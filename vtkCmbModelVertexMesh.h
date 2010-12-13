@@ -1,9 +1,10 @@
 /*=========================================================================
 
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
+Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
 Clifton Park, NY, 12065, USA.
 
-All rights reserved. No part of this software may be reproduced, distributed,
+All rights reserved. No part of this software may be reproduced,
+distributed,
 or modified, in any form or by any means, without permission in writing from
 Kitware Inc.
 
@@ -19,24 +20,37 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
 =========================================================================*/
-#ifndef __slctk_attribute_export_h
-#define __slctk_attribute_export_h
+// .NAME vtkCmbModelVertexMesh - Mesh representation for a vtkModelVertex
+// .SECTION Description
 
-// Shared library
-#ifndef BUILD_SHARED_LIBS
-#cmakedefine BUILD_SHARED_LIBS
-#endif
+#ifndef __vtkCmbModelVertexMesh_h
+#define __vtkCmbModelVertexMesh_h
 
-#if defined(WIN32) && defined(BUILD_SHARED_LIBS)
-# if defined(slctk_attribute_EXPORTS)
-#   define SLCTKATTRIBUTE_EXPORT __declspec(dllexport)
-# else
-#   define SLCTKATTRIBUTE_EXPORT __declspec(dllimport)
-# endif
-#else
-# define SLCTKATTRIBUTE_EXPORT
-#endif
+#include "vtkCmbModelEntityMesh.h"
+
+class vtkModelVertex;
+
+class VTK_EXPORT vtkCmbModelVertexMesh : public vtkCmbModelEntityMesh
+{
+public:
+  static vtkCmbModelVertexMesh* New();
+  vtkTypeRevisionMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
+  void PrintSelf(ostream& os, vtkIndent indent);
+
+  void Initialize(vtkModelVertex* vertex);
+
+  bool BuildGrid();
+
+protected:
+  vtkCmbModelVertexMesh();
+  virtual ~vtkCmbModelVertexMesh();
+
+private:
+  vtkCmbModelVertexMesh(const vtkCmbModelVertexMesh&);  // Not implemented.
+  void operator=(const vtkCmbModelVertexMesh&);  // Not implemented.
+};
 
 #endif
 

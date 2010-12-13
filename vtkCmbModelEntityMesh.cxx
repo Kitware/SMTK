@@ -1,9 +1,10 @@
 /*=========================================================================
 
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
+Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
 Clifton Park, NY, 12065, USA.
 
-All rights reserved. No part of this software may be reproduced, distributed,
+All rights reserved. No part of this software may be reproduced,
+distributed,
 or modified, in any form or by any means, without permission in writing from
 Kitware Inc.
 
@@ -19,36 +20,50 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
 =========================================================================*/
+#include "vtkCmbModelEntityMesh.h"
 
+#include <vtkPolyData.h>
 
-#include "attribute/ComponentDefinition.h"
-using namespace slck::attribute; 
+vtkCxxRevisionMacro(vtkCmbModelEntityMesh, "");
+vtkCxxSetObjectMacro(vtkCmbModelEntityMesh, Grid, vtkPolyData);
 
 //----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+vtkCmbModelEntityMesh::vtkCmbModelEntityMesh()
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
+  this->Visible = true;
+  this->Mesh = NULL;
+  this->Grid = NULL;
 }
 
 //----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
+vtkCmbModelEntityMesh::~vtkCmbModelEntityMesh()
 {
+  this->SetGrid(0);
 }
 //----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
+void vtkCmbModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
-  size_type i, n = this->m_catagories.size();
-  for (i = 0; i < n; i++)
+  this->Superclass::PrintSelf(os,indent);
+
+  os << indent << "Visible: " << this->Visible << "\n";
+  if(this->Mesh)
     {
-    if (this->isMemberOf(this->m_catagories[i]))
-      return true;
+    os << indent << "Mesh: " << this->Mesh << "\n";
     }
-  return false;
+  else
+    {
+    os << indent << "Mesh: (NULL)\n";
+    }
+  if(this->Grid)
+    {
+    os << indent << "Grid: " << this->Grid << "\n";
+    }
+  else
+    {
+    os << indent << "Grid: (NULL)\n";
+    }
+  os << indent << "GridSize: " << this->GridSize << "\n";
 }
-//----------------------------------------------------------------------------
+

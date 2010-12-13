@@ -1,54 +1,54 @@
-cmake_minimum_required (VERSION 2.8)
-project(Slctk)
+PROJECT(SimBuilderMesh)
 
-# include some cmake code that builds automatic header tests
-# and can targets for unit tests
-include(CMake/SlctkMacros.cmake)
+# trust that the compilers are a match
+set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
 
-# include export header so that we can easily expose symbols
-# in dynamic libraries
-include(GenerateExportHeader)
+FIND_PACKAGE(ParaView REQUIRED)
+INCLUDE(${PARAVIEW_USE_FILE})
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Slctk_SOURCE_DIR}/CMake)
+SET(QT_QMAKE_EXECUTABLE ${PARAVIEW_QT_QMAKE_EXECUTABLE})
+FIND_PACKAGE(Qt4)
 
-#option(Slctk_ENABLE_TESTING "Enable Testing" ON)
-#option(Slctk_ENABLE_EXAMPLES "Enable Examples" ON)
-
-#turn on ctest if we want testing
-if (Slctk_ENABLE_TESTING)
-  enable_testing()
-  include(CTest)
-endif()
-
-
-## Set the directory where the binaries will be stored
-set( EXECUTABLE_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/bin
-  CACHE PATH
-  "Directory where all executable will be stored"
-)
-
-## Set the directory where the libraries will be stored
-set( LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/libs
-  CACHE PATH
-  "Directory where all the libraries will be stored"
-)
-mark_as_advanced(
-  EXECUTABLE_OUTPUT_PATH
-  LIBRARY_OUTPUT_PATH)
-
-#add this directory so we can include files like: <slctk/internal/Test.h>
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  )
+  ${VTKExtensions_SOURCE_DIR} ${VTKExtensions_SOURCE_DIR}/Kitware
+  ${CMBModel_SOURCE_DIR}
+)
 
+#link_directories(${VXL_LIBRARY_DIR})
 
-#add the actual code
-add_subdirectory(attribute)
+SET(vtkMeshFiles
+  vtkCmbMesh.cxx
+  vtkCmbModelEntityMesh.cxx
+  vtkCmbModelVertexMesh.cxx
+)
 
-#add the examples code
-if(Slctk_ENABLE_EXAMPLES)
-  add_subdirectory(Examples)
-endif()
+SET_SOURCE_FILES_PROPERTIES(
+  vtkCmbModelEntityMesh
+  ABSTRACT
+)
+
+add_library(SimBuilderLibrary ${vtkMeshFiles})
+target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin)
+
+# Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
+if (MSVC)
+   set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+endif(MSVC)
+
+#add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
+#  SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
+#  SERVER_MANAGER_SOURCES ${CMBProxyFiles}
+#  SERVER_SOURCES ${vtkMeshFiles}
+#)
+
+#TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin ConceptualModel_Plugin vtkFiltering ERDC_Plugin)
+
+#if(NOT APPLE)
+#  install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
+#      LIBRARY DESTINATION bin)
+#endif(NOT APPLE)
+
+#if(BUILD_TESTING)
+#  add_subdirectory(Testing)
+#endif(BUILD_TESTING)
+
