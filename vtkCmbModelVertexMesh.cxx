@@ -25,12 +25,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelVertexMesh.h"
 
 #include <vtkObjectFactory.h>
+#include <vtkModelVertex.h>
 
+vtkStandardNewMacro(vtkCmbModelVertexMesh);
 vtkCxxRevisionMacro(vtkCmbModelVertexMesh, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelVertexMesh::vtkCmbModelVertexMesh()
 {
+  this->ModelVertex = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -39,10 +42,48 @@ vtkCmbModelVertexMesh::~vtkCmbModelVertexMesh()
 }
 
 //----------------------------------------------------------------------------
+vtkModelGeometricEntity* vtkCmbModelVertexMesh::GetModelGeometricEntity()
+{
+  return this->ModelVertex;
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbModelVertexMesh::Initialize(vtkCmbMesh* masterMesh,
+                                       vtkModelVertex* vertex)
+{
+  if(this->GetMasterMesh() != masterMesh)
+    {
+    this->SetMasterMesh(masterMesh);
+    this->Modified();
+    }
+  if(this->ModelVertex != vertex)
+    {
+    this->ModelVertex = vertex;
+    this->Modified();
+    }
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelVertexMesh::BuildModelEntityMesh()
+{
+  if(this->GetModelEntityMeshSize() <= 0)
+    {
+    return false;
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 void vtkCmbModelVertexMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
-
-  //os << indent << "Visible: " << this->Visible << "\n";
+  if(this->ModelVertex)
+    {
+    os << indent << "ModelVertex: " << this->ModelVertex << "\n";
+    }
+  else
+    {
+    os << indent << "ModelVertex: (NULL)\n";
+    }
 }
 

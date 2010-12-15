@@ -48,35 +48,37 @@ public:
   vtkSetMacro(Visible, bool);
   vtkGetMacro(Visible, bool);
 
-  vtkModelGeometricEntity* GetModelGeometricEntity()
-  {
-    return this->ModelGeometricEntity;
-  }
+  virtual vtkModelGeometricEntity* GetModelGeometricEntity() = 0;
 
-  vtkGetMacro(Mesh, vtkCmbMesh*);
+  vtkGetMacro(MasterMesh, vtkCmbMesh*);
 
-  vtkGetMacro(Grid, vtkPolyData*);
+  vtkGetMacro(ModelEntityMesh, vtkPolyData*);
 
-  vtkSetMacro(GridSize, double);
-  vtkGetMacro(GridSize, double);
+  vtkSetMacro(ModelEntityMeshSize, double);
+  vtkGetMacro(ModelEntityMeshSize, double);
 
-  virtual bool BuildGrid() = 0;
+  virtual bool BuildModelEntityMesh() = 0;
 
 protected:
   vtkCmbModelEntityMesh();
   virtual ~vtkCmbModelEntityMesh();
-  vtkWeakPointer<vtkModelGeometricEntity> ModelGeometricEntity;
 
-  void SetGrid(vtkPolyData* grid);
+  // Description:
+  // Mesh is reference counted.
+  void SetModelEntityMesh(vtkPolyData* mesh);
+
+  // Description:
+  // Mesh is not reference counted.
+  vtkSetMacro(MasterMesh, vtkCmbMesh*);
 
 private:
   bool Visible;
-  vtkCmbMesh* Mesh;
-  vtkPolyData* Grid;
+  vtkCmbMesh* MasterMesh;
+  vtkPolyData* ModelEntityMesh;
   // Description:
-  // The grid sizing of grid cells of equal dimension to the
+  // The mesh sizing of mesh cells of equal dimension to the
   // model dimension.
-  double GridSize;
+  double ModelEntityMeshSize;
 
   vtkCmbModelEntityMesh(const vtkCmbModelEntityMesh&);  // Not implemented.
   void operator=(const vtkCmbModelEntityMesh&);  // Not implemented.

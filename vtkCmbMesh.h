@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbMesh - Mesh representation for a vtkCMBModel.
+// .NAME vtkCmbMesh - Mesh representation for a vtkModel.
 // .SECTION Description
 
 #ifndef __vtkCmbMesh_h
@@ -31,7 +31,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObject.h>
 
 class vtkCmbMeshInternals;
-class vtkCMBModel;
+class vtkModel;
+class vtkCmbModelEntityMesh;
+class vtkModelGeometricEntity;
 
 class VTK_EXPORT vtkCmbMesh : public vtkObject
 {
@@ -45,7 +47,7 @@ public:
   vtkSetMacro(Visible, bool);
   vtkGetMacro(Visible, bool);
 
-  void Initialize(vtkCMBModel* model);
+  void Initialize(vtkModel* model);
 
   // Description:
   // If GlobalLength is less than or equal to zero, it
@@ -54,6 +56,11 @@ public:
   vtkGetMacro(GlobalLength, double);
 
   void Reset();
+
+  // Description:
+  // Given a vtkModelGeometricEntity, get the associated mesh
+  // representation.
+  vtkCmbModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*);
 
 protected:
   vtkCmbMesh();

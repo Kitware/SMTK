@@ -39,9 +39,11 @@ public:
   vtkTypeRevisionMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  void Initialize(vtkModelVertex* vertex);
+  virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
-  bool BuildGrid();
+  void Initialize(vtkCmbMesh* mesh, vtkModelVertex* vertex);
+
+  bool BuildModelEntityMesh();
 
 protected:
   vtkCmbModelVertexMesh();
@@ -50,6 +52,8 @@ protected:
 private:
   vtkCmbModelVertexMesh(const vtkCmbModelVertexMesh&);  // Not implemented.
   void operator=(const vtkCmbModelVertexMesh&);  // Not implemented.
+
+  vtkModelVertex* ModelVertex;
 };
 
 #endif

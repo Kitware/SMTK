@@ -27,20 +27,20 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPolyData.h>
 
 vtkCxxRevisionMacro(vtkCmbModelEntityMesh, "");
-vtkCxxSetObjectMacro(vtkCmbModelEntityMesh, Grid, vtkPolyData);
+vtkCxxSetObjectMacro(vtkCmbModelEntityMesh, ModelEntityMesh, vtkPolyData);
 
 //----------------------------------------------------------------------------
 vtkCmbModelEntityMesh::vtkCmbModelEntityMesh()
 {
   this->Visible = true;
-  this->Mesh = NULL;
-  this->Grid = NULL;
+  this->MasterMesh = NULL;
+  this->ModelEntityMesh = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkCmbModelEntityMesh::~vtkCmbModelEntityMesh()
 {
-  this->SetGrid(0);
+  this->SetModelEntityMesh(NULL);
 }
 //----------------------------------------------------------------------------
 void vtkCmbModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
@@ -48,22 +48,22 @@ void vtkCmbModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 
   os << indent << "Visible: " << this->Visible << "\n";
-  if(this->Mesh)
+  if(this->MasterMesh)
     {
-    os << indent << "Mesh: " << this->Mesh << "\n";
+    os << indent << "MasterMesh: " << this->MasterMesh << "\n";
     }
   else
     {
-    os << indent << "Mesh: (NULL)\n";
+    os << indent << "MasterMesh: (NULL)\n";
     }
-  if(this->Grid)
+  if(this->ModelEntityMesh)
     {
-    os << indent << "Grid: " << this->Grid << "\n";
+    os << indent << "ModelEntityMesh: " << this->ModelEntityMesh << "\n";
     }
   else
     {
-    os << indent << "Grid: (NULL)\n";
+    os << indent << "ModelEntityMesh: (NULL)\n";
     }
-  os << indent << "GridSize: " << this->GridSize << "\n";
+  os << indent << "ModelEntityMeshSize: " << this->ModelEntityMeshSize << "\n";
 }
 

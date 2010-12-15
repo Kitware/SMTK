@@ -14,8 +14,6 @@ include_directories(
   ${CMBModel_SOURCE_DIR}
 )
 
-#link_directories(${VXL_LIBRARY_DIR})
-
 SET(vtkMeshFiles
   vtkCmbMesh.cxx
   vtkCmbModelEntityMesh.cxx
@@ -48,7 +46,7 @@ endif(MSVC)
 #      LIBRARY DESTINATION bin)
 #endif(NOT APPLE)
 
-#if(BUILD_TESTING)
-#  add_subdirectory(Testing)
-#endif(BUILD_TESTING)
+if(BUILD_TESTING)
+  add_subdirectory(Testing)
+endif(BUILD_TESTING)
 
