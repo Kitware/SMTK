@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelVertexMesh.h"
 #include <vtkIdList.h>
 #include <vtkMath.h>
+#include <vtkMergeEventData.h>
 #include <vtkModel.h>
 #include <vtkModelEdge.cxx>
 #include <vtkModelEntity.h>
@@ -98,59 +99,20 @@ void vtkCmbMesh::Initialize(vtkModel* model)
   model->AddObserver(ModelGeometricEntitiesAboutToMerge, callbackCommand);
   model->AddObserver(ModelGeometricEntitySplit, callbackCommand);
 
-  // vertices
-  vtkModelItemIterator* iter = model->NewIterator(vtkModelVertexType);
-  for(iter->Begin();!iter->IsAtEnd();iter->Next())
-    {
-    vtkModelVertex* vertex =
-      vtkModelVertex::SafeDownCast(iter->GetCurrentItem());
-    vtkSmartPointer<vtkCmbModelVertexMesh> meshRepresentation =
-      vtkSmartPointer<vtkCmbModelVertexMesh>::New();
-    meshRepresentation->SetModelEntityMeshSize(this->GlobalLength);
-    this->Internal->ModelEntities[vertex] =
-      meshRepresentation;
-    }
-  iter->Delete();
   // edges
-  iter = model->NewIterator(vtkModelEdgeType);
+  vtkModelItemIterator* iter = model->NewIterator(vtkModelEdgeType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
     vtkModelEdge* edge =
       vtkModelEdge::SafeDownCast(iter->GetCurrentItem());
     vtkSmartPointer<vtkCmbModelEdgeMesh> meshRepresentation =
       vtkSmartPointer<vtkCmbModelEdgeMesh>::New();
+    meshRepresentation->Initialize(this, edge);
     meshRepresentation->SetModelEntityMeshSize(this->GlobalLength);
     this->Internal->ModelEntities[edge] =
       meshRepresentation;
     }
   iter->Delete();
-//   // faces
-//   iter = model->NewIterator(vtkModelFaceType);
-//   for(iter->Begin();!iter->IsAtEnd();iter->Next())
-//     {
-//     vtkModelEntity* entity =
-//       vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
-//     vtkSmartPointer<vtkCmbModelEntityMesh> meshRepresentation =
-//       vtkSmartPointer<vtkCmbModelEntityMesh>::New();
-//     meshRepresentation->SetGridSize(this->GlobalLength);
-//     this->Internal->ModelEntities[entity->GetUniquePersistentId()] =
-//       meshRepresentation;
-//     }
-//   iter->Delete();
-//   // regions
-//   iter = model->NewIterator(vtkModelRegionType);
-//   for(iter->Begin();!iter->IsAtEnd();iter->Next())
-//     {
-//     vtkModelEntity* entity =
-//       vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
-//     vtkSmartPointer<vtkCmbModelEntityMesh> meshRepresentation =
-//       vtkSmartPointer<vtkCmbModelEntityMesh>::New();
-//     meshRepresentation->SetGridSize(this->GlobalLength);
-//     this->Internal->ModelEntities[entity->GetUniquePersistentId()] =
-//       meshRepresentation;
-//     }
-//   iter->Delete();
-
   this->Modified();
 }
 
@@ -163,7 +125,6 @@ void vtkCmbMesh::SetGlobalLength(double globalLength)
     }
   if(globalLength <= 0)
     {
-    vtkWarningMacro("Trying to set GlobalLength to invalid value of " << globalLength);
     return;
     }
   this->GlobalLength = globalLength;
@@ -173,6 +134,7 @@ void vtkCmbMesh::SetGlobalLength(double globalLength)
       it++)
     {
     it->second->SetModelEntityMeshSize(globalLength);
+    it->second->BuildModelEntityMesh();
     }
   this->Modified();
 }
@@ -207,70 +169,117 @@ void vtkCmbMesh::ModelGeometricEntityChanged(
   if(event == ModelGeometricEntitySplit)
     {
     vtkSplitEventData* splitEventData = (vtkSplitEventData*) callData;
-    vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
-      splitEventData->GetSourceEntity()->GetThisModelEntity());
-    if(splitEventData->GetCreatedModelEntityIds()->GetNumberOfIds() != 2)
+    if(model->GetModelDimension() == 2)
       {
-      vtkGenericWarningMacro("Problem with split event.");
-      return;
-      }
-    vtkModelVertex* createdVertex = NULL;
-    vtkModelEdge* createdEdge = vtkModelEdge::SafeDownCast(
-      model->GetModelEntity(vtkModelEdgeType,
-                            splitEventData->GetCreatedModelEntityIds()->GetId(0)));
-    if(createdEdge == NULL)
-      {
-      createdEdge = vtkModelEdge::SafeDownCast(
-        model->GetModelEntity(vtkModelEdgeType,
-                              splitEventData->GetCreatedModelEntityIds()->GetId(1)));
-      createdVertex = vtkModelVertex::SafeDownCast(
-        model->GetModelEntity(vtkModelVertexType,
-                              splitEventData->GetCreatedModelEntityIds()->GetId(0)));
+      cmbMesh->ModelEdgeSplit(splitEventData);
       }
     else
       {
-      createdVertex = vtkModelVertex::SafeDownCast(
-        model->GetModelEntity(vtkModelVertexType,
-                              splitEventData->GetCreatedModelEntityIds()->GetId(1)));
-
+      vtkGenericWarningMacro("Model face split not implemented yet.")
       }
-    vtkModelVertex* sourceVertex1 =
-      vtkModelVertex::SafeDownCast(sourceEdge->GetAdjacentModelVertex(0));
-    if(sourceVertex1 == createdVertex)
-      {
-      sourceVertex1 = vtkModelVertex::SafeDownCast(
-        sourceEdge->GetAdjacentModelVertex(1));
-      }
-    vtkModelVertex* sourceVertex2 =
-      vtkModelVertex::SafeDownCast(createdEdge->GetAdjacentModelVertex(0));
-    if(sourceVertex2 == createdVertex)
-      {
-      sourceVertex2 = vtkModelVertex::SafeDownCast(
-        createdEdge->GetAdjacentModelVertex(1));
-      }
-    double size1 = cmbMesh->GetModelEntityMesh(sourceVertex1)->GetModelEntityMeshSize();
-    double size2 = cmbMesh->GetModelEntityMesh(sourceVertex2)->GetModelEntityMeshSize();
-    double newSize = size1;
-    if(size1 != size2)
-      {
-      double coords1[3], coords2[3], createdCoords[3];
-      sourceVertex1->GetPoint(coords1);
-      sourceVertex2->GetPoint(coords2);
-      createdVertex->GetPoint(createdCoords);
-      double length1 = sqrt(vtkMath::Distance2BetweenPoints(coords1, createdCoords));
-      double length2 = sqrt(vtkMath::Distance2BetweenPoints(coords2, createdCoords));
-      newSize = size1+(size2-size1)*length1/(length1+length2);
-      }
-
-    vtkSmartPointer<vtkCmbModelVertexMesh> meshRepresentation =
-      vtkSmartPointer<vtkCmbModelVertexMesh>::New();
-    meshRepresentation->SetModelEntityMeshSize(newSize);
-    cmbMesh->Internal->ModelEntities[createdVertex] =
-      meshRepresentation;
     }
+  else if(event == ModelGeometricEntitiesAboutToMerge)
+    {
+    vtkMergeEventData* mergeEventData = (vtkMergeEventData*) callData;
+    if(model->GetModelDimension() == 2)
+      {
+      cmbMesh->ModelEdgeMerge(mergeEventData);
+      }
+    else
+      {
+      vtkGenericWarningMacro("Model face merge not implemented yet.")
+      }
+    }
+  else if(event == ModelGeometricEntityBoundaryModified)
+    {
+    cmbMesh->ModelEntityBoundaryModified((vtkModelGeometricEntity*)callData);
+    }
+}
 
+//----------------------------------------------------------------------------
+void vtkCmbMesh::ModelEdgeSplit(vtkSplitEventData* splitEventData)
+{
+  vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
+    splitEventData->GetSourceEntity()->GetThisModelEntity());
+  if(splitEventData->GetCreatedModelEntityIds()->GetNumberOfIds() != 2)
+    {
+    vtkGenericWarningMacro("Problem with split event.");
+    return;
+    }
+  vtkModelEdge* createdEdge = vtkModelEdge::SafeDownCast(
+    this->Internal->Model->GetModelEntity(
+      vtkModelEdgeType, splitEventData->GetCreatedModelEntityIds()->GetId(0)));
+  if(createdEdge == NULL)
+    {
+    createdEdge = vtkModelEdge::SafeDownCast(
+      this->Internal->Model->GetModelEntity(
+        vtkModelEdgeType, splitEventData->GetCreatedModelEntityIds()->GetId(1)));
+    }
+  vtkCmbModelEntityMesh* sourceMesh = this->GetModelEntityMesh(sourceEdge);
+  sourceMesh->BuildModelEntityMesh();
+  double size = sourceMesh->GetModelEntityMeshSize();
 
-  cmbMesh->Modified();
+  vtkSmartPointer<vtkCmbModelEdgeMesh> createdMesh =
+    vtkSmartPointer<vtkCmbModelEdgeMesh>::New();
+  createdMesh->Initialize(this, createdEdge);
+  createdMesh->SetModelEntityMeshSize(size);
+  createdMesh->BuildModelEntityMesh();
+  this->Internal->ModelEntities[createdEdge] = createdMesh;
+
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMesh::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
+{
+  vtkModelEdge* sourceEdge = vtkModelEdge::SafeDownCast(
+    mergeEventData->GetSourceEntity()->GetThisModelEntity());
+  vtkModelEdge* targetEdge = vtkModelEdge::SafeDownCast(
+    mergeEventData->GetTargetEntity()->GetThisModelEntity());
+  vtkCmbModelEntityMesh* sourceMesh = this->GetModelEntityMesh(sourceEdge);
+  double sourceSize = sourceMesh->GetModelEntityMeshSize();
+  this->Internal->ModelEntities.erase(sourceEdge);
+  vtkCmbModelEntityMesh* targetEdgeMesh = this->GetModelEntityMesh(targetEdge);
+  if(sourceSize > 0)
+    {
+    double targetSize = targetEdgeMesh->GetModelEntityMeshSize();
+    if(targetSize > sourceSize)
+      {
+      targetEdgeMesh->SetModelEntityMeshSize(sourceSize);
+      }
+    }
+  // we can't remesh the target edge yet since the topology hasn't changed
+  // yet.  we mark it as modified so that when we see the boundary modified
+  // event we will trigger the remeshing then.
+  targetEdgeMesh->Modified();
+
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMesh::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
+{
+  if(entity->IsA("vtkModelEdge") == true)
+    {
+    if(vtkCmbModelEntityMesh* entityMesh = this->GetModelEntityMesh(entity))
+      {
+      entityMesh->BuildModelEntityMesh();
+      }
+    }
+  else if(vtkModelFace* face = vtkModelFace::SafeDownCast(entity))
+    {
+    vtkModelItemIterator* edges = face->NewAdjacentModelEdgeIterator();
+    for(edges->Begin();!edges->IsAtEnd();edges->Next())
+      {
+      if(vtkCmbModelEntityMesh* entityMesh =
+         this->GetModelEntityMesh(vtkModelEdge::SafeDownCast(edges->GetCurrentItem())))
+        {
+        entityMesh->BuildModelEntityMesh();
+        }
+      }
+    cout << "still need to update the model face mesh!!!!!!!!!!\n";
+    edges->Delete();
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -31,9 +31,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObject.h>
 
 class vtkCmbMeshInternals;
-class vtkModel;
 class vtkCmbModelEntityMesh;
+class vtkMergeEventData;
+class vtkModel;
 class vtkModelGeometricEntity;
+class vtkSplitEventData;
 
 class VTK_EXPORT vtkCmbMesh : public vtkObject
 {
@@ -69,6 +71,24 @@ protected:
   static void ModelGeometricEntityChanged(
     vtkObject *caller, unsigned long event,
     void *cData, void *callData);
+
+  // Description:
+  // Process an edge split event from the model.  With a
+  // constant edge length, the new edge gets the same length
+  // size as the source edge.
+  void ModelEdgeSplit(vtkSplitEventData* splitEventData);
+
+  // Description:
+  // Process an edge merge event from the model.  With a constant
+  // edge length, the surviving edge gets the smaller (valid) edge
+  // length size.
+  void ModelEdgeMerge(vtkMergeEventData* mergeEventData);
+
+  // Description:
+  // If the boundary of an object changes, we will need to remesh it.
+  // Note that if this is in conjunction with a split event, we won't
+  // mesh it now but if it's in conjunction with a merge event we will.
+  void ModelEntityBoundaryModified(vtkModelGeometricEntity*);
 
 private:
   vtkCmbMesh(const vtkCmbMesh&);  // Not implemented.
