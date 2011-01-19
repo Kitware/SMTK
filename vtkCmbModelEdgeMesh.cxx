@@ -24,10 +24,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbModelEdgeMesh.h"
 
+#include "vtkCleanPolylines.h"
 #include "vtkCmbMesh.h"
+#include "vtkCMBModelEdge.h"
 #include "vtkCmbModelVertexMesh.h"
+#include "vtkMeshModelEdgesFilter.h"
 #include <vtkModelEdge.h>
 #include <vtkModelVertex.h>
+
+#include "vtkCellData.h"
+#include "vtkDoubleArray.h"
 #include <vtkObjectFactory.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
@@ -129,33 +135,53 @@ bool vtkCmbModelEdgeMesh::BuildMesh()
     this->SetModelEntityMesh(mesh);
     mesh->Delete();
     }
-  // not done properly -- just doing a straight line with 1 cell for now
   mesh->Initialize();
   mesh->Allocate();
-  vtkPoints* points = vtkPoints::New();
-  points->SetDataTypeToDouble();
-  points->SetNumberOfPoints(2);
-  if(vtkModelVertex* modelVertex = this->ModelEdge->GetAdjacentModelVertex(0))
-    {
-    double point[3];
-    modelVertex->GetPoint(point);
-    points->SetPoint(0, point);
-    modelVertex = this->ModelEdge->GetAdjacentModelVertex(1);
-    modelVertex->GetPoint(point);
-    points->SetPoint(1, point);
-    }
-  else
-    {  // put in something random now
-    double point[3] = {0,0,0};
-    points->SetPoint(0, point);
-    point[2] = 1;
-    points->SetPoint(1, point);
-    }
-  mesh->SetPoints(points);
-  points->Delete();
-  vtkIdType pointIds[2] = {0, 1};
-  mesh->InsertNextCell(VTK_LINE, 2, pointIds);
 
+  // Clean polylines will create a "full strip", whereas vtkStripper
+  // starts building a strip from a line and adds lines to only one end,
+  // such that it is possible for (what could be) a single polyline to end
+  // up as several (perhaps MANY) polylines.  Clean polylines also deals with
+  // non-manifold points, but at this point, not expectign that to be an issue.
+  vtkCleanPolylines *stripper = vtkCleanPolylines::New();
+  stripper->SetMinimumLineLength(0);
+  stripper->UseRelativeLineLengthOff();
+  stripper->SetInput( vtkPolyData::SafeDownCast(
+    vtkCMBModelEdge::SafeDownCast(this->ModelEdge)->GetGeometry() ) );
+  stripper->Update();
+
+  if ( stripper->GetOutput()->GetNumberOfLines() != 1 )
+    {
+    vtkErrorMacro("Expecting one and exactly one edge / polyline: " <<
+      stripper->GetOutput()->GetNumberOfLines() );
+    stripper->Delete();
+    return false;
+    }
+
+  vtkDoubleArray *targetCellLength = vtkDoubleArray::New();
+  targetCellLength->SetNumberOfComponents( 1 );
+  targetCellLength->SetNumberOfTuples( 1 );
+  targetCellLength->SetValue( 0, this->GetModelEntityMeshSize() );
+  targetCellLength->SetName( "TargetSegmentLength" );
+
+  vtkPolyData *polyLinePD = vtkPolyData::New();
+  polyLinePD->ShallowCopy( stripper->GetOutput() );
+  polyLinePD->GetCellData()->AddArray( targetCellLength );
+  targetCellLength->FastDelete();
+
+  vtkMeshModelEdgesFilter *meshEdgesFilter = vtkMeshModelEdgesFilter::New();
+  meshEdgesFilter->UseLengthAlongEdgeOff();
+  meshEdgesFilter->SetInput( polyLinePD );
+  polyLinePD->FastDelete();
+  meshEdgesFilter->SetTargetSegmentLengthCellArrayName(
+    targetCellLength->GetName() );
+  meshEdgesFilter->Update();
+
+  mesh->SetPoints( meshEdgesFilter->GetOutput()->GetPoints() );
+  mesh->SetLines( meshEdgesFilter->GetOutput()->GetLines() );
+
+  stripper->Delete();
+  meshEdgesFilter->Delete();
   return true;
 }
 
