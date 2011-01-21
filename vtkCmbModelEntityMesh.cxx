@@ -35,6 +35,7 @@ vtkCmbModelEntityMesh::vtkCmbModelEntityMesh()
   this->Visible = true;
   this->MasterMesh = NULL;
   this->ModelEntityMesh = NULL;
+  this->ModelEntityMeshSize = 0;
 }
 
 //----------------------------------------------------------------------------
