@@ -35,7 +35,6 @@ vtkCmbModelEntityMesh::vtkCmbModelEntityMesh()
   this->Visible = true;
   this->MasterMesh = NULL;
   this->ModelEntityMesh = NULL;
-  this->ModelEntityMeshSize = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -43,6 +42,7 @@ vtkCmbModelEntityMesh::~vtkCmbModelEntityMesh()
 {
   this->SetModelEntityMesh(NULL);
 }
+
 //----------------------------------------------------------------------------
 void vtkCmbModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
@@ -65,6 +65,5 @@ void vtkCmbModelEntityMesh::PrintSelf(ostream& os, vtkIndent indent)
     {
     os << indent << "ModelEntityMesh: (NULL)\n";
     }
-  os << indent << "ModelEntityMeshSize: " << this->ModelEntityMeshSize << "\n";
 }
 

@@ -54,9 +54,6 @@ public:
 
   vtkGetMacro(ModelEntityMesh, vtkPolyData*);
 
-  vtkSetMacro(ModelEntityMeshSize, double);
-  vtkGetMacro(ModelEntityMeshSize, double);
-
   virtual bool BuildModelEntityMesh() = 0;
 
 protected:
@@ -75,10 +72,6 @@ private:
   bool Visible;
   vtkCmbMesh* MasterMesh;
   vtkPolyData* ModelEntityMesh;
-  // Description:
-  // The mesh sizing of mesh cells of equal dimension to the
-  // model dimension.
-  double ModelEntityMeshSize;
 
   vtkCmbModelEntityMesh(const vtkCmbModelEntityMesh&);  // Not implemented.
   void operator=(const vtkCmbModelEntityMesh&);  // Not implemented.

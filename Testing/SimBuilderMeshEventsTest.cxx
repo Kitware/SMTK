@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkCmbMesh.h>
 #include <vtkCMBModel.h>
+#include <vtkCmbModelEdgeMesh.h>
 #include <vtkCmbModelEntityMesh.h>
 #include <vtkCMBModelReadOperator.h>
 #include <vtkCMBModelWrapper.h>
@@ -64,12 +65,12 @@ int Check2DModel(const char* fileName)
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCmbModelEntityMesh* edgeMesh =
-      mesh->GetModelEntityMesh(edge);
-    if(edgeMesh->GetModelEntityMeshSize() != 1.)
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(edge));
+    if(edgeMesh->GetLength() != 0.)
       {
       numberOfErrors++;
-      vtkGenericWarningMacro("Model entity mesh size not set.");
+      vtkGenericWarningMacro("Model entity mesh size set when it shouldn't be.");
       }
     if(edgeMesh->GetModelEntityMesh() == NULL ||
        edgeMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
@@ -101,9 +102,9 @@ int Check2DModel(const char* fileName)
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCmbModelEntityMesh* edgeMesh =
-      mesh->GetModelEntityMesh(edge);
-    if(edgeMesh->GetModelEntityMeshSize() != 1.)
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(edge));
+    if(edgeMesh->GetLength() != 0.)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Model entity mesh size not set.");
@@ -119,9 +120,10 @@ int Check2DModel(const char* fileName)
   // test 2D merge
   vtkModelGeometricEntity* createdEdge = vtkModelGeometricEntity::SafeDownCast(
     model->GetModelEntity(vtkModelEdgeType, splitOperator->GetCreatedModelEdgeId()));
-  vtkCmbModelEntityMesh* createdMesh = mesh->GetModelEntityMesh(createdEdge);
+  vtkCmbModelEdgeMesh* createdMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    mesh->GetModelEntityMesh(createdEdge));
   // set the size to be larger to test that the smaller size is kept
-  createdMesh->SetModelEntityMeshSize(5.);
+  createdMesh->SetLength(5.);
 
   vtkSmartPointer<vtkMergeOperator> mergeOperator =
     vtkSmartPointer<vtkMergeOperator>::New();
@@ -137,9 +139,17 @@ int Check2DModel(const char* fileName)
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCmbModelEntityMesh* edgeMesh =
-      mesh->GetModelEntityMesh(edge);
-    if(edgeMesh->GetModelEntityMeshSize() != 1.)
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(edge));
+    if(edge->GetUniquePersistentId() == 42)
+      {
+      if(edgeMesh->GetLength() != 5.)
+        {
+        numberOfErrors++;
+        vtkGenericWarningMacro("Model entity mesh size not set properly.");
+        }
+      }
+    else if(edgeMesh->GetLength() != 0.)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Model entity mesh size not set properly.");

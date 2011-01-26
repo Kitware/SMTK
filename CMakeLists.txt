@@ -16,7 +16,9 @@ include_directories(
 
 SET(vtkMeshFiles
   vtkCmbMesh.cxx
+  vtkCmbModelEdgeMesh.cxx
   vtkCmbModelEntityMesh.cxx
+  vtkCmbModelFaceMesh.cxx
   vtkCmbModelVertexMesh.cxx
 )
 

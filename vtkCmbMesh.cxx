@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkCallbackCommand.h>
 #include "vtkCmbModelEdgeMesh.cxx"
+#include "vtkCmbModelFaceMesh.h"
 #include <vtkCMBModelGeometricEntity.h>
 #include "vtkCmbModelVertexMesh.h"
 #include <vtkIdList.h>
@@ -34,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkModel.h>
 #include <vtkModelEdge.cxx>
 #include <vtkModelEntity.h>
+#include <vtkModelFace.h>
 #include <vtkModelGeometricEntity.h>
 #include <vtkModelItemIterator.h>
 #include <vtkModelVertex.h>
@@ -50,7 +52,8 @@ vtkCxxRevisionMacro(vtkCmbMesh, "");
 class vtkCmbMeshInternals
 {
 public:
-  std::map<vtkModelGeometricEntity*, vtkSmartPointer<vtkCmbModelEntityMesh> > ModelEntities;
+  std::map<vtkModelEdge*, vtkSmartPointer<vtkCmbModelEdgeMesh> > ModelEdges;
+  std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMesh> > ModelFaces;
   vtkWeakPointer<vtkModel> Model;
   vtkCmbMeshInternals() : Model(NULL)
     {};
@@ -61,6 +64,8 @@ vtkCmbMesh::vtkCmbMesh()
 {
   this->Visible = true;
   this->GlobalLength = 0;
+  this->GlobalMaximumArea = 0;
+  this->GlobalMinimumAngle = 0;
   this->Internal = new vtkCmbMeshInternals;
 }
 
@@ -108,9 +113,7 @@ void vtkCmbMesh::Initialize(vtkModel* model)
     vtkSmartPointer<vtkCmbModelEdgeMesh> meshRepresentation =
       vtkSmartPointer<vtkCmbModelEdgeMesh>::New();
     meshRepresentation->Initialize(this, edge);
-    meshRepresentation->SetModelEntityMeshSize(this->GlobalLength);
-    this->Internal->ModelEntities[edge] =
-      meshRepresentation;
+    this->Internal->ModelEdges[edge] = meshRepresentation;
     }
   iter->Delete();
   this->Modified();
@@ -125,15 +128,48 @@ void vtkCmbMesh::SetGlobalLength(double globalLength)
     }
   if(globalLength <= 0)
     {
+    this->GlobalLength = 0.;
     return;
     }
-  this->GlobalLength = globalLength;
-  for(std::map<vtkModelGeometricEntity*,
-        vtkSmartPointer<vtkCmbModelEntityMesh> >::iterator it=
-        this->Internal->ModelEntities.begin();it!=this->Internal->ModelEntities.end();
+  this->GlobalLength = globalLength > 0. ? globalLength : 0.;
+  for(std::map<vtkModelEdge*, vtkSmartPointer<vtkCmbModelEdgeMesh> >::iterator it=
+        this->Internal->ModelEdges.begin();it!=this->Internal->ModelEdges.end();
       it++)
     {
-    it->second->SetModelEntityMeshSize(globalLength);
+    it->second->BuildModelEntityMesh();
+    }
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMesh::SetGlobalMaximumArea(double maxArea)
+{
+  if(this->GlobalMaximumArea == maxArea)
+    {
+    return;
+    }
+  this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
+  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMesh> >::iterator it=
+        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
+      it++)
+    {
+    it->second->BuildModelEntityMesh();
+    }
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMesh::SetGlobalMinimumAngle(double minAngle)
+{
+  if(this->GlobalMinimumAngle == minAngle)
+    {
+    return;
+    }
+  this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
+  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMesh> >::iterator it=
+        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
+      it++)
+    {
     it->second->BuildModelEntityMesh();
     }
   this->Modified();
@@ -149,14 +185,30 @@ void vtkCmbMesh::Reset()
 vtkCmbModelEntityMesh* vtkCmbMesh::GetModelEntityMesh(
   vtkModelGeometricEntity* entity)
 {
-  std::map<vtkModelGeometricEntity*,
-    vtkSmartPointer<vtkCmbModelEntityMesh> >::iterator it=
-    this->Internal->ModelEntities.find(entity);
-  if(it == this->Internal->ModelEntities.end())
+  if(vtkModelEdge* modelEdge = vtkModelEdge::SafeDownCast(entity))
     {
-    return NULL;
+    std::map<vtkModelEdge*,
+      vtkSmartPointer<vtkCmbModelEdgeMesh> >::iterator it=
+      this->Internal->ModelEdges.find(modelEdge);
+    if(it == this->Internal->ModelEdges.end())
+      {
+      return NULL;
+      }
+    return it->second;
     }
-  return it->second;
+  if(vtkModelFace* modelFace = vtkModelFace::SafeDownCast(entity))
+    {
+    std::map<vtkModelFace*,
+      vtkSmartPointer<vtkCmbModelFaceMesh> >::iterator it=
+      this->Internal->ModelFaces.find(modelFace);
+    if(it == this->Internal->ModelFaces.end())
+      {
+      return NULL;
+      }
+    return it->second;
+    }
+  vtkErrorMacro("Incorrect type.");
+  return NULL;
 }
 
 
@@ -215,16 +267,16 @@ void vtkCmbMesh::ModelEdgeSplit(vtkSplitEventData* splitEventData)
       this->Internal->Model->GetModelEntity(
         vtkModelEdgeType, splitEventData->GetCreatedModelEntityIds()->GetId(1)));
     }
-  vtkCmbModelEntityMesh* sourceMesh = this->GetModelEntityMesh(sourceEdge);
+  vtkCmbModelEdgeMesh* sourceMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    this->GetModelEntityMesh(sourceEdge));
   sourceMesh->BuildModelEntityMesh();
-  double size = sourceMesh->GetModelEntityMeshSize();
 
   vtkSmartPointer<vtkCmbModelEdgeMesh> createdMesh =
     vtkSmartPointer<vtkCmbModelEdgeMesh>::New();
+  createdMesh->SetLength(sourceMesh->GetLength());
   createdMesh->Initialize(this, createdEdge);
-  createdMesh->SetModelEntityMeshSize(size);
   createdMesh->BuildModelEntityMesh();
-  this->Internal->ModelEntities[createdEdge] = createdMesh;
+  this->Internal->ModelEdges[createdEdge] = createdMesh;
 
   this->Modified();
 }
@@ -236,18 +288,18 @@ void vtkCmbMesh::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
     mergeEventData->GetSourceEntity()->GetThisModelEntity());
   vtkModelEdge* targetEdge = vtkModelEdge::SafeDownCast(
     mergeEventData->GetTargetEntity()->GetThisModelEntity());
-  vtkCmbModelEntityMesh* sourceMesh = this->GetModelEntityMesh(sourceEdge);
-  double sourceSize = sourceMesh->GetModelEntityMeshSize();
-  this->Internal->ModelEntities.erase(sourceEdge);
-  vtkCmbModelEntityMesh* targetEdgeMesh = this->GetModelEntityMesh(targetEdge);
-  if(sourceSize > 0)
+  vtkCmbModelEdgeMesh* sourceMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    this->GetModelEntityMesh(sourceEdge));
+  double sourceLength = sourceMesh->GetLength();
+  this->Internal->ModelEdges.erase(sourceEdge);
+  vtkCmbModelEdgeMesh* targetEdgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    this->GetModelEntityMesh(targetEdge));
+  if( (targetEdgeMesh->GetLength() > sourceLength && sourceLength > 0.) ||
+      targetEdgeMesh->GetLength() <= 0.)
     {
-    double targetSize = targetEdgeMesh->GetModelEntityMeshSize();
-    if(targetSize > sourceSize)
-      {
-      targetEdgeMesh->SetModelEntityMeshSize(sourceSize);
-      }
+    targetEdgeMesh->SetLength(sourceLength);
     }
+
   // we can't remesh the target edge yet since the topology hasn't changed
   // yet.  we mark it as modified so that when we see the boundary modified
   // event we will trigger the remeshing then.

@@ -66,11 +66,7 @@ void vtkCmbModelVertexMesh::Initialize(vtkCmbMesh* masterMesh,
 //----------------------------------------------------------------------------
 bool vtkCmbModelVertexMesh::BuildModelEntityMesh()
 {
-  if(this->GetModelEntityMeshSize() <= 0)
-    {
-    return false;
-    }
-  return true;
+  return false;
 }
 
 //----------------------------------------------------------------------------

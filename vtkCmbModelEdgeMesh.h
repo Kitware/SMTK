@@ -24,6 +24,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkCmbModelEdgeMesh - Mesh representation for a vtkModelEdge
 // .SECTION Description
+// Mesh representation for a vtkModelEdge.  The smaller value for the
+// edge length is the one used for the global vs. local values.
+// The values are absolute values.  BuildModelEntityMesh() gets called
+// if the used edge length parameter changes.  If the edge gets meshed,
+// all adjacent model faces ...
 
 #ifndef __vtkCmbModelEdgeMesh_h
 #define __vtkCmbModelEdgeMesh_h
@@ -54,6 +59,16 @@ public:
   // mesh object for both which = 0 and which = 1.
   vtkCmbModelVertexMesh* GetAdjacentModelVertexMesh(int which);
 
+  // Description:
+  // Set/get the model edge mesh length.  If it is 0 it
+  // indicates that it is not set.  If the global edge length
+  // is smaller than this value then that value will be used
+  // when generating the arc/model edge mesh.  If the actual
+  // used edge length gets modified then the arc/model edge
+  // automatically gets remeshed.
+  vtkGetMacro(Length, double);
+  virtual void SetLength(double length);
+
 protected:
   vtkCmbModelEdgeMesh();
   virtual ~vtkCmbModelEdgeMesh();
@@ -68,6 +83,7 @@ private:
   void operator=(const vtkCmbModelEdgeMesh&);  // Not implemented.
 
   vtkModelEdge* ModelEdge;
+  double Length;
 };
 
 #endif
