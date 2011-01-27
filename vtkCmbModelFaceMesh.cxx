@@ -14,7 +14,7 @@ OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
 EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
+INCLUDING,M
 BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
 PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
@@ -25,11 +25,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelFaceMesh.h"
 
 #include "vtkCmbMesh.h"
+#include "vtkCmbModelEdgeMesh.h"
+
 #include <vtkModelFace.h>
+#include <vtkModelEdgeUse.h>
+#include <vtkModelEdge.h>
+#include <vtkModelItemIterator.h>
+#include <vtkModelFaceUse.h>
+#include <vtkModelLoopUse.h>
 
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
+using namespace CmbModelFaceMeshPrivate;
 vtkStandardNewMacro(vtkCmbModelFaceMesh);
 vtkCxxRevisionMacro(vtkCmbModelFaceMesh, "");
 
@@ -117,9 +125,88 @@ bool vtkCmbModelFaceMesh::BuildMesh()
   mesh->Initialize();
   mesh->Allocate();
 
-  // rob -- put in the calls to triangle here
+  bool valid = true;
+  valid = valid && this->CreateMeshInfo();
+  valid = valid && this->Triangulate(mesh);
+  return valid;
+}
 
-  return true;
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMesh::CreateMeshInfo()
+{
+  //we need to walk the topology once to determine the following:
+  // number of loops that are holes
+  // number of total line segements across all loops
+  // number of unique points used in all line segments
+  // we need all this information so we can properly construct the triangle memory
+  InternalLoop *loop = NULL;
+  vtkModelItemIterator *liter = this->ModelFace->GetModelFaceUse(0)->NewLoopUseIterator();
+  for (liter->Begin();!liter->IsAtEnd(); liter->Next())
+    {
+    vtkIdType loopId = liter->GetCurrentItem()->GetUniquePersistenId();
+    loop = this->InternalMeshInfo()->addLoop(loopId);
+    vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(liter->GetCurrentItem())->NewModelEdgeUseIterator();
+    for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+      {
+      //add each edge to the loop
+      vtkModelEdge* modelEdge = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem())->GetModelEdge();
+      //we now have to walk the mesh lines cell data to get all the verts for this edge
+      vtkIdType edgeId =modelEdge->GetUniquePersistentId();
+      if (!loop->edgeExists(edgeId))
+        {
+        vtkCmbModelEdgeMesh *edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+          this->GetMasterMesh()->GetModelEntityMesh(modelEdge));
+
+        InternalEdge edge(edgeId,modelEdge->GetNumberOfModelEdgeUses());
+
+        vtkPolyData *mesh = edgeMesh->GetModelEntityMesh();
+        edge.addNumberOfMeshPoints(mesh->GetNumberOfPoints());
+        int numVerts = modelEdge->GetNumberOfModelVertexUses();
+        for(int i=0;i<numverts;++i)
+          {
+          vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
+          if(vertex)
+            {
+            edge->addModelVert(vertex->GetUniquePersistentId());
+            }
+          }
+        loop->addEdge(edge);
+        }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
+{
+  //we now get to construct the triangulate structs based on our mapping
+  TriangleInterface ti(this->InternalMeshInfo);
+
+  double global = this->GetMasterMesh()->GetMaxiumArea();
+  double local = this->MaxiumArea;
+  if ( local == 0 || global < local )
+    {
+    local = global;
+    }
+  ti.setMaximumArea(local);
+
+  global = this->GetMasterMesh()->GetMaxiumAngle();
+  local = this->MaxiumAngle;
+  if ( local == 0 || global < local )
+    {
+    local = global;
+    }
+  ti.setMinimumAngle(local);
+
+  ti.setOutputMesh(mesh);
+
+  //time to walk the mesh again!
+
+
+
+
+
+  return ti.computeMesh();
 }
 
 //----------------------------------------------------------------------------

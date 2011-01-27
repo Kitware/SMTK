@@ -37,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkModelFace;
 class vtkCmbModelVertexMesh;
+struct triangulateio;
 
 class VTK_EXPORT vtkCmbModelFaceMesh : public vtkCmbModelEntityMesh
 {
@@ -75,6 +76,9 @@ protected:
   // This method builds the model entity's mesh without checking
   // the parameters.
   bool BuildMesh();
+
+  bool CreateMeshInfo();
+  bool Triangulate(vtkPolyData *mesh);
 
 private:
   vtkCmbModelFaceMesh(const vtkCmbModelFaceMesh&);  // Not implemented.
