@@ -64,7 +64,8 @@ void vtkCmbModelVertexMesh::Initialize(vtkCmbMesh* masterMesh,
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelVertexMesh::BuildModelEntityMesh()
+bool vtkCmbModelVertexMesh::BuildModelEntityMesh(
+  bool vtkNotUsed(meshHigherDimensionalEntities) )
 {
   return false;
 }

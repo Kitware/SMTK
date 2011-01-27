@@ -54,7 +54,13 @@ public:
 
   vtkGetMacro(ModelEntityMesh, vtkPolyData*);
 
-  virtual bool BuildModelEntityMesh() = 0;
+  // Description:
+  // BuildModelEntityMesh will generate a mesh for the associated
+  // model entity.  If meshHigherDimensionalEntities is set to true
+  // it will also mesh any higher dimensional entities which need
+  // to be meshed because of this object getting meshed.
+  virtual bool BuildModelEntityMesh(
+    bool meshHigherDimensionalEntities) = 0;
 
 protected:
   vtkCmbModelEntityMesh();

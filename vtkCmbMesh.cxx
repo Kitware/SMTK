@@ -136,8 +136,16 @@ void vtkCmbMesh::SetGlobalLength(double globalLength)
         this->Internal->ModelEdges.begin();it!=this->Internal->ModelEdges.end();
       it++)
     {
-    it->second->BuildModelEntityMesh();
+    it->second->BuildModelEntityMesh(false);
     }
+  // now remesh the model faces
+  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMesh> >::iterator it=
+        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
+      it++)
+    {
+    it->second->BuildModelEntityMesh(false);
+    }
+
   this->Modified();
 }
 
@@ -153,8 +161,9 @@ void vtkCmbMesh::SetGlobalMaximumArea(double maxArea)
         this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
       it++)
     {
-    it->second->BuildModelEntityMesh();
+    it->second->BuildModelEntityMesh(false);
     }
+  // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
 }
 
@@ -170,8 +179,9 @@ void vtkCmbMesh::SetGlobalMinimumAngle(double minAngle)
         this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
       it++)
     {
-    it->second->BuildModelEntityMesh();
+    it->second->BuildModelEntityMesh(false);
     }
+  // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
 }
 
@@ -269,13 +279,13 @@ void vtkCmbMesh::ModelEdgeSplit(vtkSplitEventData* splitEventData)
     }
   vtkCmbModelEdgeMesh* sourceMesh = vtkCmbModelEdgeMesh::SafeDownCast(
     this->GetModelEntityMesh(sourceEdge));
-  sourceMesh->BuildModelEntityMesh();
+  sourceMesh->BuildModelEntityMesh(false);
 
   vtkSmartPointer<vtkCmbModelEdgeMesh> createdMesh =
     vtkSmartPointer<vtkCmbModelEdgeMesh>::New();
   createdMesh->SetLength(sourceMesh->GetLength());
   createdMesh->Initialize(this, createdEdge);
-  createdMesh->BuildModelEntityMesh();
+  createdMesh->BuildModelEntityMesh(true);
   this->Internal->ModelEdges[createdEdge] = createdMesh;
 
   this->Modified();
@@ -311,11 +321,11 @@ void vtkCmbMesh::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
 //----------------------------------------------------------------------------
 void vtkCmbMesh::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
 {
-  if(entity->IsA("vtkModelEdge") == true)
+  if(entity->IsA("vtkModelEdge") != 0)
     {
     if(vtkCmbModelEntityMesh* entityMesh = this->GetModelEntityMesh(entity))
       {
-      entityMesh->BuildModelEntityMesh();
+      entityMesh->BuildModelEntityMesh(false);
       }
     }
   else if(vtkModelFace* face = vtkModelFace::SafeDownCast(entity))
@@ -326,10 +336,9 @@ void vtkCmbMesh::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
       if(vtkCmbModelEntityMesh* entityMesh =
          this->GetModelEntityMesh(vtkModelEdge::SafeDownCast(edges->GetCurrentItem())))
         {
-        entityMesh->BuildModelEntityMesh();
+        entityMesh->BuildModelEntityMesh(false);
         }
       }
-    cout << "still need to update the model face mesh!!!!!!!!!!\n";
     edges->Delete();
     }
 }

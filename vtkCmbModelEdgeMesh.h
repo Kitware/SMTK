@@ -49,7 +49,12 @@ public:
 
   void Initialize(vtkCmbMesh* mesh, vtkModelEdge* edge);
 
-  bool BuildModelEntityMesh();
+  // Description:
+  // BuildModelEntityMesh will generate a mesh for the associated
+  // model entity.  If meshHigherDimensionalEntities is set to true
+  // it will also mesh any higher dimensional entities which need
+  // to be meshed because of this object getting meshed.
+  bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
   // Description:
   // Get the model vertex mesh object associated with which
@@ -67,7 +72,7 @@ public:
   // used edge length gets modified then the arc/model edge
   // automatically gets remeshed.
   vtkGetMacro(Length, double);
-  virtual void SetLength(double length);
+  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
 
 protected:
   vtkCmbModelEdgeMesh();
@@ -76,7 +81,7 @@ protected:
   // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.
-  bool BuildMesh();
+  bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:
   vtkCmbModelEdgeMesh(const vtkCmbModelEdgeMesh&);  // Not implemented.
