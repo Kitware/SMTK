@@ -34,9 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
-#include <vtkstd/vector> // Needed for STL vector.
-#include <vtkstd/string> // Needed for STL string.
-#include <sstream> // Needed for STL sstream.
 
 #include <vtkPolyData.h>
 
@@ -55,7 +52,9 @@ public:
 
   //Note: verts and mesh points need to be added
   //before valid result is returned
-  int numberLineSegments();
+  int numberLineSegments() const;
+
+  int numberMeshPoints() const {return numMeshPoints}
 
   std::set<vtkIdType>& modelVerts(){ModelVerts}
 
@@ -123,7 +122,7 @@ void InternalEdge::setNumberMeshPoints(const int &numPoints)
   this->numMeshPoints = numPoints
 }
 //----------------------------------------------------------------------------
-int InternalEdge::numberLineSegments()
+int InternalEdge::numberLineSegments() const
 {
   return this->numMeshPoints - 1;
 }
@@ -144,16 +143,41 @@ void InternalLoop::addEdge(InternalEdge &edge)
     }
 }
 
+//----------------------------------------------------------------------------
 int InternalLoop::getNumberOfPoints() const
 {
-  //walk all the edges and add up the
   int sum = 0;
+  std::set<vtkIdType> mVerts; //needed to remove duplicate vert ids across edges
   std::map<vtkIdType,InternalEdge>::const_iterator it;
   for(it=this->ModelEdges.begin();it!=this->ModelEdges.end(); it++)
     {
-
+    sum += it->second.numberMeshPoints();
+    //not using set_union as the result iterator range can't overlap either inputs
+    mVerts.insert(it->second.modelVerts().begin(), it->second.modelVerts().end());
     }
+  sum += mVerts.count();
+  return sum;
 }
+
+//----------------------------------------------------------------------------
+int InternalLoop::getNumberOfLineSegments() const
+{
+  int sum = 0, numEdges=0;
+  std::map<vtkIdType,InternalEdge>::const_iterator it;
+  for(it=this->ModelEdges.begin();it!=this->ModelEdges.end(); it++, ++numEdges)
+    {
+    sum += it->second.numberLineSegments();
+    }
+  if (numEdges == 1 && this->isHole())
+    {
+    //if a single edge forms a hole the edge number of segments
+    //is off by 1
+    ++sum;
+    }
+  return sum;
+}
+
+
 //----------------------------------------------------------------------------
 void MeshInformation::addLoop(const InternalLoop &loop)
 {
