@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
+#include <vtkstd/list> // Needed for STL list.
 
 #include <vtkPolyData.h>
 
@@ -97,12 +98,12 @@ class MeshInformation
   {
   public:
     void addLoop(const InternalLoop &loop);
-    vtkIdType numberOfPoints();
-    vtkIdType numberOfLineSegments();
-    vtkIdType numberOfHoles();
+    int numberOfPoints();
+    int numberOfLineSegments();
+    int numberOfHoles();
 
   protected:
-    std::map<vtkIdType,InternalLoop> Loops;
+    std::list<InternalLoop> Loops;
 };
 //----------------------------------------------------------------------------
 void InternalEdge::addModelVert(const vtkIdType &id)
@@ -181,22 +182,40 @@ int InternalLoop::getNumberOfLineSegments() const
 //----------------------------------------------------------------------------
 void MeshInformation::addLoop(const InternalLoop &loop)
 {
-
+  this->Loops.push_back(loop);
 }
 //----------------------------------------------------------------------------
-vtkIdType MeshInformation::numberOfPoints( const vtkIdType &id )
+int MeshInformation::numberOfPoints( const vtkIdType &id )
 {
-
+  int sum=0;
+  std::list<InternalLoop>::const_iterator it;
+  for(it=this->Loops.begin();it!=this->Loops.end();it++)
+    {
+    sum += it.getNumberOfPoints();
+    }
+  return sum;
 }
 //----------------------------------------------------------------------------
-vtkIdType MeshInformation::numberOfLineSegments( const vtkIdType &id )
+int MeshInformation::numberOfLineSegments( const vtkIdType &id )
 {
-
+  int sum=0;
+  std::list<InternalLoop>::const_iterator it;
+  for(it=this->Loops.begin();it!=this->Loops.end();it++)
+    {
+    sum += it.getNumberOfLineSegments;
+    }
+  return sum;
 }
 //----------------------------------------------------------------------------
-vtkIdType MeshInformation::numberOfHoles( const vtkIdType &id )
+int MeshInformation::numberOfHoles( const vtkIdType &id )
 {
-
+  int sum=0;
+  std::list<InternalLoop>::const_iterator it;
+  for(it=this->Loops.begin();it!=this->Loops.end();it++)
+    {
+    sum += it.isHole() ? 1 : 0;
+    }
+  return sum;
 }
 
 class TriangleInterface
