@@ -116,6 +116,18 @@ void vtkCmbMesh::Initialize(vtkModel* model)
     this->Internal->ModelEdges[edge] = meshRepresentation;
     }
   iter->Delete();
+  // faces
+  iter = model->NewIterator(vtkModelFaceType);
+  for(iter->Begin();!iter->IsAtEnd();iter->Next())
+    {
+    vtkModelFace* face =
+      vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+    vtkSmartPointer<vtkCmbModelFaceMesh> meshRepresentation =
+      vtkSmartPointer<vtkCmbModelFaceMesh>::New();
+    meshRepresentation->Initialize(this, face);
+    this->Internal->ModelFaces[face] = meshRepresentation;
+    }
+  iter->Delete();
   this->Modified();
 }
 

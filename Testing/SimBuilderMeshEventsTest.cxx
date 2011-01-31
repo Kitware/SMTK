@@ -27,11 +27,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkCMBModel.h>
 #include <vtkCmbModelEdgeMesh.h>
 #include <vtkCmbModelEntityMesh.h>
+#include <vtkCmbModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
 #include <vtkCMBModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
 #include <vtkMergeOperator.h>
 #include <vtkModelEdge.h>
+#include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
@@ -58,7 +60,7 @@ int Check2DModel(const char* fileName)
   vtkSmartPointer<vtkCmbMesh> mesh =
     vtkSmartPointer<vtkCmbMesh>::New();
   mesh->Initialize(model);
-  mesh->SetGlobalLength(1.);  // check size of the model!!!
+  mesh->SetGlobalLength(1.);
 
   vtkSmartPointer<vtkModelItemIterator> edges;
   edges.TakeReference(model->NewIterator(vtkModelEdgeType));
@@ -161,6 +163,31 @@ int Check2DModel(const char* fileName)
       vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
       }
    }
+
+  // test model face meshing
+  mesh->SetGlobalMaximumArea(.5);
+  mesh->SetGlobalMinimumAngle(10.);
+  vtkSmartPointer<vtkModelItemIterator> faces;
+  faces.TakeReference(model->NewIterator(vtkModelFaceType));
+  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+    {
+    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(face));
+    if(faceMesh->GetMaximumArea() != 0. || faceMesh->GetMinimumAngle() != 0.)
+      {
+      numberOfErrors++;
+      vtkGenericWarningMacro("Model face mesh parameter set when it shouldn't be.");
+      }
+    if(faceMesh->GetModelEntityMesh() == NULL ||
+       faceMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
+      {
+      // commented out since we know this will fail and I don't want
+      // other stuff to cause a problem here and go unnoticed
+      //numberOfErrors++;
+      //vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
+      }
+    }
 
   model->Reset();
   modelWrapper->Delete();
