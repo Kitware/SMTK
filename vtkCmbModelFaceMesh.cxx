@@ -23,6 +23,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 #include "vtkCmbModelFaceMesh.h"
+#include "vtkCmbModelFaceMeshPrivate.h"
+#include "vtkCmbModelFaceTriangleInterface.h"
 
 #include "vtkCmbMesh.h"
 #include "vtkCmbModelEdgeMesh.h"
@@ -33,11 +35,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkModelItemIterator.h>
 #include <vtkModelFaceUse.h>
 #include <vtkModelLoopUse.h>
+#include <vtkModelVertex.h>
 
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
 using namespace CmbModelFaceMeshPrivate;
+
 vtkStandardNewMacro(vtkCmbModelFaceMesh);
 vtkCxxRevisionMacro(vtkCmbModelFaceMesh, "");
 
@@ -45,6 +49,7 @@ vtkCxxRevisionMacro(vtkCmbModelFaceMesh, "");
 vtkCmbModelFaceMesh::vtkCmbModelFaceMesh()
 {
   this->ModelFace = NULL;
+  this->MeshInfo = NULL;
   this->MaximumArea = 0.;
   this->MinimumAngle = 0.;
 }
@@ -125,6 +130,13 @@ bool vtkCmbModelFaceMesh::BuildMesh()
   mesh->Initialize();
   mesh->Allocate();
 
+  if (this->MeshInfo)
+    {
+    delete this->MeshInfo;
+    this->MeshInfo = NULL;
+    }
+  this->MeshInfo = new CmbModelFaceMeshPrivate::MeshInformation();
+
   bool valid = true;
   valid = valid && this->CreateMeshInfo();
   valid = valid && this->Triangulate(mesh);
@@ -139,12 +151,11 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
   // number of total line segements across all loops
   // number of unique points used in all line segments
   // we need all this information so we can properly construct the triangle memory
-  InternalLoop *loop = NULL;
   vtkModelItemIterator *liter = this->ModelFace->GetModelFaceUse(0)->NewLoopUseIterator();
-  for (liter->Begin();!liter->IsAtEnd(); liter->Next())
+  vtkIdType loopId=1;
+  for (liter->Begin();!liter->IsAtEnd(); liter->Next(), ++loopId)
     {
-    vtkIdType loopId = liter->GetCurrentItem()->GetUniquePersistenId();
-    loop = this->InternalMeshInfo()->addLoop(loopId);
+    InternalLoop loop(loopId);
     vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(liter->GetCurrentItem())->NewModelEdgeUseIterator();
     for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
       {
@@ -152,7 +163,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
       vtkModelEdge* modelEdge = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem())->GetModelEdge();
       //we now have to walk the mesh lines cell data to get all the verts for this edge
       vtkIdType edgeId =modelEdge->GetUniquePersistentId();
-      if (!loop->edgeExists(edgeId))
+      if (!loop.edgeExists(edgeId))
         {
         vtkCmbModelEdgeMesh *edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
           this->GetMasterMesh()->GetModelEntityMesh(modelEdge));
@@ -160,38 +171,40 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
         InternalEdge edge(edgeId,modelEdge->GetNumberOfModelEdgeUses());
 
         vtkPolyData *mesh = edgeMesh->GetModelEntityMesh();
-        edge.addNumberOfMeshPoints(mesh->GetNumberOfPoints());
+        edge.setNumberMeshPoints(mesh->GetNumberOfPoints());
         int numVerts = modelEdge->GetNumberOfModelVertexUses();
-        for(int i=0;i<numverts;++i)
+        for(int i=0;i<numVerts;++i)
           {
           vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
           if(vertex)
             {
-            edge->addModelVert(vertex->GetUniquePersistentId());
+            edge.addModelVert(vertex->GetUniquePersistentId());
             }
           }
-        loop->addEdge(edge);
+        loop.addEdge(edge);
         }
       }
+    this->MeshInfo->addLoop(loop);
     }
+  return true;
 }
 
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
   //we now get to construct the triangulate structs based on our mapping
-  TriangleInterface ti(this->InternalMeshInfo);
+  TriangleInterface ti(this->MeshInfo);
 
-  double global = this->GetMasterMesh()->GetMaxiumArea();
-  double local = this->MaxiumArea;
+  double global = this->GetMasterMesh()->GetGlobalMaximumArea();
+  double local = this->MaximumArea;
   if ( local == 0 || global < local )
     {
     local = global;
     }
   ti.setMaximumArea(local);
 
-  global = this->GetMasterMesh()->GetMaxiumAngle();
-  local = this->MaxiumAngle;
+  global = this->GetMasterMesh()->GetGlobalMinimumAngle();
+  local = this->MinimumAngle;
   if ( local == 0 || global < local )
     {
     local = global;

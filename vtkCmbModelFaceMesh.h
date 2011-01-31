@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelFaceMesh_h
 
 #include "vtkCmbModelEntityMesh.h"
+#include "vtkCmbModelFaceMeshPrivate.h"
 
 class vtkModelFace;
 class vtkCmbModelVertexMesh;
@@ -87,6 +88,10 @@ private:
   vtkModelFace* ModelFace;
   double MaximumArea;
   double MinimumAngle;
+
+  //BTX
+  CmbModelFaceMeshPrivate::MeshInformation *MeshInfo;
+  //ETX
 };
 
 #endif

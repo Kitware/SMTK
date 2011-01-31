@@ -36,9 +36,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
 
-#include <vtkPolyData.h>
-
-
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
 {
@@ -55,12 +52,12 @@ public:
   //before valid result is returned
   int numberLineSegments() const;
 
-  int numberMeshPoints() const {return numMeshPoints}
+  int numberMeshPoints() const {return numMeshPoints;}
 
-  std::set<vtkIdType>& modelVerts(){ModelVerts}
+  std::set<vtkIdType>& modelVerts(){return ModelVerts;} const
 
   vtkIdType getId() const{return Id;}
-  int getEdgeUse() const{return edgeUse;}
+  int getEdgeUse() const{return EdgeUse;}
 protected:
   const vtkIdType Id;
   const int EdgeUse;
@@ -79,13 +76,13 @@ public:
   void addEdge(InternalEdge &edge);
 
   //returns the number of  unique points in this loop
-  int getNumberOfPoints() const;
+  int getNumberOfPoints();
 
   //get the number of line segments in the loop
   int getNumberOfLineSegments() const;
 
   //returns if this loop is a hole
-  bool isHole() const{return Hole}
+  bool isHole() const{return Hole;}
 protected:
   //hole is recomputed every time an edge is added
   //if all the edges have an edge use > 1 than we are not a hole
@@ -105,6 +102,7 @@ class MeshInformation
   protected:
     std::list<InternalLoop> Loops;
 };
+
 //----------------------------------------------------------------------------
 void InternalEdge::addModelVert(const vtkIdType &id)
 {
@@ -114,14 +112,9 @@ void InternalEdge::addModelVert(const vtkIdType &id)
 
 void InternalEdge::setNumberMeshPoints(const int &numPoints)
 {
-  this->numMeshPoints = numPoints
+  this->numMeshPoints = numPoints;
 }
 
-//----------------------------------------------------------------------------
-void InternalEdge::setNumberMeshPoints(const int &numPoints)
-{
-  this->numMeshPoints = numPoints
-}
 //----------------------------------------------------------------------------
 int InternalEdge::numberLineSegments() const
 {
@@ -139,24 +132,25 @@ void InternalLoop::addEdge(InternalEdge &edge)
 {
   if ( !this->edgeExists(edge.getId()) )
     {
-    ModelEdges[edge.getId()]=edge;
-    hole = hole || (edge.getEdgeUse() == 1);
+    this->ModelEdges.insert(std::pair<vtkIdType,InternalEdge>(edge.getId(),edge));
+    this->Hole = this->Hole || (edge.getEdgeUse() == 1);
     }
 }
 
 //----------------------------------------------------------------------------
-int InternalLoop::getNumberOfPoints() const
+int InternalLoop::getNumberOfPoints()
 {
   int sum = 0;
   std::set<vtkIdType> mVerts; //needed to remove duplicate vert ids across edges
-  std::map<vtkIdType,InternalEdge>::const_iterator it;
+  std::map<vtkIdType,InternalEdge>::iterator it;
   for(it=this->ModelEdges.begin();it!=this->ModelEdges.end(); it++)
     {
     sum += it->second.numberMeshPoints();
     //not using set_union as the result iterator range can't overlap either inputs
-    mVerts.insert(it->second.modelVerts().begin(), it->second.modelVerts().end());
+    const std::set<vtkIdType> mv = it->second.modelVerts();
+    mVerts.insert(mv.begin(),mv.end());
     }
-  sum += mVerts.count();
+  sum += static_cast<int>(mVerts.size());
   return sum;
 }
 
@@ -185,52 +179,38 @@ void MeshInformation::addLoop(const InternalLoop &loop)
   this->Loops.push_back(loop);
 }
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfPoints( const vtkIdType &id )
+int MeshInformation::numberOfPoints()
 {
   int sum=0;
-  std::list<InternalLoop>::const_iterator it;
+  std::list<InternalLoop>::iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it.getNumberOfPoints();
+    sum += it->getNumberOfPoints();
     }
   return sum;
 }
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfLineSegments( const vtkIdType &id )
+int MeshInformation::numberOfLineSegments()
 {
   int sum=0;
   std::list<InternalLoop>::const_iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it.getNumberOfLineSegments;
+    sum += it->getNumberOfLineSegments();
     }
   return sum;
 }
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfHoles( const vtkIdType &id )
+int MeshInformation::numberOfHoles()
 {
   int sum=0;
   std::list<InternalLoop>::const_iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it.isHole() ? 1 : 0;
+    sum += it->isHole() ? 1 : 0;
     }
   return sum;
 }
 
-class TriangleInterface
-{
-public:
-  TriangleInterface( MeshInformation* );
-  void setMaximumArea(const double &area){MaxArea=area}
-  void setMaxiumAngle(const double &angle){MaxAngle=angle}
-  void setOuputMesh(vtkPolyData *mesh);
-
-  bool computMesh();
-protected:
-
-  double MaxArea;
-  double MaxAngle;
-  vtkPolyData *OutputMesh;
 };
-}
+#endif

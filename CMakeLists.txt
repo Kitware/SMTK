@@ -20,12 +20,20 @@ SET(vtkMeshFiles
   vtkCmbModelEntityMesh.cxx
   vtkCmbModelFaceMesh.cxx
   vtkCmbModelVertexMesh.cxx
+  TriangleInterface.cxx
 )
 
 SET_SOURCE_FILES_PROPERTIES(
   vtkCmbModelEntityMesh
   ABSTRACT
 )
+
+SET_SOURCE_FILES_PROPERTIES(
+  TriangleInterface
+  WRAP_EXCLUDE
+)
+
+
 
 add_library(SimBuilderLibrary ${vtkMeshFiles})
 target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin)
