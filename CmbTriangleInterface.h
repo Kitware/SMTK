@@ -38,6 +38,7 @@ class CmbTriangleInterface
 {
 public:
   CmbTriangleInterface(const int &numPoints,const int &numSegments, const int &numHoles);
+  ~CmbTriangleInterface();
 
   void setUseMinAngle(const bool &useMin){MinAngleOn=useMin;}
   void setMinAngle(const double &angle){MinAngle=angle;}

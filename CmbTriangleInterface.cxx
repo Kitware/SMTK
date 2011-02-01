@@ -80,13 +80,24 @@ CmbTriangleInterface::CmbTriangleInterface(const int &numPoints,
 {
   this->InitDataStructures();
 }
+//----------------------------------------------------------------------------
+CmbTriangleInterface::~CmbTriangleInterface()
+{
+  Free_triangluateio(this->TIO->in);
+  Free_triangluateio(this->TIO->out);
+  if ( this->OutputMesh )
+    {
+    this->OutputMesh->Delete();
+    }
+}
 
 //----------------------------------------------------------------------------
 void CmbTriangleInterface::InitDataStructures()
 {
   this->TIO->in = (triangulateio*)malloc(sizeof(triangulateio));
   Init_triangluateio(this->TIO->in);
-  this->TIO->out = NULL;
+  this->TIO->out = (triangulateio*)malloc(sizeof(triangulateio));
+  Init_triangluateio(this->TIO->out);
   this->TIO->vout = NULL;
 
   //setup the memory for the trianle input
