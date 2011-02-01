@@ -202,7 +202,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
     {
     local = global;
     }
-  ti.setMaximumArea(local);
+  ti.setMaxArea(local);
 
   global = this->GetMasterMesh()->GetGlobalMinimumAngle();
   local = this->MinimumAngle;
@@ -210,7 +210,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
     {
     local = global;
     }
-  ti.setMinimumAngle(local);
+  ti.setMinAngle(local);
 
   ti.setOutputMesh(mesh);
 

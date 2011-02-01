@@ -43,7 +43,7 @@ public:
   void setUseMinAngle(const bool &useMin){MinAngleOn=useMin;}
   void setMinAngle(const double &angle){MinAngle=angle;}
 
-  void setUseMaxArea(const bool &useMin){MinAreaOn=useMin;}
+  void setUseMaxArea(const bool &useMin){MaxAreaOn=useMin;}
   void setMaxArea(const double &area){MaxArea=area;}
 
   void setOutputMesh(vtkPolyData *mesh);
@@ -61,7 +61,7 @@ protected:
 
 private:
   bool MinAngleOn;
-  bool MinAreaOn;
+  bool MaxAreaOn;
   double MaxArea;
   double MinAngle;
 

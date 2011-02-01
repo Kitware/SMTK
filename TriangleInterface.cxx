@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
+#include <sstream>
 
 #include <vtkPolyData.h>
 
@@ -71,14 +72,14 @@ TriangleInterface::TriangleInterface(const int &numPoints,
   MaxArea(-1),
   MinAngle(-1),
   MinAngleOn(false),
-  MinAreaOn(false,
+  MaxAreaOn(false),
   OutputMesh(NULL),
   TIO(NULL),
-  NumberOfPoints(numPoints);
-  NumberOfSegments(numSegments);
-  NumberOfHoles(numHoles);
+  NumberOfPoints(numPoints),
+  NumberOfSegments(numSegments),
+  NumberOfHoles(numHoles)
 {
-  this->InitDataStructures(numPoints,numSegments,numHoles);
+  this->InitDataStructures();
 }
 
 //----------------------------------------------------------------------------
@@ -100,7 +101,7 @@ void TriangleInterface::InitDataStructures()
   this->TIO->in->pointlist = (TRIANGLE_REAL *)
       tl_alloc(sizeof(TRIANGLE_REAL),this->NumberOfPoints * 2, 0);
 
-  if (numHoles > 0)
+  if (this->NumberOfHoles > 0)
     {
     this->TIO->in->holelist = (TRIANGLE_REAL *) tl_alloc(sizeof(TRIANGLE_REAL),
       this->NumberOfHoles * 2, 0);
@@ -130,7 +131,7 @@ bool TriangleInterface::setPoint(const int index, const double &x, const double 
 }
 
 //----------------------------------------------------------------------------
-void TriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
+bool TriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
 {
   if (index > 0 && index < this->NumberOfSegments)
     {
@@ -142,7 +143,7 @@ void TriangleInterface::setSegement(const int index, const int &pId1, const int 
 }
 
 //----------------------------------------------------------------------------
-void TriangleInterface::setHole(const int index, const double &x, const double &y)
+bool TriangleInterface::setHole(const int index, const double &x, const double &y)
 {
   if (index > 0 && index < this->NumberOfHoles)
     {
@@ -163,11 +164,11 @@ std::string TriangleInterface::BuildTriangleArguments() const
   buffer << "Y";//preserve boundaries
   if(this->MaxAreaOn)
     {
-    buffer << "a" << fixed << this->MaxArea;
+    buffer << "a" << std::fixed << this->MaxArea;
     }
   if (this->MinAngleOn)
     {
-    buffer << "q" << fixed << this->MinAngle;
+    buffer << "q" << std::fixed << this->MinAngle;
     }
   return buffer.str();
 }
