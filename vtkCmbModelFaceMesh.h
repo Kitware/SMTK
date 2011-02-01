@@ -50,7 +50,12 @@ public:
 
   void Initialize(vtkCmbMesh* mesh, vtkModelFace* face);
 
-  bool BuildModelEntityMesh();
+  // Description:
+  // BuildModelEntityMesh will generate a mesh for the associated
+  // model entity.  If meshHigherDimensionalEntities is set to true
+  // it will also mesh any higher dimensional entities which need
+  // to be meshed because of this object getting meshed.
+  bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
   // Description:
   // Set/get the model face maximum triangle area.  If it is 0 it
@@ -75,7 +80,7 @@ protected:
   // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.
-  bool BuildMesh();
+  bool BuildMesh(bool meshHigherDimensionalEntities);
 
   bool CreateMeshInfo();
   bool Triangulate(vtkPolyData *mesh);

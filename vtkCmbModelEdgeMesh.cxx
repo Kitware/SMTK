@@ -82,11 +82,11 @@ void vtkCmbModelEdgeMesh::Initialize(vtkCmbMesh* masterMesh, vtkModelEdge* edge)
     this->ModelEdge = edge;
     this->Modified();
     }
-  this->BuildModelEntityMesh();
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelEdgeMesh::BuildModelEntityMesh()
+bool vtkCmbModelEdgeMesh::BuildModelEntityMesh(
+  bool meshHigherDimensionalEntities)
 {
   if(!this->ModelEdge)
     {
@@ -110,7 +110,7 @@ bool vtkCmbModelEdgeMesh::BuildModelEntityMesh()
     {
     return false;
     }
-  return this->BuildMesh();
+  return this->BuildMesh(meshHigherDimensionalEntities);
 }
 
 //----------------------------------------------------------------------------
@@ -128,19 +128,7 @@ vtkCmbModelVertexMesh* vtkCmbModelEdgeMesh::GetAdjacentModelVertexMesh(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbModelEdgeMesh::SetLength(double length)
-{
-  if(length == this->Length)
-    {
-    return;
-    }
-  this->Length = length > 0. ? length : 0.;
-  this->Modified();
-  this->BuildModelEntityMesh();
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbModelEdgeMesh::BuildMesh()
+bool vtkCmbModelEdgeMesh::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkPolyData* mesh = this->GetModelEntityMesh();
   if(mesh)
@@ -217,15 +205,19 @@ bool vtkCmbModelEdgeMesh::BuildMesh()
   meshEdgesFilter->Delete();
 
   // now we go and remesh any adjacent model face meshes that exist
-  vtkModelItemIterator* faces = this->ModelEdge->NewIterator(vtkModelFaceType);
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+  if(meshHigherDimensionalEntities)
     {
-    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
-      this->GetMasterMesh()->GetModelEntityMesh(face));
-    faceMesh->BuildModelEntityMesh();
+    vtkModelItemIterator* faces = this->ModelEdge->NewIterator(vtkModelFaceType);
+    for(faces->Begin();!faces->IsAtEnd();faces->Next())
+      {
+      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+      vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+        this->GetMasterMesh()->GetModelEntityMesh(face));
+      faceMesh->BuildModelEntityMesh(true);
+      }
+    faces->Delete();
+
     }
-  faces->Delete();
 
   return true;
 }

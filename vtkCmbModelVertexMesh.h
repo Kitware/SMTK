@@ -43,7 +43,12 @@ public:
 
   void Initialize(vtkCmbMesh* mesh, vtkModelVertex* vertex);
 
-  bool BuildModelEntityMesh();
+  // Description:
+  // BuildModelEntityMesh will generate a mesh for the associated
+  // model entity.  If meshHigherDimensionalEntities is set to true
+  // it will also mesh any higher dimensional entities which need
+  // to be meshed because of this object getting meshed.
+  bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
 protected:
   vtkCmbModelVertexMesh();

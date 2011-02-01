@@ -84,7 +84,8 @@ void vtkCmbModelFaceMesh::Initialize(vtkCmbMesh* masterMesh, vtkModelFace* face)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMesh::BuildModelEntityMesh()
+bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
+  bool meshHigherDimensionalEntities)
 {
   if(!this->ModelFace)
     {
@@ -108,11 +109,11 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh()
     {
     return false;
     }
-  return this->BuildMesh();
+  return this->BuildMesh(meshHigherDimensionalEntities);
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMesh::BuildMesh()
+bool vtkCmbModelFaceMesh::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkPolyData* mesh = this->GetModelEntityMesh();
   if(mesh)
