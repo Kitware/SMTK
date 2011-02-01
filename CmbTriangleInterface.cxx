@@ -52,7 +52,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 extern "C"
 {
 #include "triangle.h"
-#include "share_extern.h"
+#include "share_declare.h"
   void Init_triangluateio(struct triangulateio *);
   void Free_triangluateio(struct triangulateio *);
 }
