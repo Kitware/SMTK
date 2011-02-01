@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMesh.h"
 
 #include <vtkCallbackCommand.h>
-#include "vtkCmbModelEdgeMesh.cxx"
+#include "vtkCmbModelEdgeMesh.h"
 #include "vtkCmbModelFaceMesh.h"
 #include <vtkCMBModelGeometricEntity.h>
 #include "vtkCmbModelVertexMesh.h"
@@ -33,7 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkMath.h>
 #include <vtkMergeEventData.h>
 #include <vtkModel.h>
-#include <vtkModelEdge.cxx>
+#include <vtkModelEdge.h>
 #include <vtkModelEntity.h>
 #include <vtkModelFace.h>
 #include <vtkModelGeometricEntity.h>
