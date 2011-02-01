@@ -22,12 +22,11 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME TriangleInterface
+// .NAME CmbTriangleInterface
 // .SECTION Description
-// Convert a vtkModelFace to a triangle input for meshing. Also
-// restores the resulting mesh to a vtkPolyData
+// Wraps the Triangle library with an easy to use class
 
-#include "TriangleInterface.h"
+#include "CmbTriangleInterface.h"
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
@@ -59,7 +58,7 @@ extern "C"
 }
 // END for Triangle
 
-struct TriangleInterface::TriangleIO
+struct CmbTriangleInterface::TriangleIO
   {
   triangulateio *in;
   triangulateio *out;
@@ -67,7 +66,7 @@ struct TriangleInterface::TriangleIO
   };
 
 //----------------------------------------------------------------------------
-TriangleInterface::TriangleInterface(const int &numPoints,
+CmbTriangleInterface::CmbTriangleInterface(const int &numPoints,
   const int &numSegments, const int &numHoles):
   MaxArea(-1),
   MinAngle(-1),
@@ -83,7 +82,7 @@ TriangleInterface::TriangleInterface(const int &numPoints,
 }
 
 //----------------------------------------------------------------------------
-void TriangleInterface::InitDataStructures()
+void CmbTriangleInterface::InitDataStructures()
 {
   this->TIO->in = (triangulateio*)malloc(sizeof(triangulateio));
   Init_triangluateio(this->TIO->in);
@@ -109,7 +108,7 @@ void TriangleInterface::InitDataStructures()
 }
 
 //----------------------------------------------------------------------------
-void TriangleInterface::setOutputMesh(vtkPolyData *mesh)
+void CmbTriangleInterface::setOutputMesh(vtkPolyData *mesh)
 {
   if ( this->OutputMesh )
     {
@@ -119,7 +118,7 @@ void TriangleInterface::setOutputMesh(vtkPolyData *mesh)
 }
 
 //----------------------------------------------------------------------------
-bool TriangleInterface::setPoint(const int index, const double &x, const double &y)
+bool CmbTriangleInterface::setPoint(const int index, const double &x, const double &y)
 {
   if (index > 0 && index < this->NumberOfPoints)
     {
@@ -131,7 +130,7 @@ bool TriangleInterface::setPoint(const int index, const double &x, const double 
 }
 
 //----------------------------------------------------------------------------
-bool TriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
+bool CmbTriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
 {
   if (index > 0 && index < this->NumberOfSegments)
     {
@@ -143,7 +142,7 @@ bool TriangleInterface::setSegement(const int index, const int &pId1, const int 
 }
 
 //----------------------------------------------------------------------------
-bool TriangleInterface::setHole(const int index, const double &x, const double &y)
+bool CmbTriangleInterface::setHole(const int index, const double &x, const double &y)
 {
   if (index > 0 && index < this->NumberOfHoles)
     {
@@ -155,7 +154,7 @@ bool TriangleInterface::setHole(const int index, const double &x, const double &
 }
 
 //----------------------------------------------------------------------------
-std::string TriangleInterface::BuildTriangleArguments() const
+std::string CmbTriangleInterface::BuildTriangleArguments() const
 {
   std::stringstream buffer;
   buffer << "Q";//enable quiet mode
@@ -174,7 +173,7 @@ std::string TriangleInterface::BuildTriangleArguments() const
 }
 
 //----------------------------------------------------------------------------
-bool TriangleInterface::buildFaceMesh()
+bool CmbTriangleInterface::buildFaceMesh()
 {
   std::string options = this->BuildTriangleArguments();
   size_t len = options.size();

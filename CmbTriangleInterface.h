@@ -22,23 +22,22 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME TriangleInterface
+// .NAME CmbTriangleInterface
 // .SECTION Description
-// Convert a vtkModelFace to a triangle input for meshing. Also
-// restores the resulting mesh to a vtkPolyData
+// Wraps the Triangle library with an easy to use class
 
 
 
-#ifndef __TriangleInterface_h
-#define __TriangleInterface_h
+#ifndef __CmbTriangleInterface_h
+#define __CmbTriangleInterface_h
 
 #include <vtkstd/string> //for std string
 class vtkPolyData;
 
-class TriangleInterface
+class CmbTriangleInterface
 {
 public:
-  TriangleInterface(const int &numPoints,const int &numSegments, const int &numHoles);
+  CmbTriangleInterface(const int &numPoints,const int &numSegments, const int &numHoles);
 
   void setUseMinAngle(const bool &useMin){MinAngleOn=useMin;}
   void setMinAngle(const double &angle){MinAngle=angle;}

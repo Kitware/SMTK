@@ -34,11 +34,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelFaceMesh_h
 
 #include "vtkCmbModelEntityMesh.h"
-#include "vtkCmbModelFaceMeshPrivate.h"
+#include "CmbFaceMeshHelper.h"
 
 class vtkModelFace;
 class vtkCmbModelVertexMesh;
-struct triangulateio;
 
 class VTK_EXPORT vtkCmbModelFaceMesh : public vtkCmbModelEntityMesh
 {

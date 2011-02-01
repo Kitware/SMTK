@@ -25,7 +25,8 @@ SET(vtkMeshFiles
   vtkCmbModelEntityMesh.cxx
   vtkCmbModelFaceMesh.cxx
   vtkCmbModelVertexMesh.cxx
-  TriangleInterface.cxx
+  CmbFaceMeshHelper.cxx
+  CmbTriangleInterface.cxx
 )
 
 SET_SOURCE_FILES_PROPERTIES(
@@ -34,7 +35,8 @@ SET_SOURCE_FILES_PROPERTIES(
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-  TriangleInterface
+  CmbTriangleInterface
+  CmbFaceMeshHelper
   WRAP_EXCLUDE
 )
 

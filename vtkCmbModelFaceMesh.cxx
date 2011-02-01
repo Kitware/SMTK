@@ -23,11 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 #include "vtkCmbModelFaceMesh.h"
-#include "vtkCmbModelFaceMeshPrivate.h"
-#include "TriangleInterface.h"
-
 #include "vtkCmbMesh.h"
-#include "vtkCmbModelEdgeMesh.h"
 
 #include <vtkModelFace.h>
 #include <vtkModelEdgeUse.h>
@@ -40,6 +36,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
+#include "CmbFaceMeshHelper.h"
+#include "CmbTriangleInterface.h"
 using namespace CmbModelFaceMeshPrivate;
 
 vtkStandardNewMacro(vtkCmbModelFaceMesh);
@@ -165,12 +163,10 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
       vtkIdType edgeId =modelEdge->GetUniquePersistentId();
       if (!loop.edgeExists(edgeId))
         {
-        vtkCmbModelEdgeMesh *edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
-          this->GetMasterMesh()->GetModelEntityMesh(modelEdge));
+        vtkPolyData *mesh = this->GetMasterMesh()->
+          GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
 
         InternalEdge edge(edgeId,modelEdge->GetNumberOfModelEdgeUses());
-
-        vtkPolyData *mesh = edgeMesh->GetModelEntityMesh();
         edge.setNumberMeshPoints(mesh->GetNumberOfPoints());
         int numVerts = modelEdge->GetNumberOfModelVertexUses();
         for(int i=0;i<numVerts;++i)
@@ -193,7 +189,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
   //we now get to construct the triangulate structs based on our mapping
-  TriangleInterface ti(this->MeshInfo->numberOfPoints(),
+  CmbTriangleInterface ti(this->MeshInfo->numberOfPoints(),
     this->MeshInfo->numberOfLineSegments(), this->MeshInfo->numberOfHoles());
 
   double global = this->GetMasterMesh()->GetGlobalMaximumArea();
