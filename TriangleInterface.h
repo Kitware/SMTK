@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbModelFaceMeshPrivate
+// .NAME TriangleInterface
 // .SECTION Description
 // Convert a vtkModelFace to a triangle input for meshing. Also
 // restores the resulting mesh to a vtkPolyData
@@ -32,23 +32,45 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __TriangleInterface_h
 #define __TriangleInterface_h
 
-#include <vtkPolyData.h>
+#include <vtkstd/string> //for std string
+class vtkPolyData;
 
 class TriangleInterface
 {
 public:
-  TriangleInterface( MeshInformation* );
-  void setMaximumArea(const double &area){MaxArea=area;}
-  void setMinimumAngle(const double &angle){MinAngle=angle;}
+  TriangleInterface(const int &numPoints,const int &numSegments, const int &numHoles);
+
+  void setUseMinAngle(const bool &useMin){MinAngleOn=useMin;}
+  void setMinAngle(const double &angle){MinAngle=angle;}
+
+  void setUseMaxArea(const bool &useMin){MinAreaOn=useMin;}
+  void setMaxArea(const double &area){MaxArea=area;}
+
   void setOutputMesh(vtkPolyData *mesh);
+
+  bool setPoint(const int index, const double &x, const double &y);
+  bool setSegement(const int index, const int &pId1, const int &pId2);
+  bool setHole(const int index, const double &x, const double &y);
 
   bool buildFaceMesh();
 protected:
   void InitDataStructures();
+  std::string BuildTriangleArguments() const;
 
+  vtkPolyData *OutputMesh;
+
+private:
+  bool MinAngleOn;
+  bool MinAreaOn;
   double MaxArea;
   double MinAngle;
-  vtkPolyData *OutputMesh;
-  MeshInformation *MeshInfo;
+
+  const int NumberOfPoints;
+  const int NumberOfSegments;
+  const int NumberOfHoles;
+  //BTX
+  struct TriangleIO;
+  TriangleIO *TIO;
+  //EXT
 };
 #endif

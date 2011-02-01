@@ -12,7 +12,12 @@ FIND_PACKAGE(Qt4)
 include_directories(
   ${VTKExtensions_SOURCE_DIR} ${VTKExtensions_SOURCE_DIR}/Kitware
   ${CMBModel_SOURCE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Math/Src
+  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Alloc/Src
+  ${Omicron_BINARY_DIR}/include
 )
+
 
 SET(vtkMeshFiles
   vtkCmbMesh.cxx
@@ -33,10 +38,8 @@ SET_SOURCE_FILES_PROPERTIES(
   WRAP_EXCLUDE
 )
 
-
-
-add_library(SimBuilderLibrary ${vtkMeshFiles})
-target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin)
+add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
+target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)

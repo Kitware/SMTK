@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
+#include "vtkPolyData.h"
 
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
@@ -92,7 +93,7 @@ protected:
 };
 
 class MeshInformation
-  {
+{
   public:
     void addLoop(const InternalLoop &loop);
     int numberOfPoints();

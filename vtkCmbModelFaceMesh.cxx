@@ -24,7 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbModelFaceMesh.h"
 #include "vtkCmbModelFaceMeshPrivate.h"
-#include "vtkCmbModelFaceTriangleInterface.h"
+#include "TriangleInterface.h"
 
 #include "vtkCmbMesh.h"
 #include "vtkCmbModelEdgeMesh.h"
@@ -193,7 +193,8 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
   //we now get to construct the triangulate structs based on our mapping
-  TriangleInterface ti(this->MeshInfo);
+  TriangleInterface ti(this->MeshInfo->numberOfPoints(),
+    this->MeshInfo->numberOfLineSegments(), this->MeshInfo->numberOfHoles());
 
   double global = this->GetMasterMesh()->GetGlobalMaximumArea();
   double local = this->MaximumArea;
@@ -214,12 +215,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
   ti.setOutputMesh(mesh);
 
   //time to walk the mesh again!
-
-
-
-
-
-  return ti.computeMesh();
+  return true;
 }
 
 //----------------------------------------------------------------------------
