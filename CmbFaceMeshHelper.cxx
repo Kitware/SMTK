@@ -24,14 +24,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME CmbFaceMeshHelper
 // .SECTION Description
-// Convert a vtkModelFace to a triangle input for meshing. Also
-// restores the resulting mesh to a vtkPolyData
+// Convert a vtkModelFace to a triangle input for meshing.
 #include "CmbFaceMeshHelper.h"
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
 #include "vtkPolyData.h"
+#include "CmbTriangleInterface.h"
 
 using namespace CmbModelFaceMeshPrivate;
 //----------------------------------------------------------------------------
@@ -41,9 +41,9 @@ void InternalEdge::addModelVert(const vtkIdType &id)
 }
 //----------------------------------------------------------------------------
 
-void InternalEdge::setNumberMeshPoints(const int &numPoints)
+void InternalEdge::setMeshPoints(vtkPolyData *mesh)
 {
-  this->numMeshPoints = numPoints;
+  this->numMeshPoints = mesh->GetNumberOfPoints();
 }
 
 //----------------------------------------------------------------------------
@@ -109,9 +109,11 @@ void MeshInformation::addLoop(const InternalLoop &loop)
 {
   this->Loops.push_back(loop);
 }
+
 //----------------------------------------------------------------------------
 int MeshInformation::numberOfPoints()
 {
+  //we presume model verts are not shared between loops for this pass
   int sum=0;
   std::list<InternalLoop>::iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
@@ -141,4 +143,9 @@ int MeshInformation::numberOfHoles()
     sum += it->isHole() ? 1 : 0;
     }
   return sum;
+}
+//----------------------------------------------------------------------------
+void MeshInformation::fillTriangleInterface(CmbTriangleInterface *ti)
+{
+
 }

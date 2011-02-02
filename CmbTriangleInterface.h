@@ -49,7 +49,9 @@ public:
   void setOutputMesh(vtkPolyData *mesh);
 
   bool setPoint(const int index, const double &x, const double &y);
+
   bool setSegement(const int index, const int &pId1, const int &pId2);
+
   bool setHole(const int index, const double &x, const double &y);
 
   bool buildFaceMesh();

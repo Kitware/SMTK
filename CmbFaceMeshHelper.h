@@ -24,18 +24,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME CmbFaceMeshHelper
 // .SECTION Description
-// Convert a vtkModelFace to a triangle input for meshing. Also
-// restores the resulting mesh to a vtkPolyData
-
-
+// Convert a vtkModelFace to a triangle input for meshing.
 
 #ifndef __CmbFaceMeshHelper_h
 #define __CmbFaceMeshHelper_h
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
-#include <vtkstd/list> // Needed for STL list.
+#include <vtkstd/vector> // Needed for STL vector.
 #include "vtkType.h"
+
+class CmbTriangleInterface;
 
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
@@ -47,7 +46,7 @@ public:
     Id(id), EdgeUse(edgeUse), numMeshPoints(0){}
 
   void addModelVert(const vtkIdType &id);
-  void setNumberMeshPoints( const int &numPoints);
+  void setMeshPoints(vtkPolyData *mesh);
 
   //Note: verts and mesh points need to be added
   //before valid result is returned
@@ -84,6 +83,8 @@ public:
 
   //returns if this loop is a hole
   bool isHole() const{return Hole;}
+
+  vtkIdType getId() const{return Id;}
 protected:
   //hole is recomputed every time an edge is added
   //if all the edges have an edge use > 1 than we are not a hole
@@ -100,8 +101,10 @@ class MeshInformation
     int numberOfLineSegments();
     int numberOfHoles();
 
+    fillTriangleInterface(CmbTriangleInterface *ti);
+
   protected:
-    std::list<InternalLoop> Loops;
+    std::vector<InternalLoop> Loops;
 };
 }
 #endif

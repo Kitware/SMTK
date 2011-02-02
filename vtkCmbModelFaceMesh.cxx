@@ -155,7 +155,8 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
   for (liter->Begin();!liter->IsAtEnd(); liter->Next(), ++loopId)
     {
     InternalLoop loop(loopId);
-    vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(liter->GetCurrentItem())->NewModelEdgeUseIterator();
+    vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
+        liter->GetCurrentItem())->NewModelEdgeUseIterator();
     for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
       {
       //add each edge to the loop
@@ -168,7 +169,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
           GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
 
         InternalEdge edge(edgeId,modelEdge->GetNumberOfModelEdgeUses());
-        edge.setNumberMeshPoints(mesh->GetNumberOfPoints());
+        edge.setMeshPoints(mesh);
         int numVerts = modelEdge->GetNumberOfModelVertexUses();
         for(int i=0;i<numVerts;++i)
           {
@@ -190,8 +191,10 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
   //we now get to construct the triangulate structs based on our mapping
-  CmbTriangleInterface ti(this->MeshInfo->numberOfPoints(),
-    this->MeshInfo->numberOfLineSegments(), this->MeshInfo->numberOfHoles());
+  int numPoints = this->MeshInfo->numberOfPoints();
+  int numSegs = this->MeshInfo->numberOfLineSegments();
+  int numHoles = this->MeshInfo->numberOfHoles();
+  CmbTriangleInterface ti(numPoints,numSegs,numHoles);
 
   double global = this->GetMasterMesh()->GetGlobalMaximumArea();
   double local = this->MaximumArea;
@@ -211,8 +214,13 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 
   ti.setOutputMesh(mesh);
 
-  //time to walk the mesh again!
-  return true;
+  //we walk the model info to find the subset of information we need.
+  //while this means we require more memory, it is easier to understand
+  //how we resolve duplicate model verts inside loops, and shared verts between
+  //loops. Also this helps when mapping point ids back to model verts
+  this->MeshInfo->fillTriangleInterface(&ti);
+  bool valid = ti.buildFaceMesh();
+  return valid;
 }
 
 //----------------------------------------------------------------------------
