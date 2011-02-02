@@ -60,7 +60,7 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
           {
           mesh->GetPoint(pts[j],p);
           edgePoint ep(p[0],p[1]);
-          this->MeshPoints.insert(pts[j],ep);
+          this->MeshPoints.insert(std::pair<vtkIdType,edgePoint>(pts[j],ep));
           }
         if ( j > 0 )
           {
@@ -112,11 +112,11 @@ int InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     //add each point to the mapping, and than add that segment
     vtkIdType pId1 = it->first;
     edgePoint ep = meshPoints.find(pId1);
-    newPId1 = this->insertPoint(edgePoint);
+    newPId1 = this->insertPoint(edgePoint,pId1);
 
     vtkIdType pId2 = it->second;
     edgePoint ep = meshPoints.find(pId2);
-    newPId2 = this->insertPoint(edgePoint);
+    newPId2 = this->insertPoint(edgePoint,pId2);
 
     //add the new segment
     edgeSegment es(newPId1,newPId2);
@@ -136,10 +136,11 @@ int InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     }
 }
 //----------------------------------------------------------------------------
-vtkIdType InternalLoop::insertPoint(const edgePoint &point)
+vtkIdType InternalLoop::insertPoint(const edgePoint &point,const vtkIdType &id)
 {
   std::pair<std::map<edgePoint,vtkIdType>::iterator,bool> ret;
-  ret = this->Points.insert(point);
+  ret = this->Points.insert(
+      std::pair<edgePoint,vtkIdType>(point,id));
   //the ret will point to the already existing element,
   //or the newely created element
   return ret.first->second;
@@ -158,16 +159,26 @@ int InternalLoop::getNumberOfLineSegments() const
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::getPoints()
+void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
+   int &pointIndex, int &segmentIndex, int &holeIndex);
 {
+  std::map<edgePoint,vtkIdType>::iterator pointIt;
+  for (pointIt=this->Points.begin();pointIt!=this->Points.end();pointIt++)
+    {
+    ti->setPoint(pointIndex++,pointIt->first.x,pointIt->first.y);
+    }
+
+  std::vector<edgeSegment>::iterator segIt;
+  for (segIt=this->Segments.begin();segIt!=this->Segments.end();segIt++)
+    {
+    ti->setSegement(segmentIndex++,segIt->first,segIt->second);
+    }
+  if ( this->isHole() )
+  {
+  //not implemented yet
+  }
 
 }
-
-void InternalLoop::getSegments()
-{
-
-}
-
 
 //----------------------------------------------------------------------------
 void MeshInformation::addLoop(const InternalLoop &loop)
@@ -212,5 +223,11 @@ int MeshInformation::numberOfHoles()
 //----------------------------------------------------------------------------
 void MeshInformation::fillTriangleInterface(CmbTriangleInterface *ti)
 {
-
+  int numPoints, numSegments;
+  int pIdx = 0; sId = 0;
+  std::list<InternalLoop>::const_iterator it;
+  for(it=this->Loops.begin();it!=this->Loops.end();it++)
+    {
+    it->addDataToTriangleInterface(ti, pIdx, sId)
+    }
 }

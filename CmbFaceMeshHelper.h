@@ -97,14 +97,19 @@ public:
   //returns if this loop is a hole
   bool isHole() const{return Hole;}
 
-  vtkIdType getId() const{return Id;}
+  // adds this loops information to the triangle interface
+  // modifies the pointIndex, segment Index, and HoleIndex
+  void addDataToTriangleInterface(CmbTriangleInterface *ti,
+     int &pointIndex, int &segmentIndex, int &holeIndex);
+
 protected:
   //copy the information from the edge into the loop
   void addEdgeToLoop(const InternalEdge &edge);
 
   //Inserts the point if it doesn't exist, and returns
   //the vtkIdType id of the point.
-  vtkIdType insertPoint(const edgePoint &point);
+  vtkIdType insertPoint(const edgePoint &point,
+                        const vtkIdType &id);
 
   //hole is recomputed every time an edge is added
   //if all the edges have an edge use > 1 than we are not a hole
