@@ -31,6 +31,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
 #include "vtkPolyData.h"
+#include "vtkCellArray.h"
+#include "vtkPoints.h"
 #include "CmbTriangleInterface.h"
 
 using namespace CmbModelFaceMeshPrivate;
@@ -43,19 +45,43 @@ void InternalEdge::addModelVert(const vtkIdType &id)
 
 void InternalEdge::setMeshPoints(vtkPolyData *mesh)
 {
-  this->numMeshPoints = mesh->GetNumberOfPoints();
+
+  this->MeshPoints.clear();
+  vtkCellArray *lines = mesh->GetLines();
+  double p[3];
+  if (lines)
+    {
+    vtkIdType *pts,npts;
+    for(lines->InitTraversal();lines->GetNextCell(npts,pts);)
+      {
+      for (vtkIdType j=0; j < npts; ++j)
+        {
+        if ( this->MeshPoints.find(pts[j]) != this->MeshPoints.end())
+          {
+          mesh->GetPoint(pts[j],p);
+          edgePoint ep(p[0],p[1]);
+          this->MeshPoints.insert(pts[j],ep);
+          }
+        if ( j > 0 )
+          {
+          edgeSegment es(pts[j-1],pts[j]);
+          this->Segments.push_back(es);
+          }
+        }
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
 int InternalEdge::numberLineSegments() const
 {
-  return this->numMeshPoints - 1;
+  return this->Segments.size();
 }
 
 //----------------------------------------------------------------------------
 bool InternalLoop::edgeExists(const vtkIdType &e) const
 {
-  return this->ModelEdges.find(e) != this->ModelEdges.end();
+  return this->ModelEdges.count(e) > 0;
 }
 
 //----------------------------------------------------------------------------
@@ -63,44 +89,83 @@ void InternalLoop::addEdge(InternalEdge &edge)
 {
   if ( !this->edgeExists(edge.getId()) )
     {
-    this->ModelEdges.insert(std::pair<vtkIdType,InternalEdge>(edge.getId(),edge));
+    this->ModelEdges.insert(edge.getId());
     this->Hole = this->Hole || (edge.getEdgeUse() == 1);
+    this->addEdgeToLoop(edge);
     }
+}
+
+//----------------------------------------------------------------------------
+int InternalLoop::addEdgeToLoop(const InternalEdge &edge)
+{
+  //remove the mesh points from the edge, and into the loop.
+  //add all the model verts to the loop
+  //add all the segments to the loop
+  std::map<vtkIdType,edgePoint> meshPoints = edge.meshPoints();
+  std::vector<edgeSegment> edgeSegments = edge.segments();
+  std::set<vtkIdType> mv = edge.modeVerts();
+
+  vtkIdType pId1, pId2, newPId1, newPId2;
+  std::vector<edgeSegment>::const_iterator it;
+  for(it=edgeSegments.begin();it!=edgeSegments.end();it++)
+    {
+    //add each point to the mapping, and than add that segment
+    vtkIdType pId1 = it->first;
+    edgePoint ep = meshPoints.find(pId1);
+    newPId1 = this->insertPoint(edgePoint);
+
+    vtkIdType pId2 = it->second;
+    edgePoint ep = meshPoints.find(pId2);
+    newPId2 = this->insertPoint(edgePoint);
+
+    //add the new segment
+    edgeSegment es(newPId1,newPId2);
+    this->Segments.push_back(es);
+
+    //update the model vert set
+    if (mv.count(pId1) > 0)
+      {
+      this->ModelVerts.insert(newPId1);
+      mv.remove(pId1);
+      }
+    if (mv.count(pId2) > 0)
+      {
+      this->ModelVerts.insert(newPId2);
+      mv.remove(pId2);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+vtkIdType InternalLoop::insertPoint(const edgePoint &point)
+{
+  std::pair<std::map<edgePoint,vtkIdType>::iterator,bool> ret;
+  ret = this->Points.insert(point);
+  //the ret will point to the already existing element,
+  //or the newely created element
+  return ret.first->second;
 }
 
 //----------------------------------------------------------------------------
 int InternalLoop::getNumberOfPoints()
 {
-  int sum = 0;
-  std::set<vtkIdType> mVerts; //needed to remove duplicate vert ids across edges
-  std::map<vtkIdType,InternalEdge>::iterator it;
-  for(it=this->ModelEdges.begin();it!=this->ModelEdges.end(); it++)
-    {
-    sum += it->second.numberMeshPoints();
-    //not using set_union as the result iterator range can't overlap either inputs
-    const std::set<vtkIdType> mv = it->second.modelVerts();
-    mVerts.insert(mv.begin(),mv.end());
-    }
-  sum += static_cast<int>(mVerts.size());
-  return sum;
+  this->Points.size();
 }
 
 //----------------------------------------------------------------------------
 int InternalLoop::getNumberOfLineSegments() const
 {
-  int sum = 0, numEdges=0;
-  std::map<vtkIdType,InternalEdge>::const_iterator it;
-  for(it=this->ModelEdges.begin();it!=this->ModelEdges.end(); it++, ++numEdges)
-    {
-    sum += it->second.numberLineSegments();
-    }
-  if (numEdges == 1 && this->isHole())
-    {
-    //if a single edge forms a hole the edge number of segments
-    //is off by 1
-    ++sum;
-    }
-  return sum;
+  return this->Segments.size();
+}
+
+//----------------------------------------------------------------------------
+void InternalLoop::getPoints()
+{
+
+}
+
+void InternalLoop::getSegments()
+{
+
 }
 
 

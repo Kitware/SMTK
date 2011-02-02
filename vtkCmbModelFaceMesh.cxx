@@ -151,6 +151,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
   // number of unique points used in all line segments
   // we need all this information so we can properly construct the triangle memory
   vtkModelItemIterator *liter = this->ModelFace->GetModelFaceUse(0)->NewLoopUseIterator();
+  //double modelVert[3];
   vtkIdType loopId=1;
   for (liter->Begin();!liter->IsAtEnd(); liter->Next(), ++loopId)
     {
@@ -176,6 +177,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
           vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
           if(vertex)
             {
+            //vertex->GetPoint(modelVert);
             edge.addModelVert(vertex->GetUniquePersistentId());
             }
           }

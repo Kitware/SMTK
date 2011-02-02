@@ -39,6 +39,16 @@ class CmbTriangleInterface;
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
 {
+struct edgePoint
+{
+  double x, y;
+  edgePoint(double a, double b):x(a),y(b){}
+  bool operator <(const edgePoint &p) const {
+    return x < p.x || (x == p.x && y < p.y);
+  }
+};
+
+typedef vtkstd::pair<vtkIdType,vtkIdType> edgeSegment;
 class InternalEdge
 {
 public:
@@ -52,16 +62,19 @@ public:
   //before valid result is returned
   int numberLineSegments() const;
 
-  int numberMeshPoints() const {return numMeshPoints;}
+  int numberMeshPoints() const {return MeshPoints.size();}
 
-  std::set<vtkIdType>& modelVerts(){return ModelVerts;} const
+  std::set<vtkIdType> modelVerts(){return ModelVerts;} const
+  std::vector<edgeSegment>& segments(){return Segments;} const
+  std::map<vtkIdType,edgePoint>& meshPoints(){return MeshPoints;} const;
 
   vtkIdType getId() const{return Id;}
   int getEdgeUse() const{return EdgeUse;}
 protected:
   const vtkIdType Id;
   const int EdgeUse;
-  int numMeshPoints;
+  std::vector<edgeSegment> Segments;
+  std::map<vtkIdType,edgePoint> MeshPoints;
   std::set<vtkIdType> ModelVerts;
 };
 
@@ -73,7 +86,7 @@ public:
   bool edgeExists(const vtkIdType &e) const;
 
   //only adds unique edges
-  void addEdge(InternalEdge &edge);
+  void addEdge(const InternalEdge &edge);
 
   //returns the number of  unique points in this loop
   int getNumberOfPoints();
@@ -86,11 +99,22 @@ public:
 
   vtkIdType getId() const{return Id;}
 protected:
+  //copy the information from the edge into the loop
+  void addEdgeToLoop(const InternalEdge &edge);
+
+  //Inserts the point if it doesn't exist, and returns
+  //the vtkIdType id of the point.
+  vtkIdType insertPoint(const edgePoint &point);
+
   //hole is recomputed every time an edge is added
   //if all the edges have an edge use > 1 than we are not a hole
   const vtkIdType Id;
   bool Hole;
-  std::map<vtkIdType,InternalEdge> ModelEdges;
+  std::set<vtkIdType> ModelEdges;
+
+  std::vector<edgeSegment> Segments;
+  std::map<edgePoint,vtkIdType> Points;
+  std::set<vtkIdType> ModelVerts;
 };
 
 class MeshInformation
