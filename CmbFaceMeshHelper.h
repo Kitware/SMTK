@@ -102,6 +102,10 @@ public:
   void addDataToTriangleInterface(CmbTriangleInterface *ti,
      int &pointIndex, int &segmentIndex, int &holeIndex);
 
+  bool pointOnBoundary(const edgePoint &point) const;
+
+  bool PointInside(const edgePoint &point) const;
+
 protected:
   //copy the information from the edge into the loop
   void addEdgeToLoop(const InternalEdge &edge);

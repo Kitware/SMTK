@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
 #include <vtkstd/list> // Needed for STL list.
+#include <limits> //Needed for int max
 #include "vtkPolyData.h"
 #include "vtkCellArray.h"
 #include "vtkPoints.h"
@@ -173,10 +174,69 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
     {
     ti->setSegement(segmentIndex++,segIt->first,segIt->second);
     }
-  if ( this->isHole() )
-  {
-  //not implemented yet
-  }
+  if (this->Hole)
+    {
+    double bounds[4];
+    this->getBounds(bounds);
+
+    edgePoint holePoint;
+    bool pointInHoleFound = false;
+    while(!pointInHoleFound)
+      {
+      for (segIt=this->Segments.begin();
+          segIt!=this->Segments.end() && pointInHoleFound;
+          segIt++)
+        {
+        //use the middle point on the segment
+        //Woops, need a way to reference segments to points!
+        holePoint.x = ();
+        holePoint.y = ();
+        //see if this point is on an edge of the loop
+        if ( !this->pointOnBoundary(holePoint) )
+          {
+          pointInHoleFound = this->PointInside(holePoint);
+          }
+        if (!pointInHoleFound)
+          {
+          //move our point slight the other way
+          }
+        }
+      }
+    ti->setHole(holeIndex++,holePoint.x,holePoint.y);
+    }
+
+}
+
+//----------------------------------------------------------------------------
+bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
+{
+  //arbitrary big number, if point is on the edge the difference should
+  //be much much lower
+  double lowest_diff = std::numeric_limits<int>::max();
+
+  std::map<edgePoint,vtkIdType>::const_iterator pointIt, point2It;
+  point2It = this->Points.begin();
+  point2It++; //loop while point2 isn't at the end
+  for (pointIt=this->Points.begin();pointIt2!=this->Points.end();
+    pointIt++,point2It++)
+    {
+    double rise = point2It->first.y - pointIt->first.y;
+    double run =  point2It->first.x - pointIt->first.x;
+
+    double Ub1 = ((run*pointIt->first.y)-(rise*pointIt->first.x));
+    double Ub2 = ((run*point.y)-(rise*point.x));
+    double diff = fabs(Ub1 - Ub2);
+    //because of floating point errors round off
+    //the last few digits
+    lowest_diff = lowest_diff < diff ? lowest_diff : diff;
+    }
+  return lowest_diff <= .00001;
+}
+
+//----------------------------------------------------------------------------
+bool InternalLoop::PointInside( const edgePoint &point ) const
+{
+
 
 }
 
