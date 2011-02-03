@@ -54,7 +54,7 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
       {
       for (vtkIdType j=0; j < npts; ++j)
         {
-        if ( this->MeshPoints.find(pts[j]) != this->MeshPoints.end())
+        if ( this->MeshPoints.find(pts[j]) == this->MeshPoints.end())
           {
           mesh->GetPoint(pts[j],p);
           edgePoint ep(p[0],p[1]);
