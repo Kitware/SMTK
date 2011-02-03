@@ -73,7 +73,7 @@ CmbTriangleInterface::CmbTriangleInterface(const int &numPoints,
   MinAngleOn(false),
   MaxAreaOn(false),
   OutputMesh(NULL),
-  TIO(NULL),
+  TIO(new CmbTriangleInterface::TriangleIO()),
   NumberOfPoints(numPoints),
   NumberOfSegments(numSegments),
   NumberOfHoles(numHoles)
