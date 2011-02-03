@@ -137,17 +137,35 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
 vtkIdType InternalLoop::insertPoint(const edgePoint &point,const vtkIdType &id)
 {
   std::pair<std::map<edgePoint,vtkIdType>::iterator,bool> ret;
-  ret = this->Points.insert(
+  ret = this->PointsToIds.insert(
       std::pair<edgePoint,vtkIdType>(point,id));
+  if ( ret.second )
+    {
+    //if we added the point, update both parts of the bidirectional map
+    this->IdsToPoints.insert(
+      std::pair<vtkIdType,edgePoint>(id,point));
+    }
   //the ret will point to the already existing element,
   //or the newely created element
   return ret.first->second;
 }
 
 //----------------------------------------------------------------------------
+const edgePoint* InternalLoop::getPoint(const vtkIdType &id) const
+{
+  std::map<vtkIdType,edgePoint>::const_iterator it;
+  it = this->IdsToPoints.find(id);
+  if ( it == this->IdsToPoints.end() )
+    {
+    return NULL;
+    }
+  return &it->second;
+}
+
+//----------------------------------------------------------------------------
 int InternalLoop::getNumberOfPoints()
 {
-  return (int)this->Points.size();
+  return (int)this->PointsToIds.size();
 }
 
 //----------------------------------------------------------------------------
@@ -161,7 +179,7 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
    int &pointIndex, int &segmentIndex, int &holeIndex)
 {
   std::map<edgePoint,vtkIdType>::iterator pointIt;
-  for (pointIt=this->Points.begin();pointIt!=this->Points.end();pointIt++)
+  for (pointIt=this->PointsToIds.begin();pointIt!=this->PointsToIds.end();pointIt++)
     {
     ti->setPoint(pointIndex++,pointIt->first.x,pointIt->first.y);
     }
@@ -174,35 +192,38 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
 
   if (this->Hole)
     {
-    //double bounds[4];
-    //this->getBounds(bounds);
+    segIt=this->Segments.begin();
+    const edgePoint *p1 = this->getPoint(segIt->first);
+    const edgePoint *p2 = this->getPoint(segIt->second);
 
-    edgePoint holePoint(0,0);
+    //hole point start off at middle of the segment
+    double mx = (p1->x + p2->x)/2;
+    double my = (p1->y + p2->y)/2;
+    double dx = (p2->x - p1->x);
+    edgePoint holePoint(mx,my);
+
     bool pointInHoleFound = false;
     while(!pointInHoleFound)
       {
-      for (segIt=this->Segments.begin();
-          segIt!=this->Segments.end() && pointInHoleFound;
-          segIt++)
+      //use the middle point on the segment
+      holePoint.x = mx - dx;
+      //see if this point is on an edge of the loop
+      if ( !this->pointOnBoundary(holePoint) )
         {
-        //use the middle point on the segment
-        //Woops, need a way to reference segments to points!
-        holePoint.x = -1;
-        holePoint.y = -1;
-        //see if this point is on an edge of the loop
-        if ( !this->pointOnBoundary(holePoint) )
-          {
-          pointInHoleFound = this->PointInside(holePoint);
-          }
-        if (!pointInHoleFound)
-          {
-          //move our point slight the other way
-          }
+        pointInHoleFound = this->pointInside(holePoint);
         }
+      if (!pointInHoleFound)
+        {
+        //flip the point to the other side
+        holePoint.x = mx + dx;
+        pointInHoleFound = this->pointInside(holePoint);
+        }
+      dx /= 2; //move the ray to half the distance
+
+      //Note: should we also move Y if both x fails?
       }
     ti->setHole(holeIndex++,holePoint.x,holePoint.y);
     }
-
 }
 
 //----------------------------------------------------------------------------
@@ -212,16 +233,17 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
   //be much much lower
   double lowest_diff = std::numeric_limits<int>::max();
 
-  std::map<edgePoint,vtkIdType>::const_iterator pointIt, point2It;
-  point2It = this->Points.begin();
-  point2It++; //loop while point2 isn't at the end
-  for (pointIt=this->Points.begin();point2It!=this->Points.end();
-    pointIt++,point2It++)
+  std::list<edgeSegment>::const_iterator segIt;
+  for(segIt=this->Segments.begin();segIt!=this->Segments.end();
+    segIt++)
     {
-    double rise = point2It->first.y - pointIt->first.y;
-    double run =  point2It->first.x - pointIt->first.x;
+    const edgePoint *p1 = this->getPoint(segIt->first);
+    const edgePoint *p2 = this->getPoint(segIt->second);
 
-    double Ub1 = ((run*pointIt->first.y)-(rise*pointIt->first.x));
+    double rise= p2->y - p1->y;
+    double run = p2->x - p1->x;
+
+    double Ub1 = ((run*p1->y)-(rise*p1->x));
     double Ub2 = ((run*point.y)-(rise*point.x));
     double diff = fabs(Ub1 - Ub2);
     //because of floating point errors round off
@@ -232,10 +254,47 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
 }
 
 //----------------------------------------------------------------------------
-bool InternalLoop::PointInside( const edgePoint &point ) const
+bool InternalLoop::pointInside( const edgePoint &point ) const
 {
 
-  return false;
+  //http://en.wikipedia.org/wiki/Point_in_polygon RayCasting method
+  //shooting the ray along the x axis
+  bool inside = false;
+  std::list<edgeSegment>::const_iterator segIt;
+  double xintersection;
+  for(segIt=this->Segments.begin();segIt!=this->Segments.end();
+    segIt++)
+    {
+    const edgePoint *p1 = this->getPoint(segIt->first);
+    const edgePoint *p2 = this->getPoint(segIt->second);
+    if (point.y > std::min(p1->y,p2->y) && point.y <= std::max(p1->y,p2->y)
+      && p1->y != p2->y)
+      {
+      if (point.x <= std::max(p1->x,p2->x) )
+        {
+        xintersection = (point.y-p1->y)*(p2->x - p1->x)/(p2->y - p1->y) + p1->x;
+        if ( p1->x == p2->x || point.x <= xintersection)
+          {
+          //each time we intersect we switch if we are in side or not
+          inside = !inside;
+          }
+        }
+      }
+    }
+  return inside;
+}
+
+//----------------------------------------------------------------------------
+void InternalLoop::bounds( double b[4] ) const
+{
+  std::map<edgePoint,vtkIdType>::const_iterator pointIt;
+  for (pointIt=this->PointsToIds.begin();pointIt!=this->PointsToIds.end();pointIt++)
+    {
+    b[0] = pointIt->first.x < b[0]? pointIt->first.x : b[0];
+    b[2] = pointIt->first.x > b[2]? pointIt->first.x : b[2];
+    b[1] = pointIt->first.y < b[1]? pointIt->first.y : b[1];
+    b[3] = pointIt->first.y > b[3]? pointIt->first.y : b[3];
+    }
 }
 
 //----------------------------------------------------------------------------

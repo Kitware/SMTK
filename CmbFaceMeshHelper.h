@@ -98,6 +98,9 @@ public:
   //returns if this loop is a hole
   bool isHole() const{return Hole;}
 
+  //returns NULL if point is not found
+  const edgePoint* getPoint(const vtkIdType &id) const;
+
   // adds this loops information to the triangle interface
   // modifies the pointIndex, segment Index, and HoleIndex
   void addDataToTriangleInterface(CmbTriangleInterface *ti,
@@ -105,7 +108,9 @@ public:
 
   bool pointOnBoundary(const edgePoint &point) const;
 
-  bool PointInside(const edgePoint &point) const;
+  bool pointInside(const edgePoint &point) const;
+
+  void bounds(double bounds[4]) const;
 
 protected:
   //copy the information from the edge into the loop
@@ -120,11 +125,16 @@ protected:
   //if all the edges have an edge use > 1 than we are not a hole
   const vtkIdType Id;
   bool Hole;
+
+  //these store ids, so we don't have duplicates
   std::set<vtkIdType> ModelEdges;
+  std::set<vtkIdType> ModelVerts;
 
   std::list<edgeSegment> Segments;
-  std::map<edgePoint,vtkIdType> Points;
-  std::set<vtkIdType> ModelVerts;
+
+  //bi directional map implemented as two maps
+  std::map<edgePoint,vtkIdType> PointsToIds; //needed for easy lookup on duplicate points
+  std::map<vtkIdType,edgePoint> IdsToPoints;
 };
 
 class MeshInformation
