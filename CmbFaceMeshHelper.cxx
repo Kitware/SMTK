@@ -27,9 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Convert a vtkModelFace to a triangle input for meshing.
 #include "CmbFaceMeshHelper.h"
 
-#include <vtkstd/map> // Needed for STL map.
-#include <vtkstd/set> // Needed for STL set.
-#include <vtkstd/list> // Needed for STL list.
 #include <limits> //Needed for int max
 #include "vtkPolyData.h"
 #include "vtkCellArray.h"
@@ -76,7 +73,7 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
 //----------------------------------------------------------------------------
 int InternalEdge::numberLineSegments() const
 {
-  return this->Segments.size();
+  return (int)this->Segments.size();
 }
 
 //----------------------------------------------------------------------------
@@ -86,7 +83,7 @@ bool InternalLoop::edgeExists(const vtkIdType &e) const
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::addEdge(InternalEdge &edge)
+void InternalLoop::addEdge(const InternalEdge &edge)
 {
   if ( !this->edgeExists(edge.getId()) )
     {
@@ -97,27 +94,27 @@ void InternalLoop::addEdge(InternalEdge &edge)
 }
 
 //----------------------------------------------------------------------------
-int InternalLoop::addEdgeToLoop(const InternalEdge &edge)
+void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
 {
   //remove the mesh points from the edge, and into the loop.
   //add all the model verts to the loop
   //add all the segments to the loop
-  std::map<vtkIdType,edgePoint> meshPoints = edge.meshPoints();
-  std::vector<edgeSegment> edgeSegments = edge.segments();
-  std::set<vtkIdType> mv = edge.modeVerts();
+  std::map<vtkIdType,edgePoint> meshPoints = edge.getMeshPoints();
+  std::list<edgeSegment> edgeSegments = edge.getSegments();
+  std::set<vtkIdType> mv = edge.getModelVerts();
 
   vtkIdType pId1, pId2, newPId1, newPId2;
-  std::vector<edgeSegment>::const_iterator it;
+  std::list<edgeSegment>::iterator it;
   for(it=edgeSegments.begin();it!=edgeSegments.end();it++)
     {
     //add each point to the mapping, and than add that segment
-    vtkIdType pId1 = it->first;
-    edgePoint ep = meshPoints.find(pId1);
-    newPId1 = this->insertPoint(edgePoint,pId1);
+    pId1 = it->first;
+    edgePoint ep = meshPoints.find(pId1)->second;
+    newPId1 = this->insertPoint(ep,pId1);
 
-    vtkIdType pId2 = it->second;
-    edgePoint ep = meshPoints.find(pId2);
-    newPId2 = this->insertPoint(edgePoint,pId2);
+    pId2 = it->second;
+    ep = meshPoints.find(pId2)->second;
+    newPId2 = this->insertPoint(ep,pId2);
 
     //add the new segment
     edgeSegment es(newPId1,newPId2);
@@ -127,12 +124,12 @@ int InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     if (mv.count(pId1) > 0)
       {
       this->ModelVerts.insert(newPId1);
-      mv.remove(pId1);
+      mv.erase(pId1);
       }
     if (mv.count(pId2) > 0)
       {
       this->ModelVerts.insert(newPId2);
-      mv.remove(pId2);
+      mv.erase(pId2);
       }
     }
 }
@@ -150,18 +147,18 @@ vtkIdType InternalLoop::insertPoint(const edgePoint &point,const vtkIdType &id)
 //----------------------------------------------------------------------------
 int InternalLoop::getNumberOfPoints()
 {
-  this->Points.size();
+  return (int)this->Points.size();
 }
 
 //----------------------------------------------------------------------------
 int InternalLoop::getNumberOfLineSegments() const
 {
-  return this->Segments.size();
+  return (int)this->Segments.size();
 }
 
 //----------------------------------------------------------------------------
 void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
-   int &pointIndex, int &segmentIndex, int &holeIndex);
+   int &pointIndex, int &segmentIndex, int &holeIndex)
 {
   std::map<edgePoint,vtkIdType>::iterator pointIt;
   for (pointIt=this->Points.begin();pointIt!=this->Points.end();pointIt++)
@@ -169,17 +166,18 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
     ti->setPoint(pointIndex++,pointIt->first.x,pointIt->first.y);
     }
 
-  std::vector<edgeSegment>::iterator segIt;
+  std::list<edgeSegment>::iterator segIt;
   for (segIt=this->Segments.begin();segIt!=this->Segments.end();segIt++)
     {
     ti->setSegement(segmentIndex++,segIt->first,segIt->second);
     }
+
   if (this->Hole)
     {
-    double bounds[4];
-    this->getBounds(bounds);
+    //double bounds[4];
+    //this->getBounds(bounds);
 
-    edgePoint holePoint;
+    edgePoint holePoint(0,0);
     bool pointInHoleFound = false;
     while(!pointInHoleFound)
       {
@@ -189,8 +187,8 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
         {
         //use the middle point on the segment
         //Woops, need a way to reference segments to points!
-        holePoint.x = ();
-        holePoint.y = ();
+        holePoint.x = -1;
+        holePoint.y = -1;
         //see if this point is on an edge of the loop
         if ( !this->pointOnBoundary(holePoint) )
           {
@@ -217,7 +215,7 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
   std::map<edgePoint,vtkIdType>::const_iterator pointIt, point2It;
   point2It = this->Points.begin();
   point2It++; //loop while point2 isn't at the end
-  for (pointIt=this->Points.begin();pointIt2!=this->Points.end();
+  for (pointIt=this->Points.begin();point2It!=this->Points.end();
     pointIt++,point2It++)
     {
     double rise = point2It->first.y - pointIt->first.y;
@@ -237,7 +235,7 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
 bool InternalLoop::PointInside( const edgePoint &point ) const
 {
 
-
+  return false;
 }
 
 //----------------------------------------------------------------------------
@@ -283,11 +281,10 @@ int MeshInformation::numberOfHoles()
 //----------------------------------------------------------------------------
 void MeshInformation::fillTriangleInterface(CmbTriangleInterface *ti)
 {
-  int numPoints, numSegments;
-  int pIdx = 0; sId = 0;
-  std::list<InternalLoop>::const_iterator it;
+  int pIdx = 0, sId = 0, hId=0;
+  std::list<InternalLoop>::iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    it->addDataToTriangleInterface(ti, pIdx, sId)
+    it->addDataToTriangleInterface(ti, pIdx, sId, hId);
     }
 }

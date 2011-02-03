@@ -31,10 +31,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
-#include <vtkstd/vector> // Needed for STL vector.
+#include <vtkstd/list> // Needed for STL list.
 #include "vtkType.h"
 
 class CmbTriangleInterface;
+class vtkPolyData;
 
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
@@ -53,7 +54,7 @@ class InternalEdge
 {
 public:
   InternalEdge(const int &id, const int &edgeUse):
-    Id(id), EdgeUse(edgeUse), numMeshPoints(0){}
+    Id(id), EdgeUse(edgeUse){}
 
   void addModelVert(const vtkIdType &id);
   void setMeshPoints(vtkPolyData *mesh);
@@ -62,18 +63,18 @@ public:
   //before valid result is returned
   int numberLineSegments() const;
 
-  int numberMeshPoints() const {return MeshPoints.size();}
+  int numberMeshPoints() const {return (int)MeshPoints.size();}
 
-  std::set<vtkIdType> modelVerts(){return ModelVerts;} const
-  std::vector<edgeSegment>& segments(){return Segments;} const
-  std::map<vtkIdType,edgePoint>& meshPoints(){return MeshPoints;} const;
+  std::set<vtkIdType> getModelVerts() const {return ModelVerts;}
+  std::list<edgeSegment> getSegments() const {return Segments;}
+  std::map<vtkIdType,edgePoint> getMeshPoints() const {return MeshPoints;}
 
   vtkIdType getId() const{return Id;}
   int getEdgeUse() const{return EdgeUse;}
 protected:
   const vtkIdType Id;
   const int EdgeUse;
-  std::vector<edgeSegment> Segments;
+  std::list<edgeSegment> Segments;
   std::map<vtkIdType,edgePoint> MeshPoints;
   std::set<vtkIdType> ModelVerts;
 };
@@ -121,7 +122,7 @@ protected:
   bool Hole;
   std::set<vtkIdType> ModelEdges;
 
-  std::vector<edgeSegment> Segments;
+  std::list<edgeSegment> Segments;
   std::map<edgePoint,vtkIdType> Points;
   std::set<vtkIdType> ModelVerts;
 };
@@ -134,10 +135,10 @@ class MeshInformation
     int numberOfLineSegments();
     int numberOfHoles();
 
-    fillTriangleInterface(CmbTriangleInterface *ti);
+    void fillTriangleInterface(CmbTriangleInterface *ti);
 
   protected:
-    std::vector<InternalLoop> Loops;
+    std::list<InternalLoop> Loops;
 };
 }
 #endif
