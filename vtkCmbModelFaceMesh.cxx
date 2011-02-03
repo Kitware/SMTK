@@ -186,6 +186,10 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
       }
     this->MeshInfo->addLoop(loop);
     }
+  if ( liter )
+    {
+    liter->Delete();
+    }
   return true;
 }
 

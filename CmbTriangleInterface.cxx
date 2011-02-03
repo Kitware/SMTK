@@ -85,10 +85,7 @@ CmbTriangleInterface::~CmbTriangleInterface()
 {
   Free_triangluateio(this->TIO->in);
   Free_triangluateio(this->TIO->out);
-  if ( this->OutputMesh )
-    {
-    this->OutputMesh->Delete();
-    }
+  this->OutputMesh = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -121,11 +118,7 @@ void CmbTriangleInterface::InitDataStructures()
 //----------------------------------------------------------------------------
 void CmbTriangleInterface::setOutputMesh(vtkPolyData *mesh)
 {
-  if ( this->OutputMesh )
-    {
-    this->OutputMesh->Delete();
-    }
-  this->OutputMesh->ShallowCopy(mesh);
+  this->OutputMesh = mesh;
 }
 
 //----------------------------------------------------------------------------
