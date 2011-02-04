@@ -77,9 +77,23 @@ int InternalEdge::numberLineSegments() const
 }
 
 //----------------------------------------------------------------------------
+bool InternalLoop::isHole() const
+{
+  //holds the number of unique edges we have. If greater than zero
+  //we have a hole. Also make sure we are an internal loop (CanBeHole)
+  return this->CanBeHole && this->EdgeCount > 0;
+}
+
+//----------------------------------------------------------------------------
 bool InternalLoop::edgeExists(const vtkIdType &e) const
 {
   return this->ModelEdges.count(e) > 0;
+}
+
+//----------------------------------------------------------------------------
+void InternalLoop::markEdgeAsDuplicate(const vtkIdType &edgeId)
+{
+  --this->EdgeCount;
 }
 
 //----------------------------------------------------------------------------
@@ -88,8 +102,8 @@ void InternalLoop::addEdge(const InternalEdge &edge)
   if ( !this->edgeExists(edge.getId()) )
     {
     this->ModelEdges.insert(edge.getId());
-    this->Hole = this->Hole || (edge.getEdgeUse() == 1);
     this->addEdgeToLoop(edge);
+    ++this->EdgeCount;
     }
 }
 
@@ -110,11 +124,11 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     //add each point to the mapping, and than add that segment
     pId1 = it->first;
     edgePoint ep = meshPoints.find(pId1)->second;
-    newPId1 = this->insertPoint(ep,pId1);
+    newPId1 = this->insertPoint(ep);
 
     pId2 = it->second;
     ep = meshPoints.find(pId2)->second;
-    newPId2 = this->insertPoint(ep,pId2);
+    newPId2 = this->insertPoint(ep);
 
     //add the new segment
     edgeSegment es(newPId1,newPId2);
@@ -134,9 +148,12 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     }
 }
 //----------------------------------------------------------------------------
-vtkIdType InternalLoop::insertPoint(const edgePoint &point,const vtkIdType &id)
+vtkIdType InternalLoop::insertPoint(const edgePoint &point)
 {
   std::pair<std::map<edgePoint,vtkIdType>::iterator,bool> ret;
+  //use the number of points as ids. This way we make sure the no two
+  //points map to the same id
+  vtkIdType id(this->PointsToIds.size());
   ret = this->PointsToIds.insert(
       std::pair<edgePoint,vtkIdType>(point,id));
   if ( ret.second )
@@ -178,19 +195,29 @@ int InternalLoop::getNumberOfLineSegments() const
 void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
    int &pointIndex, int &segmentIndex, int &holeIndex)
 {
-  std::map<edgePoint,vtkIdType>::iterator pointIt;
-  for (pointIt=this->PointsToIds.begin();pointIt!=this->PointsToIds.end();pointIt++)
+  std::map<vtkIdType,edgePoint>::iterator pointIt;
+  //we have to iterate idsToPoints, to properly get the right indexing
+  //for cell lookup
+  int i = 0;
+  for (pointIt=this->IdsToPoints.begin();pointIt!=this->IdsToPoints.end();pointIt++)
     {
-    ti->setPoint(pointIndex++,pointIt->first.x,pointIt->first.y);
+    //account for the offset of the other points
+    i = pointIndex + pointIt->first;
+    ti->setPoint(i,pointIt->second.x,pointIt->second.y);
     }
+  pointIndex += (int)this->IdsToPoints.size(); //update the pointIndex
 
   std::list<edgeSegment>::iterator segIt;
+  i=segmentIndex;
   for (segIt=this->Segments.begin();segIt!=this->Segments.end();segIt++)
     {
-    ti->setSegement(segmentIndex++,segIt->first,segIt->second);
+    //make sure we offset the cell ids by the total
+    //number of cells in all the previous loops
+    ti->setSegement(i++,segmentIndex + segIt->first, segmentIndex + segIt->second);
     }
+  segmentIndex += (int)this->Segments.size();
 
-  if (this->Hole)
+  if (this->isHole())
     {
     segIt=this->Segments.begin();
     const edgePoint *p1 = this->getPoint(segIt->first);
@@ -200,6 +227,7 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
     double mx = (p1->x + p2->x)/2;
     double my = (p1->y + p2->y)/2;
     double dx = (p2->x - p1->x);
+    double dy = (p2->y - p1->y);
     edgePoint holePoint(mx,my);
 
     bool pointInHoleFound = false;
@@ -207,6 +235,7 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
       {
       //use the middle point on the segment
       holePoint.x = mx - dx;
+      holePoint.x = mx - dy;
       //see if this point is on an edge of the loop
       if ( !this->pointOnBoundary(holePoint) )
         {
@@ -216,9 +245,14 @@ void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
         {
         //flip the point to the other side
         holePoint.x = mx + dx;
-        pointInHoleFound = this->pointInside(holePoint);
+        holePoint.x = mx + dy;
+        if ( !this->pointOnBoundary(holePoint) )
+          {
+          pointInHoleFound = this->pointInside(holePoint);
+          }
         }
       dx /= 2; //move the ray to half the distance
+      dy /= 2;
 
       //Note: should we also move Y if both x fails?
       }

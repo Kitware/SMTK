@@ -53,8 +53,7 @@ typedef vtkstd::pair<vtkIdType,vtkIdType> edgeSegment;
 class InternalEdge
 {
 public:
-  InternalEdge(const int &id, const int &edgeUse):
-    Id(id), EdgeUse(edgeUse){}
+  InternalEdge(const int &id):Id(id){}
 
   void addModelVert(const vtkIdType &id);
   void setMeshPoints(vtkPolyData *mesh);
@@ -70,10 +69,8 @@ public:
   std::map<vtkIdType,edgePoint> getMeshPoints() const {return MeshPoints;}
 
   vtkIdType getId() const{return Id;}
-  int getEdgeUse() const{return EdgeUse;}
 protected:
   const vtkIdType Id;
-  const int EdgeUse;
   std::list<edgeSegment> Segments;
   std::map<vtkIdType,edgePoint> MeshPoints;
   std::set<vtkIdType> ModelVerts;
@@ -82,12 +79,17 @@ protected:
 class InternalLoop
 {
 public:
-  InternalLoop(const vtkIdType &id):Hole(false),Id(id){}
+  InternalLoop(const vtkIdType &id, const bool &isInternal)
+    :EdgeCount(0),CanBeHole(isInternal),Id(id){}
 
   bool edgeExists(const vtkIdType &e) const;
 
   //only adds unique edges
   void addEdge(const InternalEdge &edge);
+
+  //mark that we have a duplicate edge
+  //this determines if the loop is a hole
+  void markEdgeAsDuplicate(const vtkIdType &edgeId);
 
   //returns the number of  unique points in this loop
   int getNumberOfPoints();
@@ -96,7 +98,7 @@ public:
   int getNumberOfLineSegments() const;
 
   //returns if this loop is a hole
-  bool isHole() const{return Hole;}
+  bool isHole() const;
 
   //returns NULL if point is not found
   const edgePoint* getPoint(const vtkIdType &id) const;
@@ -118,13 +120,15 @@ protected:
 
   //Inserts the point if it doesn't exist, and returns
   //the vtkIdType id of the point.
-  vtkIdType insertPoint(const edgePoint &point,
-                        const vtkIdType &id);
+  vtkIdType insertPoint(const edgePoint &point);
 
-  //hole is recomputed every time an edge is added
-  //if all the edges have an edge use > 1 than we are not a hole
   const vtkIdType Id;
-  bool Hole;
+  const bool CanBeHole;
+
+  //holds the number of unique edges we have. If greater than zero
+  //we have a hole
+  int EdgeCount;
+
 
   //these store ids, so we don't have duplicates
   std::set<vtkIdType> ModelEdges;

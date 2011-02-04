@@ -151,11 +151,13 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
   // number of unique points used in all line segments
   // we need all this information so we can properly construct the triangle memory
   vtkModelItemIterator *liter = this->ModelFace->GetModelFaceUse(0)->NewLoopUseIterator();
-  //double modelVert[3];
-  vtkIdType loopId=1;
+  const int START_LOOP_ID = 1;
+  vtkIdType loopId = START_LOOP_ID;
   for (liter->Begin();!liter->IsAtEnd(); liter->Next(), ++loopId)
     {
-    InternalLoop loop(loopId);
+    //by design the first loop is the external loop, all other loops are internal loops
+    //for a loop to be a hole it has to be an internal loop, with an edge that isn't used twice
+    InternalLoop loop(loopId,loopId != START_LOOP_ID);
     vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
         liter->GetCurrentItem())->NewModelEdgeUseIterator();
     for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
@@ -169,7 +171,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
         vtkPolyData *mesh = this->GetMasterMesh()->
           GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
 
-        InternalEdge edge(edgeId,modelEdge->GetNumberOfModelEdgeUses());
+        InternalEdge edge(edgeId);
         edge.setMeshPoints(mesh);
         int numVerts = modelEdge->GetNumberOfModelVertexUses();
         for(int i=0;i<numVerts;++i)
@@ -182,6 +184,10 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
             }
           }
         loop.addEdge(edge);
+        }
+      else
+        {
+        loop.markEdgeAsDuplicate(edgeId);
         }
       }
     this->MeshInfo->addLoop(loop);
@@ -208,6 +214,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
     {
     local = global;
     }
+  ti.setUseMaxArea(true);
   ti.setMaxArea(local);
 
   global = this->GetMasterMesh()->GetGlobalMinimumAngle();
@@ -216,6 +223,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
     {
     local = global;
     }
+  ti.setUseMinAngle(true);
   ti.setMinAngle(local);
 
   ti.setOutputMesh(mesh);
