@@ -201,6 +201,13 @@ bool CmbTriangleInterface::buildFaceMesh()
 
   //we know have to convert the result into a vtkPolyData;
   triangulateio *io = this->TIO->out;
+  if( io->numberofpoints == 0 ||
+      io->numberoftriangles == 0 ||
+      io->numberofsegments == 0 )
+    {
+    vtkGenericWarningMacro("Failed to build a face mesh.");
+    return false;
+    }
 
   //setup the points
   vtkPoints *points = vtkPoints::New();
