@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <sstream>
 
 #include <vtkPolyData.h>
+#include <vtkCellArray.h>
 
 // for Triangle
 #ifndef ANSI_DECLARATORS
@@ -196,14 +197,61 @@ bool CmbTriangleInterface::buildFaceMesh()
   switches[len]='\0';
 
   triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
-  //triangle_report_vtk("E:/Work/in",this->TIO->in);
-  //triangle_report_vtk("E:/Work/out",this->TIO->out);
-
   delete[] switches;
+
+  //we know have to convert the result into a vtkPolyData;
+  triangulateio *io = this->TIO->out;
+
+  //setup the points
+  vtkPoints *points = vtkPoints::New();
+  vtkIdType i=0;
+  vtkIdType size = io->numberofpoints;
+  points->SetNumberOfPoints(size);
+  for (i=0; i < size; ++i)
+    {
+    points->InsertPoint(i,io->pointlist[2*i],io->pointlist[2*i+1],0.0);
+    }
+  this->OutputMesh->SetPoints(points);
+  points->FastDelete();
+
+  //setup the lines
+  vtkCellArray *lines = vtkCellArray::New();
+  vtkIdList *ids = vtkIdList::New();
+  size = io->numberofsegments;
+  ids->SetNumberOfIds(2);
+  lines->SetNumberOfCells(size);
+  for(i=0; i < size; ++i)
+    {
+    ids->SetId(0,io->segmentlist[2 * i]);
+    ids->SetId(1,io->segmentlist[2 * i + 1]);
+    lines->InsertNextCell(ids);
+    }
+  this->OutputMesh->SetLines(lines);
+  lines->Delete();
+
+  //reset before using for triangles
+  ids->Reset();
+
+  //setup the triangles
+  vtkCellArray *triangles = vtkCellArray::New();
+  size = io->numberofsegments;
+  ids->SetNumberOfIds(size);
+  triangles->SetNumberOfCells(size);
+  for(i=0; i < size; ++i)
+    {
+    ids->SetId(0,io->trianglelist[3 * i]);
+    ids->SetId(1,io->trianglelist[3 * i + 1]);
+    ids->SetId(2,io->trianglelist[3 * i + 2]);
+    triangles->InsertNextCell(ids);
+    }
+  ids->Delete();
+  this->OutputMesh->SetPolys(triangles);
+  triangles->Delete();
+
   return true;
 }
 
-// for Triangle
+// for Triangles
 #undef ANSI_DECLARATORS
 #undef VOID
 #undef TRIANGLE_REAL

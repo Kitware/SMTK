@@ -229,10 +229,6 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 
   ti.setOutputMesh(mesh);
 
-  //we walk the model info to find the subset of information we need.
-  //while this means we require more memory, it is easier to understand
-  //how we resolve duplicate model verts inside loops, and shared verts between
-  //loops. Also this helps when mapping point ids back to model verts
   this->MeshInfo->fillTriangleInterface(&ti);
   bool valid = ti.buildFaceMesh();
   return valid;
