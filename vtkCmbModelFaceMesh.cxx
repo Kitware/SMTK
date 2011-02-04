@@ -190,6 +190,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
         loop.markEdgeAsDuplicate(edgeId);
         }
       }
+    edgeUses->Delete();
     this->MeshInfo->addLoop(loop);
     }
   if ( liter )
