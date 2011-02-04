@@ -55,6 +55,7 @@ extern "C"
 #include "share_declare.h"
   void Init_triangluateio(struct triangulateio *);
   void Free_triangluateio(struct triangulateio *);
+  void triangle_report_vtk(char *filename, struct triangulateio *io);
 }
 // END for Triangle
 
@@ -124,7 +125,7 @@ void CmbTriangleInterface::setOutputMesh(vtkPolyData *mesh)
 //----------------------------------------------------------------------------
 bool CmbTriangleInterface::setPoint(const int index, const double &x, const double &y)
 {
-  if (index > 0 && index < this->NumberOfPoints)
+  if (index >= 0 && index < this->NumberOfPoints)
     {
     this->TIO->in->pointlist[index*2]=x;
     this->TIO->in->pointlist[index*2+1]=y;
@@ -136,7 +137,7 @@ bool CmbTriangleInterface::setPoint(const int index, const double &x, const doub
 //----------------------------------------------------------------------------
 bool CmbTriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
 {
-  if (index > 0 && index < this->NumberOfSegments)
+  if (index >= 0 && index < this->NumberOfSegments)
     {
     this->TIO->in->segmentlist[index*2]=pId1;
     this->TIO->in->segmentlist[index*2+1]=pId2;
@@ -148,7 +149,7 @@ bool CmbTriangleInterface::setSegement(const int index, const int &pId1, const i
 //----------------------------------------------------------------------------
 bool CmbTriangleInterface::setHole(const int index, const double &x, const double &y)
 {
-  if (index > 0 && index < this->NumberOfHoles)
+  if (index >= 0 && index < this->NumberOfHoles)
     {
     this->TIO->in->holelist[index*2]=x;
     this->TIO->in->holelist[index*2+1]=y;
@@ -161,10 +162,9 @@ bool CmbTriangleInterface::setHole(const int index, const double &x, const doubl
 std::string CmbTriangleInterface::BuildTriangleArguments() const
 {
   std::stringstream buffer;
-  buffer << "Q";//enable quiet mode
   buffer << "p";//generate a planar straight line graph
   buffer << "z";//use 0 based indexing
-  buffer << "Y";//preserve boundaries
+  buffer << "Q";//enable quiet mode
   if(this->MaxAreaOn)
     {
     buffer << "a" << std::fixed << this->MaxArea;
@@ -173,6 +173,7 @@ std::string CmbTriangleInterface::BuildTriangleArguments() const
     {
     buffer << "q" << std::fixed << this->MinAngle;
     }
+  buffer << "Y";//preserve boundaries
   return buffer.str();
 }
 
@@ -186,7 +187,8 @@ bool CmbTriangleInterface::buildFaceMesh()
   switches[len]='\0';
 
   triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
-
+  //triangle_report_vtk("E:/Work/in",this->TIO->in);
+  //triangle_report_vtk("E:/Work/out",this->TIO->out);
 
   delete[] switches;
   return true;
