@@ -234,30 +234,13 @@ bool CmbTriangleInterface::buildFaceMesh()
   this->OutputMesh->SetPoints(points);
   points->FastDelete();
 
-  //setup the lines
-  vtkCellArray *lines = vtkCellArray::New();
-  vtkIdList *ids = vtkIdList::New();
-  size = io->numberofsegments;
-  ids->SetNumberOfIds(2);
-  lines->SetNumberOfCells(size);
-  for(i=0; i < size; ++i)
-    {
-    ids->SetId(0,io->segmentlist[2 * i]);
-    ids->SetId(1,io->segmentlist[2 * i + 1]);
-    lines->InsertNextCell(ids);
-    }
-  this->OutputMesh->SetLines(lines);
-  lines->Delete();
-
-  //reset before using for triangles
-  ids->Reset();
-
   //setup the triangles
   vtkCellArray *triangles = vtkCellArray::New();
+  vtkIdList *ids = vtkIdList::New();
   size = io->numberofsegments;
   ids->SetNumberOfIds(size);
   triangles->SetNumberOfCells(size);
-  for(i=0; i < size; ++i)
+  for(vtkIdType i=0; i < size; ++i)
     {
     ids->SetId(0,io->trianglelist[3 * i]);
     ids->SetId(1,io->trianglelist[3 * i + 1]);
