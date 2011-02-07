@@ -88,9 +88,22 @@ CmbTriangleInterface::~CmbTriangleInterface()
   //there is a bug in triangle that the hole list is shared between
   //the in and out structs. So we have to set the hole list to NULL before
   //freeing the out, or the program will crash
-  bool holeDeleteBug = (this->TIO->in->holelist == this->TIO->out->holelist);
+  bool pointListShared = (this->TIO->in->pointlist == this->TIO->out->pointlist);
+  bool segmentListShared = (this->TIO->in->segmentlist == this->TIO->out->segmentlist);
+  bool holeListShared = (this->TIO->in->holelist == this->TIO->out->holelist);
+
   Free_triangluateio(this->TIO->in);
-  if (holeDeleteBug)
+  if (pointListShared)
+    {
+    //The free on TIO->in released the memory
+    this->TIO->out->pointlist=NULL;
+    }
+  if (segmentListShared)
+    {
+    //The free on TIO->in released the memory
+    this->TIO->out->segmentlist=NULL;
+    }
+  if (holeListShared)
     {
     //The free on TIO->in released the memory
     this->TIO->out->holelist=NULL;
