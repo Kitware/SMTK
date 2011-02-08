@@ -322,7 +322,21 @@ bool InternalLoop::pointInside( const edgePoint &point ) const
 void InternalLoop::bounds( double b[4] ) const
 {
   std::map<edgePoint,vtkIdType>::const_iterator pointIt;
-  for (pointIt=this->PointsToIds.begin();pointIt!=this->PointsToIds.end();pointIt++)
+
+  if ( this->PointsToIds.size() == 0 )
+    {
+    //handle the 0 point use case
+    b[0]=b[1]=b[2]=b[3]=0.0;
+    }
+
+  //This way we don't care what the bounds variable was when passed in
+  //this fixes a possible bug if the input area isn't setup properly
+  pointIt=this->PointsToIds.begin();
+  b[0] = b[2] = pointIt->first.x;
+  b[1] = b[3] = pointIt->first.y;
+  pointIt++;
+
+  for (;pointIt!=this->PointsToIds.end();pointIt++)
     {
     b[0] = pointIt->first.x < b[0]? pointIt->first.x : b[0];
     b[2] = pointIt->first.x > b[2]? pointIt->first.x : b[2];

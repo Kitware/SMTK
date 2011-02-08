@@ -112,6 +112,8 @@ public:
 
   bool pointInside(const edgePoint &point) const;
 
+  //returns the bounds in the order of:
+  //xmin,ymin,xmax,ymax
   void bounds(double bounds[4]) const;
 
 protected:
