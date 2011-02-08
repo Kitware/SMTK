@@ -225,7 +225,7 @@ std::string CmbTriangleInterface::BuildTriangleArguments() const
   buffer << "Q";//enable quiet mode
   if(this->MaxAreaOn)
     {
-    buffer << "a" << std::fixed << this->area() * this->MaxArea;
+    buffer << "a" << std::fixed << (this->area() / 2.0) * this->MaxArea;
     }
   if (this->MinAngleOn)
     {
@@ -253,14 +253,14 @@ bool CmbTriangleInterface::buildFaceMesh(const long &faceId)
   triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
   delete[] switches;
 
-/*
+
   std::stringstream buffer;
   buffer << "E:/Work/in" << faceId;
   triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
   buffer.str("");
   buffer << "E:/Work/out" << faceId;
   triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
-*/
+
 
   //we know have to convert the result into a vtkPolyData;
   triangulateio *io = this->TIO->out;

@@ -230,7 +230,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
   ti.setOutputMesh(mesh);
 
   this->MeshInfo->fillTriangleInterface(&ti);
-  bool valid = ti.buildFaceMesh();
+  bool valid = ti.buildFaceMesh((long)this->ModelFace->GetUniquePersistentId());
   return valid;
 }
 
