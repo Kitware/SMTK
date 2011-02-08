@@ -54,9 +54,17 @@ public:
 
   bool setHole(const int index, const double &x, const double &y);
 
-  bool buildFaceMesh();
+  //returns the area of the bounds
+  double area( ) const;
+
+  //returns the bounds in the order of:
+  //xmin,ymin,xmax,ymax
+  void bounds(double bounds[4]) const;
+
+  bool buildFaceMesh(const long &faceId);
 protected:
   void InitDataStructures();
+
   std::string BuildTriangleArguments() const;
 
   vtkPolyData *OutputMesh;

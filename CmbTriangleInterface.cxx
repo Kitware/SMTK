@@ -182,6 +182,41 @@ bool CmbTriangleInterface::setHole(const int index, const double &x, const doubl
 }
 
 //----------------------------------------------------------------------------
+double CmbTriangleInterface::area() const
+{
+  double bounds[4];
+  this->bounds(bounds);
+  return (bounds[2]-bounds[0]) * (bounds[3]-bounds[1]);
+}
+
+//----------------------------------------------------------------------------
+void CmbTriangleInterface::bounds(double bounds[4]) const
+{
+  if ( this->NumberOfPoints == 0 )
+    {
+    //handle the use case that we don't have any points yet
+    bounds[0]=bounds[1]=bounds[2]=bounds[3]=0.0;
+    return;
+    }
+
+  //use the first point as the min and max values
+  bounds[0] = bounds[2] = this->TIO->in->pointlist[0];
+  bounds[1] = bounds[3] = this->TIO->in->pointlist[1];
+  for ( int i=2; i < this->NumberOfPoints; i+=2 )
+    {
+    bounds[0] = this->TIO->in->pointlist[i] < bounds[0]?
+      this->TIO->in->pointlist[i] : bounds[0];
+    bounds[2] = this->TIO->in->pointlist[i] > bounds[2]?
+      this->TIO->in->pointlist[i] : bounds[2];
+    bounds[1] = this->TIO->in->pointlist[i+1] < bounds[1]?
+      this->TIO->in->pointlist[i+1] : bounds[1];
+    bounds[3] = this->TIO->in->pointlist[i+1] > bounds[3]?
+      this->TIO->in->pointlist[i+1] : bounds[3];
+    }
+
+}
+
+//----------------------------------------------------------------------------
 std::string CmbTriangleInterface::BuildTriangleArguments() const
 {
   std::stringstream buffer;
@@ -190,7 +225,7 @@ std::string CmbTriangleInterface::BuildTriangleArguments() const
   buffer << "Q";//enable quiet mode
   if(this->MaxAreaOn)
     {
-    buffer << "a" << std::fixed << this->MaxArea;
+    buffer << "a" << std::fixed << this->area() * this->MaxArea;
     }
   if (this->MinAngleOn)
     {
@@ -201,8 +236,14 @@ std::string CmbTriangleInterface::BuildTriangleArguments() const
 }
 
 //----------------------------------------------------------------------------
-bool CmbTriangleInterface::buildFaceMesh()
+bool CmbTriangleInterface::buildFaceMesh(const long &faceId)
 {
+  if ( this->NumberOfPoints < 3 || this->NumberOfSegments < 3 )
+    {
+    //passed an invalid data set
+    return false;
+    }
+
   std::string options = this->BuildTriangleArguments();
   size_t len = options.size();
   char *switches = new char[len+1];
@@ -211,6 +252,15 @@ bool CmbTriangleInterface::buildFaceMesh()
 
   triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
   delete[] switches;
+
+/*
+  std::stringstream buffer;
+  buffer << "E:/Work/in" << faceId;
+  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
+  buffer.str("");
+  buffer << "E:/Work/out" << faceId;
+  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
+*/
 
   //we know have to convert the result into a vtkPolyData;
   triangulateio *io = this->TIO->out;
