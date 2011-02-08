@@ -60,7 +60,7 @@ int Check2DModel(const char* fileName)
   vtkSmartPointer<vtkCmbMesh> mesh =
     vtkSmartPointer<vtkCmbMesh>::New();
   mesh->Initialize(model);
-  mesh->SetGlobalLength(150.);
+  mesh->SetGlobalLength(50.);
 
   vtkSmartPointer<vtkModelItemIterator> edges;
   edges.TakeReference(model->NewIterator(vtkModelEdgeType));
@@ -83,8 +83,8 @@ int Check2DModel(const char* fileName)
     }
 
   // test model face meshing
-  mesh->SetGlobalMaximumArea(500);
-  mesh->SetGlobalMinimumAngle(20.);
+  mesh->SetGlobalMaximumArea(0.005);
+  mesh->SetGlobalMinimumAngle(10);
   vtkSmartPointer<vtkModelItemIterator> faces;
   faces.TakeReference(model->NewIterator(vtkModelFaceType));
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
@@ -107,7 +107,6 @@ int Check2DModel(const char* fileName)
 
   model->Reset();
   modelWrapper->Delete();
-
   return numberOfErrors;
 }
 
