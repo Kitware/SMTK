@@ -203,6 +203,12 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
+  //The current plan is that we are going to redo the entire storage of the
+  //loop and face data. We will go to a light information object ( num holes,segs,points)
+  //create the mesher interface with that information.
+  //Than we will pass back to the Internal Face the pointers to the memory structs,
+  //copy all the info directly into those pointers, and use those to calculate out the
+  //bounds, hole inside etc.
   //we now get to construct the triangulate structs based on our mapping
   int numPoints = this->FaceInfo->numberOfPoints();
   int numSegs = this->FaceInfo->numberOfLineSegments();
