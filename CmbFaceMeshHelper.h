@@ -143,7 +143,7 @@ protected:
   std::map<vtkIdType,edgePoint> IdsToPoints;
 };
 
-class MeshInformation
+class InternalFace
 {
   public:
     void addLoop(const InternalLoop &loop);

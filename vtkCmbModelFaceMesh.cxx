@@ -47,7 +47,7 @@ vtkCxxRevisionMacro(vtkCmbModelFaceMesh, "");
 vtkCmbModelFaceMesh::vtkCmbModelFaceMesh()
 {
   this->ModelFace = NULL;
-  this->MeshInfo = NULL;
+  this->FaceInfo = NULL;
   this->MaximumArea = 0.;
   this->MinimumAngle = 0.;
 }
@@ -129,12 +129,12 @@ bool vtkCmbModelFaceMesh::BuildMesh(bool meshHigherDimensionalEntities)
   mesh->Initialize();
   mesh->Allocate();
 
-  if (this->MeshInfo)
+  if (this->FaceInfo)
     {
-    delete this->MeshInfo;
-    this->MeshInfo = NULL;
+    delete this->FaceInfo;
+    this->FaceInfo = NULL;
     }
-  this->MeshInfo = new CmbModelFaceMeshPrivate::MeshInformation();
+  this->FaceInfo = new CmbModelFaceMeshPrivate::InternalFace();
 
   bool valid = true;
   valid = valid && this->CreateMeshInfo();
@@ -191,7 +191,7 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
         }
       }
     edgeUses->Delete();
-    this->MeshInfo->addLoop(loop);
+    this->FaceInfo->addLoop(loop);
     }
   if ( liter )
     {
@@ -204,9 +204,9 @@ bool vtkCmbModelFaceMesh::CreateMeshInfo()
 bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 {
   //we now get to construct the triangulate structs based on our mapping
-  int numPoints = this->MeshInfo->numberOfPoints();
-  int numSegs = this->MeshInfo->numberOfLineSegments();
-  int numHoles = this->MeshInfo->numberOfHoles();
+  int numPoints = this->FaceInfo->numberOfPoints();
+  int numSegs = this->FaceInfo->numberOfLineSegments();
+  int numHoles = this->FaceInfo->numberOfHoles();
   CmbTriangleInterface ti(numPoints,numSegs,numHoles);
 
   double global = this->GetMasterMesh()->GetGlobalMaximumArea();
@@ -229,7 +229,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 
   ti.setOutputMesh(mesh);
 
-  this->MeshInfo->fillTriangleInterface(&ti);
+  this->FaceInfo->fillTriangleInterface(&ti);
   bool valid = ti.buildFaceMesh((long)this->ModelFace->GetUniquePersistentId());
   return valid;
 }

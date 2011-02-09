@@ -346,13 +346,13 @@ void InternalLoop::bounds( double b[4] ) const
 }
 
 //----------------------------------------------------------------------------
-void MeshInformation::addLoop(const InternalLoop &loop)
+void InternalFace::addLoop(const InternalLoop &loop)
 {
   this->Loops.push_back(loop);
 }
 
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfPoints()
+int InternalFace::numberOfPoints()
 {
   //we presume model verts are not shared between loops for this pass
   int sum=0;
@@ -364,7 +364,7 @@ int MeshInformation::numberOfPoints()
   return sum;
 }
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfLineSegments()
+int InternalFace::numberOfLineSegments()
 {
   int sum=0;
   std::list<InternalLoop>::const_iterator it;
@@ -375,7 +375,7 @@ int MeshInformation::numberOfLineSegments()
   return sum;
 }
 //----------------------------------------------------------------------------
-int MeshInformation::numberOfHoles()
+int InternalFace::numberOfHoles()
 {
   int sum=0;
   std::list<InternalLoop>::const_iterator it;
@@ -386,7 +386,7 @@ int MeshInformation::numberOfHoles()
   return sum;
 }
 //----------------------------------------------------------------------------
-void MeshInformation::fillTriangleInterface(CmbTriangleInterface *ti)
+void InternalFace::fillTriangleInterface(CmbTriangleInterface *ti)
 {
   int pIdx = 0, sId = 0, hId=0;
   std::list<InternalLoop>::iterator it;

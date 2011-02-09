@@ -94,7 +94,7 @@ private:
   double MinimumAngle;
 
   //BTX
-  CmbModelFaceMeshPrivate::MeshInformation *MeshInfo;
+  CmbModelFaceMeshPrivate::InternalFace *FaceInfo;
   //ETX
 };
 
