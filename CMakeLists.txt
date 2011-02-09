@@ -16,14 +16,26 @@ include_directories(
 
 SET(vtkMeshFiles
   vtkCmbMesh.cxx
+  vtkCmbMeshClient.cxx
+  vtkCmbMeshPolyDataProvider.cxx
+  vtkCmbMeshServer.cxx
+  vtkCmbMeshWrapper.cxx
   vtkCmbModelEdgeMesh.cxx
+  vtkCmbModelEdgeMeshClient.cxx
+  vtkCmbModelEdgeMeshOperator.cxx
+  vtkCmbModelEdgeMeshServer.cxx
   vtkCmbModelEntityMesh.cxx
   vtkCmbModelFaceMesh.cxx
+  vtkCmbModelFaceMeshClient.cxx
+  vtkCmbModelFaceMeshServer.cxx
   vtkCmbModelVertexMesh.cxx
 )
 
 SET_SOURCE_FILES_PROPERTIES(
+  vtkCmbMesh
+  vtkCmbModelEdgeMesh
   vtkCmbModelEntityMesh
+  vtkCmbModelFaceMesh
   ABSTRACT
 )
 

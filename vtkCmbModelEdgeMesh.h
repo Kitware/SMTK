@@ -22,13 +22,13 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbModelEdgeMesh - Mesh representation for a vtkModelEdge
+// .NAME vtkCmbModelEdgeMesh - Abstract mesh representation for a vtkModelEdge
 // .SECTION Description
-// Mesh representation for a vtkModelEdge.  The smaller value for the
+// Abstract mesh representation for a vtkModelEdge.  The concrete classes
+// are for the client and the server.  The smaller value for the
 // edge length is the one used for the global vs. local values.
 // The values are absolute values.  BuildModelEntityMesh() gets called
-// if the used edge length parameter changes.  If the edge gets meshed,
-// all adjacent model faces ...
+// if the used edge length parameter changes.
 
 #ifndef __vtkCmbModelEdgeMesh_h
 #define __vtkCmbModelEdgeMesh_h
@@ -41,20 +41,22 @@ class vtkCmbModelVertexMesh;
 class VTK_EXPORT vtkCmbModelEdgeMesh : public vtkCmbModelEntityMesh
 {
 public:
-  static vtkCmbModelEdgeMesh* New();
   vtkTypeRevisionMacro(vtkCmbModelEdgeMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
-  void Initialize(vtkCmbMesh* mesh, vtkModelEdge* edge);
+  // Description:
+  // Initialize the model edge mesh.  This sets Length to 0
+  // and removes the polydata/proxy.
+  virtual void Initialize(vtkCmbMesh* mesh, vtkModelEdge* edge);
 
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true
   // it will also mesh any higher dimensional entities which need
   // to be meshed because of this object getting meshed.
-  bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
+  virtual bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
   // Description:
   // Get the model vertex mesh object associated with which
@@ -74,6 +76,8 @@ public:
   vtkGetMacro(Length, double);
   vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
 
+  vtkGetObjectMacro(ModelEdge, vtkModelEdge);
+
 protected:
   vtkCmbModelEdgeMesh();
   virtual ~vtkCmbModelEdgeMesh();
@@ -81,7 +85,7 @@ protected:
   // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.
-  bool BuildMesh(bool meshHigherDimensionalEntities);
+  virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
 
 private:
   vtkCmbModelEdgeMesh(const vtkCmbModelEdgeMesh&);  // Not implemented.

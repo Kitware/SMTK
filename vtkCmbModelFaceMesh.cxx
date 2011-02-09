@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
-vtkStandardNewMacro(vtkCmbModelFaceMesh);
 vtkCxxRevisionMacro(vtkCmbModelFaceMesh, "");
 
 //----------------------------------------------------------------------------
@@ -99,28 +98,6 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
     return false;
     }
   return this->BuildMesh(meshHigherDimensionalEntities);
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbModelFaceMesh::BuildMesh(bool meshHigherDimensionalEntities)
-{
-  vtkPolyData* mesh = this->GetModelEntityMesh();
-  if(mesh)
-    {
-    mesh->Reset();
-    }
-  else
-    {
-    mesh = vtkPolyData::New();
-    this->SetModelEntityMesh(mesh);
-    mesh->Delete();
-    }
-  mesh->Initialize();
-  mesh->Allocate();
-
-  // rob -- put in the calls to triangle here
-
-  return true;
 }
 
 //----------------------------------------------------------------------------

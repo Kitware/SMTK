@@ -1,0 +1,93 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="CMBSimBuilderMeshGroup">
+
+    <SourceProxy name="MeshPolyDataProvider" class="vtkCmbMeshPolyDataProvider">
+      <ProxyProperty name="MeshWrapper" command="SetMeshWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBMeshGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Mesh Wrapper for the algorithm to get the polydata from.
+        </Documentation>
+      </ProxyProperty>
+      <IdTypeVectorProperty
+         name="EntityId"
+         command="SetEntityId"
+         number_of_elements="1"
+         default_values="none" >
+        <Documentation>
+          Set the Id of the model entity to be accessed.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <IntVectorProperty
+         name="ItemType"
+         command="SetItemType"
+         number_of_elements="1"
+         default_values="none">
+        <Documentation>
+          Set the Id of the model entity to be accessed.
+        </Documentation>
+      </IntVectorProperty>
+    </SourceProxy>
+
+    <OperatorProxy name="CMBModelBuilder" class="vtkCMBModelBuilder">
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CMBModelBuilder -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCmbModelEdgeMeshOperator">
+      <IdTypeVectorProperty
+         name="Id"
+         command="SetId"
+         number_of_elements="1"
+         default_values="-1">
+        <Documentation>
+          Set the unique persistent id to specify what edge to operate on.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <DoubleVectorProperty
+         name="Length"
+         command="SetLength"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty
+         name="MeshHigherDimensionalEntities"
+         command="SetMeshHigherDimensionalEntities"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          Specify whether or not to mesh other model entities that are affected by remeshing this edge.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of ModelEdgeMeshOperator -->
+    </OperatorProxy>
+
+  </ProxyGroup>
+
+
+</ServerManagerConfiguration>

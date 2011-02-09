@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbModelFaceMesh - Mesh representation for a vtkModelFace
+// .NAME vtkCmbModelFaceMeshClient - Mesh representation for a vtkModelFace
 // .SECTION Description
 // Mesh representation for a vtkModelFace.  The smaller value for
 // maximum area and larger value for minimum angle wins for local
@@ -30,23 +30,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // called whenever changing mesh parameters
 // will trigger meshing.  Absolute values are used for area.
 
-#ifndef __vtkCmbModelFaceMesh_h
-#define __vtkCmbModelFaceMesh_h
+#ifndef __vtkCmbModelFaceMeshClient_h
+#define __vtkCmbModelFaceMeshClient_h
 
-#include "vtkCmbModelEntityMesh.h"
+#include "vtkCmbModelFaceMesh.h"
 
-class vtkModelFace;
-class vtkCmbModelVertexMesh;
-
-class VTK_EXPORT vtkCmbModelFaceMesh : public vtkCmbModelEntityMesh
+class VTK_EXPORT vtkCmbModelFaceMeshClient : public vtkCmbModelFaceMesh
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbModelFaceMesh,vtkCmbModelEntityMesh);
+  static vtkCmbModelFaceMeshClient* New();
+  vtkTypeRevisionMacro(vtkCmbModelFaceMeshClient,vtkCmbModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  virtual vtkModelGeometricEntity* GetModelGeometricEntity();
-
-  virtual void Initialize(vtkCmbMesh* mesh, vtkModelFace* face);
+  void Initialize(vtkCmbMesh* mesh, vtkModelFace* face);
 
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
@@ -55,38 +51,18 @@ public:
   // to be meshed because of this object getting meshed.
   bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
-  // Description:
-  // Set/get the model face maximum triangle area.  If it is 0 it
-  // indicates that it is not set.  If the global max area
-  // is smaller than this value then that value will be used
-  // when generating the surface mesh.
-  vtkGetMacro(MaximumArea, double);
-  vtkSetClampMacro(MaximumArea, double, 0, VTK_LARGE_FLOAT);
-
-  // Description:
-  // Set/get the model face minimum triangle angle.  If it is 0 it
-  // indicates that it is not set.  If the global min angle
-  // is smaller than this value then that value will be used
-  // when generating the surface mesh.
-  vtkGetMacro(MinimumAngle, double);
-  vtkSetClampMacro(MinimumAngle, double, 0, VTK_LARGE_FLOAT);
-
 protected:
-  vtkCmbModelFaceMesh();
-  virtual ~vtkCmbModelFaceMesh();
+  vtkCmbModelFaceMeshClient();
+  virtual ~vtkCmbModelFaceMeshClient();
 
   // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.
-  virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
+  bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:
-  vtkCmbModelFaceMesh(const vtkCmbModelFaceMesh&);  // Not implemented.
-  void operator=(const vtkCmbModelFaceMesh&);  // Not implemented.
-
-  vtkModelFace* ModelFace;
-  double MaximumArea;
-  double MinimumAngle;
+  vtkCmbModelFaceMeshClient(const vtkCmbModelFaceMeshClient&);  // Not implemented.
+  void operator=(const vtkCmbModelFaceMeshClient&);  // Not implemented.
 };
 
 #endif

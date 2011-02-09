@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include <vtkCmbMesh.h>
+#include <vtkCmbMeshServer.h>
 #include <vtkCMBModel.h>
 #include <vtkCmbModelEdgeMesh.h>
 #include <vtkCmbModelEntityMesh.h>
@@ -57,8 +57,8 @@ int Check2DModel(const char* fileName)
     return 1;
     }
 
-  vtkSmartPointer<vtkCmbMesh> mesh =
-    vtkSmartPointer<vtkCmbMesh>::New();
+  vtkSmartPointer<vtkCmbMeshServer> mesh =
+    vtkSmartPointer<vtkCmbMeshServer>::New();
   mesh->Initialize(model);
   mesh->SetGlobalLength(1.);
 
@@ -74,8 +74,8 @@ int Check2DModel(const char* fileName)
       numberOfErrors++;
       vtkGenericWarningMacro("Model entity mesh size set when it shouldn't be.");
       }
-    if(edgeMesh->GetModelEntityMesh() == NULL ||
-       edgeMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
+    if(vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh()) == NULL ||
+       vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
@@ -111,8 +111,8 @@ int Check2DModel(const char* fileName)
       numberOfErrors++;
       vtkGenericWarningMacro("Model entity mesh size not set.");
       }
-    if(edgeMesh->GetModelEntityMesh() == NULL ||
-       edgeMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
+    if(vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh()) == NULL ||
+       vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
@@ -156,8 +156,8 @@ int Check2DModel(const char* fileName)
       numberOfErrors++;
       vtkGenericWarningMacro("Model entity mesh size not set properly.");
       }
-    if(edgeMesh->GetModelEntityMesh() == NULL ||
-       edgeMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
+    if(vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh()) == NULL ||
+       vtkPolyData::SafeDownCast(edgeMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
@@ -179,8 +179,8 @@ int Check2DModel(const char* fileName)
       numberOfErrors++;
       vtkGenericWarningMacro("Model face mesh parameter set when it shouldn't be.");
       }
-    if(faceMesh->GetModelEntityMesh() == NULL ||
-       faceMesh->GetModelEntityMesh()->GetNumberOfCells() == 0)
+    if(vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh()) == NULL ||
+       vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
       {
       // commented out since we know this will fail and I don't want
       // other stuff to cause a problem here and go unnoticed

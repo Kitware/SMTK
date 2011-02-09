@@ -22,103 +22,83 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbMesh - Abstract mesh representation for a vtkModel.
+// .NAME vtkCmbMeshClient - Mesh representation for a vtkModel on the client.
 // .SECTION Description
 
-#ifndef __vtkCmbMesh_h
-#define __vtkCmbMesh_h
+#ifndef __vtkCmbMeshClient_h
+#define __vtkCmbMeshClient_h
 
-#include <vtkObject.h>
+#include "vtkCmbMesh.h"
 
-#include <vtkWeakPointer.h>
+class vtkCmbMeshClientInternals;
+class vtkSMProxy;
 
-class vtkCmbModelEntityMesh;
-class vtkMergeEventData;
-class vtkModel;
-class vtkModelGeometricEntity;
-class vtkSplitEventData;
-
-class VTK_EXPORT vtkCmbMesh : public vtkObject
+class VTK_EXPORT vtkCmbMeshClient : public vtkCmbMesh
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbMesh,vtkObject);
+  static vtkCmbMeshClient* New();
+  vtkTypeRevisionMacro(vtkCmbMeshClient,vtkCmbMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  // Description:
-  // Set/get visible (non-zero is visible).
-  vtkSetMacro(Visible, bool);
-  vtkGetMacro(Visible, bool);
+  void Initialize(vtkModel* model, vtkSMProxy* serverModelProxy);
 
   // Description:
   // The absolute length set over all arcs/model edges.
   // If GlobalLength is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalLength(double length) = 0;
-  vtkGetMacro(GlobalLength, double);
+  virtual void SetGlobalLength(double length);
 
   // Description:
   // The absolute maximum area set over all model faces.
   // If GlobalMaximumArea is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMaximumArea(double area) = 0;
-  vtkGetMacro(GlobalMaximumArea, double);
+  virtual void SetGlobalMaximumArea(double area);
 
   // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMinimumAngle(double angle) = 0;
-  vtkGetMacro(GlobalMinimumAngle, double);
+  virtual void SetGlobalMinimumAngle(double angle);
 
   virtual void Reset();
 
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh
   // representation.
-  virtual vtkCmbModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*) =0;
+  vtkCmbModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*);
 
-  vtkModel* GetModel();
+  vtkGetObjectMacro(ServerModelProxy, vtkSMProxy);
 
 protected:
-  vtkCmbMesh();
-  virtual ~vtkCmbMesh();
-
-  // Description:
-  // Main callback function which delegates the work to specific
-  // methods for model entity modifications.
-  static void ModelGeometricEntityChanged(
-    vtkObject *caller, unsigned long event,
-    void *cData, void *callData);
+  vtkCmbMeshClient();
+  virtual ~vtkCmbMeshClient();
 
   // Description:
   // Process an edge split event from the model.  With a
   // constant edge length, the new edge gets the same length
   // size as the source edge.
-  virtual void ModelEdgeSplit(vtkSplitEventData* splitEventData) = 0;
+  virtual void ModelEdgeSplit(vtkSplitEventData* splitEventData);
 
   // Description:
   // Process an edge merge event from the model.  With a constant
   // edge length, the surviving edge gets the smaller (valid) edge
   // length size.
-  virtual void ModelEdgeMerge(vtkMergeEventData* mergeEventData) = 0;
+  virtual void ModelEdgeMerge(vtkMergeEventData* mergeEventData);
 
   // Description:
   // If the boundary of an object changes, we will need to remesh it.
   // Note that if this is in conjunction with a split event, we won't
   // mesh it now but if it's in conjunction with a merge event we will.
-  virtual void ModelEntityBoundaryModified(vtkModelGeometricEntity*) = 0;
+  virtual void ModelEntityBoundaryModified(vtkModelGeometricEntity*);
 
-  double GlobalLength;
-  double GlobalMaximumArea;
-  double GlobalMinimumAngle;
-  vtkWeakPointer<vtkModel> Model;
+  void SetServerModelProxy(vtkSMProxy*);
 
 private:
-  vtkCmbMesh(const vtkCmbMesh&);  // Not implemented.
-  void operator=(const vtkCmbMesh&);  // Not implemented.
+  vtkCmbMeshClient(const vtkCmbMeshClient&);  // Not implemented.
+  void operator=(const vtkCmbMeshClient&);  // Not implemented.
 
-  bool Visible;
+  vtkSMProxy* ServerModelProxy;
+  vtkCmbMeshClientInternals* Internal;
 };
 
 #endif
-

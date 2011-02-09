@@ -34,8 +34,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkModelGeometricEntity.h>
 #include <vtkWeakPointer.h>
 
-class vtkPolyData;
 class vtkCmbMesh;
+class vtkPolyData;
 
 class VTK_EXPORT vtkCmbModelEntityMesh : public vtkObject
 {
@@ -52,7 +52,10 @@ public:
 
   vtkGetMacro(MasterMesh, vtkCmbMesh*);
 
-  vtkGetMacro(ModelEntityMesh, vtkPolyData*);
+  // Description:
+  // Get the model entity's analysis mesh.  On the server it's a
+  // vtkPolyData and on the client it's NULL.
+  vtkGetObjectMacro(ModelEntityMesh, vtkPolyData);
 
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
@@ -67,7 +70,8 @@ protected:
   virtual ~vtkCmbModelEntityMesh();
 
   // Description:
-  // Mesh is reference counted.
+  // Mesh is reference counted.  On the server mesh is
+  // a vtkPolyData and on the client it's NULL.
   void SetModelEntityMesh(vtkPolyData* mesh);
 
   // Description:

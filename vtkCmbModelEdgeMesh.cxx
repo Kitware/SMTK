@@ -24,26 +24,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbModelEdgeMesh.h"
 
-#include "vtkCleanPolylines.h"
 #include "vtkCmbMesh.h"
-#include "vtkCmbModelFaceMesh.h"
-#include "vtkCMBModelEdge.h"
 #include "vtkCmbModelVertexMesh.h"
-#include "vtkMeshModelEdgesFilter.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
-#include <vtkModelFace.h>
 #include <vtkModelItemIterator.h>
 #include <vtkModelVertex.h>
-
-#include "vtkCellData.h"
-#include "vtkDoubleArray.h"
-#include <vtkObjectFactory.h>
-#include <vtkPoints.h>
 #include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
 
-vtkStandardNewMacro(vtkCmbModelEdgeMesh);
 vtkCxxRevisionMacro(vtkCmbModelEdgeMesh, "");
 
 //----------------------------------------------------------------------------
@@ -72,16 +60,10 @@ void vtkCmbModelEdgeMesh::Initialize(vtkCmbMesh* masterMesh, vtkModelEdge* edge)
     vtkErrorMacro("Passed in masterMesh or edge is NULL.");
     return;
     }
-  if(this->GetMasterMesh() != masterMesh)
-    {
-    this->SetMasterMesh(masterMesh);
-    this->Modified();
-    }
-  if(this->ModelEdge != edge)
-    {
-    this->ModelEdge = edge;
-    this->Modified();
-    }
+  this->SetMasterMesh(masterMesh);
+  this->ModelEdge = edge;
+  this->SetLength(0);
+  this->SetModelEntityMesh(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -125,101 +107,6 @@ vtkCmbModelVertexMesh* vtkCmbModelEdgeMesh::GetAdjacentModelVertexMesh(
   vtkModelVertex* modelVertex = this->ModelEdge->GetAdjacentModelVertex(which);
   return vtkCmbModelVertexMesh::SafeDownCast(
     this->GetMasterMesh()->GetModelEntityMesh(modelVertex));
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbModelEdgeMesh::BuildMesh(bool meshHigherDimensionalEntities)
-{
-  vtkPolyData* mesh = this->GetModelEntityMesh();
-  if(mesh)
-    {
-    mesh->Reset();
-    }
-  else
-    {
-    mesh = vtkPolyData::New();
-    this->SetModelEntityMesh(mesh);
-    mesh->FastDelete();
-    }
-  mesh->Initialize();
-  mesh->Allocate();
-
-  // Clean polylines will create a "full strip", whereas vtkStripper
-  // starts building a strip from a line and adds lines to only one end,
-  // such that it is possible for (what could be) a single polyline to end
-  // up as several (perhaps MANY) polylines.  Clean polylines also deals with
-  // non-manifold points, but at this point, not expectign that to be an issue.
-  vtkSmartPointer<vtkCleanPolylines> stripper =
-    vtkSmartPointer<vtkCleanPolylines>::New();
-  stripper->SetMinimumLineLength(0);
-  stripper->UseRelativeLineLengthOff();
-  stripper->SetInput( vtkPolyData::SafeDownCast(
-    vtkCMBModelEdge::SafeDownCast(this->ModelEdge)->GetGeometry() ) );
-  stripper->Update();
-
-  if ( stripper->GetOutput()->GetNumberOfLines() != 1 )
-    {
-    vtkErrorMacro("Expecting one and exactly one edge / polyline: " <<
-      stripper->GetOutput()->GetNumberOfLines() );
-    return false;
-    }
-
-  vtkDoubleArray *targetCellLength = vtkDoubleArray::New();
-  targetCellLength->SetNumberOfComponents( 1 );
-  targetCellLength->SetNumberOfTuples( 1 );
-  double length = this->Length;
-  if(length <= 0.)
-    {
-    length = this->GetMasterMesh()->GetGlobalLength();
-    if(length <= 0.)
-      {
-      vtkErrorMacro("Bad mesh edge length.");
-      return false;
-      }
-    }
-  else if(this->GetMasterMesh()->GetGlobalLength() > 0. &&
-          this->GetMasterMesh()->GetGlobalLength() < length)
-    {
-    length = this->GetMasterMesh()->GetGlobalLength();
-    }
-
-  targetCellLength->SetValue( 0, length );
-  targetCellLength->SetName( "TargetSegmentLength" );
-
-  vtkPolyData *polyLinePD = vtkPolyData::New();
-  polyLinePD->ShallowCopy( stripper->GetOutput() );
-  polyLinePD->GetCellData()->AddArray( targetCellLength );
-  targetCellLength->FastDelete();
-
-  vtkMeshModelEdgesFilter *meshEdgesFilter = vtkMeshModelEdgesFilter::New();
-  meshEdgesFilter->UseLengthAlongEdgeOff();
-  meshEdgesFilter->SetInput( polyLinePD );
-  polyLinePD->FastDelete();
-  meshEdgesFilter->SetTargetSegmentLengthCellArrayName(
-    targetCellLength->GetName() );
-  meshEdgesFilter->Update();
-
-  mesh->SetPoints( meshEdgesFilter->GetOutput()->GetPoints() );
-  mesh->SetLines( meshEdgesFilter->GetOutput()->GetLines() );
-
-  meshEdgesFilter->Delete();
-
-  // now we go and remesh any adjacent model face meshes that exist
-  if(meshHigherDimensionalEntities)
-    {
-    vtkModelItemIterator* faces = this->ModelEdge->NewIterator(vtkModelFaceType);
-    for(faces->Begin();!faces->IsAtEnd();faces->Next())
-      {
-      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-      vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
-        this->GetMasterMesh()->GetModelEntityMesh(face));
-      faceMesh->BuildModelEntityMesh(true);
-      }
-    faces->Delete();
-
-    }
-
-  return true;
 }
 
 //----------------------------------------------------------------------------
