@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkstd/list> // Needed for STL list.
 #include "vtkType.h"
 
-class CmbTriangleInterface;
+class CmbFaceMesherInterface;
 class vtkPolyData;
 
 //-----------------------------------------------------------------------------
@@ -105,7 +105,7 @@ public:
 
   // adds this loops information to the triangle interface
   // modifies the pointIndex, segment Index, and HoleIndex
-  void addDataToTriangleInterface(CmbTriangleInterface *ti,
+  void addDataToTriangleInterface(CmbFaceMesherInterface *ti,
      int &pointIndex, int &segmentIndex, int &holeIndex);
 
   bool pointOnBoundary(const edgePoint &point) const;
@@ -151,7 +151,7 @@ class InternalFace
     int numberOfLineSegments();
     int numberOfHoles();
 
-    void fillTriangleInterface(CmbTriangleInterface *ti);
+    void fillTriangleInterface(CmbFaceMesherInterface *ti);
 
   protected:
     std::list<InternalLoop> Loops;

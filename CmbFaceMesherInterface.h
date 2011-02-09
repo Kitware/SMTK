@@ -22,23 +22,23 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME CmbTriangleInterface
+// .NAME CmbFaceMesherInterface
 // .SECTION Description
 // Wraps the Triangle library with an easy to use class
 
 
 
-#ifndef __CmbTriangleInterface_h
-#define __CmbTriangleInterface_h
+#ifndef __CmbFaceMesherInterface_h
+#define __CmbFaceMesherInterface_h
 
 #include <vtkstd/string> //for std string
 class vtkPolyData;
 
-class CmbTriangleInterface
+class CmbFaceMesherInterface
 {
 public:
-  CmbTriangleInterface(const int &numPoints,const int &numSegments, const int &numHoles);
-  ~CmbTriangleInterface();
+  CmbFaceMesherInterface(const int &numPoints,const int &numSegments, const int &numHoles);
+  ~CmbFaceMesherInterface();
 
   void setUseMinAngle(const bool &useMin){MinAngleOn=useMin;}
   void setMinAngle(const double &angle){MinAngle=angle;}

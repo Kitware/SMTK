@@ -37,7 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPolyData.h>
 
 #include "CmbFaceMeshHelper.h"
-#include "CmbTriangleInterface.h"
+#include "CmbFaceMesherInterface.h"
 using namespace CmbModelFaceMeshPrivate;
 
 vtkStandardNewMacro(vtkCmbModelFaceMesh);
@@ -207,7 +207,7 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
   int numPoints = this->FaceInfo->numberOfPoints();
   int numSegs = this->FaceInfo->numberOfLineSegments();
   int numHoles = this->FaceInfo->numberOfHoles();
-  CmbTriangleInterface ti(numPoints,numSegs,numHoles);
+  CmbFaceMesherInterface ti(numPoints,numSegs,numHoles);
 
   double global = this->GetMasterMesh()->GetGlobalMaximumArea();
   double local = this->MaximumArea;

@@ -22,11 +22,11 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME CmbTriangleInterface
+// .NAME CmbFaceMesherInterface
 // .SECTION Description
 // Wraps the Triangle library with an easy to use class
 
-#include "CmbTriangleInterface.h"
+#include "CmbFaceMesherInterface.h"
 
 #include <vtkstd/map> // Needed for STL map.
 #include <vtkstd/set> // Needed for STL set.
@@ -60,7 +60,7 @@ extern "C"
 }
 // END for Triangle
 
-struct CmbTriangleInterface::TriangleIO
+struct CmbFaceMesherInterface::TriangleIO
   {
   triangulateio *in;
   triangulateio *out;
@@ -68,14 +68,14 @@ struct CmbTriangleInterface::TriangleIO
   };
 
 //----------------------------------------------------------------------------
-CmbTriangleInterface::CmbTriangleInterface(const int &numPoints,
+CmbFaceMesherInterface::CmbFaceMesherInterface(const int &numPoints,
   const int &numSegments, const int &numHoles):
   MaxArea(-1),
   MinAngle(-1),
   MinAngleOn(false),
   MaxAreaOn(false),
   OutputMesh(NULL),
-  TIO(new CmbTriangleInterface::TriangleIO()),
+  TIO(new CmbFaceMesherInterface::TriangleIO()),
   NumberOfPoints(numPoints),
   NumberOfSegments(numSegments),
   NumberOfHoles(numHoles)
@@ -83,7 +83,7 @@ CmbTriangleInterface::CmbTriangleInterface(const int &numPoints,
   this->InitDataStructures();
 }
 //----------------------------------------------------------------------------
-CmbTriangleInterface::~CmbTriangleInterface()
+CmbFaceMesherInterface::~CmbFaceMesherInterface()
 {
   //there is a bug in triangle that the hole list is shared between
   //the in and out structs. So we have to set the hole list to NULL before
@@ -113,7 +113,7 @@ CmbTriangleInterface::~CmbTriangleInterface()
 }
 
 //----------------------------------------------------------------------------
-void CmbTriangleInterface::InitDataStructures()
+void CmbFaceMesherInterface::InitDataStructures()
 {
   this->TIO->in = (triangulateio*)malloc(sizeof(triangulateio));
   Init_triangluateio(this->TIO->in);
@@ -140,13 +140,13 @@ void CmbTriangleInterface::InitDataStructures()
 }
 
 //----------------------------------------------------------------------------
-void CmbTriangleInterface::setOutputMesh(vtkPolyData *mesh)
+void CmbFaceMesherInterface::setOutputMesh(vtkPolyData *mesh)
 {
   this->OutputMesh = mesh;
 }
 
 //----------------------------------------------------------------------------
-bool CmbTriangleInterface::setPoint(const int index, const double &x, const double &y)
+bool CmbFaceMesherInterface::setPoint(const int index, const double &x, const double &y)
 {
   if (index >= 0 && index < this->NumberOfPoints)
     {
@@ -158,7 +158,7 @@ bool CmbTriangleInterface::setPoint(const int index, const double &x, const doub
 }
 
 //----------------------------------------------------------------------------
-bool CmbTriangleInterface::setSegement(const int index, const int &pId1, const int &pId2)
+bool CmbFaceMesherInterface::setSegement(const int index, const int &pId1, const int &pId2)
 {
   if (index >= 0 && index < this->NumberOfSegments)
     {
@@ -170,7 +170,7 @@ bool CmbTriangleInterface::setSegement(const int index, const int &pId1, const i
 }
 
 //----------------------------------------------------------------------------
-bool CmbTriangleInterface::setHole(const int index, const double &x, const double &y)
+bool CmbFaceMesherInterface::setHole(const int index, const double &x, const double &y)
 {
   if (index >= 0 && index < this->NumberOfHoles)
     {
@@ -182,7 +182,7 @@ bool CmbTriangleInterface::setHole(const int index, const double &x, const doubl
 }
 
 //----------------------------------------------------------------------------
-double CmbTriangleInterface::area() const
+double CmbFaceMesherInterface::area() const
 {
   double bounds[4];
   this->bounds(bounds);
@@ -190,7 +190,7 @@ double CmbTriangleInterface::area() const
 }
 
 //----------------------------------------------------------------------------
-void CmbTriangleInterface::bounds(double bounds[4]) const
+void CmbFaceMesherInterface::bounds(double bounds[4]) const
 {
   if ( this->NumberOfPoints == 0 )
     {
@@ -217,7 +217,7 @@ void CmbTriangleInterface::bounds(double bounds[4]) const
 }
 
 //----------------------------------------------------------------------------
-std::string CmbTriangleInterface::BuildTriangleArguments() const
+std::string CmbFaceMesherInterface::BuildTriangleArguments() const
 {
   std::stringstream buffer;
   buffer << "p";//generate a planar straight line graph
@@ -236,7 +236,7 @@ std::string CmbTriangleInterface::BuildTriangleArguments() const
 }
 
 //----------------------------------------------------------------------------
-bool CmbTriangleInterface::buildFaceMesh(const long &faceId)
+bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
 {
   if ( this->NumberOfPoints < 3 || this->NumberOfSegments < 3 )
     {
@@ -253,14 +253,12 @@ bool CmbTriangleInterface::buildFaceMesh(const long &faceId)
   triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
   delete[] switches;
 
-
-  std::stringstream buffer;
-  buffer << "E:/Work/in" << faceId;
-  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
-  buffer.str("");
-  buffer << "E:/Work/out" << faceId;
-  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
-
+  //std::stringstream buffer;
+  //buffer << "E:/Work/in" << faceId;
+  //triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
+  //buffer.str("");
+  //buffer << "E:/Work/out" << faceId;
+  //triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
 
   //we know have to convert the result into a vtkPolyData;
   triangulateio *io = this->TIO->out;

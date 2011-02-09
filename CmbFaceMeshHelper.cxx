@@ -31,7 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkCellArray.h"
 #include "vtkPoints.h"
-#include "CmbTriangleInterface.h"
+#include "CmbFaceMesherInterface.h"
 
 using namespace CmbModelFaceMeshPrivate;
 //----------------------------------------------------------------------------
@@ -192,7 +192,7 @@ int InternalLoop::getNumberOfLineSegments() const
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::addDataToTriangleInterface(CmbTriangleInterface *ti,
+void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
    int &pointIndex, int &segmentIndex, int &holeIndex)
 {
   std::map<vtkIdType,edgePoint>::iterator pointIt;
@@ -386,7 +386,7 @@ int InternalFace::numberOfHoles()
   return sum;
 }
 //----------------------------------------------------------------------------
-void InternalFace::fillTriangleInterface(CmbTriangleInterface *ti)
+void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
 {
   int pIdx = 0, sId = 0, hId=0;
   std::list<InternalLoop>::iterator it;
