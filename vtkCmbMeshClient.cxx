@@ -47,6 +47,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMOperatorProxy.h>
 #include <vtkSMProxyManager.h>
+#include "vtkClientServerStream.h"
+#include "vtkProcessModule.h"
 
 #include <map>
 
@@ -65,6 +67,7 @@ public:
 vtkCmbMeshClient::vtkCmbMeshClient()
 {
   this->ServerModelProxy = NULL;
+  this->ServerMeshProxy = NULL;
   this->Internal = new vtkCmbMeshClientInternals;
 }
 
@@ -75,6 +78,11 @@ vtkCmbMeshClient::~vtkCmbMeshClient()
     {
     delete this->Internal;
     this->Internal = NULL;
+    }
+  if(this->ServerMeshProxy)
+    {
+    this->ServerMeshProxy->Delete();
+    this->ServerMeshProxy = NULL;
     }
   this->SetServerModelProxy(NULL);
 }
@@ -97,7 +105,15 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* serverModelProxy)
     this->Reset();
     this->Model = model;
     }
-
+  if(this->ServerModelProxy != ServerModelProxy)
+    {
+    this->ServerModelProxy = ServerModelProxy;
+    }
+  if(this->ServerMeshProxy)
+    {
+    this->ServerMeshProxy->Delete();
+    this->ServerMeshProxy = NULL;
+    }
   // register model modification events that we want
   // this may not be correct yet
   vtkSmartPointer<vtkCallbackCommand> callbackCommand =
@@ -139,85 +155,41 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* serverModelProxy)
 
   // now initiate the initialization of the server side mesh
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "MeshOperator"));
-  if(!operatorProxy)
+  this->ServerMeshProxy = manager->NewProxy("CMBSimBuilderMeshGroup", "CMBMeshWrapper");
+  if(!this->ServerMeshProxy)
     {
     vtkErrorMacro("Unable to create operator proxy.");
     return;
     }
-  operatorProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  operatorProxy->SetServers(this->ServerModelProxy->GetServers());
+  this->ServerMeshProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
+  this->ServerMeshProxy->SetServers(this->ServerModelProxy->GetServers());
 
-  vtkErrorMacro("STILL NEED TO FIGURE OUT HOW TO CALL REQUEST!!!!!!!!!!");
-
-  // vtkSMDoubleVectorProperty* resetProperty =
-  //   vtkSMDoubleVectorProperty::SafeDownCast(
-  //     operatorProxy->GetProperty("Reset"));
-
-  operatorProxy->Operate(vtkCMBModel::SafeDownCast(this->Model), this->ServerModelProxy);
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = NULL;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Server side operator failed.");
-    }
-
-  this->Modified();
+  vtkClientServerStream stream;
+  stream  << vtkClientServerStream::Invoke
+    << this->ServerMeshProxy->GetID()
+    << "Initialize"
+    << this->ServerModelProxy->GetID()
+    << vtkClientServerStream::End;
+  // calls "Initialize" function on vtkCmbMeshWrapper
+  vtkProcessModule::GetProcessModule()->SendStream(
+    this->ServerModelProxy->GetConnectionID(),
+    this->ServerModelProxy->GetServers(), stream);
 }
 
 //----------------------------------------------------------------------------
 void vtkCmbMeshClient::SetGlobalLength(double globalLength)
 {
-  if(this->GlobalLength == globalLength)
+  if(this->GlobalLength == globalLength || !this->ServerMeshProxy)
     {
     return;
     }
   this->GlobalLength = globalLength > 0. ? globalLength : 0.;
 
-  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "MeshOperator"));
-  if(!operatorProxy)
-    {
-    vtkErrorMacro("Unable to create operator proxy.");
-    return;
-    }
-  operatorProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  operatorProxy->SetServers(this->ServerModelProxy->GetServers());
-
   vtkSMDoubleVectorProperty* lengthProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("GlobalLength"));
+      this->ServerMeshProxy->GetProperty("GlobalLength"));
   lengthProperty->SetElement(0, this->GetGlobalLength());
-
-  operatorProxy->Operate(vtkCMBModel::SafeDownCast(this->Model), this->ServerModelProxy);
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = NULL;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Server side operator failed.");
-    }
-
-  this->Modified();
+  this->ServerMeshProxy->UpdateVTKObjects();
 }
 
 //----------------------------------------------------------------------------
@@ -227,40 +199,12 @@ void vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
     {
     return;
     }
-  this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
-  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "MeshOperator"));
-  if(!operatorProxy)
-    {
-    vtkErrorMacro("Unable to create operator proxy.");
-    return;
-    }
-  operatorProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  operatorProxy->SetServers(this->ServerModelProxy->GetServers());
 
   vtkSMDoubleVectorProperty* areaProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("GlobalMaximumArea"));
+      this->ServerMeshProxy->GetProperty("GlobalMaximumArea"));
   areaProperty->SetElement(0, this->GetGlobalMaximumArea());
-
-  operatorProxy->Operate(vtkCMBModel::SafeDownCast(this->Model), this->ServerModelProxy);
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = NULL;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Server side operator failed.");
-    }
-  this->Modified();
+  this->ServerMeshProxy->UpdateVTKObjects();
 }
 
 //----------------------------------------------------------------------------
@@ -271,39 +215,12 @@ void vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
     return;
     }
   this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
-  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "MeshOperator"));
-  if(!operatorProxy)
-    {
-    vtkErrorMacro("Unable to create operator proxy.");
-    return;
-    }
-  operatorProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  operatorProxy->SetServers(this->ServerModelProxy->GetServers());
 
   vtkSMDoubleVectorProperty* angleProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("GlobalLength"));
+      this->ServerMeshProxy->GetProperty("GlobalLength"));
   angleProperty->SetElement(0, this->GetGlobalMinimumAngle());
-
-  operatorProxy->Operate(vtkCMBModel::SafeDownCast(this->Model), this->ServerModelProxy);
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = NULL;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Server side operator failed.");
-    }
-  this->Modified();
+  this->ServerMeshProxy->UpdateVTKObjects();
 }
 
 //----------------------------------------------------------------------------
@@ -311,44 +228,14 @@ void vtkCmbMeshClient::Reset()
 {
   this->Internal->ModelEdges.clear();
   this->Internal->ModelFaces.clear();
+  if(this->ServerMeshProxy)
+    {
+    this->ServerMeshProxy->Delete();
+    this->ServerMeshProxy = NULL;
+    }
   this->SetServerModelProxy(NULL);
   this->Superclass::Reset();
-  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "MeshOperator"));
-  if(!operatorProxy)
-    {
-    vtkErrorMacro("Unable to create operator proxy.");
-    return;
-    }
-  operatorProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  operatorProxy->SetServers(this->ServerModelProxy->GetServers());
-
-  vtkErrorMacro("STILL NEED TO FIGURE OUT HOW TO CALL REQUEST!!!!!!!!!!");
-
-  // vtkSMDoubleVectorProperty* resetProperty =
-  //   vtkSMDoubleVectorProperty::SafeDownCast(
-  //     operatorProxy->GetProperty("Reset"));
-
-  operatorProxy->Operate(vtkCMBModel::SafeDownCast(this->Model), this->ServerModelProxy);
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = NULL;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Server side operator failed.");
-    }
-  this->Modified();
 }
-
 
 //----------------------------------------------------------------------------
 vtkCmbModelEntityMesh* vtkCmbMeshClient::GetModelEntityMesh(
@@ -456,5 +343,13 @@ void vtkCmbMeshClient::PrintSelf(ostream& os, vtkIndent indent)
   else
     {
     os << "ServerModelProxy: (NULL)\n";
+    }
+  if(this->ServerMeshProxy)
+    {
+    os << "ServerMeshProxy: " << this->ServerMeshProxy << "\n";
+    }
+  else
+    {
+    os << "ServerMeshProxy: (NULL)\n";
     }
 }

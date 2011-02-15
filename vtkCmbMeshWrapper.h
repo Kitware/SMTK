@@ -42,13 +42,16 @@ public:
   vtkTypeRevisionMacro(vtkCmbMeshWrapper, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  vtkCmbMeshServer* GetMesh();
-
   // Description:
   // Initialize vtkCmbMeshServer.
   void Initialize(vtkCMBModelWrapper*);
+  vtkCmbMeshServer* GetMesh();
 
-  //void ResetMesh();
+  // Description:
+  // Pass to actual mesh
+  virtual void SetGlobalLength(double length);
+  virtual void SetGlobalMaximumArea(double area);
+  virtual void SetGlobalMinimumAngle(double angle);
 
 protected:
   vtkCmbMeshWrapper();

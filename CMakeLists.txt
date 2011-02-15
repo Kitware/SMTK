@@ -8,6 +8,7 @@ INCLUDE(${PARAVIEW_USE_FILE})
 
 SET(QT_QMAKE_EXECUTABLE ${PARAVIEW_QT_QMAKE_EXECUTABLE})
 FIND_PACKAGE(Qt4)
+include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 
 include_directories(
   ${VTKExtensions_SOURCE_DIR} ${VTKExtensions_SOURCE_DIR}/Kitware
@@ -52,26 +53,26 @@ SET_SOURCE_FILES_PROPERTIES(
   WRAP_EXCLUDE
 )
 
-add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
-target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin omicron triangle_omicron tl_alloc)
+# add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
+# target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering ERDC_Plugin omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 endif(MSVC)
 
-#add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
-#  SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
-#  SERVER_MANAGER_SOURCES ${CMBProxyFiles}
-#  SERVER_SOURCES ${vtkMeshFiles}
-#)
+add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
+  SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
+  SERVER_MANAGER_SOURCES ${CMBProxyFiles}
+  SERVER_SOURCES ${vtkMeshFiles}
+)
 
-#TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin ConceptualModel_Plugin vtkFiltering ERDC_Plugin)
+TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin ConceptualModel_Plugin vtkFiltering ERDC_Plugin omicron triangle_omicron tl_alloc)
 
-#if(NOT APPLE)
-#  install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
-#      LIBRARY DESTINATION bin)
-#endif(NOT APPLE)
+if(NOT APPLE)
+  install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
+      LIBRARY DESTINATION bin)
+endif(NOT APPLE)
 
 if(BUILD_TESTING)
   add_subdirectory(Testing)

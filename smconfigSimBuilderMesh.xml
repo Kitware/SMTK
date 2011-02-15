@@ -1,10 +1,40 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="CMBSimBuilderMeshGroup">
 
+    <Proxy name="CMBMeshWrapper" class="vtkCMBMeshWrapper">
+      <DoubleVectorProperty
+         name="GlobalLength"
+         command="SetGlobalLength"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+         name="GlobalMaximumArea"
+         command="SetGlobalMaximumArea"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+         name="GlobalMinimumAngle"
+         command="SetGlobalMinimumAngle"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+    </Proxy>
+
     <SourceProxy name="MeshPolyDataProvider" class="vtkCmbMeshPolyDataProvider">
       <ProxyProperty name="MeshWrapper" command="SetMeshWrapper">
         <ProxyGroupDomain name="groups">
-          <Group name="CMBMeshGroup"/>
+          <Group name="CMBSimBuilderMeshGroup"/>
         </ProxyGroupDomain>
         <Documentation>
           Sets the Mesh Wrapper for the algorithm to get the polydata from.
@@ -29,21 +59,6 @@
         </Documentation>
       </IntVectorProperty>
     </SourceProxy>
-
-    <OperatorProxy name="CMBModelBuilder" class="vtkCMBModelBuilder">
-      <IntVectorProperty
-         name="OperateSucceeded"
-         command="GetOperateSucceeded"
-         number_of_elements="1"
-         information_only="1"
-         default_values="0" >
-        <SimpleIntInformationHelper/>
-        <Documentation>
-          Return if the operation on the server was successful.
-        </Documentation>
-      </IntVectorProperty>
-      <!-- End of CMBModelBuilder -->
-    </OperatorProxy>
 
     <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCmbModelEdgeMeshOperator">
       <IdTypeVectorProperty

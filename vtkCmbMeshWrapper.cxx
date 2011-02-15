@@ -68,6 +68,27 @@ void vtkCmbMeshWrapper::Initialize(vtkCMBModelWrapper* modelWrapper)
 }
 
 //----------------------------------------------------------------------------
+void vtkCmbMeshWrapper::SetGlobalLength(double length)
+{
+  this->Mesh->SetGlobalLength(length);
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMeshWrapper::SetGlobalMaximumArea(double area)
+{
+  this->Mesh->SetGlobalMaximumArea(area);
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
+void vtkCmbMeshWrapper::SetGlobalMinimumAngle(double angle)
+{
+  this->Mesh->SetGlobalMinimumAngle(angle);
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
 void vtkCmbMeshWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
