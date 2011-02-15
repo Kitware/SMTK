@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelFaceMesh_h
 
 #include "vtkCmbModelEntityMesh.h"
+#include "CmbFaceMeshHelper.h"
 
 class vtkModelFace;
 class vtkCmbModelVertexMesh;
@@ -80,6 +81,9 @@ protected:
   // the parameters.
   virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
 
+  bool CreateMeshInfo();
+  bool Triangulate(vtkPolyData *mesh);
+
 private:
   vtkCmbModelFaceMesh(const vtkCmbModelFaceMesh&);  // Not implemented.
   void operator=(const vtkCmbModelFaceMesh&);  // Not implemented.
@@ -87,6 +91,10 @@ private:
   vtkModelFace* ModelFace;
   double MaximumArea;
   double MinimumAngle;
+
+  //BTX
+  CmbModelFaceMeshPrivate::InternalFace *FaceInfo;
+  //ETX
 };
 
 #endif

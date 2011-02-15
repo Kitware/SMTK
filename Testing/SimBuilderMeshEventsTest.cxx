@@ -182,10 +182,8 @@ int Check2DModel(const char* fileName)
     if(vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh()) == NULL ||
        vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
       {
-      // commented out since we know this will fail and I don't want
-      // other stuff to cause a problem here and go unnoticed
-      //numberOfErrors++;
-      //vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
+      numberOfErrors++;
+      vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
       }
     }
 
