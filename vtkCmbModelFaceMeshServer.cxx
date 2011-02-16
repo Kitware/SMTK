@@ -64,6 +64,52 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh)
+{
+  //The current plan is that we are going to redo the entire storage of the
+  //loop and face data. We will go to a light information object ( num holes,segs,points)
+  //create the mesher interface with that information.
+  //Than we will pass back to the Internal Face the pointers to the memory structs,
+  //copy all the info directly into those pointers, and use those to calculate out the
+  //bounds, hole inside etc.
+  //we now get to construct the triangulate structs based on our mapping
+  int numPoints = this->FaceInfo->numberOfPoints();
+  int numSegs = this->FaceInfo->numberOfLineSegments();
+  int numHoles = this->FaceInfo->numberOfHoles();
+  CmbFaceMesherInterface ti(numPoints,numSegs,numHoles);
+
+  double global = this->GetMasterMesh()->GetGlobalMaximumArea();
+  double local = this->GetMaximumArea();
+  if ( local == 0 || global < local )
+    {
+    local = global;
+    }
+  ti.setUseMaxArea(true);
+  ti.setMaxArea(local);
+
+  global = this->GetMasterMesh()->GetGlobalMinimumAngle();
+  local = this->GetMinimumAngle();
+  if ( local == 0 || global < local )
+    {
+    local = global;
+    }
+  ti.setUseMinAngle(true);
+  ti.setMinAngle(local);
+
+  ti.setOutputMesh(mesh);
+
+  this->FaceInfo->fillTriangleInterface(&ti);
+  vtkModelFace* modelFace =
+    vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
+  bool valid = ti.buildFaceMesh((long)modelFace->GetUniquePersistentId());
+  if ( valid )
+    {
+    valid = this->FaceInfo->RelateMeshToModel(mesh,modelFace->GetUniquePersistentId());
+    }
+  return valid;
+}
+
+//----------------------------------------------------------------------------
 void vtkCmbModelFaceMeshServer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
