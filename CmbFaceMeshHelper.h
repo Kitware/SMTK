@@ -87,6 +87,19 @@ public:
   //only adds unique edges
   void addEdge(const InternalEdge &edge);
 
+  //returns true if the point is contained on the loop.
+  //The Id passed in must be between zero and number of Points - 1
+  //if the point is a model vertice the modelEntityType
+  //  will be set to vtkModelVertexType, and the uniqueId will be
+  //  set to the UniquePersistentId of the model vert.
+  //if the point is a mesh edge point the modelEntityType
+  //  will be set to vtkModelEdgeType, and the uniqueId will be
+  //  set to the UniquePersistenId of the edge the point is contained on
+  // if the point isn't on the loop the modelEntityType and uniqueId
+  //  WILL NOT BE MODIFIED
+  bool pointModelRelation(const vtkIdType &pointId,
+    int &modelEntityType, vtkIdType &uniqueId) const;
+
   //mark that we have a duplicate edge
   //this determines if the loop is a hole
   void markEdgeAsDuplicate(const vtkIdType &edgeId);
@@ -131,16 +144,20 @@ protected:
   //we have a hole
   int EdgeCount;
 
-
   //these store ids, so we don't have duplicates
   std::set<vtkIdType> ModelEdges;
-  std::set<vtkIdType> ModelVerts;
 
   std::list<edgeSegment> Segments;
 
   //bi directional map implemented as two maps
   std::map<edgePoint,vtkIdType> PointsToIds; //needed for easy lookup on duplicate points
   std::map<vtkIdType,edgePoint> IdsToPoints;
+
+  //When converting back from the mesh to the model we need to know
+  //for each point if it is a model vertex or an edge point.
+  //this mapping combined with the ModelEdge list tells us exactly what
+  //each point is
+  std::map<vtkIdType,vtkIdType> ModelRealtion;
 };
 
 class InternalFace
@@ -152,6 +169,7 @@ class InternalFace
     int numberOfHoles();
 
     void fillTriangleInterface(CmbFaceMesherInterface *ti);
+    bool RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
 
   protected:
     std::list<InternalLoop> Loops;
