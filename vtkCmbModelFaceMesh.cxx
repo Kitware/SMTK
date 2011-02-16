@@ -239,6 +239,10 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 
   this->FaceInfo->fillTriangleInterface(&ti);
   bool valid = ti.buildFaceMesh((long)this->ModelFace->GetUniquePersistentId());
+  if ( valid )
+    {
+    valid = this->FaceInfo->RelateMeshToModel(mesh,this->ModelFace->GetUniquePersistentId());
+    }
   return valid;
 }
 

@@ -31,7 +31,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkCellArray.h"
 #include "vtkPoints.h"
+#include "vtkPointData.h"
 #include "CmbFaceMesherInterface.h"
+
+#include "vtkIntArray.h"
+#include "vtkIdTypeArray.h"
+#include "vtkArrayIteratorIncludes.h" //needed for VTK_TT
+#include "vtkSetGet.h" //needed for VTK_TT
+
+#include "vtkModel.h"
 
 using namespace CmbModelFaceMeshPrivate;
 //----------------------------------------------------------------------------
@@ -134,16 +142,29 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     edgeSegment es(newPId1,newPId2);
     this->Segments.push_back(es);
 
-    //update the model vert set
+    //update the model relationship
     if (mv.count(pId1) > 0)
       {
-      this->ModelVerts.insert(newPId1);
+      //make sure we label this index as relating to a model vert
+      this->ModelRealtion.insert(std::pair<vtkIdType,vtkIdType>(newPId1,pId1));
       mv.erase(pId1);
       }
+    else
+      {
+      //make sure we label this index as relating to a model edge
+      this->ModelRealtion.insert(std::pair<vtkIdType,vtkIdType>(newPId1,edge.getId()));
+      }
+
     if (mv.count(pId2) > 0)
       {
-      this->ModelVerts.insert(newPId2);
+      //make sure we label this index as relating to a model vert
+      this->ModelRealtion.insert(std::pair<vtkIdType,vtkIdType>(newPId2,pId2));
       mv.erase(pId2);
+      }
+    else
+      {
+      //make sure we label this index as relating to a model edge
+      this->ModelRealtion.insert(std::pair<vtkIdType,vtkIdType>(newPId1,edge.getId()));
       }
     }
 }
@@ -177,6 +198,39 @@ const edgePoint* InternalLoop::getPoint(const vtkIdType &id) const
     return NULL;
     }
   return &it->second;
+}
+
+//returns true if the point is contained on the loop.
+//The Id passed in must be between zero and number of Points - 1
+//if the point is a model vertice the modelEntityType
+//  will be set to vtkModelVertexType, and the uniqueId will be
+//  set to the UniquePersistentId of the model vert.
+//if the point is a mesh edge point the modelEntityType
+//  will be set to vtkModelEdgeType, and the uniqueId will be
+//  set to the UniquePersistenId of the edge the point is contained on
+// if the point isn't on the loop the modelEntityType and uniqueId
+//  WILL NOT BE MODIFIED
+//----------------------------------------------------------------------------
+bool InternalLoop::pointModelRelation(const vtkIdType &pointId,
+    int &modelEntityType, vtkIdType &uniqueId) const
+{
+  if ( pointId < 0 )
+    {
+    return false;
+    }
+
+  std::map<vtkIdType,vtkIdType>::const_iterator it =
+     this->ModelRealtion.find(pointId);
+  if ( it == this->ModelRealtion.end() )
+    {
+    return false;
+    }
+
+  //the point exists, see if it is a model edge relationship
+  modelEntityType = (this->edgeExists( it->second )) ?
+      vtkModelEdgeType : vtkModelVertexType;
+    uniqueId = it->second;
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -385,6 +439,7 @@ int InternalFace::numberOfHoles()
     }
   return sum;
 }
+
 //----------------------------------------------------------------------------
 void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
 {
@@ -394,4 +449,76 @@ void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
     {
     it->addDataToTriangleInterface(ti, pIdx, sId, hId);
     }
+}
+
+//----------------------------------------------------------------------------
+bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+{
+  vtkPoints *points = mesh->GetPoints();
+  if (points == NULL)
+    {
+    return false;
+    }
+  //construct the array for each points model type and UniquePersistentId
+  vtkIdType size = points->GetNumberOfPoints();
+
+  vtkIntArray *pointModelType = vtkIntArray::New();
+  pointModelType->SetNumberOfComponents(1);
+  pointModelType->SetNumberOfTuples(size);
+  pointModelType->SetName("ModelType");
+
+  vtkIdTypeArray *pointModelUseId = vtkIdTypeArray::New();
+  pointModelUseId->SetNumberOfComponents(1);
+  pointModelUseId->SetNumberOfTuples(size);
+  pointModelUseId->SetName("ModelUseId");
+
+  //Optimization:
+  //because we are generating a mesh with fixed boundaries
+  //we know that we know that the first N points are fixed
+  //to be identical to the input points. So we know exactly which
+  //loop each point is from. Plus after we are done with the loops
+  //all the points better be on the face.
+  std::list<InternalLoop>::iterator it;
+  int i=0,loopPointSize=0, type=0;
+  vtkIdType id;
+
+  //use direct pointers for speed
+  int *pmt = reinterpret_cast<int *>(pointModelType->GetVoidPointer(0));
+  vtkIdType *pmu = reinterpret_cast<vtkIdType *>(pointModelUseId->GetVoidPointer(0));
+
+  for(it=this->Loops.begin();it!=this->Loops.end();it++)
+    {
+    loopPointSize = it->getNumberOfPoints();
+    for (int i=0; i < loopPointSize; ++i)
+      {
+      if (it->pointModelRelation(i,type,id))
+        {
+        *pmt = type;
+        *pmu = id;
+        }
+      else
+        {
+        //this should never happen
+        *pmt = vtkModelFaceType;
+        *pmu = facePersistenId;
+        }
+      pmt++;
+      pmu++;
+      }
+    }
+
+  //now the rest are owned by the face model we can use fill.
+  vtkIdType length = size - this->numberOfPoints();
+  if ( length > 0 ) //maybe no new points have been added
+    {
+    std::fill_n(pmt,length,vtkModelFaceType);
+    std::fill_n(pmu,length,facePersistenId);
+    }
+
+  mesh->GetPointData()->AddArray(pointModelType);
+  mesh->GetPointData()->AddArray(pointModelUseId);
+
+  pointModelType->FastDelete();
+  pointModelUseId->FastDelete();
+  return true;
 }
