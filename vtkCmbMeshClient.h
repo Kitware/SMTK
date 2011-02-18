@@ -76,9 +76,14 @@ public:
 
   vtkGetObjectMacro(ServerModelProxy, vtkSMProxy);
 
+  vtkSMProxy* GetServerMeshProxy()
+  {return this->ServerMeshProxy;}
+
 protected:
   vtkCmbMeshClient();
   virtual ~vtkCmbMeshClient();
+
+  void SetServerModelProxy(vtkSMProxy*);
 
   // Description:
   // Process an edge split event from the model.  With a
@@ -98,12 +103,11 @@ protected:
   // mesh it now but if it's in conjunction with a merge event we will.
   virtual void ModelEntityBoundaryModified(vtkModelGeometricEntity*);
 
-  void SetServerModelProxy(vtkSMProxy*);
-
 private:
   vtkCmbMeshClient(const vtkCmbMeshClient&);  // Not implemented.
   void operator=(const vtkCmbMeshClient&);  // Not implemented.
 
+  vtkSMProxy* ServerMeshProxy;
   vtkSMProxy* ServerModelProxy;
   vtkCmbMeshClientInternals* Internal;
 };
