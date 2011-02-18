@@ -1,7 +1,15 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="CMBSimBuilderMeshGroup">
 
-    <Proxy name="CMBMeshWrapper" class="vtkCMBMeshWrapper">
+    <Proxy name="CMBMeshWrapper" class="vtkCmbMeshWrapper">
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper to initialize the server mesh.
+        </Documentation>
+      </ProxyProperty>
       <DoubleVectorProperty
          name="GlobalLength"
          command="SetGlobalLength"

@@ -48,6 +48,7 @@ public:
   vtkSetMacro(Visible, bool);
   vtkGetMacro(Visible, bool);
 
+//BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity() = 0;
 
   vtkGetMacro(MasterMesh, vtkCmbMesh*);
@@ -56,6 +57,7 @@ public:
   // Get the model entity's analysis mesh.  On the server it's a
   // vtkPolyData and on the client it's NULL.
   vtkGetObjectMacro(ModelEntityMesh, vtkPolyData);
+//ETX
 
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated

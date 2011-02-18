@@ -91,7 +91,8 @@ bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length,
 
   vtkCMBModel* model =
     vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model, serverModelProxy);
+  operatorProxy->Operate(model,
+    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerMeshProxy());
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =

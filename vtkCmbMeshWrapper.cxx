@@ -37,7 +37,7 @@ vtkCxxRevisionMacro(vtkCmbMeshWrapper, "");
 //----------------------------------------------------------------------------
 vtkCmbMeshWrapper::vtkCmbMeshWrapper()
 {
-  this->Mesh = vtkCmbMeshServer::New();
+  this->Mesh = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -53,38 +53,42 @@ vtkCmbMeshWrapper::~vtkCmbMeshWrapper()
 //----------------------------------------------------------------------------
 vtkCmbMeshServer* vtkCmbMeshWrapper::GetMesh()
 {
+  if(!this->Mesh)
+    {
+    this->Mesh = vtkCmbMeshServer::New();
+    }
   return this->Mesh;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshWrapper::Initialize(vtkCMBModelWrapper* modelWrapper)
+void vtkCmbMeshWrapper::SetModelWrapper(vtkCMBModelWrapper* modelWrapper)
 {
   if(modelWrapper == NULL)
     {
     vtkErrorMacro("ModelWrapper is NULL");
     return;
     }
-  this->Mesh->Initialize(modelWrapper->GetModel());
+  this->GetMesh()->Initialize(modelWrapper->GetModel());
 }
 
 //----------------------------------------------------------------------------
 void vtkCmbMeshWrapper::SetGlobalLength(double length)
 {
-  this->Mesh->SetGlobalLength(length);
+  this->GetMesh()->SetGlobalLength(length);
   this->Modified();
 }
 
 //----------------------------------------------------------------------------
 void vtkCmbMeshWrapper::SetGlobalMaximumArea(double area)
 {
-  this->Mesh->SetGlobalMaximumArea(area);
+  this->GetMesh()->SetGlobalMaximumArea(area);
   this->Modified();
 }
 
 //----------------------------------------------------------------------------
 void vtkCmbMeshWrapper::SetGlobalMinimumAngle(double angle)
 {
-  this->Mesh->SetGlobalMinimumAngle(angle);
+  this->GetMesh()->SetGlobalMinimumAngle(angle);
   this->Modified();
 }
 

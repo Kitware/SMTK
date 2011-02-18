@@ -44,8 +44,10 @@ public:
 
   // Description:
   // Initialize vtkCmbMeshServer.
-  void Initialize(vtkCMBModelWrapper*);
+  void SetModelWrapper(vtkCMBModelWrapper*);
+//BTX
   vtkCmbMeshServer* GetMesh();
+//ETX
 
   // Description:
   // Pass to actual mesh
@@ -60,8 +62,9 @@ protected:
 private:
   vtkCmbMeshWrapper(const vtkCmbMeshWrapper&); // Not implemented
   void operator=(const vtkCmbMeshWrapper&); // Not implemented
-
+//BTX
   vtkCmbMeshServer* Mesh;
+//ETX
 };
 
 #endif

@@ -38,11 +38,11 @@ public:
   static vtkCmbModelVertexMesh* New();
   vtkTypeRevisionMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
-
+//BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
   void Initialize(vtkCmbMesh* mesh, vtkModelVertex* vertex);
-
+//ETX
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true

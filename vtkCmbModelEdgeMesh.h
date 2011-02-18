@@ -43,14 +43,14 @@ class VTK_EXPORT vtkCmbModelEdgeMesh : public vtkCmbModelEntityMesh
 public:
   vtkTypeRevisionMacro(vtkCmbModelEdgeMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
-
+//BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 
   // Description:
   // Initialize the model edge mesh.  This sets Length to 0
   // and removes the polydata/proxy.
   virtual void Initialize(vtkCmbMesh* mesh, vtkModelEdge* edge);
-
+//ETX
   // Description:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true

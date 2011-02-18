@@ -27,12 +27,9 @@ ENDIF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
 SET(vtkMeshFiles
   vtkCmbMesh.cxx
   vtkCmbMeshClient.cxx
-  vtkCmbMeshPolyDataProvider.cxx
   vtkCmbMeshServer.cxx
-  vtkCmbMeshWrapper.cxx
   vtkCmbModelEdgeMesh.cxx
   vtkCmbModelEdgeMeshClient.cxx
-  vtkCmbModelEdgeMeshOperator.cxx
   vtkCmbModelEdgeMeshServer.cxx
   vtkCmbModelEntityMesh.cxx
   vtkCmbModelFaceMesh.cxx
@@ -42,7 +39,11 @@ SET(vtkMeshFiles
   CmbFaceMeshHelper.cxx
   CmbFaceMesherInterface.cxx
 )
-
+SET(CMBProxyFiles
+  vtkCmbMeshPolyDataProvider.cxx
+  vtkCmbMeshWrapper.cxx
+  vtkCmbModelEdgeMeshOperator.cxx
+)
 SET_SOURCE_FILES_PROPERTIES(
   vtkCmbMesh
   vtkCmbModelEdgeMesh

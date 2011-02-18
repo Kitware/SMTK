@@ -47,9 +47,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMOperatorProxy.h>
 #include <vtkSMProxyManager.h>
-#include "vtkClientServerStream.h"
-#include "vtkProcessModule.h"
-
+#include "vtkSMProxyProperty.h"
 #include "vtkClientServerStream.h"
 #include "vtkProcessModule.h"
 #include "vtkCollection.h"
@@ -92,14 +90,14 @@ vtkCmbMeshClient::~vtkCmbMeshClient()
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* serverModelProxy)
+void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
 {
   if(model == NULL)
     {
     vtkErrorMacro("Passed in NULL model.");
     return;
     }
-  if(serverModelProxy == NULL)
+  if(smModelProxy == NULL)
     {
     vtkErrorMacro("Passed in NULL server side proxy.");
     return;
@@ -109,9 +107,9 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* serverModelProxy)
     this->Reset();
     this->Model = model;
     }
-  if(this->ServerModelProxy != ServerModelProxy)
+  if(this->ServerModelProxy != smModelProxy)
     {
-    this->ServerModelProxy = ServerModelProxy;
+    this->ServerModelProxy = smModelProxy;
     }
   if(this->ServerMeshProxy)
     {
@@ -168,16 +166,11 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* serverModelProxy)
   this->ServerMeshProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
   this->ServerMeshProxy->SetServers(this->ServerModelProxy->GetServers());
 
-  vtkClientServerStream stream;
-  stream  << vtkClientServerStream::Invoke
-    << this->ServerMeshProxy->GetID()
-    << "Initialize"
-    << this->ServerModelProxy->GetID()
-    << vtkClientServerStream::End;
-  // calls "Initialize" function on vtkCmbMeshWrapper
-  vtkProcessModule::GetProcessModule()->SendStream(
-    this->ServerModelProxy->GetConnectionID(),
-    this->ServerModelProxy->GetServers(), stream);
+  vtkSMProxyProperty* proxyproperty =
+    vtkSMProxyProperty::SafeDownCast(
+    this->ServerMeshProxy->GetProperty("ModelWrapper"));
+  proxyproperty->AddProxy(this->ServerModelProxy);
+  this->ServerMeshProxy->UpdateVTKObjects();
 }
 
 //----------------------------------------------------------------------------
