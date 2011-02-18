@@ -50,19 +50,19 @@ public:
   // The absolute length set over all arcs/model edges.
   // If GlobalLength is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalLength(double length);
+  virtual bool SetGlobalLength(double length);
 
   // Description:
   // The absolute maximum area set over all model faces.
   // If GlobalMaximumArea is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMaximumArea(double area);
+  virtual bool SetGlobalMaximumArea(double area);
 
   // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMinimumAngle(double angle);
+  virtual bool SetGlobalMinimumAngle(double angle);
 
   virtual void Reset();
 

@@ -127,16 +127,16 @@ void vtkCmbMeshServer::Initialize(vtkModel* model)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshServer::SetGlobalLength(double globalLength)
+bool vtkCmbMeshServer::SetGlobalLength(double globalLength)
 {
   if(this->GlobalLength == globalLength)
     {
-    return;
+    return false;
     }
   if(globalLength <= 0)
     {
     this->GlobalLength = 0.;
-    return;
+    return false;
     }
   this->GlobalLength = globalLength > 0. ? globalLength : 0.;
   for(std::map<vtkModelEdge*, vtkSmartPointer<vtkCmbModelEdgeMeshServer> >::iterator it=
@@ -154,14 +154,15 @@ void vtkCmbMeshServer::SetGlobalLength(double globalLength)
     }
 
   this->Modified();
+  return true;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshServer::SetGlobalMaximumArea(double maxArea)
+bool vtkCmbMeshServer::SetGlobalMaximumArea(double maxArea)
 {
   if(this->GlobalMaximumArea == maxArea)
     {
-    return;
+    return false;
     }
   this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
   for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
@@ -172,14 +173,15 @@ void vtkCmbMeshServer::SetGlobalMaximumArea(double maxArea)
     }
   // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
+  return true;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshServer::SetGlobalMinimumAngle(double minAngle)
+bool vtkCmbMeshServer::SetGlobalMinimumAngle(double minAngle)
 {
   if(this->GlobalMinimumAngle == minAngle)
     {
-    return;
+    return false;
     }
   this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
   for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
@@ -190,6 +192,7 @@ void vtkCmbMeshServer::SetGlobalMinimumAngle(double minAngle)
     }
   // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
+  return true;
 }
 
 //----------------------------------------------------------------------------

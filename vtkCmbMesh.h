@@ -53,21 +53,21 @@ public:
   // The absolute length set over all arcs/model edges.
   // If GlobalLength is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalLength(double length) = 0;
+  virtual bool SetGlobalLength(double length) = 0;
   vtkGetMacro(GlobalLength, double);
 
   // Description:
   // The absolute maximum area set over all model faces.
   // If GlobalMaximumArea is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMaximumArea(double area) = 0;
+  virtual bool SetGlobalMaximumArea(double area) = 0;
   vtkGetMacro(GlobalMaximumArea, double);
 
   // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.
-  virtual void SetGlobalMinimumAngle(double angle) = 0;
+  virtual bool SetGlobalMinimumAngle(double angle) = 0;
   vtkGetMacro(GlobalMinimumAngle, double);
 
   virtual void Reset();

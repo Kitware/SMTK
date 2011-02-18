@@ -174,11 +174,11 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshClient::SetGlobalLength(double globalLength)
+bool vtkCmbMeshClient::SetGlobalLength(double globalLength)
 {
   if(this->GlobalLength == globalLength || !this->ServerMeshProxy)
     {
-    return;
+    return false;
     }
   this->GlobalLength = globalLength > 0. ? globalLength : 0.;
 
@@ -187,14 +187,15 @@ void vtkCmbMeshClient::SetGlobalLength(double globalLength)
       this->ServerMeshProxy->GetProperty("GlobalLength"));
   lengthProperty->SetElement(0, this->GetGlobalLength());
   this->ServerMeshProxy->UpdateVTKObjects();
+  return true;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
+bool vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
 {
   if(this->GlobalMaximumArea == maxArea)
     {
-    return;
+    return false;
     }
 
   vtkSMDoubleVectorProperty* areaProperty =
@@ -202,14 +203,15 @@ void vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
       this->ServerMeshProxy->GetProperty("GlobalMaximumArea"));
   areaProperty->SetElement(0, this->GetGlobalMaximumArea());
   this->ServerMeshProxy->UpdateVTKObjects();
+  return true;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
+bool vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
 {
   if(this->GlobalMinimumAngle == minAngle)
     {
-    return;
+    return false;
     }
   this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
 
@@ -218,6 +220,7 @@ void vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
       this->ServerMeshProxy->GetProperty("GlobalLength"));
   angleProperty->SetElement(0, this->GetGlobalMinimumAngle());
   this->ServerMeshProxy->UpdateVTKObjects();
+  return true;
 }
 
 //----------------------------------------------------------------------------
