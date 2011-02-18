@@ -48,6 +48,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSMOperatorProxy.h>
 #include <vtkSMProxyManager.h>
 
+#include "vtkClientServerStream.h"
+#include "vtkProcessModule.h"
+#include "vtkCollection.h"
+
 #include <map>
 
 vtkStandardNewMacro(vtkCmbMeshClient);
@@ -443,6 +447,27 @@ void vtkCmbMeshClient::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
 void vtkCmbMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
 {
   // no op on the client
+}
+//----------------------------------------------------------------------------
+bool vtkCmbMeshClient::SetLocalMeshLength(
+                        vtkCollection* selectedMeshEntities,
+                        double localLen, bool meshHigherDimensionalEntities)
+{
+  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
+    {
+    return false;
+    }
+  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
+    {
+    vtkSmartPointer<vtkCmbModelEdgeMeshClient> edgeMesh =
+      vtkCmbModelEdgeMeshClient::SafeDownCast(
+      selectedMeshEntities->GetItemAsObject(i));
+    if(edgeMesh)
+      {
+      edgeMesh->SetLocalLength(localLen, meshHigherDimensionalEntities);
+      }
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------

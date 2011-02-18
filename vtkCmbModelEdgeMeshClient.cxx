@@ -46,6 +46,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMOperatorProxy.h>
 #include <vtkSMProxyManager.h>
+#include "vtkSMPropertyHelper.h"
 #include <vtkSMProxy.h>
 
 vtkStandardNewMacro(vtkCmbModelEdgeMeshClient);
@@ -59,6 +60,70 @@ vtkCmbModelEdgeMeshClient::vtkCmbModelEdgeMeshClient()
 //----------------------------------------------------------------------------
 vtkCmbModelEdgeMeshClient::~vtkCmbModelEdgeMeshClient()
 {
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length,
+  bool meshHigherDimensionalEntities)
+{
+  if(length == this->GetLength())
+    {
+    return true;
+    }
+
+  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
+  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelEdgeMeshOperator"));
+  if(!operatorProxy)
+    {
+    vtkErrorMacro("Unable to create operator proxy.");
+    return false;
+    }
+  vtkSMProxy* serverModelProxy =
+    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
+  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
+  operatorProxy->SetServers(serverModelProxy->GetServers());
+
+  vtkSMPropertyHelper(operatorProxy, "Length").Set(length);
+  vtkSMPropertyHelper(operatorProxy, "Id").Set(
+    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  operatorProxy->UpdateVTKObjects();
+
+  vtkCMBModel* model =
+    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  operatorProxy->Operate(model, serverModelProxy);
+
+  // check to see if the operation succeeded on the server
+  vtkSMIntVectorProperty* operateSucceeded =
+    vtkSMIntVectorProperty::SafeDownCast(
+    operatorProxy->GetProperty("OperateSucceeded"));
+
+  operatorProxy->UpdatePropertyInformation();
+
+  int succeeded = operateSucceeded->GetElement(0);
+  operatorProxy->Delete();
+  operatorProxy = 0;
+  if(!succeeded)
+    {
+    vtkErrorMacro("Server side operator failed.");
+    return false;
+    }
+  this->SetLength(length);
+  // now we go and remesh any adjacent model face meshes that exist
+  if(meshHigherDimensionalEntities)
+    {
+    vtkModelItemIterator* faces = this->GetModelEdge()->NewIterator(vtkModelFaceType);
+    for(faces->Begin();!faces->IsAtEnd();faces->Next())
+      {
+      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+      vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+        this->GetMasterMesh()->GetModelEntityMesh(face));
+      faceMesh->BuildModelEntityMesh(true);
+      }
+    faces->Delete();
+    }
+
+  return true;
 }
 
 //----------------------------------------------------------------------------

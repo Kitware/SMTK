@@ -45,6 +45,10 @@ public:
   vtkTypeRevisionMacro(vtkCmbModelEdgeMeshClient,vtkCmbModelEdgeMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
+  // Description:
+  // Set the local mesh length
+  bool SetLocalLength(double len, bool meshHigherDimensionalEntities =false);
+
 protected:
   vtkCmbModelEdgeMeshClient();
   virtual ~vtkCmbModelEdgeMeshClient();

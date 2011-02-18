@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkCmbMeshClientInternals;
 class vtkSMProxy;
+class vtkCollection;
 
 class VTK_EXPORT vtkCmbMeshClient : public vtkCmbMesh
 {
@@ -59,6 +60,12 @@ public:
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.
   virtual void SetGlobalMinimumAngle(double angle);
+
+  // Description:
+  // Set the local mesh length for those selected model entities
+  bool SetLocalMeshLength(
+    vtkCollection* selectedMeshEntities,
+    double localLen, bool meshHigherDimensionalEntities=false);
 
   virtual void Reset();
 
