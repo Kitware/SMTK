@@ -109,7 +109,7 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
     }
   if(this->ServerModelProxy != smModelProxy)
     {
-    this->ServerModelProxy = smModelProxy;
+    this->SetServerModelProxy(smModelProxy);
     }
   if(this->ServerMeshProxy)
     {
