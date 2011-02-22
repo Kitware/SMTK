@@ -197,6 +197,7 @@ bool vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
     {
     return false;
     }
+  this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
 
   vtkSMDoubleVectorProperty* areaProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
@@ -217,7 +218,7 @@ bool vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
 
   vtkSMDoubleVectorProperty* angleProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
-      this->ServerMeshProxy->GetProperty("GlobalLength"));
+      this->ServerMeshProxy->GetProperty("GlobalMinimumAngle"));
   angleProperty->SetElement(0, this->GetGlobalMinimumAngle());
   this->ServerMeshProxy->UpdateVTKObjects();
   return true;
