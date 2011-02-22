@@ -286,7 +286,7 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
   vtkCellArray *triangles = vtkCellArray::New();
   vtkIdList *ids = vtkIdList::New();
   size = io->numberofsegments;
-  ids->SetNumberOfIds(size);
+  ids->SetNumberOfIds(3);
   triangles->SetNumberOfCells(size);
   for(vtkIdType i=0; i < size; ++i)
     {
@@ -297,6 +297,7 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
     }
   ids->Delete();
   this->OutputMesh->SetPolys(triangles);
+  this->OutputMesh->BuildCells();
   triangles->Delete();
 
   return true;
