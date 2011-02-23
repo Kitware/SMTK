@@ -28,13 +28,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "CmbFaceMesherInterface.h"
 
-#include <vtkstd/map> // Needed for STL map.
-#include <vtkstd/set> // Needed for STL set.
-#include <vtkstd/list> // Needed for STL list.
 #include <sstream>
 
 #include <vtkPolyData.h>
-#include <vtkCellArray.h>
 
 // for Triangle
 #ifndef ANSI_DECLARATORS
