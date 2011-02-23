@@ -238,6 +238,7 @@ std::string CmbFaceMesherInterface::BuildTriangleArguments() const
 //----------------------------------------------------------------------------
 bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
 {
+  this->OutputMesh->Initialize();
   if ( this->NumberOfPoints < 3 || this->NumberOfSegments < 3 )
     {
     //passed an invalid data set
@@ -283,22 +284,16 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
   points->FastDelete();
 
   //setup the triangles
-  vtkCellArray *triangles = vtkCellArray::New();
-  vtkIdList *ids = vtkIdList::New();
-  size = io->numberofsegments;
-  ids->SetNumberOfIds(3);
-  triangles->SetNumberOfCells(size);
+  size = io->numberoftriangles;
+  this->OutputMesh->Allocate(size);
+  vtkIdType ids[3];
   for(vtkIdType i=0; i < size; ++i)
     {
-    ids->SetId(0,io->trianglelist[3 * i]);
-    ids->SetId(1,io->trianglelist[3 * i + 1]);
-    ids->SetId(2,io->trianglelist[3 * i + 2]);
-    triangles->InsertNextCell(ids);
+    ids[0] = io->trianglelist[3 * i];
+    ids[1] = io->trianglelist[3 * i + 1];
+    ids[2] = io->trianglelist[3 * i + 2];
+    this->OutputMesh->InsertNextCell(VTK_TRIANGLE, 3, ids);
     }
-  ids->Delete();
-  this->OutputMesh->SetPolys(triangles);
-  this->OutputMesh->BuildCells();
-  triangles->Delete();
 
   return true;
 }
