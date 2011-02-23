@@ -157,7 +157,7 @@ int vtkCmbMeshPolyDataProvider::RequestData(
     return 0;
     }
 
-  output->ShallowCopy(vtkDataObject::SafeDownCast(modelEntityMesh->GetModelEntityMesh()));
+  output->ShallowCopy(modelEntityMesh->GetModelEntityMesh());
 
   return 1;
 }

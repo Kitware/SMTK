@@ -39,6 +39,7 @@ vtkCmbModelEdgeMesh::vtkCmbModelEdgeMesh()
 {
   this->ModelEdge = NULL;
   this->Length = 0;
+  this->MeshedLength = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -63,6 +64,7 @@ void vtkCmbModelEdgeMesh::Initialize(vtkCmbMesh* masterMesh, vtkModelEdge* edge)
   this->SetMasterMesh(masterMesh);
   this->ModelEdge = edge;
   this->SetLength(0);
+  this->SetMeshedLength(0);
   this->SetModelEntityMesh(NULL);
 }
 
@@ -74,19 +76,22 @@ bool vtkCmbModelEdgeMesh::BuildModelEntityMesh(
     {
     return false;
     }
-  if(this->Length <= 0. &&
-     this->GetMasterMesh()->GetGlobalLength() <= 0.)
-    {
-    return false;
-    }
   bool doBuild = false;
-  if(this->GetModelEntityMesh() == NULL)
+  if(this->GetModelEntityMesh() == NULL && this->GetActualLength() > 0.)
     {
     doBuild = true;
     }
-  else if(this->GetModelEntityMesh()->GetMTime() < this->GetMTime())
+  else if(this->MeshedLength != this->GetActualLength())
     {
-    doBuild = true; // the polydata is out of date
+    doBuild = true;
+    }
+  else if( vtkPolyData* modelGeometry =
+           vtkPolyData::SafeDownCast(this->ModelEdge->GetGeometry()) )
+    {
+    if(modelGeometry->GetMTime() >= this->GetModelEntityMesh()->GetMTime())
+      { // if the model poly is newer than the mesh poly we need to remesh
+      doBuild = true;
+      }
     }
   if(doBuild == false)
     {
@@ -110,6 +115,22 @@ vtkCmbModelVertexMesh* vtkCmbModelEdgeMesh::GetAdjacentModelVertexMesh(
 }
 
 //----------------------------------------------------------------------------
+double vtkCmbModelEdgeMesh::GetActualLength()
+{
+  double actualLength = this->Length;
+  double globalLength = this->GetMasterMesh()->GetGlobalLength();
+  if(globalLength > 0. && globalLength < actualLength)
+    {
+    actualLength = globalLength;
+    }
+  else if(actualLength == 0)
+    {
+    actualLength = globalLength;
+    }
+  return actualLength;
+}
+
+//----------------------------------------------------------------------------
 void vtkCmbModelEdgeMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -122,5 +143,6 @@ void vtkCmbModelEdgeMesh::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "ModelEdge: (NULL)\n";
     }
   os << indent << "Length: " << this->Length << "\n";
+  os << indent << "MeshedLength: " << this->MeshedLength << "\n";
 }
 

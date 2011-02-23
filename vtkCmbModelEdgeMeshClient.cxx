@@ -110,6 +110,7 @@ bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length,
     return false;
     }
   this->SetLength(length);
+  this->SetMeshedLength(this->GetActualLength());
   // now we go and remesh any adjacent model face meshes that exist
   if(meshHigherDimensionalEntities)
     {
@@ -167,6 +168,7 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
     vtkErrorMacro("Server side operator failed.");
     return 0;
     }
+  this->SetMeshedLength(this->GetActualLength());
   // now we go and remesh any adjacent model face meshes that exist
   if(meshHigherDimensionalEntities)
     {

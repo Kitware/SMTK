@@ -49,6 +49,9 @@ vtkCxxRevisionMacro(vtkCmbModelEdgeMeshServer, "");
 //----------------------------------------------------------------------------
 vtkCmbModelEdgeMeshServer::vtkCmbModelEdgeMeshServer()
 {
+  vtkPolyData* poly = vtkPolyData::New();
+  this->SetModelEntityMesh(poly);
+  poly->FastDelete();
 }
 
 //----------------------------------------------------------------------------
@@ -59,19 +62,12 @@ vtkCmbModelEdgeMeshServer::~vtkCmbModelEdgeMeshServer()
 //----------------------------------------------------------------------------
 bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 {
-  vtkPolyData* mesh = this->GetModelEntityMesh();
-  if(mesh)
+  this->SetMeshedLength(this->GetActualLength());
+  if(this->GetActualLength() <= 0.)
     {
-    mesh->Reset();
+    this->SetModelEntityMesh(NULL);
+    return true;
     }
-  else
-    {
-    mesh = vtkPolyData::New();
-    this->SetModelEntityMesh(mesh);
-    mesh->FastDelete();
-    }
-  mesh->Initialize();
-  mesh->Allocate();
 
   // Clean polylines will create a "full strip", whereas vtkStripper
   // starts building a strip from a line and adds lines to only one end,
@@ -97,21 +93,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   vtkDoubleArray *targetCellLength = vtkDoubleArray::New();
   targetCellLength->SetNumberOfComponents( 1 );
   targetCellLength->SetNumberOfTuples( 1 );
-  double length = this->GetLength();
-  if(length <= 0.)
-    {
-    length = this->GetMasterMesh()->GetGlobalLength();
-    if(length <= 0.)
-      {
-      vtkErrorMacro("Bad mesh edge length.");
-      return false;
-      }
-    }
-  else if(this->GetMasterMesh()->GetGlobalLength() > 0. &&
-          this->GetMasterMesh()->GetGlobalLength() < length)
-    {
-    length = this->GetMasterMesh()->GetGlobalLength();
-    }
+  double length = this->GetActualLength();
 
   targetCellLength->SetValue( 0, length );
   targetCellLength->SetName( "TargetSegmentLength" );
@@ -129,9 +111,14 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     targetCellLength->GetName() );
   meshEdgesFilter->Update();
 
-  mesh->SetPoints( meshEdgesFilter->GetOutput()->GetPoints() );
-  mesh->SetLines( meshEdgesFilter->GetOutput()->GetLines() );
-
+  vtkPolyData* mesh = this->GetModelEntityMesh();
+  if(!mesh)
+    {
+    mesh = vtkPolyData::New();
+    this->SetModelEntityMesh(mesh);
+    mesh->FastDelete();
+    }
+  mesh->ShallowCopy(meshEdgesFilter->GetOutput());
   meshEdgesFilter->Delete();
 
   // now we go and remesh any adjacent model face meshes that exist
@@ -146,7 +133,6 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
       faceMesh->BuildModelEntityMesh(true);
       }
     faces->Delete();
-
     }
 
   return true;

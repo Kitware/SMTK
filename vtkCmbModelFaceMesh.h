@@ -69,13 +69,37 @@ public:
   // Set/get the model face minimum triangle angle.  If it is 0 it
   // indicates that it is not set.  If the global min angle
   // is smaller than this value then that value will be used
-  // when generating the surface mesh.
+  // when generating the surface mesh.  Note that the angle
+  // is in degrees.
   vtkGetMacro(MinimumAngle, double);
   vtkSetClampMacro(MinimumAngle, double, 0, VTK_LARGE_FLOAT);
+
+  vtkGetMacro(MeshedMaximumArea, double);
+  vtkGetMacro(MeshedMinimumAngle, double);
+
+  // Description:
+  // Get the actual maximum area the model face will be meshed with.
+  // 0 indicates no maximum area has been set.
+  double GetActualMaximumArea();
+
+  // Description:
+  // Get the actual minimum angle the model face will be meshed with.
+  // 0 indicates no minimum area has been set.
+  double GetActualMinimumAngle();
 
 protected:
   vtkCmbModelFaceMesh();
   virtual ~vtkCmbModelFaceMesh();
+
+  // Description:
+  // Set the MeshedMaximumAngle.  This is protected so that derived
+  // classes can use this method.
+  vtkSetClampMacro(MeshedMaximumArea, double, 0, VTK_LARGE_FLOAT);
+
+  // Description:
+  // Set the MeshedMinimumAngle.  This is protected so that derived
+  // classes can use this method.
+  vtkSetClampMacro(MeshedMinimumAngle, double, 0, VTK_LARGE_FLOAT);
 
   // Description:
   // This method builds the model entity's mesh without checking
@@ -91,11 +115,13 @@ private:
 
   vtkModelFace* ModelFace;
   double MaximumArea;
-  double MinimumAngle;
+  double MinimumAngle; // in degrees
 
-  //BTX
-  CmbModelFaceMeshPrivate::InternalFace *FaceInfo;
-  //ETX
+  // Description:
+  // The mesh parameters the last time the model face was meshed.
+  // If a value is 0 it indicates that the model face has no mesh.
+  double MeshedMaximumArea;
+  double MeshedMinimumAngle;
 };
 
 #endif

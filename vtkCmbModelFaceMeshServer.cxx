@@ -34,6 +34,10 @@ vtkCxxRevisionMacro(vtkCmbModelFaceMeshServer, "");
 //----------------------------------------------------------------------------
 vtkCmbModelFaceMeshServer::vtkCmbModelFaceMeshServer()
 {
+  this->FaceInfo = NULL;
+  vtkPolyData* poly = vtkPolyData::New();
+  this->SetModelEntityMesh(poly);
+  poly->FastDelete();
 }
 
 //----------------------------------------------------------------------------
@@ -44,6 +48,14 @@ vtkCmbModelFaceMeshServer::~vtkCmbModelFaceMeshServer()
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 {
+  if(this->GetActualMaximumArea() <= 0. ||
+     this->GetActualMinimumAngle() <= 0.)
+    {
+    this->SetModelEntityMesh(NULL);
+    this->SetMeshedMaximumArea(0.);
+    this->SetMeshedMinimumAngle(0.);
+    return false;
+    }
   vtkPolyData* mesh = this->GetModelEntityMesh();
   if(mesh)
     {
@@ -53,13 +65,84 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     {
     mesh = vtkPolyData::New();
     this->SetModelEntityMesh(mesh);
-    mesh->Delete();
+    mesh->FastDelete();
     }
-  mesh->Initialize();
-  mesh->Allocate();
 
-  // rob -- put in the calls to triangle here
+  if (this->FaceInfo)
+    {
+    delete this->FaceInfo;
+    this->FaceInfo = NULL;
+    }
+  this->FaceInfo = new CmbModelFaceMeshPrivate::InternalFace();
 
+  bool valid = true;
+  valid = valid && this->CreateMeshInfo();
+  valid = valid && this->Triangulate(mesh);
+  this->SetMeshedMaximumArea(this->GetActualMaximumArea());
+  this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
+  return valid;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
+{
+  //we need to walk the topology once to determine the following:
+  // number of loops that are holes
+  // number of total line segements across all loops
+  // number of unique points used in all line segments
+  // we need all this information so we can properly construct the triangle memory
+  vtkModelFace* modelFace = vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
+  vtkModelItemIterator *liter = modelFace->GetModelFaceUse(0)->NewLoopUseIterator();
+  const int START_LOOP_ID = 1;
+  vtkIdType loopId = START_LOOP_ID;
+  for (liter->Begin();!liter->IsAtEnd(); liter->Next(), ++loopId)
+    {
+    //by design the first loop is the external loop, all other loops are internal loops
+    //for a loop to be a hole it has to be an internal loop, with an edge that isn't used twice
+    InternalLoop loop(loopId,loopId != START_LOOP_ID);
+    vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
+        liter->GetCurrentItem())->NewModelEdgeUseIterator();
+    for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+      {
+      //add each edge to the loop
+      vtkModelEdge* modelEdge = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem())->GetModelEdge();
+      //we now have to walk the mesh lines cell data to get all the verts for this edge
+      vtkIdType edgeId =modelEdge->GetUniquePersistentId();
+      if (!loop.edgeExists(edgeId))
+        {
+        vtkPolyData *mesh = this->GetMasterMesh()->
+          GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
+        if(!mesh)
+          {
+          vtkErrorMacro("stupid missing mesh.");
+          }
+
+        InternalEdge edge(edgeId);
+        edge.setMeshPoints(mesh);
+        int numVerts = modelEdge->GetNumberOfModelVertexUses();
+        for(int i=0;i<numVerts;++i)
+          {
+          vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
+          if(vertex)
+            {
+            //vertex->GetPoint(modelVert);
+            edge.addModelVert(vertex->GetUniquePersistentId());
+            }
+          }
+        loop.addEdge(edge);
+        }
+      else
+        {
+        loop.markEdgeAsDuplicate(edgeId);
+        }
+      }
+    edgeUses->Delete();
+    this->FaceInfo->addLoop(loop);
+    }
+  if ( liter )
+    {
+    liter->Delete();
+    }
   return true;
 }
 
@@ -78,23 +161,11 @@ bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh)
   int numHoles = this->FaceInfo->numberOfHoles();
   CmbFaceMesherInterface ti(numPoints,numSegs,numHoles);
 
-  double global = this->GetMasterMesh()->GetGlobalMaximumArea();
-  double local = this->GetMaximumArea();
-  if ( local == 0 || global < local )
-    {
-    local = global;
-    }
   ti.setUseMaxArea(true);
-  ti.setMaxArea(local);
+  ti.setMaxArea(this->GetActualMaximumArea());
 
-  global = this->GetMasterMesh()->GetGlobalMinimumAngle();
-  local = this->GetMinimumAngle();
-  if ( local == 0 || global < local )
-    {
-    local = global;
-    }
   ti.setUseMinAngle(true);
-  ti.setMinAngle(local);
+  ti.setMinAngle(this->GetActualMinimumAngle());
 
   ti.setOutputMesh(mesh);
 

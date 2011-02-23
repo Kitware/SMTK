@@ -23,18 +23,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 #include "vtkCmbModelFaceMesh.h"
+
 #include "vtkCmbMesh.h"
+#include "vtkCmbModelEdgeMesh.h"
 
 #include <vtkModelFace.h>
-#include <vtkModelEdgeUse.h>
-#include <vtkModelEdge.h>
 #include <vtkModelItemIterator.h>
-#include <vtkModelFaceUse.h>
-#include <vtkModelLoopUse.h>
-#include <vtkModelVertex.h>
-
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
 
 #include "CmbFaceMeshHelper.h"
 #include "CmbFaceMesherInterface.h"
@@ -50,6 +47,8 @@ vtkCmbModelFaceMesh::vtkCmbModelFaceMesh()
   this->FaceInfo = NULL;
   this->MaximumArea = 0.;
   this->MinimumAngle = 0.;
+  this->MeshedMaximumArea = 0.;
+  this->MeshedMinimumAngle = 0.;
 }
 
 //----------------------------------------------------------------------------
@@ -91,19 +90,38 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
     {
     return false;
     }
-  if( (this->MaximumArea <= 0. && this->GetMasterMesh()->GetGlobalMaximumArea() <= 0.) ||
-      (this->MinimumAngle <= 0. && this->GetMasterMesh()->GetGlobalMinimumAngle() <= 0.) )
+  vtkModelItemIterator* edges = this->ModelFace->NewAdjacentModelEdgeIterator();
+  for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    return false;
+    vtkModelGeometricEntity* edge =
+      vtkModelGeometricEntity::SafeDownCast(edges->GetCurrentItem());
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      this->GetMasterMesh()->GetModelEntityMesh(edge));
+    if(edgeMesh->GetMeshedLength() <= 0.)
+      {
+      edges->Delete();
+      return false;
+      }
     }
+  edges->Delete();
   bool doBuild = false;
-  if(this->GetModelEntityMesh() == NULL)
+  if(this->GetModelEntityMesh() == NULL && this->GetActualMaximumArea() > 0. &&
+     this->GetActualMinimumAngle() > 0.)
     {
     doBuild = true;
     }
-  else if(this->GetModelEntityMesh()->GetMTime() < this->GetMTime())
+  else if(this->GetActualMaximumArea() != this->GetMeshedMaximumArea() ||
+          this->GetActualMinimumAngle() != this->GetMeshedMinimumAngle())
     {
-    doBuild = true; // the polydata is out of date
+    doBuild = true;
+    }
+  else if( vtkPolyData* modelGeometry =
+           vtkPolyData::SafeDownCast(this->ModelFace->GetGeometry()) )
+    {
+    if(modelGeometry->GetMTime() >= this->GetModelEntityMesh()->GetMTime())
+      { // if the model poly is newer than the mesh poly we need to remesh
+      doBuild = true;
+      }
     }
   if(doBuild == false)
     {
@@ -113,8 +131,6 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
 }
 
 //----------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
 bool vtkCmbModelFaceMesh::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkPolyData* mesh = this->GetModelEntityMesh();
@@ -247,7 +263,38 @@ bool vtkCmbModelFaceMesh::Triangulate(vtkPolyData *mesh)
 }
 
 //----------------------------------------------------------------------------
->>>>>>> 253e81a8d1395d807055ba36dfeeb4c76a44bdca
+double vtkCmbModelFaceMesh::GetActualMaximumArea()
+{
+  double actualMaximumArea = this->MaximumArea;
+  double globalMaximumArea = this->GetMasterMesh()->GetGlobalMaximumArea();
+  if(globalMaximumArea > 0. && globalMaximumArea < actualMaximumArea)
+    {
+    actualMaximumArea = globalMaximumArea;
+    }
+  else if(actualMaximumArea == 0)
+    {
+    actualMaximumArea = globalMaximumArea;
+    }
+  return actualMaximumArea;
+}
+
+//----------------------------------------------------------------------------
+double vtkCmbModelFaceMesh::GetActualMinimumAngle()
+{
+  double actualMinimumAngle = this->MinimumAngle;
+  double globalMinimumAngle = this->GetMasterMesh()->GetGlobalMinimumAngle();
+  if(globalMinimumAngle > 0. && globalMinimumAngle < actualMinimumAngle)
+    {
+    actualMinimumAngle = globalMinimumAngle;
+    }
+  else if(actualMinimumAngle == 0)
+    {
+    actualMinimumAngle = globalMinimumAngle;
+    }
+  return actualMinimumAngle;
+}
+
+//----------------------------------------------------------------------------
 void vtkCmbModelFaceMesh::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -261,4 +308,6 @@ void vtkCmbModelFaceMesh::PrintSelf(ostream& os, vtkIndent indent)
     }
   os << indent << "MaximumArea: " << this->MaximumArea << "\n";
   os << indent << "MinimumAngle: " << this->MinimumAngle << "\n";
+  os << indent << "MeshedMaximumArea: " << this->MeshedMaximumArea << "\n";
+  os << indent << "MeshedMinimumAngle: " << this->MeshedMinimumAngle << "\n";
 }

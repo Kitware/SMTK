@@ -285,11 +285,6 @@ void vtkCmbMeshServer::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
     targetEdgeMesh->SetLength(sourceLength);
     }
 
-  // we can't remesh the target edge yet since the topology hasn't changed
-  // yet.  we mark it as modified so that when we see the boundary modified
-  // event we will trigger the remeshing then.
-  targetEdgeMesh->Modified();
-
   this->Modified();
 }
 

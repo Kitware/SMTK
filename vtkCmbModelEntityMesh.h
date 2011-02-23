@@ -51,7 +51,7 @@ public:
 //BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity() = 0;
 
-  vtkGetMacro(MasterMesh, vtkCmbMesh*);
+  vtkGetObjectMacro(MasterMesh, vtkCmbMesh);
 
   // Description:
   // Get the model entity's analysis mesh.  On the server it's a
@@ -77,7 +77,7 @@ protected:
   void SetModelEntityMesh(vtkPolyData* mesh);
 
   // Description:
-  // Mesh is not reference counted.
+  // Mesh is not reference counted here.
   vtkSetMacro(MasterMesh, vtkCmbMesh*);
 
 private:
