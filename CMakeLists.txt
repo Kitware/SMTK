@@ -59,7 +59,7 @@ SET_SOURCE_FILES_PROPERTIES(
 )
 
 # add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
-# target_link_libraries(SimBuilderLibrary ConceptualModel_Plugin vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+# target_link_libraries(SimBuilderLibrary vtkCmbDiscreteModel vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
@@ -72,7 +72,8 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_SOURCES ${vtkMeshFiles}
 )
 
-TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin ConceptualModel_Plugin vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel
+  vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 if(NOT APPLE)
   install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin

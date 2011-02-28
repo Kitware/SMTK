@@ -45,7 +45,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkSMDoubleVectorProperty.h>
 #include <vtkSMIntVectorProperty.h>
-#include <vtkSMOperatorProxy.h>
+#include <vtkSMProxy.h>
 #include <vtkSMProxyManager.h>
 #include "vtkSMProxyProperty.h"
 #include "vtkClientServerStream.h"
