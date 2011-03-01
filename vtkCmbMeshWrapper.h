@@ -42,10 +42,10 @@ public:
   vtkTypeRevisionMacro(vtkCmbMeshWrapper, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
+//BTX
   // Description:
   // Initialize vtkCmbMeshServer.
   void SetModelWrapper(vtkCMBModelWrapper*);
-//BTX
   vtkCmbMeshServer* GetMesh();
 //ETX
 
