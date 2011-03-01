@@ -72,7 +72,8 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_SOURCES ${vtkMeshFiles}
 )
 
-TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel
+# Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
+TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel vtkCmbDiscreteModelCS
   vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 if(NOT APPLE)
