@@ -118,6 +118,11 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
   else if( vtkPolyData* modelGeometry =
            vtkPolyData::SafeDownCast(this->ModelFace->GetGeometry()) )
     {
+    if(this->GetModelEntityMesh() == NULL &&
+       (this->GetActualMaximumArea() == 0. || this->GetActualMinimumAngle() == 0.) )
+      {
+      return false;
+      }
     if(modelGeometry->GetMTime() >= this->GetModelEntityMesh()->GetMTime())
       { // if the model poly is newer than the mesh poly we need to remesh
       doBuild = true;
