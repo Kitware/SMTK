@@ -11,7 +11,12 @@ FIND_PACKAGE(Qt4)
 include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 
 include_directories(
-  ${VTKExtensions_SOURCE_DIR} ${VTKExtensions_SOURCE_DIR}/Kitware
+  ${VTKExtensions_SOURCE_DIR} 
+  ${VTKExtensions_SOURCE_DIR}/Filtering
+  ${VTKExtensions_SOURCE_DIR}/Graphics
+  ${VTKExtensions_SOURCE_DIR}/IO
+  ${VTKExtensions_SOURCE_DIR}/Kitware
+  ${VTKExtensions_SOURCE_DIR}/Meshing
   ${CMBModel_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Src
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Math/Src
