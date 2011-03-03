@@ -122,6 +122,24 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
       { // if the model poly is newer than the mesh poly we need to remesh
       doBuild = true;
       }
+    else
+      { // check if any of the edge mesh poly's are newer than the face mesh poly
+      edges = this->ModelFace->NewAdjacentModelEdgeIterator();
+      for(edges->Begin();!edges->IsAtEnd();edges->Next())
+        {
+        vtkModelGeometricEntity* edge =
+          vtkModelGeometricEntity::SafeDownCast(edges->GetCurrentItem());
+        vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+          this->GetMasterMesh()->GetModelEntityMesh(edge));
+        if(edgeMesh->GetModelEntityMesh()->GetMTime() >
+           this->GetModelEntityMesh()->GetMTime())
+          {
+          doBuild = true;
+          break;
+          }
+        }
+      edges->Delete();
+      }
     }
   if(doBuild == false)
     {

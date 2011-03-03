@@ -111,6 +111,8 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     targetCellLength->GetName() );
   meshEdgesFilter->Update();
 
+  // it would seem like we could just do this->SetModelEntityMesh(mesh);
+  // but we can't.  i think this has to do with the polydataprovider.
   vtkPolyData* mesh = this->GetModelEntityMesh();
   if(!mesh)
     {

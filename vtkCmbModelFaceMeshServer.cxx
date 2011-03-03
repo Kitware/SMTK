@@ -56,17 +56,6 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     this->SetMeshedMinimumAngle(0.);
     return false;
     }
-  vtkPolyData* mesh = this->GetModelEntityMesh();
-  if(mesh)
-    {
-    mesh->Reset();
-    }
-  else
-    {
-    mesh = vtkPolyData::New();
-    this->SetModelEntityMesh(mesh);
-    mesh->FastDelete();
-    }
 
   if (this->FaceInfo)
     {
@@ -75,9 +64,21 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     }
   this->FaceInfo = new CmbModelFaceMeshPrivate::InternalFace();
 
-  bool valid = true;
-  valid = valid && this->CreateMeshInfo();
+  bool valid = this->CreateMeshInfo();
+  vtkPolyData* mesh = vtkPolyData::New();
   valid = valid && this->Triangulate(mesh);
+  // it would seem like we could just do this->SetModelEntityMesh(mesh);
+  // but we can't.  i think this has to do with the polydataprovider.
+  vtkPolyData* faceMesh = this->GetModelEntityMesh();
+  if(!faceMesh)
+    {
+    faceMesh = vtkPolyData::New();
+    this->SetModelEntityMesh(faceMesh);
+    faceMesh->FastDelete();
+    }
+  faceMesh->ShallowCopy(mesh);
+  mesh->Delete();
+
   this->SetMeshedMaximumArea(this->GetActualMaximumArea());
   this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
   return valid;
