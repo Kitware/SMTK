@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPolyData.h>
 #include <vtkSMIntVectorProperty.h>
 #include <vtkSMProxyManager.h>
+#include "vtkSMPropertyHelper.h"
 
 vtkStandardNewMacro(vtkCmbModelFaceMeshClient);
 vtkCxxRevisionMacro(vtkCmbModelFaceMeshClient, "");
@@ -91,6 +92,97 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   return true;
 }
 
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshClient::SetLocalMaxArea(double maxArea,
+  bool meshHigherDimensionalEntities)
+{
+  if(maxArea == this->GetMaximumArea())
+    {
+    return true;
+    }
+  bool res = this->SetFaceParameters("MaximumArea",
+    maxArea, meshHigherDimensionalEntities);
+  if(res)
+    {
+    this->SetMaximumArea(maxArea);
+    this->SetMeshedMaximumArea(this->GetActualMaximumArea());
+
+    // now we go and remesh any adjacent model regions
+    if(meshHigherDimensionalEntities)
+    {
+    }
+  }
+  return res;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshClient::SetLocalMinAngle(
+  double minAngle, bool meshHigherDimensionalEntities)
+{
+  if(minAngle == this->GetMinimumAngle())
+    {
+    return true;
+    }
+  bool res = this->SetFaceParameters("MinimumAngle",
+    minAngle, meshHigherDimensionalEntities);
+  if(res)
+    {
+    this->SetMinimumAngle(minAngle);
+    this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
+
+    // now we go and remesh any adjacent model regions
+    if(meshHigherDimensionalEntities)
+      {
+      }
+    }
+  return res;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshClient::SetFaceParameters(
+  const char* pName, double pValue, bool meshHigherDimensionalEntities)
+{
+  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
+  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
+  if(!operatorProxy)
+    {
+    vtkErrorMacro("Unable to create operator proxy.");
+    return false;
+    }
+  vtkSMProxy* serverModelProxy =
+    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
+  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
+  operatorProxy->SetServers(serverModelProxy->GetServers());
+
+  vtkSMPropertyHelper(operatorProxy, pName).Set(pValue);
+  vtkSMPropertyHelper(operatorProxy, "Id").Set(
+    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  operatorProxy->UpdateVTKObjects();
+
+  vtkCMBModel* model =
+    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  operatorProxy->Operate(model,
+    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerMeshProxy());
+
+  // check to see if the operation succeeded on the server
+  vtkSMIntVectorProperty* operateSucceeded =
+    vtkSMIntVectorProperty::SafeDownCast(
+    operatorProxy->GetProperty("OperateSucceeded"));
+
+  operatorProxy->UpdatePropertyInformation();
+
+  int succeeded = operateSucceeded->GetElement(0);
+  operatorProxy->Delete();
+  operatorProxy = 0;
+  if(!succeeded)
+    {
+    vtkErrorMacro("Server side operator failed.");
+    return false;
+    }
+
+  return true;
+}
 //----------------------------------------------------------------------------
 void vtkCmbModelFaceMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {

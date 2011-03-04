@@ -62,10 +62,16 @@ public:
   virtual bool SetGlobalMinimumAngle(double angle);
 
   // Description:
-  // Set the local mesh length for those selected model entities
+  // Set the local mesh length/max area/min angle for those selected model entities
   bool SetLocalMeshLength(
     vtkCollection* selectedMeshEntities,
     double localLen, bool meshHigherDimensionalEntities=false);
+  bool SetLocalMeshMaxArea(
+    vtkCollection* selectedMeshEntities,
+    double localMaxArea, bool meshHigherDimensionalEntities=false);
+  bool SetLocalMeshMinAngle(
+    vtkCollection* selectedMeshEntities,
+    double localMinAngle, bool meshHigherDimensionalEntities=false);
 
   virtual void Reset();
 

@@ -61,6 +61,11 @@ void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
     vtkModelFace::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, this->Id));
   vtkCmbModelFaceMeshServer* faceMesh = vtkCmbModelFaceMeshServer::SafeDownCast(
     mesh->GetModelEntityMesh(modelFace));
+  if(!faceMesh)
+    {
+    vtkWarningMacro("There is no face mesh on the server for changing local parameters");
+    return;
+    }
   faceMesh->SetMaximumArea(this->MaximumArea);
   faceMesh->SetMinimumAngle(this->MinimumAngle);
   this->OperateSucceeded =

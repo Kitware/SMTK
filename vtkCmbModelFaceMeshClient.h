@@ -42,14 +42,10 @@ public:
   vtkTypeRevisionMacro(vtkCmbModelFaceMeshClient,vtkCmbModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  void Initialize(vtkCmbMesh* mesh, vtkModelFace* face);
-
   // Description:
-  // BuildModelEntityMesh will generate a mesh for the associated
-  // model entity.  If meshHigherDimensionalEntities is set to true
-  // it will also mesh any higher dimensional entities which need
-  // to be meshed because of this object getting meshed.
-  bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
+  // Set the local mesh max area, min angle
+  bool SetLocalMaxArea(double area, bool meshHigherDimensionalEntities =false);
+  bool SetLocalMinAngle(double angle, bool meshHigherDimensionalEntities =false);
 
 protected:
   vtkCmbModelFaceMeshClient();
@@ -59,6 +55,11 @@ protected:
   // This method builds the model entity's mesh without checking
   // the parameters.
   bool BuildMesh(bool meshHigherDimensionalEntities);
+
+  // Description:
+  // Set face parameters.
+  bool SetFaceParameters(const char* name, double length,
+    bool meshHigherDimensionalEntities);
 
 private:
   vtkCmbModelFaceMeshClient(const vtkCmbModelFaceMeshClient&);  // Not implemented.

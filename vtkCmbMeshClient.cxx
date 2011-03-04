@@ -355,6 +355,54 @@ bool vtkCmbMeshClient::SetLocalMeshLength(
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbMeshClient::SetLocalMeshMinAngle(
+  vtkCollection* selectedMeshEntities,
+  double localMinAngle, bool meshHigherDimensionalEntities)
+{
+  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
+    {
+    return false;
+    }
+  bool res = true;
+  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
+    {
+    vtkSmartPointer<vtkCmbModelFaceMeshClient> faceMesh =
+      vtkCmbModelFaceMeshClient::SafeDownCast(
+      selectedMeshEntities->GetItemAsObject(i));
+    if(faceMesh)
+      {
+      res = faceMesh->SetLocalMinAngle(localMinAngle,
+        meshHigherDimensionalEntities);
+      }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbMeshClient::SetLocalMeshMaxArea(
+  vtkCollection* selectedMeshEntities,
+  double localMaxArea, bool meshHigherDimensionalEntities)
+{
+  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
+    {
+    return false;
+    }
+
+  bool res = true;
+  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
+    {
+    vtkSmartPointer<vtkCmbModelFaceMeshClient> faceMesh =
+      vtkCmbModelFaceMeshClient::SafeDownCast(
+      selectedMeshEntities->GetItemAsObject(i));
+    if(faceMesh)
+      {
+      res = faceMesh->SetLocalMaxArea(localMaxArea,
+        meshHigherDimensionalEntities);
+      }
+    }
+  return true;
+}
+//----------------------------------------------------------------------------
 void vtkCmbMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
