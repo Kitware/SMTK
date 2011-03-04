@@ -48,6 +48,7 @@ SET(CMBProxyFiles
   vtkCmbMeshPolyDataProvider.cxx
   vtkCmbMeshWrapper.cxx
   vtkCmbModelEdgeMeshOperator.cxx
+  vtkCmbModelFaceMeshOperator.cxx
 )
 SET_SOURCE_FILES_PROPERTIES(
   vtkCmbMesh

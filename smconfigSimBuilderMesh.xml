@@ -83,6 +83,7 @@
          command="SetLength"
          number_of_elements="1"
          default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
         <Documentation>
           The desired length of the cells.
         </Documentation>
@@ -108,6 +109,59 @@
         </Documentation>
       </IntVectorProperty>
       <!-- End of ModelEdgeMeshOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelFaceMeshOperator" class="vtkCmbModelFaceMeshOperator">
+      <IdTypeVectorProperty
+         name="Id"
+         command="SetId"
+         number_of_elements="1"
+         default_values="-1">
+        <Documentation>
+          Set the unique persistent id to specify what face to operate on.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <DoubleVectorProperty
+         name="MaximumArea"
+         command="SetMaximumArea"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          The desired maximum area of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+         name="MinimumAngle"
+         command="SetMinimumAngle"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0" max="60"/>
+        <Documentation>
+          The desired minimum angle of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty
+         name="MeshHigherDimensionalEntities"
+         command="SetMeshHigherDimensionalEntities"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          Specify whether or not to mesh other model entities that are affected by remeshing this face.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of ModelFaceMeshOperator -->
     </OperatorProxy>
 
   </ProxyGroup>
