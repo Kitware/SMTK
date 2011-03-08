@@ -78,8 +78,8 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     }
   faceMesh->ShallowCopy(mesh);
   mesh->Delete();
-//   cerr << "model face " << this->GetModelFace()->GetUniquePersistentId()
-//        << " mesh built with numcells " << faceMesh->GetNumberOfCells() << endl;
+  cerr << "model face " << this->GetModelFace()->GetUniquePersistentId()
+       << " mesh built with numcells " << faceMesh->GetNumberOfCells() << endl;
 
   this->SetMeshedMaximumArea(this->GetActualMaximumArea());
   this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());

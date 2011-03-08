@@ -253,8 +253,8 @@ void vtkCmbMeshServer::ModelEdgeSplit(vtkSplitEventData* splitEventData)
     vtkSmartPointer<vtkCmbModelEdgeMeshServer>::New();
   createdMesh->SetLength(sourceMesh->GetLength());
   createdMesh->Initialize(this, createdEdge);
-  createdMesh->BuildModelEntityMesh(true);
   this->Internal->ModelEdges[createdEdge] = createdMesh;
+  createdMesh->BuildModelEntityMesh(true);
 
   this->Modified();
 }
