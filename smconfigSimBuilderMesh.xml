@@ -16,7 +16,7 @@
          number_of_elements="1"
          default_values="0">
         <Documentation>
-          The desired length of the cells.
+          The desired global length of the cells.
         </Documentation>
       </DoubleVectorProperty>
       <DoubleVectorProperty
@@ -25,7 +25,7 @@
          number_of_elements="1"
          default_values="0">
         <Documentation>
-          The desired length of the cells.
+          The desired global maximum area of the cells.
         </Documentation>
       </DoubleVectorProperty>
       <DoubleVectorProperty
@@ -34,7 +34,7 @@
          number_of_elements="1"
          default_values="0">
         <Documentation>
-          The desired length of the cells.
+          The desired global minimum angle of the cells.
         </Documentation>
       </DoubleVectorProperty>
     </Proxy>
@@ -63,7 +63,7 @@
          number_of_elements="1"
          default_values="none">
         <Documentation>
-          Set the Id of the model entity to be accessed.
+          Set the type of the model entity to be accessed.
         </Documentation>
       </IntVectorProperty>
     </SourceProxy>
@@ -89,10 +89,21 @@
         </Documentation>
       </DoubleVectorProperty>
       <IntVectorProperty
+         name="BuildModelEntityMesh"
+         command="SetBuildModelEntityMesh"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to build the mesh.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
          name="MeshHigherDimensionalEntities"
          command="SetMeshHigherDimensionalEntities"
          number_of_elements="1"
          default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
         <Documentation>
           Specify whether or not to mesh other model entities that are affected by remeshing this edge.
         </Documentation>
@@ -142,10 +153,21 @@
         </Documentation>
       </DoubleVectorProperty>
       <IntVectorProperty
+         name="BuildModelEntityMesh"
+         command="SetBuildModelEntityMesh"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to build the mesh.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
          name="MeshHigherDimensionalEntities"
          command="SetMeshHigherDimensionalEntities"
          number_of_elements="1"
          default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
         <Documentation>
           Specify whether or not to mesh other model entities that are affected by remeshing this face.
         </Documentation>

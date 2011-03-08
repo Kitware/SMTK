@@ -61,9 +61,16 @@ int Check2DModel(const char* fileName)
     vtkSmartPointer<vtkCmbMeshServer>::New();
   mesh->Initialize(model);
   mesh->SetGlobalLength(1.);
-
   vtkSmartPointer<vtkModelItemIterator> edges;
   edges.TakeReference(model->NewIterator(vtkModelEdgeType));
+  for(edges->Begin();!edges->IsAtEnd();edges->Next())
+    {
+    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(edge));
+    edgeMesh->BuildModelEntityMesh(false);
+    }
+
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
@@ -169,6 +176,14 @@ int Check2DModel(const char* fileName)
   mesh->SetGlobalMinimumAngle(10.);
   vtkSmartPointer<vtkModelItemIterator> faces;
   faces.TakeReference(model->NewIterator(vtkModelFaceType));
+  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+    {
+    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(face));
+    faceMesh->BuildModelEntityMesh(false);
+    }
+
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());

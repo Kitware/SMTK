@@ -63,8 +63,7 @@ vtkCmbModelEdgeMeshClient::~vtkCmbModelEdgeMeshClient()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length,
-  bool meshHigherDimensionalEntities)
+bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length)
 {
   if(length == this->GetLength())
     {
@@ -106,24 +105,10 @@ bool vtkCmbModelEdgeMeshClient::SetLocalLength(double length,
   operatorProxy = 0;
   if(!succeeded)
     {
-    vtkErrorMacro("Server side operator failed.");
+    vtkErrorMacro("Could not properly set local edge length on the server.");
     return false;
     }
   this->SetLength(length);
-  this->SetMeshedLength(this->GetActualLength());
-  // now we go and remesh any adjacent model face meshes that exist
-  if(meshHigherDimensionalEntities)
-    {
-    vtkModelItemIterator* faces = this->GetModelEdge()->NewIterator(vtkModelFaceType);
-    for(faces->Begin();!faces->IsAtEnd();faces->Next())
-      {
-      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-      vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
-        this->GetMasterMesh()->GetModelEntityMesh(face));
-      faceMesh->BuildModelEntityMesh(true);
-      }
-    faces->Delete();
-    }
 
   return true;
 }
@@ -144,14 +129,17 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
   operatorProxy->SetServers(serverModelProxy->GetServers());
 
-  vtkSMIntVectorProperty* meshProperty =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("MeshHigherDimensionalEntities"));
-  meshProperty->SetElement(0, false);
+  vtkSMPropertyHelper(operatorProxy, "Id").Set(
+    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
+  vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
+  vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
 
   vtkCMBModel* model =
     vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model, serverModelProxy);
+  operatorProxy->Operate(
+    model, vtkCmbMeshClient::SafeDownCast(
+      this->GetMasterMesh())->GetServerMeshProxy());
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =

@@ -87,6 +87,8 @@ public:
   // 0 indicates no minimum area has been set.
   double GetActualMinimumAngle();
 
+  vtkGetObjectMacro(ModelFace, vtkModelFace);
+
 protected:
   vtkCmbModelFaceMesh();
   virtual ~vtkCmbModelFaceMesh();

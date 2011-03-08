@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkCmbMesh - Abstract mesh representation for a vtkModel.
 // .SECTION Description
+// Both the client and server mesh representation derive from this.
 
 #ifndef __vtkCmbMesh_h
 #define __vtkCmbMesh_h

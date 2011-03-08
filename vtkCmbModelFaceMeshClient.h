@@ -44,8 +44,8 @@ public:
 
   // Description:
   // Set the local mesh max area, min angle
-  bool SetLocalMaxArea(double area, bool meshHigherDimensionalEntities =false);
-  bool SetLocalMinAngle(double angle, bool meshHigherDimensionalEntities =false);
+  bool SetLocalMaximumArea(double area);
+  bool SetLocalMinimumAngle(double angle);
 
 protected:
   vtkCmbModelFaceMeshClient();
@@ -58,8 +58,7 @@ protected:
 
   // Description:
   // Set face parameters.
-  bool SetFaceParameters(const char* name, double length,
-    bool meshHigherDimensionalEntities);
+  bool SetFaceParameters(const char* name, double length);
 
 private:
   vtkCmbModelFaceMeshClient(const vtkCmbModelFaceMeshClient&);  // Not implemented.

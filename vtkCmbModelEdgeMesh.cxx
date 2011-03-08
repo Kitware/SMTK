@@ -95,7 +95,7 @@ bool vtkCmbModelEdgeMesh::BuildModelEntityMesh(
     }
   if(doBuild == false)
     {
-    return false;
+    return true;
     }
   return this->BuildMesh(meshHigherDimensionalEntities);
 }

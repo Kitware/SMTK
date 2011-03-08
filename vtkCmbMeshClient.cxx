@@ -239,6 +239,38 @@ void vtkCmbMeshClient::Reset()
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbMeshClient::BuildModelEntityMeshes()
+{
+  vtkSmartPointer<vtkModelItemIterator> edges;
+  edges.TakeReference(this->Model->NewIterator(vtkModelEdgeType));
+  for(edges->Begin();!edges->IsAtEnd();edges->Next())
+    {
+    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkCmbModelEdgeMeshClient* edgeMesh =
+      vtkCmbModelEdgeMeshClient::SafeDownCast(this->GetModelEntityMesh(edge));
+    if(edgeMesh->BuildModelEntityMesh(false) == false)
+      {
+      vtkErrorMacro("Unable to build model edge mesh.");
+      return false;
+      }
+    }
+  vtkSmartPointer<vtkModelItemIterator> faces;
+  faces.TakeReference(this->Model->NewIterator(vtkModelFaceType));
+  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+    {
+    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkCmbModelFaceMeshClient* faceMesh =
+      vtkCmbModelFaceMeshClient::SafeDownCast(this->GetModelEntityMesh(face));
+    if(faceMesh->BuildModelEntityMesh(false) == false)
+      {
+      vtkErrorMacro("Unable to build model face mesh.");
+      return false;
+      }
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 vtkCmbModelEntityMesh* vtkCmbMeshClient::GetModelEntityMesh(
   vtkModelGeometricEntity* entity)
 {
@@ -334,13 +366,13 @@ void vtkCmbMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* enti
 }
 //----------------------------------------------------------------------------
 bool vtkCmbMeshClient::SetLocalMeshLength(
-                        vtkCollection* selectedMeshEntities,
-                        double localLen, bool meshHigherDimensionalEntities)
+  vtkCollection* selectedMeshEntities, double localLen)
 {
   if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
     {
     return false;
     }
+  bool res = true;
   for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
     {
     vtkSmartPointer<vtkCmbModelEdgeMeshClient> edgeMesh =
@@ -348,16 +380,15 @@ bool vtkCmbMeshClient::SetLocalMeshLength(
       selectedMeshEntities->GetItemAsObject(i));
     if(edgeMesh)
       {
-      edgeMesh->SetLocalLength(localLen, meshHigherDimensionalEntities);
+      res = res && edgeMesh->SetLocalLength(localLen);
       }
     }
-  return true;
+  return res;
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetLocalMeshMinAngle(
-  vtkCollection* selectedMeshEntities,
-  double localMinAngle, bool meshHigherDimensionalEntities)
+bool vtkCmbMeshClient::SetLocalMeshMinimumAngle(
+  vtkCollection* selectedMeshEntities, double localMinAngle)
 {
   if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
     {
@@ -371,17 +402,15 @@ bool vtkCmbMeshClient::SetLocalMeshMinAngle(
       selectedMeshEntities->GetItemAsObject(i));
     if(faceMesh)
       {
-      res = faceMesh->SetLocalMinAngle(localMinAngle,
-        meshHigherDimensionalEntities);
+      res = res && faceMesh->SetLocalMinimumAngle(localMinAngle);
       }
     }
-  return true;
+  return res;
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetLocalMeshMaxArea(
-  vtkCollection* selectedMeshEntities,
-  double localMaxArea, bool meshHigherDimensionalEntities)
+bool vtkCmbMeshClient::SetLocalMeshMaximumArea(
+  vtkCollection* selectedMeshEntities, double localMaxArea)
 {
   if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
     {
@@ -396,11 +425,10 @@ bool vtkCmbMeshClient::SetLocalMeshMaxArea(
       selectedMeshEntities->GetItemAsObject(i));
     if(faceMesh)
       {
-      res = faceMesh->SetLocalMaxArea(localMaxArea,
-        meshHigherDimensionalEntities);
+      res = res && faceMesh->SetLocalMaximumArea(localMaxArea);
       }
     }
-  return true;
+  return res;
 }
 //----------------------------------------------------------------------------
 void vtkCmbMeshClient::PrintSelf(ostream& os, vtkIndent indent)

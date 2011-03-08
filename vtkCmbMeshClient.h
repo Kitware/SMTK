@@ -24,6 +24,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkCmbMeshClient - Mesh representation for a vtkModel on the client.
 // .SECTION Description
+// All meshing must be explicitly called on these entities (unless
+// performing a model modification operation on an already meshed
+// entity).  The client must call BuildModelEntityMeshes or
+// the vtkCmbModelEntityMesh::BuildModelEntityMesh to explicitly
+// generate a mesh on the server with the current meshing
+// parameters.
 
 #ifndef __vtkCmbMeshClient_h
 #define __vtkCmbMeshClient_h
@@ -64,16 +70,15 @@ public:
   // Description:
   // Set the local mesh length/max area/min angle for those selected model entities
   bool SetLocalMeshLength(
-    vtkCollection* selectedMeshEntities,
-    double localLen, bool meshHigherDimensionalEntities=false);
-  bool SetLocalMeshMaxArea(
-    vtkCollection* selectedMeshEntities,
-    double localMaxArea, bool meshHigherDimensionalEntities=false);
-  bool SetLocalMeshMinAngle(
-    vtkCollection* selectedMeshEntities,
-    double localMinAngle, bool meshHigherDimensionalEntities=false);
+    vtkCollection* selectedMeshEntities, double localLen);
+  bool SetLocalMeshMaximumArea(
+    vtkCollection* selectedMeshEntities, double localMaxArea);
+  bool SetLocalMeshMinimumAngle(
+    vtkCollection* selectedMeshEntities, double localMinAngle);
 
   virtual void Reset();
+
+  virtual bool BuildModelEntityMeshes();
 
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh

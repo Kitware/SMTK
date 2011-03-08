@@ -139,19 +139,19 @@ bool vtkCmbMeshServer::SetGlobalLength(double globalLength)
     return false;
     }
   this->GlobalLength = globalLength > 0. ? globalLength : 0.;
-  for(std::map<vtkModelEdge*, vtkSmartPointer<vtkCmbModelEdgeMeshServer> >::iterator it=
-        this->Internal->ModelEdges.begin();it!=this->Internal->ModelEdges.end();
-      it++)
-    {
-    it->second->BuildModelEntityMesh(false);
-    }
-  // now remesh the model faces
-  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
-        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
-      it++)
-    {
-    it->second->BuildModelEntityMesh(false);
-    }
+//   for(std::map<vtkModelEdge*, vtkSmartPointer<vtkCmbModelEdgeMeshServer> >::iterator it=
+//         this->Internal->ModelEdges.begin();it!=this->Internal->ModelEdges.end();
+//       it++)
+//     {
+//     it->second->BuildModelEntityMesh(false);
+//     }
+//   // now remesh the model faces
+//   for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
+//         this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
+//       it++)
+//     {
+//     it->second->BuildModelEntityMesh(false);
+//     }
 
   this->Modified();
   return true;
@@ -165,13 +165,13 @@ bool vtkCmbMeshServer::SetGlobalMaximumArea(double maxArea)
     return false;
     }
   this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
-  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
-        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
-      it++)
-    {
-    it->second->BuildModelEntityMesh(false);
-    }
-  // when we implement volume meshing we'll have to trigger a remesh here
+//   for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
+//         this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
+//       it++)
+//     {
+//     it->second->BuildModelEntityMesh(false);
+//     }
+//   // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
   return true;
 }
@@ -184,13 +184,6 @@ bool vtkCmbMeshServer::SetGlobalMinimumAngle(double minAngle)
     return false;
     }
   this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
-  for(std::map<vtkModelFace*, vtkSmartPointer<vtkCmbModelFaceMeshServer> >::iterator it=
-        this->Internal->ModelFaces.begin();it!=this->Internal->ModelFaces.end();
-      it++)
-    {
-    it->second->BuildModelEntityMesh(false);
-    }
-  // when we implement volume meshing we'll have to trigger a remesh here
   this->Modified();
   return true;
 }

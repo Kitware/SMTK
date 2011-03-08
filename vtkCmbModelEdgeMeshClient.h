@@ -46,8 +46,11 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // Set the local mesh length
-  bool SetLocalLength(double len, bool meshHigherDimensionalEntities =false);
+  // Set the local mesh length for both the client and the server
+  // but do not initiate edge meshing.  This is done on both the
+  // client and server to make sure they are consistent in case
+  // we do model modifications.
+  bool SetLocalLength(double len);
 
 protected:
   vtkCmbModelEdgeMeshClient();

@@ -122,6 +122,8 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     }
   mesh->ShallowCopy(meshEdgesFilter->GetOutput());
   meshEdgesFilter->Delete();
+  //cerr << "model edge " << this->GetModelEdge()->GetUniquePersistentId()
+  //     << " mesh built with numpoints " << mesh->GetNumberOfPoints() << endl;
 
   // now we go and remesh any adjacent model face meshes that exist
   if(meshHigherDimensionalEntities)

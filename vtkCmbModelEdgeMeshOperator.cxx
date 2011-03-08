@@ -40,6 +40,7 @@ vtkCmbModelEdgeMeshOperator::vtkCmbModelEdgeMeshOperator()
   this->OperateSucceeded = 0;
   this->Id = 0;
   this->Length = 0;
+  this->BuildModelEntityMesh = 0;
   this->MeshHigherDimensionalEntities = 0;
 }
 
@@ -54,6 +55,7 @@ void vtkCmbModelEdgeMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
     this->OperateSucceeded = 0;
     return;
     }
+  this->OperateSucceeded = 1;
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
   vtkModel* model = mesh->GetModel();
   vtkModelEdge* modelEdge =
@@ -61,9 +63,11 @@ void vtkCmbModelEdgeMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
   vtkCmbModelEdgeMeshServer* edgeMesh = vtkCmbModelEdgeMeshServer::SafeDownCast(
     mesh->GetModelEntityMesh(modelEdge));
   edgeMesh->SetLength(this->Length);
-  this->OperateSucceeded =
-    edgeMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
-
+  if(this->BuildModelEntityMesh)
+    {
+    this->OperateSucceeded =
+      edgeMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+    }
   return;
 }
 
@@ -73,6 +77,8 @@ void vtkCmbModelEdgeMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
   os << indent << "Id: " << this->Id << endl;
   os << indent << "Length: " << this->Length << endl;
+  os << indent << "BuildModelEntityMesh: "
+     << this->BuildModelEntityMesh << endl;
   os << indent << "MeshHigherDimensionalEntities: "
      << this->MeshHigherDimensionalEntities << endl;
 }

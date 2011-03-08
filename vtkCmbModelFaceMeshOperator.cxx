@@ -41,6 +41,7 @@ vtkCmbModelFaceMeshOperator::vtkCmbModelFaceMeshOperator()
   this->Id = 0;
   this->MaximumArea = 0;
   this->MinimumAngle = 0;
+  this->BuildModelEntityMesh = 0;
   this->MeshHigherDimensionalEntities = 0;
 }
 
@@ -58,18 +59,23 @@ void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
   vtkModel* model = mesh->GetModel();
   vtkModelFace* modelFace =
-    vtkModelFace::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, this->Id));
+    vtkModelFace::SafeDownCast(model->GetModelEntity(vtkModelFaceType, this->Id));
   vtkCmbModelFaceMeshServer* faceMesh = vtkCmbModelFaceMeshServer::SafeDownCast(
     mesh->GetModelEntityMesh(modelFace));
   if(!faceMesh)
     {
     vtkWarningMacro("There is no face mesh on the server for changing local parameters");
+    this->OperateSucceeded = 0;
     return;
     }
   faceMesh->SetMaximumArea(this->MaximumArea);
   faceMesh->SetMinimumAngle(this->MinimumAngle);
-  this->OperateSucceeded =
-    faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+  this->OperateSucceeded = 1;
+  if(this->BuildModelEntityMesh)
+    {
+    this->OperateSucceeded =
+      faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+    }
 
   return;
 }
@@ -81,6 +87,8 @@ void vtkCmbModelFaceMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Id: " << this->Id << endl;
   os << indent << "MaximumArea: " << this->MaximumArea << endl;
   os << indent << "MinimumAngle: " << this->MinimumAngle << endl;
+  os << indent << "BuildModelEntityMesh: "
+     << this->BuildModelEntityMesh << endl;
   os << indent << "MeshHigherDimensionalEntities: "
      << this->MeshHigherDimensionalEntities << endl;
 }

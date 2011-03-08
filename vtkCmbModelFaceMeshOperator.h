@@ -61,6 +61,12 @@ public:
   vtkGetMacro(MinimumAngle, double);
 
   // Description:
+  // Set/get whether or not to mesh this model face.
+  // 0 means do not and 1 means do.
+  vtkSetClampMacro(BuildModelEntityMesh, int, 0, 1);
+  vtkGetMacro(BuildModelEntityMesh, int);
+
+  // Description:
   // Set/get whether or not to mesh higher dimensional entities.
   // 0 means do not and 1 means do.
   vtkSetClampMacro(MeshHigherDimensionalEntities, int, 0, 1);
@@ -85,6 +91,7 @@ private:
   vtkIdType Id;
   double MaximumArea;
   double MinimumAngle;
+  int BuildModelEntityMesh;
   int MeshHigherDimensionalEntities;
 };
 

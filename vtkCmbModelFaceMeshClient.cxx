@@ -63,14 +63,17 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
   operatorProxy->SetServers(serverModelProxy->GetServers());
 
-  vtkSMIntVectorProperty* meshProperty =
-    vtkSMIntVectorProperty::SafeDownCast(
-      operatorProxy->GetProperty("MeshHigherDimensionalEntities"));
-  meshProperty->SetElement(0, false);
+  vtkSMPropertyHelper(operatorProxy, "Id").Set(
+    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  vtkSMPropertyHelper(operatorProxy, "MaximumArea").Set(this->GetMaximumArea());
+  vtkSMPropertyHelper(operatorProxy, "MinimumAngle").Set(this->GetMinimumAngle());
+  vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
+  vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
 
   vtkCMBModel* model =
     vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model, serverModelProxy);
+  operatorProxy->Operate(model, vtkCmbMeshClient::SafeDownCast(
+                           this->GetMasterMesh())->GetServerMeshProxy());
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =
@@ -81,66 +84,43 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 
   int succeeded = operateSucceeded->GetElement(0);
   operatorProxy->Delete();
-  operatorProxy = 0;
+  operatorProxy = NULL;
   if(!succeeded)
     {
     vtkErrorMacro("Server side operator failed.");
     return false;
     }
-  // when we do volume meshing we'll have to fill this in
+  // when we do volume meshing we'll have to fill this in if
+  // meshhigherdimensionalentities is true
 
   return true;
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshClient::SetLocalMaxArea(double maxArea,
-  bool meshHigherDimensionalEntities)
+bool vtkCmbModelFaceMeshClient::SetLocalMaximumArea(double maxArea)
 {
   if(maxArea == this->GetMaximumArea())
     {
     return true;
     }
-  bool res = this->SetFaceParameters("MaximumArea",
-    maxArea, meshHigherDimensionalEntities);
-  if(res)
-    {
-    this->SetMaximumArea(maxArea);
-    this->SetMeshedMaximumArea(this->GetActualMaximumArea());
-
-    // now we go and remesh any adjacent model regions
-    if(meshHigherDimensionalEntities)
-    {
-    }
-  }
-  return res;
+  this->SetMaximumArea(maxArea);
+  return this->SetFaceParameters("MaximumArea", maxArea);
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshClient::SetLocalMinAngle(
-  double minAngle, bool meshHigherDimensionalEntities)
+bool vtkCmbModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
 {
   if(minAngle == this->GetMinimumAngle())
     {
     return true;
     }
-  bool res = this->SetFaceParameters("MinimumAngle",
-    minAngle, meshHigherDimensionalEntities);
-  if(res)
-    {
-    this->SetMinimumAngle(minAngle);
-    this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
-
-    // now we go and remesh any adjacent model regions
-    if(meshHigherDimensionalEntities)
-      {
-      }
-    }
-  return res;
+  this->SetMinimumAngle(minAngle);
+  return this->SetFaceParameters("MinimumAngle", minAngle);
 }
 
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshClient::SetFaceParameters(
-  const char* pName, double pValue, bool meshHigherDimensionalEntities)
+  const char* pName, double pValue)
 {
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
@@ -177,7 +157,8 @@ bool vtkCmbModelFaceMeshClient::SetFaceParameters(
   operatorProxy = 0;
   if(!succeeded)
     {
-    vtkErrorMacro("Server side operator failed.");
+    vtkErrorMacro("Unable to set model face mesh property "
+                  << pName << " on server properly.");
     return false;
     }
 
