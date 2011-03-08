@@ -196,9 +196,10 @@ void CmbFaceMesherInterface::bounds(double bounds[4]) const
     }
 
   //use the first point as the min and max values
+  int numPts = this->NumberOfPoints * 2;
   bounds[0] = bounds[2] = this->TIO->in->pointlist[0];
   bounds[1] = bounds[3] = this->TIO->in->pointlist[1];
-  for ( int i=2; i < this->NumberOfPoints; i+=2 )
+  for ( int i=2; i < numPts; i+=2 )
     {
     bounds[0] = this->TIO->in->pointlist[i] < bounds[0]?
       this->TIO->in->pointlist[i] : bounds[0];
@@ -209,26 +210,43 @@ void CmbFaceMesherInterface::bounds(double bounds[4]) const
     bounds[3] = this->TIO->in->pointlist[i+1] > bounds[3]?
       this->TIO->in->pointlist[i+1] : bounds[3];
     }
-
 }
 
 //----------------------------------------------------------------------------
-std::string CmbFaceMesherInterface::BuildTriangleArguments() const
+bool CmbFaceMesherInterface::BuildTriangleArguments(std::string &options) const
 {
+  bool valid = true;
+  double value = 0;
+
   std::stringstream buffer;
   buffer << "p";//generate a planar straight line graph
   buffer << "z";//use 0 based indexing
   buffer << "Q";//enable quiet mode
   if(this->MaxAreaOn)
     {
-    buffer << "a" << std::fixed << (this->area() / 2.0) * this->MaxArea;
+    value = (this->area() / 2.0) * this->MaxArea;
+    if (value < 0.0)
+      {
+      //invalid area constraint
+      return false;
+      }
+    buffer << "a" << std::fixed << value;
     }
   if (this->MinAngleOn)
     {
-    buffer << "q" << std::fixed << this->MinAngle;
+    value = this->MinAngle;
+    if (value < 0.0)
+      {
+      //invalid area constraint
+      return false;
+      }
+    buffer << "q" << std::fixed << value;
     }
   buffer << "Y";//preserve boundaries
-  return buffer.str();
+
+  //assign
+  options = buffer.str();
+  return valid;
 }
 
 //----------------------------------------------------------------------------
@@ -241,7 +259,14 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
     return false;
     }
 
-  std::string options = this->BuildTriangleArguments();
+  //make sure the options string that is constructed is valid
+  std::string options;
+  bool validOptions = this->BuildTriangleArguments(options);
+  if (!validOptions)
+    {
+    return false;
+    }
+
   size_t len = options.size();
   char *switches = new char[len+1];
   strncpy(switches,options.c_str(),len);

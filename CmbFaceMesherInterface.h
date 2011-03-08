@@ -65,7 +65,7 @@ public:
 protected:
   void InitDataStructures();
 
-  std::string BuildTriangleArguments() const;
+  bool BuildTriangleArguments(std::string &options) const;
 
   vtkPolyData *OutputMesh;
 
