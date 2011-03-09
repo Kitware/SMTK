@@ -304,17 +304,9 @@ double vtkCmbModelFaceMesh::GetActualMaximumArea()
 //----------------------------------------------------------------------------
 double vtkCmbModelFaceMesh::GetActualMinimumAngle()
 {
-  double actualMinimumAngle = this->MinimumAngle;
   double globalMinimumAngle = this->GetMasterMesh()->GetGlobalMinimumAngle();
-  if(globalMinimumAngle > 0. && globalMinimumAngle < actualMinimumAngle)
-    {
-    actualMinimumAngle = globalMinimumAngle;
-    }
-  else if(actualMinimumAngle == 0)
-    {
-    actualMinimumAngle = globalMinimumAngle;
-    }
-  return actualMinimumAngle;
+  return (this->MinimumAngle > globalMinimumAngle ? this->MinimumAngle :
+          globalMinimumAngle);
 }
 
 //----------------------------------------------------------------------------
