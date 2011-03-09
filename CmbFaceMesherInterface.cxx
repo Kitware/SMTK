@@ -224,7 +224,7 @@ bool CmbFaceMesherInterface::BuildTriangleArguments(std::string &options) const
   buffer << "Q";//enable quiet mode
   if(this->MaxAreaOn)
     {
-    value = (this->area() / 2.0) * this->MaxArea;
+    value = this->MaxArea;
     if (value < 0.0)
       {
       //invalid area constraint
