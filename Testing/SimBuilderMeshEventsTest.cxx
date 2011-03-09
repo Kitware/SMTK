@@ -202,6 +202,31 @@ int Check2DModel(const char* fileName)
       }
     }
 
+  //Test for bug #9452
+  mesh->SetGlobalLength(0.1);
+  mesh->SetGlobalMaximumArea(0.0001);
+  mesh->SetGlobalMinimumAngle(20);
+  for(edges->Begin();!edges->IsAtEnd();edges->Next())
+    {
+    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(edge));
+    edgeMesh->BuildModelEntityMesh(false);
+    }
+  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+    {
+    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+      mesh->GetModelEntityMesh(face));
+    faceMesh->BuildModelEntityMesh(false);
+    if(vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh()) == NULL ||
+       vtkPolyData::SafeDownCast(faceMesh->GetModelEntityMesh())->GetNumberOfCells() == 0)
+      {
+      numberOfErrors++;
+      vtkGenericWarningMacro("Missing a valid mesh of a model entity.");
+      }
+    }
+
   model->Reset();
   modelWrapper->Delete();
 
