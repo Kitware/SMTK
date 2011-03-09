@@ -273,72 +273,98 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
 
   if (this->isHole())
     {
-    segIt=this->Segments.begin();
-    const edgePoint *p1 = this->getPoint(segIt->first);
-    const edgePoint *p2 = this->getPoint(segIt->second);
-
-    //hole point start off at middle of the segment
-    double mx = (p1->x + p2->x)/2;
-    double my = (p1->y + p2->y)/2;
-    double dx = (p2->x - p1->x);
-    double dy = (p2->y - p1->y);
-    edgePoint holePoint(mx,my);
-
+    //we can have edges that are part of a loop, but not the hole in the loop
+    //think of a cube with an interior line
     bool pointInHoleFound = false;
-    while(!pointInHoleFound)
+    for(segIt=this->Segments.begin();segIt!=this->Segments.end() && !pointInHoleFound;
+    segIt++)
       {
-      //use the middle point on the segment
-      holePoint.x = mx - dx;
-      holePoint.x = mx - dy;
-      //see if this point is on an edge of the loop
-      if ( !this->pointOnBoundary(holePoint) )
+      const edgePoint *p1 = this->getPoint(segIt->first);
+      const edgePoint *p2 = this->getPoint(segIt->second);
+
+      //hole point start off at middle of the segment
+      double mx = (p1->x + p2->x)/2;
+      double my = (p1->y + p2->y)/2;
+      double dx = (p2->x - p1->x);
+      double dy = (p2->y - p1->y);
+      edgePoint holePoint(mx,my);
+
+      //we are only going to attempt this 6 times
+      //for each edge, before switching to a new edge.
+      //after 6 times we will most likely start getting false positives from the
+      int timesTried=0;
+      while(!pointInHoleFound && timesTried <= 6)
         {
-        pointInHoleFound = this->pointInside(holePoint);
-        }
-      if (!pointInHoleFound)
-        {
-        //flip the point to the other side
-        holePoint.x = mx + dx;
-        holePoint.x = mx + dy;
+        //use the middle point on the segment
+        holePoint.x = mx - dx;
+        holePoint.x = mx - dy;
+        //see if this point is on an edge of the loop
         if ( !this->pointOnBoundary(holePoint) )
           {
           pointInHoleFound = this->pointInside(holePoint);
           }
-        }
-      dx /= 2; //move the ray to half the distance
-      dy /= 2;
+        if (!pointInHoleFound)
+          {
+          //flip the point to the other side
+          holePoint.x = mx + dx;
+          holePoint.x = mx + dy;
+          if ( !this->pointOnBoundary(holePoint) )
+            {
+            pointInHoleFound = this->pointInside(holePoint);
+            }
+          }
 
-      //Note: should we also move Y if both x fails?
+        //==================
+        //Now try move the hole point along the y axis
+        //==================
+        if (!pointInHoleFound)
+          {
+          //use the middle point on the segment
+          holePoint.y = mx - dx;
+          holePoint.y = mx - dy;
+
+          //see if this point is on an edge of the loop
+          if ( !this->pointOnBoundary(holePoint) )
+            {
+            pointInHoleFound = this->pointInside(holePoint);
+            }
+          if (!pointInHoleFound)
+            {
+            //flip the point to the other side
+            holePoint.y = mx + dx;
+            holePoint.y = mx + dy;
+            if ( !this->pointOnBoundary(holePoint) )
+              {
+              pointInHoleFound = this->pointInside(holePoint);
+              }
+            }
+          }
+        dx /= 2; //move the ray to half the distance
+        dy /= 2;
+        ++timesTried;
+        }
+      ti->setHole(holeIndex++,holePoint.x,holePoint.y);
       }
-    ti->setHole(holeIndex++,holePoint.x,holePoint.y);
     }
 }
 
 //----------------------------------------------------------------------------
 bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
 {
-  //arbitrary big number, if point is on the edge the difference should
-  //be much much lower
-  double lowest_diff = std::numeric_limits<int>::max();
-
+  //find if the point is collinear to any of the lines
+  //http://mathworld.wolfram.com/Collinear.html
+  // if this fails email robert.maynard@kitware.com
+  bool collinear = false;
   std::list<edgeSegment>::const_iterator segIt;
-  for(segIt=this->Segments.begin();segIt!=this->Segments.end();
+  for(segIt=this->Segments.begin();segIt!=this->Segments.end() && !collinear;
     segIt++)
     {
     const edgePoint *p1 = this->getPoint(segIt->first);
     const edgePoint *p2 = this->getPoint(segIt->second);
-
-    double rise= p2->y - p1->y;
-    double run = p2->x - p1->x;
-
-    double Ub1 = ((run*p1->y)-(rise*p1->x));
-    double Ub2 = ((run*point.y)-(rise*point.x));
-    double diff = fabs(Ub1 - Ub2);
-    //because of floating point errors round off
-    //the last few digits
-    lowest_diff = lowest_diff < diff ? lowest_diff : diff;
+    collinear = fabs((point.y - p1->y) * (point.x - p2->x) -
+      (point.y - p2->y) * (point.x - p1->y)) <= 1e-9;
     }
-  return lowest_diff <= .00001;
+  return collinear;
 }
 
 //----------------------------------------------------------------------------
