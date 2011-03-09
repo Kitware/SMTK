@@ -272,8 +272,15 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
   strncpy(switches,options.c_str(),len);
   switches[len]='\0';
 
-  triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
+  int ret = triangulate(switches,this->TIO->in,this->TIO->out,this->TIO->vout);
   delete[] switches;
+
+  if ( ret != 0 )
+    {
+    //triangle failed to mesh properly
+    //C functions return not zero on failure
+    return false;
+    }
 
   //std::stringstream buffer;
   //buffer << "E:/Work/in" << faceId;
