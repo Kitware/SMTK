@@ -47,11 +47,20 @@ protected:
   virtual ~vtkCmbModelEdgeMeshServer();
 
   // Description:
+  // Set/Get whether or not to use length along edge (as opposed to distance
+  // between current mesh point and the next) when computing the next mesh pt.
+  // Defaults to "true".
+  vtkBooleanMacro(UseLengthAlongEdge, bool);
+  vtkSetMacro(UseLengthAlongEdge, bool);
+  vtkGetMacro(UseLengthAlongEdge, bool);
+
+  // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:
+  bool UseLengthAlongEdge;
   vtkCmbModelEdgeMeshServer(const vtkCmbModelEdgeMeshServer&);  // Not implemented.
   void operator=(const vtkCmbModelEdgeMeshServer&);  // Not implemented.
 };

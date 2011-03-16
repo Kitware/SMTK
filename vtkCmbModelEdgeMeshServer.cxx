@@ -50,6 +50,7 @@ vtkCxxRevisionMacro(vtkCmbModelEdgeMeshServer, "");
 vtkCmbModelEdgeMeshServer::vtkCmbModelEdgeMeshServer()
 {
   vtkPolyData* poly = vtkPolyData::New();
+  this->UseLengthAlongEdge = true;
   this->SetModelEntityMesh(poly);
   poly->FastDelete();
 }
@@ -104,7 +105,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   targetCellLength->FastDelete();
 
   vtkMeshModelEdgesFilter *meshEdgesFilter = vtkMeshModelEdgesFilter::New();
-  meshEdgesFilter->UseLengthAlongEdgeOff();
+  meshEdgesFilter->SetUseLengthAlongEdge(this->UseLengthAlongEdge);
   meshEdgesFilter->SetInput( polyLinePD );
   polyLinePD->FastDelete();
   meshEdgesFilter->SetTargetSegmentLengthCellArrayName(
