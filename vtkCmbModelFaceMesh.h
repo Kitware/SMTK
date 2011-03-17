@@ -89,6 +89,14 @@ public:
 
   vtkGetObjectMacro(ModelFace, vtkModelFace);
 
+  // Description:
+  // Return true if the model entity should have a mesh
+  // and false otherwise.
+  virtual bool IsModelEntityMeshed()
+  {
+    return (this->MeshedMaximumArea> 0. && this->MeshedMinimumAngle > 0.);
+  }
+
 protected:
   vtkCmbModelFaceMesh();
   virtual ~vtkCmbModelFaceMesh();

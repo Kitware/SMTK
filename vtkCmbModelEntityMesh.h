@@ -67,6 +67,11 @@ public:
   virtual bool BuildModelEntityMesh(
     bool meshHigherDimensionalEntities) = 0;
 
+  // Description:
+  // Return true if the model entity should have a mesh
+  // and false otherwise.
+  virtual bool IsModelEntityMeshed() = 0;
+
 protected:
   vtkCmbModelEntityMesh();
   virtual ~vtkCmbModelEntityMesh();

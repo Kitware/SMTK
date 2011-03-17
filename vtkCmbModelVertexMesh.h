@@ -50,6 +50,14 @@ public:
   // to be meshed because of this object getting meshed.
   bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
+  // Description:
+  // Return true if the model entity should have a mesh
+  // and false otherwise.
+  virtual bool IsModelEntityMeshed()
+  {
+    return false;
+  }
+
 protected:
   vtkCmbModelVertexMesh();
   virtual ~vtkCmbModelVertexMesh();

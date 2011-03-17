@@ -89,6 +89,14 @@ public:
   // 0 indicates no length has been set.
   double GetActualLength();
 
+  // Description:
+  // Return true if the model entity should have a mesh
+  // and false otherwise.
+  virtual bool IsModelEntityMeshed()
+  {
+    return (this->MeshedLength > 0.);
+  }
+
 protected:
   vtkCmbModelEdgeMesh();
   virtual ~vtkCmbModelEdgeMesh();

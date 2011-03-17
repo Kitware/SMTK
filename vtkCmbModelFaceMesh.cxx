@@ -100,7 +100,7 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
     if(edgeMesh->GetMeshedLength() <= 0.)
       {
       edges->Delete();
-      return false;
+      return true;
       }
     }
   edges->Delete();
