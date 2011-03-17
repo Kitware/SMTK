@@ -90,6 +90,9 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
     vtkErrorMacro("Server side operator failed.");
     return false;
     }
+  this->SetMeshedMaximumArea(this->GetActualMaximumArea());
+  this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
+
   // when we do volume meshing we'll have to fill this in if
   // meshhigherdimensionalentities is true
 
