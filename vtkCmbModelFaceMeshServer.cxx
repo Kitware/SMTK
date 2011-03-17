@@ -54,7 +54,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     this->SetModelEntityMesh(NULL);
     this->SetMeshedMaximumArea(0.);
     this->SetMeshedMinimumAngle(0.);
-    return false;
+    return true;
     }
 
   if (this->FaceInfo)

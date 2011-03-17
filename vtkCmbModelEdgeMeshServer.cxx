@@ -126,6 +126,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   cerr << "model edge " << this->GetModelEdge()->GetUniquePersistentId()
        << " mesh built with numpoints " << mesh->GetNumberOfPoints() << endl;
 
+  bool returnValue = true;
   // now we go and remesh any adjacent model face meshes that exist
   if(meshHigherDimensionalEntities)
     {
@@ -136,12 +137,12 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
       vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
       vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
         this->GetMasterMesh()->GetModelEntityMesh(face));
-      faceMesh->BuildModelEntityMesh(true);
+      returnValue = returnValue && faceMesh->BuildModelEntityMesh(true);
       }
     faces->Delete();
     }
 
-  return true;
+  return returnValue;
 }
 
 //----------------------------------------------------------------------------

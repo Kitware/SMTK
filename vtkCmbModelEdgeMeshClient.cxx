@@ -122,7 +122,7 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   if(!operatorProxy)
     {
     vtkErrorMacro("Unable to create operator proxy.");
-    return 0;
+    return false;
     }
   vtkSMProxy* serverModelProxy =
     vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
@@ -154,9 +154,10 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   if(!succeeded)
     {
     vtkErrorMacro("Server side operator failed.");
-    return 0;
+    return false;
     }
   this->SetMeshedLength(this->GetActualLength());
+  bool returnValue = true;
   // now we go and remesh any adjacent model face meshes that exist
   if(meshHigherDimensionalEntities)
     {
@@ -167,12 +168,12 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
       vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
       vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
         this->GetMasterMesh()->GetModelEntityMesh(face));
-      faceMesh->BuildModelEntityMesh(true);
+      returnValue = returnValue && faceMesh->BuildModelEntityMesh(true);
       }
     faces->Delete();
     }
 
-  return true;
+  return returnValue;
 }
 
 //----------------------------------------------------------------------------

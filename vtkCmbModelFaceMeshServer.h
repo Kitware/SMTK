@@ -26,9 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Mesh representation for a vtkModelFace.  The smaller value for
 // maximum area and larger value for minimum angle wins for local
-// vs. global comparisons.  BuildModelEntityMesh() is explicitly
-// called whenever changing mesh parameters
-// will trigger meshing.  Absolute values are used for area.
+// vs. global comparisons.  Absolute values are used for area.
 
 #ifndef __vtkCmbModelFaceMeshServer_h
 #define __vtkCmbModelFaceMeshServer_h
@@ -51,7 +49,9 @@ protected:
 
   // Description:
   // This method builds the model entity's mesh without checking
-  // the parameters.
+  // the parameters.  Returns true if the operation succeeded as
+  // desired.  This includes deleting the mesh if the mesh
+  // parameters go from valid to invalid values (i.e. a parameter set to 0).
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:

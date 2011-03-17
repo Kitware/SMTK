@@ -58,7 +58,9 @@ protected:
 
   // Description:
   // This method builds the model entity's mesh without checking
-  // the parameters.
+  // the parameters.  Returns true if the operation succeeded as
+  // desired.  This includes deleting the mesh if the mesh
+  // parameters go from valid to invalid values (i.e. a parameter set to 0).
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
 private:

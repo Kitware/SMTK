@@ -27,8 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Abstract mesh representation for a vtkModelEdge.  The concrete classes
 // are for the client and the server.  The smaller value for the
 // edge length is the one used for the global vs. local values.
-// The values are absolute values.  BuildModelEntityMesh() gets called
-// if the used edge length parameter changes.
+// The values are absolute values.
 
 #ifndef __vtkCmbModelEdgeMesh_h
 #define __vtkCmbModelEdgeMesh_h
@@ -55,7 +54,10 @@ public:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true
   // it will also mesh any higher dimensional entities which need
-  // to be meshed because of this object getting meshed.
+  // to be meshed because of this object getting meshed.  Returns
+  // true if the operation succeeded as desired.  This includes
+  // deleting the mesh if the mesh parameters go from valid
+  // to invalid values (i.e. a parameter set to 0).
   virtual bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
   // Description:
@@ -108,7 +110,9 @@ protected:
 
   // Description:
   // This method builds the model entity's mesh without checking
-  // the parameters.
+  // the parameters.  Returns true if the operation succeeded as
+  // desired.  This includes deleting the mesh if the mesh
+  // parameters go from valid to invalid values (i.e. a parameter set to 0).
   virtual bool BuildMesh(bool meshHigherDimensionalEntities) = 0;
 
 private:

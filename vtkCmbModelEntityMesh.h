@@ -63,7 +63,10 @@ public:
   // BuildModelEntityMesh will generate a mesh for the associated
   // model entity.  If meshHigherDimensionalEntities is set to true
   // it will also mesh any higher dimensional entities which need
-  // to be meshed because of this object getting meshed.
+  // to be meshed because of this object getting meshed.  Returns
+  // true if the operation succeeded as desired.  This includes
+  // deleting the mesh if the mesh parameters go from valid
+  // to invalid values (i.e. a parameter set to 0).
   virtual bool BuildModelEntityMesh(
     bool meshHigherDimensionalEntities) = 0;
 

@@ -50,6 +50,8 @@ vtkCmbModelFaceMeshClient::~vtkCmbModelFaceMeshClient()
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 {
+  this->SetMeshedMaximumArea(0);
+  this->SetMeshedMinimumAngle(0);
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
     manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
