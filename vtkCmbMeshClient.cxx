@@ -102,6 +102,10 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
     vtkErrorMacro("Passed in NULL server side proxy.");
     return;
     }
+  if(model->GetModelDimension() != 2)
+    {  // do nothing if it's not a 2d model
+    return;
+    }
   if(this->Model != model)
     {
     this->Reset();

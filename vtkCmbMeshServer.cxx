@@ -81,6 +81,10 @@ void vtkCmbMeshServer::Initialize(vtkModel* model)
     vtkErrorMacro("Passed in NULL model.");
     return;
     }
+  if(model->GetModelDimension() != 2)
+    {  // do nothing if it's not a 2d model
+    return;
+    }
   if(this->Model != model)
     {
     this->Reset();
