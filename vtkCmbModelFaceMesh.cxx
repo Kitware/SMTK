@@ -90,6 +90,8 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
     {
     return false;
     }
+
+  // check if all the edges are meshed first
   vtkModelItemIterator* edges = this->ModelFace->NewAdjacentModelEdgeIterator();
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
@@ -100,6 +102,9 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
     if(edgeMesh->GetMeshedLength() <= 0.)
       {
       edges->Delete();
+      this->SetModelEntityMesh(NULL);
+      this->SetMeshedMaximumArea(0.);
+      this->SetMeshedMinimumAngle(0.);
       return true;
       }
     }

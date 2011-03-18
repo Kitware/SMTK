@@ -67,6 +67,18 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   if(this->GetActualLength() <= 0.)
     {
     this->SetModelEntityMesh(NULL);
+    // also have to delete mesh of adjacent model faces
+    vtkModelItemIterator* faces =
+      this->GetModelEdge()->NewAdjacentModelFaceIterator();
+    bool returnValue = true;
+    for(faces->Begin();!faces->IsAtEnd();faces->Next())
+      {
+      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+      vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+        this->GetMasterMesh()->GetModelEntityMesh(face));
+      returnValue = returnValue && faceMesh->BuildModelEntityMesh(true);
+      }
+    faces->Delete();
     return true;
     }
 
