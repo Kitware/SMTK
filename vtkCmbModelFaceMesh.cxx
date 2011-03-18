@@ -105,7 +105,7 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
       this->SetModelEntityMesh(NULL);
       this->SetMeshedMaximumArea(0.);
       this->SetMeshedMinimumAngle(0.);
-      return true;
+      return false;
       }
     }
   edges->Delete();

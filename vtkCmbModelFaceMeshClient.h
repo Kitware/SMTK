@@ -56,10 +56,6 @@ protected:
   // parameters go from valid to invalid values (i.e. a parameter set to 0).
   bool BuildMesh(bool meshHigherDimensionalEntities);
 
-  // Description:
-  // Set face parameters.
-  bool SetFaceParameters(const char* name, double length);
-
 private:
   vtkCmbModelFaceMeshClient(const vtkCmbModelFaceMeshClient&);  // Not implemented.
   void operator=(const vtkCmbModelFaceMeshClient&);  // Not implemented.

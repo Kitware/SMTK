@@ -109,7 +109,7 @@ bool vtkCmbModelFaceMeshClient::SetLocalMaximumArea(double maxArea)
     return true;
     }
   this->SetMaximumArea(maxArea);
-  return this->SetFaceParameters("MaximumArea", maxArea);
+  return this->BuildMesh(false);
 }
 
 //----------------------------------------------------------------------------
@@ -120,55 +120,9 @@ bool vtkCmbModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
     return true;
     }
   this->SetMinimumAngle(minAngle);
-  return this->SetFaceParameters("MinimumAngle", minAngle);
+  return this->BuildMesh(false);
 }
 
-//----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshClient::SetFaceParameters(
-  const char* pName, double pValue)
-{
-  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
-  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
-  if(!operatorProxy)
-    {
-    vtkErrorMacro("Unable to create operator proxy.");
-    return false;
-    }
-  vtkSMProxy* serverModelProxy =
-    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
-  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
-  operatorProxy->SetServers(serverModelProxy->GetServers());
-
-  vtkSMPropertyHelper(operatorProxy, pName).Set(pValue);
-  vtkSMPropertyHelper(operatorProxy, "Id").Set(
-    this->GetModelGeometricEntity()->GetUniquePersistentId());
-  operatorProxy->UpdateVTKObjects();
-
-  vtkCMBModel* model =
-    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
-  operatorProxy->Operate(model,
-    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerMeshProxy());
-
-  // check to see if the operation succeeded on the server
-  vtkSMIntVectorProperty* operateSucceeded =
-    vtkSMIntVectorProperty::SafeDownCast(
-    operatorProxy->GetProperty("OperateSucceeded"));
-
-  operatorProxy->UpdatePropertyInformation();
-
-  int succeeded = operateSucceeded->GetElement(0);
-  operatorProxy->Delete();
-  operatorProxy = 0;
-  if(!succeeded)
-    {
-    vtkErrorMacro("Unable to set model face mesh property "
-                  << pName << " on server properly.");
-    return false;
-    }
-
-  return true;
-}
 //----------------------------------------------------------------------------
 void vtkCmbModelFaceMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
