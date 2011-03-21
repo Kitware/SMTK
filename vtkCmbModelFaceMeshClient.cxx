@@ -109,7 +109,7 @@ bool vtkCmbModelFaceMeshClient::SetLocalMaximumArea(double maxArea)
     return true;
     }
   this->SetMaximumArea(maxArea);
-  return this->BuildMesh(false);
+  return this->BuildModelEntityMesh(false);
 }
 
 //----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ bool vtkCmbModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
     return true;
     }
   this->SetMinimumAngle(minAngle);
-  return this->BuildMesh(false);
+  return this->BuildModelEntityMesh(false);
 }
 
 //----------------------------------------------------------------------------
