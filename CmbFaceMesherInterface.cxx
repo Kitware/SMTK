@@ -235,9 +235,9 @@ bool CmbFaceMesherInterface::BuildTriangleArguments(std::string &options) const
   if (this->MinAngleOn)
     {
     value = this->MinAngle;
-    if (value < 0.0 || value > 33.3)
+    if (value < 0.0 || value > 33.)
       {
-      vtkGenericWarningMacro("triangle mesher has min angle limit of 33.3");
+      vtkGenericWarningMacro("triangle mesher has min angle limit of 33.");
       //invalid area constraint
       return false;
       }

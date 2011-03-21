@@ -222,9 +222,9 @@ bool vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
     {
     this->GlobalMinimumAngle = 0;
     }
-  else if(minAngle > 33.3)
+  else if(minAngle > 33.)
     {
-    this->GlobalMinimumAngle = 33.3;
+    this->GlobalMinimumAngle = 33.;
     }
   else
     {

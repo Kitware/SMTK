@@ -71,10 +71,10 @@ public:
   // indicates that it is not set.  If the global min angle
   // is smaller than this value then that value will be used
   // when generating the surface mesh.  Note that the angle
-  // is in degrees.  The 33.3 maximum value is imposed by
+  // is in degrees.  The 33 maximum value is imposed by
   // the triangle mesher.
   vtkGetMacro(MinimumAngle, double);
-  vtkSetClampMacro(MinimumAngle, double, 0, 33.3);
+  vtkSetClampMacro(MinimumAngle, double, 0, 33);
 
   vtkGetMacro(MeshedMaximumArea, double);
   vtkGetMacro(MeshedMinimumAngle, double);
