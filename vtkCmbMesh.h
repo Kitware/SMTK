@@ -67,7 +67,8 @@ public:
   // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
-  // is still unset.
+  // is still unset.  The maximum value for minimum angle
+  // is 33.3 as enforced by triangle.
   virtual bool SetGlobalMinimumAngle(double angle) = 0;
   vtkGetMacro(GlobalMinimumAngle, double);
 

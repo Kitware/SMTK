@@ -33,6 +33,7 @@
          command="SetGlobalMinimumAngle"
          number_of_elements="1"
          default_values="0">
+        <DoubleRangeDomain name="range" min="0" max="33.3"/>
         <Documentation>
           The desired global minimum angle of the cells.
         </Documentation>
@@ -147,7 +148,7 @@
          command="SetMinimumAngle"
          number_of_elements="1"
          default_values="0">
-        <DoubleRangeDomain name="range" min="0" max="60"/>
+        <DoubleRangeDomain name="range" min="0" max="33.3"/>
         <Documentation>
           The desired minimum angle of the cells.
         </Documentation>

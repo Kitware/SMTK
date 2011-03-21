@@ -218,8 +218,18 @@ bool vtkCmbMeshClient::SetGlobalMinimumAngle(double minAngle)
     {
     return false;
     }
-  this->GlobalMinimumAngle = minAngle > 0. ? minAngle : 0.;
-
+  if(minAngle < 0.)
+    {
+    this->GlobalMinimumAngle = 0;
+    }
+  else if(minAngle > 33.3)
+    {
+    this->GlobalMinimumAngle = 33.3;
+    }
+  else
+    {
+    this->GlobalMinimumAngle = minAngle;
+    }
   vtkSMDoubleVectorProperty* angleProperty =
     vtkSMDoubleVectorProperty::SafeDownCast(
       this->ServerMeshProxy->GetProperty("GlobalMinimumAngle"));
