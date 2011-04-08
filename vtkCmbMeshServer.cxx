@@ -297,6 +297,10 @@ void vtkCmbMeshServer::ModelEntityBoundaryModified(vtkModelGeometricEntity* enti
         }
       }
     edges->Delete();
+    if(vtkCmbModelEntityMesh* faceMesh = this->GetModelEntityMesh(face))
+      {
+      faceMesh->BuildModelEntityMesh(false);
+      }
     }
 }
 

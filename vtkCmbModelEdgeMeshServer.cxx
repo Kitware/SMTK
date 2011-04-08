@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelFaceMesh.h"
 #include "vtkCMBModelEdge.h"
 #include "vtkCmbModelVertexMesh.h"
+#include <vtkCMBUserName.h>
 #include "vtkMeshModelEdgesFilter.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
@@ -135,7 +136,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     }
   mesh->ShallowCopy(meshEdgesFilter->GetOutput());
   meshEdgesFilter->Delete();
-  cerr << "model edge " << this->GetModelEdge()->GetUniquePersistentId()
+  cerr << "model edge " << vtkCMBUserName::GetUserName(this->GetModelEdge())
        << " mesh built with numpoints " << mesh->GetNumberOfPoints() << endl;
 
   bool returnValue = true;

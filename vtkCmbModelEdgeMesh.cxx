@@ -81,6 +81,10 @@ bool vtkCmbModelEdgeMesh::BuildModelEntityMesh(
     {
     doBuild = true;
     }
+  else if(this->GetModelEntityMesh() == NULL && this->GetActualLength() == 0)
+    {
+    doBuild = false;
+    }
   else if(this->MeshedLength != this->GetActualLength())
     {
     doBuild = true;
