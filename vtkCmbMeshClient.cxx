@@ -127,8 +127,6 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
   callbackCommand->SetCallback(vtkCmbMeshClient::ModelGeometricEntityChanged);
   callbackCommand->SetClientData((void*) this);
   model->AddObserver(ModelGeometricEntityBoundaryModified, callbackCommand);
-  model->AddObserver(ModelGeometricEntityCreated, callbackCommand);
-  model->AddObserver(ModelGeometricEntityAboutToDestroy, callbackCommand);
   model->AddObserver(ModelGeometricEntitiesAboutToMerge, callbackCommand);
   model->AddObserver(ModelGeometricEntitySplit, callbackCommand);
 
