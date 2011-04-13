@@ -56,6 +56,8 @@ protected:
   vtkCmbModelEdgeMeshClient();
   virtual ~vtkCmbModelEdgeMeshClient();
 
+  friend class vtkCmbMeshClient;
+
   // Description:
   // This method builds the model entity's mesh without checking
   // the parameters.  Returns true if the operation succeeded as

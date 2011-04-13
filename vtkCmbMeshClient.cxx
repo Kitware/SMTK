@@ -336,8 +336,9 @@ void vtkCmbMeshClient::ModelEdgeSplit(vtkSplitEventData* splitEventData)
 
   vtkSmartPointer<vtkCmbModelEdgeMeshClient> createdMesh =
     vtkSmartPointer<vtkCmbModelEdgeMeshClient>::New();
-  createdMesh->SetLength(sourceMesh->GetLength());
   createdMesh->Initialize(this, createdEdge);
+  createdMesh->SetLength(sourceMesh->GetLength());
+  createdMesh->SetMeshedLength(sourceMesh->GetMeshedLength());
   // don't need to trigger the mesh since it's already been done on the server
   this->Internal->ModelEdges[createdEdge] = createdMesh;
 
