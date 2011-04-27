@@ -343,7 +343,12 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
         dy /= 2;
         ++timesTried;
         }
-      ti->setHole(holeIndex++,holePoint.x,holePoint.y);
+
+      if ( pointInHoleFound )
+        {
+        //only add the point if the while loop was valid
+        ti->setHole(holeIndex++,holePoint.x,holePoint.y);
+        }
       }
     }
 }
