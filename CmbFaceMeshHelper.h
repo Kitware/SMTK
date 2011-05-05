@@ -40,16 +40,45 @@ class vtkPolyData;
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
 {
-struct edgePoint
+class edgePoint
 {
-  double x, y;
-  edgePoint(double a, double b):x(a),y(b){}
-  bool operator <(const edgePoint &p) const {
-    return x < p.x || (x == p.x && y < p.y);
-  }
+public:
+  edgePoint(const double& a, const double& b);
+  edgePoint(const double& a, const double& b,
+      const vtkIdType& ModelId, const int& ModelEntityType);
+
+  double x;
+  double y;
+  vtkIdType modelId;
+  int modelEntityType;
+
+  //comparison operator needed for map storage
+  bool operator<(const edgePoint &p) const;
 };
 
-typedef vtkstd::pair<vtkIdType,vtkIdType> edgeSegment;
+class edgeSegment
+{
+public:
+  edgeSegment(const vtkIdType& f, const vtkIdType& s);
+  edgeSegment(const vtkIdType& f, const vtkIdType& s, const vtkIdType& id);
+
+  //comparison operator needed for map storage
+  bool operator<(const edgeSegment &es) const;
+
+  const vtkIdType& first() const {return First;}
+  const vtkIdType& second() const {return Second;}
+
+  void setModelId(const vtkIdType& id){ModelId=id;}
+  const vtkIdType& modelId() const {return ModelId;}
+
+  //can't set the entityType as it is always an edge
+  int modelEntityType() const;
+protected:
+  vtkIdType First;
+  vtkIdType Second;
+  vtkIdType ModelId;
+};
+
 class InternalEdge
 {
 public:
@@ -64,12 +93,22 @@ public:
 
   int numberMeshPoints() const {return (int)MeshPoints.size();}
 
-  std::set<vtkIdType> getModelVerts() const {return ModelVerts;}
-  std::list<edgeSegment> getSegments() const {return Segments;}
-  std::map<vtkIdType,edgePoint> getMeshPoints() const {return MeshPoints;}
+  const std::set<vtkIdType>& getModelVerts() const {return ModelVerts;}
+  const std::list<edgeSegment>& getSegments() const {return Segments;}
+  const std::map<vtkIdType,edgePoint>& getMeshPoints() const {return MeshPoints;}
 
-  vtkIdType getId() const{return Id;}
+  const vtkIdType& getId() const{return Id;}
 protected:
+
+  //Updates each point in the edge with the latest
+  //relationship. If the point matches a model vert
+  //it will have the id of the model vert and be set too vtkModelVertexType
+  //else it will have the id of the edge and be set to vtkModelEdgeType
+  void updateModelRealtionships();
+
+  //Same as updateModelRealtionships but for only a single model vertex id
+  void updateModelRealtionship(const vtkIdType &vertexId);
+
   const vtkIdType Id;
   std::list<edgeSegment> Segments;
   std::map<vtkIdType,edgePoint> MeshPoints;
@@ -157,17 +196,19 @@ protected:
   //these store ids, so we don't have duplicates
   std::set<vtkIdType> ModelEdges;
 
-  std::list<edgeSegment> Segments;
+  //Stores all the segments. Stores the segments in a way that
+  //is fast to see if an edge already exists. When iterated will not
+  //form a sequential list of segments of the loop. This is done this
+  //way because our mesher doesn't care about order so that isn't slowed
+  //down but this makes mapping the mesh back to the model fast!
+  std::set<edgeSegment> Segments;
 
   //bi directional map implemented as two maps
-  std::map<edgePoint,vtkIdType> PointsToIds; //needed for easy lookup on duplicate points
+  //PointsToIds needed for easy lookup on duplicate points
+  //IdsToPoints needed for correct indexing from the segments, also needed
+  //for fast lookup on points mapping back to model
+  std::map<edgePoint,vtkIdType> PointsToIds;
   std::map<vtkIdType,edgePoint> IdsToPoints;
-
-  //When converting back from the mesh to the model we need to know
-  //for each point if it is a model vertex or an edge point.
-  //this mapping combined with the ModelEdge list tells us exactly what
-  //each point is
-  std::map<vtkIdType,vtkIdType> ModelRealtion;
 };
 
 class InternalFace
