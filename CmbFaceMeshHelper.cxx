@@ -28,10 +28,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "CmbFaceMeshHelper.h"
 
 #include <limits> //Needed for int max
-#include "vtkPolyData.h"
 #include "vtkCellArray.h"
+#include "vtkCellData.h"
 #include "vtkPoints.h"
 #include "vtkPointData.h"
+#include "vtkPolyData.h"
 #include "CmbFaceMesherInterface.h"
 
 #include "vtkIntArray.h"
@@ -734,7 +735,7 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
           costs[i] -= previousCost;
           canMoveToNextBin[i] = (costs[i] > currentCost );
           validBin[i] = (costs[i] >= 0 && !canMoveToNextBin[i]);
-          numCanMove += canMoveToNextBin ? 1 : 0;
+          numCanMove += canMoveToNextBin[i] ? 1 : 0;
           }
 
         //NOTE we specify the cell ordering to be the same as the
@@ -764,10 +765,15 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
         currentCost = previousCost;
         }
       }
-
     cmt+=3;
     cmu+=3;
     }
+
+  mesh->GetCellData()->AddArray(cellModelType);
+  mesh->GetCellData()->AddArray(cellModelUseId);
+
+  cellModelType->FastDelete();
+  cellModelUseId->FastDelete();
 
   return true;
 }
