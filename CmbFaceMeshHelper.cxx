@@ -740,29 +740,21 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
         //NOTE we specify the cell ordering to be the same as the
         //ordering of the points so: 0-1,1-2,2-0. Because
         //of this we don't ever incement the cell array pointers here
+        int indices[4] = {0,1,2,0};
+        for ( int i=0; i < 3; ++i)
+          {
+          int pos=indices[i];
+          //verify edge 0 to 1 is from the inputed edge mesh
+          if ( validBin[pos] && validBin[pos+1] )
+            {
+            //set the default values up
+            cmt[pos] = vtkModelFaceType;
+            cmu[pos] = facePersistenId;
+            //modify it if needed
+            it->edgeModelRelation(pts[pos],pts[pos+1], cmt[pos], cmu[pos]);
+            }
+          }
 
-        //verify edge 0 to 1 is from the inputed edge mesh
-        if ( validBin[0] && validBin[1] )
-          {
-          //set the default values up
-          cmt[0] = vtkModelFaceType;
-          cmu[0] = facePersistenId;
-          it->edgeModelRelation(pts[0],pts[1], cmt[0], cmu[0]);
-          }
-        //verify edge 1 to 2
-        if ( validBin[1] && validBin[2] )
-          {
-          cmt[1] = vtkModelFaceType;
-          cmu[1] = facePersistenId;
-          it->edgeModelRelation(pts[1],pts[2], cmt[1], cmu[1]);
-          }
-        //verify edge 2 to 0
-        if ( validBin[2] && validBin[0] )
-          {
-          cmt[2] = vtkModelFaceType;
-          cmu[2] = facePersistenId;
-          it->edgeModelRelation(pts[2],pts[0], cmt[2], cmu[2]);
-          }
         //now confirm we have at least two items that can go on
         if ( numCanMove < 2 )
           {
