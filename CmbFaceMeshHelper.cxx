@@ -233,8 +233,22 @@ bool InternalLoop::pointModelRelation(const vtkIdType &pointId,
   return true;
 }
 
+//returns true if the edge is contained in the loop.
+//The Ids passed in must be between zero and number of Points - 1
+//if the edge is a mesh edge the modelEntityType
+//  will be set to vtkModelEdgeType, and the uniqueId will be
+//  set to the UniquePersistenId of the edge of the edge
+// if the edge isn't on the loop the modelEntityType and uniqueId
+//  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
-int InternalLoop::getNumberOfPoints()
+bool InternalLoop::edgeModelRelation(const vtkIdType &pointId1, const vtkIdType &pointId2,
+  int &modelEntityType, vtkIdType &uniqueId) const
+{
+
+  return true;
+}
+//----------------------------------------------------------------------------
+int InternalLoop::getNumberOfPoints() const
 {
   return (int)this->PointsToIds.size();
 }
@@ -485,6 +499,13 @@ void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
 //----------------------------------------------------------------------------
 bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
+  return this->RelateMeshCellsToModel(mesh, facePersistenId);
+}
+
+//----------------------------------------------------------------------------
+bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+{
+  //Currently not needed, as cell relationship is good enough
   vtkPoints *points = mesh->GetPoints();
   if (points == NULL)
     {
@@ -520,7 +541,7 @@ bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePer
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
     loopPointSize = it->getNumberOfPoints();
-    for (int i=0; i < loopPointSize; ++i)
+    for (i=0; i < loopPointSize; ++i)
       {
       if (it->pointModelRelation(i,type,id))
         {
@@ -551,5 +572,128 @@ bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePer
 
   pointModelType->FastDelete();
   pointModelUseId->FastDelete();
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+{
+  //we presume we only have triangle cells
+  //if we have other cell arrays this will break
+  //if we have non triangle cells in the poly list this will break
+  vtkCellArray *cells = mesh->GetPolys();
+  if ( cells == NULL )
+    {
+    return false;
+    }
+
+  vtkIdType size = cells->GetNumberOfCells();
+
+  //model type for each point in the cell
+  vtkIntArray *cellModelType = vtkIntArray::New();
+  cellModelType->SetNumberOfComponents(3);
+  cellModelType->SetNumberOfTuples(size);
+  cellModelType->SetName("ModelType");
+
+  vtkIdTypeArray *cellModelUseId = vtkIdTypeArray::New();
+  cellModelUseId->SetNumberOfComponents(3);
+  cellModelUseId->SetNumberOfTuples(size);
+  cellModelUseId->SetName("ModelUseId");
+
+  //Info:
+  //We are finding if the line created by each two points in the triangle
+  //is an edge in the model if both points that create the edge
+  //are part of the same loop. The nice thing is that all loop
+  //ids are sequential from zero so we can do this 'easily'
+
+  //use direct pointers for speed
+  int *cmt = reinterpret_cast<int *>(cellModelType->GetVoidPointer(0));
+  vtkIdType *cmu = reinterpret_cast<vtkIdType *>(cellModelUseId->GetVoidPointer(0));
+
+  std::list<InternalLoop>::const_iterator it;
+  //stores the current cost of the index to move to next bin
+  vtkIdType costs[3]={0,0,0};
+  bool canMoveToNextBin[3]={false,false,false}; //stores if this item can move
+  bool validBin[3]={false,false,false}; //stores if this is the correct bin
+  int currentCost = 0, previousCost=0;
+  const int maxCost = this->numberOfPoints();
+
+  vtkIdType *pts,npts;
+  cells->InitTraversal();
+  while( cells->GetNextCell(npts,pts) )
+    {
+    //the number of pts better be 3 or this will walk right off the edge
+    costs[0] = pts[0]; costs[1] = pts[1]; costs[2] = pts[2];
+    if ( costs[0] >= maxCost && costs[1] >= maxCost && costs[2] >= maxCost )
+      {
+      //this cell is entirely part of the face, so don't even attempt
+      //to see which bin is valid
+      for (int i=0; i<3;++i)
+        {
+        cmt[i] = vtkModelFaceType;
+        cmu[i] = facePersistenId;
+        }
+      }
+    else
+      {
+      //on each bin subtract the cost of that bin from both
+      //if two are less than/equal to the bin cost and greater than zero.
+      //  go register those edges
+      //if two are greater than the bin cost, goto next bin.
+      //else invalid edge stop.
+      currentCost = 0;
+      for(it=this->Loops.begin();it!=this->Loops.end();it++)
+        {
+        int numCanMove = 0;
+        currentCost = it->getNumberOfPoints() - 1;
+        //update the costs for this point
+        for (int i=0; i<3;++i)
+          {
+          costs[i] -= previousCost;
+          canMoveToNextBin[i] = (costs[i] > currentCost );
+          validBin[i] = (costs[i] >= 0 && !canMoveToNextBin[i]);
+          numCanMove += canMoveToNextBin ? 1 : 0;
+          }
+
+        //NOTE we specify the cell ordering to be the same as the
+        //ordering of the points so: 0-1,1-2,2-0. Because
+        //of this we don't ever incement the cell array pointers here
+
+        //verify edge 0 to 1 is from the inputed edge mesh
+        if ( validBin[0] && validBin[1] )
+          {
+          //set the default values up
+          cmt[0] = vtkModelFaceType;
+          cmu[0] = facePersistenId;
+          it->edgeModelRelation(pts[0],pts[1], cmt[0], cmu[0]);
+          }
+        //verify edge 1 to 2
+        if ( validBin[1] && validBin[2] )
+          {
+          cmt[1] = vtkModelFaceType;
+          cmu[1] = facePersistenId;
+          it->edgeModelRelation(pts[1],pts[2], cmt[1], cmu[1]);
+          }
+        //verify edge 2 to 0
+        if ( validBin[2] && validBin[0] )
+          {
+          cmt[2] = vtkModelFaceType;
+          cmu[2] = facePersistenId;
+          it->edgeModelRelation(pts[2],pts[0], cmt[2], cmu[2]);
+          }
+        //now confirm we have at least two items that can go on
+        if ( numCanMove < 2 )
+          {
+          break;
+          }
+
+        currentCost = previousCost;
+        }
+      }
+
+    cmt+=3;
+    cmu+=3;
+    }
+
   return true;
 }

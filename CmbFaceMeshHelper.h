@@ -100,12 +100,22 @@ public:
   bool pointModelRelation(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
+  //returns true if the edge is contained in the loop.
+  //The Ids passed in must be between zero and number of Points - 1
+  //if the edge is a mesh edge the modelEntityType
+  //  will be set to vtkModelEdgeType, and the uniqueId will be
+  //  set to the UniquePersistenId of the edge of the edge
+  // if the edge isn't on the loop the modelEntityType and uniqueId
+  //  WILL NOT BE MODIFIED
+  bool edgeModelRelation(const vtkIdType &pointId1, const vtkIdType &pointId2,
+    int &modelEntityType, vtkIdType &uniqueId) const;
+
   //mark that we have a duplicate edge
   //this determines if the loop is a hole
   void markEdgeAsDuplicate(const vtkIdType &edgeId);
 
   //returns the number of  unique points in this loop
-  int getNumberOfPoints();
+  int getNumberOfPoints() const;
 
   //get the number of line segments in the loop
   int getNumberOfLineSegments() const;
@@ -172,6 +182,8 @@ class InternalFace
     bool RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
 
   protected:
+    bool RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
+    bool RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
     std::list<InternalLoop> Loops;
 };
 }
