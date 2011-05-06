@@ -71,9 +71,37 @@ public:
     bool meshHigherDimensionalEntities) = 0;
 
   // Description:
+  // Set/get the model entity mesh length.  If it is 0 it
+  // indicates that it is not set.  If the global entity length
+  // is smaller than this value then that value will be used
+  // when generating the model entity mesh.  If the actual
+  // used length gets modified then the model entity
+  // automatically gets remeshed.
+  vtkGetMacro(Length, double);
+  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
+
+  // Description:
+  // Get the actual length used to mesh this entity (0 indicates
+  // that no valid length exists and therefore there should
+  // not be a mesh of this model entity.
+  vtkGetMacro(MeshedLength, double);
+
+  // Description:
+  // Get the actual length the model edge will be meshed with.
+  // 0 indicates no length has been set.
+  virtual double GetActualLength() = 0;
+
+  // Description:
   // Return true if the model entity should have a mesh
   // and false otherwise.
-  virtual bool IsModelEntityMeshed() = 0;
+  virtual bool IsModelEntityMeshed()
+  {
+    return (this->MeshedLength > 0.);
+  }
+
+  // Description:
+  // Set the local mesh length on the entity.
+  virtual bool SetLocalLength(double len) = 0;
 
 protected:
   vtkCmbModelEntityMesh();
@@ -88,10 +116,26 @@ protected:
   // Mesh is not reference counted here.
   vtkSetMacro(MasterMesh, vtkCmbMesh*);
 
+  // Description:
+  // Set the MeshedLength.  This is protected so that derived
+  // classes can use this method.
+  vtkSetClampMacro(MeshedLength, double, 0, VTK_LARGE_FLOAT);
+
+
 private:
   bool Visible;
   vtkCmbMesh* MasterMesh;
   vtkPolyData* ModelEntityMesh;
+
+  // Description:
+  // The set edge cell length for this model entity.  If the global
+  // length is smaller than this then that value is used for
+  // meshing (ignoring 0/unset length).
+  double Length;
+
+  // Description:
+  // The meshed length of the current mesh if it exists.
+  double MeshedLength;
 
   vtkCmbModelEntityMesh(const vtkCmbModelEntityMesh&);  // Not implemented.
   void operator=(const vtkCmbModelEntityMesh&);  // Not implemented.

@@ -26,11 +26,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkCallbackCommand.h>
 #include <vtkCMBModel.h>
-#include "vtkCmbModelEdgeMeshClient.h"
-#include "vtkCmbModelEdgeMeshServer.h"
+#include "vtkCmbModelEdgeMesh.h"
 #include "vtkCmbModelFaceMesh.h"
 #include <vtkCMBModelGeometricEntity.h>
 #include "vtkCmbModelVertexMesh.h"
+#include "vtkCollection.h"
 #include <vtkIdList.h>
 #include <vtkMath.h>
 #include <vtkMergeEventData.h>
@@ -54,7 +54,6 @@ vtkCmbMesh::vtkCmbMesh()
 {
   this->Visible = true;
   this->GlobalLength = 0;
-  this->GlobalMaximumArea = 0;
   this->GlobalMinimumAngle = 0;
   this->Model = NULL;
 }
@@ -68,7 +67,6 @@ vtkCmbMesh::~vtkCmbMesh()
 void vtkCmbMesh::Reset()
 {
   this->GlobalLength = 0;
-  this->GlobalMaximumArea = 0;
   this->GlobalMinimumAngle = 0;
   this->Model = NULL;
   this->Modified();
@@ -115,6 +113,50 @@ void vtkCmbMesh::ModelGeometricEntityChanged(
     cmbMesh->ModelEntityBoundaryModified((vtkModelGeometricEntity*)callData);
     }
 }
+//----------------------------------------------------------------------------
+bool vtkCmbMesh::SetLocalMeshLength(
+  vtkCollection* selectedMeshEntities, double localLen)
+{
+  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
+    {
+    return false;
+    }
+  bool res = true;
+  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
+    {
+    vtkSmartPointer<vtkCmbModelEntityMesh> meshEntity =
+      vtkCmbModelEntityMesh::SafeDownCast(
+      selectedMeshEntities->GetItemAsObject(i));
+    if(meshEntity)
+      {
+      res = res && meshEntity->SetLocalLength(localLen);
+      }
+    }
+  return res;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbMesh::SetLocalMeshMinimumAngle(
+  vtkCollection* selectedMeshEntities, double localMinAngle)
+{
+  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
+    {
+    return false;
+    }
+  bool res = true;
+  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
+    {
+    vtkSmartPointer<vtkCmbModelFaceMesh> faceMesh =
+      vtkCmbModelFaceMesh::SafeDownCast(
+      selectedMeshEntities->GetItemAsObject(i));
+    if(faceMesh)
+      {
+      res = res && faceMesh->SetLocalMinimumAngle(localMinAngle);
+      }
+    }
+  return res;
+}
+
 
 //----------------------------------------------------------------------------
 void vtkCmbMesh::PrintSelf(ostream& os, vtkIndent indent)
@@ -123,7 +165,6 @@ void vtkCmbMesh::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "Visible: " << this->Visible << "\n";
   os << indent << "GlobalLength: " << this->GlobalLength << "\n";
-  os << indent << "GlobalMaximumArea: " << this->GlobalMaximumArea << "\n";
   os << indent << "GlobalMinimumAngle: " << this->GlobalMinimumAngle << "\n";
   if(this->Model)
     {
@@ -134,4 +175,5 @@ void vtkCmbMesh::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "Model: (NULL)\n";
     }
 }
+//----------------------------------------------------------------------------
 

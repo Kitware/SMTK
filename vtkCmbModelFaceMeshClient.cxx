@@ -48,9 +48,55 @@ vtkCmbModelFaceMeshClient::~vtkCmbModelFaceMeshClient()
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshClient::SendLengthAndAngleToServer()
+{
+  vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
+  vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
+    manager->NewProxy("CMBSimBuilderMeshGroup", "ModelFaceMeshOperator"));
+  if(!operatorProxy)
+    {
+    vtkErrorMacro("Unable to create operator proxy.");
+    return false;
+    }
+  vtkSMProxy* serverModelProxy =
+    vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
+  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
+  operatorProxy->SetServers(serverModelProxy->GetServers());
+
+  vtkSMPropertyHelper(operatorProxy, "Id").Set(
+    this->GetModelGeometricEntity()->GetUniquePersistentId());
+  vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
+  vtkSMPropertyHelper(operatorProxy, "MinimumAngle").Set(this->GetMinimumAngle());
+  vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(false);
+  vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
+
+  vtkCMBModel* model =
+    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  operatorProxy->Operate(model, vtkCmbMeshClient::SafeDownCast(
+                           this->GetMasterMesh())->GetServerMeshProxy());
+
+  // check to see if the operation succeeded on the server
+  vtkSMIntVectorProperty* operateSucceeded =
+    vtkSMIntVectorProperty::SafeDownCast(
+      operatorProxy->GetProperty("OperateSucceeded"));
+
+  operatorProxy->UpdatePropertyInformation();
+
+  int succeeded = operateSucceeded->GetElement(0);
+  operatorProxy->Delete();
+  operatorProxy = NULL;
+  if(!succeeded)
+    {
+    vtkErrorMacro("Server side operator failed.");
+    return false;
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 {
-  this->SetMeshedMaximumArea(0);
+  this->SetMeshedLength(0);
   this->SetMeshedMinimumAngle(0);
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
@@ -67,7 +113,7 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 
   vtkSMPropertyHelper(operatorProxy, "Id").Set(
     this->GetModelGeometricEntity()->GetUniquePersistentId());
-  vtkSMPropertyHelper(operatorProxy, "MaximumArea").Set(this->GetMaximumArea());
+  vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
   vtkSMPropertyHelper(operatorProxy, "MinimumAngle").Set(this->GetMinimumAngle());
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
   vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
@@ -92,7 +138,7 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
     vtkErrorMacro("Server side operator failed.");
     return false;
     }
-  this->SetMeshedMaximumArea(this->GetActualMaximumArea());
+  this->SetMeshedLength(this->GetActualLength());
   this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
 
   // when we do volume meshing we'll have to fill this in if
@@ -102,14 +148,14 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshClient::SetLocalMaximumArea(double maxArea)
+bool vtkCmbModelFaceMeshClient::SetLocalLength(double length)
 {
-  if(maxArea == this->GetMaximumArea())
+  if(length == this->GetLength())
     {
     return true;
     }
-  this->SetMaximumArea(maxArea);
-  return this->BuildModelEntityMesh(false);
+  this->SetLength(length);
+  return this->SendLengthAndAngleToServer();
 }
 
 //----------------------------------------------------------------------------
@@ -120,7 +166,7 @@ bool vtkCmbModelFaceMeshClient::SetLocalMinimumAngle(double minAngle)
     return true;
     }
   this->SetMinimumAngle(minAngle);
-  return this->BuildModelEntityMesh(false);
+  return this->SendLengthAndAngleToServer();
 }
 
 //----------------------------------------------------------------------------

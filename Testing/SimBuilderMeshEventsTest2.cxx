@@ -91,7 +91,6 @@ int Check2DModel(const char* fileName)
     }
 
   // test model face meshing
-  mesh->SetGlobalMaximumArea(50);
   mesh->SetGlobalMinimumAngle(30);
   vtkSmartPointer<vtkModelItemIterator> faces;
   faces.TakeReference(model->NewIterator(vtkModelFaceType));
@@ -108,7 +107,7 @@ int Check2DModel(const char* fileName)
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
     vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
-    if(faceMesh->GetMaximumArea() != 0. || faceMesh->GetMinimumAngle() != 0.)
+    if(faceMesh->GetLength() != 0. || faceMesh->GetMinimumAngle() != 0.)
       {
       numberOfErrors++;
       vtkGenericWarningMacro("Model face mesh parameter set when it shouldn't be.");

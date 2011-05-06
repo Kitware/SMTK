@@ -51,9 +51,9 @@ public:
   vtkGetMacro(Id, vtkIdType);
 
   // Description:
-  // Set/get the maximum area for the cells discretizing the model face.
-  vtkSetClampMacro(MaximumArea, double, 0, VTK_LARGE_FLOAT);
-  vtkGetMacro(MaximumArea, double);
+  // Set/get the desired length for the cells discretizing the model face.
+  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
+  vtkGetMacro(Length, double);
 
   // Description:
   // Set/get the minimum angle for the cells discretizing the model face.
@@ -89,7 +89,7 @@ private:
   int OperateSucceeded;
 
   vtkIdType Id;
-  double MaximumArea;
+  double Length;
   double MinimumAngle;
   int BuildModelEntityMesh;
   int MeshHigherDimensionalEntities;

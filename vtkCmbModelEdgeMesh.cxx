@@ -28,6 +28,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelVertexMesh.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
+#include <vtkModelFace.h>
+#include <vtkCmbModelFaceMesh.h>
 #include <vtkModelItemIterator.h>
 #include <vtkModelVertex.h>
 #include <vtkPolyData.h>
@@ -38,8 +40,6 @@ vtkCxxRevisionMacro(vtkCmbModelEdgeMesh, "");
 vtkCmbModelEdgeMesh::vtkCmbModelEdgeMesh()
 {
   this->ModelEdge = NULL;
-  this->Length = 0;
-  this->MeshedLength = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -72,20 +72,21 @@ void vtkCmbModelEdgeMesh::Initialize(vtkCmbMesh* masterMesh, vtkModelEdge* edge)
 bool vtkCmbModelEdgeMesh::BuildModelEntityMesh(
   bool meshHigherDimensionalEntities)
 {
+  double length =  this->GetActualLength();
   if(!this->ModelEdge)
     {
     return false;
     }
   bool doBuild = false;
-  if(this->GetModelEntityMesh() == NULL && this->GetActualLength() > 0.)
+  if(this->GetModelEntityMesh() == NULL && length > 0.)
     {
     doBuild = true;
     }
-  else if(this->GetModelEntityMesh() == NULL && this->GetActualLength() == 0)
+  else if(this->GetModelEntityMesh() == NULL && length == 0)
     {
     doBuild = false;
     }
-  else if(this->MeshedLength != this->GetActualLength())
+  else if(this->GetMeshedLength() != length)
     {
     doBuild = true;
     }
@@ -121,15 +122,34 @@ vtkCmbModelVertexMesh* vtkCmbModelEdgeMesh::GetAdjacentModelVertexMesh(
 //----------------------------------------------------------------------------
 double vtkCmbModelEdgeMesh::GetActualLength()
 {
-  double actualLength = this->Length;
-  double globalLength = this->GetMasterMesh()->GetGlobalLength();
-  if(globalLength > 0. && globalLength < actualLength)
+  double actualLength = this->GetLength();
+
+  // Now we need to combine this with the faces of the model edge
+  vtkModelFace *face;
+  vtkCmbModelFaceMesh *faceMesh;
+  bool hadFaces = false;
+  vtkModelItemIterator *faces = this->ModelEdge->NewAdjacentModelFaceIterator();
+  for(faces->Begin(); !faces->IsAtEnd(); faces->Next())
     {
-    actualLength = globalLength;
+    face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    faceMesh = 
+      vtkCmbModelFaceMesh::SafeDownCast(
+                                        this->GetMasterMesh()->
+                                        GetModelEntityMesh(face));
+    actualLength = 
+      vtkCmbMesh::CombineMeshLengths(actualLength,
+                                     faceMesh->GetActualLength());
+    hadFaces = true;
     }
-  else if(actualLength == 0)
+  faces->Delete();
+  if (!hadFaces)
     {
-    actualLength = globalLength;
+    // We need to combine the actual length with global setting.
+    // If the edge had faces this would have been done in the above loop
+    // (several times infact)
+    actualLength = 
+      vtkCmbMesh::CombineMeshLengths(actualLength,
+                                     this->GetMasterMesh()->GetGlobalLength());
     }
   return actualLength;
 }
@@ -146,7 +166,6 @@ void vtkCmbModelEdgeMesh::PrintSelf(ostream& os, vtkIndent indent)
     {
     os << indent << "ModelEdge: (NULL)\n";
     }
-  os << indent << "Length: " << this->Length << "\n";
-  os << indent << "MeshedLength: " << this->MeshedLength << "\n";
 }
+//----------------------------------------------------------------------------
 

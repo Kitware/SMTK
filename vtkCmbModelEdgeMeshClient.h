@@ -50,12 +50,12 @@ public:
   // but do not initiate edge meshing.  This is done on both the
   // client and server to make sure they are consistent in case
   // we do model modifications.
-  bool SetLocalLength(double len);
+  virtual bool SetLocalLength(double len);
 
 protected:
   vtkCmbModelEdgeMeshClient();
   virtual ~vtkCmbModelEdgeMeshClient();
-
+  bool SendLengthToServer();
   friend class vtkCmbMeshClient;
 
   // Description:

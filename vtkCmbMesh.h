@@ -30,10 +30,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMesh_h
 
 #include <vtkObject.h>
-
 #include <vtkWeakPointer.h>
 
 class vtkCmbModelEntityMesh;
+class vtkCollection;
 class vtkMergeEventData;
 class vtkModel;
 class vtkModelGeometricEntity;
@@ -58,13 +58,6 @@ public:
   vtkGetMacro(GlobalLength, double);
 
   // Description:
-  // The absolute maximum area set over all model faces.
-  // If GlobalMaximumArea is less than or equal to zero, it
-  // is still unset.
-  virtual bool SetGlobalMaximumArea(double area) = 0;
-  vtkGetMacro(GlobalMaximumArea, double);
-
-  // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.  The maximum value for minimum angle
@@ -79,7 +72,21 @@ public:
   // representation.
   virtual vtkCmbModelEntityMesh* GetModelEntityMesh(vtkModelGeometricEntity*) =0;
 
+  // Description:
+  // Set the local mesh length/max area/min angle for those selected model entities
+  bool SetLocalMeshLength(
+    vtkCollection* selectedMeshEntities, double localLen);
+  bool SetLocalMeshMinimumAngle(
+    vtkCollection* selectedMeshEntities, double localMinAngle);
+
   vtkModel* GetModel();
+
+  // Description:
+  // Given 2 mesh lengths return the combine length.
+  static double CombineMeshLengths(double a, double b);
+  // Description:
+  // Given 2 mesh min angles return the combine angle.
+  static double CombineMeshMinimumAngles(double a, double b);
 
 protected:
   vtkCmbMesh();
@@ -111,7 +118,6 @@ protected:
   virtual void ModelEntityBoundaryModified(vtkModelGeometricEntity*) = 0;
 
   double GlobalLength;
-  double GlobalMaximumArea;
   double GlobalMinimumAngle;
   vtkWeakPointer<vtkModel> Model;
 
@@ -121,6 +127,26 @@ private:
 
   bool Visible;
 };
+
+// Return the smaller non-zero length
+inline  double vtkCmbMesh::CombineMeshLengths(double a, double b)
+{
+  if (a == 0.0)
+    {
+    return b;
+    }
+  if (b == 0.0)
+    {
+    return a;
+    }
+  return (a > b) ? b : a;
+}
+
+// Return the larger area
+inline double vtkCmbMesh::CombineMeshMinimumAngles(double a, double b)
+{
+  return (a > b) ? a : b;
+}
 
 #endif
 

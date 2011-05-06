@@ -62,6 +62,17 @@ vtkCmbModelEdgeMeshServer::~vtkCmbModelEdgeMeshServer()
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbModelEdgeMeshServer::SetLocalLength(double length)
+{
+  if(length == this->GetLength())
+    {
+    return true;
+    }
+  this->SetLength(length);
+  return true;
+}
+
+//----------------------------------------------------------------------------
 bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 {
   this->SetMeshedLength(this->GetActualLength());

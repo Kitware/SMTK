@@ -52,7 +52,6 @@ public:
   // Description:
   // Pass to actual mesh
   virtual void SetGlobalLength(double length);
-  virtual void SetGlobalMaximumArea(double area);
   virtual void SetGlobalMinimumAngle(double angle);
 
 protected:

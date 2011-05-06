@@ -54,13 +54,36 @@ vtkCmbModelFaceMeshServer::~vtkCmbModelFaceMeshServer()
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshServer::SetLocalLength(double length)
+{
+  if(length == this->GetLength())
+    {
+    return true;
+    }
+  this->SetLength(length);
+  return true;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbModelFaceMeshServer::SetLocalMinimumAngle(double minAngle)
+{
+  if(minAngle == this->GetMinimumAngle())
+    {
+    return true;
+    }
+  this->SetMinimumAngle(minAngle);
+  return true;
+}
+
+//----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 {
-  if(this->GetActualMaximumArea() <= 0. ||
-     this->GetActualMinimumAngle() <= 0.)
+  double length = this->GetActualLength();
+  double angle = this->GetActualMinimumAngle();
+  if(length <= 0. || angle <= 0.)
     {
     this->SetModelEntityMesh(NULL);
-    this->SetMeshedMaximumArea(0.);
+    this->SetMeshedLength(0.);
     this->SetMeshedMinimumAngle(0.);
     return true;
     }
@@ -74,7 +97,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 
   bool valid = this->CreateMeshInfo();
   vtkPolyData* mesh = vtkPolyData::New();
-  valid = valid && this->Triangulate(mesh);
+  valid = valid && this->Triangulate(mesh,length, angle);
   // it would seem like we could just do this->SetModelEntityMesh(mesh);
   // but we can't.  i think this has to do with the polydataprovider.
   vtkPolyData* faceMesh = this->GetModelEntityMesh();
@@ -89,8 +112,8 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   cerr << "model face " << vtkCMBUserName::GetUserName(this->GetModelFace())
        << " mesh built with numcells " << faceMesh->GetNumberOfCells() << endl;
 
-  this->SetMeshedMaximumArea(this->GetActualMaximumArea());
-  this->SetMeshedMinimumAngle(this->GetActualMinimumAngle());
+  this->SetMeshedLength(length);
+  this->SetMeshedMinimumAngle(angle);
   return valid;
 }
 
@@ -158,7 +181,8 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh)
+bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh, 
+                                            double length, double angle)
 {
   //The current plan is that we are going to redo the entire storage of the
   //loop and face data. We will go to a light information object ( num holes,segs,points)
@@ -172,11 +196,12 @@ bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh)
   int numHoles = this->FaceInfo->numberOfHoles();
   CmbFaceMesherInterface ti(numPoints,numSegs,numHoles);
 
+  double maxArea = 0.5 * length * length;
   ti.setUseMaxArea(true);
-  ti.setMaxArea(this->GetActualMaximumArea());
+  ti.setMaxArea(maxArea);
 
   ti.setUseMinAngle(true);
-  ti.setMinAngle(this->GetActualMinimumAngle());
+  ti.setMinAngle(angle);
 
   ti.setOutputMesh(mesh);
 

@@ -68,22 +68,6 @@ public:
   // mesh object for both which = 0 and which = 1.
   vtkCmbModelVertexMesh* GetAdjacentModelVertexMesh(int which);
 
-  // Description:
-  // Set/get the model edge mesh length.  If it is 0 it
-  // indicates that it is not set.  If the global edge length
-  // is smaller than this value then that value will be used
-  // when generating the arc/model edge mesh.  If the actual
-  // used edge length gets modified then the arc/model edge
-  // automatically gets remeshed.
-  vtkGetMacro(Length, double);
-  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
-
-  // Description:
-  // Get the actual length used to mesh this edge (0 indicates
-  // that no valid length exists and therefore there should
-  // not be a mesh of this model edge.
-  vtkGetMacro(MeshedLength, double);
-
   vtkGetObjectMacro(ModelEdge, vtkModelEdge);
 
   // Description:
@@ -91,22 +75,9 @@ public:
   // 0 indicates no length has been set.
   double GetActualLength();
 
-  // Description:
-  // Return true if the model entity should have a mesh
-  // and false otherwise.
-  virtual bool IsModelEntityMeshed()
-  {
-    return (this->MeshedLength > 0.);
-  }
-
 protected:
   vtkCmbModelEdgeMesh();
   virtual ~vtkCmbModelEdgeMesh();
-
-  // Description:
-  // Set the MeshedLength.  This is protected so that derived
-  // classes can use this method.
-  vtkSetClampMacro(MeshedLength, double, 0, VTK_LARGE_FLOAT);
 
   // Description:
   // This method builds the model entity's mesh without checking
@@ -121,15 +92,6 @@ private:
 
   vtkModelEdge* ModelEdge;
 
-  // Description:
-  // The set edge cell length for this model edge.  If the global
-  // length is smaller than this then that value is used for
-  // meshing (ignoring 0/unset length).
-  double Length;
-
-  // Description:
-  // The meshed length of the current mesh if it exists.
-  double MeshedLength;
 };
 
 #endif

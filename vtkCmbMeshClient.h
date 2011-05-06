@@ -38,7 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkCmbMeshClientInternals;
 class vtkSMProxy;
-class vtkCollection;
 
 class VTK_EXPORT vtkCmbMeshClient : public vtkCmbMesh
 {
@@ -55,27 +54,12 @@ public:
   // is still unset.
   virtual bool SetGlobalLength(double length);
 
-  // Description:
-  // The absolute maximum area set over all model faces.
-  // If GlobalMaximumArea is less than or equal to zero, it
-  // is still unset.
-  virtual bool SetGlobalMaximumArea(double area);
-
-  // Description:
+ // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.  The maximum value for minimum angle
   // is 33 as enforced by triangle.
   virtual bool SetGlobalMinimumAngle(double angle);
-
-  // Description:
-  // Set the local mesh length/max area/min angle for those selected model entities
-  bool SetLocalMeshLength(
-    vtkCollection* selectedMeshEntities, double localLen);
-  bool SetLocalMeshMaximumArea(
-    vtkCollection* selectedMeshEntities, double localMaxArea);
-  bool SetLocalMeshMinimumAngle(
-    vtkCollection* selectedMeshEntities, double localMinAngle);
 
   virtual void Reset();
 

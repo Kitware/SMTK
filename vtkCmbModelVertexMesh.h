@@ -38,6 +38,21 @@ public:
   static vtkCmbModelVertexMesh* New();
   vtkTypeRevisionMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
+  // Description:
+  // Get the actual length the model edge will be meshed with.
+  // 0 indicates no length has been set.
+  virtual double GetActualLength()
+  {
+    return this->GetLength();
+  }
+
+  // Description:
+  // Set the local mesh length on the entity.
+  virtual bool SetLocalLength(double len)
+  {
+    this->SetLength(len);
+  }
+
 //BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();
 

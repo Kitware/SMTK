@@ -146,18 +146,6 @@ bool vtkCmbMeshServer::SetGlobalLength(double globalLength)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshServer::SetGlobalMaximumArea(double maxArea)
-{
-  if(this->GlobalMaximumArea == maxArea)
-    {
-    return false;
-    }
-  this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
-  this->Modified();
-  return true;
-}
-
-//----------------------------------------------------------------------------
 bool vtkCmbMeshServer::SetGlobalMinimumAngle(double minAngle)
 {
   if(this->GlobalMinimumAngle == minAngle)

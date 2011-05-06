@@ -43,6 +43,11 @@ public:
   vtkTypeRevisionMacro(vtkCmbModelFaceMeshServer,vtkCmbModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
+  // Description:
+  // Set the local mesh length, min angle
+  virtual bool SetLocalLength(double length);
+  virtual bool SetLocalMinimumAngle(double angle);
+
 protected:
   vtkCmbModelFaceMeshServer();
   virtual ~vtkCmbModelFaceMeshServer();
@@ -53,6 +58,9 @@ protected:
   // desired.  This includes deleting the mesh if the mesh
   // parameters go from valid to invalid values (i.e. a parameter set to 0).
   bool BuildMesh(bool meshHigherDimensionalEntities);
+
+  bool CreateMeshInfo();
+  bool Triangulate(vtkPolyData *mesh, double length, double angle);
 
 private:
   vtkCmbModelFaceMeshServer(const vtkCmbModelFaceMeshServer&);  // Not implemented.

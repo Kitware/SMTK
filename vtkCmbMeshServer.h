@@ -53,12 +53,6 @@ public:
   virtual bool SetGlobalLength(double length);
 
   // Description:
-  // The absolute maximum area set over all model faces.
-  // If GlobalMaximumArea is less than or equal to zero, it
-  // is still unset.
-  virtual bool SetGlobalMaximumArea(double area);
-
-  // Description:
   // The global minimum angle allowed for surface elements.
   // If GlobalMinimumAngle is less than or equal to zero, it
   // is still unset.  The maximum value for minimum angle

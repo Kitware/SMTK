@@ -79,13 +79,6 @@ void vtkCmbMeshWrapper::SetGlobalLength(double length)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshWrapper::SetGlobalMaximumArea(double area)
-{
-  this->GetMesh()->SetGlobalMaximumArea(area);
-  this->Modified();
-}
-
-//----------------------------------------------------------------------------
 void vtkCmbMeshWrapper::SetGlobalMinimumAngle(double angle)
 {
   this->GetMesh()->SetGlobalMinimumAngle(angle);

@@ -46,7 +46,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 
-double TimeSimMesher(const char* fileName, double MaxArea, double MinAngle)
+double TimeSimMesher(const char* fileName, double Length, double MinAngle)
 {
   vtkCMBModelWrapper* modelWrapper = vtkCMBModelWrapper::New();
   vtkCMBModel* model = modelWrapper->GetModel();
@@ -64,7 +64,7 @@ double TimeSimMesher(const char* fileName, double MaxArea, double MinAngle)
   vtkSmartPointer<vtkCmbMesh> mesh =
     vtkSmartPointer<vtkCmbMesh>::New();
   mesh->Initialize(model);
-  mesh->SetGlobalLength(100.);
+  mesh->SetGlobalLength(Length);
 
   vtkSmartPointer<vtkModelItemIterator> edges;
   edges.TakeReference(model->NewIterator(vtkModelEdgeType));
@@ -78,7 +78,6 @@ double TimeSimMesher(const char* fileName, double MaxArea, double MinAngle)
   //start time here
   vtkSmartPointer<vtkTimerLog> tl = vtkSmartPointer<vtkTimerLog>::New();
   tl->StartTimer();
-  mesh->SetGlobalMaximumArea(MaxArea);
   mesh->SetGlobalMinimumAngle(MinAngle);
   vtkSmartPointer<vtkModelItemIterator> faces;
   faces.TakeReference(model->NewIterator(vtkModelFaceType));
@@ -96,17 +95,18 @@ double TimeSimMesher(const char* fileName, double MaxArea, double MinAngle)
   return tl->GetElapsedTime();
 }
 
-double TimeMapMesher(const char* fileName, double MaxArea, double MinAngle)
+double TimeMapMesher(const char* fileName, double Length, double MinAngle)
 {
   vtkSmartPointer<vtkCmbMapReader> reader = vtkSmartPointer<vtkCmbMapReader>::New();
   reader->SetFileName(fileName);
   reader->Update();
 
+  double maxArea = 0.5 * Length * Length;
   vtkSmartPointer<vtkCmbTriangleMesher> mesher = vtkSmartPointer<vtkCmbTriangleMesher>::New();
   mesher->SetInputConnection(reader->GetOutputPort());
   mesher->SetPreserveBoundaries(true);
-  mesher->SetMaxArea(MaxArea);
-  mesher->SetMaxAreaMode(2); //Relative to bounds is what Sim Mesher does
+  mesher->SetMaxArea(maxArea);
+  mesher->SetMaxAreaMode(1); //Relative to bounds is what Sim Mesher does
   mesher->SetUseMinAngle(true);
   mesher->SetMinAngle(MinAngle);
 
@@ -131,10 +131,10 @@ int main(int argc, char ** argv)
     vtkGenericWarningMacro("Make sure the represent the same data for a fair fight!");
     return 1;
     }
-  double MaxArea = 0.005;
+  double Length = 100;
   double MinAngle = 30;
-  double time = TimeSimMesher(argv[1],MaxArea,MinAngle);
-  double time2 = TimeMapMesher(argv[2],MaxArea,MinAngle);
+  double time = TimeSimMesher(argv[1],Length,MinAngle);
+  double time2 = TimeMapMesher(argv[2],Length,MinAngle);
 
   std::cout << "Sim Mesher time is: " << time << std::endl;
   std::cout << "Map Mesher time is: " << time2 << std::endl;

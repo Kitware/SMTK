@@ -20,15 +20,6 @@
         </Documentation>
       </DoubleVectorProperty>
       <DoubleVectorProperty
-         name="GlobalMaximumArea"
-         command="SetGlobalMaximumArea"
-         number_of_elements="1"
-         default_values="0">
-        <Documentation>
-          The desired global maximum area of the cells.
-        </Documentation>
-      </DoubleVectorProperty>
-      <DoubleVectorProperty
          name="GlobalMinimumAngle"
          command="SetGlobalMinimumAngle"
          number_of_elements="1"
@@ -134,13 +125,13 @@
         </Documentation>
       </IdTypeVectorProperty>
       <DoubleVectorProperty
-         name="MaximumArea"
-         command="SetMaximumArea"
+         name="Length"
+         command="SetLength"
          number_of_elements="1"
          default_values="0">
         <DoubleRangeDomain name="range" min="0"/>
         <Documentation>
-          The desired maximum area of the cells.
+          The desired length of the cells.
         </Documentation>
       </DoubleVectorProperty>
       <DoubleVectorProperty

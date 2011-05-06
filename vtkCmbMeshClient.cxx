@@ -50,7 +50,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSMProxyProperty.h"
 #include "vtkClientServerStream.h"
 #include "vtkProcessModule.h"
-#include "vtkCollection.h"
 
 #include <map>
 
@@ -188,23 +187,6 @@ bool vtkCmbMeshClient::SetGlobalLength(double globalLength)
     vtkSMDoubleVectorProperty::SafeDownCast(
       this->ServerMeshProxy->GetProperty("GlobalLength"));
   lengthProperty->SetElement(0, this->GetGlobalLength());
-  this->ServerMeshProxy->UpdateVTKObjects();
-  return true;
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetGlobalMaximumArea(double maxArea)
-{
-  if(this->GlobalMaximumArea == maxArea)
-    {
-    return false;
-    }
-  this->GlobalMaximumArea = maxArea > 0. ? maxArea : 0.;
-
-  vtkSMDoubleVectorProperty* areaProperty =
-    vtkSMDoubleVectorProperty::SafeDownCast(
-      this->ServerMeshProxy->GetProperty("GlobalMaximumArea"));
-  areaProperty->SetElement(0, this->GetGlobalMaximumArea());
   this->ServerMeshProxy->UpdateVTKObjects();
   return true;
 }
@@ -378,72 +360,6 @@ void vtkCmbMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* enti
   // no op on the client
 }
 //----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetLocalMeshLength(
-  vtkCollection* selectedMeshEntities, double localLen)
-{
-  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
-    {
-    return false;
-    }
-  bool res = true;
-  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
-    {
-    vtkSmartPointer<vtkCmbModelEdgeMeshClient> edgeMesh =
-      vtkCmbModelEdgeMeshClient::SafeDownCast(
-      selectedMeshEntities->GetItemAsObject(i));
-    if(edgeMesh)
-      {
-      res = res && edgeMesh->SetLocalLength(localLen);
-      }
-    }
-  return res;
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetLocalMeshMinimumAngle(
-  vtkCollection* selectedMeshEntities, double localMinAngle)
-{
-  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
-    {
-    return false;
-    }
-  bool res = true;
-  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
-    {
-    vtkSmartPointer<vtkCmbModelFaceMeshClient> faceMesh =
-      vtkCmbModelFaceMeshClient::SafeDownCast(
-      selectedMeshEntities->GetItemAsObject(i));
-    if(faceMesh)
-      {
-      res = res && faceMesh->SetLocalMinimumAngle(localMinAngle);
-      }
-    }
-  return res;
-}
-
-//----------------------------------------------------------------------------
-bool vtkCmbMeshClient::SetLocalMeshMaximumArea(
-  vtkCollection* selectedMeshEntities, double localMaxArea)
-{
-  if(!selectedMeshEntities || selectedMeshEntities->GetNumberOfItems()==0)
-    {
-    return false;
-    }
-
-  bool res = true;
-  for(int i=0; i<selectedMeshEntities->GetNumberOfItems(); i++)
-    {
-    vtkSmartPointer<vtkCmbModelFaceMeshClient> faceMesh =
-      vtkCmbModelFaceMeshClient::SafeDownCast(
-      selectedMeshEntities->GetItemAsObject(i));
-    if(faceMesh)
-      {
-      res = res && faceMesh->SetLocalMaximumArea(localMaxArea);
-      }
-    }
-  return res;
-}
-//----------------------------------------------------------------------------
 void vtkCmbMeshClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
@@ -464,3 +380,4 @@ void vtkCmbMeshClient::PrintSelf(ostream& os, vtkIndent indent)
     os << "ServerMeshProxy: (NULL)\n";
     }
 }
+//----------------------------------------------------------------------------

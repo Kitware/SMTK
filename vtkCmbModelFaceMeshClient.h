@@ -41,13 +41,14 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // Set the local mesh max area, min angle
-  bool SetLocalMaximumArea(double area);
-  bool SetLocalMinimumAngle(double angle);
+  // Set the local mesh length, min angle
+  virtual bool SetLocalLength(double length);
+  virtual bool SetLocalMinimumAngle(double angle);
 
 protected:
   vtkCmbModelFaceMeshClient();
   virtual ~vtkCmbModelFaceMeshClient();
+  bool SendLengthAndAngleToServer();
 
   // Description:
   // This method builds the model entity's mesh without checking

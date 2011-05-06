@@ -39,7 +39,7 @@ vtkCmbModelFaceMeshOperator::vtkCmbModelFaceMeshOperator()
 {
   this->OperateSucceeded = 0;
   this->Id = 0;
-  this->MaximumArea = 0;
+  this->Length = 0;
   this->MinimumAngle = 0;
   this->BuildModelEntityMesh = 0;
   this->MeshHigherDimensionalEntities = 0;
@@ -68,7 +68,7 @@ void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
     this->OperateSucceeded = 0;
     return;
     }
-  faceMesh->SetMaximumArea(this->MaximumArea);
+  faceMesh->SetLength(this->Length);
   faceMesh->SetMinimumAngle(this->MinimumAngle);
   this->OperateSucceeded = 1;
   if(this->BuildModelEntityMesh)
@@ -85,7 +85,7 @@ void vtkCmbModelFaceMeshOperator::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
   os << indent << "OperateSucceeded: " << this->OperateSucceeded << endl;
   os << indent << "Id: " << this->Id << endl;
-  os << indent << "MaximumArea: " << this->MaximumArea << endl;
+  os << indent << "Length: " << this->Length << endl;
   os << indent << "MinimumAngle: " << this->MinimumAngle << endl;
   os << indent << "BuildModelEntityMesh: "
      << this->BuildModelEntityMesh << endl;

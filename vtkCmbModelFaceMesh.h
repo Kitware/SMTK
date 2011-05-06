@@ -59,14 +59,6 @@ public:
   bool BuildModelEntityMesh(bool meshHigherDimensionalEntities);
 
   // Description:
-  // Set/get the model face maximum triangle area.  If it is 0 it
-  // indicates that it is not set.  If the global max area
-  // is smaller than this value then that value will be used
-  // when generating the surface mesh.
-  vtkGetMacro(MaximumArea, double);
-  vtkSetClampMacro(MaximumArea, double, 0, VTK_LARGE_FLOAT);
-
-  // Description:
   // Set/get the model face minimum triangle angle.  If it is 0 it
   // indicates that it is not set.  If the global min angle
   // is smaller than this value then that value will be used
@@ -76,18 +68,19 @@ public:
   vtkGetMacro(MinimumAngle, double);
   vtkSetClampMacro(MinimumAngle, double, 0, 33);
 
-  vtkGetMacro(MeshedMaximumArea, double);
   vtkGetMacro(MeshedMinimumAngle, double);
 
   // Description:
-  // Get the actual maximum area the model face will be meshed with.
-  // 0 indicates no maximum area has been set.
-  double GetActualMaximumArea();
+  // Get the desired length the model face will be meshed with.
+  // 0 indicates no mesh length has been set.
+  double GetActualLength();
 
   // Description:
   // Get the actual minimum angle the model face will be meshed with.
   // 0 indicates no minimum area has been set.
   double GetActualMinimumAngle();
+
+  virtual bool SetLocalMinimumAngle(double angle)=0;
 
   vtkGetObjectMacro(ModelFace, vtkModelFace);
 
@@ -96,17 +89,12 @@ public:
   // and false otherwise.
   virtual bool IsModelEntityMeshed()
   {
-    return (this->MeshedMaximumArea> 0. && this->MeshedMinimumAngle > 0.);
+    return (this->GetMeshedLength()> 0. && this->MeshedMinimumAngle > 0.);
   }
 
 protected:
   vtkCmbModelFaceMesh();
   virtual ~vtkCmbModelFaceMesh();
-
-  // Description:
-  // Set the MeshedMaximumAngle.  This is protected so that derived
-  // classes can use this method.
-  vtkSetClampMacro(MeshedMaximumArea, double, 0, VTK_LARGE_FLOAT);
 
   // Description:
   // Set the MeshedMinimumAngle.  This is protected so that derived
@@ -128,13 +116,11 @@ private:
   void operator=(const vtkCmbModelFaceMesh&);  // Not implemented.
 
   vtkModelFace* ModelFace;
-  double MaximumArea;
   double MinimumAngle; // in degrees
 
   // Description:
   // The mesh parameters the last time the model face was meshed.
   // If a value is 0 it indicates that the model face has no mesh.
-  double MeshedMaximumArea;
   double MeshedMinimumAngle;
 };
 
