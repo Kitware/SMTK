@@ -402,8 +402,8 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
       while(!pointInHoleFound && timesTried <= 6)
         {
         //use the middle point on the segment
-        holePoint.x = mx - dx;
         holePoint.x = mx - dy;
+        holePoint.y = my + dx;
         //see if this point is on an edge of the loop
         if ( !this->pointOnBoundary(holePoint) )
           {
@@ -412,41 +412,17 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
         if (!pointInHoleFound)
           {
           //flip the point to the other side
-          holePoint.x = mx + dx;
           holePoint.x = mx + dy;
+          holePoint.y = my - dx;
           if ( !this->pointOnBoundary(holePoint) )
             {
             pointInHoleFound = this->pointInside(holePoint);
-            }
-          }
-
-        //==================
-        //Now try move the hole point along the y axis
-        //==================
-        if (!pointInHoleFound)
-          {
-          //use the middle point on the segment
-          holePoint.y = mx - dx;
-          holePoint.y = mx - dy;
-
-          //see if this point is on an edge of the loop
-          if ( !this->pointOnBoundary(holePoint) )
-            {
-            pointInHoleFound = this->pointInside(holePoint);
-            }
-          if (!pointInHoleFound)
-            {
-            //flip the point to the other side
-            holePoint.y = mx + dx;
-            holePoint.y = mx + dy;
-            if ( !this->pointOnBoundary(holePoint) )
-              {
-              pointInHoleFound = this->pointInside(holePoint);
-              }
             }
           }
         dx /= 2; //move the ray to half the distance
         dy /= 2;
+        mx = mx - dy;
+        my = my - dx;
         ++timesTried;
         }
 
@@ -464,7 +440,8 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
 {
   //find if the point is collinear to any of the lines
   //http://mathworld.wolfram.com/Collinear.html
-  // if this fails email robert.maynard@kitware.com
+  //we are using the area of the triangle of the three points being
+  //zero to mean colinear. If this fails email robert.maynard@kitware.com
   bool collinear = false;
   std::set<edgeSegment>::const_iterator segIt;
   for(segIt=this->Segments.begin();segIt!=this->Segments.end() && !collinear;
@@ -472,8 +449,10 @@ bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
     {
     const edgePoint *p1 = this->getPoint(segIt->first());
     const edgePoint *p2 = this->getPoint(segIt->second());
-    collinear = fabs((point.y - p1->y) * (point.x - p2->x) -
-      (point.y - p2->y) * (point.x - p1->y)) <= 1e-9;
+    double area = (p1->x * ( p2->y - point.y )  ) +
+                    (p2->x * ( point.y - p1->y )  ) +
+                    (point.x * ( p1->y - p2->y )  );
+    collinear = (fabs(area) <= 1e-9);
     }
   return collinear;
 }
@@ -484,6 +463,7 @@ bool InternalLoop::pointInside( const edgePoint &point ) const
 
   //http://en.wikipedia.org/wiki/Point_in_polygon RayCasting method
   //shooting the ray along the x axis
+  // if this fails email robert.maynard@kitware.com
   bool inside = false;
   std::set<edgeSegment>::const_iterator segIt;
   double xintersection;
