@@ -42,6 +42,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModel.h"
 
+//for data dumping in debug
+//#define DUMP_DEBUG_DATA
+#ifdef DUMP_DEBUG_DATA
+#define DUMP_DEBUG_DATA_DIR "E:/Work/"
+#include <sstream>
+#include "vtkNew.h"
+#include "vtkXMLPolyDataWriter.h"
+#endif
+
 using namespace CmbModelFaceMeshPrivate;
 
 //----------------------------------------------------------------------------
@@ -318,7 +327,7 @@ bool InternalLoop::edgeModelRelation(const vtkIdType &pointId1, const vtkIdType 
     //the lookup is limited by the ordering, so switch the ordering
     //and try again
     es = edgeSegment(pointId2,pointId1);
-    std::set<edgeSegment>::const_iterator esIt = this->Segments.find(es);
+    esIt = this->Segments.find(es);
     if ( esIt == this->Segments.end() )
       {
       //both edges that were tested are not valid
@@ -582,7 +591,21 @@ void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
 //----------------------------------------------------------------------------
 bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
-  return this->RelateMeshCellsToModel(mesh, facePersistenId);
+  bool valid  = this->RelateMeshCellsToModel(mesh, facePersistenId);
+  this->RelateMeshPointsToModel(mesh, facePersistenId);
+  //Debug code, dump mesh to file
+
+#ifdef DUMP_DEBUG_DATA
+  vtkNew<vtkXMLPolyDataWriter> writer;
+  writer->SetInput(mesh);
+  std::stringstream buffer;
+  buffer << DUMP_DEBUG_DATA_DIR <<"rel"<< facePersistenId << ".vtp";
+  writer->SetFileName(buffer.str().c_str());
+  writer->Write();
+  writer->Update();
+#endif
+
+  return valid;
 }
 
 //----------------------------------------------------------------------------
@@ -693,6 +716,12 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
   int *cmt = reinterpret_cast<int *>(cellModelType->GetVoidPointer(0));
   vtkIdType *cmu = reinterpret_cast<vtkIdType *>(cellModelUseId->GetVoidPointer(0));
 
+  //set the cells to all default to face / faceId
+  //that makes the following logic easier
+  vtkIdType length = size * 3;
+  std::fill_n(cmt,length,vtkModelFaceType);
+  std::fill_n(cmu,length,facePersistenId);
+
   std::list<InternalLoop>::const_iterator it;
   //stores the current cost of the index to move to next bin
   vtkIdType costs[3]={0,0,0};
@@ -701,39 +730,37 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
   int currentCost = 0, previousCost=0;
   const int maxCost = this->numberOfPoints();
 
+  //data structs needed inside loops
+  int numCanMove = 0;
+  int indices[4] = {0,1,2,0}; //used for cell point indexes
+
   vtkIdType *pts,npts;
   cells->InitTraversal();
   while( cells->GetNextCell(npts,pts) )
     {
     //the number of pts better be 3 or this will walk right off the edge
+    //only check if two or more points are under the number of points in the loop
     costs[0] = pts[0]; costs[1] = pts[1]; costs[2] = pts[2];
-    if ( costs[0] >= maxCost && costs[1] >= maxCost && costs[2] >= maxCost )
-      {
-      //this cell is entirely part of the face, so don't even attempt
-      //to see which bin is valid
-      for (int i=0; i<3;++i)
-        {
-        cmt[i] = vtkModelFaceType;
-        cmu[i] = facePersistenId;
-        }
-      }
-    else
+    int valid = (costs[0] < maxCost && costs[1] < maxCost ) ? 1 : 0;
+    valid += (costs[1] < maxCost && costs[2] < maxCost ) ? 1 : 0;
+    valid += (costs[2] < maxCost && costs[0] < maxCost ) ? 1 : 0;
+    if ( valid >= 1 )
       {
       //on each bin subtract the cost of that bin from both
       //if two are less than/equal to the bin cost and greater than zero.
       //  go register those edges
       //if two are greater than the bin cost, goto next bin.
       //else invalid edge stop.
-      currentCost = 0;
+      previousCost = 0;
       for(it=this->Loops.begin();it!=this->Loops.end();it++)
         {
-        int numCanMove = 0;
-        currentCost = it->getNumberOfPoints() - 1;
+        numCanMove = 0;
+        currentCost = it->getNumberOfPoints();
         //update the costs for this point
         for (int i=0; i<3;++i)
           {
           costs[i] -= previousCost;
-          canMoveToNextBin[i] = (costs[i] > currentCost );
+          canMoveToNextBin[i] = (costs[i] >= currentCost );
           validBin[i] = (costs[i] >= 0 && !canMoveToNextBin[i]);
           numCanMove += canMoveToNextBin[i] ? 1 : 0;
           }
@@ -741,18 +768,19 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
         //NOTE we specify the cell ordering to be the same as the
         //ordering of the points so: 0-1,1-2,2-0. Because
         //of this we don't ever incement the cell array pointers here
-        int indices[4] = {0,1,2,0};
         for ( int i=0; i < 3; ++i)
           {
-          int pos=indices[i];
+          int pos0=indices[i], pos1=indices[i+1];
           //verify edge 0 to 1 is from the inputed edge mesh
-          if ( validBin[pos] && validBin[pos+1] )
+          if ( validBin[pos0] && validBin[pos1] )
             {
-            //set the default values up
-            cmt[pos] = vtkModelFaceType;
-            cmu[pos] = facePersistenId;
-            //modify it if needed
-            it->edgeModelRelation(pts[pos],pts[pos+1], cmt[pos], cmu[pos]);
+            //set the relation in the array if true only
+            //otherwise it is done automatically by the default fill
+
+            //each loop point indexing is zero based
+            //so we need to convert the current point id to a the loop point
+            //luckily this is the current cost
+            it->edgeModelRelation(costs[pos0],costs[pos1], cmt[pos0], cmu[pos0]);
             }
           }
 
@@ -762,7 +790,7 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
           break;
           }
 
-        currentCost = previousCost;
+        previousCost = currentCost;
         }
       }
     cmt+=3;
