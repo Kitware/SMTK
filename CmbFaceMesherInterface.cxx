@@ -27,10 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Wraps the Triangle library with an easy to use class
 
 #include "CmbFaceMesherInterface.h"
-
-#include <sstream>
-
 #include <vtkPolyData.h>
+#include <sstream>
 
 // for Triangle
 #ifndef ANSI_DECLARATORS
@@ -44,6 +42,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #else                           /* not SINGLE */
 #define TRIANGLE_REAL double
 #endif
+#endif
+
+//for data dumping in debug
+//#define DUMP_DEBUG_DATA
+#ifdef DUMP_DEBUG_DATA
+#define DUMP_DEBUG_DATA_DIR "E:/Work/"
 #endif
 
 extern "C"
@@ -283,12 +287,14 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
     return false;
     }
 
-  //std::stringstream buffer;
-  //buffer << "E:/Work/in" << faceId;
-  //triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
-  //buffer.str("");
-  //buffer << "E:/Work/out" << faceId;
-  //triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
+#ifdef DUMP_DEBUG_DATA
+  std::stringstream buffer;
+  buffer << DUMP_DEBUG_DATA_DIR << "in"<< faceId;
+  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->in);
+  buffer.str("");
+  buffer << DUMP_DEBUG_DATA_DIR << "out"<< faceId;
+  triangle_report_vtk(const_cast<char*>(buffer.str().c_str()),this->TIO->out);
+#endif
 
   //we know have to convert the result into a vtkPolyData;
   triangulateio *io = this->TIO->out;

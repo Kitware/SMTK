@@ -12,5 +12,10 @@ TARGET_LINK_LIBRARIES(SimBuilderMeshEventsTest2 SimBuilderMesh_Plugin)
 ADD_TEST(SimBuilderMeshEventsTest2 ${EXECUTABLE_OUTPUT_PATH}/SimBuilderMeshEventsTest2
   ${ERDC_TEST_DATA_ROOT}/bay.cmb)
 
+  ADD_EXECUTABLE(SimBuilderMeshRelationTest SimBuilderMeshRelationTest.cxx)
+TARGET_LINK_LIBRARIES(SimBuilderMeshRelationTest SimBuilderMesh_Plugin)
+ADD_TEST(SimBuilderMeshRelationTest ${EXECUTABLE_OUTPUT_PATH}/SimBuilderMeshRelationTest
+  ${ERDC_TEST_DATA_ROOT}/test2D.cmb)
+
 ADD_EXECUTABLE(MeshSpeedComparison MeshSpeedComparison.cxx)
 TARGET_LINK_LIBRARIES(MeshSpeedComparison SimBuilderMesh_Plugin)
