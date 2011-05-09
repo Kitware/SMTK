@@ -51,6 +51,7 @@ public:
   virtual bool SetLocalLength(double len)
   {
     this->SetLength(len);
+    return true;
   }
 
 //BTX
