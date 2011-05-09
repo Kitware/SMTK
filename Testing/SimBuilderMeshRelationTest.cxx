@@ -72,7 +72,6 @@ int Check2DModel(const char* fileName)
   faces.TakeReference(model->NewIterator(vtkModelFaceType));
 
   mesh->SetGlobalLength(1);
-  mesh->SetGlobalMaximumArea(0.2);
   mesh->SetGlobalMinimumAngle(20);
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
@@ -97,15 +96,15 @@ int Check2DModel(const char* fileName)
   //by subtracting 26 from the id. so 26 == 0, ... 29 == 3
   //index 1 == verts, 3 == edge, 6 == face
 
-  //face 26 == 2 verts, 12 edges, 32 face points
-  //face 27 == 5 verts, 9 edges, 29 face points
-  //face 28 == 3 verts, 7 edges, 13 face points
-  //face 29 == 4 verts, 14 edges, 25 face points
+  //face 26 == 2 verts, 12 edges, 10 face points
+  //face 27 == 5 verts, 9 edges, 7 face points
+  //face 28 == 3 verts, 7 edges, 3 face points
+  //face 29 == 4 verts, 14 edges, 8 face points
   const vtkIdType correctPointIdSums[4][7]={
-    {0,2,0,12,0,0,32},
-    {0,5,0,9,0,0,29},
-    {0,3,0,7,0,0,13},
-    {0,4,0,14,0,0,25}
+    {0,2,0,12,0,0,10},
+    {0,5,0,9,0,0,7},
+    {0,3,0,7,0,0,3},
+    {0,4,0,14,0,0,8}
     };
 
 
@@ -139,6 +138,10 @@ int Check2DModel(const char* fileName)
       if ( valid == false )
         {
         cerr << "ERROR: Point Mapping failed on FaceId: " << 26 + faceId << endl;
+        cerr << "i is :" << i << endl;
+        cerr << "foundCellIdSums: " << foundPointIdSums[faceId][i] << endl;
+        cerr << "correctCellIdSums: " << correctPointIdSums[faceId][i] << endl;
+        cerr << endl;
         numberOfErrors++;
         break;
         }
@@ -154,17 +157,17 @@ int Check2DModel(const char* fileName)
   // 2 edge model Id's on the triangle = inde 12
   // 3 edge model Id's on the triangle = inde 9
 
-  //face 26 == 18 1 edge cells, 50 face cells
-  //face 27 == 18 1 edge cells, 50 face cells
-  //face 28 == 1 2 edge cell, 8 1 edge cells, 25 face cells
-  //face 29 == 18 1 edge cells, 50 face cells
+  //face 26 == 1 2 edge cell, 12 1 edge cells, 19 face cells
+  //face 27 == 2 2 edge cell, 10 1 edge cells, 14 face cells
+  //face 28 == 2 2 edge cell, 6 1 edge cells, 6 face cells
+  //face 29 == 1 2 edge cell, 16 1 edge cells, 17 face cells
 
 
   const int correctCellIdSums[4][19]={
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,62},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,0,0,56},
-    {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,8,0,0,25},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,18,0,0,50}
+    {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,12,0,0,19},
+    {0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,10,0,0,14},
+    {0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,6,0,0,6},
+    {0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,16,0,0,17}
     };
 
   int foundCellIdSums[4][19]={
