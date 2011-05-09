@@ -136,8 +136,9 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
           vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
           if(vertex)
             {
-            //vertex->GetPoint(modelVert);
-            edge.addModelVert(vertex->GetUniquePersistentId());
+            double point[3];
+            vertex->GetPoint(point);
+            edge.addModelVert(vertex->GetUniquePersistentId(),point);
             }
           }
         loop.addEdge(edge);

@@ -84,7 +84,7 @@ class InternalEdge
 public:
   InternalEdge(const int &id):Id(id){}
 
-  void addModelVert(const vtkIdType &id);
+  void addModelVert(const vtkIdType &id, double point[3]);
   void setMeshPoints(vtkPolyData *mesh);
 
   //Note: verts and mesh points need to be added
@@ -93,7 +93,7 @@ public:
 
   int numberMeshPoints() const {return (int)MeshPoints.size();}
 
-  const std::set<vtkIdType>& getModelVerts() const {return ModelVerts;}
+  const std::set<edgePoint>& getModelVerts() const {return ModelVerts;}
   const std::list<edgeSegment>& getSegments() const {return Segments;}
   const std::map<vtkIdType,edgePoint>& getMeshPoints() const {return MeshPoints;}
 
@@ -106,13 +106,10 @@ protected:
   //else it will have the id of the edge and be set to vtkModelEdgeType
   void updateModelRealtionships();
 
-  //Same as updateModelRealtionships but for only a single model vertex id
-  void updateModelRealtionship(const vtkIdType &vertexId);
-
   const vtkIdType Id;
   std::list<edgeSegment> Segments;
   std::map<vtkIdType,edgePoint> MeshPoints;
-  std::set<vtkIdType> ModelVerts;
+  std::set<edgePoint> ModelVerts;
 };
 
 class InternalLoop

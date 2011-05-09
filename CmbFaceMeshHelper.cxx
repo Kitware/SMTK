@@ -105,10 +105,11 @@ int edgeSegment::modelEntityType() const
 }
 
 //----------------------------------------------------------------------------
-void InternalEdge::addModelVert(const vtkIdType &id)
+void InternalEdge::addModelVert(const vtkIdType &id, double point[3])
 {
-  ModelVerts.insert(id);
-  this->updateModelRealtionship(id);
+  edgePoint modelVert(point[0],point[1],id,vtkModelVertexType);
+  ModelVerts.insert(modelVert);
+  this->updateModelRealtionships();
 }
 
 //----------------------------------------------------------------------------
@@ -152,26 +153,23 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
 //----------------------------------------------------------------------------
 void InternalEdge::updateModelRealtionships()
 {
-  std::set<vtkIdType>::const_iterator mvIt;
-  for(mvIt=this->ModelVerts.begin();mvIt!=this->ModelVerts.end();mvIt++)
-    {
-    this->updateModelRealtionship(*mvIt);
-    }
-}
-
-//If the vertexId matches a point Id
-//it set that point to be a model vertex with that id
-//----------------------------------------------------------------------------
-void InternalEdge::updateModelRealtionship(const vtkIdType &vertexId)
-{
+  //not a fast algorithm. brue force compare
+  int numModelVerts = this->ModelVerts.size();
+  int index = 0;
   std::map<vtkIdType,edgePoint>::iterator mpIt;
-  mpIt = this->MeshPoints.find(vertexId);
-  if ( mpIt != this->MeshPoints.end() )
+  std::set<edgePoint>::const_iterator mvIt;
+  for ( mpIt = this->MeshPoints.begin(); mpIt != this->MeshPoints.end(); mpIt++)
     {
-    //update the model relationship to be a model vert
-    mpIt->second.modelId = vertexId;
-    mpIt->second.modelEntityType = vtkModelVertexType;
+    mvIt = this->ModelVerts.find( mpIt->second );
+    if ( mvIt != this->ModelVerts.end() )
+      {
+      //we found a model vert, update the point with the model vertex entity type
+      //and id.
+      mpIt->second.modelEntityType = mvIt->modelEntityType;
+      mpIt->second.modelId = mvIt->modelId;
+      }
     }
+
 }
 
 //----------------------------------------------------------------------------
@@ -219,7 +217,6 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
   //add all the segments to the loop
   std::map<vtkIdType,edgePoint> meshPoints = edge.getMeshPoints();
   std::list<edgeSegment> edgeSegments = edge.getSegments();
-  std::set<vtkIdType> mv = edge.getModelVerts();
 
   vtkIdType pId1, pId2, newPId1, newPId2;
   std::list<edgeSegment>::const_iterator it;
