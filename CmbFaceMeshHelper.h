@@ -40,11 +40,11 @@ class vtkPolyData;
 //-----------------------------------------------------------------------------
 namespace CmbModelFaceMeshPrivate
 {
-class edgePoint
+class meshVertex
 {
 public:
-  edgePoint(const double& a, const double& b);
-  edgePoint(const double& a, const double& b,
+  meshVertex(const double& a, const double& b);
+  meshVertex(const double& a, const double& b,
       const vtkIdType& ModelId, const int& ModelEntityType);
 
   double x;
@@ -53,17 +53,17 @@ public:
   int modelEntityType;
 
   //comparison operator needed for map storage
-  bool operator<(const edgePoint &p) const;
+  bool operator<(const meshVertex &p) const;
 };
 
-class edgeSegment
+class meshEdge
 {
 public:
-  edgeSegment(const vtkIdType& f, const vtkIdType& s);
-  edgeSegment(const vtkIdType& f, const vtkIdType& s, const vtkIdType& id);
+  meshEdge(const vtkIdType& f, const vtkIdType& s);
+  meshEdge(const vtkIdType& f, const vtkIdType& s, const vtkIdType& id);
 
   //comparison operator needed for map storage
-  bool operator<(const edgeSegment &es) const;
+  bool operator<(const meshEdge &es) const;
 
   const vtkIdType& first() const {return First;}
   const vtkIdType& second() const {return Second;}
@@ -79,23 +79,23 @@ protected:
   vtkIdType ModelId;
 };
 
-class InternalEdge
+class ModelEdgeRep
 {
 public:
-  InternalEdge(const int &id):Id(id){}
+  ModelEdgeRep(const int &id):Id(id){}
 
   void addModelVert(const vtkIdType &id, double point[3]);
   void setMeshPoints(vtkPolyData *mesh);
 
   //Note: verts and mesh points need to be added
   //before valid result is returned
-  int numberLineSegments() const;
+  int numberOfEdges() const;
 
-  int numberMeshPoints() const {return (int)MeshPoints.size();}
+  int numberOfVertices() const {return (int)MeshPoints.size();}
 
-  const std::set<edgePoint>& getModelVerts() const {return ModelVerts;}
-  const std::list<edgeSegment>& getSegments() const {return Segments;}
-  const std::map<vtkIdType,edgePoint>& getMeshPoints() const {return MeshPoints;}
+  const std::set<meshVertex>& getModelVerts() const {return ModelVerts;}
+  const std::list<meshEdge>& getSegments() const {return Segments;}
+  const std::map<vtkIdType,meshVertex>& getMeshPoints() const {return MeshPoints;}
 
   const vtkIdType& getId() const{return Id;}
 protected:
@@ -107,21 +107,21 @@ protected:
   void updateModelRealtionships();
 
   const vtkIdType Id;
-  std::list<edgeSegment> Segments;
-  std::map<vtkIdType,edgePoint> MeshPoints;
-  std::set<edgePoint> ModelVerts;
+  std::list<meshEdge> Segments;
+  std::map<vtkIdType,meshVertex> MeshPoints;
+  std::set<meshVertex> ModelVerts;
 };
 
-class InternalLoop
+class ModelLoopRep
 {
 public:
-  InternalLoop(const vtkIdType &id, const bool &isInternal)
+  ModelLoopRep(const vtkIdType &id, const bool &isInternal)
     :EdgeCount(0),CanBeHole(isInternal),Id(id){}
 
   bool edgeExists(const vtkIdType &e) const;
 
   //only adds unique edges
-  void addEdge(const InternalEdge &edge);
+  void addEdge(const ModelEdgeRep &edge);
 
   //returns true if the point is contained on the loop.
   //The Id passed in must be between zero and number of Points - 1
@@ -133,7 +133,7 @@ public:
   //  set to the UniquePersistenId of the edge the point is contained on
   // if the point isn't on the loop the modelEntityType and uniqueId
   //  WILL NOT BE MODIFIED
-  bool pointModelRelation(const vtkIdType &pointId,
+  bool pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
   //returns true if the edge is contained in the loop.
@@ -143,7 +143,7 @@ public:
   //  set to the UniquePersistenId of the edge of the edge
   // if the edge isn't on the loop the modelEntityType and uniqueId
   //  WILL NOT BE MODIFIED
-  bool edgeModelRelation(const vtkIdType &pointId1, const vtkIdType &pointId2,
+  bool edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
   //mark that we have a duplicate edge
@@ -151,25 +151,25 @@ public:
   void markEdgeAsDuplicate(const vtkIdType &edgeId);
 
   //returns the number of  unique points in this loop
-  int getNumberOfPoints() const;
+  int numberOfVertices() const;
 
   //get the number of line segments in the loop
-  int getNumberOfLineSegments() const;
+  int numberOfEdges() const;
 
   //returns if this loop is a hole
   bool isHole() const;
 
   //returns NULL if point is not found
-  const edgePoint* getPoint(const vtkIdType &id) const;
+  const meshVertex* getPoint(const vtkIdType &id) const;
 
   // adds this loops information to the triangle interface
   // modifies the pointIndex, segment Index, and HoleIndex
   void addDataToTriangleInterface(CmbFaceMesherInterface *ti,
      int &pointIndex, int &segmentIndex, int &holeIndex);
 
-  bool pointOnBoundary(const edgePoint &point) const;
+  bool pointOnBoundary(const double& x, const double& y) const;
 
-  bool pointInside(const edgePoint &point) const;
+  bool pointInside(const double& x, const double& y) const;
 
   //returns the bounds in the order of:
   //xmin,ymin,xmax,ymax
@@ -177,11 +177,11 @@ public:
 
 protected:
   //copy the information from the edge into the loop
-  void addEdgeToLoop(const InternalEdge &edge);
+  void addEdgeToLoop(const ModelEdgeRep &edge);
 
   //Inserts the point if it doesn't exist, and returns
   //the vtkIdType id of the point.
-  vtkIdType insertPoint(const edgePoint &point);
+  vtkIdType insertPoint(const meshVertex &point);
 
   const vtkIdType Id;
   // Probably a better design would be to have methods for
@@ -203,22 +203,22 @@ protected:
   //form a sequential list of segments of the loop. This is done this
   //way because our mesher doesn't care about order so that isn't slowed
   //down but this makes mapping the mesh back to the model fast!
-  std::set<edgeSegment> Segments;
+  std::set<meshEdge> Segments;
 
   //bi directional map implemented as two maps
   //PointsToIds needed for easy lookup on duplicate points
   //IdsToPoints needed for correct indexing from the segments, also needed
   //for fast lookup on points mapping back to model
-  std::map<edgePoint,vtkIdType> PointsToIds;
-  std::map<vtkIdType,edgePoint> IdsToPoints;
+  std::map<meshVertex,vtkIdType> PointsToIds;
+  std::map<vtkIdType,meshVertex> IdsToPoints;
 };
 
-class InternalFace
+class ModelFaceRep
 {
   public:
-    void addLoop(const InternalLoop &loop);
-    int numberOfPoints();
-    int numberOfLineSegments();
+    void addLoop(const ModelLoopRep &loop);
+    int numberOfVertices();
+    int numberOfEdges();
     int numberOfHoles();
 
     void fillTriangleInterface(CmbFaceMesherInterface *ti);
@@ -227,7 +227,7 @@ class InternalFace
   protected:
     bool RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
     bool RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
-    std::list<InternalLoop> Loops;
+    std::list<ModelLoopRep> Loops;
 };
 }
 #endif

@@ -54,7 +54,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace CmbModelFaceMeshPrivate;
 
 //----------------------------------------------------------------------------
-edgePoint::edgePoint(const double& a, const double& b):
+meshVertex::meshVertex(const double& a, const double& b):
 x(a),
 y(b),
 modelId(-1),
@@ -62,7 +62,7 @@ modelEntityType(vtkModelType)
 {}
 
 //----------------------------------------------------------------------------
-edgePoint::edgePoint(const double& a, const double& b,
+meshVertex::meshVertex(const double& a, const double& b,
       const vtkIdType& id, const int& type):
 x(a),
 y(b),
@@ -71,20 +71,20 @@ modelEntityType(type)
 {}
 
 //----------------------------------------------------------------------------
-bool edgePoint::operator <(const edgePoint &p) const
+bool meshVertex::operator <(const meshVertex &p) const
 {
   return  ((this->x < p.x) ||
           (this->x == p.x && this->y < p.y));
 }
 
 //----------------------------------------------------------------------------
-edgeSegment::edgeSegment(const vtkIdType& f, const vtkIdType& s):
+meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s):
 First(f),
 Second(s),
 ModelId(-1)
 {}
 //----------------------------------------------------------------------------
-edgeSegment::edgeSegment(const vtkIdType& f, const vtkIdType& s,
+meshEdge::meshEdge(const vtkIdType& f, const vtkIdType& s,
                          const vtkIdType& id):
 First(f),
 Second(s),
@@ -92,28 +92,28 @@ ModelId(id)
 {}
 
 //----------------------------------------------------------------------------
-bool edgeSegment::operator<(const edgeSegment &p) const
+bool meshEdge::operator<(const meshEdge &p) const
 {
   return ((this->First < p.First) ||
          (this->First == p.First && this->Second < p.Second));
 }
 
 //----------------------------------------------------------------------------
-int edgeSegment::modelEntityType() const
+int meshEdge::modelEntityType() const
 {
   return vtkModelEdgeType;
 }
 
 //----------------------------------------------------------------------------
-void InternalEdge::addModelVert(const vtkIdType &id, double point[3])
+void ModelEdgeRep::addModelVert(const vtkIdType &id, double point[3])
 {
-  edgePoint modelVert(point[0],point[1],id,vtkModelVertexType);
+  meshVertex modelVert(point[0],point[1],id,vtkModelVertexType);
   ModelVerts.insert(modelVert);
   this->updateModelRealtionships();
 }
 
 //----------------------------------------------------------------------------
-void InternalEdge::setMeshPoints(vtkPolyData *mesh)
+void ModelEdgeRep::setMeshPoints(vtkPolyData *mesh)
 {
 
   this->MeshPoints.clear();
@@ -131,12 +131,12 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
           mesh->GetPoint(pts[j],p);
           //by default everything is related to the edge, updateModelRealtionship
           //will correct the edges to be related to the model vert when verts are added
-          edgePoint ep(p[0],p[1], this->Id,vtkModelEdgeType);
-          this->MeshPoints.insert(std::pair<vtkIdType,edgePoint>(pts[j],ep));
+          meshVertex ep(p[0],p[1], this->Id,vtkModelEdgeType);
+          this->MeshPoints.insert(std::pair<vtkIdType,meshVertex>(pts[j],ep));
           }
         if ( j > 0 )
           {
-          edgeSegment es(pts[j-1],pts[j], this->Id);
+          meshEdge es(pts[j-1],pts[j], this->Id);
           this->Segments.push_back(es);
           }
         }
@@ -151,13 +151,13 @@ void InternalEdge::setMeshPoints(vtkPolyData *mesh)
 //it will have the id of the model vert and be set too vtkModelVertexType
 //else it will have the id of the edge and be set to vtkModelEdgeType
 //----------------------------------------------------------------------------
-void InternalEdge::updateModelRealtionships()
+void ModelEdgeRep::updateModelRealtionships()
 {
   //not a fast algorithm. brue force compare
   int numModelVerts = this->ModelVerts.size();
   int index = 0;
-  std::map<vtkIdType,edgePoint>::iterator mpIt;
-  std::set<edgePoint>::const_iterator mvIt;
+  std::map<vtkIdType,meshVertex>::iterator mpIt;
+  std::set<meshVertex>::const_iterator mvIt;
   for ( mpIt = this->MeshPoints.begin(); mpIt != this->MeshPoints.end(); mpIt++)
     {
     mvIt = this->ModelVerts.find( mpIt->second );
@@ -173,13 +173,13 @@ void InternalEdge::updateModelRealtionships()
 }
 
 //----------------------------------------------------------------------------
-int InternalEdge::numberLineSegments() const
+int ModelEdgeRep::numberOfEdges() const
 {
   return (int)this->Segments.size();
 }
 
 //----------------------------------------------------------------------------
-bool InternalLoop::isHole() const
+bool ModelLoopRep::isHole() const
 {
   //holds the number of unique edges we have. If greater than zero
   //we have a hole. Also make sure we are an internal loop (CanBeHole)
@@ -187,19 +187,19 @@ bool InternalLoop::isHole() const
 }
 
 //----------------------------------------------------------------------------
-bool InternalLoop::edgeExists(const vtkIdType &e) const
+bool ModelLoopRep::edgeExists(const vtkIdType &e) const
 {
   return this->ModelEdges.count(e) > 0;
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::markEdgeAsDuplicate(const vtkIdType &edgeId)
+void ModelLoopRep::markEdgeAsDuplicate(const vtkIdType &edgeId)
 {
   --this->EdgeCount;
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::addEdge(const InternalEdge &edge)
+void ModelLoopRep::addEdge(const ModelEdgeRep &edge)
 {
   if ( !this->edgeExists(edge.getId()) )
     {
@@ -210,21 +210,21 @@ void InternalLoop::addEdge(const InternalEdge &edge)
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
+void ModelLoopRep::addEdgeToLoop(const ModelEdgeRep &edge)
 {
   //remove the mesh points from the edge, and into the loop.
   //add all the model verts to the loop
   //add all the segments to the loop
-  std::map<vtkIdType,edgePoint> meshPoints = edge.getMeshPoints();
-  std::list<edgeSegment> edgeSegments = edge.getSegments();
+  std::map<vtkIdType,meshVertex> meshPoints = edge.getMeshPoints();
+  std::list<meshEdge> edgeSegments = edge.getSegments();
 
   vtkIdType pId1, pId2, newPId1, newPId2;
-  std::list<edgeSegment>::const_iterator it;
+  std::list<meshEdge>::const_iterator it;
   for(it=edgeSegments.begin();it!=edgeSegments.end();it++)
     {
     //add each point to the mapping, and than add that segment
     pId1 = it->first();
-    edgePoint ep = meshPoints.find(pId1)->second;
+    meshVertex ep = meshPoints.find(pId1)->second;
     newPId1 = this->insertPoint(ep);
 
     pId2 = it->second();
@@ -232,24 +232,24 @@ void InternalLoop::addEdgeToLoop(const InternalEdge &edge)
     newPId2 = this->insertPoint(ep);
 
     //add the new segment
-    edgeSegment es(newPId1,newPId2,it->modelId());
+    meshEdge es(newPId1,newPId2,it->modelId());
     this->Segments.insert(es);
     }
 }
 //----------------------------------------------------------------------------
-vtkIdType InternalLoop::insertPoint(const edgePoint &point)
+vtkIdType ModelLoopRep::insertPoint(const meshVertex &point)
 {
-  std::pair<std::map<edgePoint,vtkIdType>::iterator,bool> ret;
+  std::pair<std::map<meshVertex,vtkIdType>::iterator,bool> ret;
   //use the number of points as ids. This way we make sure the no two
   //points map to the same id
   vtkIdType id(this->PointsToIds.size());
   ret = this->PointsToIds.insert(
-      std::pair<edgePoint,vtkIdType>(point,id));
+      std::pair<meshVertex,vtkIdType>(point,id));
   if ( ret.second )
     {
     //if we added the point, update both parts of the bidirectional map
     this->IdsToPoints.insert(
-      std::pair<vtkIdType,edgePoint>(id,point));
+      std::pair<vtkIdType,meshVertex>(id,point));
     }
   //the ret will point to the already existing element,
   //or the newely created element
@@ -257,9 +257,9 @@ vtkIdType InternalLoop::insertPoint(const edgePoint &point)
 }
 
 //----------------------------------------------------------------------------
-const edgePoint* InternalLoop::getPoint(const vtkIdType &id) const
+const meshVertex* ModelLoopRep::getPoint(const vtkIdType &id) const
 {
-  std::map<vtkIdType,edgePoint>::const_iterator it;
+  std::map<vtkIdType,meshVertex>::const_iterator it;
   it = this->IdsToPoints.find(id);
   if ( it == this->IdsToPoints.end() )
     {
@@ -279,7 +279,7 @@ const edgePoint* InternalLoop::getPoint(const vtkIdType &id) const
 // if the point isn't on the loop the modelEntityType and uniqueId
 //  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
-bool InternalLoop::pointModelRelation(const vtkIdType &pointId,
+bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
   if ( pointId < 0 )
@@ -287,7 +287,7 @@ bool InternalLoop::pointModelRelation(const vtkIdType &pointId,
     return false;
     }
 
-  std::map<vtkIdType,edgePoint>::const_iterator it =
+  std::map<vtkIdType,meshVertex>::const_iterator it =
      this->IdsToPoints.find(pointId);
   if ( it == this->IdsToPoints.end() )
     {
@@ -308,7 +308,7 @@ bool InternalLoop::pointModelRelation(const vtkIdType &pointId,
 // if the edge isn't on the loop the modelEntityType and uniqueId
 //  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
-bool InternalLoop::edgeModelRelation(const vtkIdType &pointId1, const vtkIdType &pointId2,
+bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
   int &modelEntityType, vtkIdType &uniqueId) const
 {
   if ( pointId1 < 0 || pointId2 < 0 )
@@ -317,13 +317,13 @@ bool InternalLoop::edgeModelRelation(const vtkIdType &pointId1, const vtkIdType 
     }
 
   //create the edge that we need to lookup
-  edgeSegment es(pointId1,pointId2);
-  std::set<edgeSegment>::const_iterator esIt = this->Segments.find(es);
+  meshEdge es(pointId1,pointId2);
+  std::set<meshEdge>::const_iterator esIt = this->Segments.find(es);
   if (esIt == this->Segments.end())
     {
     //the lookup is limited by the ordering, so switch the ordering
     //and try again
-    es = edgeSegment(pointId2,pointId1);
+    es = meshEdge(pointId2,pointId1);
     esIt = this->Segments.find(es);
     if ( esIt == this->Segments.end() )
       {
@@ -337,22 +337,22 @@ bool InternalLoop::edgeModelRelation(const vtkIdType &pointId1, const vtkIdType 
   return true;
 }
 //----------------------------------------------------------------------------
-int InternalLoop::getNumberOfPoints() const
+int ModelLoopRep::numberOfVertices() const
 {
   return (int)this->PointsToIds.size();
 }
 
 //----------------------------------------------------------------------------
-int InternalLoop::getNumberOfLineSegments() const
+int ModelLoopRep::numberOfEdges() const
 {
   return (int)this->Segments.size();
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
+void ModelLoopRep::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
    int &pointIndex, int &segmentIndex, int &holeIndex)
 {
-  std::map<vtkIdType,edgePoint>::iterator pointIt;
+  std::map<vtkIdType,meshVertex>::iterator pointIt;
   //we have to iterate idsToPoints, to properly get the right indexing
   //for cell lookup
   int i = 0;
@@ -364,7 +364,7 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
     }
   pointIndex += (int)this->IdsToPoints.size(); //update the pointIndex
 
-  std::set<edgeSegment>::iterator segIt;
+  std::set<meshEdge>::iterator segIt;
   i=segmentIndex;
   for (segIt=this->Segments.begin();segIt!=this->Segments.end();segIt++)
     {
@@ -382,16 +382,16 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
     for(segIt=this->Segments.begin();segIt!=this->Segments.end() && !pointInHoleFound;
     segIt++)
       {
-      const edgePoint *p1 = this->getPoint(segIt->first());
-      const edgePoint *p2 = this->getPoint(segIt->second());
+      const meshVertex *p1 = this->getPoint(segIt->first());
+      const meshVertex *p2 = this->getPoint(segIt->second());
 
       //hole point start off at middle of the segment
       double mx = (p1->x + p2->x)/2;
       double my = (p1->y + p2->y)/2;
       double dx = (p2->x - p1->x);
       double dy = (p2->y - p1->y);
-      edgePoint holePoint(mx,my);
 
+      double holeX, holeY;
       //we are only going to attempt this 6 times
       //for each edge, before switching to a new edge.
       //after 6 times we will most likely start getting false positives from the
@@ -399,21 +399,21 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
       while(!pointInHoleFound && timesTried <= 6)
         {
         //use the middle point on the segment
-        holePoint.x = mx - dy;
-        holePoint.y = my + dx;
+        holeX = mx - dy;
+        holeY = my + dx;
         //see if this point is on an edge of the loop
-        if ( !this->pointOnBoundary(holePoint) )
+        if ( !this->pointOnBoundary(holeX, holeY) )
           {
-          pointInHoleFound = this->pointInside(holePoint);
+          pointInHoleFound = this->pointInside(holeX, holeY);
           }
         if (!pointInHoleFound)
           {
           //flip the point to the other side
-          holePoint.x = mx + dy;
-          holePoint.y = my - dx;
-          if ( !this->pointOnBoundary(holePoint) )
+          holeX = mx + dy;
+          holeY = my - dx;
+          if ( !this->pointOnBoundary(holeX, holeY) )
             {
-            pointInHoleFound = this->pointInside(holePoint);
+            pointInHoleFound = this->pointInside(holeX, holeY);
             }
           }
         dx /= 2; //move the ray to half the distance
@@ -426,56 +426,56 @@ void InternalLoop::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
       if ( pointInHoleFound )
         {
         //only add the point if the while loop was valid
-        ti->setHole(holeIndex++,holePoint.x,holePoint.y);
+        ti->setHole(holeIndex++,holeX,holeY);
         }
       }
     }
 }
 
 //----------------------------------------------------------------------------
-bool InternalLoop::pointOnBoundary( const edgePoint &point ) const
+bool ModelLoopRep::pointOnBoundary(const double& x, const double& y) const
 {
   //find if the point is collinear to any of the lines
   //http://mathworld.wolfram.com/Collinear.html
   //we are using the area of the triangle of the three points being
   //zero to mean colinear. If this fails email robert.maynard@kitware.com
   bool collinear = false;
-  std::set<edgeSegment>::const_iterator segIt;
+  std::set<meshEdge>::const_iterator segIt;
   for(segIt=this->Segments.begin();segIt!=this->Segments.end() && !collinear;
     segIt++)
     {
-    const edgePoint *p1 = this->getPoint(segIt->first());
-    const edgePoint *p2 = this->getPoint(segIt->second());
-    double area = (p1->x * ( p2->y - point.y )  ) +
-                    (p2->x * ( point.y - p1->y )  ) +
-                    (point.x * ( p1->y - p2->y )  );
+    const meshVertex *p1 = this->getPoint(segIt->first());
+    const meshVertex *p2 = this->getPoint(segIt->second());
+    double area = (p1->x * ( p2->y - y )  ) +
+                    (p2->x * ( y - p1->y )  ) +
+                    (x * ( p1->y - p2->y )  );
     collinear = (fabs(area) <= 1e-9);
     }
   return collinear;
 }
 
 //----------------------------------------------------------------------------
-bool InternalLoop::pointInside( const edgePoint &point ) const
+bool ModelLoopRep::pointInside(const double& x, const double& y) const
 {
 
   //http://en.wikipedia.org/wiki/Point_in_polygon RayCasting method
   //shooting the ray along the x axis
   // if this fails email robert.maynard@kitware.com
   bool inside = false;
-  std::set<edgeSegment>::const_iterator segIt;
+  std::set<meshEdge>::const_iterator segIt;
   double xintersection;
   for(segIt=this->Segments.begin();segIt!=this->Segments.end();
     segIt++)
     {
-    const edgePoint *p1 = this->getPoint(segIt->first());
-    const edgePoint *p2 = this->getPoint(segIt->second());
-    if (point.y > std::min(p1->y,p2->y) && point.y <= std::max(p1->y,p2->y)
+    const meshVertex *p1 = this->getPoint(segIt->first());
+    const meshVertex *p2 = this->getPoint(segIt->second());
+    if (y > std::min(p1->y,p2->y) && y <= std::max(p1->y,p2->y)
       && p1->y != p2->y)
       {
-      if (point.x <= std::max(p1->x,p2->x) )
+      if (x <= std::max(p1->x,p2->x) )
         {
-        xintersection = (point.y-p1->y)*(p2->x - p1->x)/(p2->y - p1->y) + p1->x;
-        if ( p1->x == p2->x || point.x <= xintersection)
+        xintersection = (y-p1->y)*(p2->x - p1->x)/(p2->y - p1->y) + p1->x;
+        if ( p1->x == p2->x || x <= xintersection)
           {
           //each time we intersect we switch if we are in side or not
           inside = !inside;
@@ -487,9 +487,9 @@ bool InternalLoop::pointInside( const edgePoint &point ) const
 }
 
 //----------------------------------------------------------------------------
-void InternalLoop::bounds( double b[4] ) const
+void ModelLoopRep::bounds( double b[4] ) const
 {
-  std::map<edgePoint,vtkIdType>::const_iterator pointIt;
+  std::map<meshVertex,vtkIdType>::const_iterator pointIt;
 
   if ( this->PointsToIds.size() == 0 )
     {
@@ -514,39 +514,39 @@ void InternalLoop::bounds( double b[4] ) const
 }
 
 //----------------------------------------------------------------------------
-void InternalFace::addLoop(const InternalLoop &loop)
+void ModelFaceRep::addLoop(const ModelLoopRep &loop)
 {
   this->Loops.push_back(loop);
 }
 
 //----------------------------------------------------------------------------
-int InternalFace::numberOfPoints()
+int ModelFaceRep::numberOfVertices()
 {
   //we presume model verts are not shared between loops for this pass
   int sum=0;
-  std::list<InternalLoop>::iterator it;
+  std::list<ModelLoopRep>::iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it->getNumberOfPoints();
+    sum += it->numberOfVertices();
     }
   return sum;
 }
 //----------------------------------------------------------------------------
-int InternalFace::numberOfLineSegments()
+int ModelFaceRep::numberOfEdges()
 {
   int sum=0;
-  std::list<InternalLoop>::const_iterator it;
+  std::list<ModelLoopRep>::const_iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it->getNumberOfLineSegments();
+    sum += it->numberOfEdges();
     }
   return sum;
 }
 //----------------------------------------------------------------------------
-int InternalFace::numberOfHoles()
+int ModelFaceRep::numberOfHoles()
 {
   int sum=0;
-  std::list<InternalLoop>::const_iterator it;
+  std::list<ModelLoopRep>::const_iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
     sum += it->isHole() ? 1 : 0;
@@ -555,10 +555,10 @@ int InternalFace::numberOfHoles()
 }
 
 //----------------------------------------------------------------------------
-void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
+void ModelFaceRep::fillTriangleInterface(CmbFaceMesherInterface *ti)
 {
   int pIdx = 0, sId = 0, hId=0;
-  std::list<InternalLoop>::iterator it;
+  std::list<ModelLoopRep>::iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
     it->addDataToTriangleInterface(ti, pIdx, sId, hId);
@@ -566,7 +566,7 @@ void InternalFace::fillTriangleInterface(CmbFaceMesherInterface *ti)
 }
 
 //----------------------------------------------------------------------------
-bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+bool ModelFaceRep::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
   bool valid  = this->RelateMeshCellsToModel(mesh, facePersistenId);
   this->RelateMeshPointsToModel(mesh, facePersistenId);
@@ -586,7 +586,7 @@ bool InternalFace::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePer
 }
 
 //----------------------------------------------------------------------------
-bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+bool ModelFaceRep::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
   //Currently not needed, as cell relationship is good enough
   vtkPoints *points = mesh->GetPoints();
@@ -613,7 +613,7 @@ bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &f
   //to be identical to the input points. So we know exactly which
   //loop each point is from. Plus after we are done with the loops
   //all the points better be on the face.
-  std::list<InternalLoop>::iterator it;
+  std::list<ModelLoopRep>::iterator it;
   int i=0,loopPointSize=0, type=0;
   vtkIdType id;
 
@@ -623,10 +623,10 @@ bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &f
 
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    loopPointSize = it->getNumberOfPoints();
+    loopPointSize = it->numberOfVertices();
     for (i=0; i < loopPointSize; ++i)
       {
-      if (it->pointModelRelation(i,type,id))
+      if (it->pointClassification(i,type,id))
         {
         *pmt = type;
         *pmu = id;
@@ -643,7 +643,7 @@ bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &f
     }
 
   //now the rest are owned by the face model we can use fill.
-  vtkIdType length = size - this->numberOfPoints();
+  vtkIdType length = size - this->numberOfVertices();
   if ( length > 0 ) //maybe no new points have been added
     {
     std::fill_n(pmt,length,vtkModelFaceType);
@@ -659,7 +659,7 @@ bool InternalFace::RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &f
 }
 
 //----------------------------------------------------------------------------
-bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
+bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId)
 {
   //we presume we only have triangle cells
   //if we have other cell arrays this will break
@@ -699,13 +699,13 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
   std::fill_n(cmt,length,vtkModelFaceType);
   std::fill_n(cmu,length,facePersistenId);
 
-  std::list<InternalLoop>::const_iterator it;
+  std::list<ModelLoopRep>::const_iterator it;
   //stores the current cost of the index to move to next bin
   vtkIdType costs[3]={0,0,0};
   bool canMoveToNextBin[3]={false,false,false}; //stores if this item can move
   bool validBin[3]={false,false,false}; //stores if this is the correct bin
   int currentCost = 0, previousCost=0;
-  const int maxCost = this->numberOfPoints();
+  const int maxCost = this->numberOfVertices();
 
   //data structs needed inside loops
   int numCanMove = 0;
@@ -732,7 +732,7 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
       for(it=this->Loops.begin();it!=this->Loops.end();it++)
         {
         numCanMove = 0;
-        currentCost = it->getNumberOfPoints();
+        currentCost = it->numberOfVertices();
         //update the costs for this point
         for (int i=0; i<3;++i)
           {
@@ -757,7 +757,7 @@ bool InternalFace::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
             //each loop point indexing is zero based
             //so we need to convert the current point id to a the loop point
             //luckily this is the current cost
-            it->edgeModelRelation(costs[pos0],costs[pos1], cmt[pos0], cmu[pos0]);
+            it->edgeClassification(costs[pos0],costs[pos1], cmt[pos0], cmu[pos0]);
             }
           }
 

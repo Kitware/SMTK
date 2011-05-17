@@ -36,6 +36,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 
+#include "CmbFaceMeshHelper.h"
+#include "CmbFaceMesherInterface.h"
+
 vtkStandardNewMacro(vtkCmbModelFaceMeshServer);
 vtkCxxRevisionMacro(vtkCmbModelFaceMeshServer, "");
 
@@ -93,7 +96,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     delete this->FaceInfo;
     this->FaceInfo = NULL;
     }
-  this->FaceInfo = new CmbModelFaceMeshPrivate::InternalFace();
+  this->FaceInfo = new CmbModelFaceMeshPrivate::ModelFaceRep();
 
   bool valid = this->CreateMeshInfo();
   vtkPolyData* mesh = vtkPolyData::New();
@@ -133,7 +136,7 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
     {
     //by design the first loop is the external loop, all other loops are internal loops
     //for a loop to be a hole it has to be an internal loop, with an edge that isn't used twice
-    InternalLoop loop(loopId,loopId != START_LOOP_ID);
+    CmbModelFaceMeshPrivate::ModelLoopRep loop(loopId,loopId != START_LOOP_ID);
     vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
         liter->GetCurrentItem())->NewModelEdgeUseIterator();
     for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
@@ -151,7 +154,7 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
           vtkErrorMacro("Missing mesh.");
           }
 
-        InternalEdge edge(edgeId);
+        CmbModelFaceMeshPrivate::ModelEdgeRep edge(edgeId);
         edge.setMeshPoints(mesh);
         int numVerts = modelEdge->GetNumberOfModelVertexUses();
         for(int i=0;i<numVerts;++i)
@@ -182,7 +185,7 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh, 
+bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
                                             double length, double angle)
 {
   //The current plan is that we are going to redo the entire storage of the
@@ -192,8 +195,8 @@ bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
   //copy all the info directly into those pointers, and use those to calculate out the
   //bounds, hole inside etc.
   //we now get to construct the triangulate structs based on our mapping
-  int numPoints = this->FaceInfo->numberOfPoints();
-  int numSegs = this->FaceInfo->numberOfLineSegments();
+  int numPoints = this->FaceInfo->numberOfVertices();
+  int numSegs = this->FaceInfo->numberOfEdges();
   int numHoles = this->FaceInfo->numberOfHoles();
   CmbFaceMesherInterface ti(numPoints,numSegs,numHoles);
 

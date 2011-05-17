@@ -65,6 +65,10 @@ protected:
 private:
   vtkCmbModelFaceMeshServer(const vtkCmbModelFaceMeshServer&);  // Not implemented.
   void operator=(const vtkCmbModelFaceMeshServer&);  // Not implemented.
+
+  //BTX
+  CmbModelFaceMeshPrivate::ModelFaceRep *FaceInfo;
+  //ETX
 };
 
 #endif
