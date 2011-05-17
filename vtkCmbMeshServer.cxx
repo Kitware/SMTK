@@ -66,6 +66,11 @@ vtkCmbMeshServer::vtkCmbMeshServer()
 //----------------------------------------------------------------------------
 vtkCmbMeshServer::~vtkCmbMeshServer()
 {
+  if(this->CallbackCommand)
+    {
+    this->Model->RemoveObserver(this->CallbackCommand);
+    this->CallbackCommand = NULL;
+    }
   if(this->Internal)
     {
     delete this->Internal;
@@ -93,13 +98,12 @@ void vtkCmbMeshServer::Initialize(vtkModel* model)
 
   // register model modification events that we want
   // this may not be correct yet
-  vtkSmartPointer<vtkCallbackCommand> callbackCommand =
-    vtkSmartPointer<vtkCallbackCommand>::New();
-  callbackCommand->SetCallback(vtkCmbMeshServer::ModelGeometricEntityChanged);
-  callbackCommand->SetClientData((void*) this);
-  model->AddObserver(ModelGeometricEntityBoundaryModified, callbackCommand);
-  model->AddObserver(ModelGeometricEntitiesAboutToMerge, callbackCommand);
-  model->AddObserver(ModelGeometricEntitySplit, callbackCommand);
+  this->CallbackCommand = vtkSmartPointer<vtkCallbackCommand>::New();
+  this->CallbackCommand->SetCallback(vtkCmbMeshServer::ModelGeometricEntityChanged);
+  this->CallbackCommand->SetClientData((void*) this);
+  model->AddObserver(ModelGeometricEntityBoundaryModified, this->CallbackCommand);
+  model->AddObserver(ModelGeometricEntitiesAboutToMerge, this->CallbackCommand);
+  model->AddObserver(ModelGeometricEntitySplit, this->CallbackCommand);
 
   // edges
   vtkModelItemIterator* iter = model->NewIterator(vtkModelEdgeType);
@@ -173,6 +177,11 @@ void vtkCmbMeshServer::Reset()
 {
   this->Internal->ModelEdges.clear();
   this->Internal->ModelFaces.clear();
+  if(this->CallbackCommand)
+    {
+    this->Model->RemoveObserver(this->CallbackCommand);
+    this->CallbackCommand = NULL;
+    }
   this->Superclass::Reset();
   this->Modified();
 }

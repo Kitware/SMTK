@@ -24,7 +24,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbMesh.h"
 
-#include <vtkCallbackCommand.h>
 #include <vtkCMBModel.h>
 #include "vtkCmbModelEdgeMesh.h"
 #include "vtkCmbModelFaceMesh.h"

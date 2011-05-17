@@ -35,7 +35,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshClient_h
 
 #include "vtkCmbMesh.h"
+#include <vtkSmartPointer.h> // for callback
 
+class vtkCallbackCommand;
 class vtkCmbMeshClientInternals;
 class vtkSMProxy;
 
@@ -106,6 +108,7 @@ private:
   vtkSMProxy* ServerMeshProxy;
   vtkSMProxy* ServerModelProxy;
   vtkCmbMeshClientInternals* Internal;
+  vtkSmartPointer<vtkCallbackCommand> CallbackCommand;
 };
 
 #endif

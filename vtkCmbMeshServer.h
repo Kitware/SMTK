@@ -29,7 +29,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshServer_h
 
 #include "vtkCmbMesh.h"
+#include <vtkSmartPointer.h> // for callback
 
+class vtkCallbackCommand;
 class vtkCmbMeshServerInternals;
 class vtkCmbModelEntityMesh;
 class vtkMergeEventData;
@@ -93,6 +95,7 @@ private:
   void operator=(const vtkCmbMeshServer&);  // Not implemented.
 
   vtkCmbMeshServerInternals* Internal;
+  vtkSmartPointer<vtkCallbackCommand> CallbackCommand;
 };
 
 #endif
