@@ -268,6 +268,32 @@ const meshVertex* ModelLoopRep::getPoint(const vtkIdType &id) const
   return &it->second;
 }
 
+//----------------------------------------------------------------------------
+const meshVertex* ModelLoopRep::getPoint(const double &x, const double &y) const
+{
+  std::map<meshVertex,vtkIdType>::const_iterator it;
+  meshVertex p(x,y);
+  it = this->PointsToIds.find(p);
+  if ( it == this->PointsToIds.end() )
+    {
+    return NULL;
+    }
+  return &it->first;
+}
+
+//----------------------------------------------------------------------------
+vtkIdType ModelLoopRep::getPointId(const double &x, const double &y) const
+{
+  std::map<meshVertex,vtkIdType>::const_iterator it;
+  meshVertex p(x,y);
+  it = this->PointsToIds.find(p);
+  if ( it == this->PointsToIds.end() )
+    {
+    return -1;
+    }
+  return it->second;
+}
+
 //returns true if the point is contained on the loop.
 //The Id passed in must be between zero and number of Points - 1
 //if the point is a model vertice the modelEntityType
@@ -282,21 +308,41 @@ const meshVertex* ModelLoopRep::getPoint(const vtkIdType &id) const
 bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
-  if ( pointId < 0 )
-    {
-    return false;
-    }
-
-  std::map<vtkIdType,meshVertex>::const_iterator it =
-     this->IdsToPoints.find(pointId);
-  if ( it == this->IdsToPoints.end() )
+  const meshVertex *vert = this->getPoint(pointId);
+  if ( vert == NULL)
     {
     return false;
     }
 
   //the point exists, get the relationship it has
-  modelEntityType = it->second.modelEntityType;
-  uniqueId = it->second.modelId;
+  modelEntityType = vert->modelEntityType;
+  uniqueId = vert->modelId;
+  return true;
+}
+
+//returns true if the point is contained on the loop.
+//The Id passed in must be between zero and number of Points - 1
+//if the point is a model vertice the modelEntityType
+//  will be set to vtkModelVertexType, and the uniqueId will be
+//  set to the UniquePersistentId of the model vert.
+//if the point is a mesh edge point the modelEntityType
+//  will be set to vtkModelEdgeType, and the uniqueId will be
+//  set to the UniquePersistenId of the edge the point is contained on
+// if the point isn't on the loop the modelEntityType and uniqueId
+//  WILL NOT BE MODIFIED
+//----------------------------------------------------------------------------
+bool ModelLoopRep::pointClassification(const double &x, const double &y,
+    int &modelEntityType, vtkIdType &uniqueId) const
+{
+  const meshVertex *point = this->getPoint(x,y);
+  if ( point == NULL)
+    {
+    return false;
+    }
+
+  //the point exists, get the relationship it has
+  modelEntityType = point->modelEntityType;
+  uniqueId = point->modelId;
   return true;
 }
 
@@ -336,6 +382,32 @@ bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType
   uniqueId = esIt->modelId();
   return true;
 }
+
+
+//returns true if the edge is contained in the loop.
+//The Ids passed in must be between zero and number of Points - 1
+//if the edge is a mesh edge the modelEntityType
+//  will be set to vtkModelEdgeType, and the uniqueId will be
+//  set to the UniquePersistenId of the edge of the edge
+// if the edge isn't on the loop the modelEntityType and uniqueId
+//  WILL NOT BE MODIFIED
+//----------------------------------------------------------------------------
+bool ModelLoopRep::edgeClassification(const double &x1, const double &y1,
+    const double &x2, const double &y2,
+    int &modelEntityType, vtkIdType &uniqueId) const
+{
+  vtkIdType p1 = this->getPointId(x1,y1);
+  vtkIdType p2 = this->getPointId(x2,y2);
+  if (p1 == -1 || p2 == -1 )
+    {
+    return false;
+    }
+  else
+    {
+    return this->edgeClassification(p1,p2,modelEntityType,uniqueId);
+    }
+}
+
 //----------------------------------------------------------------------------
 int ModelLoopRep::numberOfVertices() const
 {

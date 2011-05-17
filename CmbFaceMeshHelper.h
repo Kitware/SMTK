@@ -136,6 +136,19 @@ public:
   bool pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
+  //returns true if the point is contained on the loop.
+  //The Id passed in must be between zero and number of Points - 1
+  //if the point is a model vertice the modelEntityType
+  //  will be set to vtkModelVertexType, and the uniqueId will be
+  //  set to the UniquePersistentId of the model vert.
+  //if the point is a mesh edge point the modelEntityType
+  //  will be set to vtkModelEdgeType, and the uniqueId will be
+  //  set to the UniquePersistenId of the edge the point is contained on
+  // if the point isn't on the loop the modelEntityType and uniqueId
+  //  WILL NOT BE MODIFIED
+  bool pointClassification(const double &x, const double &y,
+    int &modelEntityType, vtkIdType &uniqueId) const;
+
   //returns true if the edge is contained in the loop.
   //The Ids passed in must be between zero and number of Points - 1
   //if the edge is a mesh edge the modelEntityType
@@ -144,6 +157,17 @@ public:
   // if the edge isn't on the loop the modelEntityType and uniqueId
   //  WILL NOT BE MODIFIED
   bool edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
+    int &modelEntityType, vtkIdType &uniqueId) const;
+
+  //returns true if the edge is contained in the loop.
+  //The Ids passed in must be between zero and number of Points - 1
+  //if the edge is a mesh edge the modelEntityType
+  //  will be set to vtkModelEdgeType, and the uniqueId will be
+  //  set to the UniquePersistenId of the edge of the edge
+  // if the edge isn't on the loop the modelEntityType and uniqueId
+  //  WILL NOT BE MODIFIED
+  bool edgeClassification(const double &x1, const double &y1,
+    const double &x2, const double &y2,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
   //mark that we have a duplicate edge
@@ -161,6 +185,13 @@ public:
 
   //returns NULL if point is not found
   const meshVertex* getPoint(const vtkIdType &id) const;
+
+  //returns NULL if point is not found
+  const meshVertex* getPoint(const double &x, const double &y) const;
+
+  //returns the local loop id for the point.
+  //if not found it will return -1
+  vtkIdType getPointId(const double &x, const double &y) const;
 
   // adds this loops information to the triangle interface
   // modifies the pointIndex, segment Index, and HoleIndex
