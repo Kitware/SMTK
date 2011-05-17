@@ -68,7 +68,10 @@ vtkCmbMeshServer::~vtkCmbMeshServer()
 {
   if(this->CallbackCommand)
     {
-    this->Model->RemoveObserver(this->CallbackCommand);
+    if(this->Model)
+      {
+      this->Model->RemoveObserver(this->CallbackCommand);
+      }
     this->CallbackCommand = NULL;
     }
   if(this->Internal)
@@ -179,7 +182,10 @@ void vtkCmbMeshServer::Reset()
   this->Internal->ModelFaces.clear();
   if(this->CallbackCommand)
     {
-    this->Model->RemoveObserver(this->CallbackCommand);
+    if(this->Model)
+      {
+      this->Model->RemoveObserver(this->CallbackCommand);
+      }
     this->CallbackCommand = NULL;
     }
   this->Superclass::Reset();
