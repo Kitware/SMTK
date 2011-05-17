@@ -100,10 +100,10 @@ public:
   const vtkIdType& getId() const{return Id;}
 protected:
 
-  //Updates each point in the edge with the latest
+  //Updates each locally stored mesh point in the edge mesh with the latest
   //relationship. If the point matches a model vert
-  //it will have the id of the model vert and be set too vtkModelVertexType
-  //else it will have the id of the edge and be set to vtkModelEdgeType
+  //it will have the id of the model vert and be set to vtkModelVertexType
+  //else it will have the id of the model edge and be set to vtkModelEdgeType
   void updateModelRealtionships();
 
   const vtkIdType Id;
@@ -184,6 +184,8 @@ protected:
   vtkIdType insertPoint(const edgePoint &point);
 
   const vtkIdType Id;
+  // Probably a better design would be to have methods for
+  // isOuterLoop() and isDegenerateLoop
   const bool CanBeHole;
 
   //holds the number of unique edges we have. If greater than zero
@@ -192,6 +194,9 @@ protected:
 
   //these store ids, so we don't have duplicates
   std::set<vtkIdType> ModelEdges;
+
+  // The following is for classification of mesh entities
+  // with respects to model edges and vertices
 
   //Stores all the segments. Stores the segments in a way that
   //is fast to see if an edge already exists. When iterated will not
