@@ -116,46 +116,50 @@ class ModelLoopRep
 {
 public:
   ModelLoopRep(const vtkIdType &id, const bool &isInternal)
-    :EdgeCount(0),CanBeHole(isInternal),Id(id){}
+    :EdgeCount(0),IsOuterLoop(!isInternal),Id(id){}
 
+  //returns true if an edge with the sameUniquePersistentId has already be added
   bool edgeExists(const vtkIdType &e) const;
 
-  //only adds unique edges
+  //Add an edge to the ModelLoopRep.
+  //Only unique edges will be added.
   void addEdge(const ModelEdgeRep &edge);
 
-  //returns true if the point is contained on the loop.
-  //The Id passed in must be between zero and number of Points - 1
-  //if the point is a model vertice the modelEntityType
+  //returns: If the point is used in the loop.
+  //The pointId is the loop based id of the point
+  //
+  //If the point is a model vertex, the modelEntityType
   //  will be set to vtkModelVertexType, and the uniqueId will be
-  //  set to the UniquePersistentId of the model vert.
-  //if the point is a mesh edge point the modelEntityType
+  //  set to the UniquePersistentId of the model vertex.
+  //If the point is a mesh edge rep point, the modelEntityType
   //  will be set to vtkModelEdgeType, and the uniqueId will be
-  //  set to the UniquePersistenId of the edge the point is contained on
-  // if the point isn't on the loop the modelEntityType and uniqueId
-  //  WILL NOT BE MODIFIED
+  //  set to the UniquePersistenId of the edge.
+  //Otherwise the modelEntityType and uniqueId will not be modified
+  //and we will return false
   bool pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
-  //returns true if the point is contained on the loop.
-  //The Id passed in must be between zero and number of Points - 1
-  //if the point is a model vertice the modelEntityType
+  //returns: If the poin is used in the loop.
+  //The pointId is the loop based id of the point
+  //
+  //If the point is a model vertex, the modelEntityType
   //  will be set to vtkModelVertexType, and the uniqueId will be
-  //  set to the UniquePersistentId of the model vert.
-  //if the point is a mesh edge point the modelEntityType
+  //  set to the UniquePersistentId of the model vertex.
+  //If the point is a mesh edge rep point, the modelEntityType
   //  will be set to vtkModelEdgeType, and the uniqueId will be
-  //  set to the UniquePersistenId of the edge the point is contained on
-  // if the point isn't on the loop the modelEntityType and uniqueId
-  //  WILL NOT BE MODIFIED
+  //  set to the UniquePersistenId of the edge.
+  //Otherwise the modelEntityType and uniqueId will not be modified
+  //and we will return false
   bool pointClassification(const double &x, const double &y,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
-  //returns true if the edge is contained in the loop.
-  //The Ids passed in must be between zero and number of Points - 1
+  //returns: True if the edge is used in the loop.
+  //The pointIds are the loop based ids of the points
   //if the edge is a mesh edge the modelEntityType
   //  will be set to vtkModelEdgeType, and the uniqueId will be
   //  set to the UniquePersistenId of the edge of the edge
-  // if the edge isn't on the loop the modelEntityType and uniqueId
-  //  WILL NOT BE MODIFIED
+  //Otherwise the modelEntityType and uniqueId will not be modified
+  //and we will return false
   bool edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
@@ -164,43 +168,44 @@ public:
   //if the edge is a mesh edge the modelEntityType
   //  will be set to vtkModelEdgeType, and the uniqueId will be
   //  set to the UniquePersistenId of the edge of the edge
-  // if the edge isn't on the loop the modelEntityType and uniqueId
-  //  WILL NOT BE MODIFIED
+  //Otherwise the modelEntityType and uniqueId will not be modified
+  //and we will return false
   bool edgeClassification(const double &x1, const double &y1,
     const double &x2, const double &y2,
     int &modelEntityType, vtkIdType &uniqueId) const;
 
-  //mark that we have a duplicate edge
-  //this determines if the loop is a hole
-  void markEdgeAsDuplicate(const vtkIdType &edgeId);
-
-  //returns the number of  unique points in this loop
+  //returns the number of unique points in this loop
   int numberOfVertices() const;
 
   //get the number of line segments in the loop
   int numberOfEdges() const;
 
-  //returns if this loop is a hole
-  bool isHole() const;
+  bool isOuterLoop() const;
+  bool isDegenerateLoop() const;
 
   //returns NULL if point is not found
-  const meshVertex* getPoint(const vtkIdType &id) const;
+  const meshVertex* getPoint(const vtkIdType &meshVertexId) const;
 
   //returns NULL if point is not found
   const meshVertex* getPoint(const double &x, const double &y) const;
 
-  //returns the local loop id for the point.
+  //returns the local loop id for the mesh vertex.
   //if not found it will return -1
-  vtkIdType getPointId(const double &x, const double &y) const;
+  vtkIdType getMeshVertexId(const double &x, const double &y) const;
 
   // adds this loops information to the triangle interface
   // modifies the pointIndex, segment Index, and HoleIndex
   void addDataToTriangleInterface(CmbFaceMesherInterface *ti,
      int &pointIndex, int &segmentIndex, int &holeIndex);
 
-  bool pointOnBoundary(const double& x, const double& y) const;
+  //returns true if the input coordinate is collinear with
+  //any of the edges of the loop
+  bool isBoundaryPoint(const double& x, const double& y) const;
 
-  bool pointInside(const double& x, const double& y) const;
+  //returns true if the input coordinate is inside the loop.
+  //This will not check if the point exists on the loops boundary
+  //so you should call isBoundaryPoint first
+  bool isPointInside(const double& x, const double& y) const;
 
   //returns the bounds in the order of:
   //xmin,ymin,xmax,ymax
@@ -215,9 +220,9 @@ protected:
   vtkIdType insertPoint(const meshVertex &point);
 
   const vtkIdType Id;
-  // Probably a better design would be to have methods for
-  // isOuterLoop() and isDegenerateLoop
-  const bool CanBeHole;
+
+  //stores if this loop represents the outer boundary of a face
+  const bool IsOuterLoop;
 
   //holds the number of unique edges we have. If greater than zero
   //we have a hole

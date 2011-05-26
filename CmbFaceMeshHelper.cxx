@@ -154,7 +154,7 @@ void ModelEdgeRep::setMeshPoints(vtkPolyData *mesh)
 void ModelEdgeRep::updateModelRealtionships()
 {
   //not a fast algorithm. brue force compare
-  int numModelVerts = this->ModelVerts.size();
+  int numModelVerts = static_cast<int>(this->ModelVerts.size());
   int index = 0;
   std::map<vtkIdType,meshVertex>::iterator mpIt;
   std::set<meshVertex>::const_iterator mvIt;
@@ -179,23 +179,21 @@ int ModelEdgeRep::numberOfEdges() const
 }
 
 //----------------------------------------------------------------------------
-bool ModelLoopRep::isHole() const
+bool ModelLoopRep::isOuterLoop() const
 {
-  //holds the number of unique edges we have. If greater than zero
-  //we have a hole. Also make sure we are an internal loop (CanBeHole)
-  return this->CanBeHole && this->EdgeCount > 0;
+  return this->IsOuterLoop;
+}
+
+//----------------------------------------------------------------------------
+bool ModelLoopRep::isDegenerateLoop() const
+{
+  return this->EdgeCount == 0;
 }
 
 //----------------------------------------------------------------------------
 bool ModelLoopRep::edgeExists(const vtkIdType &e) const
 {
   return this->ModelEdges.count(e) > 0;
-}
-
-//----------------------------------------------------------------------------
-void ModelLoopRep::markEdgeAsDuplicate(const vtkIdType &edgeId)
-{
-  --this->EdgeCount;
 }
 
 //----------------------------------------------------------------------------
@@ -206,6 +204,11 @@ void ModelLoopRep::addEdge(const ModelEdgeRep &edge)
     this->ModelEdges.insert(edge.getId());
     this->addEdgeToLoop(edge);
     ++this->EdgeCount;
+    }
+  else
+    {
+    //duplicate edge, this helps determine if the loop is a hole
+    --this->EdgeCount;
     }
 }
 
@@ -282,7 +285,7 @@ const meshVertex* ModelLoopRep::getPoint(const double &x, const double &y) const
 }
 
 //----------------------------------------------------------------------------
-vtkIdType ModelLoopRep::getPointId(const double &x, const double &y) const
+vtkIdType ModelLoopRep::getMeshVertexId(const double &x, const double &y) const
 {
   std::map<meshVertex,vtkIdType>::const_iterator it;
   meshVertex p(x,y);
@@ -294,16 +297,6 @@ vtkIdType ModelLoopRep::getPointId(const double &x, const double &y) const
   return it->second;
 }
 
-//returns true if the point is contained on the loop.
-//The Id passed in must be between zero and number of Points - 1
-//if the point is a model vertice the modelEntityType
-//  will be set to vtkModelVertexType, and the uniqueId will be
-//  set to the UniquePersistentId of the model vert.
-//if the point is a mesh edge point the modelEntityType
-//  will be set to vtkModelEdgeType, and the uniqueId will be
-//  set to the UniquePersistenId of the edge the point is contained on
-// if the point isn't on the loop the modelEntityType and uniqueId
-//  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
 bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
     int &modelEntityType, vtkIdType &uniqueId) const
@@ -314,45 +307,40 @@ bool ModelLoopRep::pointClassification(const vtkIdType &pointId,
     return false;
     }
 
-  //the point exists, get the relationship it has
-  modelEntityType = vert->modelEntityType;
-  uniqueId = vert->modelId;
-  return true;
+  //the point exists, make sure it has a valid modelEntityType
+  //we don't want to modify the type and uniqueId unless our
+  //point is properly classified
+  if ( vert->modelEntityType != vtkModelType && vert->modelId > -1)
+    {
+    modelEntityType = vert->modelEntityType;
+    uniqueId = vert->modelId;
+    return true;
+    }
+  return false;
 }
 
-//returns true if the point is contained on the loop.
-//The Id passed in must be between zero and number of Points - 1
-//if the point is a model vertice the modelEntityType
-//  will be set to vtkModelVertexType, and the uniqueId will be
-//  set to the UniquePersistentId of the model vert.
-//if the point is a mesh edge point the modelEntityType
-//  will be set to vtkModelEdgeType, and the uniqueId will be
-//  set to the UniquePersistenId of the edge the point is contained on
-// if the point isn't on the loop the modelEntityType and uniqueId
-//  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
 bool ModelLoopRep::pointClassification(const double &x, const double &y,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
-  const meshVertex *point = this->getPoint(x,y);
-  if ( point == NULL)
+  const meshVertex *vert = this->getPoint(x,y);
+  if ( vert == NULL)
     {
     return false;
     }
 
-  //the point exists, get the relationship it has
-  modelEntityType = point->modelEntityType;
-  uniqueId = point->modelId;
-  return true;
+  //the point exists, make sure it has a valid modelEntityType.
+  //We don't want to modify the type and uniqueId unless our
+  //point is properly classified
+  if ( vert->modelEntityType != vtkModelType && vert->modelId > -1)
+    {
+    modelEntityType = vert->modelEntityType;
+    uniqueId = vert->modelId;
+    return true;
+    }
+  return false;
 }
 
-//returns true if the edge is contained in the loop.
-//The Ids passed in must be between zero and number of Points - 1
-//if the edge is a mesh edge the modelEntityType
-//  will be set to vtkModelEdgeType, and the uniqueId will be
-//  set to the UniquePersistenId of the edge of the edge
-// if the edge isn't on the loop the modelEntityType and uniqueId
-//  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
 bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType &pointId2,
   int &modelEntityType, vtkIdType &uniqueId) const
@@ -377,27 +365,27 @@ bool ModelLoopRep::edgeClassification(const vtkIdType &pointId1, const vtkIdType
       return false;
       }
     }
-  //we found a valid edge
-  modelEntityType = esIt->modelEntityType();
-  uniqueId = esIt->modelId();
-  return true;
+
+  //We have found an edge.
+  //We know only want to update the modelEntityType and uniqueId if
+  //the edges modelEntityType and modelId are valid
+  if (esIt->modelEntityType() != vtkModelType && esIt->modelId() > -1 )
+    {
+    modelEntityType = esIt->modelEntityType();
+    uniqueId = esIt->modelId();
+    return true;
+    }
+  return false;
 }
 
 
-//returns true if the edge is contained in the loop.
-//The Ids passed in must be between zero and number of Points - 1
-//if the edge is a mesh edge the modelEntityType
-//  will be set to vtkModelEdgeType, and the uniqueId will be
-//  set to the UniquePersistenId of the edge of the edge
-// if the edge isn't on the loop the modelEntityType and uniqueId
-//  WILL NOT BE MODIFIED
 //----------------------------------------------------------------------------
 bool ModelLoopRep::edgeClassification(const double &x1, const double &y1,
     const double &x2, const double &y2,
     int &modelEntityType, vtkIdType &uniqueId) const
 {
-  vtkIdType p1 = this->getPointId(x1,y1);
-  vtkIdType p2 = this->getPointId(x2,y2);
+  vtkIdType p1 = this->getMeshVertexId(x1,y1);
+  vtkIdType p2 = this->getMeshVertexId(x2,y2);
   if (p1 == -1 || p2 == -1 )
     {
     return false;
@@ -446,7 +434,7 @@ void ModelLoopRep::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
     }
   segmentIndex += (int)this->Segments.size();
 
-  if (this->isHole())
+  if (!this->isOuterLoop() && !this->isDegenerateLoop())
     {
     //we can have edges that are part of a loop, but not the hole in the loop
     //think of a cube with an interior line
@@ -474,18 +462,18 @@ void ModelLoopRep::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
         holeX = mx - dy;
         holeY = my + dx;
         //see if this point is on an edge of the loop
-        if ( !this->pointOnBoundary(holeX, holeY) )
+        if ( !this->isBoundaryPoint(holeX, holeY) )
           {
-          pointInHoleFound = this->pointInside(holeX, holeY);
+          pointInHoleFound = this->isPointInside(holeX, holeY);
           }
         if (!pointInHoleFound)
           {
           //flip the point to the other side
           holeX = mx + dy;
           holeY = my - dx;
-          if ( !this->pointOnBoundary(holeX, holeY) )
+          if ( !this->isBoundaryPoint(holeX, holeY) )
             {
-            pointInHoleFound = this->pointInside(holeX, holeY);
+            pointInHoleFound = this->isPointInside(holeX, holeY);
             }
           }
         dx /= 2; //move the ray to half the distance
@@ -505,9 +493,9 @@ void ModelLoopRep::addDataToTriangleInterface(CmbFaceMesherInterface *ti,
 }
 
 //----------------------------------------------------------------------------
-bool ModelLoopRep::pointOnBoundary(const double& x, const double& y) const
+bool ModelLoopRep::isBoundaryPoint(const double& x, const double& y) const
 {
-  //find if the point is collinear to any of the lines
+  //find if the point is collinear to any of the edges
   //http://mathworld.wolfram.com/Collinear.html
   //we are using the area of the triangle of the three points being
   //zero to mean colinear. If this fails email robert.maynard@kitware.com
@@ -527,7 +515,7 @@ bool ModelLoopRep::pointOnBoundary(const double& x, const double& y) const
 }
 
 //----------------------------------------------------------------------------
-bool ModelLoopRep::pointInside(const double& x, const double& y) const
+bool ModelLoopRep::isPointInside(const double& x, const double& y) const
 {
 
   //http://en.wikipedia.org/wiki/Point_in_polygon RayCasting method
@@ -621,7 +609,7 @@ int ModelFaceRep::numberOfHoles()
   std::list<ModelLoopRep>::const_iterator it;
   for(it=this->Loops.begin();it!=this->Loops.end();it++)
     {
-    sum += it->isHole() ? 1 : 0;
+    sum += (!it->isOuterLoop() && !it->isDegenerateLoop() )? 1 : 0;
     }
   return sum;
 }

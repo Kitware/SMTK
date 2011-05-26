@@ -143,36 +143,30 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
       {
       //add each edge to the loop
       vtkModelEdge* modelEdge = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem())->GetModelEdge();
+
       //we now have to walk the mesh lines cell data to get all the verts for this edge
       vtkIdType edgeId =modelEdge->GetUniquePersistentId();
-      if (!loop.edgeExists(edgeId))
+      vtkPolyData *mesh = this->GetMasterMesh()->
+        GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
+      if(!mesh)
         {
-        vtkPolyData *mesh = this->GetMasterMesh()->
-          GetModelEntityMesh(modelEdge)->GetModelEntityMesh();
-        if(!mesh)
-          {
-          vtkErrorMacro("Missing mesh.");
-          }
+        vtkErrorMacro("Missing mesh.");
+        }
 
-        CmbModelFaceMeshPrivate::ModelEdgeRep edge(edgeId);
-        edge.setMeshPoints(mesh);
-        int numVerts = modelEdge->GetNumberOfModelVertexUses();
-        for(int i=0;i<numVerts;++i)
-          {
-          vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
-          if(vertex)
-            {
-            double point[3];
-            vertex->GetPoint(point);
-            edge.addModelVert(vertex->GetUniquePersistentId(),point);
-            }
-          }
-        loop.addEdge(edge);
-        }
-      else
+      CmbModelFaceMeshPrivate::ModelEdgeRep edge(edgeId);
+      edge.setMeshPoints(mesh);
+      int numVerts = modelEdge->GetNumberOfModelVertexUses();
+      for(int i=0;i<numVerts;++i)
         {
-        loop.markEdgeAsDuplicate(edgeId);
+        vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(i);
+        if(vertex)
+          {
+          double point[3];
+          vertex->GetPoint(point);
+          edge.addModelVert(vertex->GetUniquePersistentId(),point);
+          }
         }
+      loop.addEdge(edge);
       }
     edgeUses->Delete();
     this->FaceInfo->addLoop(loop);
