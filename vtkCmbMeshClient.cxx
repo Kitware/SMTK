@@ -281,6 +281,13 @@ bool vtkCmbMeshClient::BuildModelEntityMeshes()
 }
 
 //----------------------------------------------------------------------------
+bool vtkCmbMeshClient::BuildModelMeshRepresentation()
+{
+  vtkCmbMeshRepresentationOperatorClient *meshRep = vtkCmbMeshRepresentationOperatorClient::New();
+  return meshRep->Operate(this->Model, this->ServerMeshProxy);
+}
+
+//----------------------------------------------------------------------------
 vtkCmbModelEntityMesh* vtkCmbMeshClient::GetModelEntityMesh(
   vtkModelGeometricEntity* entity)
 {
