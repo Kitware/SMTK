@@ -62,6 +62,12 @@ public:
   void SetEntityId(vtkIdType Id);
   vtkGetMacro(EntityId, vtkIdType);
 
+  // Description:
+  // Setting controls whether or not to create vertex for model edges
+  vtkBooleanMacro(CreateEdgePointVerts, bool);
+  vtkSetMacro(CreateEdgePointVerts, bool);
+  vtkGetMacro(CreateEdgePointVerts, bool);
+
 //BTX
 protected:
   vtkCmbMeshPolyDataProvider();
@@ -93,6 +99,7 @@ private:
   bool ItemTypeIsSet;
   vtkIdType EntityId;
   bool EntityIdIsSet;
+  bool CreateEdgePointVerts;
 //ETX
 };
 

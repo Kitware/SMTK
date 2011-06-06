@@ -25,11 +25,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshPolyDataProvider.h"
 
 #include <vtkCMBModel.h>
+#include "vtkCellArray.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCmbMeshWrapper.h"
 #include "vtkCmbModelEntityMesh.h"
+#include "vtkIdList.h"
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include "vtkModelEdge.h"
 #include <vtkObjectFactory.h>
 #include <vtkPolyData.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
@@ -50,6 +53,7 @@ vtkCmbMeshPolyDataProvider::vtkCmbMeshPolyDataProvider()
   this->ItemTypeIsSet = 0;
   this->EntityId = -1;
   this->EntityIdIsSet = 0;
+  this->CreateEdgePointVerts = false;
 }
 
 //----------------------------------------------------------------------------
@@ -82,6 +86,7 @@ void vtkCmbMeshPolyDataProvider::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "ItemTypeIsSet: " << this->ItemTypeIsSet << endl;
   os << indent << "EntityId: " << this->EntityId << endl;
   os << indent << "EntityIdIsSet: " << this->EntityIdIsSet << endl;
+  os << indent << "CreateEdgePointVerts: " << this->CreateEdgePointVerts << endl;
 }
 
 //----------------------------------------------------------------------------
@@ -157,7 +162,46 @@ int vtkCmbMeshPolyDataProvider::RequestData(
     return 0;
     }
 
-  output->ShallowCopy(modelEntityMesh->GetModelEntityMesh());
+  // If this is an meshed model edge, we want to add vertex to the mesh polydata,
+  // so that the mesh edge points can be shown.
+  vtkModelEdge* EdgeEntity = vtkModelEdge::SafeDownCast(entity);
+  if(EdgeEntity && this->CreateEdgePointVerts)
+    {
+    vtkPolyData* edgePoly = modelEntityMesh->GetModelEntityMesh();
+    vtkIdType numCells = edgePoly->GetNumberOfCells();
+    vtkIdType npts, *cellPnts;
+    vtkSmartPointer<vtkIdList> PointIds =
+      vtkSmartPointer<vtkIdList>::New();
+    for(vtkIdType i=0; i<numCells; i++)
+      {
+      edgePoly->GetLines()->GetCell(i, npts, cellPnts);
+      for (vtkIdType ptIndex = 0; ptIndex < npts; ptIndex++)
+        {
+        vtkIdType pid = cellPnts[ptIndex];
+        PointIds->InsertUniqueId(pid);
+        }
+      }
+    vtkIdType NumberOfPointIds = PointIds->GetNumberOfIds();
+    vtkCellArray* Verts = vtkCellArray::New();
+    Verts->Allocate(NumberOfPointIds);
+    for(vtkIdType i=0;i<NumberOfPointIds;i++)
+      {
+      vtkIdType PointId = PointIds->GetId(i);
+      Verts->InsertNextCell(1, &PointId);
+      }
+    output->Initialize();
+    output->SetPoints(edgePoly->GetPoints());
+    output->SetLines(edgePoly->GetLines());
+    if(Verts->GetNumberOfCells()>0)
+      {
+      output->SetVerts(Verts);
+      }
+    Verts->Delete();
+    }
+  else
+    {
+    output->ShallowCopy(modelEntityMesh->GetModelEntityMesh());
+    }
 
   return 1;
 }
