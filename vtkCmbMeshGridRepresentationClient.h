@@ -22,25 +22,25 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbMeshRepresentationOperatorClient
+// .NAME vtkCmbMeshGridRepresentationClient
 // .SECTION Description
 // Operator that reads in the simulation mesh on the server and creates a
 // vtkCmbMeshGridRepresentation to be used by the model.
 
 
-#ifndef __vtkCmbMeshRepresentationOperatorClient_h
-#define __vtkCmbMeshRepresentationOperatorClient_h
+#ifndef __vtkCmbMeshGridRepresentationClient_h
+#define __vtkCmbMeshGridRepresentationClient_h
 
 #include "vtkObject.h"
 
 class vtkCMBModel;
 class vtkSMProxy;
 
-class VTK_EXPORT vtkCmbMeshRepresentationOperatorClient : public vtkObject
+class VTK_EXPORT vtkCmbMeshGridRepresentationClient : public vtkObject
 {
 public:
-  static vtkCmbMeshRepresentationOperatorClient * New();
-  vtkTypeRevisionMacro(vtkCmbMeshRepresentationOperatorClient,vtkObject);
+  static vtkCmbMeshGridRepresentationClient * New();
+  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationClient,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -48,12 +48,12 @@ public:
   bool Operate(vtkSMProxy* serverMeshProxy);
 
 protected:
-  vtkCmbMeshRepresentationOperatorClient();
-  virtual ~vtkCmbMeshRepresentationOperatorClient();
+  vtkCmbMeshGridRepresentationClient();
+  virtual ~vtkCmbMeshGridRepresentationClient();
 
 private:
-  vtkCmbMeshRepresentationOperatorClient(const vtkCmbMeshRepresentationOperatorClient&);  // Not implemented.
-  void operator=(const vtkCmbMeshRepresentationOperatorClient&);  // Not implemented.
+  vtkCmbMeshGridRepresentationClient(const vtkCmbMeshGridRepresentationClient&);  // Not implemented.
+  void operator=(const vtkCmbMeshGridRepresentationClient&);  // Not implemented.
 };
 
 #endif

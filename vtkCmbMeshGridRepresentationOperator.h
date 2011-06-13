@@ -22,23 +22,23 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbMeshRepresentationOperator
+// .NAME vtkCmbMeshGridRepresentationOperator
 // .SECTION Description
 // Operator that reads in the simulation mesh on the server and creates a
 // vtkCmbMeshGridRepresentation to be used by the model.
 
-#ifndef __vtkCmbMeshRepresentationOperator_h
-#define __vtkCmbMeshRepresentationOperator_h
+#ifndef __vtkCmbMeshGridRepresentationOperator_h
+#define __vtkCmbMeshGridRepresentationOperator_h
 
 #include "vtkObject.h"
 
 class vtkCMBMeshWrapper;
 
-class VTK_EXPORT vtkCmbMeshRepresentationOperator : public vtkObject
+class VTK_EXPORT vtkCmbMeshGridRepresentationOperator : public vtkObject
 {
 public:
-  static vtkCmbMeshRepresentationOperator * New();
-  vtkTypeRevisionMacro(vtkCmbMeshRepresentationOperator,vtkObject);
+  static vtkCmbMeshGridRepresentationOperator * New();
+  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -50,13 +50,13 @@ public:
   vtkGetMacro(OperateSucceeded, int);
 
 protected:
-  vtkCmbMeshRepresentationOperator();
-  virtual ~vtkCmbMeshRepresentationOperator();
+  vtkCmbMeshGridRepresentationOperator();
+  virtual ~vtkCmbMeshGridRepresentationOperator();
 
 private:
 
-  vtkCmbMeshRepresentationOperator(const vtkCmbMeshRepresentationOperator&);  // Not implemented.
-  void operator=(const vtkCmbMeshRepresentationOperator&);  // Not implemented.
+  vtkCmbMeshGridRepresentationOperator(const vtkCmbMeshGridRepresentationOperator&);  // Not implemented.
+  void operator=(const vtkCmbMeshGridRepresentationOperator&);  // Not implemented.
 
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).

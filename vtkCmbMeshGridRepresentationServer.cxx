@@ -21,7 +21,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCmbMeshGridRepresentation.h"
+#include "vtkCmbMeshGridRepresentationServer.h"
 
 #include <iostream>
 #include <string>
@@ -39,21 +39,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
 
-vtkStandardNewMacro(vtkCmbMeshGridRepresentation);
-vtkCxxRevisionMacro(vtkCmbMeshGridRepresentation, "");
+vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
+vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
 
 //----------------------------------------------------------------------------
-vtkCmbMeshGridRepresentation::vtkCmbMeshGridRepresentation()
+vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkCmbMeshGridRepresentation::~vtkCmbMeshGridRepresentation()
+vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 {
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::GetNodalGroupAnalysisGridPointIds(
+bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
   vtkCMBModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
 {
   pointIds->Reset();
@@ -87,7 +87,7 @@ bool vtkCmbMeshGridRepresentation::GetNodalGroupAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
+bool vtkCmbMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
   vtkCMBModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
 {
   pointIds->Reset();
@@ -121,7 +121,7 @@ bool vtkCmbMeshGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::GetModelEdgeAnalysisPoints(
+bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   vtkCMBModel* model, vtkIdType boundaryGroupId, vtkIdTypeArray* edgePoints)
 {
   vtkErrorMacro("2D models not supported.");
@@ -129,7 +129,7 @@ bool vtkCmbMeshGridRepresentation::GetModelEdgeAnalysisPoints(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::GetBoundaryGroupAnalysisFacets(
+bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
   vtkCMBModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
 {
@@ -175,7 +175,7 @@ bool vtkCmbMeshGridRepresentation::GetBoundaryGroupAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::IsModelConsistent(vtkCMBModel* model)
+bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkCMBModel* model)
 {
 // now go through and make sure the BC file information matches with model
   size_t number = model->GetNumberOfAssociations(vtkCMBNodalGroupType);
@@ -249,7 +249,7 @@ bool vtkCmbMeshGridRepresentation::IsModelConsistent(vtkCMBModel* model)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::Initialize(
+bool vtkCmbMeshGridRepresentationServer::Initialize(
   const char* bcFileName, vtkCMBModel* model)
 {
   this->Reset();
@@ -355,7 +355,7 @@ bool vtkCmbMeshGridRepresentation::Initialize(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::AddNodalGroup(
+bool vtkCmbMeshGridRepresentationServer::AddNodalGroup(
   vtkIdType nodalGroupId, vtkIdList* pointIds, vtkCMBModel* model)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
@@ -381,7 +381,7 @@ bool vtkCmbMeshGridRepresentation::AddNodalGroup(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::AddFloatingEdge(
+bool vtkCmbMeshGridRepresentationServer::AddFloatingEdge(
   vtkIdType floatingEdgeId, vtkIdList* pointIds, vtkCMBModel* model)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
@@ -407,7 +407,7 @@ bool vtkCmbMeshGridRepresentation::AddFloatingEdge(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::AddModelFace(
+bool vtkCmbMeshGridRepresentationServer::AddModelFace(
   vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides, vtkCMBModel* model)
 {
@@ -434,7 +434,7 @@ bool vtkCmbMeshGridRepresentation::AddModelFace(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshGridRepresentation::Reset()
+void vtkCmbMeshGridRepresentationServer::Reset()
 {
   this->Superclass::Reset();
   this->NodalGroupToPointIds.clear();
@@ -443,7 +443,7 @@ void vtkCmbMeshGridRepresentation::Reset()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::IsNodalGroupConsistent(
+bool vtkCmbMeshGridRepresentationServer::IsNodalGroupConsistent(
   vtkCMBModel* model, vtkIdType nodalGroupId)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
@@ -466,7 +466,7 @@ bool vtkCmbMeshGridRepresentation::IsNodalGroupConsistent(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::IsFloatingEdgeConsistent(
+bool vtkCmbMeshGridRepresentationServer::IsFloatingEdgeConsistent(
   vtkCMBModel* model, vtkIdType floatingEdgeId)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
@@ -489,7 +489,7 @@ bool vtkCmbMeshGridRepresentation::IsFloatingEdgeConsistent(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::IsModelFaceConsistent(
+bool vtkCmbMeshGridRepresentationServer::IsModelFaceConsistent(
   vtkCMBModel* model, vtkIdType modelFaceId)
 {
   std::map<vtkIdType, std::set<std::pair<vtkIdType, int> > >::iterator it=
@@ -520,7 +520,7 @@ bool vtkCmbMeshGridRepresentation::IsModelFaceConsistent(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentation::GetModelFaceAnalysisFacets(
+bool vtkCmbMeshGridRepresentationServer::GetModelFaceAnalysisFacets(
   vtkCMBModel* model, vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides)
 {
@@ -558,7 +558,7 @@ bool vtkCmbMeshGridRepresentation::GetModelFaceAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCmbMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

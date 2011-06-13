@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "vtkCmbMeshRepresentationOperatorClient.h"
+#include "vtkCmbMeshGridRepresentationClient.h"
 
 #include "vtkCMBModel.h"
 #include "vtkCMBXMLModelReader.h"
@@ -36,18 +36,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtksys/ios/sstream>
 
-vtkStandardNewMacro(vtkCmbMeshRepresentationOperatorClient);
-vtkCxxRevisionMacro(vtkCmbMeshRepresentationOperatorClient, "");
+vtkStandardNewMacro(vtkCmbMeshGridRepresentationClient);
+vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationClient, "");
 
-vtkCmbMeshRepresentationOperatorClient::vtkCmbMeshRepresentationOperatorClient()
+vtkCmbMeshGridRepresentationClient::vtkCmbMeshGridRepresentationClient()
 {
 }
 
-vtkCmbMeshRepresentationOperatorClient::~vtkCmbMeshRepresentationOperatorClient()
+vtkCmbMeshGridRepresentationClient::~vtkCmbMeshGridRepresentationClient()
 {
 }
 
-bool vtkCmbMeshRepresentationOperatorClient::Operate(
+bool vtkCmbMeshGridRepresentationClient::Operate(
   vtkSMProxy* serverModelProxy, vtkSMProxy *serverMeshProxy)
 {
 
@@ -83,7 +83,7 @@ bool vtkCmbMeshRepresentationOperatorClient::Operate(
   return 1;
 }
 
-void vtkCmbMeshRepresentationOperatorClient::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCmbMeshGridRepresentationClient::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

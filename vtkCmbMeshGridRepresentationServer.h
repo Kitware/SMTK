@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbMeshGridRepresentation - CMBModel representation of an analysis grid from a BC file.
+// .NAME vtkCmbMeshGridRepresentationServer - CMBModel representation of an analysis grid from a BC file.
 // .SECTION Description
 // A class used to provide all of the information that a CMBModel needs
 // to keep track of mapping grid objects from the geometry grid to the
@@ -36,18 +36,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // that are adjacent to an internal model face (i.e. a model
 // face that is adjacent to 2 model regions).
 
-#ifndef __vtkCmbMeshGridRepresentation_h
-#define __vtkCmbMeshGridRepresentation_h
+#ifndef __vtkCmbMeshGridRepresentationServer_h
+#define __vtkCmbMeshGridRepresentationServer_h
 
 #include "vtkCmbGridRepresentation.h"
 #include <map>
 #include <set>
 
-class VTK_EXPORT vtkCmbMeshGridRepresentation : public vtkCmbGridRepresentation
+class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGridRepresentation
 {
 public:
-  static vtkCmbMeshGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentation,vtkCmbGridRepresentation);
+  static vtkCmbMeshGridRepresentationServer* New();
+  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationServer,vtkCmbGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -111,12 +111,12 @@ public:
                                           vtkIdList* cellIds, vtkIdList* cellSides);
 
 protected:
-  vtkCmbMeshGridRepresentation();
-  virtual ~vtkCmbMeshGridRepresentation();
+  vtkCmbMeshGridRepresentationServer();
+  virtual ~vtkCmbMeshGridRepresentationServer();
 
 private:
-  vtkCmbMeshGridRepresentation(const vtkCmbMeshGridRepresentation&);  // Not implemented.
-  void operator=(const vtkCmbMeshGridRepresentation&);  // Not implemented.
+  vtkCmbMeshGridRepresentationServer(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.
+  void operator=(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.
 
   // Description:
   // A mapping from a nodal group id to a set of point ids in the analysis grid.

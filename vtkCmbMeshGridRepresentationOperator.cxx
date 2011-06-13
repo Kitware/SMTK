@@ -23,38 +23,38 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "vtkCmbMeshRepresentationOperator.h"
+#include "vtkCmbMeshGridRepresentationOperator.h"
 
-#include "vtkCmbMeshGridRepresentation.h"
+#include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkCMBModel.h"
 #include "vtkCMBModelWrapper.h"
 #include "vtkCMBMeshWrapper.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkObjectFactory.h"
 
-vtkStandardNewMacro(vtkCmbMeshRepresentationOperator);
-vtkCxxRevisionMacro(vtkCmbMeshRepresentationOperator, "");
+vtkStandardNewMacro(vtkCmbMeshGridRepresentationOperator);
+vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationOperator, "");
 
 //----------------------------------------------------------------------------
-vtkCmbMeshRepresentationOperator::vtkCmbMeshRepresentationOperator()
+vtkCmbMeshGridRepresentationOperator::vtkCmbMeshGridRepresentationOperator()
 {
   this->OperateSucceeded = 0;
 }
 
 //----------------------------------------------------------------------------
-vtkCmbMeshRepresentationOperator:: ~vtkCmbMeshRepresentationOperator()
+vtkCmbMeshGridRepresentationOperator:: ~vtkCmbMeshGridRepresentationOperator()
 {
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
+void vtkCmbMeshGridRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
 {
 
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
   vtkModel* model = mesh->GetModel();
 
-  vtkSmartPointer<vtkCmbMeshGridRepresentation> gridRepresentation =
-    vtkSmartPointer<vtkCmbMeshGridRepresentation>::New();
+  vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
+    vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
 
   if(this->OperateSucceeded = true
      //gridRepresentation->Initialize(model,mesh)
@@ -65,7 +65,7 @@ void vtkCmbMeshRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
   return;
 }
 //----------------------------------------------------------------------------
-void vtkCmbMeshRepresentationOperator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkCmbMeshGridRepresentationOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
