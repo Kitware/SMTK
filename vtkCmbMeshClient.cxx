@@ -290,7 +290,9 @@ bool vtkCmbMeshClient::BuildModelMeshRepresentation()
   vtkCMBModel *mod = vtkCMBModel::SafeDownCast(this->Model);
   if ( mod )
     {
-    return meshRep->Operate(mod,this->ServerMeshProxy);
+    bool result =  meshRep->Operate(mod,this->ServerMeshProxy);
+    meshRep->Delete();
+    return result;
     }
   else
     {
