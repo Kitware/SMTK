@@ -255,7 +255,8 @@ bool CmbFaceMesherInterface::BuildTriangleArguments(std::string &options) const
 }
 
 //----------------------------------------------------------------------------
-bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
+bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId,
+  const double &zValue)
 {
   this->OutputMesh->Initialize();
   if ( this->NumberOfPoints < 3 || this->NumberOfSegments < 3 )
@@ -313,7 +314,7 @@ bool CmbFaceMesherInterface::buildFaceMesh(const long &faceId)
   points->SetNumberOfPoints(size);
   for (i=0; i < size; ++i)
     {
-    points->InsertPoint(i,io->pointlist[2*i],io->pointlist[2*i+1],0.0);
+    points->InsertPoint(i,io->pointlist[2*i],io->pointlist[2*i+1],zValue);
     }
   this->OutputMesh->SetPoints(points);
   points->FastDelete();

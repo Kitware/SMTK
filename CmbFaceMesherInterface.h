@@ -61,7 +61,7 @@ public:
   //xmin,ymin,xmax,ymax
   void bounds(double bounds[4]) const;
 
-  bool buildFaceMesh(const long &faceId);
+  bool buildFaceMesh(const long &faceId, const double &zValue=0);
 protected:
   void InitDataStructures();
 
