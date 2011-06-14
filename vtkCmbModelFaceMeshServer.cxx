@@ -45,6 +45,7 @@ vtkCxxRevisionMacro(vtkCmbModelFaceMeshServer, "");
 //----------------------------------------------------------------------------
 vtkCmbModelFaceMeshServer::vtkCmbModelFaceMeshServer()
 {
+  this->ZValue = -1;
   this->FaceInfo = NULL;
   vtkPolyData* poly = vtkPolyData::New();
   this->SetModelEntityMesh(poly);
@@ -175,6 +176,8 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
     {
     liter->Delete();
     }
+
+  this->DetermineZValueOfFace();
   return true;
 }
 
@@ -206,12 +209,43 @@ bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
   this->FaceInfo->fillTriangleInterface(&ti);
   vtkModelFace* modelFace =
     vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
-  bool valid = ti.buildFaceMesh((long)modelFace->GetUniquePersistentId());
+  bool valid = ti.buildFaceMesh((long)modelFace->GetUniquePersistentId(), this->ZValue);
   if ( valid )
     {
     valid = this->FaceInfo->RelateMeshToModel(mesh,modelFace->GetUniquePersistentId());
     }
   return valid;
+}
+
+
+//----------------------------------------------------------------------------
+void vtkCmbModelFaceMeshServer::DetermineZValueOfFace()
+{
+  vtkModelFace* modelFace = vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
+  vtkModelItemIterator *liter = modelFace->GetModelFaceUse(0)->NewLoopUseIterator();
+  liter->Begin();
+
+  vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
+  liter->GetCurrentItem())->NewModelEdgeUseIterator();
+
+  edgeUses->Begin();
+
+  //get the first model edge
+  vtkModelEdge* modelEdge = vtkModelEdgeUse::SafeDownCast(
+    edgeUses->GetCurrentItem())->GetModelEdge();
+  vtkModelVertex* vertex = modelEdge->GetAdjacentModelVertex(0);
+  if(vertex)
+    {
+    double point[3];
+    vertex->GetPoint(point);
+    this->ZValue = point[2];
+    }
+
+  edgeUses->Delete();
+  if ( liter )
+    {
+    liter->Delete();
+    }
 }
 
 //----------------------------------------------------------------------------

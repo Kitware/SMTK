@@ -61,8 +61,11 @@ protected:
 
   bool CreateMeshInfo();
   bool Triangulate(vtkPolyData *mesh, double length, double angle);
+  void DetermineZValueOfFace();
 
 private:
+
+  double ZValue;
   vtkCmbModelFaceMeshServer(const vtkCmbModelFaceMeshServer&);  // Not implemented.
   void operator=(const vtkCmbModelFaceMeshServer&);  // Not implemented.
 
