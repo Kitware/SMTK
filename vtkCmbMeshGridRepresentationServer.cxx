@@ -31,10 +31,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCMBModelFace.h"
 #include "vtkCMBModelGeometricEntity.h"
 #include "vtkCMBNodalGroup.h"
+#include "vtkCmbMeshServer.h"
+#include "vtkModelItemIterator.h"
+
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
-#include "vtkModelItemIterator.h"
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
@@ -250,108 +252,110 @@ bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkCMBModel* model)
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::Initialize(
-  const char* bcFileName, vtkCMBModel* model)
+  vtkCMBModel* model, vtkCmbMeshServer *mesh)
 {
-  this->Reset();
-  if(bcFileName == NULL ||
-     vtksys::SystemTools::FileExists(bcFileName, true) == false)
-    {
-    if(bcFileName == NULL)
-      {
-      vtkErrorMacro("Passed in empty file name.");
-      }
-    else
-      {
-      vtkErrorMacro("Cannot find file " << bcFileName);
-      }
-    return false;
-    }
-  std::ifstream file(bcFileName);
-  if(file.is_open() == false)
-    {
-    vtkErrorMacro("Problem opening file " << bcFileName);
-    return false;
-    }
-  // get the floating edges of the 3D model
-  std::set<vtkIdType> floatingEdgeIds;
-  vtkModelItemIterator* edges = model->NewIterator(vtkModelEdgeType);
-  for(edges->Begin();!edges->IsAtEnd();edges->Next())
-    {
-    vtkCMBModelEdge* edge = vtkCMBModelEdge::SafeDownCast(
-      edges->GetCurrentItem());
-    if(edge->GetModelRegion())
-      {
-      floatingEdgeIds.insert(edge->GetUniquePersistentId());
-      }
-    }
-  edges->Delete();
-
-  std::string line;
-  while(!file.eof())
-    {
-    std::getline(file, line);
-    if(line.size() == 0)
-      {
-      continue;
-      }
-    std::vector<vtksys::String> values = vtksys::SystemTools::SplitString(line.c_str(), ' ');
-    if(vtksys::SystemTools::Strucmp(values[0].c_str(), "NDS") == 0 && values.size() == 3)
-      {
-      vtkIdType pointId = atoi(values[1].c_str()) -1; // analysis grid point Id in C++ ordering
-      vtkIdType entityId = atoi(values[2].c_str());
-      if(vtkCMBNodalGroup* nodalGroup =
-         vtkCMBNodalGroup::SafeDownCast(model->GetModelEntity(vtkCMBNodalGroupType, entityId)))
-        {
-        this->NodalGroupToPointIds[entityId].insert(pointId);
-        }
-      else if(floatingEdgeIds.find(entityId) != floatingEdgeIds.end())
-        {
-        this->FloatingEdgeToPointIds[entityId].insert(pointId);
-        }
-      else
-        {
-        vtkErrorMacro("Bad NDS card entity Id " << entityId);
-        this->Reset();
-        file.close();
-        return false;
-        }
-      }
-    else if(vtksys::SystemTools::Strucmp(values[0].c_str(), "FCS") == 0 &&
-            values.size() == 7)
-      {
-      vtkIdType cellId = atoi(values[1].c_str())-1; // analysis grid cell Id in C++ ordering
-      int cellSide = atoi(values[2].c_str())-1; // analysis grid cell side (0-3)
-      vtkIdType modelFaceId = atoi(values[3].c_str());
-      this->ModelFaceToFacetInfo[modelFaceId].insert(std::make_pair<vtkIdType, int>(cellId, cellSide));
-      }
-    else if(line.empty() == 0)
-      {
-      while(line[line.size()-1] == ' ' && line.empty() == 0)
-        {
-        line.resize(line.size()-1);
-        }
-      if(line.empty() == 0)
-        {
-        vtkErrorMacro("Unable to parse line '" << line << "' in " << bcFileName);
-        this->Reset();
-        file.close();
-        return false;
-        }
-      }
-    }
-  file.close();
-
-  if(this->IsModelConsistent(model) == false)
-    {
-    return false;
-    }
-  // assume that the grid and bc file name have the same base name so just
-  // change the extension to 3dm from .bc
-  std::string gridName = vtksys::SystemTools::GetFilenameName(bcFileName);
-  gridName = vtksys::SystemTools::GetFilenameWithoutExtension(gridName);
-  gridName.append(".3dm");
-  this->SetGridFileName(gridName.c_str());
   return true;
+  //const char* bcFileName = "k";
+  //this->Reset();
+  //if(bcFileName == NULL ||
+  //   vtksys::SystemTools::FileExists(bcFileName, true) == false)
+  //  {
+  //  if(bcFileName == NULL)
+  //    {
+  //    vtkErrorMacro("Passed in empty file name.");
+  //    }
+  //  else
+  //    {
+  //    vtkErrorMacro("Cannot find file " << bcFileName);
+  //    }
+  //  return false;
+  //  }
+  //std::ifstream file(bcFileName);
+  //if(file.is_open() == false)
+  //  {
+  //  vtkErrorMacro("Problem opening file " << bcFileName);
+  //  return false;
+  //  }
+  //// get the floating edges of the 3D model
+  //std::set<vtkIdType> floatingEdgeIds;
+  //vtkModelItemIterator* edges = model->NewIterator(vtkModelEdgeType);
+  //for(edges->Begin();!edges->IsAtEnd();edges->Next())
+  //  {
+  //  vtkCMBModelEdge* edge = vtkCMBModelEdge::SafeDownCast(
+  //    edges->GetCurrentItem());
+  //  if(edge->GetModelRegion())
+  //    {
+  //    floatingEdgeIds.insert(edge->GetUniquePersistentId());
+  //    }
+  //  }
+  //edges->Delete();
+
+  //std::string line;
+  //while(!file.eof())
+  //  {
+  //  std::getline(file, line);
+  //  if(line.size() == 0)
+  //    {
+  //    continue;
+  //    }
+  //  std::vector<vtksys::String> values = vtksys::SystemTools::SplitString(line.c_str(), ' ');
+  //  if(vtksys::SystemTools::Strucmp(values[0].c_str(), "NDS") == 0 && values.size() == 3)
+  //    {
+  //    vtkIdType pointId = atoi(values[1].c_str()) -1; // analysis grid point Id in C++ ordering
+  //    vtkIdType entityId = atoi(values[2].c_str());
+  //    if(vtkCMBNodalGroup* nodalGroup =
+  //       vtkCMBNodalGroup::SafeDownCast(model->GetModelEntity(vtkCMBNodalGroupType, entityId)))
+  //      {
+  //      this->NodalGroupToPointIds[entityId].insert(pointId);
+  //      }
+  //    else if(floatingEdgeIds.find(entityId) != floatingEdgeIds.end())
+  //      {
+  //      this->FloatingEdgeToPointIds[entityId].insert(pointId);
+  //      }
+  //    else
+  //      {
+  //      vtkErrorMacro("Bad NDS card entity Id " << entityId);
+  //      this->Reset();
+  //      file.close();
+  //      return false;
+  //      }
+  //    }
+  //  else if(vtksys::SystemTools::Strucmp(values[0].c_str(), "FCS") == 0 &&
+  //          values.size() == 7)
+  //    {
+  //    vtkIdType cellId = atoi(values[1].c_str())-1; // analysis grid cell Id in C++ ordering
+  //    int cellSide = atoi(values[2].c_str())-1; // analysis grid cell side (0-3)
+  //    vtkIdType modelFaceId = atoi(values[3].c_str());
+  //    this->ModelFaceToFacetInfo[modelFaceId].insert(std::make_pair<vtkIdType, int>(cellId, cellSide));
+  //    }
+  //  else if(line.empty() == 0)
+  //    {
+  //    while(line[line.size()-1] == ' ' && line.empty() == 0)
+  //      {
+  //      line.resize(line.size()-1);
+  //      }
+  //    if(line.empty() == 0)
+  //      {
+  //      vtkErrorMacro("Unable to parse line '" << line << "' in " << bcFileName);
+  //      this->Reset();
+  //      file.close();
+  //      return false;
+  //      }
+  //    }
+  //  }
+  //file.close();
+
+  //if(this->IsModelConsistent(model) == false)
+  //  {
+  //  return false;
+  //  }
+  //// assume that the grid and bc file name have the same base name so just
+  //// change the extension to 3dm from .bc
+  //std::string gridName = vtksys::SystemTools::GetFilenameName(bcFileName);
+  //gridName = vtksys::SystemTools::GetFilenameWithoutExtension(gridName);
+  //gridName.append(".3dm");
+  //this->SetGridFileName(gridName.c_str());
+  //return true;
 }
 
 //----------------------------------------------------------------------------

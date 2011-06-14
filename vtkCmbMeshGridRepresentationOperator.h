@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkObject.h"
 
-class vtkCMBMeshWrapper;
+class vtkCmbMeshWrapper;
 
 class VTK_EXPORT vtkCmbMeshGridRepresentationOperator : public vtkObject
 {
@@ -43,7 +43,7 @@ public:
 
   // Description:
   // Sets OperateSucceeded.
-  void Operate(vtkCMBMeshWrapper* meshWrapper);
+  void Operate(vtkCmbMeshWrapper* meshWrapper);
 
   // Description:
   // Returns success (1) or failue (0) for Operation.

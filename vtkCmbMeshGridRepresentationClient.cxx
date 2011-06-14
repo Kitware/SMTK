@@ -47,22 +47,22 @@ vtkCmbMeshGridRepresentationClient::~vtkCmbMeshGridRepresentationClient()
 {
 }
 
-bool vtkCmbMeshGridRepresentationClient::Operate(
-  vtkSMProxy* serverModelProxy, vtkSMProxy *serverMeshProxy)
+bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
+  vtkSMProxy *serverMeshProxy)
 {
 
   vtkSMProxyManager* manager = vtkSMProxyManager::GetProxyManager();
   vtkSMOperatorProxy* operatorProxy = vtkSMOperatorProxy::SafeDownCast(
-    manager->NewProxy("CMBModelGroup", "CmbMeshRepresentationOperator"));
+    manager->NewProxy("CMBSimBuilderMeshGroup", "CmbMeshGridRepresentationOperator"));
   if(!operatorProxy)
     {
     vtkErrorMacro("Unable to create operator proxy.");
     return 0;
     }
-  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
-  operatorProxy->SetServers(serverModelProxy->GetServers());
+  operatorProxy->SetConnectionID(serverMeshProxy->GetConnectionID());
+  operatorProxy->SetServers(serverMeshProxy->GetServers());
 
-  operatorProxy->Operate(serverModelProxy, serverMeshProxy);
+  operatorProxy->Operate(model, serverMeshProxy);
 
   // check to see if the operation succeeded on the server
   vtkSMIntVectorProperty* operateSucceeded =

@@ -60,6 +60,21 @@
       </IntVectorProperty>
     </SourceProxy>
 
+  <OperatorProxy name="CmbMeshGridRepresentationOperator" class="vtkCmbMeshGridRepresentationOperator">
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CmbMeshGridRepresentationOperator -->
+    </OperatorProxy>
+
     <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCmbModelEdgeMeshOperator">
       <IdTypeVectorProperty
          name="Id"

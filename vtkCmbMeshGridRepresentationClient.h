@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkObject.h"
 
+
 class vtkCMBModel;
 class vtkSMProxy;
 
@@ -45,7 +46,7 @@ public:
 
   // Description:
   // Reads in the file on the server. Returns true if the operation was successful.
-  bool Operate(vtkSMProxy* serverMeshProxy);
+  bool Operate(vtkCMBModel *model, vtkSMProxy* serverMeshProxy);
 
 protected:
   vtkCmbMeshGridRepresentationClient();

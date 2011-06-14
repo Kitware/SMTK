@@ -287,7 +287,15 @@ bool vtkCmbMeshClient::BuildModelMeshRepresentation()
 {
   vtkCmbMeshGridRepresentationClient *meshRep =
     vtkCmbMeshGridRepresentationClient::New();
-  return meshRep->Operate(this->Model, this->ServerMeshProxy);
+  vtkCMBModel *mod = vtkCMBModel::SafeDownCast(this->Model);
+  if ( mod )
+    {
+    return meshRep->Operate(mod,this->ServerMeshProxy);
+    }
+  else
+    {
+    return false;
+    }
 }
 
 //----------------------------------------------------------------------------

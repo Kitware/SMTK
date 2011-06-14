@@ -43,6 +43,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <map>
 #include <set>
 
+class vtkCmbMeshServer;
+class vtkCMBModel;
+
 class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGridRepresentation
 {
 public:
@@ -78,7 +81,7 @@ public:
   // Description:
   // Initialize the information from a sim mesh.
   // Returns true for success.
-  bool Initialize(vtkCMBModel* model);
+  bool Initialize(vtkCMBModel* model, vtkCmbMeshServer *mesh);
 
   bool AddNodalGroup(vtkIdType nodalGroupId, vtkIdList* pointIds, vtkCMBModel* model);
 

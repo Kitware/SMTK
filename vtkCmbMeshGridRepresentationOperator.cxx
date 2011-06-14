@@ -25,11 +25,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbMeshGridRepresentationOperator.h"
 
-#include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkCMBModel.h"
-#include "vtkCMBModelWrapper.h"
-#include "vtkCMBMeshWrapper.h"
+#include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkCmbMeshServer.h"
+#include "vtkCmbMeshWrapper.h"
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationOperator);
@@ -47,19 +46,19 @@ vtkCmbMeshGridRepresentationOperator:: ~vtkCmbMeshGridRepresentationOperator()
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshGridRepresentationOperator::Operate(vtkCMBMeshWrapper* meshWrapper)
+void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
 {
 
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
-  vtkModel* model = mesh->GetModel();
-
-  vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
-    vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
-
-  if(this->OperateSucceeded = true
-     //gridRepresentation->Initialize(model,mesh)
+  vtkCMBModel* model = vtkCMBModel::SafeDownCast(mesh->GetModel());
+  if (model && mesh)
     {
-    model->SetAnalysisGridInfo(gridRepresentation);
+    vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
+      vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
+    if(this->OperateSucceeded = gridRepresentation->Initialize(model,mesh) )
+      {
+      model->SetAnalysisGridInfo(gridRepresentation);
+      }
     }
 
   return;
