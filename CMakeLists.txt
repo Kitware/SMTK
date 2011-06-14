@@ -11,7 +11,7 @@ FIND_PACKAGE(Qt4)
 include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 
 include_directories(
-  ${VTKExtensions_SOURCE_DIR} 
+  ${VTKExtensions_SOURCE_DIR}
   ${VTKExtensions_SOURCE_DIR}/Filtering
   ${VTKExtensions_SOURCE_DIR}/Graphics
   ${VTKExtensions_SOURCE_DIR}/IO
@@ -41,8 +41,6 @@ SET(vtkMeshFiles
   vtkCmbModelFaceMeshClient.cxx
   vtkCmbModelFaceMeshServer.cxx
   vtkCmbModelVertexMesh.cxx
-  CmbFaceMeshHelper.cxx
-  CmbFaceMesherInterface.cxx
 )
 SET(CMBProxyFiles
   vtkCmbMeshPolyDataProvider.cxx
@@ -57,13 +55,6 @@ SET_SOURCE_FILES_PROPERTIES(
   vtkCmbModelFaceMesh
   ABSTRACT
 )
-
-SET_SOURCE_FILES_PROPERTIES(
-  CmbTriangleInterface
-  CmbFaceMeshHelper
-  WRAP_EXCLUDE
-)
-
 # add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
 # target_link_libraries(SimBuilderLibrary vtkCmbDiscreteModel vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
@@ -79,8 +70,7 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
-TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel vtkCmbDiscreteModelCS
-  vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel vtkCmbDiscreteModelCS vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 if(NOT APPLE)
   install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
