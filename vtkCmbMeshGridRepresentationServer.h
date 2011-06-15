@@ -83,56 +83,20 @@ public:
   // Returns true for success.
   bool Initialize(vtkCMBModel* model, vtkCmbMeshServer *mesh);
 
-  bool AddNodalGroup(vtkIdType nodalGroupId, vtkIdList* pointIds, vtkCMBModel* model);
-
-  bool AddFloatingEdge(vtkIdType floatingEdgeId, vtkIdList* pointIds, vtkCMBModel* model);
-
-  bool AddModelFace(vtkIdType modelFaceId, vtkIdList* cellIds, vtkIdList* cellSides, vtkCMBModel* model);
-
   // Description:
-  // Set GridFileName to NULL and clear the analysis grid info.
+  // clear the analysis grid info.
   virtual void Reset();
-
-  // Description:
-  // Check to see if a floating edge has the same amount of points in it as
-  // the corresponding set in FloatingEdgeToPointIds.  Returns true if it is.
-  bool IsFloatingEdgeConsistent(vtkCMBModel* model, vtkIdType floatingEdgeId);
-
-  // Description:
-  // Check to see if a nodal group has the same amount of points in it as
-  // the corresponding set in NodalGroupToPointIds.  Returns true if it is.
-  bool IsNodalGroupConsistent(vtkCMBModel* model, vtkIdType nodalGroupId);
-
-  // Description:
-  // Check to see if a boundary group has the same amount of facets in it as
-  // the corresponding set in BoundaryGroupFacetInfo.  Returns true if it is.
-  bool IsModelFaceConsistent(vtkCMBModel* model, vtkIdType boundaryGroupId);
-
-  // Description:
-  // Get the analysis grid information for a given model face.
-  virtual bool GetModelFaceAnalysisFacets(vtkCMBModel* model, vtkIdType modelFaceId,
-                                          vtkIdList* cellIds, vtkIdList* cellSides);
-
 protected:
   vtkCmbMeshGridRepresentationServer();
   virtual ~vtkCmbMeshGridRepresentationServer();
 
+  bool BuildRepresentation();
+
+  vtkWeakPointer<vtkCMBModel> Model;
+  vtkWeakPointer<vtkCmbMeshServer> MeshServer;
+
 private:
   vtkCmbMeshGridRepresentationServer(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.
   void operator=(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.
-
-  // Description:
-  // A mapping from a nodal group id to a set of point ids in the analysis grid.
-  std::map<vtkIdType, std::set<vtkIdType> > NodalGroupToPointIds;
-
-  // Description:
-  // A mapping from a model edge id to a set of point ids in the analysis grid.
-  // It's assumed that we have a 3D problem and the edges are all "floating".
-  std::map<vtkIdType, std::set<vtkIdType> > FloatingEdgeToPointIds;
-
-  // Description:
-  // A mapping from a boundary group id to a set of analysis grid cells and sides.
-  // For now we ignore the point ids of the cell sides even though it's in the bc file.
-  std::map<vtkIdType, std::set<std::pair<vtkIdType, int> > > ModelFaceToFacetInfo;
 };
 #endif
