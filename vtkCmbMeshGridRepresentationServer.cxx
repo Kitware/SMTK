@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <iostream>
 #include <string>
+
 #include "vtkCMBModel.h"
 #include "vtkCMBModelEdge.h"
 #include "vtkCmbModelEntityMesh.h"
@@ -36,8 +37,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItemIterator.h"
 
 #include <vtkAppendPolyData.h>
-#include <vtkCleanPolyData.h>
+#include <vtkCellArray.h>
 #include <vtkCellData.h>
+#include <vtkCleanPolyData.h>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
@@ -121,22 +123,38 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     return false;
     }
   this->BuildRepresentation(model);
+  edgePoints->SetNumberOfComponents(2);
+  edgePoints->SetNumberOfTuples(this->Representation->GetNumberOfCells());
 
   vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
-    this->Representation->GetPointData()->GetArray("ModelUseId"));
-
+    this->Representation->GetCellData()->GetArray("ModelUseId"));
   if (!ids )
     {
     return false;
     }
 
-  for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
+  const int indices[4] = {0,1,2,0}; //used for cell point indexes
+  //we need to find organize the edge ids by connection. So in that
+  //case we need to go through the cell model use ids while also iterating
+  //the cell structure to find all the viable edges
+  vtkIdType npts,*pts,modelIds[3],edge[2],i=0;
+  vtkCellArray *polys = this->Representation->GetPolys();
+  polys->InitTraversal();
+  while(polys->GetNextCell(npts,pts) != NULL)
     {
-    if ( ids->GetValue(i) == edgeId )
+    ids->GetTupleValue(i++,modelIds);
+    for (vtkIdType j=0; j < 3; j++)
       {
-      edgePoints->InsertNextValue(i);
+      if (modelIds[j] == edgeId)
+        {
+        edge[0] = pts[indices[i]];
+        edge[1] = pts[indices[i+1]];
+        edgePoints->SetTupleValue(i,edge);
+        }
       }
     }
+
+  edgePoints->Squeeze();
   return true;
 }
 
@@ -145,7 +163,54 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
   vtkCMBModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
 {
-  return false;
+  cellIds->Reset();
+  cellSides->Reset();
+  if(this->IsModelConsistent(model) == false)
+    {
+    this->Reset();
+    return false;
+    }
+  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+    {  // we're on the client and don't know this info
+    return false;
+    }
+
+  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetCellData()->GetArray("ModelUseId"));
+  if (!ids )
+    {
+    return false;
+    }
+
+  const int indices[4] = {0,1,2,0}; //used for cell point indexes
+  vtkIdType npts,*pts,modelIds[3],i=0;
+  vtkCellArray *polys = this->Representation->GetPolys();
+
+  if(vtkCMBModelEntityGroup* boundaryGroup =
+    vtkCMBModelEntityGroup::SafeDownCast(
+    model->GetModelEntity(vtkCMBModelEntityGroupType, boundaryGroupId)))
+    {
+    vtkModelItemIterator* entities = boundaryGroup->NewModelEntityIterator();
+    for(entities->Begin();!entities->IsAtEnd();entities->Next())
+      {
+      vtkModelEntity *entity = vtkModelEntity::SafeDownCast(entities->GetCurrentItem());
+      vtkIdType id = entity->GetUniquePersistentId();
+      polys->InitTraversal();
+      while(polys->GetNextCell(npts,pts) != NULL)
+        {
+        ids->GetTupleValue(i++,modelIds);
+        for (vtkIdType j=0; j < 3; j++)
+          {
+          if (modelIds[j] == id)
+            {
+            cellIds->InsertNextId(i);
+            cellSides->InsertNextId(j);
+            }
+          }
+        }
+      }
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -232,6 +297,9 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
 
   clean->Update();
   this->Representation->ShallowCopy(clean->GetOutput());
+
+  //TODO: we need to look at how we do our storage of model relationships on the mesh.
+  //current it is really inefficent for lookup.
 
   clean->Delete();
   appender->Delete();
