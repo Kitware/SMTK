@@ -36,10 +36,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItemIterator.h"
 
 #include <vtkAppendPolyData.h>
+#include <vtkCellDat.h>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
+#include <vtkPolyData.h>
+#include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
 
@@ -47,21 +50,54 @@ vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
 
 //----------------------------------------------------------------------------
-vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer()
+vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer():
+  RepresentationBuilt(false),
+  Model(NULL),
+  MeshServer(NULL),
+  Representation(NULL)
 {
-  this->Model = NULL;
-  this->MeshServer = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 {
+  if ( this->Representation )
+    {
+    this->Representation->Delete();
+    }
 }
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
   vtkCMBModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
 {
+  this->BuildRepresentation();
+  pointIds->Reset();
+  if(this->IsModelConsistent(model) == false)
+    {
+    this->Reset();
+    return false;
+    }
+  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+    {  // we're on the client and don't know this info
+    return false;
+    }
+
+  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetPointData()->GetArray("ModelUseId"));
+  if (!ids )
+    {
+    return false;
+    }
+
+  for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
+    {
+    if ( ids->GetValue(i) == nodalGroupId )
+      {
+      pointIds->InsertNextId(i);
+      }
+    }
+
   return false;
 }
 
@@ -94,19 +130,37 @@ bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkCMBModel* model)
 }
 
 //----------------------------------------------------------------------------
+void vtkCmbMeshGridRepresentationServer::Reset()
+{
+  this->Superclass::Reset();
+  if ( this->Representation )
+    {
+    this->Representation->Delete();
+    }
+  this->RepresentationBuilt = false;
+}
+
+//----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::Initialize(
   vtkCMBModel* model, vtkCmbMeshServer *meshServer)
 {
   //instead of doing this logic now, instead store a weak pointer to the model and mesh server
   //and than call BuildRepresentation when we are asked about any information
+  this->Reset();
 
   this->Model = model;
   this->MeshServer = meshServer;
+  this->RepresentationBuilt = false;
+  return this->Model != NULL && this->MeshServer != NULL;
 }
 
-
+//----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::BuildRepresentation()
 {
+  if ( this->RepresentationBuilt )
+    {
+    return true;
+    }
   //generate a single polydata that is the combintation of all the
   //face meshes
   std::vector<vtkPolyData*> faceMeshes;
@@ -134,7 +188,19 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation()
     }
 
   //create the single polydata now
+  vtkAppendPolyData *appender = vtkAppendPolyData::New();
 
+  for(std::vector<vtkPolyData*>::iterator it = faceMeshes.begin();
+      it != faceMeshes.end();
+      it++)
+    {
+    appender->AddInput(*it);
+    }
+  appender->Update();
+
+  this->Representation->ShallowCopy(appender->GetOutput());
+  appender->Delete();
+  this->RepresentationBuilt = true;
   return true;
 }
 

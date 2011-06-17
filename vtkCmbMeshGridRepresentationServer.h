@@ -40,9 +40,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshGridRepresentationServer_h
 
 #include "vtkCmbGridRepresentation.h"
+#include "vtkWeakPointer.h"
 #include <map>
 #include <set>
 
+class vtkPolyData;
 class vtkCmbMeshServer;
 class vtkCMBModel;
 
@@ -90,8 +92,10 @@ protected:
   vtkCmbMeshGridRepresentationServer();
   virtual ~vtkCmbMeshGridRepresentationServer();
 
+  bool RepresentationBuilt;
   bool BuildRepresentation();
 
+  vtkPolyData* Representation;
   vtkWeakPointer<vtkCMBModel> Model;
   vtkWeakPointer<vtkCmbMeshServer> MeshServer;
 
