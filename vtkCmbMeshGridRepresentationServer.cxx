@@ -36,7 +36,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItemIterator.h"
 
 #include <vtkAppendPolyData.h>
-#include <vtkCellDat.h>
+#include <vtkCleanPolyData.h>
+#include <vtkCellData.h>
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
@@ -52,7 +53,6 @@ vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer():
   RepresentationBuilt(false),
-  Model(NULL),
   MeshServer(NULL),
   Representation(NULL)
 {
@@ -71,17 +71,19 @@ vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
   vtkCMBModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
 {
-  this->BuildRepresentation();
   pointIds->Reset();
   if(this->IsModelConsistent(model) == false)
     {
     this->Reset();
     return false;
     }
+
   if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
     {  // we're on the client and don't know this info
     return false;
     }
+
+  this->BuildRepresentation(model);
 
   vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
     this->Representation->GetPointData()->GetArray("ModelUseId"));
@@ -98,7 +100,7 @@ bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
       }
     }
 
-  return false;
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -110,9 +112,32 @@ bool vtkCmbMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
-  vtkCMBModel* model, vtkIdType boundaryGroupId, vtkIdTypeArray* edgePoints)
+  vtkCMBModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
-  return false;
+
+  edgePoints->Reset();
+  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+    {  // we're on the client and don't know this info
+    return false;
+    }
+  this->BuildRepresentation(model);
+
+  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetPointData()->GetArray("ModelUseId"));
+
+  if (!ids )
+    {
+    return false;
+    }
+
+  for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
+    {
+    if ( ids->GetValue(i) == edgeId )
+      {
+      edgePoints->InsertNextValue(i);
+      }
+    }
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -142,20 +167,20 @@ void vtkCmbMeshGridRepresentationServer::Reset()
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::Initialize(
-  vtkCMBModel* model, vtkCmbMeshServer *meshServer)
+  vtkCmbMeshServer *meshServer)
 {
   //instead of doing this logic now, instead store a weak pointer to the model and mesh server
   //and than call BuildRepresentation when we are asked about any information
   this->Reset();
 
-  this->Model = model;
   this->MeshServer = meshServer;
   this->RepresentationBuilt = false;
-  return this->Model != NULL && this->MeshServer != NULL;
+  return this->MeshServer != NULL;
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::BuildRepresentation()
+bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
+  vtkCMBModel* model)
 {
   if ( this->RepresentationBuilt )
     {
@@ -165,7 +190,7 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation()
   //face meshes
   std::vector<vtkPolyData*> faceMeshes;
   vtkSmartPointer<vtkModelItemIterator> faces;
-  faces.TakeReference(this->Model->NewIterator(vtkModelFaceType));
+  faces.TakeReference(model->NewIterator(vtkModelFaceType));
 
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
@@ -196,10 +221,21 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation()
     {
     appender->AddInput(*it);
     }
-  appender->Update();
+  //now remove duplicate points
+  vtkCleanPolyData *clean = vtkCleanPolyData::New();
+  clean->SetInputConnection(appender->GetOutputPort());
+  clean->ToleranceIsAbsoluteOn();
+  clean->PointMergingOn();
+  clean->ConvertLinesToPointsOff();
+  clean->ConvertPolysToLinesOff();
+  clean->ConvertStripsToPolysOff();
 
-  this->Representation->ShallowCopy(appender->GetOutput());
+  clean->Update();
+  this->Representation->ShallowCopy(clean->GetOutput());
+
+  clean->Delete();
   appender->Delete();
+
   this->RepresentationBuilt = true;
   return true;
 }

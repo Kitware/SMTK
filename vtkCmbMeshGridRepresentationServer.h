@@ -83,7 +83,7 @@ public:
   // Description:
   // Initialize the information from a sim mesh.
   // Returns true for success.
-  bool Initialize(vtkCMBModel* model, vtkCmbMeshServer *mesh);
+  bool Initialize(vtkCmbMeshServer *mesh);
 
   // Description:
   // clear the analysis grid info.
@@ -93,10 +93,9 @@ protected:
   virtual ~vtkCmbMeshGridRepresentationServer();
 
   bool RepresentationBuilt;
-  bool BuildRepresentation();
+  bool BuildRepresentation(vtkCMBModel *model);
 
   vtkPolyData* Representation;
-  vtkWeakPointer<vtkCMBModel> Model;
   vtkWeakPointer<vtkCmbMeshServer> MeshServer;
 
 private:

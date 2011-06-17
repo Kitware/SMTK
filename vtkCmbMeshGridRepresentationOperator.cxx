@@ -55,7 +55,7 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
     {
     vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
       vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
-    if(this->OperateSucceeded = gridRepresentation->Initialize(model,mesh) )
+    if(this->OperateSucceeded = gridRepresentation->Initialize(mesh) )
       {
       model->SetAnalysisGridInfo(gridRepresentation);
       }
