@@ -73,36 +73,10 @@ vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
   vtkCMBModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
 {
-  pointIds->Reset();
-  if(this->IsModelConsistent(model) == false)
-    {
-    this->Reset();
-    return false;
-    }
-
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
-    {  // we're on the client and don't know this info
-    return false;
-    }
-
-  this->BuildRepresentation(model);
-
-  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
-    this->Representation->GetPointData()->GetArray("ModelUseId"));
-  if (!ids )
-    {
-    return false;
-    }
-
-  for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
-    {
-    if ( ids->GetValue(i) == nodalGroupId )
-      {
-      pointIds->InsertNextId(i);
-      }
-    }
-
-  return true;
+  //currently we are only able to relate nodal groups to the analysis mesh
+  //thisis because nodal groups use the model mesh points not model verts
+  //so we can't relate the old mesh points to the new mesh points
+  return false;
 }
 
 //----------------------------------------------------------------------------
