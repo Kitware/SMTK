@@ -200,6 +200,7 @@ void vtkCmbMeshGridRepresentationServer::Reset()
   if ( this->Representation )
     {
     this->Representation->Delete();
+    this->Representation = NULL;
     }
   this->RepresentationBuilt = false;
 }
@@ -270,6 +271,7 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   clean->ConvertStripsToPolysOff();
 
   clean->Update();
+  this->Representation = vtkPolyData::New();
   this->Representation->ShallowCopy(clean->GetOutput());
 
   //TODO: we need to look at how we do our storage of model relationships on the mesh.
