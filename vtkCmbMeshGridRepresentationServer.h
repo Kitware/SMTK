@@ -39,7 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCmbMeshGridRepresentationServer_h
 #define __vtkCmbMeshGridRepresentationServer_h
 
-#include "vtkCmbGridRepresentation.h"
+#include "vtkCmbGeneratedGridRepresentation.h"
 #include "vtkWeakPointer.h"
 #include <map>
 #include <set>
@@ -48,7 +48,7 @@ class vtkPolyData;
 class vtkCmbMeshServer;
 class vtkCMBModel;
 
-class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGridRepresentation
+class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGeneratedGridRepresentation
 {
 public:
   static vtkCmbMeshGridRepresentationServer* New();
