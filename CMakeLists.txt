@@ -33,6 +33,8 @@ SET(vtkMeshFiles
   vtkCmbMesh.cxx
   vtkCmbMeshClient.cxx
   vtkCmbMeshServer.cxx
+  vtkCmbMeshGridRepresentationClient.cxx
+  vtkCmbMeshGridRepresentationServer.cxx
   vtkCmbModelEdgeMesh.cxx
   vtkCmbModelEdgeMeshClient.cxx
   vtkCmbModelEdgeMeshServer.cxx
@@ -47,6 +49,7 @@ SET(vtkMeshFiles
 SET(CMBProxyFiles
   vtkCmbMeshPolyDataProvider.cxx
   vtkCmbMeshWrapper.cxx
+  vtkCmbMeshGridRepresentationOperator.cxx
   vtkCmbModelEdgeMeshOperator.cxx
   vtkCmbModelFaceMeshOperator.cxx
 )

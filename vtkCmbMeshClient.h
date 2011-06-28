@@ -67,6 +67,8 @@ public:
 
   virtual bool BuildModelEntityMeshes();
 
+  virtual bool BuildModelMeshRepresentation();
+
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh
   // representation.

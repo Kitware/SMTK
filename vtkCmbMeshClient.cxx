@@ -24,12 +24,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbMeshClient.h"
 
-#include <vtkCallbackCommand.h>
-#include <vtkCMBModel.h>
 #include "vtkCmbModelEdgeMeshClient.h"
 #include "vtkCmbModelFaceMeshClient.h"
-#include <vtkCMBModelGeometricEntity.h>
+#include "vtkCmbMeshGridRepresentationClient.h"
 #include "vtkCmbModelVertexMesh.h"
+
+#include <vtkCallbackCommand.h>
+#include <vtkCMBModel.h>
+#include <vtkCMBModelGeometricEntity.h>
 #include <vtkIdList.h>
 #include <vtkMergeEventData.h>
 #include <vtkModel.h>
@@ -278,6 +280,24 @@ bool vtkCmbMeshClient::BuildModelEntityMeshes()
       }
     }
   return true;
+}
+
+//----------------------------------------------------------------------------
+bool vtkCmbMeshClient::BuildModelMeshRepresentation()
+{
+  vtkCmbMeshGridRepresentationClient *meshRep =
+    vtkCmbMeshGridRepresentationClient::New();
+  vtkCMBModel *mod = vtkCMBModel::SafeDownCast(this->Model);
+  if ( mod )
+    {
+    bool result =  meshRep->Operate(mod,this->ServerMeshProxy);
+    meshRep->Delete();
+    return result;
+    }
+  else
+    {
+    return false;
+    }
 }
 
 //----------------------------------------------------------------------------
