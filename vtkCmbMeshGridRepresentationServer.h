@@ -55,10 +55,6 @@ public:
   vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationServer,vtkCmbGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  //Description:
-  // Returns the dimensionality of the analysis gird
-  virtual int GetAnalysisGridDimensionality(){return 2;}
-
   // Description:
   // See vtkCmbGridRepresentation.
   virtual bool GetNodalGroupAnalysisGridPointIds(vtkCMBModel* model, vtkIdType nodalGroupId,
