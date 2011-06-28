@@ -98,7 +98,6 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     }
   this->BuildRepresentation(model);
   edgePoints->SetNumberOfComponents(2);
-  edgePoints->SetNumberOfTuples(this->Representation->GetNumberOfCells());
 
   vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
     this->Representation->GetCellData()->GetArray("ModelUseId"));
@@ -121,9 +120,9 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
       {
       if (modelIds[j] == edgeId)
         {
-        edge[0] = pts[indices[i]];
-        edge[1] = pts[indices[i+1]];
-        edgePoints->SetTupleValue(i,edge);
+        edge[0] = pts[indices[j]];
+        edge[1] = pts[indices[j+1]];
+        edgePoints->InsertNextTupleValue(edge);
         }
       }
     }
