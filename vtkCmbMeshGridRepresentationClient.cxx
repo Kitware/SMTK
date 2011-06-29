@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
 #include "vtkSMStringVectorProperty.h"
+#include "vtkSMPropertyHelper.h"
 
 #include <vtksys/ios/sstream>
 
@@ -41,10 +42,13 @@ vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationClient, "");
 
 vtkCmbMeshGridRepresentationClient::vtkCmbMeshGridRepresentationClient()
 {
+  this->MeshIsAnalysisGrid = 0;
+  this->GridFileName = 0;
 }
 
 vtkCmbMeshGridRepresentationClient::~vtkCmbMeshGridRepresentationClient()
 {
+this->SetGridFileName(0);
 }
 
 bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
@@ -61,6 +65,8 @@ bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
     }
   operatorProxy->SetConnectionID(serverMeshProxy->GetConnectionID());
   operatorProxy->SetServers(serverMeshProxy->GetServers());
+  vtkSMPropertyHelper(operatorProxy, "AnalysisMesh").Set(this->MeshIsAnalysisGrid);
+  vtkSMPropertyHelper(operatorProxy,"GridFileName").Set(this->GridFileName);
 
   operatorProxy->Operate(model, serverMeshProxy);
 

@@ -45,6 +45,17 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
+  // Set if the mesh should be used as the simultation input mesh.
+  vtkGetMacro(MeshIsAnalysisGrid, int);
+  vtkSetMacro(MeshIsAnalysisGrid, int);
+
+  // Description:
+  // Set the file name to save the mesh out too.
+  // Note: Setting the file name will cause the mesh to be written out
+  vtkGetStringMacro(GridFileName);
+  vtkSetStringMacro(GridFileName);
+
+  // Description:
   // Reads in the file on the server. Returns true if the operation was successful.
   bool Operate(vtkCMBModel *model, vtkSMProxy* serverMeshProxy);
 
@@ -55,6 +66,13 @@ protected:
 private:
   vtkCmbMeshGridRepresentationClient(const vtkCmbMeshGridRepresentationClient&);  // Not implemented.
   void operator=(const vtkCmbMeshGridRepresentationClient&);  // Not implemented.
+
+    // Description:
+  // Flag to indicate that after saving the mesh to file we also want to set this mesh
+  // as the grid info representation
+  int MeshIsAnalysisGrid;
+
+  char* GridFileName;
 };
 
 #endif

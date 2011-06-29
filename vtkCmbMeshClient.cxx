@@ -283,13 +283,15 @@ bool vtkCmbMeshClient::BuildModelEntityMeshes()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshClient::BuildModelMeshRepresentation()
+bool vtkCmbMeshClient::BuildModelMeshRepresentation(const char* fileName, const bool &isAnalysisMesh)
 {
   vtkCmbMeshGridRepresentationClient *meshRep =
     vtkCmbMeshGridRepresentationClient::New();
   vtkCMBModel *mod = vtkCMBModel::SafeDownCast(this->Model);
   if ( mod )
     {
+    meshRep->SetMeshIsAnalysisGrid(isAnalysisMesh);
+    meshRep->SetGridFileName(fileName);
     bool result =  meshRep->Operate(mod,this->ServerMeshProxy);
     meshRep->Delete();
     return result;

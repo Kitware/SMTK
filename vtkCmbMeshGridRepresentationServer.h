@@ -88,15 +88,17 @@ public:
   // Description:
   // clear the analysis grid info.
   virtual void Reset();
+
+  virtual void WriteToFile( );
 protected:
   vtkCmbMeshGridRepresentationServer();
   virtual ~vtkCmbMeshGridRepresentationServer();
 
   bool RepresentationBuilt;
-  bool BuildRepresentation(vtkCMBModel *model);
+  bool BuildRepresentation(vtkCmbMeshServer *meshServer);
 
   vtkPolyData* Representation;
-  vtkWeakPointer<vtkCmbMeshServer> MeshServer;
+  vtkWeakPointer<vtkCMBModel> Model;
 
 private:
   vtkCmbMeshGridRepresentationServer(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.

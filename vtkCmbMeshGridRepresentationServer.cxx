@@ -44,10 +44,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
 #include <vtkObjectFactory.h>
+#include <vtkTrivialProducer.h>
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
+
+#include "vtkGMSMesh2DWriter.h"
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
@@ -55,8 +58,8 @@ vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer():
   RepresentationBuilt(false),
-  MeshServer(NULL),
-  Representation(NULL)
+  Representation(NULL),
+  Model(NULL)
 {
 }
 
@@ -84,8 +87,6 @@ bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
     {  // we're on the client and don't know this info
     return false;
     }
-
-  this->BuildRepresentation(model);
 
   vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
     this->Representation->GetPointData()->GetArray("ModelUseId"));
@@ -122,7 +123,6 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     {  // we're on the client and don't know this info
     return false;
     }
-  this->BuildRepresentation(model);
   edgePoints->SetNumberOfComponents(2);
 
   vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
@@ -215,7 +215,9 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkCMBModel* model)
 {
-  return true;
+  return (this->Model != NULL  &&
+          this->Model == model &&
+          this->RepresentationBuilt);
 }
 
 //----------------------------------------------------------------------------
@@ -234,33 +236,40 @@ void vtkCmbMeshGridRepresentationServer::Reset()
 bool vtkCmbMeshGridRepresentationServer::Initialize(
   vtkCmbMeshServer *meshServer)
 {
-  //instead of doing this logic now, instead store a weak pointer to the model and mesh server
-  //and than call BuildRepresentation when we are asked about any information
+  //we build the mesh on init time as we need to save the current mesh
+  // if we wait for when a query is executed the mesh could have been
+  //regenerated and become invalid.
   this->Reset();
-
-  this->MeshServer = meshServer;
-  this->RepresentationBuilt = false;
-  return this->MeshServer != NULL;
+  return this->BuildRepresentation(meshServer);
 }
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
-  vtkCMBModel* model)
+  vtkCmbMeshServer *meshServer)
 {
+
+  //TODO: we need to look at how we do our storage of model relationships on the mesh.
+  //current it is really inefficent for lookup.
   if ( this->RepresentationBuilt )
     {
     return true;
     }
+  this->Model = vtkCMBModel::SafeDownCast(meshServer->GetModel());
+  if (!this->Model)
+    {
+    return false;
+    }
+
   //generate a single polydata that is the combintation of all the
   //face meshes
   std::vector<vtkPolyData*> faceMeshes;
   vtkSmartPointer<vtkModelItemIterator> faces;
-  faces.TakeReference(model->NewIterator(vtkModelFaceType));
+  faces.TakeReference(this->Model->NewIterator(vtkModelFaceType));
 
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCmbModelEntityMesh *faceEntityMesh = this->MeshServer->GetModelEntityMesh(face);
+    vtkCmbModelEntityMesh *faceEntityMesh = meshServer->GetModelEntityMesh(face);
     if ( faceEntityMesh )
       {
       vtkPolyData *faceMesh = faceEntityMesh->GetModelEntityMesh();
@@ -299,8 +308,6 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   this->Representation = vtkPolyData::New();
   this->Representation->ShallowCopy(clean->GetOutput());
 
-  //TODO: we need to look at how we do our storage of model relationships on the mesh.
-  //current it is really inefficent for lookup.
 
   clean->Delete();
   appender->Delete();
@@ -309,6 +316,26 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   return true;
 }
 
+//----------------------------------------------------------------------------
+void vtkCmbMeshGridRepresentationServer::WriteToFile()
+{
+  if (!this->RepresentationBuilt)
+    {
+    return;
+    }
+
+  vtkTrivialProducer *tvp = vtkTrivialProducer::New();
+  tvp->SetOutput(this->Representation);
+  vtkGMSMesh2DWriter *writer = vtkGMSMesh2DWriter::New();
+  writer->SetInputConnection(tvp->GetOutputPort());
+  writer->SetFileName(this->GetGridFileName());
+  writer->Write();
+
+  //TODO: Determine how to set the regions on the 2D mesh
+  writer->Delete();
+  tvp->Delete();
+
+}
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {

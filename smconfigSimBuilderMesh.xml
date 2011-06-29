@@ -78,6 +78,23 @@
           Return if the operation on the server was successful.
         </Documentation>
       </IntVectorProperty>
+      <IntVectorProperty
+         name="AnalysisMesh"
+         command="SetMeshIsAnalysisGrid"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          If the current 2D custom mesh should be used the simulation analysis mesh
+        </Documentation>
+      </IntVectorProperty>
+      <StringVectorProperty name="GridFileName"
+        command="SetGridFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to write the analysis mesh to
+        </Documentation>
+      </StringVectorProperty>
       <!-- End of CmbMeshGridRepresentationOperator -->
     </OperatorProxy>
 

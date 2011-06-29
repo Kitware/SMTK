@@ -37,12 +37,15 @@ vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationOperator, "");
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationOperator::vtkCmbMeshGridRepresentationOperator()
 {
+  this->GridFileName = 0;
   this->OperateSucceeded = 0;
+  this->MeshIsAnalysisGrid = 0;
 }
 
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationOperator:: ~vtkCmbMeshGridRepresentationOperator()
 {
+  this->SetGridFileName(0);
 }
 
 //----------------------------------------------------------------------------
@@ -55,7 +58,14 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
     {
     vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
       vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
-    if(this->OperateSucceeded = gridRepresentation->Initialize(mesh) )
+    this->OperateSucceeded = gridRepresentation->Initialize(mesh);
+    if ( this->OperateSucceeded && this->GridFileName != NULL)
+      {
+      gridRepresentation->SetGridFileName(this->GridFileName);
+      gridRepresentation->WriteToFile();
+      }
+
+    if(this->OperateSucceeded && this->MeshIsAnalysisGrid)
       {
       model->SetAnalysisGridInfo(gridRepresentation);
       }
