@@ -299,6 +299,8 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   vtkCleanPolyData *clean = vtkCleanPolyData::New();
   clean->SetInputConnection(appender->GetOutputPort());
   clean->ToleranceIsAbsoluteOn();
+  clean->SetTolerance(0.0);
+  clean->SetAbsoluteTolerance(0.0);
   clean->PointMergingOn();
   clean->ConvertLinesToPointsOff();
   clean->ConvertPolysToLinesOff();
