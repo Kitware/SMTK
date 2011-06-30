@@ -291,7 +291,10 @@ bool vtkCmbMeshClient::BuildModelMeshRepresentation(const char* fileName, const 
   if ( mod )
     {
     meshRep->SetMeshIsAnalysisGrid(isAnalysisMesh);
-    meshRep->SetGridFileName(fileName);
+    if (fileName)
+      {
+      meshRep->SetGridFileName(fileName);
+      }
     bool result =  meshRep->Operate(mod,this->ServerMeshProxy);
     meshRep->Delete();
     return result;

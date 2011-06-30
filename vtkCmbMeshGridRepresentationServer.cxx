@@ -325,6 +325,11 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
     return;
     }
 
+  if (!this->GetGridFileName())
+    {
+    return;
+    }
+
   vtkTrivialProducer *tvp = vtkTrivialProducer::New();
   tvp->SetOutput(this->Representation);
 

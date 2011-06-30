@@ -83,9 +83,12 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
       this->OperateSucceeded = currentGrid->Initialize(mesh);
       if (this->OperateSucceeded && this->GridFileName != NULL)
         {
+        //update the file name if we have one
         currentGrid->SetGridFileName(this->GridFileName);
-        currentGrid->WriteToFile();
         }
+
+      //write the file to disk if the grid has a file name
+      currentGrid->WriteToFile();
       }
     }
   return;
