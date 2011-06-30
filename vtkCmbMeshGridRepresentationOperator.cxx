@@ -78,6 +78,7 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
         {
         currentGrid = vtkCmbMeshGridRepresentationServer::New();
         model->SetAnalysisGridInfo(currentGrid);
+        currentGrid->FastDelete();
         }
 
       this->OperateSucceeded = currentGrid->Initialize(mesh);
