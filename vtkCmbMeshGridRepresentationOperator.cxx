@@ -61,10 +61,10 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
       //create a new grid and write it out to file
       vtkCmbMeshGridRepresentationServer* gridRepresentation =
         vtkCmbMeshGridRepresentationServer::New();
-      gridRepresentation->SetGridFileName(this->GridFileName);
       this->OperateSucceeded = gridRepresentation->Initialize(mesh);
       if (this->OperateSucceeded)
         {
+        gridRepresentation->SetGridFileName(this->GridFileName);
         gridRepresentation->WriteToFile();
         }
       gridRepresentation->Delete();

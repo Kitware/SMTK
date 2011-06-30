@@ -325,7 +325,7 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
     return;
     }
 
-  if (!this->GetGridFileName())
+  if (this->GetGridFileName() == NULL)
     {
     return;
     }
