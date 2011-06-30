@@ -51,28 +51,46 @@ vtkCmbMeshGridRepresentationOperator:: ~vtkCmbMeshGridRepresentationOperator()
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
 {
-
+  this->OperateSucceeded = 0;
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
   vtkCMBModel* model = vtkCMBModel::SafeDownCast(mesh->GetModel());
   if (model && mesh)
     {
-    vtkSmartPointer<vtkCmbMeshGridRepresentationServer> gridRepresentation =
-      vtkSmartPointer<vtkCmbMeshGridRepresentationServer>::New();
-    this->OperateSucceeded = gridRepresentation->Initialize(mesh);
-    if ( this->OperateSucceeded && this->GridFileName != NULL)
+    if ( this->GridFileName != NULL && !this->MeshIsAnalysisGrid )
       {
+      //create a new grid and write it out to file
+      vtkCmbMeshGridRepresentationServer* gridRepresentation =
+        vtkCmbMeshGridRepresentationServer::New();
       gridRepresentation->SetGridFileName(this->GridFileName);
-      gridRepresentation->WriteToFile();
+      this->OperateSucceeded = gridRepresentation->Initialize(mesh);
+      if (this->OperateSucceeded)
+        {
+        gridRepresentation->WriteToFile();
+        }
+      gridRepresentation->Delete();
       }
-
-    if(this->OperateSucceeded && this->MeshIsAnalysisGrid)
+    else if ( this->MeshIsAnalysisGrid )
       {
-      model->SetAnalysisGridInfo(gridRepresentation);
+      vtkCmbMeshGridRepresentationServer *currentGrid =
+        vtkCmbMeshGridRepresentationServer::SafeDownCast(
+        model->GetAnalysisGridInfo());
+      if (!currentGrid)
+        {
+        currentGrid = vtkCmbMeshGridRepresentationServer::New();
+        model->SetAnalysisGridInfo(currentGrid);
+        }
+
+      this->OperateSucceeded = currentGrid->Initialize(mesh);
+      if (this->OperateSucceeded && this->GridFileName != NULL)
+        {
+        currentGrid->SetGridFileName(this->GridFileName);
+        currentGrid->WriteToFile();
+        }
       }
     }
-
   return;
 }
+
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationOperator::PrintSelf(ostream& os, vtkIndent indent)
 {
