@@ -310,7 +310,6 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   this->Representation = vtkPolyData::New();
   this->Representation->ShallowCopy(clean->GetOutput());
 
-
   clean->Delete();
   appender->Delete();
 
@@ -328,12 +327,19 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
 
   vtkTrivialProducer *tvp = vtkTrivialProducer::New();
   tvp->SetOutput(this->Representation);
+
   vtkGMSMesh2DWriter *writer = vtkGMSMesh2DWriter::New();
   writer->SetInputConnection(tvp->GetOutputPort());
   writer->SetFileName(this->GetGridFileName());
-  writer->Write();
 
-  //TODO: Determine how to set the regions on the 2D mesh
+  //if the representation has a cell array that
+  //identifies the model id for each cell
+  if (this->Representation->GetCellData()->HasArray("ModelId") )
+    {
+    writer->SetInputArrayToProcess(0,0,0,
+      vtkDataObject::FIELD_ASSOCIATION_CELLS,"ModelId");
+    }
+  writer->Write();
   writer->Delete();
   tvp->Delete();
 
