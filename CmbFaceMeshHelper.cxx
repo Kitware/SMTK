@@ -630,6 +630,7 @@ bool ModelFaceRep::RelateMeshToModel(vtkPolyData *mesh, const vtkIdType &facePer
 {
   bool valid  = this->RelateMeshCellsToModel(mesh, facePersistenId);
   this->RelateMeshPointsToModel(mesh, facePersistenId);
+  this->SetFaceIdOnMesh(mesh,facePersistenId);
   //Debug code, dump mesh to file
 
 #ifdef DUMP_DEBUG_DATA
@@ -841,4 +842,32 @@ bool ModelFaceRep::RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &fa
   cellModelUseId->FastDelete();
 
   return true;
+}
+
+//----------------------------------------------------------------------------
+bool ModelFaceRep::SetFaceIdOnMesh(vtkPolyData *mesh,
+  const vtkIdType &facePersistenId)
+{
+  //we presume we only have triangle cells
+  vtkCellArray *cells = mesh->GetPolys();
+  if ( cells == NULL )
+    {
+    return false;
+    }
+
+  //we are just applying the full face id to all the cells in the mesh
+  //this is needed for saving the entire models mesh to a 2DM file.
+  vtkIdType size = cells->GetNumberOfCells();
+
+  vtkIdType *faceIds = new vtkIdType[size]; //cellModelId deletes the memory
+  std::fill_n(faceIds,size,facePersistenId);
+
+  //model type for each point in the cell
+  vtkIdTypeArray *cellModelId = vtkIdTypeArray::New();
+  cellModelId->SetNumberOfComponents(1);
+  cellModelId->SetName("ModelId");
+  cellModelId->SetArray(faceIds,size,facePersistenId);
+
+  mesh->GetCellData()->AddArray(cellModelId);
+  cellModelId->FastDelete();
 }

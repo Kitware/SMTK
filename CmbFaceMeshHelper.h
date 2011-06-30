@@ -263,6 +263,7 @@ class ModelFaceRep
   protected:
     bool RelateMeshPointsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
     bool RelateMeshCellsToModel(vtkPolyData *mesh, const vtkIdType &facePersistenId);
+    bool SetFaceIdOnMesh(vtkPolyData *mesh, const vtkIdType &facePersistenId);
     std::list<ModelLoopRep> Loops;
 };
 }
