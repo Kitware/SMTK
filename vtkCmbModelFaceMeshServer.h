@@ -70,7 +70,7 @@ private:
   void operator=(const vtkCmbModelFaceMeshServer&);  // Not implemented.
 
   //BTX
-  CmbModelFaceMeshPrivate::ModelFaceRep *FaceInfo;
+  CmbFaceMesherClasses::ModelFaceRep *FaceInfo;
   //ETX
 };
 

@@ -97,7 +97,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     delete this->FaceInfo;
     this->FaceInfo = NULL;
     }
-  this->FaceInfo = new CmbModelFaceMeshPrivate::ModelFaceRep();
+  this->FaceInfo = new CmbFaceMesherClasses::ModelFaceRep();
 
   bool valid = this->CreateMeshInfo();
   vtkPolyData* mesh = vtkPolyData::New();
@@ -137,7 +137,7 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
     {
     //by design the first loop is the external loop, all other loops are internal loops
     //for a loop to be a hole it has to be an internal loop, with an edge that isn't used twice
-    CmbModelFaceMeshPrivate::ModelLoopRep loop(loopId,loopId != START_LOOP_ID);
+    CmbFaceMesherClasses::ModelLoopRep loop(loopId,loopId != START_LOOP_ID);
     vtkModelItemIterator* edgeUses = vtkModelLoopUse::SafeDownCast(
         liter->GetCurrentItem())->NewModelEdgeUseIterator();
     for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
@@ -154,7 +154,7 @@ bool vtkCmbModelFaceMeshServer::CreateMeshInfo()
         vtkErrorMacro("Missing mesh.");
         }
 
-      CmbModelFaceMeshPrivate::ModelEdgeRep edge(edgeId);
+      CmbFaceMesherClasses::ModelEdgeRep edge(edgeId);
       edge.setMeshPoints(mesh);
       int numVerts = modelEdge->GetNumberOfModelVertexUses();
       for(int i=0;i<numVerts;++i)
