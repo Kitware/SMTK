@@ -50,7 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkGMSMesh2DWriter.h"
+#include "vtkERDCMeshWriter.h"
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
@@ -333,7 +333,7 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
   vtkTrivialProducer *tvp = vtkTrivialProducer::New();
   tvp->SetOutput(this->Representation);
 
-  vtkGMSMesh2DWriter *writer = vtkGMSMesh2DWriter::New();
+  vtkERDCMeshWriter *writer = vtkERDCMeshWriter::New();
   writer->SetInputConnection(tvp->GetOutputPort());
   writer->SetFileName(this->GetGridFileName());
 
@@ -344,6 +344,14 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
     writer->SetInputArrayToProcess(0,0,0,
       vtkDataObject::FIELD_ASSOCIATION_CELLS,"ModelId");
     }
+
+  writer->SetFileFormat(vtkERDCMeshWriter::XMS);
+  writer->SetMeshDimension(vtkERDCMeshWriter::MESH2D);
+  writer->SetValidateDimension(true);
+  writer->SetWriteMetaInfo(true);
+  writer->SetFloatPrecision(6);
+  writer->SetUseScientificNotation(true);
+
   writer->Write();
   writer->Delete();
   tvp->Delete();
