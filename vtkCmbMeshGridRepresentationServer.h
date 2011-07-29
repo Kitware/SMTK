@@ -57,8 +57,8 @@ public:
 
   // Description:
   // See vtkCmbGridRepresentation.
-  virtual bool GetNodalGroupAnalysisGridPointIds(vtkCMBModel* model, vtkIdType nodalGroupId,
-                                                 vtkIdList* pointIds);
+  virtual bool GetBCSNodalAnalysisGridPointIds(vtkCMBModel* model,vtkIdType bcsGroupId,
+    int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkCmbGridRepresentation.

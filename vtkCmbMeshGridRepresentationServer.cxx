@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCMBModelEntityGroup.h"
 #include "vtkCMBModelFace.h"
 #include "vtkCMBModelGeometricEntity.h"
+#include "vtkCMBModelVertex.h"
 #include "vtkCMBNodalGroup.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkModelItemIterator.h"
@@ -49,6 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
+#include "vtkNew.h"
 
 #include "vtkERDCMeshWriter.h"
 
@@ -73,8 +75,9 @@ vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
-  vtkCMBModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
+bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
+  vtkCMBModel* model, vtkIdType bcsGroupId,
+  int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
   if(this->IsModelConsistent(model) == false)
@@ -95,15 +98,59 @@ bool vtkCmbMeshGridRepresentationServer::GetNodalGroupAnalysisGridPointIds(
     return false;
     }
 
-  for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
+  if(vtkCMBModelEntityGroup* bcsNodalGroup =
+    vtkCMBModelEntityGroup::SafeDownCast(
+    model->GetModelEntity(vtkCMBModelEntityGroupType, bcsGroupId)))
     {
-    if ( ids->GetValue(i) == nodalGroupId )
-      {
-      pointIds->InsertNextId(i);
-      }
-    }
+    vtkNew<vtkIdList> vertsIdList;
+    vtkNew<vtkIdList> edgesIdList;
 
-  return true;
+    vtkModelItemIterator* iterEdge=bcsNodalGroup->NewIterator(vtkModelEdgeType);
+    for(iterEdge->Begin();!iterEdge->IsAtEnd();iterEdge->Next())
+      {
+      vtkCMBModelEdge* entity =
+        vtkCMBModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
+      if(entity)
+        {
+        edgesIdList->InsertUniqueId(entity->GetUniquePersistentId());
+        for(int i=0; i<2; i++)
+          {
+          vtkCMBModelVertex* cmbModelVertex =
+            vtkCMBModelVertex::SafeDownCast(entity->GetAdjacentModelVertex(i));
+          if(cmbModelVertex)
+            {
+            vertsIdList->InsertUniqueId(cmbModelVertex->GetUniquePersistentId());
+            }
+          }
+        }
+      }
+    iterEdge->Delete();
+    vtkIdType entId;
+    bool bAdd;
+    for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
+      {
+      entId = ids->GetValue(i);
+      if(bcGroupType == 1)// vtkSBBCInstance::enBCModelEntityAllNodesType)
+        {
+        bAdd = (vertsIdList->IsId(entId)>=0 || edgesIdList->IsId(entId)>=0);
+        }
+      else if(bcGroupType == 2)//vtkSBBCInstance::enBCModelEntityBoundaryNodesType)
+        {
+        bAdd = (vertsIdList->IsId(entId)>=0);
+        }
+      else if(bcGroupType == 3)//vtkSBBCInstance::enBCModelEntityInteriorNodesType)
+        {
+        bAdd = (edgesIdList->IsId(entId)>=0);
+        }
+      if(bAdd)
+        {
+        pointIds->InsertNextId(i);
+        }
+      }
+
+    return true;
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
