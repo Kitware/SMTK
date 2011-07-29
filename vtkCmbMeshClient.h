@@ -67,7 +67,9 @@ public:
 
   virtual bool BuildModelEntityMeshes();
 
-  virtual bool BuildModelMeshRepresentation(const char* fileName, const bool &isAnalysisMesh);
+  virtual bool BuildModelMeshRepresentation(
+    const char* fileName, const bool &isAnalysisMesh,
+    vtkSMProxy* meshRepresentionInput=NULL);
 
   // Description:
   // Given a vtkModelGeometricEntity, get the associated mesh

@@ -283,7 +283,9 @@ bool vtkCmbMeshClient::BuildModelEntityMeshes()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshClient::BuildModelMeshRepresentation(const char* fileName, const bool &isAnalysisMesh)
+bool vtkCmbMeshClient::BuildModelMeshRepresentation(
+  const char* fileName, const bool &isAnalysisMesh,
+  vtkSMProxy* meshRepresentionInput)
 {
   vtkCmbMeshGridRepresentationClient *meshRep =
     vtkCmbMeshGridRepresentationClient::New();
@@ -295,6 +297,7 @@ bool vtkCmbMeshClient::BuildModelMeshRepresentation(const char* fileName, const 
       {
       meshRep->SetGridFileName(fileName);
       }
+    meshRep->SetMeshRepresentationSource(meshRepresentionInput);
     bool result =  meshRep->Operate(mod,this->ServerMeshProxy);
     meshRep->Delete();
     return result;

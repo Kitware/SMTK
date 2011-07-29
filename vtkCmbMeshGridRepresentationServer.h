@@ -47,6 +47,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class vtkPolyData;
 class vtkCmbMeshServer;
 class vtkCMBModel;
+class vtkAlgorithm;
 
 class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGeneratedGridRepresentation
 {
@@ -81,13 +82,21 @@ public:
   virtual bool IsModelConsistent(vtkCMBModel* model);
 
   // Description:
-  // Initialize the information from a sim mesh.
+  // Initialize the information from a sim mesh or mesh representation.
   // Returns true for success.
   bool Initialize(vtkCmbMeshServer *mesh);
+  bool Initialize(vtkPolyData* meshRepresentation);
 
   // Description:
   // clear the analysis grid info.
   virtual void Reset();
+
+  // Description:
+  // The method to set the mesh representation input. This is
+  // useful if some filters are applied to the mesh, and the representation
+  // is changed due to that.
+  vtkGetObjectMacro(Representation, vtkPolyData);
+  void SetRepresentation(vtkPolyData* mesh);
 
   virtual void WriteToFile( );
 protected:

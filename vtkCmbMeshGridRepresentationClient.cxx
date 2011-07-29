@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSMIntVectorProperty.h"
 #include "vtkSMOperatorProxy.h"
 #include "vtkSMProxyManager.h"
+#include "vtkSMProxyProperty.h"
 #include "vtkSMStringVectorProperty.h"
 #include "vtkSMPropertyHelper.h"
 
@@ -39,16 +40,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationClient);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationClient, "");
+vtkCxxSetObjectMacro(vtkCmbMeshGridRepresentationClient, MeshRepresentationSource, vtkSMProxy);
 
 vtkCmbMeshGridRepresentationClient::vtkCmbMeshGridRepresentationClient()
 {
   this->MeshIsAnalysisGrid = 0;
   this->GridFileName = 0;
+  this->MeshRepresentationSource = NULL;
 }
 
 vtkCmbMeshGridRepresentationClient::~vtkCmbMeshGridRepresentationClient()
 {
-this->SetGridFileName(0);
+  this->SetGridFileName(0);
+  this->SetMeshRepresentationSource(NULL);
 }
 
 bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
@@ -67,6 +71,13 @@ bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
   operatorProxy->SetServers(serverMeshProxy->GetServers());
   vtkSMPropertyHelper(operatorProxy, "AnalysisMesh").Set(this->MeshIsAnalysisGrid);
   vtkSMPropertyHelper(operatorProxy,"GridFileName").Set(this->GridFileName);
+  if(this->MeshRepresentationSource)
+    {
+    vtkSMProxyProperty* pp = vtkSMProxyProperty::SafeDownCast(
+      operatorProxy->GetProperty("MeshRepresentationInput"));
+    pp->RemoveAllProxies();
+    pp->AddProxy(this->MeshRepresentationSource);
+    }
 
   operatorProxy->Operate(model, serverMeshProxy);
 

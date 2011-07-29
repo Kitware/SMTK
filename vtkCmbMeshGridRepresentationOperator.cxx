@@ -25,11 +25,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbMeshGridRepresentationOperator.h"
 
+#include "vtkAlgorithm.h"
 #include "vtkCMBModel.h"
 #include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCmbMeshWrapper.h"
 #include "vtkObjectFactory.h"
+#include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationOperator);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationOperator, "");
@@ -40,6 +42,7 @@ vtkCmbMeshGridRepresentationOperator::vtkCmbMeshGridRepresentationOperator()
   this->GridFileName = 0;
   this->OperateSucceeded = 0;
   this->MeshIsAnalysisGrid = 0;
+  this->MeshRepresentationSource = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -61,7 +64,10 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
       //create a new grid and write it out to file
       vtkCmbMeshGridRepresentationServer* gridRepresentation =
         vtkCmbMeshGridRepresentationServer::New();
-      this->OperateSucceeded = gridRepresentation->Initialize(mesh);
+      this->OperateSucceeded = this->MeshRepresentationSource ?
+        gridRepresentation->Initialize(vtkPolyData::SafeDownCast(
+            this->MeshRepresentationSource->GetOutputDataObject(0))) :
+        gridRepresentation->Initialize(mesh);
       if (this->OperateSucceeded)
         {
         gridRepresentation->SetGridFileName(this->GridFileName);
@@ -81,7 +87,10 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
         currentGrid->FastDelete();
         }
 
-      this->OperateSucceeded = currentGrid->Initialize(mesh);
+      this->OperateSucceeded = this->MeshRepresentationSource ?
+        currentGrid->Initialize(vtkPolyData::SafeDownCast(
+            this->MeshRepresentationSource->GetOutputDataObject(0))) :
+        currentGrid->Initialize(mesh);
       if (this->OperateSucceeded && this->GridFileName != NULL)
         {
         //update the file name if we have one
@@ -93,6 +102,12 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
       }
     }
   return;
+}
+//----------------------------------------------------------------------------
+void vtkCmbMeshGridRepresentationOperator::SetMeshRepresentationInput(
+  vtkAlgorithm* meshSource)
+{
+  this->MeshRepresentationSource = meshSource;
 }
 
 //----------------------------------------------------------------------------

@@ -68,10 +68,7 @@ vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer():
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 {
-  if ( this->Representation )
-    {
-    this->Representation->Delete();
-    }
+  this->SetRepresentation(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -289,12 +286,18 @@ bool vtkCmbMeshGridRepresentationServer::Initialize(
   this->Reset();
   return this->BuildRepresentation(meshServer);
 }
+//----------------------------------------------------------------------------
+bool vtkCmbMeshGridRepresentationServer::Initialize(
+vtkPolyData* meshRepresentation)
+{
+  this->SetRepresentation(meshRepresentation);
+  return this->RepresentationBuilt;
+}
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   vtkCmbMeshServer *meshServer)
 {
-
   //TODO: we need to look at how we do our storage of model relationships on the mesh.
   //current it is really inefficent for lookup.
   if ( this->RepresentationBuilt )
@@ -404,6 +407,29 @@ void vtkCmbMeshGridRepresentationServer::WriteToFile()
   tvp->Delete();
 
 }
+//----------------------------------------------------------------------------
+void vtkCmbMeshGridRepresentationServer::SetRepresentation (vtkPolyData* mesh)
+{
+  if(this->Representation == mesh)
+    {
+    return;
+    }
+  if(this->Representation)
+    {
+    this->Representation->UnRegister(this);
+    this->Representation = NULL;
+    this->RepresentationBuilt = false;
+    }
+  this->Representation = mesh;
+  if(this->Representation)
+    {
+    this->Representation->Register(this);
+    this->RepresentationBuilt = true;
+    }
+  this->Modified();
+
+}
+
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {

@@ -56,6 +56,13 @@ public:
   vtkSetStringMacro(GridFileName);
 
   // Description:
+  // Source proxy for mesh representation. Default is null, and the mesh representation
+  // will be built later in vtkCmbMeshGridRepresentionServer. However, if this is set,
+  // it will be passed to vtkCmbMeshGridRepresentionServer as its mesh representation.
+  vtkGetObjectMacro(MeshRepresentationSource, vtkSMProxy);
+  void SetMeshRepresentationSource(vtkSMProxy* );
+
+  // Description:
   // Reads in the file on the server. Returns true if the operation was successful.
   bool Operate(vtkCMBModel *model, vtkSMProxy* serverMeshProxy);
 
@@ -73,6 +80,8 @@ private:
   int MeshIsAnalysisGrid;
 
   char* GridFileName;
+  vtkSMProxy* MeshRepresentationSource;
+
 };
 
 #endif

@@ -31,8 +31,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshGridRepresentationOperator_h
 
 #include "vtkObject.h"
+#include "vtkWeakPointer.h"
 
 class vtkCmbMeshWrapper;
+class vtkAlgorithm;
 
 class VTK_EXPORT vtkCmbMeshGridRepresentationOperator : public vtkObject
 {
@@ -60,6 +62,12 @@ public:
   vtkGetStringMacro(GridFileName);
   vtkSetStringMacro(GridFileName);
 
+  // Description:
+  // Source proxy for mesh representation. Default is null, and the mesh representation
+  // will be built later in vtkCmbMeshGridRepresentionServer. However, if this is set,
+  // it will be passed to vtkCmbMeshGridRepresentionServer as its mesh representation.
+  void SetMeshRepresentationInput(vtkAlgorithm* meshSource);
+
 protected:
   vtkCmbMeshGridRepresentationOperator();
   virtual ~vtkCmbMeshGridRepresentationOperator();
@@ -79,6 +87,7 @@ private:
   int MeshIsAnalysisGrid;
 
   char* GridFileName;
+  vtkWeakPointer<vtkAlgorithm> MeshRepresentationSource;
 };
 
 #endif
