@@ -52,6 +52,7 @@ SET(CMBProxyFiles
   vtkCmbModelFaceMeshOperator.cxx
   vtkCmbMeshToModelWriter.cxx
   vtkCmbMeshToModelReader.cxx
+  vtkCmbMeshToModelReadOperator.cxx
 )
 SET_SOURCE_FILES_PROPERTIES(
   vtkCmbMesh

@@ -116,27 +116,38 @@ int vtkCmbMeshToModelWriter::GetDataSetMinorVersion()
 int vtkCmbMeshToModelWriter::WriteData()
 {
   int result = 0;
+  // Write the file.
+  if (!this->StartFile())
+    {
+    return result;
+    }
+
   vtkIndent indent;
   result = this->WriteHeader(&indent);
   if(!result)
     {
     return result;
     }
+  vtkIndent indent2 = indent.GetNextIndent();
   vtkCMBModel* Model = this->ModelWrapper->GetModel();
   int modelDim = Model->GetModelDimension();
   if(modelDim == 3)
     {
-    result = this->Write3DModelMeshInfo(&indent);
+    result = this->Write3DModelMeshInfo(&indent2);
     }
   else if(modelDim == 2)
     {
-    result = this->Write2DModelMeshInfo(&indent);
+    result = this->Write2DModelMeshInfo(&indent2);
     }
-  if(!result)
+  if(result)
     {
-    return result;
+    result = this->WriteFooter(&indent);
     }
-  result = this->WriteFooter(&indent);
+  if (result)
+    {
+    result = this->EndFile();
+    }
+
   return result;
 }
 
@@ -157,6 +168,7 @@ int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
     vtkWarningMacro("This vtkCmbGridRepresentation does not have a GridFileName.");
     return 0;
     }
+
   ostream& os = *(this->Stream);
   vtkIndent indent = parentIndent->GetNextIndent();
 
@@ -164,19 +176,19 @@ int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
   os << indent << "<" << this->GetDataSetName();
   // version
   vtkstd::stringstream version;
-  version << this->GetDataSetMajorVersion() << "." << this->GetDataSetMinorVersion();
-  os << indent << "Version=\"" << version.str().c_str() << "\"\n";
+  version << this->GetDataSetMajorVersion() << "."
+          << this->GetDataSetMinorVersion();
+  os << " version=\"" << version.str().c_str() << "\"";
   // analysis grid name
-  os << indent << "AnalysisMeshFileName=\""
+  os << " AnalysisMeshFileName=\""
      <<vtksys::SystemTools::GetFilenameName(
-     std::string(analysisGridName)).c_str() << "\"\n";
+     std::string(analysisGridName)).c_str() << "\"";
   // model dimension
   vtkstd::stringstream modelDim;
   modelDim << Model->GetModelDimension();
-  os << indent << "ModelDimension=\"" << modelDim.str().c_str() << "\"";
+  os << " ModelDimension=\"" << modelDim.str().c_str() << "\">\n";
 
   // Close primary element:
-  os << ">\n";
   os.flush();
   if (os.fail())
     {
@@ -229,29 +241,32 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
   vtkIdList* idList = vtkIdList::New();
   vtkIdTypeArray* floatingEdgeData = vtkIdTypeArray::New();
   // format is floating edge id, number of point ids, point ids,...
-  vtkModelItemIterator* edges = Model->NewIterator(vtkModelEdgeType);
-  vtkIdType floatingEdgeCounter = 0;
-  for(edges->Begin();!edges->IsAtEnd();edges->Next())
+  if(Model->GetNumberOfAssociations(vtkModelEdgeType))
     {
-    vtkCMBModelEdge* edge =
-      vtkCMBModelEdge::SafeDownCast(edges->GetCurrentItem());
-    if(edge->GetModelRegion())
+    vtkModelItemIterator* edges = Model->NewIterator(vtkModelEdgeType);
+    vtkIdType floatingEdgeCounter = 0;
+    for(edges->Begin();!edges->IsAtEnd();edges->Next())
       {
-      floatingEdgeCounter++;
-      floatingEdgeData->InsertNextValue(edge->GetUniquePersistentId());
-      analysisGridInfo->GetFloatingEdgeAnalysisGridPointIds(
-        Model, edge->GetUniquePersistentId(), idList);
-      floatingEdgeData->InsertNextValue(idList->GetNumberOfIds());
-      for(vtkIdType i=0;i<idList->GetNumberOfIds();i++)
+      vtkCMBModelEdge* edge =
+        vtkCMBModelEdge::SafeDownCast(edges->GetCurrentItem());
+      if(edge->GetModelRegion())
         {
-        floatingEdgeData->InsertNextValue(idList->GetId(i));
+        floatingEdgeCounter++;
+        floatingEdgeData->InsertNextValue(edge->GetUniquePersistentId());
+        analysisGridInfo->GetFloatingEdgeAnalysisGridPointIds(
+          Model, edge->GetUniquePersistentId(), idList);
+        floatingEdgeData->InsertNextValue(idList->GetNumberOfIds());
+        for(vtkIdType i=0;i<idList->GetNumberOfIds();i++)
+          {
+          floatingEdgeData->InsertNextValue(idList->GetId(i));
+          }
         }
       }
+    floatingEdgeData->SetName(vtkCMBParserBase::GetBCFloatingEdgeDataString());
+    tmpPoly->GetFieldData()->AddArray(floatingEdgeData);
+    floatingEdgeData->Delete();
+    edges->Delete();
     }
-  floatingEdgeData->SetName(vtkCMBParserBase::GetBCFloatingEdgeDataString());
-  tmpPoly->GetFieldData()->AddArray(floatingEdgeData);
-  floatingEdgeData->Delete();
-  edges->Delete();
 
   vtkIdTypeArray* modelFaceData = vtkIdTypeArray::New();
   // format is model face id, number of facets, cell 0, side 0, cell 1, side 1,...
@@ -352,9 +367,9 @@ int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
 
 //-----------------------------------------------------------------------------
 const char* vtkCmbMeshToModelWriter::GetDataSetName()
-  {
-  return "MeshToModelMapFile";
-  }
+{
+  return "PolyData";
+}
 
 //-----------------------------------------------------------------------------
 void vtkCmbMeshToModelWriter::PrintSelf(ostream& os, vtkIndent indent)

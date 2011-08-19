@@ -231,6 +231,47 @@
       <!-- End of ModelFaceMeshOperator -->
     </OperatorProxy>
 
+    <SourceProxy name="MeshToModelWriter" class="vtkCmbMeshToModelWriter"
+      label="The bcs file writer">
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper for the algorithm to get the polydata from.
+        </Documentation>
+      </ProxyProperty>
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to write to.
+        </Documentation>
+      </StringVectorProperty>
+      <!-- End of MeshToModelWriter -->
+    </SourceProxy>
+    <OperatorProxy name="MeshToModelReadOperator" class="vtkCmbMeshToModelReadOperator">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of MeshToModelReadOperator -->
+    </OperatorProxy>
+
   </ProxyGroup>
 
 

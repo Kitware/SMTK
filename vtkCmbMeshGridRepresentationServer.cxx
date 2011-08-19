@@ -289,9 +289,10 @@ bool vtkCmbMeshGridRepresentationServer::Initialize(
 }
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::Initialize(
-vtkPolyData* meshRepresentation)
+vtkPolyData* meshRepresentation, vtkCMBModel* model)
 {
   this->SetRepresentation(meshRepresentation);
+  this->Model = model;
   return this->RepresentationBuilt;
 }
 
@@ -438,7 +439,7 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellIdMapArray()
     ModelFaceRep::Get2DAnalysisCellModelIdsString()));
   if (!maparray )
     {
-    vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIdTypeArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisCellModelIdsString()));
     }
@@ -452,7 +453,7 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellTypeMapArray()
     ModelFaceRep::Get2DAnalysisCellModelTypesString()));
   if (!maparray )
     {
-    vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIdTypeArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisCellModelTypesString()));
     }
@@ -467,7 +468,7 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointIdMapArray()
     ModelFaceRep::Get2DAnalysisPointModelIdsString()));
   if (!maparray )
     {
-    vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIdTypeArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisPointModelIdsString()));
     }
@@ -482,7 +483,7 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointTypeMapArray()
     ModelFaceRep::Get2DAnalysisPointModelTypesString()));
   if (!maparray )
     {
-    vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIdTypeArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisPointModelTypesString()));
     }

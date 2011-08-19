@@ -66,7 +66,7 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
         vtkCmbMeshGridRepresentationServer::New();
       this->OperateSucceeded = this->MeshRepresentationSource ?
         gridRepresentation->Initialize(vtkPolyData::SafeDownCast(
-            this->MeshRepresentationSource->GetOutputDataObject(0))) :
+            this->MeshRepresentationSource->GetOutputDataObject(0)), model) :
         gridRepresentation->Initialize(mesh);
       if (this->OperateSucceeded)
         {
@@ -89,7 +89,7 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
 
       this->OperateSucceeded = this->MeshRepresentationSource ?
         currentGrid->Initialize(vtkPolyData::SafeDownCast(
-            this->MeshRepresentationSource->GetOutputDataObject(0))) :
+            this->MeshRepresentationSource->GetOutputDataObject(0)), model) :
         currentGrid->Initialize(mesh);
       if (this->OperateSucceeded && this->GridFileName != NULL)
         {

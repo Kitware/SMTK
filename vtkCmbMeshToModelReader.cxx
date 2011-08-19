@@ -73,12 +73,15 @@ vtkCmbMeshToModelReader::vtkCmbMeshToModelReader()
 {
   this->SetNumberOfInputPorts(0);
   this->ModelWrapper = 0;
+  this->ModelDimension = 0;
+  this->AnalysisGridFileName = NULL;
 }
 
 //----------------------------------------------------------------------------
 vtkCmbMeshToModelReader::~vtkCmbMeshToModelReader()
 {
   this->SetModelWrapper(0);
+  this->SetAnalysisGridFileName(NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -96,7 +99,7 @@ int vtkCmbMeshToModelReader::GetDataSetMinorVersion()
 //-----------------------------------------------------------------------------
 const char* vtkCmbMeshToModelReader::GetDataSetName()
 {
-  return "MeshToModelMapFile";
+  return "PolyData";
 }
 //----------------------------------------------------------------------------
 void vtkCmbMeshToModelReader::SetupEmptyOutput()
@@ -116,76 +119,92 @@ int vtkCmbMeshToModelReader::CanReadFileVersion(int major, int minor)
 //----------------------------------------------------------------------------
 int vtkCmbMeshToModelReader::ReadPrimaryElement(vtkXMLDataElement* ePrimary)
 {
-  vtkstd::string strVersion = ePrimary->GetAttribute("Version");
-  int modelDimension=0;
-  ePrimary->GetScalarAttribute("ModelDimension", modelDimension);
-  vtkstd::string strAnalysisMeshFileName = ePrimary->GetAttribute(
-    "AnalysisMeshFileName");
-
-  // See if there is a FieldData element. There should be one, and only one for now
-  int numNested = ePrimary->GetNumberOfNestedElements();
-  for(int i=0; i < numNested; ++i)
+  if(!ePrimary || !this->vtkXMLReader::ReadPrimaryElement(ePrimary))
     {
-    vtkXMLDataElement* eNested = ePrimary->GetNestedElement(i);
-    if(strcmp(eNested->GetName(), "FieldData") == 0)
-      {
-      // read the field data information
-      int i, numTuples;
-      vtkFieldData *fieldData = this->GetCurrentOutput()->GetFieldData();
-      for(i=0; i < this->FieldDataElement->GetNumberOfNestedElements() &&
-        !this->AbortExecute; i++)
-        {
-        vtkXMLDataElement* eNested = this->FieldDataElement->GetNestedElement(i);
-        vtkAbstractArray* array = this->CreateArray(eNested);
-        if (array)
-          {
-          if(eNested->GetScalarAttribute("NumberOfTuples", numTuples))
-            {
-            array->SetNumberOfTuples(numTuples);
-            }
-          else
-            {
-            numTuples = 0;
-            }
-          fieldData->AddArray(array);
-          array->Delete();
-          if (!this->ReadArrayValues(eNested, 0, array, 0, numTuples*array->GetNumberOfComponents()))
-            {
-            this->DataError = 1;
-            return 0;
-            }
-          }
-        }
-      return this->LoadAnalysisGridInfo(fieldData, modelDimension,
-        strAnalysisMeshFileName.c_str());
-      }
+    return 0;
     }
-
-  return 0;
+  ePrimary->GetScalarAttribute("ModelDimension",
+    this->ModelDimension);
+  this->SetAnalysisGridFileName(ePrimary->GetAttribute(
+    "AnalysisMeshFileName"));
+  return 1;
 }
-//-----------------------------------------------------------------------------
-int vtkCmbMeshToModelReader::LoadAnalysisGridInfo(
-  vtkFieldData* fieldData, int modelDim, const char* meshFileName)
-{
-  if(modelDim == 2)
-    {
-    return this->Load2DAnalysisGridInfo(fieldData, meshFileName);
-    }
-  else if(modelDim == 3)
-    {
-    return this->Load2DAnalysisGridInfo(fieldData, meshFileName);
-    }
-  return 0;
-}
-//-----------------------------------------------------------------------------
-int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(
-  vtkFieldData* fieldData, const char* meshFileName)
+//----------------------------------------------------------------------------
+void vtkCmbMeshToModelReader::ReadXMLData()
 {
   if(!this->ModelWrapper || !this->ModelWrapper->GetModel())
     {
     vtkWarningMacro("There is no model set for the reader.");
-    return 0;
+    this->DataError = 1;
+    return;
     }
+
+  vtkXMLDataElement* eNested = this->FieldDataElement;
+  // See if there is a FieldData element. There should be one, and only one for now
+  if(!eNested)
+    {
+    vtkWarningMacro("There is no FieldData in the file.");
+    this->DataError = 1;
+    return;
+    }
+
+  // read the field data information
+  int i, numTuples;
+  vtkFieldData *fieldData = this->GetCurrentOutput()->GetFieldData();
+  for(i=0; i < this->FieldDataElement->GetNumberOfNestedElements() &&
+    !this->AbortExecute; i++)
+    {
+    vtkXMLDataElement* eNested = this->FieldDataElement->GetNestedElement(i);
+    vtkAbstractArray* array = this->CreateArray(eNested);
+    if (array)
+      {
+      if(eNested->GetScalarAttribute("NumberOfTuples", numTuples))
+        {
+        array->SetNumberOfTuples(numTuples);
+        }
+      else
+        {
+        numTuples = 0;
+        }
+      fieldData->AddArray(array);
+      array->Delete();
+      if (!this->ReadArrayValues(eNested, 0, array, 0,
+       numTuples*array->GetNumberOfComponents()))
+        {
+        this->DataError = 1;
+        return;
+        }
+      }
+    }
+  if(!this->LoadAnalysisGridInfo(fieldData))
+    {
+    this->DataError = 1;
+    }
+}
+//-----------------------------------------------------------------------------
+int vtkCmbMeshToModelReader::LoadAnalysisGridInfo(vtkFieldData* fieldData)
+{
+  if(this->ModelDimension == 2)
+    {
+    return this->Load2DAnalysisGridInfo(fieldData);
+    }
+  else if(this->ModelDimension == 3)
+    {
+    return this->Load3DAnalysisGridInfo(fieldData);
+    }
+  return 0;
+}
+//----------------------------------------------------------------------------
+int vtkCmbMeshToModelReader::FillOutputPortInformation(
+  int, vtkInformation* info)
+{
+  info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
+  return 1;
+}
+
+//-----------------------------------------------------------------------------
+int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
+{
   vtkCMBModel* model = this->ModelWrapper->GetModel();
 
   vtkDataArray* cellids =
@@ -198,12 +217,27 @@ int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(
   fieldData->GetArray(ModelFaceRep::Get2DAnalysisPointModelTypesString());
   if(cellids && celltypes && ptsids && ptstypes)
     {
-    vtkNew<vtkCmbMeshGridRepresentationServer> gridRepresentationInfo;
-    vtkNew<vtkPolyData> gridRepPoly;
+    vtkCmbMeshGridRepresentationServer* gridRepresentationInfo =
+      vtkCmbMeshGridRepresentationServer::New();
+    vtkPolyData* gridRepPoly = vtkPolyData::New();
     gridRepPoly->Initialize();
-    gridRepPoly->GetFieldData()->ShallowCopy(fieldData);
-    gridRepresentationInfo->SetRepresentation(gridRepPoly.GetPointer());
-    model->SetAnalysisGridInfo(gridRepresentationInfo.GetPointer());
+    vtkIdTypeArray* newptsids = this->NewIdTypeArray(ptsids);
+    vtkIdTypeArray* newptstypes = this->NewIdTypeArray(ptstypes);
+    vtkIdTypeArray* newcellids = this->NewIdTypeArray(cellids);
+    vtkIdTypeArray* newcelltypes = this->NewIdTypeArray(celltypes);
+
+    gridRepPoly->GetFieldData()->AddArray(newptsids);
+    gridRepPoly->GetFieldData()->AddArray(newptstypes);
+    gridRepPoly->GetFieldData()->AddArray(newcellids);
+    gridRepPoly->GetFieldData()->AddArray(newcelltypes);
+    gridRepresentationInfo->Initialize(gridRepPoly, model);
+    model->SetAnalysisGridInfo(gridRepresentationInfo);
+    gridRepPoly->Delete();
+    gridRepresentationInfo->Delete();
+    newptsids->Delete();
+    newptstypes->Delete();
+    newcelltypes->Delete();
+    newcellids->Delete();
     return 1;
     }
   else
@@ -214,41 +248,38 @@ int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(
   return 0;
 }
 //-----------------------------------------------------------------------------
-int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(
-  vtkFieldData* fieldData, const char* meshFileName)
+int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
 {
-  if(!this->ModelWrapper || !this->ModelWrapper->GetModel())
-    {
-    vtkWarningMacro("There is no model set for the reader.");
-    return 0;
-    }
   vtkCMBModel* model = this->ModelWrapper->GetModel();
   vtkDataArray* bcFloatingEdgeData =
   fieldData->GetArray(vtkCMBParserBase::GetBCFloatingEdgeDataString());
   vtkDataArray* bcModelFaceData =
   fieldData->GetArray(vtkCMBParserBase::GetBCModelFaceDataString());
-  if(bcFloatingEdgeData && bcModelFaceData)
+  // The model face mapping to analysis mesh must be present
+  if(bcModelFaceData)
     {
     vtkSmartPointer<vtkCmbBCGridRepresentation> gridRepresentation =
       vtkSmartPointer<vtkCmbBCGridRepresentation>::New();
-
-    // parse the floating edge data
     vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
     vtkIdType counter = 0;
     vtkSmartPointer<vtkIdTypeArray> idTypeArray;
-    idTypeArray.TakeReference(this->NewIdTypeArray(bcFloatingEdgeData));
-    while(counter < idTypeArray->GetNumberOfTuples()*idTypeArray->GetNumberOfComponents())
+    if(bcFloatingEdgeData)
       {
-      vtkIdType floatingEdgeId = idTypeArray->GetValue(counter++);
-      vtkIdType numberOfIds = idTypeArray->GetValue(counter++);
-      ids->SetNumberOfIds(numberOfIds);
-      for(vtkIdType id=0;id<numberOfIds;id++)
+      // parse the floating edge data
+      idTypeArray.TakeReference(this->NewIdTypeArray(bcFloatingEdgeData));
+      while(counter < idTypeArray->GetNumberOfTuples()*idTypeArray->GetNumberOfComponents())
         {
-        ids->InsertId(id, idTypeArray->GetValue(counter++));
-        }
-      if(gridRepresentation->AddFloatingEdge(floatingEdgeId, ids, model) == false)
-        {
-        return 0;
+        vtkIdType floatingEdgeId = idTypeArray->GetValue(counter++);
+        vtkIdType numberOfIds = idTypeArray->GetValue(counter++);
+        ids->SetNumberOfIds(numberOfIds);
+        for(vtkIdType id=0;id<numberOfIds;id++)
+          {
+          ids->InsertId(id, idTypeArray->GetValue(counter++));
+          }
+        if(gridRepresentation->AddFloatingEdge(floatingEdgeId, ids, model) == false)
+          {
+          return 0;
+          }
         }
       }
 
@@ -272,10 +303,7 @@ int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(
         return 0;
         }
       }
-    if(meshFileName && *meshFileName)
-      {
-      gridRepresentation->SetGridFileName(meshFileName);
-      }
+    gridRepresentation->SetGridFileName(this->AnalysisGridFileName);
     model->SetAnalysisGridInfo(gridRepresentation);
     return 1;
     }
@@ -308,6 +336,7 @@ vtkIdTypeArray* vtkCmbMeshToModelReader::NewIdTypeArray(vtkDataArray* a)
   ida = vtkIdTypeArray::New();
   ida->SetNumberOfComponents(a->GetNumberOfComponents());
   ida->SetNumberOfTuples(a->GetNumberOfTuples());
+  ida->SetName(a->GetName());
   vtkIdType length = a->GetNumberOfComponents() * a->GetNumberOfTuples();
   vtkIdType* idBuffer = ida->GetPointer(0);
   void* inIdBuffer = a->GetVoidPointer(0);

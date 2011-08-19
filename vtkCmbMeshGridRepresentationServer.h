@@ -85,7 +85,7 @@ public:
   // Initialize the information from a sim mesh or mesh representation.
   // Returns true for success.
   bool Initialize(vtkCmbMeshServer *mesh);
-  bool Initialize(vtkPolyData* meshRepresentation);
+  bool Initialize(vtkPolyData* meshRepresentation, vtkCMBModel* model);
 
   // Description:
   // clear the analysis grid info.

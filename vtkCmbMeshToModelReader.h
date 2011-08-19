@@ -64,15 +64,26 @@ public:
   //ETX
   void SetModelWrapper(vtkCMBModelWrapper* Wrapper);
 
+  bool IsReadSuccessful(){return !this->DataError;}
+
 protected:
   vtkCmbMeshToModelReader();
   ~vtkCmbMeshToModelReader();
 
+  // see algorithm for more info
+  virtual int FillOutputPortInformation(int port, vtkInformation* info);
+
+  // Called by corresponding RequestData methods after appropriate
+  // setup has been done.
+  virtual void ReadXMLData();
+
+  // Setup the output's information.
+  virtual void SetupOutputInformation(vtkInformation *vtkNotUsed(outInfo)) {}
+
   // Load the analysis grid info to the model.
-  int LoadAnalysisGridInfo(vtkFieldData* fieldData,
-    int modelDim, const char* meshFileName);
-  int Load2DAnalysisGridInfo(vtkFieldData* fieldData,const char* meshFileName);
-  int Load3DAnalysisGridInfo(vtkFieldData* fieldData,const char* meshFileName);
+  int LoadAnalysisGridInfo(vtkFieldData* fieldData);
+  int Load2DAnalysisGridInfo(vtkFieldData* fieldData);
+  int Load3DAnalysisGridInfo(vtkFieldData* fieldData);
 
   // Get the name of the data set being read.
   virtual const char* GetDataSetName();
@@ -101,6 +112,14 @@ protected:
   // The vtkCMBModelWrapper for the algorithm to reload the mesh
   // information to.
   vtkCMBModelWrapper* ModelWrapper;
+
+  // Description:
+  // Get/Set the name of the AnalysisGridFileName file.
+  vtkSetStringMacro(AnalysisGridFileName);
+  vtkGetStringMacro(AnalysisGridFileName);
+
+  int ModelDimension;
+  char* AnalysisGridFileName;
 
 private:
   vtkCmbMeshToModelReader(const vtkCmbMeshToModelReader&);  // Not implemented.
