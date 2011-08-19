@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCMBModelVertex.h"
 #include "vtkCMBNodalGroup.h"
 #include "vtkCmbMeshServer.h"
+#include "vtkCMBParserBase.h"
 #include "vtkModelItemIterator.h"
 
 #include <vtkAppendPolyData.h>
@@ -53,6 +54,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkNew.h"
 
 #include "vtkERDCMeshWriter.h"
+#include "CmbFaceMeshHelper.h"
+
+using namespace CmbFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
 vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
@@ -88,8 +92,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
     return false;
     }
 
-  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
-    this->Representation->GetPointData()->GetArray("ModelUseId"));
+  vtkIdTypeArray *ids = this->GetPointIdMapArray();
   if (!ids )
     {
     return false;
@@ -169,8 +172,7 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     }
   edgePoints->SetNumberOfComponents(2);
 
-  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
-    this->Representation->GetCellData()->GetArray("ModelUseId"));
+  vtkIdTypeArray *ids = this->GetCellIdMapArray();
   if (!ids )
     {
     return false;
@@ -218,8 +220,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
     return false;
     }
 
-  vtkIdTypeArray *ids = vtkIdTypeArray::SafeDownCast(
-    this->Representation->GetCellData()->GetArray("ModelUseId"));
+  vtkIdTypeArray *ids = this->GetCellIdMapArray();
   if (!ids )
     {
     return false;
@@ -357,18 +358,18 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   clean->ConvertStripsToPolysOff();
 
   clean->Update();
-  this->Representation = vtkPolyData::New();
-  this->Representation->ShallowCopy(clean->GetOutput());
-
+  //this->Representation = vtkPolyData::New();
+  //this->Representation->ShallowCopy(clean->GetOutput());
+  //this->RepresentationBuilt = true;
+  this->SetRepresentation(clean->GetOutput());
   clean->Delete();
   appender->Delete();
 
-  this->RepresentationBuilt = true;
   return true;
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshGridRepresentationServer::WriteToFile()
+void vtkCmbMeshGridRepresentationServer::WriteMeshToFile()
 {
   if (!this->RepresentationBuilt)
     {
@@ -427,7 +428,77 @@ void vtkCmbMeshGridRepresentationServer::SetRepresentation (vtkPolyData* mesh)
     this->RepresentationBuilt = true;
     }
   this->Modified();
+}
 
+//----------------------------------------------------------------------------
+vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellIdMapArray()
+{
+  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetCellData()->GetArray(
+    ModelFaceRep::Get2DAnalysisCellModelIdsString()));
+  if (!maparray )
+    {
+    vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetFieldData()->GetArray(
+      ModelFaceRep::Get2DAnalysisCellModelIdsString()));
+    }
+  return maparray;
+}
+//----------------------------------------------------------------------------
+vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellTypeMapArray()
+{
+  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetCellData()->GetArray(
+    ModelFaceRep::Get2DAnalysisCellModelTypesString()));
+  if (!maparray )
+    {
+    vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetFieldData()->GetArray(
+      ModelFaceRep::Get2DAnalysisCellModelTypesString()));
+    }
+  return maparray;
+
+}
+//----------------------------------------------------------------------------
+vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointIdMapArray()
+{
+  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetPointData()->GetArray(
+    ModelFaceRep::Get2DAnalysisPointModelIdsString()));
+  if (!maparray )
+    {
+    vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetFieldData()->GetArray(
+      ModelFaceRep::Get2DAnalysisPointModelIdsString()));
+    }
+  return maparray;
+
+}
+//----------------------------------------------------------------------------
+vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointTypeMapArray()
+{
+  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetPointData()->GetArray(
+    ModelFaceRep::Get2DAnalysisPointModelTypesString()));
+  if (!maparray )
+    {
+    vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetFieldData()->GetArray(
+      ModelFaceRep::Get2DAnalysisPointModelTypesString()));
+    }
+  return maparray;
+}
+//----------------------------------------------------------------------------
+bool vtkCmbMeshGridRepresentationServer::WriteModelInfoToFile(
+  const char* miFileName)
+{
+  return false;
+}
+//----------------------------------------------------------------------------
+bool vtkCmbMeshGridRepresentationServer::LoadModelInfoFromFile(
+  const char* miFileName)
+{
+  return false;
 }
 
 //----------------------------------------------------------------------------

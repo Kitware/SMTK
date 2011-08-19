@@ -41,6 +41,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkCellData.h>
 #include <vtkIntArray.h>
 #include <vtkIdTypeArray.h>
+#include "CmbFaceMeshHelper.h"
+
+using namespace CmbFaceMesherClasses;
 
 // This tests the events for the SimBuilder Mesh.
 
@@ -124,7 +127,8 @@ int Check2DModel(const char* fileName)
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
     vtkIntArray *types = vtkIntArray::SafeDownCast(
-      mesh->GetPointData()->GetArray("ModelType"));
+      mesh->GetPointData()->GetArray(
+      ModelFaceRep::Get2DAnalysisPointModelTypesString()));
     for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
       {
       foundPointIdSums[faceId][types->GetValue(i)]++;
@@ -186,7 +190,8 @@ int Check2DModel(const char* fileName)
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
     vtkIntArray *types = vtkIntArray::SafeDownCast(
-      mesh->GetCellData()->GetArray("ModelType"));
+      mesh->GetCellData()->GetArray(
+      ModelFaceRep::Get2DAnalysisCellModelTypesString()));
     for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
       {
       int sum=0;
