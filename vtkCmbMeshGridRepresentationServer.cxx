@@ -164,7 +164,6 @@ bool vtkCmbMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
 bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   vtkCMBModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
-
   edgePoints->Reset();
   if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
     {  // we're on the client and don't know this info
@@ -183,18 +182,45 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   //case we need to go through the cell model use ids while also iterating
   //the cell structure to find all the viable edges
   vtkIdType npts,*pts,modelIds[3],edge[2],i=0;
-  vtkCellArray *polys = this->Representation->GetPolys();
-  polys->InitTraversal();
-  while(polys->GetNextCell(npts,pts) != NULL)
+  if(this->Representation->GetNumberOfCells()>0)
     {
-    ids->GetTupleValue(i++,modelIds);
-    for (vtkIdType j=0; j < 3; j++)
+    vtkCellArray *polys = this->Representation->GetPolys();
+    polys->InitTraversal();
+    while(polys->GetNextCell(npts,pts) != NULL)
       {
-      if (modelIds[j] == edgeId)
+      ids->GetTupleValue(i++,modelIds);
+      for (vtkIdType j=0; j < 3; j++)
         {
-        edge[0] = pts[indices[j]];
-        edge[1] = pts[indices[j+1]];
-        edgePoints->InsertNextTupleValue(edge);
+        if (modelIds[j] == edgeId)
+          {
+          edge[0] = pts[indices[j]];
+          edge[1] = pts[indices[j+1]];
+          edgePoints->InsertNextTupleValue(edge);
+          }
+        }
+      }
+    }
+  else
+    {
+    vtkIdTypeArray *cellptsids = this->GetCellPointIdsArray();
+    if (!cellptsids || cellptsids->GetNumberOfTuples() !=
+       ids->GetNumberOfTuples())
+      {
+      return false;
+      }
+    vtkIdType pointIds[3];
+    for(vtkIdType id=0; id<cellptsids->GetNumberOfTuples(); id++)
+      {
+      ids->GetTupleValue(id, modelIds);
+      for (vtkIdType j=0; j < 3; j++)
+        {
+        if (modelIds[j] == edgeId)
+          {
+          cellptsids->GetTupleValue(id,pointIds);
+          edge[0] = pointIds[indices[j]];
+          edge[1] = pointIds[indices[j+1]];
+          edgePoints->InsertNextTupleValue(edge);
+          }
         }
       }
     }
@@ -446,14 +472,14 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellIdMapArray()
   return maparray;
 }
 //----------------------------------------------------------------------------
-vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellTypeMapArray()
+vtkIntArray* vtkCmbMeshGridRepresentationServer::GetCellTypeMapArray()
 {
-  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+  vtkIntArray *maparray = vtkIntArray::SafeDownCast(
     this->Representation->GetCellData()->GetArray(
     ModelFaceRep::Get2DAnalysisCellModelTypesString()));
   if (!maparray )
     {
-    maparray = vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIntArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisCellModelTypesString()));
     }
@@ -476,32 +502,27 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointIdMapArray()
 
 }
 //----------------------------------------------------------------------------
-vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetPointTypeMapArray()
+vtkIntArray* vtkCmbMeshGridRepresentationServer::GetPointTypeMapArray()
 {
-  vtkIdTypeArray *maparray = vtkIdTypeArray::SafeDownCast(
+  vtkIntArray *maparray = vtkIntArray::SafeDownCast(
     this->Representation->GetPointData()->GetArray(
     ModelFaceRep::Get2DAnalysisPointModelTypesString()));
   if (!maparray )
     {
-    maparray = vtkIdTypeArray::SafeDownCast(
+    maparray = vtkIntArray::SafeDownCast(
       this->Representation->GetFieldData()->GetArray(
       ModelFaceRep::Get2DAnalysisPointModelTypesString()));
     }
   return maparray;
 }
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::WriteModelInfoToFile(
-  const char* miFileName)
+vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellPointIdsArray()
 {
-  return false;
+  vtkIdTypeArray *cellptsarray = vtkIdTypeArray::SafeDownCast(
+    this->Representation->GetFieldData()->GetArray(
+    ModelFaceRep::Get2DAnalysisCellPointIdsString()));
+  return cellptsarray;
 }
-//----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::LoadModelInfoFromFile(
-  const char* miFileName)
-{
-  return false;
-}
-
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {

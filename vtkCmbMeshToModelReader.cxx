@@ -209,35 +209,30 @@ int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
 
   vtkDataArray* cellids =
     fieldData->GetArray(ModelFaceRep::Get2DAnalysisCellModelIdsString());
-  vtkDataArray* celltypes =
-    fieldData->GetArray(ModelFaceRep::Get2DAnalysisCellModelTypesString());
   vtkDataArray* ptsids =
-  fieldData->GetArray(ModelFaceRep::Get2DAnalysisPointModelIdsString());
-  vtkDataArray* ptstypes =
-  fieldData->GetArray(ModelFaceRep::Get2DAnalysisPointModelTypesString());
-  if(cellids && celltypes && ptsids && ptstypes)
+    fieldData->GetArray(ModelFaceRep::Get2DAnalysisPointModelIdsString());
+  vtkDataArray *cellPointIds =
+    fieldData->GetArray(ModelFaceRep::Get2DAnalysisCellPointIdsString());
+  if (ptsids && cellids && cellPointIds)
     {
     vtkCmbMeshGridRepresentationServer* gridRepresentationInfo =
       vtkCmbMeshGridRepresentationServer::New();
     vtkPolyData* gridRepPoly = vtkPolyData::New();
     gridRepPoly->Initialize();
     vtkIdTypeArray* newptsids = this->NewIdTypeArray(ptsids);
-    vtkIdTypeArray* newptstypes = this->NewIdTypeArray(ptstypes);
     vtkIdTypeArray* newcellids = this->NewIdTypeArray(cellids);
-    vtkIdTypeArray* newcelltypes = this->NewIdTypeArray(celltypes);
+    vtkIdTypeArray* newcellptsids = this->NewIdTypeArray(cellPointIds);
 
     gridRepPoly->GetFieldData()->AddArray(newptsids);
-    gridRepPoly->GetFieldData()->AddArray(newptstypes);
     gridRepPoly->GetFieldData()->AddArray(newcellids);
-    gridRepPoly->GetFieldData()->AddArray(newcelltypes);
+    gridRepPoly->GetFieldData()->AddArray(newcellptsids);
     gridRepresentationInfo->Initialize(gridRepPoly, model);
     model->SetAnalysisGridInfo(gridRepresentationInfo);
+    newptsids->Delete();
+    newcellids->Delete();
+    newcellptsids->Delete();
     gridRepPoly->Delete();
     gridRepresentationInfo->Delete();
-    newptsids->Delete();
-    newptstypes->Delete();
-    newcelltypes->Delete();
-    newcellids->Delete();
     return 1;
     }
   else
@@ -258,15 +253,14 @@ int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
   // The model face mapping to analysis mesh must be present
   if(bcModelFaceData)
     {
-    vtkSmartPointer<vtkCmbBCGridRepresentation> gridRepresentation =
-      vtkSmartPointer<vtkCmbBCGridRepresentation>::New();
+    vtkCmbBCGridRepresentation* gridRepresentation =
+      vtkCmbBCGridRepresentation::New();
     vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
     vtkIdType counter = 0;
-    vtkSmartPointer<vtkIdTypeArray> idTypeArray;
     if(bcFloatingEdgeData)
       {
       // parse the floating edge data
-      idTypeArray.TakeReference(this->NewIdTypeArray(bcFloatingEdgeData));
+      vtkIdTypeArray* idTypeArray = this->NewIdTypeArray(bcFloatingEdgeData);
       while(counter < idTypeArray->GetNumberOfTuples()*idTypeArray->GetNumberOfComponents())
         {
         vtkIdType floatingEdgeId = idTypeArray->GetValue(counter++);
@@ -278,33 +272,40 @@ int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
           }
         if(gridRepresentation->AddFloatingEdge(floatingEdgeId, ids, model) == false)
           {
+          idTypeArray->Delete();
+          gridRepresentation->Delete();
           return 0;
           }
         }
+      idTypeArray->Delete();
       }
 
     // parse the model face data
     counter = 0;
-    idTypeArray.TakeReference(this->NewIdTypeArray(bcModelFaceData));
+    vtkIdTypeArray* mfidTypeArray = this->NewIdTypeArray(bcModelFaceData);
     vtkSmartPointer<vtkIdList> cellSides = vtkSmartPointer<vtkIdList>::New();
-    while(counter < idTypeArray->GetNumberOfTuples()*idTypeArray->GetNumberOfComponents())
+    while(counter < mfidTypeArray->GetNumberOfTuples()*mfidTypeArray->GetNumberOfComponents())
       {
-      vtkIdType modelFaceId = idTypeArray->GetValue(counter++);
-      vtkIdType numberOfIds = idTypeArray->GetValue(counter++);
+      vtkIdType modelFaceId = mfidTypeArray->GetValue(counter++);
+      vtkIdType numberOfIds = mfidTypeArray->GetValue(counter++);
       ids->SetNumberOfIds(numberOfIds);
       cellSides->SetNumberOfIds(numberOfIds);
       for(vtkIdType id=0;id<numberOfIds;id++)
         {
-        ids->InsertId(id, idTypeArray->GetValue(counter++));
-        cellSides->InsertId(id, idTypeArray->GetValue(counter++));
+        ids->InsertId(id, mfidTypeArray->GetValue(counter++));
+        cellSides->InsertId(id, mfidTypeArray->GetValue(counter++));
         }
       if(gridRepresentation->AddModelFace(modelFaceId, ids, cellSides, model) == false)
         {
+        mfidTypeArray->Delete();
+        gridRepresentation->Delete();
         return 0;
         }
       }
     gridRepresentation->SetGridFileName(this->AnalysisGridFileName);
     model->SetAnalysisGridInfo(gridRepresentation);
+    mfidTypeArray->Delete();
+    gridRepresentation->Delete();
     return 1;
     }
   else
@@ -344,7 +345,7 @@ vtkIdTypeArray* vtkCmbMeshToModelReader::NewIdTypeArray(vtkDataArray* a)
     {
     vtkTemplateMacro(
       MeshToModelCopyArray(
-      static_cast<VTK_TT*>(a->GetVoidPointer(0)),
+      static_cast<VTK_TT*>(inIdBuffer),
       idBuffer, length));
     default:
       vtkErrorMacro("Cannot convert vtkDataArray of type " << a->GetDataType()

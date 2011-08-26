@@ -239,10 +239,10 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
   tmpPoly->Initialize();
   // the analysis grid info came from a bc file
   vtkIdList* idList = vtkIdList::New();
-  vtkIdTypeArray* floatingEdgeData = vtkIdTypeArray::New();
   // format is floating edge id, number of point ids, point ids,...
   if(Model->GetNumberOfAssociations(vtkModelEdgeType))
     {
+    vtkIdTypeArray* floatingEdgeData = vtkIdTypeArray::New();
     vtkModelItemIterator* edges = Model->NewIterator(vtkModelEdgeType);
     vtkIdType floatingEdgeCounter = 0;
     for(edges->Begin();!edges->IsAtEnd();edges->Next())
@@ -326,30 +326,56 @@ int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
     return 0;
     }
   vtkPolyData* gridPoly = analysisGridInfo->GetRepresentation();
-  vtkIdTypeArray *ptsids = vtkIdTypeArray::SafeDownCast(
-    gridPoly->GetPointData()->GetArray(
-    ModelFaceRep::Get2DAnalysisPointModelIdsString()));
-  vtkIntArray *ptstypes = vtkIntArray::SafeDownCast(
-    gridPoly->GetPointData()->GetArray(
-    ModelFaceRep::Get2DAnalysisPointModelTypesString()));
-  vtkIdTypeArray *cellids = vtkIdTypeArray::SafeDownCast(
-    gridPoly->GetCellData()->GetArray(
-    ModelFaceRep::Get2DAnalysisCellModelIdsString()));
-  vtkIntArray *celltypes = vtkIntArray::SafeDownCast(
-    gridPoly->GetCellData()->GetArray(
-    ModelFaceRep::Get2DAnalysisCellModelTypesString()));
-  if (!ptsids || !ptstypes || !cellids || !celltypes)
+  vtkIdTypeArray *ptsids = analysisGridInfo->GetPointIdMapArray();
+  vtkIdTypeArray *cellids = analysisGridInfo->GetCellIdMapArray();
+  if (!ptsids || !cellids)
     {
     vtkWarningMacro("One of the points or cell mapping arrays is missing.");
+    return 0;
+    }
+
+  vtkIdType npts,*pts,i=0;
+  vtkIdTypeArray *cellPointIds=NULL;
+  vtkIdType numCells = gridPoly->GetNumberOfCells();
+  if(numCells>0)
+    {
+    cellPointIds = vtkIdTypeArray::New();
+    cellPointIds->SetNumberOfComponents(3);
+    cellPointIds->SetNumberOfTuples(numCells);
+    cellPointIds->SetName(
+      ModelFaceRep::Get2DAnalysisCellPointIdsString());
+    vtkIdType *cpd = reinterpret_cast<vtkIdType *>(
+      cellPointIds->GetVoidPointer(0));
+    vtkCellArray *polys = gridPoly->GetPolys();
+    polys->InitTraversal();
+    while(polys->GetNextCell(npts,pts) != NULL)
+      {
+      for(int j=0;j<3;j++)
+        {
+        *cpd = pts[j];
+        cpd++;
+        }
+      }
+    }
+  else if(analysisGridInfo->GetCellPointIdsArray())
+    {
+    cellPointIds = analysisGridInfo->GetCellPointIdsArray();
+    }
+  else
+    {
+    vtkWarningMacro("The 2DAnalysisCellPointIds array is missing.");
     return 0;
     }
 
   vtkNew<vtkPolyData> tmpPoly;
   tmpPoly->Initialize();
   tmpPoly->GetFieldData()->AddArray(ptsids);
-  tmpPoly->GetFieldData()->AddArray(ptstypes);
   tmpPoly->GetFieldData()->AddArray(cellids);
-  tmpPoly->GetFieldData()->AddArray(celltypes);
+  tmpPoly->GetFieldData()->AddArray(cellPointIds);
+  if(numCells>0 && cellPointIds)
+    {
+    cellPointIds->Delete();
+    }
   vtkFieldData* fieldData = tmpPoly->GetFieldData();
   vtkIndent indent2 = parentindent->GetNextIndent();
   if(this->DataMode == vtkXMLWriter::Appended)

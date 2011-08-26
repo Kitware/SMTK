@@ -48,6 +48,7 @@ class vtkPolyData;
 class vtkCmbMeshServer;
 class vtkCMBModel;
 class vtkAlgorithm;
+class vtkIntArray;
 
 class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGeneratedGridRepresentation
 {
@@ -98,23 +99,19 @@ public:
   vtkGetObjectMacro(Representation, vtkPolyData);
   void SetRepresentation(vtkPolyData* mesh);
 
-  // Description:
-  // Write or Load the Model Info file, which is the file with mapping info
-  // between mesh and model
-  virtual bool WriteModelInfoToFile(const char* miFileName);
-  virtual bool LoadModelInfoFromFile(const char* miFileName);
-
   virtual void WriteMeshToFile( );
 protected:
   vtkCmbMeshGridRepresentationServer();
   virtual ~vtkCmbMeshGridRepresentationServer();
 
+  friend class vtkCmbMeshToModelWriter;
   bool RepresentationBuilt;
   bool BuildRepresentation(vtkCmbMeshServer *meshServer);
   vtkIdTypeArray* GetCellIdMapArray();
-  vtkIdTypeArray* GetCellTypeMapArray();
+  vtkIntArray* GetCellTypeMapArray();
   vtkIdTypeArray* GetPointIdMapArray();
-  vtkIdTypeArray* GetPointTypeMapArray();
+  vtkIntArray* GetPointTypeMapArray();
+  vtkIdTypeArray* GetCellPointIdsArray();
 
   vtkPolyData* Representation;
   vtkWeakPointer<vtkCMBModel> Model;
