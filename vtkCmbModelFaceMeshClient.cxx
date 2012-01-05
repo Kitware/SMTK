@@ -60,8 +60,7 @@ bool vtkCmbModelFaceMeshClient::SendLengthAndAngleToServer()
     }
   vtkSMProxy* serverModelProxy =
     vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
-  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
-  operatorProxy->SetServers(serverModelProxy->GetServers());
+  operatorProxy->SetLocation(serverModelProxy->GetLocation());
 
   vtkSMPropertyHelper(operatorProxy, "Id").Set(
     this->GetModelGeometricEntity()->GetUniquePersistentId());
@@ -108,8 +107,7 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
     }
   vtkSMProxy* serverModelProxy =
     vtkCmbMeshClient::SafeDownCast(this->GetMasterMesh())->GetServerModelProxy();
-  operatorProxy->SetConnectionID(serverModelProxy->GetConnectionID());
-  operatorProxy->SetServers(serverModelProxy->GetServers());
+  operatorProxy->SetLocation(serverModelProxy->GetLocation());
 
   vtkSMPropertyHelper(operatorProxy, "Id").Set(
     this->GetModelGeometricEntity()->GetUniquePersistentId());

@@ -174,8 +174,7 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
     vtkErrorMacro("Unable to create operator proxy.");
     return;
     }
-  this->ServerMeshProxy->SetConnectionID(this->ServerModelProxy->GetConnectionID());
-  this->ServerMeshProxy->SetServers(this->ServerModelProxy->GetServers());
+  this->ServerMeshProxy->SetLocation(this->ServerModelProxy->GetLocation());
 
   vtkSMProxyProperty* proxyproperty =
     vtkSMProxyProperty::SafeDownCast(

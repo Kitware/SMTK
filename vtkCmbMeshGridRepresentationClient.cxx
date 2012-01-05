@@ -67,8 +67,7 @@ bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
     vtkErrorMacro("Unable to create operator proxy.");
     return 0;
     }
-  operatorProxy->SetConnectionID(serverMeshProxy->GetConnectionID());
-  operatorProxy->SetServers(serverMeshProxy->GetServers());
+  operatorProxy->SetLocation(serverMeshProxy->GetLocation());
   vtkSMPropertyHelper(operatorProxy, "AnalysisMesh").Set(this->MeshIsAnalysisGrid);
   vtkSMPropertyHelper(operatorProxy,"GridFileName").Set(this->GridFileName);
   if(this->MeshRepresentationSource)
