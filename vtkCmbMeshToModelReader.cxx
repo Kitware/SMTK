@@ -49,7 +49,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <sstream>
 #include <vtksys/SystemTools.hxx>
 
-using namespace vtkstd;
+using namespace std;
 using namespace CmbFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCmbMeshToModelReader);

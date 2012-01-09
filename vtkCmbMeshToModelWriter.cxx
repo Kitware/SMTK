@@ -61,11 +61,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <sstream>
 #include <vtksys/SystemTools.hxx>
 
-using namespace vtkstd;
+using namespace std;
 using namespace CmbFaceMesherClasses;
 
 namespace {
-  void CreateIdMap(vtkIdList* ids, vtkstd::map<int, int>& createdMap)
+  void CreateIdMap(vtkIdList* ids, std::map<int, int>& createdMap)
     {
     createdMap.clear();
     for(int i=0;i<ids->GetNumberOfIds();i++)
@@ -175,7 +175,7 @@ int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
   // Open the primary element.
   os << indent << "<" << this->GetDataSetName();
   // version
-  vtkstd::stringstream version;
+  std::stringstream version;
   version << this->GetDataSetMajorVersion() << "."
           << this->GetDataSetMinorVersion();
   os << " version=\"" << version.str().c_str() << "\"";
@@ -184,7 +184,7 @@ int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
      <<vtksys::SystemTools::GetFilenameName(
      std::string(analysisGridName)).c_str() << "\"";
   // model dimension
-  vtkstd::stringstream modelDim;
+  std::stringstream modelDim;
   modelDim << Model->GetModelDimension();
   os << " ModelDimension=\"" << modelDim.str().c_str() << "\">\n";
 
