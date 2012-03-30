@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
+Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced,

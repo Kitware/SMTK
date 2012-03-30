@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
+Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced,
@@ -45,13 +45,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
+#include "vtkNew.h"
 #include <vtkObjectFactory.h>
 #include <vtkTrivialProducer.h>
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtksys/SystemTools.hxx>
-#include "vtkNew.h"
 
 #include "vtkERDCMeshWriter.h"
 #include "CmbFaceMeshHelper.h"
@@ -186,7 +186,7 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
     {
     vtkCellArray *polys = this->Representation->GetPolys();
     polys->InitTraversal();
-    while(polys->GetNextCell(npts,pts) != NULL)
+    while(polys->GetNextCell(npts,pts))
       {
       ids->GetTupleValue(i++,modelIds);
       for (vtkIdType j=0; j < 3; j++)
@@ -266,7 +266,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
       vtkModelEntity *entity = vtkModelEntity::SafeDownCast(entities->GetCurrentItem());
       vtkIdType id = entity->GetUniquePersistentId();
       polys->InitTraversal();
-      while(polys->GetNextCell(npts,pts) != NULL)
+      while(polys->GetNextCell(npts,pts))
         {
         ids->GetTupleValue(i++,modelIds);
         for (vtkIdType j=0; j < 3; j++)
@@ -365,16 +365,16 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
     }
 
   //create the single polydata now
-  vtkAppendPolyData *appender = vtkAppendPolyData::New();
+  vtkNew<vtkAppendPolyData> appender;
 
   for(std::vector<vtkPolyData*>::iterator it = faceMeshes.begin();
       it != faceMeshes.end();
       it++)
     {
-    appender->AddInput(*it);
+    appender->AddInputData(*it);
     }
   //now remove duplicate points
-  vtkCleanPolyData *clean = vtkCleanPolyData::New();
+  vtkNew<vtkCleanPolyData> clean;
   clean->SetInputConnection(appender->GetOutputPort());
   clean->ToleranceIsAbsoluteOn();
   clean->SetTolerance(0.0);
@@ -385,13 +385,7 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
   clean->ConvertStripsToPolysOff();
 
   clean->Update();
-  //this->Representation = vtkPolyData::New();
-  //this->Representation->ShallowCopy(clean->GetOutput());
-  //this->RepresentationBuilt = true;
   this->SetRepresentation(clean->GetOutput());
-  clean->Delete();
-  appender->Delete();
-
   return true;
 }
 
@@ -408,10 +402,10 @@ void vtkCmbMeshGridRepresentationServer::WriteMeshToFile()
     return;
     }
 
-  vtkTrivialProducer *tvp = vtkTrivialProducer::New();
+  vtkNew<vtkTrivialProducer> tvp;
   tvp->SetOutput(this->Representation);
 
-  vtkERDCMeshWriter *writer = vtkERDCMeshWriter::New();
+  vtkNew<vtkERDCMeshWriter> writer;
   writer->SetInputConnection(tvp->GetOutputPort());
   writer->SetFileName(this->GetGridFileName());
 
@@ -431,9 +425,6 @@ void vtkCmbMeshGridRepresentationServer::WriteMeshToFile()
   writer->SetUseScientificNotation(true);
 
   writer->Write();
-  writer->Delete();
-  tvp->Delete();
-
 }
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationServer::SetRepresentation (vtkPolyData* mesh)

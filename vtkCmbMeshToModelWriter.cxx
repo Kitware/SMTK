@@ -348,7 +348,7 @@ int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
       cellPointIds->GetVoidPointer(0));
     vtkCellArray *polys = gridPoly->GetPolys();
     polys->InitTraversal();
-    while(polys->GetNextCell(npts,pts) != NULL)
+    while(polys->GetNextCell(npts,pts))
       {
       for(int j=0;j<3;j++)
         {

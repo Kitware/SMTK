@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
+Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced,
@@ -39,6 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCellData.h"
 #include "vtkDoubleArray.h"
+#include "vtkNew.h"
 #include <vtkObjectFactory.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
@@ -99,13 +100,12 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   // such that it is possible for (what could be) a single polyline to end
   // up as several (perhaps MANY) polylines.  Clean polylines also deals with
   // non-manifold points, but at this point, not expectign that to be an issue.
-  vtkSmartPointer<vtkCleanPolylines> stripper =
-    vtkSmartPointer<vtkCleanPolylines>::New();
+  vtkNew<vtkCleanPolylines> stripper;
   stripper->SetMinimumLineLength(0);
   stripper->UseRelativeLineLengthOff();
   vtkCMBModelEdge* cmbModelEdge = vtkCMBModelEdge::SafeDownCast(this->GetModelEdge());
   vtkPolyData* polyd = vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
-  stripper->SetInput(vtkPolyData::SafeDownCast(vtkCMBModelEdge::SafeDownCast(this->GetModelEdge())->GetGeometry() ) );
+  stripper->SetInputData(vtkPolyData::SafeDownCast(vtkCMBModelEdge::SafeDownCast(this->GetModelEdge())->GetGeometry() ) );
   stripper->Update();
 
   if ( stripper->GetOutput()->GetNumberOfLines() != 1 )
@@ -115,7 +115,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     return false;
     }
 
-  vtkDoubleArray *targetCellLength = vtkDoubleArray::New();
+  vtkNew<vtkDoubleArray> targetCellLength;
   targetCellLength->SetNumberOfComponents( 1 );
   targetCellLength->SetNumberOfTuples( 1 );
   double length = this->GetActualLength();
@@ -123,15 +123,13 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   targetCellLength->SetValue( 0, length );
   targetCellLength->SetName( "TargetSegmentLength" );
 
-  vtkPolyData *polyLinePD = vtkPolyData::New();
+  vtkNew<vtkPolyData> polyLinePD;
   polyLinePD->ShallowCopy( stripper->GetOutput() );
-  polyLinePD->GetCellData()->AddArray( targetCellLength );
-  targetCellLength->FastDelete();
+  polyLinePD->GetCellData()->AddArray( targetCellLength.GetPointer() );
 
-  vtkMeshModelEdgesFilter *meshEdgesFilter = vtkMeshModelEdgesFilter::New();
+  vtkNew<vtkMeshModelEdgesFilter> meshEdgesFilter;
   meshEdgesFilter->SetUseLengthAlongEdge(this->UseLengthAlongEdge);
-  meshEdgesFilter->SetInput( polyLinePD );
-  polyLinePD->FastDelete();
+  meshEdgesFilter->SetInputData( polyLinePD.GetPointer() );
   meshEdgesFilter->SetTargetSegmentLengthCellArrayName(
     targetCellLength->GetName() );
   meshEdgesFilter->Update();
@@ -146,7 +144,6 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     mesh->FastDelete();
     }
   mesh->ShallowCopy(meshEdgesFilter->GetOutput());
-  meshEdgesFilter->Delete();
   cerr << "model edge " << vtkCMBUserName::GetUserName(this->GetModelEdge())
        << " mesh built with numpoints " << mesh->GetNumberOfPoints() << endl;
 
