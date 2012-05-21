@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshGridRepresentationOperator.h"
 
 #include "vtkAlgorithm.h"
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCmbMeshWrapper.h"
@@ -56,7 +56,7 @@ void vtkCmbMeshGridRepresentationOperator::Operate(vtkCmbMeshWrapper* meshWrappe
 {
   this->OperateSucceeded = 0;
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
-  vtkCMBModel* model = vtkCMBModel::SafeDownCast(mesh->GetModel());
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(mesh->GetModel());
   if (model && mesh)
     {
     if ( this->GridFileName != NULL && !this->MeshIsAnalysisGrid )

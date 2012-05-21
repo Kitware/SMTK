@@ -46,7 +46,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkPolyData;
 class vtkCmbMeshServer;
-class vtkCMBModel;
+class vtkDiscreteModel;
 class vtkAlgorithm;
 class vtkIntArray;
 
@@ -59,34 +59,34 @@ public:
 
   // Description:
   // See vtkCmbGridRepresentation.
-  virtual bool GetBCSNodalAnalysisGridPointIds(vtkCMBModel* model,vtkIdType bcsGroupId,
+  virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,vtkIdType bcsGroupId,
     int bcGroupType, vtkIdList* pointIds);
 
   // Description:
   // See vtkCmbGridRepresentation.
-  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkCMBModel* model, vtkIdType modelEdgeId,
+  virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
                                                    vtkIdList* pointIds);
 
   // Description:
   // See vtkCmbGridRepresentation.
-  virtual bool GetModelEdgeAnalysisPoints(vtkCMBModel* model, vtkIdType edgeId,
+  virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
                                           vtkIdTypeArray* edgePoints);
 
   // Description:
   // See vtkCmbGridRepresentation.
-  virtual bool GetBoundaryGroupAnalysisFacets(vtkCMBModel* model, vtkIdType boundaryGroupId,
+  virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
                                               vtkIdList* cellIds, vtkIdList* cellSides);
 
   // Description:
   // Do some type of validation of the mapping information in model.
   // So far we can't guarantee that this works.
-  virtual bool IsModelConsistent(vtkCMBModel* model);
+  virtual bool IsModelConsistent(vtkDiscreteModel* model);
 
   // Description:
   // Initialize the information from a sim mesh or mesh representation.
   // Returns true for success.
   bool Initialize(vtkCmbMeshServer *mesh);
-  bool Initialize(vtkPolyData* meshRepresentation, vtkCMBModel* model);
+  bool Initialize(vtkPolyData* meshRepresentation, vtkDiscreteModel* model);
 
   // Description:
   // clear the analysis grid info.
@@ -114,7 +114,7 @@ protected:
   vtkIdTypeArray* GetCellPointIdsArray();
 
   vtkPolyData* Representation;
-  vtkWeakPointer<vtkCMBModel> Model;
+  vtkWeakPointer<vtkDiscreteModel> Model;
 
 private:
   vtkCmbMeshGridRepresentationServer(const vtkCmbMeshGridRepresentationServer&);  // Not implemented.

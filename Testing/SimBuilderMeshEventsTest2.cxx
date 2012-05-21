@@ -23,9 +23,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include <vtkCmbMesh.h>
-#include <vtkCMBModel.h>
-#include <vtkCmbModelEdgeMesh.h>
+#include <vtkCmbMeshServer.h>
+#include <vtkDiscreteModel.h>
+#include <vtkCmbModelEdgeMeshServer.h>
 #include <vtkCmbModelEntityMesh.h>
 #include <vtkCmbModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
@@ -45,7 +45,7 @@ int Check2DModel(const char* fileName)
   int numberOfErrors = 0;
   vtkCMBModelWrapper* modelWrapper = vtkCMBModelWrapper::New();
 
-  vtkCMBModel* model = modelWrapper->GetModel();
+  vtkDiscreteModel* model = modelWrapper->GetModel();
 
   vtkSmartPointer<vtkCMBModelReadOperator> reader =
     vtkSmartPointer<vtkCMBModelReadOperator>::New();

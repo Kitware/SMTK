@@ -35,7 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class vtkCMBParserBase;
 class vtkCMBModelWrapper;
 class vtkPolyData;
-class vtkCMBModel;
+class vtkDiscreteModel;
 
 class VTK_EXPORT vtkCmbMeshToModelReadOperator : public vtkObject
 {

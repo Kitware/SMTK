@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbMeshToModelReadOperator.h"
 
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCMBModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkNew.h"
@@ -56,7 +56,7 @@ void vtkCmbMeshToModelReadOperator::Operate(vtkCMBModelWrapper* ModelWrapper)
     }
 
   vtkDebugMacro("Reading a m2m file into a CMB model.");
-  vtkCMBModel* Model = ModelWrapper->GetModel();
+  vtkDiscreteModel* Model = ModelWrapper->GetModel();
   this->OperateSucceeded = 0;
   if(!this->GetFileName())
     {

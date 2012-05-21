@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshServer.h"
 
 #include <vtkCallbackCommand.h>
-#include <vtkCMBModel.h>
+#include <vtkDiscreteModel.h>
 #include "vtkCmbModelEdgeMeshServer.h"
 #include "vtkCmbModelFaceMeshServer.h"
 #include <vtkCMBModelGeometricEntity.h>

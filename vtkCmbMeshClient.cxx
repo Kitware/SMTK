@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelVertexMesh.h"
 
 #include <vtkCallbackCommand.h>
-#include <vtkCMBModel.h>
+#include <vtkDiscreteModel.h>
 #include <vtkCMBModelGeometricEntity.h>
 #include <vtkIdList.h>
 #include <vtkMergeEventData.h>
@@ -288,7 +288,7 @@ bool vtkCmbMeshClient::BuildModelMeshRepresentation(
 {
   vtkCmbMeshGridRepresentationClient *meshRep =
     vtkCmbMeshGridRepresentationClient::New();
-  vtkCMBModel *mod = vtkCMBModel::SafeDownCast(this->Model);
+  vtkDiscreteModel *mod = vtkDiscreteModel::SafeDownCast(this->Model);
   if ( mod )
     {
     meshRep->SetMeshIsAnalysisGrid(isAnalysisMesh);

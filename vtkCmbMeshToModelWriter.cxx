@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCellData.h"
 #include "vtkCharArray.h"
 #include "vtkCMBMaterial.h"
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCMBModelEdge.h"
 #include "vtkCMBModelEntityGroup.h"
 #include "vtkCMBModelFace.h"
@@ -129,7 +129,7 @@ int vtkCmbMeshToModelWriter::WriteData()
     return result;
     }
   vtkIndent indent2 = indent.GetNextIndent();
-  vtkCMBModel* Model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
   int modelDim = Model->GetModelDimension();
   if(modelDim == 3)
     {
@@ -154,7 +154,7 @@ int vtkCmbMeshToModelWriter::WriteData()
 //----------------------------------------------------------------------------
 int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
 {
-  vtkCMBModel* Model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
   vtkCmbGridRepresentation* gridRepresentation =
   Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)
@@ -218,7 +218,7 @@ int vtkCmbMeshToModelWriter::WriteFooter(vtkIndent* parentIndent)
 //----------------------------------------------------------------------------
 int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
 {
-  vtkCMBModel* Model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
   vtkCmbGridRepresentation* gridRepresentation =
     Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)
@@ -309,7 +309,7 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
 //----------------------------------------------------------------------------
 int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
 {
-  vtkCMBModel* Model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
   vtkCmbGridRepresentation* gridRepresentation =
   Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)

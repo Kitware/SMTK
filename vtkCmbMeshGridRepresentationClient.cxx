@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbMeshGridRepresentationClient.h"
 
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCMBXMLModelReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
@@ -55,7 +55,7 @@ vtkCmbMeshGridRepresentationClient::~vtkCmbMeshGridRepresentationClient()
   this->SetMeshRepresentationSource(NULL);
 }
 
-bool vtkCmbMeshGridRepresentationClient::Operate(vtkCMBModel *model,
+bool vtkCmbMeshGridRepresentationClient::Operate(vtkDiscreteModel *model,
   vtkSMProxy *serverMeshProxy)
 {
 

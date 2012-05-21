@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelFaceMeshClient.h"
 
 #include "vtkCmbMeshClient.h"
-#include <vtkCMBModel.h>
+#include <vtkDiscreteModel.h>
 #include <vtkModelFace.h>
 #include <vtkObjectFactory.h>
 #include <vtkSMOperatorProxy.h>
@@ -69,8 +69,8 @@ bool vtkCmbModelFaceMeshClient::SendLengthAndAngleToServer()
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(false);
   vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
 
-  vtkCMBModel* model =
-    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  vtkDiscreteModel* model =
+    vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
   operatorProxy->Operate(model, vtkCmbMeshClient::SafeDownCast(
                            this->GetMasterMesh())->GetServerMeshProxy());
 
@@ -116,8 +116,8 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
   vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
 
-  vtkCMBModel* model =
-    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  vtkDiscreteModel* model =
+    vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
   operatorProxy->Operate(model, vtkCmbMeshClient::SafeDownCast(
                            this->GetMasterMesh())->GetServerMeshProxy());
 

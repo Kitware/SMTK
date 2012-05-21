@@ -37,7 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkFieldData.h"
 #include "vtkCmbBCGridRepresentation.h"
 #include "vtkCmbMeshGridRepresentationServer.h"
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCMBModelWrapper.h"
 #include "vtkCMBParserBase.h"
 #include "vtkIdList.h"
@@ -205,7 +205,7 @@ int vtkCmbMeshToModelReader::FillOutputPortInformation(
 //-----------------------------------------------------------------------------
 int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
 {
-  vtkCMBModel* model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* model = this->ModelWrapper->GetModel();
 
   vtkDataArray* cellids =
     fieldData->GetArray(ModelFaceRep::Get2DAnalysisCellModelIdsString());
@@ -245,7 +245,7 @@ int vtkCmbMeshToModelReader::Load2DAnalysisGridInfo(vtkFieldData* fieldData)
 //-----------------------------------------------------------------------------
 int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
 {
-  vtkCMBModel* model = this->ModelWrapper->GetModel();
+  vtkDiscreteModel* model = this->ModelWrapper->GetModel();
   vtkDataArray* bcFloatingEdgeData =
   fieldData->GetArray(vtkCMBParserBase::GetBCFloatingEdgeDataString());
   vtkDataArray* bcModelFaceData =

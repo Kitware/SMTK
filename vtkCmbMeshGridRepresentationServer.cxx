@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 #include <string>
 
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCMBModelEdge.h"
 #include "vtkCmbModelEntityMesh.h"
 #include "vtkCMBModelEntityGroup.h"
@@ -77,7 +77,7 @@ vtkCmbMeshGridRepresentationServer::~vtkCmbMeshGridRepresentationServer()
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
-  vtkCMBModel* model, vtkIdType bcsGroupId,
+  vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType, vtkIdList* pointIds)
 {
   pointIds->Reset();
@@ -155,14 +155,14 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
-  vtkCMBModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
+  vtkDiscreteModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
 {
   return false;
 }
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
-  vtkCMBModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
+  vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
   edgePoints->Reset();
   if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
@@ -231,7 +231,7 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
-  vtkCMBModel* model, vtkIdType boundaryGroupId,
+  vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
 {
   cellIds->Reset();
@@ -284,7 +284,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkCMBModel* model)
+bool vtkCmbMeshGridRepresentationServer::IsModelConsistent(vtkDiscreteModel* model)
 {
   return (this->Model != NULL  &&
           this->Model == model &&
@@ -315,7 +315,7 @@ bool vtkCmbMeshGridRepresentationServer::Initialize(
 }
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::Initialize(
-vtkPolyData* meshRepresentation, vtkCMBModel* model)
+vtkPolyData* meshRepresentation, vtkDiscreteModel* model)
 {
   this->SetRepresentation(meshRepresentation);
   this->Model = model;
@@ -332,7 +332,7 @@ bool vtkCmbMeshGridRepresentationServer::BuildRepresentation(
     {
     return true;
     }
-  this->Model = vtkCMBModel::SafeDownCast(meshServer->GetModel());
+  this->Model = vtkDiscreteModel::SafeDownCast(meshServer->GetModel());
   if (!this->Model)
     {
     return false;

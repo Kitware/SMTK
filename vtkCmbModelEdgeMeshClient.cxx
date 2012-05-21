@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCleanPolylines.h"
 #include "vtkCmbMeshClient.h"
-#include "vtkCMBModel.h"
+#include "vtkDiscreteModel.h"
 #include "vtkCmbModelFaceMesh.h"
 #include "vtkCMBModelEdge.h"
 #include "vtkCmbModelVertexMesh.h"
@@ -93,8 +93,8 @@ bool vtkCmbModelEdgeMeshClient::SendLengthToServer()
   vtkSMPropertyHelper(operatorProxy, "Length").Set(this->GetLength());
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(false);
 
-  vtkCMBModel* model =
-    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  vtkDiscreteModel* model =
+    vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
   operatorProxy->Operate(
     model, vtkCmbMeshClient::SafeDownCast(
       this->GetMasterMesh())->GetServerMeshProxy());
@@ -138,8 +138,8 @@ bool vtkCmbModelEdgeMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
   vtkSMPropertyHelper(operatorProxy, "BuildModelEntityMesh").Set(true);
   vtkSMPropertyHelper(operatorProxy, "MeshHigherDimensionalEntities").Set(false);
 
-  vtkCMBModel* model =
-    vtkCMBModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
+  vtkDiscreteModel* model =
+    vtkDiscreteModel::SafeDownCast(this->GetModelGeometricEntity()->GetModel());
   operatorProxy->Operate(
     model, vtkCmbMeshClient::SafeDownCast(
       this->GetMasterMesh())->GetServerMeshProxy());

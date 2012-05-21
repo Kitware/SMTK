@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkObjectFactory.h>
 #include "vtkCmbMeshServer.h"
-#include <vtkCMBModel.h>
+#include <vtkDiscreteModel.h>
 #include <vtkCMBModelWrapper.h>
 
 #include <vtksys/ios/sstream>

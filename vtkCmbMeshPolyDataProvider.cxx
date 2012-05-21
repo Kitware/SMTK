@@ -24,7 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkCmbMeshPolyDataProvider.h"
 
-#include <vtkCMBModel.h>
+#include <vtkDiscreteModel.h>
 #include "vtkCellArray.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCmbMeshWrapper.h"
