@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbModelFaceMeshServer.h"
 
 #include "vtkCmbMesh.h"
-#include <vtkCMBUserName.h>
+#include <vtkModelUserName.h>
 #include <vtkModelFace.h>
 #include <vtkModelEdgeUse.h>
 #include <vtkModelEdge.h>
@@ -113,7 +113,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     }
   faceMesh->ShallowCopy(mesh);
   mesh->Delete();
-  cerr << "model face " << vtkCMBUserName::GetUserName(this->GetModelFace())
+  cerr << "model face " << vtkModelUserName::GetUserName(this->GetModelFace())
        << " mesh built with numcells " << faceMesh->GetNumberOfCells() << endl;
 
   this->SetMeshedLength(length);

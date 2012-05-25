@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkCmbModelEntityMesh.h>
 #include <vtkCmbModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
-#include <vtkCMBModelWrapper.h>
+#include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
 #include <vtkMergeOperator.h>
 #include <vtkModelEdge.h>
@@ -50,7 +50,7 @@ using namespace CmbFaceMesherClasses;
 int Check2DModel(const char* fileName)
 {
   int numberOfErrors = 0;
-  vtkCMBModelWrapper* modelWrapper = vtkCMBModelWrapper::New();
+  vtkDiscreteModelWrapper* modelWrapper = vtkDiscreteModelWrapper::New();
 
   vtkDiscreteModel* model = modelWrapper->GetModel();
 

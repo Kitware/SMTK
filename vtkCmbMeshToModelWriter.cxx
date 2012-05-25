@@ -27,15 +27,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCharArray.h"
-#include "vtkCMBMaterial.h"
+#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelRegion.h"
-#include "vtkCMBModelWrapper.h"
-#include "vtkCMBNodalGroup.h"
-#include "vtkCMBUserName.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelRegion.h"
+#include "vtkDiscreteModelWrapper.h"
+#include "vtkModelNodalGroup.h"
+#include "vtkModelUserName.h"
 #include "vtkDoubleArray.h"
 #include "vtkErrorCode.h"
 #include "vtkIdTypeArray.h"
@@ -50,7 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkStringArray.h"
 #include "vtkXMLDataElement.h"
 #include "vtkXMLUtilities.h"
-#include "vtkCmbBCGridRepresentation.h"
+#include "vtkModelBCGridRepresentation.h"
 #include "vtkNew.h"
 #include "vtkFieldData.h"
 #include "vtkCmbMeshGridRepresentationServer.h"
@@ -77,7 +77,7 @@ namespace {
 
 vtkStandardNewMacro(vtkCmbMeshToModelWriter);
 vtkCxxRevisionMacro(vtkCmbMeshToModelWriter, "");
-vtkCxxSetObjectMacro(vtkCmbMeshToModelWriter, ModelWrapper, vtkCMBModelWrapper);
+vtkCxxSetObjectMacro(vtkCmbMeshToModelWriter, ModelWrapper, vtkDiscreteModelWrapper);
 
 //----------------------------------------------------------------------------
 vtkCmbMeshToModelWriter::vtkCmbMeshToModelWriter()
@@ -155,7 +155,7 @@ int vtkCmbMeshToModelWriter::WriteData()
 int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
-  vtkCmbGridRepresentation* gridRepresentation =
+  vtkModelGridRepresentation* gridRepresentation =
   Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)
     {
@@ -165,7 +165,7 @@ int vtkCmbMeshToModelWriter::WriteHeader(vtkIndent* parentIndent)
   const char*  analysisGridName = gridRepresentation->GetGridFileName();
   if(!analysisGridName || !(*analysisGridName))
     {
-    vtkWarningMacro("This vtkCmbGridRepresentation does not have a GridFileName.");
+    vtkWarningMacro("This vtkModelGridRepresentation does not have a GridFileName.");
     return 0;
     }
 
@@ -219,18 +219,18 @@ int vtkCmbMeshToModelWriter::WriteFooter(vtkIndent* parentIndent)
 int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
-  vtkCmbGridRepresentation* gridRepresentation =
+  vtkModelGridRepresentation* gridRepresentation =
     Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)
     {
     return 0;
     }
-  vtkCmbBCGridRepresentation* analysisGridInfo =
-    vtkCmbBCGridRepresentation::SafeDownCast(gridRepresentation);
+  vtkModelBCGridRepresentation* analysisGridInfo =
+    vtkModelBCGridRepresentation::SafeDownCast(gridRepresentation);
   if(!analysisGridInfo ||
     analysisGridInfo->IsModelConsistent(Model) == false)
     {
-    vtkWarningMacro("Only the vtkCmbBCGridRepresentation, which is created from an "
+    vtkWarningMacro("Only the vtkModelBCGridRepresentation, which is created from an "
       << "Omicron bc file, is supported currently for 3D model.");
     return 0;
     }
@@ -247,8 +247,8 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
     vtkIdType floatingEdgeCounter = 0;
     for(edges->Begin();!edges->IsAtEnd();edges->Next())
       {
-      vtkCMBModelEdge* edge =
-        vtkCMBModelEdge::SafeDownCast(edges->GetCurrentItem());
+      vtkDiscreteModelEdge* edge =
+        vtkDiscreteModelEdge::SafeDownCast(edges->GetCurrentItem());
       if(edge->GetModelRegion())
         {
         floatingEdgeCounter++;
@@ -274,8 +274,8 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
   vtkIdList* cellSides = vtkIdList::New();
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
-    vtkCMBModelFace* face =
-      vtkCMBModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkDiscreteModelFace* face =
+      vtkDiscreteModelFace::SafeDownCast(faces->GetCurrentItem());
     modelFaceData->InsertNextValue(face->GetUniquePersistentId());
     analysisGridInfo->GetModelFaceAnalysisFacets(
       Model, face->GetUniquePersistentId(), idList, cellSides);
@@ -310,7 +310,7 @@ int vtkCmbMeshToModelWriter::Write3DModelMeshInfo(vtkIndent* parentindent)
 int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
 {
   vtkDiscreteModel* Model = this->ModelWrapper->GetModel();
-  vtkCmbGridRepresentation* gridRepresentation =
+  vtkModelGridRepresentation* gridRepresentation =
   Model->GetAnalysisGridInfo();
   if(gridRepresentation == NULL)
     {

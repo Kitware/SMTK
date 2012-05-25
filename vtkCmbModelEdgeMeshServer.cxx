@@ -27,9 +27,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCleanPolylines.h"
 #include "vtkCmbMesh.h"
 #include "vtkCmbModelFaceMesh.h"
-#include "vtkCMBModelEdge.h"
+#include "vtkDiscreteModelEdge.h"
 #include "vtkCmbModelVertexMesh.h"
-#include <vtkCMBUserName.h>
+#include <vtkModelUserName.h>
 #include "vtkMeshModelEdgesFilter.h"
 #include <vtkModel.h>
 #include <vtkModelEdge.h>
@@ -103,9 +103,9 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   vtkNew<vtkCleanPolylines> stripper;
   stripper->SetMinimumLineLength(0);
   stripper->UseRelativeLineLengthOff();
-  vtkCMBModelEdge* cmbModelEdge = vtkCMBModelEdge::SafeDownCast(this->GetModelEdge());
+  vtkDiscreteModelEdge* cmbModelEdge = vtkDiscreteModelEdge::SafeDownCast(this->GetModelEdge());
   vtkPolyData* polyd = vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
-  stripper->SetInputData(vtkPolyData::SafeDownCast(vtkCMBModelEdge::SafeDownCast(this->GetModelEdge())->GetGeometry() ) );
+  stripper->SetInputData(vtkPolyData::SafeDownCast(vtkDiscreteModelEdge::SafeDownCast(this->GetModelEdge())->GetGeometry() ) );
   stripper->Update();
 
   if ( stripper->GetOutput()->GetNumberOfLines() != 1 )
@@ -144,7 +144,7 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     mesh->FastDelete();
     }
   mesh->ShallowCopy(meshEdgesFilter->GetOutput());
-  cerr << "model edge " << vtkCMBUserName::GetUserName(this->GetModelEdge())
+  cerr << "model edge " << vtkModelUserName::GetUserName(this->GetModelEdge())
        << " mesh built with numpoints " << mesh->GetNumberOfPoints() << endl;
 
   bool returnValue = true;

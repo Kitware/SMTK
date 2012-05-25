@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkCmbModelEntityMesh.h>
 #include <vtkCmbModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
-#include <vtkCMBModelWrapper.h>
+#include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
 #include <vtkMergeOperator.h>
 #include <vtkModelEdge.h>
@@ -49,7 +49,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 double TimeSimMesher(const char* fileName, double Length, double MinAngle)
 {
-  vtkCMBModelWrapper* modelWrapper = vtkCMBModelWrapper::New();
+  vtkDiscreteModelWrapper* modelWrapper = vtkDiscreteModelWrapper::New();
   vtkDiscreteModel* model = modelWrapper->GetModel();
 
   vtkSmartPointer<vtkCMBModelReadOperator> reader =

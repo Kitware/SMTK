@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObjectFactory.h>
 #include "vtkCmbMeshServer.h"
 #include <vtkDiscreteModel.h>
-#include <vtkCMBModelWrapper.h>
+#include <vtkDiscreteModelWrapper.h>
 
 #include <vtksys/ios/sstream>
 
@@ -61,7 +61,7 @@ vtkCmbMeshServer* vtkCmbMeshWrapper::GetMesh()
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshWrapper::SetModelWrapper(vtkCMBModelWrapper* modelWrapper)
+void vtkCmbMeshWrapper::SetModelWrapper(vtkDiscreteModelWrapper* modelWrapper)
 {
   if(modelWrapper == NULL)
     {

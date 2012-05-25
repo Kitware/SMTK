@@ -31,7 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkCallbackCommand.h>
 #include <vtkDiscreteModel.h>
-#include <vtkCMBModelGeometricEntity.h>
+#include <vtkDiscreteModelGeometricEntity.h>
 #include <vtkIdList.h>
 #include <vtkMergeEventData.h>
 #include <vtkModel.h>

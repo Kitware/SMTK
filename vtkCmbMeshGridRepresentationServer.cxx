@@ -27,13 +27,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <string>
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
+#include "vtkDiscreteModelEdge.h"
 #include "vtkCmbModelEntityMesh.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelGeometricEntity.h"
-#include "vtkCMBModelVertex.h"
-#include "vtkCMBNodalGroup.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelGeometricEntity.h"
+#include "vtkDiscreteModelVertex.h"
+#include "vtkModelNodalGroup.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCMBParserBase.h"
 #include "vtkModelItemIterator.h"
@@ -98,9 +98,9 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
     return false;
     }
 
-  if(vtkCMBModelEntityGroup* bcsNodalGroup =
-    vtkCMBModelEntityGroup::SafeDownCast(
-    model->GetModelEntity(vtkCMBModelEntityGroupType, bcsGroupId)))
+  if(vtkDiscreteModelEntityGroup* bcsNodalGroup =
+    vtkDiscreteModelEntityGroup::SafeDownCast(
+    model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
     {
     vtkNew<vtkIdList> vertsIdList;
     vtkNew<vtkIdList> edgesIdList;
@@ -108,15 +108,15 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
     vtkModelItemIterator* iterEdge=bcsNodalGroup->NewIterator(vtkModelEdgeType);
     for(iterEdge->Begin();!iterEdge->IsAtEnd();iterEdge->Next())
       {
-      vtkCMBModelEdge* entity =
-        vtkCMBModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
+      vtkDiscreteModelEdge* entity =
+        vtkDiscreteModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
       if(entity)
         {
         edgesIdList->InsertUniqueId(entity->GetUniquePersistentId());
         for(int i=0; i<2; i++)
           {
-          vtkCMBModelVertex* cmbModelVertex =
-            vtkCMBModelVertex::SafeDownCast(entity->GetAdjacentModelVertex(i));
+          vtkDiscreteModelVertex* cmbModelVertex =
+            vtkDiscreteModelVertex::SafeDownCast(entity->GetAdjacentModelVertex(i));
           if(cmbModelVertex)
             {
             vertsIdList->InsertUniqueId(cmbModelVertex->GetUniquePersistentId());
@@ -256,9 +256,9 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
   vtkIdType npts,*pts,modelIds[3],i=0;
   vtkCellArray *polys = this->Representation->GetPolys();
 
-  if(vtkCMBModelEntityGroup* boundaryGroup =
-    vtkCMBModelEntityGroup::SafeDownCast(
-    model->GetModelEntity(vtkCMBModelEntityGroupType, boundaryGroupId)))
+  if(vtkDiscreteModelEntityGroup* boundaryGroup =
+    vtkDiscreteModelEntityGroup::SafeDownCast(
+    model->GetModelEntity(vtkDiscreteModelEntityGroupType, boundaryGroupId)))
     {
     vtkModelItemIterator* entities = boundaryGroup->NewModelEntityIterator();
     for(entities->Begin();!entities->IsAtEnd();entities->Next())

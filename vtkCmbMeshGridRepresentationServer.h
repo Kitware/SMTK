@@ -39,7 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCmbMeshGridRepresentationServer_h
 #define __vtkCmbMeshGridRepresentationServer_h
 
-#include "vtkCmbGeneratedGridRepresentation.h"
+#include "vtkModelGeneratedGridRepresentation.h"
 #include "vtkWeakPointer.h"
 #include <map>
 #include <set>
@@ -50,30 +50,30 @@ class vtkDiscreteModel;
 class vtkAlgorithm;
 class vtkIntArray;
 
-class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkCmbGeneratedGridRepresentation
+class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkModelGeneratedGridRepresentation
 {
 public:
   static vtkCmbMeshGridRepresentationServer* New();
-  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationServer,vtkCmbGridRepresentation);
+  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationServer,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,vtkIdType bcsGroupId,
     int bcGroupType, vtkIdList* pointIds);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
                                                    vtkIdList* pointIds);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
                                           vtkIdTypeArray* edgePoints);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
                                               vtkIdList* cellIds, vtkIdList* cellSides);
 

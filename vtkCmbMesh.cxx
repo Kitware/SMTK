@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkDiscreteModel.h>
 #include "vtkCmbModelEdgeMesh.h"
 #include "vtkCmbModelFaceMesh.h"
-#include <vtkCMBModelGeometricEntity.h>
+#include <vtkDiscreteModelGeometricEntity.h>
 #include "vtkCmbModelVertexMesh.h"
 #include "vtkCollection.h"
 #include <vtkIdList.h>

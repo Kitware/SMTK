@@ -33,7 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObject.h"
 
 class vtkCmbMeshServer;
-class vtkCMBModelWrapper;
+class vtkDiscreteModelWrapper;
 
 class VTK_EXPORT vtkCmbMeshWrapper : public vtkObject
 {
@@ -45,7 +45,7 @@ public:
   // Description:
   // Initialize vtkCmbMeshServer.
 //BTX
-  void SetModelWrapper(vtkCMBModelWrapper*);
+  void SetModelWrapper(vtkDiscreteModelWrapper*);
   vtkCmbMeshServer* GetMesh();
 //ETX
 

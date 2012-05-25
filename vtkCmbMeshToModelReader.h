@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkXMLDataElement;
 class vtkFieldData;
-class vtkCMBModelWrapper;
+class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;
 class vtkDataArray;
 
@@ -60,8 +60,8 @@ public:
   // Description:
   // Set/get functions for the ModelWrapper.
   //BTX
-  vtkGetMacro(ModelWrapper, vtkCMBModelWrapper*);
-  void SetModelWrapper(vtkCMBModelWrapper* Wrapper);
+  vtkGetMacro(ModelWrapper, vtkDiscreteModelWrapper*);
+  void SetModelWrapper(vtkDiscreteModelWrapper* Wrapper);
   //ETX
   bool IsReadSuccessful(){return !this->DataError;}
 
@@ -108,9 +108,9 @@ protected:
   vtkIdTypeArray* NewIdTypeArray(vtkDataArray* Array);
 
   // Description:
-  // The vtkCMBModelWrapper for the algorithm to reload the mesh
+  // The vtkDiscreteModelWrapper for the algorithm to reload the mesh
   // information to.
-  vtkCMBModelWrapper* ModelWrapper;
+  vtkDiscreteModelWrapper* ModelWrapper;
 
   // Description:
   // Get/Set the name of the AnalysisGridFileName file.

@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshToModelReadOperator.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelWrapper.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkFieldData.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
@@ -47,7 +47,7 @@ vtkCmbMeshToModelReadOperator:: ~vtkCmbMeshToModelReadOperator()
   this->SetFileName(0);
 }
 
-void vtkCmbMeshToModelReadOperator::Operate(vtkCMBModelWrapper* ModelWrapper)
+void vtkCmbMeshToModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrapper)
 {
   if(!ModelWrapper || !ModelWrapper->GetModel())
     {

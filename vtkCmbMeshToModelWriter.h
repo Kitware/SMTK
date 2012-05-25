@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkXMLWriter.h"
 
-class vtkCMBModelWrapper;
+class vtkDiscreteModelWrapper;
 
 class VTK_EXPORT vtkCmbMeshToModelWriter : public vtkXMLWriter
 {
@@ -51,8 +51,8 @@ public:
   // Description:
   // Set/get functions for the ModelWrapper.
 //BTX
-  vtkGetMacro(ModelWrapper, vtkCMBModelWrapper*);
-  void SetModelWrapper(vtkCMBModelWrapper* Wrapper);
+  vtkGetMacro(ModelWrapper, vtkDiscreteModelWrapper*);
+  void SetModelWrapper(vtkDiscreteModelWrapper* Wrapper);
 //ETX
 
 protected:
@@ -72,9 +72,9 @@ private:
   void operator=(const vtkCmbMeshToModelWriter&);  // Not implemented.
 
   // Description:
-  // The vtkCMBModelWrapper for the algorithm to extract the model
+  // The vtkDiscreteModelWrapper for the algorithm to extract the model
   // information from.
-  vtkCMBModelWrapper* ModelWrapper;
+  vtkDiscreteModelWrapper* ModelWrapper;
 
 };
 

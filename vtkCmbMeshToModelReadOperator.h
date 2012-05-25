@@ -33,7 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObject.h"
 
 class vtkCMBParserBase;
-class vtkCMBModelWrapper;
+class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
@@ -47,7 +47,7 @@ public:
 //BTX
   // Description:
   // Load the file into Model.
-  void Operate(vtkCMBModelWrapper* ModelWrapper);
+  void Operate(vtkDiscreteModelWrapper* ModelWrapper);
 //ETX
 
   // Description:

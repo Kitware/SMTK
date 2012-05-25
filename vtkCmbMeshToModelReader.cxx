@@ -35,10 +35,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkXMLDataElement.h"
 #include "vtkDataObject.h"
 #include "vtkFieldData.h"
-#include "vtkCmbBCGridRepresentation.h"
+#include "vtkModelBCGridRepresentation.h"
 #include "vtkCmbMeshGridRepresentationServer.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelWrapper.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkCMBParserBase.h"
 #include "vtkIdList.h"
 #include "vtkNew.h"
@@ -54,7 +54,7 @@ using namespace CmbFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCmbMeshToModelReader);
 vtkCxxRevisionMacro(vtkCmbMeshToModelReader, "");
-vtkCxxSetObjectMacro(vtkCmbMeshToModelReader, ModelWrapper, vtkCMBModelWrapper);
+vtkCxxSetObjectMacro(vtkCmbMeshToModelReader, ModelWrapper, vtkDiscreteModelWrapper);
 
 //----------------------------------------------------------------------------
 // copied from vtkXMLUnstructuredDataReader.cxx
@@ -253,8 +253,8 @@ int vtkCmbMeshToModelReader::Load3DAnalysisGridInfo(vtkFieldData* fieldData)
   // The model face mapping to analysis mesh must be present
   if(bcModelFaceData)
     {
-    vtkCmbBCGridRepresentation* gridRepresentation =
-      vtkCmbBCGridRepresentation::New();
+    vtkModelBCGridRepresentation* gridRepresentation =
+      vtkModelBCGridRepresentation::New();
     vtkSmartPointer<vtkIdList> ids = vtkSmartPointer<vtkIdList>::New();
     vtkIdType counter = 0;
     if(bcFloatingEdgeData)

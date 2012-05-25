@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshGridRepresentationClient.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBXMLModelReader.h"
+#include "vtkXMLModelReader.h"
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 #include "vtkSMIntVectorProperty.h"
