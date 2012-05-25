@@ -97,8 +97,8 @@ protected:
   friend class vtkModelEdge;
   friend class vtkModelFace;
   friend class vtkModelFaceUse;
-  friend class vtkCMBXMLModelReader;
-  friend class vtkCMBModelGeometricEntity;
+  friend class vtkXMLModelReader;
+  friend class vtkDiscreteModelGeometricEntity;
 //ETX
 
 private:

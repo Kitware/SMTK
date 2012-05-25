@@ -173,7 +173,7 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
     for(entities->Begin();!entities->IsAtEnd();entities->Next())
       {
       if(vtkDiscreteModelGeometricEntity* entity =
-         vtkDiscreteModelGeometricEntity::GetThisCMBModelGeometricEntity(
+         vtkDiscreteModelGeometricEntity::GetThisDiscreteModelGeometricEntity(
            vtkModelEntity::SafeDownCast(entities->GetCurrentItem())))
         {
         for(vtkIdType i=0;i<entity->GetNumberOfCells();i++)

@@ -185,16 +185,16 @@ protected:
   // Flag to whether invoke event
   bool BlockModelGeometricEntityEvent;
   void InvokeModelGeometricEntityEvent(unsigned long event, void *callData);
-  friend class vtkCMBModelEdge;
-  friend class vtkCMBModelFace;
-  friend class vtkCMBModelGeometricEntity;
-  friend class vtkCMBXMLModelReader;
+  friend class vtkDiscreteModelEdge;
+  friend class vtkDiscreteModelFace;
+  friend class vtkDiscreteModelGeometricEntity;
+  friend class vtkXMLModelReader;
   friend class vtkModelEdge;
   friend class vtkModelFace;
   friend class vtkModelRegion;
   friend class vtkModelVertex;
-  friend class vtkEdgeSplitOperatorClient;
   friend class vtkModelGeometricEntity;
+  friend class vtkEdgeSplitOperatorClient;
 
 private:
   vtkModel(const vtkModel&);  // Not implemented.

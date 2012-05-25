@@ -20,7 +20,7 @@
 //=============================================================================
 // .NAME vtkXMLElement represents an XML element and those nested inside.
 // .SECTION Description
-// This is used by vtkCmbXMLParser to represent an XML document starting
+// This is used by vtkModelXMLParser to represent an XML document starting
 // at the root element.
 #ifndef __vtkXMLElement_h
 #define __vtkXMLElement_h
@@ -29,7 +29,7 @@
 #include "vtkStdString.h" // needed for vtkStdString.
 
 class vtkCollection;
-class vtkCmbXMLParser;
+class vtkModelXMLParser;
 
 //BTX
 struct vtkXMLElementInternals;
@@ -199,7 +199,7 @@ protected:
   // The parent of this element.
   vtkXMLElement* Parent;
 
-  // Method used by vtkCmbXMLParser to setup the element.
+  // Method used by vtkModelXMLParser to setup the element.
   vtkSetStringMacro(Id);
   void ReadXMLAttributes(const char** atts);
   void AddCharacterData(const char* data, int length);
@@ -211,7 +211,7 @@ protected:
   void SetParent(vtkXMLElement* parent);
 
   //BTX
-  friend class vtkCmbXMLParser;
+  friend class vtkModelXMLParser;
   //ETX
 
 private:

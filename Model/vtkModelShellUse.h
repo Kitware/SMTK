@@ -71,13 +71,13 @@ protected:
   virtual bool Destroy();
 //BTX
   friend class vtkModelRegion;
-  friend class vtkCMBModelFace;
+  friend class vtkDiscreteModelFace;
   friend class vtkModelFaceUse;
   // these two friend classes should eventually come out
   // as they are specific to CMB
   friend class vtkSplitOperatorClient;
   friend class vtkSelectionSplitOperatorClient;
-  friend class vtkCMBModelGeometricEntity;
+  friend class vtkDiscreteModelGeometricEntity;
 //ETX
 
 private:

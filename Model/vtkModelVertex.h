@@ -84,12 +84,12 @@ protected:
   void DestroyModelVertexUse(vtkModelVertexUse* VertexUse);
 //BTX
   friend class vtkDiscreteModel;
-  friend class vtkCMBModelGeometricEntity;
+  friend class vtkDiscreteModelGeometricEntity;
   friend class vtkModel;
   friend class vtkModelVertexUse;
   friend class vtkModelEdgeUse;
   friend class vtkModelEdge;
-  friend class vtkCMBXMLModelReader;
+  friend class vtkXMLModelReader;
 //ETX
 
 private:

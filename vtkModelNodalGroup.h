@@ -22,43 +22,43 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBNodalGroup - An object to store a set of point Ids.
+// .NAME vtkModelNodalGroup - An object to store a set of point Ids.
 // .SECTION Description
 // An object that stores a group of point Ids.  All point Ids are
 // stored uniquely.
 
-#ifndef __vtkCMBNodalGroup_h
-#define __vtkCMBNodalGroup_h
+#ifndef __vtkModelNodalGroup_h
+#define __vtkModelNodalGroup_h
 
 #include "vtkModelEntity.h"
 #include <set>
 
 class vtkBitArray;
 class vtkDiscreteModel;
-class vtkCMBModelFace;
-class vtkCMBModelEdge;
+class vtkDiscreteModelFace;
+class vtkDiscreteModelEdge;
 class vtkModelEntity;
-struct vtkCMBNodalGroupInternals;
+struct vtkModelNodalGroupInternals;
 class vtkPolyData;
 
 typedef enum {
   BASE_NODAL_GROUP = 0,
   UNIQUE_NODAL_GROUP = 1
-} VTKCMBNodalGroupType;
+} VTKModelNodalGroupType;
 
 //BTX
 typedef enum
 {
-  vtkCMBModelEntityAllPoints = 0,
-  vtkCMBModelEntityBoundaryPoints,
-  vtkCMBModelEntityInteriorPoints
+  vtkDiscreteModelEntityAllPoints = 0,
+  vtkDiscreteModelEntityBoundaryPoints,
+  vtkDiscreteModelEntityInteriorPoints
 } enNodalGroupPointLocationType;
 //ETX
 
-class VTK_EXPORT vtkCMBNodalGroup : public vtkModelEntity
+class VTK_EXPORT vtkModelNodalGroup : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBNodalGroup,vtkModelEntity);
+  vtkTypeRevisionMacro(vtkModelNodalGroup,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -72,9 +72,9 @@ public:
   // Set/get the PointLocationType.
   //typedef enum
   //  {
-  //  vtkCMBModelEntityAllPoints = 0,
-  //  vtkCMBModelEntityBoundaryPoints,
-  //  vtkCMBModelEntityInteriorPoints
+  //  vtkDiscreteModelEntityAllPoints = 0,
+  //  vtkDiscreteModelEntityBoundaryPoints,
+  //  vtkDiscreteModelEntityInteriorPoints
   //  } enNodalGroupPointLocationType;
   vtkGetMacro(PointLocationType, int);
   vtkSetMacro(PointLocationType, int);
@@ -112,13 +112,13 @@ public:
   vtkDiscreteModel* GetModel();
 
   // Description:
-  // Flag to indicate the type of vtkCMBNodalGroup.
+  // Flag to indicate the type of vtkModelNodalGroup.
   virtual int GetNodalGroupType() {return BASE_NODAL_GROUP;}
 
 protected:
-  vtkCMBNodalGroup();
-  virtual ~vtkCMBNodalGroup();
-  static vtkCMBNodalGroup *New();
+  vtkModelNodalGroup();
+  virtual ~vtkModelNodalGroup();
+  static vtkModelNodalGroup *New();
 //BTX
   friend class vtkDiscreteModel;
 //ETX
@@ -129,18 +129,18 @@ protected:
   virtual void RemovePointId(vtkIdType PointId);
   virtual void AddPointIds(vtkIdList* PointIds);
   virtual void RemovePointIds(vtkIdList* PointIds);
-  virtual void AddPointIdsInModelFace(vtkCMBModelFace* ModelFace);
-  virtual void AddPointIdsInModelEdge(vtkCMBModelEdge* ModelEdge);
-  virtual void AddPointIdsInModelFaceInterior(vtkCMBModelFace* ModelFace);
-  virtual void AddPointIdsInModelFaceBoundary(vtkCMBModelFace* ModelFace);
-  virtual void RemovePointIdsInModelFace(vtkCMBModelFace* ModelFace);
-  virtual void RemovePointIdsInModelFaceInterior(vtkCMBModelFace* ModelFace);
-  virtual void RemovePointIdsInModelFaceBoundary(vtkCMBModelFace* ModelFace);
+  virtual void AddPointIdsInModelFace(vtkDiscreteModelFace* ModelFace);
+  virtual void AddPointIdsInModelEdge(vtkDiscreteModelEdge* ModelEdge);
+  virtual void AddPointIdsInModelFaceInterior(vtkDiscreteModelFace* ModelFace);
+  virtual void AddPointIdsInModelFaceBoundary(vtkDiscreteModelFace* ModelFace);
+  virtual void RemovePointIdsInModelFace(vtkDiscreteModelFace* ModelFace);
+  virtual void RemovePointIdsInModelFaceInterior(vtkDiscreteModelFace* ModelFace);
+  virtual void RemovePointIdsInModelFaceBoundary(vtkDiscreteModelFace* ModelFace);
 
   // Description:
   // Mark each index in  Points with 0 (out) or 1 (in) for vtkPoints that are
-  // in the vtkCMBModelEdge grid.
-  void GatherAllPointIdsOfModelEdge(vtkCMBModelEdge* ModelEdge,
+  // in the vtkDiscreteModelEdge grid.
+  void GatherAllPointIdsOfModelEdge(vtkDiscreteModelEdge* ModelEdge,
     vtkBitArray* Points);
 
   virtual bool IsDestroyable();
@@ -149,22 +149,22 @@ protected:
   // Description:
   // Contains std::set<vtkIdType> PointIds with respect to the
   // master grid.
-  vtkCMBNodalGroupInternals* Internal;
+  vtkModelNodalGroupInternals* Internal;
 
   // Description:
   // A flag to indicate what points in the model entity will
   // be used for the nodal group.
   //typedef enum
   //  {
-  //  vtkCMBModelEntityAllPoints = 0,
-  //  vtkCMBModelEntityBoundaryPoints,
-  //  vtkCMBModelEntityInteriorPoints
+  //  vtkDiscreteModelEntityAllPoints = 0,
+  //  vtkDiscreteModelEntityBoundaryPoints,
+  //  vtkDiscreteModelEntityInteriorPoints
   //  } enNodalGroupPointLocationType;
   int PointLocationType;
 
 private:
-  vtkCMBNodalGroup(const vtkCMBNodalGroup&);  // Not implemented.
-  void operator=(const vtkCMBNodalGroup&);  // Not implemented.
+  vtkModelNodalGroup(const vtkModelNodalGroup&);  // Not implemented.
+  void operator=(const vtkModelNodalGroup&);  // Not implemented.
 };
 
 #endif

@@ -100,7 +100,7 @@ vtkIdType vtkDiscreteModelGeometricEntity::GetNumberOfCells()
 }
 
 vtkDiscreteModelGeometricEntity*
-vtkDiscreteModelGeometricEntity::GetThisCMBModelGeometricEntity(vtkModelEntity* entity)
+vtkDiscreteModelGeometricEntity::GetThisDiscreteModelGeometricEntity(vtkModelEntity* entity)
 {
   if(!entity)
     {

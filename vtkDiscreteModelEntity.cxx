@@ -40,7 +40,7 @@ vtkDiscreteModelEntity::~vtkDiscreteModelEntity()
 {
 }
 
-vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisCMBModelEntity(
+vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisDiscreteModelEntity(
   vtkModelEntity* Entity)
 {
   if(!Entity)

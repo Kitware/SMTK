@@ -22,29 +22,29 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelFace - A model face based on a polydata representation.
+// .NAME vtkDiscreteModelFace - A model face based on a polydata representation.
 // .SECTION Description
 
-#ifndef __vtkCMBModelFace_h
-#define __vtkCMBModelFace_h
+#ifndef __vtkDiscreteModelFace_h
+#define __vtkDiscreteModelFace_h
 
 #include "vtkModelFace.h"
-#include "vtkCMBModelGeometricEntity.h"
+#include "vtkDiscreteModelGeometricEntity.h"
 
 
-class vtkCMBModelFaceUse;
+class vtkDiscreteModelFaceUse;
 class vtkIdList;
 class vtkIdTypeArray;
 class vtkBitArray;
 
-class VTK_EXPORT vtkCMBModelFace : public vtkModelFace,
-  public vtkCMBModelGeometricEntity
+class VTK_EXPORT vtkDiscreteModelFace : public vtkModelFace,
+  public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBModelFace,vtkModelFace);
+  vtkTypeRevisionMacro(vtkDiscreteModelFace,vtkModelFace);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  static vtkCMBModelFace *New();
+  static vtkDiscreteModelFace *New();
 
   // Description:
   // Split this model face based on SplitAngle.  The function
@@ -60,28 +60,28 @@ public:
 
   // Description:
   // Mark each index in PointsMask with 0 (out) or 1 (in) for
-  // master vtkPoints that are in the vtkCMBModelFace grid.
+  // master vtkPoints that are in the vtkDiscreteModelFace grid.
   void GatherAllPointIdsMask(vtkBitArray* PointsMask);
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model face.
   // Mark each index in PointsMask with 0 (out) or 1 (in) for
-  // master vtkPoints that are on the boundary of vtkCMBModelFace grid.
+  // master vtkPoints that are on the boundary of vtkDiscreteModelFace grid.
   void GatherBoundaryPointIdsMask(vtkBitArray* Points);
 
 protected:
 //BTX
   friend class vtkDiscreteModel;
   friend class vtkCmbMapToCmbModel;
-  friend class vtkCmbBCGridRepresentation;
+  friend class vtkModelBCGridRepresentation;
 //ETX
-  vtkCMBModelFace();
-  virtual ~vtkCMBModelFace();
+  vtkDiscreteModelFace();
+  virtual ~vtkDiscreteModelFace();
 
   // Description:
   // Build a new model face from the cells listed in CellIds.
   // The Ids listed in CellIds are with respect to the master grid.
-  vtkCMBModelFace* BuildFromExistingModelFace(vtkIdList* CellIds);
+  vtkDiscreteModelFace* BuildFromExistingModelFace(vtkIdList* CellIds);
   friend class vtkSelectionSplitOperator;
   friend class vtkCmbIncorporateMeshOperator;
 
@@ -95,8 +95,8 @@ protected:
   virtual void Serialize(vtkSerializer* ser);
 
 private:
-  vtkCMBModelFace(const vtkCMBModelFace&);  // Not implemented.
-  void operator=(const vtkCMBModelFace&);  // Not implemented.
+  vtkDiscreteModelFace(const vtkDiscreteModelFace&);  // Not implemented.
+  void operator=(const vtkDiscreteModelFace&);  // Not implemented.
 
   void CreateModelFaceUses();
 };

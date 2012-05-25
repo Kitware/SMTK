@@ -18,23 +18,23 @@
 //
 //
 //=============================================================================
-// .NAME vtkCmbXMLParser parses XML files.
+// .NAME vtkModelXMLParser parses XML files.
 // .SECTION Description
 // This is a subclass of vtkXMLParser that constructs a DOM representation
 // of parsed XML using vtkXMLElement.
-#ifndef __vtkCmbXMLParser_h
-#define __vtkCmbXMLParser_h
+#ifndef __vtkModelXMLParser_h
+#define __vtkModelXMLParser_h
 
 #include "vtkXMLParser.h"
 
 class vtkXMLElement;
 
-class VTK_EXPORT vtkCmbXMLParser : public vtkXMLParser
+class VTK_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbXMLParser,vtkXMLParser);
+  vtkTypeRevisionMacro(vtkModelXMLParser,vtkXMLParser);
   void PrintSelf(ostream& os, vtkIndent indent);
-  static vtkCmbXMLParser* New();
+  static vtkModelXMLParser* New();
 
   // Description:
   // Write the parsed XML into the output stream.
@@ -50,8 +50,8 @@ public:
   vtkGetStringMacro(FileName);
 
 protected:
-  vtkCmbXMLParser();
-  ~vtkCmbXMLParser();
+  vtkModelXMLParser();
+  ~vtkModelXMLParser();
 
   void StartElement(const char* name, const char** atts);
   void EndElement(const char* name);
@@ -77,8 +77,8 @@ protected:
   virtual int ParseXML();
 
 private:
-  vtkCmbXMLParser(const vtkCmbXMLParser&);  // Not implemented.
-  void operator=(const vtkCmbXMLParser&);  // Not implemented.
+  vtkModelXMLParser(const vtkModelXMLParser&);  // Not implemented.
+  void operator=(const vtkModelXMLParser&);  // Not implemented.
 };
 
 #endif

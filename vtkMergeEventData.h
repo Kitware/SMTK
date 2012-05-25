@@ -36,7 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObject.h"
 
 class vtkIdTypeArray;
-class vtkCMBModelGeometricEntity;
+class vtkDiscreteModelGeometricEntity;
 
 class VTK_EXPORT vtkMergeEventData : public vtkObject
 {
@@ -47,13 +47,13 @@ public:
 
   // Description:
   // Set/get the SourceEntity
-  vtkGetMacro(SourceEntity, vtkCMBModelGeometricEntity*);
-  vtkSetMacro(SourceEntity, vtkCMBModelGeometricEntity*);
+  vtkGetMacro(SourceEntity, vtkDiscreteModelGeometricEntity*);
+  vtkSetMacro(SourceEntity, vtkDiscreteModelGeometricEntity*);
 
   // Description:
   // Set/get the TargetEntity
-  vtkGetMacro(TargetEntity, vtkCMBModelGeometricEntity*);
-  vtkSetMacro(TargetEntity, vtkCMBModelGeometricEntity*);
+  vtkGetMacro(TargetEntity, vtkDiscreteModelGeometricEntity*);
+  vtkSetMacro(TargetEntity, vtkDiscreteModelGeometricEntity*);
 
   // Description:
   // Set/get the LowerDimensionalIds
@@ -65,8 +65,8 @@ protected:
   virtual ~vtkMergeEventData();
 
 private:
-  vtkCMBModelGeometricEntity* SourceEntity;
-  vtkCMBModelGeometricEntity* TargetEntity;
+  vtkDiscreteModelGeometricEntity* SourceEntity;
+  vtkDiscreteModelGeometricEntity* TargetEntity;
   vtkIdTypeArray* LowerDimensionalIds;
 
   vtkMergeEventData(const vtkMergeEventData&);  // Not implemented.

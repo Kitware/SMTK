@@ -94,15 +94,15 @@ void vtkModelMaterial::AddModelGeometricEntity(
   vtkModelGeometricEntity* GeometricEntity)
 {
   // first remove the GeometricEntities association with any other material
-  vtkDiscreteModelGeometricEntity* CMBGeometricEntity = 
+  vtkDiscreteModelGeometricEntity* ModelGeometricEntity = 
     vtkDiscreteModelRegion::SafeDownCast(GeometricEntity);
-  if(!CMBGeometricEntity)
+  if(!ModelGeometricEntity)
     {
-    CMBGeometricEntity = vtkDiscreteModelFace::SafeDownCast(GeometricEntity);
+    ModelGeometricEntity = vtkDiscreteModelFace::SafeDownCast(GeometricEntity);
     }
-  if(CMBGeometricEntity)
+  if(ModelGeometricEntity)
     {
-    vtkModelMaterial* PreviousMaterial = CMBGeometricEntity->GetMaterial();
+    vtkModelMaterial* PreviousMaterial = ModelGeometricEntity->GetMaterial();
     if(PreviousMaterial)
       {
       PreviousMaterial->RemoveModelGeometricEntity(GeometricEntity);

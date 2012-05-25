@@ -115,8 +115,8 @@ protected:
   // current unique persistent Id that is stored in vtkDiscreteModel.
   void SetUniquePersistentId(vtkIdType id); // only to be called from this and readers
   friend class vtkCMBParserBase;
-  friend class vtkCMBXMLModelWriter;
-  friend class vtkCMBXMLModelReader;
+  friend class vtkXMLModelWriter;
+  friend class vtkXMLModelReader;
 
   // Description:
   // Remove/destroy this object and anything it aggregates from the its aggregator as well

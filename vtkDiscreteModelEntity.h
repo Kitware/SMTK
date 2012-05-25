@@ -22,19 +22,19 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelEntity - 
+// .NAME vtkDiscreteModelEntity - 
 // .SECTION Description
 
-#ifndef __vtkCMBModelEntity_h
-#define __vtkCMBModelEntity_h
+#ifndef __vtkDiscreteModelEntity_h
+#define __vtkDiscreteModelEntity_h
 
 #include "vtkObject.h"
 
-class vtkCMBModelEntityGroup;
+class vtkDiscreteModelEntityGroup;
 class vtkModelEntity;
 class vtkModelItemIterator;
 
-class VTK_EXPORT vtkCMBModelEntity
+class VTK_EXPORT vtkDiscreteModelEntity
 {
 public:
   void PrintSelf(ostream& os, vtkIndent indent);
@@ -44,10 +44,10 @@ public:
   virtual vtkModelEntity* GetThisModelEntity()=0;
 
   // Description:
-  // Given a vtkModelEntity, return a vtkCMBModelEntity if
-  // it is a vtkCMBModelEntity (for now vtkCMBModelRegion,
-  // vtkCMBModelFace, or vtkCMBModelEdge).
-  static vtkCMBModelEntity* GetThisCMBModelEntity(vtkModelEntity*);
+  // Given a vtkModelEntity, return a vtkDiscreteModelEntity if
+  // it is a vtkDiscreteModelEntity (for now vtkDiscreteModelRegion,
+  // vtkDiscreteModelFace, or vtkDiscreteModelEdge).
+  static vtkDiscreteModelEntity* GetThisDiscreteModelEntity(vtkModelEntity*);
 
   // Description:
   // Get information about the model entity groups associated 
@@ -56,15 +56,15 @@ public:
   vtkModelItemIterator* NewModelEntityGroupIterator();
 
 protected:
-  vtkCMBModelEntity();
-  virtual ~vtkCMBModelEntity();
+  vtkDiscreteModelEntity();
+  virtual ~vtkDiscreteModelEntity();
 
-  void CopyModelEntityGroups(vtkCMBModelEntity* SourceEntity);
+  void CopyModelEntityGroups(vtkDiscreteModelEntity* SourceEntity);
   void RemoveAllModelEntityGroups();
 
 private:
-  vtkCMBModelEntity(const vtkCMBModelEntity&);  // Not implemented.
-  void operator=(const vtkCMBModelEntity&);  // Not implemented.
+  vtkDiscreteModelEntity(const vtkDiscreteModelEntity&);  // Not implemented.
+  void operator=(const vtkDiscreteModelEntity&);  // Not implemented.
 };
 
 #endif

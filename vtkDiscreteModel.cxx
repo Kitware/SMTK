@@ -557,17 +557,17 @@ vtkObject* vtkDiscreteModel::GetGeometry()
 
 const char* vtkDiscreteModel::GetPointMapArrayName()
 {
-  return "CMBPointMapArray";
+  return "ModelPointMapArray";
 }
 
 const char* vtkDiscreteModel::GetCellMapArrayName()
 {
-  return "CMBCellMapArray";
+  return "ModelCellMapArray";
 }
 
 const char* vtkDiscreteModel::GetCanonicalSideArrayName()
 {
-  return "CMBCanonicalSideArray";
+  return "ModelCanonicalSideArray";
 }
 
 vtkIdType vtkDiscreteModel::GetCellModelGeometricEntityIndex(vtkIdType CellId)

@@ -22,11 +22,11 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBMaterial - 
+// .NAME vtkModelMaterial - 
 // .SECTION Description
 
-#ifndef __vtkCMBMaterial_h
-#define __vtkCMBMaterial_h
+#ifndef __vtkModelMaterial_h
+#define __vtkModelMaterial_h
 
 #include "vtkModelEntity.h"
 
@@ -34,10 +34,10 @@ class vtkInformationStringKey;
 class vtkModelGeometricEntity;
 class vtkModelItemIterator;
 
-class VTK_EXPORT vtkCMBMaterial : public vtkModelEntity
+class VTK_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBMaterial,vtkModelEntity);
+  vtkTypeRevisionMacro(vtkModelMaterial,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   bool SetWarehouseId(double* uuid);
@@ -64,9 +64,9 @@ public:
   void AddModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
 
 protected:
-  vtkCMBMaterial();
-  virtual ~vtkCMBMaterial();
-  static vtkCMBMaterial* New();
+  vtkModelMaterial();
+  virtual ~vtkModelMaterial();
+  static vtkModelMaterial* New();
 
   // Description:
   // Remove GeometricEntity from this material.  It is assumed that it 
@@ -77,8 +77,8 @@ protected:
   virtual bool Destroy();
 
 private:
-  vtkCMBMaterial(const vtkCMBMaterial&);  // Not implemented.
-  void operator=(const vtkCMBMaterial&);  // Not implemented.
+  vtkModelMaterial(const vtkModelMaterial&);  // Not implemented.
+  void operator=(const vtkModelMaterial&);  // Not implemented.
 //BTX
   friend class vtkDiscreteModel;
 //ETX

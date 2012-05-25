@@ -356,10 +356,10 @@ bool vtkDiscreteModelEdge::Split(
       ModelGeometricEntityBoundaryModified, face);
     }
   faces->Delete();
-  vtkDiscreteModelVertex* cmbVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
-  if(cmbVertex)
+  vtkDiscreteModelVertex* ModelVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
+  if(ModelVertex)
     {
-    cmbVertex->CreateGeometry();
+    ModelVertex->CreateGeometry();
     }
   return 1;
 }
@@ -371,10 +371,10 @@ bool vtkDiscreteModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
   bool result = this->Superclass::SplitModelEdgeLoop(vertex);
   if(result)
     {
-    vtkDiscreteModelVertex* cmbVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
-    if(cmbVertex)
+    vtkDiscreteModelVertex* ModelVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
+    if(ModelVertex)
       {
-      cmbVertex->CreateGeometry();
+      ModelVertex->CreateGeometry();
       }
     }
   return result;
@@ -466,11 +466,11 @@ void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
     }
   for(int i=0; i<2; i++)
     {
-    vtkDiscreteModelVertex* cmbModelVertex =
+    vtkDiscreteModelVertex* ModelVertex =
       vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(i));
-    if(cmbModelVertex)
+    if(ModelVertex)
       {
-      ptsList->InsertUniqueId(cmbModelVertex->GetPointId());
+      ptsList->InsertUniqueId(ModelVertex->GetPointId());
       }
     }
 }

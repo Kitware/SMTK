@@ -22,14 +22,14 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbGridRepresentation - Abstract class for CMBModel representation of an analysis grid.
+// .NAME vtkModelGridRepresentation - Abstract class for Discrete model representation of an analysis grid.
 // .SECTION Description
-// An abstract class used to provide all of the information that a CMBModel needs
+// An abstract class used to provide all of the information that a discrete model needs
 // to keep track of mapping grid objects from the geometry grid to the
 // analysis grid.
 
-#ifndef __vtkCmbGridRepresentation_h
-#define __vtkCmbGridRepresentation_h
+#ifndef __vtkModelGridRepresentation_h
+#define __vtkModelGridRepresentation_h
 
 #include <vtkObject.h>
 
@@ -37,10 +37,10 @@ class vtkDiscreteModel;
 class vtkIdList;
 class vtkIdTypeArray;
 
-class VTK_EXPORT vtkCmbGridRepresentation : public vtkObject
+class VTK_EXPORT vtkModelGridRepresentation : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbGridRepresentation,vtkObject);
+  vtkTypeRevisionMacro(vtkModelGridRepresentation,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetStringMacro(GridFileName);
@@ -87,15 +87,15 @@ public:
   virtual bool IsSameModelInfoFile(const char* filename);
 
 protected:
-  vtkCmbGridRepresentation();
-  virtual ~vtkCmbGridRepresentation();
+  vtkModelGridRepresentation();
+  virtual ~vtkModelGridRepresentation();
 
   vtkGetStringMacro(ModelInfoFileName);
   vtkSetStringMacro(ModelInfoFileName);
 
 private:
-  vtkCmbGridRepresentation(const vtkCmbGridRepresentation&);  // Not implemented.
-  void operator=(const vtkCmbGridRepresentation&);  // Not implemented.
+  vtkModelGridRepresentation(const vtkModelGridRepresentation&);  // Not implemented.
+  void operator=(const vtkModelGridRepresentation&);  // Not implemented.
 
   // Description:
   // The name of the analysis grid file.

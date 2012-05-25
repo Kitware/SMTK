@@ -22,21 +22,21 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBUniqueNodalGroup - An object to store a set of point Ids.
+// .NAME vtkModelUniqueNodalGroup - An object to store a set of point Ids.
 // .SECTION Description
 // An object that stores a group of point Ids.  All point Ids are
 // stored uniquely.
 
-#ifndef __vtkCMBUniqueNodalGroup_h
-#define __vtkCMBUniqueNodalGroup_h
+#ifndef __vtkModelUniqueNodalGroup_h
+#define __vtkModelUniqueNodalGroup_h
 
-#include "vtkCMBNodalGroup.h"
+#include "vtkModelNodalGroup.h"
 
 
-class VTK_EXPORT vtkCMBUniqueNodalGroup : public vtkCMBNodalGroup
+class VTK_EXPORT vtkModelUniqueNodalGroup : public vtkModelNodalGroup
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBUniqueNodalGroup,vtkCMBNodalGroup);
+  vtkTypeRevisionMacro(vtkModelUniqueNodalGroup,vtkModelNodalGroup);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -51,13 +51,13 @@ public:
   virtual void Serialize(vtkSerializer* ser);
 
   // Description:
-  // Flag to indicate the type of vtkCMBNodalGroup.
+  // Flag to indicate the type of vtkModelNodalGroup.
   virtual int GetNodalGroupType() {return UNIQUE_NODAL_GROUP;}
 
 protected:
-  vtkCMBUniqueNodalGroup();
-  virtual ~vtkCMBUniqueNodalGroup();
-  static vtkCMBUniqueNodalGroup *New();
+  vtkModelUniqueNodalGroup();
+  virtual ~vtkModelUniqueNodalGroup();
+  static vtkModelUniqueNodalGroup *New();
 //BTX
   friend class vtkDiscreteModel;
 //ETX
@@ -65,8 +65,8 @@ protected:
   virtual bool Destroy();
   
 private:
-  vtkCMBUniqueNodalGroup(const vtkCMBUniqueNodalGroup&);  // Not implemented.
-  void operator=(const vtkCMBUniqueNodalGroup&);  // Not implemented.
+  vtkModelUniqueNodalGroup(const vtkModelUniqueNodalGroup&);  // Not implemented.
+  void operator=(const vtkModelUniqueNodalGroup&);  // Not implemented.
 };
 
 #endif

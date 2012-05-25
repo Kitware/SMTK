@@ -145,8 +145,8 @@ SET(DiscreteModelFiles
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-  Model/vtkDiscreteModelEntity
-  Model/vtkDiscreteModelGeometricEntity
+  vtkDiscreteModelEntity
+  vtkDiscreteModelGeometricEntity
   vtkModelGridRepresentation
   vtkModelGeneratedGridRepresentation
   Model/vtkModel

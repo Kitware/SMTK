@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-// .NAME vtkCMBModelWrapper - The new CMB model
+// .NAME vtkDiscreteModelWrapper - The new CMB model
 //
 // .SECTION Description
 // This class is just a shell around vtkDiscreteModel, which
@@ -37,8 +37,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION See Also
 // vtkDiscreteModel, vtkCmbModelMapper
 
-#ifndef __vtkCMBModelWrapper_h
-#define __vtkCMBModelWrapper_h
+#ifndef __vtkDiscreteModelWrapper_h
+#define __vtkDiscreteModelWrapper_h
 
 #include "vtkCompositeDataSet.h"
 #include "vtkSmartPointer.h"
@@ -58,12 +58,12 @@ class vtkAlgorithmOutput;
 class vtkProperty;
 class vtkPoints;
 
-class VTK_EXPORT vtkCMBModelWrapper : public vtkCompositeDataSet
+class VTK_EXPORT vtkDiscreteModelWrapper : public vtkCompositeDataSet
 {
 public:
-  vtkTypeMacro(vtkCMBModelWrapper, vtkCompositeDataSet);
+  vtkTypeMacro(vtkDiscreteModelWrapper, vtkCompositeDataSet);
   void PrintSelf(ostream& os, vtkIndent indent);
-  static vtkCMBModelWrapper* New();
+  static vtkDiscreteModelWrapper* New();
 //BTX
   // Description:
   // Function to serialize the model from the server to the client.
@@ -129,9 +129,9 @@ public:
   void SetSerializedModel(vtkStringArray* Array);
 
   // Description:
-  // Retrieve a vtkCMBModelWrapper stored inside an information object.
-  static vtkCMBModelWrapper* GetData(vtkInformation* info);
-  static vtkCMBModelWrapper* GetData(vtkInformationVector* v, int i=0);
+  // Retrieve a vtkDiscreteModelWrapper stored inside an information object.
+  static vtkDiscreteModelWrapper* GetData(vtkInformation* info);
+  static vtkDiscreteModelWrapper* GetData(vtkInformationVector* v, int i=0);
 
   // Description:
   // This is a convenient method to switch the points for all the
@@ -166,8 +166,8 @@ public:
 
 //BTX
 protected:
-  vtkCMBModelWrapper();
-  ~vtkCMBModelWrapper();
+  vtkDiscreteModelWrapper();
+  ~vtkDiscreteModelWrapper();
 
   // Description:
   // This is protected on purpose
@@ -185,8 +185,8 @@ protected:
   vtkCallbackCommand* ModelCBC;
 
 private:
-  vtkCMBModelWrapper(const vtkCMBModelWrapper&);  // Not implemented.
-  void operator=(const vtkCMBModelWrapper&);  // Not implemented.
+  vtkDiscreteModelWrapper(const vtkDiscreteModelWrapper&);  // Not implemented.
+  void operator=(const vtkDiscreteModelWrapper&);  // Not implemented.
 
 //ETX
 };

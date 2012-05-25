@@ -22,28 +22,28 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelEntityGroup - An object to store a group of model entities.
+// .NAME vtkDiscreteModelEntityGroup - An object to store a group of model entities.
 // .SECTION Description
 // An object that stores a group of model entities of the same EntityType.  
 // This class stores an association to those types as well as those 
 // types storing an association to this.  Note that a vtkModelEntity can
-// belong to multiple vtkCMBModelEntityGroups (including none at all).
+// belong to multiple vtkDiscreteModelEntityGroups (including none at all).
 
-#ifndef __vtkCMBModelEntityGroup_h
-#define __vtkCMBModelEntityGroup_h
+#ifndef __vtkDiscreteModelEntityGroup_h
+#define __vtkDiscreteModelEntityGroup_h
 
 #include "vtkModelEntity.h"
 
-class vtkCMBModelEntity;
+class vtkDiscreteModelEntity;
 
-class VTK_EXPORT vtkCMBModelEntityGroup : public vtkModelEntity
+class VTK_EXPORT vtkDiscreteModelEntityGroup : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBModelEntityGroup,vtkModelEntity);
+  vtkTypeRevisionMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-  void AddModelEntity(vtkCMBModelEntity*);
-  bool RemoveModelEntity(vtkCMBModelEntity*);
+  void AddModelEntity(vtkDiscreteModelEntity*);
+  bool RemoveModelEntity(vtkDiscreteModelEntity*);
   
   // Description:
   // Returns the number of model entities of type this->EntityType
@@ -67,9 +67,9 @@ public:
   virtual void Serialize(vtkSerializer* ser);
 
 protected:
-  vtkCMBModelEntityGroup();
-  virtual ~vtkCMBModelEntityGroup();
-  static vtkCMBModelEntityGroup *New();
+  vtkDiscreteModelEntityGroup();
+  virtual ~vtkDiscreteModelEntityGroup();
+  static vtkDiscreteModelEntityGroup *New();
 //BTX
   friend class vtkDiscreteModel;
 //ETX
@@ -80,8 +80,8 @@ protected:
   int EntityType;
 
 private:
-  vtkCMBModelEntityGroup(const vtkCMBModelEntityGroup&);  // Not implemented.
-  void operator=(const vtkCMBModelEntityGroup&);  // Not implemented.
+  vtkDiscreteModelEntityGroup(const vtkDiscreteModelEntityGroup&);  // Not implemented.
+  void operator=(const vtkDiscreteModelEntityGroup&);  // Not implemented.
 };
 
 #endif

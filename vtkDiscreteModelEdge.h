@@ -22,14 +22,14 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelEdge - Abstract generic model entity class.
+// .NAME vtkDiscreteModelEdge - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __vtkCMBModelEdge_h
-#define __vtkCMBModelEdge_h
+#ifndef __vtkDiscreteModelEdge_h
+#define __vtkDiscreteModelEdge_h
 
 #include "Model/vtkModelEdge.h"
-#include "vtkCMBModelGeometricEntity.h"
+#include "vtkDiscreteModelGeometricEntity.h"
 
 class vtkModelEdgeUse;
 class vtkModelItemIterator;
@@ -37,12 +37,12 @@ class vtkModelVertex;
 class vtkModelRegion;
 class vtkIdList;
 
-class VTK_EXPORT vtkCMBModelEdge : public vtkModelEdge, 
-  public vtkCMBModelGeometricEntity
+class VTK_EXPORT vtkDiscreteModelEdge : public vtkModelEdge, 
+  public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBModelEdge,vtkModelEdge);
-  static vtkCMBModelEdge* New();
+  vtkTypeRevisionMacro(vtkDiscreteModelEdge,vtkModelEdge);
+  static vtkDiscreteModelEdge* New();
   void PrintSelf(ostream& os, vtkIndent indent);
   
   // Description:
@@ -94,8 +94,8 @@ public:
   virtual void GetBoundaryPointIds(vtkIdList* ptsList);
 
 protected:
-  vtkCMBModelEdge();
-  virtual ~vtkCMBModelEdge();
+  vtkDiscreteModelEdge();
+  virtual ~vtkDiscreteModelEdge();
 
   virtual bool IsDestroyable();
   virtual bool Destroy();
@@ -122,8 +122,8 @@ protected:
   bool SplitModelEdgeLoop(vtkIdType PointId);
 
 private:
-  vtkCMBModelEdge(const vtkCMBModelEdge&);  // Not implemented.
-  void operator=(const vtkCMBModelEdge&);  // Not implemented.
+  vtkDiscreteModelEdge(const vtkDiscreteModelEdge&);  // Not implemented.
+  void operator=(const vtkDiscreteModelEdge&);  // Not implemented.
 //BTX
   friend class vtkDiscreteModel;
   friend class vtkCmbMapToCmbModel;

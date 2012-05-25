@@ -22,21 +22,21 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelVertex - CMB specific model vertex class.
+// .NAME vtkDiscreteModelVertex - CMB specific model vertex class.
 // .SECTION Description
 
-#ifndef __vtkCMBModelVertex_h
-#define __vtkCMBModelVertex_h
+#ifndef __vtkDiscreteModelVertex_h
+#define __vtkDiscreteModelVertex_h
 
 #include "vtkModelVertex.h"
-#include "vtkCMBModelGeometricEntity.h"
+#include "vtkDiscreteModelGeometricEntity.h"
 
 class vtkInformationIdTypeKey;
 
-class VTK_EXPORT vtkCMBModelVertex : public vtkModelVertex
+class VTK_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBModelVertex,vtkModelVertex);
+  vtkTypeRevisionMacro(vtkDiscreteModelVertex,vtkModelVertex);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -64,9 +64,9 @@ public:
   void CreateGeometry();
 
 protected:
-  static vtkCMBModelVertex* New();
-  vtkCMBModelVertex();
-  virtual ~vtkCMBModelVertex();
+  static vtkDiscreteModelVertex* New();
+  vtkDiscreteModelVertex();
+  virtual ~vtkDiscreteModelVertex();
 
 //BTX
   friend class vtkDiscreteModel;
@@ -74,15 +74,15 @@ protected:
   friend class vtkModelVertexUse;
   friend class vtkModelEdgeUse;
   friend class vtkModelEdge;
-  friend class vtkCMBXMLModelReader;
-  friend class vtkCMBModelWrapper;
+  friend class vtkXMLModelReader;
+  friend class vtkDiscreteModelWrapper;
   friend class vtkCmbMapToCmbModel;
 //ETX
 
 
 private:
-  vtkCMBModelVertex(const vtkCMBModelVertex&);  // Not implemented.
-  void operator=(const vtkCMBModelVertex&);  // Not implemented.
+  vtkDiscreteModelVertex(const vtkDiscreteModelVertex&);  // Not implemented.
+  void operator=(const vtkDiscreteModelVertex&);  // Not implemented.
 };
 
 #endif

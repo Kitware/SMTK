@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkCMBXMLModelReader.h
+  Module:    vtkXMLModelReader.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-// .NAME vtkCMBXMLModelReader - Reads an XML archive from input stream
+// .NAME vtkXMLModelReader - Reads an XML archive from input stream
 // .SECTION Description
 // This concrete sub-class of vtkSerializer reads an XML archive from
 // an input stream and create a collection of sub-classes of 
@@ -21,25 +21,25 @@
 //  std::vector<vtkSmartPointer<vtkSerializableObject> > objs;
 //  ifstream ifs(filename);
 //  
-//  vtkSmartPointer<vtkCMBXMLModelReader> reader = 
-//    vtkSmartPointer<vtkCMBXMLModelReader>::New();
+//  vtkSmartPointer<vtkXMLModelReader> reader = 
+//    vtkSmartPointer<vtkXMLModelReader>::New();
 //  reader->Serialize(istr, "ConceptualModel", objs);
 // .. Do something with objs
 // \endcode
-// See vtkCMBModelWriter for details about the XML format.
+// See vtkDiscreteModelWriter for details about the XML format.
 // .SECTION See Also
 // vtkSerializer vtkXMLArchiveWriter
 
-#ifndef __vtkCMBXMLModelReader_h
-#define __vtkCMBXMLModelReader_h
+#ifndef __vtkXMLModelReader_h
+#define __vtkXMLModelReader_h
 
 #include "Serialize/vtkSerializer.h"
 
 //BTX
 class vtkDiscreteModel;
-class vtkCMBModelEntityGroup;
-class vtkCMBNodalGroup;
-class vtkCMBUniqueNodalGroup;
+class vtkDiscreteModelEntityGroup;
+class vtkModelNodalGroup;
+class vtkModelUniqueNodalGroup;
 class vtkCollection;
 class vtkXMLElement;
 class vtkModelEdge;
@@ -53,11 +53,11 @@ class vtkModelVertex;
 class vtkModelVertexUse;
 //ETX
 
-class VTK_EXPORT vtkCMBXMLModelReader : public vtkSerializer
+class VTK_EXPORT vtkXMLModelReader : public vtkSerializer
 {
 public:
-  static vtkCMBXMLModelReader *New();
-  vtkTypeRevisionMacro(vtkCMBXMLModelReader,vtkSerializer);
+  static vtkXMLModelReader *New();
+  vtkTypeRevisionMacro(vtkXMLModelReader,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -163,8 +163,8 @@ public:
                                 vtkCollection* elements);
 
 protected:
-  vtkCMBXMLModelReader();
-  ~vtkCMBXMLModelReader();
+  vtkXMLModelReader();
+  ~vtkXMLModelReader();
 
 //BTX
   // Description:
@@ -186,13 +186,13 @@ protected:
   vtkModelShellUse* ConstructModelShellUse(int id);
   vtkModelVertex* ConstructModelVertex(int id);
   vtkModelVertexUse* ConstructModelVertexUse(int id);
-  vtkCMBModelEntityGroup* ConstructModelEntityGroup(int id);
-  vtkCMBNodalGroup* ConstructNodalGroup(int id);
-  vtkCMBUniqueNodalGroup* ConstructUniqueNodalGroup(int id);
+  vtkDiscreteModelEntityGroup* ConstructModelEntityGroup(int id);
+  vtkModelNodalGroup* ConstructNodalGroup(int id);
+  vtkModelUniqueNodalGroup* ConstructUniqueNodalGroup(int id);
 
 private:
-  vtkCMBXMLModelReader(const vtkCMBXMLModelReader&);  // Not implemented.
-  void operator=(const vtkCMBXMLModelReader&);  // Not implemented.
+  vtkXMLModelReader(const vtkXMLModelReader&);  // Not implemented.
+  void operator=(const vtkXMLModelReader&);  // Not implemented.
 
   int ParseStream(istream& str);
   vtkObject* ReadObject(vtkIdType id, bool weakPtr);

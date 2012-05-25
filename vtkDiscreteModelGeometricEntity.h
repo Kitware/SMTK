@@ -22,31 +22,31 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelGeometricEntity - Abstract class that is used through
-// multiple inheritance to imbue the required functionality for vtkCMBModelFace,
-// vtkCMBModelEdge, vtkCMBModelVertex, and vtkCMBModelRegion objects.
+// .NAME vtkDiscreteModelGeometricEntity - Abstract class that is used through
+// multiple inheritance to imbue the required functionality for vtkDiscreteModelFace,
+// vtkDiscreteModelEdge, vtkDiscreteModelVertex, and vtkDiscreteModelRegion objects.
 // .SECTION Description
 // Abstract class that is used through
-// multiple inheritance to imbue the required functionality for vtkCMBModelFace,
-// vtkCMBModelEdge, vtkCMBModelVertex, and vtkCMBModelRegion objects.  A cell data
+// multiple inheritance to imbue the required functionality for vtkDiscreteModelFace,
+// vtkDiscreteModelEdge, vtkDiscreteModelVertex, and vtkDiscreteModelRegion objects.  A cell data
 // array is used to get the corresponding cell id for the master grid.
 
 
-#ifndef __vtkCMBModelGeometricEntity_h
-#define __vtkCMBModelGeometricEntity_h
+#ifndef __vtkDiscreteModelGeometricEntity_h
+#define __vtkDiscreteModelGeometricEntity_h
 
-#include "vtkCMBModelEntity.h"
+#include "vtkDiscreteModelEntity.h"
 
 #include <vector>
 #include "vtkType.h"
 
-class vtkCMBMaterial;
+class vtkModelMaterial;
 class vtkIdList;
 class vtkIdTypeArray;
 class vtkModel;
 class vtkModelGeometricEntity;
 
-class VTK_EXPORT vtkCMBModelGeometricEntity : public vtkCMBModelEntity
+class VTK_EXPORT vtkDiscreteModelGeometricEntity : public vtkDiscreteModelEntity
 {
 public:
 
@@ -54,7 +54,7 @@ public:
   // Merge the source model entity into this model entity.  lowerDimensionalIds
   // is the entity ids of model entities that are only on the boundary of
   // the source and target.  They will get destroyed during the merge operation.
-  virtual bool Merge(vtkCMBModelGeometricEntity* source,
+  virtual bool Merge(vtkDiscreteModelGeometricEntity* source,
                      vtkIdTypeArray* lowerDimensionalIds);
 
   // Description:
@@ -64,7 +64,7 @@ public:
   // Description:
   // Returns the material.  Should return zero values for objects that
   // are part of the boundary of a higher dimensional object.
-  virtual vtkCMBMaterial* GetMaterial();
+  virtual vtkModelMaterial* GetMaterial();
 
   // Description:
   // Get the CellId on the master vtkPolyData for the cell with
@@ -78,10 +78,10 @@ public:
   vtkIdType GetNumberOfCells();
 
   // Description:
-  // Return a pointer to this if it is a vtkCMBModelGeometricEntity given
-  // a vtkModelEntity.  Currently this returns non-null values for vtkCMBModelFaces
-  // and vtkCMBModelRegions.
-  static vtkCMBModelGeometricEntity* GetThisCMBModelGeometricEntity(vtkModelEntity*);
+  // Return a pointer to this if it is a vtkDiscreteModelGeometricEntity given
+  // a vtkModelEntity.  Currently this returns non-null values for vtkDiscreteModelFaces
+  // and vtkDiscreteModelRegions.
+  static vtkDiscreteModelGeometricEntity* GetThisDiscreteModelGeometricEntity(vtkModelEntity*);
 
   // Description:
   // Get name of the cell array that maps the CellId for this grid to the CellId on
@@ -89,14 +89,14 @@ public:
   static const char* GetReverseClassificationArrayName();
 
 protected:
-  vtkCMBModelGeometricEntity();
-  virtual ~vtkCMBModelGeometricEntity();
+  vtkDiscreteModelGeometricEntity();
+  virtual ~vtkDiscreteModelGeometricEntity();
 
 //BTX
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
-  friend class vtkCMBModelWrapper;
+  friend class vtkDiscreteModelWrapper;
   friend class vtkCMBModelStateOperator;
   //friend class vtkCMB3dmReader;
   friend class vtkCMBModelBuilder;
@@ -109,7 +109,7 @@ protected:
   // Add cells to this geometric representation.  This should
   // only be called from vtkDiscreteModel on the server as vtkDiscreteModel is
   // responsible for removing this cell from the current
-  // vtkCMBModelGeometricEntity that is classified on.
+  // vtkDiscreteModelGeometricEntity that is classified on.
   bool AddCellsToGeometry(vtkIdList* CellIds);
 
   // Description:
@@ -117,14 +117,14 @@ protected:
   // the master grid.
   vtkIdTypeArray* GetReverseClassificationArray();
 
-  void SetMaterial(vtkCMBMaterial* Material);
+  void SetMaterial(vtkModelMaterial* Material);
 //BTX
-  friend class vtkCMBMaterial;
+  friend class vtkModelMaterial;
 //ETX
 
 private:
-  vtkCMBModelGeometricEntity(const vtkCMBModelGeometricEntity&);  // Not implemented.
-  void operator=(const vtkCMBModelGeometricEntity&);  // Not implemented.
+  vtkDiscreteModelGeometricEntity(const vtkDiscreteModelGeometricEntity&);  // Not implemented.
+  void operator=(const vtkDiscreteModelGeometricEntity&);  // Not implemented.
 
   // Description:
   // Remove a list of cells from the geometric object.  The cell

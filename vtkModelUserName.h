@@ -22,24 +22,24 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBUserName - Helper class for setting/getting a user name
+// .NAME vtkModelUserName - Helper class for setting/getting a user name
 // .SECTION Description
 // Helper class with functions for setting and getting a user name
 // for a vtkModelEntity.  
 
-#ifndef __vtkCMBUserName_h
-#define __vtkCMBUserName_h
+#ifndef __vtkModelUserName_h
+#define __vtkModelUserName_h
 
 #include "vtkObject.h"
 
 class vtkInformationStringKey;
 class vtkModelEntity;
 
-class VTK_EXPORT vtkCMBUserName : public vtkObject
+class VTK_EXPORT vtkModelUserName : public vtkObject
 {
 public:
-  static vtkCMBUserName *New();
-  vtkTypeRevisionMacro(vtkCMBUserName,vtkObject);
+  static vtkModelUserName *New();
+  vtkTypeRevisionMacro(vtkModelUserName,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static void SetUserName(vtkModelEntity* Entity, const char* UserName);
@@ -49,12 +49,12 @@ public:
   static vtkInformationStringKey* USERNAME();
 
 protected:
-  vtkCMBUserName() {};
-  ~vtkCMBUserName() {};
+  vtkModelUserName() {};
+  ~vtkModelUserName() {};
 
 private:
-  vtkCMBUserName(const vtkCMBUserName&);  // Not implemented.
-  void operator=(const vtkCMBUserName&);  // Not implemented.
+  vtkModelUserName(const vtkModelUserName&);  // Not implemented.
+  void operator=(const vtkModelUserName&);  // Not implemented.
 };
 #endif
 

@@ -22,22 +22,22 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCMBModelRegion - 
+// .NAME vtkDiscreteModelRegion - 
 // .SECTION Description
 
-#ifndef __vtkCMBModelRegion_h
-#define __vtkCMBModelRegion_h
+#ifndef __vtkDiscreteModelRegion_h
+#define __vtkDiscreteModelRegion_h
 
 #include "Model/vtkModelRegion.h"
-#include "vtkCMBModelGeometricEntity.h"
+#include "vtkDiscreteModelGeometricEntity.h"
 
 class vtkInformationStringKey;
 
-class VTK_EXPORT vtkCMBModelRegion : public vtkModelRegion,
-  public vtkCMBModelGeometricEntity
+class VTK_EXPORT vtkDiscreteModelRegion : public vtkModelRegion,
+  public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkCMBModelRegion,vtkModelRegion);
+  vtkTypeRevisionMacro(vtkDiscreteModelRegion,vtkModelRegion);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual bool Destroy();
@@ -64,17 +64,17 @@ public:
   virtual void Serialize(vtkSerializer* ser);
 
 protected:
-  static vtkCMBModelRegion *New();
+  static vtkDiscreteModelRegion *New();
 //BTX
   friend class vtkDiscreteModel;
 //ETX
-  vtkCMBModelRegion();
-  virtual ~vtkCMBModelRegion();
+  vtkDiscreteModelRegion();
+  virtual ~vtkDiscreteModelRegion();
   virtual vtkModelEntity* GetThisModelEntity();
 
 private:
-  vtkCMBModelRegion(const vtkCMBModelRegion&);  // Not implemented.
-  void operator=(const vtkCMBModelRegion&);  // Not implemented.
+  vtkDiscreteModelRegion(const vtkDiscreteModelRegion&);  // Not implemented.
+  void operator=(const vtkDiscreteModelRegion&);  // Not implemented.
 };
 
 #endif

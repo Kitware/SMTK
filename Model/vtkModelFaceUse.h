@@ -76,7 +76,7 @@ private:
   void operator=(const vtkModelFaceUse&);  // Not implemented.
 
 //BTX
-  friend class vtkCMBXMLModelReader;
+  friend class vtkXMLModelReader;
   friend class vtkModel;
   friend class vtkModelShellUse;
   friend class vtkModelFace;

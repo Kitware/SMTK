@@ -137,7 +137,7 @@ private:
   
 //BTX
   friend class vtkModelItemListIterator;
-  friend class vtkCMBXMLModelReader;
+  friend class vtkXMLModelReader;
 //ETX
 };
 

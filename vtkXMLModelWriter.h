@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkCMBXMLModelWriter.h
+  Module:    vtkXMLModelWriter.h
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,9 +12,9 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-// .NAME vtkCMBXMLModelWriter - Writes an XML archive to output stream
+// .NAME vtkXMLModelWriter - Writes an XML archive to output stream
 // .SECTION Description
-// Given a vector of vtkSerializableObject, vtkCMBXMLModelWriter writes
+// Given a vector of vtkSerializableObject, vtkXMLModelWriter writes
 // the object graph in an XML format. All objects are written in a flat
 // collection under the root element. All references to these objects
 // are stored using elements of type Pointer. All objects in the
@@ -34,7 +34,7 @@
 //       </Key_1>
 //     </Associations>
 //   </Object>
-//   <Object type="vtkvtkCMBModelFaceUse" id="2">
+//   <Object type="vtkvtkDiscreteModelFaceUse" id="2">
 //     <Properties type="vtkInformation">
 //       <vtkConceptualModelItem::COLOR values="1 0 0 0" length="4"/>
 //     </Properties>
@@ -47,8 +47,8 @@
 // </ConceptualModel>
 // \endcode
 
-#ifndef __vtkCMBXMLModelWriter_h
-#define __vtkCMBXMLModelWriter_h
+#ifndef __vtkXMLModelWriter_h
+#define __vtkXMLModelWriter_h
 
 #include "Serialize/vtkSerializer.h"
 
@@ -57,16 +57,16 @@
 #include "vtkSmartPointer.h" // Vector of smart pointers
 
 //BTX
-struct vtkCMBXMLModelWriterInternals;
+struct vtkXMLModelWriterInternals;
 class vtkXMLElement;
 class vtkSerializableObject;
 //ETX
 
-class VTK_EXPORT vtkCMBXMLModelWriter : public vtkSerializer
+class VTK_EXPORT vtkXMLModelWriter : public vtkSerializer
 {
 public:
-  static vtkCMBXMLModelWriter *New();
-  vtkTypeRevisionMacro(vtkCMBXMLModelWriter,vtkSerializer);
+  static vtkXMLModelWriter *New();
+  vtkTypeRevisionMacro(vtkXMLModelWriter,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -83,16 +83,16 @@ public:
   // only. For example:
   // \code
   // vtkSmartPointer<vtkvtkCMBShell> shell = vtkSmartPointer<vtkvtkCMBShell>::New();
-  // vtkvtkCMBModelFaceUse* fu1 = vtkvtkCMBModelFaceUse::New();
+  // vtkvtkDiscreteModelFaceUse* fu1 = vtkvtkDiscreteModelFaceUse::New();
   // shell->AddModelFaceUse(fu1);
   // 
-  // vtkSmartPointer<vtkvtkCMBModelFaceUse> fu2 = 
-  //   vtkSmartPointer<vtkvtkCMBModelFaceUse>::New();
+  // vtkSmartPointer<vtkvtkDiscreteModelFaceUse> fu2 = 
+  //   vtkSmartPointer<vtkvtkDiscreteModelFaceUse>::New();
   // shell->AddModelFaceUse(fu2);
   // fu2->SetColor(1, 0, 0, 0);
   // 
-  // vtkSmartPointer<vtkCMBXMLModelWriter> writer = 
-  //   vtkSmartPointer<vtkCMBXMLModelWriter>::New();
+  // vtkSmartPointer<vtkXMLModelWriter> writer = 
+  //   vtkSmartPointer<vtkXMLModelWriter>::New();
   // vtksys_ios::ostringstream ostr;
   // writer->SetArchiveVersion(1);
   // std::vector<vtkSmartPointer<vtkSerializableObject> > objs;
@@ -172,15 +172,15 @@ public:
 //ETX
 
 protected:
-  vtkCMBXMLModelWriter();
-  ~vtkCMBXMLModelWriter();
+  vtkXMLModelWriter();
+  ~vtkXMLModelWriter();
 
   virtual void Initialize(const char* name);
   virtual vtkIdType Serialize(vtkSerializableObject*& obj);
   
 private:
-  vtkCMBXMLModelWriter(const vtkCMBXMLModelWriter&);  // Not implemented.
-  void operator=(const vtkCMBXMLModelWriter&);  // Not implemented.
+  vtkXMLModelWriter(const vtkXMLModelWriter&);  // Not implemented.
+  void operator=(const vtkXMLModelWriter&);  // Not implemented.
 
 //BTX
   virtual vtkXMLElement* CreateDOM(const char* rootName, 
@@ -189,7 +189,7 @@ private:
 
   void SetRootElement(vtkXMLElement*);
   
-  vtkCMBXMLModelWriterInternals* Internal;
+  vtkXMLModelWriterInternals* Internal;
   vtkXMLElement* RootElement;
 };
 

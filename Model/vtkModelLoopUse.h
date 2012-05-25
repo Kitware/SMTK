@@ -75,8 +75,8 @@ protected:
   void RemoveModelEdgeUseAssociation(vtkModelEdgeUse* EdgeUse);
 
 //BTX
-  friend class vtkCMBModelGeometricEntity;
-  friend class vtkCMBXMLModelReader;
+  friend class vtkDiscreteModelGeometricEntity;
+  friend class vtkXMLModelReader;
   friend class vtkModelEdge;
   friend class vtkModelFace;
   friend class vtkModelFaceUse;

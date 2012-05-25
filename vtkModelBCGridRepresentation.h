@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkCmbBCGridRepresentation - CMBModel representation of an analysis grid from a BC file.
+// .NAME vtkModelBCGridRepresentation - CMBModel representation of an analysis grid from a BC file.
 // .SECTION Description
 // A class used to provide all of the information that a CMBModel needs
 // to keep track of mapping grid objects from the geometry grid to the
@@ -36,40 +36,40 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // that are adjacent to an internal model face (i.e. a model
 // face that is adjacent to 2 model regions).
 
-#ifndef __vtkCmbBCGridRepresentation_h
-#define __vtkCmbBCGridRepresentation_h
+#ifndef __vtkModelBCGridRepresentation_h
+#define __vtkModelBCGridRepresentation_h
 
-#include "vtkCmbGridRepresentation.h"
+#include "vtkModelGridRepresentation.h"
 #include "vtkSmartPointer.h"
 #include <map>
 #include <set>
 
 class vtkPolyData;
 
-class VTK_EXPORT vtkCmbBCGridRepresentation : public vtkCmbGridRepresentation
+class VTK_EXPORT vtkModelBCGridRepresentation : public vtkModelGridRepresentation
 {
 public:
-  static vtkCmbBCGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkCmbBCGridRepresentation,vtkCmbGridRepresentation);
+  static vtkModelBCGridRepresentation* New();
+  vtkTypeRevisionMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetBCSNodalAnalysisGridPointIds(vtkDiscreteModel* model,
     vtkIdType bcsGroupId, int bcGroupType, vtkIdList* pointIds);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetFloatingEdgeAnalysisGridPointIds(vtkDiscreteModel* model, vtkIdType modelEdgeId,
                                                    vtkIdList* pointIds);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetModelEdgeAnalysisPoints(vtkDiscreteModel* model, vtkIdType edgeId,
                                           vtkIdTypeArray* edgePoints);
 
   // Description:
-  // See vtkCmbGridRepresentation.
+  // See vtkModelGridRepresentation.
   virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
                                               vtkIdList* cellIds, vtkIdList* cellSides);
 
@@ -110,12 +110,12 @@ public:
                                           vtkIdList* cellIds, vtkIdList* cellSides);
 
 protected:
-  vtkCmbBCGridRepresentation();
-  virtual ~vtkCmbBCGridRepresentation();
+  vtkModelBCGridRepresentation();
+  virtual ~vtkModelBCGridRepresentation();
 
 private:
-  vtkCmbBCGridRepresentation(const vtkCmbBCGridRepresentation&);  // Not implemented.
-  void operator=(const vtkCmbBCGridRepresentation&);  // Not implemented.
+  vtkModelBCGridRepresentation(const vtkModelBCGridRepresentation&);  // Not implemented.
+  void operator=(const vtkModelBCGridRepresentation&);  // Not implemented.
 
   // Description:
   // A mapping from a model edge id to a set of point ids in the analysis grid.

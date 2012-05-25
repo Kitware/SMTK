@@ -38,7 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObject.h"
 
 class vtkIdList;
-class vtkCMBModelGeometricEntity;
+class vtkDiscreteModelGeometricEntity;
 
 class VTK_EXPORT vtkSplitEventData : public vtkObject
 {
@@ -49,8 +49,8 @@ public:
 
   // Description:
   // Set/get the SourceEntity
-  vtkGetMacro(SourceEntity, vtkCMBModelGeometricEntity*);
-  vtkSetMacro(SourceEntity, vtkCMBModelGeometricEntity*);
+  vtkGetMacro(SourceEntity, vtkDiscreteModelGeometricEntity*);
+  vtkSetMacro(SourceEntity, vtkDiscreteModelGeometricEntity*);
 
   // Description:
   // Set/get the list of created model entity ids.  Values
@@ -63,7 +63,7 @@ protected:
   virtual ~vtkSplitEventData();
 
 private:
-  vtkCMBModelGeometricEntity* SourceEntity;
+  vtkDiscreteModelGeometricEntity* SourceEntity;
   vtkIdList* CreatedModelEntityIds;
 
   vtkSplitEventData(const vtkSplitEventData&);  // Not implemented.

@@ -68,7 +68,7 @@ vtkModelUniqueNodalGroup::~vtkModelUniqueNodalGroup()
 void vtkModelUniqueNodalGroup::AddPointId(vtkIdType PointId)
 {
   vtkDiscreteModel* Model = this->GetModel();
-  // CMBModel will remove PointId from the old unique nodal group
+  // DiscreteModel will remove PointId from the old unique nodal group
   Model->SetPointUniqueNodalGroup(this, PointId);
 
   this->Superclass::AddPointId(PointId);
@@ -76,7 +76,7 @@ void vtkModelUniqueNodalGroup::AddPointId(vtkIdType PointId)
 
 void vtkModelUniqueNodalGroup::RemovePointId(vtkIdType PointId)
 {
-  // CMBModel will remove PointId from the old unique nodal group
+  // DiscreteModel will remove PointId from the old unique nodal group
   vtkDiscreteModel* Model = this->GetModel();
   Model->SetPointUniqueNodalGroup(0, PointId);
 }

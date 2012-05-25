@@ -103,7 +103,7 @@ void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
     Model->GetGeometry());
   if(!MasterPoly)
     {
-    vtkErrorMacro("The CMB model does not have a valid master polydata.");
+    vtkErrorMacro("The discrete model does not have a valid master polydata.");
     return;
     }
   MasterPoly->SetPoints(points);
@@ -511,7 +511,6 @@ void vtkDiscreteModelWrapper::ModelEntitySetGeometryCallback(vtkObject *caller,
   vtkDiscreteModelWrapper* self = reinterpret_cast<vtkDiscreteModelWrapper *>( clientData );
   if(!self || (!model && !modelEntity))
     {
-    //vtkWarningMacro("vtkSBDomainSetContainer::CMBModelChangedCallback, Could not get the model entity.");
     return;
     }
 
