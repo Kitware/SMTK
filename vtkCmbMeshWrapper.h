@@ -44,8 +44,8 @@ public:
 
   // Description:
   // Initialize vtkCmbMeshServer.
-  void SetModelWrapper(vtkCMBModelWrapper*);
 //BTX
+  void SetModelWrapper(vtkCMBModelWrapper*);
   vtkCmbMeshServer* GetMesh();
 //ETX
 

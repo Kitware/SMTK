@@ -10,18 +10,21 @@ SET(QT_QMAKE_EXECUTABLE ${PARAVIEW_QT_QMAKE_EXECUTABLE})
 FIND_PACKAGE(Qt4)
 include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 
+message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
+
 include_directories(
   ${VTKExtensions_SOURCE_DIR}
   ${VTKExtensions_SOURCE_DIR}/Filtering
   ${VTKExtensions_SOURCE_DIR}/Graphics
   ${VTKExtensions_SOURCE_DIR}/IO
-  ${VTKExtensions_SOURCE_DIR}/Kitware
   ${VTKExtensions_SOURCE_DIR}/Meshing
   ${CMBModel_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Src
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Math/Src
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Alloc/Src
   ${Omicron_BINARY_DIR}/include
+  ${DiscreteModel_SOURCE_DIR}
+  ${DiscreteModel_SOURCE_DIR}/Model
 )
 
 IF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
@@ -62,7 +65,7 @@ SET_SOURCE_FILES_PROPERTIES(
   ABSTRACT
 )
 # add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
-# target_link_libraries(SimBuilderLibrary vtkCmbDiscreteModel vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+# target_link_libraries(SimBuilderLibrary vtkDiscreteModel vtkCmbDiscreteModel vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
@@ -76,7 +79,8 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
-TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCmbDiscreteModel vtkCmbDiscreteModelCS vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCMBVTKExtensions vtkCMBVTKExtensionsCS vtkCmbDiscreteModel vtkCmbDiscreteModelCS
+  vtkDiscreteModel vtkDiscreteModelCS vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
 
 if(NOT APPLE)
   install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
