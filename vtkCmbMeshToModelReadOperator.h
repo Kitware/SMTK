@@ -44,11 +44,9 @@ public:
   vtkTypeRevisionMacro(vtkCmbMeshToModelReadOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
-//BTX
   // Description:
   // Load the file into Model.
   void Operate(vtkDiscreteModelWrapper* ModelWrapper);
-//ETX
 
   // Description:
   // Get/Set the name of the input file.

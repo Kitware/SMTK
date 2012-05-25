@@ -50,10 +50,8 @@ public:
 
   // Description:
   // Set/get functions for the ModelWrapper.
-//BTX
   vtkGetMacro(ModelWrapper, vtkDiscreteModelWrapper*);
   void SetModelWrapper(vtkDiscreteModelWrapper* Wrapper);
-//ETX
 
 protected:
   vtkCmbMeshToModelWriter();
