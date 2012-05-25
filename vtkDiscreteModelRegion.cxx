@@ -22,79 +22,79 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelRegion.h"
+#include "vtkDiscreteModelRegion.h"
 
-#include "vtkCMBModelEntityGroup.h"
+#include "vtkDiscreteModelEntityGroup.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationStringKey.h"
-#include "vtkCMBMaterial.h"
+#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
 #include "vtkModelShellUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
-vtkCxxRevisionMacro(vtkCMBModelRegion, "");
-vtkInformationKeyRestrictedMacro(vtkCMBModelRegion, POINTINSIDE, DoubleVector, 3);
-vtkInformationKeyMacro(vtkCMBModelRegion, SOLIDFILENAME, String);
+vtkCxxRevisionMacro(vtkDiscreteModelRegion, "");
+vtkInformationKeyRestrictedMacro(vtkDiscreteModelRegion, POINTINSIDE, DoubleVector, 3);
+vtkInformationKeyMacro(vtkDiscreteModelRegion, SOLIDFILENAME, String);
 
-vtkCMBModelRegion* vtkCMBModelRegion::New()
+vtkDiscreteModelRegion* vtkDiscreteModelRegion::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBModelRegion"); 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelRegion"); 
   if(ret) 
     {                                    
-    return static_cast<vtkCMBModelRegion*>(ret); 
+    return static_cast<vtkDiscreteModelRegion*>(ret); 
     } 
-  return new vtkCMBModelRegion;
+  return new vtkDiscreteModelRegion;
 }
 
-vtkCMBModelRegion::vtkCMBModelRegion()
+vtkDiscreteModelRegion::vtkDiscreteModelRegion()
 {
 }
 
-vtkCMBModelRegion::~vtkCMBModelRegion()
+vtkDiscreteModelRegion::~vtkDiscreteModelRegion()
 {
 }
 
-vtkModelEntity* vtkCMBModelRegion::GetThisModelEntity()
+vtkModelEntity* vtkDiscreteModelRegion::GetThisModelEntity()
 {
   return this;
 }
 
-bool vtkCMBModelRegion::Destroy()
+bool vtkDiscreteModelRegion::Destroy()
 {
   this->Superclass::Destroy();
   this->RemoveAllAssociations(vtkModelEdgeType);
   return 1;
 }
 
-void vtkCMBModelRegion::SetPointInside(double* Point)
+void vtkDiscreteModelRegion::SetPointInside(double* Point)
 {
   this->GetProperties()->Set(POINTINSIDE(),Point,3);
   this->Modified();
 }
 
-double* vtkCMBModelRegion::GetPointInside()
+double* vtkDiscreteModelRegion::GetPointInside()
 {
   return this->GetProperties()->Get(POINTINSIDE());
 }
-void vtkCMBModelRegion::SetSolidFileName(const char* filename)
+void vtkDiscreteModelRegion::SetSolidFileName(const char* filename)
 {
   this->GetProperties()->Set(SOLIDFILENAME(),filename);
   this->Modified();
 }
-const char* vtkCMBModelRegion::GetSolidFileName()
+const char* vtkDiscreteModelRegion::GetSolidFileName()
 {
   return this->GetProperties()->Get(SOLIDFILENAME());
 }
 
-void vtkCMBModelRegion::Serialize(vtkSerializer* ser)
+void vtkDiscreteModelRegion::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-void vtkCMBModelRegion::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelRegion::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

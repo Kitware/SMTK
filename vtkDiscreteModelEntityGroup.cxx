@@ -22,78 +22,78 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelEntityGroup.h"
+#include "vtkDiscreteModelEntityGroup.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEntity.h"
+#include "vtkDiscreteModelEntity.h"
 #include "vtkInformation.h"
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 
-vtkCxxRevisionMacro(vtkCMBModelEntityGroup, "");
+vtkCxxRevisionMacro(vtkDiscreteModelEntityGroup, "");
 
-vtkCMBModelEntityGroup* vtkCMBModelEntityGroup::New()
+vtkDiscreteModelEntityGroup* vtkDiscreteModelEntityGroup::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBModelEntityGroup"); 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEntityGroup"); 
   if(ret) 
     {                                    
-    return static_cast<vtkCMBModelEntityGroup*>(ret);
+    return static_cast<vtkDiscreteModelEntityGroup*>(ret);
     } 
-  return new vtkCMBModelEntityGroup;
+  return new vtkDiscreteModelEntityGroup;
 }
 
-vtkCMBModelEntityGroup::vtkCMBModelEntityGroup()
+vtkDiscreteModelEntityGroup::vtkDiscreteModelEntityGroup()
 {
   this->EntityType = -1;
 }
 
-vtkCMBModelEntityGroup::~vtkCMBModelEntityGroup()
+vtkDiscreteModelEntityGroup::~vtkDiscreteModelEntityGroup()
 {
 }
 
-bool vtkCMBModelEntityGroup::IsDestroyable()
+bool vtkDiscreteModelEntityGroup::IsDestroyable()
 {
   return 1;
 }
 
-bool vtkCMBModelEntityGroup::Destroy()
+bool vtkDiscreteModelEntityGroup::Destroy()
 {
   this->RemoveAllAssociations(this->EntityType);
   this->Modified();
   return 1;
 }
 
-void vtkCMBModelEntityGroup::AddModelEntity(vtkCMBModelEntity* Object)
+void vtkDiscreteModelEntityGroup::AddModelEntity(vtkDiscreteModelEntity* Object)
 {
   vtkModelEntity* entity = Object->GetThisModelEntity();
   int entityType = entity->GetType();
   this->AddAssociation(entityType, entity);
 }
 
-bool vtkCMBModelEntityGroup::RemoveModelEntity(vtkCMBModelEntity* Object)
+bool vtkDiscreteModelEntityGroup::RemoveModelEntity(vtkDiscreteModelEntity* Object)
 {
   this->RemoveAssociation(Object->GetThisModelEntity()->GetType(), 
                           Object->GetThisModelEntity());
   return 1;
 }
 
-int vtkCMBModelEntityGroup::GetNumberOfModelEntities()
+int vtkDiscreteModelEntityGroup::GetNumberOfModelEntities()
 {
   return this->GetNumberOfAssociations(this->EntityType);
 }
 
-vtkModelItemIterator* vtkCMBModelEntityGroup::NewModelEntityIterator()
+vtkModelItemIterator* vtkDiscreteModelEntityGroup::NewModelEntityIterator()
 {
   vtkModelItemIterator* iter = this->NewIterator(this->EntityType);
   return iter;
 }
 
-int vtkCMBModelEntityGroup::GetType()
+int vtkDiscreteModelEntityGroup::GetType()
 {
-  return vtkCMBModelEntityGroupType;
+  return vtkDiscreteModelEntityGroupType;
 }
 
-void vtkCMBModelEntityGroup::Serialize(vtkSerializer* ser)
+void vtkDiscreteModelEntityGroup::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 
@@ -101,7 +101,7 @@ void vtkCMBModelEntityGroup::Serialize(vtkSerializer* ser)
 }
 
 
-void vtkCMBModelEntityGroup::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelEntityGroup::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 

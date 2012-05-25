@@ -21,32 +21,32 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCmbGridRepresentation.h"
+#include "vtkModelGridRepresentation.h"
 
-vtkCxxRevisionMacro(vtkCmbGridRepresentation, "");
+vtkCxxRevisionMacro(vtkModelGridRepresentation, "");
 
 //----------------------------------------------------------------------------
-vtkCmbGridRepresentation::vtkCmbGridRepresentation()
+vtkModelGridRepresentation::vtkModelGridRepresentation()
 {
   this->GridFileName = NULL;
   this->ModelInfoFileName = NULL;
 }
 
 //----------------------------------------------------------------------------
-vtkCmbGridRepresentation::~vtkCmbGridRepresentation()
+vtkModelGridRepresentation::~vtkModelGridRepresentation()
 {
   this->SetGridFileName(NULL);
   this->SetModelInfoFileName(NULL);
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbGridRepresentation::Reset()
+void vtkModelGridRepresentation::Reset()
 {
   this->SetGridFileName(NULL);
   this->SetModelInfoFileName(NULL);
 }
 //----------------------------------------------------------------------------
-bool vtkCmbGridRepresentation::IsSameModelInfoFile(const char* filename)
+bool vtkModelGridRepresentation::IsSameModelInfoFile(const char* filename)
 {
   if((this->ModelInfoFileName == NULL && filename == NULL) ||
     (this->ModelInfoFileName && filename &&
@@ -58,7 +58,7 @@ bool vtkCmbGridRepresentation::IsSameModelInfoFile(const char* filename)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
   os << indent << "GridFileName: " << this->GridFileName << "\n";

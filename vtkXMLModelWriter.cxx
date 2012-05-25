@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    vtkCMBXMLModelWriter.cxx
+  Module:    vtkXMLModelWriter.cxx
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,7 +12,7 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkCMBXMLModelWriter.h"
+#include "vtkXMLModelWriter.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationIdTypeKey.h"
@@ -33,14 +33,14 @@
 #include <map>
 #include "vtksys/ios/sstream"
 
-vtkCxxRevisionMacro(vtkCMBXMLModelWriter, "");
-vtkStandardNewMacro(vtkCMBXMLModelWriter);
+vtkCxxRevisionMacro(vtkXMLModelWriter, "");
+vtkStandardNewMacro(vtkXMLModelWriter);
 
-vtkCxxSetObjectMacro(vtkCMBXMLModelWriter, RootElement, vtkXMLElement);
+vtkCxxSetObjectMacro(vtkXMLModelWriter, RootElement, vtkXMLElement);
 
-struct vtkCMBXMLModelWriterInternals
+struct vtkXMLModelWriterInternals
 {
-  vtkCMBXMLModelWriterInternals() {}
+  vtkXMLModelWriterInternals() {}
 
   void Push(vtkXMLElement* elem)
     {
@@ -56,19 +56,19 @@ struct vtkCMBXMLModelWriterInternals
   std::map<vtkSerializableObject*, vtkIdType> IDs;
 };
 
-vtkCMBXMLModelWriter::vtkCMBXMLModelWriter()
+vtkXMLModelWriter::vtkXMLModelWriter()
 {
-  this->Internal = new vtkCMBXMLModelWriterInternals;
+  this->Internal = new vtkXMLModelWriterInternals;
   this->RootElement = 0;
 }
 
-vtkCMBXMLModelWriter::~vtkCMBXMLModelWriter()
+vtkXMLModelWriter::~vtkXMLModelWriter()
 {
   delete this->Internal;
   this->SetRootElement(0);
 }
 
-void vtkCMBXMLModelWriter::PrintSelf(ostream& os, vtkIndent indent)
+void vtkXMLModelWriter::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
@@ -76,7 +76,7 @@ void vtkCMBXMLModelWriter::PrintSelf(ostream& os, vtkIndent indent)
 namespace
 {
 vtkSmartPointer<vtkXMLElement> BaseSerialize(const char* name,
-  vtkCMBXMLModelWriterInternals* internal)
+  vtkXMLModelWriterInternals* internal)
 {
   vtkXMLElement* root = internal->Stack.front();
   if (!root)
@@ -94,7 +94,7 @@ vtkSmartPointer<vtkXMLElement> BaseSerialize(const char* name,
 }
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name,vtkObject*& obj,
+void vtkXMLModelWriter::Serialize(const char* name,vtkObject*& obj,
                                   bool weakPtr)
 {
 
@@ -113,7 +113,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name,vtkObject*& obj,
     }
 }
 
-vtkIdType vtkCMBXMLModelWriter::Serialize(vtkSerializableObject*& obj)
+vtkIdType vtkXMLModelWriter::Serialize(vtkSerializableObject*& obj)
 {
   if (!obj)
     {
@@ -193,7 +193,7 @@ void SerializeVectorKey(vtkInformation* info,
 }
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, vtkInformation* info)
+void vtkXMLModelWriter::Serialize(const char* name, vtkInformation* info)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -269,7 +269,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, vtkInformation* info)
   iter->Delete();
 }
 
-void vtkCMBXMLModelWriter::Serialize(
+void vtkXMLModelWriter::Serialize(
   const char* name,
   std::vector<vtkSmartPointer<vtkObject> >& objs,
   bool weakPtr)
@@ -292,7 +292,7 @@ void vtkCMBXMLModelWriter::Serialize(
   this->Internal->Pop();
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name,
+void vtkXMLModelWriter::Serialize(const char* name,
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& map)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -316,14 +316,14 @@ void vtkCMBXMLModelWriter::Serialize(const char* name,
 
 }
 
-void vtkCMBXMLModelWriter::Initialize(const char* name)
+void vtkXMLModelWriter::Initialize(const char* name)
 {
   this->RootElement = vtkXMLElement::New();
   this->RootElement->SetName(name);
   this->RootElement->AddAttribute("version", this->GetArchiveVersion());
 }
 
-vtkXMLElement* vtkCMBXMLModelWriter::CreateDOM(const char* rootName,
+vtkXMLElement* vtkXMLModelWriter::CreateDOM(const char* rootName,
   std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
   this->Initialize(rootName);
@@ -345,14 +345,14 @@ vtkXMLElement* vtkCMBXMLModelWriter::CreateDOM(const char* rootName,
   return this->RootElement;
 }
 
-void vtkCMBXMLModelWriter::Serialize(vtksys_ios::ostringstream& ostr, const char* rootName,
+void vtkXMLModelWriter::Serialize(vtksys_ios::ostringstream& ostr, const char* rootName,
   std::vector<vtkSmartPointer<vtkObject> >& objs)
 {
   if(this->Internal)
     {
     delete this->Internal;
     }
-  this->Internal = new vtkCMBXMLModelWriterInternals;
+  this->Internal = new vtkXMLModelWriterInternals;
 
   vtkXMLElement* re = this->CreateDOM(rootName, objs);
   re->PrintXML(ostr, vtkIndent());
@@ -362,7 +362,7 @@ void vtkCMBXMLModelWriter::Serialize(vtksys_ios::ostringstream& ostr, const char
 }
 
 // -------------integers---------------
-void vtkCMBXMLModelWriter::Serialize(const char* name, int& val)
+void vtkXMLModelWriter::Serialize(const char* name, int& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -373,7 +373,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, int& val)
   elem->AddAttribute("value", val);
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, int*& val, unsigned int& length)
+void vtkXMLModelWriter::Serialize(const char* name, int*& val, unsigned int& length)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -392,7 +392,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, int*& val, unsigned int& 
 }
 
 // -------------unsigned longs---------------
-void vtkCMBXMLModelWriter::Serialize(const char* name, unsigned long& val)
+void vtkXMLModelWriter::Serialize(const char* name, unsigned long& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -403,7 +403,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, unsigned long& val)
   elem->AddAttribute("value", val);
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, unsigned long*& val, unsigned int& length)
+void vtkXMLModelWriter::Serialize(const char* name, unsigned long*& val, unsigned int& length)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -423,7 +423,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, unsigned long*& val, unsi
 
 // -------------vtkIdTypes---------------
 #if defined(VTK_USE_64BIT_IDS)
-void vtkCMBXMLModelWriter::Serialize(const char* name, vtkIdType& val)
+void vtkXMLModelWriter::Serialize(const char* name, vtkIdType& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -434,7 +434,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, vtkIdType& val)
   elem->AddAttribute("value", val);
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, vtkIdType*& val, unsigned int& length)
+void vtkXMLModelWriter::Serialize(const char* name, vtkIdType*& val, unsigned int& length)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -455,7 +455,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, vtkIdType*& val, unsigned
 
 
 // -------------doubles---------------
-void vtkCMBXMLModelWriter::Serialize(const char* name, double& val)
+void vtkXMLModelWriter::Serialize(const char* name, double& val)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -466,7 +466,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, double& val)
   elem->AddAttribute("value", val);
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, double*& val, unsigned int& length)
+void vtkXMLModelWriter::Serialize(const char* name, double*& val, unsigned int& length)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -484,7 +484,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, double*& val, unsigned in
   elem->AddAttribute("values", val, length);
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, char*& str)
+void vtkXMLModelWriter::Serialize(const char* name, char*& str)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())
@@ -498,7 +498,7 @@ void vtkCMBXMLModelWriter::Serialize(const char* name, char*& str)
     }
 }
 
-void vtkCMBXMLModelWriter::Serialize(const char* name, std::string& str)
+void vtkXMLModelWriter::Serialize(const char* name, std::string& str)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())

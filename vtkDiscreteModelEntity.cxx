@@ -22,25 +22,25 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelEntity.h"
+#include "vtkDiscreteModelEntity.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelRegion.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelRegion.h"
 #include "vtkModelItemIterator.h"
 #include "vtkObjectFactory.h"
 
-vtkCMBModelEntity::vtkCMBModelEntity()
+vtkDiscreteModelEntity::vtkDiscreteModelEntity()
 {
 }
 
-vtkCMBModelEntity::~vtkCMBModelEntity()
+vtkDiscreteModelEntity::~vtkDiscreteModelEntity()
 {
 }
 
-vtkCMBModelEntity* vtkCMBModelEntity::GetThisCMBModelEntity(
+vtkDiscreteModelEntity* vtkDiscreteModelEntity::GetThisCMBModelEntity(
   vtkModelEntity* Entity)
 {
   if(!Entity)
@@ -48,19 +48,19 @@ vtkCMBModelEntity* vtkCMBModelEntity::GetThisCMBModelEntity(
     return 0;
     }
 
-  vtkCMBModelRegion* Region = vtkCMBModelRegion::SafeDownCast(Entity);
+  vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(Entity);
   if(Region)
     {
     return Region;
     }
 
-  vtkCMBModelFace* Face = vtkCMBModelFace::SafeDownCast(Entity);
+  vtkDiscreteModelFace* Face = vtkDiscreteModelFace::SafeDownCast(Entity);
   if(Face)
     {
     return Face;
     }
 
-  vtkCMBModelEdge* Edge = vtkCMBModelEdge::SafeDownCast(Entity);
+  vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::SafeDownCast(Entity);
   if(Edge)
     {
     return Edge;
@@ -69,47 +69,47 @@ vtkCMBModelEntity* vtkCMBModelEntity::GetThisCMBModelEntity(
   return 0;
 }
 
-int vtkCMBModelEntity::GetNumberOfModelEntityGroups()
+int vtkDiscreteModelEntity::GetNumberOfModelEntityGroups()
 {
   return this->GetThisModelEntity()->GetNumberOfAssociations(
-    vtkCMBModelEntityGroupType);
+    vtkDiscreteModelEntityGroupType);
 }
 
-vtkModelItemIterator* vtkCMBModelEntity::NewModelEntityGroupIterator()
+vtkModelItemIterator* vtkDiscreteModelEntity::NewModelEntityGroupIterator()
 {
   vtkModelEntity* thisEntity = this->GetThisModelEntity();
-  vtkModelItemIterator* iter = thisEntity->NewIterator(vtkCMBModelEntityGroupType);
+  vtkModelItemIterator* iter = thisEntity->NewIterator(vtkDiscreteModelEntityGroupType);
   return iter;
 }
 
-void vtkCMBModelEntity::CopyModelEntityGroups(vtkCMBModelEntity* SourceEntity)
+void vtkDiscreteModelEntity::CopyModelEntityGroups(vtkDiscreteModelEntity* SourceEntity)
 {
   this->RemoveAllModelEntityGroups();
   vtkModelItemIterator* Iter = SourceEntity->NewModelEntityGroupIterator();
 
   for(Iter->Begin();!Iter->IsAtEnd();Iter->Next())
     {
-    vtkCMBModelEntityGroup* EntityGroup = vtkCMBModelEntityGroup::SafeDownCast(
+    vtkDiscreteModelEntityGroup* EntityGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
       Iter->GetCurrentItem());
     EntityGroup->AddModelEntity(this);
     }
   Iter->Delete();
 }
 
-void vtkCMBModelEntity::RemoveAllModelEntityGroups()
+void vtkDiscreteModelEntity::RemoveAllModelEntityGroups()
 {
   vtkModelItemIterator* Iter = this->NewModelEntityGroupIterator();
 
   for(Iter->Begin();!Iter->IsAtEnd();Iter->Next())
     {
-    vtkCMBModelEntityGroup* EntityGroup = vtkCMBModelEntityGroup::SafeDownCast(
+    vtkDiscreteModelEntityGroup* EntityGroup = vtkDiscreteModelEntityGroup::SafeDownCast(
       Iter->GetCurrentItem());
     EntityGroup->RemoveModelEntity(this);
     }
   Iter->Delete();
 }
 
-void vtkCMBModelEntity::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelEntity::PrintSelf(ostream& os, vtkIndent indent)
 {
 
 }

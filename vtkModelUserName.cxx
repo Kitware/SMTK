@@ -22,31 +22,31 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBUserName.h"
+#include "vtkModelUserName.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationStringKey.h"
 #include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkCMBUserName, "");
-vtkStandardNewMacro(vtkCMBUserName);
-vtkInformationKeyMacro(vtkCMBUserName, USERNAME, String); 
+vtkCxxRevisionMacro(vtkModelUserName, "");
+vtkStandardNewMacro(vtkModelUserName);
+vtkInformationKeyMacro(vtkModelUserName, USERNAME, String); 
 
 //----------------------------------------------------------------------------
-void vtkCMBUserName::SetUserName(vtkModelEntity* Entity, const char* UserName)
+void vtkModelUserName::SetUserName(vtkModelEntity* Entity, const char* UserName)
 {
-  Entity->GetAttributes()->Set(vtkCMBUserName::USERNAME(), UserName);
+  Entity->GetAttributes()->Set(vtkModelUserName::USERNAME(), UserName);
 }
 
 //----------------------------------------------------------------------------
-const char* vtkCMBUserName::GetUserName(vtkModelEntity* Entity)
+const char* vtkModelUserName::GetUserName(vtkModelEntity* Entity)
 {
-  return Entity->GetAttributes()->Get(vtkCMBUserName::USERNAME());
+  return Entity->GetAttributes()->Get(vtkModelUserName::USERNAME());
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBUserName::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelUserName::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

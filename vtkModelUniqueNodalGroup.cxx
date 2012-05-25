@@ -22,12 +22,12 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBUniqueNodalGroup.h"
+#include "vtkModelUniqueNodalGroup.h"
 
 #include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelFace.h"
+#include "vtkDiscreteModelFace.h"
 #include "vtkExtractEdges.h"
 #include "vtkIdList.h"
 #include "vtkModelItemIterator.h"
@@ -38,34 +38,34 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <set>
 
-struct vtkCMBUniqueNodalGroupInternals
+struct vtkModelUniqueNodalGroupInternals
 {
   typedef std::set<vtkIdType> Set;
   typedef Set::iterator SetIterator;
   Set PointIds;
 };
 
-vtkCxxRevisionMacro(vtkCMBUniqueNodalGroup, "");
+vtkCxxRevisionMacro(vtkModelUniqueNodalGroup, "");
 
-vtkCMBUniqueNodalGroup* vtkCMBUniqueNodalGroup::New()
+vtkModelUniqueNodalGroup* vtkModelUniqueNodalGroup::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBUniqueNodalGroup"); 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelUniqueNodalGroup"); 
   if(ret) 
     {                                    
-    return static_cast<vtkCMBUniqueNodalGroup*>(ret);
+    return static_cast<vtkModelUniqueNodalGroup*>(ret);
     } 
-  return new vtkCMBUniqueNodalGroup;
+  return new vtkModelUniqueNodalGroup;
 }
 
-vtkCMBUniqueNodalGroup::vtkCMBUniqueNodalGroup()
+vtkModelUniqueNodalGroup::vtkModelUniqueNodalGroup()
 {
 }
 
-vtkCMBUniqueNodalGroup::~vtkCMBUniqueNodalGroup()
+vtkModelUniqueNodalGroup::~vtkModelUniqueNodalGroup()
 {
 }
 
-void vtkCMBUniqueNodalGroup::AddPointId(vtkIdType PointId)
+void vtkModelUniqueNodalGroup::AddPointId(vtkIdType PointId)
 {
   vtkDiscreteModel* Model = this->GetModel();
   // CMBModel will remove PointId from the old unique nodal group
@@ -74,19 +74,19 @@ void vtkCMBUniqueNodalGroup::AddPointId(vtkIdType PointId)
   this->Superclass::AddPointId(PointId);
 }
 
-void vtkCMBUniqueNodalGroup::RemovePointId(vtkIdType PointId)
+void vtkModelUniqueNodalGroup::RemovePointId(vtkIdType PointId)
 {
   // CMBModel will remove PointId from the old unique nodal group
   vtkDiscreteModel* Model = this->GetModel();
   Model->SetPointUniqueNodalGroup(0, PointId);
 }
 
-void vtkCMBUniqueNodalGroup::Serialize(vtkSerializer* ser)
+void vtkModelUniqueNodalGroup::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-bool vtkCMBUniqueNodalGroup::Destroy()
+bool vtkModelUniqueNodalGroup::Destroy()
 {
   // remove all points first from here so that the model doesn't have
   // anything in.  
@@ -101,7 +101,7 @@ bool vtkCMBUniqueNodalGroup::Destroy()
   return 1;
 }
 
-void vtkCMBUniqueNodalGroup::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelUniqueNodalGroup::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

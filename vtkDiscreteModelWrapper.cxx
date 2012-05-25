@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "vtkCMBModelWrapper.h"
+#include "vtkDiscreteModelWrapper.h"
 #include "vtkDiscreteModel.h"
 
 #include "vtkInformation.h"
@@ -38,12 +38,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkInformationStringKey.h"
 #include "vtkModelGeometricEntity.h"
 #include "vtkCellData.h"
-#include "vtkCmbGridRepresentation.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelVertex.h"
-#include "vtkCMBXMLModelReader.h"
-#include "vtkCMBXMLModelWriter.h"
+#include "vtkModelGridRepresentation.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelVertex.h"
+#include "vtkXMLModelReader.h"
+#include "vtkXMLModelWriter.h"
 #include "vtkFieldData.h"
 #include "vtkIdList.h"
 #include "vtkOpenGLProperty.h"
@@ -55,15 +55,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItemIterator.h"
 #include <vtksys/ios/sstream>
 
-vtkStandardNewMacro(vtkCMBModelWrapper);
-//vtkCxxSetObjectMacro(vtkCMBModelWrapper, Model, vtkDiscreteModel);
-vtkCxxSetObjectMacro(vtkCMBModelWrapper, SerializedModel, vtkStringArray);
-vtkInformationKeyMacro(vtkCMBModelWrapper, NAME, String);
+vtkStandardNewMacro(vtkDiscreteModelWrapper);
+//vtkCxxSetObjectMacro(vtkDiscreteModelWrapper, Model, vtkDiscreteModel);
+vtkCxxSetObjectMacro(vtkDiscreteModelWrapper, SerializedModel, vtkStringArray);
+vtkInformationKeyMacro(vtkDiscreteModelWrapper, NAME, String);
 
-vtkCMBModelWrapper::vtkCMBModelWrapper()
+vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
 {
   this->ModelCBC = vtkCallbackCommand::New();
-  this->ModelCBC->SetCallback(vtkCMBModelWrapper::ModelEntitySetGeometryCallback);
+  this->ModelCBC->SetCallback(vtkDiscreteModelWrapper::ModelEntitySetGeometryCallback);
   this->ModelCBC->SetClientData((void *)this);
 
   this->Model = vtkDiscreteModel::New();
@@ -74,7 +74,7 @@ vtkCMBModelWrapper::vtkCMBModelWrapper()
   this->SerializedModel = 0;
 }
 
-vtkCMBModelWrapper::~vtkCMBModelWrapper()
+vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
 {
   if(this->Model)
     {
@@ -87,7 +87,7 @@ vtkCMBModelWrapper::~vtkCMBModelWrapper()
  this->SetSerializedModel(0);
 }
 
-void vtkCMBModelWrapper::ResetModel()
+void vtkDiscreteModelWrapper::ResetModel()
 {
   if(this->Model)
     {
@@ -96,7 +96,7 @@ void vtkCMBModelWrapper::ResetModel()
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
+void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 {
   vtkDiscreteModel* Model = this->GetModel();
   vtkPolyData* MasterPoly = vtkPolyData::SafeDownCast(
@@ -132,12 +132,12 @@ void vtkCMBModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 }
 
 //----------------------------------------------------------------------------
-vtkDiscreteModel* vtkCMBModelWrapper::GetModel()
+vtkDiscreteModel* vtkDiscreteModelWrapper::GetModel()
 {
   return this->Model;
 }
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::SetModel(vtkDiscreteModel *model)
+void vtkDiscreteModelWrapper::SetModel(vtkDiscreteModel *model)
 {
   if ( this->Model == model)
     {
@@ -159,7 +159,7 @@ void vtkCMBModelWrapper::SetModel(vtkDiscreteModel *model)
 
   this->Modified();
 }
-void vtkCMBModelWrapper::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelWrapper::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
@@ -175,7 +175,7 @@ void vtkCMBModelWrapper::PrintSelf(ostream& os, vtkIndent indent)
     }
 }
 
-unsigned long vtkCMBModelWrapper::GetMTime()
+unsigned long vtkDiscreteModelWrapper::GetMTime()
 {
   unsigned long mtime = this->Superclass::GetMTime();
   if (this->Model)
@@ -189,18 +189,18 @@ unsigned long vtkCMBModelWrapper::GetMTime()
   return mtime;
 }
 
-vtkCMBModelWrapper* vtkCMBModelWrapper::GetData(vtkInformation* info)
+vtkDiscreteModelWrapper* vtkDiscreteModelWrapper::GetData(vtkInformation* info)
 {
-  return info ? vtkCMBModelWrapper::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
+  return info ? vtkDiscreteModelWrapper::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
-vtkCMBModelWrapper* vtkCMBModelWrapper::GetData(vtkInformationVector* v, int i)
+vtkDiscreteModelWrapper* vtkDiscreteModelWrapper::GetData(vtkInformationVector* v, int i)
 {
-  return vtkCMBModelWrapper::GetData(v->GetInformationObject(i));
+  return vtkDiscreteModelWrapper::GetData(v->GetInformationObject(i));
 }
 
 //----------------------------------------------------------------------------
-const char* vtkCMBModelWrapper::GetAnalysisGridFileName()
+const char* vtkDiscreteModelWrapper::GetAnalysisGridFileName()
 {
   if(this->Model->GetAnalysisGridInfo())
     {
@@ -210,21 +210,21 @@ const char* vtkCMBModelWrapper::GetAnalysisGridFileName()
 }
 
 //----------------------------------------------------------------------------
-vtkModelEntity* vtkCMBModelWrapper::GetModelEntity(
+vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
   vtkIdType UniquePersistentId)
 {
   return this->Model->GetModelEntity(UniquePersistentId);
 }
 
 //----------------------------------------------------------------------------
-vtkModelEntity* vtkCMBModelWrapper::GetModelEntity(
+vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
   int itemType, vtkIdType UniquePersistentId)
 {
   return this->Model->GetModelEntity(itemType, UniquePersistentId);
 }
 
 //----------------------------------------------------------------------------
-vtkStringArray* vtkCMBModelWrapper::SerializeModel()
+vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
 {
   vtkDebugMacro("Serializing the model on the server.");
   if(!this->Model)
@@ -232,8 +232,8 @@ vtkStringArray* vtkCMBModelWrapper::SerializeModel()
     vtkWarningMacro("No model to serialize.");
     return 0;
     }
-  vtkSmartPointer<vtkCMBXMLModelWriter> serializer = 
-    vtkSmartPointer<vtkCMBXMLModelWriter>::New();
+  vtkSmartPointer<vtkXMLModelWriter> serializer = 
+    vtkSmartPointer<vtkXMLModelWriter>::New();
   vtksys_ios::ostringstream ostr;
   // Set to version to 1 (default is 0)
   serializer->SetArchiveVersion(1);
@@ -258,7 +258,7 @@ vtkStringArray* vtkCMBModelWrapper::SerializeModel()
 }
 
 //----------------------------------------------------------------------------
-int vtkCMBModelWrapper::RebuildModel(const char* data,
+int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & FaceToIds,
   std::map<vtkIdType, vtkIdType> & VertexToIds,
   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &EntityToProperties)
@@ -289,8 +289,8 @@ int vtkCMBModelWrapper::RebuildModel(const char* data,
 
   // Create an input stream to read the XML back
   vtksys_ios::istringstream istr(data);
-  vtkSmartPointer<vtkCMBXMLModelReader> reader = 
-    vtkSmartPointer<vtkCMBXMLModelReader>::New();
+  vtkSmartPointer<vtkXMLModelReader> reader = 
+    vtkSmartPointer<vtkXMLModelReader>::New();
 
   reader->SetModel(this->Model);
   reader->Serialize(istr, "ConceptualModel");
@@ -315,18 +315,18 @@ int vtkCMBModelWrapper::RebuildModel(const char* data,
   bool dim2D = this->Model->GetNumberOfAssociations(
     vtkModelRegionType) > 0 ? false : true;
   int enumEnType = dim2D ? vtkModelEdgeType : vtkModelFaceType;
-  vtkCMBModelGeometricEntity* modelEntity = NULL;
+  vtkDiscreteModelGeometricEntity* modelEntity = NULL;
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it;  
   for(it=FaceToIds.begin(); it!=FaceToIds.end(); it++)
     {
     vtkModelEntity* tmpEntity = this->Model->GetModelEntity(enumEnType, it->first);
     if(dim2D)
       {
-      modelEntity = vtkCMBModelEdge::SafeDownCast(tmpEntity);
+      modelEntity = vtkDiscreteModelEdge::SafeDownCast(tmpEntity);
       }
     else
       {
-      modelEntity = vtkCMBModelFace::SafeDownCast(tmpEntity);
+      modelEntity = vtkDiscreteModelFace::SafeDownCast(tmpEntity);
       }
     modelEntity->AddCellsToGeometry(it->second);
     if(EntityToProperties.find(it->first) != EntityToProperties.end())
@@ -342,7 +342,7 @@ int vtkCMBModelWrapper::RebuildModel(const char* data,
     for(it=VertexToIds.begin(); it!=VertexToIds.end(); it++)
       {
       vtkModelEntity* entity = this->Model->GetModelEntity(vtkModelVertexType, it->first);
-      vtkCMBModelVertex* vtxEntity = vtkCMBModelVertex::SafeDownCast(entity);
+      vtkDiscreteModelVertex* vtxEntity = vtkDiscreteModelVertex::SafeDownCast(entity);
       vtxEntity->SetPointId(it->second);
       vtxEntity->CreateGeometry();
       }
@@ -353,7 +353,7 @@ int vtkCMBModelWrapper::RebuildModel(const char* data,
 }
 
 //----------------------------------------------------------------------------
-bool vtkCMBModelWrapper::GetEntityIdByChildIndex(
+bool vtkDiscreteModelWrapper::GetEntityIdByChildIndex(
   unsigned int index, vtkIdType& EntityId)
 {
   if (this->HasChildMetaData(index))
@@ -367,7 +367,7 @@ bool vtkCMBModelWrapper::GetEntityIdByChildIndex(
   return false;
 }
 //----------------------------------------------------------------------------
-vtkProperty* vtkCMBModelWrapper::GetEntityPropertyByEntityId(
+vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByEntityId(
   vtkIdType EntityId)
 {
   unsigned int cur_index;
@@ -379,7 +379,7 @@ vtkProperty* vtkCMBModelWrapper::GetEntityPropertyByEntityId(
 }
 
 //----------------------------------------------------------------------------
-vtkProperty* vtkCMBModelWrapper::GetEntityPropertyByChildIndex(
+vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(
   unsigned int index)
 {
   if (this->HasChildMetaData(index))
@@ -394,7 +394,7 @@ vtkProperty* vtkCMBModelWrapper::GetEntityPropertyByChildIndex(
   return NULL;
 }
 //----------------------------------------------------------------------------
-vtkModelEntity* vtkCMBModelWrapper::GetEntityObjectByFlatIndex(
+vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(
   unsigned int index)
 {
   index--;
@@ -409,7 +409,7 @@ vtkModelEntity* vtkCMBModelWrapper::GetEntityObjectByFlatIndex(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCMBModelWrapper::GetChildIndexByEntityId(
+bool vtkDiscreteModelWrapper::GetChildIndexByEntityId(
   vtkIdType entityId, unsigned int& index)
 {
   unsigned int numChildren = this->GetNumberOfChildren();
@@ -433,7 +433,7 @@ bool vtkCMBModelWrapper::GetChildIndexByEntityId(
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::InitializeWithModelGeometry()
+void vtkDiscreteModelWrapper::InitializeWithModelGeometry()
 {
   this->Initialize();
 
@@ -444,7 +444,7 @@ void vtkCMBModelWrapper::InitializeWithModelGeometry()
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::AddGeometricEntities(int entType)
+void vtkDiscreteModelWrapper::AddGeometricEntities(int entType)
 {
   std::vector<vtkModelGeometricEntity*> entities;
   vtkModelItemIterator* iter = this->Model->NewIterator(entType);
@@ -459,7 +459,7 @@ void vtkCMBModelWrapper::AddGeometricEntities(int entType)
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::AddGeometricEntities(std::vector<vtkIdType> &entities)
+void vtkDiscreteModelWrapper::AddGeometricEntities(std::vector<vtkIdType> &entities)
 {
   std::vector<vtkModelGeometricEntity*> geoentities;
   std::vector<vtkIdType>::iterator iter;
@@ -473,7 +473,7 @@ void vtkCMBModelWrapper::AddGeometricEntities(std::vector<vtkIdType> &entities)
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::AddGeometricEntities(
+void vtkDiscreteModelWrapper::AddGeometricEntities(
   std::vector<vtkModelGeometricEntity*> &entities)
 {
   int numEnt = static_cast<int>(entities.size());
@@ -502,13 +502,13 @@ void vtkCMBModelWrapper::AddGeometricEntities(
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBModelWrapper::ModelEntitySetGeometryCallback(vtkObject *caller,
+void vtkDiscreteModelWrapper::ModelEntitySetGeometryCallback(vtkObject *caller,
   unsigned long event, void *clientData, void *callData)
 {
   vtkDiscreteModel* model = reinterpret_cast<vtkDiscreteModel*>(caller);
   vtkModelGeometricEntity* modelEntity = reinterpret_cast<vtkModelGeometricEntity*>(callData);
 
-  vtkCMBModelWrapper* self = reinterpret_cast<vtkCMBModelWrapper *>( clientData );
+  vtkDiscreteModelWrapper* self = reinterpret_cast<vtkDiscreteModelWrapper *>( clientData );
   if(!self || (!model && !modelEntity))
     {
     //vtkWarningMacro("vtkSBDomainSetContainer::CMBModelChangedCallback, Could not get the model entity.");

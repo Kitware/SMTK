@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Visualization Toolkit
-  Module:    $RCSfile: vtkCMBXMLModelReader.cxx,v $
+  Module:    $RCSfile: vtkXMLModelReader.cxx,v $
 
   Copyright (c) Ken Martin, Will Schroeder, Bill Lorensen
   All rights reserved.
@@ -12,18 +12,18 @@
      PURPOSE.  See the above copyright notice for more information.
 
 =========================================================================*/
-#include "vtkCMBXMLModelReader.h"
+#include "vtkXMLModelReader.h"
 
-#include "vtkCMBMaterial.h"
+#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelRegion.h"
-#include "vtkCMBModelVertex.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelRegion.h"
+#include "vtkDiscreteModelVertex.h"
 #
-#include "vtkCMBUniqueNodalGroup.h"
-#include "vtkCMBUserName.h"
+#include "vtkModelUniqueNodalGroup.h"
+#include "vtkModelUserName.h"
 #include "vtkCollection.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleKey.h"
@@ -36,7 +36,7 @@
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkInstantiator.h"
 #include "vtkXMLElement.h"
-#include "vtkCmbXMLParser.h"
+#include "vtkModelXMLParser.h"
 #
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFaceUse.h"
@@ -53,11 +53,11 @@
 #include <vtksys/SystemTools.hxx>
 
 
-vtkCxxRevisionMacro(vtkCMBXMLModelReader, "$Revision: 2586 $");
-vtkStandardNewMacro(vtkCMBXMLModelReader);
+vtkCxxRevisionMacro(vtkXMLModelReader, "$Revision: 2586 $");
+vtkStandardNewMacro(vtkXMLModelReader);
 
-vtkCxxSetObjectMacro(vtkCMBXMLModelReader, RootElement, vtkXMLElement);
-vtkCxxSetObjectMacro(vtkCMBXMLModelReader, Model, vtkDiscreteModel);
+vtkCxxSetObjectMacro(vtkXMLModelReader, RootElement, vtkXMLElement);
+vtkCxxSetObjectMacro(vtkXMLModelReader, Model, vtkDiscreteModel);
 
 namespace
 {
@@ -92,20 +92,20 @@ void SerializeVectorKey(vtkInformation* info, KeyType* key, vtkXMLElement* elem)
 }
 }
 
-vtkCMBXMLModelReader::vtkCMBXMLModelReader()
+vtkXMLModelReader::vtkXMLModelReader()
 {
   // Register keys with the map. This makes it possible for the
   // archiver to access this key when reading an archive
   vtkInformationKeyMap::RemoveAllKeys();
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::UNIQUEPERSISTENTID());
-  vtkInformationKeyMap::RegisterKey(vtkCMBUserName::USERNAME());
+  vtkInformationKeyMap::RegisterKey(vtkModelUserName::USERNAME());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::COLOR());
-  vtkInformationKeyMap::RegisterKey(vtkCMBModelRegion::POINTINSIDE());
+  vtkInformationKeyMap::RegisterKey(vtkDiscreteModelRegion::POINTINSIDE());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::VISIBILITY());
-  vtkInformationKeyMap::RegisterKey(vtkCMBModelEdge::LINERESOLUTION());
+  vtkInformationKeyMap::RegisterKey(vtkDiscreteModelEdge::LINERESOLUTION());
   vtkInformationKeyMap::RegisterKey(vtkModelEdgeUse::DIRECTION());
-  vtkInformationKeyMap::RegisterKey(vtkCMBModelVertex::POINTID());
-  vtkInformationKeyMap::RegisterKey(vtkCMBModelRegion::SOLIDFILENAME());
+  vtkInformationKeyMap::RegisterKey(vtkDiscreteModelVertex::POINTID());
+  vtkInformationKeyMap::RegisterKey(vtkDiscreteModelRegion::SOLIDFILENAME());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::DISPLAY_PROPERTY());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::PICKABLE());
 
@@ -114,14 +114,14 @@ vtkCMBXMLModelReader::vtkCMBXMLModelReader()
   this->Model = 0;
 }
 
-vtkCMBXMLModelReader::~vtkCMBXMLModelReader()
+vtkXMLModelReader::~vtkXMLModelReader()
 {
   this->SetRootElement(0);
   this->SetModel(0);
 }
 
 //----------------------------------------------------------------------------
-void vtkCMBXMLModelReader::GetElementsByType(
+void vtkXMLModelReader::GetElementsByType(
   vtkXMLElement* element, const char* type, vtkCollection* elements)
 {
   if (!elements)
@@ -157,7 +157,7 @@ void vtkCMBXMLModelReader::GetElementsByType(
     }
 }
 
-void vtkCMBXMLModelReader::Serialize(istream& str, const char*)
+void vtkXMLModelReader::Serialize(istream& str, const char*)
 {
   this->ParseStream(str);
   
@@ -173,19 +173,19 @@ void vtkCMBXMLModelReader::Serialize(istream& str, const char*)
   model->BlockModelGeometricEntityEventOn();
 
   this->SerializeModel();
-  this->Serialize("vtkCMBMaterial");
-  this->Serialize("vtkCMBModelVertex");
+  this->Serialize("vtkModelMaterial");
+  this->Serialize("vtkDiscreteModelVertex");
   this->Serialize("vtkModelVertexUse");
-  this->Serialize("vtkCMBModelEdge");
+  this->Serialize("vtkDiscreteModelEdge");
   this->Serialize("vtkModelEdgeUse");
-  this->Serialize("vtkCMBModelFace");
+  this->Serialize("vtkDiscreteModelFace");
   this->Serialize("vtkModelFaceUse");
   this->Serialize("vtkModelLoopUse");
-  this->Serialize("vtkCMBModelRegion");
+  this->Serialize("vtkDiscreteModelRegion");
   this->Serialize("vtkModelShellUse");
-  this->Serialize("vtkCMBModelEntityGroup");
-  this->Serialize("vtkCMBNodalGroup");
-  this->Serialize("vtkCMBUniqueNodalGroup");
+  this->Serialize("vtkDiscreteModelEntityGroup");
+  this->Serialize("vtkModelNodalGroup");
+  this->Serialize("vtkModelUniqueNodalGroup");
 
   model->SetBlockModelGeometricEntityEvent(blockEvent);
   int types[4] = {vtkModelVertexType, vtkModelEdgeType,
@@ -205,7 +205,7 @@ void vtkCMBXMLModelReader::Serialize(istream& str, const char*)
     }
 }
 
-void vtkCMBXMLModelReader::SerializeModel()
+void vtkXMLModelReader::SerializeModel()
 {
   vtkSmartPointer<vtkCollection> collection = vtkSmartPointer<vtkCollection>::New();
   this->GetElementsByType(this->RootElement, "vtkDiscreteModel", collection);
@@ -233,7 +233,7 @@ void vtkCMBXMLModelReader::SerializeModel()
   model->Serialize(this);
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
+void vtkXMLModelReader::Serialize(const char* ObjectName)
 {
   if(!this->Model)
     {
@@ -253,11 +253,11 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
       continue;
       }
     vtkSerializableObject* obj;
-    if(!strcmp(ObjectName, "vtkCMBMaterial"))
+    if(!strcmp(ObjectName, "vtkModelMaterial"))
       {
       obj = this->Model->BuildMaterial(id);
       }
-    else if(!strcmp(ObjectName, "vtkCMBModelFace"))
+    else if(!strcmp(ObjectName, "vtkDiscreteModelFace"))
       {
       obj = this->ConstructModelFace(id);
       }
@@ -278,7 +278,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }
       }
-    else if(!strcmp(ObjectName, "vtkCMBModelRegion"))
+    else if(!strcmp(ObjectName, "vtkDiscreteModelRegion"))
       {
       obj = this->ConstructModelRegion(id);
       if(!obj)
@@ -286,7 +286,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }      
       }
-    else if(!strcmp(ObjectName, "vtkCMBModelEdge"))
+    else if(!strcmp(ObjectName, "vtkDiscreteModelEdge"))
       {
       obj = this->ConstructModelEdge(id);
       if(!obj)
@@ -310,7 +310,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }      
       }
-    else if(!strcmp(ObjectName, "vtkCMBModelVertex"))
+    else if(!strcmp(ObjectName, "vtkDiscreteModelVertex"))
       {
       obj = this->ConstructModelVertex(id);
       }
@@ -323,7 +323,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }      
       }
-    else if(!strcmp(ObjectName, "vtkCMBModelEntityGroup"))
+    else if(!strcmp(ObjectName, "vtkDiscreteModelEntityGroup"))
       {
       obj = this->ConstructModelEntityGroup(id);
       if(!obj)
@@ -331,7 +331,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }
       }
-    else if(!strcmp(ObjectName, "vtkCMBNodalGroup"))
+    else if(!strcmp(ObjectName, "vtkModelNodalGroup"))
       {
       obj = this->ConstructNodalGroup(id);
       if(!obj)
@@ -339,7 +339,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
         return;
         }
       }
-    else if(!strcmp(ObjectName, "vtkCMBUniqueNodalGroup"))
+    else if(!strcmp(ObjectName, "vtkModelUniqueNodalGroup"))
       {
       obj = this->ConstructUniqueNodalGroup(id);
       if(!obj)
@@ -351,7 +351,7 @@ void vtkCMBXMLModelReader::Serialize(const char* ObjectName)
     }    
 }
 
-vtkModelLoopUse* vtkCMBXMLModelReader::ConstructModelLoopUse(int id)
+vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int id)
 {
   std::vector<vtkIdType> associatedModelFaceUse;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"), 
@@ -415,7 +415,7 @@ vtkModelLoopUse* vtkCMBXMLModelReader::ConstructModelLoopUse(int id)
   return loopUse;
 }
 
-vtkModelFace* vtkCMBXMLModelReader::ConstructModelFace(int id)
+vtkModelFace* vtkXMLModelReader::ConstructModelFace(int id)
 {
   std::vector<vtkIdType> ModelFaceUses;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"), 
@@ -425,7 +425,7 @@ vtkModelFace* vtkCMBXMLModelReader::ConstructModelFace(int id)
     vtkErrorMacro("Model face does not have two uses.");
     return 0;
     }
-  vtkCMBModelFace* ModelFace = vtkCMBModelFace::New();
+  vtkDiscreteModelFace* ModelFace = vtkDiscreteModelFace::New();
   this->Model->AddAssociation(ModelFace->GetType(), ModelFace);
   ModelFace->Delete();
   ModelFace->SetUniquePersistentId(id);
@@ -436,18 +436,18 @@ vtkModelFace* vtkCMBXMLModelReader::ConstructModelFace(int id)
   // there will be a material associated with it
   std::vector<vtkIdType> Materials;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"), 
-                        vtkCMBMaterialType, Materials);
+                        vtkModelMaterialType, Materials);
   if(Materials.size() == 1)
     {
-    vtkCMBMaterial* Material = vtkCMBMaterial::SafeDownCast(
-      this->Model->GetModelEntity(vtkCMBMaterialType, Materials[0]));
+    vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
+      this->Model->GetModelEntity(vtkModelMaterialType, Materials[0]));
     Material->AddModelGeometricEntity(ModelFace);
     }
 
   return ModelFace;
 }
 
-vtkModelFaceUse* vtkCMBXMLModelReader::ConstructModelFaceUse(int id)
+vtkModelFaceUse* vtkXMLModelReader::ConstructModelFaceUse(int id)
 {
   vtkModelFaceUse* FaceUse = 0;
   std::vector<vtkIdType> associatedModelFace;
@@ -481,21 +481,21 @@ vtkModelFaceUse* vtkCMBXMLModelReader::ConstructModelFaceUse(int id)
   return FaceUse;
 }
 
-vtkModelRegion* vtkCMBXMLModelReader::ConstructModelRegion(int id)
+vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
 {
   vtkModelRegion* Region = 0;
   std::map<int, std::vector<vtkIdType> > Associations;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
                         Associations);
-  if(Associations[vtkCMBMaterialType].size() != 1 || 
+  if(Associations[vtkModelMaterialType].size() != 1 || 
      Associations[vtkModelShellUseType].size() != 1)
     {
     // Currently serialization only supports a single shell
     vtkErrorMacro("Model region has wrong associations.");
     return 0;
     }
-  vtkCMBMaterial* Material = vtkCMBMaterial::SafeDownCast(
-    this->Model->GetModelEntity(vtkCMBMaterialType, Associations[vtkCMBMaterialType][0]));
+  vtkModelMaterial* Material = vtkModelMaterial::SafeDownCast(
+    this->Model->GetModelEntity(vtkModelMaterialType, Associations[vtkModelMaterialType][0]));
   
   // get shell use adjacencies
   vtksys_ios::ostringstream idstr;
@@ -538,7 +538,7 @@ vtkModelRegion* vtkCMBXMLModelReader::ConstructModelRegion(int id)
    return Region;
 }
 
-vtkModelVertex* vtkCMBXMLModelReader::ConstructModelVertex(int id)
+vtkModelVertex* vtkXMLModelReader::ConstructModelVertex(int id)
 {
   vtkModelVertex* Vertex = this->Model->BuildModelVertex(-2, id);
 
@@ -555,7 +555,7 @@ vtkModelVertex* vtkCMBXMLModelReader::ConstructModelVertex(int id)
   return Vertex;
 }
 
-vtkModelVertexUse* vtkCMBXMLModelReader::ConstructModelVertexUse(int id)
+vtkModelVertexUse* vtkXMLModelReader::ConstructModelVertexUse(int id)
 {
   std::vector<vtkIdType> AssociatedVertex;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
@@ -573,13 +573,13 @@ vtkModelVertexUse* vtkCMBXMLModelReader::ConstructModelVertexUse(int id)
   return VertexUse;
 }
 
-vtkModelEdge* vtkCMBXMLModelReader::ConstructModelEdge(int id)
+vtkModelEdge* vtkXMLModelReader::ConstructModelEdge(int id)
 {
   std::map<int, std::vector<vtkIdType> > Associations;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
                         Associations);
 
-  vtkCMBModelEdge* Edge = vtkCMBModelEdge::New();
+  vtkDiscreteModelEdge* Edge = vtkDiscreteModelEdge::New();
   Edge->SetUniquePersistentId(id);
   this->Model->AddAssociation(Edge->GetType(), Edge);
   Edge->Delete();
@@ -597,7 +597,7 @@ vtkModelEdge* vtkCMBXMLModelReader::ConstructModelEdge(int id)
   return Edge;
 }
 
-vtkModelEdgeUse* vtkCMBXMLModelReader::ConstructModelEdgeUse(int id)
+vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
 {
   std::map<int, std::vector<vtkIdType> > Associations;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
@@ -661,7 +661,7 @@ vtkModelEdgeUse* vtkCMBXMLModelReader::ConstructModelEdgeUse(int id)
   return EdgeUse;
 }
 
-vtkModelShellUse* vtkCMBXMLModelReader::ConstructModelShellUse(int id)
+vtkModelShellUse* vtkXMLModelReader::ConstructModelShellUse(int id)
 {
   std::vector<vtkIdType> AssociatedRegion;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
@@ -672,7 +672,7 @@ vtkModelShellUse* vtkCMBXMLModelReader::ConstructModelShellUse(int id)
     return 0;
     }
   vtkModelShellUse* ShellUse = 0;
-  vtkModelItemIterator* iter = vtkCMBModelRegion::SafeDownCast(
+  vtkModelItemIterator* iter = vtkDiscreteModelRegion::SafeDownCast(
     this->Model->GetModelEntity(vtkModelRegionType, AssociatedRegion[0]))
     ->NewModelShellUseIterator();
   for(iter->Begin();!iter->IsAtEnd()&&!ShellUse;iter->Next())
@@ -691,7 +691,7 @@ vtkModelShellUse* vtkCMBXMLModelReader::ConstructModelShellUse(int id)
   return ShellUse;
 }
 
-vtkCMBModelEntityGroup* vtkCMBXMLModelReader::ConstructModelEntityGroup(int id)
+vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id)
 {
   std::map<int, std::vector<vtkIdType> > Associations;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
@@ -705,7 +705,7 @@ vtkCMBModelEntityGroup* vtkCMBXMLModelReader::ConstructModelEntityGroup(int id)
       Associations.begin();
     int type = it->first;
     int numberOfEntities = it->second.size();
-    std::vector<vtkCMBModelEntity*> entities(numberOfEntities);
+    std::vector<vtkDiscreteModelEntity*> entities(numberOfEntities);
     for(int j=0;j<numberOfEntities;j++)
       {
       vtkModelEntity* ent = this->Model->GetModelEntity(type, it->second[j]);
@@ -713,17 +713,17 @@ vtkCMBModelEntityGroup* vtkCMBXMLModelReader::ConstructModelEntityGroup(int id)
         {
         case vtkModelEdgeType:
         {
-        entities[j] = vtkCMBModelEdge::SafeDownCast(ent);
+        entities[j] = vtkDiscreteModelEdge::SafeDownCast(ent);
         break;
         }
         case vtkModelFaceType:
         {
-        entities[j] = vtkCMBModelFace::SafeDownCast(ent);
+        entities[j] = vtkDiscreteModelFace::SafeDownCast(ent);
         break;
         }
         case vtkModelRegionType:
         {
-        entities[j] = vtkCMBModelRegion::SafeDownCast(ent);
+        entities[j] = vtkDiscreteModelRegion::SafeDownCast(ent);
         break;
         }
         default:
@@ -747,7 +747,7 @@ vtkCMBModelEntityGroup* vtkCMBXMLModelReader::ConstructModelEntityGroup(int id)
   return 0;
 }
 
-vtkCMBNodalGroup* vtkCMBXMLModelReader::ConstructNodalGroup(int id)
+vtkModelNodalGroup* vtkXMLModelReader::ConstructNodalGroup(int id)
 {
   // nodal groups only have an association with the model
   // and the model will take care of keeping track of that association
@@ -755,16 +755,16 @@ vtkCMBNodalGroup* vtkCMBXMLModelReader::ConstructNodalGroup(int id)
   return this->Model->BuildNodalGroup(BASE_NODAL_GROUP, 0, id);
 }
 
-vtkCMBUniqueNodalGroup* vtkCMBXMLModelReader::ConstructUniqueNodalGroup(int id)
+vtkModelUniqueNodalGroup* vtkXMLModelReader::ConstructUniqueNodalGroup(int id)
 {
   // nodal groups only have an association with the model
   // and the model will take care of keeping track of that association
   // when the nodal group is built
-  return vtkCMBUniqueNodalGroup::SafeDownCast(
+  return vtkModelUniqueNodalGroup::SafeDownCast(
     this->Model->BuildNodalGroup(UNIQUE_NODAL_GROUP, 0, id));
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, vtkInformation* info)
+void vtkXMLModelReader::Serialize(const char* name, vtkInformation* info)
 {
   info->Clear();
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);
@@ -835,7 +835,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, vtkInformation* info)
 
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, vtkObject*& obj,
+void vtkXMLModelReader::Serialize(const char* name, vtkObject*& obj,
                                      bool weakPtr/*=false*/)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
@@ -853,7 +853,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, vtkObject*& obj,
 }
 
 // -------------integers---------------
-void vtkCMBXMLModelReader::Serialize(const char* name, int& val)
+void vtkXMLModelReader::Serialize(const char* name, int& val)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -864,7 +864,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, int& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, int*& val, unsigned int& length)
+void vtkXMLModelReader::Serialize(const char* name, int*& val, unsigned int& length)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -886,7 +886,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, int*& val, unsigned int& 
 }
 
 // -------------unsigned longs---------------
-void vtkCMBXMLModelReader::Serialize(const char* name, unsigned long& val)
+void vtkXMLModelReader::Serialize(const char* name, unsigned long& val)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -897,7 +897,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, unsigned long& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, unsigned long*& val, unsigned int& length)
+void vtkXMLModelReader::Serialize(const char* name, unsigned long*& val, unsigned int& length)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -920,7 +920,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, unsigned long*& val, unsi
 
 // -------------vtkIdTypes---------------
 #if defined(VTK_USE_64BIT_IDS)
-void vtkCMBXMLModelReader::Serialize(const char* name, vtkIdType& val)
+void vtkXMLModelReader::Serialize(const char* name, vtkIdType& val)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -931,7 +931,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, vtkIdType& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, vtkIdType*& val, unsigned int& length)
+void vtkXMLModelReader::Serialize(const char* name, vtkIdType*& val, unsigned int& length)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -954,7 +954,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, vtkIdType*& val, unsigned
 #endif // if defined(VTK_USE_64BIT_IDS)
 
 // -------------doubles---------------
-void vtkCMBXMLModelReader::Serialize(const char* name, double& val)
+void vtkXMLModelReader::Serialize(const char* name, double& val)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -965,7 +965,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, double& val)
   elem->GetScalarAttribute("value", &val);
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, double*& val, unsigned int& length)
+void vtkXMLModelReader::Serialize(const char* name, double*& val, unsigned int& length)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -986,7 +986,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, double*& val, unsigned in
     }
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, char*& str)
+void vtkXMLModelReader::Serialize(const char* name, char*& str)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -1002,7 +1002,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, char*& str)
     }
 }
 
-void vtkCMBXMLModelReader::Serialize(const char* name, std::string& str)
+void vtkXMLModelReader::Serialize(const char* name, std::string& str)
 {
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
   if (!elem)
@@ -1022,7 +1022,7 @@ void vtkCMBXMLModelReader::Serialize(const char* name, std::string& str)
 
 }
 
-void vtkCMBXMLModelReader::Serialize(
+void vtkXMLModelReader::Serialize(
   const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs,
   bool weakPtr)
 {
@@ -1056,7 +1056,7 @@ void vtkCMBXMLModelReader::Serialize(
 
 }
 
-void vtkCMBXMLModelReader::Serialize(
+void vtkXMLModelReader::Serialize(
   const char* name, 
   std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs)
 {
@@ -1077,7 +1077,7 @@ void vtkCMBXMLModelReader::Serialize(
     }
 }
 
-void vtkCMBXMLModelReader::GetAssociations(
+void vtkXMLModelReader::GetAssociations(
   vtkXMLElement* elem, std::map<int, std::vector<vtkIdType> >& objs)
 {
   // this should be an Associations elemement
@@ -1092,7 +1092,7 @@ void vtkCMBXMLModelReader::GetAssociations(
     }
 }
 
-void vtkCMBXMLModelReader::GetAssociations(
+void vtkXMLModelReader::GetAssociations(
   vtkXMLElement* elem, int entityType, std::vector<vtkIdType>& objs)
 {
   // this should be an Associations elemement
@@ -1119,15 +1119,15 @@ void vtkCMBXMLModelReader::GetAssociations(
     }
 }
 
-vtkObject* vtkCMBXMLModelReader::ReadObject(vtkIdType id, bool weakPtr)
+vtkObject* vtkXMLModelReader::ReadObject(vtkIdType id, bool weakPtr)
 {
   return 0;
 }
 
-int vtkCMBXMLModelReader::ParseStream(istream& str)
+int vtkXMLModelReader::ParseStream(istream& str)
 {
-  vtkSmartPointer<vtkCmbXMLParser> parser = 
-    vtkSmartPointer<vtkCmbXMLParser>::New();
+  vtkSmartPointer<vtkModelXMLParser> parser = 
+    vtkSmartPointer<vtkModelXMLParser>::New();
   parser->SetStream(&str);
   parser->Parse();
   this->SetRootElement(parser->GetRootElement());
@@ -1135,7 +1135,7 @@ int vtkCMBXMLModelReader::ParseStream(istream& str)
 }
 
 
-void vtkCMBXMLModelReader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkXMLModelReader::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
   os << indent << "RootElement: " << this->RootElement << "\n";

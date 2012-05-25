@@ -22,12 +22,12 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelFace.h"
+#include "vtkDiscreteModelFace.h"
 
 #include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkCMBModelEntityGroup.h"
+#include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModel.h"
 #include "vtkConnectivityFilter.h"
 #include "vtkFeatureEdges.h"
@@ -48,34 +48,34 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSplitEventData.h"
 #include <map>
 
-vtkCxxRevisionMacro(vtkCMBModelFace, "");
+vtkCxxRevisionMacro(vtkDiscreteModelFace, "");
 
 
 
-vtkCMBModelFace* vtkCMBModelFace::New()
+vtkDiscreteModelFace* vtkDiscreteModelFace::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBModelFace");
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelFace");
   if(ret)
     {
-    return static_cast<vtkCMBModelFace*>(ret);
+    return static_cast<vtkDiscreteModelFace*>(ret);
     }
-  return new vtkCMBModelFace;
+  return new vtkDiscreteModelFace;
 }
 
-vtkCMBModelFace::vtkCMBModelFace()
+vtkDiscreteModelFace::vtkDiscreteModelFace()
 {
 }
 
-vtkCMBModelFace::~vtkCMBModelFace()
+vtkDiscreteModelFace::~vtkDiscreteModelFace()
 {
 }
 
-vtkModelEntity* vtkCMBModelFace::GetThisModelEntity()
+vtkModelEntity* vtkDiscreteModelFace::GetThisModelEntity()
 {
   return this;
 }
 
-bool vtkCMBModelFace::Split(
+bool vtkDiscreteModelFace::Split(
   double splitAngle, vtkIdTypeArray* createdModelFaces)
 {
   createdModelFaces->Reset();
@@ -138,7 +138,7 @@ bool vtkCMBModelFace::Split(
     mit++; // skip the first model face as it is the old/source model face
     for(vtkIdType i=0;mit!=newModelFaces.end();mit++,i++)
       {
-      vtkCMBModelFace* face =
+      vtkDiscreteModelFace* face =
         this->BuildFromExistingModelFace(mit->second);
       createdModelFaces->SetValue(i, face->GetUniquePersistentId());
       newFaceIds->SetId(i, face->GetUniquePersistentId());
@@ -153,12 +153,12 @@ bool vtkCMBModelFace::Split(
   return 1;
 }
 
-vtkCMBModelFace* vtkCMBModelFace::BuildFromExistingModelFace(
+vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(
   vtkIdList* masterCellIds)
 {
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(true);
-  vtkCMBModelFace* newModelFace = vtkCMBModelFace::SafeDownCast(
+  vtkDiscreteModelFace* newModelFace = vtkDiscreteModelFace::SafeDownCast(
     this->GetModel()->BuildModelFace(0, 0, 0));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
 
@@ -191,7 +191,7 @@ vtkCMBModelFace* vtkCMBModelFace::BuildFromExistingModelFace(
   return newModelFace;
 }
 
-void vtkCMBModelFace::GetAllPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelFace::GetAllPointIds(vtkIdList* ptsList)
 {
   vtkBitArray* Points = vtkBitArray::New();
   this->GatherAllPointIdsMask(Points);
@@ -204,7 +204,7 @@ void vtkCMBModelFace::GetAllPointIds(vtkIdList* ptsList)
     }
   Points->Delete();
 }
-void vtkCMBModelFace::GetInteriorPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelFace::GetInteriorPointIds(vtkIdList* ptsList)
 {
   vtkBitArray* AllModelFacePoints = vtkBitArray::New();
   this->GatherAllPointIdsMask(AllModelFacePoints);
@@ -221,7 +221,7 @@ void vtkCMBModelFace::GetInteriorPointIds(vtkIdList* ptsList)
   AllModelFacePoints->Delete();
   BoundaryModelFacePoints->Delete();
 }
-void vtkCMBModelFace::GetBoundaryPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelFace::GetBoundaryPointIds(vtkIdList* ptsList)
 {
   vtkBitArray* Points = vtkBitArray::New();
   this->GatherBoundaryPointIdsMask(Points);
@@ -235,7 +235,7 @@ void vtkCMBModelFace::GetBoundaryPointIds(vtkIdList* ptsList)
   Points->Delete();
 }
 
-void vtkCMBModelFace::GatherAllPointIdsMask(vtkBitArray* Points)
+void vtkDiscreteModelFace::GatherAllPointIdsMask(vtkBitArray* Points)
   {
   vtkPointSet* Grid = vtkPointSet::SafeDownCast(this->GetGeometry());
   if(!Grid)
@@ -265,7 +265,7 @@ void vtkCMBModelFace::GatherAllPointIdsMask(vtkBitArray* Points)
   CellPoints->Delete();
 }
 
-void vtkCMBModelFace::GatherBoundaryPointIdsMask(vtkBitArray* Points)
+void vtkDiscreteModelFace::GatherBoundaryPointIdsMask(vtkBitArray* Points)
 {
   vtkPointSet* Grid = vtkPointSet::SafeDownCast(this->GetGeometry());
   // add in an array of the original point ids to grid
@@ -276,7 +276,7 @@ void vtkCMBModelFace::GatherBoundaryPointIdsMask(vtkBitArray* Points)
     {
     OriginalPointIds->SetValue(i, i);
     }
-  const char ArrayName[] = "vtkCMBNodalGroupPointIdArray";
+  const char ArrayName[] = "vtkModelNodalGroupPointIdArray";
   OriginalPointIds->SetName(ArrayName);
   Grid->GetPointData()->AddArray(OriginalPointIds);
   OriginalPointIds->Delete();
@@ -316,24 +316,24 @@ void vtkCMBModelFace::GatherBoundaryPointIdsMask(vtkBitArray* Points)
   Grid->GetPointData()->RemoveArray(ArrayName);
 }
 
-void vtkCMBModelFace::Serialize(vtkSerializer* ser)
+void vtkDiscreteModelFace::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-bool vtkCMBModelFace::Destroy()
+bool vtkDiscreteModelFace::Destroy()
 {
   if(this->Superclass::Destroy())
     {
-    this->RemoveAllAssociations(vtkCMBModelEntityGroupType);
-    this->RemoveAllAssociations(vtkCMBNodalGroupType);
+    this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
+    this->RemoveAllAssociations(vtkModelNodalGroupType);
     this->Modified();
     return true;
     }
   return false;
 }
 
-void vtkCMBModelFace::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelFace::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

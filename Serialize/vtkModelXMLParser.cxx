@@ -18,16 +18,16 @@
 //
 //
 //=============================================================================
-#include "vtkCmbXMLParser.h"
+#include "vtkModelXMLParser.h"
 #include "vtkObjectFactory.h"
 #include "vtkXMLElement.h"
 #include "vtksys/ios/sstream"
 
-vtkCxxRevisionMacro(vtkCmbXMLParser, "1774");
-vtkStandardNewMacro(vtkCmbXMLParser);
+vtkCxxRevisionMacro(vtkModelXMLParser, "1774");
+vtkStandardNewMacro(vtkModelXMLParser);
 
 //----------------------------------------------------------------------------
-vtkCmbXMLParser::vtkCmbXMLParser()
+vtkModelXMLParser::vtkModelXMLParser()
 {
   this->FileName = 0;
   this->InputString = 0;
@@ -39,7 +39,7 @@ vtkCmbXMLParser::vtkCmbXMLParser()
 }
 
 //----------------------------------------------------------------------------
-vtkCmbXMLParser::~vtkCmbXMLParser()
+vtkModelXMLParser::~vtkModelXMLParser()
 {
   unsigned int i;
   for(i=0;i < this->NumberOfOpenElements;++i)
@@ -55,7 +55,7 @@ vtkCmbXMLParser::~vtkCmbXMLParser()
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelXMLParser::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
   os << indent << "FileName: " << (this->FileName? this->FileName : "(none)")
@@ -63,7 +63,7 @@ void vtkCmbXMLParser::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::StartElement(const char* name, const char** atts)
+void vtkModelXMLParser::StartElement(const char* name, const char** atts)
 {
   vtkXMLElement* element = vtkXMLElement::New();
   element->SetName(name);
@@ -83,7 +83,7 @@ void vtkCmbXMLParser::StartElement(const char* name, const char** atts)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::EndElement(const char* vtkNotUsed(name))
+void vtkModelXMLParser::EndElement(const char* vtkNotUsed(name))
 {
   vtkXMLElement* finished = this->PopOpenElement();
   unsigned int numOpen = this->NumberOfOpenElements;
@@ -99,7 +99,7 @@ void vtkCmbXMLParser::EndElement(const char* vtkNotUsed(name))
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::CharacterDataHandler(const char* data, int length)
+void vtkModelXMLParser::CharacterDataHandler(const char* data, int length)
 {
   unsigned int numOpen = this->NumberOfOpenElements;
   if(numOpen > 0)
@@ -109,7 +109,7 @@ void vtkCmbXMLParser::CharacterDataHandler(const char* data, int length)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::PushOpenElement(vtkXMLElement* element)
+void vtkModelXMLParser::PushOpenElement(vtkXMLElement* element)
 {
   if(this->NumberOfOpenElements == this->OpenElementsSize)
     {
@@ -130,7 +130,7 @@ void vtkCmbXMLParser::PushOpenElement(vtkXMLElement* element)
 }
 
 //----------------------------------------------------------------------------
-vtkXMLElement* vtkCmbXMLParser::PopOpenElement()
+vtkXMLElement* vtkModelXMLParser::PopOpenElement()
 {
   if(this->NumberOfOpenElements > 0)
     {
@@ -141,13 +141,13 @@ vtkXMLElement* vtkCmbXMLParser::PopOpenElement()
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbXMLParser::PrintXML(ostream& os)
+void vtkModelXMLParser::PrintXML(ostream& os)
 {
   this->RootElement->PrintXML(os, vtkIndent());
 }
 
 //----------------------------------------------------------------------------
-int vtkCmbXMLParser::ParseXML()
+int vtkModelXMLParser::ParseXML()
 {
   if (this->RootElement)
     {
@@ -158,7 +158,7 @@ int vtkCmbXMLParser::ParseXML()
 }
 
 //----------------------------------------------------------------------------
-vtkXMLElement* vtkCmbXMLParser::GetRootElement()
+vtkXMLElement* vtkModelXMLParser::GetRootElement()
 {
   return this->RootElement;
 }

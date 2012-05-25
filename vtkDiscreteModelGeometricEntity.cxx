@@ -22,13 +22,13 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelGeometricEntity.h"
+#include "vtkDiscreteModelGeometricEntity.h"
 
-#include "vtkCMBMaterial.h"
+#include "vtkModelMaterial.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelRegion.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelRegion.h"
 #include <vtkCell.h>
 #include <vtkCellData.h>
 #include <vtkIdList.h>
@@ -50,28 +50,28 @@ namespace
   const char ReverseClassificationArrayName[] = "ReverseClassification";
 }
 
-vtkCMBModelGeometricEntity::vtkCMBModelGeometricEntity()
+vtkDiscreteModelGeometricEntity::vtkDiscreteModelGeometricEntity()
 {
 }
 
-vtkCMBModelGeometricEntity::~vtkCMBModelGeometricEntity()
+vtkDiscreteModelGeometricEntity::~vtkDiscreteModelGeometricEntity()
 {
 }
 
-vtkCMBMaterial* vtkCMBModelGeometricEntity::GetMaterial()
+vtkModelMaterial* vtkDiscreteModelGeometricEntity::GetMaterial()
 {
-  vtkModelItemIterator* iter = this->GetThisModelEntity()->NewIterator(vtkCMBMaterialType);
+  vtkModelItemIterator* iter = this->GetThisModelEntity()->NewIterator(vtkModelMaterialType);
   iter->Begin();
-  vtkCMBMaterial* Material = 0;
+  vtkModelMaterial* Material = 0;
   if(!iter->IsAtEnd())
     {
-    Material = vtkCMBMaterial::SafeDownCast(iter->GetCurrentItem());
+    Material = vtkModelMaterial::SafeDownCast(iter->GetCurrentItem());
     }
   iter->Delete();
   return Material;
 }
 
-vtkIdType vtkCMBModelGeometricEntity::GetMasterCellId(vtkIdType Id)
+vtkIdType vtkDiscreteModelGeometricEntity::GetMasterCellId(vtkIdType Id)
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
@@ -86,7 +86,7 @@ vtkIdType vtkCMBModelGeometricEntity::GetMasterCellId(vtkIdType Id)
   return MasterCellIds->GetValue(Id);
 }
 
-vtkIdType vtkCMBModelGeometricEntity::GetNumberOfCells()
+vtkIdType vtkDiscreteModelGeometricEntity::GetNumberOfCells()
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
@@ -99,26 +99,26 @@ vtkIdType vtkCMBModelGeometricEntity::GetNumberOfCells()
   return Geometry->GetNumberOfCells();
 }
 
-vtkCMBModelGeometricEntity*
-vtkCMBModelGeometricEntity::GetThisCMBModelGeometricEntity(vtkModelEntity* entity)
+vtkDiscreteModelGeometricEntity*
+vtkDiscreteModelGeometricEntity::GetThisCMBModelGeometricEntity(vtkModelEntity* entity)
 {
   if(!entity)
     {
     return 0;
     }
-  if(vtkCMBModelFace* face = vtkCMBModelFace::SafeDownCast(entity))
+  if(vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(entity))
     {
     return face;
     }
-  else if(vtkCMBModelEdge* edge = vtkCMBModelEdge::SafeDownCast(entity))
+  else if(vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(entity))
     {
     return edge;
     }
-  return vtkCMBModelRegion::SafeDownCast(entity);
+  return vtkDiscreteModelRegion::SafeDownCast(entity);
 }
 
-bool vtkCMBModelGeometricEntity::Merge(
-  vtkCMBModelGeometricEntity* sourceEntity, vtkIdTypeArray* lowerDimensionalIds)
+bool vtkDiscreteModelGeometricEntity::Merge(
+  vtkDiscreteModelGeometricEntity* sourceEntity, vtkIdTypeArray* lowerDimensionalIds)
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
@@ -150,8 +150,8 @@ bool vtkCMBModelGeometricEntity::Merge(
     vtkModelGeometricEntity::SafeDownCast(sourceEntity->GetThisModelEntity());
 
   // need to correct model topology info still
-  if(vtkCMBModelFace* face =
-     vtkCMBModelFace::SafeDownCast(sourceGeometricEntity))
+  if(vtkDiscreteModelFace* face =
+     vtkDiscreteModelFace::SafeDownCast(sourceGeometricEntity))
     {
     for(int i=0;i<2;i++)
       {
@@ -171,8 +171,8 @@ bool vtkCMBModelGeometricEntity::Merge(
       throw 1;
       }
     }
-  else if(vtkCMBModelRegion* region =
-          vtkCMBModelRegion::SafeDownCast(sourceGeometricEntity))
+  else if(vtkDiscreteModelRegion* region =
+          vtkDiscreteModelRegion::SafeDownCast(sourceGeometricEntity))
     {
     // all lower dimensional model entities that were adjacent to this source
     // are now adjacent to the target
@@ -192,8 +192,8 @@ bool vtkCMBModelGeometricEntity::Merge(
       }
     shellUses->Delete();
     }
-  else if(vtkCMBModelEdge* sourceEdge =
-          vtkCMBModelEdge::SafeDownCast(sourceGeometricEntity))
+  else if(vtkDiscreteModelEdge* sourceEdge =
+          vtkDiscreteModelEdge::SafeDownCast(sourceGeometricEntity))
     {
     if(lowerDimensionalIds->GetNumberOfTuples() == 0)
       {
@@ -203,7 +203,7 @@ bool vtkCMBModelGeometricEntity::Merge(
     vtkModelVertex* sharedVertex = vtkModelVertex::SafeDownCast(
       model->GetModelEntity(vtkModelVertexType, lowerDimensionalIds->GetValue(0)));
     int targetSharedVertexNumber = -1;
-    vtkCMBModelEdge* targetEdge = vtkCMBModelEdge::SafeDownCast(this->GetThisModelEntity());
+    vtkDiscreteModelEdge* targetEdge = vtkDiscreteModelEdge::SafeDownCast(this->GetThisModelEntity());
     if(targetEdge->GetAdjacentModelVertex(0) == sharedVertex)
       {
       targetSharedVertexNumber = 0;
@@ -283,8 +283,8 @@ bool vtkCMBModelGeometricEntity::Merge(
       }
     }
 
-  if(vtkCMBModelFace* face =
-     vtkCMBModelFace::SafeDownCast(thisEntity))
+  if(vtkDiscreteModelFace* face =
+     vtkDiscreteModelFace::SafeDownCast(thisEntity))
     {
     for(int i=0;i<2;i++)
       {
@@ -295,8 +295,8 @@ bool vtkCMBModelGeometricEntity::Merge(
         }
       }
     }
-  else if(vtkCMBModelEdge* sourceEdge =
-          vtkCMBModelEdge::SafeDownCast(thisEntity))
+  else if(vtkDiscreteModelEdge* sourceEdge =
+          vtkDiscreteModelEdge::SafeDownCast(thisEntity))
     {
     vtkModelItemIterator* faces = sourceEdge->NewAdjacentModelFaceIterator();
     for(faces->Begin();!faces->IsAtEnd();faces->Next())
@@ -311,7 +311,7 @@ bool vtkCMBModelGeometricEntity::Merge(
   return 1;
 }
 
-bool vtkCMBModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
+bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
@@ -329,7 +329,7 @@ bool vtkCMBModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
     {
     if(geometry)
       {
-      cerr << "vtkCMBModelGeometricEntity: Bad geometry.\n";
+      cerr << "vtkDiscreteModelGeometricEntity: Bad geometry.\n";
       return 0;
       }
     entityPoly= vtkPolyData::New();
@@ -347,12 +347,12 @@ bool vtkCMBModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
     }
 
   // first remove the cells from other model faces
-  std::map<vtkCMBModelGeometricEntity*, vtkSmartPointer<vtkIdList> > removeInfo;
+  std::map<vtkDiscreteModelGeometricEntity*, vtkSmartPointer<vtkIdList> > removeInfo;
   for(vtkIdType i=0;i<masterCellIds->GetNumberOfIds();i++)
     {
-    vtkCMBModelGeometricEntity* sourceEntity =
+    vtkDiscreteModelGeometricEntity* sourceEntity =
       model->GetCellModelGeometricEntity(masterCellIds->GetId(i));
-    std::map<vtkCMBModelGeometricEntity*, vtkSmartPointer<vtkIdList> >::iterator it=
+    std::map<vtkDiscreteModelGeometricEntity*, vtkSmartPointer<vtkIdList> >::iterator it=
       removeInfo.find(sourceEntity);
     if(it != removeInfo.end() && it->first == this)
       { // it shouldn't get here but just to be safe
@@ -370,7 +370,7 @@ bool vtkCMBModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
       it->second->InsertNextId(localId);
       }
     }
-  for(std::map<vtkCMBModelGeometricEntity*, vtkSmartPointer<vtkIdList> >::iterator it=
+  for(std::map<vtkDiscreteModelGeometricEntity*, vtkSmartPointer<vtkIdList> >::iterator it=
         removeInfo.begin();it!=removeInfo.end();it++)
     {
     if(it->first)
@@ -398,7 +398,7 @@ bool vtkCMBModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellIds)
   return 1;
 }
 
-bool vtkCMBModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds)
+bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds)
 {
   if(cellIds->GetNumberOfIds() == 0)
     {
@@ -424,7 +424,7 @@ bool vtkCMBModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds)
       }
     else
       {
-      cerr << "vtkCMBModelGeometricEntity: Bad cell index to remove.\n";
+      cerr << "vtkDiscreteModelGeometricEntity: Bad cell index to remove.\n";
       }
     }
   poly->RemoveDeletedCells();
@@ -442,12 +442,12 @@ bool vtkCMBModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds)
   return 1;
 }
 
-const char* vtkCMBModelGeometricEntity::GetReverseClassificationArrayName()
+const char* vtkDiscreteModelGeometricEntity::GetReverseClassificationArrayName()
 {
   return ReverseClassificationArrayName;
 }
 
-vtkIdTypeArray* vtkCMBModelGeometricEntity::GetReverseClassificationArray()
+vtkIdTypeArray* vtkDiscreteModelGeometricEntity::GetReverseClassificationArray()
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());

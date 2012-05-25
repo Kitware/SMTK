@@ -21,22 +21,22 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCmbGeneratedGridRepresentation.h"
+#include "vtkModelGeneratedGridRepresentation.h"
 
-vtkCxxRevisionMacro(vtkCmbGeneratedGridRepresentation, "");
+vtkCxxRevisionMacro(vtkModelGeneratedGridRepresentation, "");
 
 //----------------------------------------------------------------------------
-vtkCmbGeneratedGridRepresentation::vtkCmbGeneratedGridRepresentation()
+vtkModelGeneratedGridRepresentation::vtkModelGeneratedGridRepresentation()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkCmbGeneratedGridRepresentation::~vtkCmbGeneratedGridRepresentation()
+vtkModelGeneratedGridRepresentation::~vtkModelGeneratedGridRepresentation()
 {
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbGeneratedGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelGeneratedGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

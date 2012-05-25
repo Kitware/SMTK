@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelVertex.h"
+#include "vtkDiscreteModelVertex.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkInformation.h"
@@ -34,29 +34,29 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkProperty.h"
 
-vtkCxxRevisionMacro(vtkCMBModelVertex, "");
-vtkInformationKeyMacro(vtkCMBModelVertex, POINTID, IdType);
+vtkCxxRevisionMacro(vtkDiscreteModelVertex, "");
+vtkInformationKeyMacro(vtkDiscreteModelVertex, POINTID, IdType);
 
-vtkCMBModelVertex* vtkCMBModelVertex::New()
+vtkDiscreteModelVertex* vtkDiscreteModelVertex::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBModelVertex");
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelVertex");
   if(ret)
     {
-    return static_cast<vtkCMBModelVertex*>(ret);
+    return static_cast<vtkDiscreteModelVertex*>(ret);
     }
-  return new vtkCMBModelVertex;
+  return new vtkDiscreteModelVertex;
 }
 
-vtkCMBModelVertex::vtkCMBModelVertex()
+vtkDiscreteModelVertex::vtkDiscreteModelVertex()
 {
   this->GetProperties()->Set(POINTID(), -1);
 }
 
-vtkCMBModelVertex::~vtkCMBModelVertex()
+vtkDiscreteModelVertex::~vtkDiscreteModelVertex()
 {
 }
 
-bool vtkCMBModelVertex::GetPoint(double* xyz)
+bool vtkDiscreteModelVertex::GetPoint(double* xyz)
 {
   if(vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(
        vtkDiscreteModel::SafeDownCast(this->GetModel())->GetGeometry()))
@@ -75,12 +75,12 @@ bool vtkCMBModelVertex::GetPoint(double* xyz)
   return false;
 }
 
-vtkIdType vtkCMBModelVertex::GetPointId()
+vtkIdType vtkDiscreteModelVertex::GetPointId()
 {
   return this->GetProperties()->Get(POINTID());
 }
 
-void vtkCMBModelVertex::SetPointId(vtkIdType pointId)
+void vtkDiscreteModelVertex::SetPointId(vtkIdType pointId)
 {
   if(pointId != this->GetPointId())
     {
@@ -89,7 +89,7 @@ void vtkCMBModelVertex::SetPointId(vtkIdType pointId)
     }
 }
 
-void vtkCMBModelVertex::CreateGeometry()
+void vtkDiscreteModelVertex::CreateGeometry()
 {
   // if already has geometry, just return;
   if(this->GetGeometry())
@@ -120,7 +120,7 @@ void vtkCMBModelVertex::CreateGeometry()
     }
 }
 
-void vtkCMBModelVertex::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelVertex::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

@@ -21,16 +21,16 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCmbBCGridRepresentation.h"
+#include "vtkModelBCGridRepresentation.h"
 
 #include <iostream>
 #include <string>
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelGeometricEntity.h"
-#include "vtkCMBNodalGroup.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelGeometricEntity.h"
+#include "vtkModelNodalGroup.h"
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
@@ -44,16 +44,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkPoints.h"
 
-vtkStandardNewMacro(vtkCmbBCGridRepresentation);
-vtkCxxRevisionMacro(vtkCmbBCGridRepresentation, "");
+vtkStandardNewMacro(vtkModelBCGridRepresentation);
+vtkCxxRevisionMacro(vtkModelBCGridRepresentation, "");
 
 //----------------------------------------------------------------------------
-vtkCmbBCGridRepresentation::vtkCmbBCGridRepresentation()
+vtkModelBCGridRepresentation::vtkModelBCGridRepresentation()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkCmbBCGridRepresentation::~vtkCmbBCGridRepresentation()
+vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation()
 {
 }
 
@@ -74,20 +74,20 @@ void inline AddPointIds(vtkIdType entId,vtkIdList* inPtsList,
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::GetBCSNodalAnalysisGridPointIds(
+bool vtkModelBCGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType,vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if(vtkCMBModelEntityGroup* bcsNodalGroup =
-    vtkCMBModelEntityGroup::SafeDownCast(
-    model->GetModelEntity(vtkCMBModelEntityGroupType, bcsGroupId)))
+  if(vtkDiscreteModelEntityGroup* bcsNodalGroup =
+    vtkDiscreteModelEntityGroup::SafeDownCast(
+    model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
     {
     vtkModelItemIterator* iterFace=bcsNodalGroup->NewIterator(vtkModelFaceType);
     for(iterFace->Begin();!iterFace->IsAtEnd();iterFace->Next())
       {
-      vtkCMBModelFace* entity =
-        vtkCMBModelFace::SafeDownCast(iterFace->GetCurrentItem());
+      vtkDiscreteModelFace* entity =
+        vtkDiscreteModelFace::SafeDownCast(iterFace->GetCurrentItem());
       if(entity)
         {
         vtkIdType entityId = entity->GetUniquePersistentId();
@@ -122,12 +122,12 @@ bool vtkCmbBCGridRepresentation::GetBCSNodalAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
+bool vtkModelBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
 {
   pointIds->Reset();
-  if(vtkCMBModelEdge* floatingEdge =
-     vtkCMBModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, floatingEdgeId)))
+  if(vtkDiscreteModelEdge* floatingEdge =
+     vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, floatingEdgeId)))
     {
     std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
       this->FloatingEdgeToPointIds.find(floatingEdgeId);
@@ -156,7 +156,7 @@ bool vtkCmbBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::GetModelEdgeAnalysisPoints(
+bool vtkModelBCGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdTypeArray* edgePoints)
 {
   vtkErrorMacro("2D models not supported.");
@@ -164,15 +164,15 @@ bool vtkCmbBCGridRepresentation::GetModelEdgeAnalysisPoints(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
+bool vtkModelBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
 {
   cellIds->Reset();
   cellSides->Reset();
-  vtkCMBModelEntityGroup* boundaryGroup =
-    vtkCMBModelEntityGroup::SafeDownCast(
-      model->GetModelEntity(vtkCMBModelEntityGroupType, boundaryGroupId));
+  vtkDiscreteModelEntityGroup* boundaryGroup =
+    vtkDiscreteModelEntityGroup::SafeDownCast(
+      model->GetModelEntity(vtkDiscreteModelEntityGroupType, boundaryGroupId));
   if(!boundaryGroup)
     {
     vtkWarningMacro("Bad boundary group id.");
@@ -186,8 +186,8 @@ bool vtkCmbBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
     {
     faceCellIds->Reset();
     faceCellSides->Reset();
-    vtkCMBModelFace* face =
-      vtkCMBModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkDiscreteModelFace* face =
+      vtkDiscreteModelFace::SafeDownCast(faces->GetCurrentItem());
     if(!face || this->GetModelFaceAnalysisFacets(model,
       face->GetUniquePersistentId(), faceCellIds.GetPointer(),
       faceCellSides.GetPointer()) == false)
@@ -210,14 +210,14 @@ bool vtkCmbBCGridRepresentation::GetBoundaryGroupAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
+bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 {
   // get the floating edges of the 3D model
   std::set<vtkIdType> floatingEdgeIds;
   vtkModelItemIterator* edges = model->NewIterator(vtkModelEdgeType);
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkCMBModelEdge* edge = vtkCMBModelEdge::SafeDownCast(
+    vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(
       edges->GetCurrentItem());
     if(edge->GetModelRegion())
       {
@@ -266,7 +266,7 @@ bool vtkCmbBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::Initialize(
+bool vtkModelBCGridRepresentation::Initialize(
   const char* bcFileName, vtkDiscreteModel* model)
 {
   this->Reset();
@@ -294,7 +294,7 @@ bool vtkCmbBCGridRepresentation::Initialize(
   vtkModelItemIterator* edges = model->NewIterator(vtkModelEdgeType);
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkCMBModelEdge* edge = vtkCMBModelEdge::SafeDownCast(
+    vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::SafeDownCast(
       edges->GetCurrentItem());
     if(edge->GetModelRegion())
       {
@@ -316,9 +316,9 @@ bool vtkCmbBCGridRepresentation::Initialize(
       {
       vtkIdType pointId = atoi(values[1].c_str()) -1; // analysis grid point Id in C++ ordering
       vtkIdType entityId = atoi(values[2].c_str());
-      if(vtkCMBModelEntityGroup* nodalGroup =
-         vtkCMBModelEntityGroup::SafeDownCast(model->GetModelEntity(
-         vtkCMBModelEntityGroupType, entityId)))
+      if(vtkDiscreteModelEntityGroup* nodalGroup =
+         vtkDiscreteModelEntityGroup::SafeDownCast(model->GetModelEntity(
+         vtkDiscreteModelEntityGroupType, entityId)))
         {
         // We should not have NDS from .bc file any more, since the nodal group is now
         // defined as BCS group with nodal-type (ALL, Boundary, Interior)
@@ -391,7 +391,7 @@ bool vtkCmbBCGridRepresentation::Initialize(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::AddFloatingEdge(
+bool vtkModelBCGridRepresentation::AddFloatingEdge(
   vtkIdType floatingEdgeId, vtkIdList* pointIds, vtkDiscreteModel* model)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
@@ -417,11 +417,11 @@ bool vtkCmbBCGridRepresentation::AddFloatingEdge(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::AddModelFace(
+bool vtkModelBCGridRepresentation::AddModelFace(
   vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides, vtkDiscreteModel* model)
 {
-  vtkCMBModelFace* face = vtkCMBModelFace::SafeDownCast(
+  vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(
     model->GetModelEntity(vtkModelFaceType, modelFaceId));
   if(face == NULL || face->GetNumberOfCells()==0)
     {
@@ -445,7 +445,7 @@ bool vtkCmbBCGridRepresentation::AddModelFace(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbBCGridRepresentation::Reset()
+void vtkModelBCGridRepresentation::Reset()
 {
   this->Superclass::Reset();
   this->FloatingEdgeToPointIds.clear();
@@ -453,15 +453,15 @@ void vtkCmbBCGridRepresentation::Reset()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::IsFloatingEdgeConsistent(
+bool vtkModelBCGridRepresentation::IsFloatingEdgeConsistent(
   vtkDiscreteModel* model, vtkIdType floatingEdgeId)
 {
   std::map<vtkIdType, std::set<vtkIdType> >::iterator it=
     this->FloatingEdgeToPointIds.find(floatingEdgeId);
   if(it!=this->FloatingEdgeToPointIds.end())
     {
-    if(vtkCMBModelEdge* floatingEdge =
-       vtkCMBModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, floatingEdgeId)))
+    if(vtkDiscreteModelEdge* floatingEdge =
+       vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, floatingEdgeId)))
       {
       if(static_cast<size_t>(floatingEdge->GetLineResolution()+1) == it->second.size())
         {
@@ -476,14 +476,14 @@ bool vtkCmbBCGridRepresentation::IsFloatingEdgeConsistent(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::IsModelFaceConsistent(
+bool vtkModelBCGridRepresentation::IsModelFaceConsistent(
   vtkDiscreteModel* model, vtkIdType modelFaceId)
 {
   return true;
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbBCGridRepresentation::GetModelFaceAnalysisFacets(
+bool vtkModelBCGridRepresentation::GetModelFaceAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType modelFaceId, vtkIdList* cellIds,
   vtkIdList* cellSides)
 {
@@ -496,7 +496,7 @@ bool vtkCmbBCGridRepresentation::GetModelFaceAnalysisFacets(
     this->Reset();
     return false;
     }
-  vtkCMBModelFace* face = vtkCMBModelFace::SafeDownCast(
+  vtkDiscreteModelFace* face = vtkDiscreteModelFace::SafeDownCast(
     model->GetModelEntity(vtkModelFaceType, modelFaceId));
   if(face == NULL || face->GetNumberOfCells()==0)
     {
@@ -533,7 +533,7 @@ bool vtkCmbBCGridRepresentation::GetModelFaceAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbBCGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelBCGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

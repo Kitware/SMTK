@@ -93,7 +93,7 @@ SET(ModelFiles
   Serialize/vtkSerializationHelper.cxx
   Serialize/vtkSerializationHelperMap.cxx
   Serialize/vtkSerializer.cxx
-  Serialize/vtkCmbXMLParser.cxx
+  Serialize/vtkModelXMLParser.cxx
   Serialize/vtkCommonSerializationHelper.cxx
   Serialize/vtkInformationKeyMap.cxx
   Serialize/vtkRenderingSerializationHelper.cxx
@@ -120,35 +120,35 @@ SET(ModelFiles
 )
 
 SET(DiscreteModelFiles
-  vtkCmb3dmGridRepresentation.cxx
-  vtkCmb3dm2DGridRepresentation.cxx
-  vtkCmbBCGridRepresentation.cxx
-  vtkCmbGridRepresentation.cxx
-  vtkCmbGeneratedGridRepresentation.cxx
+  vtkModel3dmGridRepresentation.cxx
+  vtkModel3dm2DGridRepresentation.cxx
+  vtkModelBCGridRepresentation.cxx
+  vtkModelGridRepresentation.cxx
+  vtkModelGeneratedGridRepresentation.cxx
   vtkDiscreteModel.cxx
-  vtkCMBMaterial.cxx
-  vtkCMBModelEdge.cxx
-  vtkCMBModelEntity.cxx
-  vtkCMBModelEntityGroup.cxx
-  vtkCMBModelFace.cxx
-  vtkCMBModelGeometricEntity.cxx
-  vtkCMBModelRegion.cxx
-  vtkCMBModelVertex.cxx
-  vtkCMBNodalGroup.cxx
-  #vtkCMBModelWrapper.cxx
-  vtkCMBUniqueNodalGroup.cxx
-  vtkCMBUserName.cxx
-  vtkCMBXMLModelReader.cxx
-  vtkCMBXMLModelWriter.cxx
+  vtkModelMaterial.cxx
+  vtkDiscreteModelEdge.cxx
+  vtkDiscreteModelEntity.cxx
+  vtkDiscreteModelEntityGroup.cxx
+  vtkDiscreteModelFace.cxx
+  vtkDiscreteModelGeometricEntity.cxx
+  vtkDiscreteModelRegion.cxx
+  vtkDiscreteModelVertex.cxx
+  vtkModelNodalGroup.cxx
+  #vtkDiscreteModelWrapper.cxx
+  vtkModelUniqueNodalGroup.cxx
+  vtkModelUserName.cxx
+  vtkXMLModelReader.cxx
+  vtkXMLModelWriter.cxx
   vtkMergeEventData.cxx
   vtkSplitEventData.cxx
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-  Model/vtkCmbModelEntity
-  Model/vtkCmbModelGeometricEntity
-  vtkCmbGridRepresentation
-  vtkCmbGeneratedGridRepresentation
+  Model/vtkDiscreteModelEntity
+  Model/vtkDiscreteModelGeometricEntity
+  vtkModelGridRepresentation
+  vtkModelGeneratedGridRepresentation
   Model/vtkModel
   Model/vtkModelEdge
   Model/vtkModelEntity
@@ -180,7 +180,7 @@ WRAP_EXCLUDE
 SET(MODEL_KIT_SRC
   ${ModelFiles}
   ${DiscreteModelFiles}
-  vtkCMBModelWrapper.cxx
+  vtkDiscreteModelWrapper.cxx
 )
 
 # Depends on vtkFiltering due to vtkPolyData reference

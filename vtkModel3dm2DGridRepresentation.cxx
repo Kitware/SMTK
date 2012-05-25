@@ -21,12 +21,12 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCmb3dm2DGridRepresentation.h"
+#include "vtkModel3dm2DGridRepresentation.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelEntityGroup.h"
-#include "vtkCMBModelFace.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelFace.h"
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include "vtkModelItemIterator.h"
@@ -35,21 +35,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
 
-vtkStandardNewMacro(vtkCmb3dm2DGridRepresentation);
-vtkCxxRevisionMacro(vtkCmb3dm2DGridRepresentation, "");
+vtkStandardNewMacro(vtkModel3dm2DGridRepresentation);
+vtkCxxRevisionMacro(vtkModel3dm2DGridRepresentation, "");
 
 //----------------------------------------------------------------------------
-vtkCmb3dm2DGridRepresentation::vtkCmb3dm2DGridRepresentation()
+vtkModel3dm2DGridRepresentation::vtkModel3dm2DGridRepresentation()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkCmb3dm2DGridRepresentation::~vtkCmb3dm2DGridRepresentation()
+vtkModel3dm2DGridRepresentation::~vtkModel3dm2DGridRepresentation()
 {
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmb3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
+bool vtkModel3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType bcsGroupId,
   int bcGroupType, vtkIdList* pointIds)
 {
@@ -64,15 +64,15 @@ bool vtkCmb3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
     return false;
     }
 
-  if(vtkCMBModelEntityGroup* bcsNodalGroup =
-     vtkCMBModelEntityGroup::SafeDownCast(
-       model->GetModelEntity(vtkCMBModelEntityGroupType, bcsGroupId)))
+  if(vtkDiscreteModelEntityGroup* bcsNodalGroup =
+     vtkDiscreteModelEntityGroup::SafeDownCast(
+       model->GetModelEntity(vtkDiscreteModelEntityGroupType, bcsGroupId)))
     {
     vtkModelItemIterator* iterEdge=bcsNodalGroup->NewIterator(vtkModelEdgeType);
     for(iterEdge->Begin();!iterEdge->IsAtEnd();iterEdge->Next())
       {
-      vtkCMBModelEdge* entity =
-        vtkCMBModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
+      vtkDiscreteModelEdge* entity =
+        vtkDiscreteModelEdge::SafeDownCast(iterEdge->GetCurrentItem());
       if(entity)
         {
         vtkNew<vtkIdList> newPointIds;
@@ -102,7 +102,7 @@ bool vtkCmb3dm2DGridRepresentation::GetBCSNodalAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmb3dm2DGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
+bool vtkModel3dm2DGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
   vtkDiscreteModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
 {
   vtkErrorMacro("3dm file does not support floating edges.");
@@ -110,7 +110,7 @@ bool vtkCmb3dm2DGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmb3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
+bool vtkModel3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
   edgePoints->SetNumberOfComponents(2);
@@ -118,8 +118,8 @@ bool vtkCmb3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
     {  // we're on the client and don't know this info
     return false;
     }
-  vtkCMBModelEdge* edge =
-    vtkCMBModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, edgeId));
+  vtkDiscreteModelEdge* edge =
+    vtkDiscreteModelEdge::SafeDownCast(model->GetModelEntity(vtkModelEdgeType, edgeId));
   if(!edge)
     {
     return false;
@@ -142,7 +142,7 @@ bool vtkCmb3dm2DGridRepresentation::GetModelEdgeAnalysisPoints(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmb3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
+bool vtkModel3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
   vtkDiscreteModel* model, vtkIdType boundaryGroupId,
   vtkIdList* cellIds, vtkIdList* cellSides)
 {
@@ -150,7 +150,7 @@ bool vtkCmb3dm2DGridRepresentation::GetBoundaryGroupAnalysisFacets(
 }
 
 //----------------------------------------------------------------------------
-void vtkCmb3dm2DGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModel3dm2DGridRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

@@ -22,38 +22,38 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBMaterial.h"
+#include "vtkModelMaterial.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelFace.h"
-#include "vtkCMBModelRegion.h"
+#include "vtkDiscreteModelFace.h"
+#include "vtkDiscreteModelRegion.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 
-vtkCxxRevisionMacro(vtkCMBMaterial, "");
-vtkInformationKeyRestrictedMacro(vtkCMBMaterial, WAREHOUSEID, DoubleVector, 2);
+vtkCxxRevisionMacro(vtkModelMaterial, "");
+vtkInformationKeyRestrictedMacro(vtkModelMaterial, WAREHOUSEID, DoubleVector, 2);
 
-vtkCMBMaterial* vtkCMBMaterial::New()
+vtkModelMaterial* vtkModelMaterial::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBMaterial"); 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelMaterial"); 
   if(ret) 
     {                                    
-    return static_cast<vtkCMBMaterial*>(ret);
+    return static_cast<vtkModelMaterial*>(ret);
     } 
-  return new vtkCMBMaterial;
+  return new vtkModelMaterial;
 }
 
-vtkCMBMaterial::vtkCMBMaterial()
+vtkModelMaterial::vtkModelMaterial()
 {
 }
 
-vtkCMBMaterial::~vtkCMBMaterial()
+vtkModelMaterial::~vtkModelMaterial()
 {
 }
 
-bool vtkCMBMaterial::IsDestroyable()
+bool vtkModelMaterial::IsDestroyable()
 {
   if(this->GetNumberOfModelGeometricEntities())
     {
@@ -62,7 +62,7 @@ bool vtkCMBMaterial::IsDestroyable()
   return true;
 }
 
-bool vtkCMBMaterial::Destroy()
+bool vtkModelMaterial::Destroy()
 {
   this->RemoveAllAssociations(vtkModelVertexType);
   this->RemoveAllAssociations(vtkModelEdgeType);
@@ -73,36 +73,36 @@ bool vtkCMBMaterial::Destroy()
   return true;
 }
 
-int vtkCMBMaterial::GetType()
+int vtkModelMaterial::GetType()
 {
-  return vtkCMBMaterialType;
+  return vtkModelMaterialType;
 }
 
-bool vtkCMBMaterial::SetWarehouseId(double* uuid)
+bool vtkModelMaterial::SetWarehouseId(double* uuid)
 {
   this->GetProperties()->Set(WAREHOUSEID(),uuid,2);
   this->Modified();
   return 1;
 }
 
-double* vtkCMBMaterial::GetWarehouseId()
+double* vtkModelMaterial::GetWarehouseId()
 {
   return this->GetProperties()->Get(WAREHOUSEID());
 }
 
-void vtkCMBMaterial::AddModelGeometricEntity(
+void vtkModelMaterial::AddModelGeometricEntity(
   vtkModelGeometricEntity* GeometricEntity)
 {
   // first remove the GeometricEntities association with any other material
-  vtkCMBModelGeometricEntity* CMBGeometricEntity = 
-    vtkCMBModelRegion::SafeDownCast(GeometricEntity);
+  vtkDiscreteModelGeometricEntity* CMBGeometricEntity = 
+    vtkDiscreteModelRegion::SafeDownCast(GeometricEntity);
   if(!CMBGeometricEntity)
     {
-    CMBGeometricEntity = vtkCMBModelFace::SafeDownCast(GeometricEntity);
+    CMBGeometricEntity = vtkDiscreteModelFace::SafeDownCast(GeometricEntity);
     }
   if(CMBGeometricEntity)
     {
-    vtkCMBMaterial* PreviousMaterial = CMBGeometricEntity->GetMaterial();
+    vtkModelMaterial* PreviousMaterial = CMBGeometricEntity->GetMaterial();
     if(PreviousMaterial)
       {
       PreviousMaterial->RemoveModelGeometricEntity(GeometricEntity);
@@ -112,7 +112,7 @@ void vtkCMBMaterial::AddModelGeometricEntity(
   this->Modified();
 }
 
-int vtkCMBMaterial::GetNumberOfModelGeometricEntities()
+int vtkModelMaterial::GetNumberOfModelGeometricEntities()
 {
   int number = this->GetNumberOfAssociations(vtkModelVertexType);
   number += this->GetNumberOfAssociations(vtkModelEdgeType);
@@ -121,7 +121,7 @@ int vtkCMBMaterial::GetNumberOfModelGeometricEntities()
   return number;
 }
 
-bool vtkCMBMaterial::RemoveModelGeometricEntity(
+bool vtkModelMaterial::RemoveModelGeometricEntity(
   vtkModelGeometricEntity* GeometricEntity)
 {
   this->RemoveAssociation(GeometricEntity->GetType(), 
@@ -130,12 +130,12 @@ bool vtkCMBMaterial::RemoveModelGeometricEntity(
   return 1;
 }
 
-void vtkCMBMaterial::Serialize(vtkSerializer* ser)
+void vtkModelMaterial::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-void vtkCMBMaterial::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelMaterial::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

@@ -36,7 +36,7 @@
 #include "vtkSerializableObject.h"
 #include "vtkSerializationHelperMap.h"
 #include "vtkXMLElement.h"
-#include "vtkCmbXMLParser.h"
+#include "vtkModelXMLParser.h"
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 
@@ -239,8 +239,8 @@ vtkObject* vtkXMLArchiveReader::ReadObject(int id, bool weakPtr)
 //----------------------------------------------------------------------------
 int vtkXMLArchiveReader::ParseStream(istream& str)
 {
-  vtkSmartPointer<vtkCmbXMLParser> parser =
-    vtkSmartPointer<vtkCmbXMLParser>::New();
+  vtkSmartPointer<vtkModelXMLParser> parser =
+    vtkSmartPointer<vtkModelXMLParser>::New();
   parser->SetStream(&str);
   int result = parser->Parse();
   this->SetRootElement(parser->GetRootElement());

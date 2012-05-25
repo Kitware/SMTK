@@ -22,13 +22,13 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBNodalGroup.h"
+#include "vtkModelNodalGroup.h"
 
 #include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelEdge.h"
-#include "vtkCMBModelFace.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelFace.h"
 #include "vtkFeatureEdges.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
@@ -39,11 +39,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkSerializer.h"
 #include "vtkModelItemIterator.h"
-#include "vtkCMBModelVertex.h"
+#include "vtkDiscreteModelVertex.h"
 
 #include <set>
 
-struct vtkCMBNodalGroupInternals
+struct vtkModelNodalGroupInternals
 {
   typedef std::set<vtkIdType> Set;
   typedef Set::iterator SetIterator;
@@ -53,25 +53,25 @@ struct vtkCMBNodalGroupInternals
   EntitySet Entities;
 };
 
-vtkCxxRevisionMacro(vtkCMBNodalGroup, "");
+vtkCxxRevisionMacro(vtkModelNodalGroup, "");
 
-vtkCMBNodalGroup* vtkCMBNodalGroup::New()
+vtkModelNodalGroup* vtkModelNodalGroup::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBNodalGroup"); 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelNodalGroup"); 
   if(ret) 
     {                                    
-    return static_cast<vtkCMBNodalGroup*>(ret);
+    return static_cast<vtkModelNodalGroup*>(ret);
     } 
-  return new vtkCMBNodalGroup;
+  return new vtkModelNodalGroup;
 }
 
-vtkCMBNodalGroup::vtkCMBNodalGroup()
+vtkModelNodalGroup::vtkModelNodalGroup()
 {
-  this->Internal = new vtkCMBNodalGroupInternals;
-  this->PointLocationType = vtkCMBModelEntityAllPoints;
+  this->Internal = new vtkModelNodalGroupInternals;
+  this->PointLocationType = vtkDiscreteModelEntityAllPoints;
 }
 
-vtkCMBNodalGroup::~vtkCMBNodalGroup()
+vtkModelNodalGroup::~vtkModelNodalGroup()
 {
   if(this->Internal)
     {
@@ -79,37 +79,37 @@ vtkCMBNodalGroup::~vtkCMBNodalGroup()
     }
   this->Internal = 0;
 }
-void vtkCMBNodalGroup::AddModelEntity(vtkModelEntity* ModelEntity)
+void vtkModelNodalGroup::AddModelEntity(vtkModelEntity* ModelEntity)
 {
   if(ModelEntity)
     {
     this->Internal->Entities.insert(ModelEntity);
     }
 }
-void vtkCMBNodalGroup::RemoveModelEntity(vtkModelEntity* ModelEntity)
+void vtkModelNodalGroup::RemoveModelEntity(vtkModelEntity* ModelEntity)
 {
   this->Internal->Entities.erase(ModelEntity);
 }
-void vtkCMBNodalGroup::ClearEntities()
+void vtkModelNodalGroup::ClearEntities()
 {
   this->Internal->Entities.clear();
 }
-std::set<vtkModelEntity*>& vtkCMBNodalGroup::GetModelEntities() const
+std::set<vtkModelEntity*>& vtkModelNodalGroup::GetModelEntities() const
 {
   return this->Internal->Entities;
 }
 
-void vtkCMBNodalGroup::AddPointId(vtkIdType PointId)
+void vtkModelNodalGroup::AddPointId(vtkIdType PointId)
 {
   this->Internal->PointIds.insert(PointId);
 }
 
-void vtkCMBNodalGroup::RemovePointId(vtkIdType PointId)
+void vtkModelNodalGroup::RemovePointId(vtkIdType PointId)
 {
   this->Internal->PointIds.erase(PointId);
 }
 
-void vtkCMBNodalGroup::AddPointIds(vtkIdList* PointIds)
+void vtkModelNodalGroup::AddPointIds(vtkIdList* PointIds)
 {
   for(vtkIdType i=0;i<PointIds->GetNumberOfIds();i++)
     {
@@ -117,7 +117,7 @@ void vtkCMBNodalGroup::AddPointIds(vtkIdList* PointIds)
     }
 }
 
-void vtkCMBNodalGroup::RemovePointIds(vtkIdList* PointIds)
+void vtkModelNodalGroup::RemovePointIds(vtkIdList* PointIds)
 {
   for(vtkIdType i=0;i<PointIds->GetNumberOfIds();i++)
     {
@@ -125,7 +125,7 @@ void vtkCMBNodalGroup::RemovePointIds(vtkIdList* PointIds)
     }
 }
 
-void vtkCMBNodalGroup::AddPointIdsInModelFace(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::AddPointIdsInModelFace(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* Points = vtkBitArray::New();
   ModelFace->GatherAllPointIdsMask(Points);
@@ -138,7 +138,7 @@ void vtkCMBNodalGroup::AddPointIdsInModelFace(vtkCMBModelFace* ModelFace)
     }
   Points->Delete();
 }
-void vtkCMBNodalGroup::AddPointIdsInModelEdge(vtkCMBModelEdge* ModelEdge)
+void vtkModelNodalGroup::AddPointIdsInModelEdge(vtkDiscreteModelEdge* ModelEdge)
 {
   vtkBitArray* Points = vtkBitArray::New();
   this->GatherAllPointIdsOfModelEdge(ModelEdge, Points);
@@ -152,7 +152,7 @@ void vtkCMBNodalGroup::AddPointIdsInModelEdge(vtkCMBModelEdge* ModelEdge)
   Points->Delete();
 }
 
-void vtkCMBNodalGroup::AddPointIdsInModelFaceInterior(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::AddPointIdsInModelFaceInterior(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* AllModelFacePoints = vtkBitArray::New();
   ModelFace->GatherAllPointIdsMask(AllModelFacePoints);
@@ -170,7 +170,7 @@ void vtkCMBNodalGroup::AddPointIdsInModelFaceInterior(vtkCMBModelFace* ModelFace
   BoundaryModelFacePoints->Delete();
 }
 
-void vtkCMBNodalGroup::AddPointIdsInModelFaceBoundary(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::AddPointIdsInModelFaceBoundary(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* Points = vtkBitArray::New();
   ModelFace->GatherBoundaryPointIdsMask(Points);
@@ -184,7 +184,7 @@ void vtkCMBNodalGroup::AddPointIdsInModelFaceBoundary(vtkCMBModelFace* ModelFace
   Points->Delete();
 }
 
-void vtkCMBNodalGroup::RemovePointIdsInModelFace(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::RemovePointIdsInModelFace(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* Points = vtkBitArray::New();
   ModelFace->GatherAllPointIdsMask(Points);
@@ -198,7 +198,7 @@ void vtkCMBNodalGroup::RemovePointIdsInModelFace(vtkCMBModelFace* ModelFace)
   Points->Delete();
 }
 
-void vtkCMBNodalGroup::RemovePointIdsInModelFaceInterior(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::RemovePointIdsInModelFaceInterior(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* AllModelFacePoints = vtkBitArray::New();
   ModelFace->GatherAllPointIdsMask(AllModelFacePoints);
@@ -216,7 +216,7 @@ void vtkCMBNodalGroup::RemovePointIdsInModelFaceInterior(vtkCMBModelFace* ModelF
   BoundaryModelFacePoints->Delete();
 }
 
-void vtkCMBNodalGroup::RemovePointIdsInModelFaceBoundary(vtkCMBModelFace* ModelFace)
+void vtkModelNodalGroup::RemovePointIdsInModelFaceBoundary(vtkDiscreteModelFace* ModelFace)
 {
   vtkBitArray* Points = vtkBitArray::New();
   ModelFace->GatherBoundaryPointIdsMask(Points);
@@ -230,35 +230,35 @@ void vtkCMBNodalGroup::RemovePointIdsInModelFaceBoundary(vtkCMBModelFace* ModelF
   Points->Delete();
 
 }  
-void vtkCMBNodalGroup::ClearPointIds()
+void vtkModelNodalGroup::ClearPointIds()
 {
   this->Internal->PointIds.clear();
 }
 
-vtkIdType vtkCMBNodalGroup::GetNumberOfPointIds()
+vtkIdType vtkModelNodalGroup::GetNumberOfPointIds()
 {
   vtkIdType size = this->Internal->PointIds.size();
   return size;
 }
 
-void vtkCMBNodalGroup::GetPointIds(vtkIdList* PointIds)
+void vtkModelNodalGroup::GetPointIds(vtkIdList* PointIds)
 {
   vtkIdType NumberOfIds = this->GetNumberOfPointIds();
   PointIds->SetNumberOfIds(NumberOfIds);
   vtkIdType counter = 0;
-  for(vtkCMBNodalGroupInternals::SetIterator iter=this->Internal->PointIds.begin();
+  for(vtkModelNodalGroupInternals::SetIterator iter=this->Internal->PointIds.begin();
       iter!=this->Internal->PointIds.end();iter++,counter++)
     {
     PointIds->SetId(counter, *iter);
     }
 }
 
-int vtkCMBNodalGroup::GetType()
+int vtkModelNodalGroup::GetType()
 {
-  return vtkCMBNodalGroupType;
+  return vtkModelNodalGroupType;
 }
 
-bool vtkCMBNodalGroup::ConstructRepresentation(vtkPolyData* Grid)
+bool vtkModelNodalGroup::ConstructRepresentation(vtkPolyData* Grid)
 {
   Grid->Initialize();
   vtkDiscreteModel* Model = this->GetModel();
@@ -288,7 +288,7 @@ bool vtkCMBNodalGroup::ConstructRepresentation(vtkPolyData* Grid)
   return true;
 }
 
-vtkDiscreteModel* vtkCMBNodalGroup::GetModel()
+vtkDiscreteModel* vtkModelNodalGroup::GetModel()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelType);
   iter->Begin();
@@ -297,8 +297,8 @@ vtkDiscreteModel* vtkCMBNodalGroup::GetModel()
   return Model;
 }
 
-void vtkCMBNodalGroup::GatherAllPointIdsOfModelEdge(
-  vtkCMBModelEdge* ModelEdge, vtkBitArray* Points)
+void vtkModelNodalGroup::GatherAllPointIdsOfModelEdge(
+  vtkDiscreteModelEdge* ModelEdge, vtkBitArray* Points)
 {
   vtkPointSet* Grid = vtkPointSet::SafeDownCast(ModelEdge->GetGeometry());
   if(!Grid)
@@ -328,25 +328,25 @@ void vtkCMBNodalGroup::GatherAllPointIdsOfModelEdge(
   CellPoints->Delete();
 }
 
-bool vtkCMBNodalGroup::IsDestroyable()
+bool vtkModelNodalGroup::IsDestroyable()
 {
   return 1;
 }
 
-bool vtkCMBNodalGroup::Destroy()
+bool vtkModelNodalGroup::Destroy()
 {
   // This doesn't contain references to any other objects besides the model
   // so we don't need to remove any associations here.
   return 1;
 }
 
-void vtkCMBNodalGroup::Serialize(vtkSerializer* ser)
+void vtkModelNodalGroup::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
 
-void vtkCMBNodalGroup::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelNodalGroup::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }

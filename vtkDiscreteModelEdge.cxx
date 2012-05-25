@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "vtkCMBModelEdge.h"
+#include "vtkDiscreteModelEdge.h"
 
 #include "vtkCell.h"
 #include "vtkIdList.h"
@@ -34,8 +34,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 
 #include "vtkDiscreteModel.h"
-#include "vtkCMBModelRegion.h"
-#include "vtkCMBModelVertex.h"
+#include "vtkDiscreteModelRegion.h"
+#include "vtkDiscreteModelVertex.h"
 #include "vtkLineSource.h"
 #include "vtkInformation.h"
 #include "vtkInformationDoubleVectorKey.h"
@@ -46,21 +46,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSmartPointer.h"
 #include "vtkSplitEventData.h"
 
-vtkCxxRevisionMacro(vtkCMBModelEdge, "");
-vtkInformationKeyMacro(vtkCMBModelEdge, LINERESOLUTION, Integer);
-vtkInformationKeyMacro(vtkCMBModelEdge, LINEADNPOINTSGEOMETRY, ObjectBase);
+vtkCxxRevisionMacro(vtkDiscreteModelEdge, "");
+vtkInformationKeyMacro(vtkDiscreteModelEdge, LINERESOLUTION, Integer);
+vtkInformationKeyMacro(vtkDiscreteModelEdge, LINEADNPOINTSGEOMETRY, ObjectBase);
 
-vtkCMBModelEdge* vtkCMBModelEdge::New()
+vtkDiscreteModelEdge* vtkDiscreteModelEdge::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkCMBModelEdge");
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEdge");
   if(ret)
     {
-    return static_cast<vtkCMBModelEdge*>(ret);
+    return static_cast<vtkDiscreteModelEdge*>(ret);
     }
-  return new vtkCMBModelEdge;
+  return new vtkDiscreteModelEdge;
 }
 
-vtkCMBModelEdge::vtkCMBModelEdge()
+vtkDiscreteModelEdge::vtkDiscreteModelEdge()
 {
   this->GetProperties()->Set(LINERESOLUTION(), 1);
   vtkProperty* displayProp = this->GetDisplayProperty();
@@ -68,11 +68,11 @@ vtkCMBModelEdge::vtkCMBModelEdge()
   displayProp->SetPointSize(6.0);
 }
 
-vtkCMBModelEdge::~vtkCMBModelEdge()
+vtkDiscreteModelEdge::~vtkDiscreteModelEdge()
 {
 }
 
-bool vtkCMBModelEdge::IsDestroyable()
+bool vtkDiscreteModelEdge::IsDestroyable()
 {
   vtkModelItemIterator* edgeUseIter = this->NewModelEdgeUseIterator();
   for(edgeUseIter->Begin();!edgeUseIter->IsAtEnd();edgeUseIter->Next())
@@ -87,7 +87,7 @@ bool vtkCMBModelEdge::IsDestroyable()
   return true;
 }
 
-bool vtkCMBModelEdge::Destroy()
+bool vtkDiscreteModelEdge::Destroy()
 {
   this->GetModel()->InvokeModelGeometricEntityEvent(
     ModelGeometricEntityAboutToDestroy, this);
@@ -106,20 +106,20 @@ bool vtkCMBModelEdge::Destroy()
   this->RemoveAllAssociations(vtkModelEdgeUseType);
   // For the floating edge, we have associations with regions
   this->RemoveAllAssociations(vtkModelRegionType);
-  this->RemoveAllAssociations(vtkCMBModelEntityGroupType);
-  this->RemoveAllAssociations(vtkCMBNodalGroupType);
+  this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
+  this->RemoveAllAssociations(vtkModelNodalGroupType);
   this->Modified();
   return true;
 }
 
-vtkModelEntity* vtkCMBModelEdge::GetThisModelEntity()
+vtkModelEntity* vtkDiscreteModelEdge::GetThisModelEntity()
 {
   return this;
 }
 
-void vtkCMBModelEdge::AddRegionAssociation(vtkIdType regionId)
+void vtkDiscreteModelEdge::AddRegionAssociation(vtkIdType regionId)
 {
-  vtkCMBModelRegion* region = vtkCMBModelRegion::SafeDownCast(
+  vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(
     this->GetModel()->GetModelEntity(vtkModelRegionType, regionId));
   if(region)
     {
@@ -129,7 +129,7 @@ void vtkCMBModelEdge::AddRegionAssociation(vtkIdType regionId)
     }
 }
 
-vtkObject* vtkCMBModelEdge::GetGeometry()
+vtkObject* vtkDiscreteModelEdge::GetGeometry()
 {
   if(vtkObject* object = this->Superclass::GetGeometry())
     {
@@ -147,7 +147,7 @@ vtkObject* vtkCMBModelEdge::GetGeometry()
   return 0;
 }
 
-bool vtkCMBModelEdge::ConstructRepresentation()
+bool vtkDiscreteModelEdge::ConstructRepresentation()
 {
   if(this->GetGeometry())
     {
@@ -190,7 +190,7 @@ bool vtkCMBModelEdge::ConstructRepresentation()
   return true;
 }
 
-bool vtkCMBModelEdge::Split(
+bool vtkDiscreteModelEdge::Split(
   vtkIdType splitPointId, vtkIdType & createdVertexId,
   vtkIdType & createdEdgeId)
 {
@@ -241,9 +241,9 @@ bool vtkCMBModelEdge::Split(
     return true;
     }
 
-  vtkIdType modelEdgeStartPoint = vtkCMBModelVertex::SafeDownCast(
+  vtkIdType modelEdgeStartPoint = vtkDiscreteModelVertex::SafeDownCast(
     this->GetAdjacentModelVertex(0))->GetPointId();
-  vtkIdType modelEdgeEndPoint = vtkCMBModelVertex::SafeDownCast(
+  vtkIdType modelEdgeEndPoint = vtkDiscreteModelVertex::SafeDownCast(
     this->GetAdjacentModelVertex(1))->GetPointId();
   if(splitPointId == modelEdgeStartPoint || splitPointId == modelEdgeEndPoint)
     {
@@ -327,7 +327,7 @@ bool vtkCMBModelEdge::Split(
   createdVertexId = vertex->GetUniquePersistentId();
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(1);
-  vtkCMBModelEdge* newEdge = vtkCMBModelEdge::SafeDownCast(model->BuildModelEdge(0,0));
+  vtkDiscreteModelEdge* newEdge = vtkDiscreteModelEdge::SafeDownCast(model->BuildModelEdge(0,0));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
   this->Superclass::SplitModelEdge(vertex, newEdge);
   // now create the poly data for the new edge
@@ -356,7 +356,7 @@ bool vtkCMBModelEdge::Split(
       ModelGeometricEntityBoundaryModified, face);
     }
   faces->Delete();
-  vtkCMBModelVertex* cmbVertex = vtkCMBModelVertex::SafeDownCast(vertex);
+  vtkDiscreteModelVertex* cmbVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
   if(cmbVertex)
     {
     cmbVertex->CreateGeometry();
@@ -364,14 +364,14 @@ bool vtkCMBModelEdge::Split(
   return 1;
 }
 
-bool vtkCMBModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
+bool vtkDiscreteModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
 {
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
   vtkModelVertex* vertex = model->BuildModelVertex(pointId);
   bool result = this->Superclass::SplitModelEdgeLoop(vertex);
   if(result)
     {
-    vtkCMBModelVertex* cmbVertex = vtkCMBModelVertex::SafeDownCast(vertex);
+    vtkDiscreteModelVertex* cmbVertex = vtkDiscreteModelVertex::SafeDownCast(vertex);
     if(cmbVertex)
       {
       cmbVertex->CreateGeometry();
@@ -380,7 +380,7 @@ bool vtkCMBModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
   return result;
 }
 
-void vtkCMBModelEdge::SetLineResolution(int LineResolution)
+void vtkDiscreteModelEdge::SetLineResolution(int LineResolution)
 {
   if(LineResolution > 0 && LineResolution != this->GetLineResolution())
     {
@@ -390,30 +390,30 @@ void vtkCMBModelEdge::SetLineResolution(int LineResolution)
     }
 }
 
-int vtkCMBModelEdge::GetLineResolution()
+int vtkDiscreteModelEdge::GetLineResolution()
 {
   return this->GetProperties()->Get(LINERESOLUTION());
 }
 
-void vtkCMBModelEdge::SetLineAndPointsGeometry(vtkObject* Geometry)
+void vtkDiscreteModelEdge::SetLineAndPointsGeometry(vtkObject* Geometry)
 {
   this->GetProperties()->Set(LINEADNPOINTSGEOMETRY(), Geometry);
   this->Modified();
 }
 
-vtkObject* vtkCMBModelEdge::GetLineAndPointsGeometry()
+vtkObject* vtkDiscreteModelEdge::GetLineAndPointsGeometry()
 {
   vtkObject* object = vtkObject::SafeDownCast(
     this->GetProperties()->Get(LINEADNPOINTSGEOMETRY()));
   return object;
 }
 
-void vtkCMBModelEdge::Serialize(vtkSerializer* ser)
+void vtkDiscreteModelEdge::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);
 }
 
-vtkModelRegion* vtkCMBModelEdge::GetModelRegion()
+vtkModelRegion* vtkDiscreteModelEdge::GetModelRegion()
 {
   vtkModelItemIterator* iter =
     this->NewIterator(vtkModelRegionType);
@@ -423,7 +423,7 @@ vtkModelRegion* vtkCMBModelEdge::GetModelRegion()
   iter->Delete();
   return Region;
 }
-void vtkCMBModelEdge::GetAllPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelEdge::GetAllPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
@@ -446,7 +446,7 @@ void vtkCMBModelEdge::GetAllPointIds(vtkIdList* ptsList)
     }
   //ptsList->Squeeze();
 }
-void vtkCMBModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
 {
   vtkNew<vtkIdList> BoundaryPtsList;
   this->GetAllPointIds(ptsList);
@@ -456,7 +456,7 @@ void vtkCMBModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
     ptsList->DeleteId(BoundaryPtsList->GetId(i));
     }
 }
-void vtkCMBModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
+void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
 {
   ptsList->Reset();
   vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
@@ -466,8 +466,8 @@ void vtkCMBModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
     }
   for(int i=0; i<2; i++)
     {
-    vtkCMBModelVertex* cmbModelVertex =
-      vtkCMBModelVertex::SafeDownCast(this->GetAdjacentModelVertex(i));
+    vtkDiscreteModelVertex* cmbModelVertex =
+      vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(i));
     if(cmbModelVertex)
       {
       ptsList->InsertUniqueId(cmbModelVertex->GetPointId());
@@ -475,7 +475,7 @@ void vtkCMBModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
     }
 }
 
-void vtkCMBModelEdge::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
