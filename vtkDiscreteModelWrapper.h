@@ -64,13 +64,12 @@ public:
   vtkTypeMacro(vtkDiscreteModelWrapper, vtkCompositeDataSet);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkDiscreteModelWrapper* New();
-//BTX
+
   // Description:
   // Function to serialize the model from the server to the client.
   vtkStringArray* SerializeModel();
 
-
-
+//BTX
   // Description:
   // Function for getting a model entity from its unique persistent id.
   vtkModelEntity* GetModelEntity(vtkIdType UniquePersistentId);
@@ -103,7 +102,6 @@ public:
   void AddGeometricEntities(std::vector<vtkIdType> &entities);
   void AddGeometricEntities(std::vector<vtkModelGeometricEntity*> &entities);
   void AddGeometricEntities(int entType);
-
 //ETX
 
   // Description:
@@ -118,7 +116,6 @@ public:
   // Get the analysis grid filename if it exists.
   const char* GetAnalysisGridFileName();
 
-//BTX
   // Description:
   // Get the Server Manager XML from a loaded plugin
   // the string array contains chunks of XML to process
@@ -141,7 +138,6 @@ public:
   // Description:
   // Key used to put node name in the meta-data associated with a node.
   static vtkInformationStringKey* NAME();
-//ETX
 
   // Description:
   // Get the modified time of this object.
@@ -157,7 +153,6 @@ public:
   vtkProperty* GetEntityPropertyByChildIndex(
     unsigned int index);
   vtkProperty* GetEntityPropertyByEntityId(vtkIdType EntityId);
-
 
   // Description:
   // Callback function to handle DomainSetCreated/Destroyed event from CMBModel
