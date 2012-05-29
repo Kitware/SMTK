@@ -173,7 +173,6 @@ protected:
   friend class vtkModelEntityOperator;
   friend class vtkCmbModelSource;
   friend class vtkCmbModelMapper;
-  friend class vtkCmbModelRepresentation;
 
   vtkDiscreteModel* Model;
   vtkStringArray* SerializedModel;
