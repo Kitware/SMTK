@@ -65,7 +65,7 @@ SET_SOURCE_FILES_PROPERTIES(
   ABSTRACT
 )
 # add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
-# target_link_libraries(SimBuilderLibrary vtkDiscreteModel vtkCmbDiscreteModel vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+# target_link_libraries(SimBuilderLibrary vtkDiscreteModel vtkCmbDiscreteModel vtkFiltering vtkCMBVTKExtensions omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
@@ -80,7 +80,7 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
 TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCMBVTKExtensions vtkCMBVTKExtensionsCS vtkCmbDiscreteModel vtkCmbDiscreteModelCS
-  vtkDiscreteModel vtkDiscreteModelCS vtkFiltering vtkCMBLib omicron triangle_omicron tl_alloc)
+  vtkDiscreteModel vtkDiscreteModelCS vtkFiltering vtkCMBVTKExtensions omicron triangle_omicron tl_alloc)
 
 if(NOT APPLE)
   install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
