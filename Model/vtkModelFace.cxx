@@ -302,6 +302,9 @@ void vtkModelFace::AddLoop(int numEdges, vtkModelEdge** edges,
     }
   else
     { // single model edge
+    // This logic seems to be redundant since the exact same logic is already applied
+    // at the begining of this method.
+    /*
     if(edges[0]->GetNumberOfModelEdgeUses() == 2 &&
        edges[0]->GetModelEdgeUse(0)->GetNumberOfAssociations(vtkModelLoopUseType) == 0)
       {  // this is the default edge use associated with the model edge
@@ -312,6 +315,7 @@ void vtkModelFace::AddLoop(int numEdges, vtkModelEdge** edges,
       vtkModelEdgeUse* edgeUse = edges[0]->BuildModelEdgeUsePair();
       edgeUses[0] = edgeDirections[0] == 1 ? edgeUse : edgeUse->GetPairedModelEdgeUse();
       }
+    */
     if(edgeUses[0]->GetModelVertexUse(0) != edgeUses[0]->GetModelVertexUse(1))
       {
       this->CombineModelVertexUses(edgeUses[0],edgeUses[0]);
