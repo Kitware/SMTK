@@ -36,6 +36,7 @@ vtkCxxRevisionMacro(vtkModelGeometricEntity, "$Revision: 2566 $");
 vtkModelGeometricEntity::vtkModelGeometricEntity()
 {
   this->InitDefaultDisplayProperty();
+  this->SetPickable(1);
 }
 
 vtkModelGeometricEntity::~vtkModelGeometricEntity()
@@ -59,6 +60,7 @@ vtkObject* vtkModelGeometricEntity::GetGeometry()
   return object;
 }
 
+
 void vtkModelGeometricEntity::InitDefaultDisplayProperty()
 {
   vtkOpenGLProperty* prop = vtkOpenGLProperty::New();
@@ -66,6 +68,39 @@ void vtkModelGeometricEntity::InitDefaultDisplayProperty()
   prop->SetFrontfaceCulling(0);
   this->SetDisplayProperty(prop);
   prop->Delete();
+}
+
+void vtkModelGeometricEntity::SetDisplayProperty(vtkProperty* prop)
+{
+  this->GetProperties()->Set(DISPLAY_PROPERTY(), prop);
+  this->Modified();
+}
+
+vtkProperty* vtkModelGeometricEntity::GetDisplayProperty()
+{
+  vtkProperty* object = vtkProperty::SafeDownCast(
+    this->GetProperties()->Get(DISPLAY_PROPERTY()));
+  return object;
+}
+
+void vtkModelGeometricEntity::SetPickable(int pickable)
+{
+  if(this->GetProperties()->Has(PICKABLE()) &&
+    pickable == this->GetProperties()->Get(PICKABLE()))
+    {
+    return;
+    }
+  this->GetProperties()->Set(PICKABLE(), pickable);
+  this->Modified();
+}
+
+int vtkModelGeometricEntity::GetPickable()
+{
+  if(this->GetProperties()->Has(PICKABLE()))
+    {
+    return this->GetProperties()->Get(PICKABLE());
+    }
+  return 1;
 }
 
 bool vtkModelGeometricEntity::GetBounds(double bounds[6])

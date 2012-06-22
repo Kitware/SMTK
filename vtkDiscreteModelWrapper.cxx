@@ -331,8 +331,8 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     modelEntity->AddCellsToGeometry(it->second);
     if(EntityToProperties.find(it->first) != EntityToProperties.end())
       {
-      modelEntity->GetThisModelEntity()->SetDisplayProperty(
-        EntityToProperties[it->first]);
+      vtkModelGeometricEntity::SafeDownCast(modelEntity->GetThisModelEntity())
+        ->SetDisplayProperty(EntityToProperties[it->first]);
       }
     }
 
@@ -397,10 +397,11 @@ vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByChildIndex(
 vtkModelEntity* vtkDiscreteModelWrapper::GetEntityObjectByFlatIndex(
   unsigned int index)
 {
-  index--;
-  if (this->HasChildMetaData(index))
+  // The flat index starts with root index, so we should minus 1.
+  unsigned int flat_index = index - 1;
+  if (this->HasChildMetaData(flat_index))
     {
-    vtkInformation* childInfo = this->GetChildMetaData(index);
+    vtkInformation* childInfo = this->GetChildMetaData(flat_index);
     vtkIdType entId = static_cast<vtkIdType>(
       childInfo->Get(vtkModelEntity::UNIQUEPERSISTENTID()));
     return this->Model->GetModelEntity(entId);
@@ -413,7 +414,6 @@ bool vtkDiscreteModelWrapper::GetChildIndexByEntityId(
   vtkIdType entityId, unsigned int& index)
 {
   unsigned int numChildren = this->GetNumberOfChildren();
-  this->SetNumberOfChildren(numChildren);
   for (unsigned int cc=0; cc < numChildren; cc++)
     {
     if (this->HasChildMetaData(cc))
@@ -476,16 +476,16 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(std::vector<vtkIdType> &entit
 void vtkDiscreteModelWrapper::AddGeometricEntities(
   std::vector<vtkModelGeometricEntity*> &entities)
 {
-  int numEnt = static_cast<int>(entities.size());
+  unsigned int numEnt = static_cast<unsigned int>(entities.size());
   if(numEnt == 0)
     {
     return;
     }
-  int numItems = this->GetNumberOfChildren();
+  unsigned int numItems = this->GetNumberOfChildren();
   this->SetNumberOfChildren(numItems + numEnt);
 
   std::vector<vtkModelGeometricEntity* >::iterator it;
-  int i=0;
+  unsigned int i=0;
   for(it = entities.begin(); it != entities.end(), i<numEnt; ++it)
     {
     vtkPolyData* Geometry = vtkPolyData::SafeDownCast(

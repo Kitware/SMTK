@@ -59,6 +59,16 @@ public:
   // Get the model that this vtkModelItem is part of.
   vtkModel* GetModel();
 
+  // Definition:
+  // Get/set the display property for this entity.
+  void SetDisplayProperty(vtkProperty* prop);
+  vtkProperty* GetDisplayProperty();
+
+  // Description:
+  // Set/get Pickable (non-zero is Pickable).
+  void SetPickable(int pickable);
+  int GetPickable();
+
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See

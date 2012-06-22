@@ -62,7 +62,6 @@ vtkModelEntity::vtkModelEntity()
   this->Initialized = 0;
   this->SetUniquePersistentId(UseIdCounter--);
   this->SetVisibility(1);
-  this->SetPickable(1);
 }
 
 vtkModelEntity::~vtkModelEntity()
@@ -124,25 +123,6 @@ int vtkModelEntity::GetVisibility()
     }
   return 1;
 }
-void vtkModelEntity::SetPickable(int pickable)
-{
-  if(this->GetProperties()->Has(PICKABLE()) &&
-    pickable == this->GetProperties()->Get(PICKABLE()))
-    {
-    return;
-    }
-  this->GetProperties()->Set(PICKABLE(), pickable);
-  this->Modified();
-}
-
-int vtkModelEntity::GetPickable()
-{
-  if(this->GetProperties()->Has(PICKABLE()))
-    {
-    return this->GetProperties()->Get(PICKABLE());
-    }
-  return 1;
-}
 
 void vtkModelEntity::SetUniquePersistentId(vtkIdType id)
 {
@@ -164,18 +144,6 @@ void vtkModelEntity::Initialize(vtkIdType UniquePersistentId)
 {
   this->SetUniquePersistentId(UniquePersistentId);
   this->Initialized = 1;
-}
-void vtkModelEntity::SetDisplayProperty(vtkProperty* prop)
-{
-  this->GetProperties()->Set(DISPLAY_PROPERTY(), prop);
-  this->Modified();
-}
-
-vtkProperty* vtkModelEntity::GetDisplayProperty()
-{
-  vtkProperty* object = vtkProperty::SafeDownCast(
-    this->GetProperties()->Get(DISPLAY_PROPERTY()));
-  return object;
 }
 
 vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType UniquePersistentId)

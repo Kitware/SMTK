@@ -49,6 +49,8 @@ public:
   vtkTypeRevisionMacro(vtkModelEntity,vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
+  // Description:
+  // Set/get color of the model entity
   void SetColor(double r, double g, double b, double a);
   double* GetColor();
   void GetColor(double RGBA[4]);
@@ -57,11 +59,6 @@ public:
   // Set/get visible (non-zero is visible).
   void SetVisibility(int Visible);
   int GetVisibility();
-
-  // Description:
-  // Set/get Pickable (non-zero is Pickable).
-  void SetPickable(int pickable);
-  int GetPickable();
 
   vtkIdType GetUniquePersistentId();
 
@@ -73,11 +70,6 @@ public:
   static vtkInformationIntegerKey* VISIBILITY();
   static vtkInformationObjectBaseKey* DISPLAY_PROPERTY();
   static vtkInformationIntegerKey* PICKABLE();
-
-  // Definition:
-  // Get/set the display property for this entity.
-  void SetDisplayProperty(vtkProperty* prop);
-  vtkProperty* GetDisplayProperty();
 
   // Description:
   // Methods to add and retrieve generic information.
