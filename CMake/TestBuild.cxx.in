@@ -1,0 +1,6 @@
+#include <@dir_prefix@/@header@>
+
+int @headername@()
+{
+  return 0;
+}
