@@ -609,7 +609,7 @@ void vtkDiscreteModel::SetPointUniqueNodalGroup(
     if(this->UniquePointGroup[PointId] &&
        this->UniquePointGroup[PointId] != NodalGroup)
       {
-      this->UniquePointGroup[PointId]->Superclass::RemovePointId(PointId);
+      this->UniquePointGroup[PointId]->vtkModelUniqueNodalGroup::Superclass::RemovePointId(PointId);
       }
     this->UniquePointGroup[PointId] = NodalGroup;
     }
