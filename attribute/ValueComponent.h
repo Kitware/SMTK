@@ -28,23 +28,24 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_ValueComponent_h
 
 #include "attribute/Component.h"
-class slctk::attribute::ValueComponentDefinition;
+#include "AttributeExports.h"
 
 namespace slctk
 {
   namespace attribute
   {
+    class ValueComponentDefinition;
     class SLCTKATTRIBUTE_EXPORT ValueComponent : public slctk::attribute::Component
     {
     public:
-      size_type numberOfElements() const
+      std::size_t numberOfElements() const
       {return this->m_isSet.size();}
 
-      int descreteIndex() const
+      int discreteIndex() const
       { return this->discreteIndex(0);}
-      int descreteIndex(int element) const
-      {return this->m_discreteIndex;}
-      bool isDescrete() const;
+      int discreteIndex(int element) const
+      {return this->m_discreteIndices[element];}
+      bool isDiscrete() const;
       
       void setDiscreteIndex(int index)
       {this->setDiscreteIndex(0, index);}
@@ -55,15 +56,15 @@ namespace slctk
       // it will be marked as unset.
       //If the component's definition indicated a size of 0 then it will go back to 
       // having no values
-      virtual reset() = 0;
-      bool setToDefault(int element) const = 0;
+      virtual void reset() = 0;
+      virtual bool setToDefault(int element) const = 0;
       virtual const std::string &valueAsString(const std::string &format) const
       { return this->valueAsString(0, format);}
 
       virtual const std::string &valueAsString(int element, const std::string &format) const = 0;
       bool isSet() const
       { return this->m_isSet[0];}
-      bool isSet(int element) const;
+      bool isSet(int element) const
       {return this->m_isSet[element];}
       void unset() 
       {this->unset(0);}

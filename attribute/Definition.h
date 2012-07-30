@@ -27,28 +27,31 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_Definition_h
 #define __slctk_attribute_Definition_h
 
+#include "AttributeExports.h"
 #include <string>
 #include <set>
 
-class slctk::attribute::Attribute;
-class slctk::attribute::Cluster;
-class slctk::attribute::ComponentDefintion;
 
 namespace slctk
 {
   namespace attribute
   {
+    class Attribute;
+    class Cluster;
+    class ComponentDefinition;
+
     class SLCTKATTRIBUTE_EXPORT Definition
     {
+      friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Manager;
     public:
-      const char *type() const
-      { return this->m_type.c_str();}
+      const std::string &type() const
+      { return this->m_type;}
 
       // The lable is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the lable
-      const char *lable() const
-      { return this->m_lable.c_str();}
+      const std::string &lable() const
+      { return this->m_lable;}
 
       void setLable(const std::string &newLable)
       { this->m_lable = newLable;}
@@ -56,7 +59,7 @@ namespace slctk
       unsigned long id() const
       { return this->m_id;}
 
-      Definition *superDefinition() const;
+      Definition *baseDefinition() const;
       bool isA(slctk::attribute::Definition *def) const;
 
       int version() const
@@ -65,16 +68,16 @@ namespace slctk
       {this->m_version = myVersion;}
 
       bool isAbstract() const
-      { return this->m_isAbstract();}
+      { return this->m_isAbstract;}
 
       void setIsAbstract(bool isAbstractValue)
       { this->m_isAbstract = isAbstractValue;}
 
-      size_type numberOfCatagories() const
+      std::size_t numberOfCatagories() const
       {return this->m_catagories.size();}
 
       bool isMemberOf(const std::string &catagory) const
-      { return (this->m_catagories.find() != this->m_catagories.end());}
+      { return (this->m_catagories.find(catagory) != this->m_catagories.end());}
 
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
@@ -106,7 +109,7 @@ namespace slctk
 
       unsigned long associationMask() const
       {return this->m_associationMask;}
-      void setAssociationMask(unisgned long mask)
+      void setAssociationMask(unsigned long mask)
       {this->m_associationMask = mask;}
       bool associatesWithVertex() const
       { return ((this->m_associationMask & 0x1) != 0); }
@@ -124,7 +127,7 @@ namespace slctk
       bool canBeAssociated(slctk::ModelEntity *entity,
                            std::vector<slctk::attribute::Attribute *>*conflicts) const;
       bool conflicts(slctk::attribute::Definition *definition) const;
-      size_type numberOfComponentDefinitions() const
+      std::size_t numberOfComponentDefinitions() const
       {return this->m_componentDefs.size();}
       slctk::attribute::ComponentDefinition *componentDefinition(int ith) const
       {
@@ -146,7 +149,7 @@ namespace slctk
       slctk::attribute::Definition *findIsUniqueBaseClass() const;
     protected:
       // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, slctk::abstract::Cluster *myCluster, 
+      Definition(const std::string &myType, slctk::attribute::Cluster *myCluster, 
                  unsigned long myId);
       virtual ~Definition();
 

@@ -2,6 +2,9 @@ project(Slctk_Attribute)
 
 set(headers
   Attribute.h
+  AttributeReferenceComponent.h
+  AttributeReferenceComponentDefinition.h
+  Cluster.h
   Component.h
   ComponentDefinition.h
   Definition.h
@@ -13,6 +16,9 @@ set(headers
 
 set(attribute_srcs
   Attribute.cxx
+  AttributeReferenceComponent.cxx
+  AttributeReferenceComponentDefinition.cxx
+  Cluster.cxx
   Component.cxx
   ComponentDefinition.cxx
   Definition.cxx

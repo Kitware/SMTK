@@ -50,6 +50,7 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT Attribute
     {
       friend class slctk::attribute::AttributeReferenceComponent;
+      friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Definition;
       friend class slctk::attribute::Manager;
     public:

@@ -36,7 +36,7 @@ namespace slctk
   namespace attribute
   {
     template<typename DataT, typename DefT>
-    class SLCTKATTRIBUTE_EXPORT ValueComponentTemplate : public ValueComponent
+    class ValueComponentTemplate : public ValueComponent
     {
     public:
       int numberOfValues() const
@@ -52,7 +52,7 @@ namespace slctk
       bool appendValue(const DataT &val);
       bool removeValue(int element);
       virtual reset();
-      bool setToDefault(int element) const;
+      bool setToDefault(int element);
 
     protected:
       ValueComponentTemplate(DefT *def);
@@ -67,7 +67,7 @@ namespace slctk
     ValueComponentTemplate::ValueComponentTemplate(DataT *def):
       ValueComponent(def)
     {
-      int n = def->numberOfElements();
+      int n = def->numberOfValues();
       if (n)
         {
         if (def->hasDefault())
@@ -86,7 +86,7 @@ namespace slctk
     template<typename DataT, typename DefT>
     bool ValueComponentTemplate::setValue(int element, const DataT &val)
     {
-      DefT *def = static_cast<DefT *>(this->definition());
+      const DefT *def = static_cast<const DefT *>(this->definition());
       if (def->isDiscrete())
         {
         int index = def->findDiscreteIndex(val);
@@ -99,7 +99,7 @@ namespace slctk
           }
         return false;
         }
-      if (def->isValid(val))
+      if (def->isValueValid(val))
         {
         this->m_values[element] = val;
         this->m_isSet[element] = true;
@@ -111,7 +111,7 @@ namespace slctk
     template<typename DataT, typename DefT>
     void ValueComponentTemplate::updateDiscreteValue(int element)
     {
-      DefT *def = static_cast<DefT *>(this->definition());
+      const DefT *def = static_cast<const DefT *>(this->definition());
       this->m_values[element] = def->discreteValue(this->discreteIndex[element]);
     }
 //----------------------------------------------------------------------------
@@ -132,8 +132,8 @@ namespace slctk
     ValueComponentTemplate::appendValue(const DataT &val)
     {
       //First - are we allowed to change the number of values?
-      DefT *def = static_cast<DefT *>(this->definition());
-      int n = def->numberOfElements();
+      const DefT *def = static_cast<const DefT *>(this->definition());
+      int n = def->numberOfValues();
       if (n)
         {
         return false; // The number of values is fixed
@@ -144,17 +144,17 @@ namespace slctk
         int index = def->findDiscreteIndex(val);
         if (index != -1)
           {
-          this->m_values.pushback(val);
-          this->m_discreteIndices.pushback(index);
-          this->m_isSet.pushback(true);
+          this->m_values.push_back(val);
+          this->m_discreteIndices.push_back(index);
+          this->m_isSet.push_back(true);
           return true;
           }
         return false;
         }
-      if (def->isValid(val))
+      if (def->isValueValid(val))
         {
-        this->m_values.pushback(val);
-        this->m_isSet.pushback(true);
+        this->m_values.push_back(val);
+        this->m_isSet.push_back(true);
         return true;
         }
       return false;
@@ -165,8 +165,8 @@ namespace slctk
     ValueComponentTemplate::removeValue(int element)
     {
       //First - are we allowed to change the number of values?
-      DefT *def = static_cast<DefT *>(this->definition());
-      int n = def->numberOfElements();
+      const DefT *def = static_cast<const DefT *>(this->definition());
+      int n = def->numberOfValues();
       if (n)
         {
         return false; // The number of values is fixed
@@ -184,7 +184,7 @@ namespace slctk
     bool
     ValueComponentTemplate::setToDefault(int element)
     {
-      DefT *def = static_cast<DefT *>(this->definition());
+      const DefT *def = static_cast<const DefT *>(this->definition());
       if (!def->hasDefault())
         {
         return false; // Doesn't have a default value
@@ -205,9 +205,9 @@ namespace slctk
     void
     ValueComponentTemplate::reset()
     {
-      DefT *def = static_cast<DefT *>(this->definition());
+      const DefT *def = static_cast<const DefT *>(this->definition());
       // Was the initial size 0?
-      int i, n = def->numberOfElements();
+      int i, n = def->numberOfValues();
       if (!n)
         {
         this->m_values.clear();

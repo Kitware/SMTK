@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Component.h"
 #include "attribute/ComponentDefinition.h"
 
-using namespace slck::attribute; 
+using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
 Component::Component(ComponentDefinition *def):
@@ -38,7 +38,7 @@ Component::~Component()
 {
 }
 //----------------------------------------------------------------------------
-const char *Component::name() const
+const std::string &Component::name() const
 {
   return this->m_definition->name();
 }
@@ -55,11 +55,62 @@ bool Component::isEnabled() const
 //----------------------------------------------------------------------------
 bool Component::isMemberOf(const std::string &catagory) const
 {
-  return this->definition->isMemberOf(catagory);
+  return this->definition()->isMemberOf(catagory);
 }
 //----------------------------------------------------------------------------
-bool Component::isMemberOf(const std::vector<std::string> &catagories) const;
+bool Component::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  return this->definition->isMemberOf(catagories);
+  return this->definition()->isMemberOf(catagories);
+}
+//----------------------------------------------------------------------------
+std::string Component::type2String(Component::Type t)
+{
+  switch (t)
+    {
+    case ATTRIBUTE_REFERENCE:
+      return "AttributeReference";
+    case DOUBLE:
+      return "Double";
+    case GROUP:
+      return "Group";
+    case INTEGER:
+      return "Integer";
+    case STRING:
+      return "String";
+    case VOID:
+      return "Void";
+    default:
+      return "";
+    }
+  return "Error!";
+}
+//----------------------------------------------------------------------------
+Component::Type Component::string2Type(const std::string &s)
+{
+  if (s == "AttributeReference")
+    {
+    return ATTRIBUTE_REFERENCE;
+    }
+  if (s == "Double")
+    {
+    return DOUBLE;
+    }
+  if (s == "Group")
+    {
+    return GROUP;
+    }
+  if (s == "Integer")
+    {
+    return INTEGER;
+    }
+  if (s == "String")
+    {
+    return STRING;
+    }
+  if (s == "Void")
+    {
+    return VOID;
+    }
+  return NUMBER_OF_TYPES;
 }
 //----------------------------------------------------------------------------

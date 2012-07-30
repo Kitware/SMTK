@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/AttributeReferenceComponent.h"
 #include "attribute/Cluster.h"
 #include "attribute/Component.h"
+#include "attribute/Definition.h"
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, Cluster *myCluster, 
@@ -46,7 +47,7 @@ Attribute::~Attribute()
   std::set<AttributeReferenceComponent *>::iterator it;
   for (it = comps.begin(); it != comps.end(); it++)
     {
-    *it->setValue(NULL);
+    (*it)->setValue(NULL);
     }
 }
 //----------------------------------------------------------------------------
@@ -65,14 +66,21 @@ const std::string &Attribute::type() const
   return this->m_cluster->type();
 }
 //----------------------------------------------------------------------------
-const char *Attribute::types() const
+std::vector<std::string> Attribute::types() const
 {
-  return this->m_cluster->types();
+  std::vector<std::string> tvec;
+  Cluster *c = this->m_cluster;
+  while (c != NULL)
+    {
+    tvec.push_back(c->type());
+    c = c->parent();
+    }
+  return tvec;
 }
 //----------------------------------------------------------------------------
 bool Attribute::isA(Definition *def) const
 {
-  return this->m_cluster->isA(def);
+  return this->m_cluster->definition()->isA(def);
 }
 //----------------------------------------------------------------------------
 const Definition *Attribute::definition() const
@@ -82,12 +90,12 @@ const Definition *Attribute::definition() const
 //----------------------------------------------------------------------------
 bool Attribute::isMemberOf(const std::string &catagory) const
 {
-  return this->m_cluster->isMemberOf(catagory);
+  return this->m_cluster->definition()->isMemberOf(catagory);
 }
 //----------------------------------------------------------------------------
 bool Attribute::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  return this->m_cluster->isMemberOf(catagories);
+  return this->m_cluster->definition()->isMemberOf(catagories);
 }
 //----------------------------------------------------------------------------
 Manager *Attribute::manager() const
@@ -95,7 +103,7 @@ Manager *Attribute::manager() const
   return this->m_cluster->manager();
 }
 //----------------------------------------------------------------------------
-void Attribute::associateEntity(slck::ModelEntity *entity)
+void Attribute::associateEntity(slctk::ModelEntity *entity)
 {
   if (this->isEntityAssociated(entity))
     {
@@ -106,7 +114,7 @@ void Attribute::associateEntity(slck::ModelEntity *entity)
   //TODO Need to attach attribute to the entity!
 }
 //----------------------------------------------------------------------------
-void Attribute::disassociateEntity(slck::ModelEntity *entity)
+void Attribute::disassociateEntity(slctk::ModelEntity *entity)
 {
   if (this->m_entities.erase(entity))
     {
@@ -116,7 +124,7 @@ void Attribute::disassociateEntity(slck::ModelEntity *entity)
 //----------------------------------------------------------------------------
 void Attribute::removeAllAssociations()
 {
-  set<slck::ModelEntity *>::iterator it;
+  std::set<slctk::ModelEntity *>::iterator it;
   for (it = this->m_entities.begin(); it != this->m_entities.end(); it++)
     {
     // TODO Need to detatch the attribute from the entity
@@ -126,6 +134,6 @@ void Attribute::removeAllAssociations()
 void Attribute::addComponent(Component *component)
 {
   this->m_components.push_back(component);
-  this->m_componentLookUp[component->name(), component);
+  this->m_componentLookUp[component->name()] = component;
 }
 //----------------------------------------------------------------------------

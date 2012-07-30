@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include <string>
+#include <vector>
 
 
 namespace slctk
@@ -40,8 +41,19 @@ namespace slctk
     {
       friend class Attribute;
     public:
+     enum Type
+     {
+       ATTRIBUTE_REFERENCE,
+       DOUBLE,
+       GROUP,
+       INTEGER,
+       STRING,
+       VOID,
+       NUMBER_OF_TYPES
+     };
+       
       const std::string &name() const;
-      virtual const char *dataType() const = 0;
+      virtual Component::Type type() const = 0;
       const slctk::attribute::ComponentDefinition *definition() const
       {return this->m_definition;}
 
@@ -57,7 +69,10 @@ namespace slctk
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-    protected:
+      static std::string type2String(Component::Type t);
+      static Component::Type string2Type(const std::string &s);
+
+     protected:
       Component(slctk::attribute::ComponentDefinition *def);
       virtual ~Component();
       bool m_isEnabled;

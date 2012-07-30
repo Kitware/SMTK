@@ -27,15 +27,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_ComponentDefinition_h
 #define __slctk_attribute_ComponentDefinition_h
 
+#include "AttributeExports.h"
 #include <string>
 #include <set>
-
-class slctk::attribute::Cluster;
 
 namespace slctk
 {
   namespace attribute
   {
+    class Cluster;
+    class Component;
     class SLCTKATTRIBUTE_EXPORT ComponentDefinition
     {
     public:
@@ -59,16 +60,16 @@ namespace slctk
       {this->m_version = myVersion;}
 
       bool isOptional() const
-      { return this->m_isOptional();}
+      { return this->m_isOptional;}
 
       void setIsOptional(bool isOptionalValue)
       { this->m_isOptional = isOptionalValue;}
 
-      size_type numberOfCatagories() const
+      std::size_t numberOfCatagories() const
       {return this->m_catagories.size();}
 
       bool isMemberOf(const std::string &catagory) const
-      { return (this->m_catagories.find() != this->m_catagories.end());}
+      { return (this->m_catagories.find(catagory) != this->m_catagories.end());}
 
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 

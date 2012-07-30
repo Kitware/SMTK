@@ -47,14 +47,14 @@ Definition::Definition(const std::string &myType, Cluster *myCluster,
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
-  size_type i, n = this->m_componentsDefs.size();
+  std::size_t i, n = this->m_componentsDefs.size();
   for (i = 0; i < n; i++)
     {
     delete this->m_componentsDefs[i];
     }
 }
 //----------------------------------------------------------------------------
-Definition *Definition::superDefinition() const
+Definition *Definition::baseDefinition() const
 {
   if (this->m_cluster && this->m_cluster->parent())
     {
@@ -68,7 +68,7 @@ bool Definition::isA(Definition *targetDef) const
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
   Definition *def = this;
-  for (def = this; def != NULL; def = def->superDefinition())
+  for (def = this; def != NULL; def = def->baseDefinition())
     {
     if (def == target)
       {
@@ -94,11 +94,11 @@ bool Definition::conflicts(Definition *def) const
     return true;
     }
 
-  // Get the "highest" super definition that is unique
-  Definition *superDef = this->findIsUnqueBaseClass();
+  // Get the most "basic" definition that is unique
+  Definition *baseDef = this->findIsUnqueBaseClass();
   // See if the other definition is derived from this base defintion.
   // If it is not then we know there is no conflict
-  return def->isA(superDef);
+  return def->isA(baseDef);
 }
 //----------------------------------------------------------------------------
 Definition *Definition::findIsUnqueBaseClass()
@@ -106,7 +106,7 @@ Definition *Definition::findIsUnqueBaseClass()
   Definition *uDef = this, *def;
   while (1)
     {
-    def = uDef->superDefintion();
+    def = uDef->baseDefintion();
     if ((def == NULL) || (!def->isUnique()))
       {
       return uDef;
@@ -132,10 +132,10 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
 void Definition::BuildAttribute(Attribute *att)
 {
   // If there is a super definition have it prep the attribute and add its components
-  Definition *sdef = this->superDefinition();
-  if (sdef)
+  Definition *bdef = this->baseDefinition();
+  if (bdef)
     {
-    sdef->BuildAttribute(att);
+    bdef->BuildAttribute(att);
     }
   else
     {
@@ -147,7 +147,7 @@ void Definition::BuildAttribute(Attribute *att)
   // Next - for each component definition we have build and add the appropriate
   // component to the attribute
   Component *comp;
-  size_type i, n = this->m_componentDefs.size();
+  std::size_t i, n = this->m_componentDefs.size();
   for (i = 0; i < n; i++)
     {
     comp = this->m_componentDefs[i].create();
@@ -157,7 +157,7 @@ void Definition::BuildAttribute(Attribute *att)
 //----------------------------------------------------------------------------
 bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  size_type i, n = this->m_catagories.size();
+  std::size_t i, n = this->m_catagories.size();
   for (i = 0; i < n; i++)
     {
     if (this->isMemberOf(this->m_catagories[i]))

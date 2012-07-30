@@ -29,23 +29,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <string>
 #include <set>
+#include <vector>
 
-class slctk::attribute::Attribute;
-class slctk::attribute::Cluster;
-class slctk::attribute::ComponentDefintion;
+#include "AttributeExports.h"
+#include "attribute/ComponentDefinition.h"
 
 namespace slctk
 {
   namespace attribute
   {
+    class Attribute;
+    class Cluster;
     class SLCTKATTRIBUTE_EXPORT ValueComponentDefinition : 
       public slctk::attribute::ComponentDefinition
     {
     public:
       bool isDiscrete() const
       {return (this->m_discreteValueLables.size() != 0);}
-      void setIsDiscrete(bool isDiscreteValue)
-      {this->m_isDiscrete = isDiscreteValue;}
       
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}
@@ -60,10 +60,10 @@ namespace slctk
       int numberOfValues() const
       {return this->m_numberOfElements;}
       void setNumberOfValues(int esize)
-      {this->m_numberOfElements = esize;
+      {this->m_numberOfElements = esize;}
 
       bool hasValueLables() const
-      {return this->m_elementLabels.size();}
+      {return this->m_elementLables.size();}
 
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLable(const std::string &elable);
