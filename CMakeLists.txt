@@ -3,9 +3,9 @@ PROJECT(DiscreteModel)
 # trust that the compilers are a match
 set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
 
-# VTK is needed.
-FIND_PACKAGE(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+# ParaView is needed.
+FIND_PACKAGE(ParaView REQUIRED)
+INCLUDE(${PARAVIEW_USE_FILE})
 
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
