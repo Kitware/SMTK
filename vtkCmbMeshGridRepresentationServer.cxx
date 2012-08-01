@@ -59,7 +59,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace CmbFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationServer);
-vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationServer, "");
 
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationServer::vtkCmbMeshGridRepresentationServer():

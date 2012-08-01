@@ -41,7 +41,7 @@ class VTK_EXPORT vtkCmbMeshToModelReader : public vtkXMLDataReader
 {
 public:
   static vtkCmbMeshToModelReader *New();
-  vtkTypeRevisionMacro(vtkCmbMeshToModelReader,vtkXMLReader);
+  vtkTypeMacro(vtkCmbMeshToModelReader,vtkXMLReader);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

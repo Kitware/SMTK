@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkModelVertex.h>
 #include <vtkPolyData.h>
 
-vtkCxxRevisionMacro(vtkCmbModelEdgeMesh, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelEdgeMesh::vtkCmbModelEdgeMesh()

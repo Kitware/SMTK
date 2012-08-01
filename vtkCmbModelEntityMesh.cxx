@@ -26,7 +26,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <vtkPolyData.h>
 
-vtkCxxRevisionMacro(vtkCmbModelEntityMesh, "");
 vtkCxxSetObjectMacro(vtkCmbModelEntityMesh, ModelEntityMesh, vtkPolyData);
 
 //----------------------------------------------------------------------------

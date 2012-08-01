@@ -36,7 +36,7 @@ class VTK_EXPORT vtkCmbModelVertexMesh : public vtkCmbModelEntityMesh
 {
 public:
   static vtkCmbModelVertexMesh* New();
-  vtkTypeRevisionMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
+  vtkTypeMacro(vtkCmbModelVertexMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
   // Description:
   // Get the actual length the model edge will be meshed with.

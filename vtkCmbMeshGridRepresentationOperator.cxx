@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationOperator);
-vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationOperator, "");
 
 //----------------------------------------------------------------------------
 vtkCmbMeshGridRepresentationOperator::vtkCmbMeshGridRepresentationOperator()

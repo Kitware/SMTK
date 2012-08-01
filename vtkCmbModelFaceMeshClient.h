@@ -37,7 +37,7 @@ class VTK_EXPORT vtkCmbModelFaceMeshClient : public vtkCmbModelFaceMesh
 {
 public:
   static vtkCmbModelFaceMeshClient* New();
-  vtkTypeRevisionMacro(vtkCmbModelFaceMeshClient,vtkCmbModelFaceMesh);
+  vtkTypeMacro(vtkCmbModelFaceMeshClient,vtkCmbModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

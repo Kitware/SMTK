@@ -48,7 +48,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <map>
 
 vtkStandardNewMacro(vtkCmbMeshServer);
-vtkCxxRevisionMacro(vtkCmbMeshServer, "");
 
 class vtkCmbMeshServerInternals
 {

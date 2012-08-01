@@ -33,7 +33,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(vtkCmbModelEdgeMeshOperator);
-vtkCxxRevisionMacro(vtkCmbModelEdgeMeshOperator, "");
 
 vtkCmbModelEdgeMeshOperator::vtkCmbModelEdgeMeshOperator()
 {

@@ -156,7 +156,6 @@ bool vtkCmbModelFaceMesh::BuildModelEntityMesh(
 }
 
 //----------------------------------------------------------------------------
-<<<<<<< HEAD
 bool vtkCmbModelFaceMesh::BuildMesh(bool meshHigherDimensionalEntities)
 {
   vtkPolyData* mesh = this->GetModelEntityMesh();

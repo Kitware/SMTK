@@ -38,7 +38,7 @@ class VTK_EXPORT vtkCmbModelEdgeMeshOperator : public vtkObject
 {
 public:
   static vtkCmbModelEdgeMeshOperator * New();
-  vtkTypeRevisionMacro(vtkCmbModelEdgeMeshOperator,vtkObject);
+  vtkTypeMacro(vtkCmbModelEdgeMeshOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

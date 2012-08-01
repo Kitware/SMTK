@@ -40,7 +40,7 @@ class vtkCmbModelVertexMesh;
 class VTK_EXPORT vtkCmbModelEdgeMesh : public vtkCmbModelEntityMesh
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbModelEdgeMesh,vtkCmbModelEntityMesh);
+  vtkTypeMacro(vtkCmbModelEdgeMesh,vtkCmbModelEntityMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 //BTX
   virtual vtkModelGeometricEntity* GetModelGeometricEntity();

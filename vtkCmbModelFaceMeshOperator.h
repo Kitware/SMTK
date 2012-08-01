@@ -38,7 +38,7 @@ class VTK_EXPORT vtkCmbModelFaceMeshOperator : public vtkObject
 {
 public:
   static vtkCmbModelFaceMeshOperator * New();
-  vtkTypeRevisionMacro(vtkCmbModelFaceMeshOperator,vtkObject);
+  vtkTypeMacro(vtkCmbModelFaceMeshOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

@@ -39,7 +39,7 @@ class VTK_EXPORT vtkCmbMeshWrapper : public vtkObject
 {
 public:
   static vtkCmbMeshWrapper* New();
-  vtkTypeRevisionMacro(vtkCmbMeshWrapper, vtkObject);
+  vtkTypeMacro(vtkCmbMeshWrapper, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

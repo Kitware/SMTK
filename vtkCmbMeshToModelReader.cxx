@@ -53,7 +53,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace CmbFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCmbMeshToModelReader);
-vtkCxxRevisionMacro(vtkCmbMeshToModelReader, "");
 vtkCxxSetObjectMacro(vtkCmbMeshToModelReader, ModelWrapper, vtkDiscreteModelWrapper);
 
 //----------------------------------------------------------------------------

@@ -45,7 +45,7 @@ class VTK_EXPORT vtkCmbMeshClient : public vtkCmbMesh
 {
 public:
   static vtkCmbMeshClient* New();
-  vtkTypeRevisionMacro(vtkCmbMeshClient,vtkCmbMesh);
+  vtkTypeMacro(vtkCmbMeshClient,vtkCmbMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void Initialize(vtkModel* model, vtkSMProxy* serverModelProxy);

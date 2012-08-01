@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCmbMeshToModelReader.h"
 
 vtkStandardNewMacro(vtkCmbMeshToModelReadOperator);
-vtkCxxRevisionMacro(vtkCmbMeshToModelReadOperator, "");
 
 vtkCmbMeshToModelReadOperator::vtkCmbMeshToModelReadOperator()
 {

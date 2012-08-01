@@ -50,7 +50,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSMProxy.h>
 
 vtkStandardNewMacro(vtkCmbModelEdgeMeshClient);
-vtkCxxRevisionMacro(vtkCmbModelEdgeMeshClient, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelEdgeMeshClient::vtkCmbModelEdgeMeshClient()

@@ -39,7 +39,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtksys/ios/sstream>
 
 vtkStandardNewMacro(vtkCmbMeshGridRepresentationClient);
-vtkCxxRevisionMacro(vtkCmbMeshGridRepresentationClient, "");
 vtkCxxSetObjectMacro(vtkCmbMeshGridRepresentationClient, MeshRepresentationSource, vtkSMProxy);
 
 vtkCmbMeshGridRepresentationClient::vtkCmbMeshGridRepresentationClient()

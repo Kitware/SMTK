@@ -42,7 +42,7 @@ class vtkSplitEventData;
 class VTK_EXPORT vtkCmbMesh : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbMesh,vtkObject);
+  vtkTypeMacro(vtkCmbMesh,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

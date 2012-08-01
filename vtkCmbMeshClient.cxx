@@ -56,7 +56,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <map>
 
 vtkStandardNewMacro(vtkCmbMeshClient);
-vtkCxxRevisionMacro(vtkCmbMeshClient, "");
 vtkCxxSetObjectMacro(vtkCmbMeshClient, ServerModelProxy, vtkSMProxy);
 
 class vtkCmbMeshClientInternals

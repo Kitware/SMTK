@@ -40,7 +40,7 @@ class vtkPolyData;
 class VTK_EXPORT vtkCmbModelEntityMesh : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkCmbModelEntityMesh,vtkObject);
+  vtkTypeMacro(vtkCmbModelEntityMesh,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

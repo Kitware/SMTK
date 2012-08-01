@@ -76,7 +76,6 @@ namespace {
   } // end local namespace
 
 vtkStandardNewMacro(vtkCmbMeshToModelWriter);
-vtkCxxRevisionMacro(vtkCmbMeshToModelWriter, "");
 vtkCxxSetObjectMacro(vtkCmbMeshToModelWriter, ModelWrapper, vtkDiscreteModelWrapper);
 
 //----------------------------------------------------------------------------

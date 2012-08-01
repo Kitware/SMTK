@@ -32,7 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtksys/ios/sstream>
 
 vtkStandardNewMacro(vtkCmbMeshWrapper);
-vtkCxxRevisionMacro(vtkCmbMeshWrapper, "");
 
 //----------------------------------------------------------------------------
 vtkCmbMeshWrapper::vtkCmbMeshWrapper()

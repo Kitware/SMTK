@@ -40,7 +40,7 @@ class VTK_EXPORT vtkCmbMeshGridRepresentationOperator : public vtkObject
 {
 public:
   static vtkCmbMeshGridRepresentationOperator * New();
-  vtkTypeRevisionMacro(vtkCmbMeshGridRepresentationOperator,vtkObject);
+  vtkTypeMacro(vtkCmbMeshGridRepresentationOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

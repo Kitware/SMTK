@@ -46,7 +46,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSmartPointer.h>
 
 vtkStandardNewMacro(vtkCmbModelEdgeMeshServer);
-vtkCxxRevisionMacro(vtkCmbModelEdgeMeshServer, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelEdgeMeshServer::vtkCmbModelEdgeMeshServer()

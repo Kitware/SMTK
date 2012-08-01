@@ -41,7 +41,7 @@ class VTK_EXPORT vtkCmbMeshPolyDataProvider : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCmbMeshPolyDataProvider *New();
-  vtkTypeRevisionMacro(vtkCmbMeshPolyDataProvider,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkCmbMeshPolyDataProvider,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void SetMeshWrapper(vtkCmbMeshWrapper*);

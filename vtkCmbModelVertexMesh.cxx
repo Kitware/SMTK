@@ -28,7 +28,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkModelVertex.h>
 
 vtkStandardNewMacro(vtkCmbModelVertexMesh);
-vtkCxxRevisionMacro(vtkCmbModelVertexMesh, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelVertexMesh::vtkCmbModelVertexMesh()

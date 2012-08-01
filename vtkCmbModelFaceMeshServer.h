@@ -40,7 +40,7 @@ class VTK_EXPORT vtkCmbModelFaceMeshServer : public vtkCmbModelFaceMesh
 {
 public:
   static vtkCmbModelFaceMeshServer* New();
-  vtkTypeRevisionMacro(vtkCmbModelFaceMeshServer,vtkCmbModelFaceMesh);
+  vtkTypeMacro(vtkCmbModelFaceMeshServer,vtkCmbModelFaceMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

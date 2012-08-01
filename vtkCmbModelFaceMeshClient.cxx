@@ -35,7 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSMPropertyHelper.h"
 
 vtkStandardNewMacro(vtkCmbModelFaceMeshClient);
-vtkCxxRevisionMacro(vtkCmbModelFaceMeshClient, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelFaceMeshClient::vtkCmbModelFaceMeshClient()

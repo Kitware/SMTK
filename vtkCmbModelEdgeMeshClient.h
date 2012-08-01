@@ -42,7 +42,7 @@ class VTK_EXPORT vtkCmbModelEdgeMeshClient : public vtkCmbModelEdgeMesh
 {
 public:
   static vtkCmbModelEdgeMeshClient* New();
-  vtkTypeRevisionMacro(vtkCmbModelEdgeMeshClient,vtkCmbModelEdgeMesh);
+  vtkTypeMacro(vtkCmbModelEdgeMeshClient,vtkCmbModelEdgeMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

@@ -46,7 +46,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSplitEventData.h>
 #include <vtkWeakPointer.h>
 
-vtkCxxRevisionMacro(vtkCmbMesh, "");
 
 //----------------------------------------------------------------------------
 vtkCmbMesh::vtkCmbMesh()

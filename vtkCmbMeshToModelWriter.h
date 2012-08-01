@@ -38,7 +38,7 @@ class VTK_EXPORT vtkCmbMeshToModelWriter : public vtkXMLWriter
 {
 public:
   static vtkCmbMeshToModelWriter *New();
-  vtkTypeRevisionMacro(vtkCmbMeshToModelWriter,vtkXMLWriter);
+  vtkTypeMacro(vtkCmbMeshToModelWriter,vtkXMLWriter);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual const char* GetDefaultFileExtension();

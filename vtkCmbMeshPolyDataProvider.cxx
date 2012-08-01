@@ -37,7 +37,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkPolyData.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 
-vtkCxxRevisionMacro(vtkCmbMeshPolyDataProvider, "");
 vtkStandardNewMacro(vtkCmbMeshPolyDataProvider);
 vtkCxxSetObjectMacro(vtkCmbMeshPolyDataProvider, MeshWrapper, vtkCmbMeshWrapper);
 

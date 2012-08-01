@@ -40,7 +40,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "CmbFaceMesherInterface.h"
 
 vtkStandardNewMacro(vtkCmbModelFaceMeshServer);
-vtkCxxRevisionMacro(vtkCmbModelFaceMeshServer, "");
 
 //----------------------------------------------------------------------------
 vtkCmbModelFaceMeshServer::vtkCmbModelFaceMeshServer()

@@ -39,7 +39,7 @@ class VTK_EXPORT vtkCmbModelEdgeMeshServer : public vtkCmbModelEdgeMesh
 {
 public:
   static vtkCmbModelEdgeMeshServer* New();
-  vtkTypeRevisionMacro(vtkCmbModelEdgeMeshServer,vtkCmbModelEdgeMesh);
+  vtkTypeMacro(vtkCmbModelEdgeMeshServer,vtkCmbModelEdgeMesh);
   void PrintSelf(ostream& os, vtkIndent indent);
   // Description:
   // Set the local mesh length on the entity.

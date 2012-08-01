@@ -41,7 +41,7 @@ class VTK_EXPORT vtkCmbMeshToModelReadOperator : public vtkObject
 {
 public:
   static vtkCmbMeshToModelReadOperator * New();
-  vtkTypeRevisionMacro(vtkCmbMeshToModelReadOperator,vtkObject);
+  vtkTypeMacro(vtkCmbMeshToModelReadOperator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
