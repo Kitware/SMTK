@@ -184,7 +184,14 @@ SET(MODEL_KIT_SRC
 )
 
 # Depends on vtkFiltering due to vtkPolyData reference
-set(Depend_LIBS vtkFiltering vtkGraphics vtkRendering vtkIO vtkCommon ${KIT_LIBS})
+set(Depend_LIBS
+  vtkCommonDataModel
+  vtkRenderingOpenGL
+  vtkRenderingFreeTypeOpenGL
+  vtkInteractionStyle
+  vtkIOCore
+  ${KIT_LIBS})
+
 ADD_DISCRETE_MODEL_KIT(${KIT} ${KIT_UPCASE} "${Depend_LIBS}" "${MODEL_KIT_SRC}" )
 
 if(NOT APPLE)
