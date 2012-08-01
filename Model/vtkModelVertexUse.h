@@ -37,7 +37,7 @@ class VTK_EXPORT vtkModelVertexUse : public vtkModelEntity
 {
 public:
   static vtkModelVertexUse* New();
-  vtkTypeRevisionMacro(vtkModelVertexUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelVertexUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

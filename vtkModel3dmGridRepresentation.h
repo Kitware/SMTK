@@ -45,7 +45,7 @@ class VTK_EXPORT vtkModel3dmGridRepresentation : public vtkModelGridRepresentati
 {
 public:
   static vtkModel3dmGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkModel3dmGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModel3dmGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

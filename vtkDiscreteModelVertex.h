@@ -36,7 +36,7 @@ class vtkInformationIdTypeKey;
 class VTK_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelVertex,vtkModelVertex);
+  vtkTypeMacro(vtkDiscreteModelVertex,vtkModelVertex);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

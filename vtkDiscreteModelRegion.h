@@ -37,7 +37,7 @@ class VTK_EXPORT vtkDiscreteModelRegion : public vtkModelRegion,
   public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelRegion,vtkModelRegion);
+  vtkTypeMacro(vtkDiscreteModelRegion,vtkModelRegion);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual bool Destroy();

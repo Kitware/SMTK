@@ -32,7 +32,7 @@ class vtkXMLElement;
 class VTK_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
-  vtkTypeRevisionMacro(vtkModelXMLParser,vtkXMLParser);
+  vtkTypeMacro(vtkModelXMLParser,vtkXMLParser);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkModelXMLParser* New();
 

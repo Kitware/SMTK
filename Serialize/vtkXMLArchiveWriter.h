@@ -75,7 +75,7 @@ class VTK_EXPORT vtkXMLArchiveWriter : public vtkSerializer
 {
 public:
   static vtkXMLArchiveWriter *New();
-  vtkTypeRevisionMacro(vtkXMLArchiveWriter,vtkSerializer);
+  vtkTypeMacro(vtkXMLArchiveWriter,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

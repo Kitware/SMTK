@@ -82,7 +82,7 @@ public:
   static vtkDiscreteModel* New();
 
 //BTX
-  vtkTypeRevisionMacro(vtkDiscreteModel,vtkModel);
+  vtkTypeMacro(vtkDiscreteModel,vtkModel);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

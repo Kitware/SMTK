@@ -37,7 +37,7 @@ class vtkModelItemIterator;
 class VTK_EXPORT vtkModelLoopUse : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelLoopUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelLoopUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

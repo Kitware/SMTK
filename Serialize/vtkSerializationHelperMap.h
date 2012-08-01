@@ -48,7 +48,7 @@ class VTK_EXPORT vtkSerializationHelperMap : public vtkObject
 {
 public:
   static vtkSerializationHelperMap *New();
-  vtkTypeRevisionMacro(vtkSerializationHelperMap,vtkObject);
+  vtkTypeMacro(vtkSerializationHelperMap,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

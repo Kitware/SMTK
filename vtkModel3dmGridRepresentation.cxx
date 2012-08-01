@@ -39,7 +39,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtksys/SystemTools.hxx>
 
 vtkStandardNewMacro(vtkModel3dmGridRepresentation);
-vtkCxxRevisionMacro(vtkModel3dmGridRepresentation, "");
 
 //----------------------------------------------------------------------------
 vtkModel3dmGridRepresentation::vtkModel3dmGridRepresentation()

@@ -36,7 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class VTK_EXPORT vtkModelUniqueNodalGroup : public vtkModelNodalGroup
 {
 public:
-  vtkTypeRevisionMacro(vtkModelUniqueNodalGroup,vtkModelNodalGroup);
+  vtkTypeMacro(vtkModelUniqueNodalGroup,vtkModelNodalGroup);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

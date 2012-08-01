@@ -45,7 +45,6 @@ struct vtkModelUniqueNodalGroupInternals
   Set PointIds;
 };
 
-vtkCxxRevisionMacro(vtkModelUniqueNodalGroup, "");
 
 vtkModelUniqueNodalGroup* vtkModelUniqueNodalGroup::New()
 {

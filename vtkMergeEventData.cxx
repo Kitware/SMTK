@@ -29,7 +29,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkMergeEventData);
-vtkCxxRevisionMacro(vtkMergeEventData, "");
 vtkCxxSetObjectMacro(vtkMergeEventData, LowerDimensionalIds, vtkIdTypeArray);
 
 vtkMergeEventData::vtkMergeEventData()

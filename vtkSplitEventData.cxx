@@ -29,7 +29,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkSplitEventData);
-vtkCxxRevisionMacro(vtkSplitEventData, "");
 vtkCxxSetObjectMacro(vtkSplitEventData, CreatedModelEntityIds, vtkIdList);
 
 vtkSplitEventData::vtkSplitEventData()

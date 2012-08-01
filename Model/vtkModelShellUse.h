@@ -37,7 +37,7 @@ class vtkModelRegion;
 class VTK_EXPORT vtkModelShellUse : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelShellUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelShellUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

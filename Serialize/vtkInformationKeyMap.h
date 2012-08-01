@@ -44,7 +44,7 @@ class VTK_EXPORT vtkInformationKeyMap : public vtkObject
 {
 public:
   static vtkInformationKeyMap *New();
-  vtkTypeRevisionMacro(vtkInformationKeyMap,vtkObject);
+  vtkTypeMacro(vtkInformationKeyMap,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

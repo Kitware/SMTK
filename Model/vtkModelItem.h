@@ -42,7 +42,7 @@ class vtkModelItemIterator;
 class VTK_EXPORT vtkModelItem : public vtkSerializableObject
 {
 public:
-  vtkTypeRevisionMacro(vtkModelItem,vtkSerializableObject);
+  vtkTypeMacro(vtkModelItem,vtkSerializableObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetObjectMacro(Properties, vtkInformation);

@@ -50,7 +50,7 @@ class VTK_EXPORT vtkModelBCGridRepresentation : public vtkModelGridRepresentatio
 {
 public:
   static vtkModelBCGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

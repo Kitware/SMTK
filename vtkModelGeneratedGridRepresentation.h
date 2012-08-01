@@ -38,7 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class VTK_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation
 {
 public:
-  vtkTypeRevisionMacro(vtkModelGeneratedGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelGeneratedGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void WriteMeshToFile()=0;

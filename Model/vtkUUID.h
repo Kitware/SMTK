@@ -47,7 +47,7 @@ class VTK_EXPORT vtkUUID : public vtkObject
 {
 public:
   static vtkUUID* New();
-  vtkTypeRevisionMacro(vtkUUID, vtkObject);
+  vtkTypeMacro(vtkUUID, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

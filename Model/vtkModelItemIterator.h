@@ -49,7 +49,7 @@ class vtkModelItem;
 class VTK_EXPORT vtkModelItemIterator : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkModelItemIterator,vtkObject);
+  vtkTypeMacro(vtkModelItemIterator,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

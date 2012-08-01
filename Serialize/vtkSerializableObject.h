@@ -96,7 +96,7 @@ class VTK_EXPORT vtkSerializableObject : public vtkObject
 {
 public:
   static vtkSerializableObject *New();
-  vtkTypeRevisionMacro(vtkSerializableObject,vtkObject);
+  vtkTypeMacro(vtkSerializableObject,vtkObject);
 
   // Description:
   // Reads the state of an instance from an archive OR

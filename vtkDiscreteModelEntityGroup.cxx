@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 
-vtkCxxRevisionMacro(vtkDiscreteModelEntityGroup, "");
 
 vtkDiscreteModelEntityGroup* vtkDiscreteModelEntityGroup::New()
 {

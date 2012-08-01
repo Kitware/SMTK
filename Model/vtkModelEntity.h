@@ -46,7 +46,7 @@ class vtkProperty;
 class VTK_EXPORT vtkModelEntity : public vtkModelItem
 {
 public:
-  vtkTypeRevisionMacro(vtkModelEntity,vtkModelItem);
+  vtkTypeMacro(vtkModelEntity,vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

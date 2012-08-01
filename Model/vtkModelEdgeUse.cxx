@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelEdgeUse, "");
 vtkInformationKeyMacro(vtkModelEdgeUse, DIRECTION, Integer);
 
 vtkModelEdgeUse* vtkModelEdgeUse::New()

@@ -58,7 +58,7 @@ typedef enum
 class VTK_EXPORT vtkModelNodalGroup : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelNodalGroup,vtkModelEntity);
+  vtkTypeMacro(vtkModelNodalGroup,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

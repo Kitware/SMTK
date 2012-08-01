@@ -32,7 +32,6 @@
  #include "vtkRenderingSerializationHelper.h"
 #endif
 
-vtkCxxRevisionMacro(vtkSerializationHelperMap, "1774");
 vtkStandardNewMacro(vtkSerializationHelperMap);
 
 

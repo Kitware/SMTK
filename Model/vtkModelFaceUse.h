@@ -39,7 +39,7 @@ class VTK_EXPORT vtkModelFaceUse : public vtkModelEntity
 {
 public:
   static vtkModelFaceUse *New();
-  vtkTypeRevisionMacro(vtkModelFaceUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelFaceUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

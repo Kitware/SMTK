@@ -37,7 +37,7 @@ class vtkModelItemIterator;
 class VTK_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelMaterial,vtkModelEntity);
+  vtkTypeMacro(vtkModelMaterial,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   bool SetWarehouseId(double* uuid);

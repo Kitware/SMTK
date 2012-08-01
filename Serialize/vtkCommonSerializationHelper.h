@@ -41,7 +41,7 @@ class VTK_EXPORT vtkCommonSerializationHelper : public vtkSerializationHelper
 {
 public:
   static vtkCommonSerializationHelper *New();
-  vtkTypeRevisionMacro(vtkCommonSerializationHelper, vtkSerializationHelper);
+  vtkTypeMacro(vtkCommonSerializationHelper, vtkSerializationHelper);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

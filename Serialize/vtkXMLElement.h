@@ -38,7 +38,7 @@ struct vtkXMLElementInternals;
 class VTK_EXPORT vtkXMLElement : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkXMLElement,vtkObject);
+  vtkTypeMacro(vtkXMLElement,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkXMLElement* New();
 

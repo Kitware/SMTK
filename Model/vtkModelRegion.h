@@ -39,7 +39,7 @@ class vtkModelShellUse;
 class VTK_EXPORT vtkModelRegion : public vtkModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelRegion,vtkModelGeometricEntity);
+  vtkTypeMacro(vtkModelRegion,vtkModelGeometricEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkModelItemIterator* NewModelShellUseIterator();

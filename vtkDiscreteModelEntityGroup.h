@@ -39,7 +39,7 @@ class vtkDiscreteModelEntity;
 class VTK_EXPORT vtkDiscreteModelEntityGroup : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
+  vtkTypeMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void AddModelEntity(vtkDiscreteModelEntity*);

@@ -41,7 +41,7 @@ class VTK_EXPORT vtkDiscreteModelEdge : public vtkModelEdge,
   public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelEdge,vtkModelEdge);
+  vtkTypeMacro(vtkDiscreteModelEdge,vtkModelEdge);
   static vtkDiscreteModelEdge* New();
   void PrintSelf(ostream& os, vtkIndent indent);
   

@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkProperty.h"
 
-vtkCxxRevisionMacro(vtkDiscreteModelVertex, "");
 vtkInformationKeyMacro(vtkDiscreteModelVertex, POINTID, IdType);
 
 vtkDiscreteModelVertex* vtkDiscreteModelVertex::New()

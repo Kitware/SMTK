@@ -85,7 +85,7 @@ enum ModelEventIds {
 class VTK_EXPORT vtkModel : public vtkModelItem
 {
 public:
-  vtkTypeRevisionMacro(vtkModel,vtkModelItem);
+  vtkTypeMacro(vtkModel,vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

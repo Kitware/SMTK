@@ -57,7 +57,7 @@ class VTK_EXPORT vtkXMLModelReader : public vtkSerializer
 {
 public:
   static vtkXMLModelReader *New();
-  vtkTypeRevisionMacro(vtkXMLModelReader,vtkSerializer);
+  vtkTypeMacro(vtkXMLModelReader,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

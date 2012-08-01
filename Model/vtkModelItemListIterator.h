@@ -51,7 +51,7 @@ class VTK_EXPORT vtkModelItemListIterator : public vtkModelItemIterator
 {
 public:
   static vtkModelItemListIterator *New();
-  vtkTypeRevisionMacro(vtkModelItemListIterator,vtkModelItemIterator);
+  vtkTypeMacro(vtkModelItemListIterator,vtkModelItemIterator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

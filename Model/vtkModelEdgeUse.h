@@ -45,7 +45,7 @@ class VTK_EXPORT vtkModelEdgeUse : public vtkModelEntity
 {
 public:
   static vtkModelEdgeUse* New();
-  vtkTypeRevisionMacro(vtkModelEdgeUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelEdgeUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

@@ -49,7 +49,7 @@ class vtkInformation;
 class VTK_EXPORT vtkSerializer : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkSerializer,vtkObject);
+  vtkTypeMacro(vtkSerializer,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

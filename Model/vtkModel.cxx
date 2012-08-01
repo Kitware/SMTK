@@ -38,7 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
-vtkCxxRevisionMacro(vtkModel, "$Revision: 2586 $");
 
 //----------------------------------------------------------------------------
 vtkModel::vtkModel()

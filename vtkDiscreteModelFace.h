@@ -41,7 +41,7 @@ class VTK_EXPORT vtkDiscreteModelFace : public vtkModelFace,
   public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelFace,vtkModelFace);
+  vtkTypeMacro(vtkDiscreteModelFace,vtkModelFace);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   static vtkDiscreteModelFace *New();

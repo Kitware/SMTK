@@ -42,7 +42,7 @@ class VTK_EXPORT vtkMergeEventData : public vtkObject
 {
 public:
   static vtkMergeEventData * New();
-  vtkTypeRevisionMacro(vtkMergeEventData,vtkObject);
+  vtkTypeMacro(vtkMergeEventData,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

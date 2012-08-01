@@ -40,7 +40,7 @@ class vtkIdTypeArray;
 class VTK_EXPORT vtkModelGridRepresentation : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkModelGridRepresentation,vtkObject);
+  vtkTypeMacro(vtkModelGridRepresentation,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetStringMacro(GridFileName);

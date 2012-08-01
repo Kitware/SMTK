@@ -33,7 +33,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelShellUse.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelRegion, "");
 
 //-----------------------------------------------------------------------------
 vtkModelRegion::vtkModelRegion()

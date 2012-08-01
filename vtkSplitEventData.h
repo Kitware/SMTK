@@ -44,7 +44,7 @@ class VTK_EXPORT vtkSplitEventData : public vtkObject
 {
 public:
   static vtkSplitEventData * New();
-  vtkTypeRevisionMacro(vtkSplitEventData,vtkObject);
+  vtkTypeMacro(vtkSplitEventData,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

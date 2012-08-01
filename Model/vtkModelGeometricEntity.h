@@ -39,7 +39,7 @@ class vtkProperty;
 class VTK_EXPORT vtkModelGeometricEntity : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelGeometricEntity,vtkModelEntity);
+  vtkTypeMacro(vtkModelGeometricEntity,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Definition:

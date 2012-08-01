@@ -53,7 +53,7 @@ class VTK_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
 {
 public:
   static vtkModelItemGenericIterator *New();
-  vtkTypeRevisionMacro(vtkModelItemGenericIterator,vtkModelItemIterator);
+  vtkTypeMacro(vtkModelItemGenericIterator,vtkModelItemIterator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

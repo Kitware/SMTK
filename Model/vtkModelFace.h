@@ -47,7 +47,7 @@ class vtkModelRegion;
 class VTK_EXPORT vtkModelFace : public vtkModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelFace,vtkModelGeometricEntity);
+  vtkTypeMacro(vtkModelFace,vtkModelGeometricEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();
