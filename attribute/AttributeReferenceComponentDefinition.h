@@ -54,7 +54,7 @@ namespace slctk
 
       bool isValueValid(slctk::attribute::Attribute *att) const;
 
-      virtual slctk::attribute::Component *createComponent();
+      virtual slctk::attribute::Component *buildComponent() const;
     protected:
         slctk::attribute::Definition *m_definition;
     private:

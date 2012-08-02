@@ -42,6 +42,9 @@ namespace slctk
     {
     public:
       friend class Manager;
+      Cluster(slctk::attribute::Manager *myManager, slctk::attribute::Cluster *myParent, 
+              slctk::attribute::Definition *def);
+      virtual ~Cluster();
       const std::string &type() const;
       slctk::attribute::Manager *manager() const
       {return this->m_manager;}
@@ -54,9 +57,6 @@ namespace slctk
       slctk::attribute::Attribute *find(const std::string &name) const;
       bool rename(slctk::attribute::Attribute *att, const std::string &newName);
     protected:
-      Cluster(slctk::attribute::Manager *myManager, slctk::attribute::Cluster *myParent, 
-              slctk::attribute::Definition *def);
-      virtual ~Cluster();
       // Add an attribute to the cluster.  Note that the cluster
       // now owns and manages it
       void add(slctk::attribute::Attribute *att);

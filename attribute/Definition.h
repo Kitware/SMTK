@@ -30,21 +30,26 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include <string>
 #include <set>
-
+#include <vector>
 
 namespace slctk
 {
+  class ModelEntity;
   namespace attribute
   {
     class Attribute;
     class Cluster;
     class ComponentDefinition;
-
+    class Manager;
+ 
     class SLCTKATTRIBUTE_EXPORT Definition
     {
-      friend class slctk::attribute::Cluster;
-      friend class slctk::attribute::Manager;
     public:
+      // Definitions can only be created by an attribute manager
+      Definition(const std::string &myType, slctk::attribute::Cluster *myCluster, 
+                 unsigned long myId);
+      virtual ~Definition();
+
       const std::string &type() const
       { return this->m_type;}
 
@@ -59,8 +64,8 @@ namespace slctk
       unsigned long id() const
       { return this->m_id;}
 
-      Definition *baseDefinition() const;
-      bool isA(slctk::attribute::Definition *def) const;
+      const Definition *baseDefinition() const;
+      bool isA(const slctk::attribute::Definition *def) const;
 
       int version() const
       {return this->m_version;}
@@ -145,13 +150,9 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      void buildAttribute(slctk::attribute::Attribute *attribute);
-      slctk::attribute::Definition *findIsUniqueBaseClass() const;
+      void buildAttribute(slctk::attribute::Attribute *attribute) const;
+      const slctk::attribute::Definition *findIsUniqueBaseClass() const;
     protected:
-      // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, slctk::attribute::Cluster *myCluster, 
-                 unsigned long myId);
-      virtual ~Definition();
 
       int m_version;
       bool m_isAbstract;

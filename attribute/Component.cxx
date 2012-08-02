@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Component::Component(ComponentDefinition *def):
+Component::Component(const ComponentDefinition *def):
   m_isEnabled(true), m_definition(def)
 {
 }

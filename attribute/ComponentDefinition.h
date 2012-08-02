@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include <string>
 #include <set>
+#include <vector>
 
 namespace slctk
 {
@@ -37,9 +38,13 @@ namespace slctk
   {
     class Cluster;
     class Component;
+    class Definition;
     class SLCTKATTRIBUTE_EXPORT ComponentDefinition
     {
     public:
+      ComponentDefinition(const std::string &myname, 
+                          unsigned long myId);
+      virtual ~ComponentDefinition();
       const std::string &name() const
       { return this->m_name;}
 
@@ -94,12 +99,8 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      virtual slctk::attribute::Component *createComponent() = 0;
+      virtual slctk::attribute::Component *buildComponent() const = 0;
     protected:
-      // ComponentDefinitions can only be created by an attribute manager
-      ComponentDefinition(const std::string &myname, 
-                          unsigned long myId);
-      virtual ~ComponentDefinition();
 
       int m_version;
       bool m_isOptional;

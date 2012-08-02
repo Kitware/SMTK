@@ -39,7 +39,6 @@ namespace slctk
     class ComponentDefinition;
     class SLCTKATTRIBUTE_EXPORT Component
     {
-      friend class Attribute;
     public:
      enum Type
      {
@@ -52,6 +51,8 @@ namespace slctk
        NUMBER_OF_TYPES
      };
        
+      Component(const slctk::attribute::ComponentDefinition *def);
+      virtual ~Component();
       const std::string &name() const;
       virtual Component::Type type() const = 0;
       const slctk::attribute::ComponentDefinition *definition() const
@@ -73,10 +74,10 @@ namespace slctk
       static Component::Type string2Type(const std::string &s);
 
      protected:
-      Component(slctk::attribute::ComponentDefinition *def);
-      virtual ~Component();
+      // This method allows any Component to delete another - USE WITH CARE!
+      void deleteComponent();
       bool m_isEnabled;
-      ComponentDefinition *m_definition;
+      const ComponentDefinition *m_definition;
     private:
       
     };

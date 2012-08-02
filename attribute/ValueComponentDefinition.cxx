@@ -23,7 +23,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/ValueComponentDefinition.h"
-using namespace slck::attribute; 
+#include "attribute/AttributeReferenceComponent.h"
+#include "attribute/AttributeReferenceComponentDefinition.h"
+
+using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
 ValueComponentDefinition::ValueComponentDefinition(const std::string &myName, 
@@ -32,23 +35,27 @@ ValueComponentDefinition::ValueComponentDefinition(const std::string &myName,
 {
   this->m_defaultDiscreteIndex = -1;
   this->m_hasDefault = false;
-  this->useCommonLabel = false;
-  this->m_numberOfElements = 0;
+  this->m_useCommonLabel = false;
+  this->m_numberOfValues = 0;
+  this->m_expressionDefinition = 
+    new AttributeReferenceComponentDefinition("expression", 0);
+  this->m_expressionDefinition->setNumberOfValues(1);
 }
 
 //----------------------------------------------------------------------------
 ValueComponentDefinition::~ValueComponentDefinition()
 {
+  delete this->m_expressionDefinition;
 }
 //----------------------------------------------------------------------------
-void ValueComponentDefinition::setNumberOfValues(int esize) const
+void ValueComponentDefinition::setNumberOfValues(int esize)
 {
-  if (esize == this->m_numberOfElements)
+  if (esize == this->m_numberOfValues)
     {
     return;
     }
-  this->m_numberOfElements = esize;
-  if (this->m_hasDefault && (!this->useCommonLabel))
+  this->m_numberOfValues = esize;
+  if (this->m_hasDefault && (!this->m_useCommonLabel))
     {
     this->m_elementLables.resize(esize);
     }
@@ -56,13 +63,13 @@ void ValueComponentDefinition::setNumberOfValues(int esize) const
 //----------------------------------------------------------------------------
 void ValueComponentDefinition::setValueLabel(int element, const std::string &elabel)
 {
-  if (this->m_numberOfElements == 0)
+  if (this->m_numberOfValues == 0)
     {
     return;
     }
-  if (this->m_elementLables.size() != this->m_numberOfElements)
+  if (this->m_elementLables.size() != this->m_numberOfValues)
     {
-    this->m_elementLables.resize(this->m_numberOfElements);
+    this->m_elementLables.resize(this->m_numberOfValues);
     }
   this->m_useCommonLabel = false;
   this->m_elementLables[element] = elabel;
@@ -75,11 +82,11 @@ void ValueComponentDefinition::setCommonValueLable(const std::string &elable)
     this->m_elementLables.resize(1);
     }
   this->m_useCommonLabel = true;
-  this->m_elementLables[0] = elabel;
+  this->m_elementLables[0] = elable;
 }
 
 //----------------------------------------------------------------------------
-const std::string &ValueComponentDefinition::valueLable(int element) const
+std::string ValueComponentDefinition::valueLable(int element) const
 {
   if (this->m_useCommonLabel)
     {
@@ -89,5 +96,38 @@ const std::string &ValueComponentDefinition::valueLable(int element) const
     {
     return this->m_elementLables[element];
     }
+  return ""; // If we threw execeptions this method could return const string &
+}
+//----------------------------------------------------------------------------
+bool ValueComponentDefinition::isValidExpression(Attribute *exp) const
+{
+  if ((this->m_expressionDefinition->attributeDefinition() != NULL) && 
+      this->m_expressionDefinition->isValueValid(exp))
+    {
+    return true;
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
+bool ValueComponentDefinition::allowsExpressions() const
+{
+  return this->m_expressionDefinition->attributeDefinition() != NULL;
+}
+//----------------------------------------------------------------------------
+Definition *ValueComponentDefinition::expressionDefinition() const
+{
+  return this->m_expressionDefinition->attributeDefinition();
+}
+//----------------------------------------------------------------------------
+void ValueComponentDefinition::setExpressionDefinition(Definition *exp)
+{
+  this->m_expressionDefinition->setAttributeDefinition(exp);
+}
+//----------------------------------------------------------------------------
+AttributeReferenceComponent *
+ValueComponentDefinition::buildExpressionComponent() const
+{
+  return static_cast<AttributeReferenceComponent *>
+    (this->m_expressionDefinition->buildComponent());
 }
 //----------------------------------------------------------------------------

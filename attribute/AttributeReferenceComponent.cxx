@@ -31,7 +31,7 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 AttributeReferenceComponent::
-AttributeReferenceComponent(AttributeReferenceComponentDefinition *def):
+AttributeReferenceComponent(const AttributeReferenceComponentDefinition *def):
   ValueComponent(def)
 {
   int n = def->numberOfValues();

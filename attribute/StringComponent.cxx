@@ -22,35 +22,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/ComponentDefinition.h"
+#include "attribute/StringComponent.h"
+#include "attribute/StringComponentDefinition.h"
+
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+StringComponent::StringComponent(const StringComponentDefinition *def):
+  ValueComponentTemplate<std::string>(def)
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
 }
 
 //----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
+StringComponent::~StringComponent()
 {
 }
 //----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
+Component::Type StringComponent::type() const
 {
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
-    {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
+  return STRING;
 }
-//----------------------------------------------------------------------------

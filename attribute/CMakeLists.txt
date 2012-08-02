@@ -8,6 +8,12 @@ set(headers
   Component.h
   ComponentDefinition.h
   Definition.h
+  DoubleComponent.h
+  DoubleComponentDefinition.h
+  IntegerComponent.h
+  IntegerComponentDefinition.h
+  StringComponent.h
+  StringComponentDefinition.h
   ValueComponent.h
   ValueComponentDefinition.h
   ValueComponentDefinitionTemplate.h
@@ -22,6 +28,12 @@ set(attribute_srcs
   Component.cxx
   ComponentDefinition.cxx
   Definition.cxx
+  DoubleComponent.cxx
+  DoubleComponentDefinition.cxx
+  IntegerComponent.cxx
+  IntegerComponentDefinition.cxx
+  StringComponent.cxx
+  StringComponentDefinition.cxx
   ValueComponent.cxx
   ValueComponentDefinition.cxx
   )

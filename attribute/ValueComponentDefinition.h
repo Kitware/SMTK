@@ -39,11 +39,17 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
+    class AttributeReferenceComponent;
+    class AttributeReferenceComponentDefinition;
+    class Definition;
     class Cluster;
     class SLCTKATTRIBUTE_EXPORT ValueComponentDefinition : 
       public slctk::attribute::ComponentDefinition
     {
     public:
+      ValueComponentDefinition(const std::string &myname, 
+                               unsigned long myId);
+      virtual ~ValueComponentDefinition();
       bool isDiscrete() const
       {return (this->m_discreteValueLables.size() != 0);}
       
@@ -52,35 +58,40 @@ namespace slctk
       void setDefaultDiscreteIndex(int discreteIndex)
       {this->m_defaultDiscreteIndex = discreteIndex;}
       
+      bool allowsExpressions() const;
+      bool isValidExpression(Attribute *exp) const;
+      Definition *expressionDefinition() const;
+      void setExpressionDefinition(Definition *exp);
+      AttributeReferenceComponent *buildExpressionComponent() const;
+
       bool hasDefault() const
       {return this->m_hasDefault;}
 
       virtual bool hasRange() const = 0;
 
       int numberOfValues() const
-      {return this->m_numberOfElements;}
-      void setNumberOfValues(int esize)
-      {this->m_numberOfElements = esize;}
+      {return this->m_numberOfValues;}
+      void setNumberOfValues(int esize);
 
       bool hasValueLables() const
       {return this->m_elementLables.size();}
 
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLable(const std::string &elable);
-      const std::string &valueLable(int element) const;
+      std::string valueLable(int element) const;
+      bool isDiscreteIndexValid(int index) const
+      {return ((index > -1) && (index < this->m_discreteValueLables.size()));}
 
+      virtual Component *buildComponent() const;
     protected:
-      // ValueComponentDefinitions can only be created by an attribute manager
-      ValueComponentDefinition(const std::string &myname, 
-                               unsigned long myId);
-      virtual ~ValueComponentDefinition();
 
       bool m_hasDefault;
       bool m_useCommonLabel;
       std::vector<std::string> m_elementLables;
       std::vector<std::string> m_discreteValueLables;
       int m_defaultDiscreteIndex;
-      int m_numberOfElements;
+      int m_numberOfValues;
+      AttributeReferenceComponentDefinition *m_expressionDefinition;
     private:
       
     };

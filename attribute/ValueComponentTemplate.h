@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_ValueComponentTemplate_h
 #define __slctk_attribute_ValueComponentTemplate_h
 
+#include "attribute/AttributeReferenceComponent.h"
 #include "attribute/ValueComponent.h"
 #include "attribute/ValueComponentDefinitionTemplate.h"
 #include <vector>
@@ -35,12 +36,16 @@ namespace slctk
 {
   namespace attribute
   {
-    template<typename DataT, typename DefT>
+    template<typename DataT>
     class ValueComponentTemplate : public ValueComponent
     {
+      //template<DataT> friend class ValueComponentDefinitionTemplate;
     public:
-      int numberOfValues() const
-      {return this->m_values.size();}
+      typedef DataT DataType;
+      typedef ValueComponentDefinitionTemplate<DataType> DefType;
+      
+      ValueComponentTemplate(const DefType *def);
+      virtual ~ValueComponentTemplate() {}
       DataT value() const
       {return this->m_values[0];}
       DataT value(int element) const
@@ -50,21 +55,20 @@ namespace slctk
       {return this->setValue(0, val);}
       bool setValue(int element, const DataT &val);
       bool appendValue(const DataT &val);
+      virtual bool appendExpression(Attribute *exp);
       bool removeValue(int element);
-      virtual reset();
+      virtual void reset();
       bool setToDefault(int element);
 
     protected:
-      ValueComponentTemplate(DefT *def);
-      virtual ~ValueComponentTemplate() {}
       virtual void updateDiscreteValue(int element);
       std::vector<DataT> m_values;
     private:
     };
 
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
-    ValueComponentTemplate::ValueComponentTemplate(DataT *def):
+    template<typename DataT>
+    ValueComponentTemplate<DataT>::ValueComponentTemplate(const DefType *def):
       ValueComponent(def)
     {
       int n = def->numberOfValues();
@@ -74,7 +78,7 @@ namespace slctk
           {
           // Assumes that if the definition is discrete then default value
           // will be based on the default discrete index
-          this->m_values.resize(n, def->discreteValue(def->defaultValue()));
+          this->m_values.resize(n, def->defaultValue());
           }
         else
           {
@@ -83,10 +87,10 @@ namespace slctk
         }
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
-    bool ValueComponentTemplate::setValue(int element, const DataT &val)
+    template<typename DataT>
+    bool ValueComponentTemplate<DataT>::setValue(int element, const DataT &val)
     {
-      const DefT *def = static_cast<const DefT *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition());
       if (def->isDiscrete())
         {
         int index = def->findDiscreteIndex(val);
@@ -94,6 +98,10 @@ namespace slctk
           {
           this->m_discreteIndices[element] = index;
           this->m_values[element] = val;
+          if (def->allowsExpressions())
+            {
+            this->m_expressions[element]->setValue(NULL);
+            }
           this->m_isSet[element] = true;
           return true;
           }
@@ -108,31 +116,72 @@ namespace slctk
       return false;
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
-    void ValueComponentTemplate::updateDiscreteValue(int element)
+    template<typename DataT>
+    void ValueComponentTemplate<DataT>::updateDiscreteValue(int element)
     {
-      const DefT *def = static_cast<const DefT *>(this->definition());
-      this->m_values[element] = def->discreteValue(this->discreteIndex[element]);
+      const DefType *def = static_cast<const DefType *>(this->definition());
+      this->m_values[element] =
+        def->discreteValue(this->m_discreteIndices[element]);
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
+    template<typename DataT>
     const std::string &
-    ValueComponentTemplate::valueAsString(int element, 
+    ValueComponentTemplate<DataT>::valueAsString(int element, 
                                           const std::string &format) const
     {
       // For the initial design we will use sprintf and force a limit of 300 char
-      char dummy[300];
-      sprintf(dummy, format.c_str(), this->m_values[element]);
-      this->m_tempString = dummy;
+      if (this->m_isSet[element])
+        {
+        if (this->isExpression(element))
+          {
+          this->m_tempString = "VALUE_IS_EXPRESSION";
+          }
+        else
+          {
+          char dummy[300];
+          sprintf(dummy, format.c_str(), this->m_values[element]);
+          this->m_tempString = dummy;
+          }
+        }
+      else
+        {
+      this->m_tempString = "VALUE_IS_NOT_SET";
+        }
       return this->m_tempString;
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
+    template<>
+    const std::string &
+    ValueComponentTemplate<std::string>::valueAsString(int element, 
+                                          const std::string &format) const
+    {
+      // For the initial design we will use sprintf and force a limit of 300 char
+      if (this->m_isSet[element])
+        {
+        if (this->isExpression(element))
+          {
+          this->m_tempString = "VALUE_IS_EXPRESSION";
+          }
+        else
+          {
+          char dummy[300];
+          sprintf(dummy, format.c_str(), this->m_values[element].c_str());
+          this->m_tempString = dummy;
+          }
+        }
+      else
+        {
+      this->m_tempString = "VALUE_IS_NOT_SET";
+        }
+      return this->m_tempString;
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
     bool
-    ValueComponentTemplate::appendValue(const DataT &val)
+    ValueComponentTemplate<DataT>::appendValue(const DataT &val)
     {
       //First - are we allowed to change the number of values?
-      const DefT *def = static_cast<const DefT *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition());
       int n = def->numberOfValues();
       if (n)
         {
@@ -147,12 +196,22 @@ namespace slctk
           this->m_values.push_back(val);
           this->m_discreteIndices.push_back(index);
           this->m_isSet.push_back(true);
+          if (def->allowsExpressions())
+            {
+            this->m_expressions.
+              push_back(def->buildExpressionComponent());
+            }
           return true;
           }
         return false;
         }
       if (def->isValueValid(val))
         {
+        if (def->allowsExpressions())
+          {
+          this->m_expressions.
+            push_back(def->expressionDefinition()->buildComponent());
+          }
         this->m_values.push_back(val);
         this->m_isSet.push_back(true);
         return true;
@@ -160,16 +219,21 @@ namespace slctk
       return false;
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
+    template<typename DataT>
     bool
-    ValueComponentTemplate::removeValue(int element)
+    ValueComponentTemplate<DataT>::removeValue(int element)
     {
       //First - are we allowed to change the number of values?
-      const DefT *def = static_cast<const DefT *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition());
       int n = def->numberOfValues();
       if (n)
         {
         return false; // The number of values is fixed
+        }
+      if (def->allowsExpressions)
+        {
+        delete this->m_expressions[element];
+        this->m_expressions.erase(this->m_expressions.begin()+element);
         }
       this->m_values.erase(this->m_values.begin()+element);
       this->m_isSet.erase(this->m_isSet.begin()+element);
@@ -180,11 +244,11 @@ namespace slctk
       return true;
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
+    template<typename DataT>
     bool
-    ValueComponentTemplate::setToDefault(int element)
+    ValueComponentTemplate<DataT>::setToDefault(int element)
     {
-      const DefT *def = static_cast<const DefT *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition());
       if (!def->hasDefault())
         {
         return false; // Doesn't have a default value
@@ -192,7 +256,7 @@ namespace slctk
 
       if (def->isDiscrete())
         {
-        this->setDiscreteIndex(element, def->discreteDefaultIndex());
+        this->setDiscreteIndex(element, def->defaultDiscreteIndex());
         }
       else
         {
@@ -201,11 +265,11 @@ namespace slctk
       return true;
     }
 //----------------------------------------------------------------------------
-    template<typename DataT, typename DefT>
+    template<typename DataT>
     void
-    ValueComponentTemplate::reset()
+    ValueComponentTemplate<DataT>::reset()
     {
-      const DefT *def = static_cast<const DefT *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition());
       // Was the initial size 0?
       int i, n = def->numberOfValues();
       if (!n)
@@ -213,7 +277,24 @@ namespace slctk
         this->m_values.clear();
         this->m_isSet.clear();
         this->m_discreteIndices.clear();
+        if (def->allowsExpressions())
+          {
+          for (i = 0; i < n; i++)
+            {
+            delete this->m_expressions[i];
+            }
+          this->m_expressions.clear();
+          }
         return;
+        }
+
+      // If we can have expressions then clear them
+      if (def->allowsExpressions())
+        {
+        for (i = 0; i < n; i++)
+          {
+          this->m_expressions[i]->setValue(NULL);
+          }
         }
       if (!def->hasDefault()) // Do we have default values
         {
@@ -226,7 +307,7 @@ namespace slctk
 
       if (def->isDiscrete())
         {
-        int index = def->discreteDefaultIndex();
+        int index = def->defaultDiscreteIndex();
         for(i = 0; i < n; i++)
           {
           this->setDiscreteIndex(i, index);
@@ -242,6 +323,19 @@ namespace slctk
         }
     }
 //----------------------------------------------------------------------------
+    template<typename DataT>
+    bool
+    ValueComponentTemplate<DataT>::appendExpression(Attribute *exp)
+    {
+      // See if the parent class appended the expression
+      if (ValueComponent::appendExpression(exp))
+        {
+        // Resize the values array to match
+        this->m_values.resize(this->m_expressions.size());
+        return true;
+        }
+      return false;
+    }
   };
 };
 

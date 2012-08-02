@@ -24,16 +24,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/ValueComponent.h"
 #include "attribute/ValueComponentDefinition.h"
+#include "attribute/AttributeReferenceComponent.h"
+#include "attribute/AttributeReferenceComponentDefinition.h"
 
-using namespace slck::attribute; 
+using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ValueComponent::ValueComponent(ValueComponentDefinition *def):
+ValueComponent::ValueComponent(const ValueComponentDefinition *def):
   Component(def)
 {
-  // Find out how many elements this component is suppose to have
+  // Find out how many values this component is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfElements();
+  int n = def->numberOfValues();
   if (n)
     {
     if (def->hasDefault())
@@ -48,17 +50,96 @@ ValueComponent::ValueComponent(ValueComponentDefinition *def):
       {
       this->m_discreteIndices.resize(n, def->defaultDiscreteIndex());
       }
+    if (def->allowsExpressions())
+      {
+      int i;
+      this->m_expressions.resize(n, NULL);
+      for (i = 0; i < n; i++)
+        {
+        this->m_expressions[i] = def->buildExpressionComponent();
+        }
+      }
     }
 }
-
 //----------------------------------------------------------------------------
 ValueComponent::~ValueComponent()
 {
+  const ValueComponentDefinition *def = 
+    static_cast<const ValueComponentDefinition*>(this->m_definition);
+  if (def->allowsExpressions())
+    {
+    int i, n = def->numberOfValues();
+    for (i = 0; i < n; i++)
+      {
+      delete this->m_expressions[i];
+      }
+    }
+
+}
+//----------------------------------------------------------------------------
+Attribute *ValueComponent::expression(int element) const
+{
+  const ValueComponentDefinition *def = 
+    static_cast<const ValueComponentDefinition*>(this->m_definition);
+  if (def->allowsExpressions())
+    {
+    return this->m_expressions[element]->value();
+    }
+  return NULL;
+}
+//----------------------------------------------------------------------------
+bool ValueComponent::setExpression(int element, Attribute *exp)
+{
+  const ValueComponentDefinition *def = 
+    static_cast<const ValueComponentDefinition*>(this->m_definition);
+  if (def->allowsExpressions())
+    {
+    if (exp == NULL)
+      {
+      if (this->m_expressions[element]->value() != NULL)
+        {
+        this->m_isSet[element] = false;
+        this->m_expressions[element]->setValue(NULL);
+        }
+      return true;
+      }
+    if (def->isValidExpression(exp))
+      {
+      this->m_isSet[element] = true;
+      this->m_expressions[element]->setValue(exp);
+      return true;
+      }
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
+bool ValueComponent::appendExpression(Attribute *exp)
+{
+  const ValueComponentDefinition *def = 
+    static_cast<const ValueComponentDefinition*>(this->m_definition);
+  if (!def->allowsExpressions())
+    {
+    return false;
+    }
+  int n = def->numberOfValues();
+  if (n)
+    {
+    return false; // The number of values is fixed
+    }
+  if (!def->isValidExpression(exp))
+    {
+    return false; // Attribute is of the proper type
+    }
+  n = m_expressions.size();
+  this->m_expressions.push_back(def->buildExpressionComponent());
+  this->m_expressions[n]->setValue(exp);
+  this->m_isSet.push_back(true);
+  return true;
 }
 //----------------------------------------------------------------------------
 bool ValueComponent::isDiscrete() const
 {
-  return static_cast<ValueComponentDefinition*>(this->m_definition)->
+  return static_cast<const ValueComponentDefinition*>(this->m_definition)->
     isDiscrete();
 }
 //----------------------------------------------------------------------------
@@ -68,11 +149,15 @@ void ValueComponent::setDiscreteIndex(int element, int index)
     {
     return;
     }
-  ValueComponentDefintion *vdef = 
-    static_cast<ValueComponentDefinition*>(this->m_definition);
-  if (vdef->isDiscreteIndexValid(index))
+  const ValueComponentDefinition *def = 
+    static_cast<const ValueComponentDefinition*>(this->m_definition);
+  if (def->isDiscreteIndexValid(index))
     {
-    this->m_discreteIndex[element] = index;
+    this->m_discreteIndices[element] = index;
+    if (def->allowsExpressions())
+      {
+      this->m_expressions[element]->setValue(NULL);
+      }
     this->m_isSet[element] = true;
     this->updateDiscreteValue(element);
     }

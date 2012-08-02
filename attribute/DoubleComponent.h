@@ -20,37 +20,36 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME DoubleComponent.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_DoubleComponent_h
+#define __slctk_attribute_DoubleComponent_h
 
-#include "attribute/ComponentDefinition.h"
-using namespace slctk::attribute; 
+#include "attribute/ValueComponentTemplate.h"
+#include "AttributeExports.h"
 
-//----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+namespace slctk
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
-}
-
-//----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
-{
-}
-//----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
-{
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
+  namespace attribute
+  {
+    class Attribute;
+    class DoubleComponentDefinition;
+    class SLCTKATTRIBUTE_EXPORT DoubleComponent :
+      public ValueComponentTemplate<double>
     {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
-}
-//----------------------------------------------------------------------------
+      friend class DoubleComponentDefinition; 
+    public:
+      DoubleComponent(const DoubleComponentDefinition *def);
+      virtual ~DoubleComponent();
+      virtual Component::Type type() const;
+    protected:
+      
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_DoubleComponent_h */

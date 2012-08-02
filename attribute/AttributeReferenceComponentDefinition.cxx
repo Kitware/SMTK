@@ -59,7 +59,7 @@ bool AttributeReferenceComponentDefinition::isValueValid(Attribute *att) const
   return true;
 }
 //----------------------------------------------------------------------------
-Component *AttributeReferenceComponentDefinition::createComponent()
+Component *AttributeReferenceComponentDefinition::buildComponent() const
 {
   return new AttributeReferenceComponent(this);
 }

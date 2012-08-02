@@ -22,35 +22,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/ComponentDefinition.h"
+#include "attribute/IntegerComponent.h"
+#include "attribute/IntegerComponentDefinition.h"
+
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+IntegerComponent::IntegerComponent(const IntegerComponentDefinition *def):
+  ValueComponentTemplate<int>(def)
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
 }
 
 //----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
+IntegerComponent::~IntegerComponent()
 {
 }
 //----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
+Component::Type IntegerComponent::type() const
 {
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
-    {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
+  return INTEGER;
 }
-//----------------------------------------------------------------------------

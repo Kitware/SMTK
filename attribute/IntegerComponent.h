@@ -20,37 +20,36 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME IntegerComponent.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_IntegerComponent_h
+#define __slctk_attribute_IntegerComponent_h
 
-#include "attribute/ComponentDefinition.h"
-using namespace slctk::attribute; 
+#include "attribute/ValueComponentTemplate.h"
+#include "AttributeExports.h"
 
-//----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+namespace slctk
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
-}
-
-//----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
-{
-}
-//----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
-{
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
+  namespace attribute
+  {
+    class Attribute;
+    class IntegerComponentDefinition;
+    class SLCTKATTRIBUTE_EXPORT IntegerComponent :
+      public ValueComponentTemplate<int>
     {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
-}
-//----------------------------------------------------------------------------
+      friend class IntegerComponentDefinition; 
+    public:
+      IntegerComponent(const IntegerComponentDefinition *def);
+      virtual ~IntegerComponent();
+      virtual Component::Type type() const;
+    protected:
+      
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_IntegerComponent_h */

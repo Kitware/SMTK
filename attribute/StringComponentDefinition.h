@@ -20,37 +20,34 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME StringComponentDefinition.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_StringComponentDefinition_h
+#define __slctk_attribute_StringComponentDefinition_h
 
-#include "attribute/ComponentDefinition.h"
-using namespace slctk::attribute; 
+#include "ValueComponentDefinitionTemplate.h"
 
-//----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+namespace slctk
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
-}
-
-//----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
-{
-}
-//----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
-{
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
+  namespace attribute
+  {
+    class SLCTKATTRIBUTE_EXPORT StringComponentDefinition :
+      public ValueComponentDefinitionTemplate<std::string>
     {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
-}
-//----------------------------------------------------------------------------
+    public:
+      StringComponentDefinition(const std::string &myName,
+                                unsigned long myId);
+      virtual ~StringComponentDefinition();
+      virtual slctk::attribute::Component *buildComponent() const;
+
+    protected:
+
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_StringComponentDefinition_h */

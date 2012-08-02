@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 
+#include <tr1/memory>
 #include <map>
 #include <set>
 #include <string>
@@ -54,6 +55,9 @@ namespace slctk
       friend class slctk::attribute::Definition;
       friend class slctk::attribute::Manager;
     public:
+      Attribute(const std::string &myName,
+                slctk::attribute::Cluster *myCluster, unsigned long myId);
+      virtual ~Attribute();
       // NOTE: To rename an attribute use the manager!
       const std::string &name() const
       { return this->m_name;}
@@ -110,9 +114,6 @@ namespace slctk
       {return this->m_cluster;}
 
     protected:
-      Attribute(const std::string &myName,
-                slctk::attribute::Cluster *myCluster, unsigned long myId);
-      virtual ~Attribute();
       void removeAllComponents();
       void addComponent(slctk::attribute::Component *component);
       void setName(const std::string &newname)
@@ -122,7 +123,10 @@ namespace slctk
       {this->m_references.insert(comp);}
       void unregisterComponent(slctk::attribute::AttributeReferenceComponent *comp)
       {this->m_references.erase(comp);}
-
+     
+      struct internal_no_copy_data
+      {
+      };
       std::string m_name;
       std::vector<slctk::attribute::Component *> m_components;
       std::map<std::string, slctk::attribute::Component *> m_componentLookUp;
@@ -132,6 +136,8 @@ namespace slctk
       std::set<slctk::attribute::AttributeReferenceComponent *> m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
+
+      std::tr1::shared_ptr<internal_no_copy_data> Data;
     private:
       
     };

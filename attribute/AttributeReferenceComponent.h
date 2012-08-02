@@ -39,8 +39,9 @@ namespace slctk
     class AttributeReferenceComponentDefinition;
     class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponent : public ValueComponent
     {
-      friend class AttributeReferenceComponentDefinition;
     public:
+      AttributeReferenceComponent(const AttributeReferenceComponentDefinition *def);
+      virtual ~AttributeReferenceComponent();
       virtual Component::Type type() const;
       slctk::attribute::Attribute *value() const
       {return this->m_values[0];}
@@ -57,8 +58,6 @@ namespace slctk
       virtual const std::string &valueAsString(int element, const std::string &format) const;
      
     protected:
-      AttributeReferenceComponent(AttributeReferenceComponentDefinition *def);
-      virtual ~AttributeReferenceComponent();
       virtual void updateDiscreteValue(int element);
       std::vector<Attribute *>m_values;
     private:

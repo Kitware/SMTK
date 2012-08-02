@@ -34,12 +34,28 @@ namespace slctk
 {
   namespace attribute
   {
+    class Attribute;
+    class AttributeReferenceComponent;
     class ValueComponentDefinition;
     class SLCTKATTRIBUTE_EXPORT ValueComponent : public slctk::attribute::Component
     {
     public:
-      std::size_t numberOfElements() const
+      ValueComponent(const slctk::attribute::ValueComponentDefinition *def);
+      virtual ~ValueComponent();
+      std::size_t numberOfValues() const
       {return this->m_isSet.size();}
+
+      bool isExpression() const
+      {return this->isExpression(0);}
+      bool isExpression(int element) const
+      { return (this->expression(element) != NULL);}
+      Attribute *expression() const
+      {return this->expression(0);}
+      Attribute *expression(int element) const;
+      bool setExpression(Attribute *exp)
+      {return this->setExpression(0, exp);}
+      bool setExpression(int element, Attribute *exp);
+      virtual bool appendExpression(Attribute *exp);
 
       int discreteIndex() const
       { return this->discreteIndex(0);}
@@ -57,7 +73,7 @@ namespace slctk
       //If the component's definition indicated a size of 0 then it will go back to 
       // having no values
       virtual void reset() = 0;
-      virtual bool setToDefault(int element) const = 0;
+      virtual bool setToDefault(int element) = 0;
       virtual const std::string &valueAsString(const std::string &format) const
       { return this->valueAsString(0, format);}
 
@@ -72,11 +88,10 @@ namespace slctk
       {this->m_isSet[element] = false;}
 
     protected:
-      ValueComponent(slctk::attribute::ValueComponentDefinition *def);
-      virtual ~ValueComponent();
       virtual void updateDiscreteValue(int element) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
+      std::vector<AttributeReferenceComponent *> m_expressions;
       mutable std::string m_tempString;
     private:
       

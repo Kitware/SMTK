@@ -27,7 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Attribute.h"
 #include "attribute/Cluster.h"
 #include "attribute/ComponentDefinition.h"
-using namespace slck::attribute; 
+
+using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
 Definition::Definition(const std::string &myType, Cluster *myCluster, 
@@ -35,8 +36,8 @@ Definition::Definition(const std::string &myType, Cluster *myCluster,
 {
   this->m_id = myId;
   this->m_type = myType;
-  this-m_cluster = myCluster;
-  this->version = 0;
+  this->m_cluster = myCluster;
+  this->m_version = 0;
   this->m_isNodal = false;
   this->m_advanceLevel = 0;
   this->m_isUnique = true;
@@ -47,14 +48,14 @@ Definition::Definition(const std::string &myType, Cluster *myCluster,
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
-  std::size_t i, n = this->m_componentsDefs.size();
+  std::size_t i, n = this->m_componentDefs.size();
   for (i = 0; i < n; i++)
     {
-    delete this->m_componentsDefs[i];
+    delete this->m_componentDefs[i];
     }
 }
 //----------------------------------------------------------------------------
-Definition *Definition::baseDefinition() const
+const Definition *Definition::baseDefinition() const
 {
   if (this->m_cluster && this->m_cluster->parent())
     {
@@ -63,14 +64,14 @@ Definition *Definition::baseDefinition() const
   return NULL;
 }
 //----------------------------------------------------------------------------
-bool Definition::isA(Definition *targetDef) const
+bool Definition::isA(const Definition *targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
-  Definition *def = this;
+  const Definition *def = this;
   for (def = this; def != NULL; def = def->baseDefinition())
     {
-    if (def == target)
+    if (def == targetDef)
       {
       return true;
       }
@@ -95,18 +96,18 @@ bool Definition::conflicts(Definition *def) const
     }
 
   // Get the most "basic" definition that is unique
-  Definition *baseDef = this->findIsUnqueBaseClass();
+  const Definition *baseDef = this->findIsUniqueBaseClass();
   // See if the other definition is derived from this base defintion.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
 }
 //----------------------------------------------------------------------------
-Definition *Definition::findIsUnqueBaseClass()
+const Definition *Definition::findIsUniqueBaseClass() const
 {
-  Definition *uDef = this, *def;
+  const Definition *uDef = this, *def;
   while (1)
     {
-    def = uDef->baseDefintion();
+    def = uDef->baseDefinition();
     if ((def == NULL) || (!def->isUnique()))
       {
       return uDef;
@@ -127,15 +128,16 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
   // model's dimension to call the appropriate method. - return false if it can't.
   // 2. Get a list of attributes on the entity and call conflicts method with each
   // definition.  All conflicting attributes gets added to the list.
+  return false;
 }
 //----------------------------------------------------------------------------
-void Definition::BuildAttribute(Attribute *att)
+void Definition::buildAttribute(Attribute *att) const
 {
   // If there is a super definition have it prep the attribute and add its components
-  Definition *bdef = this->baseDefinition();
+  const Definition *bdef = this->baseDefinition();
   if (bdef)
     {
-    bdef->BuildAttribute(att);
+    bdef->buildAttribute(att);
     }
   else
     {
@@ -150,17 +152,17 @@ void Definition::BuildAttribute(Attribute *att)
   std::size_t i, n = this->m_componentDefs.size();
   for (i = 0; i < n; i++)
     {
-    comp = this->m_componentDefs[i].create();
+    comp = this->m_componentDefs[i]->buildComponent();
     att->addComponent(comp);
     }
 }
 //----------------------------------------------------------------------------
 bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  std::size_t i, n = this->m_catagories.size();
+  std::size_t i, n = catagories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(this->m_catagories[i]))
+    if (this->isMemberOf(catagories[i]))
       return true;
     }
   return false;

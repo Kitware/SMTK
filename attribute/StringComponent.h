@@ -20,37 +20,36 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME StringComponent.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_StringComponent_h
+#define __slctk_attribute_StringComponent_h
 
-#include "attribute/ComponentDefinition.h"
-using namespace slctk::attribute; 
+#include "attribute/ValueComponentTemplate.h"
+#include "AttributeExports.h"
 
-//----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+namespace slctk
 {
-  this->m_id = myId;
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
-}
-
-//----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
-{
-}
-//----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
-{
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
+  namespace attribute
+  {
+    class Attribute;
+    class StringComponentDefinition;
+    class SLCTKATTRIBUTE_EXPORT StringComponent :
+      public ValueComponentTemplate<std::string>
     {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
-}
-//----------------------------------------------------------------------------
+      friend class StringComponentDefinition; 
+    public:
+      StringComponent(const StringComponentDefinition *def);
+      virtual ~StringComponent();
+      virtual Component::Type type() const;
+    protected:
+      
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_StringComponent_h */
