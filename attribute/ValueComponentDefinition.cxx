@@ -57,7 +57,7 @@ void ValueComponentDefinition::setNumberOfValues(int esize)
   this->m_numberOfValues = esize;
   if (this->m_hasDefault && (!this->m_useCommonLabel))
     {
-    this->m_elementLables.resize(esize);
+    this->m_valueLables.resize(esize);
     }
 }
 //----------------------------------------------------------------------------
@@ -67,22 +67,22 @@ void ValueComponentDefinition::setValueLabel(int element, const std::string &ela
     {
     return;
     }
-  if (this->m_elementLables.size() != this->m_numberOfValues)
+  if (this->m_valueLables.size() != this->m_numberOfValues)
     {
-    this->m_elementLables.resize(this->m_numberOfValues);
+    this->m_valueLables.resize(this->m_numberOfValues);
     }
   this->m_useCommonLabel = false;
-  this->m_elementLables[element] = elabel;
+  this->m_valueLables[element] = elabel;
 }
 //----------------------------------------------------------------------------
 void ValueComponentDefinition::setCommonValueLable(const std::string &elable)
 {
-  if (this->m_elementLables.size() != 1)
+  if (this->m_valueLables.size() != 1)
     {
-    this->m_elementLables.resize(1);
+    this->m_valueLables.resize(1);
     }
   this->m_useCommonLabel = true;
-  this->m_elementLables[0] = elable;
+  this->m_valueLables[0] = elable;
 }
 
 //----------------------------------------------------------------------------
@@ -90,11 +90,11 @@ std::string ValueComponentDefinition::valueLable(int element) const
 {
   if (this->m_useCommonLabel)
     {
-    return this->m_elementLables[0];
+    return this->m_valueLables[0];
     }
-  if (this->m_elementLables.size())
+  if (this->m_valueLables.size())
     {
-    return this->m_elementLables[element];
+    return this->m_valueLables[element];
     }
   return ""; // If we threw execeptions this method could return const string &
 }

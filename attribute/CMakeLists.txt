@@ -10,6 +10,8 @@ set(headers
   Definition.h
   DoubleComponent.h
   DoubleComponentDefinition.h
+  GroupComponent.h
+  GroupComponentDefinition.h
   IntegerComponent.h
   IntegerComponentDefinition.h
   StringComponent.h
@@ -30,6 +32,8 @@ set(attribute_srcs
   Definition.cxx
   DoubleComponent.cxx
   DoubleComponentDefinition.cxx
+  GroupComponent.cxx
+  GroupComponentDefinition.cxx
   IntegerComponent.cxx
   IntegerComponentDefinition.cxx
   StringComponent.cxx

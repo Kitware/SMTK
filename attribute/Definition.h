@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Definition_h
 
 #include "AttributeExports.h"
+#include <map>
 #include <string>
 #include <set>
 #include <vector>
@@ -139,6 +140,9 @@ namespace slctk
         return (ith < 0) ? NULL : (ith >= this->m_componentDefs.size() ? 
                                    NULL : this->m_componentDefs[ith]);
       }
+      bool addComponentDefinition(slctk::attribute::ComponentDefinition *cdef);
+
+      int findComponentPosition(const std::string &name) const;
 
       const char *detailedDescription() const
       {return this->m_detailedDescription.c_str();}
@@ -164,6 +168,7 @@ namespace slctk
       std::set<std::string> m_catagories;
       int m_advanceLevel;
       std::vector<slctk::attribute::ComponentDefinition *> m_componentDefs;
+      std::map<std::string, int> m_componentDefPositions;
 //Is Unique indicates if more than one attribute of this type can be assigned to a 
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
 // has isUnique = true it will also prevent an attribute from this definition being assigned if the
@@ -176,6 +181,17 @@ namespace slctk
     private:
       
     };
+//----------------------------------------------------------------------------
+    inline int Definition::findComponentPosition(const std::string &name) const
+    {
+      std::map<std::string, int>::const_iterator it;
+      it = this->m_componentDefPositions.find(name);
+      if (it == this->m_componentDefPositions.end())
+        {
+        return -1; // named component doesn't exist
+        }
+      return it->second;
+    }
   };
 };
 

@@ -74,7 +74,7 @@ namespace slctk
       void setNumberOfValues(int esize);
 
       bool hasValueLables() const
-      {return this->m_elementLables.size();}
+      {return this->m_valueLables.size();}
 
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLable(const std::string &elable);
@@ -87,7 +87,7 @@ namespace slctk
 
       bool m_hasDefault;
       bool m_useCommonLabel;
-      std::vector<std::string> m_elementLables;
+      std::vector<std::string> m_valueLables;
       std::vector<std::string> m_discreteValueLables;
       int m_defaultDiscreteIndex;
       int m_numberOfValues;

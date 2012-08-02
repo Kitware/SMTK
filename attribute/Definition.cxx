@@ -168,3 +168,16 @@ bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
   return false;
 }
 //----------------------------------------------------------------------------
+bool Definition::addComponentDefinition(ComponentDefinition *cdef)
+{
+  // First see if there is a component by the same name
+  if (this->findComponentPosition(cdef->name()) >= 0)
+    {
+    return false;
+    }
+  std::size_t n = this->m_componentDefs.size();
+  this->m_componentDefs.push_back(cdef);
+  this->m_componentDefPositions[cdef->name()] = n;
+  return true;
+}
+//----------------------------------------------------------------------------

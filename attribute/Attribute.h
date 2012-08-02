@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 
 #include <tr1/memory>
-#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -115,9 +114,10 @@ namespace slctk
 
     protected:
       void removeAllComponents();
-      void addComponent(slctk::attribute::Component *component);
+      void addComponent(slctk::attribute::Component *component)
+      {this->m_components.push_back(component);}
       void setName(const std::string &newname)
-        {this->m_name = newname;}
+      {this->m_name = newname;}
 
       void registerComponent(slctk::attribute::AttributeReferenceComponent *comp)
       {this->m_references.insert(comp);}
@@ -129,7 +129,6 @@ namespace slctk
       };
       std::string m_name;
       std::vector<slctk::attribute::Component *> m_components;
-      std::map<std::string, slctk::attribute::Component *> m_componentLookUp;
       unsigned long m_id;
       slctk::attribute::Cluster *m_cluster;
       std::set<slctk::ModelEntity *> m_entities;
@@ -141,29 +140,6 @@ namespace slctk
     private:
       
     };
-//----------------------------------------------------------------------------
-    inline const Component *Attribute::find(const std::string &name) const
-    {
-      std::map<std::string, slctk::attribute::Component *>::const_iterator it;
-      it = this->m_componentLookUp.find(name);
-      if (it == this->m_componentLookUp.end())
-        {
-        return NULL;
-        }
-      return it->second;
-    }
-
-//----------------------------------------------------------------------------
-    inline  Component *Attribute::find(const std::string &name)
-    {
-      std::map<std::string, slctk::attribute::Component *>::const_iterator it;
-      it = this->m_componentLookUp.find(name);
-      if (it == this->m_componentLookUp.end())
-        {
-        return NULL;
-        }
-      return it->second;
-    }
   };
 };
 

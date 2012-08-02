@@ -131,9 +131,16 @@ void Attribute::removeAllAssociations()
     }
 }
 //----------------------------------------------------------------------------
-void Attribute::addComponent(Component *component)
+const Component *Attribute::find(const std::string &name) const
 {
-  this->m_components.push_back(component);
-  this->m_componentLookUp[component->name()] = component;
+  int i = this->definition()->findComponentPosition(name);
+  return (i < 0) ? NULL : this->m_components[i];
+}
+
+//----------------------------------------------------------------------------
+Component *Attribute::find(const std::string &name)
+{
+  int i = this->definition()->findComponentPosition(name);
+  return (i < 0) ? NULL : this->m_components[i];
 }
 //----------------------------------------------------------------------------
