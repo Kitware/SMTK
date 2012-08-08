@@ -14,6 +14,7 @@ set(headers
   GroupComponentDefinition.h
   IntegerComponent.h
   IntegerComponentDefinition.h
+  Manager.h
   StringComponent.h
   StringComponentDefinition.h
   ValueComponent.h
@@ -36,6 +37,7 @@ set(attribute_srcs
   GroupComponentDefinition.cxx
   IntegerComponent.cxx
   IntegerComponentDefinition.cxx
+  Manager.cxx
   StringComponent.cxx
   StringComponentDefinition.cxx
   ValueComponent.cxx

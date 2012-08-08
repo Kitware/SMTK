@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Definition.h"
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
-Cluster::Cluster(Manager *myManager, Cluster *myParent, Definition *def):
-  m_manager(myManager), m_parent(myParent), m_definition(def)
+Cluster::Cluster(Manager *myManager, Cluster *myParent):
+  m_manager(myManager), m_parent(myParent), m_definition(NULL)
 {
 }
 
@@ -39,7 +39,38 @@ Cluster::~Cluster()
     {
     delete (*it).second;
     }
-  delete this->m_definition;
+  if (this->m_definition)
+    {
+    delete this->m_definition;
+    }
+}
+//----------------------------------------------------------------------------
+Definition *Cluster::generateDefinition(const std::string &typeName,
+                                        unsigned long defId)
+{
+  if (this->m_definition != NULL)
+    {
+    return NULL;
+    }
+  this->m_definition = new Definition(typeName, this, defId);
+  return this->m_definition;
+}
+//----------------------------------------------------------------------------
+Attribute *Cluster::generateAttribute(const std::string &name,
+                                        unsigned long attId)
+{
+  //Do we already have an attribute with the same name
+  if (this->find(name) != NULL)
+    {
+    return NULL;
+    }
+  Attribute *a = new Attribute(name, this, attId);
+  if (this->m_definition)
+    {
+    this->m_definition->buildAttribute(a);
+    }
+  this->m_attributes[name] = a;
+  return a;
 }
 //----------------------------------------------------------------------------
 const std::string &Cluster::type() const
@@ -47,18 +78,8 @@ const std::string &Cluster::type() const
   return this->m_definition->type();
 }
 //----------------------------------------------------------------------------
-void Cluster::add(Attribute *att)
+void Cluster::deleteAttribute(Attribute *att)
 {
-  this->m_attributes[att->name()] = att;
-}
-//----------------------------------------------------------------------------
-void Cluster::remove(Attribute *att)
-{
-  // Can only remove attributes that are owned by this cluster!
-  if (att->cluster() != this)
-    {
-    return;
-    }
   this->m_attributes.erase(att->name());
   delete att;
 }

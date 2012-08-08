@@ -52,7 +52,6 @@ namespace slctk
       friend class slctk::attribute::AttributeReferenceComponent;
       friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Definition;
-      friend class slctk::attribute::Manager;
     public:
       Attribute(const std::string &myName,
                 slctk::attribute::Cluster *myCluster, unsigned long myId);
