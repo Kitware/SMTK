@@ -44,16 +44,6 @@ GroupComponent::GroupComponent(const GroupComponentDefinition *def):
 //----------------------------------------------------------------------------
 GroupComponent::~GroupComponent()
 {
-  std::size_t group, comp, numComps, numGroups = this->m_components.size();
-  for (group = 0; group < numGroups; group++)
-    {
-    std::vector<Component*> &cvec = this->m_components[group];
-    numComps = cvec.size();
-    for (comp = 0; comp < numComps; comp++)
-      {
-      delete cvec[comp];
-      }
-    }
 }
 //----------------------------------------------------------------------------
 Component::Type GroupComponent::type() const
@@ -94,30 +84,27 @@ bool GroupComponent::removeGroup(int element)
     // Can not change the number of components
     return false;
     }
-  std::vector<Component *> cvec = this->m_components[element];
-  std::size_t i;
-  n = cvec.size();
-  for (i = 0; i < n; i++)
-    {
-    delete cvec[i];
-    }
   this->m_components.erase(this->m_components.begin() + element);
   return true;
 }
 //----------------------------------------------------------------------------
-Component *GroupComponent::find(int element, const std::string &name)
+slctk::AttributeComponentPtr GroupComponent::find(int element, const std::string &name)
 {
   const GroupComponentDefinition *def = 
     static_cast<const GroupComponentDefinition *>(this->definition());
   int i = def->findComponentPosition(name);
-  return (i < 0) ? NULL : this->m_components[element][i];
+  return (i < 0) ? slctk::AttributeComponentPtr() : this->m_components[element][i];
 }
 //----------------------------------------------------------------------------
-const Component *GroupComponent::find(int element, const std::string &name) const
+slctk::ConstAttributeComponentPtr GroupComponent::find(int element, const std::string &name) const
 {
   const GroupComponentDefinition *def = 
     static_cast<const GroupComponentDefinition *>(this->definition());
   int i = def->findComponentPosition(name);
-  return (i < 0) ? NULL : this->m_components[element][i];
+  if (i < 0)
+    {
+    return slctk::ConstAttributeComponentPtr();
+    }
+  return this->m_components[element][i];
 }
 //----------------------------------------------------------------------------

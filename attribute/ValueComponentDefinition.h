@@ -69,7 +69,7 @@ namespace slctk
       bool isValidExpression(slctk::AttributePtr exp) const;
       slctk::AttributeDefinitionPtr expressionDefinition() const;
       void setExpressionDefinition(slctk::AttributeDefinitionPtr exp);
-      AttributeReferenceComponent *buildExpressionComponent() const;
+      slctk::AttributeReferenceComponentPtr buildExpressionComponent() const;
 
       bool hasDefault() const
       {return this->m_hasDefault;}

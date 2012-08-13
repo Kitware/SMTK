@@ -28,6 +28,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_ComponentDefinition_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
+
 #include <string>
 #include <set>
 #include <vector>
@@ -99,7 +101,7 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      virtual slctk::attribute::Component *buildComponent() const = 0;
+      virtual slctk::AttributeComponentPtr buildComponent() const = 0;
     protected:
 
       int m_version;

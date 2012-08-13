@@ -43,9 +43,9 @@ GroupComponentDefinition::~GroupComponentDefinition()
     }
 }
 //----------------------------------------------------------------------------
-Component *GroupComponentDefinition::buildComponent() const
+slctk::AttributeComponentPtr GroupComponentDefinition::buildComponent() const
 {
-  return new GroupComponent(this);
+  return slctk::AttributeComponentPtr(new GroupComponent(this));
 }
 //----------------------------------------------------------------------------
 bool GroupComponentDefinition::addComponentDefinition(ComponentDefinition *cdef)
@@ -61,10 +61,10 @@ bool GroupComponentDefinition::addComponentDefinition(ComponentDefinition *cdef)
   return true;
 }
 //----------------------------------------------------------------------------
-void GroupComponentDefinition::buildGroup(std::vector<Component *> &group) const
+void GroupComponentDefinition::buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const
 {
   std::size_t i, n = this->m_componentDefs.size();
-  group.resize(n, NULL);
+  group.resize(n);
   for (i = 0; i < n; i++)
     {
     group[i] = this->m_componentDefs[i]->buildComponent();

@@ -124,10 +124,10 @@ ValueComponentDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr 
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
 //----------------------------------------------------------------------------
-AttributeReferenceComponent *
+slctk::AttributeReferenceComponentPtr 
 ValueComponentDefinition::buildExpressionComponent() const
 {
-  return static_cast<AttributeReferenceComponent *>
-    (this->m_expressionDefinition->buildComponent());
+  return slctk::AttributeReferenceComponentPtr(static_cast<AttributeReferenceComponent* >
+                                               (this->m_expressionDefinition->buildComponent().get()));
 }
 //----------------------------------------------------------------------------

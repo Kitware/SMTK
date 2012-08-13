@@ -40,7 +40,7 @@ namespace slctk
       StringComponentDefinition(const std::string &myName,
                                 unsigned long myId);
       virtual ~StringComponentDefinition();
-      virtual slctk::attribute::Component *buildComponent() const;
+      virtual slctk::AttributeComponentPtr buildComponent() const;
 
     protected:
 

@@ -32,12 +32,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Definition::Definition(const std::string &myType, Cluster *myCluster, 
-                       unsigned long myId)
+Definition::Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster, 
+                       unsigned long myId) : m_cluster(myCluster)
 {
   this->m_id = myId;
   this->m_type = myType;
-  this->m_cluster = myCluster;
   this->m_version = 0;
   this->m_isNodal = false;
   this->m_advanceLevel = 0;
@@ -60,9 +59,9 @@ Definition::~Definition()
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr Definition::baseDefinition() const
 {
-  if (this->m_cluster && this->m_cluster->parent())
+  if (this->m_cluster.lock() && this->m_cluster.lock()->parent())
     {
-    return this->m_cluster->parent()->definition();
+    return this->m_cluster.lock()->parent()->definition();
     }
   return slctk::AttributeDefinitionPtr();
 }
@@ -151,7 +150,7 @@ void Definition::buildAttribute(AttributePtr att) const
 
   // Next - for each component definition we have build and add the appropriate
   // component to the attribute
-  Component *comp;
+  slctk::AttributeComponentPtr comp;
   std::size_t i, n = this->m_componentDefs.size();
   for (i = 0; i < n; i++)
     {

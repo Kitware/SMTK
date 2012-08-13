@@ -60,8 +60,8 @@ AttributeReferenceComponentDefinition::isValueValid(slctk::AttributePtr att) con
   return true;
 }
 //----------------------------------------------------------------------------
-Component *AttributeReferenceComponentDefinition::buildComponent() const
+slctk::AttributeComponentPtr AttributeReferenceComponentDefinition::buildComponent() const
 {
-  return new AttributeReferenceComponent(this);
+  return slctk::AttributeComponentPtr(new AttributeReferenceComponent(this));
 }
 //----------------------------------------------------------------------------

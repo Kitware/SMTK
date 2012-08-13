@@ -55,7 +55,7 @@ namespace slctk
       friend class slctk::attribute::Definition;
     public:
       Attribute(const std::string &myName,
-                slctk::attribute::Cluster *myCluster, unsigned long myId);
+                slctk::AttributeClusterPtr myCluster, unsigned long myId);
       virtual ~Attribute();
       // NOTE: To rename an attribute use the manager!
       const std::string &name() const
@@ -72,14 +72,15 @@ namespace slctk
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-      slctk::attribute::Component *component(int ith) const
+      slctk::AttributeComponentPtr component(int ith) const
       {
-        return (ith < 0) ? NULL : (ith >= this->m_components.size() ? 
-                                   NULL : this->m_components[ith]);
+        return (ith < 0) ? slctk::AttributeComponentPtr() : 
+          (ith >= this->m_components.size() ? 
+           slctk::AttributeComponentPtr() : this->m_components[ith]);
       }
 
-      slctk::attribute::Component *find(const std::string &name) ;
-      const slctk::attribute::Component *find(const std::string &name) const;
+      slctk::AttributeComponentPtr find(const std::string &name) ;
+      slctk::ConstAttributeComponentPtr find(const std::string &name) const;
       std::size_t numberOfComponents() const
       {return this->m_components.size();}
 
@@ -104,39 +105,25 @@ namespace slctk
       void setAppliesToInteriorNodes(bool appliesValue)
       {this->m_appliesToInteriorNodes = appliesValue;}
 
-      bool isReferenced() const
-      {return this->m_references.size() != 0;}
-
       slctk::attribute::Manager *manager() const;
 
-      slctk::attribute::Cluster *cluster() const
-      {return this->m_cluster;}
+      slctk::AttributeClusterPtr cluster() const
+      {return this->m_cluster.lock();}
 
     protected:
       void removeAllComponents();
-      void addComponent(slctk::attribute::Component *component)
+      void addComponent(slctk::AttributeComponentPtr component)
       {this->m_components.push_back(component);}
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
-      void registerComponent(slctk::attribute::AttributeReferenceComponent *comp)
-      {this->m_references.insert(comp);}
-      void unregisterComponent(slctk::attribute::AttributeReferenceComponent *comp)
-      {this->m_references.erase(comp);}
-     
-      struct internal_no_copy_data
-      {
-      };
       std::string m_name;
-      std::vector<slctk::attribute::Component *> m_components;
+      std::vector<slctk::AttributeComponentPtr> m_components;
       unsigned long m_id;
-      slctk::attribute::Cluster *m_cluster;
+      slctk::WeakAttributeClusterPtr m_cluster;
       std::set<slctk::ModelEntity *> m_entities;
-      std::set<slctk::attribute::AttributeReferenceComponent *> m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
-
-      std::tr1::shared_ptr<internal_no_copy_data> Data;
     private:
       
     };

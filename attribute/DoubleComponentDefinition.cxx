@@ -38,7 +38,7 @@ DoubleComponentDefinition::~DoubleComponentDefinition()
 {
 }
 //----------------------------------------------------------------------------
-Component *DoubleComponentDefinition::buildComponent() const
+slctk::AttributeComponentPtr DoubleComponentDefinition::buildComponent() const
 {
-  return new DoubleComponent(this);
+  return slctk::AttributeComponentPtr(new DoubleComponent(this));
 }

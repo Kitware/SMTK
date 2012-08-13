@@ -56,10 +56,10 @@ namespace slctk
       AttributeDefinitionPtr createDefinition(const std::string &typeName,
                                               const std::string &baseTypeName = "");
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type);
-      bool deleteAttribute(slctk::AttributePtr att);
+      bool removeAttribute(slctk::AttributePtr att);
       slctk::AttributePtr findAttribute(const std::string &name) const;
-      Cluster *findCluster(const std::string &type) const;
-      void findClusters(long mask, std::vector<Cluster *> &result) const;
+      slctk::AttributeClusterPtr findCluster(const std::string &type) const;
+      void findClusters(long mask, std::vector<slctk::AttributeClusterPtr> &result) const;
       bool rename(AttributePtr att, const std::string &newName);
       // For Reader classes
       slctk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
@@ -70,7 +70,7 @@ namespace slctk
       void setNextIds(unsigned long attributeId, unsigned long definitionId);
 
     protected:
-      std::map<std::string, Cluster *> m_clusters;
+      std::map<std::string, slctk::AttributeClusterPtr> m_clusters;
       std::map<std::string, slctk::AttributePtr> m_attributes;
       std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
       unsigned long m_nextAttributeId;
@@ -85,11 +85,12 @@ namespace slctk
       return (it == this->m_attributes.end()) ? slctk::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline Cluster *Manager::findCluster(const std::string &typeName) const
+    inline slctk::AttributeClusterPtr 
+    Manager::findCluster(const std::string &typeName) const
     {
-      std::map<std::string, Cluster *>::const_iterator it;
+      std::map<std::string, slctk::AttributeClusterPtr>::const_iterator it;
       it = this->m_clusters.find(typeName);
-      return (it == this->m_clusters.end()) ? NULL : it->second;
+      return (it == this->m_clusters.end()) ? slctk::AttributeClusterPtr() : it->second;
     }
 //----------------------------------------------------------------------------
     inline void Manager::setNextIds(unsigned long attributeId, 

@@ -48,7 +48,7 @@ namespace slctk
     {
     public:
       // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, slctk::attribute::Cluster *myCluster, 
+      Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster, 
                  unsigned long myId);
       virtual ~Definition();
 
@@ -161,7 +161,7 @@ namespace slctk
 
       int m_version;
       bool m_isAbstract;
-      slctk::attribute::Cluster *m_cluster;
+      slctk::WeakAttributeClusterPtr m_cluster;
       unsigned long m_id;
       std::string m_type;
       std::string m_lable;

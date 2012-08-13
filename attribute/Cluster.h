@@ -30,8 +30,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace slctk
 {
@@ -44,28 +45,35 @@ namespace slctk
     {
     public:
       friend class Manager;
-      Cluster(slctk::attribute::Manager *myManager, 
-              slctk::attribute::Cluster *myParent);
+      Cluster(slctk::attribute::Manager *myManager);
       virtual ~Cluster();
       const std::string &type() const;
       slctk::attribute::Manager *manager() const
       {return this->m_manager;}
-      slctk::attribute::Cluster *parent() const
-      {return this->m_parent;}
+      slctk::AttributeClusterPtr parent() const
+      {return this->m_parent.lock();}
       slctk::AttributeDefinitionPtr definition() const
       {return this->m_definition;}
       std::size_t numberOfAttributes() const
       {return this->m_attributes.size();}
+      std::size_t numberOfChildrenClusters() const
+      {return this->m_children.size();}
+      slctk::AttributeClusterPtr child(int i) const
+      {return this->m_children[i];}
       slctk::AttributePtr find(const std::string &name) const;
       bool rename(slctk::AttributePtr att, const std::string &newName);
     protected:
-      slctk::AttributeDefinitionPtr generateDefinition(const std::string &typeName,
-                                                       unsigned long defId);
-      slctk::AttributePtr generateAttribute(const std::string &name,
-                                            unsigned long defId);
-      void deleteAttribute(slctk::AttributePtr att);
+      void removeAttribute(slctk::AttributePtr att);
+      void addAttribute(slctk::AttributePtr att);
+      void addChild(slctk::AttributeClusterPtr childCluster)
+        {this->m_children.push_back(childCluster);}
+      void setParent(slctk::AttributeClusterPtr parentCluster)
+        { this->m_parent = parentCluster;}
+      void setDefinition(slctk::AttributeDefinitionPtr att)
+        { this->m_definition = att; }
       slctk::attribute::Manager *m_manager;
-      slctk::attribute::Cluster *m_parent;
+      slctk::WeakAttributeClusterPtr m_parent;
+      std::vector<slctk::AttributeClusterPtr> m_children;
       slctk::AttributeDefinitionPtr m_definition;
       std::map<std::string, slctk::AttributePtr> m_attributes;
     private:

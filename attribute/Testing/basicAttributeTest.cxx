@@ -43,12 +43,32 @@ int main()
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
   if (def1 == NULL)
     {
-    std::cout << "Duplicated efinition testDef not created\n";
+    std::cout << "Duplicated definition testDef not created\n";
     }
   else
     {
     std::cout << "ERROR: Duplicated definition testDef created\n";
     }
+  slctk::AttributePtr att = manager.createAttribute("testAtt", "testDef");
+  if (att != NULL)
+    {
+    std::cout << "Attribute testAtt created\n";
+    }
+  else
+    {
+    std::cout << "ERROR: Attribute testAtt not created\n";
+    }
+
+  slctk::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
+  if (att1 == NULL)
+    {
+    std::cout << "Duplicate Attribute testAtt not created\n";
+    }
+  else
+    {
+    std::cout << "ERROR: Duplicate Attribute testAtt  created\n";
+    }
+
   std::cout << "Manager destroyed\n";
   }
 }

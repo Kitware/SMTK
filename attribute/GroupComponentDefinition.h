@@ -57,8 +57,8 @@ namespace slctk
       {return this->m_numberOfGroups;}
       void setNumberOfGroups(int gsize)
       {this->m_numberOfGroups = gsize;}
-      virtual slctk::attribute::Component *buildComponent() const;
-      void buildGroup(std::vector<Component *> &group) const;
+      virtual slctk::AttributeComponentPtr buildComponent() const;
+      void buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const;
       
     protected:
       std::vector<slctk::attribute::ComponentDefinition *> m_componentDefs;

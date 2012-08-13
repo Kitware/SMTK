@@ -60,7 +60,15 @@ namespace slctk
   typedef std::tr1::shared_ptr<attribute::Definition> AttributeDefinitionPtr;
   typedef std::tr1::shared_ptr<const attribute::Definition> ConstAttributeDefinitionPtr;
   typedef std::tr1::weak_ptr<attribute::Definition> WeakAttributeDefinitionPtr;
+
   typedef std::tr1::shared_ptr<attribute::AttributeReferenceComponent> AttributeReferenceComponentPtr;
   typedef std::tr1::shared_ptr<attribute::AttributeReferenceComponentDefinition> AttributeReferenceComponentDefinitionPtr;
+
+  typedef std::tr1::shared_ptr<attribute::Cluster> AttributeClusterPtr;
+  typedef std::tr1::weak_ptr<attribute::Cluster> WeakAttributeClusterPtr;
+
+  typedef std::tr1::shared_ptr<attribute::Component> AttributeComponentPtr;
+  typedef std::tr1::shared_ptr<const attribute::Component> ConstAttributeComponentPtr;
+ 
 };
 #endif /* __slctk_attribute_PublicPointerDefs_h */

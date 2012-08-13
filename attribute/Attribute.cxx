@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Definition.h"
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
-Attribute::Attribute(const std::string &myName, Cluster *myCluster, 
+Attribute::Attribute(const std::string &myName, slctk::AttributeClusterPtr myCluster, 
                      unsigned long myId):
   m_name(myName), m_cluster(myCluster), m_id(myId)
 {
@@ -44,23 +44,18 @@ Attribute::~Attribute()
 //----------------------------------------------------------------------------
 void Attribute::removeAllComponents()
 {
-  std::size_t i, n = this->m_components.size();
-  for (i = 0; i < n; i++)
-    {
-    delete this->m_components[i];
-    }
-
+  this->m_components.clear();
 }
 //----------------------------------------------------------------------------
 const std::string &Attribute::type() const
 {
-  return this->m_cluster->type();
+  return this->m_cluster.lock()->type();
 }
 //----------------------------------------------------------------------------
 std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
-  Cluster *c = this->m_cluster;
+  slctk::AttributeClusterPtr c = this->m_cluster.lock();
   while (c != NULL)
     {
     tvec.push_back(c->type());
@@ -71,27 +66,27 @@ std::vector<std::string> Attribute::types() const
 //----------------------------------------------------------------------------
 bool Attribute::isA(slctk::AttributeDefinitionPtr def) const
 {
-  return this->m_cluster->definition()->isA(def);
+  return this->m_cluster.lock()->definition()->isA(def);
 }
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr Attribute::definition() const
 {
-  return this->m_cluster->definition();
+  return this->m_cluster.lock()->definition();
 }
 //----------------------------------------------------------------------------
 bool Attribute::isMemberOf(const std::string &catagory) const
 {
-  return this->m_cluster->definition()->isMemberOf(catagory);
+  return this->m_cluster.lock()->definition()->isMemberOf(catagory);
 }
 //----------------------------------------------------------------------------
 bool Attribute::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  return this->m_cluster->definition()->isMemberOf(catagories);
+  return this->m_cluster.lock()->definition()->isMemberOf(catagories);
 }
 //----------------------------------------------------------------------------
 Manager *Attribute::manager() const
 {
-  return this->m_cluster->manager();
+  return this->m_cluster.lock()->manager();
 }
 //----------------------------------------------------------------------------
 void Attribute::associateEntity(slctk::ModelEntity *entity)
@@ -122,16 +117,20 @@ void Attribute::removeAllAssociations()
     }
 }
 //----------------------------------------------------------------------------
-const Component *Attribute::find(const std::string &name) const
+slctk::ConstAttributeComponentPtr Attribute::find(const std::string &name) const
 {
   int i = this->definition()->findComponentPosition(name);
-  return (i < 0) ? NULL : this->m_components[i];
+  if (i < 0)
+    {
+    return slctk::ConstAttributeComponentPtr();
+    }
+  return this->m_components[i];
 }
 
 //----------------------------------------------------------------------------
-Component *Attribute::find(const std::string &name)
+slctk::AttributeComponentPtr Attribute::find(const std::string &name)
 {
   int i = this->definition()->findComponentPosition(name);
-  return (i < 0) ? NULL : this->m_components[i];
+  return (i < 0) ? slctk::AttributeComponentPtr() : this->m_components[i];
 }
 //----------------------------------------------------------------------------

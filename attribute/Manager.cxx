@@ -36,12 +36,6 @@ Manager::Manager(): m_nextAttributeId(0), m_nextDefinitionId(0)
 //----------------------------------------------------------------------------
 Manager::~Manager()
 {
-  // Deleting the clusters delete the attributes and their definitions
-  std::map<std::string,  Cluster*>::iterator it;
-  for (it = this->m_clusters.begin(); it != this->m_clusters.end(); it++)
-    {
-    delete (*it).second;
-    }
 }
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr 
@@ -77,7 +71,7 @@ Manager::createDefinition(const std::string &typeName,
                           const std::string &baseTypeName,
                           unsigned long id)
 {
-  Cluster *newCluster, *c = this->findCluster(typeName);
+  slctk::AttributeClusterPtr newCluster, c = this->findCluster(typeName);
   // Does this cluster already exist
   if (c != NULL)
     {
@@ -93,9 +87,16 @@ Manager::createDefinition(const std::string &typeName,
       return slctk::AttributeDefinitionPtr();
       }
     }
-  newCluster = new Cluster(this, c);
+  newCluster = slctk::AttributeClusterPtr(new Cluster(this));
+  if (c != NULL)
+    {
+    c->addChild(newCluster);
+    newCluster->setParent(c);
+    }
   this->m_clusters[typeName] = newCluster;
-  return newCluster->generateDefinition(typeName, id);
+  slctk::AttributeDefinitionPtr def(new Definition(typeName, newCluster, id));
+  newCluster->setDefinition(def);
+  return def;
 }
 //----------------------------------------------------------------------------
 slctk::AttributePtr Manager::createAttribute(const std::string &name,
@@ -110,36 +111,37 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
     }
 
   // Second we need to find the cluster that corresponds to the type
-  Cluster *c = this->findCluster(typeName);
+  slctk::AttributeClusterPtr c = this->findCluster(typeName);
   if (c == NULL)
     {
     return slctk::AttributePtr();
     }
-  a = c->generateAttribute(name, id);
+  a = slctk::AttributePtr(new Attribute(name, c, id));
+  c->addAttribute(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[id] = a;
   return a;
 }
 //----------------------------------------------------------------------------
-bool Manager::deleteAttribute(slctk::AttributePtr att)
+bool Manager::removeAttribute(slctk::AttributePtr att)
 {
   // Make sure that this manager is managing this attribute
   if (att->manager() != this)
     {
     return false;
     }
-  Cluster *c = att->cluster();
+  slctk::AttributeClusterPtr c = att->cluster();
   this->m_attributes.erase(att->name());
   this->m_attributeIdMap.erase(att->id());
-  c->deleteAttribute(att);
+  c->removeAttribute(att);
   return true;
 }
 //----------------------------------------------------------------------------
-void Manager::findClusters(long mask, std::vector<Cluster *> &result) const
+void Manager::findClusters(long mask, std::vector<slctk::AttributeClusterPtr> &result) const
 {
   slctk::AttributeDefinitionPtr def;
   result.clear();
-  std::map<std::string,  Cluster*>::const_iterator it;
+  std::map<std::string,  slctk::AttributeClusterPtr>::const_iterator it;
   for (it = this->m_clusters.begin(); it != this->m_clusters.end(); it++)
     {
     def =  (*it).second->definition();

@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Definition.h"
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
-Cluster::Cluster(Manager *myManager, Cluster *myParent):
-  m_manager(myManager), m_parent(myParent), m_definition()
+Cluster::Cluster(Manager *myManager):
+  m_manager(myManager), m_parent(), m_definition()
 {
 }
 
@@ -36,50 +36,25 @@ Cluster::~Cluster()
 {
 }
 //----------------------------------------------------------------------------
-slctk::AttributeDefinitionPtr
-Cluster::generateDefinition(const std::string &typeName,
-                            unsigned long defId)
-{
-  if (this->m_definition != NULL)
-    {
-    return slctk::AttributeDefinitionPtr();
-    }
-  this->m_definition = 
-    slctk::AttributeDefinitionPtr(new Definition(typeName, this, defId));
-  return this->m_definition;
-}
-//----------------------------------------------------------------------------
-slctk::AttributePtr Cluster::generateAttribute(const std::string &name,
-                                               unsigned long attId)
-{
-  //Do we already have an attribute with the same name
-  if (this->find(name) != NULL)
-    {
-    return slctk::AttributePtr();
-    }
-  slctk::AttributePtr a(new Attribute(name, this, attId));
-  if (this->m_definition)
-    {
-    this->m_definition->buildAttribute(a);
-    }
-  this->m_attributes[name] = a;
-  return a;
-}
-//----------------------------------------------------------------------------
 const std::string &Cluster::type() const
 {
   return this->m_definition->type();
 }
 //----------------------------------------------------------------------------
-void Cluster::deleteAttribute(slctk::AttributePtr att)
+void Cluster::removeAttribute(slctk::AttributePtr att)
 {
   this->m_attributes.erase(att->name());
+}
+//----------------------------------------------------------------------------
+void Cluster::addAttribute(slctk::AttributePtr att)
+{
+  this->m_attributes[att->name()] = att;
 }
 //----------------------------------------------------------------------------
 bool Cluster::rename(slctk::AttributePtr att, const std::string &newName)
 {
   // Can only remove attributes that are owned by this cluster!
-  if (att->cluster() != this)
+  if (att->cluster().get() != this)
     {
     return false;
     }

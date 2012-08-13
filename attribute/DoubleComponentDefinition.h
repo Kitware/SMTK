@@ -40,7 +40,7 @@ namespace slctk
       DoubleComponentDefinition(const std::string &myName,
                                 unsigned long myId);
       virtual ~DoubleComponentDefinition();
-      virtual slctk::attribute::Component *buildComponent() const;
+      virtual slctk::AttributeComponentPtr buildComponent() const;
 
     protected:
 

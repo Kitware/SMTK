@@ -47,20 +47,20 @@ namespace slctk
       bool appendGroup();
       bool removeGroup(int element);
 
-      Component *component(int ith) const
+      slctk::AttributeComponentPtr component(int ith) const
       {return this->component(0, ith);}
-      Component *component(int element, int ith) const
+      slctk::AttributeComponentPtr component(int element, int ith) const
         {return this->m_components[element][ith];}
 
-      Component *find(const std::string &name)
+      slctk::AttributeComponentPtr find(const std::string &name)
         {return this->find(0, name);}
-      Component *find(int element, const std::string &name) ;
-      const Component *find(const std::string &name) const
+      slctk::AttributeComponentPtr find(int element, const std::string &name) ;
+      slctk::ConstAttributeComponentPtr find(const std::string &name) const
         {return this->find(0, name);}
-      const Component *find(int element, const std::string &name) const;
+      slctk::ConstAttributeComponentPtr find(int element, const std::string &name) const;
 
     protected:
-      std::vector<std::vector<Component *> >m_components;
+      std::vector<std::vector<slctk::AttributeComponentPtr> >m_components;
   
     private:
     };

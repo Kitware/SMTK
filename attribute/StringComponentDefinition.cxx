@@ -38,7 +38,7 @@ StringComponentDefinition::~StringComponentDefinition()
 {
 }
 //----------------------------------------------------------------------------
-Component *StringComponentDefinition::buildComponent() const
+slctk::AttributeComponentPtr StringComponentDefinition::buildComponent() const
 {
-  return new StringComponent(this);
+  return slctk::AttributeComponentPtr(new StringComponent(this));
 }
