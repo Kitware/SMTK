@@ -28,6 +28,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_AttributeReferenceComponentDefinition_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
+
 #include "ValueComponentDefinition.h"
 
 namespace slctk
@@ -46,17 +48,17 @@ namespace slctk
       
       virtual bool hasRange() const;
 
-      slctk::attribute::Definition *attributeDefinition() const
-      {return this->m_definition;}
+      slctk::AttributeDefinitionPtr attributeDefinition() const
+      {return this->m_definition.lock();}
 
-      void setAttributeDefinition(slctk::attribute::Definition *def)
+      void setAttributeDefinition(slctk::AttributeDefinitionPtr def)
       {this->m_definition = def;}
 
-      bool isValueValid(slctk::attribute::Attribute *att) const;
+      bool isValueValid(slctk::AttributePtr att) const;
 
       virtual slctk::attribute::Component *buildComponent() const;
     protected:
-        slctk::attribute::Definition *m_definition;
+        slctk::WeakAttributeDefinitionPtr m_definition;
     private:
       
     };

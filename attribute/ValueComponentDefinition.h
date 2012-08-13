@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include "attribute/ComponentDefinition.h"
+#include "attribute/PublicPointerDefs.h"
 
 namespace slctk
 {
@@ -50,6 +51,12 @@ namespace slctk
       ValueComponentDefinition(const std::string &myname, 
                                unsigned long myId);
       virtual ~ValueComponentDefinition();
+
+      const std::string &units() const
+      { return this->m_units;}
+      void setUnits(const std::string &newUnits)
+      { this->m_units = newUnits;}
+
       bool isDiscrete() const
       {return (this->m_discreteValueLables.size() != 0);}
       
@@ -59,9 +66,9 @@ namespace slctk
       {this->m_defaultDiscreteIndex = discreteIndex;}
       
       bool allowsExpressions() const;
-      bool isValidExpression(Attribute *exp) const;
-      Definition *expressionDefinition() const;
-      void setExpressionDefinition(Definition *exp);
+      bool isValidExpression(slctk::AttributePtr exp) const;
+      slctk::AttributeDefinitionPtr expressionDefinition() const;
+      void setExpressionDefinition(slctk::AttributeDefinitionPtr exp);
       AttributeReferenceComponent *buildExpressionComponent() const;
 
       bool hasDefault() const
@@ -82,7 +89,6 @@ namespace slctk
       bool isDiscreteIndexValid(int index) const
       {return ((index > -1) && (index < this->m_discreteValueLables.size()));}
 
-      virtual Component *buildComponent() const;
     protected:
 
       bool m_hasDefault;
@@ -91,7 +97,8 @@ namespace slctk
       std::vector<std::string> m_discreteValueLables;
       int m_defaultDiscreteIndex;
       int m_numberOfValues;
-      AttributeReferenceComponentDefinition *m_expressionDefinition;
+      std::string m_units;
+      slctk::AttributeReferenceComponentDefinitionPtr m_expressionDefinition;
     private:
       
     };

@@ -61,3 +61,8 @@ slctk_public_headers(${headers})
 #setup the exports for the library when used from a build tree
 export(PACKAGE SlctkAttribute)
 export(TARGETS SlctkAttribute FILE SlctkAttribute-exports.cmake)
+
+if(Slctk_ENABLE_TESTING)
+  add_subdirectory(Testing)
+endif(Slctk_ENABLE_TESTING)
+

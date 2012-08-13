@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Definition_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
 #include <map>
 #include <string>
 #include <set>
@@ -65,8 +66,8 @@ namespace slctk
       unsigned long id() const
       { return this->m_id;}
 
-      const Definition *baseDefinition() const;
-      bool isA(const slctk::attribute::Definition *def) const;
+      slctk::AttributeDefinitionPtr baseDefinition() const;
+      bool isA(slctk::ConstAttributeDefinitionPtr def) const;
 
       int version() const
       {return this->m_version;}
@@ -132,7 +133,7 @@ namespace slctk
       // of this type from being associated
       bool canBeAssociated(slctk::ModelEntity *entity,
                            std::vector<slctk::attribute::Attribute *>*conflicts) const;
-      bool conflicts(slctk::attribute::Definition *definition) const;
+      bool conflicts(slctk::AttributeDefinitionPtr definition) const;
       std::size_t numberOfComponentDefinitions() const
       {return this->m_componentDefs.size();}
       slctk::attribute::ComponentDefinition *componentDefinition(int ith) const
@@ -154,8 +155,8 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      void buildAttribute(slctk::attribute::Attribute *attribute) const;
-      const slctk::attribute::Definition *findIsUniqueBaseClass() const;
+      void buildAttribute(slctk::AttributePtr attribute) const;
+      slctk::ConstAttributeDefinitionPtr findIsUniqueBaseClass() const;
     protected:
 
       int m_version;

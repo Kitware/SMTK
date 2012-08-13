@@ -28,11 +28,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Manager_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
+
 #include <map>
 #include <string>
 #include <vector>
+ 
+
 namespace slctk
 {
+  namespace attribute { class Manager; }
+  typedef sharedPtr<attribute::Manager> SharedManager;
+
   namespace attribute
   {
     class Attribute;
@@ -42,39 +49,40 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT Manager
     {
     public:
+      
       Manager();
       virtual ~Manager();
       
-      Definition *createDefinition(const std::string &typeName,
-                                   const std::string &baseTypeName = "");
-      Attribute *createAttribute(const std::string &name, const std::string &type);
-      bool deleteAttribute(Attribute *att);
-      Attribute *findAttribute(const std::string &name) const;
+      AttributeDefinitionPtr createDefinition(const std::string &typeName,
+                                              const std::string &baseTypeName = "");
+      slctk::AttributePtr createAttribute(const std::string &name, const std::string &type);
+      bool deleteAttribute(slctk::AttributePtr att);
+      slctk::AttributePtr findAttribute(const std::string &name) const;
       Cluster *findCluster(const std::string &type) const;
       void findClusters(long mask, std::vector<Cluster *> &result) const;
-      bool rename(Attribute *att, const std::string &newName);
+      bool rename(AttributePtr att, const std::string &newName);
       // For Reader classes
-      Definition *createDefinition(const std::string &typeName,
-                                   const std::string &baseTypeName,
-                                   unsigned long id);
-      Attribute *createAttribute(const std::string &name, const std::string &type,
-                                 unsigned long id);
+      slctk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
+                                                     const std::string &baseTypeName,
+                                                     unsigned long id);
+      slctk::AttributePtr createAttribute(const std::string &name, const std::string &type,
+                                          unsigned long id);
       void setNextIds(unsigned long attributeId, unsigned long definitionId);
 
     protected:
       std::map<std::string, Cluster *> m_clusters;
-      std::map<std::string, Attribute*> m_attributes;
-      std::map<unsigned long, Attribute*> m_attributeIdMap;
+      std::map<std::string, slctk::AttributePtr> m_attributes;
+      std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
       unsigned long m_nextAttributeId;
       unsigned long m_nextDefinitionId;
     private:
     };
 //----------------------------------------------------------------------------
-    inline Attribute *Manager::findAttribute(const std::string &name) const
+    inline slctk::AttributePtr Manager::findAttribute(const std::string &name) const
     {
-      std::map<std::string, Attribute *>::const_iterator it;
+      std::map<std::string, AttributePtr>::const_iterator it;
       it = this->m_attributes.find(name);
-      return (it == this->m_attributes.end()) ? NULL : it->second;
+      return (it == this->m_attributes.end()) ? slctk::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
     inline Cluster *Manager::findCluster(const std::string &typeName) const

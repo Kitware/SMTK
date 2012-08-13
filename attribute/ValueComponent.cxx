@@ -53,10 +53,11 @@ ValueComponent::ValueComponent(const ValueComponentDefinition *def):
     if (def->allowsExpressions())
       {
       int i;
-      this->m_expressions.resize(n, NULL);
+      this->m_expressions.resize(n);
       for (i = 0; i < n; i++)
         {
-        this->m_expressions[i] = def->buildExpressionComponent();
+        this->m_expressions[i] = 
+          slctk::AttributeReferenceComponentPtr(def->buildExpressionComponent());
         }
       }
     }
@@ -64,20 +65,9 @@ ValueComponent::ValueComponent(const ValueComponentDefinition *def):
 //----------------------------------------------------------------------------
 ValueComponent::~ValueComponent()
 {
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition);
-  if (def->allowsExpressions())
-    {
-    int i, n = def->numberOfValues();
-    for (i = 0; i < n; i++)
-      {
-      delete this->m_expressions[i];
-      }
-    }
-
 }
 //----------------------------------------------------------------------------
-Attribute *ValueComponent::expression(int element) const
+slctk::AttributePtr ValueComponent::expression(int element) const
 {
   const ValueComponentDefinition *def = 
     static_cast<const ValueComponentDefinition*>(this->m_definition);
@@ -85,10 +75,10 @@ Attribute *ValueComponent::expression(int element) const
     {
     return this->m_expressions[element]->value();
     }
-  return NULL;
+  return slctk::AttributePtr();
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::setExpression(int element, Attribute *exp)
+bool ValueComponent::setExpression(int element, slctk::AttributePtr exp)
 {
   const ValueComponentDefinition *def = 
     static_cast<const ValueComponentDefinition*>(this->m_definition);
@@ -99,7 +89,7 @@ bool ValueComponent::setExpression(int element, Attribute *exp)
       if (this->m_expressions[element]->value() != NULL)
         {
         this->m_isSet[element] = false;
-        this->m_expressions[element]->setValue(NULL);
+        this->m_expressions[element]->unset();
         }
       return true;
       }
@@ -113,7 +103,7 @@ bool ValueComponent::setExpression(int element, Attribute *exp)
   return false;
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::appendExpression(Attribute *exp)
+bool ValueComponent::appendExpression(slctk::AttributePtr exp)
 {
   const ValueComponentDefinition *def = 
     static_cast<const ValueComponentDefinition*>(this->m_definition);
@@ -131,7 +121,7 @@ bool ValueComponent::appendExpression(Attribute *exp)
     return false; // Attribute is of the proper type
     }
   n = m_expressions.size();
-  this->m_expressions.push_back(def->buildExpressionComponent());
+  this->m_expressions.push_back(slctk::AttributeReferenceComponentPtr(def->buildExpressionComponent()));
   this->m_expressions[n]->setValue(exp);
   this->m_isSet.push_back(true);
   return true;
@@ -156,7 +146,7 @@ void ValueComponent::setDiscreteIndex(int element, int index)
     this->m_discreteIndices[element] = index;
     if (def->allowsExpressions())
       {
-      this->m_expressions[element]->setValue(NULL);
+      this->m_expressions[element]->unset();
       }
     this->m_isSet[element] = true;
     this->updateDiscreteValue(element);

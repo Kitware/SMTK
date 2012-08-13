@@ -32,7 +32,7 @@ using namespace slctk::attribute;
 AttributeReferenceComponentDefinition::
 AttributeReferenceComponentDefinition(const std::string &myName,
                                       unsigned long myId):
-  ValueComponentDefinition(myName, myId), m_definition(NULL)
+  ValueComponentDefinition(myName, myId), m_definition()
 {
 }
 
@@ -46,15 +46,16 @@ bool AttributeReferenceComponentDefinition::hasRange() const
   return false;
 }
 //----------------------------------------------------------------------------
-bool AttributeReferenceComponentDefinition::isValueValid(Attribute *att) const
+bool 
+AttributeReferenceComponentDefinition::isValueValid(slctk::AttributePtr att) const
 {
   if (att == NULL)
     {
     return true;
     }
-  if (this->m_definition != NULL)
+  if (this->m_definition.lock() != NULL)
     {
-    return att->isA(this->m_definition);
+    return att->isA(this->m_definition.lock());
     }
   return true;
 }

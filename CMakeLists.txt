@@ -11,7 +11,7 @@ include(GenerateExportHeader)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Slctk_SOURCE_DIR}/CMake)
 
-#option(Slctk_ENABLE_TESTING "Enable Testing" ON)
+option(Slctk_ENABLE_TESTING "Enable Testing" ON)
 #option(Slctk_ENABLE_EXAMPLES "Enable Examples" ON)
 
 #turn on ctest if we want testing

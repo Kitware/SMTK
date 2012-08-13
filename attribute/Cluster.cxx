@@ -27,44 +27,37 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
 Cluster::Cluster(Manager *myManager, Cluster *myParent):
-  m_manager(myManager), m_parent(myParent), m_definition(NULL)
+  m_manager(myManager), m_parent(myParent), m_definition()
 {
 }
 
 //----------------------------------------------------------------------------
 Cluster::~Cluster()
 {
-  std::map<std::string,  Attribute*>::iterator it;
-  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
-    {
-    delete (*it).second;
-    }
-  if (this->m_definition)
-    {
-    delete this->m_definition;
-    }
 }
 //----------------------------------------------------------------------------
-Definition *Cluster::generateDefinition(const std::string &typeName,
-                                        unsigned long defId)
+slctk::AttributeDefinitionPtr
+Cluster::generateDefinition(const std::string &typeName,
+                            unsigned long defId)
 {
   if (this->m_definition != NULL)
     {
-    return NULL;
+    return slctk::AttributeDefinitionPtr();
     }
-  this->m_definition = new Definition(typeName, this, defId);
+  this->m_definition = 
+    slctk::AttributeDefinitionPtr(new Definition(typeName, this, defId));
   return this->m_definition;
 }
 //----------------------------------------------------------------------------
-Attribute *Cluster::generateAttribute(const std::string &name,
-                                        unsigned long attId)
+slctk::AttributePtr Cluster::generateAttribute(const std::string &name,
+                                               unsigned long attId)
 {
   //Do we already have an attribute with the same name
   if (this->find(name) != NULL)
     {
-    return NULL;
+    return slctk::AttributePtr();
     }
-  Attribute *a = new Attribute(name, this, attId);
+  slctk::AttributePtr a(new Attribute(name, this, attId));
   if (this->m_definition)
     {
     this->m_definition->buildAttribute(a);
@@ -78,13 +71,12 @@ const std::string &Cluster::type() const
   return this->m_definition->type();
 }
 //----------------------------------------------------------------------------
-void Cluster::deleteAttribute(Attribute *att)
+void Cluster::deleteAttribute(slctk::AttributePtr att)
 {
   this->m_attributes.erase(att->name());
-  delete att;
 }
 //----------------------------------------------------------------------------
-bool Cluster::rename(Attribute *att, const std::string &newName)
+bool Cluster::rename(slctk::AttributePtr att, const std::string &newName)
 {
   // Can only remove attributes that are owned by this cluster!
   if (att->cluster() != this)
@@ -94,5 +86,6 @@ bool Cluster::rename(Attribute *att, const std::string &newName)
   this->m_attributes.erase(att->name());
   att->setName(newName);
   this->m_attributes[att->name()] = att;
+  return true;
 }
   

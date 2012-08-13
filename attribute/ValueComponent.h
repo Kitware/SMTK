@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_ValueComponent_h
 
 #include "attribute/Component.h"
+#include "attribute/PublicPointerDefs.h"
 #include "AttributeExports.h"
 
 namespace slctk
@@ -49,13 +50,13 @@ namespace slctk
       {return this->isExpression(0);}
       bool isExpression(int element) const
       { return (this->expression(element) != NULL);}
-      Attribute *expression() const
+      slctk::AttributePtr expression() const
       {return this->expression(0);}
-      Attribute *expression(int element) const;
-      bool setExpression(Attribute *exp)
+      slctk::AttributePtr expression(int element) const;
+      bool setExpression(slctk::AttributePtr exp)
       {return this->setExpression(0, exp);}
-      bool setExpression(int element, Attribute *exp);
-      virtual bool appendExpression(Attribute *exp);
+      bool setExpression(int element, slctk::AttributePtr exp);
+      virtual bool appendExpression(slctk::AttributePtr exp);
 
       int discreteIndex() const
       { return this->discreteIndex(0);}
@@ -78,20 +79,20 @@ namespace slctk
       { return this->valueAsString(0, format);}
 
       virtual const std::string &valueAsString(int element, const std::string &format) const = 0;
-      bool isSet() const
+      virtual bool isSet() const
       { return this->m_isSet[0];}
-      bool isSet(int element) const
+      virtual bool isSet(int element) const
       {return this->m_isSet[element];}
-      void unset() 
+      virtual void unset() 
       {this->unset(0);}
-      void unset(int element)
+      virtual void unset(int element)
       {this->m_isSet[element] = false;}
 
     protected:
       virtual void updateDiscreteValue(int element) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
-      std::vector<AttributeReferenceComponent *> m_expressions;
+      std::vector<slctk::AttributeReferenceComponentPtr > m_expressions;
       mutable std::string m_tempString;
     private:
       

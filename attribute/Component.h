@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Component_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
 #include <string>
 #include <vector>
 

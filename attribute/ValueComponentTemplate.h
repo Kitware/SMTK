@@ -55,7 +55,7 @@ namespace slctk
       {return this->setValue(0, val);}
       bool setValue(int element, const DataT &val);
       bool appendValue(const DataT &val);
-      virtual bool appendExpression(Attribute *exp);
+      virtual bool appendExpression(slctk::AttributePtr exp);
       bool removeValue(int element);
       virtual void reset();
       bool setToDefault(int element);
@@ -100,7 +100,7 @@ namespace slctk
           this->m_values[element] = val;
           if (def->allowsExpressions())
             {
-            this->m_expressions[element]->setValue(NULL);
+            this->m_expressions[element]->unset();
             }
           this->m_isSet[element] = true;
           return true;
@@ -279,10 +279,6 @@ namespace slctk
         this->m_discreteIndices.clear();
         if (def->allowsExpressions())
           {
-          for (i = 0; i < n; i++)
-            {
-            delete this->m_expressions[i];
-            }
           this->m_expressions.clear();
           }
         return;
@@ -293,7 +289,7 @@ namespace slctk
         {
         for (i = 0; i < n; i++)
           {
-          this->m_expressions[i]->setValue(NULL);
+          this->m_expressions[i]->unset();
           }
         }
       if (!def->hasDefault()) // Do we have default values
@@ -325,7 +321,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueComponentTemplate<DataT>::appendExpression(Attribute *exp)
+    ValueComponentTemplate<DataT>::appendExpression(slctk::AttributePtr exp)
     {
       // See if the parent class appended the expression
       if (ValueComponent::appendExpression(exp))

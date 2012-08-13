@@ -38,14 +38,13 @@ ValueComponentDefinition::ValueComponentDefinition(const std::string &myName,
   this->m_useCommonLabel = false;
   this->m_numberOfValues = 0;
   this->m_expressionDefinition = 
-    new AttributeReferenceComponentDefinition("expression", 0);
+    slctk::AttributeReferenceComponentDefinitionPtr(new AttributeReferenceComponentDefinition("expression", 0));
   this->m_expressionDefinition->setNumberOfValues(1);
 }
 
 //----------------------------------------------------------------------------
 ValueComponentDefinition::~ValueComponentDefinition()
 {
-  delete this->m_expressionDefinition;
 }
 //----------------------------------------------------------------------------
 void ValueComponentDefinition::setNumberOfValues(int esize)
@@ -99,7 +98,7 @@ std::string ValueComponentDefinition::valueLable(int element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
-bool ValueComponentDefinition::isValidExpression(Attribute *exp) const
+bool ValueComponentDefinition::isValidExpression(slctk::AttributePtr exp) const
 {
   if ((this->m_expressionDefinition->attributeDefinition() != NULL) && 
       this->m_expressionDefinition->isValueValid(exp))
@@ -114,12 +113,13 @@ bool ValueComponentDefinition::allowsExpressions() const
   return this->m_expressionDefinition->attributeDefinition() != NULL;
 }
 //----------------------------------------------------------------------------
-Definition *ValueComponentDefinition::expressionDefinition() const
+slctk::AttributeDefinitionPtr ValueComponentDefinition::expressionDefinition() const
 {
   return this->m_expressionDefinition->attributeDefinition();
 }
 //----------------------------------------------------------------------------
-void ValueComponentDefinition::setExpressionDefinition(Definition *exp)
+void
+ValueComponentDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr exp)
 {
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }

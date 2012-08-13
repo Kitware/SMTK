@@ -44,10 +44,11 @@ Manager::~Manager()
     }
 }
 //----------------------------------------------------------------------------
-Definition *Manager::createDefinition(const std::string &typeName,
-                                      const std::string &baseTypeName)
+slctk::AttributeDefinitionPtr 
+Manager::createDefinition(const std::string &typeName,
+                          const std::string &baseTypeName)
 {
-  Definition *def = 
+  slctk::AttributeDefinitionPtr def = 
     this->createDefinition(typeName, baseTypeName, this->m_nextDefinitionId);
   if (def != NULL)
     {
@@ -56,9 +57,11 @@ Definition *Manager::createDefinition(const std::string &typeName,
   return def;
 }
 //----------------------------------------------------------------------------
-Attribute *Manager::createAttribute(const std::string &name, const std::string &typeName)
+slctk::AttributePtr Manager::createAttribute(const std::string &name,
+                                             const std::string &typeName)
 {
-  Attribute *att = this->createAttribute(name, typeName, this->m_nextAttributeId);
+  slctk::AttributePtr att = this->createAttribute(name, typeName,
+                                                  this->m_nextAttributeId);
   if (att != NULL)
     {
     this->m_nextAttributeId++;
@@ -69,15 +72,16 @@ Attribute *Manager::createAttribute(const std::string &name, const std::string &
 //----------------------------------------------------------------------------
 // For Reader classes
 //----------------------------------------------------------------------------
-Definition *Manager::createDefinition(const std::string &typeName, 
-                                      const std::string &baseTypeName,
-                                      unsigned long id)
+slctk::AttributeDefinitionPtr
+Manager::createDefinition(const std::string &typeName, 
+                          const std::string &baseTypeName,
+                          unsigned long id)
 {
   Cluster *newCluster, *c = this->findCluster(typeName);
   // Does this cluster already exist
   if (c != NULL)
     {
-    return NULL;
+    return slctk::AttributeDefinitionPtr();
     }
 
   // If baseTypeName is not empty then it better exist
@@ -86,7 +90,7 @@ Definition *Manager::createDefinition(const std::string &typeName,
     c = this->findCluster(baseTypeName);
     if (c == NULL)
       {
-      return NULL;
+      return slctk::AttributeDefinitionPtr();
       }
     }
   newCluster = new Cluster(this, c);
@@ -94,21 +98,22 @@ Definition *Manager::createDefinition(const std::string &typeName,
   return newCluster->generateDefinition(typeName, id);
 }
 //----------------------------------------------------------------------------
-Attribute *Manager::createAttribute(const std::string &name, const std::string &typeName,
-                                    unsigned long id)
+slctk::AttributePtr Manager::createAttribute(const std::string &name,
+                                             const std::string &typeName,
+                                             unsigned long id)
 {
   // First we need to check to see if an attribute exists by the same name
-  Attribute *a = this->findAttribute(name);
+  slctk::AttributePtr a = this->findAttribute(name);
   if (a != NULL)
     {
-    return NULL;
+    return slctk::AttributePtr();
     }
 
   // Second we need to find the cluster that corresponds to the type
   Cluster *c = this->findCluster(typeName);
   if (c == NULL)
     {
-    return NULL;
+    return slctk::AttributePtr();
     }
   a = c->generateAttribute(name, id);
   this->m_attributes[name] = a;
@@ -116,7 +121,7 @@ Attribute *Manager::createAttribute(const std::string &name, const std::string &
   return a;
 }
 //----------------------------------------------------------------------------
-bool Manager::deleteAttribute(Attribute *att)
+bool Manager::deleteAttribute(slctk::AttributePtr att)
 {
   // Make sure that this manager is managing this attribute
   if (att->manager() != this)
@@ -132,7 +137,7 @@ bool Manager::deleteAttribute(Attribute *att)
 //----------------------------------------------------------------------------
 void Manager::findClusters(long mask, std::vector<Cluster *> &result) const
 {
-  Definition *def;
+  slctk::AttributeDefinitionPtr def;
   result.clear();
   std::map<std::string,  Cluster*>::const_iterator it;
   for (it = this->m_clusters.begin(); it != this->m_clusters.end(); it++)
@@ -148,7 +153,7 @@ void Manager::findClusters(long mask, std::vector<Cluster *> &result) const
     }
 }
 //----------------------------------------------------------------------------
-bool Manager::rename(Attribute *att, const std::string &newName)
+bool Manager::rename(slctk::AttributePtr att, const std::string &newName)
 {
   // Make sure that this manager is managing this attribute
   if (att->manager() != this)
@@ -156,7 +161,7 @@ bool Manager::rename(Attribute *att, const std::string &newName)
     return false;
     }
   // Make sure that the new name doesn't exists
-  Attribute *a = this->findAttribute(newName);
+  slctk::AttributePtr a = this->findAttribute(newName);
   if (a != NULL)
     {
     return false;

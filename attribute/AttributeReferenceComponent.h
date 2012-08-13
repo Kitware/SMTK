@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_AttributeReferenceComponent_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
 #include "attribute/ValueComponent.h"
 #include <vector>
 
@@ -43,23 +44,30 @@ namespace slctk
       AttributeReferenceComponent(const AttributeReferenceComponentDefinition *def);
       virtual ~AttributeReferenceComponent();
       virtual Component::Type type() const;
-      slctk::attribute::Attribute *value() const
-      {return this->m_values[0];}
-      slctk::attribute::Attribute *value(int element) const
-      {return this->m_values[element];}
-      bool setValue( slctk::attribute::Attribute *val)
+      slctk::AttributePtr value() const
+      {return this->m_values[0].lock();}
+      slctk::AttributePtr value(int element) const
+      {return this->m_values[element].lock();}
+      bool setValue( slctk::AttributePtr val)
       {return this->setValue(0, val);}
-      bool setValue(int element, slctk::attribute::Attribute *val);
-      virtual bool setToDefault(int element) const;
-      bool appendValue(slctk::attribute::Attribute *val);
+      bool setValue(int element, slctk::AttributePtr val);
+      bool appendValue(slctk::AttributePtr val);
       bool removeValue(int element);
       virtual void reset();
       virtual bool setToDefault(int element);
       virtual const std::string &valueAsString(int element, const std::string &format) const;
+      virtual bool isSet() const
+      { return this->m_isSet[0];}
+      virtual bool isSet(int element) const
+      {return this->m_values[element].lock() != NULL;}
+      virtual void unset() 
+      {this->unset(0);}
+      virtual void unset(int element)
+      {this->m_values[element].reset();}
      
     protected:
       virtual void updateDiscreteValue(int element);
-      std::vector<Attribute *>m_values;
+      std::vector<WeakAttributePtr>m_values;
     private:
     };
   };

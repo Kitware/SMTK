@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Attribute_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
 
 #include <tr1/memory>
 #include <set>
@@ -65,8 +66,8 @@ namespace slctk
 
       const std::string &type() const;
       std::vector<std::string> types() const;
-      bool isA(slctk::attribute::Definition *def) const;
-      const slctk::attribute::Definition *definition() const;
+      bool isA(slctk::AttributeDefinitionPtr def) const;
+      slctk::AttributeDefinitionPtr definition() const;
 
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;

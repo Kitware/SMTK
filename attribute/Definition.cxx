@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Attribute.h"
 #include "attribute/Cluster.h"
 #include "attribute/ComponentDefinition.h"
+#include <iostream>
 
 using namespace slctk::attribute; 
 
@@ -48,6 +49,8 @@ Definition::Definition(const std::string &myType, Cluster *myCluster,
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
+  std::cout << "Deleting Definition " << this->m_type << std::endl;
+
   std::size_t i, n = this->m_componentDefs.size();
   for (i = 0; i < n; i++)
     {
@@ -55,23 +58,23 @@ Definition::~Definition()
     }
 }
 //----------------------------------------------------------------------------
-const Definition *Definition::baseDefinition() const
+slctk::AttributeDefinitionPtr Definition::baseDefinition() const
 {
   if (this->m_cluster && this->m_cluster->parent())
     {
     return this->m_cluster->parent()->definition();
     }
-  return NULL;
+  return slctk::AttributeDefinitionPtr();
 }
 //----------------------------------------------------------------------------
-bool Definition::isA(const Definition *targetDef) const
+bool Definition::isA(slctk::ConstAttributeDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
   const Definition *def = this;
-  for (def = this; def != NULL; def = def->baseDefinition())
+  for (def = this; def != NULL; def = def->baseDefinition().get())
     {
-    if (def == targetDef)
+    if (def == targetDef.get())
       {
       return true;
       }
@@ -79,7 +82,7 @@ bool Definition::isA(const Definition *targetDef) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool Definition::conflicts(Definition *def) const
+bool Definition::conflicts(slctk::AttributeDefinitionPtr def) const
 {
   // 2 definitions conflict if their inheritance tree intersects and isUnique is
   // is true within the intersection
@@ -90,27 +93,27 @@ bool Definition::conflicts(Definition *def) const
     return false;
     }
   // Test the trivial case that they are the same definition
-  if (this == def)
+  if (this == def.get())
     {
     return true;
     }
 
   // Get the most "basic" definition that is unique
-  const Definition *baseDef = this->findIsUniqueBaseClass();
+   slctk::ConstAttributeDefinitionPtr baseDef = this->findIsUniqueBaseClass();
   // See if the other definition is derived from this base defintion.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
 }
 //----------------------------------------------------------------------------
-const Definition *Definition::findIsUniqueBaseClass() const
+slctk::ConstAttributeDefinitionPtr Definition::findIsUniqueBaseClass() const
 {
   const Definition *uDef = this, *def;
   while (1)
     {
-    def = uDef->baseDefinition();
+    def = uDef->baseDefinition().get();
     if ((def == NULL) || (!def->isUnique()))
       {
-      return uDef;
+      return slctk::ConstAttributeDefinitionPtr(uDef);
       }
     uDef = def;
     }
@@ -131,10 +134,10 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
   return false;
 }
 //----------------------------------------------------------------------------
-void Definition::buildAttribute(Attribute *att) const
+void Definition::buildAttribute(AttributePtr att) const
 {
   // If there is a super definition have it prep the attribute and add its components
-  const Definition *bdef = this->baseDefinition();
+  const Definition *bdef = this->baseDefinition().get();
   if (bdef)
     {
     bdef->buildAttribute(att);

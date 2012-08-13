@@ -37,23 +37,13 @@ AttributeReferenceComponent(const AttributeReferenceComponentDefinition *def):
   int n = def->numberOfValues();
   if (n)
     {
-    this->m_values.resize(n, NULL);
+    this->m_values.resize(n);
     }
 }
 
 //----------------------------------------------------------------------------
 AttributeReferenceComponent::~AttributeReferenceComponent()
 {
-  const AttributeReferenceComponentDefinition *def = 
-    static_cast<const AttributeReferenceComponentDefinition *>(this->definition());
-  int i, n = def->numberOfValues();
-  for (i = 0; i < n; i++)
-    {
-    if (this->m_values[i] != NULL)
-      {
-      this->m_values[i]->unregisterComponent(this);
-      }
-    }
 }
 //----------------------------------------------------------------------------
 Component::Type AttributeReferenceComponent::type() const
@@ -62,25 +52,13 @@ Component::Type AttributeReferenceComponent::type() const
 }
 
 //----------------------------------------------------------------------------
-bool AttributeReferenceComponent::setValue(int element, Attribute *att)
+bool AttributeReferenceComponent::setValue(int element, slctk::AttributePtr att)
 {
   const AttributeReferenceComponentDefinition *def = 
     static_cast<const AttributeReferenceComponentDefinition *>(this->definition());
   if (def->isValueValid(att))
     {
-    if (this->m_values[element])
-      {
-      this->m_values[element]->unregisterComponent(this);
-      }
     this->m_values[element] = att;
-    if (this->m_values[element])
-      {
-      this->m_values[element]->registerComponent(this);
-      }
-    else
-      {
-      this->m_isSet[element] = false;
-      }
     return true;
     }
   return false;
@@ -97,13 +75,13 @@ AttributeReferenceComponent::valueAsString(int element,
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
-  sprintf(dummy, format.c_str(), this->m_values[element]->id());
+  sprintf(dummy, format.c_str(), this->m_values[element].lock()->id());
   this->m_tempString = dummy;
   return this->m_tempString;
 }
 //----------------------------------------------------------------------------
 bool
-AttributeReferenceComponent::appendValue(Attribute *val)
+AttributeReferenceComponent::appendValue(slctk::AttributePtr val)
 {
   //First - are we allowed to change the number of values?
   const AttributeReferenceComponentDefinition *def =
@@ -117,15 +95,6 @@ AttributeReferenceComponent::appendValue(Attribute *val)
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
-    if (val != NULL)
-      {
-      this->m_isSet.push_back(true);
-      val->registerComponent(this);
-      }
-    else
-      {
-      this->m_isSet.push_back(false);
-      }
     return true;
     }
   return false;
@@ -141,10 +110,6 @@ AttributeReferenceComponent::removeValue(int element)
   if (n)
     {
     return false; // The number of values is fixed
-    }
-  if (this->m_values[element] != NULL)
-    {
-    this->m_values[element]->unregisterComponent(this);
     }
   this->m_values.erase(this->m_values.begin()+element);
   this->m_isSet.erase(this->m_isSet.begin()+element);

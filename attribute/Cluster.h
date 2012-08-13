@@ -28,6 +28,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_Cluster_h
 
 #include "AttributeExports.h"
+#include "attribute/PublicPointerDefs.h"
+
 #include <string>
 #include <map>
 
@@ -50,32 +52,32 @@ namespace slctk
       {return this->m_manager;}
       slctk::attribute::Cluster *parent() const
       {return this->m_parent;}
-      slctk::attribute::Definition *definition() const
+      slctk::AttributeDefinitionPtr definition() const
       {return this->m_definition;}
       std::size_t numberOfAttributes() const
       {return this->m_attributes.size();}
-      slctk::attribute::Attribute *find(const std::string &name) const;
-      bool rename(slctk::attribute::Attribute *att, const std::string &newName);
+      slctk::AttributePtr find(const std::string &name) const;
+      bool rename(slctk::AttributePtr att, const std::string &newName);
     protected:
-      Definition *generateDefinition(const std::string &typeName,
-                                     unsigned long defId);
-      Attribute *generateAttribute(const std::string &name,
-                                   unsigned long defId);
-      void deleteAttribute(slctk::attribute::Attribute *att);
+      slctk::AttributeDefinitionPtr generateDefinition(const std::string &typeName,
+                                                       unsigned long defId);
+      slctk::AttributePtr generateAttribute(const std::string &name,
+                                            unsigned long defId);
+      void deleteAttribute(slctk::AttributePtr att);
       slctk::attribute::Manager *m_manager;
       slctk::attribute::Cluster *m_parent;
-      slctk::attribute::Definition *m_definition;
-      std::map<std::string, slctk::attribute::Attribute *> m_attributes;
+      slctk::AttributeDefinitionPtr m_definition;
+      std::map<std::string, slctk::AttributePtr> m_attributes;
     private:
     };
 //----------------------------------------------------------------------------
-    inline  Attribute *Cluster::find(const std::string &name) const
+    inline  slctk::AttributePtr Cluster::find(const std::string &name) const
     {
-      std::map<std::string, slctk::attribute::Attribute *>::const_iterator it;
+      std::map<std::string, slctk::AttributePtr>::const_iterator it;
       it = this->m_attributes.find(name);
       if (it == this->m_attributes.end())
         {
-        return NULL;
+        return slctk::AttributePtr();
         }
       return it->second;
     }

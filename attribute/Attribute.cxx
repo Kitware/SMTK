@@ -40,16 +40,7 @@ Attribute::~Attribute()
 {
   this->removeAllAssociations();
   this->removeAllComponents();
-  // Tell all references this attribute is going away.  Since setting the reference
-  // to NULL will cause the references set to be modified we need to copy the set first
-  // and iterate over the copy
-  std::set<AttributeReferenceComponent *> comps = this->m_references; 
-  std::set<AttributeReferenceComponent *>::iterator it;
-  for (it = comps.begin(); it != comps.end(); it++)
-    {
-    (*it)->setValue(NULL);
-    }
-}
+ }
 //----------------------------------------------------------------------------
 void Attribute::removeAllComponents()
 {
@@ -78,12 +69,12 @@ std::vector<std::string> Attribute::types() const
   return tvec;
 }
 //----------------------------------------------------------------------------
-bool Attribute::isA(Definition *def) const
+bool Attribute::isA(slctk::AttributeDefinitionPtr def) const
 {
   return this->m_cluster->definition()->isA(def);
 }
 //----------------------------------------------------------------------------
-const Definition *Attribute::definition() const
+slctk::AttributeDefinitionPtr Attribute::definition() const
 {
   return this->m_cluster->definition();
 }
