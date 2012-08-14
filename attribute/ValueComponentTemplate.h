@@ -44,12 +44,15 @@ namespace slctk
       typedef DataT DataType;
       typedef ValueComponentDefinitionTemplate<DataType> DefType;
       
-      ValueComponentTemplate(const DefType *def);
+      ValueComponentTemplate();
       virtual ~ValueComponentTemplate() {}
+      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr vdef);
       DataT value() const
       {return this->m_values[0];}
       DataT value(int element) const
       {return this->m_values[element];}
+      virtual const std::string &valueAsString(const std::string &format) const
+      {return this->valueAsString(0, format);}
       virtual const std::string &valueAsString(int element, const std::string &format) const;
       bool setValue(const DataT &val)
       {return this->setValue(0, val);}
@@ -68,9 +71,24 @@ namespace slctk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueComponentTemplate<DataT>::ValueComponentTemplate(const DefType *def):
-      ValueComponent(def)
+    ValueComponentTemplate<DataT>::ValueComponentTemplate()
     {
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    bool ValueComponentTemplate<DataT>::
+    setDefinition(slctk::ConstAttributeComponentDefinitionPtr tdef)
+    {
+      // Note that we do a dynamic cast here since we don't
+      // know if the proper definition is being passed
+      const DefType *def = 
+        dynamic_cast<const DefType *>(tdef.get());
+      // Call the parent's set definition - similar to constructor calls
+      // we call from base to derived
+      if ((def == NULL) || (!ValueComponent::setDefinition(tdef)))
+        {
+        return false;
+        }
       int n = def->numberOfValues();
       if (n)
         {
@@ -85,12 +103,13 @@ namespace slctk
           this->m_values.resize(n);
           }
         }
+      return true;
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool ValueComponentTemplate<DataT>::setValue(int element, const DataT &val)
     {
-      const DefType *def = static_cast<const DefType *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (def->isDiscrete())
         {
         int index = def->findDiscreteIndex(val);
@@ -119,13 +138,13 @@ namespace slctk
     template<typename DataT>
     void ValueComponentTemplate<DataT>::updateDiscreteValue(int element)
     {
-      const DefType *def = static_cast<const DefType *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
       this->m_values[element] =
         def->discreteValue(this->m_discreteIndices[element]);
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    const std::string &
+    inline const std::string &
     ValueComponentTemplate<DataT>::valueAsString(int element, 
                                           const std::string &format) const
     {
@@ -151,7 +170,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<>
-    const std::string &
+    inline const std::string &
     ValueComponentTemplate<std::string>::valueAsString(int element, 
                                           const std::string &format) const
     {
@@ -248,7 +267,7 @@ namespace slctk
     bool
     ValueComponentTemplate<DataT>::setToDefault(int element)
     {
-      const DefType *def = static_cast<const DefType *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def->hasDefault())
         {
         return false; // Doesn't have a default value
@@ -269,7 +288,7 @@ namespace slctk
     void
     ValueComponentTemplate<DataT>::reset()
     {
-      const DefType *def = static_cast<const DefType *>(this->definition());
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
       int i, n = def->numberOfValues();
       if (!n)

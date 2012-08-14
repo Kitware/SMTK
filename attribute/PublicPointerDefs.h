@@ -33,6 +33,11 @@ namespace slctk
 {
   template <typename T> struct sharedPtr : public std::tr1::shared_ptr<T> {};
   template <typename T> struct weakPtr : public std::tr1::weak_ptr<T>{};
+  template <typename T, typename U>
+  inline std::tr1::shared_ptr<T> dynamicCastPointer(const std::tr1::shared_ptr<U> &r)
+  {
+    return std::tr1::dynamic_pointer_cast<T>(r);
+  }
 
   namespace attribute
   {
@@ -69,6 +74,15 @@ namespace slctk
 
   typedef std::tr1::shared_ptr<attribute::Component> AttributeComponentPtr;
   typedef std::tr1::shared_ptr<const attribute::Component> ConstAttributeComponentPtr;
- 
+  typedef std::tr1::shared_ptr<attribute::ComponentDefinition> AttributeComponentDefinitionPtr;
+  typedef std::tr1::shared_ptr<const attribute::ComponentDefinition> ConstAttributeComponentDefinitionPtr;
+  typedef std::tr1::shared_ptr<attribute::ValueComponent> ValueComponentPtr;
+  typedef std::tr1::shared_ptr<attribute::DoubleComponent> DoubleComponentPtr;
+  typedef std::tr1::shared_ptr<attribute::DoubleComponentDefinition> DoubleComponentDefinitionPtr;
+  typedef std::tr1::shared_ptr<attribute::IntegerComponent> IntegerComponentPtr;
+  typedef std::tr1::shared_ptr<attribute::IntegerComponentDefinition> IntegerComponentDefinitionPtr;
+  typedef std::tr1::shared_ptr<attribute::StringComponent> StringComponentPtr;
+  typedef std::tr1::shared_ptr<attribute::StringComponentDefinition> StringComponentDefinitionPtr;
+
 };
 #endif /* __slctk_attribute_PublicPointerDefs_h */

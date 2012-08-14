@@ -36,19 +36,15 @@ GroupComponentDefinition::GroupComponentDefinition(const std::string &myName,
 //----------------------------------------------------------------------------
 GroupComponentDefinition::~GroupComponentDefinition()
 {
-  std::size_t i, n = this->m_componentDefs.size();
-  for (i = 0; i < n; i++)
-    {
-    delete this->m_componentDefs[i];
-    }
 }
 //----------------------------------------------------------------------------
 slctk::AttributeComponentPtr GroupComponentDefinition::buildComponent() const
 {
-  return slctk::AttributeComponentPtr(new GroupComponent(this));
+  return slctk::AttributeComponentPtr(new GroupComponent());
 }
 //----------------------------------------------------------------------------
-bool GroupComponentDefinition::addComponentDefinition(ComponentDefinition *cdef)
+bool GroupComponentDefinition::
+addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef)
 {
   // First see if there is a component by the same name
   if (this->findComponentPosition(cdef->name()) >= 0)
@@ -61,13 +57,15 @@ bool GroupComponentDefinition::addComponentDefinition(ComponentDefinition *cdef)
   return true;
 }
 //----------------------------------------------------------------------------
-void GroupComponentDefinition::buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const
+void GroupComponentDefinition::
+buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const
 {
   std::size_t i, n = this->m_componentDefs.size();
   group.resize(n);
   for (i = 0; i < n; i++)
     {
     group[i] = this->m_componentDefs[i]->buildComponent();
+    group[i]->setDefinition(this->m_componentDefs[i]);
     }
 }
 //----------------------------------------------------------------------------

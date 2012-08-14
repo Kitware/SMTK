@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 
-#include "ValueComponentDefinition.h"
+#include "ComponentDefinition.h"
 
 namespace slctk
 {
@@ -39,15 +39,13 @@ namespace slctk
     class Attribute;
     class Definition;
     class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponentDefinition:
-      public ValueComponentDefinition
+      public ComponentDefinition
     {
     public:
       AttributeReferenceComponentDefinition(const std::string &myName,
                                             unsigned long myId);
       virtual ~AttributeReferenceComponentDefinition();
       
-      virtual bool hasRange() const;
-
       slctk::AttributeDefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
 
@@ -57,9 +55,22 @@ namespace slctk
       bool isValueValid(slctk::AttributePtr att) const;
 
       virtual slctk::AttributeComponentPtr buildComponent() const;
+      int numberOfValues() const
+      {return this->m_numberOfValues;}
+      void setNumberOfValues(int esize);
+
+      bool hasValueLables() const
+      {return this->m_valueLables.size();}
+
+      void setValueLabel(int element, const std::string &elabel);
+      void setCommonValueLable(const std::string &elable);
+      std::string valueLable(int element) const;
     protected:
         slctk::WeakAttributeDefinitionPtr m_definition;
-    private:
+        bool m_useCommonLabel;
+        std::vector<std::string> m_valueLables;
+        int m_numberOfValues;
+     private:
       
     };
   };

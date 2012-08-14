@@ -28,8 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-StringComponent::StringComponent(const StringComponentDefinition *def):
-  ValueComponentTemplate<std::string>(def)
+StringComponent::StringComponent()
 {
 }
 

@@ -52,11 +52,12 @@ namespace slctk
        NUMBER_OF_TYPES
      };
        
-      Component(const slctk::attribute::ComponentDefinition *def);
+      Component();
       virtual ~Component();
       const std::string &name() const;
       virtual Component::Type type() const = 0;
-      const slctk::attribute::ComponentDefinition *definition() const
+      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
+      slctk::ConstAttributeComponentDefinitionPtr definition() const
       {return this->m_definition;}
 
       bool isOptional() const;
@@ -78,7 +79,8 @@ namespace slctk
       // This method allows any Component to delete another - USE WITH CARE!
       void deleteComponent();
       bool m_isEnabled;
-      const ComponentDefinition *m_definition;
+      mutable std::string m_tempString;
+      slctk::ConstAttributeComponentDefinitionPtr m_definition;
     private:
       
     };

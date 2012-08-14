@@ -32,18 +32,15 @@ using namespace slctk::attribute;
 AttributeReferenceComponentDefinition::
 AttributeReferenceComponentDefinition(const std::string &myName,
                                       unsigned long myId):
-  ValueComponentDefinition(myName, myId), m_definition()
+  ComponentDefinition(myName, myId), m_definition()
 {
+  this->m_useCommonLabel = false;
+  this->m_numberOfValues = 0;
 }
 
 //----------------------------------------------------------------------------
 AttributeReferenceComponentDefinition::~AttributeReferenceComponentDefinition()
 {
-}
-//----------------------------------------------------------------------------
-bool AttributeReferenceComponentDefinition::hasRange() const
-{
-  return false;
 }
 //----------------------------------------------------------------------------
 bool 
@@ -62,6 +59,57 @@ AttributeReferenceComponentDefinition::isValueValid(slctk::AttributePtr att) con
 //----------------------------------------------------------------------------
 slctk::AttributeComponentPtr AttributeReferenceComponentDefinition::buildComponent() const
 {
-  return slctk::AttributeComponentPtr(new AttributeReferenceComponent(this));
+  return slctk::AttributeComponentPtr(new AttributeReferenceComponent());
+}
+//----------------------------------------------------------------------------
+void AttributeReferenceComponentDefinition::setNumberOfValues(int esize)
+{
+  if (esize == this->m_numberOfValues)
+    {
+    return;
+    }
+  this->m_numberOfValues = esize;
+  if (!this->m_useCommonLabel)
+    {
+    this->m_valueLables.resize(esize);
+    }
+}
+//----------------------------------------------------------------------------
+void AttributeReferenceComponentDefinition::setValueLabel(int element, const std::string &elabel)
+{
+  if (this->m_numberOfValues == 0)
+    {
+    return;
+    }
+  if (this->m_valueLables.size() != this->m_numberOfValues)
+    {
+    this->m_valueLables.resize(this->m_numberOfValues);
+    }
+  this->m_useCommonLabel = false;
+  this->m_valueLables[element] = elabel;
+}
+//----------------------------------------------------------------------------
+void AttributeReferenceComponentDefinition::setCommonValueLable(const std::string &elable)
+{
+  if (this->m_valueLables.size() != 1)
+    {
+    this->m_valueLables.resize(1);
+    }
+  this->m_useCommonLabel = true;
+  this->m_valueLables[0] = elable;
+}
+
+//----------------------------------------------------------------------------
+std::string AttributeReferenceComponentDefinition::valueLable(int element) const
+{
+  if (this->m_useCommonLabel)
+    {
+    return this->m_valueLables[0];
+    }
+  if (this->m_valueLables.size())
+    {
+    return this->m_valueLables[element];
+    }
+  return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------

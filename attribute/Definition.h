@@ -136,12 +136,13 @@ namespace slctk
       bool conflicts(slctk::AttributeDefinitionPtr definition) const;
       std::size_t numberOfComponentDefinitions() const
       {return this->m_componentDefs.size();}
-      slctk::attribute::ComponentDefinition *componentDefinition(int ith) const
+      slctk::AttributeComponentDefinitionPtr componentDefinition(int ith) const
       {
-        return (ith < 0) ? NULL : (ith >= this->m_componentDefs.size() ? 
-                                   NULL : this->m_componentDefs[ith]);
+        return (ith < 0) ? slctk::AttributeComponentDefinitionPtr()
+          : (ith >= this->m_componentDefs.size() ? 
+             slctk::AttributeComponentDefinitionPtr() : this->m_componentDefs[ith]);
       }
-      bool addComponentDefinition(slctk::attribute::ComponentDefinition *cdef);
+      bool addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef);
 
       int findComponentPosition(const std::string &name) const;
 
@@ -168,7 +169,7 @@ namespace slctk
       bool m_isNodal;
       std::set<std::string> m_catagories;
       int m_advanceLevel;
-      std::vector<slctk::attribute::ComponentDefinition *> m_componentDefs;
+      std::vector<slctk::AttributeComponentDefinitionPtr> m_componentDefs;
       std::map<std::string, int> m_componentDefPositions;
 //Is Unique indicates if more than one attribute of this type can be assigned to a 
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition

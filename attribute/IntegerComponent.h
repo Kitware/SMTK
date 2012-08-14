@@ -41,7 +41,7 @@ namespace slctk
     {
       friend class IntegerComponentDefinition; 
     public:
-      IntegerComponent(const IntegerComponentDefinition *def);
+      IntegerComponent();
       virtual ~IntegerComponent();
       virtual Component::Type type() const;
     protected:

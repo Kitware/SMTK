@@ -41,7 +41,7 @@ namespace slctk
     {
       friend class StringComponentDefinition; 
     public:
-      StringComponent(const StringComponentDefinition *def);
+      StringComponent();
       virtual ~StringComponent();
       virtual Component::Type type() const;
     protected:

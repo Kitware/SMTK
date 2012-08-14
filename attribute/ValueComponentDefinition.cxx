@@ -36,7 +36,7 @@ ValueComponentDefinition::ValueComponentDefinition(const std::string &myName,
   this->m_defaultDiscreteIndex = -1;
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
-  this->m_numberOfValues = 0;
+  this->m_numberOfValues = 1;
   this->m_expressionDefinition = 
     slctk::AttributeReferenceComponentDefinitionPtr(new AttributeReferenceComponentDefinition("expression", 0));
   this->m_expressionDefinition->setNumberOfValues(1);
@@ -54,7 +54,7 @@ void ValueComponentDefinition::setNumberOfValues(int esize)
     return;
     }
   this->m_numberOfValues = esize;
-  if (this->m_hasDefault && (!this->m_useCommonLabel))
+  if (!this->m_useCommonLabel)
     {
     this->m_valueLables.resize(esize);
     }
@@ -127,7 +127,10 @@ ValueComponentDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr 
 slctk::AttributeReferenceComponentPtr 
 ValueComponentDefinition::buildExpressionComponent() const
 {
-  return slctk::AttributeReferenceComponentPtr(static_cast<AttributeReferenceComponent* >
-                                               (this->m_expressionDefinition->buildComponent().get()));
+  slctk::AttributeReferenceComponentPtr aref =
+    slctk::dynamicCastPointer<slctk::attribute::AttributeReferenceComponent>
+    (this->m_expressionDefinition->buildComponent());
+  aref->setDefinition(this->m_expressionDefinition);
+  return aref;
 }
 //----------------------------------------------------------------------------

@@ -38,9 +38,10 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT GroupComponent : public Component
     {
     public:
-      GroupComponent(const GroupComponentDefinition *def);
+      GroupComponent();
       virtual ~GroupComponent();
       virtual Component::Type type() const;
+      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
       std::size_t numberOfComponentsPerGroup() const;
       std::size_t numberOfGroups() const
       {return this->m_components.size();}

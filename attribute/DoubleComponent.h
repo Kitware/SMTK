@@ -41,7 +41,7 @@ namespace slctk
     {
       friend class DoubleComponentDefinition; 
     public:
-      DoubleComponent(const DoubleComponentDefinition *def);
+      DoubleComponent();
       virtual ~DoubleComponent();
       virtual Component::Type type() const;
     protected:

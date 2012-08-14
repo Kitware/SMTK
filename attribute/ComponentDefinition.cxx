@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/ComponentDefinition.h"
+#include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
@@ -39,6 +40,7 @@ ComponentDefinition::ComponentDefinition(const std::string &myName,
 //----------------------------------------------------------------------------
 ComponentDefinition::~ComponentDefinition()
 {
+  std::cout << "Component Definition " << m_name << " deleted\n";
 }
 //----------------------------------------------------------------------------
 bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const

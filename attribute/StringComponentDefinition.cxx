@@ -40,5 +40,5 @@ StringComponentDefinition::~StringComponentDefinition()
 //----------------------------------------------------------------------------
 slctk::AttributeComponentPtr StringComponentDefinition::buildComponent() const
 {
-  return slctk::AttributeComponentPtr(new StringComponent(this));
+  return slctk::AttributeComponentPtr(new StringComponent());
 }

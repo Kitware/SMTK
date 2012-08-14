@@ -41,32 +41,34 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT ValueComponent : public slctk::attribute::Component
     {
     public:
-      ValueComponent(const slctk::attribute::ValueComponentDefinition *def);
+      ValueComponent();
       virtual ~ValueComponent();
       std::size_t numberOfValues() const
       {return this->m_isSet.size();}
 
+      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
+      bool allowsExpressions() const;
       bool isExpression() const
       {return this->isExpression(0);}
-      bool isExpression(int element) const
-      { return (this->expression(element) != NULL);}
+      bool isExpression(int elementIndex) const
+      { return (this->expression(elementIndex) != NULL);}
       slctk::AttributePtr expression() const
       {return this->expression(0);}
-      slctk::AttributePtr expression(int element) const;
+      slctk::AttributePtr expression(int elementIndex) const;
       bool setExpression(slctk::AttributePtr exp)
       {return this->setExpression(0, exp);}
-      bool setExpression(int element, slctk::AttributePtr exp);
+      bool setExpression(int elementIndex, slctk::AttributePtr exp);
       virtual bool appendExpression(slctk::AttributePtr exp);
 
       int discreteIndex() const
       { return this->discreteIndex(0);}
-      int discreteIndex(int element) const
-      {return this->m_discreteIndices[element];}
+      int discreteIndex(int elementIndex) const
+      {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
       
-      void setDiscreteIndex(int index)
-      {this->setDiscreteIndex(0, index);}
-      void setDiscreteIndex(int element, int index);
+      void setDiscreteIndex(int value)
+      {this->setDiscreteIndex(0, value);}
+      void setDiscreteIndex(int elementIndex, int value);
       // Reset returns the component to its initial state.
       //If the component is of fixed size, then it's values  to their initial state.  
       // If there is a default available it will use it, else
@@ -74,22 +76,22 @@ namespace slctk
       //If the component's definition indicated a size of 0 then it will go back to 
       // having no values
       virtual void reset() = 0;
-      virtual bool setToDefault(int element) = 0;
+      virtual bool setToDefault(int elementIndex) = 0;
       virtual const std::string &valueAsString(const std::string &format) const
       { return this->valueAsString(0, format);}
 
-      virtual const std::string &valueAsString(int element, const std::string &format) const = 0;
+      virtual const std::string &valueAsString(int elementIndex, const std::string &format) const = 0;
       virtual bool isSet() const
       { return this->m_isSet[0];}
-      virtual bool isSet(int element) const
-      {return this->m_isSet[element];}
+      virtual bool isSet(int elementIndex) const
+      {return this->m_isSet[elementIndex];}
       virtual void unset() 
       {this->unset(0);}
-      virtual void unset(int element)
-      {this->m_isSet[element] = false;}
+      virtual void unset(int elementIndex)
+      {this->m_isSet[elementIndex] = false;}
 
     protected:
-      virtual void updateDiscreteValue(int element) = 0;
+      virtual void updateDiscreteValue(int elementIndex) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
       std::vector<slctk::AttributeReferenceComponentPtr > m_expressions;

@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/Attribute.h"
 #include "attribute/Cluster.h"
+#include "attribute/Component.h"
 #include "attribute/ComponentDefinition.h"
 #include <iostream>
 
@@ -49,12 +50,6 @@ Definition::Definition(const std::string &myType, slctk::AttributeClusterPtr myC
 Definition::~Definition()
 {
   std::cout << "Deleting Definition " << this->m_type << std::endl;
-
-  std::size_t i, n = this->m_componentDefs.size();
-  for (i = 0; i < n; i++)
-    {
-    delete this->m_componentDefs[i];
-    }
 }
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr Definition::baseDefinition() const
@@ -155,6 +150,7 @@ void Definition::buildAttribute(AttributePtr att) const
   for (i = 0; i < n; i++)
     {
     comp = this->m_componentDefs[i]->buildComponent();
+    comp->setDefinition(this->m_componentDefs[i]);
     att->addComponent(comp);
     }
 }
@@ -170,7 +166,7 @@ bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool Definition::addComponentDefinition(ComponentDefinition *cdef)
+bool Definition::addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef)
 {
   // First see if there is a component by the same name
   if (this->findComponentPosition(cdef->name()) >= 0)

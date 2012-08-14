@@ -117,6 +117,7 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
     return slctk::AttributePtr();
     }
   a = slctk::AttributePtr(new Attribute(name, c, id));
+  c->definition()->buildAttribute(a);
   c->addAttribute(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[id] = a;

@@ -47,7 +47,7 @@ namespace slctk
       virtual ~ValueComponentDefinitionTemplate() {}
       
       const DataT &defaultValue() const
-      {return this->defaultValue();}
+      {return this->m_defaultValue;}
       void setDefaultValue(const DataT &val);
       const DataT &discreteValue(int element) const
       {return this->m_discreteValues[element];}

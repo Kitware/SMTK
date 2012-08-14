@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Cluster.h"
 #include "attribute/Component.h"
 #include "attribute/Definition.h"
+#include <iostream>
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, slctk::AttributeClusterPtr myCluster, 
@@ -38,6 +39,7 @@ Attribute::Attribute(const std::string &myName, slctk::AttributeClusterPtr myClu
 //----------------------------------------------------------------------------
 Attribute::~Attribute()
 {
+  std::cout << "Deleting Attribute " << this->name() << "\n";
   this->removeAllAssociations();
   this->removeAllComponents();
  }

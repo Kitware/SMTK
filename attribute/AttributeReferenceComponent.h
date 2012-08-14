@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
-#include "attribute/ValueComponent.h"
+#include "attribute/Component.h"
 #include <vector>
 
 namespace slctk
@@ -38,12 +38,13 @@ namespace slctk
   {
     class Attribute;
     class AttributeReferenceComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponent : public ValueComponent
+    class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponent : public Component
     {
     public:
-      AttributeReferenceComponent(const AttributeReferenceComponentDefinition *def);
+      AttributeReferenceComponent();
       virtual ~AttributeReferenceComponent();
       virtual Component::Type type() const;
+      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
       slctk::AttributePtr value() const
       {return this->m_values[0].lock();}
       slctk::AttributePtr value(int element) const
@@ -54,10 +55,9 @@ namespace slctk
       bool appendValue(slctk::AttributePtr val);
       bool removeValue(int element);
       virtual void reset();
-      virtual bool setToDefault(int element);
       virtual const std::string &valueAsString(int element, const std::string &format) const;
       virtual bool isSet() const
-      { return this->m_isSet[0];}
+      { return this->m_values[0].lock() != NULL;}
       virtual bool isSet(int element) const
       {return this->m_values[element].lock() != NULL;}
       virtual void unset() 
@@ -66,8 +66,8 @@ namespace slctk
       {this->m_values[element].reset();}
      
     protected:
-      virtual void updateDiscreteValue(int element);
       std::vector<WeakAttributePtr>m_values;
+      mutable std::string m_tempString;
     private:
     };
   };

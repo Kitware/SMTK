@@ -40,5 +40,5 @@ IntegerComponentDefinition::~IntegerComponentDefinition()
 //----------------------------------------------------------------------------
 slctk::AttributeComponentPtr IntegerComponentDefinition::buildComponent() const
 {
-  return slctk::AttributeComponentPtr(new IntegerComponent(this));
+  return slctk::AttributeComponentPtr(new IntegerComponent());
 }

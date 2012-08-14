@@ -24,23 +24,39 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/Component.h"
 #include "attribute/ComponentDefinition.h"
-
+#include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Component::Component(const ComponentDefinition *def):
-  m_isEnabled(true), m_definition(def)
+Component::Component():
+  m_isEnabled(true), m_definition()
 {
 }
 
 //----------------------------------------------------------------------------
 Component::~Component()
 {
+  std::cout << "Component " << this->name() << " deleted\n";
 }
 //----------------------------------------------------------------------------
 const std::string &Component::name() const
 {
+  if (this->m_definition == NULL)
+    {
+    this->m_tempString = "";
+    return this->m_tempString;
+    }
   return this->m_definition->name();
+}
+//----------------------------------------------------------------------------
+bool Component::setDefinition(slctk::ConstAttributeComponentDefinitionPtr def)
+{
+  if (this->m_definition != NULL)
+    {
+    return false;
+    }
+  this->m_definition = def;
+  return true;
 }
 //----------------------------------------------------------------------------
 bool Component::isOptional() const

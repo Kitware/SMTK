@@ -28,8 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-IntegerComponent::IntegerComponent(const IntegerComponentDefinition *def):
-  ValueComponentTemplate<int>(def)
+IntegerComponent::IntegerComponent()
 {
 }
 

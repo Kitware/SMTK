@@ -45,12 +45,13 @@ namespace slctk
       virtual ~GroupComponentDefinition();
       std::size_t numberOfComponentDefinitions() const
       {return this->m_componentDefs.size();}
-      slctk::attribute::ComponentDefinition *componentDefinition(int ith) const
+      slctk::AttributeComponentDefinitionPtr componentDefinition(int ith) const
       {
-        return (ith < 0) ? NULL : (ith >= this->m_componentDefs.size() ? 
-                                   NULL : this->m_componentDefs[ith]);
+        return (ith < 0) ? slctk::AttributeComponentDefinitionPtr() : 
+          (ith >= this->m_componentDefs.size() ? 
+           slctk::AttributeComponentDefinitionPtr() : this->m_componentDefs[ith]);
       }
-      bool addComponentDefinition(ComponentDefinition *cdef);
+      bool addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef);
       int findComponentPosition(const std::string &name) const;
 
       int numberOfGroups() const
@@ -61,7 +62,7 @@ namespace slctk
       void buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const;
       
     protected:
-      std::vector<slctk::attribute::ComponentDefinition *> m_componentDefs;
+      std::vector<slctk::AttributeComponentDefinitionPtr> m_componentDefs;
       std::map<std::string, int> m_componentDefPositions;
       int m_numberOfGroups;
     private:

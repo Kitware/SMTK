@@ -28,8 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-DoubleComponent::DoubleComponent(const DoubleComponentDefinition *def):
-  ValueComponentTemplate<double>(def)
+DoubleComponent::DoubleComponent()
 {
 }
 
