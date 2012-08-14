@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Manager::Manager(): m_nextAttributeId(0), m_nextDefinitionId(0)
+Manager::Manager(): m_nextAttributeId(0)
 {
 }
 
@@ -37,39 +37,11 @@ Manager::Manager(): m_nextAttributeId(0), m_nextDefinitionId(0)
 Manager::~Manager()
 {
 }
-//----------------------------------------------------------------------------
-slctk::AttributeDefinitionPtr 
-Manager::createDefinition(const std::string &typeName,
-                          const std::string &baseTypeName)
-{
-  slctk::AttributeDefinitionPtr def = 
-    this->createDefinition(typeName, baseTypeName, this->m_nextDefinitionId);
-  if (def != NULL)
-    {
-    this->m_nextDefinitionId++;
-    }
-  return def;
-}
-//----------------------------------------------------------------------------
-slctk::AttributePtr Manager::createAttribute(const std::string &name,
-                                             const std::string &typeName)
-{
-  slctk::AttributePtr att = this->createAttribute(name, typeName,
-                                                  this->m_nextAttributeId);
-  if (att != NULL)
-    {
-    this->m_nextAttributeId++;
-    }
-  return att;
-}
 
-//----------------------------------------------------------------------------
-// For Reader classes
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr
 Manager::createDefinition(const std::string &typeName, 
-                          const std::string &baseTypeName,
-                          unsigned long id)
+                          const std::string &baseTypeName)
 {
   slctk::AttributeClusterPtr newCluster, c = this->findCluster(typeName);
   // Does this cluster already exist
@@ -94,10 +66,24 @@ Manager::createDefinition(const std::string &typeName,
     newCluster->setParent(c);
     }
   this->m_clusters[typeName] = newCluster;
-  slctk::AttributeDefinitionPtr def(new Definition(typeName, newCluster, id));
+  slctk::AttributeDefinitionPtr def(new Definition(typeName, newCluster));
   newCluster->setDefinition(def);
   return def;
+}//----------------------------------------------------------------------------
+slctk::AttributePtr Manager::createAttribute(const std::string &name,
+                                             const std::string &typeName)
+{
+  slctk::AttributePtr att = this->createAttribute(name, typeName,
+                                                  this->m_nextAttributeId);
+  if (att != NULL)
+    {
+    this->m_nextAttributeId++;
+    }
+  return att;
 }
+
+//----------------------------------------------------------------------------
+// For Reader classes
 //----------------------------------------------------------------------------
 slctk::AttributePtr Manager::createAttribute(const std::string &name,
                                              const std::string &typeName,

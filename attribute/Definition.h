@@ -48,8 +48,7 @@ namespace slctk
     {
     public:
       // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster, 
-                 unsigned long myId);
+      Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster);
       virtual ~Definition();
 
       const std::string &type() const
@@ -62,9 +61,6 @@ namespace slctk
 
       void setLable(const std::string &newLable)
       { this->m_lable = newLable;}
-
-      unsigned long id() const
-      { return this->m_id;}
 
       slctk::AttributeDefinitionPtr baseDefinition() const;
       bool isA(slctk::ConstAttributeDefinitionPtr def) const;
@@ -163,7 +159,6 @@ namespace slctk
       int m_version;
       bool m_isAbstract;
       slctk::WeakAttributeClusterPtr m_cluster;
-      unsigned long m_id;
       std::string m_type;
       std::string m_lable;
       bool m_isNodal;

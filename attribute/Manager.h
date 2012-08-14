@@ -62,19 +62,16 @@ namespace slctk
       void findClusters(long mask, std::vector<slctk::AttributeClusterPtr> &result) const;
       bool rename(AttributePtr att, const std::string &newName);
       // For Reader classes
-      slctk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
-                                                     const std::string &baseTypeName,
-                                                     unsigned long id);
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type,
                                           unsigned long id);
-      void setNextIds(unsigned long attributeId, unsigned long definitionId);
+      void setNextId(unsigned long attributeId)
+      {this->m_nextAttributeId = attributeId;}
 
     protected:
       std::map<std::string, slctk::AttributeClusterPtr> m_clusters;
       std::map<std::string, slctk::AttributePtr> m_attributes;
       std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
       unsigned long m_nextAttributeId;
-      unsigned long m_nextDefinitionId;
     private:
     };
 //----------------------------------------------------------------------------
@@ -92,13 +89,6 @@ namespace slctk
       it = this->m_clusters.find(typeName);
       return (it == this->m_clusters.end()) ? slctk::AttributeClusterPtr() : it->second;
     }
-//----------------------------------------------------------------------------
-    inline void Manager::setNextIds(unsigned long attributeId, 
-                                    unsigned long definitionId)
-      { 
-        this->m_nextAttributeId = attributeId;
-        this->m_nextDefinitionId = definitionId;
-      }
 //----------------------------------------------------------------------------
   };
 };

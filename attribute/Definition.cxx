@@ -33,10 +33,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Definition::Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster, 
-                       unsigned long myId) : m_cluster(myCluster)
+Definition::Definition(const std::string &myType, 
+                       slctk::AttributeClusterPtr myCluster) : m_cluster(myCluster)
 {
-  this->m_id = myId;
   this->m_type = myType;
   this->m_version = 0;
   this->m_isNodal = false;
