@@ -79,7 +79,8 @@ int main()
   scompdef2->setDefaultValue("Default");
   def1->addComponentDefinition(scompdef2);
 
-  slctk::AttributePtr expAtt = manager.createAttribute("Exp1", "ExpDef");
+  // Lets test creating an attribute by passing in the expression definition explicitly
+  slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   slctk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att != NULL)
     {

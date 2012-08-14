@@ -51,6 +51,15 @@ Definition::~Definition()
   std::cout << "Deleting Definition " << this->m_type << std::endl;
 }
 //----------------------------------------------------------------------------
+slctk::attribute::Manager *Definition::manager() const
+{
+  if (this->m_cluster.lock())
+    {
+    return this->m_cluster.lock()->manager();
+    }
+  return NULL;
+}
+//----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr Definition::baseDefinition() const
 {
   if (this->m_cluster.lock() && this->m_cluster.lock()->parent())

@@ -69,7 +69,34 @@ Manager::createDefinition(const std::string &typeName,
   slctk::AttributeDefinitionPtr def(new Definition(typeName, newCluster));
   newCluster->setDefinition(def);
   return def;
-}//----------------------------------------------------------------------------
+}
+
+//----------------------------------------------------------------------------
+slctk::AttributePtr Manager::createAttribute(const std::string &name,
+                                             slctk::AttributeDefinitionPtr def)
+{
+  // Make sure the definition belongs to this manager!
+  if (def->manager() != this)
+    {
+    return slctk::AttributePtr();
+    }
+  // Next we need to check to see if an attribute exists by the same name
+  slctk::AttributePtr a = this->findAttribute(name);
+  if (a != NULL)
+    {
+    return slctk::AttributePtr();
+    }
+
+  slctk::AttributeClusterPtr c = def->cluster();
+  a = slctk::AttributePtr(new Attribute(name, c, this->m_nextAttributeId++));
+  c->definition()->buildAttribute(a);
+  c->addAttribute(a);
+  this->m_attributes[name] = a;
+  this->m_attributeIdMap[a->id()] = a;
+  return a;
+}
+
+//----------------------------------------------------------------------------
 slctk::AttributePtr Manager::createAttribute(const std::string &name,
                                              const std::string &typeName)
 {

@@ -54,6 +54,8 @@ namespace slctk
       const std::string &type() const
       { return this->m_type;}
 
+      slctk::attribute::Manager *manager() const;
+
       // The lable is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the lable
       const std::string &lable() const
@@ -154,6 +156,9 @@ namespace slctk
 
       void buildAttribute(slctk::AttributePtr attribute) const;
       slctk::ConstAttributeDefinitionPtr findIsUniqueBaseClass() const;
+      slctk::AttributeClusterPtr cluster() const
+      {return this->m_cluster.lock();}
+
     protected:
 
       int m_version;

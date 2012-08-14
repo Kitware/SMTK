@@ -56,6 +56,7 @@ namespace slctk
       AttributeDefinitionPtr createDefinition(const std::string &typeName,
                                               const std::string &baseTypeName = "");
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type);
+      slctk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def);
       bool removeAttribute(slctk::AttributePtr att);
       slctk::AttributePtr findAttribute(const std::string &name) const;
       slctk::AttributeClusterPtr findCluster(const std::string &type) const;
