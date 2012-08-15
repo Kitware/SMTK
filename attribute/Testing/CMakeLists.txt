@@ -2,14 +2,17 @@ add_executable(basicAttributeTest basicAttributeTest.cxx)
 add_executable(basicAttributeDefinitionTest basicAttributeDefinitionTest.cxx)
 add_executable(basicAttributeDerivationTest basicAttributeDerivationTest.cxx)
 add_executable(expressionTest expressionTest.cxx)
+add_executable(attributeAutoNamingTest attributeAutoNamingTest.cxx)
 
 target_link_libraries(basicAttributeTest SlctkAttribute)
 target_link_libraries(basicAttributeDefinitionTest SlctkAttribute)
 target_link_libraries(basicAttributeDerivationTest SlctkAttribute)
 target_link_libraries(expressionTest SlctkAttribute)
+target_link_libraries(attributeAutoNamingTest SlctkAttribute)
 
 
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeTest)
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDefinitionTest)
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDerivationTest)
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/expressionTest)
+add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/attributeAutoNamingTest)

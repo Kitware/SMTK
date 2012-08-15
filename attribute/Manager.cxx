@@ -26,6 +26,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
 #include "attribute/Cluster.h"
+
+#include <sstream>
+
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
@@ -94,6 +97,19 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
   this->m_attributes[name] = a;
   this->m_attributeIdMap[a->id()] = a;
   return a;
+}
+
+//----------------------------------------------------------------------------
+slctk::AttributePtr Manager::createAttribute(const std::string &typeName)
+{
+  slctk::AttributePtr att =
+    this->createAttribute(this->createUniqueName(typeName), typeName,
+                          this->m_nextAttributeId);
+  if (att != NULL)
+    {
+    this->m_nextAttributeId++;
+    }
+  return att;
 }
 
 //----------------------------------------------------------------------------
@@ -186,5 +202,25 @@ bool Manager::rename(slctk::AttributePtr att, const std::string &newName)
   att->cluster()->rename(att, newName);
   this->m_attributes[newName] = att;
   return true;
+}
+//----------------------------------------------------------------------------
+std::string Manager::createUniqueName(const std::string &type) const
+{
+  int i = 0;
+  std::string base = type, newName;
+  base.append("-");
+  while (1)
+    {
+    std::ostringstream n;
+    n << i++;
+    newName = base + n.str();
+    // Make sure that the new name doesn't exists
+    slctk::AttributePtr a = this->findAttribute(newName);
+    if (a == NULL)
+      {
+      return newName;
+      }
+    }
+  return "";
 }
 //----------------------------------------------------------------------------
