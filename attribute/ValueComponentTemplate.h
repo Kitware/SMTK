@@ -47,13 +47,11 @@ namespace slctk
       ValueComponentTemplate();
       virtual ~ValueComponentTemplate() {}
       virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr vdef);
-      DataT value() const
-      {return this->m_values[0];}
-      DataT value(int element) const
+      DataT value(int element=0) const
       {return this->m_values[element];}
-      virtual const std::string &valueAsString(const std::string &format) const
+      virtual std::string valueAsString(const std::string &format="") const
       {return this->valueAsString(0, format);}
-      virtual const std::string &valueAsString(int element, const std::string &format) const;
+      virtual std::string valueAsString(int element, const std::string &format="") const;
       bool setValue(const DataT &val)
       {return this->setValue(0, val);}
       bool setValue(int element, const DataT &val);
@@ -61,7 +59,7 @@ namespace slctk
       virtual bool appendExpression(slctk::AttributePtr exp);
       bool removeValue(int element);
       virtual void reset();
-      bool setToDefault(int element);
+      bool setToDefault(int element=0);
 
     protected:
       virtual void updateDiscreteValue(int element);
@@ -144,7 +142,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    inline const std::string &
+    std::string
     ValueComponentTemplate<DataT>::valueAsString(int element, 
                                           const std::string &format) const
     {
@@ -153,24 +151,20 @@ namespace slctk
         {
         if (this->isExpression(element))
           {
-          this->m_tempString = "VALUE_IS_EXPRESSION";
+          return "VALUE_IS_EXPRESSION";
           }
         else
           {
           char dummy[300];
           sprintf(dummy, format.c_str(), this->m_values[element]);
-          this->m_tempString = dummy;
+          return dummy;
           }
         }
-      else
-        {
-      this->m_tempString = "VALUE_IS_NOT_SET";
-        }
-      return this->m_tempString;
+      return "VALUE_IS_NOT_SET";
     }
 //----------------------------------------------------------------------------
     template<>
-    inline const std::string &
+    inline std::string
     ValueComponentTemplate<std::string>::valueAsString(int element, 
                                           const std::string &format) const
     {
@@ -179,20 +173,81 @@ namespace slctk
         {
         if (this->isExpression(element))
           {
-          this->m_tempString = "VALUE_IS_EXPRESSION";
+          return "VALUE_IS_EXPRESSION";
           }
         else
           {
           char dummy[300];
-          sprintf(dummy, format.c_str(), this->m_values[element].c_str());
-          this->m_tempString = dummy;
+          if (format == "")
+            {
+            sprintf(dummy, "%s", this->m_values[element].c_str());
+            }
+          else
+            {
+            sprintf(dummy, format.c_str(), this->m_values[element].c_str());
+            }
+          return dummy;
           }
         }
-      else
+      return "VALUE_IS_NOT_SET";
+    }
+//----------------------------------------------------------------------------
+    template<>
+    inline std::string
+    ValueComponentTemplate<int>::valueAsString(int element, 
+                                               const std::string &format) const
+    {
+      // For the initial design we will use sprintf and force a limit of 300 char
+      if (this->m_isSet[element])
         {
-      this->m_tempString = "VALUE_IS_NOT_SET";
+        if (this->isExpression(element))
+          {
+          return "VALUE_IS_EXPRESSION";
+          }
+        else
+          {
+          char dummy[300];
+          if (format == "")
+            {
+            sprintf(dummy, "%d", this->m_values[element]);
+            }
+          else
+            {
+            sprintf(dummy, format.c_str(), this->m_values[element]);
+            }
+          return dummy;
+          }
         }
-      return this->m_tempString;
+      return "VALUE_IS_NOT_SET";
+    }
+//----------------------------------------------------------------------------
+    template<>
+    inline std::string
+    ValueComponentTemplate<double>::valueAsString(int element, 
+                                               const std::string &format) const
+    {
+      // For the initial design we will use sprintf and force a limit of 300 char
+      if (this->m_isSet[element])
+        {
+        if (this->isExpression(element))
+          {
+          return "VALUE_IS_EXPRESSION";
+          }
+        else
+          {
+          char dummy[300];
+          if (format == "")
+            {
+            sprintf(dummy, "%g", this->m_values[element]);
+            }
+          else
+            {
+            sprintf(dummy, format.c_str(), this->m_values[element]);
+            }
+          return dummy;
+          }
+        }
+      return "VALUE_IS_NOT_SET";
     }
 //----------------------------------------------------------------------------
     template<typename DataT>

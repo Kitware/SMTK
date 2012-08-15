@@ -45,9 +45,7 @@ namespace slctk
       virtual ~AttributeReferenceComponent();
       virtual Component::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
-      slctk::AttributePtr value() const
-      {return this->m_values[0].lock();}
-      slctk::AttributePtr value(int element) const
+      slctk::AttributePtr value(int element=0) const
       {return this->m_values[element].lock();}
       bool setValue( slctk::AttributePtr val)
       {return this->setValue(0, val);}
@@ -55,19 +53,16 @@ namespace slctk
       bool appendValue(slctk::AttributePtr val);
       bool removeValue(int element);
       virtual void reset();
-      virtual const std::string &valueAsString(int element, const std::string &format) const;
-      virtual bool isSet() const
-      { return this->m_values[0].lock() != NULL;}
-      virtual bool isSet(int element) const
+      virtual std::string valueAsString(const std::string &format="") const
+      {return this->valueAsString(0, format);}
+      virtual std::string valueAsString(int element, const std::string &format="") const;
+      virtual bool isSet(int element=0) const
       {return this->m_values[element].lock() != NULL;}
-      virtual void unset() 
-      {this->unset(0);}
-      virtual void unset(int element)
+      virtual void unset(int element=0)
       {this->m_values[element].reset();}
      
     protected:
       std::vector<WeakAttributePtr>m_values;
-      mutable std::string m_tempString;
     private:
     };
   };

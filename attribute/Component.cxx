@@ -39,12 +39,11 @@ Component::~Component()
   std::cout << "Component " << this->name() << " deleted\n";
 }
 //----------------------------------------------------------------------------
-const std::string &Component::name() const
+std::string Component::name() const
 {
   if (this->m_definition == NULL)
     {
-    this->m_tempString = "";
-    return this->m_tempString;
+    return "";
     }
   return this->m_definition->name();
 }

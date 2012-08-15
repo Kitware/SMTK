@@ -80,15 +80,21 @@ bool AttributeReferenceComponent::setValue(int element, slctk::AttributePtr att)
   return false;
 }
 //----------------------------------------------------------------------------
-const std::string &
+std::string
 AttributeReferenceComponent::valueAsString(int element, 
                                       const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
-  sprintf(dummy, format.c_str(), this->m_values[element].lock()->id());
-  this->m_tempString = dummy;
-  return this->m_tempString;
+  if (format != "")
+    {
+    sprintf(dummy, format.c_str(), this->m_values[element].lock()->id());
+    }
+  else
+    {
+    sprintf(dummy, "%ld", this->m_values[element].lock()->id());
+    }
+  return dummy;
 }
 //----------------------------------------------------------------------------
 bool

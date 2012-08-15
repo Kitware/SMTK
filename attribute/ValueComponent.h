@@ -48,21 +48,15 @@ namespace slctk
 
       virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
       bool allowsExpressions() const;
-      bool isExpression() const
-      {return this->isExpression(0);}
-      bool isExpression(int elementIndex) const
+      bool isExpression(int elementIndex=0) const
       { return (this->expression(elementIndex) != NULL);}
-      slctk::AttributePtr expression() const
-      {return this->expression(0);}
-      slctk::AttributePtr expression(int elementIndex) const;
+      slctk::AttributePtr expression(int elementIndex=0) const;
       bool setExpression(slctk::AttributePtr exp)
       {return this->setExpression(0, exp);}
       bool setExpression(int elementIndex, slctk::AttributePtr exp);
       virtual bool appendExpression(slctk::AttributePtr exp);
 
-      int discreteIndex() const
-      { return this->discreteIndex(0);}
-      int discreteIndex(int elementIndex) const
+      int discreteIndex(int elementIndex=0) const
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
       
@@ -76,18 +70,15 @@ namespace slctk
       //If the component's definition indicated a size of 0 then it will go back to 
       // having no values
       virtual void reset() = 0;
-      virtual bool setToDefault(int elementIndex) = 0;
-      virtual const std::string &valueAsString(const std::string &format) const
+      virtual bool setToDefault(int elementIndex=0) = 0;
+      virtual std::string valueAsString(const std::string &format="") const
       { return this->valueAsString(0, format);}
 
-      virtual const std::string &valueAsString(int elementIndex, const std::string &format) const = 0;
-      virtual bool isSet() const
-      { return this->m_isSet[0];}
-      virtual bool isSet(int elementIndex) const
+      virtual std::string valueAsString(int elementIndex,
+                                        const std::string &format="") const = 0;
+      virtual bool isSet(int elementIndex = 0) const
       {return this->m_isSet[elementIndex];}
-      virtual void unset() 
-      {this->unset(0);}
-      virtual void unset(int elementIndex)
+      virtual void unset(int elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
 
     protected:
@@ -95,7 +86,6 @@ namespace slctk
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
       std::vector<slctk::AttributeReferenceComponentPtr > m_expressions;
-      mutable std::string m_tempString;
     private:
       
     };

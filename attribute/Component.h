@@ -54,7 +54,7 @@ namespace slctk
        
       Component();
       virtual ~Component();
-      const std::string &name() const;
+      std::string name() const;
       virtual Component::Type type() const = 0;
       virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
       slctk::ConstAttributeComponentDefinitionPtr definition() const
