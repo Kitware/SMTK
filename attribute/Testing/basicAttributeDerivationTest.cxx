@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 int main()
 {
+  int status = 0;
   {
   typedef slctk::attribute::IntegerComponentDefinition IntCompDef;
   typedef slctk::attribute::DoubleComponentDefinition DoubleCompDef;
@@ -45,25 +46,25 @@ int main()
   std::cout << "Manager Created\n";
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some component definitions
-  slctk::IntegerComponentDefinitionPtr icompdef(new IntCompDef("IntComp1",0));
+  slctk::IntegerComponentDefinitionPtr icompdef(new IntCompDef("IntComp1"));
   base->addComponentDefinition(icompdef);
-  slctk::IntegerComponentDefinitionPtr icompdef2(new IntCompDef("IntComp2",0));
+  slctk::IntegerComponentDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
   icompdef2->setDefaultValue(10);
   base->addComponentDefinition(icompdef2);
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some component definitions
-  slctk::DoubleComponentDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1", 0));
+  slctk::DoubleComponentDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1"));
   def1->addComponentDefinition(dcompdef);
-  slctk::DoubleComponentDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2", 0));
+  slctk::DoubleComponentDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2"));
   dcompdef2->setDefaultValue(-35.2);
   def1->addComponentDefinition(dcompdef2);
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some component definitions
-  slctk::StringComponentDefinitionPtr scompdef(new StringCompDef("StringComp1", 0));
+  slctk::StringComponentDefinitionPtr scompdef(new StringCompDef("StringComp1"));
   def1->addComponentDefinition(scompdef);
-  slctk::StringComponentDefinitionPtr scompdef2(new StringCompDef("StringComp2", 0));
+  slctk::StringComponentDefinitionPtr scompdef2(new StringCompDef("StringComp2"));
   scompdef2->setDefaultValue("Default");
   def1->addComponentDefinition(scompdef2);
 
@@ -75,6 +76,7 @@ int main()
   else
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
+    status = -1;
     }
 
   slctk::ValueComponentPtr vcomp;
@@ -107,4 +109,5 @@ int main()
     }
   std::cout << "Manager destroyed\n";
   }
+  return status;
 }

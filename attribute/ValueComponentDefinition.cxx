@@ -29,16 +29,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ValueComponentDefinition::ValueComponentDefinition(const std::string &myName, 
-                                                   unsigned long myId):
-  ComponentDefinition(myName, myId)
+ValueComponentDefinition::ValueComponentDefinition(const std::string &myName):
+  ComponentDefinition(myName)
 {
   this->m_defaultDiscreteIndex = -1;
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
   this->m_numberOfValues = 1;
   this->m_expressionDefinition = 
-    slctk::AttributeReferenceComponentDefinitionPtr(new AttributeReferenceComponentDefinition("expression", 0));
+    slctk::AttributeReferenceComponentDefinitionPtr(new AttributeReferenceComponentDefinition("expression"));
   this->m_expressionDefinition->setNumberOfValues(1);
 }
 

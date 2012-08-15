@@ -27,9 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-DoubleComponentDefinition::DoubleComponentDefinition(const std::string &myName,
-                                                     unsigned long myId):
-  ValueComponentDefinitionTemplate<double>(myName, myId)
+DoubleComponentDefinition::DoubleComponentDefinition(const std::string &myName):
+  ValueComponentDefinitionTemplate<double>(myName)
 {
 }
 

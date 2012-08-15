@@ -30,9 +30,8 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 AttributeReferenceComponentDefinition::
-AttributeReferenceComponentDefinition(const std::string &myName,
-                                      unsigned long myId):
-  ComponentDefinition(myName, myId), m_definition()
+AttributeReferenceComponentDefinition(const std::string &myName):
+  ComponentDefinition(myName), m_definition()
 {
   this->m_useCommonLabel = false;
   this->m_numberOfValues = 0;

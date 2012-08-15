@@ -48,8 +48,7 @@ namespace slctk
       public slctk::attribute::ComponentDefinition
     {
     public:
-      ValueComponentDefinition(const std::string &myname, 
-                               unsigned long myId);
+      ValueComponentDefinition(const std::string &myname);
       virtual ~ValueComponentDefinition();
 
       const std::string &units() const

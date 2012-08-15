@@ -40,8 +40,7 @@ namespace slctk
       public ComponentDefinition
     {
     public:
-      GroupComponentDefinition(const std::string &myname, 
-                               unsigned long myId);
+      GroupComponentDefinition(const std::string &myname);
       virtual ~GroupComponentDefinition();
       std::size_t numberOfComponentDefinitions() const
       {return this->m_componentDefs.size();}

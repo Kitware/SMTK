@@ -42,8 +42,7 @@ namespace slctk
     public:
       typedef DataT DataType;
 
-      ValueComponentDefinitionTemplate(const std::string &myname, 
-                                       unsigned long myId);
+      ValueComponentDefinitionTemplate(const std::string &myname);
       virtual ~ValueComponentDefinitionTemplate() {}
       
       const DataT &defaultValue() const
@@ -88,9 +87,8 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     ValueComponentDefinitionTemplate<DataT>::
-    ValueComponentDefinitionTemplate(const std::string &myname, 
-                                     unsigned long myId):
-      ValueComponentDefinition(myname, myId)
+    ValueComponentDefinitionTemplate(const std::string &myname):
+      ValueComponentDefinition(myname)
     {
       this->m_minRangeSet = false;
       this->m_minRangeInclusive = false;

@@ -44,8 +44,7 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT ComponentDefinition
     {
     public:
-      ComponentDefinition(const std::string &myname, 
-                          unsigned long myId);
+      ComponentDefinition(const std::string &myname);
       virtual ~ComponentDefinition();
       const std::string &name() const
       { return this->m_name;}
@@ -57,9 +56,6 @@ namespace slctk
 
       void setLable(const std::string &newLable)
       { this->m_lable = newLable;}
-
-      unsigned long id() const
-      { return this->m_id;}
 
       int version() const
       {return this->m_version;}
@@ -106,7 +102,6 @@ namespace slctk
 
       int m_version;
       bool m_isOptional;
-      unsigned long m_id;
       std::string m_name;
       std::string m_lable;
       std::set<std::string> m_catagories;

@@ -27,10 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName, 
-                                         unsigned long myId)
+ComponentDefinition::ComponentDefinition(const std::string &myName)
 {
-  this->m_id = myId;
   this->m_name = myName;
   this->m_version = 0;
   this->m_advanceLevel = 0;

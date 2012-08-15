@@ -27,9 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-GroupComponentDefinition::GroupComponentDefinition(const std::string &myName,
-                                                   unsigned long myId):
-  ComponentDefinition(myName, myId)
+GroupComponentDefinition::GroupComponentDefinition(const std::string &myName):
+  ComponentDefinition(myName)
 {
 }
 

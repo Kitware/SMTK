@@ -37,8 +37,7 @@ namespace slctk
       public ValueComponentDefinitionTemplate<int>
     {
     public:
-      IntegerComponentDefinition(const std::string &myName,
-                                unsigned long myId);
+      IntegerComponentDefinition(const std::string &myName);
       virtual ~IntegerComponentDefinition();
       virtual slctk::AttributeComponentPtr buildComponent() const;
 

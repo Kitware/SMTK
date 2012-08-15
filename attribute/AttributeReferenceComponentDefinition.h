@@ -42,8 +42,7 @@ namespace slctk
       public ComponentDefinition
     {
     public:
-      AttributeReferenceComponentDefinition(const std::string &myName,
-                                            unsigned long myId);
+      AttributeReferenceComponentDefinition(const std::string &myName);
       virtual ~AttributeReferenceComponentDefinition();
       
       slctk::AttributeDefinitionPtr attributeDefinition() const
