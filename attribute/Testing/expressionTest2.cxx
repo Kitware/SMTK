@@ -46,8 +46,10 @@ int main()
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  slctk::StringComponentDefinitionPtr ecompdef(new StringCompDef("Expression String"));
-  expDef->addComponentDefinition(ecompdef);
+  slctk::StringComponentDefinitionPtr ecompdef = expDef->addDef<slctk::StringComponentDefinitionPtr>("Expression String");
+  ecompdef->setDefaultValue("sample");
+//  slctk::StringComponentDefinitionPtr ecompdef(new StringCompDef("Expression String"));
+//  expDef->addComponentDefinition(ecompdef);
 
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some component definitions

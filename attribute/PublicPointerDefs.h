@@ -84,5 +84,38 @@ namespace slctk
   typedef std::tr1::shared_ptr<attribute::StringComponent> StringComponentPtr;
   typedef std::tr1::shared_ptr<attribute::StringComponentDefinition> StringComponentDefinitionPtr;
 
+/*
+  template<typename T>
+  struct shared_ptr_type
+  {
+    typedef std::tr1::shared_ptr<T> type;
+  };
+*/
+
+  template <typename T>
+  struct is_shared_ptr
+  {
+    enum {type=false};
+  };
+  template<typename T>
+  struct is_shared_ptr<std::tr1::shared_ptr<T> >
+  {
+    enum{type=true};
+  };
+
+  template<typename T, int Enabled = is_shared_ptr<T>::type >
+  struct shared_ptr_type
+  {
+    typedef std::tr1::shared_ptr<T> type;
+    typedef T T_Type;
+  };
+
+template<typename T>
+ struct shared_ptr_type<T,true>
+  {
+    typedef T type;
+    typedef typename T::element_type T_Type;
+  };
+
 };
 #endif /* __slctk_attribute_PublicPointerDefs_h */

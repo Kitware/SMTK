@@ -140,7 +140,16 @@ namespace slctk
           : (ith >= this->m_componentDefs.size() ? 
              slctk::AttributeComponentDefinitionPtr() : this->m_componentDefs[ith]);
       }
+
       bool addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef);
+      template<typename T>
+        typename slctk::shared_ptr_type<T>::type addDef(const std::string &name)
+      {
+        typedef slctk::shared_ptr_type<T> SharedTypes;
+        typename SharedTypes::type comp(new typename SharedTypes::T_Type(name));
+        this->m_componentDefs.push_back(comp);
+        return comp;
+      }
 
       int findComponentPosition(const std::string &name) const;
 
