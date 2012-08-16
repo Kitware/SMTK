@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeReferenceItem.h -
+// .NAME AttributeRefItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_AttributeReferenceItem_h
-#define __slctk_attribute_AttributeReferenceItem_h
+#ifndef __slctk_attribute_AttributeRefItem_h
+#define __slctk_attribute_AttributeRefItem_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
@@ -37,12 +37,12 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceItemDefinition;
-    class SLCTKATTRIBUTE_EXPORT AttributeReferenceItem : public Item
+    class AttributeRefItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT AttributeRefItem : public Item
     {
     public:
-      AttributeReferenceItem();
-      virtual ~AttributeReferenceItem();
+      AttributeRefItem();
+      virtual ~AttributeRefItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
       slctk::AttributePtr value(int element=0) const
@@ -69,4 +69,4 @@ namespace slctk
 };
 
 
-#endif /* __slctk_attribute_AttributeReferenceItem_h */
+#endif /* __slctk_attribute_AttributeRefItem_h */

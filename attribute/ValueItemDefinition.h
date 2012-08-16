@@ -40,8 +40,8 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceItem;
-    class AttributeReferenceItemDefinition;
+    class AttributeRefItem;
+    class AttributeRefItemDefinition;
     class Definition;
     class Cluster;
     class SLCTKATTRIBUTE_EXPORT ValueItemDefinition : 
@@ -68,7 +68,7 @@ namespace slctk
       bool isValidExpression(slctk::AttributePtr exp) const;
       slctk::AttributeDefinitionPtr expressionDefinition() const;
       void setExpressionDefinition(slctk::AttributeDefinitionPtr exp);
-      slctk::AttributeReferenceItemPtr buildExpressionItem() const;
+      slctk::AttributeRefItemPtr buildExpressionItem() const;
 
       bool hasDefault() const
       {return this->m_hasDefault;}
@@ -97,7 +97,7 @@ namespace slctk
       int m_defaultDiscreteIndex;
       int m_numberOfValues;
       std::string m_units;
-      slctk::AttributeReferenceItemDefinitionPtr m_expressionDefinition;
+      slctk::AttributeRefItemDefinitionPtr m_expressionDefinition;
     private:
       
     };

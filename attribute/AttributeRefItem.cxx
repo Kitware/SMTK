@@ -22,26 +22,26 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/AttributeReferenceItem.h"
-#include "attribute/AttributeReferenceItemDefinition.h"
+#include "attribute/AttributeRefItem.h"
+#include "attribute/AttributeRefItemDefinition.h"
 #include "attribute/Attribute.h"
 #include <iostream>
 
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-AttributeReferenceItem::AttributeReferenceItem()
+AttributeRefItem::AttributeRefItem()
 {
 }
 
 //----------------------------------------------------------------------------
-bool AttributeReferenceItem::
+bool AttributeRefItem::
 setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const AttributeReferenceItemDefinition *def = 
-    dynamic_cast<const AttributeReferenceItemDefinition *>(adef.get());
+  const AttributeRefItemDefinition *def = 
+    dynamic_cast<const AttributeRefItemDefinition *>(adef.get());
   
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -58,20 +58,20 @@ setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
 }
 
 //----------------------------------------------------------------------------
-AttributeReferenceItem::~AttributeReferenceItem()
+AttributeRefItem::~AttributeRefItem()
 {
 }
 //----------------------------------------------------------------------------
-Item::Type AttributeReferenceItem::type() const
+Item::Type AttributeRefItem::type() const
 {
   return ATTRIBUTE_REFERENCE;
 }
 
 //----------------------------------------------------------------------------
-bool AttributeReferenceItem::setValue(int element, slctk::AttributePtr att)
+bool AttributeRefItem::setValue(int element, slctk::AttributePtr att)
 {
-  const AttributeReferenceItemDefinition *def = 
-    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
+  const AttributeRefItemDefinition *def = 
+    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   if (def->isValueValid(att))
     {
     this->m_values[element] = att;
@@ -81,7 +81,7 @@ bool AttributeReferenceItem::setValue(int element, slctk::AttributePtr att)
 }
 //----------------------------------------------------------------------------
 std::string
-AttributeReferenceItem::valueAsString(int element, 
+AttributeRefItem::valueAsString(int element, 
                                       const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
@@ -98,11 +98,11 @@ AttributeReferenceItem::valueAsString(int element,
 }
 //----------------------------------------------------------------------------
 bool
-AttributeReferenceItem::appendValue(slctk::AttributePtr val)
+AttributeRefItem::appendValue(slctk::AttributePtr val)
 {
   //First - are we allowed to change the number of values?
-  const AttributeReferenceItemDefinition *def =
-    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
+  const AttributeRefItemDefinition *def =
+    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   int n = def->numberOfValues();
   if (n)
     {
@@ -118,11 +118,11 @@ AttributeReferenceItem::appendValue(slctk::AttributePtr val)
 }
 //----------------------------------------------------------------------------
 bool
-AttributeReferenceItem::removeValue(int element)
+AttributeRefItem::removeValue(int element)
 {
   //First - are we allowed to change the number of values?
-  const AttributeReferenceItemDefinition *def =
-    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
+  const AttributeRefItemDefinition *def =
+    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   int n = def->numberOfValues();
   if (n)
     {
@@ -133,10 +133,10 @@ AttributeReferenceItem::removeValue(int element)
 }
 //----------------------------------------------------------------------------
 void
-AttributeReferenceItem::reset()
+AttributeRefItem::reset()
 {
-  const AttributeReferenceItemDefinition *def
-    = static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
+  const AttributeRefItemDefinition *def
+    = static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   // Was the initial size 0?
   int i, n = def->numberOfValues();
   if (!n)

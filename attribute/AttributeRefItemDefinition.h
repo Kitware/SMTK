@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeReferenceItemDefinition.h -
+// .NAME AttributeRefItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_AttributeReferenceItemDefinition_h
-#define __slctk_attribute_AttributeReferenceItemDefinition_h
+#ifndef __slctk_attribute_AttributeRefItemDefinition_h
+#define __slctk_attribute_AttributeRefItemDefinition_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
@@ -38,12 +38,12 @@ namespace slctk
   {
     class Attribute;
     class Definition;
-    class SLCTKATTRIBUTE_EXPORT AttributeReferenceItemDefinition:
+    class SLCTKATTRIBUTE_EXPORT AttributeRefItemDefinition:
       public ItemDefinition
     {
     public:
-      AttributeReferenceItemDefinition(const std::string &myName);
-      virtual ~AttributeReferenceItemDefinition();
+      AttributeRefItemDefinition(const std::string &myName);
+      virtual ~AttributeRefItemDefinition();
       
       slctk::AttributeDefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
@@ -75,4 +75,4 @@ namespace slctk
   };
 };
 
-#endif /* __slctk_attribute_AttributeReferenceItemDefinition_h */
+#endif /* __slctk_attribute_AttributeRefItemDefinition_h */

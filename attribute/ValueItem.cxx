@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinition.h"
-#include "attribute/AttributeReferenceItem.h"
-#include "attribute/AttributeReferenceItemDefinition.h"
+#include "attribute/AttributeRefItem.h"
+#include "attribute/AttributeRefItemDefinition.h"
 
 using namespace slctk::attribute; 
 
@@ -70,7 +70,7 @@ bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
       for (i = 0; i < n; i++)
         {
         this->m_expressions[i] = 
-          slctk::AttributeReferenceItemPtr(def->buildExpressionItem());
+          slctk::AttributeRefItemPtr(def->buildExpressionItem());
         }
       }
     }
@@ -146,7 +146,7 @@ bool ValueItem::appendExpression(slctk::AttributePtr exp)
     return false; // Attribute is of the proper type
     }
   n = m_expressions.size();
-  this->m_expressions.push_back(slctk::AttributeReferenceItemPtr(def->buildExpressionItem()));
+  this->m_expressions.push_back(slctk::AttributeRefItemPtr(def->buildExpressionItem()));
   this->m_expressions[n]->setValue(exp);
   this->m_isSet.push_back(true);
   return true;

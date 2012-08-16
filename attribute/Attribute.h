@@ -42,7 +42,7 @@ namespace slctk
 
   namespace attribute
   {
-    class AttributeReferenceItem;
+    class AttributeRefItem;
     class Item;
     class Definition;
     class Cluster;
@@ -50,7 +50,7 @@ namespace slctk
 
     class SLCTKATTRIBUTE_EXPORT Attribute
     {
-      friend class slctk::attribute::AttributeReferenceItem;
+      friend class slctk::attribute::AttributeRefItem;
       friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Definition;
     public:

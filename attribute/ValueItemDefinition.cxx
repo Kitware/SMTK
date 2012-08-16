@@ -23,8 +23,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/ValueItemDefinition.h"
-#include "attribute/AttributeReferenceItem.h"
-#include "attribute/AttributeReferenceItemDefinition.h"
+#include "attribute/AttributeRefItem.h"
+#include "attribute/AttributeRefItemDefinition.h"
 
 using namespace slctk::attribute; 
 
@@ -37,7 +37,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_useCommonLabel = false;
   this->m_numberOfValues = 1;
   this->m_expressionDefinition = 
-    slctk::AttributeReferenceItemDefinitionPtr(new AttributeReferenceItemDefinition("expression"));
+    slctk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition("expression"));
   this->m_expressionDefinition->setNumberOfValues(1);
 }
 
@@ -123,11 +123,11 @@ ValueItemDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr exp)
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
 //----------------------------------------------------------------------------
-slctk::AttributeReferenceItemPtr 
+slctk::AttributeRefItemPtr 
 ValueItemDefinition::buildExpressionItem() const
 {
-  slctk::AttributeReferenceItemPtr aref =
-    slctk::dynamicCastPointer<slctk::attribute::AttributeReferenceItem>
+  slctk::AttributeRefItemPtr aref =
+    slctk::dynamicCastPointer<slctk::attribute::AttributeRefItem>
     (this->m_expressionDefinition->buildItem());
   aref->setDefinition(this->m_expressionDefinition);
   return aref;

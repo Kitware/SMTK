@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_ValueItemTemplate_h
 #define __slctk_attribute_ValueItemTemplate_h
 
-#include "attribute/AttributeReferenceItem.h"
+#include "attribute/AttributeRefItem.h"
 #include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinitionTemplate.h"
 #include <vector>

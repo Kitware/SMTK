@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/Attribute.h"
-#include "attribute/AttributeReferenceItem.h"
+#include "attribute/AttributeRefItem.h"
 #include "attribute/Cluster.h"
 #include "attribute/Item.h"
 #include "attribute/Definition.h"

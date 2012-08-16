@@ -36,7 +36,7 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceItem;
+    class AttributeRefItem;
     class ValueItemDefinition;
     class SLCTKATTRIBUTE_EXPORT ValueItem : public slctk::attribute::Item
     {
@@ -85,7 +85,7 @@ namespace slctk
       virtual void updateDiscreteValue(int elementIndex) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
-      std::vector<slctk::AttributeReferenceItemPtr > m_expressions;
+      std::vector<slctk::AttributeRefItemPtr > m_expressions;
     private:
       
     };

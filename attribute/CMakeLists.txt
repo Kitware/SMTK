@@ -2,8 +2,8 @@ project(Slctk_Attribute)
 
 set(headers
   Attribute.h
-  AttributeReferenceItem.h
-  AttributeReferenceItemDefinition.h
+  AttributeRefItem.h
+  AttributeRefItemDefinition.h
   Cluster.h
   Item.h
   ItemDefinition.h
@@ -25,8 +25,8 @@ set(headers
 
 set(attribute_srcs
   Attribute.cxx
-  AttributeReferenceItem.cxx
-  AttributeReferenceItemDefinition.cxx
+  AttributeRefItem.cxx
+  AttributeRefItemDefinition.cxx
   Cluster.cxx
   Item.cxx
   ItemDefinition.cxx

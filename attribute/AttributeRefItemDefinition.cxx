@@ -22,15 +22,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/AttributeReferenceItemDefinition.h"
+#include "attribute/AttributeRefItemDefinition.h"
 #include "attribute/Attribute.h"
-#include "attribute/AttributeReferenceItem.h"
+#include "attribute/AttributeRefItem.h"
 
 using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-AttributeReferenceItemDefinition::
-AttributeReferenceItemDefinition(const std::string &myName):
+AttributeRefItemDefinition::
+AttributeRefItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_definition()
 {
   this->m_useCommonLabel = false;
@@ -38,12 +38,12 @@ AttributeReferenceItemDefinition(const std::string &myName):
 }
 
 //----------------------------------------------------------------------------
-AttributeReferenceItemDefinition::~AttributeReferenceItemDefinition()
+AttributeRefItemDefinition::~AttributeRefItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
 bool 
-AttributeReferenceItemDefinition::isValueValid(slctk::AttributePtr att) const
+AttributeRefItemDefinition::isValueValid(slctk::AttributePtr att) const
 {
   if (att == NULL)
     {
@@ -56,12 +56,12 @@ AttributeReferenceItemDefinition::isValueValid(slctk::AttributePtr att) const
   return true;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr AttributeReferenceItemDefinition::buildItem() const
+slctk::AttributeItemPtr AttributeRefItemDefinition::buildItem() const
 {
-  return slctk::AttributeItemPtr(new AttributeReferenceItem());
+  return slctk::AttributeItemPtr(new AttributeRefItem());
 }
 //----------------------------------------------------------------------------
-void AttributeReferenceItemDefinition::setNumberOfValues(int esize)
+void AttributeRefItemDefinition::setNumberOfValues(int esize)
 {
   if (esize == this->m_numberOfValues)
     {
@@ -74,7 +74,7 @@ void AttributeReferenceItemDefinition::setNumberOfValues(int esize)
     }
 }
 //----------------------------------------------------------------------------
-void AttributeReferenceItemDefinition::setValueLabel(int element, const std::string &elabel)
+void AttributeRefItemDefinition::setValueLabel(int element, const std::string &elabel)
 {
   if (this->m_numberOfValues == 0)
     {
@@ -88,7 +88,7 @@ void AttributeReferenceItemDefinition::setValueLabel(int element, const std::str
   this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
-void AttributeReferenceItemDefinition::setCommonValueLabel(const std::string &elabel)
+void AttributeRefItemDefinition::setCommonValueLabel(const std::string &elabel)
 {
   if (this->m_valueLabels.size() != 1)
     {
@@ -99,7 +99,7 @@ void AttributeReferenceItemDefinition::setCommonValueLabel(const std::string &el
 }
 
 //----------------------------------------------------------------------------
-std::string AttributeReferenceItemDefinition::valueLabel(int element) const
+std::string AttributeRefItemDefinition::valueLabel(int element) const
 {
   if (this->m_useCommonLabel)
     {

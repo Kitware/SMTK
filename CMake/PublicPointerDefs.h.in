@@ -40,8 +40,8 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceItem;
-    class AttributeReferenceItemDefinition;
+    class AttributeRefItem;
+    class AttributeRefItemDefinition;
     class Definition;
     class Cluster;
     class Item;
@@ -65,8 +65,8 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Definition> ConstAttributeDefinitionPtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Definition> WeakAttributeDefinitionPtr;
 
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceItem> AttributeReferenceItemPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceItemDefinition> AttributeReferenceItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeRefItem> AttributeRefItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeRefItemDefinition> AttributeRefItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Cluster> AttributeClusterPtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Cluster> WeakAttributeClusterPtr;
