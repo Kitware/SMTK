@@ -88,7 +88,7 @@ int main()
     {
     comp = att->item(i);
     std::cout << "\t" << comp->name() << " Type = " << AttComp::type2String(comp->type()) << ", ";
-    vcomp = std::tr1::dynamic_pointer_cast<ValueComp>(comp);
+    vcomp = slctk::dynamicCastPointer<ValueComp>(comp);
     if (vcomp != NULL)
       {
       switch (vcomp->type())
