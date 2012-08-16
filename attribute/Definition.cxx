@@ -136,7 +136,7 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
   return false;
 }
 //----------------------------------------------------------------------------
-void Definition::buildAttribute(AttributePtr att) const
+void Definition::buildAttribute(slctk::AttributePtr att) const
 {
   // If there is a super definition have it prep the attribute and add its items
   const Definition *bdef = this->baseDefinition().get();

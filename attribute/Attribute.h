@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 
-#include <tr1/memory>
 #include <set>
 #include <string>
 #include <vector>

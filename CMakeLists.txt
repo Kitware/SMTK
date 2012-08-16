@@ -18,6 +18,9 @@ determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
 #found in c++ or c++ tr1 we include boost
 if(${POINTER_NAMESPACE_BOOST_TRUE})
   find_package(Boost)
+  include_directories(
+  ${Boost_INCLUDE_DIR}
+  )
 endif()
 
 configure_file(
