@@ -20,24 +20,33 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME IntItemDefinition.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_IntItemDefinition_h
+#define __slctk_attribute_IntItemDefinition_h
 
-#include "attribute/IntegerItem.h"
-#include "attribute/IntegerItemDefinition.h"
+#include "ValueItemDefinitionTemplate.h"
 
-using namespace slctk::attribute; 
-
-//----------------------------------------------------------------------------
-IntegerItem::IntegerItem()
+namespace slctk
 {
-}
+  namespace attribute
+  {
+    class SLCTKATTRIBUTE_EXPORT IntItemDefinition :
+      public ValueItemDefinitionTemplate<int>
+    {
+    public:
+      IntItemDefinition(const std::string &myName);
+      virtual ~IntItemDefinition();
+      virtual slctk::AttributeItemPtr buildItem() const;
 
-//----------------------------------------------------------------------------
-IntegerItem::~IntegerItem()
-{
-}
-//----------------------------------------------------------------------------
-Item::Type IntegerItem::type() const
-{
-  return INTEGER;
-}
+    protected:
+
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_DoubleItemDefinition_h */

@@ -20,36 +20,24 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME IntegerItem.h -
-// .SECTION Description
-// .SECTION See Also
 
-#ifndef __slctk_attribute_IntegerItem_h
-#define __slctk_attribute_IntegerItem_h
 
-#include "attribute/ValueItemTemplate.h"
-#include "AttributeExports.h"
+#include "attribute/IntItem.h"
+#include "attribute/IntItemDefinition.h"
 
-namespace slctk
+using namespace slctk::attribute; 
+
+//----------------------------------------------------------------------------
+IntItem::IntItem()
 {
-  namespace attribute
-  {
-    class Attribute;
-    class IntegerItemDefinition;
-    class SLCTKATTRIBUTE_EXPORT IntegerItem :
-      public ValueItemTemplate<int>
-    {
-      friend class IntegerItemDefinition; 
-    public:
-      IntegerItem();
-      virtual ~IntegerItem();
-      virtual Item::Type type() const;
-    protected:
-      
-    private:
+}
 
-    };
-  };
-};
-
-#endif /* __slctk_attribute_IntegerItem_h */
+//----------------------------------------------------------------------------
+IntItem::~IntItem()
+{
+}
+//----------------------------------------------------------------------------
+Item::Type IntItem::type() const
+{
+  return INT;
+}

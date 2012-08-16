@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Definition.h"
 #include "attribute/Attribute.h"
-#include "attribute/IntegerItem.h"
-#include "attribute/IntegerItemDefinition.h"
+#include "attribute/IntItem.h"
+#include "attribute/IntItemDefinition.h"
 #include "attribute/DoubleItem.h"
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/StringItem.h"
@@ -36,7 +36,7 @@ int main()
 {
   int status;
   {
-  typedef slctk::attribute::IntegerItemDefinition IntCompDef;
+  typedef slctk::attribute::IntItemDefinition IntCompDef;
   typedef slctk::attribute::DoubleItemDefinition DoubleCompDef;
   typedef slctk::attribute::StringItemDefinition StringCompDef;
   typedef slctk::attribute::ValueItem ValueComp;
@@ -54,9 +54,9 @@ int main()
 
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  slctk::IntegerItemDefinitionPtr icompdef(new IntCompDef("IntComp1"));
+  slctk::IntItemDefinitionPtr icompdef(new IntCompDef("IntComp1"));
   base->addItemDefinition(icompdef);
-  slctk::IntegerItemDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
+  slctk::IntItemDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
   icompdef2->setDefaultValue(10);
   base->addItemDefinition(icompdef2);
 

@@ -46,7 +46,7 @@ namespace slctk
        ATTRIBUTE_REFERENCE,
        DOUBLE,
        GROUP,
-       INTEGER,
+       INT,
        STRING,
        VOID,
        NUMBER_OF_TYPES

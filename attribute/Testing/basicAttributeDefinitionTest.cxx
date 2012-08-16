@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Definition.h"
 #include "attribute/Attribute.h"
-#include "attribute/IntegerItem.h"
-#include "attribute/IntegerItemDefinition.h"
+#include "attribute/IntItem.h"
+#include "attribute/IntItemDefinition.h"
 #include "attribute/DoubleItem.h"
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/StringItem.h"
@@ -49,9 +49,9 @@ int main()
     status = -1;
     }
   // Lets add some item definitions
-  slctk::IntegerItemDefinitionPtr icompdef(new slctk::attribute::IntegerItemDefinition("IntComp1"));
+  slctk::IntItemDefinitionPtr icompdef(new slctk::attribute::IntItemDefinition("IntComp1"));
   def->addItemDefinition(icompdef);
-  slctk::IntegerItemDefinitionPtr icompdef2(new slctk::attribute::IntegerItemDefinition("IntComp2"));
+  slctk::IntItemDefinitionPtr icompdef2(new slctk::attribute::IntItemDefinition("IntComp2"));
   icompdef2->setDefaultValue(10);
   def->addItemDefinition(icompdef2);
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
@@ -94,10 +94,10 @@ int main()
     }
   else
     {
-    slctk::IntegerItemPtr icptr;
-    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerItem>(att->item(0));
+    slctk::IntItemPtr icptr;
+    icptr = slctk::dynamicCastPointer<slctk::attribute::IntItem>(att->item(0));
     std::cout << "Found IntComp1 - value = " << icptr->valueAsString(" %d") << std::endl;
-    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerItem>(att->item(1));
+    icptr = slctk::dynamicCastPointer<slctk::attribute::IntItem>(att->item(1));
     std::cout << "Found IntComp2 - value = " << icptr->valueAsString(" %d") << std::endl;
     }
 

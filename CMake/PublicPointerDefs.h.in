@@ -50,8 +50,8 @@ namespace slctk
     class DoubleItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
-    class IntegerItem;
-    class IntegerItemDefinition;
+    class IntItem;
+    class IntItemDefinition;
     class Manager;
     class StringItem;
     class StringItemDefinition;
@@ -78,8 +78,8 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItem> DoubleItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItemDefinition> DoubleItemDefinitionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerItem> IntegerItemPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerItemDefinition> IntegerItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItem> IntItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItemDefinition> IntItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItem> StringItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItemDefinition> StringItemDefinitionPtr;
 

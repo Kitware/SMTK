@@ -88,8 +88,8 @@ std::string Item::type2String(Item::Type t)
       return "Double";
     case GROUP:
       return "Group";
-    case INTEGER:
-      return "Integer";
+    case INT:
+      return "Int";
     case STRING:
       return "String";
     case VOID:
@@ -114,9 +114,9 @@ Item::Type Item::string2Type(const std::string &s)
     {
     return GROUP;
     }
-  if (s == "Integer")
+  if (s == "Int")
     {
-    return INTEGER;
+    return INT;
     }
   if (s == "String")
     {

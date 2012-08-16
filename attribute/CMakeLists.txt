@@ -12,8 +12,8 @@ set(headers
   DoubleItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
-  IntegerItem.h
-  IntegerItemDefinition.h
+  IntItem.h
+  IntItemDefinition.h
   Manager.h
   StringItem.h
   StringItemDefinition.h
@@ -35,8 +35,8 @@ set(attribute_srcs
   DoubleItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
-  IntegerItem.cxx
-  IntegerItemDefinition.cxx
+  IntItem.cxx
+  IntItemDefinition.cxx
   Manager.cxx
   StringItem.cxx
   StringItemDefinition.cxx
