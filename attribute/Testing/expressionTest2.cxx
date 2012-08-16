@@ -47,6 +47,7 @@ int main()
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
   slctk::StringComponentDefinitionPtr ecompdef = expDef->addDef<slctk::StringComponentDefinitionPtr>("Expression String");
+  slctk::StringComponentDefinitionPtr ecompdef2= expDef->addDef<slctk::attribute::StringComponentDefinition>("Expression String");
   ecompdef->setDefaultValue("sample");
 //  slctk::StringComponentDefinitionPtr ecompdef(new StringCompDef("Expression String"));
 //  expDef->addComponentDefinition(ecompdef);

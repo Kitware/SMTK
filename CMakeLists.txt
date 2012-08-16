@@ -9,6 +9,23 @@ include(CMake/SlctkMacros.cmake)
 # in dynamic libraries
 include(GenerateExportHeader)
 
+# Include mechanism for determining shared and weak pointer support
+include(CMake/SharedPtr.cmake)
+
+determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
+
+#if the shared_ptr isn't able to be
+#found in c++ or c++ tr1 we include boost
+if(${SHARED_TYPE_BOOST_TRUE})
+  find_package(Boost)
+endif()
+
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/PublicPointerDefs.h.in
+  ${PROJECT_BINARY_DIR}/attribute/PublicPointerDefs.h
+  @ONLY)
+
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Slctk_SOURCE_DIR}/CMake)
 
 option(Slctk_ENABLE_TESTING "Enable Testing" ON)

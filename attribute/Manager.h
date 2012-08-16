@@ -38,7 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 namespace slctk
 {
   namespace attribute { class Manager; }
-  typedef sharedPtr<attribute::Manager> SharedManager;
 
   namespace attribute
   {
