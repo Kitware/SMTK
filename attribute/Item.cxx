@@ -82,7 +82,7 @@ std::string Item::type2String(Item::Type t)
 {
   switch (t)
     {
-    case ATTRIBUTE_REFERENCE:
+    case ATTRIBUTE_REF:
       return "AttributeRef";
     case DOUBLE:
       return "Double";
@@ -104,7 +104,7 @@ Item::Type Item::string2Type(const std::string &s)
 {
   if (s == "AttributeRef")
     {
-    return ATTRIBUTE_REFERENCE;
+    return ATTRIBUTE_REF;
     }
   if (s == "Double")
     {

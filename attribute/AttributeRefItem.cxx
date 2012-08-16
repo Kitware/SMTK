@@ -64,7 +64,7 @@ AttributeRefItem::~AttributeRefItem()
 //----------------------------------------------------------------------------
 Item::Type AttributeRefItem::type() const
 {
-  return ATTRIBUTE_REFERENCE;
+  return ATTRIBUTE_REF;
 }
 
 //----------------------------------------------------------------------------

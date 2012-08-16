@@ -43,7 +43,7 @@ namespace slctk
     public:
      enum Type
      {
-       ATTRIBUTE_REFERENCE,
+       ATTRIBUTE_REF,
        DOUBLE,
        GROUP,
        INT,
