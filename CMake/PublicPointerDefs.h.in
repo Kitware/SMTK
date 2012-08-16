@@ -40,23 +40,23 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceComponent;
-    class AttributeReferenceComponentDefinition;
+    class AttributeReferenceItem;
+    class AttributeReferenceItemDefinition;
     class Definition;
     class Cluster;
-    class Component;
-    class ComponentDefinition;
-    class DoubleComponent;
-    class DoubleComponentDefinition;
-    class GroupComponent;
-    class GroupComponentDefinition;
-    class IntegerComponent;
-    class IntegerComponentDefinition;
+    class Item;
+    class ItemDefinition;
+    class DoubleItem;
+    class DoubleItemDefinition;
+    class GroupItem;
+    class GroupItemDefinition;
+    class IntegerItem;
+    class IntegerItemDefinition;
     class Manager;
-    class StringComponent;
-    class StringComponentDefinition;
-    class ValueComponent;
-    class ValueComponentDefinition;
+    class StringItem;
+    class StringItemDefinition;
+    class ValueItem;
+    class ValueItemDefinition;
   };
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Attribute> AttributePtr;
@@ -65,23 +65,23 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Definition> ConstAttributeDefinitionPtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Definition> WeakAttributeDefinitionPtr;
 
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceComponent> AttributeReferenceComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceComponentDefinition> AttributeReferenceComponentDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceItem> AttributeReferenceItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeReferenceItemDefinition> AttributeReferenceItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Cluster> AttributeClusterPtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Cluster> WeakAttributeClusterPtr;
 
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Component> AttributeComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Component> ConstAttributeComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ComponentDefinition> AttributeComponentDefinitionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ComponentDefinition> ConstAttributeComponentDefinitionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueComponent> ValueComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleComponent> DoubleComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleComponentDefinition> DoubleComponentDefinitionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerComponent> IntegerComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerComponentDefinition> IntegerComponentDefinitionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringComponent> StringComponentPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringComponentDefinition> StringComponentDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Item> AttributeItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Item> ConstAttributeItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ItemDefinition> AttributeItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ItemDefinition> ConstAttributeItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItem> DoubleItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItemDefinition> DoubleItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerItem> IntegerItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntegerItemDefinition> IntegerItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItem> StringItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItemDefinition> StringItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Manager> AttributeManagerPtr;
 

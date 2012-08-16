@@ -20,37 +20,36 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME StringItem.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __slctk_attribute_StringItem_h
+#define __slctk_attribute_StringItem_h
 
-#include "attribute/ComponentDefinition.h"
-#include <iostream>
-using namespace slctk::attribute; 
+#include "attribute/ValueItemTemplate.h"
+#include "AttributeExports.h"
 
-//----------------------------------------------------------------------------
-ComponentDefinition::ComponentDefinition(const std::string &myName)
+namespace slctk
 {
-  this->m_name = myName;
-  this->m_version = 0;
-  this->m_advanceLevel = 0;
-  this->m_isOptional = false;
-}
-
-//----------------------------------------------------------------------------
-ComponentDefinition::~ComponentDefinition()
-{
-  std::cout << "Component Definition " << m_name << " deleted\n";
-}
-//----------------------------------------------------------------------------
-bool ComponentDefinition::isMemberOf(const std::vector<std::string> &catagories) const
-{
-  std::size_t i, n = catagories.size();
-  for (i = 0; i < n; i++)
+  namespace attribute
+  {
+    class Attribute;
+    class StringItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT StringItem :
+      public ValueItemTemplate<std::string>
     {
-    if (this->isMemberOf(catagories[i]))
-      {
-      return true;
-      }
-    }
-    return false;
-}
-//----------------------------------------------------------------------------
+      friend class StringItemDefinition; 
+    public:
+      StringItem();
+      virtual ~StringItem();
+      virtual Item::Type type() const;
+    protected:
+      
+    private:
+
+    };
+  };
+};
+
+#endif /* __slctk_attribute_StringItem_h */

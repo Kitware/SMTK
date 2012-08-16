@@ -22,31 +22,46 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/ValueComponentDefinition.h"
-#include "attribute/AttributeReferenceComponent.h"
-#include "attribute/AttributeReferenceComponentDefinition.h"
+#include "attribute/AttributeReferenceItemDefinition.h"
+#include "attribute/Attribute.h"
+#include "attribute/AttributeReferenceItem.h"
 
-using namespace slctk::attribute; 
+using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-ValueComponentDefinition::ValueComponentDefinition(const std::string &myName):
-  ComponentDefinition(myName)
+AttributeReferenceItemDefinition::
+AttributeReferenceItemDefinition(const std::string &myName):
+  ItemDefinition(myName), m_definition()
 {
-  this->m_defaultDiscreteIndex = -1;
-  this->m_hasDefault = false;
   this->m_useCommonLabel = false;
-  this->m_numberOfValues = 1;
-  this->m_expressionDefinition = 
-    slctk::AttributeReferenceComponentDefinitionPtr(new AttributeReferenceComponentDefinition("expression"));
-  this->m_expressionDefinition->setNumberOfValues(1);
+  this->m_numberOfValues = 0;
 }
 
 //----------------------------------------------------------------------------
-ValueComponentDefinition::~ValueComponentDefinition()
+AttributeReferenceItemDefinition::~AttributeReferenceItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-void ValueComponentDefinition::setNumberOfValues(int esize)
+bool 
+AttributeReferenceItemDefinition::isValueValid(slctk::AttributePtr att) const
+{
+  if (att == NULL)
+    {
+    return true;
+    }
+  if (this->m_definition.lock() != NULL)
+    {
+    return att->isA(this->m_definition.lock());
+    }
+  return true;
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr AttributeReferenceItemDefinition::buildItem() const
+{
+  return slctk::AttributeItemPtr(new AttributeReferenceItem());
+}
+//----------------------------------------------------------------------------
+void AttributeReferenceItemDefinition::setNumberOfValues(int esize)
 {
   if (esize == this->m_numberOfValues)
     {
@@ -59,7 +74,7 @@ void ValueComponentDefinition::setNumberOfValues(int esize)
     }
 }
 //----------------------------------------------------------------------------
-void ValueComponentDefinition::setValueLabel(int element, const std::string &elabel)
+void AttributeReferenceItemDefinition::setValueLabel(int element, const std::string &elabel)
 {
   if (this->m_numberOfValues == 0)
     {
@@ -73,7 +88,7 @@ void ValueComponentDefinition::setValueLabel(int element, const std::string &ela
   this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
-void ValueComponentDefinition::setCommonValueLabel(const std::string &elabel)
+void AttributeReferenceItemDefinition::setCommonValueLabel(const std::string &elabel)
 {
   if (this->m_valueLabels.size() != 1)
     {
@@ -84,7 +99,7 @@ void ValueComponentDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string ValueComponentDefinition::valueLabel(int element) const
+std::string AttributeReferenceItemDefinition::valueLabel(int element) const
 {
   if (this->m_useCommonLabel)
     {
@@ -95,41 +110,5 @@ std::string ValueComponentDefinition::valueLabel(int element) const
     return this->m_valueLabels[element];
     }
   return ""; // If we threw execeptions this method could return const string &
-}
-//----------------------------------------------------------------------------
-bool ValueComponentDefinition::isValidExpression(slctk::AttributePtr exp) const
-{
-  if ((this->m_expressionDefinition->attributeDefinition() != NULL) && 
-      this->m_expressionDefinition->isValueValid(exp))
-    {
-    return true;
-    }
-  return false;
-}
-//----------------------------------------------------------------------------
-bool ValueComponentDefinition::allowsExpressions() const
-{
-  return this->m_expressionDefinition->attributeDefinition() != NULL;
-}
-//----------------------------------------------------------------------------
-slctk::AttributeDefinitionPtr ValueComponentDefinition::expressionDefinition() const
-{
-  return this->m_expressionDefinition->attributeDefinition();
-}
-//----------------------------------------------------------------------------
-void
-ValueComponentDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr exp)
-{
-  this->m_expressionDefinition->setAttributeDefinition(exp);
-}
-//----------------------------------------------------------------------------
-slctk::AttributeReferenceComponentPtr 
-ValueComponentDefinition::buildExpressionComponent() const
-{
-  slctk::AttributeReferenceComponentPtr aref =
-    slctk::dynamicCastPointer<slctk::attribute::AttributeReferenceComponent>
-    (this->m_expressionDefinition->buildComponent());
-  aref->setDefinition(this->m_expressionDefinition);
-  return aref;
 }
 //----------------------------------------------------------------------------

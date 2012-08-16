@@ -20,16 +20,16 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeReferenceComponent.h -
+// .NAME AttributeReferenceItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_AttributeReferenceComponent_h
-#define __slctk_attribute_AttributeReferenceComponent_h
+#ifndef __slctk_attribute_AttributeReferenceItem_h
+#define __slctk_attribute_AttributeReferenceItem_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
-#include "attribute/Component.h"
+#include "attribute/Item.h"
 #include <vector>
 
 namespace slctk
@@ -37,14 +37,14 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponent : public Component
+    class AttributeReferenceItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT AttributeReferenceItem : public Item
     {
     public:
-      AttributeReferenceComponent();
-      virtual ~AttributeReferenceComponent();
-      virtual Component::Type type() const;
-      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
+      AttributeReferenceItem();
+      virtual ~AttributeReferenceItem();
+      virtual Item::Type type() const;
+      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
       slctk::AttributePtr value(int element=0) const
       {return this->m_values[element].lock();}
       bool setValue( slctk::AttributePtr val)
@@ -69,4 +69,4 @@ namespace slctk
 };
 
 
-#endif /* __slctk_attribute_AttributeReferenceComponent_h */
+#endif /* __slctk_attribute_AttributeReferenceItem_h */

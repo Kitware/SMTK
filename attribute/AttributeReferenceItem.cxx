@@ -22,30 +22,30 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/AttributeReferenceComponent.h"
-#include "attribute/AttributeReferenceComponentDefinition.h"
+#include "attribute/AttributeReferenceItem.h"
+#include "attribute/AttributeReferenceItemDefinition.h"
 #include "attribute/Attribute.h"
 #include <iostream>
 
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-AttributeReferenceComponent::AttributeReferenceComponent()
+AttributeReferenceItem::AttributeReferenceItem()
 {
 }
 
 //----------------------------------------------------------------------------
-bool AttributeReferenceComponent::
-setDefinition(slctk::ConstAttributeComponentDefinitionPtr adef)
+bool AttributeReferenceItem::
+setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const AttributeReferenceComponentDefinition *def = 
-    dynamic_cast<const AttributeReferenceComponentDefinition *>(adef.get());
+  const AttributeReferenceItemDefinition *def = 
+    dynamic_cast<const AttributeReferenceItemDefinition *>(adef.get());
   
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Component::setDefinition(adef)))
+  if ((def == NULL) || (!Item::setDefinition(adef)))
     {
     return false;
     }
@@ -58,20 +58,20 @@ setDefinition(slctk::ConstAttributeComponentDefinitionPtr adef)
 }
 
 //----------------------------------------------------------------------------
-AttributeReferenceComponent::~AttributeReferenceComponent()
+AttributeReferenceItem::~AttributeReferenceItem()
 {
 }
 //----------------------------------------------------------------------------
-Component::Type AttributeReferenceComponent::type() const
+Item::Type AttributeReferenceItem::type() const
 {
   return ATTRIBUTE_REFERENCE;
 }
 
 //----------------------------------------------------------------------------
-bool AttributeReferenceComponent::setValue(int element, slctk::AttributePtr att)
+bool AttributeReferenceItem::setValue(int element, slctk::AttributePtr att)
 {
-  const AttributeReferenceComponentDefinition *def = 
-    static_cast<const AttributeReferenceComponentDefinition *>(this->definition().get());
+  const AttributeReferenceItemDefinition *def = 
+    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
   if (def->isValueValid(att))
     {
     this->m_values[element] = att;
@@ -81,7 +81,7 @@ bool AttributeReferenceComponent::setValue(int element, slctk::AttributePtr att)
 }
 //----------------------------------------------------------------------------
 std::string
-AttributeReferenceComponent::valueAsString(int element, 
+AttributeReferenceItem::valueAsString(int element, 
                                       const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
@@ -98,11 +98,11 @@ AttributeReferenceComponent::valueAsString(int element,
 }
 //----------------------------------------------------------------------------
 bool
-AttributeReferenceComponent::appendValue(slctk::AttributePtr val)
+AttributeReferenceItem::appendValue(slctk::AttributePtr val)
 {
   //First - are we allowed to change the number of values?
-  const AttributeReferenceComponentDefinition *def =
-    static_cast<const AttributeReferenceComponentDefinition *>(this->definition().get());
+  const AttributeReferenceItemDefinition *def =
+    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
   int n = def->numberOfValues();
   if (n)
     {
@@ -118,11 +118,11 @@ AttributeReferenceComponent::appendValue(slctk::AttributePtr val)
 }
 //----------------------------------------------------------------------------
 bool
-AttributeReferenceComponent::removeValue(int element)
+AttributeReferenceItem::removeValue(int element)
 {
   //First - are we allowed to change the number of values?
-  const AttributeReferenceComponentDefinition *def =
-    static_cast<const AttributeReferenceComponentDefinition *>(this->definition().get());
+  const AttributeReferenceItemDefinition *def =
+    static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
   int n = def->numberOfValues();
   if (n)
     {
@@ -133,10 +133,10 @@ AttributeReferenceComponent::removeValue(int element)
 }
 //----------------------------------------------------------------------------
 void
-AttributeReferenceComponent::reset()
+AttributeReferenceItem::reset()
 {
-  const AttributeReferenceComponentDefinition *def
-    = static_cast<const AttributeReferenceComponentDefinition *>(this->definition().get());
+  const AttributeReferenceItemDefinition *def
+    = static_cast<const AttributeReferenceItemDefinition *>(this->definition().get());
   // Was the initial size 0?
   int i, n = def->numberOfValues();
   if (!n)

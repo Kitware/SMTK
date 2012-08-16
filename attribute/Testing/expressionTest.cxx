@@ -24,62 +24,62 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Definition.h"
 #include "attribute/Attribute.h"
-#include "attribute/IntegerComponent.h"
-#include "attribute/IntegerComponentDefinition.h"
-#include "attribute/DoubleComponent.h"
-#include "attribute/DoubleComponentDefinition.h"
-#include "attribute/StringComponent.h"
-#include "attribute/StringComponentDefinition.h"
+#include "attribute/IntegerItem.h"
+#include "attribute/IntegerItemDefinition.h"
+#include "attribute/DoubleItem.h"
+#include "attribute/DoubleItemDefinition.h"
+#include "attribute/StringItem.h"
+#include "attribute/StringItemDefinition.h"
 #include <iostream>
 
 int main()
 {
   int status;
   {
-  typedef slctk::attribute::IntegerComponentDefinition IntCompDef;
-  typedef slctk::attribute::DoubleComponentDefinition DoubleCompDef;
-  typedef slctk::attribute::StringComponentDefinition StringCompDef;
-  typedef slctk::attribute::ValueComponent ValueComp;
-  typedef slctk::attribute::Component AttComp;
+  typedef slctk::attribute::IntegerItemDefinition IntCompDef;
+  typedef slctk::attribute::DoubleItemDefinition DoubleCompDef;
+  typedef slctk::attribute::StringItemDefinition StringCompDef;
+  typedef slctk::attribute::ValueItem ValueComp;
+  typedef slctk::attribute::Item AttComp;
 
   slctk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  slctk::StringComponentDefinitionPtr ecompdef(new StringCompDef("Expression String"));
-  expDef->addComponentDefinition(ecompdef);
+  slctk::StringItemDefinitionPtr ecompdef(new StringCompDef("Expression String"));
+  expDef->addItemDefinition(ecompdef);
 
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
-  // Lets add some component definitions
-  slctk::IntegerComponentDefinitionPtr icompdef(new IntCompDef("IntComp1"));
-  base->addComponentDefinition(icompdef);
-  slctk::IntegerComponentDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
+  // Lets add some item definitions
+  slctk::IntegerItemDefinitionPtr icompdef(new IntCompDef("IntComp1"));
+  base->addItemDefinition(icompdef);
+  slctk::IntegerItemDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
   icompdef2->setDefaultValue(10);
-  base->addComponentDefinition(icompdef2);
+  base->addItemDefinition(icompdef2);
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
-   // Lets add some component definitions
-  slctk::DoubleComponentDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1"));
+   // Lets add some item definitions
+  slctk::DoubleItemDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1"));
   // Allow this one to hold an expression
   dcompdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
   if (!dcompdef->allowsExpressions())
     {
-    std::cout << "ERROR - Component Def does not allow expressions\n";
+    std::cout << "ERROR - Item Def does not allow expressions\n";
     status = -1;
     }
-  def1->addComponentDefinition(dcompdef);
-  slctk::DoubleComponentDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2"));
+  def1->addItemDefinition(dcompdef);
+  slctk::DoubleItemDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2"));
   dcompdef2->setDefaultValue(-35.2);
-  def1->addComponentDefinition(dcompdef2);
+  def1->addItemDefinition(dcompdef2);
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
-   // Lets add some component definitions
-  slctk::StringComponentDefinitionPtr scompdef(new StringCompDef("StringComp1"));
-  def1->addComponentDefinition(scompdef);
-  slctk::StringComponentDefinitionPtr scompdef2(new StringCompDef("StringComp2"));
+   // Lets add some item definitions
+  slctk::StringItemDefinitionPtr scompdef(new StringCompDef("StringComp1"));
+  def1->addItemDefinition(scompdef);
+  slctk::StringItemDefinitionPtr scompdef2(new StringCompDef("StringComp2"));
   scompdef2->setDefaultValue("Default");
-  def1->addComponentDefinition(scompdef2);
+  def1->addItemDefinition(scompdef2);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
@@ -94,11 +94,11 @@ int main()
     status = -1;
     }
 
-  slctk::ValueComponentPtr vcomp;
-  slctk::AttributeComponentPtr comp;
+  slctk::ValueItemPtr vcomp;
+  slctk::AttributeItemPtr comp;
 
-  // Find the expression enabled component
-  comp = att->component(2);
+  // Find the expression enabled item
+  comp = att->item(2);
   vcomp = std::tr1::dynamic_pointer_cast<ValueComp>(comp);
   if (vcomp->allowsExpressions())
     {
@@ -111,11 +111,11 @@ int main()
     status = -1;
     }
   
-  int i, n = att->numberOfComponents();
-  std::cout << "Components of testAtt:\n";
+  int i, n = att->numberOfItems();
+  std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
     {
-    comp = att->component(i);
+    comp = att->item(i);
     std::cout << "\t" << comp->name() << " Type = " << AttComp::type2String(comp->type()) << ", ";
     vcomp = std::tr1::dynamic_pointer_cast<ValueComp>(comp);
     if (vcomp != NULL)

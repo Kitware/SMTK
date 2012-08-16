@@ -22,31 +22,31 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/ValueComponent.h"
-#include "attribute/ValueComponentDefinition.h"
-#include "attribute/AttributeReferenceComponent.h"
-#include "attribute/AttributeReferenceComponentDefinition.h"
+#include "attribute/ValueItem.h"
+#include "attribute/ValueItemDefinition.h"
+#include "attribute/AttributeReferenceItem.h"
+#include "attribute/AttributeReferenceItemDefinition.h"
 
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ValueComponent::ValueComponent()
+ValueItem::ValueItem()
 {
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::setDefinition(slctk::ConstAttributeComponentDefinitionPtr vdef)
+bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const ValueComponentDefinition *def = 
-    dynamic_cast<const ValueComponentDefinition *>(vdef.get());
+  const ValueItemDefinition *def = 
+    dynamic_cast<const ValueItemDefinition *>(vdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Component::setDefinition(vdef)))
+  if ((def == NULL) || (!Item::setDefinition(vdef)))
     {
     return false;
     }
-  // Find out how many values this component is suppose to have
+  // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
   int n = def->numberOfValues();
   if (n)
@@ -70,21 +70,21 @@ bool ValueComponent::setDefinition(slctk::ConstAttributeComponentDefinitionPtr v
       for (i = 0; i < n; i++)
         {
         this->m_expressions[i] = 
-          slctk::AttributeReferenceComponentPtr(def->buildExpressionComponent());
+          slctk::AttributeReferenceItemPtr(def->buildExpressionItem());
         }
       }
     }
   return true;
 }
 //----------------------------------------------------------------------------
-ValueComponent::~ValueComponent()
+ValueItem::~ValueItem()
 {
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::allowsExpressions() const
+bool ValueItem::allowsExpressions() const
 {
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition.get());
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def == NULL)
     {
     return false;
@@ -92,10 +92,10 @@ bool ValueComponent::allowsExpressions() const
   return def->allowsExpressions();
 }
 //----------------------------------------------------------------------------
-slctk::AttributePtr ValueComponent::expression(int element) const
+slctk::AttributePtr ValueItem::expression(int element) const
 {
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition.get());
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->allowsExpressions())
     {
     return this->m_expressions[element]->value();
@@ -103,10 +103,10 @@ slctk::AttributePtr ValueComponent::expression(int element) const
   return slctk::AttributePtr();
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::setExpression(int element, slctk::AttributePtr exp)
+bool ValueItem::setExpression(int element, slctk::AttributePtr exp)
 {
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition.get());
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->allowsExpressions())
     {
     if (exp == NULL)
@@ -128,10 +128,10 @@ bool ValueComponent::setExpression(int element, slctk::AttributePtr exp)
   return false;
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::appendExpression(slctk::AttributePtr exp)
+bool ValueItem::appendExpression(slctk::AttributePtr exp)
 {
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition.get());
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (!def->allowsExpressions())
     {
     return false;
@@ -146,26 +146,26 @@ bool ValueComponent::appendExpression(slctk::AttributePtr exp)
     return false; // Attribute is of the proper type
     }
   n = m_expressions.size();
-  this->m_expressions.push_back(slctk::AttributeReferenceComponentPtr(def->buildExpressionComponent()));
+  this->m_expressions.push_back(slctk::AttributeReferenceItemPtr(def->buildExpressionItem()));
   this->m_expressions[n]->setValue(exp);
   this->m_isSet.push_back(true);
   return true;
 }
 //----------------------------------------------------------------------------
-bool ValueComponent::isDiscrete() const
+bool ValueItem::isDiscrete() const
 {
-  return static_cast<const ValueComponentDefinition*>(this->m_definition.get())->
+  return static_cast<const ValueItemDefinition*>(this->m_definition.get())->
     isDiscrete();
 }
 //----------------------------------------------------------------------------
-void ValueComponent::setDiscreteIndex(int element, int index)
+void ValueItem::setDiscreteIndex(int element, int index)
 {
   if (!this->isDiscrete())
     {
     return;
     }
-  const ValueComponentDefinition *def = 
-    static_cast<const ValueComponentDefinition*>(this->m_definition.get());
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->isDiscreteIndexValid(index))
     {
     this->m_discreteIndices[element] = index;

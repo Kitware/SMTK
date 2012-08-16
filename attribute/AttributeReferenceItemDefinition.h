@@ -20,17 +20,17 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeReferenceComponentDefinition.h -
+// .NAME AttributeReferenceItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_AttributeReferenceComponentDefinition_h
-#define __slctk_attribute_AttributeReferenceComponentDefinition_h
+#ifndef __slctk_attribute_AttributeReferenceItemDefinition_h
+#define __slctk_attribute_AttributeReferenceItemDefinition_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 
-#include "ComponentDefinition.h"
+#include "ItemDefinition.h"
 
 namespace slctk
 {
@@ -38,12 +38,12 @@ namespace slctk
   {
     class Attribute;
     class Definition;
-    class SLCTKATTRIBUTE_EXPORT AttributeReferenceComponentDefinition:
-      public ComponentDefinition
+    class SLCTKATTRIBUTE_EXPORT AttributeReferenceItemDefinition:
+      public ItemDefinition
     {
     public:
-      AttributeReferenceComponentDefinition(const std::string &myName);
-      virtual ~AttributeReferenceComponentDefinition();
+      AttributeReferenceItemDefinition(const std::string &myName);
+      virtual ~AttributeReferenceItemDefinition();
       
       slctk::AttributeDefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
@@ -53,7 +53,7 @@ namespace slctk
 
       bool isValueValid(slctk::AttributePtr att) const;
 
-      virtual slctk::AttributeComponentPtr buildComponent() const;
+      virtual slctk::AttributeItemPtr buildItem() const;
       int numberOfValues() const
       {return this->m_numberOfValues;}
       void setNumberOfValues(int esize);
@@ -75,4 +75,4 @@ namespace slctk
   };
 };
 
-#endif /* __slctk_attribute_AttributeReferenceComponentDefinition_h */
+#endif /* __slctk_attribute_AttributeReferenceItemDefinition_h */

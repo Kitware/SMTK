@@ -22,22 +22,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/DoubleComponentDefinition.h"
-#include "attribute/DoubleComponent.h"
-using namespace slctk::attribute;
+#include "attribute/DoubleItem.h"
+#include "attribute/DoubleItemDefinition.h"
+
+using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-DoubleComponentDefinition::DoubleComponentDefinition(const std::string &myName):
-  ValueComponentDefinitionTemplate<double>(myName)
+DoubleItem::DoubleItem()
 {
 }
 
 //----------------------------------------------------------------------------
-DoubleComponentDefinition::~DoubleComponentDefinition()
+DoubleItem::~DoubleItem()
 {
 }
 //----------------------------------------------------------------------------
-slctk::AttributeComponentPtr DoubleComponentDefinition::buildComponent() const
+Item::Type DoubleItem::type() const
 {
-  return slctk::AttributeComponentPtr(new DoubleComponent());
+  return DOUBLE;
 }

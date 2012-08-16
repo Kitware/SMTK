@@ -20,36 +20,33 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME DoubleComponent.h -
+// .NAME StringItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_DoubleComponent_h
-#define __slctk_attribute_DoubleComponent_h
+#ifndef __slctk_attribute_StringItemDefinition_h
+#define __slctk_attribute_StringItemDefinition_h
 
-#include "attribute/ValueComponentTemplate.h"
-#include "AttributeExports.h"
+#include "ValueItemDefinitionTemplate.h"
 
 namespace slctk
 {
   namespace attribute
   {
-    class Attribute;
-    class DoubleComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT DoubleComponent :
-      public ValueComponentTemplate<double>
+    class SLCTKATTRIBUTE_EXPORT StringItemDefinition :
+      public ValueItemDefinitionTemplate<std::string>
     {
-      friend class DoubleComponentDefinition; 
     public:
-      DoubleComponent();
-      virtual ~DoubleComponent();
-      virtual Component::Type type() const;
+      StringItemDefinition(const std::string &myName);
+      virtual ~StringItemDefinition();
+      virtual slctk::AttributeItemPtr buildItem() const;
+
     protected:
-      
+
     private:
 
     };
   };
 };
 
-#endif /* __slctk_attribute_DoubleComponent_h */
+#endif /* __slctk_attribute_StringItemDefinition_h */

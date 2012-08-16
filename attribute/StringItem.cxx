@@ -22,49 +22,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/GroupComponentDefinition.h"
-#include "attribute/GroupComponent.h"
+#include "attribute/StringItem.h"
+#include "attribute/StringItemDefinition.h"
+
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-GroupComponentDefinition::GroupComponentDefinition(const std::string &myName):
-  ComponentDefinition(myName)
+StringItem::StringItem()
 {
 }
 
 //----------------------------------------------------------------------------
-GroupComponentDefinition::~GroupComponentDefinition()
+StringItem::~StringItem()
 {
 }
 //----------------------------------------------------------------------------
-slctk::AttributeComponentPtr GroupComponentDefinition::buildComponent() const
+Item::Type StringItem::type() const
 {
-  return slctk::AttributeComponentPtr(new GroupComponent());
+  return STRING;
 }
-//----------------------------------------------------------------------------
-bool GroupComponentDefinition::
-addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef)
-{
-  // First see if there is a component by the same name
-  if (this->findComponentPosition(cdef->name()) >= 0)
-    {
-    return false;
-    }
-  std::size_t n = this->m_componentDefs.size();
-  this->m_componentDefs.push_back(cdef);
-  this->m_componentDefPositions[cdef->name()] = n;
-  return true;
-}
-//----------------------------------------------------------------------------
-void GroupComponentDefinition::
-buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const
-{
-  std::size_t i, n = this->m_componentDefs.size();
-  group.resize(n);
-  for (i = 0; i < n; i++)
-    {
-    group[i] = this->m_componentDefs[i]->buildComponent();
-    group[i]->setDefinition(this->m_componentDefs[i]);
-    }
-}
-//----------------------------------------------------------------------------

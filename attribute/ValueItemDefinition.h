@@ -20,19 +20,19 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ValueComponentDefinition.h -
+// .NAME ValueItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_ValueComponentDefinition_h
-#define __slctk_attribute_ValueComponentDefinition_h
+#ifndef __slctk_attribute_ValueItemDefinition_h
+#define __slctk_attribute_ValueItemDefinition_h
 
 #include <string>
 #include <set>
 #include <vector>
 
 #include "AttributeExports.h"
-#include "attribute/ComponentDefinition.h"
+#include "attribute/ItemDefinition.h"
 #include "attribute/PublicPointerDefs.h"
 
 namespace slctk
@@ -40,16 +40,16 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceComponent;
-    class AttributeReferenceComponentDefinition;
+    class AttributeReferenceItem;
+    class AttributeReferenceItemDefinition;
     class Definition;
     class Cluster;
-    class SLCTKATTRIBUTE_EXPORT ValueComponentDefinition : 
-      public slctk::attribute::ComponentDefinition
+    class SLCTKATTRIBUTE_EXPORT ValueItemDefinition : 
+      public slctk::attribute::ItemDefinition
     {
     public:
-      ValueComponentDefinition(const std::string &myname);
-      virtual ~ValueComponentDefinition();
+      ValueItemDefinition(const std::string &myname);
+      virtual ~ValueItemDefinition();
 
       const std::string &units() const
       { return this->m_units;}
@@ -68,7 +68,7 @@ namespace slctk
       bool isValidExpression(slctk::AttributePtr exp) const;
       slctk::AttributeDefinitionPtr expressionDefinition() const;
       void setExpressionDefinition(slctk::AttributeDefinitionPtr exp);
-      slctk::AttributeReferenceComponentPtr buildExpressionComponent() const;
+      slctk::AttributeReferenceItemPtr buildExpressionItem() const;
 
       bool hasDefault() const
       {return this->m_hasDefault;}
@@ -97,11 +97,11 @@ namespace slctk
       int m_defaultDiscreteIndex;
       int m_numberOfValues;
       std::string m_units;
-      slctk::AttributeReferenceComponentDefinitionPtr m_expressionDefinition;
+      slctk::AttributeReferenceItemDefinitionPtr m_expressionDefinition;
     private:
       
     };
   };
 };
 
-#endif /* __slctk_attribute_ValueComponentDefinition_h */
+#endif /* __slctk_attribute_ValueItemDefinition_h */

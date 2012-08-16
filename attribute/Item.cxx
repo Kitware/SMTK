@@ -22,24 +22,24 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/Component.h"
-#include "attribute/ComponentDefinition.h"
+#include "attribute/Item.h"
+#include "attribute/ItemDefinition.h"
 #include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Component::Component():
+Item::Item():
   m_isEnabled(true), m_definition()
 {
 }
 
 //----------------------------------------------------------------------------
-Component::~Component()
+Item::~Item()
 {
-  std::cout << "Component " << this->name() << " deleted\n";
+  std::cout << "Item " << this->name() << " deleted\n";
 }
 //----------------------------------------------------------------------------
-std::string Component::name() const
+std::string Item::name() const
 {
   if (this->m_definition == NULL)
     {
@@ -48,7 +48,7 @@ std::string Component::name() const
   return this->m_definition->name();
 }
 //----------------------------------------------------------------------------
-bool Component::setDefinition(slctk::ConstAttributeComponentDefinitionPtr def)
+bool Item::setDefinition(slctk::ConstAttributeItemDefinitionPtr def)
 {
   if (this->m_definition != NULL)
     {
@@ -58,27 +58,27 @@ bool Component::setDefinition(slctk::ConstAttributeComponentDefinitionPtr def)
   return true;
 }
 //----------------------------------------------------------------------------
-bool Component::isOptional() const
+bool Item::isOptional() const
 {
   return this->m_definition->isOptional();
 }
 //----------------------------------------------------------------------------=
-bool Component::isEnabled() const
+bool Item::isEnabled() const
 {
   return this->isOptional() ? this->m_isEnabled : true;
 }
 //----------------------------------------------------------------------------
-bool Component::isMemberOf(const std::string &catagory) const
+bool Item::isMemberOf(const std::string &catagory) const
 {
   return this->definition()->isMemberOf(catagory);
 }
 //----------------------------------------------------------------------------
-bool Component::isMemberOf(const std::vector<std::string> &catagories) const
+bool Item::isMemberOf(const std::vector<std::string> &catagories) const
 {
   return this->definition()->isMemberOf(catagories);
 }
 //----------------------------------------------------------------------------
-std::string Component::type2String(Component::Type t)
+std::string Item::type2String(Item::Type t)
 {
   switch (t)
     {
@@ -100,7 +100,7 @@ std::string Component::type2String(Component::Type t)
   return "Error!";
 }
 //----------------------------------------------------------------------------
-Component::Type Component::string2Type(const std::string &s)
+Item::Type Item::string2Type(const std::string &s)
 {
   if (s == "AttributeReference")
     {

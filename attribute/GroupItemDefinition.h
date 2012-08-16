@@ -20,14 +20,14 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME GroupComponentDefinition.h -
+// .NAME GroupItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_GroupComponentDefinition_h
-#define __slctk_attribute_GroupComponentDefinition_h
+#ifndef __slctk_attribute_GroupItemDefinition_h
+#define __slctk_attribute_GroupItemDefinition_h
 
-#include "attribute/ComponentDefinition.h"
+#include "attribute/ItemDefinition.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -36,45 +36,45 @@ namespace slctk
 {
   namespace attribute
   {
-    class SLCTKATTRIBUTE_EXPORT GroupComponentDefinition :
-      public ComponentDefinition
+    class SLCTKATTRIBUTE_EXPORT GroupItemDefinition :
+      public ItemDefinition
     {
     public:
-      GroupComponentDefinition(const std::string &myname);
-      virtual ~GroupComponentDefinition();
-      std::size_t numberOfComponentDefinitions() const
-      {return this->m_componentDefs.size();}
-      slctk::AttributeComponentDefinitionPtr componentDefinition(int ith) const
+      GroupItemDefinition(const std::string &myname);
+      virtual ~GroupItemDefinition();
+      std::size_t numberOfItemDefinitions() const
+      {return this->m_itemDefs.size();}
+      slctk::AttributeItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? slctk::AttributeComponentDefinitionPtr() : 
-          (ith >= this->m_componentDefs.size() ? 
-           slctk::AttributeComponentDefinitionPtr() : this->m_componentDefs[ith]);
+        return (ith < 0) ? slctk::AttributeItemDefinitionPtr() : 
+          (ith >= this->m_itemDefs.size() ? 
+           slctk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
-      bool addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef);
-      int findComponentPosition(const std::string &name) const;
+      bool addItemDefinition(slctk::AttributeItemDefinitionPtr cdef);
+      int findItemPosition(const std::string &name) const;
 
       int numberOfGroups() const
       {return this->m_numberOfGroups;}
       void setNumberOfGroups(int gsize)
       {this->m_numberOfGroups = gsize;}
-      virtual slctk::AttributeComponentPtr buildComponent() const;
-      void buildGroup(std::vector<slctk::AttributeComponentPtr> &group) const;
+      virtual slctk::AttributeItemPtr buildItem() const;
+      void buildGroup(std::vector<slctk::AttributeItemPtr> &group) const;
       
     protected:
-      std::vector<slctk::AttributeComponentDefinitionPtr> m_componentDefs;
-      std::map<std::string, int> m_componentDefPositions;
+      std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
+      std::map<std::string, int> m_itemDefPositions;
       int m_numberOfGroups;
     private:
     };
 //----------------------------------------------------------------------------
-    inline int GroupComponentDefinition::
-    findComponentPosition(const std::string &name) const
+    inline int GroupItemDefinition::
+    findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
-      it = this->m_componentDefPositions.find(name);
-      if (it == this->m_componentDefPositions.end())
+      it = this->m_itemDefPositions.find(name);
+      if (it == this->m_itemDefPositions.end())
         {
-        return -1; // named component doesn't exist
+        return -1; // named item doesn't exist
         }
       return it->second;
     }
@@ -82,4 +82,4 @@ namespace slctk
 };
 
 
-#endif /* __slctk_attribute_GroupComponentDefinition_h */
+#endif /* __slctk_attribute_GroupItemDefinition_h */

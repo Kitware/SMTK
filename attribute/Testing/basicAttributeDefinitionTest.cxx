@@ -24,12 +24,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Definition.h"
 #include "attribute/Attribute.h"
-#include "attribute/IntegerComponent.h"
-#include "attribute/IntegerComponentDefinition.h"
-#include "attribute/DoubleComponent.h"
-#include "attribute/DoubleComponentDefinition.h"
-#include "attribute/StringComponent.h"
-#include "attribute/StringComponentDefinition.h"
+#include "attribute/IntegerItem.h"
+#include "attribute/IntegerItemDefinition.h"
+#include "attribute/DoubleItem.h"
+#include "attribute/DoubleItemDefinition.h"
+#include "attribute/StringItem.h"
+#include "attribute/StringItemDefinition.h"
 #include <iostream>
 
 int main()
@@ -48,12 +48,12 @@ int main()
     std::cout << "ERROR: Definition testDef not created\n";
     status = -1;
     }
-  // Lets add some component definitions
-  slctk::IntegerComponentDefinitionPtr icompdef(new slctk::attribute::IntegerComponentDefinition("IntComp1"));
-  def->addComponentDefinition(icompdef);
-  slctk::IntegerComponentDefinitionPtr icompdef2(new slctk::attribute::IntegerComponentDefinition("IntComp2"));
+  // Lets add some item definitions
+  slctk::IntegerItemDefinitionPtr icompdef(new slctk::attribute::IntegerItemDefinition("IntComp1"));
+  def->addItemDefinition(icompdef);
+  slctk::IntegerItemDefinitionPtr icompdef2(new slctk::attribute::IntegerItemDefinition("IntComp2"));
   icompdef2->setDefaultValue(10);
-  def->addComponentDefinition(icompdef2);
+  def->addItemDefinition(icompdef2);
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
   if (def1 == NULL)
     {
@@ -75,29 +75,29 @@ int main()
     status = -1;
     }
 
-  if (att->numberOfComponents() != 2)
+  if (att->numberOfItems() != 2)
     {
-    std::cout << "ERROR: attribute has " << att->numberOfComponents() << " components not 2\n";
+    std::cout << "ERROR: attribute has " << att->numberOfItems() << " items not 2\n";
     status = -1;
     }
-  else if (att->component(0)->name() != "IntComp1")
+  else if (att->item(0)->name() != "IntComp1")
     {
-    std::cout << "ERROR: Attribute's 0th component is named " << att->component(0)->name()
+    std::cout << "ERROR: Attribute's 0th item is named " << att->item(0)->name()
               << " not IntComp1\n";
      status = -1;
    }
-  else if (att->component(1)->name() != "IntComp2")
+  else if (att->item(1)->name() != "IntComp2")
     {
-    std::cout << "Error Attribute's 1st component is named " << att->component(0)->name()
+    std::cout << "Error Attribute's 1st item is named " << att->item(0)->name()
               << " not IntComp2\n";
     status = -1;
     }
   else
     {
-    slctk::IntegerComponentPtr icptr;
-    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerComponent>(att->component(0));
+    slctk::IntegerItemPtr icptr;
+    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerItem>(att->item(0));
     std::cout << "Found IntComp1 - value = " << icptr->valueAsString(" %d") << std::endl;
-    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerComponent>(att->component(1));
+    icptr = slctk::dynamicCastPointer<slctk::attribute::IntegerItem>(att->item(1));
     std::cout << "Found IntComp2 - value = " << icptr->valueAsString(" %d") << std::endl;
     }
 

@@ -20,14 +20,14 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ValueComponent.h -
+// .NAME ValueItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_ValueComponent_h
-#define __slctk_attribute_ValueComponent_h
+#ifndef __slctk_attribute_ValueItem_h
+#define __slctk_attribute_ValueItem_h
 
-#include "attribute/Component.h"
+#include "attribute/Item.h"
 #include "attribute/PublicPointerDefs.h"
 #include "AttributeExports.h"
 
@@ -36,17 +36,17 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class AttributeReferenceComponent;
-    class ValueComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT ValueComponent : public slctk::attribute::Component
+    class AttributeReferenceItem;
+    class ValueItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT ValueItem : public slctk::attribute::Item
     {
     public:
-      ValueComponent();
-      virtual ~ValueComponent();
+      ValueItem();
+      virtual ~ValueItem();
       std::size_t numberOfValues() const
       {return this->m_isSet.size();}
 
-      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
+      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
       { return (this->expression(elementIndex) != NULL);}
@@ -63,11 +63,11 @@ namespace slctk
       void setDiscreteIndex(int value)
       {this->setDiscreteIndex(0, value);}
       void setDiscreteIndex(int elementIndex, int value);
-      // Reset returns the component to its initial state.
-      //If the component is of fixed size, then it's values  to their initial state.  
+      // Reset returns the item to its initial state.
+      //If the item is of fixed size, then it's values  to their initial state.  
       // If there is a default available it will use it, else
       // it will be marked as unset.
-      //If the component's definition indicated a size of 0 then it will go back to 
+      //If the item's definition indicated a size of 0 then it will go back to 
       // having no values
       virtual void reset() = 0;
       virtual bool setToDefault(int elementIndex=0) = 0;
@@ -85,11 +85,11 @@ namespace slctk
       virtual void updateDiscreteValue(int elementIndex) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
-      std::vector<slctk::AttributeReferenceComponentPtr > m_expressions;
+      std::vector<slctk::AttributeReferenceItemPtr > m_expressions;
     private:
       
     };
   };
 };
 
-#endif /* __slctk_attribute_ValueComponent_h */
+#endif /* __slctk_attribute_ValueItem_h */

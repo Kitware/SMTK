@@ -22,22 +22,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/IntegerComponentDefinition.h"
-#include "attribute/IntegerComponent.h"
+#include "attribute/IntegerItemDefinition.h"
+#include "attribute/IntegerItem.h"
 using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-IntegerComponentDefinition::IntegerComponentDefinition(const std::string &myName):
-  ValueComponentDefinitionTemplate<int>(myName)
+IntegerItemDefinition::IntegerItemDefinition(const std::string &myName):
+  ValueItemDefinitionTemplate<int>(myName)
 {
 }
 
 //----------------------------------------------------------------------------
-IntegerComponentDefinition::~IntegerComponentDefinition()
+IntegerItemDefinition::~IntegerItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-slctk::AttributeComponentPtr IntegerComponentDefinition::buildComponent() const
+slctk::AttributeItemPtr IntegerItemDefinition::buildItem() const
 {
-  return slctk::AttributeComponentPtr(new IntegerComponent());
+  return slctk::AttributeItemPtr(new IntegerItem());
 }

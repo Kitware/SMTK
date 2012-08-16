@@ -41,7 +41,7 @@ namespace slctk
   {
     class Attribute;
     class Cluster;
-    class ComponentDefinition;
+    class ItemDefinition;
     class Manager;
  
     class SLCTKATTRIBUTE_EXPORT Definition
@@ -132,26 +132,26 @@ namespace slctk
       bool canBeAssociated(slctk::ModelEntity *entity,
                            std::vector<slctk::attribute::Attribute *>*conflicts) const;
       bool conflicts(slctk::AttributeDefinitionPtr definition) const;
-      std::size_t numberOfComponentDefinitions() const
-      {return this->m_componentDefs.size();}
-      slctk::AttributeComponentDefinitionPtr componentDefinition(int ith) const
+      std::size_t numberOfItemDefinitions() const
+      {return this->m_itemDefs.size();}
+      slctk::AttributeItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? slctk::AttributeComponentDefinitionPtr()
-          : (ith >= this->m_componentDefs.size() ? 
-             slctk::AttributeComponentDefinitionPtr() : this->m_componentDefs[ith]);
+        return (ith < 0) ? slctk::AttributeItemDefinitionPtr()
+          : (ith >= this->m_itemDefs.size() ? 
+             slctk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
-      bool addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef);
+      bool addItemDefinition(slctk::AttributeItemDefinitionPtr cdef);
       template<typename T>
         typename slctk::shared_ptr_type<T>::type addDef(const std::string &name)
       {
         typedef slctk::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::type comp(new typename SharedTypes::T_Type(name));
-        this->m_componentDefs.push_back(comp);
+        this->m_itemDefs.push_back(comp);
         return comp;
       }
 
-      int findComponentPosition(const std::string &name) const;
+      int findItemPosition(const std::string &name) const;
 
       const char *detailedDescription() const
       {return this->m_detailedDescription.c_str();}
@@ -178,8 +178,8 @@ namespace slctk
       bool m_isNodal;
       std::set<std::string> m_catagories;
       int m_advanceLevel;
-      std::vector<slctk::AttributeComponentDefinitionPtr> m_componentDefs;
-      std::map<std::string, int> m_componentDefPositions;
+      std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
+      std::map<std::string, int> m_itemDefPositions;
 //Is Unique indicates if more than one attribute of this type can be assigned to a 
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
 // has isUnique = true it will also prevent an attribute from this definition being assigned if the
@@ -193,13 +193,13 @@ namespace slctk
       
     };
 //----------------------------------------------------------------------------
-    inline int Definition::findComponentPosition(const std::string &name) const
+    inline int Definition::findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
-      it = this->m_componentDefPositions.find(name);
-      if (it == this->m_componentDefPositions.end())
+      it = this->m_itemDefPositions.find(name);
+      if (it == this->m_itemDefPositions.end())
         {
-        return -1; // named component doesn't exist
+        return -1; // named item doesn't exist
         }
       return it->second;
     }

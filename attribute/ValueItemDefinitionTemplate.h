@@ -20,14 +20,14 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ValueComponentDefinitionTemplate.h -
+// .NAME ValueItemDefinitionTemplate.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_ValueComponentDefinitionTemplate_h
-#define __slctk_attribute_ValueComponentDefinitionTemplate_h
+#ifndef __slctk_attribute_ValueItemDefinitionTemplate_h
+#define __slctk_attribute_ValueItemDefinitionTemplate_h
 
-#include "ValueComponentDefinition.h"
+#include "ValueItemDefinition.h"
 #include <iostream>
 #include <sstream>
 
@@ -36,14 +36,14 @@ namespace slctk
   namespace attribute
   {
     template<typename DataT>
-    class ValueComponentDefinitionTemplate :
-      public slctk::attribute::ValueComponentDefinition
+    class ValueItemDefinitionTemplate :
+      public slctk::attribute::ValueItemDefinition
     {
     public:
       typedef DataT DataType;
 
-      ValueComponentDefinitionTemplate(const std::string &myname);
-      virtual ~ValueComponentDefinitionTemplate() {}
+      ValueItemDefinitionTemplate(const std::string &myname);
+      virtual ~ValueItemDefinitionTemplate() {}
       
       const DataT &defaultValue() const
       {return this->m_defaultValue;}
@@ -86,9 +86,9 @@ namespace slctk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueComponentDefinitionTemplate<DataT>::
-    ValueComponentDefinitionTemplate(const std::string &myname):
-      ValueComponentDefinition(myname)
+    ValueItemDefinitionTemplate<DataT>::
+    ValueItemDefinitionTemplate(const std::string &myname):
+      ValueItemDefinition(myname)
     {
       this->m_minRangeSet = false;
       this->m_minRangeInclusive = false;
@@ -97,7 +97,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueComponentDefinitionTemplate<DataT>::
+    void ValueItemDefinitionTemplate<DataT>::
     setDefaultValue(const DataT &dvalue)
     {
       this->m_defaultValue = dvalue;
@@ -105,7 +105,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueComponentDefinitionTemplate<DataT>::
+    void ValueItemDefinitionTemplate<DataT>::
     addDiscreteValue(const DataT &dvalue)
     {
       // Set the label to be based on the value
@@ -115,7 +115,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueComponentDefinitionTemplate<DataT>::
+    void ValueItemDefinitionTemplate<DataT>::
     addDiscreteValue(const DataT &dvalue, const std::string &dlabel)
     {
       this->m_discreteValues.push_back(dvalue);
@@ -123,7 +123,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueComponentDefinitionTemplate<DataT>::
+    bool ValueItemDefinitionTemplate<DataT>::
     setMinRange(const DataT &minVal, bool isInclusive)
     {
       if ((!this->m_maxRangeSet) || (minVal < this->m_maxRange))
@@ -137,7 +137,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueComponentDefinitionTemplate<DataT>::
+    bool ValueItemDefinitionTemplate<DataT>::
     setMaxRange(const DataT &maxVal, bool isInclusive)
     {
       if ((!this->m_minRangeSet) || (maxVal > this->m_minRange))
@@ -151,7 +151,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueComponentDefinitionTemplate<DataT>::
+    void ValueItemDefinitionTemplate<DataT>::
     clearRange()
     {
       this->m_minRangeSet = false;
@@ -159,7 +159,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    int ValueComponentDefinitionTemplate<DataT>::
+    int ValueItemDefinitionTemplate<DataT>::
     findDiscreteIndex(const DataT &val) const
     {
       // Are we dealing with Discrete Values?
@@ -179,7 +179,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueComponentDefinitionTemplate<DataT>::
+    bool ValueItemDefinitionTemplate<DataT>::
     isValueValid(const DataT &val) const
     {
       // Are we dealing with Discrete Values?
@@ -208,4 +208,4 @@ namespace slctk
   };
 };
 
-#endif /* __slctk_attribute_ValueComponentDefinitionTemplate_h */
+#endif /* __slctk_attribute_ValueItemDefinitionTemplate_h */

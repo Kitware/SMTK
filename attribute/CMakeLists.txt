@@ -2,46 +2,46 @@ project(Slctk_Attribute)
 
 set(headers
   Attribute.h
-  AttributeReferenceComponent.h
-  AttributeReferenceComponentDefinition.h
+  AttributeReferenceItem.h
+  AttributeReferenceItemDefinition.h
   Cluster.h
-  Component.h
-  ComponentDefinition.h
+  Item.h
+  ItemDefinition.h
   Definition.h
-  DoubleComponent.h
-  DoubleComponentDefinition.h
-  GroupComponent.h
-  GroupComponentDefinition.h
-  IntegerComponent.h
-  IntegerComponentDefinition.h
+  DoubleItem.h
+  DoubleItemDefinition.h
+  GroupItem.h
+  GroupItemDefinition.h
+  IntegerItem.h
+  IntegerItemDefinition.h
   Manager.h
-  StringComponent.h
-  StringComponentDefinition.h
-  ValueComponent.h
-  ValueComponentDefinition.h
-  ValueComponentDefinitionTemplate.h
-  ValueComponentTemplate.h
+  StringItem.h
+  StringItemDefinition.h
+  ValueItem.h
+  ValueItemDefinition.h
+  ValueItemDefinitionTemplate.h
+  ValueItemTemplate.h
   )
 
 set(attribute_srcs
   Attribute.cxx
-  AttributeReferenceComponent.cxx
-  AttributeReferenceComponentDefinition.cxx
+  AttributeReferenceItem.cxx
+  AttributeReferenceItemDefinition.cxx
   Cluster.cxx
-  Component.cxx
-  ComponentDefinition.cxx
+  Item.cxx
+  ItemDefinition.cxx
   Definition.cxx
-  DoubleComponent.cxx
-  DoubleComponentDefinition.cxx
-  GroupComponent.cxx
-  GroupComponentDefinition.cxx
-  IntegerComponent.cxx
-  IntegerComponentDefinition.cxx
+  DoubleItem.cxx
+  DoubleItemDefinition.cxx
+  GroupItem.cxx
+  GroupItemDefinition.cxx
+  IntegerItem.cxx
+  IntegerItemDefinition.cxx
   Manager.cxx
-  StringComponent.cxx
-  StringComponentDefinition.cxx
-  ValueComponent.cxx
-  ValueComponentDefinition.cxx
+  StringItem.cxx
+  StringItemDefinition.cxx
+  ValueItem.cxx
+  ValueItemDefinition.cxx
   )
 
 add_library(SlctkAttribute ${attribute_srcs} ${headers})

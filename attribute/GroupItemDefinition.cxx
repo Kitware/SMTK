@@ -22,22 +22,49 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/DoubleComponent.h"
-#include "attribute/DoubleComponentDefinition.h"
-
+#include "attribute/GroupItemDefinition.h"
+#include "attribute/GroupItem.h"
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-DoubleComponent::DoubleComponent()
+GroupItemDefinition::GroupItemDefinition(const std::string &myName):
+  ItemDefinition(myName)
 {
 }
 
 //----------------------------------------------------------------------------
-DoubleComponent::~DoubleComponent()
+GroupItemDefinition::~GroupItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-Component::Type DoubleComponent::type() const
+slctk::AttributeItemPtr GroupItemDefinition::buildItem() const
 {
-  return DOUBLE;
+  return slctk::AttributeItemPtr(new GroupItem());
 }
+//----------------------------------------------------------------------------
+bool GroupItemDefinition::
+addItemDefinition(slctk::AttributeItemDefinitionPtr cdef)
+{
+  // First see if there is a item by the same name
+  if (this->findItemPosition(cdef->name()) >= 0)
+    {
+    return false;
+    }
+  std::size_t n = this->m_itemDefs.size();
+  this->m_itemDefs.push_back(cdef);
+  this->m_itemDefPositions[cdef->name()] = n;
+  return true;
+}
+//----------------------------------------------------------------------------
+void GroupItemDefinition::
+buildGroup(std::vector<slctk::AttributeItemPtr> &group) const
+{
+  std::size_t i, n = this->m_itemDefs.size();
+  group.resize(n);
+  for (i = 0; i < n; i++)
+    {
+    group[i] = this->m_itemDefs[i]->buildItem();
+    group[i]->setDefinition(this->m_itemDefs[i]);
+    }
+}
+//----------------------------------------------------------------------------

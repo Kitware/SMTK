@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ComponentDefinition.h -
+// .NAME ItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_ComponentDefinition_h
-#define __slctk_attribute_ComponentDefinition_h
+#ifndef __slctk_attribute_ItemDefinition_h
+#define __slctk_attribute_ItemDefinition_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
@@ -39,13 +39,13 @@ namespace slctk
   namespace attribute
   {
     class Cluster;
-    class Component;
+    class Item;
     class Definition;
-    class SLCTKATTRIBUTE_EXPORT ComponentDefinition
+    class SLCTKATTRIBUTE_EXPORT ItemDefinition
     {
     public:
-      ComponentDefinition(const std::string &myname);
-      virtual ~ComponentDefinition();
+      ItemDefinition(const std::string &myname);
+      virtual ~ItemDefinition();
       const std::string &name() const
       { return this->m_name;}
 
@@ -97,7 +97,7 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      virtual slctk::AttributeComponentPtr buildComponent() const = 0;
+      virtual slctk::AttributeItemPtr buildItem() const = 0;
     protected:
 
       int m_version;
@@ -114,4 +114,4 @@ namespace slctk
   };
 };
 
-#endif /* __slctk_attribute_ComponentDefinition_h */
+#endif /* __slctk_attribute_ItemDefinition_h */

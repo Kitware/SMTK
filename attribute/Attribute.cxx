@@ -23,9 +23,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/Attribute.h"
-#include "attribute/AttributeReferenceComponent.h"
+#include "attribute/AttributeReferenceItem.h"
 #include "attribute/Cluster.h"
-#include "attribute/Component.h"
+#include "attribute/Item.h"
 #include "attribute/Definition.h"
 #include <iostream>
 using namespace slctk::attribute; 
@@ -41,12 +41,12 @@ Attribute::~Attribute()
 {
   std::cout << "Deleting Attribute " << this->name() << "\n";
   this->removeAllAssociations();
-  this->removeAllComponents();
+  this->removeAllItems();
  }
 //----------------------------------------------------------------------------
-void Attribute::removeAllComponents()
+void Attribute::removeAllItems()
 {
-  this->m_components.clear();
+  this->m_items.clear();
 }
 //----------------------------------------------------------------------------
 const std::string &Attribute::type() const
@@ -119,20 +119,20 @@ void Attribute::removeAllAssociations()
     }
 }
 //----------------------------------------------------------------------------
-slctk::ConstAttributeComponentPtr Attribute::find(const std::string &name) const
+slctk::ConstAttributeItemPtr Attribute::find(const std::string &name) const
 {
-  int i = this->definition()->findComponentPosition(name);
+  int i = this->definition()->findItemPosition(name);
   if (i < 0)
     {
-    return slctk::ConstAttributeComponentPtr();
+    return slctk::ConstAttributeItemPtr();
     }
-  return this->m_components[i];
+  return this->m_items[i];
 }
 
 //----------------------------------------------------------------------------
-slctk::AttributeComponentPtr Attribute::find(const std::string &name)
+slctk::AttributeItemPtr Attribute::find(const std::string &name)
 {
-  int i = this->definition()->findComponentPosition(name);
-  return (i < 0) ? slctk::AttributeComponentPtr() : this->m_components[i];
+  int i = this->definition()->findItemPosition(name);
+  return (i < 0) ? slctk::AttributeItemPtr() : this->m_items[i];
 }
 //----------------------------------------------------------------------------

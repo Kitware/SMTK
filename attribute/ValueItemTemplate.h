@@ -20,16 +20,16 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ValueComponentTemplate.h -
+// .NAME ValueItemTemplate.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_ValueComponentTemplate_h
-#define __slctk_attribute_ValueComponentTemplate_h
+#ifndef __slctk_attribute_ValueItemTemplate_h
+#define __slctk_attribute_ValueItemTemplate_h
 
-#include "attribute/AttributeReferenceComponent.h"
-#include "attribute/ValueComponent.h"
-#include "attribute/ValueComponentDefinitionTemplate.h"
+#include "attribute/AttributeReferenceItem.h"
+#include "attribute/ValueItem.h"
+#include "attribute/ValueItemDefinitionTemplate.h"
 #include <vector>
 
 namespace slctk
@@ -37,16 +37,16 @@ namespace slctk
   namespace attribute
   {
     template<typename DataT>
-    class ValueComponentTemplate : public ValueComponent
+    class ValueItemTemplate : public ValueItem
     {
-      //template<DataT> friend class ValueComponentDefinitionTemplate;
+      //template<DataT> friend class ValueItemDefinitionTemplate;
     public:
       typedef DataT DataType;
-      typedef ValueComponentDefinitionTemplate<DataType> DefType;
+      typedef ValueItemDefinitionTemplate<DataType> DefType;
       
-      ValueComponentTemplate();
-      virtual ~ValueComponentTemplate() {}
-      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr vdef);
+      ValueItemTemplate();
+      virtual ~ValueItemTemplate() {}
+      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
       DataT value(int element=0) const
       {return this->m_values[element];}
       virtual std::string valueAsString(const std::string &format="") const
@@ -69,13 +69,13 @@ namespace slctk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueComponentTemplate<DataT>::ValueComponentTemplate()
+    ValueItemTemplate<DataT>::ValueItemTemplate()
     {
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueComponentTemplate<DataT>::
-    setDefinition(slctk::ConstAttributeComponentDefinitionPtr tdef)
+    bool ValueItemTemplate<DataT>::
+    setDefinition(slctk::ConstAttributeItemDefinitionPtr tdef)
     {
       // Note that we do a dynamic cast here since we don't
       // know if the proper definition is being passed
@@ -83,7 +83,7 @@ namespace slctk
         dynamic_cast<const DefType *>(tdef.get());
       // Call the parent's set definition - similar to constructor calls
       // we call from base to derived
-      if ((def == NULL) || (!ValueComponent::setDefinition(tdef)))
+      if ((def == NULL) || (!ValueItem::setDefinition(tdef)))
         {
         return false;
         }
@@ -105,7 +105,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueComponentTemplate<DataT>::setValue(int element, const DataT &val)
+    bool ValueItemTemplate<DataT>::setValue(int element, const DataT &val)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (def->isDiscrete())
@@ -134,7 +134,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueComponentTemplate<DataT>::updateDiscreteValue(int element)
+    void ValueItemTemplate<DataT>::updateDiscreteValue(int element)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       this->m_values[element] =
@@ -143,7 +143,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     std::string
-    ValueComponentTemplate<DataT>::valueAsString(int element, 
+    ValueItemTemplate<DataT>::valueAsString(int element, 
                                           const std::string &format) const
     {
       // For the initial design we will use sprintf and force a limit of 300 char
@@ -165,7 +165,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<>
     inline std::string
-    ValueComponentTemplate<std::string>::valueAsString(int element, 
+    ValueItemTemplate<std::string>::valueAsString(int element, 
                                           const std::string &format) const
     {
       // For the initial design we will use sprintf and force a limit of 300 char
@@ -194,7 +194,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<>
     inline std::string
-    ValueComponentTemplate<int>::valueAsString(int element, 
+    ValueItemTemplate<int>::valueAsString(int element, 
                                                const std::string &format) const
     {
       // For the initial design we will use sprintf and force a limit of 300 char
@@ -223,7 +223,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<>
     inline std::string
-    ValueComponentTemplate<double>::valueAsString(int element, 
+    ValueItemTemplate<double>::valueAsString(int element, 
                                                const std::string &format) const
     {
       // For the initial design we will use sprintf and force a limit of 300 char
@@ -252,7 +252,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueComponentTemplate<DataT>::appendValue(const DataT &val)
+    ValueItemTemplate<DataT>::appendValue(const DataT &val)
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition());
@@ -273,7 +273,7 @@ namespace slctk
           if (def->allowsExpressions())
             {
             this->m_expressions.
-              push_back(def->buildExpressionComponent());
+              push_back(def->buildExpressionItem());
             }
           return true;
           }
@@ -284,7 +284,7 @@ namespace slctk
         if (def->allowsExpressions())
           {
           this->m_expressions.
-            push_back(def->expressionDefinition()->buildComponent());
+            push_back(def->expressionDefinition()->buildItem());
           }
         this->m_values.push_back(val);
         this->m_isSet.push_back(true);
@@ -295,7 +295,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueComponentTemplate<DataT>::removeValue(int element)
+    ValueItemTemplate<DataT>::removeValue(int element)
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition());
@@ -320,7 +320,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueComponentTemplate<DataT>::setToDefault(int element)
+    ValueItemTemplate<DataT>::setToDefault(int element)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def->hasDefault())
@@ -341,7 +341,7 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     void
-    ValueComponentTemplate<DataT>::reset()
+    ValueItemTemplate<DataT>::reset()
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
@@ -395,10 +395,10 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueComponentTemplate<DataT>::appendExpression(slctk::AttributePtr exp)
+    ValueItemTemplate<DataT>::appendExpression(slctk::AttributePtr exp)
     {
       // See if the parent class appended the expression
-      if (ValueComponent::appendExpression(exp))
+      if (ValueItem::appendExpression(exp))
         {
         // Resize the values array to match
         this->m_values.resize(this->m_expressions.size());
@@ -410,4 +410,4 @@ namespace slctk
 };
 
 
-#endif /* __slctk_attribute_ValueComponentTemplate_h */
+#endif /* __slctk_attribute_ValueItemTemplate_h */

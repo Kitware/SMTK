@@ -20,48 +20,48 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME GroupComponent.h -
+// .NAME GroupItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_GroupComponent_h
-#define __slctk_attribute_GroupComponent_h
+#ifndef __slctk_attribute_GroupItem_h
+#define __slctk_attribute_GroupItem_h
 
 #include "AttributeExports.h"
-#include "attribute/Component.h"
+#include "attribute/Item.h"
 #include <vector>
 namespace slctk
 {
   namespace attribute
   {
-    class GroupComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT GroupComponent : public Component
+    class GroupItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT GroupItem : public Item
     {
     public:
-      GroupComponent();
-      virtual ~GroupComponent();
-      virtual Component::Type type() const;
-      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
-      std::size_t numberOfComponentsPerGroup() const;
+      GroupItem();
+      virtual ~GroupItem();
+      virtual Item::Type type() const;
+      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
+      std::size_t numberOfItemsPerGroup() const;
       std::size_t numberOfGroups() const
-      {return this->m_components.size();}
+      {return this->m_items.size();}
       bool appendGroup();
       bool removeGroup(int element);
 
-      slctk::AttributeComponentPtr component(int ith) const
-      {return this->component(0, ith);}
-      slctk::AttributeComponentPtr component(int element, int ith) const
-        {return this->m_components[element][ith];}
+      slctk::AttributeItemPtr item(int ith) const
+      {return this->item(0, ith);}
+      slctk::AttributeItemPtr item(int element, int ith) const
+        {return this->m_items[element][ith];}
 
-      slctk::AttributeComponentPtr find(const std::string &name)
+      slctk::AttributeItemPtr find(const std::string &name)
         {return this->find(0, name);}
-      slctk::AttributeComponentPtr find(int element, const std::string &name) ;
-      slctk::ConstAttributeComponentPtr find(const std::string &name) const
+      slctk::AttributeItemPtr find(int element, const std::string &name) ;
+      slctk::ConstAttributeItemPtr find(const std::string &name) const
         {return this->find(0, name);}
-      slctk::ConstAttributeComponentPtr find(int element, const std::string &name) const;
+      slctk::ConstAttributeItemPtr find(int element, const std::string &name) const;
 
     protected:
-      std::vector<std::vector<slctk::AttributeComponentPtr> >m_components;
+      std::vector<std::vector<slctk::AttributeItemPtr> >m_items;
   
     private:
     };
@@ -69,4 +69,4 @@ namespace slctk
 };
 
 
-#endif /* __GroupComponent_h */
+#endif /* __GroupItem_h */

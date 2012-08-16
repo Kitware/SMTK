@@ -22,22 +22,35 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/StringComponent.h"
-#include "attribute/StringComponentDefinition.h"
-
+#include "attribute/ItemDefinition.h"
+#include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-StringComponent::StringComponent()
+ItemDefinition::ItemDefinition(const std::string &myName)
 {
+  this->m_name = myName;
+  this->m_version = 0;
+  this->m_advanceLevel = 0;
+  this->m_isOptional = false;
 }
 
 //----------------------------------------------------------------------------
-StringComponent::~StringComponent()
+ItemDefinition::~ItemDefinition()
 {
+  std::cout << "Item Definition " << m_name << " deleted\n";
 }
 //----------------------------------------------------------------------------
-Component::Type StringComponent::type() const
+bool ItemDefinition::isMemberOf(const std::vector<std::string> &catagories) const
 {
-  return STRING;
+  std::size_t i, n = catagories.size();
+  for (i = 0; i < n; i++)
+    {
+    if (this->isMemberOf(catagories[i]))
+      {
+      return true;
+      }
+    }
+    return false;
 }
+//----------------------------------------------------------------------------

@@ -20,14 +20,14 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME StringComponent.h -
+// .NAME IntegerItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_StringComponent_h
-#define __slctk_attribute_StringComponent_h
+#ifndef __slctk_attribute_IntegerItem_h
+#define __slctk_attribute_IntegerItem_h
 
-#include "attribute/ValueComponentTemplate.h"
+#include "attribute/ValueItemTemplate.h"
 #include "AttributeExports.h"
 
 namespace slctk
@@ -35,15 +35,15 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class StringComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT StringComponent :
-      public ValueComponentTemplate<std::string>
+    class IntegerItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT IntegerItem :
+      public ValueItemTemplate<int>
     {
-      friend class StringComponentDefinition; 
+      friend class IntegerItemDefinition; 
     public:
-      StringComponent();
-      virtual ~StringComponent();
-      virtual Component::Type type() const;
+      IntegerItem();
+      virtual ~IntegerItem();
+      virtual Item::Type type() const;
     protected:
       
     private:
@@ -52,4 +52,4 @@ namespace slctk
   };
 };
 
-#endif /* __slctk_attribute_StringComponent_h */
+#endif /* __slctk_attribute_IntegerItem_h */

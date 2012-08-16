@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/Attribute.h"
 #include "attribute/Cluster.h"
-#include "attribute/Component.h"
-#include "attribute/ComponentDefinition.h"
+#include "attribute/Item.h"
+#include "attribute/ItemDefinition.h"
 #include <iostream>
 
 using namespace slctk::attribute; 
@@ -138,7 +138,7 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
 //----------------------------------------------------------------------------
 void Definition::buildAttribute(AttributePtr att) const
 {
-  // If there is a super definition have it prep the attribute and add its components
+  // If there is a super definition have it prep the attribute and add its items
   const Definition *bdef = this->baseDefinition().get();
   if (bdef)
     {
@@ -147,19 +147,19 @@ void Definition::buildAttribute(AttributePtr att) const
   else
     {
     // This is the "base definition" so first we should make sure the attribute 
-    // is "empty" of components
-    att->removeAllComponents();
+    // is "empty" of items
+    att->removeAllItems();
     }
 
-  // Next - for each component definition we have build and add the appropriate
-  // component to the attribute
-  slctk::AttributeComponentPtr comp;
-  std::size_t i, n = this->m_componentDefs.size();
+  // Next - for each item definition we have build and add the appropriate
+  // item to the attribute
+  slctk::AttributeItemPtr comp;
+  std::size_t i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
-    comp = this->m_componentDefs[i]->buildComponent();
-    comp->setDefinition(this->m_componentDefs[i]);
-    att->addComponent(comp);
+    comp = this->m_itemDefs[i]->buildItem();
+    comp->setDefinition(this->m_itemDefs[i]);
+    att->addItem(comp);
     }
 }
 //----------------------------------------------------------------------------
@@ -174,16 +174,16 @@ bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool Definition::addComponentDefinition(slctk::AttributeComponentDefinitionPtr cdef)
+bool Definition::addItemDefinition(slctk::AttributeItemDefinitionPtr cdef)
 {
-  // First see if there is a component by the same name
-  if (this->findComponentPosition(cdef->name()) >= 0)
+  // First see if there is a item by the same name
+  if (this->findItemPosition(cdef->name()) >= 0)
     {
     return false;
     }
-  std::size_t n = this->m_componentDefs.size();
-  this->m_componentDefs.push_back(cdef);
-  this->m_componentDefPositions[cdef->name()] = n;
+  std::size_t n = this->m_itemDefs.size();
+  this->m_itemDefs.push_back(cdef);
+  this->m_itemDefPositions[cdef->name()] = n;
   return true;
 }
 //----------------------------------------------------------------------------

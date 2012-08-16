@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Component.h -
+// .NAME Item.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_Component_h
-#define __slctk_attribute_Component_h
+#ifndef __slctk_attribute_Item_h
+#define __slctk_attribute_Item_h
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
@@ -37,8 +37,8 @@ namespace slctk
 {
   namespace attribute
   {
-    class ComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT Component
+    class ItemDefinition;
+    class SLCTKATTRIBUTE_EXPORT Item
     {
     public:
      enum Type
@@ -52,18 +52,18 @@ namespace slctk
        NUMBER_OF_TYPES
      };
        
-      Component();
-      virtual ~Component();
+      Item();
+      virtual ~Item();
       std::string name() const;
-      virtual Component::Type type() const = 0;
-      virtual bool setDefinition(slctk::ConstAttributeComponentDefinitionPtr def);
-      slctk::ConstAttributeComponentDefinitionPtr definition() const
+      virtual Item::Type type() const = 0;
+      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
+      slctk::ConstAttributeItemDefinitionPtr definition() const
       {return this->m_definition;}
 
       bool isOptional() const;
 
-      // isEnabled only matters for optional components.  All non-optional
-      // components will return true for isEnabled regardless of the value 
+      // isEnabled only matters for optional items.  All non-optional
+      // items will return true for isEnabled regardless of the value 
       // of m_isEnabled
       bool isEnabled() const;
       void setIsEnabled(bool isEnabledValue)
@@ -72,19 +72,19 @@ namespace slctk
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-      static std::string type2String(Component::Type t);
-      static Component::Type string2Type(const std::string &s);
+      static std::string type2String(Item::Type t);
+      static Item::Type string2Type(const std::string &s);
 
      protected:
-      // This method allows any Component to delete another - USE WITH CARE!
-      void deleteComponent();
+      // This method allows any Item to delete another - USE WITH CARE!
+      void deleteItem();
       bool m_isEnabled;
       mutable std::string m_tempString;
-      slctk::ConstAttributeComponentDefinitionPtr m_definition;
+      slctk::ConstAttributeItemDefinitionPtr m_definition;
     private:
       
     };
   };
 };
 
-#endif /* __slctk_attribute_Component_h */
+#endif /* __slctk_attribute_Item_h */

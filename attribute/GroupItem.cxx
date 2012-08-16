@@ -22,35 +22,35 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/GroupComponent.h"
-#include "attribute/GroupComponentDefinition.h"
+#include "attribute/GroupItem.h"
+#include "attribute/GroupItemDefinition.h"
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-GroupComponent::GroupComponent()
+GroupItem::GroupItem()
 {
 }
 
 //----------------------------------------------------------------------------
-GroupComponent::~GroupComponent()
+GroupItem::~GroupItem()
 {
 }
 //----------------------------------------------------------------------------
-Component::Type GroupComponent::type() const
+Item::Type GroupItem::type() const
 {
   return GROUP;
 }
 //----------------------------------------------------------------------------
 bool
-GroupComponent::setDefinition(slctk::ConstAttributeComponentDefinitionPtr gdef) 
+GroupItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr gdef) 
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const GroupComponentDefinition *def = 
-    dynamic_cast<const GroupComponentDefinition *>(gdef.get());
+  const GroupItemDefinition *def = 
+    dynamic_cast<const GroupItemDefinition *>(gdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (Component::setDefinition(gdef)))
+  if ((def == NULL) || (Item::setDefinition(gdef)))
     {
     return false;
     }
@@ -58,69 +58,69 @@ GroupComponent::setDefinition(slctk::ConstAttributeComponentDefinitionPtr gdef)
   std::size_t i, n = def->numberOfGroups();
   if (n)
     {
-    this->m_components.resize(n);
+    this->m_items.resize(n);
     for (i = 0; i < n; i++)
       {
-      def->buildGroup(this->m_components[i]);
+      def->buildGroup(this->m_items[i]);
       }
     }
   return true;
 }
 //----------------------------------------------------------------------------
-std::size_t GroupComponent::numberOfComponentsPerGroup() const
+std::size_t GroupItem::numberOfItemsPerGroup() const
 {
-  const GroupComponentDefinition *def = 
-    static_cast<const GroupComponentDefinition *>(this->definition().get());
-  return def->numberOfComponentDefinitions();
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  return def->numberOfItemDefinitions();
 }
 //----------------------------------------------------------------------------
-bool GroupComponent::appendGroup()
+bool GroupItem::appendGroup()
 {
-  const GroupComponentDefinition *def = 
-    static_cast<const GroupComponentDefinition *>(this->definition().get());
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
   std::size_t n = def->numberOfGroups();
   if (n)
     {
-    // Can not change the number of components
+    // Can not change the number of items
     return false;
     }
-  n = this->m_components.size();
-  this->m_components.resize(n+1);
-  def->buildGroup(this->m_components[n]);
+  n = this->m_items.size();
+  this->m_items.resize(n+1);
+  def->buildGroup(this->m_items[n]);
   return true;
 }
 //----------------------------------------------------------------------------
-bool GroupComponent::removeGroup(int element)
+bool GroupItem::removeGroup(int element)
 {
-  const GroupComponentDefinition *def = 
-    static_cast<const GroupComponentDefinition *>(this->definition().get());
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
   std::size_t n = def->numberOfGroups();
   if (n)
     {
-    // Can not change the number of components
+    // Can not change the number of items
     return false;
     }
-  this->m_components.erase(this->m_components.begin() + element);
+  this->m_items.erase(this->m_items.begin() + element);
   return true;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeComponentPtr GroupComponent::find(int element, const std::string &name)
+slctk::AttributeItemPtr GroupItem::find(int element, const std::string &name)
 {
-  const GroupComponentDefinition *def = 
-    static_cast<const GroupComponentDefinition *>(this->definition().get());
-  int i = def->findComponentPosition(name);
-  return (i < 0) ? slctk::AttributeComponentPtr() : this->m_components[element][i];
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  int i = def->findItemPosition(name);
+  return (i < 0) ? slctk::AttributeItemPtr() : this->m_items[element][i];
 }
 //----------------------------------------------------------------------------
-slctk::ConstAttributeComponentPtr GroupComponent::find(int element, const std::string &name) const
+slctk::ConstAttributeItemPtr GroupItem::find(int element, const std::string &name) const
 {
-  const GroupComponentDefinition *def = 
-    static_cast<const GroupComponentDefinition *>(this->definition().get());
-  int i = def->findComponentPosition(name);
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  int i = def->findItemPosition(name);
   if (i < 0)
     {
-    return slctk::ConstAttributeComponentPtr();
+    return slctk::ConstAttributeItemPtr();
     }
-  return this->m_components[element][i];
+  return this->m_items[element][i];
 }
 //----------------------------------------------------------------------------

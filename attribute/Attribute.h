@@ -42,15 +42,15 @@ namespace slctk
 
   namespace attribute
   {
-    class AttributeReferenceComponent;
-    class Component;
+    class AttributeReferenceItem;
+    class Item;
     class Definition;
     class Cluster;
     class Manager;
 
     class SLCTKATTRIBUTE_EXPORT Attribute
     {
-      friend class slctk::attribute::AttributeReferenceComponent;
+      friend class slctk::attribute::AttributeReferenceItem;
       friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Definition;
     public:
@@ -72,17 +72,17 @@ namespace slctk
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-      slctk::AttributeComponentPtr component(int ith) const
+      slctk::AttributeItemPtr item(int ith) const
       {
-        return (ith < 0) ? slctk::AttributeComponentPtr() : 
-          (ith >= this->m_components.size() ? 
-           slctk::AttributeComponentPtr() : this->m_components[ith]);
+        return (ith < 0) ? slctk::AttributeItemPtr() : 
+          (ith >= this->m_items.size() ? 
+           slctk::AttributeItemPtr() : this->m_items[ith]);
       }
 
-      slctk::AttributeComponentPtr find(const std::string &name) ;
-      slctk::ConstAttributeComponentPtr find(const std::string &name) const;
-      std::size_t numberOfComponents() const
-      {return this->m_components.size();}
+      slctk::AttributeItemPtr find(const std::string &name) ;
+      slctk::ConstAttributeItemPtr find(const std::string &name) const;
+      std::size_t numberOfItems() const
+      {return this->m_items.size();}
 
       std::size_t numberOfAssociatedEntities() const
       { return this->m_entities.size();}
@@ -111,14 +111,14 @@ namespace slctk
       {return this->m_cluster.lock();}
 
     protected:
-      void removeAllComponents();
-      void addComponent(slctk::AttributeComponentPtr component)
-      {this->m_components.push_back(component);}
+      void removeAllItems();
+      void addItem(slctk::AttributeItemPtr item)
+      {this->m_items.push_back(item);}
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
       std::string m_name;
-      std::vector<slctk::AttributeComponentPtr> m_components;
+      std::vector<slctk::AttributeItemPtr> m_items;
       unsigned long m_id;
       slctk::WeakAttributeClusterPtr m_cluster;
       std::set<slctk::ModelEntity *> m_entities;

@@ -20,36 +20,24 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME IntegerComponent.h -
-// .SECTION Description
-// .SECTION See Also
 
-#ifndef __slctk_attribute_IntegerComponent_h
-#define __slctk_attribute_IntegerComponent_h
 
-#include "attribute/ValueComponentTemplate.h"
-#include "AttributeExports.h"
+#include "attribute/IntegerItem.h"
+#include "attribute/IntegerItemDefinition.h"
 
-namespace slctk
+using namespace slctk::attribute; 
+
+//----------------------------------------------------------------------------
+IntegerItem::IntegerItem()
 {
-  namespace attribute
-  {
-    class Attribute;
-    class IntegerComponentDefinition;
-    class SLCTKATTRIBUTE_EXPORT IntegerComponent :
-      public ValueComponentTemplate<int>
-    {
-      friend class IntegerComponentDefinition; 
-    public:
-      IntegerComponent();
-      virtual ~IntegerComponent();
-      virtual Component::Type type() const;
-    protected:
-      
-    private:
+}
 
-    };
-  };
-};
-
-#endif /* __slctk_attribute_IntegerComponent_h */
+//----------------------------------------------------------------------------
+IntegerItem::~IntegerItem()
+{
+}
+//----------------------------------------------------------------------------
+Item::Type IntegerItem::type() const
+{
+  return INTEGER;
+}
