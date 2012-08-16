@@ -16,7 +16,7 @@ determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
 
 #if the shared_ptr isn't able to be
 #found in c++ or c++ tr1 we include boost
-if(${SHARED_TYPE_BOOST_TRUE})
+if(${POINTER_NAMESPACE_BOOST_TRUE})
   find_package(Boost)
 endif()
 
