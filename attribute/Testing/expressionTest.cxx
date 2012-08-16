@@ -36,50 +36,50 @@ int main()
 {
   int status;
   {
-  typedef slctk::attribute::IntItemDefinition IntCompDef;
-  typedef slctk::attribute::DoubleItemDefinition DoubleCompDef;
-  typedef slctk::attribute::StringItemDefinition StringCompDef;
-  typedef slctk::attribute::ValueItem ValueComp;
-  typedef slctk::attribute::Item AttComp;
+  typedef slctk::attribute::IntItemDefinition IntItemDef;
+  typedef slctk::attribute::DoubleItemDefinition DoubleItemDef;
+  typedef slctk::attribute::StringItemDefinition StringItemDef;
+  typedef slctk::attribute::ValueItem ValueItem;
+  typedef slctk::attribute::Item AttItem;
 
   slctk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  slctk::StringItemDefinitionPtr ecompdef(new StringCompDef("Expression String"));
-  expDef->addItemDefinition(ecompdef);
+  slctk::StringItemDefinitionPtr eitemdef(new StringItemDef("Expression String"));
+  expDef->addItemDefinition(eitemdef);
 
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  slctk::IntItemDefinitionPtr icompdef(new IntCompDef("IntComp1"));
-  base->addItemDefinition(icompdef);
-  slctk::IntItemDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
-  icompdef2->setDefaultValue(10);
-  base->addItemDefinition(icompdef2);
+  slctk::IntItemDefinitionPtr iitemdef(new IntItemDef("IntItem1"));
+  base->addItemDefinition(iitemdef);
+  slctk::IntItemDefinitionPtr iitemdef2(new IntItemDef("IntItem2"));
+  iitemdef2->setDefaultValue(10);
+  base->addItemDefinition(iitemdef2);
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  slctk::DoubleItemDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1"));
+  slctk::DoubleItemDefinitionPtr ditemdef(new DoubleItemDef("DoubleItem1"));
   // Allow this one to hold an expression
-  dcompdef->setExpressionDefinition(expDef);
+  ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
-  if (!dcompdef->allowsExpressions())
+  if (!ditemdef->allowsExpressions())
     {
     std::cout << "ERROR - Item Def does not allow expressions\n";
     status = -1;
     }
-  def1->addItemDefinition(dcompdef);
-  slctk::DoubleItemDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2"));
-  dcompdef2->setDefaultValue(-35.2);
-  def1->addItemDefinition(dcompdef2);
+  def1->addItemDefinition(ditemdef);
+  slctk::DoubleItemDefinitionPtr ditemdef2(new DoubleItemDef("DoubleItem2"));
+  ditemdef2->setDefaultValue(-35.2);
+  def1->addItemDefinition(ditemdef2);
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  slctk::StringItemDefinitionPtr scompdef(new StringCompDef("StringComp1"));
-  def1->addItemDefinition(scompdef);
-  slctk::StringItemDefinitionPtr scompdef2(new StringCompDef("StringComp2"));
-  scompdef2->setDefaultValue("Default");
-  def1->addItemDefinition(scompdef2);
+  slctk::StringItemDefinitionPtr sitemdef(new StringItemDef("StringItem1"));
+  def1->addItemDefinition(sitemdef);
+  slctk::StringItemDefinitionPtr sitemdef2(new StringItemDef("StringItem2"));
+  sitemdef2->setDefaultValue("Default");
+  def1->addItemDefinition(sitemdef2);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
@@ -94,20 +94,20 @@ int main()
     status = -1;
     }
 
-  slctk::ValueItemPtr vcomp;
-  slctk::AttributeItemPtr comp;
+  slctk::ValueItemPtr vitem;
+  slctk::AttributeItemPtr item;
 
   // Find the expression enabled item
-  comp = att->item(2);
-  vcomp = std::tr1::dynamic_pointer_cast<ValueComp>(comp);
-  if (vcomp->allowsExpressions())
+  item = att->item(2);
+  vitem = slctk::dynamicCastPointer<ValueItem>(item);
+  if (vitem->allowsExpressions())
     {
-    vcomp->setExpression(expAtt);
-    std::cout << "Expression Set on " << vcomp->name() << "\n";
+    vitem->setExpression(expAtt);
+    std::cout << "Expression Set on " << vitem->name() << "\n";
     }
   else
     {
-    std::cout << "ERROR: Can not set expression on " << vcomp->name() << "\n";
+    std::cout << "ERROR: Can not set expression on " << vitem->name() << "\n";
     status = -1;
     }
   
@@ -115,27 +115,27 @@ int main()
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
     {
-    comp = att->item(i);
-    std::cout << "\t" << comp->name() << " Type = " << AttComp::type2String(comp->type()) << ", ";
-    vcomp = std::tr1::dynamic_pointer_cast<ValueComp>(comp);
-    if (vcomp != NULL)
+    item = att->item(i);
+    std::cout << "\t" << item->name() << " Type = " << AttItem::type2String(item->type()) << ", ";
+    vitem = slctk::dynamicCastPointer<ValueItem>(item);
+    if (vitem != NULL)
       {
-      if (vcomp->isExpression())
+      if (vitem->isExpression())
         {
-        std::cout << " using Expression: " << vcomp->expression()->name() << "\n";
+        std::cout << " using Expression: " << vitem->expression()->name() << "\n";
         }
       else
         {
-        switch (vcomp->type())
+        switch (vitem->type())
           {
-          case AttComp::DOUBLE:
-            std::cout << " Value = " << vcomp->valueAsString("%g") << "\n";
+          case AttItem::DOUBLE:
+            std::cout << " Value = " << vitem->valueAsString("%g") << "\n";
             break;
-          case AttComp::INT:
-            std::cout << " Value = " << vcomp->valueAsString("%d") << "\n";
+          case AttItem::INT:
+            std::cout << " Value = " << vitem->valueAsString("%d") << "\n";
             break;
-          case AttComp::STRING:
-            std::cout << vcomp->valueAsString(" String Val = %s") << "\n";
+          case AttItem::STRING:
+            std::cout << vitem->valueAsString(" String Val = %s") << "\n";
             break;
           default:
             break;
