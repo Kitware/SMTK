@@ -57,7 +57,7 @@ namespace slctk
       { this->m_units = newUnits;}
 
       bool isDiscrete() const
-      {return (this->m_discreteValueLables.size() != 0);}
+      {return (this->m_discreteValueLabels.size() != 0);}
       
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}
@@ -79,21 +79,21 @@ namespace slctk
       {return this->m_numberOfValues;}
       void setNumberOfValues(int esize);
 
-      bool hasValueLables() const
-      {return this->m_valueLables.size();}
+      bool hasValueLabels() const
+      {return this->m_valueLabels.size();}
 
       void setValueLabel(int element, const std::string &elabel);
-      void setCommonValueLable(const std::string &elable);
-      std::string valueLable(int element) const;
+      void setCommonValueLabel(const std::string &elabel);
+      std::string valueLabel(int element) const;
       bool isDiscreteIndexValid(int index) const
-      {return ((index > -1) && (index < this->m_discreteValueLables.size()));}
+      {return ((index > -1) && (index < this->m_discreteValueLabels.size()));}
 
     protected:
 
       bool m_hasDefault;
       bool m_useCommonLabel;
-      std::vector<std::string> m_valueLables;
-      std::vector<std::string> m_discreteValueLables;
+      std::vector<std::string> m_valueLabels;
+      std::vector<std::string> m_discreteValueLabels;
       int m_defaultDiscreteIndex;
       int m_numberOfValues;
       std::string m_units;

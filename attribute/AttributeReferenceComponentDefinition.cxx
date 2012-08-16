@@ -70,7 +70,7 @@ void AttributeReferenceComponentDefinition::setNumberOfValues(int esize)
   this->m_numberOfValues = esize;
   if (!this->m_useCommonLabel)
     {
-    this->m_valueLables.resize(esize);
+    this->m_valueLabels.resize(esize);
     }
 }
 //----------------------------------------------------------------------------
@@ -80,34 +80,34 @@ void AttributeReferenceComponentDefinition::setValueLabel(int element, const std
     {
     return;
     }
-  if (this->m_valueLables.size() != this->m_numberOfValues)
+  if (this->m_valueLabels.size() != this->m_numberOfValues)
     {
-    this->m_valueLables.resize(this->m_numberOfValues);
+    this->m_valueLabels.resize(this->m_numberOfValues);
     }
   this->m_useCommonLabel = false;
-  this->m_valueLables[element] = elabel;
+  this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
-void AttributeReferenceComponentDefinition::setCommonValueLable(const std::string &elable)
+void AttributeReferenceComponentDefinition::setCommonValueLabel(const std::string &elabel)
 {
-  if (this->m_valueLables.size() != 1)
+  if (this->m_valueLabels.size() != 1)
     {
-    this->m_valueLables.resize(1);
+    this->m_valueLabels.resize(1);
     }
   this->m_useCommonLabel = true;
-  this->m_valueLables[0] = elable;
+  this->m_valueLabels[0] = elabel;
 }
 
 //----------------------------------------------------------------------------
-std::string AttributeReferenceComponentDefinition::valueLable(int element) const
+std::string AttributeReferenceComponentDefinition::valueLabel(int element) const
 {
   if (this->m_useCommonLabel)
     {
-    return this->m_valueLables[0];
+    return this->m_valueLabels[0];
     }
-  if (this->m_valueLables.size())
+  if (this->m_valueLabels.size())
     {
-    return this->m_valueLables[element];
+    return this->m_valueLabels[element];
     }
   return ""; // If we threw execeptions this method could return const string &
 }

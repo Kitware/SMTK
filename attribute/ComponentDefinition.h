@@ -49,13 +49,13 @@ namespace slctk
       const std::string &name() const
       { return this->m_name;}
 
-      // The lable is what can be displayed in an application.  Unlike the type
-      // which is constant w/r to the definition, an application can change the lable
-      const std::string &lable() const
-      { return this->m_lable;}
+      // The label is what can be displayed in an application.  Unlike the type
+      // which is constant w/r to the definition, an application can change the label
+      const std::string &label() const
+      { return this->m_label;}
 
-      void setLable(const std::string &newLable)
-      { this->m_lable = newLable;}
+      void setLabel(const std::string &newLabel)
+      { this->m_label = newLabel;}
 
       int version() const
       {return this->m_version;}
@@ -103,7 +103,7 @@ namespace slctk
       int m_version;
       bool m_isOptional;
       std::string m_name;
-      std::string m_lable;
+      std::string m_label;
       std::set<std::string> m_catagories;
       int m_advanceLevel;
       std::string m_detailedDescription;

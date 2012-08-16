@@ -56,13 +56,13 @@ namespace slctk
 
       slctk::attribute::Manager *manager() const;
 
-      // The lable is what can be displayed in an application.  Unlike the type
-      // which is constant w/r to the definition, an application can change the lable
-      const std::string &lable() const
-      { return this->m_lable;}
+      // The label is what can be displayed in an application.  Unlike the type
+      // which is constant w/r to the definition, an application can change the label
+      const std::string &label() const
+      { return this->m_label;}
 
-      void setLable(const std::string &newLable)
-      { this->m_lable = newLable;}
+      void setLabel(const std::string &newLabel)
+      { this->m_label = newLabel;}
 
       slctk::AttributeDefinitionPtr baseDefinition() const;
       bool isA(slctk::ConstAttributeDefinitionPtr def) const;
@@ -174,7 +174,7 @@ namespace slctk
       bool m_isAbstract;
       slctk::WeakAttributeClusterPtr m_cluster;
       std::string m_type;
-      std::string m_lable;
+      std::string m_label;
       bool m_isNodal;
       std::set<std::string> m_catagories;
       int m_advanceLevel;

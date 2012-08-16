@@ -58,16 +58,16 @@ namespace slctk
       {return this->m_numberOfValues;}
       void setNumberOfValues(int esize);
 
-      bool hasValueLables() const
-      {return this->m_valueLables.size();}
+      bool hasValueLabels() const
+      {return this->m_valueLabels.size();}
 
       void setValueLabel(int element, const std::string &elabel);
-      void setCommonValueLable(const std::string &elable);
-      std::string valueLable(int element) const;
+      void setCommonValueLabel(const std::string &elabel);
+      std::string valueLabel(int element) const;
     protected:
         slctk::WeakAttributeDefinitionPtr m_definition;
         bool m_useCommonLabel;
-        std::vector<std::string> m_valueLables;
+        std::vector<std::string> m_valueLabels;
         int m_numberOfValues;
      private:
       
