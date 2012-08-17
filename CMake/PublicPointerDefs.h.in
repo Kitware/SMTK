@@ -43,7 +43,6 @@ namespace slctk
     class AttributeRefItem;
     class AttributeRefItemDefinition;
     class Definition;
-    class Cluster;
     class Item;
     class ItemDefinition;
     class DoubleItem;
@@ -68,9 +67,6 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeRefItem> AttributeRefItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeRefItemDefinition> AttributeRefItemDefinitionPtr;
 
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Cluster> AttributeClusterPtr;
-  typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Cluster> WeakAttributeClusterPtr;
-
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Item> AttributeItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Item> ConstAttributeItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ItemDefinition> AttributeItemDefinitionPtr;
@@ -93,30 +89,33 @@ namespace slctk
   };
 */
 
-  template <typename T>
-  struct is_shared_ptr
+  // These are used internally by SLCTK
+  namespace internal
   {
-    enum {type=false};
+    template <typename T>
+    struct is_shared_ptr
+    {
+      enum {type=false};
+    };
+    template<typename T>
+    struct is_shared_ptr<@POINTER_NAMESPACE@::shared_ptr<T> >
+    {
+      enum{type=true};
+    };
+    
+    template<typename T, int Enabled = is_shared_ptr<T>::type >
+    struct shared_ptr_type
+    {
+      typedef @POINTER_NAMESPACE@::shared_ptr<T> SharedPointerType;
+      typedef T RawPointerType;
+    };
+    
+    template<typename T>
+    struct shared_ptr_type<T,true>
+    {
+      typedef T SharedPointerType;
+      typedef typename T::element_type RawPointerType;
+    };
   };
-  template<typename T>
-  struct is_shared_ptr<@POINTER_NAMESPACE@::shared_ptr<T> >
-  {
-    enum{type=true};
-  };
-
-  template<typename T, int Enabled = is_shared_ptr<T>::type >
-  struct shared_ptr_type
-  {
-    typedef @POINTER_NAMESPACE@::shared_ptr<T> type;
-    typedef T T_Type;
-  };
-
-template<typename T>
- struct shared_ptr_type<T,true>
-  {
-    typedef T type;
-    typedef typename T::element_type T_Type;
-  };
-
 };
 #endif /* __slctk_attribute_PublicPointerDefs_h */

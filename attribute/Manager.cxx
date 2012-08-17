@@ -25,7 +25,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
-#include "attribute/Cluster.h"
 
 #include <sstream>
 
@@ -39,16 +38,22 @@ Manager::Manager(): m_nextAttributeId(0)
 //----------------------------------------------------------------------------
 Manager::~Manager()
 {
-}
+  std::map<std::string,  slctk::AttributeDefinitionPtr>::const_iterator it;
+  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+    {
+    // Decouple all defintions from this manager
+    (*it).second->clearManager();
+    }
+ }
 
 //----------------------------------------------------------------------------
 slctk::AttributeDefinitionPtr
 Manager::createDefinition(const std::string &typeName, 
                           const std::string &baseTypeName)
 {
-  slctk::AttributeClusterPtr newCluster, c = this->findCluster(typeName);
-  // Does this cluster already exist
-  if (c != NULL)
+  slctk::AttributeDefinitionPtr def = this->findDefinition(typeName);
+  // Does this definition already exist
+  if (def != NULL)
     {
     return slctk::AttributeDefinitionPtr();
     }
@@ -56,30 +61,52 @@ Manager::createDefinition(const std::string &typeName,
   // If baseTypeName is not empty then it better exist
   if (baseTypeName != "")
     {
-    c = this->findCluster(baseTypeName);
-    if (c == NULL)
+    def = this->findDefinition(baseTypeName);
+    if (def == NULL)
       {
       return slctk::AttributeDefinitionPtr();
       }
     }
-  newCluster = slctk::AttributeClusterPtr(new Cluster(this));
-  if (c != NULL)
+  slctk::AttributeDefinitionPtr newDef(new Definition(typeName, def, this));
+  this->m_definitions[typeName] = newDef;
+  if (def != NULL)
     {
-    c->addChild(newCluster);
-    newCluster->setParent(c);
+    // Need to add this new definition to the list of derived defs
+    this->m_derivedDefInfo[def].insert(newDef);
     }
-  this->m_clusters[typeName] = newCluster;
-  slctk::AttributeDefinitionPtr def(new Definition(typeName, newCluster));
-  newCluster->setDefinition(def);
-  return def;
+  return newDef;
+}
+
+//----------------------------------------------------------------------------
+slctk::AttributeDefinitionPtr
+Manager::createDefinition(const std::string &typeName, 
+                          slctk::AttributeDefinitionPtr baseDef)
+{
+  slctk::AttributeDefinitionPtr  def = this->findDefinition(typeName);
+  // Does this definition already exist or if the base def is not part
+  // of this manger
+  if (!((def == NULL) && ((baseDef == NULL) || ((baseDef->manager() == this)))))
+    {
+    return slctk::AttributeDefinitionPtr();
+    }
+
+  slctk::AttributeDefinitionPtr newDef(new Definition(typeName, baseDef, this));
+  this->m_definitions[typeName] = newDef;
+  if (baseDef != NULL)
+    {
+    // Need to add this new definition to the list of derived defs
+    this->m_derivedDefInfo[baseDef].insert(newDef);
+    }
+  return newDef;
 }
 
 //----------------------------------------------------------------------------
 slctk::AttributePtr Manager::createAttribute(const std::string &name,
                                              slctk::AttributeDefinitionPtr def)
 {
-  // Make sure the definition belongs to this manager!
-  if (def->manager() != this)
+  // Make sure the definition belongs to this manager or if the definition
+  // is abstract
+  if ((def->manager() != this) || def->isAbstract())
     {
     return slctk::AttributePtr();
     }
@@ -89,11 +116,8 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
     {
     return slctk::AttributePtr();
     }
-
-  slctk::AttributeClusterPtr c = def->cluster();
-  a = slctk::AttributePtr(new Attribute(name, c, this->m_nextAttributeId++));
-  c->definition()->buildAttribute(a);
-  c->addAttribute(a);
+  a = slctk::AttributePtr(new Attribute(name, def, this->m_nextAttributeId++));
+  this->m_attributeClusters[def->type()].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[a->id()] = a;
   return a;
@@ -139,15 +163,15 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
     return slctk::AttributePtr();
     }
 
-  // Second we need to find the cluster that corresponds to the type
-  slctk::AttributeClusterPtr c = this->findCluster(typeName);
-  if (c == NULL)
+  // Second we need to find the definition that corresponds to the type and make sure it
+  // is not abstract
+  slctk::AttributeDefinitionPtr def = this->findDefinition(typeName);
+  if ((def == NULL) || def->isAbstract())
     {
     return slctk::AttributePtr();
     }
-  a = slctk::AttributePtr(new Attribute(name, c, id));
-  c->definition()->buildAttribute(a);
-  c->addAttribute(a);
+  a = slctk::AttributePtr(new Attribute(name, def, id));
+  this->m_attributeClusters[typeName].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[id] = a;
   return a;
@@ -160,30 +184,66 @@ bool Manager::removeAttribute(slctk::AttributePtr att)
     {
     return false;
     }
-  slctk::AttributeClusterPtr c = att->cluster();
   this->m_attributes.erase(att->name());
   this->m_attributeIdMap.erase(att->id());
-  c->removeAttribute(att);
+  this->m_attributeClusters[att->type()].erase(att);
   return true;
 }
 //----------------------------------------------------------------------------
-void Manager::findClusters(long mask, std::vector<slctk::AttributeClusterPtr> &result) const
+void Manager::findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const
 {
   slctk::AttributeDefinitionPtr def;
   result.clear();
-  std::map<std::string,  slctk::AttributeClusterPtr>::const_iterator it;
-  for (it = this->m_clusters.begin(); it != this->m_clusters.end(); it++)
+  std::map<std::string,  slctk::AttributeDefinitionPtr>::const_iterator it;
+  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
-    def =  (*it).second->definition();
-    if (def)
+    def =  (*it).second;
+    if ((!def->isAbstract()) && ((def->associationMask() & mask) == mask))
       {
-      if ((def->associationMask() & mask) == mask)
-        {
-        result.push_back((*it).second);
-        }
+      result.push_back(def);
       }
     }
 }
+
+//----------------------------------------------------------------------------
+void Manager::
+findAttributes(slctk::AttributeDefinitionPtr def, 
+               std::vector<slctk::AttributePtr> &result) const
+{
+  result.clear();
+  if ((def != NULL) && (def->manager() == this))
+    {
+    this->internalFindAttributes(def, result);
+    }
+}
+//----------------------------------------------------------------------------
+void Manager::
+internalFindAttributes(AttributeDefinitionPtr def, 
+                       std::vector<slctk::AttributePtr> &result) const
+{
+  if (!def->isAbstract())
+    {
+    std::map<std::string, std::set<slctk::AttributePtr> >::const_iterator it;
+    it = this->m_attributeClusters.find(def->type());
+    if (it != this->m_attributeClusters.end())
+      {
+      result.insert(result.end(), it->second.begin(), it->second.end());
+      }
+    }
+  std::map<slctk::AttributeDefinitionPtr,
+    std::set<slctk::WeakAttributeDefinitionPtr> >::const_iterator dit;
+  dit = this->m_derivedDefInfo.find(def);
+  if (dit == this->m_derivedDefInfo.end())
+    {
+    return;
+    }
+  std::set<slctk::WeakAttributeDefinitionPtr>::const_iterator defIt;
+  for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
+    {
+    this->internalFindAttributes(defIt->lock(), result);
+    }
+}
+
 //----------------------------------------------------------------------------
 bool Manager::rename(slctk::AttributePtr att, const std::string &newName)
 {
@@ -199,7 +259,7 @@ bool Manager::rename(slctk::AttributePtr att, const std::string &newName)
     return false;
     }
   this->m_attributes.erase(att->name());
-  att->cluster()->rename(att, newName);
+  att->setName(newName);
   this->m_attributes[newName] = att;
   return true;
 }

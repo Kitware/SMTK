@@ -25,7 +25,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Definition.h"
 
 #include "attribute/Attribute.h"
-#include "attribute/Cluster.h"
 #include "attribute/Item.h"
 #include "attribute/ItemDefinition.h"
 #include <iostream>
@@ -34,8 +33,11 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 Definition::Definition(const std::string &myType, 
-                       slctk::AttributeClusterPtr myCluster) : m_cluster(myCluster)
+                       slctk::AttributeDefinitionPtr myBaseDef,
+                       Manager *myManager)
 {
+  this->m_manager = myManager;
+  this->m_baseDefinition = myBaseDef;
   this->m_type = myType;
   this->m_version = 0;
   this->m_isNodal = false;
@@ -51,30 +53,12 @@ Definition::~Definition()
   std::cout << "Deleting Definition " << this->m_type << std::endl;
 }
 //----------------------------------------------------------------------------
-slctk::attribute::Manager *Definition::manager() const
-{
-  if (this->m_cluster.lock())
-    {
-    return this->m_cluster.lock()->manager();
-    }
-  return NULL;
-}
-//----------------------------------------------------------------------------
-slctk::AttributeDefinitionPtr Definition::baseDefinition() const
-{
-  if (this->m_cluster.lock() && this->m_cluster.lock()->parent())
-    {
-    return this->m_cluster.lock()->parent()->definition();
-    }
-  return slctk::AttributeDefinitionPtr();
-}
-//----------------------------------------------------------------------------
 bool Definition::isA(slctk::ConstAttributeDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
   const Definition *def = this;
-  for (def = this; def != NULL; def = def->baseDefinition().get())
+  for (def = this; def != NULL; def = def->m_baseDefinition.get())
     {
     if (def == targetDef.get())
       {
@@ -112,7 +96,7 @@ slctk::ConstAttributeDefinitionPtr Definition::findIsUniqueBaseClass() const
   const Definition *uDef = this, *def;
   while (1)
     {
-    def = uDef->baseDefinition().get();
+    def = uDef->m_baseDefinition.get();
     if ((def == NULL) || (!def->isUnique()))
       {
       return slctk::ConstAttributeDefinitionPtr(uDef);
@@ -136,10 +120,10 @@ Definition::canBeAssociated(slctk::ModelEntity *entity,
   return false;
 }
 //----------------------------------------------------------------------------
-void Definition::buildAttribute(slctk::AttributePtr att) const
+void Definition::buildAttribute(Attribute *att) const
 {
   // If there is a super definition have it prep the attribute and add its items
-  const Definition *bdef = this->baseDefinition().get();
+  const Definition *bdef = this->m_baseDefinition.get();
   if (bdef)
     {
     bdef->buildAttribute(att);

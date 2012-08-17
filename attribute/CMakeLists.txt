@@ -4,7 +4,6 @@ set(headers
   Attribute.h
   AttributeRefItem.h
   AttributeRefItemDefinition.h
-  Cluster.h
   Item.h
   ItemDefinition.h
   Definition.h
@@ -27,7 +26,6 @@ set(attribute_srcs
   Attribute.cxx
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
-  Cluster.cxx
   Item.cxx
   ItemDefinition.cxx
   Definition.cxx

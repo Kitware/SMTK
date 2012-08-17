@@ -40,21 +40,23 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class Cluster;
     class ItemDefinition;
     class Manager;
  
     class SLCTKATTRIBUTE_EXPORT Definition
     {
     public:
+      friend class slctk::attribute::Manager;
       // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, slctk::AttributeClusterPtr myCluster);
+      Definition(const std::string &myType, slctk::AttributeDefinitionPtr myBaseDef,
+                 slctk::attribute::Manager *myManager);
       virtual ~Definition();
 
       const std::string &type() const
       { return this->m_type;}
 
-      slctk::attribute::Manager *manager() const;
+      slctk::attribute::Manager *manager() const
+      {return this->m_manager;}
 
       // The label is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the label
@@ -64,7 +66,9 @@ namespace slctk
       void setLabel(const std::string &newLabel)
       { this->m_label = newLabel;}
 
-      slctk::AttributeDefinitionPtr baseDefinition() const;
+      slctk::AttributeDefinitionPtr baseDefinition() const
+      { return this->m_baseDefinition;}
+
       bool isA(slctk::ConstAttributeDefinitionPtr def) const;
 
       int version() const
@@ -143,10 +147,12 @@ namespace slctk
 
       bool addItemDefinition(slctk::AttributeItemDefinitionPtr cdef);
       template<typename T>
-        typename slctk::shared_ptr_type<T>::type addDef(const std::string &name)
+        typename slctk::internal::shared_ptr_type<T>::SharedPointerType
+        addDef(const std::string &name)
       {
-        typedef slctk::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::type comp(new typename SharedTypes::T_Type(name));
+        typedef slctk::internal::shared_ptr_type<T> SharedTypes;
+        typename SharedTypes::SharedPointerType 
+          comp(new typename SharedTypes::RawPointerType(name));
         this->m_itemDefs.push_back(comp);
         return comp;
       }
@@ -163,16 +169,18 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      void buildAttribute(slctk::AttributePtr attribute) const;
+      void buildAttribute(slctk::attribute::Attribute *attribute) const;
       slctk::ConstAttributeDefinitionPtr findIsUniqueBaseClass() const;
-      slctk::AttributeClusterPtr cluster() const
-      {return this->m_cluster.lock();}
 
     protected:
+      void clearManager()
+      { this->m_manager = NULL;}
 
+      slctk::attribute::Manager *m_manager;
       int m_version;
       bool m_isAbstract;
-      slctk::WeakAttributeClusterPtr m_cluster;
+      slctk::AttributeDefinitionPtr m_baseDefinition;
+      std::set<WeakAttributeDefinitionPtr> m_derivedDefinitions;
       std::string m_type;
       std::string m_label;
       bool m_isNodal;

@@ -44,17 +44,15 @@ namespace slctk
     class AttributeRefItem;
     class Item;
     class Definition;
-    class Cluster;
     class Manager;
 
     class SLCTKATTRIBUTE_EXPORT Attribute
     {
-      friend class slctk::attribute::AttributeRefItem;
-      friend class slctk::attribute::Cluster;
       friend class slctk::attribute::Definition;
+      friend class slctk::attribute::Manager;
     public:
       Attribute(const std::string &myName,
-                slctk::AttributeClusterPtr myCluster, unsigned long myId);
+                slctk::AttributeDefinitionPtr myDefinition, unsigned long myId);
       virtual ~Attribute();
       // NOTE: To rename an attribute use the manager!
       const std::string &name() const
@@ -66,7 +64,8 @@ namespace slctk
       const std::string &type() const;
       std::vector<std::string> types() const;
       bool isA(slctk::AttributeDefinitionPtr def) const;
-      slctk::AttributeDefinitionPtr definition() const;
+      slctk::AttributeDefinitionPtr definition() const
+      {return this->m_definition;}
 
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
@@ -106,9 +105,6 @@ namespace slctk
 
       slctk::attribute::Manager *manager() const;
 
-      slctk::AttributeClusterPtr cluster() const
-      {return this->m_cluster.lock();}
-
     protected:
       void removeAllItems();
       void addItem(slctk::AttributeItemPtr item)
@@ -119,7 +115,7 @@ namespace slctk
       std::string m_name;
       std::vector<slctk::AttributeItemPtr> m_items;
       unsigned long m_id;
-      slctk::WeakAttributeClusterPtr m_cluster;
+      slctk::AttributeDefinitionPtr m_definition;
       std::set<slctk::ModelEntity *> m_entities;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;

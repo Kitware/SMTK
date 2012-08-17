@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/PublicPointerDefs.h"
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
  
@@ -42,7 +43,6 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
-    class Cluster;
     class Definition;
 
     class SLCTKATTRIBUTE_EXPORT Manager
@@ -52,15 +52,21 @@ namespace slctk
       Manager();
       virtual ~Manager();
       
-      AttributeDefinitionPtr createDefinition(const std::string &typeName,
-                                              const std::string &baseTypeName = "");
+      slctk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
+                                                     const std::string &baseTypeName = "");
+      slctk::AttributeDefinitionPtr createDefinition(const std::string &name, 
+                                                     AttributeDefinitionPtr baseDefiniiton);
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type);
       slctk::AttributePtr createAttribute(const std::string &type);
       slctk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def);
       bool removeAttribute(slctk::AttributePtr att);
       slctk::AttributePtr findAttribute(const std::string &name) const;
-      slctk::AttributeClusterPtr findCluster(const std::string &type) const;
-      void findClusters(long mask, std::vector<slctk::AttributeClusterPtr> &result) const;
+      void findAttributes(const std::string &type, std::vector<slctk::AttributePtr> &result) const;
+      void findAttributes(slctk::AttributeDefinitionPtr def, std::vector<AttributePtr> &result) const;
+      slctk::AttributeDefinitionPtr findDefinition(const std::string &type) const;
+      void findDefinitionAttributes(const std::string &type,
+                                    std::vector<slctk::AttributePtr> &result) const;
+      void findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const;
       bool rename(AttributePtr att, const std::string &newName);
       // For Reader classes
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type,
@@ -70,9 +76,14 @@ namespace slctk
       std::string createUniqueName(const std::string &type) const;
 
     protected:
-      std::map<std::string, slctk::AttributeClusterPtr> m_clusters;
+      void internalFindAttributes(AttributeDefinitionPtr def,
+                                  std::vector<AttributePtr> &result) const;
+      std::map<std::string, slctk::AttributeDefinitionPtr> m_definitions;
+      std::map<std::string, std::set<slctk::AttributePtr> > m_attributeClusters;
       std::map<std::string, slctk::AttributePtr> m_attributes;
       std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
+      std::map<slctk::AttributeDefinitionPtr,
+        std::set<slctk::WeakAttributeDefinitionPtr> > m_derivedDefInfo;
       unsigned long m_nextAttributeId;
     private:
     };
@@ -84,12 +95,37 @@ namespace slctk
       return (it == this->m_attributes.end()) ? slctk::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline slctk::AttributeClusterPtr 
-    Manager::findCluster(const std::string &typeName) const
+    inline slctk::AttributeDefinitionPtr 
+    Manager::findDefinition(const std::string &typeName) const
     {
-      std::map<std::string, slctk::AttributeClusterPtr>::const_iterator it;
-      it = this->m_clusters.find(typeName);
-      return (it == this->m_clusters.end()) ? slctk::AttributeClusterPtr() : it->second;
+      std::map<std::string, slctk::AttributeDefinitionPtr>::const_iterator it;
+      it = this->m_definitions.find(typeName);
+      return (it == this->m_definitions.end()) ? slctk::AttributeDefinitionPtr() : it->second;
+    }
+//----------------------------------------------------------------------------
+    inline void  
+    Manager::findDefinitionAttributes(const std::string &typeName,
+                                      std::vector<slctk::AttributePtr> &result) const
+    {
+      result.clear();
+      std::map<std::string, std::set<slctk::AttributePtr> >::const_iterator it;
+      it = this->m_attributeClusters.find(typeName);
+      if (it != this->m_attributeClusters.end())
+        {
+        result.insert(result.end(), it->second.begin(), it->second.end());
+        }
+    }
+//----------------------------------------------------------------------------
+    inline void Manager::
+    findAttributes(const std::string &type, 
+                   std::vector<slctk::AttributePtr> &result) const
+    {
+      result.clear();
+      slctk::AttributeDefinitionPtr def = this->findDefinition(type);
+      if (def != NULL)
+        {
+        this->internalFindAttributes(def, result);
+        }
     }
 //----------------------------------------------------------------------------
   };
