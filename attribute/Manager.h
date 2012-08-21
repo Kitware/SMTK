@@ -75,6 +75,8 @@ namespace slctk
       {this->m_nextAttributeId = attributeId;}
       std::string createUniqueName(const std::string &type) const;
 
+      void updateCatagories();
+
     protected:
       void internalFindAttributes(AttributeDefinitionPtr def,
                                   std::vector<AttributePtr> &result) const;

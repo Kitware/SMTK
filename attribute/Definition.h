@@ -90,11 +90,8 @@ namespace slctk
 
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-      void addCatagory(const std::string &catagory)
-      {this->m_catagories.insert(catagory);}
-
-      void removeCatagory(const std::string &catagory)
-      {this->m_catagories.erase(catagory);}
+      const std::set<std::string> & catagories() const
+      {return this->m_catagories;}
 
       bool advanceLevel() const
       {return this->m_advanceLevel;}
@@ -148,13 +145,13 @@ namespace slctk
       bool addItemDefinition(slctk::AttributeItemDefinitionPtr cdef);
       template<typename T>
         typename slctk::internal::shared_ptr_type<T>::SharedPointerType
-        addDef(const std::string &name)
+        addItemDefinition(const std::string &name)
       {
         typedef slctk::internal::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::SharedPointerType 
-          comp(new typename SharedTypes::RawPointerType(name));
-        this->m_itemDefs.push_back(comp);
-        return comp;
+          item(new typename SharedTypes::RawPointerType(name));
+        this->m_itemDefs.push_back(item);
+        return item;
       }
 
       int findItemPosition(const std::string &name) const;
@@ -175,6 +172,8 @@ namespace slctk
     protected:
       void clearManager()
       { this->m_manager = NULL;}
+
+      void setCatagories();
 
       slctk::attribute::Manager *m_manager;
       int m_version;

@@ -54,3 +54,18 @@ bool ItemDefinition::isMemberOf(const std::vector<std::string> &catagories) cons
     return false;
 }
 //----------------------------------------------------------------------------
+void ItemDefinition::updateCatagories()
+{
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::addCatagory(const std::string &catagory)
+{
+  this->m_catagories.insert(catagory);
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::removeCatagory(const std::string &catagory)
+{
+this->m_catagories.erase(catagory);
+}
+//----------------------------------------------------------------------------
+

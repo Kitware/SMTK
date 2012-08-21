@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Definition.h"
 
 #include <sstream>
+#include <queue>
 
 using namespace slctk::attribute; 
 
@@ -282,5 +283,41 @@ std::string Manager::createUniqueName(const std::string &type) const
       }
     }
   return "";
+}
+//----------------------------------------------------------------------------
+void Manager::updateCatagories()
+{
+  std::queue<AttributeDefinitionPtr> toBeProcessed;
+  // Insert all top most definitions into the queue
+  std::map<std::string,  slctk::AttributeDefinitionPtr>::const_iterator it;
+  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+    {
+    if (it->second->baseDefinition() == NULL)
+      {
+      toBeProcessed.push(it->second);
+      }
+    }
+  // Now for each definition in the queue do the following:
+  // update its catagories (which will be used by def derived from it
+  // Add all of its derived definitions into the queue
+  slctk::AttributeDefinitionPtr def;
+  while (!toBeProcessed.empty())
+    {
+    def = toBeProcessed.front();
+    def->setCatagories();
+    // Does this definition have derived defs from it?
+    std::map<slctk::AttributeDefinitionPtr,
+      std::set<slctk::WeakAttributeDefinitionPtr> >::iterator dit = 
+      this-> m_derivedDefInfo.find(def);
+    if (dit != this-> m_derivedDefInfo.end())
+      {
+      std::set<slctk::WeakAttributeDefinitionPtr>::iterator ddit;
+      for (ddit = dit->second.begin(); ddit != dit->second.end(); ddit++)
+        {
+        toBeProcessed.push(ddit->lock());
+        }
+      }
+    toBeProcessed.pop();
+    }
 }
 //----------------------------------------------------------------------------

@@ -51,6 +51,17 @@ namespace slctk
            slctk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
       bool addItemDefinition(slctk::AttributeItemDefinitionPtr cdef);
+      template<typename T>
+        typename slctk::internal::shared_ptr_type<T>::SharedPointerType
+        addItemDefinition(const std::string &name)
+      {
+        typedef slctk::internal::shared_ptr_type<T> SharedTypes;
+        typename SharedTypes::SharedPointerType 
+          item(new typename SharedTypes::RawPointerType(name));
+        this->m_itemDefs.push_back(item);
+        return item;
+      }
+
       int findItemPosition(const std::string &name) const;
 
       int numberOfGroups() const
@@ -59,8 +70,11 @@ namespace slctk
       {this->m_numberOfGroups = gsize;}
       virtual slctk::AttributeItemPtr buildItem() const;
       void buildGroup(std::vector<slctk::AttributeItemPtr> &group) const;
+      virtual void addCatagory(const std::string &catagory);
+      virtual void removeCatagory(const std::string &catagory);
       
     protected:
+      virtual void updateCatagories();
       std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       int m_numberOfGroups;

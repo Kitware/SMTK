@@ -24,6 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/GroupItemDefinition.h"
 #include "attribute/GroupItem.h"
+#include <iostream>
+
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
@@ -66,5 +68,27 @@ buildGroup(std::vector<slctk::AttributeItemPtr> &group) const
     group[i] = this->m_itemDefs[i]->buildItem();
     group[i]->setDefinition(this->m_itemDefs[i]);
     }
+}
+//----------------------------------------------------------------------------
+void GroupItemDefinition::updateCatagories()
+{
+  this->m_catagories.clear();
+  int i, n = this->m_itemDefs.size();
+  for (i = 0; i < n; i++)
+    {
+    this->m_itemDefs[i]->updateCatagories();
+    const std::set<std::string> &itemCats = this->m_itemDefs[i]->catagories();
+    this->m_catagories.insert(itemCats.begin(), itemCats.end());
+    }
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::addCatagory(const std::string &catagory)
+{
+  std::cerr << "Can not add catagories to a group item definition\n";
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::removeCatagory(const std::string &catagory)
+{
+  std::cerr << "Can not remove catagories to a group item definition\n";
 }
 //----------------------------------------------------------------------------

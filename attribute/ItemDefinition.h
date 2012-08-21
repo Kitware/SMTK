@@ -38,11 +38,13 @@ namespace slctk
 {
   namespace attribute
   {
-    class Cluster;
+    class GroupItemDefinition;
     class Item;
     class Definition;
     class SLCTKATTRIBUTE_EXPORT ItemDefinition
     {
+      friend class slctk::attribute::Definition;
+      friend class slctk::attribute::GroupItemDefinition;
     public:
       ItemDefinition(const std::string &myname);
       virtual ~ItemDefinition();
@@ -71,16 +73,17 @@ namespace slctk
       std::size_t numberOfCatagories() const
       {return this->m_catagories.size();}
 
+      const std::set<std::string> & catagories() const
+      {return this->m_catagories;}
+
       bool isMemberOf(const std::string &catagory) const
       { return (this->m_catagories.find(catagory) != this->m_catagories.end());}
 
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
-      void addCatagory(const std::string &catagory)
-      {this->m_catagories.insert(catagory);}
+      virtual void addCatagory(const std::string &catagory);
 
-      void removeCatagory(const std::string &catagory)
-      {this->m_catagories.erase(catagory);}
+      virtual void removeCatagory(const std::string &catagory);
 
       bool advanceLevel() const
       {return this->m_advanceLevel;}
@@ -99,7 +102,7 @@ namespace slctk
 
       virtual slctk::AttributeItemPtr buildItem() const = 0;
     protected:
-
+      virtual void updateCatagories();
       int m_version;
       bool m_isOptional;
       std::string m_name;

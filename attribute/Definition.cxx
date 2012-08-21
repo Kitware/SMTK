@@ -171,3 +171,23 @@ bool Definition::addItemDefinition(slctk::AttributeItemDefinitionPtr cdef)
   return true;
 }
 //----------------------------------------------------------------------------
+void 
+Definition::setCatagories()
+{
+  if (this->m_baseDefinition != NULL)
+    {
+    this->m_catagories = this->m_baseDefinition->m_catagories;
+    }
+  else
+    {
+    this->m_catagories.clear();
+    }
+  int i, n = this->m_itemDefs.size();
+  for (i = 0; i < n; i++)
+    {
+    this->m_itemDefs[i]->updateCatagories();
+    const std::set<std::string> &itemCats = this->m_itemDefs[i]->catagories();
+    this->m_catagories.insert(itemCats.begin(), itemCats.end());
+    }
+}
+//----------------------------------------------------------------------------

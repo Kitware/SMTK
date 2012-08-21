@@ -50,15 +50,18 @@ int main()
   // Lets add some item definitions
   slctk::IntItemDefinitionPtr iitemdef = 
     base->addItemDefinition<slctk::IntItemDefinitionPtr>("IntItem1");
+  iitemdef->addCatagory("Flow");
   iitemdef = 
     base->addItemDefinition<slctk::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
+  iitemdef->addCatagory("Heat");
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   slctk::DoubleItemDefinitionPtr ditemdef = 
     def1->addItemDefinition<slctk::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
+  ditemdef->addCatagory("Veg");
   ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
   if (!ditemdef->allowsExpressions())
@@ -69,15 +72,51 @@ int main()
   ditemdef = 
     def1->addItemDefinition<slctk::DoubleItemDefinitionPtr>("DoubleItem2");
   ditemdef->setDefaultValue(-35.2);
+  ditemdef->addCatagory("Constituent");
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   slctk::StringItemDefinitionPtr sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem1");
+  sitemdef->addCatagory("Flow");
   sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem2");
   sitemdef->setDefaultValue("Default");
+  sitemdef->addCatagory("General");
 
+  // Process Catagories
+  manager.updateCatagories();
+  // Lets see what catagories the attribute definitions think they are
+  if (expDef->numberOfCatagories())
+    {
+    const std::set<std::string> &catagories = expDef->catagories();
+    std::set<std::string>::const_iterator it;
+    std::cout << "ERROR: ExpDef's catagories: ";
+    for (it = catagories.begin(); it != catagories.end(); it++)
+      {
+      std::cout << "\""<< (*it) << "\" ";
+      }
+    std::cout << "\n";
+    }
+  else
+    {
+    std::cout << "ExpDef has no catagories\n";
+    }
+  if (def2->numberOfCatagories())
+    {
+    const std::set<std::string> &catagories = def2->catagories();
+    std::set<std::string>::const_iterator it;
+    std::cout << "Def2's catagories: ";
+    for (it = catagories.begin(); it != catagories.end(); it++)
+      {
+      std::cout << "\""<< (*it) << "\" ";
+      }
+    std::cout << "\n";
+    }
+  else
+    {
+    std::cout << "ERROR: Def2 has no catagories!\n";
+    }
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   slctk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
