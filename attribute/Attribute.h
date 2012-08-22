@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -104,6 +105,13 @@ namespace slctk
       {this->m_appliesToInteriorNodes = appliesValue;}
 
       slctk::attribute::Manager *manager() const;
+      void setUserData(const std::string &key, void *value)
+      {this->m_userData[key] = value;}
+      void *userData(const std::string &key) const;
+      void clearUserData(const std::string &key)
+      {this->m_userData.erase(key);}
+      void clearAllUserData()
+      {this->m_userData.clear();}
 
     protected:
       void removeAllItems();
@@ -119,9 +127,17 @@ namespace slctk
       std::set<slctk::ModelEntity *> m_entities;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
+      std::map<std::string, void *> m_userData;
     private:
       
     };
+//----------------------------------------------------------------------------
+    inline void *Attribute::userData(const std::string &key) const
+    {
+      std::map<std::string, void *>::const_iterator it =
+        this->m_userData.find(key);
+      return ((it == this->m_userData.end()) ? NULL : it->second);
+    }
   };
 };
 

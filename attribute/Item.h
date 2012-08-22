@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
+#include <map>
 #include <string>
 #include <vector>
 
@@ -74,6 +75,14 @@ namespace slctk
       bool isMemberOf(const std::string &catagory) const;
       bool isMemberOf(const std::vector<std::string> &catagories) const;
 
+      void setUserData(const std::string &key, void *value)
+      {this->m_userData[key] = value;}
+      void *userData(const std::string &key) const;
+      void clearUserData(const std::string &key)
+      {this->m_userData.erase(key);}
+      void clearAllUserData()
+      {this->m_userData.clear();}
+
       static std::string type2String(Item::Type t);
       static Item::Type string2Type(const std::string &s);
 
@@ -83,9 +92,17 @@ namespace slctk
       bool m_isEnabled;
       mutable std::string m_tempString;
       slctk::ConstAttributeItemDefinitionPtr m_definition;
+      std::map<std::string, void *> m_userData;
     private:
       
     };
+//----------------------------------------------------------------------------
+    inline void *Item::userData(const std::string &key) const
+    {
+      std::map<std::string, void *>::const_iterator it =
+        this->m_userData.find(key);
+      return ((it == this->m_userData.end()) ? NULL : it->second);
+    }
   };
 };
 
