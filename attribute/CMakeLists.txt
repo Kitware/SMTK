@@ -7,8 +7,12 @@ set(headers
   Item.h
   ItemDefinition.h
   Definition.h
+  DirectoryItem.h
+  DirectoryItemDefinition.h
   DoubleItem.h
   DoubleItemDefinition.h
+  FileItem.h
+  FileItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
   IntItem.h
@@ -20,6 +24,8 @@ set(headers
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
   ValueItemTemplate.h
+  VoidItem.h
+  VoidItemDefinition.h
   )
 
 set(attribute_srcs
@@ -29,8 +35,12 @@ set(attribute_srcs
   Item.cxx
   ItemDefinition.cxx
   Definition.cxx
+  DirectoryItem.cxx
+  DirectoryItemDefinition.cxx
   DoubleItem.cxx
   DoubleItemDefinition.cxx
+  FileItem.cxx
+  FileItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
   IntItem.cxx
@@ -40,7 +50,9 @@ set(attribute_srcs
   StringItemDefinition.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
-  )
+  VoidItem.cxx
+  VoidItemDefinition.cxx
+)
 
 add_library(SlctkAttribute ${attribute_srcs} ${headers})
 target_link_libraries(SlctkAttribute)

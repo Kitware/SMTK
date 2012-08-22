@@ -45,8 +45,12 @@ namespace slctk
     class Definition;
     class Item;
     class ItemDefinition;
+    class DirectoryItem;
+    class DirectoryItemDefinition;
     class DoubleItem;
     class DoubleItemDefinition;
+    class FileItem;
+    class FileItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
     class IntItem;
@@ -56,6 +60,8 @@ namespace slctk
     class StringItemDefinition;
     class ValueItem;
     class ValueItemDefinition;
+    class VoidItem;
+    class VoidItemDefinition;
   };
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Attribute> AttributePtr;
@@ -72,12 +78,18 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ItemDefinition> AttributeItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ItemDefinition> ConstAttributeItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItem> DirectoryItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItemDefinition> DirectoryItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItem> DoubleItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItemDefinition> DoubleItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::FileItem> FileItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::FileItemDefinition> FileItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItem> IntItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItemDefinition> IntItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItem> StringItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItemDefinition> StringItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::VoidItem> VoidItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::VoidItemDefinition> VoidItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Manager> AttributeManagerPtr;
 

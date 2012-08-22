@@ -49,6 +49,8 @@ namespace slctk
        INT,
        STRING,
        VOID,
+       FILE,
+       DIRECTORY,
        NUMBER_OF_TYPES
      };
        
