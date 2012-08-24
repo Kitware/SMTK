@@ -45,6 +45,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 // This tests the events for the SimBuilder Mesh.
 
+// For omicron shared extern
+extern "C" {
+#include "share_declare.h"
+}
 
 
 double TimeSimMesher(const char* fileName, double Length, double MinAngle)

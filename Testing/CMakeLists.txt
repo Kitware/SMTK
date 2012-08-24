@@ -18,4 +18,10 @@ ADD_TEST(SimBuilderMeshRelationTest ${EXECUTABLE_OUTPUT_PATH}/SimBuilderMeshRela
   ${ERDC_TEST_DATA_ROOT}/test2D.cmb)
 
 ADD_EXECUTABLE(MeshSpeedComparison MeshSpeedComparison.cxx)
-TARGET_LINK_LIBRARIES(MeshSpeedComparison SimBuilderMesh_Plugin)
+target_link_libraries(MeshSpeedComparison
+  SimBuilderMesh_Plugin
+  omicron
+  triangle_omicron
+  tl_alloc
+  )
+
