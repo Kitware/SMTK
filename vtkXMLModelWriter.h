@@ -50,6 +50,7 @@
 #ifndef __vtkXMLModelWriter_h
 #define __vtkXMLModelWriter_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
 
 #include <vector> // Vector of smart pointers
@@ -62,7 +63,7 @@ class vtkXMLElement;
 class vtkSerializableObject;
 //ETX
 
-class VTK_EXPORT vtkXMLModelWriter : public vtkSerializer
+class VTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
 {
 public:
   static vtkXMLModelWriter *New();

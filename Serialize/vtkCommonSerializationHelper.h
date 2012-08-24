@@ -31,13 +31,14 @@
 #ifndef __vtkCommonSerializationHelper_h
 #define __vtkCommonSerializationHelper_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
 
 class vtkDataArray;
 class vtkSerializer;
 class vtkTransform;
 
-class VTK_EXPORT vtkCommonSerializationHelper : public vtkSerializationHelper
+class VTKDISCRETEMODEL_EXPORT vtkCommonSerializationHelper : public vtkSerializationHelper
 {
 public:
   static vtkCommonSerializationHelper *New();

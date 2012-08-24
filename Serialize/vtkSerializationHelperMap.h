@@ -38,13 +38,14 @@
 #ifndef __vtkSerializationHelperMap_h
 #define __vtkSerializationHelperMap_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 class vtkSerializationHelper;
 class vtkSerializer;
 class vtkXMLElement;
 
-class VTK_EXPORT vtkSerializationHelperMap : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkSerializationHelperMap : public vtkObject
 {
 public:
   static vtkSerializationHelperMap *New();

@@ -40,13 +40,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItemIterator_h
 #define __vtkModelItemIterator_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 //BTX
 class vtkModelItem;
 //ETX
 
-class VTK_EXPORT vtkModelItemIterator : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkModelItemIterator,vtkObject);

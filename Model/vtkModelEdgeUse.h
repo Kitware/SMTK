@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelEdgeUse_h
 #define __vtkModelEdgeUse_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkInformationIntegerKey;
@@ -41,7 +42,7 @@ class vtkModelLoopUse;
 class vtkModelVertex;
 class vtkModelVertexUse;
 
-class VTK_EXPORT vtkModelEdgeUse : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelEdgeUse : public vtkModelEntity
 {
 public:
   static vtkModelEdgeUse* New();

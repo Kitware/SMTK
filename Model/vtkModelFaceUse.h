@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelFaceUse_h
 #define __vtkModelFaceUse_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkModelEdgeUse;
@@ -35,7 +36,7 @@ class vtkModelFace;
 class vtkModelLoopUse;
 class vtkModelShellUse;
 
-class VTK_EXPORT vtkModelFaceUse : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelFaceUse : public vtkModelEntity
 {
 public:
   static vtkModelFaceUse *New();

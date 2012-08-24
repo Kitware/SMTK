@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelNodalGroup_h
 #define __vtkModelNodalGroup_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 #include <set>
 
@@ -55,7 +56,7 @@ typedef enum
 } enNodalGroupPointLocationType;
 //ETX
 
-class VTK_EXPORT vtkModelNodalGroup : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelNodalGroup : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelNodalGroup,vtkModelEntity);

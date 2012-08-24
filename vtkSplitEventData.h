@@ -35,12 +35,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkSplitEventData_h
 #define __vtkSplitEventData_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 class vtkIdList;
 class vtkDiscreteModelGeometricEntity;
 
-class VTK_EXPORT vtkSplitEventData : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkSplitEventData : public vtkObject
 {
 public:
   static vtkSplitEventData * New();

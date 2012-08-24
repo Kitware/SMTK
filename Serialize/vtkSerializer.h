@@ -38,6 +38,7 @@
 #ifndef __vtkSerializer_h
 #define __vtkSerializer_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 #include "vtkSmartPointer.h" // For collections
@@ -46,7 +47,7 @@
 
 class vtkInformation;
 
-class VTK_EXPORT vtkSerializer : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkSerializer : public vtkObject
 {
 public:
   vtkTypeMacro(vtkSerializer,vtkObject);

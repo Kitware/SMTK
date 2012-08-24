@@ -41,9 +41,10 @@
 #ifndef __vtkUUID_h
 #define __vtkUUID_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
-class VTK_EXPORT vtkUUID : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkUUID : public vtkObject
 {
 public:
   static vtkUUID* New();

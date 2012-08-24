@@ -61,6 +61,7 @@
 #ifndef __vtkXMLArchiveWriter_h
 #define __vtkXMLArchiveWriter_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
 
 #include <vector> // Vector of smart pointers
@@ -71,7 +72,7 @@ struct vtkXMLArchiveWriterInternals;
 class vtkXMLElement;
 //ETX
 
-class VTK_EXPORT vtkXMLArchiveWriter : public vtkSerializer
+class VTKDISCRETEMODEL_EXPORT vtkXMLArchiveWriter : public vtkSerializer
 {
 public:
   static vtkXMLArchiveWriter *New();

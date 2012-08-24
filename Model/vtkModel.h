@@ -45,6 +45,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModel_h
 #define __vtkModel_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
 #include <vector>
 
@@ -82,7 +83,7 @@ enum ModelEventIds {
   ModelReset
 };
 
-class VTK_EXPORT vtkModel : public vtkModelItem
+class VTKDISCRETEMODEL_EXPORT vtkModel : public vtkModelItem
 {
 public:
   vtkTypeMacro(vtkModel,vtkModelItem);

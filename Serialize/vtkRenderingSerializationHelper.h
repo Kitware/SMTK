@@ -30,12 +30,13 @@
 #ifndef __vtkRenderingSerializationHelper_h
 #define __vtkRenderingSerializationHelper_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
 
 class vtkCamera;
 class vtkSerializer;
 
-class VTK_EXPORT vtkRenderingSerializationHelper : public vtkSerializationHelper
+class VTKDISCRETEMODEL_EXPORT vtkRenderingSerializationHelper : public vtkSerializationHelper
 {
 public:
   static vtkRenderingSerializationHelper *New();

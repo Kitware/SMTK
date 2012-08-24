@@ -40,6 +40,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItemListIterator_h
 #define __vtkModelItemListIterator_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
 
 //BTX
@@ -47,7 +48,7 @@ class vtkModelItem;
 struct vtkModelItemListIteratorInternals;
 //ETX
 
-class VTK_EXPORT vtkModelItemListIterator : public vtkModelItemIterator
+class VTKDISCRETEMODEL_EXPORT vtkModelItemListIterator : public vtkModelItemIterator
 {
 public:
   static vtkModelItemListIterator *New();

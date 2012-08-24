@@ -30,10 +30,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelUniqueNodalGroup_h
 #define __vtkModelUniqueNodalGroup_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelNodalGroup.h"
 
 
-class VTK_EXPORT vtkModelUniqueNodalGroup : public vtkModelNodalGroup
+class VTKDISCRETEMODEL_EXPORT vtkModelUniqueNodalGroup : public vtkModelNodalGroup
 {
 public:
   vtkTypeMacro(vtkModelUniqueNodalGroup,vtkModelNodalGroup);

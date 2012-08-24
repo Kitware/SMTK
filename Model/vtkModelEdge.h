@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelEdge_h
 #define __vtkModelEdge_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 
 class vtkModelEdgeUse;
@@ -37,7 +38,7 @@ class vtkModelItemIterator;
 class vtkModelVertex;
 class vtkModelVertexUse;
 
-class VTK_EXPORT vtkModelEdge : public vtkModelGeometricEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelEdge : public vtkModelGeometricEntity
 {
 public:
   vtkTypeMacro(vtkModelEdge,vtkModelGeometricEntity);
