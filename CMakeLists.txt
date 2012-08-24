@@ -3,9 +3,6 @@ PROJECT(SimBuilderMesh)
 # trust that the compilers are a match
 set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
 
-FIND_PACKAGE(ParaView REQUIRED)
-INCLUDE(${PARAVIEW_USE_FILE})
-
 SET(QT_QMAKE_EXECUTABLE ${PARAVIEW_QT_QMAKE_EXECUTABLE})
 FIND_PACKAGE(Qt4)
 include(${VXL_CMAKE_DIR}/UseVXL.cmake)
@@ -13,19 +10,22 @@ include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
 
 include_directories(
-  ${VTKExtensions_SOURCE_DIR}
-  ${VTKExtensions_SOURCE_DIR}/Filtering
-  ${VTKExtensions_SOURCE_DIR}/Graphics
-  ${VTKExtensions_SOURCE_DIR}/IO
-  ${VTKExtensions_SOURCE_DIR}/Meshing
   ${CMBModel_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Src
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Math/Src
   ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Alloc/Src
   ${Omicron_BINARY_DIR}/include
-  ${DiscreteModel_SOURCE_DIR}
-  ${DiscreteModel_SOURCE_DIR}/Model
+  ${vtkDiscreteModel_SOURCE_DIR}/Model
+  ${vtkCmbDiscreteModel_INCLUDE_DIRS}
+  ${vtkDiscreteModel_INCLUDE_DIRS}
+  ${vtkCMBFiltering_INCLUDE_DIRS}
+  ${vtkCMBGraphics_INCLUDE_DIRS}
+  ${vtkCMBIO_INCLUDE_DIRS}
+  ${vtkCMBMeshing_INCLUDE_DIRS}
+  ${vtkCMBGeneral_INCLUDE_DIRS}
 )
+
+message("include: ${vtkDiscreteModel_INCLUDE_DIRS}")
 
 IF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS)
@@ -76,11 +76,23 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
   SERVER_MANAGER_SOURCES ${CMBProxyFiles}
   SERVER_SOURCES ${vtkMeshFiles}
+  CS_KITS vtkCmbDiscreteModel vtkDiscreteModel vtkFiltersCore
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
-TARGET_LINK_LIBRARIES(SimBuilderMesh_Plugin vtkCMBVTKExtensions vtkCMBVTKExtensionsCS vtkCmbDiscreteModel vtkCmbDiscreteModelCS
-  vtkDiscreteModel vtkDiscreteModelCS vtkFiltersCore vtkCMBVTKExtensions omicron triangle_omicron tl_alloc)
+target_link_libraries(SimBuilderMesh_Plugin
+  vtkCMBFiltering vtkCMBFilteringCS
+  vtkCMBGraphics vtkCMBGraphicsCS
+  vtkCMBIO vtkCMBIOCS
+  vtkCMBMeshing vtkCMBMeshingCS
+  vtkCMBGeneral vtkCMBGeneralCS
+  vtkCmbDiscreteModel vtkCmbDiscreteModelCS
+  vtkDiscreteModel vtkDiscreteModelCS
+  vtkFiltersCore vtkFiltersCoreCS
+  omicron
+  triangle_omicron
+  tl_alloc
+)
 
 if(NOT APPLE)
   install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
