@@ -25,8 +25,6 @@ include_directories(
   ${vtkCMBGeneral_INCLUDE_DIRS}
 )
 
-message("include: ${vtkDiscreteModel_INCLUDE_DIRS}")
-
 IF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
   ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS)
   ADD_DEFINITIONS(-D_SCL_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
@@ -76,7 +74,15 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
   SERVER_MANAGER_SOURCES ${CMBProxyFiles}
   SERVER_SOURCES ${vtkMeshFiles}
-  CS_KITS vtkCmbDiscreteModel vtkDiscreteModel vtkFiltersCore
+  CS_KITS
+    vtkCMBGeneral
+    vtkCMBFiltering
+    vtkCMBGraphics
+    vtkCMBMeshing
+    vtkCMBIO
+    vtkCmbDiscreteModel
+    vtkDiscreteModel
+    vtkFiltersCore
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
