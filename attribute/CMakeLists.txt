@@ -4,6 +4,7 @@ set(headers
   Attribute.h
   AttributeRefItem.h
   AttributeRefItemDefinition.h
+  AttributeSection.h
   Item.h
   ItemDefinition.h
   Definition.h
@@ -15,9 +16,15 @@ set(headers
   FileItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
+  GroupSection.h
+  InstancedSection.h
   IntItem.h
   IntItemDefinition.h
   Manager.h
+  ModelEntitySection.h
+  RootSection.h
+  Section.h
+  SimpleExpressionSection.h
   StringItem.h
   StringItemDefinition.h
   ValueItem.h
@@ -32,6 +39,7 @@ set(attribute_srcs
   Attribute.cxx
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
+  AttributeSection.cxx
   Item.cxx
   ItemDefinition.cxx
   Definition.cxx
@@ -43,9 +51,15 @@ set(attribute_srcs
   FileItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
+  GroupSection.cxx
+  InstancedSection.cxx
   IntItem.cxx
   IntItemDefinition.cxx
   Manager.cxx
+  ModelEntitySection.cxx
+  RootSection.cxx
+  Section.cxx
+  SimpleExpressionSection.cxx
   StringItem.cxx
   StringItemDefinition.cxx
   ValueItem.cxx

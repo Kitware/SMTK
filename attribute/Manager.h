@@ -44,7 +44,7 @@ namespace slctk
   {
     class Attribute;
     class Definition;
-
+    class RootSection;
     class SLCTKATTRIBUTE_EXPORT Manager
     {
     public:
@@ -68,6 +68,14 @@ namespace slctk
                                     std::vector<slctk::AttributePtr> &result) const;
       void findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const;
       bool rename(AttributePtr att, const std::string &newName);
+      bool defineAnalysis(const std::string &analysisName,
+                          const std::set<std::string> &catagories);
+      std::size_t numberOfAnalyses() const
+      {return this->m_analyses.size();}
+      std::set<std::string> analysisCatagories(const std::string &analysisType) const;
+      const std::map<std::string, std::set<std::string> > &analyses() const
+      {return this->m_analyses;}
+
       // For Reader classes
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type,
                                           unsigned long id);
@@ -76,6 +84,11 @@ namespace slctk
       std::string createUniqueName(const std::string &type) const;
 
       void updateCatagories();
+      const std::set<std::string> & catagories() const
+      {return this->m_catagories;}
+
+      slctk::RootSectionPtr rootSection() const
+      {return this->m_rootSection;}
 
     protected:
       void internalFindAttributes(AttributeDefinitionPtr def,
@@ -86,7 +99,10 @@ namespace slctk
       std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
       std::map<slctk::AttributeDefinitionPtr,
         std::set<slctk::WeakAttributeDefinitionPtr> > m_derivedDefInfo;
+      std::set<std::string> m_catagories;
+      std::map<std::string, std::set<std::string> > m_analyses;
       unsigned long m_nextAttributeId;
+      slctk::RootSectionPtr m_rootSection;
     private:
     };
 //----------------------------------------------------------------------------
@@ -129,6 +145,18 @@ namespace slctk
         this->internalFindAttributes(def, result);
         }
     }
+//----------------------------------------------------------------------------
+  inline std::set<std::string> Manager::
+  analysisCatagories(const std::string &analysisType) const
+  {
+    std::map<std::string, std::set<std::string> >::const_iterator it;
+      it = this->m_analyses.find(analysisType);
+      if (it != this->m_analyses.end())
+        {
+        return it->second;
+        }
+      return std::set<std::string>();
+  }
 //----------------------------------------------------------------------------
   };
 };

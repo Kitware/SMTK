@@ -25,14 +25,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
-
+#include "attribute/RootSection.h"
 #include <sstream>
 #include <queue>
 
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-Manager::Manager(): m_nextAttributeId(0)
+Manager::Manager(): m_nextAttributeId(0), m_rootSection(new RootSection(""))
 {
 }
 
@@ -318,6 +318,14 @@ void Manager::updateCatagories()
         }
       }
     toBeProcessed.pop();
+    }
+  // Now all of the definitions have been processed we need to combine all
+  // of their catagories to form the managers
+  this->m_catagories.clear();
+  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+    {
+    this->m_catagories.insert(it->second->catagories().begin(),
+                              it->second->catagories().end());
     }
 }
 //----------------------------------------------------------------------------

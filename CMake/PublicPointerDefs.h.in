@@ -40,11 +40,10 @@ namespace slctk
   namespace attribute
   {
     class Attribute;
+    class AttributeSection;
     class AttributeRefItem;
     class AttributeRefItemDefinition;
     class Definition;
-    class Item;
-    class ItemDefinition;
     class DirectoryItem;
     class DirectoryItemDefinition;
     class DoubleItem;
@@ -53,9 +52,17 @@ namespace slctk
     class FileItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
+    class GroupSection;
+    class InstancedSection;
     class IntItem;
     class IntItemDefinition;
+    class Item;
+    class ItemDefinition;
     class Manager;
+    class ModelEntitySection;
+    class RootSection;
+    class Section;
+    class SimpleExpressionSection;
     class StringItem;
     class StringItemDefinition;
     class ValueItem;
@@ -77,6 +84,7 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Item> ConstAttributeItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ItemDefinition> AttributeItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ItemDefinition> ConstAttributeItemDefinitionPtr;
+
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItem> DirectoryItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItemDefinition> DirectoryItemDefinitionPtr;
@@ -92,6 +100,15 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::VoidItemDefinition> VoidItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Manager> AttributeManagerPtr;
+
+  // Section Related Pointer Classes
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Section> SectionPtr;
+  typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Section> WeakSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeSection> AttributeSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::GroupSection> GroupSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ModelEntitySection> ModelEntitySectionSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::RootSection> RootSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::SimpleExpressionSection> SimpleExpressionSectionPtr;
 
 /*
   template<typename T>
