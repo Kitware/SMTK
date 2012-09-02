@@ -67,6 +67,29 @@ GroupItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr gdef)
   return true;
 }
 //----------------------------------------------------------------------------
+void GroupItem::reset() 
+{
+  const GroupItemDefinition *def = 
+    dynamic_cast<const GroupItemDefinition *>(this->m_definition.get());
+  std::size_t i, n = def->numberOfGroups();
+  if (!n)
+    {
+    this->m_items.clear();
+    }
+  else
+    {
+    for (i = 0; i < n; i++)
+      {
+      std::size_t j, m = this->m_items[i].size();
+      for (j = 0; j < m; j++)
+        {
+        this->m_items[i][j]->reset();
+        }
+      }
+    }
+  Item::reset();
+}
+//----------------------------------------------------------------------------
 std::size_t GroupItem::numberOfItemsPerGroup() const
 {
   const GroupItemDefinition *def = 

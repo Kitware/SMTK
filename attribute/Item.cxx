@@ -55,6 +55,10 @@ bool Item::setDefinition(slctk::ConstAttributeItemDefinitionPtr def)
     return false;
     }
   this->m_definition = def;
+  if ((def != NULL) && def->isOptional())
+    {
+    this->m_isEnabled = def->isEnabledByDefault();
+    }
   return true;
 }
 //----------------------------------------------------------------------------
@@ -76,6 +80,14 @@ bool Item::isMemberOf(const std::string &catagory) const
 bool Item::isMemberOf(const std::vector<std::string> &catagories) const
 {
   return this->definition()->isMemberOf(catagories);
+}
+//----------------------------------------------------------------------------
+void Item::reset() 
+{
+  if ((this->m_definition != NULL) && this->m_definition->isOptional())
+    {
+    this->m_isEnabled = this->m_definition->isEnabledByDefault();
+    }
 }
 //----------------------------------------------------------------------------
 std::string Item::type2String(Item::Type t)

@@ -69,7 +69,7 @@ namespace slctk
       // it will be marked as unset.
       //If the item's definition indicated a size of 0 then it will go back to 
       // having no values
-      virtual void reset() = 0;
+      virtual void reset();
       virtual bool setToDefault(int elementIndex=0) = 0;
       virtual std::string valueAsString(const std::string &format="") const
       { return this->valueAsString(0, format);}

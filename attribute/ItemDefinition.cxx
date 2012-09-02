@@ -33,6 +33,7 @@ ItemDefinition::ItemDefinition(const std::string &myName)
   this->m_version = 0;
   this->m_advanceLevel = 0;
   this->m_isOptional = false;
+  this->m_isEnabledByDefault = false;
 }
 
 //----------------------------------------------------------------------------

@@ -158,6 +158,11 @@ bool ValueItem::isDiscrete() const
     isDiscrete();
 }
 //----------------------------------------------------------------------------
+void ValueItem::reset() 
+{
+  Item::reset();
+}
+//----------------------------------------------------------------------------
 void ValueItem::setDiscreteIndex(int element, int index)
 {
   if (!this->isDiscrete())

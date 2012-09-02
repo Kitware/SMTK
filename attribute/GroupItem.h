@@ -60,6 +60,7 @@ namespace slctk
         {return this->find(0, name);}
       slctk::ConstAttributeItemPtr find(int element, const std::string &name) const;
 
+      virtual void reset();
     protected:
       std::vector<std::vector<slctk::AttributeItemPtr> >m_items;
   

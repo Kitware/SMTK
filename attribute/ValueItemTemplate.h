@@ -391,6 +391,7 @@ namespace slctk
           this->setValue(i, val);
           }
         }
+      ValueItem::reset();
     }
 //----------------------------------------------------------------------------
     template<typename DataT>

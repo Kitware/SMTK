@@ -70,6 +70,13 @@ namespace slctk
       void setIsOptional(bool isOptionalValue)
       { this->m_isOptional = isOptionalValue;}
 
+      // This only comes into play if the item is optional
+      bool isEnabledByDefault() const
+      { return this->m_isEnabledByDefault;}
+
+      void setIsEnabledByDefault(bool isEnabledByDefaultValue)
+      { this->m_isEnabledByDefault = isEnabledByDefaultValue;}
+
       std::size_t numberOfCatagories() const
       {return this->m_catagories.size();}
 
@@ -105,6 +112,7 @@ namespace slctk
       virtual void updateCatagories();
       int m_version;
       bool m_isOptional;
+      bool m_isEnabledByDefault;
       std::string m_name;
       std::string m_label;
       std::set<std::string> m_catagories;

@@ -83,6 +83,7 @@ namespace slctk
       void clearAllUserData()
       {this->m_userData.clear();}
 
+      virtual void reset();
       static std::string type2String(Item::Type t);
       static Item::Type string2Type(const std::string &s);
 
