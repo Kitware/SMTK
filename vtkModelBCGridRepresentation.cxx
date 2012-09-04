@@ -45,7 +45,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPoints.h"
 
 vtkStandardNewMacro(vtkModelBCGridRepresentation);
-vtkCxxRevisionMacro(vtkModelBCGridRepresentation, "");
 
 //----------------------------------------------------------------------------
 vtkModelBCGridRepresentation::vtkModelBCGridRepresentation()

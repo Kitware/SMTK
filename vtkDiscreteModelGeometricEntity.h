@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelGeometricEntity_h
 #define __vtkDiscreteModelGeometricEntity_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelEntity.h"
 
 #include <vector>
@@ -46,7 +47,7 @@ class vtkIdTypeArray;
 class vtkModel;
 class vtkModelGeometricEntity;
 
-class VTK_EXPORT vtkDiscreteModelGeometricEntity : public vtkDiscreteModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelGeometricEntity : public vtkDiscreteModelEntity
 {
 public:
 

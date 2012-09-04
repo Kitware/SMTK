@@ -29,7 +29,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelEntity.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelUserName, "");
 vtkStandardNewMacro(vtkModelUserName);
 vtkInformationKeyMacro(vtkModelUserName, USERNAME, String); 
 

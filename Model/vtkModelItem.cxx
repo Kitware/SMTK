@@ -35,7 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModelItemInternals.h"
 
-vtkCxxRevisionMacro(vtkModelItem, "");
 vtkInformationKeyMacro(vtkModelItem, GEOMETRY, ObjectBase);
 
 vtkModelItem::vtkModelItem()

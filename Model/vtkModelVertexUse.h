@@ -28,16 +28,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelVertexUse_h
 #define __vtkModelVertexUse_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkModelEdgeUse;
 class vtkModelVertex;
 
-class VTK_EXPORT vtkModelVertexUse : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelVertexUse : public vtkModelEntity
 {
 public:
   static vtkModelVertexUse* New();
-  vtkTypeRevisionMacro(vtkModelVertexUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelVertexUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

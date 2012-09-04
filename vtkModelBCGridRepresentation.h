@@ -39,6 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelBCGridRepresentation_h
 #define __vtkModelBCGridRepresentation_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 #include "vtkSmartPointer.h"
 #include <map>
@@ -46,11 +47,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkPolyData;
 
-class VTK_EXPORT vtkModelBCGridRepresentation : public vtkModelGridRepresentation
+class VTKDISCRETEMODEL_EXPORT vtkModelBCGridRepresentation : public vtkModelGridRepresentation
 {
 public:
   static vtkModelBCGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelBCGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

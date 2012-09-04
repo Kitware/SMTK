@@ -32,14 +32,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelEntityGroup_h
 #define __vtkDiscreteModelEntityGroup_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkDiscreteModelEntity;
 
-class VTK_EXPORT vtkDiscreteModelEntityGroup : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelEntityGroup : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
+  vtkTypeMacro(vtkDiscreteModelEntityGroup,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   void AddModelEntity(vtkDiscreteModelEntity*);

@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelRegion.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelShellUse, "");
 
 vtkModelShellUse* vtkModelShellUse::New()
 {

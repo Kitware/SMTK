@@ -5,7 +5,7 @@ MACRO(ADD_DISCRETE_MODEL_KIT KIT KIT_UPCASE Depend_LIBS Kit_SRCS)
 
 # Setup vtkInstantiator registration for this library's classes.
   INCLUDE(${VTK_CMAKE_DIR}/vtkMakeInstantiator.cmake)
-  INCLUDE(${VTK_CMAKE_DIR}/vtkTargetExportMacros.cmake)
+  INCLUDE(${ParaView_CMAKE_DIR}/VTKMono/vtkTargetExportMacros.cmake)
   VTK_MAKE_INSTANTIATOR3(vtk${KIT}Instantiator KitInstantiator_SRCS
     "${Kit_SRCS}"
     VTK_EXPORT
@@ -21,7 +21,7 @@ MACRO(ADD_DISCRETE_MODEL_KIT KIT KIT_UPCASE Depend_LIBS Kit_SRCS)
   SET(VTK_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
   SET(VTK_KITS_DIR "${CMAKE_CURRENT_BINARY_DIR}/Utilities")
 
-  INCLUDE(${VTK_CMAKE_DIR}/vtkExportKit.cmake)
+  INCLUDE(${ParaView_CMAKE_DIR}/VTKMono/vtkExportKit.cmake)
 
   VTK_EXPORT_KIT("${KIT}" "${KIT_UPCASE}" "${Kit_SRCS}")
 
@@ -36,7 +36,7 @@ MACRO(ADD_DISCRETE_MODEL_KIT KIT KIT_UPCASE Depend_LIBS Kit_SRCS)
 SET(LIBTYPE SHARED)
 
 # Create the library.
-  VTK_ADD_LIBRARY(vtk${KIT} ${LIBTYPE}
+  PVVTK_ADD_LIBRARY(vtk${KIT} ${LIBTYPE}
     ${Kit_SRCS}
     ${KitInstantiator_SRCS}
     )

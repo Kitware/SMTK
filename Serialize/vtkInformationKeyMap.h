@@ -32,6 +32,7 @@
 #ifndef __vtkInformationKeyMap_h
 #define __vtkInformationKeyMap_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 #include <string>
@@ -40,11 +41,11 @@
 class vtkInformationKey;
 //ETX
 
-class VTK_EXPORT vtkInformationKeyMap : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
 {
 public:
   static vtkInformationKeyMap *New();
-  vtkTypeRevisionMacro(vtkInformationKeyMap,vtkObject);
+  vtkTypeMacro(vtkInformationKeyMap,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

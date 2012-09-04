@@ -35,7 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <map>
 
-vtkCxxRevisionMacro(vtkModelVertex, "");
 
 vtkModelVertex::vtkModelVertex()
 {

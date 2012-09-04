@@ -31,7 +31,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkOpenGLProperty.h"
 
-vtkCxxRevisionMacro(vtkModelGeometricEntity, "$Revision: 2566 $");
 
 vtkModelGeometricEntity::vtkModelGeometricEntity()
 {

@@ -36,7 +36,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <set>
 
-vtkCxxRevisionMacro(vtkModelEdge, "");
 
 vtkModelEdge::vtkModelEdge()
 {

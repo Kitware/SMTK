@@ -23,7 +23,6 @@
 #include "vtkXMLElement.h"
 #include "vtksys/ios/sstream"
 
-vtkCxxRevisionMacro(vtkModelXMLParser, "1774");
 vtkStandardNewMacro(vtkModelXMLParser);
 
 //----------------------------------------------------------------------------

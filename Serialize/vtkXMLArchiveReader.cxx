@@ -45,7 +45,6 @@
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/ios/sstream>
 
-vtkCxxRevisionMacro(vtkXMLArchiveReader, "1774");
 vtkStandardNewMacro(vtkXMLArchiveReader);
 
 vtkCxxSetObjectMacro(vtkXMLArchiveReader, RootElement, vtkXMLElement);

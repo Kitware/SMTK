@@ -38,7 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <set>
 
-vtkCxxRevisionMacro(vtkModelFace, "");
 
 //-----------------------------------------------------------------------------
 vtkModelFace::vtkModelFace()

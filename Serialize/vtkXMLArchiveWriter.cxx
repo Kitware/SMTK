@@ -44,7 +44,6 @@
 #include <algorithm>
 #include "vtksys/ios/sstream"
 
-vtkCxxRevisionMacro(vtkXMLArchiveWriter, "1774");
 vtkStandardNewMacro(vtkXMLArchiveWriter);
 
 vtkCxxSetObjectMacro(vtkXMLArchiveWriter, RootElement, vtkXMLElement);

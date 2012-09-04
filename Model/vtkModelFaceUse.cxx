@@ -38,7 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelFaceUse, "");
 vtkStandardNewMacro(vtkModelFaceUse);
 
 //-----------------------------------------------------------------------------

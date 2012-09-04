@@ -28,7 +28,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItem.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelItemIterator, "");
 
 vtkModelItemIterator::vtkModelItemIterator()
 {

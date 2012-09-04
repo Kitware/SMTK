@@ -29,7 +29,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelItemInternals.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelItemGenericIterator, "");
 vtkStandardNewMacro(vtkModelItemGenericIterator);
 
 struct vtkModelItemGenericIteratorInternals

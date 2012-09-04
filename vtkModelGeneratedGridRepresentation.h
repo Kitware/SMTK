@@ -33,12 +33,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelGeneratedGridRepresentation_h
 #define __vtkModelGeneratedGridRepresentation_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 
-class VTK_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation
+class VTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation
 {
 public:
-  vtkTypeRevisionMacro(vtkModelGeneratedGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModelGeneratedGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void WriteMeshToFile()=0;

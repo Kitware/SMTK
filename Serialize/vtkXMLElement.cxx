@@ -24,7 +24,6 @@
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
 
-vtkCxxRevisionMacro(vtkXMLElement, "1774");
 vtkStandardNewMacro(vtkXMLElement);
 
 #include <string>

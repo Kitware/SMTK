@@ -42,6 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItemGenericIterator_h
 #define __vtkModelItemGenericIterator_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
 
 //BTX
@@ -49,11 +50,11 @@ class vtkModelItem;
 struct vtkModelItemGenericIteratorInternals;
 //ETX
 
-class VTK_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
+class VTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
 {
 public:
   static vtkModelItemGenericIterator *New();
-  vtkTypeRevisionMacro(vtkModelItemGenericIterator,vtkModelItemIterator);
+  vtkTypeMacro(vtkModelItemGenericIterator,vtkModelItemIterator);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

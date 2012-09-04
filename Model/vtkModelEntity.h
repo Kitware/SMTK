@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelEntity_h
 #define __vtkModelEntity_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
 
 class vtkInformationDoubleVectorKey;
@@ -43,10 +44,10 @@ class vtkInformationObjectBaseKey;
 class vtkModel;
 class vtkProperty;
 
-class VTK_EXPORT vtkModelEntity : public vtkModelItem
+class VTKDISCRETEMODEL_EXPORT vtkModelEntity : public vtkModelItem
 {
 public:
-  vtkTypeRevisionMacro(vtkModelEntity,vtkModelItem);
+  vtkTypeMacro(vtkModelEntity,vtkModelItem);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

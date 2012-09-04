@@ -26,7 +26,6 @@
 #include "vtkXMLElement.h"
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkRenderingSerializationHelper, "1774");
 vtkStandardNewMacro(vtkRenderingSerializationHelper);
 
 //-----------------------------------------------------------------------------

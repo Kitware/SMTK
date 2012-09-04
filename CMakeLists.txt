@@ -3,10 +3,6 @@ PROJECT(DiscreteModel)
 # trust that the compilers are a match
 set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
 
-# VTK is needed.
-FIND_PACKAGE(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
-
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
   "${PROJECT_SOURCE_DIR}/Model/VTKUUIDConfigure.h.in"
@@ -166,26 +162,19 @@ if (MSVC)
    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 endif(MSVC)
 
-# creating Discrete model lib
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/DiscreteModelMacros.cmake)
-SET(KIT "DiscreteModel")
-SET(KIT_UPCASE "DISCRETEMODEL")
-
 SET_SOURCE_FILES_PROPERTIES(
 ${ModelFiles}
 ${DiscreteModelFiles}
 WRAP_EXCLUDE
 )
 
-SET(MODEL_KIT_SRC
+set(_module_src
   ${ModelFiles}
   ${DiscreteModelFiles}
   vtkDiscreteModelWrapper.cxx
 )
 
-# Depends on vtkFiltering due to vtkPolyData reference
-set(Depend_LIBS vtkFiltering vtkGraphics vtkRendering vtkIO vtkCommon ${KIT_LIBS})
-ADD_DISCRETE_MODEL_KIT(${KIT} ${KIT_UPCASE} "${Depend_LIBS}" "${MODEL_KIT_SRC}" )
+vtk_module_library(vtkDiscreteModel ${_module_src})
 
 if(NOT APPLE)
   install(TARGETS vtkDiscreteModel

@@ -77,7 +77,6 @@
 # include <net/if_arp.h>
 #endif
 
-vtkCxxRevisionMacro(vtkUUID, "1774");
 vtkStandardNewMacro(vtkUUID);
 
 //-----------------------------------------------------------------------------

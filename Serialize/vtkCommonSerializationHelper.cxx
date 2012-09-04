@@ -30,7 +30,6 @@
 #include "vtkObjectFactory.h"
 #include "vtkTransform.h"
 
-vtkCxxRevisionMacro(vtkCommonSerializationHelper, "1774");
 vtkStandardNewMacro(vtkCommonSerializationHelper);
 
 //-----------------------------------------------------------------------------

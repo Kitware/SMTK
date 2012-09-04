@@ -39,6 +39,7 @@
 #ifndef __vtkXMLArchiveReader_h
 #define __vtkXMLArchiveReader_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
 
 //BTX
@@ -46,11 +47,11 @@ class vtkXMLElement;
 struct vtkXMLArchiveReaderInternals;
 //ETX
 
-class VTK_EXPORT vtkXMLArchiveReader : public vtkSerializer
+class VTKDISCRETEMODEL_EXPORT vtkXMLArchiveReader : public vtkSerializer
 {
 public:
   static vtkXMLArchiveReader *New();
-  vtkTypeRevisionMacro(vtkXMLArchiveReader,vtkSerializer);
+  vtkTypeMacro(vtkXMLArchiveReader,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

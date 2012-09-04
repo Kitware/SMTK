@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModel_h
 #define __vtkDiscreteModel_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"
 
 class vtkCharArray;
@@ -76,13 +77,13 @@ enum DiscreteModelEventIds {
 };
 //ETX
 
-class VTK_EXPORT vtkDiscreteModel : public vtkModel
+class VTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
   static vtkDiscreteModel* New();
 
 //BTX
-  vtkTypeRevisionMacro(vtkDiscreteModel,vtkModel);
+  vtkTypeMacro(vtkDiscreteModel,vtkModel);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

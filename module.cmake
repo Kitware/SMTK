@@ -1,0 +1,10 @@
+vtk_module(vtkDiscreteModel
+  GROUPS
+   CmbCore
+  DEPENDS
+   vtkCommonDataModel
+   vtkRenderingOpenGL
+   vtkRenderingFreeTypeOpenGL
+   vtkInteractionStyle
+   vtkIOCore
+)

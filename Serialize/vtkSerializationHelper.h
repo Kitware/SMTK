@@ -32,14 +32,15 @@
 #ifndef __vtkSerializationHelper_h
 #define __vtkSerializationHelper_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 class vtkSerializer;
 
-class VTK_EXPORT vtkSerializationHelper : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkSerializationHelper : public vtkObject
 {
 public:
-  vtkTypeRevisionMacro(vtkSerializationHelper,vtkObject);
+  vtkTypeMacro(vtkSerializationHelper,vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
