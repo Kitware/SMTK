@@ -285,6 +285,21 @@ std::string Manager::createUniqueName(const std::string &type) const
   return "";
 }
 //----------------------------------------------------------------------------
+void Manager::
+findBaseDefinitions(std::vector<slctk::AttributeDefinitionPtr> &result) const
+{
+  result.clear();
+  // Insert all top most definitions into the queue
+  std::map<std::string,  slctk::AttributeDefinitionPtr>::const_iterator it;
+  for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
+    {
+    if (it->second->baseDefinition() == NULL)
+      {
+      result.push_back(it->second);
+      }
+    }
+}
+//----------------------------------------------------------------------------
 void Manager::updateCatagories()
 {
   std::queue<AttributeDefinitionPtr> toBeProcessed;
@@ -328,4 +343,26 @@ void Manager::updateCatagories()
                               it->second->catagories().end());
     }
 }
+//----------------------------------------------------------------------------
+void Manager::
+derivedDefinitions(slctk::AttributeDefinitionPtr def,
+                   std::vector<slctk::AttributeDefinitionPtr> &result) const
+{
+  std::map<slctk::AttributeDefinitionPtr, 
+    std::set<slctk::WeakAttributeDefinitionPtr> >::const_iterator it;
+  it = this->m_derivedDefInfo.find(def);
+  result.clear();
+  if (it == this->m_derivedDefInfo.end())
+    {
+    return;
+    }
+  int i, n = it->second.size();
+  result.resize(n);
+  std::set<slctk::WeakAttributeDefinitionPtr>::const_iterator dit;
+  for (i = 0, dit = it->second.begin(); i < n; dit++, i++)
+    {
+    result[i] = dit->lock();
+    }
+}
+    
 //----------------------------------------------------------------------------

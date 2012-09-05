@@ -64,6 +64,13 @@ namespace slctk
       void findAttributes(const std::string &type, std::vector<slctk::AttributePtr> &result) const;
       void findAttributes(slctk::AttributeDefinitionPtr def, std::vector<AttributePtr> &result) const;
       slctk::AttributeDefinitionPtr findDefinition(const std::string &type) const;
+      
+      // Return a list of definitions that are not derived from another definition
+      void findBaseDefinitions(std::vector<slctk::AttributeDefinitionPtr> &result) const;
+      
+      void derivedDefinitions(slctk::AttributeDefinitionPtr def,
+                              std::vector<slctk::AttributeDefinitionPtr> &result) const;
+
       void findDefinitionAttributes(const std::string &type,
                                     std::vector<slctk::AttributePtr> &result) const;
       void findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const;

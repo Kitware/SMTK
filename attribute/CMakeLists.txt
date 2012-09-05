@@ -33,6 +33,7 @@ set(headers
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
+  XmlV1StringWriter.h
   )
 
 set(attribute_srcs
@@ -66,6 +67,7 @@ set(attribute_srcs
   ValueItemDefinition.cxx
   VoidItem.cxx
   VoidItemDefinition.cxx
+  XmlV1StringWriter.cxx
 )
 
 add_library(SlctkAttribute ${attribute_srcs} ${headers})
