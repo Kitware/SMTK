@@ -174,7 +174,10 @@ set(_module_src
   vtkDiscreteModelWrapper.cxx
 )
 
+set(vtkDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkDiscreteModel ${_module_src})
+set(Depend_LIBS vtkFiltersCore vtkRenderingCore vtkIOCore vtkCommonCore ${KIT_LIBS})
+target_link_libraries(vtkDiscreteModel ${Depend_LIBS})
 
 if(NOT APPLE)
   install(TARGETS vtkDiscreteModel
