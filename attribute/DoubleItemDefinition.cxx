@@ -37,6 +37,11 @@ DoubleItemDefinition::~DoubleItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type DoubleItemDefinition::type() const
+{
+  return Item::DOUBLE;
+}
+//----------------------------------------------------------------------------
 slctk::AttributeItemPtr DoubleItemDefinition::buildItem() const
 {
   return slctk::AttributeItemPtr(new DoubleItem());

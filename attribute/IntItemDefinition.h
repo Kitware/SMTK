@@ -39,6 +39,7 @@ namespace slctk
     public:
       IntItemDefinition(const std::string &myName);
       virtual ~IntItemDefinition();
+      virtual Item::Type type() const;
       virtual slctk::AttributeItemPtr buildItem() const;
 
     protected:

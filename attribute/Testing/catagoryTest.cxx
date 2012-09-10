@@ -30,6 +30,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/StringItem.h"
 #include "attribute/StringItemDefinition.h"
+#include "attribute/XmlV1StringWriter.h"
+
 #include <iostream>
 
 int main()
@@ -40,6 +42,8 @@ int main()
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
+  expDef->setBriefDescription("Sample Expression");
+  expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   slctk::StringItemDefinitionPtr eitemdef = 
     expDef->addItemDefinition<slctk::StringItemDefinitionPtr>("Expression String");
   slctk::StringItemDefinitionPtr eitemdef2 =
@@ -166,6 +170,8 @@ int main()
         }
       }
     }
+  slctk::attribute::XmlV1StringWriter writer(manager);
+  std::cout << writer.convertToString() << std::endl;
   std::cout << "Manager destroyed\n";
   }
   return status;

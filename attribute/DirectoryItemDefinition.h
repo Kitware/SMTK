@@ -45,6 +45,7 @@ namespace slctk
       DirectoryItemDefinition(const std::string &myName);
       virtual ~DirectoryItemDefinition();
       
+      virtual Item::Type type() const;
       bool isValueValid(const std::string &val) const;
 
       virtual slctk::AttributeItemPtr buildItem() const;

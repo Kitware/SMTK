@@ -45,6 +45,7 @@ namespace slctk
       AttributeRefItemDefinition(const std::string &myName);
       virtual ~AttributeRefItemDefinition();
       
+      virtual Item::Type type() const;
       slctk::AttributeDefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
 
@@ -63,6 +64,9 @@ namespace slctk
 
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
+      bool usingCommonLabel() const
+      {return this->m_useCommonLabel;}
+
       std::string valueLabel(int element) const;
     protected:
         slctk::WeakAttributeDefinitionPtr m_definition;

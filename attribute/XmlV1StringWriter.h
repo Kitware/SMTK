@@ -29,9 +29,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 #include "attribute/Manager.h"
-#include "rapidxml/rapidxml.hpp"
 #include <string>
 #include <vector>
+#include "pugixml-1.2/src/pugixml.hpp"
+
 namespace slctk
 {
   namespace attribute
@@ -50,13 +51,17 @@ namespace slctk
       void processModelInfo();
 
       void processDefinition(slctk::AttributeDefinitionPtr def);
+      void processItemDefinition(pugi::xml_node &node, 
+                                 AttributeItemDefinitionPtr idef);
+      void processAttributeRefDef(pugi::xml_node &node,
+                                  AttributeRefItemDefinitionPtr idef);
       const slctk::attribute::Manager &m_manager;
-      rapidxml::xml_document<> m_doc;
-      rapidxml::xml_node<> *m_root;
-      rapidxml::xml_node<> *m_definitions;
-      rapidxml::xml_node<> *m_instances;
-      rapidxml::xml_node<> *m_sections;
-      rapidxml::xml_node<> *m_modelInfo;
+      pugi::xml_document m_doc;
+      pugi::xml_node m_root;
+      pugi::xml_node m_definitions;
+      pugi::xml_node m_instances;
+      pugi::xml_node m_sections;
+      pugi::xml_node m_modelInfo;
       std::vector<std::string> m_strings;
     private:
       

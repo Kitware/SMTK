@@ -37,6 +37,11 @@ IntItemDefinition::~IntItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type IntItemDefinition::type() const
+{
+  return Item::INT;
+}
+//----------------------------------------------------------------------------
 slctk::AttributeItemPtr IntItemDefinition::buildItem() const
 {
   return slctk::AttributeItemPtr(new IntItem());

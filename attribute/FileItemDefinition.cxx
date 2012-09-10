@@ -41,6 +41,12 @@ FileItemDefinition::~FileItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type FileItemDefinition::type() const
+{
+  return Item::FILE;
+}
+
+//----------------------------------------------------------------------------
 bool 
 FileItemDefinition::isValueValid(const std::string &val) const
 {

@@ -39,6 +39,11 @@ GroupItemDefinition::~GroupItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type GroupItemDefinition::type() const
+{
+  return Item::GROUP;
+}
+//----------------------------------------------------------------------------
 slctk::AttributeItemPtr GroupItemDefinition::buildItem() const
 {
   return slctk::AttributeItemPtr(new GroupItem());

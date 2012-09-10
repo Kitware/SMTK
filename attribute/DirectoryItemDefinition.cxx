@@ -41,6 +41,12 @@ DirectoryItemDefinition::~DirectoryItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type DirectoryItemDefinition::type() const
+{
+  return Item::DIRECTORY;
+}
+
+//----------------------------------------------------------------------------
 bool 
 DirectoryItemDefinition::isValueValid(const std::string &val) const
 {

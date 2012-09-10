@@ -42,6 +42,12 @@ AttributeRefItemDefinition::~AttributeRefItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type AttributeRefItemDefinition::type() const
+{
+  return Item::ATTRIBUTE_REF;
+}
+
+//----------------------------------------------------------------------------
 bool 
 AttributeRefItemDefinition::isValueValid(slctk::AttributePtr att) const
 {

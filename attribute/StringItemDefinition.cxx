@@ -37,6 +37,11 @@ StringItemDefinition::~StringItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
+Item::Type StringItemDefinition::type() const
+{
+  return Item::STRING;
+}
+//----------------------------------------------------------------------------
 slctk::AttributeItemPtr StringItemDefinition::buildItem() const
 {
   return slctk::AttributeItemPtr(new StringItem());

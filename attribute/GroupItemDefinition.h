@@ -42,6 +42,7 @@ namespace slctk
     public:
       GroupItemDefinition(const std::string &myname);
       virtual ~GroupItemDefinition();
+      virtual Item::Type type() const;
       std::size_t numberOfItemDefinitions() const
       {return this->m_itemDefs.size();}
       slctk::AttributeItemDefinitionPtr itemDefinition(int ith) const

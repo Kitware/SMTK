@@ -93,7 +93,7 @@ namespace slctk
       const std::set<std::string> & catagories() const
       {return this->m_catagories;}
 
-      bool advanceLevel() const
+      int advanceLevel() const
       {return this->m_advanceLevel;}
       void setAdvanceLevel(int level)
       {this->m_advanceLevel = level;}
@@ -123,8 +123,10 @@ namespace slctk
       { return ((this->m_associationMask & 0x2) != 0); }
       bool associatesWithFace() const
       { return ((this->m_associationMask & 0x4) != 0); }
-      bool associatesWithModel() const
+      bool associatesWithRegion() const
       { return ((this->m_associationMask & 0x8) != 0); }
+      bool associatesWithModel() const
+      { return ((this->m_associationMask & 0x10) != 0); }
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return 
       // the appropriate associatesWith method
@@ -156,13 +158,13 @@ namespace slctk
 
       int findItemPosition(const std::string &name) const;
 
-      const char *detailedDescription() const
-      {return this->m_detailedDescription.c_str();}
+      const std::string &detailedDescription() const
+      {return this->m_detailedDescription;}
       void setDetailedDescription(const std::string &text)
         {this->m_detailedDescription = text;}
 
-      const char *briefDescription() const
-      {return this->m_briefDescription.c_str();}
+      const std::string &briefDescription() const
+      {return this->m_briefDescription;}
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 

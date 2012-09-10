@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
+#include "attribute/Item.h" // Needed for Item Types
 
 #include <string>
 #include <set>
@@ -39,7 +40,6 @@ namespace slctk
   namespace attribute
   {
     class GroupItemDefinition;
-    class Item;
     class Definition;
     class SLCTKATTRIBUTE_EXPORT ItemDefinition
     {
@@ -51,6 +51,7 @@ namespace slctk
       const std::string &name() const
       { return this->m_name;}
 
+      virtual Item::Type type() const = 0;
       // The label is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the label
       const std::string &label() const
@@ -92,7 +93,7 @@ namespace slctk
 
       virtual void removeCatagory(const std::string &catagory);
 
-      bool advanceLevel() const
+      int advanceLevel() const
       {return this->m_advanceLevel;}
       void setAdvanceLevel(int level)
       {this->m_advanceLevel = level;}
