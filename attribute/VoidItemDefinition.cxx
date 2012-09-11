@@ -45,3 +45,8 @@ slctk::AttributeItemPtr VoidItemDefinition::buildItem() const
   return slctk::AttributeItemPtr(new VoidItem());
 }
 //----------------------------------------------------------------------------
+Item::Type VoidItemDefinition::type() const
+{
+  return Item::VOID;
+}
+//----------------------------------------------------------------------------

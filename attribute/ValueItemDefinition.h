@@ -57,12 +57,14 @@ namespace slctk
       { this->m_units = newUnits;}
 
       bool isDiscrete() const
-      {return (this->m_discreteValueLabels.size() != 0);}
-      
+      {return (this->m_discreteValueEnums.size() != 0);}
+      std::size_t numberOfDiscreteValues() const
+      {return this->m_discreteValueEnums.size();}
+      const std::string &discreteEnum(int ith) const
+      {return this->m_discreteValueEnums[ith];}
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}
-      void setDefaultDiscreteIndex(int discreteIndex)
-      {this->m_defaultDiscreteIndex = discreteIndex;}
+      void setDefaultDiscreteIndex(int discreteIndex);
       
       bool allowsExpressions() const;
       bool isValidExpression(slctk::AttributePtr exp) const;
@@ -82,18 +84,20 @@ namespace slctk
       bool hasValueLabels() const
       {return this->m_valueLabels.size();}
 
+      bool usingCommonLabel() const
+      {return this->m_useCommonLabel;}
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
       std::string valueLabel(int element) const;
       bool isDiscreteIndexValid(int index) const
-      {return ((index > -1) && (index < this->m_discreteValueLabels.size()));}
+      {return ((index > -1) && (index < this->m_discreteValueEnums.size()));}
 
     protected:
 
       bool m_hasDefault;
       bool m_useCommonLabel;
       std::vector<std::string> m_valueLabels;
-      std::vector<std::string> m_discreteValueLabels;
+      std::vector<std::string> m_discreteValueEnums;
       int m_defaultDiscreteIndex;
       int m_numberOfValues;
       std::string m_units;

@@ -55,6 +55,18 @@ namespace slctk
                                  AttributeItemDefinitionPtr idef);
       void processAttributeRefDef(pugi::xml_node &node,
                                   AttributeRefItemDefinitionPtr idef);
+      void processDoubleDef(pugi::xml_node &node,
+                            DoubleItemDefinitionPtr idef);
+      void processDirectoryDef(pugi::xml_node &node,
+                               DirectoryItemDefinitionPtr idef);
+      void processFileDef(pugi::xml_node &node,
+                          FileItemDefinitionPtr idef);
+      void processIntDef(pugi::xml_node &node,
+                         IntItemDefinitionPtr idef);
+      void processStringDef(pugi::xml_node &node,
+                            StringItemDefinitionPtr idef);
+      void processValueDef(pugi::xml_node &node,
+                           ValueItemDefinitionPtr idef);
       const slctk::attribute::Manager &m_manager;
       pugi::xml_document m_doc;
       pugi::xml_node m_root;

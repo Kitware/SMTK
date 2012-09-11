@@ -133,3 +133,9 @@ ValueItemDefinition::buildExpressionItem() const
   return aref;
 }
 //----------------------------------------------------------------------------
+void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
+{
+  this->m_defaultDiscreteIndex = discreteIndex;
+  this->m_hasDefault = true;
+}
+//----------------------------------------------------------------------------

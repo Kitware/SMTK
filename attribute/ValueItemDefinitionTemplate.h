@@ -51,7 +51,7 @@ namespace slctk
       const DataT &discreteValue(int element) const
       {return this->m_discreteValues[element];}
       void addDiscreteValue(const DataT &val);
-      void addDiscreteValue(const DataT &val, const std::string &label);
+      void addDiscreteValue(const DataT &val, const std::string &discreteEnum);
       virtual bool hasRange() const
       {return this->m_minRangeSet || this->m_maxRangeSet;}
       bool hasMinRange() const
@@ -119,7 +119,7 @@ namespace slctk
     addDiscreteValue(const DataT &dvalue, const std::string &dlabel)
     {
       this->m_discreteValues.push_back(dvalue);
-      this->m_discreteValueLables.push_back(dlabel);
+      this->m_discreteValueEnums.push_back(dlabel);
     }
 //----------------------------------------------------------------------------
     template<typename DataT>

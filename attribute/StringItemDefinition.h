@@ -41,9 +41,12 @@ namespace slctk
       virtual ~StringItemDefinition();
       virtual Item::Type type() const;
       virtual slctk::AttributeItemPtr buildItem() const;
-
+      bool isMultiline() const
+      { return this->m_multiline;}
+      void setIsMultiline(bool val)
+      {this->m_multiline = val;}
     protected:
-
+      bool m_multiline;
     private:
 
     };

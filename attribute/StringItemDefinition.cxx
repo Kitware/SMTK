@@ -28,7 +28,7 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 StringItemDefinition::StringItemDefinition(const std::string &myName):
-  ValueItemDefinitionTemplate<std::string>(myName)
+  ValueItemDefinitionTemplate<std::string>(myName), m_multiline(false)
 {
 }
 

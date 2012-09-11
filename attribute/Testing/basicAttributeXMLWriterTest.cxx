@@ -28,9 +28,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/IntItemDefinition.h"
 #include "attribute/DoubleItem.h"
 #include "attribute/DoubleItemDefinition.h"
+#include "attribute/DirectoryItemDefinition.h"
+#include "attribute/FileItemDefinition.h"
 #include "attribute/StringItem.h"
 #include "attribute/StringItemDefinition.h"
+#include "attribute/VoidItemDefinition.h"
 #include "attribute/XmlV1StringWriter.h"
+
 #include <iostream>
 
 int main()
@@ -40,7 +44,9 @@ int main()
   slctk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef>s");
+  slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
+  expDef->setBriefDescription("Sample Expression");
+  expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   slctk::StringItemDefinitionPtr eitemdef = 
     expDef->addItemDefinition<slctk::StringItemDefinitionPtr>("Expression String");
   slctk::StringItemDefinitionPtr eitemdef2 =
@@ -50,16 +56,25 @@ int main()
   slctk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
   slctk::IntItemDefinitionPtr iitemdef = 
-    base->addItemDefinition<slctk::IntItemDefinitionPtr>("IntItem1");
+    base->addItemDefinition<slctk::IntItemDefinitionPtr>("TEMPORAL");
+  iitemdef->setCommonValueLabel("Time");
+  iitemdef->addDiscreteValue(0, "Seconds");
+  iitemdef->addDiscreteValue(1, "Minutes");
+  iitemdef->addDiscreteValue(2, "Hours");
+  iitemdef->addDiscreteValue(3, "Days");
+  iitemdef->setDefaultDiscreteIndex(0);
+  iitemdef->addCatagory("Flow");
   iitemdef = 
     base->addItemDefinition<slctk::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
+  iitemdef->addCatagory("Heat");
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   slctk::DoubleItemDefinitionPtr ditemdef = 
     def1->addItemDefinition<slctk::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
+  ditemdef->addCatagory("Veg");
   ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
   if (!ditemdef->allowsExpressions())
@@ -70,15 +85,66 @@ int main()
   ditemdef = 
     def1->addItemDefinition<slctk::DoubleItemDefinitionPtr>("DoubleItem2");
   ditemdef->setDefaultValue(-35.2);
+  ditemdef->setMinRange(-100, true);
+  ditemdef->setMaxRange(125.0, false);
+  ditemdef->addCatagory("Constituent");
+  slctk::VoidItemDefinitionPtr vdef = 
+    def1->addItemDefinition<slctk::VoidItemDefinitionPtr>("VoidItem");
+  vdef->setIsOptional(true);
+  vdef->setLabel("Option 1");
+ 
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   slctk::StringItemDefinitionPtr sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem1");
+  sitemdef->setIsMultiline(true);
+  sitemdef->addCatagory("Flow");
   sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem2");
   sitemdef->setDefaultValue("Default");
+  sitemdef->addCatagory("General");
+  slctk::DirectoryItemDefinitionPtr dirdef =
+    def2->addItemDefinition<slctk::DirectoryItemDefinitionPtr>("DirectoryItem");
+  dirdef->setShouldExist(true);
+  dirdef->setShouldBeRelative(true);
+  slctk::FileItemDefinitionPtr fdef =
+    def2->addItemDefinition<slctk::FileItemDefinitionPtr>("FileItem");
+  fdef->setShouldBeRelative(true);
 
+  // Process Catagories
+  manager.updateCatagories();
+  // Lets see what catagories the attribute definitions think they are
+  if (expDef->numberOfCatagories())
+    {
+    const std::set<std::string> &catagories = expDef->catagories();
+    std::set<std::string>::const_iterator it;
+    std::cout << "ERROR: ExpDef's catagories: ";
+    for (it = catagories.begin(); it != catagories.end(); it++)
+      {
+      std::cout << "\""<< (*it) << "\" ";
+      }
+    std::cout << "\n";
+    }
+  else
+    {
+    std::cout << "ExpDef has no catagories\n";
+    }
+  if (def2->numberOfCatagories())
+    {
+    const std::set<std::string> &catagories = def2->catagories();
+    std::set<std::string>::const_iterator it;
+    std::cout << "Def2's catagories: ";
+    for (it = catagories.begin(); it != catagories.end(); it++)
+      {
+      std::cout << "\""<< (*it) << "\" ";
+      }
+    std::cout << "\n";
+    }
+  else
+    {
+    std::cout << "ERROR: Def2 has no catagories!\n";
+    }
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   slctk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
@@ -126,6 +192,10 @@ int main()
         {
         std::cout << " Value = " << vitem->valueAsString() << "\n";
         }
+      }
+    else
+      {
+      std::cout << " Not a value item\n";
       }
     }
   slctk::attribute::XmlV1StringWriter writer(manager);

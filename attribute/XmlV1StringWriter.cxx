@@ -25,10 +25,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/XmlV1StringWriter.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
-#include "attribute/Manager.h"
-#include "attribute/Definition.h"
-#include "attribute/ItemDefinition.h"
 #include "attribute/AttributeRefItemDefinition.h"
+#include "attribute/Definition.h"
+#include "attribute/DoubleItemDefinition.h"
+#include "attribute/DirectoryItemDefinition.h"
+#include "attribute/FileItemDefinition.h"
+#include "attribute/IntItemDefinition.h"
+#include "attribute/ItemDefinition.h"
+#include "attribute/Manager.h"
+#include "attribute/StringItemDefinition.h"
+#include "attribute/ValueItemDefinition.h"
 #include <sstream>
 #include <iostream>
 
@@ -40,16 +46,12 @@ XmlV1StringWriter::XmlV1StringWriter(const Manager &myManager):
 m_manager(myManager)
 {
   this->m_doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
-  this->m_root = this->m_doc.append_child();
-  this->m_root.set_name("SLCTK_AttributeManager");
-  this->m_definitions = this->m_root.append_child();
-  this->m_definitions.set_name("Definitions");
-  this->m_instances = this->m_root.append_child();
-  this->m_instances.set_name("Attribute");
-  this->m_sections = this->m_root.append_child();
-  this->m_sections.set_name("Sections");
-  this->m_modelInfo = this->m_root.append_child();
-  this->m_modelInfo.set_name("ModelInfo");
+  this->m_root = this->m_doc.append_child("SLCTK_AttributeManager");
+  this->m_root.append_attribute("Version").set_value(1);
+  this->m_definitions = this->m_root.append_child("Definitions");
+  this->m_instances = this->m_root.append_child("Attribute");
+  this->m_sections = this->m_root.append_child("Sections");
+  this->m_modelInfo = this->m_root.append_child("ModelInfo");
 }
 
 //----------------------------------------------------------------------------
@@ -86,7 +88,10 @@ void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
     child, node = this->m_definitions.append_child();
   node.set_name("AttDef");
   node.append_attribute("Type").set_value(def->type().c_str());
-  node.append_attribute("Label").set_value(def->label().c_str());
+  if (def->label() != "")
+    {
+    node.append_attribute("Label").set_value(def->label().c_str());
+    }
   if (def->baseDefinition() != NULL)
     {
     node.append_attribute("BaseType").set_value(def->baseDefinition()->type().c_str());
@@ -100,7 +105,10 @@ void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
     {
     node.append_attribute("Abstract").set_value("true");
     }
-  node.append_attribute("AdvanceLevel") = def->advanceLevel();
+  if (def->advanceLevel())
+    {
+    node.append_attribute("AdvanceLevel") = def->advanceLevel();
+    }
   if (def->isUnique())
     {
     node.append_attribute("Unique").set_value("true");
@@ -171,19 +179,24 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
 {
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
-  node.append_attribute("Type").set_value(Item::type2String(idef->type()).c_str());
-  node.append_attribute("Label").set_value(idef->label().c_str());
+  node.append_attribute("DataType").set_value(Item::type2String(idef->type()).c_str());
+  if (idef->label() != "")
+    {
+    node.append_attribute("Label").set_value(idef->label().c_str());
+    }
   node.append_attribute("Version") = idef->version();
   if (idef->isOptional())
     {
     node.append_attribute("Optional").set_value("true");
     node.append_attribute("IsEnabledByDefault") = idef->isEnabledByDefault();
     }
-  node.append_attribute("AdvanceLevel") = idef->advanceLevel();
+  if (idef->advanceLevel() != 0)
+    {
+    node.append_attribute("AdvanceLevel") = idef->advanceLevel();
+    }
   if (idef->numberOfCatagories())
     {
-    xml_node cnode, catNodes = node.append_child();
-    catNodes.set_name("Catagories");
+    xml_node cnode, catNodes = node.append_child("Catagories");
     std::set<std::string>::const_iterator it;
     const std::set<std::string> &cats = idef->catagories();
     for (it = cats.begin(); it != cats.end(); it++)
@@ -204,25 +217,318 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
     case Item::ATTRIBUTE_REF:
       this->processAttributeRefDef(node, slctk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
       break;
+    case Item::DOUBLE:
+      this->processDoubleDef(node, slctk::dynamicCastPointer<DoubleItemDefinition>(idef));
+      break;
+    case Item::DIRECTORY:
+      this->processDirectoryDef(node, slctk::dynamicCastPointer<DirectoryItemDefinition>(idef));
+      break;
+    case Item::FILE:
+      this->processFileDef(node, slctk::dynamicCastPointer<FileItemDefinition>(idef));
+      break;
+    case Item::INT:
+      this->processIntDef(node, slctk::dynamicCastPointer<IntItemDefinition>(idef));
+      break;
+    case Item::STRING:
+      this->processStringDef(node, slctk::dynamicCastPointer<StringItemDefinition>(idef));
+      break;
+    case Item::VOID:
+      // Nothing to do!
+      break;
     default:
       std::cerr << "Unsupported Type!\n";
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
+                                         DoubleItemDefinitionPtr idef)
+{
+  // First process the common value item def stuff
+  this->processValueDef(node, 
+                        slctk::dynamicCastPointer<ValueItemDefinition>(idef));
+  if (idef->isDiscrete())
+    {
+    xml_node dnodes = node.append_child("DiscreteInfo");
+    int i, n = idef->numberOfDiscreteValues();
+    xml_node dnode;
+    for (i = 0; i < n; i++)
+      {
+      dnode = dnodes.append_child("Value");
+      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
+      dnode.text().set(idef->discreteValue(i));
+      }
+    if (idef->hasDefault())
+      {
+      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
+      }
+    return;
+    }
+  // Does this def have a default value
+  if (idef->hasDefault())
+    {
+    xml_node defnode = node.append_child("DefaultValue");
+    defnode.text().set(idef->defaultValue());
+    }
+  // Does this node have a range?
+  if (idef->hasRange())
+    {
+    xml_node rnode = node.append_child("RangeInfo");
+    xml_node r;
+    if (idef->hasMinRange())
+      {
+      r = rnode.append_child("Min");
+      if (idef->minRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->minRange());
+      }
+    if (idef->hasMaxRange())
+      {
+      r = rnode.append_child("Max");
+      if (idef->maxRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->maxRange());
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
+                                      IntItemDefinitionPtr idef)
+{
+  // First process the common value item def stuff
+  this->processValueDef(node, 
+                        slctk::dynamicCastPointer<ValueItemDefinition>(idef));
+  if (idef->isDiscrete())
+    {
+    xml_node dnodes = node.append_child("DiscreteInfo");
+    int i, n = idef->numberOfDiscreteValues();
+    xml_node dnode;
+    for (i = 0; i < n; i++)
+      {
+      dnode = dnodes.append_child("Value");
+      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
+      dnode.text().set(idef->discreteValue(i));
+      }
+    if (idef->hasDefault())
+      {
+      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
+      }
+    return;
+    }
+  // Does this def have a default value
+  if (idef->hasDefault())
+    {
+    xml_node defnode = node.append_child("DefaultValue");
+    defnode.text().set(idef->defaultValue());
+    }
+  // Does this node have a range?
+  if (idef->hasRange())
+    {
+    xml_node rnode = node.append_child("RangeInfo");
+    xml_node r;
+    if (idef->hasMinRange())
+      {
+      r = rnode.append_child("Min");
+      if (idef->minRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->minRange());
+      }
+    if (idef->hasMaxRange())
+      {
+      r = rnode.append_child("Max");
+      if (idef->maxRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->maxRange());
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
+                                         StringItemDefinitionPtr idef)
+{
+  // First process the common value item def stuff
+  this->processValueDef(node, 
+                        slctk::dynamicCastPointer<ValueItemDefinition>(idef));
+  if (idef->isMultiline())
+    {
+    node.append_attribute("MultipleLines").set_value(true);
+    }
+  if (idef->isDiscrete())
+    {
+    xml_node dnodes = node.append_child("DiscreteInfo");
+    int i, n = idef->numberOfDiscreteValues();
+    xml_node dnode;
+    for (i = 0; i < n; i++)
+      {
+      dnode = dnodes.append_child("Value");
+      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
+      dnode.text().set(idef->discreteValue(i).c_str());
+      }
+    if (idef->hasDefault())
+      {
+      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
+      }
+    return;
+    }
+  // Does this def have a default value
+  if (idef->hasDefault())
+    {
+    xml_node defnode = node.append_child("DefaultValue");
+    defnode.text().set(idef->defaultValue().c_str());
+    }
+  // Does this node have a range?
+  if (idef->hasRange())
+    {
+    xml_node rnode = node.append_child("RangeInfo");
+    xml_node r;
+    if (idef->hasMinRange())
+      {
+      r = rnode.append_child("Min");
+      if (idef->minRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->minRange().c_str());
+      }
+    if (idef->hasMaxRange())
+      {
+      r = rnode.append_child("Max");
+      if (idef->maxRangeInclusive())
+        {
+        r.append_attribute("Inclusive").set_value(true);
+        }
+      r.text().set(idef->maxRange().c_str());
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
+                                        ValueItemDefinitionPtr idef)
+{
+  node.append_attribute("NumberOfValues") = idef->numberOfValues();
+  if (idef->hasValueLabels())
+    {
+    xml_node lnode = node.append_child();
+    lnode.set_name("Labels");
+    if (idef->usingCommonLabel())
+      {
+      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
+      }
+    else
+      {
+      int i, n = idef->numberOfValues();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+        {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->valueLabel(i).c_str());
+        }
+      }
+    }
+  if (idef->allowsExpressions())
+    {
+    AttributeDefinitionPtr  exp = idef->expressionDefinition();
+    if (exp != NULL)
+      {
+      xml_node enode = node.append_child("ExpressionType");
+      enode.text().set(exp->type().c_str());
+      }
+    }
+  if (idef->units() != "")
+    {
+    xml_node unode = node.append_child("Units");
+    unode.text().set(idef->units().c_str());
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processAttributeRefDef(pugi::xml_node &node,
                                                AttributeRefItemDefinitionPtr idef)
 {
-  xml_node refStuff = node.append_child();
-  refStuff.set_name("AttRefItemInfo");
   AttributeDefinitionPtr  adp = idef->attributeDefinition();
   if (adp != NULL)
     {
-    refStuff.append_attribute("AttDef").set_value(adp->type().c_str());
+    node.append_attribute("AttDef").set_value(adp->type().c_str());
     }
-  refStuff.append_attribute("NumberOfValues") = idef->numberOfValues();
+  node.append_attribute("NumberOfValues") = idef->numberOfValues();
   if (idef->hasValueLabels())
     {
-    xml_node lnode = refStuff.append_child();
+    xml_node lnode = node.append_child();
+    lnode.set_name("Labels");
+    if (idef->usingCommonLabel())
+      {
+      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
+      }
+    else
+      {
+      int i, n = idef->numberOfValues();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+        {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->valueLabel(i).c_str());
+        }
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
+                                            DirectoryItemDefinitionPtr idef)
+{
+  node.append_attribute("NumberOfValues") = idef->numberOfValues();
+  if (idef->shouldExist())
+    {
+    node.append_attribute("ShouldExist").set_value(true);
+    }
+  if (idef->shouldBeRelative())
+    {
+    node.append_attribute("ShouldBeRelative").set_value(true);
+    }
+  if (idef->hasValueLabels())
+    {
+    xml_node lnode = node.append_child();
+    lnode.set_name("Labels");
+    if (idef->usingCommonLabel())
+      {
+      lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
+      }
+    else
+      {
+      int i, n = idef->numberOfValues();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+        {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->valueLabel(i).c_str());
+        }
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
+                                       FileItemDefinitionPtr idef)
+{
+  node.append_attribute("NumberOfValues") = idef->numberOfValues();
+  if (idef->shouldExist())
+    {
+    node.append_attribute("ShouldExist").set_value(true);
+    }
+  if (idef->shouldBeRelative())
+    {
+    node.append_attribute("ShouldBeRelative").set_value(true);
+    }
+  if (idef->hasValueLabels())
+    {
+    xml_node lnode = node.append_child();
     lnode.set_name("Labels");
     if (idef->usingCommonLabel())
       {

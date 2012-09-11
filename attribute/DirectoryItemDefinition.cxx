@@ -32,7 +32,7 @@ using namespace slctk::attribute;
 DirectoryItemDefinition::
 DirectoryItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfValues(0)
+  m_useCommonLabel(false), m_numberOfValues(1)
 {
 }
 

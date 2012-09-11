@@ -42,7 +42,7 @@ namespace slctk
     public:
       VoidItemDefinition(const std::string &myName);
       virtual ~VoidItemDefinition();
-      
+      virtual Item::Type type() const;
       virtual slctk::AttributeItemPtr buildItem() const;
     protected:
     private:
