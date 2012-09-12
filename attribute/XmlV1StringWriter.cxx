@@ -30,9 +30,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/DirectoryItemDefinition.h"
 #include "attribute/FileItemDefinition.h"
+#include "attribute/GroupItemDefinition.h"
 #include "attribute/IntItemDefinition.h"
 #include "attribute/ItemDefinition.h"
 #include "attribute/Manager.h"
+#include "attribute/AttributeSection.h"
+#include "attribute/InstancedSection.h"
+#include "attribute/GroupSection.h"
+#include "attribute/ModelEntitySection.h"
+#include "attribute/RootSection.h"
+#include "attribute/SimpleExpressionSection.h"
 #include "attribute/StringItemDefinition.h"
 #include "attribute/ValueItemDefinition.h"
 #include <sstream>
@@ -48,10 +55,6 @@ m_manager(myManager)
   this->m_doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
   this->m_root = this->m_doc.append_child("SLCTK_AttributeManager");
   this->m_root.append_attribute("Version").set_value(1);
-  this->m_definitions = this->m_root.append_child("Definitions");
-  this->m_instances = this->m_root.append_child("Attribute");
-  this->m_sections = this->m_root.append_child("Sections");
-  this->m_modelInfo = this->m_root.append_child("ModelInfo");
 }
 
 //----------------------------------------------------------------------------
@@ -61,6 +64,35 @@ XmlV1StringWriter::~XmlV1StringWriter()
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::convertToString()
 {
+  // Write out the category and analysis information
+  if (this->m_manager.numberOfCategories())
+    {
+    xml_node cnode, catNodes = this->m_root.append_child("Categories");
+    std::set<std::string>::const_iterator it;
+    const std::set<std::string> &cats = this->m_manager.categories();
+    for (it = cats.begin(); it != cats.end(); it++)
+      {
+      catNodes.append_child("Cat").text().set(it->c_str());
+      }
+    }
+
+  if (this->m_manager.numberOfAnalyses())
+    {
+    xml_node cnode, catNodes = this->m_root.append_child("Analyses");
+    std::map<std::string, std::set<std::string> >::const_iterator it;
+    const std::map<std::string, std::set<std::string> > &analyses = 
+      this->m_manager.analyses();
+    for (it = analyses.begin(); it != analyses.end(); it++)
+      {
+      xml_node anode = catNodes.append_child("Analysis");
+      anode.append_attribute("Type").set_value(it->first.c_str());
+      std::set<std::string>::const_iterator cit;
+      for (cit = it->second.begin(); cit != it->second.end(); cit++)
+        {
+        anode.append_child("Cat").text().set(cit->c_str());
+        }
+      }
+    }
   this->processDefinitions();
   this->processInstances();
   this->processSections();
@@ -76,16 +108,18 @@ void XmlV1StringWriter::processDefinitions()
   std::vector<slctk::AttributeDefinitionPtr> baseDefs;
   this->m_manager.findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
+  xml_node definitions = this->m_root.append_child("Definitions");
   for (i = 0; i < n; i++)
     {
-    this->processDefinition(baseDefs[i]);
+    this->processDefinition(definitions, baseDefs[i]);
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
+void XmlV1StringWriter::processDefinition(xml_node &definitions,
+                                          slctk::AttributeDefinitionPtr def)
 {
   xml_node itemDefNode, itemDefNodes, 
-    child, node = this->m_definitions.append_child();
+    child, node = definitions.append_child();
   node.set_name("AttDef");
   node.append_attribute("Type").set_value(def->type().c_str());
   if (def->label() != "")
@@ -118,28 +152,7 @@ void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
     node.append_attribute("Nodal").set_value("true");
     }
   // Create association string
-  std::string s;
-  if (def->associatesWithModel())
-    {
-    s.append("m");
-    }
-  if (def->associatesWithRegion())
-    {
-    s.append("r");
-    }
-  if (def->associatesWithFace())
-    {
-    s.append("f");
-    }
-  if (def->associatesWithEdge())
-    {
-    s.append("e");
-    }
-  if (def->associatesWithVertex())
-    {
-    s.append("v");
-    }
-  
+  std::string s = this->encodeModelEntityMask(def->associationMask());
   node.append_attribute("Associations").set_value(s.c_str());
 
   if (def->briefDescription() != "")
@@ -154,12 +167,11 @@ void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
   std::size_t i, n = def->numberOfItemDefinitions();
   if (n != 0)
     {
-    itemDefNodes = node.append_child();
-    itemDefNodes.set_name("ItemDefinitions");
+    itemDefNodes = node.append_child("ItemDefinitions");
     for (i = 0; i < n; i++)
       {
       itemDefNode = itemDefNodes.append_child();
-      itemDefNode.set_name("ItemDef");
+      itemDefNode.set_name(Item::type2String(def->itemDefinition(i)->type()).c_str());
       this->processItemDefinition(itemDefNode, 
                                   def->itemDefinition(i));
       }
@@ -170,7 +182,7 @@ void XmlV1StringWriter::processDefinition(slctk::AttributeDefinitionPtr def)
   n = defs.size();
   for (i = 0; i < n; i++)
     {
-    this->processDefinition(defs[i]);
+    this->processDefinition(definitions, defs[i]);
     }
 }
 //----------------------------------------------------------------------------
@@ -194,11 +206,11 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
     {
     node.append_attribute("AdvanceLevel") = idef->advanceLevel();
     }
-  if (idef->numberOfCatagories())
+  if (idef->numberOfCategories() && (idef->type() != Item::GROUP))
     {
-    xml_node cnode, catNodes = node.append_child("Catagories");
+    xml_node cnode, catNodes = node.append_child("Categories");
     std::set<std::string>::const_iterator it;
-    const std::set<std::string> &cats = idef->catagories();
+    const std::set<std::string> &cats = idef->categories();
     for (it = cats.begin(); it != cats.end(); it++)
       {
       catNodes.append_child("Cat").text().set(it->c_str());
@@ -225,6 +237,9 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
       break;
     case Item::FILE:
       this->processFileDef(node, slctk::dynamicCastPointer<FileItemDefinition>(idef));
+      break;
+    case Item::GROUP:
+      this->processGroupDef(node, slctk::dynamicCastPointer<GroupItemDefinition>(idef));
       break;
     case Item::INT:
       this->processIntDef(node, slctk::dynamicCastPointer<IntItemDefinition>(idef));
@@ -548,16 +563,146 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
+void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
+                                        GroupItemDefinitionPtr idef)
+{
+  node.append_attribute("NumberOfGroups") = idef->numberOfGroups();
+  xml_node itemDefNode, itemDefNodes;
+  // Now lets process its items
+  std::size_t i, n = idef->numberOfItemDefinitions();
+  if (n != 0)
+    {
+    itemDefNodes = node.append_child("ItemDefinitions");
+    for (i = 0; i < n; i++)
+      {
+      itemDefNode = itemDefNodes.append_child();
+      itemDefNode.set_name(Item::type2String(idef->itemDefinition(i)->type()).c_str());
+      this->processItemDefinition(itemDefNode, 
+                                  idef->itemDefinition(i));
+      }
+    }
+}
+//----------------------------------------------------------------------------
 void XmlV1StringWriter::processInstances()
 {
+  xml_node instances = this->m_root.append_child("Attribute");
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processSections()
 {
+  xml_node sections = this->m_root.append_child("RootSection");
+  slctk::RootSectionPtr rs = this->m_manager.rootSection();
+  xml_node node;
+  double c[3];
+  rs->defaultColor(c);
+  node = sections.append_child("DefaultColor");
+  node.append_attribute("R").set_value(c[0]);
+  node.append_attribute("G").set_value(c[1]);
+  node.append_attribute("B").set_value(c[2]);
+  rs->invalidColor(c);
+  node = sections.append_child("InvalidColor");
+  node.append_attribute("R").set_value(c[0]);
+  node.append_attribute("G").set_value(c[1]);
+  node.append_attribute("B").set_value(c[2]);
+  this->processGroupSection(sections,
+                            slctk::dynamicCastPointer<GroupSection>(rs));
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processAttributeSection(xml_node &node,
+                                            slctk::AttributeSectionPtr sec)
+{
+  this->processBasicSection(node,
+                            slctk::dynamicCastPointer<Section>(sec));
+  if (sec->modelEntityMask())
+    {
+    std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
+    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    }
+  std::size_t i, n = sec->numberOfAttributeTypes();
+  if (n)
+    {
+    xml_node atypes = node.append_child("Attribute Types");
+    for (i = 0; i < n; i++)
+      {
+      atypes.append_child("Type").text().set(sec->attributeType(i).c_str());
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processInstancedSection(xml_node &node,
+                                                  slctk::InstancedSectionPtr sec)
+{
+  this->processBasicSection(node,
+                            slctk::dynamicCastPointer<Section>(sec));
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processModelEntitySection(xml_node &node,
+                                                  slctk::ModelEntitySectionPtr sec)
+{
+  this->processBasicSection(node,
+                            slctk::dynamicCastPointer<Section>(sec));
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processSimpleExpressionSection(xml_node &node,
+                                                       slctk::SimpleExpressionSectionPtr sec)
+{
+  this->processBasicSection(node,
+                            slctk::dynamicCastPointer<Section>(sec));
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processGroupSection(xml_node &node,
+                                            slctk::GroupSectionPtr group)
+{
+  this->processBasicSection(node,
+                            slctk::dynamicCastPointer<Section>(group));
+  std::size_t i, n = group->numberOfSubsections();
+  xml_node child;
+  slctk::SectionPtr sec;
+  for (i = 0; i < n; i++)
+    {
+    child = node.append_child("SubSection");
+    sec = group->subsection(i);
+    switch(sec->type())
+      {
+      case Section::ATTRIBUTE:
+        this->processAttributeSection(child, 
+                                      slctk::dynamicCastPointer<AttributeSection>(sec));
+        break;
+      case Section::GROUP:
+        this->processGroupSection(child, 
+                                  slctk::dynamicCastPointer<GroupSection>(sec));
+        break;
+      case Section::INSTANCED:
+        this->processInstancedSection(child, 
+                                      slctk::dynamicCastPointer<InstancedSection>(sec));
+        break;
+      case Section::MODEL_ENTITY:
+        this->processModelEntitySection(child, 
+                                        slctk::dynamicCastPointer<ModelEntitySection>(sec));
+        break;
+      case Section::SIMPLE_EXPRESSION:
+        this->processSimpleExpressionSection(child, 
+                                             slctk::dynamicCastPointer<SimpleExpressionSection>(sec));
+        break;
+      default:
+        std::cerr << "Unsupport Section Type " << Section::type2String(sec->type()) << std::endl;
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processBasicSection(xml_node &node,
+                                            slctk::SectionPtr sec)
+{
+  node.append_attribute("Title").set_value(sec->title().c_str());
+  if (sec->iconName() != "")
+    {
+    node.append_attribute("Icon").set_value(sec->title().c_str());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processModelInfo()
 {
+  xml_node modelInfo = this->m_root.append_child("ModelInfo");
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::convertStringToXML(std::string &str)
@@ -606,5 +751,39 @@ void XmlV1StringWriter::convertStringToXML(std::string &str)
       continue;
       }
     }
+}
+//----------------------------------------------------------------------------
+std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)
+{
+  std::string s;
+  if (m & 0x40)
+    {
+    s.append("d");
+    }
+  if (m & 0x20)
+    {
+    s.append("b");
+    }
+  if (m & 0x10)
+    {
+    s.append("m");
+    }
+  if (m & 0x8)
+    {
+    s.append("r");
+    }
+  if (m & 0x4)
+    {
+    s.append("f");
+    }
+  if (m & 0x2)
+    {
+    s.append("e");
+    }
+  if (m & 0x1)
+    {
+    s.append("v");
+    }
+  return s;
 }
 //----------------------------------------------------------------------------

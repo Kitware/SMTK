@@ -78,20 +78,20 @@ namespace slctk
       void setIsEnabledByDefault(bool isEnabledByDefaultValue)
       { this->m_isEnabledByDefault = isEnabledByDefaultValue;}
 
-      std::size_t numberOfCatagories() const
-      {return this->m_catagories.size();}
+      std::size_t numberOfCategories() const
+      {return this->m_categories.size();}
 
-      const std::set<std::string> & catagories() const
-      {return this->m_catagories;}
+      const std::set<std::string> & categories() const
+      {return this->m_categories;}
 
-      bool isMemberOf(const std::string &catagory) const
-      { return (this->m_catagories.find(catagory) != this->m_catagories.end());}
+      bool isMemberOf(const std::string &category) const
+      { return (this->m_categories.find(category) != this->m_categories.end());}
 
-      bool isMemberOf(const std::vector<std::string> &catagories) const;
+      bool isMemberOf(const std::vector<std::string> &categories) const;
 
-      virtual void addCatagory(const std::string &catagory);
+      virtual void addCategory(const std::string &category);
 
-      virtual void removeCatagory(const std::string &catagory);
+      virtual void removeCategory(const std::string &category);
 
       int advanceLevel() const
       {return this->m_advanceLevel;}
@@ -110,13 +110,13 @@ namespace slctk
 
       virtual slctk::AttributeItemPtr buildItem() const = 0;
     protected:
-      virtual void updateCatagories();
+      virtual void updateCategories();
       int m_version;
       bool m_isOptional;
       bool m_isEnabledByDefault;
       std::string m_name;
       std::string m_label;
-      std::set<std::string> m_catagories;
+      std::set<std::string> m_categories;
       int m_advanceLevel;
       std::string m_detailedDescription;
       std::string m_briefDescription;

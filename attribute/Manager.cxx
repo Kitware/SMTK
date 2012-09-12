@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
 #include "attribute/RootSection.h"
+#include <iostream>
 #include <sstream>
 #include <queue>
 
@@ -300,7 +301,7 @@ findBaseDefinitions(std::vector<slctk::AttributeDefinitionPtr> &result) const
     }
 }
 //----------------------------------------------------------------------------
-void Manager::updateCatagories()
+void Manager::updateCategories()
 {
   std::queue<AttributeDefinitionPtr> toBeProcessed;
   // Insert all top most definitions into the queue
@@ -313,13 +314,13 @@ void Manager::updateCatagories()
       }
     }
   // Now for each definition in the queue do the following:
-  // update its catagories (which will be used by def derived from it
+  // update its categories (which will be used by def derived from it
   // Add all of its derived definitions into the queue
   slctk::AttributeDefinitionPtr def;
   while (!toBeProcessed.empty())
     {
     def = toBeProcessed.front();
-    def->setCatagories();
+    def->setCategories();
     // Does this definition have derived defs from it?
     std::map<slctk::AttributeDefinitionPtr,
       std::set<slctk::WeakAttributeDefinitionPtr> >::iterator dit = 
@@ -335,12 +336,12 @@ void Manager::updateCatagories()
     toBeProcessed.pop();
     }
   // Now all of the definitions have been processed we need to combine all
-  // of their catagories to form the managers
-  this->m_catagories.clear();
+  // of their categories to form the managers
+  this->m_categories.clear();
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
-    this->m_catagories.insert(it->second->catagories().begin(),
-                              it->second->catagories().end());
+    this->m_categories.insert(it->second->categories().begin(),
+                              it->second->categories().end());
     }
 }
 //----------------------------------------------------------------------------

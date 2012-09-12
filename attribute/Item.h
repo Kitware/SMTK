@@ -72,8 +72,8 @@ namespace slctk
       void setIsEnabled(bool isEnabledValue)
       {this->m_isEnabled = isEnabledValue;}
 
-      bool isMemberOf(const std::string &catagory) const;
-      bool isMemberOf(const std::vector<std::string> &catagories) const;
+      bool isMemberOf(const std::string &category) const;
+      bool isMemberOf(const std::vector<std::string> &categories) const;
 
       void setUserData(const std::string &key, void *value)
       {this->m_userData[key] = value;}

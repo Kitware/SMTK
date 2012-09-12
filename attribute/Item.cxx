@@ -72,14 +72,14 @@ bool Item::isEnabled() const
   return this->isOptional() ? this->m_isEnabled : true;
 }
 //----------------------------------------------------------------------------
-bool Item::isMemberOf(const std::string &catagory) const
+bool Item::isMemberOf(const std::string &category) const
 {
-  return this->definition()->isMemberOf(catagory);
+  return this->definition()->isMemberOf(category);
 }
 //----------------------------------------------------------------------------
-bool Item::isMemberOf(const std::vector<std::string> &catagories) const
+bool Item::isMemberOf(const std::vector<std::string> &categories) const
 {
-  return this->definition()->isMemberOf(catagories);
+  return this->definition()->isMemberOf(categories);
 }
 //----------------------------------------------------------------------------
 void Item::reset() 
@@ -96,8 +96,12 @@ std::string Item::type2String(Item::Type t)
     {
     case ATTRIBUTE_REF:
       return "AttributeRef";
+    case DIRECTORY:
+      return "Directory";
     case DOUBLE:
       return "Double";
+    case FILE:
+      return "File";
     case GROUP:
       return "Group";
     case INT:
@@ -118,9 +122,17 @@ Item::Type Item::string2Type(const std::string &s)
     {
     return ATTRIBUTE_REF;
     }
+  if (s == "Directory")
+    {
+    return DIRECTORY;
+    }
   if (s == "Double")
     {
     return DOUBLE;
+    }
+  if (s == "File")
+    {
+    return FILE;
     }
   if (s == "Group")
     {

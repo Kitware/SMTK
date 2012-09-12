@@ -71,11 +71,11 @@ namespace slctk
       {this->m_numberOfGroups = gsize;}
       virtual slctk::AttributeItemPtr buildItem() const;
       void buildGroup(std::vector<slctk::AttributeItemPtr> &group) const;
-      virtual void addCatagory(const std::string &catagory);
-      virtual void removeCatagory(const std::string &catagory);
+      virtual void addCategory(const std::string &category);
+      virtual void removeCategory(const std::string &category);
       
     protected:
-      virtual void updateCatagories();
+      virtual void updateCategories();
       std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       int m_numberOfGroups;

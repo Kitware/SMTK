@@ -42,12 +42,12 @@ ItemDefinition::~ItemDefinition()
   std::cout << "Item Definition " << m_name << " deleted\n";
 }
 //----------------------------------------------------------------------------
-bool ItemDefinition::isMemberOf(const std::vector<std::string> &catagories) const
+bool ItemDefinition::isMemberOf(const std::vector<std::string> &categories) const
 {
-  std::size_t i, n = catagories.size();
+  std::size_t i, n = categories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(catagories[i]))
+    if (this->isMemberOf(categories[i]))
       {
       return true;
       }
@@ -55,18 +55,18 @@ bool ItemDefinition::isMemberOf(const std::vector<std::string> &catagories) cons
     return false;
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::updateCatagories()
+void ItemDefinition::updateCategories()
 {
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::addCatagory(const std::string &catagory)
+void ItemDefinition::addCategory(const std::string &category)
 {
-  this->m_catagories.insert(catagory);
+  this->m_categories.insert(category);
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::removeCatagory(const std::string &catagory)
+void ItemDefinition::removeCategory(const std::string &category)
 {
-this->m_catagories.erase(catagory);
+this->m_categories.erase(category);
 }
 //----------------------------------------------------------------------------
 

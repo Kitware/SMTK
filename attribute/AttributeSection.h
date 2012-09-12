@@ -49,7 +49,7 @@ namespace slctk
       { return this->m_attributeTypes.size();}
       const std::string &attributeType(int ith) const
       {return this->m_attributeTypes[ith];}
-            unsigned long modelEntityMask() const
+      unsigned long modelEntityMask() const
       {return this->m_modelEntityMask;}
       void setModelEntityMask(unsigned long mask)
       {this->m_modelEntityMask = mask;}

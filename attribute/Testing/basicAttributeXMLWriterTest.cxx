@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/DirectoryItemDefinition.h"
 #include "attribute/FileItemDefinition.h"
+#include "attribute/GroupItemDefinition.h"
 #include "attribute/StringItem.h"
 #include "attribute/StringItemDefinition.h"
 #include "attribute/VoidItemDefinition.h"
@@ -43,6 +44,27 @@ int main()
   {
   slctk::attribute::Manager manager;
   std::cout << "Manager Created\n";
+  // Lets add some analyses
+  std::set<std::string> analysis;
+  analysis.insert("Flow");
+  analysis.insert("General");
+  analysis.insert("Time");
+  manager.defineAnalysis("CFD Flow", analysis);
+  analysis.clear();
+
+  analysis.insert("Flow");
+  analysis.insert("Heat");
+  analysis.insert("General");
+  analysis.insert("Time");
+  manager.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+  analysis.clear();
+
+  analysis.insert("Constituent");
+  analysis.insert("General");
+  analysis.insert("Time");
+  manager.defineAnalysis("Constituent Transport", analysis);
+  analysis.clear();
+
   // Lets create an attribute to represent an expression
   slctk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
@@ -63,18 +85,19 @@ int main()
   iitemdef->addDiscreteValue(2, "Hours");
   iitemdef->addDiscreteValue(3, "Days");
   iitemdef->setDefaultDiscreteIndex(0);
-  iitemdef->addCatagory("Flow");
+  iitemdef->addCategory("Time");
   iitemdef = 
     base->addItemDefinition<slctk::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
-  iitemdef->addCatagory("Heat");
+  iitemdef->addCategory("Heat");
 
   slctk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  def1->setAssociationMask(0x20); // belongs on domains
    // Lets add some item definitions
   slctk::DoubleItemDefinitionPtr ditemdef = 
     def1->addItemDefinition<slctk::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
-  ditemdef->addCatagory("Veg");
+  ditemdef->addCategory("Veg");
   ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
   if (!ditemdef->allowsExpressions())
@@ -87,7 +110,7 @@ int main()
   ditemdef->setDefaultValue(-35.2);
   ditemdef->setMinRange(-100, true);
   ditemdef->setMaxRange(125.0, false);
-  ditemdef->addCatagory("Constituent");
+  ditemdef->addCategory("Constituent");
   slctk::VoidItemDefinitionPtr vdef = 
     def1->addItemDefinition<slctk::VoidItemDefinitionPtr>("VoidItem");
   vdef->setIsOptional(true);
@@ -95,15 +118,16 @@ int main()
  
 
   slctk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  def2->setAssociationMask(0x7);
    // Lets add some item definitions
   slctk::StringItemDefinitionPtr sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem1");
   sitemdef->setIsMultiline(true);
-  sitemdef->addCatagory("Flow");
+  sitemdef->addCategory("Flow");
   sitemdef = 
     def2->addItemDefinition<slctk::StringItemDefinitionPtr>("StringItem2");
   sitemdef->setDefaultValue("Default");
-  sitemdef->addCatagory("General");
+  sitemdef->addCategory("General");
   slctk::DirectoryItemDefinitionPtr dirdef =
     def2->addItemDefinition<slctk::DirectoryItemDefinitionPtr>("DirectoryItem");
   dirdef->setShouldExist(true);
@@ -111,16 +135,24 @@ int main()
   slctk::FileItemDefinitionPtr fdef =
     def2->addItemDefinition<slctk::FileItemDefinitionPtr>("FileItem");
   fdef->setShouldBeRelative(true);
-
-  // Process Catagories
-  manager.updateCatagories();
-  // Lets see what catagories the attribute definitions think they are
-  if (expDef->numberOfCatagories())
+  slctk::GroupItemDefinitionPtr gdef1, gdef =
+    def2->addItemDefinition<slctk::GroupItemDefinitionPtr>("GroupItem");
+  gdef->addItemDefinition<slctk::FileItemDefinitionPtr>("File1");
+  gdef1 = gdef->addItemDefinition<slctk::GroupItemDefinitionPtr>("SubGroup");
+  sitemdef = 
+    gdef1->addItemDefinition<slctk::StringItemDefinitionPtr>("GroupString");
+  sitemdef->setDefaultValue("Something Cool");
+  sitemdef->addCategory("General");
+  sitemdef->addCategory("Flow");
+  // Process Categories
+  manager.updateCategories();
+  // Lets see what categories the attribute definitions think they are
+  if (expDef->numberOfCategories())
     {
-    const std::set<std::string> &catagories = expDef->catagories();
+    const std::set<std::string> &categories = expDef->categories();
     std::set<std::string>::const_iterator it;
-    std::cout << "ERROR: ExpDef's catagories: ";
-    for (it = catagories.begin(); it != catagories.end(); it++)
+    std::cout << "ERROR: ExpDef's categories: ";
+    for (it = categories.begin(); it != categories.end(); it++)
       {
       std::cout << "\""<< (*it) << "\" ";
       }
@@ -128,14 +160,14 @@ int main()
     }
   else
     {
-    std::cout << "ExpDef has no catagories\n";
+    std::cout << "ExpDef has no categories\n";
     }
-  if (def2->numberOfCatagories())
+  if (def2->numberOfCategories())
     {
-    const std::set<std::string> &catagories = def2->catagories();
+    const std::set<std::string> &categories = def2->categories();
     std::set<std::string>::const_iterator it;
-    std::cout << "Def2's catagories: ";
-    for (it = catagories.begin(); it != catagories.end(); it++)
+    std::cout << "Def2's categories: ";
+    for (it = categories.begin(); it != categories.end(); it++)
       {
       std::cout << "\""<< (*it) << "\" ";
       }
@@ -143,7 +175,7 @@ int main()
     }
   else
     {
-    std::cout << "ERROR: Def2 has no catagories!\n";
+    std::cout << "ERROR: Def2 has no categories!\n";
     }
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);

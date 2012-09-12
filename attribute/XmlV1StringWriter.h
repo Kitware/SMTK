@@ -44,13 +44,15 @@ namespace slctk
       virtual ~XmlV1StringWriter();
       std::string convertToString();
       static void convertStringToXML(std::string &str);
+      static std::string encodeModelEntityMask(unsigned long m);
     protected:
       void processDefinitions();
       void processInstances();
       void processSections();
       void processModelInfo();
 
-      void processDefinition(slctk::AttributeDefinitionPtr def);
+      void processDefinition(pugi::xml_node &node,
+                             slctk::AttributeDefinitionPtr def);
       void processItemDefinition(pugi::xml_node &node, 
                                  AttributeItemDefinitionPtr idef);
       void processAttributeRefDef(pugi::xml_node &node,
@@ -61,20 +63,36 @@ namespace slctk
                                DirectoryItemDefinitionPtr idef);
       void processFileDef(pugi::xml_node &node,
                           FileItemDefinitionPtr idef);
+      void processGroupDef(pugi::xml_node &node,
+                           GroupItemDefinitionPtr idef);
       void processIntDef(pugi::xml_node &node,
                          IntItemDefinitionPtr idef);
       void processStringDef(pugi::xml_node &node,
                             StringItemDefinitionPtr idef);
       void processValueDef(pugi::xml_node &node,
                            ValueItemDefinitionPtr idef);
+
+      void processAttributeSection(pugi::xml_node &node,
+                                   slctk::AttributeSectionPtr sec);
+
+      void processInstancedSection(pugi::xml_node &node,
+                                  slctk::InstancedSectionPtr sec);
+
+      void processModelEntitySection(pugi::xml_node &node,
+                                     slctk::ModelEntitySectionPtr sec);
+
+      void processSimpleExpressionSection(pugi::xml_node &node,
+                                          slctk::SimpleExpressionSectionPtr sec);
+
+      void processGroupSection(pugi::xml_node &node,
+                               slctk::GroupSectionPtr sec);
+
+      void processBasicSection(pugi::xml_node &node,
+                               slctk::SectionPtr sec);
+
       const slctk::attribute::Manager &m_manager;
       pugi::xml_document m_doc;
       pugi::xml_node m_root;
-      pugi::xml_node m_definitions;
-      pugi::xml_node m_instances;
-      pugi::xml_node m_sections;
-      pugi::xml_node m_modelInfo;
-      std::vector<std::string> m_strings;
     private:
       
     };

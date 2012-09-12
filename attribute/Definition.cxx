@@ -147,12 +147,12 @@ void Definition::buildAttribute(Attribute *att) const
     }
 }
 //----------------------------------------------------------------------------
-bool Definition::isMemberOf(const std::vector<std::string> &catagories) const
+bool Definition::isMemberOf(const std::vector<std::string> &categories) const
 {
-  std::size_t i, n = catagories.size();
+  std::size_t i, n = categories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(catagories[i]))
+    if (this->isMemberOf(categories[i]))
       return true;
     }
   return false;
@@ -172,22 +172,22 @@ bool Definition::addItemDefinition(slctk::AttributeItemDefinitionPtr cdef)
 }
 //----------------------------------------------------------------------------
 void 
-Definition::setCatagories()
+Definition::setCategories()
 {
   if (this->m_baseDefinition != NULL)
     {
-    this->m_catagories = this->m_baseDefinition->m_catagories;
+    this->m_categories = this->m_baseDefinition->m_categories;
     }
   else
     {
-    this->m_catagories.clear();
+    this->m_categories.clear();
     }
   int i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
-    this->m_itemDefs[i]->updateCatagories();
-    const std::set<std::string> &itemCats = this->m_itemDefs[i]->catagories();
-    this->m_catagories.insert(itemCats.begin(), itemCats.end());
+    this->m_itemDefs[i]->updateCategories();
+    const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
+    this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
 }
 //----------------------------------------------------------------------------

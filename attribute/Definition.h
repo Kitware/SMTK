@@ -82,16 +82,16 @@ namespace slctk
       void setIsAbstract(bool isAbstractValue)
       { this->m_isAbstract = isAbstractValue;}
 
-      std::size_t numberOfCatagories() const
-      {return this->m_catagories.size();}
+      std::size_t numberOfCategories() const
+      {return this->m_categories.size();}
 
-      bool isMemberOf(const std::string &catagory) const
-      { return (this->m_catagories.find(catagory) != this->m_catagories.end());}
+      bool isMemberOf(const std::string &category) const
+      { return (this->m_categories.find(category) != this->m_categories.end());}
 
-      bool isMemberOf(const std::vector<std::string> &catagories) const;
+      bool isMemberOf(const std::vector<std::string> &categories) const;
 
-      const std::set<std::string> & catagories() const
-      {return this->m_catagories;}
+      const std::set<std::string> & categories() const
+      {return this->m_categories;}
 
       int advanceLevel() const
       {return this->m_advanceLevel;}
@@ -175,7 +175,7 @@ namespace slctk
       void clearManager()
       { this->m_manager = NULL;}
 
-      void setCatagories();
+      void setCategories();
 
       slctk::attribute::Manager *m_manager;
       int m_version;
@@ -185,7 +185,7 @@ namespace slctk
       std::string m_type;
       std::string m_label;
       bool m_isNodal;
-      std::set<std::string> m_catagories;
+      std::set<std::string> m_categories;
       int m_advanceLevel;
       std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;

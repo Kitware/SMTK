@@ -75,25 +75,25 @@ buildGroup(std::vector<slctk::AttributeItemPtr> &group) const
     }
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::updateCatagories()
+void GroupItemDefinition::updateCategories()
 {
-  this->m_catagories.clear();
+  this->m_categories.clear();
   int i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
-    this->m_itemDefs[i]->updateCatagories();
-    const std::set<std::string> &itemCats = this->m_itemDefs[i]->catagories();
-    this->m_catagories.insert(itemCats.begin(), itemCats.end());
+    this->m_itemDefs[i]->updateCategories();
+    const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
+    this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::addCatagory(const std::string &catagory)
+void GroupItemDefinition::addCategory(const std::string &category)
 {
-  std::cerr << "Can not add catagories to a group item definition\n";
+  std::cerr << "Can not add categories to a group item definition\n";
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::removeCatagory(const std::string &catagory)
+void GroupItemDefinition::removeCategory(const std::string &category)
 {
-  std::cerr << "Can not remove catagories to a group item definition\n";
+  std::cerr << "Can not remove categories to a group item definition\n";
 }
 //----------------------------------------------------------------------------

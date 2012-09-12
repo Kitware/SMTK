@@ -86,12 +86,15 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ItemDefinition> ConstAttributeItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItemDefinition> ValueItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItem> DirectoryItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DirectoryItemDefinition> DirectoryItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItem> DoubleItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::DoubleItemDefinition> DoubleItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::FileItem> FileItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::FileItemDefinition> FileItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::GroupItem> GroupItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::GroupItemDefinition> GroupItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItem> IntItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::IntItemDefinition> IntItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::StringItem> StringItemPtr;
@@ -106,7 +109,8 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Section> WeakSectionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::AttributeSection> AttributeSectionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::GroupSection> GroupSectionPtr;
-  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ModelEntitySection> ModelEntitySectionSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::InstancedSection> InstancedSectionPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ModelEntitySection> ModelEntitySectionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::RootSection> RootSectionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::SimpleExpressionSection> SimpleExpressionSectionPtr;
 

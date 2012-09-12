@@ -68,8 +68,8 @@ namespace slctk
       slctk::AttributeDefinitionPtr definition() const
       {return this->m_definition;}
 
-      bool isMemberOf(const std::string &catagory) const;
-      bool isMemberOf(const std::vector<std::string> &catagories) const;
+      bool isMemberOf(const std::string &category) const;
+      bool isMemberOf(const std::vector<std::string> &categories) const;
 
       slctk::AttributeItemPtr item(int ith) const
       {

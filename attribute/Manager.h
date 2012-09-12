@@ -76,10 +76,10 @@ namespace slctk
       void findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const;
       bool rename(AttributePtr att, const std::string &newName);
       bool defineAnalysis(const std::string &analysisName,
-                          const std::set<std::string> &catagories);
+                          const std::set<std::string> &categories);
       std::size_t numberOfAnalyses() const
       {return this->m_analyses.size();}
-      std::set<std::string> analysisCatagories(const std::string &analysisType) const;
+      std::set<std::string> analysisCategories(const std::string &analysisType) const;
       const std::map<std::string, std::set<std::string> > &analyses() const
       {return this->m_analyses;}
 
@@ -90,9 +90,11 @@ namespace slctk
       {this->m_nextAttributeId = attributeId;}
       std::string createUniqueName(const std::string &type) const;
 
-      void updateCatagories();
-      const std::set<std::string> & catagories() const
-      {return this->m_catagories;}
+      void updateCategories();
+      std::size_t numberOfCategories() const
+      {return this->m_categories.size();}
+      const std::set<std::string> & categories() const
+      {return this->m_categories;}
 
       slctk::RootSectionPtr rootSection() const
       {return this->m_rootSection;}
@@ -106,7 +108,7 @@ namespace slctk
       std::map<unsigned long, slctk::AttributePtr> m_attributeIdMap;
       std::map<slctk::AttributeDefinitionPtr,
         std::set<slctk::WeakAttributeDefinitionPtr> > m_derivedDefInfo;
-      std::set<std::string> m_catagories;
+      std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
       unsigned long m_nextAttributeId;
       slctk::RootSectionPtr m_rootSection;
@@ -154,7 +156,7 @@ namespace slctk
     }
 //----------------------------------------------------------------------------
   inline std::set<std::string> Manager::
-  analysisCatagories(const std::string &analysisType) const
+  analysisCategories(const std::string &analysisType) const
   {
     std::map<std::string, std::set<std::string> >::const_iterator it;
       it = this->m_analyses.find(analysisType);
@@ -165,6 +167,19 @@ namespace slctk
       return std::set<std::string>();
   }
 //----------------------------------------------------------------------------
+    inline bool Manager::defineAnalysis(const std::string &analysisName,
+                                        const std::set<std::string> &categories)
+    {
+    std::map<std::string, std::set<std::string> >::const_iterator it;
+      it = this->m_analyses.find(analysisName);
+      if (it != this->m_analyses.end())
+        {
+        // it already exists
+        return false;
+        }
+      this->m_analyses[analysisName] = categories;
+      return true;
+    }
   };
 };
 

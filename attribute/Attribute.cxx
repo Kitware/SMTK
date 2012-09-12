@@ -72,14 +72,14 @@ bool Attribute::isA(slctk::AttributeDefinitionPtr def) const
   return this->m_definition->isA(def);
 }
 ///----------------------------------------------------------------------------
-bool Attribute::isMemberOf(const std::string &catagory) const
+bool Attribute::isMemberOf(const std::string &category) const
 {
-  return this->m_definition->isMemberOf(catagory);
+  return this->m_definition->isMemberOf(category);
 }
 //----------------------------------------------------------------------------
-bool Attribute::isMemberOf(const std::vector<std::string> &catagories) const
+bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 {
-  return this->m_definition->isMemberOf(catagories);
+  return this->m_definition->isMemberOf(categories);
 }
 //----------------------------------------------------------------------------
 Manager *Attribute::manager() const
