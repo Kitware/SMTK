@@ -42,13 +42,13 @@ namespace slctk
       SimpleExpressionSection(const std::string &myTitle);
       virtual ~SimpleExpressionSection();
       virtual Section::Type type() const;
-      const std::string &attributeType() const
-      {return this->m_attributeType;}
-      void setAttributeType(const std::string &attType)
-        {this->m_attributeType = attType;}
+      slctk::AttributeDefinitionPtr definition() const
+      {return this->m_definition;}
+      void setDefinition(slctk::AttributeDefinitionPtr def)
+      {this->m_definition = def;}
 
     protected:
-      std::string m_attributeType;
+      slctk::AttributeDefinitionPtr m_definition;
     private:
     };
   };

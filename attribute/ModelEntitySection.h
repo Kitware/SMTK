@@ -50,17 +50,17 @@ namespace slctk
       void setModelEntityMask(unsigned long mask)
       {this->m_modelEntityMask = mask;}
       
-      // If this string is not null then the section should
+      // If this def is not null then the section should
       // display all model entities of the requested mask along
       // with the attribute of this type in a table view
-      const std::string &attributeType() const
-      {return this->m_attributeType;}
-      void setAttributeType(const std::string &attType)
-        {this->m_attributeType = attType;}
+      slctk::AttributeDefinitionPtr definition() const
+      {return this->m_attributeDefinition;}
+      void setDefinition(slctk::AttributeDefinitionPtr def)
+      {this->m_attributeDefinition = def;}
 
     protected:
       unsigned long m_modelEntityMask;
-      std::string m_attributeType;
+      slctk::AttributeDefinitionPtr m_attributeDefinition;
     private:
       
     };

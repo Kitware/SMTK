@@ -69,6 +69,15 @@ namespace slctk
       {return this->m_numberOfGroups;}
       void setNumberOfGroups(int gsize)
       {this->m_numberOfGroups = gsize;}
+      bool hasSubGroupLabels() const
+      {return this->m_labels.size();}
+
+      void setSubGroupLabel(int element, const std::string &elabel);
+      void setCommonSubGroupLabel(const std::string &elabel);
+      bool usingCommonSubGroupLabel() const
+      {return this->m_useCommonLabel;}
+      std::string subGroupLabel(int element) const;
+
       virtual slctk::AttributeItemPtr buildItem() const;
       void buildGroup(std::vector<slctk::AttributeItemPtr> &group) const;
       virtual void addCategory(const std::string &category);
@@ -78,7 +87,9 @@ namespace slctk
       virtual void updateCategories();
       std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
+      std::vector<std::string> m_labels;
       int m_numberOfGroups;
+      bool m_useCommonLabel;
     private:
     };
 //----------------------------------------------------------------------------

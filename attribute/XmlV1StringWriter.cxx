@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "attribute/AttributeRefItemDefinition.h"
+#include "attribute/Attribute.h"
 #include "attribute/Definition.h"
 #include "attribute/DoubleItemDefinition.h"
 #include "attribute/DirectoryItemDefinition.h"
@@ -568,6 +569,26 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
 {
   node.append_attribute("NumberOfGroups") = idef->numberOfGroups();
   xml_node itemDefNode, itemDefNodes;
+  if (idef->hasSubGroupLabels())
+    {
+    xml_node lnode = node.append_child();
+    lnode.set_name("Labels");
+    if (idef->usingCommonSubGroupLabel())
+      {
+      lnode.append_attribute("CommonLabel") = idef->subGroupLabel(0).c_str();
+      }
+    else
+      {
+      int i, n = idef->numberOfGroups();
+      xml_node ln;
+      for (i = 0; i < n; i++)
+        {
+        ln = lnode.append_child();
+        ln.set_name("Label");
+        ln.set_value(idef->subGroupLabel(i).c_str());
+        }
+      }
+    }
   // Now lets process its items
   std::size_t i, n = idef->numberOfItemDefinitions();
   if (n != 0)
@@ -617,14 +638,18 @@ void XmlV1StringWriter::processAttributeSection(xml_node &node,
     {
     std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
     node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    if (sec->okToCreateModelEntities())
+      {
+      node.append_attribute("CreateEntities").set_value(true);
+      }
     }
-  std::size_t i, n = sec->numberOfAttributeTypes();
+  std::size_t i, n = sec->numberOfDefinitions();
   if (n)
     {
     xml_node atypes = node.append_child("Attribute Types");
     for (i = 0; i < n; i++)
       {
-      atypes.append_child("Type").text().set(sec->attributeType(i).c_str());
+      atypes.append_child("Type").text().set(sec->definition(i)->type().c_str());
       }
     }
 }
@@ -634,6 +659,16 @@ void XmlV1StringWriter::processInstancedSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
+  std::size_t i, n = sec->numberOfInstances();
+   if (n)
+    {
+    xml_node instances = node.append_child("Instanced Attributes");
+    for (i = 0; i < n; i++)
+      {
+      instances.append_child("Att").text().set(sec->instance(i)->name().c_str());
+      }
+    }
+ 
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processModelEntitySection(xml_node &node,
@@ -641,6 +676,15 @@ void XmlV1StringWriter::processModelEntitySection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
+  if (sec->modelEntityMask())
+    {
+    std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
+    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    }
+  if (sec->definition() != NULL)
+    {
+    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processSimpleExpressionSection(xml_node &node,
@@ -648,6 +692,10 @@ void XmlV1StringWriter::processSimpleExpressionSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
+  if (sec->definition() != NULL)
+    {
+    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processGroupSection(xml_node &node,
@@ -660,27 +708,31 @@ void XmlV1StringWriter::processGroupSection(xml_node &node,
   slctk::SectionPtr sec;
   for (i = 0; i < n; i++)
     {
-    child = node.append_child("SubSection");
     sec = group->subsection(i);
     switch(sec->type())
       {
       case Section::ATTRIBUTE:
+        child = node.append_child("AttributeSection");
         this->processAttributeSection(child, 
                                       slctk::dynamicCastPointer<AttributeSection>(sec));
         break;
       case Section::GROUP:
+        child = node.append_child("GroupSection");
         this->processGroupSection(child, 
                                   slctk::dynamicCastPointer<GroupSection>(sec));
         break;
       case Section::INSTANCED:
+        child = node.append_child("InstancedSection");
         this->processInstancedSection(child, 
                                       slctk::dynamicCastPointer<InstancedSection>(sec));
         break;
       case Section::MODEL_ENTITY:
+        child = node.append_child("ModelEntitySection");
         this->processModelEntitySection(child, 
                                         slctk::dynamicCastPointer<ModelEntitySection>(sec));
         break;
       case Section::SIMPLE_EXPRESSION:
+        child = node.append_child("SimpleExpressionSection");
         this->processSimpleExpressionSection(child, 
                                              slctk::dynamicCastPointer<SimpleExpressionSection>(sec));
         break;

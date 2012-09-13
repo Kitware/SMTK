@@ -30,7 +30,7 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
-  ItemDefinition(myName)
+  ItemDefinition(myName), m_numberOfGroups(1), m_useCommonLabel(false)
 {
 }
 
@@ -95,5 +95,43 @@ void GroupItemDefinition::addCategory(const std::string &category)
 void GroupItemDefinition::removeCategory(const std::string &category)
 {
   std::cerr << "Can not remove categories to a group item definition\n";
+}
+//----------------------------------------------------------------------------
+void GroupItemDefinition::setSubGroupLabel(int element, const std::string &elabel)
+{
+  if (this->m_numberOfGroups == 0)
+    {
+    return;
+    }
+  if (this->m_labels.size() != this->m_numberOfGroups)
+    {
+    this->m_labels.resize(this->m_numberOfGroups);
+    }
+  this->m_useCommonLabel = false;
+  this->m_labels[element] = elabel;
+}
+//----------------------------------------------------------------------------
+void GroupItemDefinition::setCommonSubGroupLabel(const std::string &elabel)
+{
+  if (this->m_labels.size() != 1)
+    {
+    this->m_labels.resize(1);
+    }
+  this->m_useCommonLabel = true;
+  this->m_labels[0] = elabel;
+}
+
+//----------------------------------------------------------------------------
+std::string GroupItemDefinition::subGroupLabel(int element) const
+{
+  if (this->m_useCommonLabel)
+    {
+    return this->m_labels[0];
+    }
+  if (this->m_labels.size())
+    {
+    return this->m_labels[element];
+    }
+  return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------

@@ -43,12 +43,12 @@ namespace slctk
       AttributeSection(const std::string &myTitle);
       virtual ~AttributeSection();
       virtual Section::Type type() const;
-      void addAttributeType(const std::string &attType)
-        {this->m_attributeTypes.push_back(attType);}
-      std::size_t numberOfAttributeTypes() const
-      { return this->m_attributeTypes.size();}
-      const std::string &attributeType(int ith) const
-      {return this->m_attributeTypes[ith];}
+      void addDefinition(slctk::AttributeDefinitionPtr def)
+      {this->m_definitions.push_back(def);}
+      std::size_t numberOfDefinitions() const
+      { return this->m_definitions.size();}
+      slctk::AttributeDefinitionPtr definition(int ith) const
+      {return this->m_definitions[ith];}
       unsigned long modelEntityMask() const
       {return this->m_modelEntityMask;}
       void setModelEntityMask(unsigned long mask)
@@ -59,7 +59,7 @@ namespace slctk
       { this->m_okToCreateModelEntities = val;}
 
     protected:
-      std::vector<std::string> m_attributeTypes;
+      std::vector<slctk::AttributeDefinitionPtr> m_definitions;
       unsigned long m_modelEntityMask;
       bool m_okToCreateModelEntities;
 
