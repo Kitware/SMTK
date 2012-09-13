@@ -145,7 +145,7 @@ int main()
   AttributeSectionPtr attSec;
   attSec = root->addSubsection<AttributeSectionPtr>("Materials");
   attSec->addDefinition(materialDef);
-  attSec->setModelEntityMask(0x20);
+  attSec->setModelEntityMask(0x40);
   attSec->setOkToCreateModelEntities(true);
   ModelEntitySectionPtr modSec;
   modSec = root->addSubsection<ModelEntitySectionPtr>("Domains");

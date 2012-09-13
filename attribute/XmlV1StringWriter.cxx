@@ -646,7 +646,7 @@ void XmlV1StringWriter::processAttributeSection(xml_node &node,
   std::size_t i, n = sec->numberOfDefinitions();
   if (n)
     {
-    xml_node atypes = node.append_child("Attribute Types");
+    xml_node atypes = node.append_child("AttributeTypes");
     for (i = 0; i < n; i++)
       {
       atypes.append_child("Type").text().set(sec->definition(i)->type().c_str());
@@ -662,7 +662,7 @@ void XmlV1StringWriter::processInstancedSection(xml_node &node,
   std::size_t i, n = sec->numberOfInstances();
    if (n)
     {
-    xml_node instances = node.append_child("Instanced Attributes");
+    xml_node instances = node.append_child("InstancedAttributes");
     for (i = 0; i < n; i++)
       {
       instances.append_child("Att").text().set(sec->instance(i)->name().c_str());
