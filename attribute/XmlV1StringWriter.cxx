@@ -28,11 +28,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/AttributeRefItemDefinition.h"
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
+#include "attribute/DoubleItem.h"
 #include "attribute/DoubleItemDefinition.h"
+#include "attribute/DirectoryItem.h"
 #include "attribute/DirectoryItemDefinition.h"
+#include "attribute/FileItem.h"
 #include "attribute/FileItemDefinition.h"
+#include "attribute/GroupItem.h"
 #include "attribute/GroupItemDefinition.h"
+#include "attribute/IntItem.h"
 #include "attribute/IntItemDefinition.h"
+#include "attribute/Item.h"
 #include "attribute/ItemDefinition.h"
 #include "attribute/Manager.h"
 #include "attribute/AttributeSection.h"
@@ -41,7 +47,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/ModelEntitySection.h"
 #include "attribute/RootSection.h"
 #include "attribute/SimpleExpressionSection.h"
+#include "attribute/StringItem.h"
 #include "attribute/StringItemDefinition.h"
+#include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinition.h"
 #include <sstream>
 #include <iostream>
@@ -94,8 +102,7 @@ std::string XmlV1StringWriter::convertToString()
         }
       }
     }
-  this->processDefinitions();
-  this->processInstances();
+  this->processAttributeInformation();
   this->processSections();
   this->processModelInfo();
   std::stringstream oss;
@@ -104,19 +111,21 @@ std::string XmlV1StringWriter::convertToString()
   return result;
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processDefinitions()
+void XmlV1StringWriter::processAttributeInformation()
 {
   std::vector<slctk::AttributeDefinitionPtr> baseDefs;
   this->m_manager.findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions = this->m_root.append_child("Definitions");
+  xml_node attributes = this->m_root.append_child("Atributes");
   for (i = 0; i < n; i++)
     {
-    this->processDefinition(definitions, baseDefs[i]);
+    this->processDefinition(definitions, attributes, baseDefs[i]);
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDefinition(xml_node &definitions,
+                                          xml_node &attributes,
                                           slctk::AttributeDefinitionPtr def)
 {
   xml_node itemDefNode, itemDefNodes, 
@@ -177,13 +186,21 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
                                   def->itemDefinition(i));
       }
     }
+  // Process all attributes based on this class
+  std::vector<slctk::AttributePtr> atts;
+  this->m_manager.findDefinitionAttributes(def->type(), atts);
+  n = atts.size();
+  for (i = 0; i < n; i++)
+    {
+    this->processAttribute(attributes, atts[i]);
+    }
   // Now process all of its derived classes
   std::vector<slctk::AttributeDefinitionPtr> defs;
   this->m_manager.derivedDefinitions(def, defs);
   n = defs.size();
   for (i = 0; i < n; i++)
     {
-    this->processDefinition(definitions, defs[i]);
+    this->processDefinition(definitions, attributes, defs[i]);
     }
 }
 //----------------------------------------------------------------------------
@@ -192,7 +209,6 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
 {
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
-  node.append_attribute("DataType").set_value(Item::type2String(idef->type()).c_str());
   if (idef->label() != "")
     {
     node.append_attribute("Label").set_value(idef->label().c_str());
@@ -261,7 +277,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node, 
-                        slctk::dynamicCastPointer<ValueItemDefinition>(idef));
+                        dynamicCastPointer<ValueItemDefinition>(idef));
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
@@ -604,9 +620,332 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processInstances()
+void XmlV1StringWriter::processAttribute(xml_node &attributes, 
+                                         AttributePtr att)
 {
-  xml_node instances = this->m_root.append_child("Attribute");
+  xml_node node = attributes.append_child("Att");
+  node.append_attribute("Name").set_value(att->name().c_str());
+  if (att->definition() != NULL)
+    {
+    node.append_attribute("Type").set_value(att->definition()->type().c_str());
+    if (att->definition()->isNodal())
+      {
+      node.append_attribute("OnInteriorNodes").set_value(att->appliesToInteriorNodes());
+      node.append_attribute("OnBoundaryNodes").set_value(att->appliesToBoundaryNodes());
+      }
+    }
+  node.append_attribute("ID").set_value((unsigned int)att->id());
+  std::size_t i, n = att->numberOfItems();
+  if (n)
+    {
+    xml_node itemNode, items = node.append_child("Items");
+    for (i = 0; i < n; i++)
+      {
+      itemNode = items.append_child();
+      itemNode.set_name(Item::type2String(att->item(i)->type()).c_str());
+      this->processItem(itemNode, att->item(i));
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processItem(xml_node &node, 
+                                    AttributeItemPtr item)
+{
+  node.append_attribute("Name").set_value(item->name().c_str());
+  if (item->isOptional())
+    {
+    node.append_attribute("Enabled").set_value(item->isEnabled());
+    }
+  switch (item->type())
+    {
+    case Item::ATTRIBUTE_REF:
+      this->processAttributeRefItem(node, slctk::dynamicCastPointer<AttributeRefItem>(item));
+      break;
+    case Item::DOUBLE:
+      this->processDoubleItem(node, slctk::dynamicCastPointer<DoubleItem>(item));
+      break;
+    case Item::DIRECTORY:
+      this->processDirectoryItem(node, slctk::dynamicCastPointer<DirectoryItem>(item));
+      break;
+    case Item::FILE:
+      this->processFileItem(node, slctk::dynamicCastPointer<FileItem>(item));
+      break;
+    case Item::GROUP:
+      this->processGroupItem(node, slctk::dynamicCastPointer<GroupItem>(item));
+      break;
+    case Item::INT:
+      this->processIntItem(node, slctk::dynamicCastPointer<IntItem>(item));
+      break;
+    case Item::STRING:
+      this->processStringItem(node, slctk::dynamicCastPointer<StringItem>(item));
+      break;
+    case Item::VOID:
+      // Nothing to do!
+      break;
+    default:
+      std::cerr << "Unsupported Type!\n";
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
+                                         ValueItemPtr item)
+{
+  if (!item->isDiscrete())
+    {
+    return; // there is nothing to be done
+    }
+  std::size_t i, n = item->numberOfValues();
+  xml_node val, values;
+  if (!n)
+    {
+    return;
+    }
+  else if (n > 1)
+    {
+    values = node.append_child("DiscreteValues");
+    }
+  else
+    {
+    values = node;
+    }
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      val = values.append_child("DiscreteVal");
+      if (n != 1)
+        {
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        }
+      val.text().set(item->discreteIndex(i));
+      }
+    else
+      {
+      val = values.append_child("UnsetDiscreteVal");
+      if (n != 1)
+        {
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        }
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processAttributeRefItem(pugi::xml_node &node,
+                                               AttributeRefItemPtr item)
+{
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.text().set(item->value(i)->name().c_str());
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
+                                             DirectoryItemPtr item)
+{
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.text().set(item->value(i).c_str());
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
+                                          DoubleItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamicCastPointer<ValueItem>(item));
+  if (item->isDiscrete())
+    {
+    return; // nothing left to do
+    }
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      if (item->isExpression(i))
+        {
+        val = values.append_child("Expression");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->expression(i)->name().c_str());
+        }
+      else
+        {
+        val = values.append_child("Val");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->value(i));
+        }
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
+                                        FileItemPtr item)
+{
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      val = values.append_child("Val");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.text().set(item->value(i).c_str());
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
+                                         GroupItemPtr item)
+{
+  std::size_t i, j, m, n = item->numberOfGroups();
+  if (!n)
+    {
+    return;
+    }
+  xml_node itemNode, group, groups = node.append_child("Groups");
+  for(i = 0; i < n; i++)
+    {
+    m = item->numberOfItemsInGroup(i);
+    group = groups.append_child("Group");
+    group.append_attribute("Ith").set_value((unsigned int) i);
+    for (j = 0; j < m; j++)
+      {
+      itemNode = group.append_child();
+      itemNode.set_name(Item::type2String(item->item(i,j)->type()).c_str());
+      this->processItem(itemNode, item->item(i,j));
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
+                                       IntItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamicCastPointer<ValueItem>(item));
+  if (item->isDiscrete())
+    {
+    return; // nothing left to do
+    }
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      if (item->isExpression(i))
+        {
+        val = values.append_child("Expression");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->expression(i)->name().c_str());
+        }
+      else
+        {
+        val = values.append_child("Val");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->value(i));
+        }
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
+                                          StringItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamicCastPointer<ValueItem>(item));
+  if (item->isDiscrete())
+    {
+    return; // nothing left to do
+    }
+  std::size_t i, n = item->numberOfValues();
+  if (!n)
+    {
+    return;
+    }
+  xml_node val, values = node.append_child("Values");
+  for(i = 0; i < n; i++)
+    {
+    if (item->isSet(i))
+      {
+      if (item->isExpression(i))
+        {
+        val = values.append_child("Expression");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->expression(i)->name().c_str());
+        }
+      else
+        {
+        val = values.append_child("Val");
+        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.text().set(item->value(i).c_str());
+        }
+      }
+    else
+      {
+      val = values.append_child("UnsetVal");
+      val.append_attribute("Ith").set_value((unsigned int) i);
+      }
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processSections()

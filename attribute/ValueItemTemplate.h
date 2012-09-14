@@ -47,6 +47,8 @@ namespace slctk
       ValueItemTemplate();
       virtual ~ValueItemTemplate() {}
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
+      std::size_t numberOfValues() const
+      {return this->m_values.size();}
       DataT value(int element=0) const
       {return this->m_values[element];}
       virtual std::string valueAsString(const std::string &format="") const

@@ -47,6 +47,8 @@ namespace slctk
       virtual Item::Type type() const;
       bool shouldBeRelative() const;
       bool shouldExist() const;
+      std::size_t numberOfValues() const
+      {return this->m_values.size();}
       std::string value(int element=0) const
       {return this->m_values[element];}
       bool setValue(const std::string &val)

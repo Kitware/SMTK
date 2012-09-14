@@ -46,31 +46,51 @@ namespace slctk
       static void convertStringToXML(std::string &str);
       static std::string encodeModelEntityMask(unsigned long m);
     protected:
-      void processDefinitions();
-      void processInstances();
+      void processAttributeInformation();
       void processSections();
       void processModelInfo();
 
-      void processDefinition(pugi::xml_node &node,
+      void processDefinition(pugi::xml_node &definitions,
+                             pugi::xml_node &attributes,
                              slctk::AttributeDefinitionPtr def);
+      void processAttribute(pugi::xml_node &attributes,
+                            slctk::AttributePtr att);
+      void processItem(pugi::xml_node &node, 
+                       slctk::AttributeItemPtr item);
       void processItemDefinition(pugi::xml_node &node, 
-                                 AttributeItemDefinitionPtr idef);
+                                 slctk::AttributeItemDefinitionPtr idef);
+      void processAttributeRefItem(pugi::xml_node &node, 
+                                   slctk::AttributeRefItemPtr item);
       void processAttributeRefDef(pugi::xml_node &node,
-                                  AttributeRefItemDefinitionPtr idef);
+                                  slctk::AttributeRefItemDefinitionPtr idef);
+      void processDoubleItem(pugi::xml_node &node, 
+                             slctk::DoubleItemPtr item);
       void processDoubleDef(pugi::xml_node &node,
-                            DoubleItemDefinitionPtr idef);
+                            slctk::DoubleItemDefinitionPtr idef);
+      void processDirectoryItem(pugi::xml_node &node, 
+                                slctk::DirectoryItemPtr item);
       void processDirectoryDef(pugi::xml_node &node,
-                               DirectoryItemDefinitionPtr idef);
+                               slctk::DirectoryItemDefinitionPtr idef);
+      void processFileItem(pugi::xml_node &node, 
+                           slctk::FileItemPtr item);
       void processFileDef(pugi::xml_node &node,
-                          FileItemDefinitionPtr idef);
+                          slctk::FileItemDefinitionPtr idef);
+      void processGroupItem(pugi::xml_node &node, 
+                             slctk::GroupItemPtr item);
       void processGroupDef(pugi::xml_node &node,
-                           GroupItemDefinitionPtr idef);
+                           slctk::GroupItemDefinitionPtr idef);
+      void processIntItem(pugi::xml_node &node, 
+                          slctk::IntItemPtr item);
       void processIntDef(pugi::xml_node &node,
-                         IntItemDefinitionPtr idef);
+                         slctk::IntItemDefinitionPtr idef);
+      void processStringItem(pugi::xml_node &node, 
+                             slctk::StringItemPtr item);
       void processStringDef(pugi::xml_node &node,
-                            StringItemDefinitionPtr idef);
+                            slctk::StringItemDefinitionPtr idef);
+      void processValueItem(pugi::xml_node &node, 
+                             slctk::ValueItemPtr item);
       void processValueDef(pugi::xml_node &node,
-                           ValueItemDefinitionPtr idef);
+                           slctk::ValueItemDefinitionPtr idef);
 
       void processAttributeSection(pugi::xml_node &node,
                                    slctk::AttributeSectionPtr sec);

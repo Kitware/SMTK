@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/GroupItem.h"
 #include "attribute/GroupItemDefinition.h"
+#include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
@@ -50,12 +51,13 @@ GroupItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr gdef)
     dynamic_cast<const GroupItemDefinition *>(gdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (Item::setDefinition(gdef)))
+  if ((def == NULL) || (!Item::setDefinition(gdef)))
     {
     return false;
     }
   this->m_definition = gdef;
   std::size_t i, n = def->numberOfGroups();
+  std::cerr << "**** Number of Groups = " << n << std::endl;
   if (n)
     {
     this->m_items.resize(n);
@@ -88,13 +90,6 @@ void GroupItem::reset()
       }
     }
   Item::reset();
-}
-//----------------------------------------------------------------------------
-std::size_t GroupItem::numberOfItemsPerGroup() const
-{
-  const GroupItemDefinition *def = 
-    static_cast<const GroupItemDefinition *>(this->definition().get());
-  return def->numberOfItemDefinitions();
 }
 //----------------------------------------------------------------------------
 bool GroupItem::appendGroup()
