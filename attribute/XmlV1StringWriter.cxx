@@ -47,6 +47,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 
 using namespace pugi;
+using namespace slctk; 
 using namespace slctk::attribute; 
  
 //----------------------------------------------------------------------------

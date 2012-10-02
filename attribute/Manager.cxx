@@ -220,7 +220,7 @@ findAttributes(slctk::AttributeDefinitionPtr def,
 }
 //----------------------------------------------------------------------------
 void Manager::
-internalFindAttributes(AttributeDefinitionPtr def, 
+internalFindAttributes(slctk::AttributeDefinitionPtr def, 
                        std::vector<slctk::AttributePtr> &result) const
 {
   if (!def->isAbstract())
