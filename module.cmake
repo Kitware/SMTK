@@ -7,4 +7,5 @@ vtk_module(vtkDiscreteModel
    vtkRenderingFreeTypeOpenGL
    vtkInteractionStyle
    vtkIOCore
+  EXCLUDE_FROM_WRAP_HIERARCHY
 )
