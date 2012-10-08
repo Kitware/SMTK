@@ -228,13 +228,36 @@ bool vtkModel3dmGridRepresentation::Initialize(
     vtkIdTypeArray* modelCellToAnalysisCells, vtkCharArray* modelCellToAnalysisCellSides)
 {
   this->SetGridFileName(fileName);
-  this->ModelPointToAnalysisPoint->SetNumberOfTuples(
-    modelPointToAnalysisPoint->GetNumberOfTuples());
-  for(vtkIdType i=0;i<modelPointToAnalysisPoint->GetNumberOfTuples();i++)
+
+  if(modelPointToAnalysisPoint)
     {
-    vtkIdType value = modelPointToAnalysisPoint->GetValue(i);
-    this->ModelPointToAnalysisPoint->SetValue(i, value);
+    this->ModelPointToAnalysisPoint->SetNumberOfTuples(
+      modelPointToAnalysisPoint->GetNumberOfTuples());
+    for(vtkIdType i=0;i<modelPointToAnalysisPoint->GetNumberOfTuples();i++)
+      {
+      vtkIdType value = modelPointToAnalysisPoint->GetValue(i);
+      this->ModelPointToAnalysisPoint->SetValue(i, value);
+      }
     }
+  else
+    {
+    //no unique model points, which means we presume each point is unique
+    vtkDataSet* ds = vtkDataSet::SafeDownCast(model->GetGeometry());
+    if(!ds)
+      {
+      this->Reset();
+      return false;
+      }
+
+    const vtkIdType numPoints(ds->GetNumberOfPoints());
+    this->ModelPointToAnalysisPoint->SetNumberOfTuples(numPoints);
+    for(vtkIdType i=0;i<numPoints;i++)
+      {
+      this->ModelPointToAnalysisPoint->SetValue(i, i);
+      }
+
+    }
+
   vtkIdType numberOfCells = modelCellToAnalysisCells->GetNumberOfTuples();
   if(numberOfCells != modelCellToAnalysisCellSides->GetNumberOfTuples())
     {
