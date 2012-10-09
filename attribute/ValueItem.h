@@ -45,6 +45,7 @@ namespace slctk
       virtual ~ValueItem();
       std::size_t numberOfValues() const
       {return this->m_isSet.size();}
+      int numberOfRequiredValues() const;
 
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
       bool allowsExpressions() const;
@@ -55,14 +56,15 @@ namespace slctk
       {return this->setExpression(0, exp);}
       bool setExpression(int elementIndex, slctk::AttributePtr exp);
       virtual bool appendExpression(slctk::AttributePtr exp);
+      virtual bool setNumberOfValues(std::size_t newSize) = 0;
 
       int discreteIndex(int elementIndex=0) const
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
       
-      void setDiscreteIndex(int value)
-      {this->setDiscreteIndex(0, value);}
-      void setDiscreteIndex(int elementIndex, int value);
+      bool setDiscreteIndex(int value)
+      {return this->setDiscreteIndex(0, value);}
+      bool setDiscreteIndex(int elementIndex, int value);
       // Reset returns the item to its initial state.
       //If the item is of fixed size, then it's values  to their initial state.  
       // If there is a default available it will use it, else

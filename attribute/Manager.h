@@ -86,9 +86,14 @@ namespace slctk
       // For Reader classes
       slctk::AttributePtr createAttribute(const std::string &name, const std::string &type,
                                           unsigned long id);
-      void setNextId(unsigned long attributeId)
-      {this->m_nextAttributeId = attributeId;}
-      std::string createUniqueName(const std::string &type) const;
+     slctk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def,
+                                          unsigned long id);
+     unsigned long nextId() const
+     {return this->m_nextAttributeId;}
+
+     // Sets the next attribute id counter to be the bigger than the largest used by its attributes
+     void recomputeNextAttributeID();
+     std::string createUniqueName(const std::string &type) const;
 
       void updateCategories();
       std::size_t numberOfCategories() const

@@ -49,6 +49,8 @@ namespace slctk
       bool shouldExist() const;
       std::size_t numberOfValues() const
       {return this->m_values.size();}
+      bool  setNumberOfValues(std::size_t newSize);
+      int numberOfRequiredValues() const;
       std::string value(int element=0) const
       {return this->m_values[element];}
       bool setValue(const std::string &val)

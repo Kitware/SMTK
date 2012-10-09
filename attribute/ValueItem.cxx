@@ -48,7 +48,7 @@ bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     if (def->hasDefault())
@@ -79,6 +79,17 @@ bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
 //----------------------------------------------------------------------------
 ValueItem::~ValueItem()
 {
+}
+//----------------------------------------------------------------------------
+int ValueItem::numberOfRequiredValues() const
+{
+  const ValueItemDefinition *def = 
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (def == NULL)
+    {
+    return 0;
+    }
+  return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
 bool ValueItem::allowsExpressions() const
@@ -136,7 +147,7 @@ bool ValueItem::appendExpression(slctk::AttributePtr exp)
     {
     return false;
     }
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
@@ -163,11 +174,11 @@ void ValueItem::reset()
   Item::reset();
 }
 //----------------------------------------------------------------------------
-void ValueItem::setDiscreteIndex(int element, int index)
+bool ValueItem::setDiscreteIndex(int element, int index)
 {
   if (!this->isDiscrete())
     {
-    return;
+    return false;
     }
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -180,6 +191,8 @@ void ValueItem::setDiscreteIndex(int element, int index)
       }
     this->m_isSet[element] = true;
     this->updateDiscreteValue(element);
+    return true;
     }
+  return false;
 }
 //----------------------------------------------------------------------------

@@ -40,15 +40,20 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/StringItemDefinition.h"
 #include "attribute/VoidItemDefinition.h"
 #include "attribute/XmlV1StringWriter.h"
+#include "attribute/XmlV1StringReader.h"
+#define PUGIXML_HEADER_ONLY
+#include "pugixml-1.2/src/pugixml.hpp"
+#include "pugixml-1.2/src/pugixml.cpp"
 
 #include <iostream>
+#include <sstream>
 
 using namespace slctk;
 int main()
 {
   int status;
   {
-  slctk::attribute::Manager manager;
+  attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create some attribute Definitions
   AttributeDefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
@@ -164,8 +169,26 @@ int main()
   att = manager.createAttribute("Globals", globalsDef);
   iSec = root->addSubsection<InstancedSectionPtr>("Global Parameters");
   iSec->addInstance(att);
-  slctk::attribute::XmlV1StringWriter writer(manager);
-  std::cout << writer.convertToString() << std::endl;
+  attribute::XmlV1StringWriter writer(manager);
+  std::string result = writer.convertToString();
+  std::cout << result << std::endl;
+  std::stringstream test(result);
+  pugi::xml_document doc;
+  doc.load(test);
+  attribute::Manager manager1;  
+  slctk::attribute::XmlV1StringReader reader(manager1);
+  reader.process(doc);
+  std::string readErrors = reader.errorStatus();
+  if (readErrors != "")
+    {
+    std::cerr << "READ ERRORS ENCOUNTERED!!!\n";
+    std::cerr << readErrors << "\n";
+    }
+  attribute::XmlV1StringWriter writer1(manager1);
+  std::cout << "Manager 1:\n";
+  result = writer1.convertToString();
+  std::cout << result << std::endl;
+
   std::cout << "Manager destroyed\n";
   }
   return status;

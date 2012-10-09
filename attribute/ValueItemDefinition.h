@@ -77,9 +77,9 @@ namespace slctk
 
       virtual bool hasRange() const = 0;
 
-      int numberOfValues() const
-      {return this->m_numberOfValues;}
-      void setNumberOfValues(int esize);
+      int numberOfRequiredValues() const
+      {return this->m_numberOfRequiredValues;}
+      void setNumberOfRequiredValues(int esize);
 
       bool hasValueLabels() const
       {return this->m_valueLabels.size();}
@@ -99,7 +99,7 @@ namespace slctk
       std::vector<std::string> m_valueLabels;
       std::vector<std::string> m_discreteValueEnums;
       int m_defaultDiscreteIndex;
-      int m_numberOfValues;
+      int m_numberOfRequiredValues;
       std::string m_units;
       slctk::AttributeRefItemDefinitionPtr m_expressionDefinition;
     private:

@@ -204,6 +204,46 @@ void XmlV1StringReader::processAttributeInformation(xml_node &root)
     {
     this->processAttribute(child);
     }
+
+  // Have the manager reset its next attribute id properly
+  this->m_manager.recomputeNextAttributeID();
+
+  // At this point we have all the attributes read in so lets
+  // fix up all of the attribute  references
+  AttributePtr att;
+  for (i = 0; i < this->m_itemExpressionInfo.size(); i++)
+    {
+    att = this->m_manager.findAttribute(this->m_itemExpressionInfo[i].expName);
+    if (att)
+      {
+      this->m_itemExpressionInfo[i].
+        item->setExpression(m_itemExpressionInfo[i].pos, att);
+      }
+    else
+      {
+      this->m_errorStatus << "ERROR:Expression Attribute: " 
+                          << this->m_itemExpressionInfo[i].expName
+                          << " is missing and required by Item : "
+                          << this->m_itemExpressionInfo[i].item->name() << "/n";
+        }
+    }
+      
+  for (i = 0; i < this->m_attRefInfo.size(); i++)
+    {
+    att = this->m_manager.findAttribute(this->m_attRefInfo[i].attName);
+    if (att)
+      {
+      this->m_attRefInfo[i].item->setValue(this->m_attRefInfo[i].pos, att);
+      }
+    else
+      {
+      this->m_errorStatus << "ERROR:Referenced Attribute: " 
+                          << this->m_attRefInfo[i].attName
+                          << " is missing and required by Item: "
+                          << this->m_attRefInfo[i].item->name() << "/n";
+        }
+    }
+      
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processDefinition(xml_node &defNode)
@@ -916,60 +956,138 @@ void XmlV1StringReader::processGroupDef(pugi::xml_node &node,
                           << " needed to create Group Definition: " << def->name() << "\n";
       }
     }
-
-/*
-  // Now lets process its items
-  std::size_t i, n = idef->numberOfItemDefinitions();
-  if (n != 0)
-    {
-    itemDefNodes = node.append_child("ItemDefinitions");
-    for (i = 0; i < n; i++)
-      {
-      itemDefNode = itemDefNodes.append_child();
-      itemDefNode.set_name(Item::type2String(idef->itemDefinition(i)->type()).c_str());
-      this->processItemDefinition(itemDefNode, 
-                                  idef->itemDefinition(i));
-      }
-    }
-*/
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processAttribute(xml_node &attNode)
 {
-/*
-  xml_node node = attributes.append_child("Att");
-  node.append_attribute("Name").set_value(att->name().c_str());
-  if (att->definition() != NULL)
+  xml_node itemsNode, iNode, node;
+  std::string name, type;
+  xml_attribute xatt;
+  AttributePtr att;
+  AttributeDefinitionPtr def;
+  unsigned long id, maxId = 0;
+  std::size_t i, n;
+
+  xatt = attNode.attribute("Name");
+  if (!xatt)
     {
-    node.append_attribute("Type").set_value(att->definition()->type().c_str());
-    if (att->definition()->isNodal())
-      {
-      node.append_attribute("OnInteriorNodes").set_value(att->appliesToInteriorNodes());
-      node.append_attribute("OnBoundaryNodes").set_value(att->appliesToBoundaryNodes());
-      }
+    this->m_errorStatus << "ERROR: Invalid Attribute! - Missing XML Attribute Name\n";
+    return;
     }
-  node.append_attribute("ID").set_value((unsigned int)att->id());
-  std::size_t i, n = att->numberOfItems();
-  if (n)
+  name = xatt.value();
+  xatt = attNode.attribute("Type");
+  if (!xatt)
     {
-    xml_node itemNode, items = node.append_child("Items");
-    for (i = 0; i < n; i++)
-      {
-      itemNode = items.append_child();
-      itemNode.set_name(Item::type2String(att->item(i)->type()).c_str());
-      this->processItem(itemNode, att->item(i));
-      }
+    this->m_errorStatus << "ERROR: Invalid Attribute: " << name
+                        << "  - Missing XML Attribute Type\n";
+    return;
     }
-*/
+  type = xatt.value();
+  xatt = attNode.attribute("ID");
+  if (!xatt)
+    {
+    this->m_errorStatus << "ERROR: Invalid Attribute: " << name
+                        << "  - Missing XML Attribute ID\n";
+    return;
+    }
+  id = xatt.as_uint();
+  
+  def = this->m_manager.findDefinition(type);
+  if (!def)
+    {
+    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
+                        << "  - can not find attribute definition\n";
+    return;
+    }
+  
+  // Is the definition abstract?
+  if (def->isAbstract())
+    {
+    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
+                        << "  - is based on an abstract definition\n";
+    return;
+    }
+  
+  att = this->m_manager.createAttribute(name, def, id);
+  
+  if (att == NULL)
+    {
+    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
+                        << "  - could not be created - is the name in use?\n";
+    return;
+    }
+  xatt = attNode.attribute("OnInteriorNodes");
+  if (xatt)
+    {
+    att->setAppliesToInteriorNodes(xatt.as_bool());
+    }
+  
+  xatt = attNode.attribute("OnBoundaryNodes");
+  if (xatt)
+    {
+    att->setAppliesToBoundaryNodes(xatt.as_bool());
+    }
+  
+  itemsNode = attNode.child("Items");
+  if (!itemsNode)
+    {
+    return;
+    }
+  // Process all of the items in the attribute w/r to the XML
+  // NOTE That the writer processes the items in order - lets assume
+  // that for speed and if that fails we can try to search for the correct
+  // xml node
+  n = att->numberOfItems();
+  for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode; 
+       i++, iNode = iNode.next_sibling())
+    {
+    // See if the name of the item matches the name of node
+    xatt = iNode.attribute("Name");
+    if (!xatt)
+      {
+      this->m_errorStatus << "ERROR: Bad Item for Attribute : " << name 
+                          << "- missing XML Attribute Name\n";
+      node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+      }
+    else
+      {
+      // Is the ith xml node the same as the ith item of the attribute?
+      if (att->item(i)->name() == xatt.value())
+        {
+        node = iNode;
+        }
+      else
+        {
+        node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+        }
+      }
+    if (!node)
+      {
+      this->m_errorStatus << "Error: Can not locate XML Item node :" << att->item(i)->name() 
+                          << " for Attribute : " << name 
+                          << "\n";
+      continue;
+      }
+    this->processItem(node, att->item(i));
+    }
+  if (iNode || (i != n))
+    {
+    this->m_errorStatus << "Error: Number of Items does not match XML for Attribute : " << name 
+                        << "\n";
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processItem(xml_node &node, 
                                     AttributeItemPtr item)
 {
-  node.append_attribute("Name").set_value(item->name().c_str());
+  xml_attribute xatt;
   if (item->isOptional())
     {
-    node.append_attribute("Enabled").set_value(item->isEnabled());
+    xatt = node.attribute("Enabled");
+    if (xatt)
+      {
+      item->setIsEnabled(xatt.as_bool());
+      }
     }
   switch (item->type())
     {
@@ -998,115 +1116,244 @@ void XmlV1StringReader::processItem(xml_node &node,
       // Nothing to do!
       break;
     default:
-      std::cerr << "Unsupported Type!\n";
+      this->m_errorStatus << "Error: Unsupported Item Type: " << Item::type2String(item->type())
+                          << "\n";
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processValueItem(pugi::xml_node &node,
                                          ValueItemPtr item)
 {
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::size_t i, n = item->numberOfValues();
+  xml_attribute xatt;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
   if (!item->isDiscrete())
     {
     return; // there is nothing to be done
     }
-  std::size_t i, n = item->numberOfValues();
   xml_node val, values;
+  int index;
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1) // Special Common Case
+  // There are 2 possible formats - a general one that must be used when n > 1
+  // and a special compact one that could be used for n == 1
+  // Lets check the general one first - note we only need to process the values
+  // that have been set
+  values = node.child("DiscreteValues");
+  if (values)
     {
-    node.append_attribute("Discrete").set_value(true);
-    if (item->isSet())
+    for (val = values.child("Index"); val; val = val.next_sibling("Index"))
       {
-      node.text().set(item->discreteIndex());
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_int();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      index = val.text().as_int();
+      if (!item->setDiscreteIndex(i, index))
+        {
+        this->m_errorStatus << "Error: Discrete Index " << index
+                            << " for  ith value : " << i
+                            << " is not valid for Item: " << item->name() 
+                            << "\n";
+        }
       }
     return;
     }
-  values = node.append_child("DiscreteValues");
-  for(i = 0; i < n; i++)
+  if (numRequiredVals == 1) // Special Common Case
     {
-    if (item->isSet(i))
+    if (!item->setDiscreteIndex(node.text().as_int()))
       {
-      val = values.append_child("Index");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      val.text().set(item->discreteIndex(i));
+        this->m_errorStatus << "Error: Discrete Index " << index
+                            << " for  ith value : " << i
+                            << " is not valid for Item: " << item->name() 
+                            << "\n";
       }
-    else
-      {
-      val = values.append_child("UnsetDiscreteVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    return;
     }
+  this->m_errorStatus << "Error: Missing Discrete Values for Item: " << item->name() 
+                      << "\n";
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processAttributeRefItem(pugi::xml_node &node,
                                                AttributeRefItemPtr item)
 {
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::string attName;
+  AttributePtr att;
+  AttRefInfo info;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
       {
-      val = node.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      val.text().set(item->value(i)->name().c_str());
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      attName = val.text().get();
+      att = this->m_manager.findAttribute(attName);
+      if (att == NULL)
+        {
+        info.item = item; info.pos = i; info.attName = attName;
+        this->m_attRefInfo.push_back(info);
+        }
+      else
+        {
+        item->setValue(i, att);
+        }
       }
-    return;
     }
-  xml_node values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    val = node.child("Val");
+    if (val != NULL)
       {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      val.text().set(item->value(i)->name().c_str());
+      attName = val.text().get();
+      att = this->m_manager.findAttribute(attName);
+      if (att == NULL)
+        {
+        info.item = item; info.pos = 0; info.attName = attName;
+        this->m_attRefInfo.push_back(info);
+        }
+      else
+        {
+        item->setValue(att);
+        }
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processDirectoryItem(pugi::xml_node &node,
                                              DirectoryItemPtr item)
 {
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
       {
-      node.text().set(item->value().c_str());
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      item->setValue(i, val.text().get());
       }
-    return;
     }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    val = node.child("Val");
+    if (val != NULL)
       {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      val.text().set(item->value(i).c_str());
+      item->setValue(val.text().get());
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -1119,83 +1366,184 @@ void XmlV1StringReader::processDoubleItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
+
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::string nodeName, expName;
+  AttributePtr expAtt;
+  bool allowsExpressions = item->allowsExpressions();
+  ItemExpressionInfo info;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.first_child(); val; val = val.next_sibling())
       {
-      if (item->isExpression())
+      nodeName = val.name();
+      if (nodeName == "UnsetVal")
         {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
+        continue;
+        }
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      if (nodeName == "Val")
+        {
+        item->setValue(i, val.text().as_double());
+        }
+      else if (allowsExpressions && (nodeName == "Expression"))
+        {
+        expName = val.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = i; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(i, expAtt);
+          }
         }
       else
         {
-        node.text().set(item->value());
+        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
+                            << item->name() 
+                            << "\n";
         }
       }
-    return;
     }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    // Lets see if the value is set
+    if (node.text())
       {
-      if (item->isExpression(i))
+      // Is this an exapression?
+      xatt = node.attribute("Expression");
+      if (allowsExpressions && xatt)
         {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->expression(i)->name().c_str());
+        expName = node.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = 0; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(expAtt);
+          }
         }
       else
         {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->value(i));
+        item->setValue(node.text().as_double());
         }
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processFileItem(pugi::xml_node &node,
                                         FileItemPtr item)
 {
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
       {
-      node.text().set(item->value().c_str());
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      item->setValue(i, val.text().get());
       }
-    return;
     }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    val = node.child("Val");
+    if (val != NULL)
       {
-      val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      val.text().set(item->value(i).c_str());
+      item->setValue(val.text().get());
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -1203,35 +1551,78 @@ void XmlV1StringReader::processGroupItem(pugi::xml_node &node,
                                          GroupItemPtr item)
 {
   std::size_t i, j, m, n;
+  std::size_t  numRequiredGroups = item->numberOfRequiredGroups();
   xml_node itemNode;
+  xml_attribute xatt;
   n = item->numberOfGroups();
   m = item->numberOfItemsPerGroup();
-  if (!n)
+  if (!numRequiredGroups)
+    {
+    // The node should have an attribute indicating how many groups are 
+    // associated with the item
+    xatt = node.attribute("NumberOfGroups");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfGroups is missing for Group Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfGroups(n);
+    }
+
+  if (!n) // There are no sub-groups for this item
     {
     return;
     }
-  // Optimize for number of required groups = 1
-  if (item->numberOfRequiredGroups() == 1)
+  // There are 2 formats - one is for any number of sub groups and the other
+  // is a custon case is for 1 subGroup
+  xml_node cluster, clusters = node.child("GroupClusters");
+  if (clusters)
     {
-    for (j = 0; j < m; j++)
+    for (cluster = clusters.first_child(), i = 0; cluster; 
+         cluster = cluster.next_sibling(), ++i)
       {
-      itemNode = node.append_child();
-      itemNode.set_name(Item::type2String(item->item(j)->type()).c_str());
-      this->processItem(itemNode, item->item(j));
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: Too many sub-groups for Group Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      for (itemNode = cluster.first_child(), j = 0; itemNode;
+           itemNode = itemNode.next_sibling(), j++)
+        {
+        if (j >= m)
+          {
+          this->m_errorStatus << "Error: Too many item nodes for subGroup: " << i
+                              << " for Group Item: " << item->name() 
+                              << "\n";
+          continue;
+          }
+        this->processItem(itemNode, item->item(i,j));
+        }
       }
-    return;
     }
-  xml_node cluster, clusters = node.append_child("GroupClusters");
-  for(i = 0; i < n; i++)
+  else if (numRequiredGroups == 1)
     {
-    cluster = clusters.append_child("Cluster");
-    cluster.append_attribute("Ith").set_value((unsigned int) i);
-    for (j = 0; j < m; j++)
+    for (itemNode = node.first_child(), j = 0; itemNode;
+         itemNode = itemNode.next_sibling(), j++)
       {
-      itemNode = cluster.append_child();
-      itemNode.set_name(Item::type2String(item->item(i,j)->type()).c_str());
-      this->processItem(itemNode, item->item(i,j));
-      }
+      if (j >= m)
+        {
+        this->m_errorStatus << "Error: Too many item nodes for subGroup:0"
+                              << " for Group Item: " << item->name() 
+                              << "\n";
+          continue;
+          }
+        this->processItem(itemNode, item->item(j));
+        }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node GroupClusters is missing for Item: " << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -1244,50 +1635,119 @@ void XmlV1StringReader::processIntItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
+
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::string nodeName, expName;
+  AttributePtr expAtt;
+  bool allowsExpressions = item->allowsExpressions();
+  ItemExpressionInfo info;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.first_child(); val; val = val.next_sibling())
       {
-      if (item->isExpression())
+      nodeName = val.name();
+      if (nodeName == "UnsetVal")
         {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
+        continue;
+        }
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      if (nodeName == "Val")
+        {
+        item->setValue(i, val.text().as_int());
+        }
+      else if (allowsExpressions && (nodeName == "Expression"))
+        {
+        expName = val.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = i; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(i, expAtt);
+          }
         }
       else
         {
-        node.text().set(item->value());
+        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
+                            << item->name() 
+                            << "\n";
         }
       }
-    return;
     }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    // Lets see if the value is set
+    if (node.text())
       {
-      if (item->isExpression(i))
+      // Is this an exapression?
+      xatt = node.attribute("Expression");
+      if (allowsExpressions && xatt)
         {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->expression(i)->name().c_str());
+        expName = node.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = 0; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(expAtt);
+          }
         }
       else
         {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->value(i));
+        item->setValue(node.text().as_int());
         }
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " 
+                        << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -1300,70 +1760,189 @@ void XmlV1StringReader::processStringItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
+
+  xml_attribute xatt;
+  xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::string nodeName, expName;
+  AttributePtr expAtt;
+  bool allowsExpressions = item->allowsExpressions();
+  ItemExpressionInfo info;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are 
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
+                          << item->name() 
+                          << "\n";
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
   if (!n)
     {
     return;
     }
-  if (item->numberOfRequiredValues() == 1)
+  valsNode = node.child("Values");
+  if (valsNode)
     {
-    if (item->isSet())
+    for (val = valsNode.first_child(); val; val = val.next_sibling())
       {
-      if (item->isExpression())
+      nodeName = val.name();
+      if (nodeName == "UnsetVal")
         {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
+        continue;
+        }
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        this->m_errorStatus << "Error: XML Attribute Ith = " << i
+                            << " and is out of range for Item: " << item->name() 
+                            << "\n";
+        continue;
+        }
+      if (nodeName == "Val")
+        {
+        item->setValue(i, val.text().get());
+        }
+      else if (allowsExpressions && (nodeName == "Expression"))
+        {
+        expName = val.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = i; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(i, expAtt);
+          }
         }
       else
         {
-        node.text().set(item->value().c_str());
+        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
+                            << item->name() 
+                            << "\n";
         }
       }
-    return;
     }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
+  else if (numRequiredVals == 1)
     {
-    if (item->isSet(i))
+    // Lets see if the value is set
+    if (node.text())
       {
-      if (item->isExpression(i))
+      // Is this an exapression?
+      xatt = node.attribute("Expression");
+      if (allowsExpressions && xatt)
         {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->expression(i)->name().c_str());
+        expName = node.text().get();
+        expAtt = this->m_manager.findAttribute(expName);
+        if (expAtt == NULL)
+          {
+          info.item = item; info.pos = 0; info.expName = expName;
+          this->m_itemExpressionInfo.push_back(info);
+          }
+        else
+          {
+          item->setExpression(expAtt);
+          }
         }
       else
         {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->value(i).c_str());
+        item->setValue(node.text().get());
         }
       }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
-      }
+    }
+  else
+    {
+    this->m_errorStatus << "Error: XML Node Values is missing for Item: " 
+                        << item->name() 
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
+bool XmlV1StringReader::getColor(xml_node &node, double color[3],
+                                 const std::string &colorName)
+{
+  xml_attribute xatt;
+  xatt = node.attribute("R");
+  if (xatt)
+    {
+    color[0] = xatt.as_double();
+    }
+  else
+    {
+    this->m_errorStatus << "Error: Missing XML Attribute R for " 
+                        << colorName
+                        << "\n";
+    return false;
+    }
+
+  xatt = node.attribute("G");
+  if (xatt)
+    {
+    color[1] = xatt.as_double();
+    }
+  else
+    {
+    this->m_errorStatus << "Error: Missing XML Attribute G for " 
+                        << colorName
+                        << "\n";
+    return false;
+    }
+
+  xatt = node.attribute("B");
+  if (xatt)
+    {
+    color[2] = xatt.as_double();
+    }
+  else
+    {
+    this->m_errorStatus << "Error: Missing XML Attribute B for " 
+                        << colorName
+                        << "\n";
+    return false;
+    }
+  return true;
+}
+
+//----------------------------------------------------------------------------
 void XmlV1StringReader::processSections(xml_node &root)
 {
-  this->m_root.append_child(node_comment).set_value("********** Workflow Sections ***********");
-  xml_node sections = this->m_root.append_child("RootSection");
+  xml_node sections = root.child("RootSection");
+  if (!sections)
+    {
+    return;
+    }
   slctk::RootSectionPtr rs = this->m_manager.rootSection();
   xml_node node;
+  xml_attribute xatt;
   double c[3];
-  rs->defaultColor(c);
-  node = sections.append_child("DefaultColor");
-  node.append_attribute("R").set_value(c[0]);
-  node.append_attribute("G").set_value(c[1]);
-  node.append_attribute("B").set_value(c[2]);
-  rs->invalidColor(c);
-  node = sections.append_child("InvalidColor");
-  node.append_attribute("R").set_value(c[0]);
-  node.append_attribute("G").set_value(c[1]);
-  node.append_attribute("B").set_value(c[2]);
+  node = sections.child("DefaultColor");
+  if (node && this->getColor(node, c, "DefaultColor"))
+    {
+    rs->setDefaultColor(c);
+    }
+  node = sections.child("InvalidColor");
+  if (node && this->getColor(node, c, "InvalidColor"))
+    {
+    rs->setInvalidColor(c);
+    }
   this->processGroupSection(sections,
                             slctk::dynamicCastPointer<GroupSection>(rs));
 }
@@ -1373,22 +1952,40 @@ void XmlV1StringReader::processAttributeSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
-  if (sec->modelEntityMask())
+  xml_attribute xatt;
+  AttributeDefinitionPtr def;
+  xml_node child, attTypes;
+  std::string defType;
+  xatt = node.attribute("ModelEnityFilter");
+  if (xatt)
     {
-    // std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
-    // node.append_attribute("ModelEnityFilter").set_value(s.c_str());
-    if (sec->okToCreateModelEntities())
+    unsigned long mask = this->decodeModelEntityMask(xatt.value());
+    sec->setModelEntityMask(mask);
+
+    xatt = node.attribute("CreateEntities");
+    if (xatt)
       {
-      node.append_attribute("CreateEntities").set_value(true);
+      sec->setOkToCreateModelEntities(xatt.as_bool());
       }
     }
-  std::size_t i, n = sec->numberOfDefinitions();
-  if (n)
+  attTypes = node.child("AttributeTypes");
+  if (!attTypes)
     {
-    xml_node atypes = node.append_child("AttributeTypes");
-    for (i = 0; i < n; i++)
+    return;
+    }
+  for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
+    {
+    defType = child.text().get();
+    def = this->m_manager.findDefinition(defType);
+    if (def)
       {
-      atypes.append_child("Type").text().set(sec->definition(i)->type().c_str());
+      sec->addDefinition(def);
+      }
+    else
+      {
+      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType 
+                          << " required for Attribute Section: " << sec->title()
+                          << "\n";
       }
     }
 }
@@ -1398,16 +1995,53 @@ void XmlV1StringReader::processInstancedSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
-  std::size_t i, n = sec->numberOfInstances();
-   if (n)
+  xml_attribute xatt;
+  xml_node child, instances = node.child("InstancedAttributes");
+  std::string attName, defName;
+  AttributePtr att;
+  AttributeDefinitionPtr attDef;
+
+  if (!instances)
     {
-    xml_node instances = node.append_child("InstancedAttributes");
-    for (i = 0; i < n; i++)
-      {
-      instances.append_child("Att").text().set(sec->instance(i)->name().c_str());
-      }
+    return; // No instances are in the section
     }
- 
+
+  for (child = instances.child("Att"); child; child = child.next_sibling("Att"))
+    {
+    attName = child.text().get();
+    // See if the attribute exists and if not then create it
+    att = this->m_manager.findAttribute(attName);
+    if (!att)
+      {
+      xatt = child.attribute("Type");
+      if (xatt)
+        {
+        defName = xatt.value();
+        attDef = this->m_manager.findDefinition(defName);
+        if (!attDef)
+          {
+          this->m_errorStatus << "Error: Cannot find attribute definition: " << defName
+                              << " required to create attribute: " << attName 
+                              << " for Instanced Section: " << sec->title()
+                              << "\n";
+          continue;
+          }
+        else
+          {
+          att = this->m_manager.createAttribute(attName, attDef);
+          }
+        }
+      else
+        {
+        this->m_errorStatus << "Error: XML Attribute Type is missing"
+                            << "and is required to create attribute: " << attName 
+                            << " for Instanced Section: " << sec->title()
+                            << "\n";
+        continue;
+        }
+      }
+    sec->addInstance(att);
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processModelEntitySection(xml_node &node,
@@ -1415,14 +2049,24 @@ void XmlV1StringReader::processModelEntitySection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
-  if (sec->modelEntityMask())
+  xml_attribute xatt = node.attribute("ModelEnityFilter");
+  xml_node child = node.child("Definition");
+  if (xatt)
     {
-    // std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
-    // node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    unsigned long mask = this->decodeModelEntityMask(xatt.value());
+    sec->setModelEntityMask(mask);
     }
-  if (sec->definition() != NULL)
+
+  if (child)
     {
-    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    std::string defType = child.text().get();
+    AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
+    if (!def)
+      {
+      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType
+                          << " for Model Entity Section: " << sec->title()
+                          << "\n";
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -1431,9 +2075,17 @@ void XmlV1StringReader::processSimpleExpressionSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(sec));
-  if (sec->definition() != NULL)
+  xml_node child = node.child("Definition");
+  if (child)
     {
-    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    std::string defType = child.text().get();
+    AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
+    if (!def)
+      {
+      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType
+                          << " for Simple Expression Section: " << sec->title()
+                          << "\n";
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -1442,58 +2094,83 @@ void XmlV1StringReader::processGroupSection(xml_node &node,
 {
   this->processBasicSection(node,
                             slctk::dynamicCastPointer<Section>(group));
-  std::size_t i, n = group->numberOfSubsections();
+
   xml_node child;
-  slctk::SectionPtr sec;
-  for (i = 0; i < n; i++)
+  std::string sectionType;
+  for (child = node.first_child(); child; child = child.next_sibling())
     {
-    sec = group->subsection(i);
-    switch(sec->type())
+    sectionType = child.name();
+    if (sectionType == "AttributeSection")
       {
-      case Section::ATTRIBUTE:
-        child = node.append_child("AttributeSection");
-        this->processAttributeSection(child, 
-                                      slctk::dynamicCastPointer<AttributeSection>(sec));
-        break;
-      case Section::GROUP:
-        child = node.append_child("GroupSection");
-        this->processGroupSection(child, 
-                                  slctk::dynamicCastPointer<GroupSection>(sec));
-        break;
-      case Section::INSTANCED:
-        child = node.append_child("InstancedSection");
-        this->processInstancedSection(child, 
-                                      slctk::dynamicCastPointer<InstancedSection>(sec));
-        break;
-      case Section::MODEL_ENTITY:
-        child = node.append_child("ModelEntitySection");
-        this->processModelEntitySection(child, 
-                                        slctk::dynamicCastPointer<ModelEntitySection>(sec));
-        break;
-      case Section::SIMPLE_EXPRESSION:
-        child = node.append_child("SimpleExpressionSection");
-        this->processSimpleExpressionSection(child, 
-                                             slctk::dynamicCastPointer<SimpleExpressionSection>(sec));
-        break;
-      default:
-        std::cerr << "Unsupport Section Type " << Section::type2String(sec->type()) << std::endl;
+      this->processAttributeSection(child, 
+                                    group->addSubsection<AttributeSectionPtr>(""));
+      continue;
       }
+    
+    if (sectionType == "GroupSection")
+      {
+      this->processGroupSection(child, 
+                                group->addSubsection<GroupSectionPtr>(""));
+      continue;
+      }
+    
+    if (sectionType == "InstancedSection")
+      {
+      this->processInstancedSection(child, 
+                                    group->addSubsection<InstancedSectionPtr>(""));
+      continue;
+      }
+    
+    if (sectionType == "ModelEntitySection")
+      {
+      this->processModelEntitySection(child, 
+                                      group->addSubsection<ModelEntitySectionPtr>(""));
+      continue;
+      }
+    
+    if (sectionType == "SimpleExpressionSection")
+      {
+      this->processSimpleExpressionSection(child, 
+                                           group->addSubsection<SimpleExpressionSectionPtr>(""));
+      continue;
+      }
+    
+    // In case this was root section
+    if ((group->type() == Section::ROOT) && ((sectionType == "DefaultColor") ||
+                                             (sectionType == "InvalidColor")))
+      {
+      continue;
+      }
+
+    this->m_errorStatus << "Error: Unsupported Section Type: " << sectionType
+                        << " for Group Section: " << group->title()
+                        << "\n";
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processBasicSection(xml_node &node,
                                             slctk::SectionPtr sec)
 {
-  node.append_attribute("Title").set_value(sec->title().c_str());
-  if (sec->iconName() != "")
+  xml_attribute xatt;
+  xatt = node.attribute("Title"); // Required
+  if (!xatt)
     {
-    node.append_attribute("Icon").set_value(sec->title().c_str());
+    this->m_errorStatus << "Error: Section is missing XML Attribute Title\n";
+    }
+  else
+    {
+    sec->setTitle(xatt.value());
+    }
+  xatt = node.attribute("Icon"); // optional
+  if (xatt)
+    {
+    sec->setIconName(xatt.value());
     }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringReader::processModelInfo(xml_node &root)
 {
-  xml_node modelInfo = this->m_root.append_child("ModelInfo");
+  //xml_node modelInfo = this->m_root.append_child("ModelInfo");
 }
 //----------------------------------------------------------------------------
 unsigned long  XmlV1StringReader::decodeModelEntityMask(const std::string &s)

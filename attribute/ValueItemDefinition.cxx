@@ -35,10 +35,10 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_defaultDiscreteIndex = -1;
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
-  this->m_numberOfValues = 1;
+  this->m_numberOfRequiredValues = 1;
   this->m_expressionDefinition = 
     slctk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition("expression"));
-  this->m_expressionDefinition->setNumberOfValues(1);
+  this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
 //----------------------------------------------------------------------------
@@ -46,13 +46,13 @@ ValueItemDefinition::~ValueItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-void ValueItemDefinition::setNumberOfValues(int esize)
+void ValueItemDefinition::setNumberOfRequiredValues(int esize)
 {
-  if (esize == this->m_numberOfValues)
+  if (esize == this->m_numberOfRequiredValues)
     {
     return;
     }
-  this->m_numberOfValues = esize;
+  this->m_numberOfRequiredValues = esize;
   if (!this->m_useCommonLabel)
     {
     this->m_valueLabels.resize(esize);
@@ -61,13 +61,13 @@ void ValueItemDefinition::setNumberOfValues(int esize)
 //----------------------------------------------------------------------------
 void ValueItemDefinition::setValueLabel(int element, const std::string &elabel)
 {
-  if (this->m_numberOfValues == 0)
+  if (this->m_numberOfRequiredValues == 0)
     {
     return;
     }
-  if (this->m_valueLabels.size() != this->m_numberOfValues)
+  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
     {
-    this->m_valueLabels.resize(this->m_numberOfValues);
+    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
     }
   this->m_useCommonLabel = false;
   this->m_valueLabels[element] = elabel;

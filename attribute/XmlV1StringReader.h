@@ -40,10 +40,23 @@ namespace slctk
 {
   typedef std::pair<slctk::ValueItemDefinitionPtr, std::string> ItemExpressionDefInfo;
   typedef std::pair<slctk::AttributeRefItemDefinitionPtr, std::string> AttRefDefInfo;
-  typedef std::pair<slctk::ValueItemPtr, std::string> ItemExpressionInfo;
-  typedef std::pair<slctk::AttributeRefItemPtr, std::string> AttRefInfo;
   namespace attribute
   {
+    // Helper struct needed for dealing with attribute references
+    struct AttRefInfo
+    {
+      slctk::AttributeRefItemPtr item;
+      int pos;
+      std::string attName;
+    };
+
+    struct ItemExpressionInfo
+    {
+      slctk::ValueItemPtr item;
+      int pos;
+      std::string expName;
+    };
+
     class SLCTKATTRIBUTE_EXPORT XmlV1StringReader
     {
     public:
@@ -115,6 +128,9 @@ namespace slctk
 
       void processBasicSection(pugi::xml_node &node,
                                slctk::SectionPtr sec);
+
+      bool getColor(pugi::xml_node &node, double color[3],
+                    const std::string &colorName);
 
       slctk::attribute::Manager &m_manager;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;

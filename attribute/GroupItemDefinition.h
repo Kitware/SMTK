@@ -65,10 +65,10 @@ namespace slctk
 
       int findItemPosition(const std::string &name) const;
 
-      int numberOfGroups() const
-      {return this->m_numberOfGroups;}
-      void setNumberOfGroups(int gsize)
-      {this->m_numberOfGroups = gsize;}
+      int numberOfRequiredGroups() const
+      {return this->m_numberOfRequiredGroups;}
+      void setNumberOfRequiredGroups(int gsize)
+      {this->m_numberOfRequiredGroups = gsize;}
       bool hasSubGroupLabels() const
       {return this->m_labels.size();}
 
@@ -88,7 +88,7 @@ namespace slctk
       std::vector<slctk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       std::vector<std::string> m_labels;
-      int m_numberOfGroups;
+      int m_numberOfRequiredGroups;
       bool m_useCommonLabel;
     private:
     };

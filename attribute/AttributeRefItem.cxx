@@ -49,7 +49,7 @@ setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
     {
     return false;
     }
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     this->m_values.resize(n);
@@ -67,6 +67,17 @@ Item::Type AttributeRefItem::type() const
   return ATTRIBUTE_REF;
 }
 
+//----------------------------------------------------------------------------
+int AttributeRefItem::numberOfRequiredValues() const
+{
+  const AttributeRefItemDefinition *def = 
+    static_cast<const AttributeRefItemDefinition*>(this->m_definition.get());
+  if (def == NULL)
+    {
+    return 0;
+    }
+  return def->numberOfRequiredValues();
+}
 //----------------------------------------------------------------------------
 bool AttributeRefItem::setValue(int element, slctk::AttributePtr att)
 {
@@ -103,7 +114,7 @@ AttributeRefItem::appendValue(slctk::AttributePtr val)
   //First - are we allowed to change the number of values?
   const AttributeRefItemDefinition *def =
     static_cast<const AttributeRefItemDefinition *>(this->definition().get());
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
@@ -123,12 +134,33 @@ AttributeRefItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const AttributeRefItemDefinition *def =
     static_cast<const AttributeRefItemDefinition *>(this->definition().get());
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
     }
   this->m_values.erase(this->m_values.begin()+element);
+  return true;
+}
+//----------------------------------------------------------------------------
+bool
+AttributeRefItem::setNumberOfValues(std::size_t newSize)
+{
+  // If the current size is the same just return
+  if (this->numberOfValues() == newSize)
+    {
+    return true;
+    }
+  
+  //Next - are we allowed to change the number of values?
+  const AttributeRefItemDefinition *def =
+    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  std::size_t n = def->numberOfRequiredValues();
+  if (n)
+    {
+    return false; // The number of values is fixed
+    }
+  this->m_values.resize(newSize);
   return true;
 }
 //----------------------------------------------------------------------------
@@ -138,7 +170,7 @@ AttributeRefItem::reset()
   const AttributeRefItemDefinition *def
     = static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfValues();
+  int i, n = def->numberOfRequiredValues();
   if (!n)
     {
     this->m_values.clear();

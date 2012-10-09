@@ -47,6 +47,8 @@ namespace slctk
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
       std::size_t numberOfValues() const
       {return this->m_values.size();}
+      bool  setNumberOfValues(std::size_t newSize);
+      int numberOfRequiredValues() const;
       slctk::AttributePtr value(int element=0) const
       {return this->m_values[element].lock();}
       bool setValue( slctk::AttributePtr val)

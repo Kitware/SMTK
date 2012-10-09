@@ -24,7 +24,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "attribute/GroupItem.h"
 #include "attribute/GroupItemDefinition.h"
-#include <iostream>
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
@@ -56,8 +55,7 @@ GroupItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr gdef)
     return false;
     }
   this->m_definition = gdef;
-  std::size_t i, n = def->numberOfGroups();
-  std::cerr << "**** Number of Groups = " << n << std::endl;
+  std::size_t i, n = def->numberOfRequiredGroups();
   if (n)
     {
     this->m_items.resize(n);
@@ -73,7 +71,7 @@ void GroupItem::reset()
 {
   const GroupItemDefinition *def = 
     dynamic_cast<const GroupItemDefinition *>(this->m_definition.get());
-  std::size_t i, n = def->numberOfGroups();
+  std::size_t i, n = def->numberOfRequiredGroups();
   if (!n)
     {
     this->m_items.clear();
@@ -92,11 +90,25 @@ void GroupItem::reset()
   Item::reset();
 }
 //----------------------------------------------------------------------------
+std::size_t GroupItem::numberOfItemsPerGroup() const
+{
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  return def->numberOfItemDefinitions();
+}
+//----------------------------------------------------------------------------
+std::size_t GroupItem::numberOfRequiredGroups() const
+{
+  const GroupItemDefinition *def = 
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  return def->numberOfRequiredGroups();
+}
+//----------------------------------------------------------------------------
 bool GroupItem::appendGroup()
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfGroups();
+  std::size_t n = def->numberOfRequiredGroups();
   if (n)
     {
     // Can not change the number of items
@@ -112,13 +124,37 @@ bool GroupItem::removeGroup(int element)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfGroups();
+  std::size_t n = def->numberOfRequiredGroups();
   if (n)
     {
     // Can not change the number of items
     return false;
     }
   this->m_items.erase(this->m_items.begin() + element);
+  return true;
+}
+//----------------------------------------------------------------------------
+bool GroupItem::setNumberOfGroups(std::size_t newSize)
+{
+  // If the current size is the same just return
+  if (this->numberOfGroups() == newSize)
+    {
+    return true;
+    }
+  
+  //Next - are we allowed to change the number of values?
+  const GroupItemDefinition *def =
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  std::size_t i, n = def->numberOfRequiredGroups();
+  if (n)
+    {
+    return false; // The number of values is fixed
+    }
+  this->m_items.resize(newSize);
+  for (i = n; i < newSize; i++)
+    {
+    def->buildGroup(this->m_items[i]);
+    }
   return true;
 }
 //----------------------------------------------------------------------------

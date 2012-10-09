@@ -32,7 +32,7 @@ using namespace slctk::attribute;
 DirectoryItemDefinition::
 DirectoryItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfValues(1)
+  m_useCommonLabel(false), m_numberOfRequiredValues(1)
 {
 }
 
@@ -58,13 +58,13 @@ slctk::AttributeItemPtr DirectoryItemDefinition::buildItem() const
   return slctk::AttributeItemPtr(new DirectoryItem());
 }
 //----------------------------------------------------------------------------
-void DirectoryItemDefinition::setNumberOfValues(int esize)
+void DirectoryItemDefinition::setNumberOfRequiredValues(int esize)
 {
-  if (esize == this->m_numberOfValues)
+  if (esize == this->m_numberOfRequiredValues)
     {
     return;
     }
-  this->m_numberOfValues = esize;
+  this->m_numberOfRequiredValues = esize;
   if (!this->m_useCommonLabel)
     {
     this->m_valueLabels.resize(esize);
@@ -73,13 +73,13 @@ void DirectoryItemDefinition::setNumberOfValues(int esize)
 //----------------------------------------------------------------------------
 void DirectoryItemDefinition::setValueLabel(int element, const std::string &elabel)
 {
-  if (this->m_numberOfValues == 0)
+  if (this->m_numberOfRequiredValues == 0)
     {
     return;
     }
-  if (this->m_valueLabels.size() != this->m_numberOfValues)
+  if (this->m_valueLabels.size() != this->m_numberOfRequiredValues)
     {
-    this->m_valueLabels.resize(this->m_numberOfValues);
+    this->m_valueLabels.resize(this->m_numberOfRequiredValues);
     }
   this->m_useCommonLabel = false;
   this->m_valueLabels[element] = elabel;

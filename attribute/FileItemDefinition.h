@@ -49,9 +49,9 @@ namespace slctk
       bool isValueValid(const std::string &val) const;
 
       virtual slctk::AttributeItemPtr buildItem() const;
-      int numberOfValues() const
-      {return this->m_numberOfValues;}
-      void setNumberOfValues(int esize);
+      int numberOfRequiredValues() const
+      {return this->m_numberOfRequiredValues;}
+      void setNumberOfRequiredValues(int esize);
 
       bool hasValueLabels() const
       {return this->m_valueLabels.size();}
@@ -75,7 +75,7 @@ namespace slctk
         bool m_shouldBeRelative;
         bool m_useCommonLabel;
         std::vector<std::string> m_valueLabels;
-        int m_numberOfValues;
+        int m_numberOfRequiredValues;
      private:
       
     };

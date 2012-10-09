@@ -55,9 +55,9 @@ namespace slctk
       bool isValueValid(slctk::AttributePtr att) const;
 
       virtual slctk::AttributeItemPtr buildItem() const;
-      int numberOfValues() const
-      {return this->m_numberOfValues;}
-      void setNumberOfValues(int esize);
+      int numberOfRequiredValues() const
+      {return this->m_numberOfRequiredValues;}
+      void setNumberOfRequiredValues(int esize);
 
       bool hasValueLabels() const
       {return this->m_valueLabels.size();}
@@ -72,7 +72,7 @@ namespace slctk
         slctk::WeakAttributeDefinitionPtr m_definition;
         bool m_useCommonLabel;
         std::vector<std::string> m_valueLabels;
-        int m_numberOfValues;
+        int m_numberOfRequiredValues;
      private:
       
     };

@@ -30,7 +30,7 @@ using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
-  ItemDefinition(myName), m_numberOfGroups(1), m_useCommonLabel(false)
+  ItemDefinition(myName), m_numberOfRequiredGroups(1), m_useCommonLabel(false)
 {
 }
 
@@ -99,13 +99,13 @@ void GroupItemDefinition::removeCategory(const std::string &category)
 //----------------------------------------------------------------------------
 void GroupItemDefinition::setSubGroupLabel(int element, const std::string &elabel)
 {
-  if (this->m_numberOfGroups == 0)
+  if (this->m_numberOfRequiredGroups == 0)
     {
     return;
     }
-  if (this->m_labels.size() != this->m_numberOfGroups)
+  if (this->m_labels.size() != this->m_numberOfRequiredGroups)
     {
-    this->m_labels.resize(this->m_numberOfGroups);
+    this->m_labels.resize(this->m_numberOfRequiredGroups);
     }
   this->m_useCommonLabel = false;
   this->m_labels[element] = elabel;

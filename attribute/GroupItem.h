@@ -42,10 +42,11 @@ namespace slctk
       virtual ~GroupItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
+      std::size_t numberOfRequiredGroups() const;
       std::size_t numberOfGroups() const
       {return this->m_items.size();}
-      std::size_t numberOfItemsInGroup(int ith=0) const
-      {return this->m_items[ith].size();}
+      bool  setNumberOfGroups(std::size_t newSize);
+      std::size_t numberOfItemsPerGroup() const;
       bool appendGroup();
       bool removeGroup(int element);
 

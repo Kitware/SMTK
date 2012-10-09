@@ -51,7 +51,7 @@ setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     this->m_isSet.resize(n, false);
@@ -70,6 +70,17 @@ Item::Type FileItem::type() const
   return FILE;
 }
 
+//----------------------------------------------------------------------------
+int FileItem::numberOfRequiredValues() const
+{
+  const FileItemDefinition *def = 
+    static_cast<const FileItemDefinition*>(this->m_definition.get());
+  if (def == NULL)
+    {
+    return 0;
+    }
+  return def->numberOfRequiredValues();
+}
 //----------------------------------------------------------------------------
 bool FileItem::shouldBeRelative() const
 {
@@ -129,7 +140,7 @@ FileItem::appendValue(const std::string &val)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
@@ -150,7 +161,7 @@ FileItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  int n = def->numberOfValues();
+  int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
@@ -160,13 +171,34 @@ FileItem::removeValue(int element)
   return true;
 }
 //----------------------------------------------------------------------------
+bool FileItem::setNumberOfValues(std::size_t newSize)
+{
+  // If the current size is the same just return
+  if (this->numberOfValues() == newSize)
+    {
+    return true;
+    }
+  
+  //Next - are we allowed to change the number of values?
+  const FileItemDefinition *def =
+    static_cast<const FileItemDefinition *>(this->definition().get());
+  std::size_t n = def->numberOfRequiredValues();
+  if (n)
+    {
+    return false; // The number of values is fixed
+    }
+  this->m_values.resize(newSize);
+  this->m_isSet.resize(newSize, false); //Any added values are not set
+  return true;
+}
+//----------------------------------------------------------------------------
 void
 FileItem::reset()
 {
   const FileItemDefinition *def
     = static_cast<const FileItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfValues();
+  int i, n = def->numberOfRequiredValues();
   if (!n)
     {
     this->m_values.clear();

@@ -49,6 +49,7 @@ namespace slctk
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
       std::size_t numberOfValues() const
       {return this->m_values.size();}
+      virtual bool setNumberOfValues(std::size_t newSize);
       DataT value(int element=0) const
       {return this->m_values[element];}
       virtual std::string valueAsString(const std::string &format="") const
@@ -89,7 +90,7 @@ namespace slctk
         {
         return false;
         }
-      int n = def->numberOfValues();
+      int n = def->numberOfRequiredValues();
       if (n)
         {
         if (def->hasDefault())
@@ -257,8 +258,8 @@ namespace slctk
     ValueItemTemplate<DataT>::appendValue(const DataT &val)
     {
       //First - are we allowed to change the number of values?
-      const DefType *def = static_cast<const DefType *>(this->definition());
-      int n = def->numberOfValues();
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      int n = def->numberOfRequiredValues();
       if (n)
         {
         return false; // The number of values is fixed
@@ -297,18 +298,76 @@ namespace slctk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
+    ValueItemTemplate<DataT>::setNumberOfValues(std::size_t newSize)
+    {
+      // If the current size is the same just return
+      if (this->numberOfValues() == newSize)
+        {
+        return true;
+        }
+
+      //Next - are we allowed to change the number of values?
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      std::size_t n = def->numberOfRequiredValues();
+      if (n)
+        {
+        return false; // The number of values is fixed
+        }
+      // Are we increasing or decreasing?
+      if (newSize < n)
+        {
+        if (def->allowsExpressions())
+          {
+          this->m_expressions.resize(newSize);
+          }
+        this->m_values.resize(newSize);
+        this->m_isSet.resize(newSize);
+        if (def->isDiscrete())
+          {
+          this->m_discreteIndices.resize(newSize);
+          }
+        return true;
+        }
+      if (def->hasDefault())
+        {
+        this->m_values.resize(newSize, def->defaultValue());
+        this->m_isSet.resize(newSize, true);
+        }
+      else
+        {
+        this->m_values.resize(newSize);
+        this->m_isSet.resize(newSize, false);
+        }
+      if (def->isDiscrete())
+        {
+        this->m_discreteIndices.resize(newSize, def->defaultDiscreteIndex());
+        }
+      if (def->allowsExpressions())
+        {
+        int i;
+        this->m_expressions.resize(newSize);
+        for (i = n; i < newSize; i++)
+          {
+          this->m_expressions[i] = 
+            slctk::AttributeRefItemPtr(def->buildExpressionItem());
+          }
+        }
+      return true;
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    bool
     ValueItemTemplate<DataT>::removeValue(int element)
     {
       //First - are we allowed to change the number of values?
-      const DefType *def = static_cast<const DefType *>(this->definition());
-      int n = def->numberOfValues();
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      int n = def->numberOfRequiredValues();
       if (n)
         {
         return false; // The number of values is fixed
         }
       if (def->allowsExpressions)
         {
-        delete this->m_expressions[element];
         this->m_expressions.erase(this->m_expressions.begin()+element);
         }
       this->m_values.erase(this->m_values.begin()+element);
@@ -347,7 +406,7 @@ namespace slctk
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
-      int i, n = def->numberOfValues();
+      int i, n = def->numberOfRequiredValues();
       if (!n)
         {
         this->m_values.clear();

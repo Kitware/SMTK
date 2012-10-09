@@ -152,7 +152,37 @@ slctk::AttributePtr Manager::createAttribute(const std::string &name,
 }
 
 //----------------------------------------------------------------------------
+void Manager::recomputeNextAttributeID() 
+{
+  std::map<std::string, AttributePtr>::const_iterator it;
+  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
+    {
+    if (it->second->id() > this->m_nextAttributeId)
+      {
+      this->m_nextAttributeId = it->second->id() + 1;
+      }
+    }
+}
+//----------------------------------------------------------------------------
 // For Reader classes
+//----------------------------------------------------------------------------
+slctk::AttributePtr Manager::createAttribute(const std::string &name,
+                                             slctk::AttributeDefinitionPtr def,
+                                             unsigned long id)
+{
+  // First we need to check to see if an attribute exists by the same name
+  slctk::AttributePtr a = this->findAttribute(name);
+  if (a != NULL)
+    {
+    return slctk::AttributePtr();
+    }
+
+  a = slctk::AttributePtr(new Attribute(name, def, id));
+  this->m_attributeClusters[def->type()].insert(a);
+  this->m_attributes[name] = a;
+  this->m_attributeIdMap[id] = a;
+  return a;
+}
 //----------------------------------------------------------------------------
 slctk::AttributePtr Manager::createAttribute(const std::string &name,
                                              const std::string &typeName,
