@@ -52,7 +52,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinition.h"
 #include <sstream>
-#include <iostream>
 
 using namespace pugi;
 using namespace slctk; 
@@ -74,6 +73,9 @@ XmlV1StringWriter::~XmlV1StringWriter()
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::convertToString()
 {
+  // Reset the error status
+  this->m_errorStatus.str("");
+
   this->m_root.append_child(node_comment).set_value("**********  Category and Analysis Infomation ***********");
   // Write out the category and analysis information
   if (this->m_manager.numberOfCategories())
@@ -272,7 +274,8 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
       // Nothing to do!
       break;
     default:
-      std::cerr << "Unsupported Type!\n";
+      this->m_errorStatus << "Error: Unsupported Type: " << Item::type2String(idef->type())
+                          << " for Item Definition: " << idef->name() << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -691,7 +694,8 @@ void XmlV1StringWriter::processItem(xml_node &node,
       // Nothing to do!
       break;
     default:
-      std::cerr << "Unsupported Type!\n";
+      this->m_errorStatus << "Error: Unsupported Type: " << Item::type2String(item->type())
+                          << " for Item: " << item->name() << "\n";
     }
 }
 //----------------------------------------------------------------------------
@@ -1215,7 +1219,8 @@ void XmlV1StringWriter::processGroupSection(xml_node &node,
                                              slctk::dynamicCastPointer<SimpleExpressionSection>(sec));
         break;
       default:
-        std::cerr << "Unsupport Section Type " << Section::type2String(sec->type()) << std::endl;
+        this->m_errorStatus << "Unsupport Section Type " 
+                            << Section::type2String(sec->type()) << "\n";
       }
     }
 }
@@ -1233,54 +1238,6 @@ void XmlV1StringWriter::processBasicSection(xml_node &node,
 void XmlV1StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_root.append_child("ModelInfo");
-}
-//----------------------------------------------------------------------------
-void XmlV1StringWriter::convertStringToXML(std::string &str)
-{
-  int i, n = str.size();
-  for (i = 0; i < n; i++)
-    {
-    // See if we have any special XML characters to escape
-    if (str[i] == '\'')
-      {
-      str.replace(i, 1, "&apos;");
-      i+=5;
-      n+=5;
-      continue;
-      }
-
-    if (str[i] == '>')
-      {
-      str.replace(i, 1, "&gt;");
-      i+=3;
-      n+=3;
-      continue;
-      }
-    
-    if (str[i] == '<')
-      {
-      str.replace(i, 1, "&lt;");
-      i+=3;
-      n+=3;
-      continue;
-      }
-    
-    if (str[i] == '\"')
-      {
-      str.replace(i, 1, "&quot;");
-      i+=5;
-      n+=5;
-      continue;
-      }
-    
-    if (str[i] == '&')
-      {
-      str.replace(i, 1, "&amp;");
-      i+=4;
-      n+=4;
-      continue;
-      }
-    }
 }
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)

@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "attribute/XmlV1StringReader.h"
+#include "attribute/XmlDocV1Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "attribute/AttributeRefItemDefinition.h"
@@ -60,17 +60,17 @@ using namespace pugi;
 using namespace slctk::attribute; 
 using namespace slctk;
 //----------------------------------------------------------------------------
-XmlV1StringReader::XmlV1StringReader(Manager &myManager):
+XmlDocV1Parser::XmlDocV1Parser(Manager &myManager):
 m_manager(myManager)
 {
 }
 
 //----------------------------------------------------------------------------
-XmlV1StringReader::~XmlV1StringReader()
+XmlDocV1Parser::~XmlDocV1Parser()
 {
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::process(xml_document &doc)
+void XmlDocV1Parser::process(xml_document &doc)
 {
   // Clear the vectors for dealing with attribute references
   this->m_itemExpressionDefInfo.clear();
@@ -96,12 +96,6 @@ void XmlV1StringReader::process(xml_document &doc)
         }
       catagories.insert(cnode.text().get());
       }
-    }
-  std::set<std::string>::const_iterator it;
-  std::cout << "Manager Categories:\n";
-  for(it = catagories.begin(); it != catagories.end(); it++)
-    {
-    std::cout << "\t" << *it << "\n";
     }
 
   // Process Analsis Info
@@ -133,6 +127,7 @@ void XmlV1StringReader::process(xml_document &doc)
   // that were not explicitly listed in the catagories section - first update catagories
   this->m_manager.updateCategories();
 
+  std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = this->m_manager.categories();
   for (it = cats.begin(); it != cats.end(); it++)
     {
@@ -143,7 +138,7 @@ void XmlV1StringReader::process(xml_document &doc)
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processAttributeInformation(xml_node &root)
+void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 {
   // Process definitions first
   xml_node child, node = root.child("Definitions");
@@ -246,7 +241,7 @@ void XmlV1StringReader::processAttributeInformation(xml_node &root)
       
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processDefinition(xml_node &defNode)
+void XmlDocV1Parser::processDefinition(xml_node &defNode)
 {
   xml_node node;
   AttributeDefinitionPtr def, baseDef;
@@ -365,7 +360,7 @@ void XmlV1StringReader::processDefinition(xml_node &defNode)
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processItemDef(xml_node &node, 
+void XmlDocV1Parser::processItemDef(xml_node &node, 
                                        AttributeItemDefinitionPtr idef)
 {
   xml_attribute xatt;
@@ -410,7 +405,7 @@ void XmlV1StringReader::processItemDef(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processDoubleDef(pugi::xml_node &node,
+void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
                                          DoubleItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
@@ -487,7 +482,7 @@ void XmlV1StringReader::processDoubleDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processIntDef(pugi::xml_node &node,
+void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
                                       IntItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
@@ -564,7 +559,7 @@ void XmlV1StringReader::processIntDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processStringDef(pugi::xml_node &node,
+void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
                                          StringItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
@@ -648,7 +643,7 @@ void XmlV1StringReader::processStringDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processValueDef(pugi::xml_node &node,
+void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
                                         ValueItemDefinitionPtr idef)
 {
   xml_node labels, child;
@@ -709,7 +704,7 @@ void XmlV1StringReader::processValueDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processAttributeRefDef(pugi::xml_node &node,
+void XmlDocV1Parser::processAttributeRefDef(pugi::xml_node &node,
                                                AttributeRefItemDefinitionPtr idef)
 {
   xml_node labels, child;
@@ -767,7 +762,7 @@ void XmlV1StringReader::processAttributeRefDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processDirectoryDef(pugi::xml_node &node,
+void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
                                             DirectoryItemDefinitionPtr idef)
 {
   xml_node labels, child;
@@ -819,7 +814,7 @@ void XmlV1StringReader::processDirectoryDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processFileDef(pugi::xml_node &node,
+void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
                                        FileItemDefinitionPtr idef)
 {
   xml_node labels, child;
@@ -871,7 +866,7 @@ void XmlV1StringReader::processFileDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processGroupDef(pugi::xml_node &node,
+void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
                                         GroupItemDefinitionPtr def)
 {
   xml_node labels, child;
@@ -958,7 +953,7 @@ void XmlV1StringReader::processGroupDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processAttribute(xml_node &attNode)
+void XmlDocV1Parser::processAttribute(xml_node &attNode)
 {
   xml_node itemsNode, iNode, node;
   std::string name, type;
@@ -1077,7 +1072,7 @@ void XmlV1StringReader::processAttribute(xml_node &attNode)
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processItem(xml_node &node, 
+void XmlDocV1Parser::processItem(xml_node &node, 
                                     AttributeItemPtr item)
 {
   xml_attribute xatt;
@@ -1121,7 +1116,7 @@ void XmlV1StringReader::processItem(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processValueItem(pugi::xml_node &node,
+void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
                                          ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
@@ -1202,7 +1197,7 @@ void XmlV1StringReader::processValueItem(pugi::xml_node &node,
                       << "\n";
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processAttributeRefItem(pugi::xml_node &node,
+void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
                                                AttributeRefItemPtr item)
 {
   xml_attribute xatt;
@@ -1291,7 +1286,7 @@ void XmlV1StringReader::processAttributeRefItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processDirectoryItem(pugi::xml_node &node,
+void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
                                              DirectoryItemPtr item)
 {
   xml_attribute xatt;
@@ -1357,7 +1352,7 @@ void XmlV1StringReader::processDirectoryItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processDoubleItem(pugi::xml_node &node,
+void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
                                           DoubleItemPtr item)
 {
   this->processValueItem(node,
@@ -1481,7 +1476,7 @@ void XmlV1StringReader::processDoubleItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processFileItem(pugi::xml_node &node,
+void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
                                         FileItemPtr item)
 {
   xml_attribute xatt;
@@ -1547,7 +1542,7 @@ void XmlV1StringReader::processFileItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processGroupItem(pugi::xml_node &node,
+void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                                          GroupItemPtr item)
 {
   std::size_t i, j, m, n;
@@ -1626,7 +1621,7 @@ void XmlV1StringReader::processGroupItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processIntItem(pugi::xml_node &node,
+void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
                                        IntItemPtr item)
 {
   this->processValueItem(node,
@@ -1751,7 +1746,7 @@ void XmlV1StringReader::processIntItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processStringItem(pugi::xml_node &node,
+void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
                                           StringItemPtr item)
 {
   this->processValueItem(node,
@@ -1876,7 +1871,7 @@ void XmlV1StringReader::processStringItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-bool XmlV1StringReader::getColor(xml_node &node, double color[3],
+bool XmlDocV1Parser::getColor(xml_node &node, double color[3],
                                  const std::string &colorName)
 {
   xml_attribute xatt;
@@ -1922,7 +1917,7 @@ bool XmlV1StringReader::getColor(xml_node &node, double color[3],
 }
 
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processSections(xml_node &root)
+void XmlDocV1Parser::processSections(xml_node &root)
 {
   xml_node sections = root.child("RootSection");
   if (!sections)
@@ -1947,7 +1942,7 @@ void XmlV1StringReader::processSections(xml_node &root)
                             slctk::dynamicCastPointer<GroupSection>(rs));
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processAttributeSection(xml_node &node,
+void XmlDocV1Parser::processAttributeSection(xml_node &node,
                                             slctk::AttributeSectionPtr sec)
 {
   this->processBasicSection(node,
@@ -1990,7 +1985,7 @@ void XmlV1StringReader::processAttributeSection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processInstancedSection(xml_node &node,
+void XmlDocV1Parser::processInstancedSection(xml_node &node,
                                                   slctk::InstancedSectionPtr sec)
 {
   this->processBasicSection(node,
@@ -2044,7 +2039,7 @@ void XmlV1StringReader::processInstancedSection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processModelEntitySection(xml_node &node,
+void XmlDocV1Parser::processModelEntitySection(xml_node &node,
                                                   slctk::ModelEntitySectionPtr sec)
 {
   this->processBasicSection(node,
@@ -2070,7 +2065,7 @@ void XmlV1StringReader::processModelEntitySection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processSimpleExpressionSection(xml_node &node,
+void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
                                                        slctk::SimpleExpressionSectionPtr sec)
 {
   this->processBasicSection(node,
@@ -2089,7 +2084,7 @@ void XmlV1StringReader::processSimpleExpressionSection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processGroupSection(xml_node &node,
+void XmlDocV1Parser::processGroupSection(xml_node &node,
                                             slctk::GroupSectionPtr group)
 {
   this->processBasicSection(node,
@@ -2148,7 +2143,7 @@ void XmlV1StringReader::processGroupSection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processBasicSection(xml_node &node,
+void XmlDocV1Parser::processBasicSection(xml_node &node,
                                             slctk::SectionPtr sec)
 {
   xml_attribute xatt;
@@ -2168,12 +2163,12 @@ void XmlV1StringReader::processBasicSection(xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringReader::processModelInfo(xml_node &root)
+void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
   //xml_node modelInfo = this->m_root.append_child("ModelInfo");
 }
 //----------------------------------------------------------------------------
-unsigned long  XmlV1StringReader::decodeModelEntityMask(const std::string &s)
+unsigned long  XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
 {
   unsigned long m = 0;
   std::size_t i, n = s.length();
@@ -2203,7 +2198,8 @@ unsigned long  XmlV1StringReader::decodeModelEntityMask(const std::string &s)
         m |= 0x1;
         break;
       default:
-        std::cerr << "Option " << s[i] << " is not supported\n";
+        this->m_errorStatus << "Error: Decoding Model Entity Mask - Option " 
+                            << s[i] << " is not supported\n";
       }
     }
   return m;

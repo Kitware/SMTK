@@ -40,7 +40,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/StringItemDefinition.h"
 #include "attribute/VoidItemDefinition.h"
 #include "attribute/XmlV1StringWriter.h"
-#include "attribute/XmlV1StringReader.h"
+#include "attribute/XmlDocV1Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.hpp"
 #include "pugixml-1.2/src/pugixml.cpp"
@@ -176,7 +176,7 @@ int main()
   pugi::xml_document doc;
   doc.load(test);
   attribute::Manager manager1;  
-  slctk::attribute::XmlV1StringReader reader(manager1);
+  slctk::attribute::XmlDocV1Parser reader(manager1);
   reader.process(doc);
   std::string readErrors = reader.errorStatus();
   if (readErrors != "")

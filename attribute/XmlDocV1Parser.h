@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME XmlV1StringReader.h -
+// .NAME XmlDocV1Parser.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_XmlV1StringReader_h
-#define __slctk_attribute_XmlV1StringReader_h
+#ifndef __slctk_attribute_XmlDocV1Parser_h
+#define __slctk_attribute_XmlDocV1Parser_h
 #include "AttributeExports.h"
 #include "attribute/PublicPointerDefs.h"
 #include "attribute/Manager.h"
@@ -57,16 +57,15 @@ namespace slctk
       std::string expName;
     };
 
-    class SLCTKATTRIBUTE_EXPORT XmlV1StringReader
+    class SLCTKATTRIBUTE_EXPORT XmlDocV1Parser
     {
     public:
-      XmlV1StringReader(slctk::attribute::Manager &manager);
-      virtual ~XmlV1StringReader();
+      XmlDocV1Parser(slctk::attribute::Manager &manager);
+      virtual ~XmlDocV1Parser();
       void process(pugi::xml_document &doc);
       std::string errorStatus() const
       {return this->m_errorStatus.str();}
       static void convertStringToXML(std::string &str);
-      static unsigned long  decodeModelEntityMask(const std::string &s);
     protected:
       void processAttributeInformation(pugi::xml_node &root);
       void processSections(pugi::xml_node &root);
@@ -132,6 +131,8 @@ namespace slctk
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);
 
+      unsigned long  decodeModelEntityMask(const std::string &s);
+
       slctk::attribute::Manager &m_manager;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
       std::vector<AttRefDefInfo> m_attRefDefInfo;
@@ -146,4 +147,4 @@ namespace slctk
 };
 
 
-#endif /* __slctk_attribute_XmlV1StringReader_h */
+#endif /* __slctk_attribute_XmlDocV1Parser_h */

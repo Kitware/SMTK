@@ -5,6 +5,8 @@ set(headers
   AttributeRefItem.h
   AttributeRefItemDefinition.h
   AttributeSection.h
+  AttributeReader.h
+  AttributeWriter.h
   Item.h
   ItemDefinition.h
   Definition.h
@@ -33,7 +35,7 @@ set(headers
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-  XmlV1StringReader.h
+  XmlDocV1Parser.h
   XmlV1StringWriter.h
   )
 
@@ -42,6 +44,8 @@ set(attribute_srcs
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
   AttributeSection.cxx
+  AttributeReader.cxx
+  AttributeWriter.cxx
   Item.cxx
   ItemDefinition.cxx
   Definition.cxx
@@ -69,7 +73,7 @@ set(attribute_srcs
   VoidItem.cxx
   VoidItemDefinition.cxx
   XmlV1StringWriter.cxx
-  XmlV1StringReader.cxx
+  XmlDocV1Parser.cxx
 )
 
 add_library(SlctkAttribute ${attribute_srcs} ${headers})

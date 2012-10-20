@@ -34,14 +34,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/StringItem.h"
 #include "attribute/StringItemDefinition.h"
 #include "attribute/VoidItemDefinition.h"
-#include "attribute/XmlV1StringWriter.h"
+#include "attribute/AttributeWriter.h"
 
 #include <iostream>
 
-int main()
+int main(int argc, char *argv[])
 {
   int status;
   {
+  if (argc != 2)
+    {
+    std::cerr << "Usage: " << argv[0] << " filename\n";
+    return -1;
+    }
   slctk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets add some analyses
@@ -146,45 +151,10 @@ int main()
   sitemdef->addCategory("Flow");
   // Process Categories
   manager.updateCategories();
-  // Lets see what categories the attribute definitions think they are
-  if (expDef->numberOfCategories())
-    {
-    const std::set<std::string> &categories = expDef->categories();
-    std::set<std::string>::const_iterator it;
-    std::cout << "ERROR: ExpDef's categories: ";
-    for (it = categories.begin(); it != categories.end(); it++)
-      {
-      std::cout << "\""<< (*it) << "\" ";
-      }
-    std::cout << "\n";
-    }
-  else
-    {
-    std::cout << "ExpDef has no categories\n";
-    }
-  if (def2->numberOfCategories())
-    {
-    const std::set<std::string> &categories = def2->categories();
-    std::set<std::string>::const_iterator it;
-    std::cout << "Def2's categories: ";
-    for (it = categories.begin(); it != categories.end(); it++)
-      {
-      std::cout << "\""<< (*it) << "\" ";
-      }
-    std::cout << "\n";
-    }
-  else
-    {
-    std::cout << "ERROR: Def2 has no categories!\n";
-    }
   // Lets test creating an attribute by passing in the expression definition explicitly
   slctk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   slctk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
-  if (att != NULL)
-    {
-    std::cout << "Attribute testAtt created\n";
-    }
-  else
+  if (att == NULL)
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
     status = -1;
@@ -196,42 +166,12 @@ int main()
   // Find the expression enabled item
   item = att->item(2);
   vitem = slctk::dynamicCastPointer<slctk::attribute::ValueItem>(item);
-  if (vitem->allowsExpressions())
+  slctk::attribute::AttributeWriter writer;
+  if (writer.write(manager, argv[1]))
     {
-    vitem->setExpression(expAtt);
-    std::cout << "Expression Set on " << vitem->name() << "\n";
+    std::cerr << "Errors encountered creating Attribute File:\n";
+    std::cerr << writer.errorMessages();
     }
-  else
-    {
-    std::cout << "ERROR: Can not set expression on " << vitem->name() << "\n";
-    status = -1;
-    }
-  
-  int i, n = att->numberOfItems();
-  std::cout << "Items of testAtt:\n";
-  for (i = 0; i < n; i++)
-    {
-    item = att->item(i);
-    std::cout << "\t" << item->name() << " Type = " << slctk::attribute::Item::type2String(item->type()) << ", ";
-    vitem = slctk::dynamicCastPointer<slctk::attribute::ValueItem>(item);
-    if (vitem != NULL)
-      {
-      if (vitem->isExpression())
-        {
-        std::cout << " using Expression: " << vitem->expression()->name() << "\n";
-        }
-      else
-        {
-        std::cout << " Value = " << vitem->valueAsString() << "\n";
-        }
-      }
-    else
-      {
-      std::cout << " Not a value item\n";
-      }
-    }
-  slctk::attribute::XmlV1StringWriter writer(manager);
-  std::cout << writer.convertToString() << std::endl;
   std::cout << "Manager destroyed\n";
   }
   return status;

@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/PublicPointerDefs.h"
 #include "attribute/Manager.h"
 #include <string>
+#include <sstream>
 #include <vector>
 #include "pugixml-1.2/src/pugixml.hpp"
 
@@ -43,8 +44,8 @@ namespace slctk
       XmlV1StringWriter(const slctk::attribute::Manager &manager);
       virtual ~XmlV1StringWriter();
       std::string convertToString();
-      static void convertStringToXML(std::string &str);
-      static std::string encodeModelEntityMask(unsigned long m);
+      std::string errorStatus() const
+      {return this->m_errorStatus.str();}
     protected:
       void processAttributeInformation();
       void processSections();
@@ -110,9 +111,12 @@ namespace slctk
       void processBasicSection(pugi::xml_node &node,
                                slctk::SectionPtr sec);
 
+      std::string encodeModelEntityMask(unsigned long m);
+
       const slctk::attribute::Manager &m_manager;
       pugi::xml_document m_doc;
       pugi::xml_node m_root;
+      std::stringstream m_errorStatus;
     private:
       
     };
