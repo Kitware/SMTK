@@ -41,7 +41,8 @@ namespace slctk
     {
       friend class DoubleItemDefinition; 
     public:
-      DoubleItem();
+      DoubleItem(Attribute *owningAttribute, int itemPosition);
+      DoubleItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~DoubleItem();
       virtual Item::Type type() const;
     protected:

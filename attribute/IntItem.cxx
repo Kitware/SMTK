@@ -28,10 +28,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-IntItem::IntItem()
+IntItem::IntItem(Attribute *owningAttribute, 
+                 int itemPosition): 
+  ValueItemTemplate<int>(owningAttribute, itemPosition)
 {
 }
 
+//----------------------------------------------------------------------------
+IntItem::IntItem(Item *owningItem,
+                 int itemPosition,
+                 int mySubGroupPosition): 
+  ValueItemTemplate<int>(owningItem, itemPosition, mySubGroupPosition)
+{
+}
 //----------------------------------------------------------------------------
 IntItem::~IntItem()
 {

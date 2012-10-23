@@ -40,8 +40,10 @@ namespace slctk
     class AttributeRefItemDefinition;
     class SLCTKATTRIBUTE_EXPORT AttributeRefItem : public Item
     {
+      friend class Attribute;
     public:
-      AttributeRefItem();
+      AttributeRefItem(Attribute *owningAttribute, int itemPosition);
+      AttributeRefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~AttributeRefItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
@@ -61,11 +63,11 @@ namespace slctk
       {return this->valueAsString(0, format);}
       virtual std::string valueAsString(int element, const std::string &format="") const;
       virtual bool isSet(int element=0) const
-      {return this->m_values[element].lock() != NULL;}
-      virtual void unset(int element=0)
-      {this->m_values[element].reset();}
-     
+      {return this->m_values[element].lock().get() != NULL;}
+      virtual void unset(int element=0);
+      
     protected:
+      void clearAllReferences();
       std::vector<WeakAttributePtr>m_values;
     private:
     };

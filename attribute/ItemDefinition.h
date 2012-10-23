@@ -39,6 +39,8 @@ namespace slctk
 {
   namespace attribute
   {
+    class Attribute;
+    class Item;
     class GroupItemDefinition;
     class Definition;
     class SLCTKATTRIBUTE_EXPORT ItemDefinition
@@ -108,7 +110,11 @@ namespace slctk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
-      virtual slctk::AttributeItemPtr buildItem() const = 0;
+      virtual slctk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+                                                int itemPosition) const = 0;
+      virtual slctk::AttributeItemPtr buildItem(Item *owningItem, 
+                                                int position,
+                                                int subGroupPosition) const = 0;
     protected:
       virtual void updateCategories();
       int m_version;

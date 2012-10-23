@@ -43,7 +43,11 @@ namespace slctk
       VoidItemDefinition(const std::string &myName);
       virtual ~VoidItemDefinition();
       virtual Item::Type type() const;
-      virtual slctk::AttributeItemPtr buildItem() const;
+      virtual slctk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+                                                int itemPosition) const;
+      virtual slctk::AttributeItemPtr buildItem(Item *owningItem, 
+                                                int position,
+                                                int subGroupPosition) const;
     protected:
     private:
       

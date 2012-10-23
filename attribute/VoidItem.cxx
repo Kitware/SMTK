@@ -30,7 +30,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-VoidItem::VoidItem()
+VoidItem::VoidItem(Attribute *owningAttribute, 
+                   int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+VoidItem::VoidItem(Item *owningItem,
+                   int itemPosition,
+                   int mySubGroupPosition): 
+  Item(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 

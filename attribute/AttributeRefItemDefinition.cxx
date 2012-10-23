@@ -62,9 +62,22 @@ AttributeRefItemDefinition::isValueValid(slctk::AttributePtr att) const
   return true;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr AttributeRefItemDefinition::buildItem() const
+slctk::AttributeItemPtr 
+AttributeRefItemDefinition::buildItem(Attribute *owningAttribute,
+                                      int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new AttributeRefItem());
+  return slctk::AttributeItemPtr(new AttributeRefItem(owningAttribute,
+                                                     itemPosition));
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr 
+AttributeRefItemDefinition::buildItem(Item *owningItem,
+                                      int itemPosition,
+                                      int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new AttributeRefItem(owningItem,
+                                                      itemPosition,
+                                                      subGroupPosition));
 }
 //----------------------------------------------------------------------------
 void AttributeRefItemDefinition::setNumberOfRequiredValues(int esize)

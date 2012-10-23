@@ -28,7 +28,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-DoubleItem::DoubleItem()
+DoubleItem::DoubleItem(Attribute *owningAttribute, 
+                       int itemPosition): 
+  ValueItemTemplate<double>(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+DoubleItem::DoubleItem(Item *owningItem,
+                       int itemPosition,
+                       int mySubGroupPosition): 
+  ValueItemTemplate<double>(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 

@@ -41,7 +41,9 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT ValueItem : public slctk::attribute::Item
     {
     public:
-      ValueItem();
+      friend class ValueItemDefinition;
+      ValueItem(Attribute *owningAttribute, int itemPosition);
+      ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~ValueItem();
       std::size_t numberOfValues() const
       {return this->m_isSet.size();}
@@ -82,6 +84,8 @@ namespace slctk
       {return this->m_isSet[elementIndex];}
       virtual void unset(int elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
+      slctk::AttributeRefItemPtr expressionReference(int elementIndex=0) const
+      {return this->m_expressions[elementIndex];}
 
     protected:
       virtual void updateDiscreteValue(int elementIndex) = 0;

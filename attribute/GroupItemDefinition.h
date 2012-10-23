@@ -36,6 +36,7 @@ namespace slctk
 {
   namespace attribute
   {
+    class GroupItem;
     class SLCTKATTRIBUTE_EXPORT GroupItemDefinition :
       public ItemDefinition
     {
@@ -78,8 +79,12 @@ namespace slctk
       {return this->m_useCommonLabel;}
       std::string subGroupLabel(int element) const;
 
-      virtual slctk::AttributeItemPtr buildItem() const;
-      void buildGroup(std::vector<slctk::AttributeItemPtr> &group) const;
+      virtual slctk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+                                                int itemPosition) const;
+      virtual slctk::AttributeItemPtr buildItem(Item *owningItem, 
+                                                int position,
+                                                int subGroupPosition) const;
+      void buildGroup(slctk::attribute::GroupItem *group, int subGroupPosition) const;
       virtual void addCategory(const std::string &category);
       virtual void removeCategory(const std::string &category);
       

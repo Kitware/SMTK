@@ -40,7 +40,11 @@ namespace slctk
       StringItemDefinition(const std::string &myName);
       virtual ~StringItemDefinition();
       virtual Item::Type type() const;
-      virtual slctk::AttributeItemPtr buildItem() const;
+      virtual slctk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+                                                int itemPosition) const;
+      virtual slctk::AttributeItemPtr buildItem(Item *owningItem, 
+                                                int position,
+                                                int subGroupPosition) const;
       bool isMultiline() const
       { return this->m_multiline;}
       void setIsMultiline(bool val)

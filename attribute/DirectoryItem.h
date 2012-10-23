@@ -41,7 +41,8 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT DirectoryItem : public Item
     {
     public:
-      DirectoryItem();
+      DirectoryItem(Attribute *owningAttribute, int itemPosition);
+      DirectoryItem(Item *owningItem, int position, int subGroupPosition);
       virtual ~DirectoryItem();
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
       virtual Item::Type type() const;

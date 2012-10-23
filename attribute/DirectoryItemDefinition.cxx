@@ -53,9 +53,22 @@ DirectoryItemDefinition::isValueValid(const std::string &val) const
   return true;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr DirectoryItemDefinition::buildItem() const
+slctk::AttributeItemPtr
+DirectoryItemDefinition::buildItem(Attribute *owningAttribute,
+                                   int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new DirectoryItem());
+  return slctk::AttributeItemPtr(new DirectoryItem(owningAttribute,
+                                                   itemPosition));
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr
+DirectoryItemDefinition::buildItem(Item *owningItem,
+                                   int itemPosition,
+                                   int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new DirectoryItem(owningItem,
+                                                   itemPosition,
+                                                   subGroupPosition));
 }
 //----------------------------------------------------------------------------
 void DirectoryItemDefinition::setNumberOfRequiredValues(int esize)

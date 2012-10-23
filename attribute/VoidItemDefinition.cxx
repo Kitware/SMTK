@@ -40,9 +40,22 @@ VoidItemDefinition::~VoidItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr VoidItemDefinition::buildItem() const
+slctk::AttributeItemPtr 
+VoidItemDefinition::buildItem(Attribute *owningAttribute,
+                              int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new VoidItem());
+  return slctk::AttributeItemPtr(new VoidItem(owningAttribute,
+                                              itemPosition));
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr 
+VoidItemDefinition::buildItem(Item *owningItem,
+                              int itemPosition,
+                              int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new VoidItem(owningItem,
+                                              itemPosition,
+                                              subGroupPosition));
 }
 //----------------------------------------------------------------------------
 Item::Type VoidItemDefinition::type() const

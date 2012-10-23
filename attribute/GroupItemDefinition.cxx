@@ -44,9 +44,22 @@ Item::Type GroupItemDefinition::type() const
   return Item::GROUP;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr GroupItemDefinition::buildItem() const
+slctk::AttributeItemPtr 
+GroupItemDefinition::buildItem(Attribute *owningAttribute,
+                               int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new GroupItem());
+  return slctk::AttributeItemPtr(new GroupItem(owningAttribute,
+                                               itemPosition));
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr 
+GroupItemDefinition::buildItem(Item *owningItem,
+                               int itemPosition,
+                               int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new GroupItem(owningItem,
+                                               itemPosition,
+                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
 bool GroupItemDefinition::
@@ -64,14 +77,15 @@ addItemDefinition(slctk::AttributeItemDefinitionPtr cdef)
 }
 //----------------------------------------------------------------------------
 void GroupItemDefinition::
-buildGroup(std::vector<slctk::AttributeItemPtr> &group) const
+buildGroup(GroupItem *groupItem, int subGroupPosition) const
 {
   std::size_t i, n = this->m_itemDefs.size();
-  group.resize(n);
+  std::vector<slctk::AttributeItemPtr> &items = groupItem->m_items[subGroupPosition];
+  items.resize(n);
   for (i = 0; i < n; i++)
     {
-    group[i] = this->m_itemDefs[i]->buildItem();
-    group[i]->setDefinition(this->m_itemDefs[i]);
+    items[i] = this->m_itemDefs[i]->buildItem(groupItem, i, subGroupPosition);
+    items[i]->setDefinition(this->m_itemDefs[i]);
     }
 }
 //----------------------------------------------------------------------------

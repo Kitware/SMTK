@@ -26,13 +26,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/AttributeRefItem.h"
 #include "attribute/Item.h"
 #include "attribute/Definition.h"
+#include "attribute/Manager.h"
 #include <iostream>
 using namespace slctk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, 
                      slctk::AttributeDefinitionPtr myDefinition, 
                      unsigned long myId):
-  m_name(myName), m_definition(myDefinition), m_id(myId)
+  m_name(myName), m_definition(myDefinition), m_id(myId), m_aboutToBeDeleted(false)
 {
   this->m_definition->buildAttribute(this);
 }
@@ -40,14 +41,44 @@ Attribute::Attribute(const std::string &myName,
 //----------------------------------------------------------------------------
 Attribute::~Attribute()
 {
+  this->m_aboutToBeDeleted = true;
   std::cout << "Deleting Attribute " << this->name() << "\n";
-  this->removeAllAssociations();
+  // Clear all references to the attribute
+  std::map<slctk::attribute::AttributeRefItem *, std::set<int> >::iterator it;
+  for (it = this->m_references.begin(); it != this->m_references.end(); it++)
+    {
+    std::set<int>::iterator sit;
+    for (sit = it->second.begin(); sit != it->second.end(); sit++)
+      {
+      it->first->unset(*sit);
+      }
+    }
   this->removeAllItems();
+  this->removeAllAssociations();
  }
 //----------------------------------------------------------------------------
 void Attribute::removeAllItems()
 {
+  // we need to detatch all items owned bu this attribute
+  std::size_t i, n = this->m_items.size();
+  for (i = 0; i < n; i++)
+    {
+    this->m_items[i]->detachOwningAttribute();
+    }
   this->m_items.clear();
+}
+//----------------------------------------------------------------------------
+void Attribute::references(std::vector<slctk::AttributeItemPtr> &list) const
+{
+  list.clear();
+  std::map<slctk::attribute::AttributeRefItem *, std::set<int> >::const_iterator it;
+  for (it = this->m_references.begin(); it != this->m_references.end(); it++)
+    {
+    if (it->second.size())
+      {
+      list.push_back(it->first->pointer());
+      }
+    }
 }
 //----------------------------------------------------------------------------
 const std::string &Attribute::type() const
@@ -85,6 +116,16 @@ bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 Manager *Attribute::manager() const
 {
   return this->m_definition->manager();
+}
+//----------------------------------------------------------------------------
+slctk::AttributePtr Attribute::pointer() const
+{
+  Manager *m = this->manager();
+  if (m)
+    {
+    return m->findAttribute(this->m_name);
+    }
+  return slctk::AttributePtr();
 }
 //----------------------------------------------------------------------------
 void Attribute::associateEntity(slctk::ModelEntity *entity)

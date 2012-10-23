@@ -41,7 +41,8 @@ namespace slctk
     {
       friend class StringItemDefinition; 
     public:
-      StringItem();
+      StringItem(Attribute *owningAttribute, int itemPosition);
+      StringItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~StringItem();
       virtual Item::Type type() const;
     protected:

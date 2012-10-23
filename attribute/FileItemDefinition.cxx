@@ -53,9 +53,20 @@ FileItemDefinition::isValueValid(const std::string &val) const
   return true;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr FileItemDefinition::buildItem() const
+slctk::AttributeItemPtr FileItemDefinition::buildItem(Attribute *owningAttribute,
+                                      int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new FileItem());
+  return slctk::AttributeItemPtr(new FileItem(owningAttribute,
+                                              itemPosition));
+}
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr FileItemDefinition::buildItem(Item *owningItem,
+                                                      int itemPosition,
+                                                      int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new FileItem(owningItem,
+                                              itemPosition,
+                                              subGroupPosition));
 }
 //----------------------------------------------------------------------------
 void FileItemDefinition::setNumberOfRequiredValues(int esize)

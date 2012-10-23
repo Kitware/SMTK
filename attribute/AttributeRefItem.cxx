@@ -30,7 +30,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-AttributeRefItem::AttributeRefItem()
+AttributeRefItem::AttributeRefItem(Attribute *owningAttribute, 
+                                   int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+AttributeRefItem::AttributeRefItem(Item *owningItem,
+                                   int itemPosition,
+                                   int mySubGroupPosition): 
+  Item(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -60,6 +70,21 @@ setDefinition(slctk::ConstAttributeItemDefinitionPtr adef)
 //----------------------------------------------------------------------------
 AttributeRefItem::~AttributeRefItem()
 {
+  this->clearAllReferences();
+}
+//----------------------------------------------------------------------------
+void AttributeRefItem::clearAllReferences() 
+{
+  std::size_t i, n = this->m_values.size();
+  Attribute *att;
+  for (i = 0; i < n; i++)
+    {
+    att = this->m_values[i].lock().get();
+    if (att)
+      {
+      att->removeReference(this);
+      }
+    }
 }
 //----------------------------------------------------------------------------
 Item::Type AttributeRefItem::type() const
@@ -85,7 +110,13 @@ bool AttributeRefItem::setValue(int element, slctk::AttributePtr att)
     static_cast<const AttributeRefItemDefinition *>(this->definition().get());
   if (def->isValueValid(att))
     {
+    Attribute *attPtr = this->m_values[element].lock().get();
+    if (attPtr != NULL)
+      {
+      attPtr->removeReference(this, element);
+      }
     this->m_values[element] = att;
+    att->addReference(this, element);
     return true;
     }
   return false;
@@ -123,6 +154,7 @@ AttributeRefItem::appendValue(slctk::AttributePtr val)
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
+    val->addReference(this, this->m_values.size() - 1);
     return true;
     }
   return false;
@@ -138,6 +170,12 @@ AttributeRefItem::removeValue(int element)
   if (n)
     {
     return false; // The number of values is fixed
+    }
+  // Tell the attribute we are no longer referencing it (if needed)
+  Attribute *att = this->m_values[element].lock().get();
+  if (att != NULL)
+    {
+    att->removeReference(this, element);
     }
   this->m_values.erase(this->m_values.begin()+element);
   return true;
@@ -160,8 +198,37 @@ AttributeRefItem::setNumberOfValues(std::size_t newSize)
     {
     return false; // The number of values is fixed
     }
+  if (newSize < n)
+    {
+    std::size_t i;
+    Attribute *att;
+    for (i = newSize; i < n; i++)
+      {
+      att = this->m_values[i].lock().get();
+      if (att != NULL)
+        {
+        att->removeReference(this, i);
+        }
+      }
+    }
   this->m_values.resize(newSize);
   return true;
+}
+//----------------------------------------------------------------------------
+void
+AttributeRefItem::unset(int element)
+{
+  Attribute *att = this->m_values[element].lock().get();
+  if (att == NULL)
+    {
+    return;
+    }
+  this->m_values[element].reset();
+  // See if we need to tell the attribute we are no longer referencing it
+  if (!att->isAboutToBeDeleted())
+    {
+    att->removeReference(this, element);
+    }
 }
 //----------------------------------------------------------------------------
 void
@@ -173,6 +240,7 @@ AttributeRefItem::reset()
   int i, n = def->numberOfRequiredValues();
   if (!n)
     {
+    this->clearAllReferences();
     this->m_values.clear();
     return;
     }

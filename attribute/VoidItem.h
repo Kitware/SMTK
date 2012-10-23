@@ -40,7 +40,8 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT VoidItem : public Item
     {
     public:
-      VoidItem();
+      VoidItem(Attribute *owningAttribute, int itemPosition);
+      VoidItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~VoidItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);

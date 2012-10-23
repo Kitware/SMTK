@@ -27,13 +27,42 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem()
+GroupItem::GroupItem(Attribute *owningAttribute, 
+                     int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+GroupItem::GroupItem(Item *owningItem,
+                     int itemPosition,
+                     int mySubGroupPosition): 
+  Item(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 
 //----------------------------------------------------------------------------
 GroupItem::~GroupItem()
 {
+  // This group is going away so make sure any items that are
+  // being held externally no longer think they are owned by it
+  this->detachAllItems();
+ }
+//----------------------------------------------------------------------------
+void GroupItem::detachAllItems()
+{
+  // Detatch all top level items contained in this group
+  std::size_t i, j, n, m;
+  n = this->m_items.size();
+  for (i = 0; i < n; i++)
+    {
+    std::vector<slctk::AttributeItemPtr> &items = this->m_items[i];
+    m = items.size();
+    for (j = 0; j < m; j++)
+      {
+      items[j]->detachOwningItem();
+      }
+    }
 }
 //----------------------------------------------------------------------------
 Item::Type GroupItem::type() const
@@ -61,7 +90,7 @@ GroupItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr gdef)
     this->m_items.resize(n);
     for (i = 0; i < n; i++)
       {
-      def->buildGroup(this->m_items[i]);
+      def->buildGroup(this, i);
       }
     }
   return true;
@@ -74,6 +103,7 @@ void GroupItem::reset()
   std::size_t i, n = def->numberOfRequiredGroups();
   if (!n)
     {
+    this->detachAllItems();
     this->m_items.clear();
     }
   else
@@ -116,7 +146,7 @@ bool GroupItem::appendGroup()
     }
   n = this->m_items.size();
   this->m_items.resize(n+1);
-  def->buildGroup(this->m_items[n]);
+  def->buildGroup(this, n);
   return true;
 }
 //----------------------------------------------------------------------------
@@ -129,6 +159,12 @@ bool GroupItem::removeGroup(int element)
     {
     // Can not change the number of items
     return false;
+    }
+  std::vector<slctk::AttributeItemPtr> &items = this->m_items[element];
+  std::size_t j, m = items.size();
+  for(j = 0; j < m; j++)
+    {
+    items[j]->detachOwningItem();
     }
   this->m_items.erase(this->m_items.begin() + element);
   return true;
@@ -150,10 +186,27 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     {
     return false; // The number of values is fixed
     }
-  this->m_items.resize(newSize);
-  for (i = n; i < newSize; i++)
+  if (newSize < n)
     {
-    def->buildGroup(this->m_items[i]);
+    // We need to detach all of the items we no longer need
+    std::size_t j, m;
+    for (i = newSize; i < n; i++)
+      {
+      std::vector<slctk::AttributeItemPtr> &items = this->m_items[i];
+      m = items.size();
+      for (j = 0; j < m; j++)
+        {
+        items[j]->detachOwningItem();
+        }
+      }
+    }
+  else
+    {
+    this->m_items.resize(newSize);
+    for (i = n; i < newSize; i++)
+      {
+      def->buildGroup(this, i);
+      }
     }
   return true;
 }

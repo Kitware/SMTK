@@ -30,7 +30,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-ValueItem::ValueItem()
+ValueItem::ValueItem(Attribute *owningAttribute, 
+                     int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+ValueItem::ValueItem(Item *owningItem,
+                     int itemPosition,
+                     int mySubGroupPosition): 
+  Item(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 //----------------------------------------------------------------------------
@@ -69,8 +79,7 @@ bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
       this->m_expressions.resize(n);
       for (i = 0; i < n; i++)
         {
-        this->m_expressions[i] = 
-          slctk::AttributeRefItemPtr(def->buildExpressionItem());
+        def->buildExpressionItem(this, i);
         }
       }
     }
@@ -79,6 +88,12 @@ bool ValueItem::setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef)
 //----------------------------------------------------------------------------
 ValueItem::~ValueItem()
 {
+  // we need to detach all items that are owned by this. i.e. the expression items
+  std::size_t i, n = m_expressions.size();
+  for (i = 0; i < n; i++)
+    {
+    this->m_expressions[i]->detachOwningItem();
+    }
 }
 //----------------------------------------------------------------------------
 int ValueItem::numberOfRequiredValues() const
@@ -157,7 +172,8 @@ bool ValueItem::appendExpression(slctk::AttributePtr exp)
     return false; // Attribute is of the proper type
     }
   n = m_expressions.size();
-  this->m_expressions.push_back(slctk::AttributeRefItemPtr(def->buildExpressionItem()));
+  this->m_expressions.resize(n+1);
+  def->buildExpressionItem(this, n);
   this->m_expressions[n]->setValue(exp);
   this->m_isSet.push_back(true);
   return true;

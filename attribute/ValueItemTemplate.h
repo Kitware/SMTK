@@ -44,7 +44,8 @@ namespace slctk
       typedef DataT DataType;
       typedef ValueItemDefinitionTemplate<DataType> DefType;
       
-      ValueItemTemplate();
+      ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
+      ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~ValueItemTemplate() {}
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
       std::size_t numberOfValues() const
@@ -72,7 +73,18 @@ namespace slctk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueItemTemplate<DataT>::ValueItemTemplate()
+    ValueItemTemplate<DataT>::ValueItemTemplate(Attribute *owningAttribute, 
+                                                int itemPosition): 
+      ValueItem(owningAttribute, itemPosition)
+    {
+    }
+
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    ValueItemTemplate<DataT>::ValueItemTemplate(Item *owningItem,
+                                                int itemPosition,
+                                                int mySubGroupPosition): 
+      ValueItem(owningItem, itemPosition, mySubGroupPosition)
     {
     }
 //----------------------------------------------------------------------------
@@ -275,8 +287,9 @@ namespace slctk
           this->m_isSet.push_back(true);
           if (def->allowsExpressions())
             {
-            this->m_expressions.
-              push_back(def->buildExpressionItem());
+            int nextPos = this->expressions.size();
+            this->expressions.resize(nextPos+1);
+            def->buildExpressionItem(this, nextPos);
             }
           return true;
           }
@@ -286,8 +299,9 @@ namespace slctk
         {
         if (def->allowsExpressions())
           {
-          this->m_expressions.
-            push_back(def->expressionDefinition()->buildItem());
+          int nextPos = this->expressions.size();
+          this->expressions.resize(nextPos+1);
+          def->buildExpressionItem(this, nextPos);
           }
         this->m_values.push_back(val);
         this->m_isSet.push_back(true);
@@ -318,6 +332,11 @@ namespace slctk
         {
         if (def->allowsExpressions())
           {
+          int i;
+          for (i = newSize; i < n; i++)
+            {
+            this->m_expressions[i]->detachOwningItem();
+            }
           this->m_expressions.resize(newSize);
           }
         this->m_values.resize(newSize);
@@ -348,8 +367,7 @@ namespace slctk
         this->m_expressions.resize(newSize);
         for (i = n; i < newSize; i++)
           {
-          this->m_expressions[i] = 
-            slctk::AttributeRefItemPtr(def->buildExpressionItem());
+          def->buildExpressionItem(this, i);
           }
         }
       return true;
@@ -368,6 +386,7 @@ namespace slctk
         }
       if (def->allowsExpressions)
         {
+        this->m_expressions[element]->detachOwningItem();
         this->m_expressions.erase(this->m_expressions.begin()+element);
         }
       this->m_values.erase(this->m_values.begin()+element);
@@ -414,6 +433,11 @@ namespace slctk
         this->m_discreteIndices.clear();
         if (def->allowsExpressions())
           {
+          int j, m = this->m_expressions.size();
+          for (j = 0; j < m; j++)
+            {
+            this->m_expressions[j]->detachOwningItem();
+            }
           this->m_expressions.clear();
           }
         return;

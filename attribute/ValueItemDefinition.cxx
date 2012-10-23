@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/ValueItemDefinition.h"
+#include "attribute/ValueItem.h"
 #include "attribute/AttributeRefItem.h"
 #include "attribute/AttributeRefItemDefinition.h"
 
@@ -123,14 +124,14 @@ ValueItemDefinition::setExpressionDefinition(slctk::AttributeDefinitionPtr exp)
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
 //----------------------------------------------------------------------------
-slctk::AttributeRefItemPtr 
-ValueItemDefinition::buildExpressionItem() const
+void 
+ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
   slctk::AttributeRefItemPtr aref =
     slctk::dynamicCastPointer<slctk::attribute::AttributeRefItem>
-    (this->m_expressionDefinition->buildItem());
+    (this->m_expressionDefinition->buildItem(vitem, position, -1));
   aref->setDefinition(this->m_expressionDefinition);
-  return aref;
+  vitem->m_expressions[position] = aref;
 }
 //----------------------------------------------------------------------------
 void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)

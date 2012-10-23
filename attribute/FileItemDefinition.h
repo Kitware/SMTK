@@ -48,7 +48,11 @@ namespace slctk
       virtual Item::Type type() const;
       bool isValueValid(const std::string &val) const;
 
-      virtual slctk::AttributeItemPtr buildItem() const;
+      virtual slctk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+                                                int itemPosition) const;
+      virtual slctk::AttributeItemPtr buildItem(Item *owningItem, 
+                                                int position,
+                                                int subGroupPosition) const;
       int numberOfRequiredValues() const
       {return this->m_numberOfRequiredValues;}
       void setNumberOfRequiredValues(int esize);

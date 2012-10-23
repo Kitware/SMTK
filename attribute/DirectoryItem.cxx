@@ -30,7 +30,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-DirectoryItem::DirectoryItem()
+DirectoryItem::DirectoryItem(Attribute *owningAttribute, 
+                             int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+DirectoryItem::DirectoryItem(Item *owningItem,
+                             int itemPosition,
+                             int subGroupPosition): 
+  Item(owningItem, itemPosition, subGroupPosition)
 {
 }
 

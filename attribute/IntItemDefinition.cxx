@@ -42,7 +42,21 @@ Item::Type IntItemDefinition::type() const
   return Item::INT;
 }
 //----------------------------------------------------------------------------
-slctk::AttributeItemPtr IntItemDefinition::buildItem() const
+slctk::AttributeItemPtr 
+IntItemDefinition::buildItem(Attribute *owningAttribute,
+                             int itemPosition) const
 {
-  return slctk::AttributeItemPtr(new IntItem());
+  return slctk::AttributeItemPtr(new IntItem(owningAttribute,
+                                             itemPosition));
 }
+//----------------------------------------------------------------------------
+slctk::AttributeItemPtr 
+IntItemDefinition::buildItem(Item *owningItem,
+                             int itemPosition,
+                             int subGroupPosition) const
+{
+  return slctk::AttributeItemPtr(new IntItem(owningItem,
+                                             itemPosition,
+                                             subGroupPosition));
+}
+//----------------------------------------------------------------------------

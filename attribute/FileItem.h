@@ -41,7 +41,8 @@ namespace slctk
     class SLCTKATTRIBUTE_EXPORT FileItem : public Item
     {
     public:
-      FileItem();
+      FileItem(Attribute *owningAttribute, int itemPosition);
+      FileItem(Item *owningItem, int position, int subGroupPosition);
       virtual ~FileItem();
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr vdef);
       virtual Item::Type type() const;

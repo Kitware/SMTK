@@ -44,6 +44,7 @@ namespace slctk
     class AttributeRefItemDefinition;
     class Definition;
     class Cluster;
+    class ValueItem;
     class SLCTKATTRIBUTE_EXPORT ValueItemDefinition : 
       public slctk::attribute::ItemDefinition
     {
@@ -70,7 +71,8 @@ namespace slctk
       bool isValidExpression(slctk::AttributePtr exp) const;
       slctk::AttributeDefinitionPtr expressionDefinition() const;
       void setExpressionDefinition(slctk::AttributeDefinitionPtr exp);
-      slctk::AttributeRefItemPtr buildExpressionItem() const;
+      // Should only be called internally by the ValueItem
+      void buildExpressionItem(ValueItem *vitem, int position) const;
 
       bool hasDefault() const
       {return this->m_hasDefault;}

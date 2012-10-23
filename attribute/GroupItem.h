@@ -37,8 +37,10 @@ namespace slctk
     class GroupItemDefinition;
     class SLCTKATTRIBUTE_EXPORT GroupItem : public Item
     {
+      friend class GroupItemDefinition;
     public:
-      GroupItem();
+      GroupItem(Attribute *owningAttribute, int itemPosition);
+      GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~GroupItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
@@ -64,6 +66,9 @@ namespace slctk
 
       virtual void reset();
     protected:
+      // This method will detach all of the items directly owned by 
+      // this group
+      void detachAllItems();
       std::vector<std::vector<slctk::AttributeItemPtr> >m_items;
   
     private:

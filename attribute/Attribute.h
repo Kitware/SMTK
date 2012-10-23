@@ -51,6 +51,7 @@ namespace slctk
     {
       friend class slctk::attribute::Definition;
       friend class slctk::attribute::Manager;
+      friend class slctk::attribute::AttributeRefItem;
     public:
       Attribute(const std::string &myName,
                 slctk::AttributeDefinitionPtr myDefinition, unsigned long myId);
@@ -68,6 +69,11 @@ namespace slctk
       slctk::AttributeDefinitionPtr definition() const
       {return this->m_definition;}
 
+      // Return the public pointer for this attribute.
+      // If the attribute's manager has been deleted this can return an
+      // empty pointer
+      slctk::AttributePtr pointer() const;
+
       bool isMemberOf(const std::string &category) const;
       bool isMemberOf(const std::vector<std::string> &categories) const;
 
@@ -82,6 +88,8 @@ namespace slctk
       slctk::ConstAttributeItemPtr find(const std::string &name) const;
       std::size_t numberOfItems() const
       {return this->m_items.size();}
+
+      void references(std::vector<slctk::AttributeItemPtr> &list) const;
 
       std::size_t numberOfAssociatedEntities() const
       { return this->m_entities.size();}
@@ -112,6 +120,8 @@ namespace slctk
       {this->m_userData.erase(key);}
       void clearAllUserData()
       {this->m_userData.clear();}
+      bool isAboutToBeDeleted() const
+      {return this->m_aboutToBeDeleted;}
 
     protected:
       void removeAllItems();
@@ -120,14 +130,27 @@ namespace slctk
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
+      void addReference(slctk::attribute::AttributeRefItem *attRefItem, int pos)
+        {this->m_references[attRefItem].insert(pos);}
+      // This removes a specific ref item
+      void removeReference(slctk::attribute::AttributeRefItem *attRefItem, int pos)
+        {this->m_references[attRefItem].erase(pos);}
+      // This removes all references to a specific Ref Item
+      void removeReference(slctk::attribute::AttributeRefItem *attRefItem)
+        {this->m_references.erase(attRefItem);}
       std::string m_name;
       std::vector<slctk::AttributeItemPtr> m_items;
       unsigned long m_id;
       slctk::AttributeDefinitionPtr m_definition;
       std::set<slctk::ModelEntity *> m_entities;
+      std::map<slctk::attribute::AttributeRefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       std::map<std::string, void *> m_userData;
+      // We need something to indicate that the attribute is in process of
+      // being deleted - this is used skip certain clean up steps that 
+      // would need to be done otherwise
+      bool m_aboutToBeDeleted;
     private:
       
     };

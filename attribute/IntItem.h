@@ -41,7 +41,8 @@ namespace slctk
     {
       friend class IntItemDefinition; 
     public:
-      IntItem();
+      IntItem(Attribute *owningAttribute, int itemPosition);
+      IntItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~IntItem();
       virtual Item::Type type() const;
     protected:

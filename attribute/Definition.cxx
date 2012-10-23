@@ -138,10 +138,11 @@ void Definition::buildAttribute(Attribute *att) const
   // Next - for each item definition we have build and add the appropriate
   // item to the attribute
   slctk::AttributeItemPtr comp;
-  std::size_t i, n = this->m_itemDefs.size();
-  for (i = 0; i < n; i++)
+  std::size_t i, j, n = this->m_itemDefs.size();
+  j = att->numberOfItems();
+  for (i = 0; i < n; i++, j++)
     {
-    comp = this->m_itemDefs[i]->buildItem();
+    comp = this->m_itemDefs[i]->buildItem(att, j);
     comp->setDefinition(this->m_itemDefs[i]);
     att->addItem(comp);
     }

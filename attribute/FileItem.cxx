@@ -30,7 +30,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk::attribute; 
 
 //----------------------------------------------------------------------------
-FileItem::FileItem()
+FileItem::FileItem(Attribute *owningAttribute, 
+                   int itemPosition): 
+  Item(owningAttribute, itemPosition)
+{
+}
+
+//----------------------------------------------------------------------------
+FileItem::FileItem(Item *owningItem,
+                   int itemPosition,
+                   int subGroupPosition): 
+  Item(owningItem, itemPosition, subGroupPosition)
 {
 }
 

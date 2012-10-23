@@ -23,13 +23,27 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "attribute/Item.h"
+#include "attribute/Attribute.h"
+#include "attribute/AttributeRefItem.h"
 #include "attribute/ItemDefinition.h"
+#include "attribute/GroupItem.h"
+#include "attribute/ValueItem.h"
 #include <iostream>
-using namespace slctk::attribute; 
+using namespace slctk::attribute;
+using namespace slctk;
 
 //----------------------------------------------------------------------------
-Item::Item():
-  m_isEnabled(true), m_definition()
+Item::Item(Attribute *owningAttribute, int itemPosition):
+  m_isEnabled(true), m_definition(), m_attribute(owningAttribute),
+  m_position(itemPosition), m_owningItem(NULL)
+{
+}
+
+//----------------------------------------------------------------------------
+Item::Item(Item *owningItem, int itemPosition, int subGroupPosition):
+  m_isEnabled(true), m_definition(), m_owningItem(owningItem),
+  m_position(itemPosition), m_attribute(NULL),
+  m_subGroupPosition(subGroupPosition)
 {
 }
 
@@ -37,6 +51,42 @@ Item::Item():
 Item::~Item()
 {
   std::cout << "Item " << this->name() << " deleted\n";
+}
+//----------------------------------------------------------------------------
+AttributePtr Item::attribute() const
+{
+  if (this->m_attribute)
+    {
+    return this->m_attribute->pointer();
+    }
+  if (this->m_owningItem)
+    {
+    return this->m_owningItem->attribute();
+    }
+  return AttributePtr();
+}
+//----------------------------------------------------------------------------
+AttributeItemPtr Item::pointer() const
+{
+  // We need to find the object that owns this item
+  if (this->m_attribute)
+    {
+    return this->m_attribute->item(this->m_position);
+    }
+  if (this->m_owningItem)
+    {
+    GroupItem *gitem = dynamic_cast<GroupItem *>(this->m_owningItem);
+    if (gitem)
+      {
+      return gitem->item(this->m_subGroupPosition, this->m_position);
+      }
+    ValueItem *vitem = dynamic_cast<ValueItem *>(this->m_owningItem);
+    if (vitem)
+      {
+      return vitem->expressionReference(this->m_position);
+      }
+    }
+  return AttributeItemPtr();
 }
 //----------------------------------------------------------------------------
 std::string Item::name() const

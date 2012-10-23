@@ -39,6 +39,9 @@ namespace slctk
   namespace attribute
   {
     class ItemDefinition;
+    class GroupItem;
+    class Attribute;
+
     class SLCTKATTRIBUTE_EXPORT Item
     {
     public:
@@ -55,41 +58,73 @@ namespace slctk
        NUMBER_OF_TYPES
      };
        
-      Item();
-      virtual ~Item();
-      std::string name() const;
-      virtual Item::Type type() const = 0;
-      virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
-      slctk::ConstAttributeItemDefinitionPtr definition() const
-      {return this->m_definition;}
+     Item(Attribute *owningAttribute, int itemPosition);
+     Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
+     virtual ~Item();
+     std::string name() const;
+     virtual Item::Type type() const = 0;
+     virtual bool setDefinition(slctk::ConstAttributeItemDefinitionPtr def);
+     slctk::ConstAttributeItemDefinitionPtr definition() const
+     {return this->m_definition;}
+     
+     // Return the attribute that owns this item
+     slctk::AttributePtr attribute() const;
+     slctk::AttributeItemPtr owningItem() const
+     {return (this->m_owningItem ? this->m_owningItem->pointer() : 
+              slctk::AttributeItemPtr());}
+     //Position is the item's location w/r to the owning item if not null
+     // or the owning attribute. Currently the only items that can own other items are
+     // GroupItem and ValueItem (for expressions)
+     int position() const
+     {return this->m_position;}
 
-      bool isOptional() const;
+     int subGroupPosition() const
+     {return this->m_subGroupPosition;}
 
-      // isEnabled only matters for optional items.  All non-optional
-      // items will return true for isEnabled regardless of the value 
-      // of m_isEnabled
-      bool isEnabled() const;
-      void setIsEnabled(bool isEnabledValue)
-      {this->m_isEnabled = isEnabledValue;}
+     // Returns the shared pointer of the item - if the item is no longer
+     // owned by either an attribute or by another item it will return
+     // an empty shared pointer
+     slctk::AttributeItemPtr pointer() const;
+     bool isOptional() const;
+     
+     // isEnabled only matters for optional items.  All non-optional
+     // items will return true for isEnabled regardless of the value 
+     // of m_isEnabled
+     bool isEnabled() const;
+     void setIsEnabled(bool isEnabledValue)
+     {this->m_isEnabled = isEnabledValue;}
+     
+     bool isMemberOf(const std::string &category) const;
+     bool isMemberOf(const std::vector<std::string> &categories) const;
+     
+     void setUserData(const std::string &key, void *value)
+       {this->m_userData[key] = value;}
+     void *userData(const std::string &key) const;
+     void clearUserData(const std::string &key)
+     {this->m_userData.erase(key);}
+     void clearAllUserData()
+     {this->m_userData.clear();}
+     
+     virtual void reset();
 
-      bool isMemberOf(const std::string &category) const;
-      bool isMemberOf(const std::vector<std::string> &categories) const;
+     //This should be used only by attributes
+     void detachOwningAttribute()
+     {this->m_attribute = NULL;}
+     //This should only be called by the item that owns
+     // this one
+     void detachOwningItem()
+     {this->m_owningItem = NULL;}
 
-      void setUserData(const std::string &key, void *value)
-      {this->m_userData[key] = value;}
-      void *userData(const std::string &key) const;
-      void clearUserData(const std::string &key)
-      {this->m_userData.erase(key);}
-      void clearAllUserData()
-      {this->m_userData.clear();}
-
-      virtual void reset();
-      static std::string type2String(Item::Type t);
-      static Item::Type string2Type(const std::string &s);
+     static std::string type2String(Item::Type t);
+     static Item::Type string2Type(const std::string &s);
 
      protected:
       // This method allows any Item to delete another - USE WITH CARE!
       void deleteItem();
+      Attribute *m_attribute;
+      Item *m_owningItem;
+      int m_position;
+      int m_subGroupPosition;
       bool m_isEnabled;
       mutable std::string m_tempString;
       slctk::ConstAttributeItemDefinitionPtr m_definition;
