@@ -96,6 +96,8 @@ namespace slctk
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::Item> ConstAttributeItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ItemDefinition> AttributeItemDefinitionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<const attribute::ItemDefinition> ConstAttributeItemDefinitionPtr;
+  typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Item> WeakAttributeItemPtr;
+  typedef @POINTER_NAMESPACE@::weak_ptr<attribute::ItemDefinition> WeakAttributeItemDefinitionPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItem> ValueItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::ValueItemDefinition> ValueItemDefinitionPtr;

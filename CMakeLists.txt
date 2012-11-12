@@ -12,6 +12,8 @@ include(GenerateExportHeader)
 # Include mechanism for determining shared and weak pointer support
 include(CMake/SharedPtr.cmake)
 
+option(BUILD_SHARED_LIBS "Build Slctk using shared libraries" OFF)
+
 determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
 
 #if the shared_ptr isn't able to be

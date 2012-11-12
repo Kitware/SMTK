@@ -1,0 +1,90 @@
+/*=========================================================================
+
+Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
+Clifton Park, NY, 12065, USA.
+
+All rights reserved. No part of this software may be reproduced, distributed,
+or modified, in any form or by any means, without permission in writing from
+Kitware Inc.
+
+IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
+EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
+BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
+"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+=========================================================================*/
+// .NAME qtSimpleExpressionSection - an Expression Section
+// .SECTION Description
+// .SECTION See Also
+// qtSection
+
+#ifndef __slctk_attribute_qtSimpleExpressionSection_h
+#define __slctk_attribute_qtSimpleExpressionSection_h
+
+#include "qtSection.h"
+
+class qtSimpleExpressionSectionInternals;
+
+namespace slctk
+{
+  namespace attribute
+  {
+    class SLCTKATTRIBUTE_EXPORT qtSimpleExpressionSection : public qtSection
+    {
+      Q_OBJECT
+
+    public:         
+      qtSimpleExpressionSection(slctk::AttributeItemPtr, QWidget* parent);
+      virtual ~qtSimpleExpressionSection();  
+
+      virtual void createNewFunction(slctk::AttributeDefinitionPtr attDef);
+      QListWidgetItem* getSelectedItem();
+      virtual void createFunctionWithExpression();
+
+    public slots:
+      void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
+      void onFuncValueChanged(QTableWidgetItem*);
+      void onFuncNameChanged(QListWidgetItem*);
+      void onCreateNew();
+      void onCopySelected();
+      void onDeleteSelected();
+      void onFuncTableKeyPress(QKeyEvent* );
+      void onAddValue();
+      void onRemoveSelectedValues();
+
+      void showAdvanced(int show);
+      
+    protected:
+      virtual void createWidget();
+      slctk::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
+      slctk::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
+      slctk::AttributePtr getFunctionFromItem(QListWidgetItem * item);
+      slctk::GroupItemPtr getSelectedArrayData();
+      slctk::ValueItemPtr getSelectedStringData();
+      slctk::AttributePtr getSelectedFunction();
+      slctk::GroupItemPtr getFunctionArrayData(slctk::AttributePtr func);
+      slctk::ValueItemPtr getFunctionStringData(slctk::AttributePtr func);
+      QListWidgetItem* addFunctionListItem(slctk::AttributePtr childData);
+      void addNewValue(double* vals, int numVals);
+      void updateFunctionEditorUI(
+        slctk::ValueItemPtr expressionItem, slctk::GroupItemPtr arrayItem);
+      void pasteFunctionValues(QString& values);
+      virtual void initFunctionList();
+      virtual void clearFuncExpression();
+
+    private:
+
+      qtSimpleExpressionSectionInternals *Internals;
+
+    }; // class
+  }; // namespace attribute
+}; // namespace slctk
+
+
+#endif

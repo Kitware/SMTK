@@ -86,8 +86,34 @@ source_group("model_Header" FILES ${ModelHeaders})
 set(headers ${headers} ${ModelHeaders})
 set(attribute_srcs ${attribute_srcs} ${ModelSrcs})
 
-add_library(SlctkAttribute ${attribute_srcs} ${headers})
-target_link_libraries(SlctkAttribute)
+# Option to build Qt ui compoments for attributes
+option(Slctk_BUILD_QT "Build Qt GUI" OFF)
+
+#add the Qt GUI code
+if(Slctk_BUILD_QT)
+  find_package(Qt4 REQUIRED)
+  if(NOT QT4_FOUND)
+    message(FATAL_ERROR "QT4 libraries are missing")
+  endif()
+  INCLUDE(${QT_USE_FILE})
+
+  add_subdirectory(Qt)
+
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Qt)
+  include_directories(${CMAKE_CURRENT_BINARY_DIR}/Qt)
+
+  set (slctkQtDepends ${QT_LIBRARIES})
+  get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
+  get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
+  qt4_wrap_cpp(QAttrLibMocSrcs ${QAttrLibMocHeaders})
+  source_group("Qt_Source" FILES ${QAttrLibSrcs})
+  source_group("Qt_Moc" FILES ${QAttrLibMocSrcs})
+  source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
+endif()
+
+add_library(SlctkAttribute ${attribute_srcs} ${headers}
+   ${QAttrLibSrcs} ${QAttrLibMocSrcs} ${QAttrLibMocHeaders})
+target_link_libraries(SlctkAttribute ${slctkQtDepends})
 
 slctk_set_includes(SlctkAttribute ${Slctk_Attribute_INCLUDE_DIRS})
 
