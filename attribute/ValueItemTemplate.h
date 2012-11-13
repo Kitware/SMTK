@@ -287,8 +287,8 @@ namespace slctk
           this->m_isSet.push_back(true);
           if (def->allowsExpressions())
             {
-            int nextPos = this->expressions.size();
-            this->expressions.resize(nextPos+1);
+            int nextPos = this->m_expressions.size();
+            this->m_expressions.resize(nextPos+1);
             def->buildExpressionItem(this, nextPos);
             }
           return true;
@@ -299,8 +299,8 @@ namespace slctk
         {
         if (def->allowsExpressions())
           {
-          int nextPos = this->expressions.size();
-          this->expressions.resize(nextPos+1);
+          int nextPos = this->m_expressions.size();
+          this->m_expressions.resize(nextPos+1);
           def->buildExpressionItem(this, nextPos);
           }
         this->m_values.push_back(val);
@@ -384,7 +384,7 @@ namespace slctk
         {
         return false; // The number of values is fixed
         }
-      if (def->allowsExpressions)
+      if (def->allowsExpressions())
         {
         this->m_expressions[element]->detachOwningItem();
         this->m_expressions.erase(this->m_expressions.begin()+element);
