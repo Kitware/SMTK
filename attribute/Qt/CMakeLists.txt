@@ -44,7 +44,7 @@ set(QAttrLibMocHeaders
     Qt/qtInstancedSection.h
     Qt/qtModelEntitySection.h
     Qt/qtSimpleExpressionSection.h
- #   Qt/qtExpressionItem.h
+#   Qt/qtExpressionItem.h
     Qt/qtFileItem.h
     Qt/qtAttributeRefItem.h
     Qt/qtTableWidget.h

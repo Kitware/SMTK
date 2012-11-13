@@ -31,8 +31,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/Manager.h"
 #include "attribute/GroupItem.h"
 #include "attribute/GroupItemDefinition.h"
-#include "attribute/ValueItem.h"
-#include "attribute/ValueItemDefinition.h"
+#include "attribute/IntItem.h"
+#include "attribute/IntItemDefinition.h"
+#include "attribute/DoubleItem.h"
+#include "attribute/DoubleItemDefinition.h"
 #include "attribute/SimpleExpressionSection.h"
 
 #include <QGridLayout>
@@ -51,18 +53,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QLineEdit>
 #include <QLabel>
 #include <QGroupBox>
+#include <QPointer>
 
-#include <stringstream>
+#include <sstream>
 
 #define MAX_NUMBEWR_FUNC_POINTS 10000
 
 using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-class 
+class qtSimpleExpressionSectionInternals
 {
-  qtSimpleExpressionSectionInternals() :
-    FunctionParserDescription (0){}
+public:
+  qtSimpleExpressionSectionInternals()
+  {
+    this->FunctionParserDescription = 0;
+  }
 
   ~qtSimpleExpressionSectionInternals()
   {
@@ -73,7 +79,6 @@ class
       }
   }
 
-public:
   const char* getFunctionParserDescription()
     {
     if(!this->FunctionParserDescription)
@@ -114,16 +119,14 @@ public:
   QGroupBox*   EditorGroup;
 
   char*        FunctionParserDescription;
-  QList< QPointer<qtAttribute> > AttInstances;
 
 };
 
 //----------------------------------------------------------------------------
 qtSimpleExpressionSection::qtSimpleExpressionSection(
-  slctk::AttributeItemPtr dataObj, QWidget* p) : qtSection(dataObj, p)
+  slctk::SectionPtr dataObj, QWidget* p) : qtSection(dataObj, p)
 {
   this->Internals = new qtSimpleExpressionSectionInternals;
-  this->IsLeafItem = true;
   this->createWidget();
 }
 
@@ -139,7 +142,6 @@ void qtSimpleExpressionSection::createWidget()
     {
     return;
     }
-  this->clearChildItems();
   // Create a frame to contain all gui components for this object
   // Create a list box for the group entries
   // Create a table widget
@@ -160,7 +162,7 @@ void qtSimpleExpressionSection::createWidget()
   // create a list box for all the array entries
   this->Internals->FuncList = new QListWidget(frame);
     
-  this->Internals->FuncTable = new erdcTableWidget(frame);
+  this->Internals->FuncTable = new qtTableWidget(frame);
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   this->Internals->FuncTable->setSizePolicy(tableSizePolicy);
 
@@ -284,7 +286,9 @@ slctk::ValueItemPtr qtSimpleExpressionSection::getStringDataFromItem(QListWidget
 slctk::AttributePtr qtSimpleExpressionSection::getFunctionFromItem(
   QListWidgetItem * item)
 { 
-  return item ? static_cast<slctk::AttributePtr>(item->data(Qt::UserRole).value<void *>()) : NULL;
+  Attribute* rawPtr = item ? 
+    static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
+  return rawPtr ? rawPtr->pointer() : slctk::AttributePtr();
 }
 //-----------------------------------------------------------------------------
 slctk::GroupItemPtr qtSimpleExpressionSection::getSelectedArrayData()
@@ -312,7 +316,8 @@ QListWidgetItem *qtSimpleExpressionSection::getSelectedItem()
 slctk::GroupItemPtr qtSimpleExpressionSection::getFunctionArrayData(
   slctk::AttributePtr func)
 {
-  return func ? func->item() : NULL;
+  return func ? dynamicCastPointer<GroupItem>(func->item(0)) :
+    slctk::GroupItemPtr();
 }
 
 //-----------------------------------------------------------------------------
@@ -321,9 +326,9 @@ slctk::ValueItemPtr qtSimpleExpressionSection::getFunctionStringData(
 {
   if(func && func->numberOfItems()==2)// Kind of Hack
     {
-    return func->item(1));
+    return dynamicCastPointer<ValueItem>(func->item(1));
     }
-  return NULL;
+  return slctk::ValueItemPtr();
 }
 
 //----------------------------------------------------------------------------
@@ -392,7 +397,7 @@ void qtSimpleExpressionSection::updateFunctionEditorUI(
       this->Internals->NumberBox->setValue(numValues);
       if(numValues>1 && n==2 && (dItem || iItem))
         {
-        double deltaVal = dItem ? (dItem->value(1)-dItem->value(0) :
+        double deltaVal = dItem ? (dItem->value(1)-dItem->value(0)) :
           (iItem->value(1)-iItem->value(0));
         this->Internals->DeltaInput->setText(QString::number(deltaVal));
         }
@@ -512,7 +517,6 @@ void qtSimpleExpressionSection::createNewFunction(
     return;
     }
 
-  AttributeDefinitionPtr attDef = sec->definition();
   Manager *attManager = attDef->manager();
 
   slctk::AttributePtr newFunc = attManager->createAttribute(attDef->type());
@@ -554,7 +558,7 @@ void qtSimpleExpressionSection::onDeleteSelected()
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtSimpleExpressionSection::addFunctionListItem(
-  slctk::AttributePtr* childData)
+  slctk::AttributePtr childData)
 {
   if(!this->passAdvancedCheck(childData->definition()->advanceLevel()))
     {
@@ -566,10 +570,10 @@ QListWidgetItem* qtSimpleExpressionSection::addFunctionListItem(
   if(dataItem)
     {
     item = new QListWidgetItem(
-      QString::fromUtf8(childData->definition()->label()),
+      QString::fromUtf8(childData->definition()->label().c_str()),
       this->Internals->FuncList, slctk_USER_DATA_TYPE);
     QVariant vdata;
-    vdata.setValue((void*)childData);
+    vdata.setValue((void*)(childData.get()));
     item->setData(Qt::UserRole, vdata);
     if(childData->definition()->advanceLevel())
       {

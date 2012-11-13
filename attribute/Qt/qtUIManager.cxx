@@ -15,7 +15,6 @@
 #include "qtUIManager.h"
 
 #include "qtItem.h"
-#include "qtTableItem.h"
 #include "qtComboItem.h"
 #include "qtRootSection.h"
 #include "qtInputsItem.h"
@@ -51,6 +50,9 @@
 #include "attribute/GroupItemDefinition.h"
 #include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinition.h"
+#include "attribute/DoubleItem.h"
+#include "attribute/IntItem.h"
+
 
 using namespace slctk::attribute;
 
@@ -121,7 +123,6 @@ void qtUIManager::processAttributeSection(qtAttributeSection* qtSec)
     qtSec->getObject());
 
   this->processBasicSection(qtSec);
-  AttributeDefinitionPtr def;
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processInstancedSection(qtInstancedSection* qtSec)
@@ -130,10 +131,6 @@ void qtUIManager::processInstancedSection(qtInstancedSection* qtSec)
     qtSec->getObject());
 
   this->processBasicSection(qtSec);
-  std::string attName, defName;
-  AttributePtr att;
-  AttributeDefinitionPtr attDef;
-
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processModelEntitySection(qtModelEntitySection* qtSec)
@@ -273,7 +270,7 @@ void qtUIManager::updateArrayTableWidget(
     {
     for (j = 0; j < m; j++) // expecting one item for each column
       {
-      this->updateTableColRows(item->item(i,j), i, widget);
+      qtUIManager::updateTableColRows(dataItem->item(i,j), i, widget);
       }
     }
 }
@@ -292,7 +289,7 @@ void qtUIManager::updateTableColRows(slctk::AttributeItemPtr dataItem,
   QString strValue;
   for(int row=0; row < numRows; row++)
     {
-    strValue = item->valueAsString(row);
+    strValue = item->valueAsString(row).c_str();
     widget->setItem(row, col, new QTableWidgetItem(strValue));
     }
 }
@@ -301,86 +298,80 @@ void qtUIManager::updateTableColRows(slctk::AttributeItemPtr dataItem,
 void qtUIManager::updateArrayDataValue(
   slctk::GroupItemPtr dataItem, QTableWidgetItem* item)
 {
-  vtkDataArray* dataArray = NULL;
-  if(dataItem->GetDataType() == vtkSBDataItem::SBDOUBLEARRAY)
-    {
-    dataArray = vtkSBDoubleArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  else
-    {
-    dataArray = vtkSBIntArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  if(dataArray)
-    {
-    int idx = item->row()*dataArray->GetNumberOfComponents() + item->column();
-    if(dataArray->GetDataType() == VTK_DOUBLE)
-      {
-      vtkDoubleArray::SafeDownCast(dataArray)->SetValue(idx,
-        item->text().toDouble());
-      }
-    else if(dataArray->GetDataType() == VTK_INT)
-      {
-      vtkIntArray::SafeDownCast(dataArray)->SetValue(idx,
-        item->text().toInt());
-      }
-    }
-}
-void qtUIManager::removeSelectedTableValues(
-  slctk::GroupItemPtr dataItem, QTableWidget* table)
-{
-  vtkDataArray* dataArray = NULL;
-  if(dataItem->GetDataType() == vtkSBDataItem::SBDOUBLEARRAY)
-    {
-    dataArray = vtkSBDoubleArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  else
-    {
-    dataArray = vtkSBIntArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  if(!dataArray)
+  if(!dataItem)
     {
     return;
     }
-  int numRows = table->rowCount();
+  slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(
+    dataItem->item(item->column(),0));
+  slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(
+    dataItem->item(item->column(),0));
+  if(dItem)
+    {
+    dItem->setValue(item->row(), item->text().toDouble());
+    }
+  else if(iItem)
+    {
+    iItem->setValue(item->row(), item->text().toInt());
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::removeSelectedTableValues(
+  slctk::GroupItemPtr dataItem, QTableWidget* table)
+{
+  if(!dataItem)
+    {
+    return;
+    }
+
+  int numRows = table->rowCount(), numCols = table->columnCount();
   for(int r=numRows-1; r>=0; --r)
     {
     if(table->item(r, 0)->isSelected())
       {
-      dataArray->RemoveTuple(r);
+      for(int i = 0; i < numCols; i++)
+        {
+        slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i,0));
+        slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i,0));
+        if(dItem)
+          {
+          dItem->removeValue(r);
+          }
+        else if(iItem)
+          {
+          iItem->removeValue(r);
+          }
+        }
       table->removeRow(r);
       }
     }
-
 }
 
 void qtUIManager::addNewTableValues(slctk::GroupItemPtr dataItem,
   QTableWidget* table, double* vals, int numVals)
 {
+  int numCols = table->columnCount();
+  if(!dataItem || numCols != numVals)
+    {
+    return;
+    }
   int totalRow = table->rowCount();
   table->setRowCount(++totalRow);
-  vtkDataArray* dataArray = NULL;
-  if(dataItem->GetDataType() == vtkSBDataItem::SBDOUBLEARRAY)
+
+  for(int i=0; i<numVals; i++)
     {
-    dataArray = vtkSBDoubleArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  else
-    {
-    dataArray = vtkSBIntArrayItem::SafeDownCast(dataItem)->GetArray();
-    }
-  if(dataArray)
-    {
-    if(dataArray->GetDataType() == VTK_DOUBLE)
+    slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i,0));
+    slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i,0));
+    if(dItem)
       {
-      vtkDoubleArray::SafeDownCast(dataArray)->InsertNextTuple(vals);
+      dItem->appendValue(vals[i]);
       }
-    else if(dataArray->GetDataType() == VTK_INT)
+    else if(iItem)
       {
-      vtkIntArray::SafeDownCast(dataArray)->InsertNextTuple(vals);
+      iItem->appendValue(vals[i]);
       }
-    for(int i=0; i<numVals; i++)
-      {
-      QString strValue = QString::number(vals[i]);
-      table->setItem(totalRow-1, i, new QTableWidgetItem(strValue));
-      }
+    QString strValue = QString::number(vals[i]);
+    table->setItem(totalRow-1, i, new QTableWidgetItem(strValue));
     }
 }

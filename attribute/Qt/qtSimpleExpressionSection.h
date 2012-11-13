@@ -30,6 +30,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtSection.h"
 
 class qtSimpleExpressionSectionInternals;
+class QListWidgetItem;
+class QTableWidgetItem;
+class QKeyEvent;
 
 namespace slctk
 {
@@ -40,7 +43,7 @@ namespace slctk
       Q_OBJECT
 
     public:         
-      qtSimpleExpressionSection(slctk::AttributeItemPtr, QWidget* parent);
+      qtSimpleExpressionSection(slctk::SectionPtr, QWidget* parent);
       virtual ~qtSimpleExpressionSection();  
 
       virtual void createNewFunction(slctk::AttributeDefinitionPtr attDef);
@@ -59,7 +62,11 @@ namespace slctk
       void onRemoveSelectedValues();
 
       void showAdvanced(int show);
-      
+
+    protected slots:
+      virtual void updateAttributeData() 
+      {this->initFunctionList();}
+    
     protected:
       virtual void createWidget();
       slctk::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
@@ -85,6 +92,5 @@ namespace slctk
     }; // class
   }; // namespace attribute
 }; // namespace slctk
-
 
 #endif

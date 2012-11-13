@@ -25,7 +25,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtComboItem.h"
 #include "qtGroupItem.h"
 #include "qtInputsItem.h"
-#include "qtExpressionItem.h"
 #include "qtFileItem.h"
 #include "qtAttributeRefItem.h"
 
