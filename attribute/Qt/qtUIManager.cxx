@@ -43,6 +43,7 @@
 #include "attribute/AttributeSection.h"
 #include "attribute/InstancedSection.h"
 #include "attribute/ModelEntitySection.h"
+#include "attribute/SimpleExpressionSection.h"
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
 #include "attribute/Manager.h"
@@ -143,7 +144,7 @@ void qtUIManager::processModelEntitySection(qtModelEntitySection* qtSec)
 //----------------------------------------------------------------------------
 void qtUIManager::processSimpleExpressionSection(qtSimpleExpressionSection* qtSec)
 {
-  slctk::ModelEntitySectionPtr sec = slctk::dynamicCastPointer<ModelEntitySection>(
+  slctk::SimpleExpressionSectionPtr sec = slctk::dynamicCastPointer<SimpleExpressionSection>(
     qtSec->getObject());
 
   this->processBasicSection(qtSec);
@@ -186,6 +187,10 @@ void qtUIManager::processGroupSection(qtGroupSection* pQtGroup)
         break;
         //this->m_errorStatus << "Unsupport Section Type " 
         //                    << Section::type2String(sec->type()) << "\n";
+      }
+    if(qtSec)
+      {
+      pQtGroup->addChildSection(qtSec);
       }
     }
 }

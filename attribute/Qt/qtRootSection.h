@@ -51,6 +51,7 @@ namespace slctk
 
     protected:
       virtual void createWidget( );
+      QScrollArea *ScrollArea;
 
     private:
 

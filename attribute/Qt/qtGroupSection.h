@@ -53,8 +53,9 @@ namespace slctk
 
     protected:
       virtual void createWidget( );
+      virtual void isRootTabGroup( );
+      virtual void addTabEntry(qtSection*);
 
-      QScrollArea *ScrollArea;
     private:
 
       qtGroupSectionInternals *Internals;
