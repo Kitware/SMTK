@@ -49,7 +49,7 @@ namespace slctk
       QList<qtSection*>& childSections() const;
 
     public slots:
-      void showAdvanced(int show);
+      virtual void showAdvanced(int show);
 
     protected:
       virtual void createWidget( );

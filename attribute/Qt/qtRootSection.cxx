@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtRootSection.h"
 
 #include "qtUIManager.h"
+#include "qtGroupSection.h"
 #include "attribute/RootSection.h"
 
 #include <QFrame>
@@ -42,13 +43,13 @@ class qtRootSectionInternals
 public:
 
   QPointer<QCheckBox> AdvancedCheck;
-
+  QPointer<qtGroupSection> TabGroup;
 };
 
 //----------------------------------------------------------------------------
 qtRootSection::qtRootSection(
   slctk::RootSectionPtr dataObj, QWidget* p) :
-  qtGroupSection(slctk::dynamicCastPointer<Section>(dataObj), p)
+  qtSection(slctk::dynamicCastPointer<Section>(dataObj), p)
 {
   this->Internals = new qtRootSectionInternals;
   this->ScrollArea = NULL;
@@ -81,6 +82,10 @@ void qtRootSection::createWidget( )
     {
     delete this->Internals->AdvancedCheck;
     }
+  if(this->Internals->TabGroup)
+    {
+    delete this->Internals->TabGroup;
+    }
   if(this->Widget)
     {
     this->parentWidget()->layout()->removeWidget(this->ScrollArea);
@@ -88,7 +93,6 @@ void qtRootSection::createWidget( )
     delete this->ScrollArea;
     }
 
-  this->clearChildSections();
   this->Widget = new QFrame(this->parentWidget());
 
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
@@ -118,6 +122,10 @@ void qtRootSection::createWidget( )
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
+  this->Internals->TabGroup = new qtGroupSection(this->getObject(), this->Widget);
+  qtUIManager::processGroupSection(this->Internals->TabGroup);
+  this->initRootTabGroup();
+
   //add the advanced layout, and the scroll area onto the
   //widgets to the frame
   parentlayout->setAlignment(Qt::AlignTop);
@@ -131,17 +139,6 @@ void qtRootSection::createWidget( )
 //----------------------------------------------------------------------------
 void qtRootSection::showAdvanced(int checked)
 {
-  int currentTab = 0;
-
-  if(this->childSections().count())
-    {
-    QTabWidget* child = static_cast<QTabWidget*>(childSections().value(0)->widget());
-    if(child)
-      {
-      currentTab = child->currentIndex();
-      }
-    }
-
   if(this->Widget)
     {
     this->parentWidget()->layout()->removeWidget(this->ScrollArea);
@@ -149,7 +146,6 @@ void qtRootSection::showAdvanced(int checked)
     delete this->ScrollArea;
     }
 
-  this->clearChildSections();
 
   this->Widget = new QFrame(this->parentWidget());
 
@@ -166,18 +162,30 @@ void qtRootSection::showAdvanced(int checked)
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   this->Widget->setLayout( layout );
+  this->Internals->TabGroup->showAdvanced(checked);
+  layout->addWidget(this->Internals->TabGroup->widget());
 
   this->parentWidget()->layout()->addWidget( this->ScrollArea );
 
   qtUIManager::instance()->setShowAdvanced(checked ? true : false);
-  qtUIManager::instance()->processRootSection(this);
+  // qtUIManager::instance()->processRootSection(this);
+}
 
-  if(this->childSections().count())
+//----------------------------------------------------------------------------
+void qtRootSection::initRootTabGroup()
+{
+  //if we are the root tab group we want to be display differently than the other tab groups
+  QTabWidget *tab = dynamic_cast<QTabWidget*>(this->Internals->TabGroup->widget());
+  if ( tab )
     {
-    QTabWidget* child = static_cast<QTabWidget*>(childSections().value(0)->widget());
-    if(child)
+    tab->setTabPosition(QTabWidget::East);
+
+    //default icon size is style dependent. We will override this with a default
+    //that icons can't be smaller than 32x32
+    QSize ISize = tab->iconSize();
+    if ( ISize.height() < 24 && ISize.width() < 24 )
       {
-      child->setCurrentIndex(currentTab);
+      tab->setIconSize( QSize(24,24) );
       }
     }
 }

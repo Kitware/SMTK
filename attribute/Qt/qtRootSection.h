@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_qtRootSection_h
 #define __slctk_attribute_qtRootSection_h
 
-#include "qtGroupSection.h"
+#include "qtSection.h"
 
 class qtRootSectionInternals;
 class QScrollArea;
@@ -36,7 +36,7 @@ namespace slctk
 {
   namespace attribute
   {
-    class SLCTKATTRIBUTE_EXPORT qtRootSection : public qtGroupSection
+    class SLCTKATTRIBUTE_EXPORT qtRootSection : public qtSection
     {
       Q_OBJECT
 
@@ -44,13 +44,12 @@ namespace slctk
       qtRootSection(slctk::RootSectionPtr, QWidget* p);
       virtual ~qtRootSection();
 
-      void updateCMBModelInfo();
-
     public slots:
-      void showAdvanced(int show);
+      virtual void showAdvanced(int show);
 
     protected:
       virtual void createWidget( );
+      virtual void initRootTabGroup( );
       QScrollArea *ScrollArea;
 
     private:

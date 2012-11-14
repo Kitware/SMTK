@@ -80,8 +80,7 @@ void qtGroupSection::addChildSection(qtSection* child)
   if(!this->Internals->ChildSections.contains(child))
     {
     this->Internals->ChildSections.append(child);
-    QTabWidget *tab = dynamic_cast<QTabWidget*>(this->Widget);
-    
+    this->addTabEntry(child);
     }
 }
 //----------------------------------------------------------------------------
@@ -92,9 +91,9 @@ QList<qtSection*>& qtGroupSection::childSections() const
 //----------------------------------------------------------------------------
 void qtGroupSection::clearChildSections()
 {
-  for(int i=0; i < this->Internals->ChildSections.count(); i++)
+  foreach(qtSection* childSec, this->Internals->ChildSections)
     {
-    delete this->Internals->ChildSections.value(i);
+    delete childSec;
     }
   this->Internals->ChildSections.clear();
 }
@@ -102,24 +101,28 @@ void qtGroupSection::clearChildSections()
 //----------------------------------------------------------------------------
 void qtGroupSection::showAdvanced(int checked)
 {
+  int currentTab = 0;
 
-}
-
-//----------------------------------------------------------------------------
-void qtGroupSection::isRootTabGroup( )
-{
-  //if we are the root tab group we want to be display differently than the other tab groups
-  QTabWidget *tab = dynamic_cast<QTabWidget*>(this->Widget);
-  if ( tab )
+  if(this->childSections().count())
     {
-    tab->setTabPosition(QTabWidget::East);
-
-    //default icon size is style dependent. We will override this with a default
-    //that icons can't be smaller than 32x32
-    QSize ISize = tab->iconSize();
-    if ( ISize.height() < 24 && ISize.width() < 24 )
+    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
+    if(selfW)
       {
-      tab->setIconSize( QSize(24,24) );
+      currentTab = selfW->currentIndex();
+      }
+    }
+
+  foreach(qtSection* childSec, this->Internals->ChildSections)
+    {
+    childSec->showAdvanced(checked);
+    }
+
+  if(this->childSections().count())
+    {
+    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
+    if(selfW)
+      {
+      selfW->setCurrentIndex(currentTab);
       }
     }
 }

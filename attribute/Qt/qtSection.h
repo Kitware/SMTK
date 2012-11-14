@@ -49,6 +49,9 @@ namespace slctk
      
       bool passAdvancedCheck(bool advanced);
 
+    public slots:
+      virtual void showAdvanced(int show){;}
+
     protected slots:
       virtual void updateAttributeData() {;}
       

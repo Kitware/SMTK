@@ -16,6 +16,7 @@
 
 #include "qtItem.h"
 #include "qtComboItem.h"
+#include "qtGroupSection.h"
 #include "qtRootSection.h"
 #include "qtInputsItem.h"
 #include "qtAttributeSection.h"
@@ -114,7 +115,7 @@ void qtUIManager::initializeUI(QWidget* pWidget)
 //----------------------------------------------------------------------------
 void qtUIManager::processRootSection(qtRootSection* rootSec)
 {
-  this->processGroupSection(rootSec);
+  //this->processGroupSection(rootSec);
 }
 
 //----------------------------------------------------------------------------
@@ -123,7 +124,7 @@ void qtUIManager::processAttributeSection(qtAttributeSection* qtSec)
   slctk::AttributeSectionPtr sec = slctk::dynamicCastPointer<AttributeSection>(
     qtSec->getObject());
 
-  this->processBasicSection(qtSec);
+  qtUIManager::processBasicSection(qtSec);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processInstancedSection(qtInstancedSection* qtSec)
@@ -131,7 +132,7 @@ void qtUIManager::processInstancedSection(qtInstancedSection* qtSec)
   slctk::InstancedSectionPtr sec = slctk::dynamicCastPointer<InstancedSection>(
     qtSec->getObject());
 
-  this->processBasicSection(qtSec);
+  qtUIManager::processBasicSection(qtSec);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processModelEntitySection(qtModelEntitySection* qtSec)
@@ -139,7 +140,7 @@ void qtUIManager::processModelEntitySection(qtModelEntitySection* qtSec)
   slctk::ModelEntitySectionPtr sec = slctk::dynamicCastPointer<ModelEntitySection>(
     qtSec->getObject());
 
-  this->processBasicSection(qtSec);
+  qtUIManager::processBasicSection(qtSec);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processSimpleExpressionSection(qtSimpleExpressionSection* qtSec)
@@ -147,14 +148,14 @@ void qtUIManager::processSimpleExpressionSection(qtSimpleExpressionSection* qtSe
   slctk::SimpleExpressionSectionPtr sec = slctk::dynamicCastPointer<SimpleExpressionSection>(
     qtSec->getObject());
 
-  this->processBasicSection(qtSec);
+  qtUIManager::processBasicSection(qtSec);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processGroupSection(qtGroupSection* pQtGroup)
 {
   slctk::GroupSectionPtr group = slctk::dynamicCastPointer<GroupSection>(
     pQtGroup->getObject());
-  this->processBasicSection( pQtGroup);
+  qtUIManager::processBasicSection( pQtGroup);
   std::size_t i, n = group->numberOfSubsections();
   slctk::SectionPtr sec;
   qtSection* qtSec = NULL;
@@ -165,23 +166,23 @@ void qtUIManager::processGroupSection(qtGroupSection* pQtGroup)
       {
       case Section::ATTRIBUTE:
         qtSec = new qtAttributeSection(sec, pQtGroup->widget());
-        this->processAttributeSection(qobject_cast<qtAttributeSection*>(qtSec));
+        qtUIManager::processAttributeSection(qobject_cast<qtAttributeSection*>(qtSec));
         break;
       case Section::GROUP:
         qtSec = new qtGroupSection(sec, pQtGroup->widget());
-        this->processGroupSection(qobject_cast<qtGroupSection*>(qtSec));
+        qtUIManager::processGroupSection(qobject_cast<qtGroupSection*>(qtSec));
         break;
       case Section::INSTANCED:
         qtSec = new qtInstancedSection(sec, pQtGroup->widget());
-        this->processInstancedSection(qobject_cast<qtInstancedSection*>(qtSec));
+        qtUIManager::processInstancedSection(qobject_cast<qtInstancedSection*>(qtSec));
         break;
       case Section::MODEL_ENTITY:
         qtSec = new qtModelEntitySection(sec, pQtGroup->widget());
-        this->processModelEntitySection(qobject_cast<qtModelEntitySection*>(qtSec));
+        qtUIManager::processModelEntitySection(qobject_cast<qtModelEntitySection*>(qtSec));
         break;
       case Section::SIMPLE_EXPRESSION:
         qtSec = new qtSimpleExpressionSection(sec, pQtGroup->widget());
-        this->processSimpleExpressionSection(qobject_cast<qtSimpleExpressionSection*>(qtSec));
+        qtUIManager::processSimpleExpressionSection(qobject_cast<qtSimpleExpressionSection*>(qtSec));
         break;
       default:
         break;

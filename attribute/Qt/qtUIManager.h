@@ -39,7 +39,7 @@ namespace slctk
     class qtSimpleExpressionSection;
     class qtGroupSection;
     class qtSection;
-    
+   
     class SLCTKATTRIBUTE_EXPORT qtUIManager : public QObject
     {
 
@@ -88,13 +88,13 @@ namespace slctk
       
     protected:
 
-      void processRootSection(qtRootSection* qRootSection);
-      void processAttributeSection(qtAttributeSection* sec);
-      void processInstancedSection(qtInstancedSection* sec);
-      void processModelEntitySection(qtModelEntitySection* sec);
-      void processSimpleExpressionSection(qtSimpleExpressionSection* sec);
-      void processGroupSection(qtGroupSection* sec);
-      void processBasicSection(qtSection* sec);
+      static void processRootSection(qtRootSection* qRootSection);
+      static void processAttributeSection(qtAttributeSection* sec);
+      static void processInstancedSection(qtInstancedSection* sec);
+      static void processModelEntitySection(qtModelEntitySection* sec);
+      static void processSimpleExpressionSection(qtSimpleExpressionSection* sec);
+      static void processGroupSection(qtGroupSection* sec);
+      static void processBasicSection(qtSection* sec);
 
       void setShowAdvanced(bool val)
       {  this->ShowAdvanced = val;  }
