@@ -23,15 +23,33 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtModelEntitySection.h"
 
 #include "qtUIManager.h"
+#include "qtTableWidget.h"
+#include "qtAttribute.h"
+#include "qtItem.h"
 
-#include <QFrame>
+#include "attribute/ModelEntitySection.h"
+#include "attribute/Attribute.h"
+#include "attribute/Definition.h"
+#include "attribute/ItemDefinition.h"
+#include "attribute/Manager.h"
+#include "attribute/ValueItem.h"
+#include "attribute/ValueItemDefinition.h"
+
+#include <QGridLayout>
+#include <QComboBox>
+#include <QTableWidgetItem>
+#include <QVariant>
+#include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QPointer>
-#include <QCheckBox>
 #include <QLabel>
-#include <QTableWidget>
-#include <QScrollArea>
+#include <QListWidget>
+#include <QKeyEvent>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QMessageBox>
+#include <QSplitter>
+
 
 using namespace slctk::attribute;
 
@@ -39,6 +57,11 @@ using namespace slctk::attribute;
 class qtModelEntitySectionInternals
 {
 public:
+  QListWidget* ListBox;
+  QComboBox* ShowCategoryCombo;
+  QFrame* FiltersFrame;
+  QFrame* leftFrame; // top
+  QFrame* rightFrame; // bottom
 
 };
 
@@ -63,10 +86,153 @@ void qtModelEntitySection::createWidget( )
     {
     return;
     }
+  // Create a frame to contain all gui components for this object
+  // Create a list box for the group entries
+  // Create a table widget
+  // Add link from the listbox selection to the table widget
+  // A common add/delete/(copy/paste ??) widget
+
+  QSplitter* frame = new QSplitter(this->parentWidget());
+  //this panel looks better in a over / under layout, rather than left / right
+  frame->setOrientation( Qt::Vertical );
+
+  QFrame* leftFrame = new QFrame(frame);
+  QFrame* rightFrame = new QFrame(frame);
+
+  this->Internals->leftFrame = leftFrame;
+  this->Internals->rightFrame = rightFrame;
+
+  QVBoxLayout* leftLayout = new QVBoxLayout(leftFrame);
+  leftLayout->setMargin(0);
+  QVBoxLayout* rightLayout = new QVBoxLayout(rightFrame);
+  rightLayout->setMargin(0);
+
+  
+  this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
+
+  const Manager* attMan = qtUIManager::instance()->attManager();
+  std::set<std::string>::const_iterator it;
+  const std::set<std::string> &cats = attMan->categories();
+  for (it = cats.begin(); it != cats.end(); it++)
+    {
+    this->Internals->ShowCategoryCombo->addItem(it->c_str());
+    }
+
+  this->Internals->FiltersFrame = new QFrame(frame);
+  QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
+  filterLayout->setMargin(0);
+
+  QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
+  filterLayout->addWidget(labelShow);
+  filterLayout->addWidget(this->Internals->ShowCategoryCombo);
+
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  // create a list box for all the entries
+  this->Internals->ListBox = new QListWidget(frame);
+  this->Internals->ListBox->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  leftLayout->addWidget(this->Internals->ListBox);
+
+  frame->addWidget(leftFrame);
+  frame->addWidget(rightFrame);
+
+
+  slctk::ModelEntitySectionPtr sec =
+    slctk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+  if(!sec || !sec->definition())
+    {
+    return;
+    }
+
+  AttributeDefinitionPtr attDef = sec->definition();
+
+  std::vector<slctk::AttributePtr> result;
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
+  std::vector<slctk::AttributePtr>::iterator itAtt;
+  this->Internals->ListBox->blockSignals(true);    
+  for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+    {
+    this->addAttributeListItem(*itAtt);
+    }
+  this->Internals->ListBox->blockSignals(false);
+
+  // signals/slots
+  QObject::connect(this->Internals->ShowCategoryCombo,
+    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory(int)));
+
+  QObject::connect(this->Internals->ListBox,
+    SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
+    this, SLOT(onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
+  QObject::connect(this->Internals->ListBox,
+    SIGNAL(itemChanged (QListWidgetItem *)),
+    this, SLOT(onAttributeNameChanged(QListWidgetItem * )));
+
+  this->Widget = frame;
+  this->parentWidget()->layout()->addWidget(frame);
+
 }
 
 //----------------------------------------------------------------------------
 void qtModelEntitySection::showAdvanced(int checked)
 {
 
+}
+//----------------------------------------------------------------------------
+void qtModelEntitySection::onShowCategory(int category)
+{
+  slctk::ModelEntitySectionPtr sec =
+    slctk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+  if(!sec || !sec->definition())
+    {
+    return;
+    }
+  AttributeDefinitionPtr attDef = sec->definition();
+
+  std::vector<slctk::AttributePtr> result;
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
+
+  if(result.size())
+    {
+
+    }
+}
+//----------------------------------------------------------------------------
+void qtModelEntitySection::onListBoxSelectionChanged(
+  QListWidgetItem * current, QListWidgetItem * previous)
+{
+}
+//-----------------------------------------------------------------------------
+slctk::AttributePtr qtModelEntitySection::getSelectedAttribute()
+{
+  return this->getAttributeFromItem(this->getSelectedItem());
+}
+//-----------------------------------------------------------------------------
+slctk::AttributePtr qtModelEntitySection::getAttributeFromItem(
+  QListWidgetItem * item)
+{
+  Attribute* rawPtr = item ? 
+    static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
+  return rawPtr ? rawPtr->pointer() : slctk::AttributePtr();
+}
+//-----------------------------------------------------------------------------
+QListWidgetItem *qtModelEntitySection::getSelectedItem()
+{
+  return this->Internals->ListBox->selectedItems().count()>0 ?
+    this->Internals->ListBox->selectedItems().value(0) : NULL;
+}
+//----------------------------------------------------------------------------
+QListWidgetItem* qtModelEntitySection::addAttributeListItem(
+  slctk::AttributePtr childData)
+{
+  QListWidgetItem* item = new QListWidgetItem(
+      QString::fromUtf8(childData->definition()->label().c_str()),
+      this->Internals->ListBox, slctk_USER_DATA_TYPE);
+  QVariant vdata;
+  vdata.setValue((void*)(childData.get()));
+  item->setData(Qt::UserRole, vdata);
+  item->setFlags(item->flags() | Qt::ItemIsEditable);
+  this->Internals->ListBox->addItem(item);
+  return item;
 }

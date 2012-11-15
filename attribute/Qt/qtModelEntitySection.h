@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtSection.h"
 
 class qtModelEntitySectionInternals;
-class QScrollArea;
+class QListWidgetItem;
 
 namespace slctk
 {
@@ -43,12 +43,18 @@ namespace slctk
     public:
       qtModelEntitySection(slctk::SectionPtr, QWidget* p);
       virtual ~qtModelEntitySection();
+      QListWidgetItem* getSelectedItem();
 
     public slots:
       void showAdvanced(int show);
+      void onShowCategory(int);
+      void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
     protected:
       virtual void createWidget( );
+      slctk::AttributePtr getSelectedAttribute();
+      slctk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
+      QListWidgetItem* addAttributeListItem(slctk::AttributePtr childData);
 
     private:
 
