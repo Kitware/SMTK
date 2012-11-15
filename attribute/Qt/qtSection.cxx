@@ -80,14 +80,3 @@ QWidget* qtSection::parentWidget()
 {
   return this->Internals->ParentWidget;
 }
-
-//----------------------------------------------------------------------------
-bool qtSection::passAdvancedCheck(bool advancedContainer)
-{
-  if(!advancedContainer || 
-     (advancedContainer && qtUIManager::instance()->showAdvanced()))
-     {
-     return true;
-     }
-  return false;
-}

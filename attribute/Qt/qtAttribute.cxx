@@ -168,17 +168,6 @@ QWidget* qtAttribute::parentWidget()
 }
 
 //----------------------------------------------------------------------------
-bool qtAttribute::passAdvancedCheck(bool advancedContainer)
-{
-  if(!advancedContainer || 
-     (advancedContainer && qtUIManager::instance()->showAdvanced()))
-     {
-     return true;
-     }
-  return false;
-}
-
-//----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(slctk::AttributeItemPtr item, QWidget* pW)
 {
   qtItem* aItem = NULL;

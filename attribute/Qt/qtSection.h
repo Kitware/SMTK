@@ -47,8 +47,6 @@ namespace slctk
       {return this->Widget;}
       QWidget* parentWidget();
      
-      bool passAdvancedCheck(bool advanced);
-
     public slots:
       virtual void showAdvanced(int show){;}
 

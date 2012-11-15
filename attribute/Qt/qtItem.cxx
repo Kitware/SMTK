@@ -22,6 +22,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtItem.h"
 
 #include "qtUIManager.h"
+#include "attribute/Item.h"
+#include "attribute/ItemDefinition.h"
 
 #include <QPointer>
 #include <QLayout>
@@ -110,10 +112,7 @@ QWidget* qtItem::parentWidget()
 //----------------------------------------------------------------------------
 bool qtItem::passAdvancedCheck(bool advancedContainer)
 {
-  if(!advancedContainer || 
-     (advancedContainer && qtUIManager::instance()->showAdvanced()))
-     {
-     return true;
-     }
-  return false;
+  slctk::AttributeItemPtr dataObj = this->getObject();
+  return qtUIManager::instance()->passItemAdvancedCheck(
+    advancedContainer,dataObj->definition()->advanceLevel());
 }

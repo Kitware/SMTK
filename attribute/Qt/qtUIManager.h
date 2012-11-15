@@ -55,20 +55,24 @@ namespace slctk
       virtual ~qtUIManager();  
 
       void initializeUI(QWidget* pWidget);
-      
+      slctk::attribute::Manager* attManager() const
+        {return &this->m_AttManager;}
+
       // Description:
       // Set/Get the color used for indicating items with default values
       void setDefaultValueColor(const QColor &color);
       QColor defaultValueColor() const
       {return this->DefaultValueColor;}
-        
+
       qtRootSection* rootSection()
         {return this->RootSection;}
       static QString clipBoardText();
       static void setClipBoardText(QString& text);
-      
+
       void clearRoot();
-      
+
+      bool passItemAdvancedCheck(bool advancedAtt, bool advancedItem);
+      bool passAttributeAdvancedCheck(bool advancedAtt);
       const QFont& advancedFont()
         {return this->advFont;}
       bool showAdvanced()
@@ -87,8 +91,6 @@ namespace slctk
       slctk::GroupItemPtr dataItem, QTableWidget* table);
       
     protected:
-
-      static void processRootSection(qtRootSection* qRootSection);
       static void processAttributeSection(qtAttributeSection* sec);
       static void processInstancedSection(qtInstancedSection* sec);
       static void processModelEntitySection(qtModelEntitySection* sec);
@@ -105,6 +107,7 @@ namespace slctk
       qtRootSection* RootSection;
       QFont advFont;
       QColor DefaultValueColor;
+      //slctk::attribute::Manager &m_AttManager;
       slctk::attribute::Manager &m_AttManager;
 
     }; // class

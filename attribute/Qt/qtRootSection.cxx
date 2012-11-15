@@ -64,6 +64,10 @@ qtRootSection::~qtRootSection()
     {
     delete this->Internals->AdvancedCheck;
     }
+  if(this->Internals->TabGroup)
+    {
+    delete this->Internals->TabGroup;
+    }
   delete this->Internals;
   if ( this->ScrollArea )
     {

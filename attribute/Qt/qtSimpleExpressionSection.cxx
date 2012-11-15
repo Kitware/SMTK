@@ -412,15 +412,16 @@ void qtSimpleExpressionSection::onFuncNameChanged(QListWidgetItem* item)
   if(func)
     {
     func->definition()->setLabel(item->text().toAscii().constData());
-    } 
-  // Lets see what attributes are being referenced
-  std::vector<slctk::AttributeItemPtr> refs;
-  std::size_t i;
-  func->references(refs);
-  for (i = 0; i < refs.size(); i++)
-    {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
-      << "\n";
+
+    // Lets see what attributes are being referenced
+    std::vector<slctk::AttributeItemPtr> refs;
+    std::size_t i;
+    func->references(refs);
+    for (i = 0; i < refs.size(); i++)
+      {
+      std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+        << "\n";
+      } 
     } 
 }
 
@@ -560,7 +561,8 @@ void qtSimpleExpressionSection::onDeleteSelected()
 QListWidgetItem* qtSimpleExpressionSection::addFunctionListItem(
   slctk::AttributePtr childData)
 {
-  if(!this->passAdvancedCheck(childData->definition()->advanceLevel()))
+  if(!qtUIManager::instance()->passAttributeAdvancedCheck(
+    childData->definition()->advanceLevel()))
     {
     return NULL;
     }

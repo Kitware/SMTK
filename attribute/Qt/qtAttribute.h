@@ -54,8 +54,6 @@ namespace slctk
       virtual void clearItems();
       QList<qtItem*>& items() const;
 
-      bool passAdvancedCheck(bool advanced);
-
       // create all the items
       static qtItem* createItem(slctk::AttributeItemPtr item, QWidget* p);
       static qtItem* createValueItem(slctk::ValueItemPtr item, QWidget* p);

@@ -109,13 +109,29 @@ void qtUIManager::initializeUI(QWidget* pWidget)
     }
   this->RootSection = new qtRootSection(
     this->m_AttManager.rootSection(), pWidget);
-  this->processRootSection(this->RootSection);
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::processRootSection(qtRootSection* rootSec)
+bool qtUIManager::passItemAdvancedCheck(
+  bool advancedContainer, bool advancedItem)
 {
-  //this->processGroupSection(rootSec);
+  if((!advancedItem && !advancedContainer) || 
+     (advancedItem && this->showAdvanced()) ||
+     (!advancedItem && advancedContainer && this->showAdvanced()))
+     {
+     return true;
+     }
+  return false;
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAttributeAdvancedCheck(bool advancedContainer)
+{
+  if(!advancedContainer || 
+     (advancedContainer && this->showAdvanced()))
+     {
+     return true;
+     }
+  return false;
 }
 
 //----------------------------------------------------------------------------

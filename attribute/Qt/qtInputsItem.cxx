@@ -96,7 +96,7 @@ void qtInputsItem::createWidget()
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setAlignment(Qt::AlignLeft);
-  if(dataObj->definition()->isOptional())
+  if(dataObj->isOptional())
     {
     QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
     optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
