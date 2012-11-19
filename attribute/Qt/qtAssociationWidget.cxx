@@ -1,0 +1,174 @@
+/*=========================================================================
+
+Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
+Clifton Park, NY, 12065, USA.
+
+All rights reserved. No part of this software may be reproduced, distributed,
+or modified, in any form or by any means, without permission in writing from
+Kitware Inc.
+
+IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
+DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
+OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
+EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
+BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
+"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+
+=========================================================================*/
+
+#include "qtAssociationWidget.h"
+
+#include "qtUIManager.h"
+#include "qtTableWidget.h"
+#include "qtAttribute.h"
+#include "qtItem.h"
+
+#include "attribute/ModelEntitySection.h"
+#include "attribute/Attribute.h"
+#include "attribute/Definition.h"
+#include "attribute/ItemDefinition.h"
+#include "attribute/Manager.h"
+#include "attribute/ValueItem.h"
+#include "attribute/ValueItemDefinition.h"
+
+#include <QGridLayout>
+#include <QComboBox>
+#include <QTableWidgetItem>
+#include <QVariant>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QListWidget>
+#include <QKeyEvent>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QMessageBox>
+#include <QSplitter>
+
+#include "ui_qtAttributeAssociation.h"
+
+namespace Ui { class qtAttributeAssociation; }
+
+using namespace slctk::attribute;
+
+//----------------------------------------------------------------------------
+class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
+{
+public:
+
+};
+
+//----------------------------------------------------------------------------
+qtAssociationWidget::qtAssociationWidget(
+  QWidget* _p): QWidget(_p)
+{
+  this->Internals = new qtAssociationWidgetInternals;
+  this->Internals->setupUi(this);
+
+  this->initWidget( );
+}
+
+//----------------------------------------------------------------------------
+qtAssociationWidget::~qtAssociationWidget()
+{
+  delete this->Internals;
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::initWidget( )
+{
+  // signals/slots
+  QObject::connect(this->Internals->CurrentList,
+    SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
+    this, SLOT(onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
+  QObject::connect(this->Internals->AvailableList,
+    SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
+    this, SLOT(onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
+
+  QObject::connect(this->Internals->MoveToRight,
+    SIGNAL(clicked()), this, SLOT(onRemoveAssigned()));
+  QObject::connect(this->Internals->MoveToLeft,
+    SIGNAL(clicked()), this, SLOT(onAddAvailable()));
+  QObject::connect(this->Internals->ExchangeLeftRight,
+    SIGNAL(clicked()), this, SLOT(onExchange()));
+
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::showAdvanced(int checked)
+{
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::showAttributeAssociation(
+  slctk::AttributePtr att, QString& category)
+{
+
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onCurrentListSelectionChanged(
+  QListWidgetItem * current, QListWidgetItem * previous)
+{
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onAvailableListSelectionChanged(
+  QListWidgetItem * current, QListWidgetItem * previous)
+{
+}
+
+//-----------------------------------------------------------------------------
+slctk::AttributePtr qtAssociationWidget::getSelectedAttribute(
+  QListWidget* theList)
+{
+  return this->getAttributeFromItem(this->getSelectedItem(theList));
+}
+//-----------------------------------------------------------------------------
+slctk::AttributePtr qtAssociationWidget::getAttributeFromItem(
+  QListWidgetItem * item)
+{
+  Attribute* rawPtr = item ? 
+    static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
+  return rawPtr ? rawPtr->pointer() : slctk::AttributePtr();
+}
+//-----------------------------------------------------------------------------
+QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
+{
+  return theList->selectedItems().count()>0 ?
+    theList->selectedItems().value(0) : NULL;
+}
+//----------------------------------------------------------------------------
+QListWidgetItem* qtAssociationWidget::addAttributeListItem(
+  QListWidget* theList, slctk::AttributePtr childData)
+{
+  QListWidgetItem* item = new QListWidgetItem(
+      QString::fromUtf8(childData->definition()->label().c_str()),
+      theList, slctk_USER_DATA_TYPE);
+  QVariant vdata;
+  vdata.setValue((void*)(childData.get()));
+  item->setData(Qt::UserRole, vdata);
+  item->setFlags(item->flags() | Qt::ItemIsEditable);
+  theList->addItem(item);
+  return item;
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onRemoveAssigned()
+{
+
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onAddAvailable()
+{
+
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onExchange()
+{
+
+}

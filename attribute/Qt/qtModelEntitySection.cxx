@@ -170,7 +170,7 @@ void qtModelEntitySection::createWidget( )
 
   this->Widget = frame;
   this->parentWidget()->layout()->addWidget(frame);
-
+  this->onShowCategory(0);
 }
 
 //----------------------------------------------------------------------------

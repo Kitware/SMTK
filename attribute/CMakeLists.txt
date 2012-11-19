@@ -105,14 +105,20 @@ if(Slctk_BUILD_QT)
   set (slctkQtDepends ${QT_LIBRARIES})
   get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
   get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
+  get_directory_property(QAttrLibUIS DIRECTORY Qt DEFINITION QAttrLibUIS)
   qt4_wrap_cpp(QAttrLibMocSrcs ${QAttrLibMocHeaders})
-  source_group("Qt_Source" FILES ${QAttrLibSrcs})
-  source_group("Qt_Moc" FILES ${QAttrLibMocSrcs})
+  qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs}
+    )
+
+  source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
+  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
+  source_group("Qt_Generated" FILES ${UI_BUILT_SOURCES})
 endif()
 
 add_library(SlctkAttribute ${attribute_srcs} ${headers}
-   ${QAttrLibSrcs} ${QAttrLibMocSrcs} ${QAttrLibMocHeaders})
+   ${QAttrLibSrcs} ${QAttrLibMocSrcs} ${QAttrLibMocHeaders}
+   ${UI_BUILT_SOURCES})
 target_link_libraries(SlctkAttribute ${slctkQtDepends})
 
 slctk_set_includes(SlctkAttribute ${Slctk_Attribute_INCLUDE_DIRS})

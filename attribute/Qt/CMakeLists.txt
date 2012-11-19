@@ -13,6 +13,7 @@ set(QAttrLibSrcs
     Qt/qtFileItem.cxx
     Qt/qtAttributeRefItem.cxx
     Qt/qtTableWidget.cxx
+    Qt/qtAssociationWidget.cxx
 
  #   Qt/qtUIPanel.cxx
     Qt/qtItem.cxx
@@ -34,6 +35,11 @@ set(QAttrLibSrcs
  #   Qt/qtGeometryItem.cxx
   )
 
+  set(QAttrLibUIs
+    Qt/qtAttributeAssociation.ui
+    )
+
+
 set(QAttrLibMocHeaders
     Qt/qtUIManager.h
     Qt/qtAttribute.h
@@ -48,6 +54,7 @@ set(QAttrLibMocHeaders
     Qt/qtFileItem.h
     Qt/qtAttributeRefItem.h
     Qt/qtTableWidget.h
+    Qt/qtAssociationWidget.h
 
 #    Qt/qtUIPanel.h
     Qt/qtItem.h

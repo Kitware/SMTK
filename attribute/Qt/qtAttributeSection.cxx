@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtUIManager.h"
 #include "qtTableWidget.h"
 #include "qtAttribute.h"
+#include "qtAssociationWidget.h"
 #include "qtItem.h"
 
 #include "attribute/AttributeSection.h"
@@ -49,6 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QModelIndexList>
 #include <QMessageBox>
 #include <QSplitter>
+#include <QPointer>
 
 #include <set>
 using namespace slctk::attribute;
@@ -66,12 +68,12 @@ public:
 
   QFrame* FiltersFrame;
   QFrame* ButtonsFrame;
-  QFrame* leftFrame; // top
-  QFrame* rightFrame; // bottom
+  QFrame* TopFrame; // top
+  QFrame* BottomFrame; // bottom
 
   QComboBox* ViewByCombo;
   QComboBox* ShowCategoryCombo;
-
+  QPointer<qtAssociationWidget> AssociationWidget;
 };
 
 //----------------------------------------------------------------------------
@@ -105,16 +107,16 @@ void qtAttributeSection::createWidget( )
   //this panel looks better in a over / under layout, rather than left / right
   frame->setOrientation( Qt::Vertical );
 
-  QFrame* leftFrame = new QFrame(frame);
-  QFrame* rightFrame = new QFrame(frame);
+  QFrame* TopFrame = new QFrame(frame);
+  QFrame* BottomFrame = new QFrame(frame);
 
-  this->Internals->leftFrame = leftFrame;
-  this->Internals->rightFrame = rightFrame;
+  this->Internals->TopFrame = TopFrame;
+  this->Internals->BottomFrame = BottomFrame;
 
-  QVBoxLayout* leftLayout = new QVBoxLayout(leftFrame);
-  leftLayout->setMargin(0);
-  QVBoxLayout* rightLayout = new QVBoxLayout(rightFrame);
-  rightLayout->setMargin(0);
+  QVBoxLayout* TopLayout = new QVBoxLayout(TopFrame);
+  TopLayout->setMargin(0);
+  QVBoxLayout* BottomLayout = new QVBoxLayout(BottomFrame);
+  BottomLayout->setMargin(0);
 
   // create a filter-frame with ViewBy-combo
   this->Internals->FiltersFrame = new QFrame(frame);
@@ -165,13 +167,16 @@ void qtAttributeSection::createWidget( )
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   this->Internals->AttributeTable->setSizePolicy(tableSizePolicy);
 
-  leftLayout->addWidget(this->Internals->FiltersFrame);
-  leftLayout->addWidget(this->Internals->ListBox);
-  leftLayout->addWidget(this->Internals->ButtonsFrame);
-  rightLayout->addWidget(this->Internals->AttributeTable);
+  TopLayout->addWidget(this->Internals->FiltersFrame);
+  TopLayout->addWidget(this->Internals->ListBox);
+  TopLayout->addWidget(this->Internals->ButtonsFrame);
+  BottomLayout->addWidget(this->Internals->AttributeTable);
 
-  frame->addWidget(leftFrame);
-  frame->addWidget(rightFrame);
+  frame->addWidget(TopFrame);
+  frame->addWidget(BottomFrame);
+  // the association widget
+  this->Internals->AssociationWidget = new qtAssociationWidget(frame);
+  BottomLayout->addWidget(this->Internals->AssociationWidget);
 
   // signals/slots
   QObject::connect(this->Internals->ViewByCombo,
