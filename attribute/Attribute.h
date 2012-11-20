@@ -70,8 +70,6 @@ namespace slctk
       {return this->m_definition;}
 
       // Return the public pointer for this attribute.
-      // If the attribute's manager has been deleted this can return an
-      // empty pointer
       slctk::AttributePtr pointer() const;
 
       bool isMemberOf(const std::string &category) const;

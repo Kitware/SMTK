@@ -25,7 +25,7 @@ endif()
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/PublicPointerDefs.h.in
-  ${PROJECT_BINARY_DIR}/attribute/PublicPointerDefs.h
+  ${PROJECT_BINARY_DIR}/PublicPointerDefs.h
   @ONLY)
 
 
@@ -67,6 +67,7 @@ include_directories(
 
 #add the actual code
 add_subdirectory(attribute)
+add_subdirectory(model)
 
 #add the examples code
 if(Slctk_ENABLE_EXAMPLES)

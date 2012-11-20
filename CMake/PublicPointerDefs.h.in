@@ -37,6 +37,14 @@ namespace slctk
     return @POINTER_NAMESPACE@::dynamic_pointer_cast<T>(r);
   }
 
+  namespace model
+  {
+    class Model;
+    class Item;
+    class GroupItem;
+    class ModelDomainItem;
+  };
+
   namespace attribute
   {
     class Attribute;
@@ -70,6 +78,10 @@ namespace slctk
     class VoidItem;
     class VoidItemDefinition;
   };
+
+  typedef @POINTER_NAMESPACE@::shared_ptr<model::Item> ModelItemPtr;
+  typedef @POINTER_NAMESPACE@::weak_ptr<model::Item> WeakModelItemPtr;
+  typedef @POINTER_NAMESPACE@::shared_ptr<model::GroupItem> ModelGroupItemPtr;
 
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::Attribute> AttributePtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<attribute::Attribute> WeakAttributePtr;

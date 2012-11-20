@@ -38,8 +38,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace slctk
 {
-  namespace attribute { class Manager; }
-
   namespace attribute
   {
     class Attribute;
@@ -61,6 +59,7 @@ namespace slctk
       slctk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def);
       bool removeAttribute(slctk::AttributePtr att);
       slctk::AttributePtr findAttribute(const std::string &name) const;
+      slctk::AttributePtr findAttribute(unsigned long id) const;
       void findAttributes(const std::string &type, std::vector<slctk::AttributePtr> &result) const;
       void findAttributes(slctk::AttributeDefinitionPtr def, std::vector<AttributePtr> &result) const;
       slctk::AttributeDefinitionPtr findDefinition(const std::string &type) const;
@@ -125,6 +124,13 @@ namespace slctk
       std::map<std::string, AttributePtr>::const_iterator it;
       it = this->m_attributes.find(name);
       return (it == this->m_attributes.end()) ? slctk::AttributePtr() : it->second;
+    }
+//----------------------------------------------------------------------------
+    inline slctk::AttributePtr Manager::findAttribute(unsigned long attId) const
+    {
+      std::map<unsigned long, AttributePtr>::const_iterator it;
+      it = this->m_attributeIdMap.find(attId);
+      return (it == this->m_attributeIdMap.end()) ? slctk::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
     inline slctk::AttributeDefinitionPtr 
