@@ -107,7 +107,7 @@ void qtInputsItem::createWidget()
       dataObj->definition()->isEnabledByDefault());
     labelLayout->addWidget(optionalCheck);
     }
-  QLabel* label = new QLabel(dataObj->definition()->label().c_str(),
+  QLabel* label = new QLabel(dataObj->name().c_str(),
     this->parentWidget());
   label->setSizePolicy(sizeFixedPolicy);
 

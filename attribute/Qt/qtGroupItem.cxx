@@ -70,7 +70,7 @@ void qtGroupItem::createWidget()
     return;
     }
 
-  QGroupBox* groupBox = new QGroupBox(item->definition()->label().c_str(),
+  QGroupBox* groupBox = new QGroupBox(item->name().c_str(),
     this->parentWidget());
   //   groupBox->setCheckable(true);
   //   groupBox->setChecked(true);

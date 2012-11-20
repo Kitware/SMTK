@@ -227,7 +227,7 @@ QListWidgetItem* qtModelEntitySection::addAttributeListItem(
   slctk::AttributePtr childData)
 {
   QListWidgetItem* item = new QListWidgetItem(
-      QString::fromUtf8(childData->definition()->label().c_str()),
+      QString::fromUtf8(childData->name().c_str()),
       this->Internals->ListBox, slctk_USER_DATA_TYPE);
   QVariant vdata;
   vdata.setValue((void*)(childData.get()));

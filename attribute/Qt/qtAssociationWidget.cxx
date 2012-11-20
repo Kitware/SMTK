@@ -108,6 +108,30 @@ void qtAssociationWidget::showAdvanced(int checked)
 void qtAssociationWidget::showAttributeAssociation(
   slctk::AttributePtr att, QString& category)
 {
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+  this->Internals->CurrentList->clear();
+  this->Internals->AvailableList->clear();
+
+  if(att)
+    {
+    // Lets see what attributes are being referenced
+    std::vector<slctk::AttributeItemPtr> refs;
+    std::size_t i;
+    att->references(refs);
+    for (i = 0; i < refs.size(); i++)
+      {
+      this->addAttributeRefListItem(
+        this->Internals->CurrentList,refs[i]);
+      } 
+    } 
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::showEntityAssociation(
+  ModelEntity* modEnt, QString& category)
+{
 
 }
 
@@ -144,14 +168,16 @@ QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
     theList->selectedItems().value(0) : NULL;
 }
 //----------------------------------------------------------------------------
-QListWidgetItem* qtAssociationWidget::addAttributeListItem(
-  QListWidget* theList, slctk::AttributePtr childData)
+QListWidgetItem* qtAssociationWidget::addAttributeRefListItem(
+  QListWidget* theList, slctk::AttributeItemPtr refItem)
 {
-  QListWidgetItem* item = new QListWidgetItem(
-      QString::fromUtf8(childData->definition()->label().c_str()),
+  QString txtLabel(refItem->attribute()->name().c_str());
+  txtLabel.append(" : ").append(refItem->owningItem()->name().c_str());
+
+  QListWidgetItem* item = new QListWidgetItem(txtLabel,
       theList, slctk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(childData.get()));
+  vdata.setValue((void*)(refItem.get()));
   item->setData(Qt::UserRole, vdata);
   item->setFlags(item->flags() | Qt::ItemIsEditable);
   theList->addItem(item);

@@ -49,24 +49,24 @@ namespace slctk
       virtual ~qtAssociationWidget();
 
     public slots:
-      void showAdvanced(int show);
-      void showAttributeAssociation(slctk::AttributePtr att, QString& category);
-      void showEntityAssociation(ModelEntity*, QString& category){;}
+      virtual void showAdvanced(int show);
+      virtual void showAttributeAssociation(slctk::AttributePtr att, QString& category);
+      virtual void showEntityAssociation(ModelEntity*, QString& category);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
     protected slots:
-      void onRemoveAssigned();
-      void onAddAvailable();
-      void onExchange();
+      virtual void onRemoveAssigned();
+      virtual void onAddAvailable();
+      virtual void onExchange();
 
     protected:
       virtual void initWidget( );
       QListWidgetItem* getSelectedItem(QListWidget* theLis);
       slctk::AttributePtr getSelectedAttribute(QListWidget* theLis);
       slctk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
-      QListWidgetItem* addAttributeListItem(QListWidget* theList,
-        slctk::AttributePtr childData);
+      virtual QListWidgetItem* addAttributeRefListItem(QListWidget* theList,
+        slctk::AttributeItemPtr refItem);
 
     private:
 

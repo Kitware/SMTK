@@ -411,7 +411,9 @@ void qtSimpleExpressionSection::onFuncNameChanged(QListWidgetItem* item)
   slctk::AttributePtr func = this->getFunctionFromItem(item);
   if(func)
     {
-    func->definition()->setLabel(item->text().toAscii().constData());
+    Manager *attManager = func->definition()->manager();
+    attManager->rename(func, item->text().toAscii().constData());
+    //func->definition()->setLabel(item->text().toAscii().constData());
 
     // Lets see what attributes are being referenced
     std::vector<slctk::AttributeItemPtr> refs;
@@ -572,7 +574,7 @@ QListWidgetItem* qtSimpleExpressionSection::addFunctionListItem(
   if(dataItem)
     {
     item = new QListWidgetItem(
-      QString::fromUtf8(childData->definition()->label().c_str()),
+      QString::fromUtf8(childData->name().c_str()),
       this->Internals->FuncList, slctk_USER_DATA_TYPE);
     QVariant vdata;
     vdata.setValue((void*)(childData.get()));

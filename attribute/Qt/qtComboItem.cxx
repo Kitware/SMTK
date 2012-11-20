@@ -88,7 +88,7 @@ void qtComboItem::createWidget()
     layout = new QVBoxLayout(this->Widget);
     }
   layout->setMargin(0);
-  QLabel* label = new QLabel(this->getObject()->definition()->label().c_str(),
+  QLabel* label = new QLabel(this->getObject()->name().c_str(),
     this->Widget);
   layout->addWidget(label);
 

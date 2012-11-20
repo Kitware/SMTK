@@ -289,7 +289,9 @@ void qtAttributeSection::onAttributeNameChanged(QListWidgetItem* item)
   slctk::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if(aAttribute)
     {
-    aAttribute->definition()->setLabel(item->text().toAscii().constData());
+    Manager *attManager = aAttribute->definition()->manager();
+    attManager->rename(aAttribute, item->text().toAscii().constData());
+    //aAttribute->definition()->setLabel(item->text().toAscii().constData());
 
     // Lets see what attributes are being referenced
     std::vector<slctk::AttributeItemPtr> refs;
@@ -301,7 +303,6 @@ void qtAttributeSection::onAttributeNameChanged(QListWidgetItem* item)
         << "\n";
       } 
     }
-
 }
 
 //----------------------------------------------------------------------------
@@ -463,7 +464,7 @@ void qtAttributeSection::addAttributePropertyItems(
       {
       // No User data, not editable
       QListWidgetItem* item = new QListWidgetItem(
-        QString::fromUtf8(idef->label().c_str()),
+        QString::fromUtf8(idef->name().c_str()),
         this->Internals->ListBox, slctk_USER_DATA_TYPE);
       if(idef->advanceLevel())
         {
@@ -479,7 +480,7 @@ QListWidgetItem* qtAttributeSection::addAttributeListItem(
   slctk::AttributePtr childData)
 {
   QListWidgetItem* item = new QListWidgetItem(
-      QString::fromUtf8(childData->definition()->label().c_str()),
+      QString::fromUtf8(childData->name().c_str()),
       this->Internals->ListBox, slctk_USER_DATA_TYPE);
   QVariant vdata;
   vdata.setValue((void*)(childData.get()));
@@ -599,7 +600,7 @@ void qtAttributeSection::updateTableWithAttribute(
       }
     if(itemDef->isMemberOf(group.toStdString()))
       {
-      QTableWidgetItem* item = new QTableWidgetItem(itemDef->label().c_str());
+      QTableWidgetItem* item = new QTableWidgetItem(attItem->name().c_str());
       if(itemDef->advanceLevel())
         {
         item->setFont(qtUIManager::instance()->instance()->advancedFont());
@@ -679,10 +680,10 @@ void qtAttributeSection::updateTableWithProperty(QString& propertyName)
         continue;
         }    
 
-      if( propertyName == QString(itemDef->label().c_str()))
+      if( propertyName == QString(itemDef->name().c_str()))
         {
         widget->setRowCount(++numRows);
-        QTableWidgetItem* item = new QTableWidgetItem(itemDef->label().c_str());
+        QTableWidgetItem* item = new QTableWidgetItem(attItem->name().c_str());
         if(itemDef->advanceLevel())
           {
           item->setFont(qtUIManager::instance()->instance()->advancedFont());

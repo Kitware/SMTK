@@ -91,7 +91,7 @@ void qtAttributeRefItem::createWidget()
     layout = new QVBoxLayout(this->Widget);
     }
   layout->setMargin(0);
-  QLabel* label = new QLabel(this->getObject()->definition()->label().c_str(),
+  QLabel* label = new QLabel(this->getObject()->name().c_str(),
     this->Widget);
   layout->addWidget(label);
 
@@ -138,7 +138,7 @@ void qtAttributeRefItem::updateItemData()
   std::vector<slctk::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
-    attNames.push_back((*it)->definition()->label().c_str());
+    attNames.push_back((*it)->name().c_str());
     }
 
   foreach(QComboBox* combo, this->Internals->comboBoxes)
