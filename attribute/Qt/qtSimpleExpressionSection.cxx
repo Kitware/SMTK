@@ -763,3 +763,17 @@ void qtSimpleExpressionSection::showAdvanced(int checked)
 {
 
 }
+//----------------------------------------------------------------------------
+void qtSimpleExpressionSection::getAllDefinitions(
+  std::vector<slctk::AttributeDefinitionPtr>& defs)
+{
+  slctk::SimpleExpressionSectionPtr sec =
+    slctk::dynamicCastPointer<SimpleExpressionSection>(this->getObject());
+  if(!sec || !sec->definition())
+    {
+    return;
+    }
+
+  AttributeDefinitionPtr attDef = sec->definition();
+  this->qtSection::getDefinitions(attDef, defs);
+}

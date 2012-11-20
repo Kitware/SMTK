@@ -87,6 +87,8 @@ namespace slctk
 
       void updateChildWidgetsEnableState(
         slctk::ValueItemPtr linkedData, QTableWidgetItem* item);
+      virtual void getAllDefinitions(
+        std::vector<slctk::AttributeDefinitionPtr>& defs);
 
     private:
 

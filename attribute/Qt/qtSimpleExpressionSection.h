@@ -84,6 +84,8 @@ namespace slctk
       void pasteFunctionValues(QString& values);
       virtual void initFunctionList();
       virtual void clearFuncExpression();
+      virtual void getAllDefinitions(
+        std::vector<slctk::AttributeDefinitionPtr>& defs);
 
     private:
 

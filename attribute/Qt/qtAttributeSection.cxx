@@ -775,3 +775,20 @@ void qtAttributeSection::showUI(int viewBy, int category)
   this->Internals->ShowCategoryCombo->blockSignals(false);
   this->onShowCategory(category);
 }
+//----------------------------------------------------------------------------
+void qtAttributeSection::getAllDefinitions(
+  std::vector<slctk::AttributeDefinitionPtr>& defs)
+{
+  slctk::AttributeSectionPtr sec =
+    slctk::dynamicCastPointer<AttributeSection>(this->getObject());
+  if(!sec || !sec->numberOfDefinitions())
+    {
+    return;
+    }
+  std::size_t i, n = sec->numberOfDefinitions();
+  for (i = 0; i < n; i++)
+    {
+    AttributeDefinitionPtr attDef = sec->definition(i);
+    this->qtSection::getDefinitions(attDef, defs);
+    }
+}

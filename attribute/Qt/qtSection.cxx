@@ -22,6 +22,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtSection.h"
 
 #include "qtUIManager.h"
+#include "attribute/Section.h"
+#include "attribute/Definition.h"
+#include "attribute/Manager.h"
 
 #include <QPointer>
 #include <QLayout>
@@ -79,4 +82,22 @@ slctk::SectionPtr qtSection::getObject()
 QWidget* qtSection::parentWidget()
 {
   return this->Internals->ParentWidget;
+}
+//----------------------------------------------------------------------------
+void qtSection::getDefinitions(
+  slctk::AttributeDefinitionPtr attDef, 
+  std::vector<slctk::AttributeDefinitionPtr>& defs)
+{
+  std::vector<slctk::AttributeDefinitionPtr> newdefs;
+  Manager *attManager = attDef->manager();
+  attManager->derivedDefinitions(attDef, newdefs);
+  if(!attDef->isAbstract())
+    {
+    defs.push_back(attDef);
+    }
+  std::vector<slctk::AttributeDefinitionPtr>::iterator itDef;
+  for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
+    {
+    defs.push_back(*itDef);
+    }
 }

@@ -144,16 +144,22 @@ void qtModelEntitySection::createWidget( )
     return;
     }
 
-  AttributeDefinitionPtr attDef = sec->definition();
+  this->Internals->ListBox->blockSignals(true);
 
-  std::vector<slctk::AttributePtr> result;
+  AttributeDefinitionPtr attDef = sec->definition();
   Manager *attManager = attDef->manager();
-  attManager->findAttributes(attDef, result);
-  std::vector<slctk::AttributePtr>::iterator itAtt;
-  this->Internals->ListBox->blockSignals(true);    
-  for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+  std::vector<slctk::AttributeDefinitionPtr> defs;
+  this->getAllDefinitions(defs);
+  std::vector<slctk::AttributeDefinitionPtr>::iterator itDef;
+  for (itDef=defs.begin(); itDef!=defs.end(); ++itDef)
     {
-    this->addAttributeListItem(*itAtt);
+    std::vector<slctk::AttributePtr> result;
+    attManager->findAttributes(*itDef, result);
+    std::vector<slctk::AttributePtr>::iterator itAtt;
+    for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+      {
+      this->addAttributeListItem(*itAtt);
+      }
     }
   this->Internals->ListBox->blockSignals(false);
 
@@ -235,4 +241,18 @@ QListWidgetItem* qtModelEntitySection::addAttributeListItem(
   item->setFlags(item->flags() | Qt::ItemIsEditable);
   this->Internals->ListBox->addItem(item);
   return item;
+}
+//----------------------------------------------------------------------------
+void qtModelEntitySection::getAllDefinitions(
+  std::vector<slctk::AttributeDefinitionPtr>& defs)
+{
+  slctk::ModelEntitySectionPtr sec =
+    slctk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+  if(!sec || !sec->definition())
+    {
+    return;
+    }
+
+  AttributeDefinitionPtr attDef = sec->definition();
+  this->qtSection::getDefinitions(attDef, defs);
 }
