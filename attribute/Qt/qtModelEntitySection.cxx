@@ -146,21 +146,21 @@ void qtModelEntitySection::createWidget( )
 
   this->Internals->ListBox->blockSignals(true);
 
-  AttributeDefinitionPtr attDef = sec->definition();
-  Manager *attManager = attDef->manager();
-  std::vector<slctk::AttributeDefinitionPtr> defs;
-  this->getAllDefinitions(defs);
-  std::vector<slctk::AttributeDefinitionPtr>::iterator itDef;
-  for (itDef=defs.begin(); itDef!=defs.end(); ++itDef)
-    {
-    std::vector<slctk::AttributePtr> result;
-    attManager->findAttributes(*itDef, result);
-    std::vector<slctk::AttributePtr>::iterator itAtt;
-    for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
-      {
-      this->addAttributeListItem(*itAtt);
-      }
-    }
+  //AttributeDefinitionPtr attDef = sec->definition();
+  //Manager *attManager = attDef->manager();
+  //std::vector<slctk::AttributeDefinitionPtr> defs;
+  //this->getAllDefinitions(defs);
+  //std::vector<slctk::AttributeDefinitionPtr>::iterator itDef;
+  //for (itDef=defs.begin(); itDef!=defs.end(); ++itDef)
+  //  {
+  //  std::vector<slctk::AttributePtr> result;
+  //  attManager->findAttributes(*itDef, result);
+  //  std::vector<slctk::AttributePtr>::iterator itAtt;
+  //  for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+  //    {
+  //    this->addAttributeListItem(*itAtt);
+  //    }
+  //  }
   this->Internals->ListBox->blockSignals(false);
 
   // signals/slots

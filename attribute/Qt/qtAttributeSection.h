@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtSection.h"
 
 class qtAttributeSectionInternals;
-class QListWidgetItem;
 class QTableWidgetItem;
 class QKeyEvent;
 
@@ -46,7 +45,7 @@ namespace slctk
       qtAttributeSection(slctk::SectionPtr, QWidget* p);
       virtual ~qtAttributeSection();
 
-      QListWidgetItem* getSelectedItem();
+      QTableWidgetItem* getSelectedItem();
       int currentViewBy();
       int currentCategory();
       void showUI(int viewBy, int category);
@@ -60,10 +59,12 @@ namespace slctk
 
     public slots:
       void onViewBy(int);
-      void onShowCategory(int);
-      void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
+      void onViewByWithDefinition(
+        int viewBy, slctk::AttributeDefinitionPtr attDef);
+      void onShowCategory(int category);
+      void onListBoxSelectionChanged();
       void onAttributeValueChanged(QTableWidgetItem*);
-      void onAttributeNameChanged(QListWidgetItem*);
+      void onAttributeNameChanged(QTableWidgetItem*);
       void onCreateNew();
       void onCopySelected();
       void onDeleteSelected();
@@ -73,22 +74,23 @@ namespace slctk
 
     protected:
       virtual void createWidget( );
-      slctk::ValueItemPtr getArrayDataFromItem(QListWidgetItem * item);
-      slctk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
+      slctk::ValueItemPtr getArrayDataFromItem(QTableWidgetItem * item);
+      slctk::AttributePtr getAttributeFromItem(QTableWidgetItem * item);
       slctk::ValueItemPtr getSelectedArrayData();
       slctk::AttributePtr getSelectedAttribute();
       slctk::ValueItemPtr getAttributeArrayData(slctk::AttributePtr aAttribute);
-      QListWidgetItem* addAttributeListItem(slctk::AttributePtr childData);
-      void addAttributePropertyItems(slctk::AttributeDefinitionPtr attDef, QString& group);
-      void updateTableWithAttribute(slctk::AttributePtr dataItem, QString& group);
+      QTableWidgetItem* addAttributeListItem(slctk::AttributePtr childData);
+      void addAttributePropertyItems(
+        slctk::AttributePtr childData, const QString& group);
+      void updateTableWithAttribute(slctk::AttributePtr dataItem, const QString& group);
       void updateTableWithProperty(QString& propertyName);
       void addTableValueItems(
         slctk::AttributeItemPtr childData, int& numRows, bool bEnabled);
 
       void updateChildWidgetsEnableState(
         slctk::ValueItemPtr linkedData, QTableWidgetItem* item);
-      virtual void getAllDefinitions(
-        std::vector<slctk::AttributeDefinitionPtr>& defs);
+      virtual void getAllDefinitions();
+      bool hasMultiDefinition(const QString& group);
 
     private:
 

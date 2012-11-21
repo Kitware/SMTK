@@ -98,6 +98,9 @@ void qtSection::getDefinitions(
   std::vector<slctk::AttributeDefinitionPtr>::iterator itDef;
   for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
     {
-    defs.push_back(*itDef);
+    if(!(*itDef)->isAbstract())
+      {
+      defs.push_back(*itDef);
+      }
     }
 }
