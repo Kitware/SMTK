@@ -31,11 +31,14 @@ function(ms_add_header_test name dir_prefix)
     configure_file(${Slctk_SOURCE_DIR}/CMake/TestBuild.cxx.in ${src} @ONLY)
     set(cxxfiles ${cxxfiles} ${src})
   endforeach (header)
-  include_directories(${sysTools_BINARY_DIR})
+
+  # message(STATUS "sysTools_BINARY_DIR='${sysTools_BINARY_DIR}'")
+  # include_directories(${sysTools_BINARY_DIR})
+
   #include the build directory for the export header
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
   add_library(TestBuild_${name} ${cxxfiles} ${hfiles})
-  target_link_libraries(TestBuild_${name} sysTools)
+  # target_link_libraries(TestBuild_${name} sysTools)
   set_source_files_properties(${hfiles}
     PROPERTIES HEADER_FILE_ONLY TRUE
     )
