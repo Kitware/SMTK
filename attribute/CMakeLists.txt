@@ -107,8 +107,7 @@ if(Slctk_BUILD_QT)
   get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
   get_directory_property(QAttrLibUIS DIRECTORY Qt DEFINITION QAttrLibUIS)
   qt4_wrap_cpp(QAttrLibMocSrcs ${QAttrLibMocHeaders})
-  qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs}
-    )
+  qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
   source_group("Qt_Generated" FILES ${QAttrLibMocSrcs})
@@ -116,7 +115,14 @@ if(Slctk_BUILD_QT)
   source_group("Qt_Generated" FILES ${UI_BUILT_SOURCES})
 endif()
 
-add_library(SlctkAttribute ${attribute_srcs} ${headers}
+IF(BUILD_SHARED_LIBS)
+  SET(LIBTYPE SHARED)
+ELSE(BUILD_SHARED_LIBS)
+  SET(LIBTYPE STATIC)
+ENDIF()
+
+add_library(SlctkAttribute ${LIBTYPE}
+   ${attribute_srcs} ${headers}
    ${QAttrLibSrcs} ${QAttrLibMocSrcs} ${QAttrLibMocHeaders}
    ${UI_BUILT_SOURCES})
 target_link_libraries(SlctkAttribute ${slctkQtDepends})
