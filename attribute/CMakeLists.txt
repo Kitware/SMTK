@@ -113,6 +113,13 @@ if(Slctk_BUILD_QT)
   source_group("Qt_Generated" FILES ${QAttrLibMocSrcs})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
   source_group("Qt_Generated" FILES ${UI_BUILT_SOURCES})
+  
+  set(headers ${headers} ${QAttrLibMocHeaders})
+  set(attribute_srcs ${attribute_srcs}
+   ${QAttrLibSrcs}
+   ${QAttrLibMocSrcs}
+   ${UI_BUILT_SOURCES}
+   )
 endif()
 
 IF(BUILD_SHARED_LIBS)
@@ -123,8 +130,7 @@ ENDIF()
 
 add_library(SlctkAttribute ${LIBTYPE}
    ${attribute_srcs} ${headers}
-   ${QAttrLibSrcs} ${QAttrLibMocSrcs} ${QAttrLibMocHeaders}
-   ${UI_BUILT_SOURCES})
+   )
 target_link_libraries(SlctkAttribute ${slctkQtDepends})
 
 slctk_set_includes(SlctkAttribute ${Slctk_Attribute_INCLUDE_DIRS})
@@ -137,6 +143,8 @@ slctk_install_library(SlctkAttribute)
 
 #install the headers
 slctk_public_headers(${headers})
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/PublicPointerDefs.h
+  DESTINATION include/attribute)
 
 #setup the exports for the library when used from a build tree
 export(PACKAGE SlctkAttribute)
