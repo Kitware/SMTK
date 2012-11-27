@@ -40,6 +40,7 @@ Definition::Definition(const std::string &myType,
   this->m_baseDefinition = myBaseDef;
   this->m_type = myType;
   this->m_version = 0;
+  this->m_isAbstract = false;
   this->m_isNodal = false;
   this->m_advanceLevel = 0;
   this->m_isUnique = true;
