@@ -51,7 +51,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace slctk;
 int main()
 {
-  int status;
+  int status=0;
   {
   attribute::Manager manager;
   std::cout << "Manager Created\n";

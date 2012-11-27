@@ -45,7 +45,9 @@ namespace slctk
       virtual ~InstancedSection();
       virtual Section::Type type() const;
       void addInstance(slctk::AttributePtr att)
-        { this->m_instances.push_back(att);}
+        { if(att.get() != NULL)
+            {this->m_instances.push_back(att);}
+        }
       std::size_t numberOfInstances() const
       {return this->m_instances.size();}
       slctk::AttributePtr instance(int ith) const

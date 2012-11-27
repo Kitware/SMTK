@@ -55,7 +55,6 @@
 #include "attribute/DoubleItem.h"
 #include "attribute/IntItem.h"
 
-
 using namespace slctk::attribute;
 
 #define SB_DOUBLE_CONSTRAINT_PRECISION 0.000001
