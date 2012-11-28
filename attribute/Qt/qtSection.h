@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QObject>
 #include "AttributeExports.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 #include <vector>
 
 class qtSectionInternals;

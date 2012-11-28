@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QWidget>
 #include "AttributeExports.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 
 class qtAssociationWidgetInternals;
 class QListWidgetItem;
