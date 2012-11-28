@@ -67,7 +67,6 @@ include_directories(
 
 #add the actual code
 add_subdirectory(attribute)
-add_subdirectory(model)
 
 #add the examples code
 if(Slctk_ENABLE_EXAMPLES)

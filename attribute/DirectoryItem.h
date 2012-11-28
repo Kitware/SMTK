@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_DirectoryItem_h
 
 #include "AttributeExports.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 #include "attribute/Item.h"
 #include <string>
 #include <vector>

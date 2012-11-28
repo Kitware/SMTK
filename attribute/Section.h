@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_Section_h
 #define __slctk_attribute_Section_h
 #include "AttributeExports.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 
 #include <map>
 #include <string>

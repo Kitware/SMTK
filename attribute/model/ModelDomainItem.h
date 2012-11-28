@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_model_ModelDomainItem_h
 #define __slctk_model_ModelDomainItem_h
 
-#include "ModelExports.h"
+#include "AttributeExports.h"
 #include "PublicPointerDefs.h"
 #include "model/Item.h"
 #include <string>
@@ -36,7 +36,7 @@ namespace slctk
 {
   namespace model
   {
-    class SLCTKMODEL_EXPORT ModelDomainItem : public Item
+    class SLCTKATTRIBUTE_EXPORT ModelDomainItem : public Item
     {
     public:
       ModelDomainItem(Model *model, unsigned long myid);

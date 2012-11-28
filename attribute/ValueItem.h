@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_ValueItem_h
 
 #include "attribute/Item.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 #include "AttributeExports.h"
 
 namespace slctk

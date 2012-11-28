@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_attribute_XmlDocV1Parser_h
 #define __slctk_attribute_XmlDocV1Parser_h
 #include "AttributeExports.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 #include "attribute/Manager.h"
 #include <utility>
 #include <string>

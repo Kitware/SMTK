@@ -76,6 +76,16 @@ set(attribute_srcs
   XmlDocV1Parser.cxx
 )
 
+# add model related classes
+add_subdirectory(model)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/model)
+get_directory_property(ModelSrcs DIRECTORY model DEFINITION ModelSrcs)
+get_directory_property(ModelHeaders DIRECTORY model DEFINITION ModelHeaders)
+source_group("model_Source" FILES ${ModelSrcs})
+source_group("model_Header" FILES ${ModelHeaders})
+set(headers ${headers} ${ModelHeaders})
+set(attribute_srcs ${attribute_srcs} ${ModelSrcs})
+
 add_library(SlctkAttribute ${attribute_srcs} ${headers})
 target_link_libraries(SlctkAttribute)
 

@@ -33,7 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "AttributeExports.h"
 #include "attribute/ItemDefinition.h"
-#include "attribute/PublicPointerDefs.h"
+#include "PublicPointerDefs.h"
 
 namespace slctk
 {

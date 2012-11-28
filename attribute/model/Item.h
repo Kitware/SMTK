@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __slctk_model_Item_h
 #define __slctk_model_Item_h
 
-#include "ModelExports.h"
+#include "AttributeExports.h"
 #include "PublicPointerDefs.h"
 #include <string>
 
@@ -36,7 +36,7 @@ namespace slctk
   namespace model
   {
     class Model;
-    class SLCTKMODEL_EXPORT Item
+    class SLCTKATTRIBUTE_EXPORT Item
     {
       friend class Model;
     public:
