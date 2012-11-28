@@ -105,14 +105,18 @@ if(Slctk_BUILD_QT)
   set (slctkQtDepends ${QT_LIBRARIES})
   get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
   get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
-  get_directory_property(QAttrLibUIS DIRECTORY Qt DEFINITION QAttrLibUIS)
+  get_directory_property(QAttrLibUIs DIRECTORY Qt DEFINITION QAttrLibUIs)
   qt4_wrap_cpp(QAttrLibMocSrcs ${QAttrLibMocHeaders})
+
+message(status "QAttrLibUIs=${QAttrLibUIs}")
+
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
 
+message(status "UI_BUILT_SOURCES=${UI_BUILT_SOURCES}")
+
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs})
+  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
-  source_group("Qt_Generated" FILES ${UI_BUILT_SOURCES})
   
   set(headers ${headers} ${QAttrLibMocHeaders})
   set(attribute_srcs ${attribute_srcs}
