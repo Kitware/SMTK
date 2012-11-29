@@ -40,6 +40,7 @@ class vtkInformationIdTypeKey;
 class vtkInformationIntegerKey;
 class vtkInformationKey;
 class vtkInformationObjectBaseKey;
+class vtkInformationStringKey;
 class vtkModel;
 class vtkProperty;
 
@@ -70,6 +71,7 @@ public:
   static vtkInformationIntegerKey* VISIBILITY();
   static vtkInformationObjectBaseKey* DISPLAY_PROPERTY();
   static vtkInformationIntegerKey* PICKABLE();
+  static vtkInformationStringKey* USERDATA();
 
   // Description:
   // Methods to add and retrieve generic information.
