@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkInformationDoubleVectorKey.h"
 #include "vtkInformationIdTypeKey.h"
 #include "vtkInformationIntegerKey.h"
+#include "vtkInformationStringKey.h"
 #include "vtkInformationObjectBaseKey.h"
 #include "vtkModel.h"
 #include "vtkModelItemIterator.h"
@@ -42,6 +43,7 @@ vtkInformationKeyMacro(vtkModelEntity, VISIBILITY, Integer);
 vtkInformationKeyMacro(vtkModelEntity, UNIQUEPERSISTENTID, IdType);
 vtkInformationKeyMacro(vtkModelEntity, DISPLAY_PROPERTY, ObjectBase);
 vtkInformationKeyMacro(vtkModelEntity, PICKABLE, Integer);
+vtkInformationKeyMacro(vtkModelEntity, USERDATA, String);
 
 // Description:
 // A counter to give each use a unique persistent Id that
