@@ -149,6 +149,7 @@ void qtGroupSection::addTabEntry(qtSection* child)
 
   QVBoxLayout* vLayout = new QVBoxLayout(tabPage);
   vLayout->setMargin(0);
+  vLayout->addWidget(child->widget());
 
   int index = tabWidget->addTab(s, secTitle);
   tabWidget->setTabToolTip( index, secTitle);

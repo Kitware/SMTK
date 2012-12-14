@@ -509,7 +509,7 @@ void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
         << idef->name() << "\n";
         }
       }
-    xatt = node.attribute("DefaultIndex");
+    xatt = dnode.attribute("DefaultIndex");
     if (xatt)
       {
       idef->setDefaultDiscreteIndex(xatt.as_int());
@@ -1120,7 +1120,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
                                          ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::size_t i, n = item->numberOfValues();
+  std::size_t i=0, n = item->numberOfValues();
   xml_attribute xatt;
   if (!numRequiredVals)
     {
@@ -1142,7 +1142,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     return; // there is nothing to be done
     }
   xml_node val, values;
-  int index;
+  int index=0;
   if (!n)
     {
     return;

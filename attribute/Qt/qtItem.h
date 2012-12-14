@@ -82,7 +82,7 @@ namespace slctk
       bool isLeafItem()
         {return this->IsLeafItem;}
       
-      bool passAdvancedCheck(bool advanced);
+      bool passAdvancedCheck();
 
     protected slots:
       virtual void updateItemData() {;}

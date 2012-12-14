@@ -750,7 +750,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
 void XmlV1StringWriter::processAttributeRefItem(pugi::xml_node &node,
                                                AttributeRefItemPtr item)
 {
-  std::size_t i, n = item->numberOfValues();
+  std::size_t i=0, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
 
   xml_node val;

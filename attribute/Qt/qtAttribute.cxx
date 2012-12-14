@@ -105,9 +105,9 @@ void qtAttribute::createWidget()
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
 
-  QLabel* label = new QLabel(this->getObject()->name().c_str(),
-    this->parentWidget());
-  layout->addWidget(label);
+//  QLabel* label = new QLabel(this->getObject()->name().c_str(),
+//    this->parentWidget());
+//  layout->addWidget(label);
   this->updateItemsData();
 }
 
@@ -170,6 +170,12 @@ QWidget* qtAttribute::parentWidget()
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(slctk::AttributeItemPtr item, QWidget* pW)
 {
+  if(!qtUIManager::instance()->passItemAdvancedCheck(
+    item->definition()->advanceLevel()))
+    {
+    return NULL;
+    }
+
   qtItem* aItem = NULL;
   switch (item->type())
     {
@@ -234,22 +240,7 @@ qtItem* qtAttribute::createGroupItem(slctk::GroupItemPtr item, QWidget* pW)
 qtItem* qtAttribute::createValueItem(
   slctk::ValueItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = NULL;
-  if (item->allowsExpressions())
-    {
-    // create the expression item for expression type values
-    returnItem = qtAttribute::createAttributeRefItem(
-      slctk::dynamicCastPointer<AttributeRefItem>(item), pW);
-    }
-  else if (!item->isDiscrete())
-    {
     // create the input item for editable type values
-    returnItem = new qtInputsItem(dynamicCastPointer<Item>(item), pW);
-    }
-  else if(item->isDiscrete())
-    {
-    // create the combo item for discrete values
-    returnItem = new qtComboItem(dynamicCastPointer<Item>(item), pW);
-    }
+  qtItem* returnItem = new qtInputsItem(dynamicCastPointer<Item>(item), pW);
   return returnItem;
 }

@@ -46,6 +46,8 @@ namespace slctk
 
     public slots:
       void onInputValueChanged();
+      void onComboIndexChanged();
+      void onExpressionReferenceChanged();
       void setOutputOptional(int);
 
     protected slots:
@@ -53,10 +55,12 @@ namespace slctk
 
     protected:
       virtual void createWidget();
-      virtual void loadInputValues(QBoxLayout*);
+      virtual void loadInputValues(
+        QBoxLayout* labelLayout, QBoxLayout* entryLayout);
       virtual void updateUI();
       virtual QWidget* createInputWidget(int elementIdx);
-      
+      virtual QWidget* createComboBox(int elementIdx);
+      virtual QWidget* createExpressionRefWidget(int elementIdx);
     private:
 
       qtInputsItemInternals *Internals;

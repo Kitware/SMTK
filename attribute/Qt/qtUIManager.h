@@ -71,7 +71,7 @@ namespace slctk
 
       void clearRoot();
 
-      bool passItemAdvancedCheck(bool advancedAtt, bool advancedItem);
+      bool passItemAdvancedCheck(bool advancedItem);
       bool passAttributeAdvancedCheck(bool advancedAtt);
       const QFont& advancedFont()
         {return this->advFont;}

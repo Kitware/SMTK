@@ -111,26 +111,14 @@ void qtUIManager::initializeUI(QWidget* pWidget)
 }
 
 //----------------------------------------------------------------------------
-bool qtUIManager::passItemAdvancedCheck(
-  bool advancedContainer, bool advancedItem)
+bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
 {
-  if((!advancedItem && !advancedContainer) || 
-     (advancedItem && this->showAdvanced()) ||
-     (!advancedItem && advancedContainer && this->showAdvanced()))
-     {
-     return true;
-     }
-  return false;
+  return (!advancedItem || advancedItem==this->showAdvanced());
 }
 //----------------------------------------------------------------------------
-bool qtUIManager::passAttributeAdvancedCheck(bool advancedContainer)
+bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
 {
-  if(!advancedContainer || 
-     (advancedContainer && this->showAdvanced()))
-     {
-     return true;
-     }
-  return false;
+  return (!advancedAtt || advancedAtt==this->showAdvanced());
 }
 
 //----------------------------------------------------------------------------

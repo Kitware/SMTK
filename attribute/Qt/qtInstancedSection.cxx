@@ -44,9 +44,9 @@ class qtInstancedSectionInternals
 public:
   qtInstancedSectionInternals()
     {
-    this->ScrollArea = NULL;
+//    this->ScrollArea = NULL;
     }
-  QScrollArea *ScrollArea;
+  //QScrollArea *ScrollArea;
   QList< QPointer<qtAttribute> > AttInstances;
 };
 
@@ -73,10 +73,10 @@ void qtInstancedSection::createWidget( )
     }
   if(this->Widget)
     {
-    this->parentWidget()->layout()->removeWidget(
-      this->Internals->ScrollArea);
+    //this->parentWidget()->layout()->removeWidget(
+    //  this->Internals->ScrollArea);
     delete this->Widget;
-    delete this->Internals->ScrollArea;
+    //delete this->Internals->ScrollArea;
     }
 
   this->Widget = new QFrame(this->parentWidget());
@@ -86,11 +86,11 @@ void qtInstancedSection::createWidget( )
 
   //create the scroll area on the tabs, so we don't make the
   //3d window super small
-  this->Internals->ScrollArea = new QScrollArea();
-  this->Internals->ScrollArea->setWidgetResizable(true);
-  this->Internals->ScrollArea->setFrameShape(QFrame::NoFrame);
-  this->Internals->ScrollArea->setObjectName("rootScrollArea");
-  this->Internals->ScrollArea->setWidget( this->Widget );
+  //this->Internals->ScrollArea = new QScrollArea();
+  //this->Internals->ScrollArea->setWidgetResizable(true);
+  //this->Internals->ScrollArea->setFrameShape(QFrame::NoFrame);
+  //this->Internals->ScrollArea->setObjectName("rootScrollArea");
+  //this->Internals->ScrollArea->setWidget( this->Widget );
 
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
@@ -99,8 +99,11 @@ void qtInstancedSection::createWidget( )
 
   //add the advanced layout, and the scroll area onto the
   //widgets to the frame
-  parentlayout->setAlignment(Qt::AlignTop);
-  parentlayout->addWidget(this->Internals->ScrollArea);
+  if(parentlayout)
+    {
+    parentlayout->setAlignment(Qt::AlignTop);
+    parentlayout->addWidget(this->Widget);
+    }
 
   this->updateAttributeData();
 }

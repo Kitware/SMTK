@@ -86,6 +86,28 @@ void qtRootSection::createWidget( )
     {
     delete this->Internals->AdvancedCheck;
     }
+
+  //first setup the advanced check box layout form
+  //QHBoxLayout* advancedLayout = new QHBoxLayout();
+  //advancedLayout->setMargin(10);
+  this->Internals->AdvancedCheck = new QCheckBox(this->Widget);
+  this->Internals->AdvancedCheck->setText("Show Advanced");
+  this->Internals->AdvancedCheck->setFont(
+    qtUIManager::instance()->advancedFont());
+  QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
+    this->parentWidget()->layout());
+  parentlayout->setAlignment(Qt::AlignTop);
+  parentlayout->addWidget(this->Internals->AdvancedCheck);
+
+  this->showAdvanced(0);
+
+  QObject::connect(this->Internals->AdvancedCheck,
+    SIGNAL(stateChanged(int)), this, SLOT(showAdvanced(int)));
+}
+
+//----------------------------------------------------------------------------
+void qtRootSection::showAdvanced(int checked)
+{
   if(this->Internals->TabGroup)
     {
     delete this->Internals->TabGroup;
@@ -96,22 +118,12 @@ void qtRootSection::createWidget( )
     delete this->Widget;
     delete this->ScrollArea;
     }
+  qtUIManager::instance()->setShowAdvanced(checked ? true : false);
 
   this->Widget = new QFrame(this->parentWidget());
 
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
     this->parentWidget()->layout());
-
-  //first setup the advanced check box layout form
-  //QHBoxLayout* advancedLayout = new QHBoxLayout();
-  //advancedLayout->setMargin(10);
-  this->Internals->AdvancedCheck = new QCheckBox(this->Widget);
-  this->Internals->AdvancedCheck->setText("Show Advanced");
-  this->Internals->AdvancedCheck->setFont(
-    qtUIManager::instance()->advancedFont());
-
-  //add the checkbox to the layout
-  //advancedLayout->addWidget(this->Internals->AdvancedCheck);
 
   //create the scroll area on the tabs, so we don't make the
   //3d window super small
@@ -130,49 +142,11 @@ void qtRootSection::createWidget( )
   qtUIManager::processGroupSection(this->Internals->TabGroup);
   this->initRootTabGroup();
 
-  //add the advanced layout, and the scroll area onto the
-  //widgets to the frame
-  parentlayout->setAlignment(Qt::AlignTop);
-  parentlayout->addWidget(this->Internals->AdvancedCheck);
-  parentlayout->addWidget(this->ScrollArea);
-
-  QObject::connect(this->Internals->AdvancedCheck,
-    SIGNAL(stateChanged(int)), this, SLOT(showAdvanced(int)));
-}
-
-//----------------------------------------------------------------------------
-void qtRootSection::showAdvanced(int checked)
-{
-  if(this->Widget)
-    {
-    this->parentWidget()->layout()->removeWidget(this->ScrollArea);
-    delete this->Widget;
-    delete this->ScrollArea;
-    }
-
-
-  this->Widget = new QFrame(this->parentWidget());
-
-  //create the scroll area on the tabs, so we don't make the
-  //3d window super small
-  this->ScrollArea = new QScrollArea();
-  this->ScrollArea->setWidgetResizable(true);
-  this->ScrollArea->setFrameShape(QFrame::NoFrame);
-  this->ScrollArea->setObjectName("rootScrollArea");
-  this->ScrollArea->setWidgetResizable( true );
-  this->ScrollArea->setWidget( this->Widget );
-
-  //create the layout for the tabs area
-  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
-  this->Widget->setLayout( layout );
-  this->Internals->TabGroup->showAdvanced(checked);
   layout->addWidget(this->Internals->TabGroup->widget());
 
-  this->parentWidget()->layout()->addWidget( this->ScrollArea );
-
-  qtUIManager::instance()->setShowAdvanced(checked ? true : false);
-  // qtUIManager::instance()->processRootSection(this);
+  //add the advanced layout, and the scroll area onto the
+  //widgets to the frame
+  parentlayout->addWidget(this->ScrollArea);
 }
 
 //----------------------------------------------------------------------------

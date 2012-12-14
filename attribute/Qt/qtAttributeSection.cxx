@@ -475,7 +475,6 @@ void qtAttributeSection::addAttributePropertyItems(
     slctk::AttributeItemPtr attItem = childData->item(i);
     if(attItem->definition()->isMemberOf(group.toStdString()) &&
       qtUIManager::instance()->passItemAdvancedCheck(
-      childData->definition()->advanceLevel(),
       attItem->definition()->advanceLevel()))
       {
       // No User data, not editable
@@ -638,7 +637,7 @@ void qtAttributeSection::updateTableWithAttribute(
     const ItemDefinition* itemDef =
      dynamic_cast<const ItemDefinition*>(attItem->definition().get());
     if(!qtUIManager::instance()->passItemAdvancedCheck(
-      att->definition()->advanceLevel(), itemDef->advanceLevel()))
+      itemDef->advanceLevel()))
       {
       continue;
       }
@@ -719,7 +718,7 @@ void qtAttributeSection::updateTableWithProperty(QString& propertyName)
       const ItemDefinition* itemDef =
       dynamic_cast<const ItemDefinition*>(attItem->definition().get());
       if(!qtUIManager::instance()->passItemAdvancedCheck(
-        (*it)->definition()->advanceLevel(), itemDef->advanceLevel()))
+        itemDef->advanceLevel()))
         {
         continue;
         }    

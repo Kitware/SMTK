@@ -110,9 +110,9 @@ QWidget* qtItem::parentWidget()
 }
 
 //----------------------------------------------------------------------------
-bool qtItem::passAdvancedCheck(bool advancedContainer)
+bool qtItem::passAdvancedCheck()
 {
   slctk::AttributeItemPtr dataObj = this->getObject();
   return qtUIManager::instance()->passItemAdvancedCheck(
-    advancedContainer,dataObj->definition()->advanceLevel());
+    dataObj->definition()->advanceLevel());
 }
