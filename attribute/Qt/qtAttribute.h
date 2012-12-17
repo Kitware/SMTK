@@ -57,9 +57,9 @@ namespace slctk
       // create all the items
       static qtItem* createItem(slctk::AttributeItemPtr item, QWidget* p);
       static qtItem* createValueItem(slctk::ValueItemPtr item, QWidget* p);
-      static qtItem* createAttributeRefItem(slctk::AttributeRefItemPtr item, QWidget* p);
       static qtItem* createDirectoryItem(slctk::DirectoryItemPtr item, QWidget* p);
-      static qtItem* createFileItem(slctk::FileItemPtr item, QWidget* p);
+      static qtItem* createAttributeRefItem(slctk::AttributeRefItemPtr item, QWidget* p);
+      static qtItem* createFileItem(slctk::FileItemPtr item, QWidget* p, bool dirOnly=false);
       static qtItem* createGroupItem(slctk::GroupItemPtr item, QWidget* p);
 
     protected slots:

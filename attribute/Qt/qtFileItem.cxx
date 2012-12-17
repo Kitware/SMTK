@@ -147,7 +147,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
   QVariant vdata;
   vdata.setValue((void*)lineEdit);
-  fileBrowserButton->setProperty("DataItem", vdata);
+  this->setProperty("DataItem", vdata);
 
   QVariant vdata1(elementIdx);
   lineEdit->setProperty("ElementIndex", vdata1);

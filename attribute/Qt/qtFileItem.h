@@ -46,7 +46,10 @@ namespace slctk
 
     public slots:
       virtual void onInputValueChanged();
-      virtual void onLaunchFileBrowser(){;}
+      virtual void onLaunchFileBrowser()
+        {emit this->launchFileBrowser();}
+    signals:
+      void launchFileBrowser();
 
     protected slots:
       virtual void updateItemData();

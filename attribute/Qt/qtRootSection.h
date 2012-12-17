@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_qtRootSection_h
 
 #include "qtSection.h"
+#include "attribute/Section.h"
 
 class qtRootSectionInternals;
 class QScrollArea;
@@ -43,6 +44,7 @@ namespace slctk
     public:
       qtRootSection(slctk::RootSectionPtr, QWidget* p);
       virtual ~qtRootSection();
+      qtSection* getSection(slctk::attribute::Section::Type secType);
 
     public slots:
       virtual void showAdvanced(int show);

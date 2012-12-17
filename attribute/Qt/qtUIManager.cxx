@@ -16,6 +16,7 @@
 
 #include "qtItem.h"
 #include "qtComboItem.h"
+#include "qtFileItem.h"
 #include "qtGroupSection.h"
 #include "qtRootSection.h"
 #include "qtInputsItem.h"
@@ -198,6 +199,7 @@ void qtUIManager::processGroupSection(qtGroupSection* pQtGroup)
       }
     }
 }
+
 //----------------------------------------------------------------------------
 void qtUIManager::processBasicSection(qtSection* sec)
 {
@@ -357,6 +359,7 @@ void qtUIManager::removeSelectedTableValues(
     }
 }
 
+//----------------------------------------------------------------------------
 void qtUIManager::addNewTableValues(slctk::GroupItemPtr dataItem,
   QTableWidget* table, double* vals, int numVals)
 {
@@ -383,4 +386,9 @@ void qtUIManager::addNewTableValues(slctk::GroupItemPtr dataItem,
     QString strValue = QString::number(vals[i]);
     table->setItem(totalRow-1, i, new QTableWidgetItem(strValue));
     }
+}
+//----------------------------------------------------------------------------
+void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
+{
+  emit this->fileItemCreated(fileItem);
 }

@@ -30,6 +30,8 @@ configure_file(
   ${PROJECT_BINARY_DIR}/PublicPointerDefs.h
   @ONLY)
 
+install (FILES ${PROJECT_BINARY_DIR}/PublicPointerDefs.h
+  DESTINATION include/attribute)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Slctk_SOURCE_DIR}/CMake)
 

@@ -470,13 +470,13 @@ void qtSimpleExpressionSection::onCreateNew()
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::createFunctionWithExpression()
 {
-/*
   QString funcExpr = this->Internals->ExpressionInput->text();
   if(funcExpr.isEmpty())
     {
     funcExpr = "X";
     }
   this->Internals->ExpressionInput->setText(funcExpr);
+/*
   int errorPos = -1;
   std::string errorMsg;
   this->getFunctionContainer()->GetFunctionParser()->SetFunction(funcExpr.toStdString());
@@ -492,11 +492,13 @@ void qtSimpleExpressionSection::createFunctionWithExpression()
     this->Internals->ExpressionInput->setCursorPosition(errorPos);
     return;
     }
-  
+*/
   double initVal = this->Internals->InitValueInput->text().toDouble();
   double deltaVal = this->Internals->DeltaInput->text().toDouble();
   int numValues = this->Internals->NumberBox->value();
-  
+  emit this->onCreateFunctionWithExpression(
+    funcExpr, initVal, deltaVal, numValues);
+/*
   // Need "Delete" after done.
   slctk::AttributePtr resultContainer = this->getFunctionContainer()->BuildFunction(
     "Function1DLinear", "New Func with Expr", 
@@ -509,7 +511,7 @@ void qtSimpleExpressionSection::createFunctionWithExpression()
       this->Internals->FuncList->setCurrentItem(item);
       }
     }
-*/    
+*/
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::createNewFunction(

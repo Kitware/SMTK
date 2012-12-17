@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_qtGroupSection_h
 
 #include "qtSection.h"
+#include "attribute/Section.h"
 
 class qtGroupSectionInternals;
 class QScrollArea;
@@ -43,6 +44,8 @@ namespace slctk
     public:
       qtGroupSection(slctk::SectionPtr, QWidget* p);
       virtual ~qtGroupSection();
+
+      qtSection* getChildSection(slctk::attribute::Section::Type secType);
 
       virtual void addChildSection(qtSection*);
       virtual void clearChildSections();

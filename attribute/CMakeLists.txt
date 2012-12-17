@@ -142,8 +142,6 @@ slctk_install_library(SlctkAttribute)
 
 #install the headers
 slctk_public_headers(${headers})
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/PublicPointerDefs.h
-  DESTINATION include/attribute)
 
 #setup the exports for the library when used from a build tree
 export(PACKAGE SlctkAttribute)

@@ -73,6 +73,19 @@ void qtGroupSection::createWidget( )
 
   this->parentWidget()->layout()->addWidget(this->Widget);    
 }
+//----------------------------------------------------------------------------
+qtSection* qtGroupSection::getChildSection(
+  slctk::attribute::Section::Type secType)
+{
+  foreach(qtSection* childSec, this->Internals->ChildSections)
+    {
+    if(childSec->getObject()->type() == secType)
+      {
+      return childSec;
+      }
+    }
+  return NULL;
+}
 
 //----------------------------------------------------------------------------
 void qtGroupSection::addChildSection(qtSection* child)

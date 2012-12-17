@@ -73,6 +73,10 @@ namespace slctk
       {return this->m_shouldBeRelative;}
       void setShouldBeRelative(bool val)
       {this->m_shouldBeRelative = val;}
+      const std::string& getFileFilters() const
+      {return this->m_fileFilters;}
+      void setFileFilters(const std::string &filters)
+      {this->m_fileFilters = filters;}
 
     protected:
         bool m_shouldExist;
@@ -80,6 +84,8 @@ namespace slctk
         bool m_useCommonLabel;
         std::vector<std::string> m_valueLabels;
         int m_numberOfRequiredValues;
+        std::string m_fileFilters;
+
      private:
       
     };

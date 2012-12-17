@@ -218,15 +218,17 @@ qtItem* qtAttribute::createAttributeRefItem(
 qtItem* qtAttribute::createDirectoryItem(
   slctk::DirectoryItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = new qtFileItem(dynamicCastPointer<Item>(item), pW, true);
+  qtFileItem* returnItem = new qtFileItem(dynamicCastPointer<Item>(item), pW, true);
+  qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
-
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createFileItem(
-  slctk::FileItemPtr item, QWidget* pW)
+  slctk::FileItemPtr item, QWidget* pW, bool dirOnly)
 {
-  qtItem* returnItem = new qtFileItem(dynamicCastPointer<Item>(item), pW);
+  qtFileItem* returnItem = new qtFileItem(
+    dynamicCastPointer<Item>(item), pW, dirOnly);
+  qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------

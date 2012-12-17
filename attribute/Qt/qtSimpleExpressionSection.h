@@ -48,7 +48,6 @@ namespace slctk
 
       virtual void createNewFunction(slctk::AttributeDefinitionPtr attDef);
       QListWidgetItem* getSelectedItem();
-      virtual void createFunctionWithExpression();
 
     public slots:
       void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -61,7 +60,12 @@ namespace slctk
       void onAddValue();
       void onRemoveSelectedValues();
 
+      virtual void createFunctionWithExpression();
       void showAdvanced(int show);
+
+    signals:
+      void onCreateFunctionWithExpression(
+        QString& expression, double initVal, double deltaVal, int numVals);
 
     protected slots:
       virtual void updateAttributeData() 

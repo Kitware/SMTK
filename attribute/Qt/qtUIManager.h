@@ -32,6 +32,7 @@ namespace slctk
   namespace attribute
   {
     class qtItem;
+    class qtFileItem;
     class qtRootSection;
     class qtAttributeSection;
     class qtInstancedSection;
@@ -89,7 +90,12 @@ namespace slctk
       QTableWidget* table, double* vals, int numVals);
     static void removeSelectedTableValues(
       slctk::GroupItemPtr dataItem, QTableWidget* table);
-      
+
+    public slots:
+      void onFileItemCreated(qtFileItem*);
+    signals:
+      void fileItemCreated(qtFileItem* fileItem);
+
     protected:
       static void processAttributeSection(qtAttributeSection* sec);
       static void processInstancedSection(qtInstancedSection* sec);

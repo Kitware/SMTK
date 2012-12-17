@@ -150,6 +150,12 @@ void qtRootSection::showAdvanced(int checked)
 }
 
 //----------------------------------------------------------------------------
+qtSection* qtRootSection::getSection(slctk::attribute::Section::Type secType)
+{
+  return this->Internals->TabGroup->getChildSection(secType);
+}
+
+//----------------------------------------------------------------------------
 void qtRootSection::initRootTabGroup()
 {
   //if we are the root tab group we want to be display differently than the other tab groups
