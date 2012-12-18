@@ -11,10 +11,6 @@ message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
 
 include_directories(
   ${CMBModel_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Math/Src
-  ${CMAKE_CURRENT_SOURCE_DIR}/../Omicron/Externals/Alloc/Src
-  ${Omicron_BINARY_DIR}/include
   ${vtkDiscreteModel_SOURCE_DIR}/Model
   ${vtkCmbDiscreteModel_INCLUDE_DIRS}
   ${vtkDiscreteModel_INCLUDE_DIRS}
@@ -62,8 +58,6 @@ SET_SOURCE_FILES_PROPERTIES(
   vtkCmbModelFaceMesh
   ABSTRACT
 )
-# add_library(SimBuilderLibrary SHARED ${vtkMeshFiles})
-# target_link_libraries(SimBuilderLibrary vtkDiscreteModel vtkCmbDiscreteModel vtkFiltering vtkCMBVTKExtensions omicron triangle_omicron tl_alloc)
 
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
@@ -95,9 +89,6 @@ target_link_libraries(SimBuilderMesh_Plugin
   vtkCmbDiscreteModel vtkCmbDiscreteModelCS
   vtkDiscreteModel vtkDiscreteModelCS
   vtkFiltersCore vtkFiltersCoreCS
-  omicron
-  triangle_omicron
-  tl_alloc
 )
 
 if(NOT APPLE)
