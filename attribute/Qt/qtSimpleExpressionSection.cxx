@@ -35,6 +35,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "attribute/IntItemDefinition.h"
 #include "attribute/DoubleItem.h"
 #include "attribute/DoubleItemDefinition.h"
+#include "attribute/StringItem.h"
+#include "attribute/StringItemDefinition.h"
 #include "attribute/SimpleExpressionSection.h"
 
 #include <QGridLayout>
@@ -261,8 +263,13 @@ void qtSimpleExpressionSection::createWidget()
   this->Internals->FuncList->setSelectionMode(QAbstractItemView::SingleSelection);
 
   this->Widget = frame;
-  this->parentWidget()->layout()->setAlignment(Qt::AlignJustify);
-  this->parentWidget()->layout()->addWidget(frame);
+  QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
+    this->parentWidget()->layout());
+  if(parentlayout)
+    {
+    parentlayout->setAlignment(Qt::AlignJustify);
+    parentlayout->addWidget(frame);
+    }
   
   this->initFunctionList();
   
@@ -342,11 +349,7 @@ void qtSimpleExpressionSection::onFuncSelectionChanged(
     qtUIManager::instance()->updateArrayTableWidget(dataItem, 
       this->Internals->FuncTable);
     this->Internals->FuncTable->resizeColumnsToContents();
-    if(this->Internals->FuncTable->columnCount()>=2)
-      {
-      this->Internals->FuncTable->setHorizontalHeaderLabels(
-          QStringList() << tr("x") << tr("f(x)") );
-      }
+    this->updateTableHeader();
     }
   else
     {
@@ -380,7 +383,7 @@ void qtSimpleExpressionSection::updateFunctionEditorUI(
   if(arrayItem)
     {
     int n = (int)(arrayItem->numberOfGroups());
-    int m = (int)(arrayItem->numberOfItemsPerGroup()); // expecting 1
+    int m = (int)(arrayItem->numberOfItemsPerGroup());
     if(!m  || !n)
       {
       return;
@@ -447,26 +450,57 @@ void qtSimpleExpressionSection::onCreateNew()
     }
   else
     {
-/*
-    int numRows = this->Internals->NumberBox->value();
-    vtkDoubleArray* newArray = vtkDoubleArray::New();
-    newArray->SetNumberOfComponents(2);
-    for(int i=0; i<numRows; i++)
-      {
-      double initV[2]={0.0, 0.0};
-      newArray->InsertNextTuple(initV);
-      }
-*/
     slctk::SimpleExpressionSectionPtr sec =
       slctk::dynamicCastPointer<SimpleExpressionSection>(this->getObject());
     if(!sec || !sec->definition())
       {
       return;
       }
+    AttributeDefinitionPtr attDef = sec->definition();
+    if(!attDef->numberOfItemDefinitions())
+      {
+      return;
+      }
+    const GroupItemDefinition *itemDefinition = 
+      dynamic_cast<const GroupItemDefinition *>(attDef->itemDefinition(0).get());
+    if(!itemDefinition)
+      {
+      return;
+      }
 
-    this->createNewFunction(sec->definition());
+    QStringList strVals;
+    int numRows = this->Internals->NumberBox->value();
+    int numberOfComponents = itemDefinition->numberOfItemDefinitions();
+    for(int i=0; i < numRows; i++)
+      {
+      for(int c=0; c<numberOfComponents-1; c++)
+        {
+        strVals << "0.0" << "\t";
+        }
+      strVals << "0.0" << LINE_BREAKER_STRING
+      }
+    QString valuesText = strVals.join(" ");
+    slctk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+      this->Internals->FuncList->currentItem());
+    QString funcExp = expressionItem ?
+      expressionItem->valueAsString().c_str() : "";
+
+    this->buildSimpleExpression(funcExp, valuesText,numberOfComponents);
     }
 }
+
+//----------------------------------------------------------------------------
+void qtSimpleExpressionSection::displayExpressionError(
+  std::string& errorMsg, int errorPos)
+{
+  QString strMessage = QString(errorMsg.c_str()) + 
+    "\nThe function expression has some syntax error at cursor position: " + 
+    QString::number(errorPos);
+  QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),strMessage);
+  this->Internals->ExpressionInput->setFocus();
+  this->Internals->ExpressionInput->setCursorPosition(errorPos);
+}
+
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::createFunctionWithExpression()
 {
@@ -476,42 +510,11 @@ void qtSimpleExpressionSection::createFunctionWithExpression()
     funcExpr = "X";
     }
   this->Internals->ExpressionInput->setText(funcExpr);
-/*
-  int errorPos = -1;
-  std::string errorMsg;
-  this->getFunctionContainer()->GetFunctionParser()->SetFunction(funcExpr.toStdString());
-  this->getFunctionContainer()->GetFunctionParser()->CheckExpression(errorPos, errorMsg);
-  QString strMessage = QString(errorMsg.c_str()) + 
-    "\nThe function expression has some syntax error at cursor position: " + 
-    QString::number(errorPos);
-    
-  if(errorPos != -1 && !errorMsg.empty())
-    {
-    QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),strMessage);
-    this->Internals->ExpressionInput->setFocus();
-    this->Internals->ExpressionInput->setCursorPosition(errorPos);
-    return;
-    }
-*/
   double initVal = this->Internals->InitValueInput->text().toDouble();
   double deltaVal = this->Internals->DeltaInput->text().toDouble();
   int numValues = this->Internals->NumberBox->value();
   emit this->onCreateFunctionWithExpression(
     funcExpr, initVal, deltaVal, numValues);
-/*
-  // Need "Delete" after done.
-  slctk::AttributePtr resultContainer = this->getFunctionContainer()->BuildFunction(
-    "Function1DLinear", "New Func with Expr", 
-    funcExpr.toAscii().constData(), initVal, deltaVal, numValues);
-  if(resultContainer)
-    {
-    QListWidgetItem* item = this->addFunctionListItem(resultContainer);
-    if(item)
-      {
-      this->Internals->FuncList->setCurrentItem(item);
-      }
-    }
-*/
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::createNewFunction(
@@ -521,7 +524,7 @@ void qtSimpleExpressionSection::createNewFunction(
     {
     return;
     }
-
+  this->Internals->FuncList->blockSignals(true);
   Manager *attManager = attDef->manager();
 
   slctk::AttributePtr newFunc = attManager->createAttribute(attDef->type());
@@ -530,17 +533,70 @@ void qtSimpleExpressionSection::createNewFunction(
     {
     this->Internals->FuncList->setCurrentItem(item);
     }
+  this->Internals->FuncList->blockSignals(false);
+}
+//----------------------------------------------------------------------------
+void qtSimpleExpressionSection::buildSimpleExpression(
+  QString& funcExpr, QString& funcVals, int numberOfComponents)
+{
+  slctk::SimpleExpressionSectionPtr sec =
+    slctk::dynamicCastPointer<SimpleExpressionSection>(this->getObject());
+  if(!sec || !sec->definition())
+    {
+    return;
+    }
+
+  this->createNewFunction(sec->definition());
+  slctk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+    this->Internals->FuncList->currentItem());
+  if(expressionItem && !funcExpr.isEmpty())
+    {
+    slctk::StringItemPtr sItem =dynamicCastPointer<StringItem>(expressionItem);
+    if(sItem)
+      {
+      sItem->setValue(funcExpr.toStdString());
+      this->Internals->ExpressionInput->setText(
+        sItem->valueAsString().c_str());
+      }
+    }
+
+  this->Internals->FuncTable->clear();
+  this->Internals->FuncTable->setRowCount(0);
+  this->Internals->FuncTable->setColumnCount(numberOfComponents);
+  this->pasteFunctionValues(funcVals, false);
+  this->updateTableHeader();
+}
+
+//----------------------------------------------------------------------------
+void qtSimpleExpressionSection::updateTableHeader()
+{
+  if(this->Internals->FuncTable->columnCount()>=2)
+    {
+    this->Internals->FuncTable->setHorizontalHeaderLabels(
+      QStringList() << tr("x") << tr("f(x)") );
+    }
 }
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::onCopySelected()
 {
   slctk::AttributePtr dataItem = this->getSelectedFunction();
-  if(dataItem)
+  if(dataItem && dataItem->numberOfItems())
     {
-    this->createNewFunction(dataItem->definition());
+    slctk::GroupItemPtr groupItem = dynamicCastPointer<GroupItem>(dataItem->item(0));
+    QString valuesText;
+    if(groupItem && qtUIManager::instance()->getExpressionArrayString(groupItem, valuesText))
+      {
+      slctk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+        this->Internals->FuncList->currentItem());
+      QString funcExp = expressionItem ?
+        expressionItem->valueAsString().c_str() : "";
+      this->buildSimpleExpression(funcExp, valuesText,
+        groupItem->numberOfItemsPerGroup());
+      }
     }
 }
+
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::onDeleteSelected()
 {
@@ -645,7 +701,7 @@ void qtSimpleExpressionSection::onFuncTableKeyPress(QKeyEvent* e)
 }
 
 //----------------------------------------------------------------------------
-void qtSimpleExpressionSection::pasteFunctionValues(QString& str)
+void qtSimpleExpressionSection::pasteFunctionValues(QString& str, bool clearExp)
 {
   if(str.isNull())
     {
@@ -686,7 +742,10 @@ void qtSimpleExpressionSection::pasteFunctionValues(QString& str)
     delete vals;
     }
   this->Internals->FuncTable->resizeColumnsToContents();
-  this->clearFuncExpression();
+  if(clearExp)
+    {
+    this->clearFuncExpression();
+    }
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::onAddValue()

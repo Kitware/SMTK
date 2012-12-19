@@ -117,7 +117,6 @@ void XmlDocV1Parser::process(xml_document &doc)
         }
       this->m_manager.defineAnalysis(s, catagories);
       }
-        
     }
   this->processAttributeInformation(amnode);
   this->processSections(amnode);
@@ -2080,6 +2079,10 @@ void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
       this->m_errorStatus << "Error: Cannot find attribute definition: " << defType
                           << " for Simple Expression Section: " << sec->title()
                           << "\n";
+      }
+    else
+      {
+      sec->setDefinition(def);
       }
     }
 }

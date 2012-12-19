@@ -80,6 +80,8 @@ namespace slctk
       {  return this->ShowAdvanced;  }
       void setWidgetToDefaultValueColor(QWidget *widget,
         bool setToDefault);
+      bool getExpressionArrayString(
+        slctk::GroupItemPtr dataItem, QString& strValues);
 
     static void updateArrayTableWidget(slctk::GroupItemPtr dataItem, QTableWidget* widget);
     static void updateTableColRows(slctk::AttributeItemPtr dataItem,
@@ -91,10 +93,17 @@ namespace slctk
     static void removeSelectedTableValues(
       slctk::GroupItemPtr dataItem, QTableWidget* table);
 
+#ifdef WIN32
+    #define LINE_BREAKER_STRING "\n";
+#else
+    #define LINE_BREAKER_STRINGstrVals "\r";
+#endif
+
     public slots:
-      void onFileItemCreated(qtFileItem*);
+      void onFileItemCreated(slctk::attribute::qtFileItem*);
+
     signals:
-      void fileItemCreated(qtFileItem* fileItem);
+      void fileItemCreated(slctk::attribute::qtFileItem* fileItem);
 
     protected:
       static void processAttributeSection(qtAttributeSection* sec);

@@ -258,7 +258,7 @@ void qtUIManager::updateArrayTableWidget(
   widget->setRowCount(0);
   widget->setColumnCount(0);
 
-  if(!dataItem || !dataItem->numberOfGroups())
+  if(!dataItem)
     {
     return;
     }
@@ -269,20 +269,23 @@ void qtUIManager::updateArrayTableWidget(
     {
     return;
     }
-  int numCols = (int)n, numRows = (int)m;  
+  slctk::ValueItemPtr item =dynamicCastPointer<ValueItem>(dataItem->item(0));
+  if(!item || item->isDiscrete() || item->isExpression())
+    {
+    return;
+    }
+
+  int numCols = (int)(n*m), numRows = (int)(item->numberOfValues());
   widget->setColumnCount(numCols);
+  widget->setRowCount(numRows);
   for(int h=0; h<numCols; h++)
     {
     QTableWidgetItem *qtablewidgetitem = new QTableWidgetItem();
     widget->setHorizontalHeaderItem(h, qtablewidgetitem);
     }
-
-  for(i = 0; i < n; i++)
+  for (j = 0; j < numCols; j++) // expecting one item for each column
     {
-    for (j = 0; j < m; j++) // expecting one item for each column
-      {
-      qtUIManager::updateTableColRows(dataItem->item(i,j), i, widget);
-      }
+    qtUIManager::updateTableColRows(dataItem->item(j), j, widget);
     }
 }
 
@@ -314,9 +317,9 @@ void qtUIManager::updateArrayDataValue(
     return;
     }
   slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(
-    dataItem->item(item->column(),0));
+    dataItem->item(item->column()));
   slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(
-    dataItem->item(item->column(),0));
+    dataItem->item(item->column()));
   if(dItem)
     {
     dItem->setValue(item->row(), item->text().toDouble());
@@ -325,6 +328,38 @@ void qtUIManager::updateArrayDataValue(
     {
     iItem->setValue(item->row(), item->text().toInt());
     }
+}
+
+//----------------------------------------------------------------------------
+bool qtUIManager::getExpressionArrayString(
+  slctk::GroupItemPtr dataItem, QString& strValues)
+{
+  if(!dataItem || !dataItem->numberOfRequiredGroups())
+    {
+    return false;
+    }
+  slctk::ValueItemPtr item =dynamicCastPointer<ValueItem>(dataItem->item(0));
+  if(!item || item->isDiscrete() || item->isExpression())
+    {
+    return false;
+    }
+  int numberOfComponents = dataItem->numberOfItemsPerGroup();   
+  int nVals = (int)(item->numberOfValues());
+  QStringList strVals;
+  slctk::ValueItemPtr valueitem;
+  for(int i=0; i < nVals; i++)
+    {
+    for(int c=0; c<numberOfComponents-1; c++)
+      {
+      valueitem =dynamicCastPointer<ValueItem>(dataItem->item(c));
+      strVals << valueitem->valueAsString(i).c_str() <<"\t";
+      }
+    valueitem =dynamicCastPointer<ValueItem>(dataItem->item(numberOfComponents-1));
+    strVals << valueitem->valueAsString(i).c_str();
+    strVals << LINE_BREAKER_STRING;
+    }
+  strValues = strVals.join(" ");
+  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -343,8 +378,8 @@ void qtUIManager::removeSelectedTableValues(
       {
       for(int i = 0; i < numCols; i++)
         {
-        slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i,0));
-        slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i,0));
+        slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i));
+        slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i));
         if(dItem)
           {
           dItem->removeValue(r);
@@ -373,8 +408,8 @@ void qtUIManager::addNewTableValues(slctk::GroupItemPtr dataItem,
 
   for(int i=0; i<numVals; i++)
     {
-    slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i,0));
-    slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i,0));
+    slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i));
+    slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i));
     if(dItem)
       {
       dItem->appendValue(vals[i]);

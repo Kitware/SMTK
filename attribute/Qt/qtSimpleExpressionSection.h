@@ -29,6 +29,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "qtSection.h"
 
+#include <vector>
+
 class qtSimpleExpressionSectionInternals;
 class QListWidgetItem;
 class QTableWidgetItem;
@@ -46,8 +48,11 @@ namespace slctk
       qtSimpleExpressionSection(slctk::SectionPtr, QWidget* parent);
       virtual ~qtSimpleExpressionSection();  
 
+      void buildSimpleExpression(
+        QString& funcExpr, QString& funcVals, int numberOfComponents);
       virtual void createNewFunction(slctk::AttributeDefinitionPtr attDef);
       QListWidgetItem* getSelectedItem();
+      void displayExpressionError(std::string& errorMsg, int errorPos);
 
     public slots:
       void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -73,6 +78,7 @@ namespace slctk
     
     protected:
       virtual void createWidget();
+      void updateTableHeader();
       slctk::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
       slctk::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
       slctk::AttributePtr getFunctionFromItem(QListWidgetItem * item);
@@ -85,7 +91,7 @@ namespace slctk
       void addNewValue(double* vals, int numVals);
       void updateFunctionEditorUI(
         slctk::ValueItemPtr expressionItem, slctk::GroupItemPtr arrayItem);
-      void pasteFunctionValues(QString& values);
+      void pasteFunctionValues(QString& values, bool clearExp=true);
       virtual void initFunctionList();
       virtual void clearFuncExpression();
       virtual void getAllDefinitions(
