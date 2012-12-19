@@ -92,8 +92,9 @@ target_link_libraries(SimBuilderMesh_Plugin
 )
 
 if(NOT APPLE)
-  install(TARGETS SimBuilderMesh_Plugin RUNTIME DESTINATION bin
-      LIBRARY DESTINATION bin)
+  install(TARGETS SimBuilderMesh_Plugin
+             RUNTIME DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
+             LIBRARY DESTINATION ${VTK_INSTALL_LIBRARY_DIR})
 endif(NOT APPLE)
 
 if(BUILD_TESTING)
