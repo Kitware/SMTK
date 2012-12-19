@@ -10,7 +10,7 @@ configure_file(
   )
 
 include_directories(
-  ${PROJECT_SOURCE_DIR} 
+  ${PROJECT_SOURCE_DIR}
   ${PROJECT_SOURCE_DIR}/Serialize
   ${PROJECT_SOURCE_DIR}/Model
   ${PROJECT_BINARY_DIR}
@@ -19,7 +19,7 @@ include_directories(
 ###############################################################################
 ###############################################################################
 # UUID stuff. Probably don't need all of it
-if(WIN32) 
+if(WIN32)
  if (NOT BORLAND)
     # rpcrt4 -> UuidCreate
     #snmpapi -> getting MAC address
@@ -181,8 +181,8 @@ target_link_libraries(vtkDiscreteModel ${Depend_LIBS})
 
 if(NOT APPLE)
   install(TARGETS vtkDiscreteModel
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
+    RUNTIME DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
+    LIBRARY DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
     )
 endif()
 
