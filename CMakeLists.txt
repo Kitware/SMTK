@@ -91,11 +91,7 @@ target_link_libraries(SimBuilderMesh_Plugin
   vtkFiltersCore vtkFiltersCoreCS
 )
 
-if(NOT APPLE)
-  install(TARGETS SimBuilderMesh_Plugin
-             RUNTIME DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
-             LIBRARY DESTINATION ${VTK_INSTALL_LIBRARY_DIR})
-endif(NOT APPLE)
+cmb_install_plugin(SimBuilderMesh_Plugin)
 
 if(BUILD_TESTING)
   add_subdirectory(Testing)
