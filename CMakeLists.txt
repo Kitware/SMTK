@@ -178,14 +178,3 @@ set(vtkDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkDiscreteModel ${_module_src})
 set(Depend_LIBS vtkFiltersCore vtkRenderingCore vtkIOCore vtkCommonCore ${KIT_LIBS})
 target_link_libraries(vtkDiscreteModel ${Depend_LIBS})
-
-if(NOT APPLE)
-  install(TARGETS vtkDiscreteModel
-    RUNTIME DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
-    LIBRARY DESTINATION ${VTK_INSTALL_LIBRARY_DIR}
-    )
-endif()
-
-# if(BUILD_TESTING)
-#   add_subdirectory(Testing)
-# endif(BUILD_TESTING)
