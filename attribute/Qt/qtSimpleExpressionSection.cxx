@@ -675,11 +675,7 @@ void qtSimpleExpressionSection::onFuncTableKeyPress(QKeyEvent* e)
             list << "\t";
             }
           }
-#ifdef WIN32
-        list << "\n";
-#else
-        list << "\r";
-#endif
+        list << LINE_BREAKER_STRING;
         }
       }
 
@@ -707,12 +703,8 @@ void qtSimpleExpressionSection::pasteFunctionValues(QString& str, bool clearExp)
     {
     return;
     }
-  QStringList rows;
-#ifdef WIN32
-   rows = str.split('\n');
-#else
-   rows = str.split('\r');
-#endif
+  QString strSep=LINE_BREAKER_STRING;
+  QStringList rows = str.split(strSep);
 
   int numRows = rows.count()-1;
   int numColumns = rows.first().count('\t') + 1;
@@ -826,7 +818,7 @@ void qtSimpleExpressionSection::showAdvanced(int checked)
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::getAllDefinitions(
-  std::vector<slctk::AttributeDefinitionPtr>& defs)
+  QList<slctk::AttributeDefinitionPtr>& defs)
 {
   slctk::SimpleExpressionSectionPtr sec =
     slctk::dynamicCastPointer<SimpleExpressionSection>(this->getObject());

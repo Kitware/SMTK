@@ -49,12 +49,18 @@
 #include "attribute/Attribute.h"
 #include "attribute/Definition.h"
 #include "attribute/Manager.h"
+#include "attribute/AttributeRefItem.h"
+#include "attribute/AttributeRefItemDefinition.h"
 #include "attribute/GroupItem.h"
 #include "attribute/GroupItemDefinition.h"
 #include "attribute/ValueItem.h"
 #include "attribute/ValueItemDefinition.h"
 #include "attribute/DoubleItem.h"
+#include "attribute/DoubleItemDefinition.h"
 #include "attribute/IntItem.h"
+#include "attribute/IntItemDefinition.h"
+#include "attribute/StringItem.h"
+#include "attribute/StringItemDefinition.h"
 
 using namespace slctk::attribute;
 
@@ -426,4 +432,472 @@ void qtUIManager::addNewTableValues(slctk::GroupItemPtr dataItem,
 void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 {
   emit this->fileItemCreated(fileItem);
+}
+
+//----------------------------------------------------------------------------
+QWidget* qtUIManager::createExpressionRefWidget(
+  slctk::AttributeItemPtr attitem, int elementIdx, QWidget* pWidget)
+{
+  slctk::ValueItemPtr inputitem =dynamicCastPointer<ValueItem>(attitem);
+  if(!inputitem)
+    {
+    return NULL;
+    }
+  slctk::AttributeRefItemPtr item =inputitem->expressionReference(elementIdx);
+  if(!item)
+    {
+    return NULL;
+    }
+
+  const AttributeRefItemDefinition *itemDef = 
+    dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
+  slctk::AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
+  if(!attDef)
+    {
+    return NULL;
+    }
+  QList<QString> attNames;
+  std::vector<slctk::AttributePtr> result;
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
+  std::vector<slctk::AttributePtr>::iterator it;
+  for (it=result.begin(); it!=result.end(); ++it)
+    {
+    attNames.push_back((*it)->name().c_str());
+    }
+
+  QComboBox* combo = new QComboBox(pWidget);
+  QVariant vdata(elementIdx);
+  combo->setProperty("ElementIndex", vdata);
+  QVariant vobject;
+  vobject.setValue((void*)(attitem.get()));
+  combo->setProperty("AttItemObj", vobject);
+  combo->addItems(attNames);
+
+  int setIndex = -1;
+  if (item->isSet(elementIdx))
+    {
+    setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
+    }
+  combo->setCurrentIndex(setIndex);
+
+  QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
+    this, SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
+  
+  return combo;
+}
+//----------------------------------------------------------------------------
+void qtUIManager::onExpressionReferenceChanged()
+{
+  QComboBox* const comboBox = qobject_cast<QComboBox*>(
+    QObject::sender());
+  if(!comboBox)
+    {
+    return;
+    }
+  int curIdx = comboBox->currentIndex();
+  int elementIdx = comboBox->property("ElementIndex").toInt();
+  ValueItem* inputitem =static_cast<ValueItem*>(
+    comboBox->property("AttItemObj").value<void *>());
+  if(!inputitem)
+    {
+    return;
+    }
+  slctk::AttributeRefItemPtr item =inputitem->expressionReference(elementIdx);
+  if(!item)
+    {
+    return;
+    }
+
+  if(curIdx>=0)
+    {
+    const AttributeRefItemDefinition *itemDef = 
+      dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
+    AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
+    Manager *attManager = attDef->manager();
+    AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+    if(attPtr)
+      {
+      item->setValue(elementIdx, attPtr);
+      }
+    else
+      {
+      item->unset(elementIdx);
+      }
+    }
+  else
+    {
+    item->unset(elementIdx);
+    }
+}
+
+//----------------------------------------------------------------------------
+QWidget* qtUIManager::createComboBox(
+  slctk::AttributeItemPtr attitem, int elementIdx, QWidget* pWidget)
+{
+  slctk::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  if(!item)
+    {
+    return NULL;
+    }
+  const ValueItemDefinition *itemDef = 
+    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+
+  QList<QString> discreteVals;
+  for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
+    {
+    std::string enumText = itemDef->discreteEnum(i);
+    if(itemDef->hasDefault() &&
+      itemDef->defaultDiscreteIndex() == i)
+      {
+      enumText.append(" (Default)");
+      }
+    discreteVals.push_back(enumText.c_str());
+    }
+
+  QComboBox* combo = new QComboBox(pWidget);
+  QVariant vdata(elementIdx);
+  combo->setProperty("ElementIndex", vdata);
+  QVariant vobject;
+  vobject.setValue((void*)(attitem.get()));
+  combo->setProperty("AttItemObj", vobject);
+  combo->addItems(discreteVals);
+  int setIndex = -1;
+  if (item->isSet(elementIdx))
+    {
+    setIndex = item->discreteIndex(elementIdx);
+    }
+  if(setIndex < 0 && itemDef->hasDefault() &&
+    itemDef->defaultDiscreteIndex() < combo->count())
+    {
+    setIndex = itemDef->defaultDiscreteIndex();
+    }
+  combo->setCurrentIndex(setIndex);
+
+  QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
+    this, SLOT(onComboIndexChanged()), Qt::QueuedConnection);
+  
+  return combo;
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::onComboIndexChanged()
+{
+  QComboBox* const comboBox = qobject_cast<QComboBox*>(
+    QObject::sender());
+  if(!comboBox)
+    {
+    return;
+    }
+  int curIdx = comboBox->currentIndex();
+  int elementIdx = comboBox->property("ElementIndex").toInt();
+  ValueItem* item =static_cast<ValueItem*>(
+    comboBox->property("AttItemObj").value<void *>());
+  if(!item)
+    {
+    return;
+    }
+  if(curIdx>=0)
+    {
+    item->setDiscreteIndex(elementIdx, curIdx);
+    }
+  else
+    {
+    item->unset(elementIdx);
+    }
+}
+//----------------------------------------------------------------------------
+QWidget* qtUIManager::createInputWidget(
+  slctk::AttributeItemPtr attitem,int elementIdx,QWidget* pWidget)
+{
+  slctk::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  if(!item)
+    {
+    return NULL;
+    }
+
+  return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
+    this->createExpressionRefWidget(item,elementIdx,pWidget) :
+    (item->isDiscrete() ?
+      this->createComboBox(item,elementIdx,pWidget) :
+      this->createEditBox(item,elementIdx,pWidget));
+}
+//----------------------------------------------------------------------------
+QWidget* qtUIManager::createEditBox(
+  slctk::AttributeItemPtr attitem,int elementIdx,QWidget* pWidget)
+{
+  slctk::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  if(!item)
+    {
+    return NULL;
+    }
+
+  QWidget* inputWidget = NULL;
+  QVariant vdata(elementIdx);
+  bool isDefault = false;
+  switch (item->type())
+    {
+    case slctk::attribute::Item::DOUBLE:
+      {
+      QLineEdit* editBox = new QLineEdit(pWidget);
+      const DoubleItemDefinition *dDef = 
+        dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
+      QDoubleValidator *validator = new QDoubleValidator(pWidget);
+      editBox->setValidator(validator);
+      editBox->setFixedWidth(100);
+      
+      double value=slctk_DOUBLE_MIN;
+      if(dDef->hasMinRange())
+        {
+        value = dDef->minRangeInclusive() ?
+          dDef->minRange() : dDef->minRange() + slctk_DOUBLE_CONSTRAINT_PRECISION;
+        validator->setBottom(value);
+        }
+      value=slctk_DOUBLE_MAX;
+      if(dDef->hasMaxRange())
+        {
+        value = dDef->maxRangeInclusive() ?
+          dDef->maxRange() : dDef->maxRange() - slctk_DOUBLE_CONSTRAINT_PRECISION;
+        validator->setTop(value);
+        }
+
+      slctk::DoubleItemPtr ditem =dynamicCastPointer<DoubleItem>(item);
+      if(item->isSet(elementIdx))
+        {
+        editBox->setText(item->valueAsString(elementIdx).c_str());
+
+        isDefault = dDef->hasDefault() &&
+          dDef->defaultValue()==ditem->value(elementIdx);
+        }
+      else if(dDef->hasDefault())
+        {
+        editBox->setText(QString::number(dDef->defaultValue()));
+        isDefault = true;
+        }
+      inputWidget = editBox;
+      break;
+      }
+    case slctk::attribute::Item::INT:
+      {
+      QLineEdit* editBox = new QLineEdit(pWidget);
+      const IntItemDefinition *iDef = 
+        dynamic_cast<const IntItemDefinition*>(item->definition().get());
+      QIntValidator *validator = new QIntValidator(pWidget);
+      editBox->setValidator(validator);
+      editBox->setFixedWidth(100);
+
+      int value=slctk_INT_MIN;
+      if(iDef->hasMinRange())
+        {
+        value = iDef->minRangeInclusive() ?
+          iDef->minRange() : iDef->minRange() + 1;
+        validator->setBottom(value);
+        }
+      value=slctk_INT_MAX;
+      if(iDef->hasMaxRange())
+        {
+        value = iDef->maxRangeInclusive() ?
+          iDef->maxRange() : iDef->maxRange() - 1;
+        validator->setTop(value);
+        }
+
+      slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(item);
+      if(item->isSet(elementIdx))
+        {
+        editBox->setText(item->valueAsString(elementIdx).c_str());
+
+        isDefault = iDef->hasDefault() &&
+          iDef->defaultValue()==iItem->value(elementIdx);
+        }
+      else if(iDef->hasDefault())
+        {
+        editBox->setText(QString::number(iDef->defaultValue()));
+        isDefault = true;
+        }
+      inputWidget = editBox;
+      break;
+      }
+    case slctk::attribute::Item::STRING:
+      {
+      const StringItemDefinition *sDef = 
+        dynamic_cast<const StringItemDefinition*>(item->definition().get());
+      slctk::StringItemPtr sitem =dynamicCastPointer<StringItem>(item);
+      QString valText;
+      if(item->isSet(elementIdx))
+        {
+        valText = item->valueAsString(elementIdx).c_str();
+        isDefault = sDef->hasDefault() &&
+          sDef->defaultValue()==sitem->value(elementIdx);
+        }
+      else if(sDef->hasDefault())
+        {
+        valText = sDef->defaultValue().c_str();
+        isDefault = true;
+        }
+
+      if(sDef->isMultiline())
+        {
+        QTextEdit* textEdit = new QTextEdit(pWidget);
+        textEdit->setPlainText(valText);
+        QObject::connect(textEdit, SIGNAL(textChanged()),
+          this, SLOT(onInputValueChanged()));
+        inputWidget = textEdit;
+        }
+      else
+        {
+        QLineEdit* lineEdit = new QLineEdit(pWidget);
+        lineEdit->setText(valText);
+        inputWidget = lineEdit;
+        }
+      inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+      break;
+      }
+    default:
+      //this->m_errorStatus << "Error: Unsupported Item Type: " <<
+      // slctk::attribute::Item::type2String(item->type()) << "\n";
+      break;
+    }
+  if(inputWidget)
+    {
+    inputWidget->setProperty("ElementIndex", vdata);
+    QVariant vobject;
+    vobject.setValue((void*)(attitem.get()));
+    inputWidget->setProperty("AttItemObj", vobject);
+
+    qtUIManager::instance()->setWidgetToDefaultValueColor(inputWidget,isDefault);
+    }
+  if(QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
+    {
+    QObject::connect(editBox, SIGNAL(editingFinished()),
+      this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
+    }
+
+  return inputWidget;
+}
+//----------------------------------------------------------------------------
+void qtUIManager::onInputValueChanged()
+{
+  QLineEdit* const editBox = qobject_cast<QLineEdit*>(
+    QObject::sender());
+  QTextEdit* const textBox = qobject_cast<QTextEdit*>(
+    QObject::sender());
+  if(!editBox && !textBox)
+    {
+    return;
+    }
+  QWidget* inputBox;
+  if(editBox!=NULL)
+    {
+    inputBox = editBox;
+    }
+  else
+    {
+    inputBox = textBox;
+    }
+  ValueItem* rawitem =static_cast<ValueItem*>(
+    inputBox->property("AttItemObj").value<void *>());
+  if(!rawitem)
+    {
+    return;
+    }
+  //slctk::ValueItemPtr item(rawitem);
+  //slctk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(item);
+  //slctk::IntItemPtr iItem =dynamicCastPointer<IntItem>(item);
+  //slctk::StringItemPtr sItem =dynamicCastPointer<StringItem>(item);
+  int elementIdx = editBox ? editBox->property("ElementIndex").toInt() :
+    textBox->property("ElementIndex").toInt();
+
+  if(editBox && !editBox->text().isEmpty())
+    {
+    if(rawitem->type()==slctk::attribute::Item::DOUBLE)
+      {
+      slctk::dynamicCastPointer<DoubleItem>(rawitem->pointer())
+        ->setValue(elementIdx, editBox->text().toDouble());
+      }
+    else if(rawitem->type()==slctk::attribute::Item::INT)
+      {
+      slctk::dynamicCastPointer<IntItem>(rawitem->pointer())
+        ->setValue(elementIdx, editBox->text().toInt());
+      }
+    else if(rawitem->type()==slctk::attribute::Item::STRING)
+      {
+      slctk::dynamicCastPointer<StringItem>(rawitem->pointer())
+        ->setValue(elementIdx, editBox->text().toStdString());
+      }
+    else
+      {
+      rawitem->unset(elementIdx);
+      }
+    }
+  else if(textBox && !textBox->toPlainText().isEmpty() &&
+     rawitem->type()==slctk::attribute::Item::STRING)
+    {
+    slctk::dynamicCastPointer<StringItem>(rawitem->pointer())
+      ->setValue(elementIdx, textBox->toPlainText().toStdString());
+    }
+  else
+    {
+    rawitem->unset(elementIdx);
+    }
+}
+//----------------------------------------------------------------------------
+std::string qtUIManager::getValueItemCommonLabel(
+  slctk::ValueItemPtr attItem) const
+{
+  const ValueItemDefinition *itemDef = 
+    dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
+
+  if(itemDef && itemDef->usingCommonLabel() && itemDef->hasValueLabels() &&
+    !itemDef->valueLabel(0).empty())
+    {
+    return itemDef->valueLabel(0);
+    }
+  return "";
+}
+//----------------------------------------------------------------------------
+std::string qtUIManager::getGroupItemCommonLabel(
+  slctk::GroupItemPtr attItem) const
+{
+  const GroupItemDefinition *groupDef = 
+    dynamic_cast<const GroupItemDefinition*>(attItem->definition().get());
+
+  if(groupDef && groupDef->usingCommonSubGroupLabel() &&
+    groupDef->hasSubGroupLabels() && !groupDef->subGroupLabel(0).empty())
+    {
+    return groupDef->subGroupLabel(0);
+    }
+  return "";
+}
+
+//----------------------------------------------------------------------------
+std::string qtUIManager::getItemCommonLabel(
+  slctk::AttributeItemPtr attItem)
+{
+  if(attItem->type() == slctk::attribute::Item::GROUP)
+    {
+    return this->getGroupItemCommonLabel(dynamicCastPointer<GroupItem>(attItem));
+    }
+  else
+    {
+    return this->getValueItemCommonLabel(dynamicCastPointer<ValueItem>(attItem));
+    }
+  return "";
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::updateTableItemCheckState(
+  QTableWidgetItem* labelitem, slctk::AttributeItemPtr attItem)
+{
+  bool bEnabled = true;
+  if(attItem->definition()->isOptional())
+    {
+    Qt::CheckState checkState = attItem->definition()->isEnabledByDefault() ?
+      Qt::Checked : Qt::Unchecked;
+    labelitem->setCheckState(checkState);
+    QVariant vdata;
+    vdata.setValue((void*)attItem.get());
+    labelitem->setData(Qt::UserRole, vdata);
+    labelitem->setFlags(labelitem->flags() | Qt::ItemIsUserCheckable);
+    bEnabled = (checkState==Qt::Checked);
+    }
+  return bEnabled;
 }

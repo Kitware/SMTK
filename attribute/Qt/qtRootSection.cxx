@@ -54,7 +54,6 @@ qtRootSection::qtRootSection(
   this->Internals = new qtRootSectionInternals;
   this->ScrollArea = NULL;
   this->createWidget( );
-
 }
 
 //----------------------------------------------------------------------------
@@ -108,10 +107,22 @@ void qtRootSection::createWidget( )
 //----------------------------------------------------------------------------
 void qtRootSection::showAdvanced(int checked)
 {
+  int currentTab = 0;
+
   if(this->Internals->TabGroup)
     {
+    if(this->Internals->TabGroup->childSections().count())
+      {
+      QTabWidget* selfW = static_cast<QTabWidget*>(
+        this->Internals->TabGroup->widget());
+      if(selfW)
+        {
+        currentTab = selfW->currentIndex();
+        }
+      }
     delete this->Internals->TabGroup;
     }
+
   if(this->Widget)
     {
     this->parentWidget()->layout()->removeWidget(this->ScrollArea);
@@ -141,6 +152,16 @@ void qtRootSection::showAdvanced(int checked)
   this->Internals->TabGroup = new qtGroupSection(this->getObject(), this->Widget);
   qtUIManager::processGroupSection(this->Internals->TabGroup);
   this->initRootTabGroup();
+
+  if(this->Internals->TabGroup->childSections().count())
+    {
+    QTabWidget* tabW = static_cast<QTabWidget*>(
+      this->Internals->TabGroup->widget());
+    if(tabW)
+      {
+      tabW->setCurrentIndex(currentTab);
+      }
+    }
 
   layout->addWidget(this->Internals->TabGroup->widget());
 

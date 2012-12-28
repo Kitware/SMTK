@@ -26,8 +26,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __slctk_attribute_qtItem_h
 
 #include <QObject>
+
 #include "AttributeExports.h"
 #include "PublicPointerDefs.h"
+
 class qtItemInternals;
 
 /*--------------------------------------------------------------------------*/
@@ -94,7 +96,6 @@ namespace slctk
     private:
 
       qtItemInternals *Internals;
-      
     }; // class
   }; // namespace attribute
 }; // namespace slctk

@@ -56,7 +56,7 @@ namespace slctk
       slctk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
       QListWidgetItem* addAttributeListItem(slctk::AttributePtr childData);
       virtual void getAllDefinitions(
-        std::vector<slctk::AttributeDefinitionPtr>& defs);
+        QList<slctk::AttributeDefinitionPtr>& defs);
 
     private:
 

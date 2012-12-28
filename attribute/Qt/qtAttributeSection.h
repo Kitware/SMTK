@@ -70,25 +70,29 @@ namespace slctk
       void onDeleteSelected();
       void onAttributeModified();
 
-      void showAdvanced(int show);
-
     protected:
       virtual void createWidget( );
-      slctk::ValueItemPtr getArrayDataFromItem(QTableWidgetItem * item);
       slctk::AttributePtr getAttributeFromItem(QTableWidgetItem * item);
-      slctk::ValueItemPtr getSelectedArrayData();
+      slctk::AttributeItemPtr getAttributeItemFromItem(QTableWidgetItem * item);
+
       slctk::AttributePtr getSelectedAttribute();
-      slctk::ValueItemPtr getAttributeArrayData(slctk::AttributePtr aAttribute);
       QTableWidgetItem* addAttributeListItem(slctk::AttributePtr childData);
       void addAttributePropertyItems(
         slctk::AttributePtr childData, const QString& group);
       void updateTableWithAttribute(slctk::AttributePtr dataItem, const QString& group);
       void updateTableWithProperty(QString& propertyName);
+      void addTableGroupItems(
+        slctk::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
       void addTableValueItems(
-        slctk::AttributeItemPtr childData, int& numRows, bool bEnabled);
+        slctk::ValueItemPtr attItem, int& numRows);
+      void addTableValueItems(
+        slctk::ValueItemPtr attItem, int& numRows,
+        const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
-        slctk::ValueItemPtr linkedData, QTableWidgetItem* item);
+        slctk::AttributeItemPtr linkedData, QTableWidgetItem* item);
+      void updateItemWidgetsEnableState(
+        slctk::ValueItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
       bool hasMultiDefinition(const QString& group);
 

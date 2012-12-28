@@ -83,7 +83,7 @@ void XmlDocV1Parser::process(xml_document &doc)
   amnode = doc.child("SLCTK_AttributeManager");
   
   // Get the category information
-  std::set<std::string> catagories;
+  std::set<std::string> secCatagories;
   std::string s;
   node = amnode.child("Categories");
   if (node)
@@ -94,11 +94,12 @@ void XmlDocV1Parser::process(xml_document &doc)
         {
         continue;
         }
-      catagories.insert(cnode.text().get());
+      secCatagories.insert(cnode.text().get());
       }
     }
 
   // Process Analsis Info
+  std::set<std::string> catagories;
   node = amnode.child("Analyses");
   if (node)
     {
@@ -130,7 +131,7 @@ void XmlDocV1Parser::process(xml_document &doc)
   const std::set<std::string> &cats = this->m_manager.categories();
   for (it = cats.begin(); it != cats.end(); it++)
     {
-    if (catagories.find(*it) == catagories.end())
+    if (secCatagories.find(*it) == secCatagories.end())
       {
       this->m_errorStatus << "Error: Catagory: " << *it << " was not listed in Manger's Catagory Section\n";
       }

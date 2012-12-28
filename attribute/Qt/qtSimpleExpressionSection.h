@@ -95,7 +95,7 @@ namespace slctk
       virtual void initFunctionList();
       virtual void clearFuncExpression();
       virtual void getAllDefinitions(
-        std::vector<slctk::AttributeDefinitionPtr>& defs);
+        QList<slctk::AttributeDefinitionPtr>& defs);
 
     private:
 

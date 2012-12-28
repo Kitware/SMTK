@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QObject>
 #include "AttributeExports.h"
 #include "PublicPointerDefs.h"
-#include <vector>
+#include <QList>
 
 class qtSectionInternals;
 
@@ -58,7 +58,7 @@ namespace slctk
     protected:
       virtual void createWidget(){;}
       virtual void getDefinitions(slctk::AttributeDefinitionPtr attDef,
-        std::vector<slctk::AttributeDefinitionPtr>& defs);
+        QList<slctk::AttributeDefinitionPtr>& defs);
 
       QWidget* Widget;
     private:

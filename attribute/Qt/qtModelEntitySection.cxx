@@ -175,7 +175,10 @@ void qtModelEntitySection::createWidget( )
     this, SLOT(onAttributeNameChanged(QListWidgetItem * )));
 
   this->Widget = frame;
-  this->parentWidget()->layout()->addWidget(frame);
+  if(this->parentWidget()->layout())
+    {
+    this->parentWidget()->layout()->addWidget(frame);
+    }
   this->onShowCategory(0);
 }
 
@@ -244,7 +247,7 @@ QListWidgetItem* qtModelEntitySection::addAttributeListItem(
 }
 //----------------------------------------------------------------------------
 void qtModelEntitySection::getAllDefinitions(
-  std::vector<slctk::AttributeDefinitionPtr>& defs)
+  QList<slctk::AttributeDefinitionPtr>& defs)
 {
   slctk::ModelEntitySectionPtr sec =
     slctk::dynamicCastPointer<ModelEntitySection>(this->getObject());

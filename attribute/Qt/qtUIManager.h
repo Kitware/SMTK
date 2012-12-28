@@ -93,14 +93,29 @@ namespace slctk
     static void removeSelectedTableValues(
       slctk::GroupItemPtr dataItem, QTableWidget* table);
 
+    std::string getValueItemCommonLabel(slctk::ValueItemPtr vitem) const;
+    std::string getGroupItemCommonLabel(slctk::GroupItemPtr groupitem) const;
+    std::string getItemCommonLabel(slctk::AttributeItemPtr attItem);
+    bool updateTableItemCheckState(
+      QTableWidgetItem* labelitem, slctk::AttributeItemPtr attItem);
+
+    virtual QWidget* createInputWidget(slctk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
+    virtual QWidget* createEditBox(slctk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
+    virtual QWidget* createComboBox(slctk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
+    virtual QWidget* createExpressionRefWidget(slctk::AttributeItemPtr,int elementIdx,QWidget* pWidget);
+
+
 #ifdef WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
-    #define LINE_BREAKER_STRINGstrVals "\r";
+    #define LINE_BREAKER_STRING "\r";
 #endif
 
     public slots:
       void onFileItemCreated(slctk::attribute::qtFileItem*);
+      void onInputValueChanged();
+      void onComboIndexChanged();
+      void onExpressionReferenceChanged();
 
     signals:
       void fileItemCreated(slctk::attribute::qtFileItem* fileItem);
