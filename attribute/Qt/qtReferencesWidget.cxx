@@ -20,7 +20,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "qtAssociationWidget.h"
+#include "qtReferencesWidget.h"
 
 #include "qtUIManager.h"
 #include "qtTableWidget.h"
@@ -57,30 +57,30 @@ namespace Ui { class qtAttributeAssociation; }
 using namespace slctk::attribute;
 
 //----------------------------------------------------------------------------
-class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
+class qtReferencesWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
 
 };
 
 //----------------------------------------------------------------------------
-qtAssociationWidget::qtAssociationWidget(
+qtReferencesWidget::qtReferencesWidget(
   QWidget* _p): QWidget(_p)
 {
-  this->Internals = new qtAssociationWidgetInternals;
+  this->Internals = new qtReferencesWidgetInternals;
   this->Internals->setupUi(this);
 
   this->initWidget( );
 }
 
 //----------------------------------------------------------------------------
-qtAssociationWidget::~qtAssociationWidget()
+qtReferencesWidget::~qtReferencesWidget()
 {
   delete this->Internals;
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::initWidget( )
+void qtReferencesWidget::initWidget( )
 {
   // signals/slots
   QObject::connect(this->Internals->CurrentList,
@@ -100,37 +100,55 @@ void qtAssociationWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showAdvanced(int checked)
+void qtReferencesWidget::showAdvanced(int checked)
 {
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showEntityAssociation(
-  slctk::ModelItemPtr entity, QString& category)
+void qtReferencesWidget::showAttributeReferences(
+  slctk::AttributePtr att, QString& category)
 {
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+  this->Internals->CurrentList->clear();
+  this->Internals->AvailableList->clear();
 
+  if(att)
+    {
+    // Lets see what attributes are being referenced
+    std::vector<slctk::AttributeItemPtr> refs;
+    std::size_t i;
+    att->references(refs);
+    for (i = 0; i < refs.size(); i++)
+      {
+      this->addAttributeRefListItem(
+        this->Internals->CurrentList,refs[i]);
+      } 
+    } 
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onCurrentListSelectionChanged(
+void qtReferencesWidget::onCurrentListSelectionChanged(
   QListWidgetItem * current, QListWidgetItem * previous)
 {
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onAvailableListSelectionChanged(
+void qtReferencesWidget::onAvailableListSelectionChanged(
   QListWidgetItem * current, QListWidgetItem * previous)
 {
 }
 
 //-----------------------------------------------------------------------------
-slctk::AttributePtr qtAssociationWidget::getSelectedAttribute(
+slctk::AttributePtr qtReferencesWidget::getSelectedAttribute(
   QListWidget* theList)
 {
   return this->getAttributeFromItem(this->getSelectedItem(theList));
 }
 //-----------------------------------------------------------------------------
-slctk::AttributePtr qtAssociationWidget::getAttributeFromItem(
+slctk::AttributePtr qtReferencesWidget::getAttributeFromItem(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ? 
@@ -138,13 +156,13 @@ slctk::AttributePtr qtAssociationWidget::getAttributeFromItem(
   return rawPtr ? rawPtr->pointer() : slctk::AttributePtr();
 }
 //-----------------------------------------------------------------------------
-QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
+QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)
 {
   return theList->selectedItems().count()>0 ?
     theList->selectedItems().value(0) : NULL;
 }
 //----------------------------------------------------------------------------
-QListWidgetItem* qtAssociationWidget::addAttributeRefListItem(
+QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(
   QListWidget* theList, slctk::AttributeItemPtr refItem)
 {
   QString txtLabel(refItem->attribute()->name().c_str());
@@ -160,17 +178,17 @@ QListWidgetItem* qtAssociationWidget::addAttributeRefListItem(
   return item;
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onRemoveAssigned()
+void qtReferencesWidget::onRemoveAssigned()
 {
 
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onAddAvailable()
+void qtReferencesWidget::onAddAvailable()
 {
 
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::onExchange()
+void qtReferencesWidget::onExchange()
 {
 
 }

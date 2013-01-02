@@ -132,7 +132,7 @@ namespace slctk
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
-      bool canBeAssociated(slctk::ModelEntity *entity,
+      bool canBeAssociated(slctk::ModelItemPtr entity,
                            std::vector<slctk::attribute::Attribute *>*conflicts) const;
       bool conflicts(slctk::AttributeDefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const

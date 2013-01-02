@@ -19,19 +19,19 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtAssociationWidget - the Attribute Section
+// .NAME qtReferencesWidget - the Attribute References Widget
 // .SECTION Description
 // .SECTION See Also
 // qtSection
 
-#ifndef __slctk_attribute_qtAssociationWidget_h
-#define __slctk_attribute_qtAssociationWidget_h
+#ifndef __slctk_attribute_qtReferencesWidget_h
+#define __slctk_attribute_qtReferencesWidget_h
 
 #include <QWidget>
 #include "AttributeExports.h"
 #include "PublicPointerDefs.h"
 
-class qtAssociationWidgetInternals;
+class qtReferencesWidgetInternals;
 class QListWidgetItem;
 class QListWidget;
 class ModelEntity;
@@ -40,17 +40,17 @@ namespace slctk
 {
   namespace attribute
   {
-    class SLCTKATTRIBUTE_EXPORT qtAssociationWidget : public QWidget
+    class SLCTKATTRIBUTE_EXPORT qtReferencesWidget : public QWidget
     {
       Q_OBJECT
 
     public:
-      qtAssociationWidget(QWidget* p);
-      virtual ~qtAssociationWidget();
+      qtReferencesWidget(QWidget* p);
+      virtual ~qtReferencesWidget();
 
     public slots:
       virtual void showAdvanced(int show);
-      virtual void showEntityAssociation(slctk::ModelItemPtr entity, QString& category);
+      virtual void showAttributeReferences(slctk::AttributePtr att, QString& category);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
@@ -69,7 +69,7 @@ namespace slctk
 
     private:
 
-      qtAssociationWidgetInternals *Internals;
+      qtReferencesWidgetInternals *Internals;
 
     }; // class
   }; // namespace attribute

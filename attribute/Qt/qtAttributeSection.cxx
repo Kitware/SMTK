@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "qtTableWidget.h"
 #include "qtAttribute.h"
 #include "qtAssociationWidget.h"
+#include "qtReferencesWidget.h"
 #include "qtItem.h"
 
 #include "attribute/AttributeSection.h"
@@ -66,6 +67,7 @@ public:
   qtTableWidget* ValuesTable;
 
   QPushButton* AddButton;
+  QComboBox* DefsCombo;
   QPushButton* DeleteButton;
   QPushButton* CopyButton;
 
@@ -76,7 +78,9 @@ public:
 
   QComboBox* ViewByCombo;
   QComboBox* ShowCategoryCombo;
-  QPointer<qtAssociationWidget> AssociationWidget;
+
+  QPointer<qtAssociationWidget> AssociationsWidget;
+  QPointer<qtReferencesWidget> ReferencesWidget;
 
   // <category, AttDefinitions>
   QMap<QString, QList<slctk::AttributeDefinitionPtr> > AttDefMap;
@@ -175,6 +179,10 @@ void qtAttributeSection::createWidget( )
   this->Internals->DeleteButton->setSizePolicy(sizeFixedPolicy);
   this->Internals->CopyButton = new QPushButton("Copy", this->Internals->ButtonsFrame);
   this->Internals->CopyButton->setSizePolicy(sizeFixedPolicy);
+  this->Internals->DefsCombo = new QComboBox(this->Internals->ButtonsFrame);
+  this->Internals->DefsCombo->setVisible(false);
+  buttonLayout->addWidget(this->Internals->DefsCombo);
+
   buttonLayout->addWidget(this->Internals->AddButton);
   buttonLayout->addWidget(this->Internals->CopyButton);
   buttonLayout->addWidget(this->Internals->DeleteButton);
@@ -190,9 +198,13 @@ void qtAttributeSection::createWidget( )
 
   frame->addWidget(TopFrame);
   frame->addWidget(BottomFrame);
+
   // the association widget
-  this->Internals->AssociationWidget = new qtAssociationWidget(frame);
-  BottomLayout->addWidget(this->Internals->AssociationWidget);
+  this->Internals->ReferencesWidget = new qtReferencesWidget(frame);
+  this->Internals->AssociationsWidget = new qtAssociationWidget(frame);
+  this->updateAssociationEnableState(slctk::AttributePtr());
+  BottomLayout->addWidget(this->Internals->AssociationsWidget);
+  BottomLayout->addWidget(this->Internals->ReferencesWidget);
 
   // signals/slots
   QObject::connect(this->Internals->ViewByCombo,
@@ -257,7 +269,6 @@ slctk::AttributeItemPtr qtAttributeSection::getAttributeItemFromItem(
     return rawPtr ? rawPtr->pointer() : slctk::AttributeItemPtr();
     }
   return slctk::AttributeItemPtr();
-  
 }
 //-----------------------------------------------------------------------------
 slctk::AttributePtr qtAttributeSection::getSelectedAttribute()
@@ -270,6 +281,19 @@ QTableWidgetItem *qtAttributeSection::getSelectedItem()
 {
   return this->Internals->ListTable->selectedItems().count()>0 ?
     this->Internals->ListTable->selectedItems().value(0) : NULL;
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeSection::updateAssociationEnableState(
+  slctk::AttributePtr theAtt)
+{
+  bool rvisible=false, avisible=false;
+  if(theAtt)
+    {
+    //if(theAtt->definition()->canBeAssociated())
+    }
+  this->Internals->AssociationsWidget->setVisible(avisible);
+  this->Internals->ReferencesWidget->setVisible(rvisible);
 }
 
 //----------------------------------------------------------------------------
@@ -286,6 +310,7 @@ void qtAttributeSection::onListBoxSelectionChanged()
     if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
       {
       slctk::AttributePtr dataItem = this->getAttributeFromItem(current);
+      this->updateAssociationEnableState(dataItem);
       if(dataItem)
         {
         QString strMaterail = this->Internals->ShowCategoryCombo->currentText();
@@ -294,6 +319,7 @@ void qtAttributeSection::onListBoxSelectionChanged()
       }
     else if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
       {
+      this->updateAssociationEnableState(slctk::AttributePtr());
       QString temp = current->text();
       this->updateTableWithProperty(temp);
       }
@@ -302,6 +328,7 @@ void qtAttributeSection::onListBoxSelectionChanged()
   this->Internals->ValuesTable->resizeColumnsToContents();
   this->Internals->ValuesTable->blockSignals(false);
 }
+
 //----------------------------------------------------------------------------
 void qtAttributeSection::onAttributeNameChanged(QTableWidgetItem* item)
 {
@@ -394,21 +421,29 @@ void qtAttributeSection::updateItemWidgetsEnableState(
 //----------------------------------------------------------------------------
 void qtAttributeSection::onCreateNew()
 {
-  if(slctk::AttributePtr selObject = this->getSelectedAttribute())
+  slctk::AttributeSectionPtr sec =
+  slctk::dynamicCastPointer<AttributeSection>(this->getObject());
+  if(!sec || !sec->numberOfDefinitions())
     {
-    this->createNewAttribute(selObject->definition());
+    return;
     }
-  else
+  AttributeDefinitionPtr newAttDef = sec->definition(0);
+  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
+  bool multiDef = this->hasMultiDefinition(strCategory);
+  if(multiDef)
     {
-    slctk::AttributeSectionPtr sec =
-      slctk::dynamicCastPointer<AttributeSection>(this->getObject());
-    if(!sec || !sec->numberOfDefinitions())
+    QString strCategory = this->Internals->DefsCombo->currentText();
+    foreach (AttributeDefinitionPtr attDef,
+      this->Internals->AttDefMap[strCategory])
       {
-      return;
-      }
-
-    this->createNewAttribute(sec->definition(0));
+      if(strCategory == QString::fromUtf8(attDef->type().c_str()))
+        {
+        newAttDef = attDef;
+        break;
+        }
+      }   
     }
+  this->createNewAttribute(newAttDef);
 }
 
 //----------------------------------------------------------------------------
@@ -590,7 +625,16 @@ void qtAttributeSection::onViewBy(int viewBy)
   if(multiDef)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
+    this->Internals->DefsCombo->clear();
+    foreach (AttributeDefinitionPtr attDef,
+      this->Internals->AttDefMap[strCategory])
+      {
+      this->Internals->DefsCombo->addItem(
+        QString::fromUtf8(attDef->type().c_str()));
+      }
+    this->Internals->DefsCombo->setCurrentIndex(0);
     }
+  this->Internals->DefsCombo->setVisible(multiDef);
   
   foreach (AttributeDefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])

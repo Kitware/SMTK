@@ -13,6 +13,7 @@ set(QAttrLibSrcs
     Qt/qtAttributeRefItem.cxx
     Qt/qtTableWidget.cxx
     Qt/qtAssociationWidget.cxx
+    Qt/qtReferencesWidget.cxx
 
     Qt/qtItem.cxx
     Qt/qtComboItem.cxx
@@ -39,6 +40,7 @@ set(QAttrLibMocHeaders
     Qt/qtAttributeRefItem.h
     Qt/qtTableWidget.h
     Qt/qtAssociationWidget.h
+    Qt/qtReferencesWidget.h
 
     Qt/qtItem.h
     Qt/qtComboItem.h

@@ -91,12 +91,12 @@ namespace slctk
 
       std::size_t numberOfAssociatedEntities() const
       { return this->m_entities.size();}
-      bool isEntityAssociated(slctk::ModelEntity *entity) const
+      bool isEntityAssociated(slctk::ModelItemPtr entity) const
       { return (this->m_entities.find(entity) != this->m_entities.end());}
-      std::set<slctk::ModelEntity *>::const_iterator associatedEntities() const
+      std::set<slctk::ModelItemPtr>::const_iterator associatedEntities() const
       {return this->m_entities.begin();}
-      void associateEntity(slctk::ModelEntity *entity);
-      void disassociateEntity(slctk::ModelEntity *entity);
+      void associateEntity(slctk::ModelItemPtr entity);
+      void disassociateEntity(slctk::ModelItemPtr entity);
       void removeAllAssociations();
 
       // These methods only applies to Attributes whose
@@ -140,7 +140,7 @@ namespace slctk
       std::vector<slctk::AttributeItemPtr> m_items;
       unsigned long m_id;
       slctk::AttributeDefinitionPtr m_definition;
-      std::set<slctk::ModelEntity *> m_entities;
+      std::set<slctk::ModelItemPtr> m_entities;
       std::map<slctk::attribute::AttributeRefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;

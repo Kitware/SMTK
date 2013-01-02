@@ -128,7 +128,7 @@ slctk::AttributePtr Attribute::pointer() const
   return slctk::AttributePtr();
 }
 //----------------------------------------------------------------------------
-void Attribute::associateEntity(slctk::ModelEntity *entity)
+void Attribute::associateEntity(slctk::ModelItemPtr entity)
 {
   if (this->isEntityAssociated(entity))
     {
@@ -139,7 +139,7 @@ void Attribute::associateEntity(slctk::ModelEntity *entity)
   //TODO Need to attach attribute to the entity!
 }
 //----------------------------------------------------------------------------
-void Attribute::disassociateEntity(slctk::ModelEntity *entity)
+void Attribute::disassociateEntity(slctk::ModelItemPtr entity)
 {
   if (this->m_entities.erase(entity))
     {
@@ -149,7 +149,7 @@ void Attribute::disassociateEntity(slctk::ModelEntity *entity)
 //----------------------------------------------------------------------------
 void Attribute::removeAllAssociations()
 {
-  std::set<slctk::ModelEntity *>::iterator it;
+  std::set<slctk::ModelItemPtr>::iterator it;
   for (it = this->m_entities.begin(); it != this->m_entities.end(); it++)
     {
     // TODO Need to detatch the attribute from the entity

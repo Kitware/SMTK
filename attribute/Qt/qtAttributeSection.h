@@ -69,6 +69,7 @@ namespace slctk
       void onCopySelected();
       void onDeleteSelected();
       void onAttributeModified();
+      void updateAssociationEnableState(slctk::AttributePtr);
 
     protected:
       virtual void createWidget( );

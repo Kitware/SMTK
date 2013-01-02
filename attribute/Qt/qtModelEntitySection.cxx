@@ -60,8 +60,8 @@ public:
   QListWidget* ListBox;
   QComboBox* ShowCategoryCombo;
   QFrame* FiltersFrame;
-  QFrame* leftFrame; // top
-  QFrame* rightFrame; // bottom
+  QFrame* leftFrame;
+  QFrame* rightFrame;
 
 };
 
@@ -71,7 +71,6 @@ qtModelEntitySection::qtModelEntitySection(
 {
   this->Internals = new qtModelEntitySectionInternals;
   this->createWidget( );
-
 }
 
 //----------------------------------------------------------------------------
