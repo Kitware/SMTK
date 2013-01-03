@@ -277,6 +277,42 @@ internalFindAttributes(slctk::AttributeDefinitionPtr def,
 }
 
 //----------------------------------------------------------------------------
+void Manager::
+findAllDerivedDefinitions(slctk::AttributeDefinitionPtr def, 
+                          bool onlyConcrete,
+                          std::vector<slctk::AttributeDefinitionPtr> &result) const
+{
+  result.clear();
+  if ((def != NULL) && (def->manager() == this))
+    {
+    this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
+    }
+}
+//----------------------------------------------------------------------------
+void Manager::
+internalFindAllDerivedDefinitions(slctk::AttributeDefinitionPtr def,
+                                  bool onlyConcrete,
+                                  std::vector<slctk::AttributeDefinitionPtr> &result) const
+{
+  if (!(def->isAbstract() && onlyConcrete))
+    {
+    result.push_back(def);
+    }
+  std::map<slctk::AttributeDefinitionPtr,
+    std::set<slctk::WeakAttributeDefinitionPtr> >::const_iterator dit;
+  dit = this->m_derivedDefInfo.find(def);
+  if (dit == this->m_derivedDefInfo.end())
+    {
+    return;
+    }
+  std::set<slctk::WeakAttributeDefinitionPtr>::const_iterator defIt;
+  for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
+    {
+    this->internalFindAllDerivedDefinitions(defIt->lock(), onlyConcrete, result);
+    }
+}
+
+//----------------------------------------------------------------------------
 bool Manager::rename(slctk::AttributePtr att, const std::string &newName)
 {
   // Make sure that this manager is managing this attribute

@@ -36,7 +36,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace slctk
 {
-  class ModelEntity;
+  namespace model
+  {
+    class Item;
+  };
+
   namespace attribute
   {
     class Attribute;
@@ -127,6 +131,8 @@ namespace slctk
       { return ((this->m_associationMask & 0x8) != 0); }
       bool associatesWithModel() const
       { return ((this->m_associationMask & 0x10) != 0); }
+      bool canBeAssociated(unsigned long type) const
+      { return (type == (type & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return 
       // the appropriate associatesWith method

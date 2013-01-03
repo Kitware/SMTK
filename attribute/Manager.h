@@ -70,6 +70,9 @@ namespace slctk
       void derivedDefinitions(slctk::AttributeDefinitionPtr def,
                               std::vector<slctk::AttributeDefinitionPtr> &result) const;
 
+      void findAllDerivedDefinitions(slctk::AttributeDefinitionPtr def, bool concreteOnly,
+                                     std::vector<slctk::AttributeDefinitionPtr> &result) const;
+
       void findDefinitionAttributes(const std::string &type,
                                     std::vector<slctk::AttributePtr> &result) const;
       void findDefinitions(long mask, std::vector<slctk::AttributeDefinitionPtr> &result) const;
@@ -104,6 +107,8 @@ namespace slctk
       {return this->m_rootSection;}
 
     protected:
+      void internalFindAllDerivedDefinitions(AttributeDefinitionPtr def, bool onlyConcrete,
+                                             std::vector<AttributeDefinitionPtr> &result) const;
       void internalFindAttributes(AttributeDefinitionPtr def,
                                   std::vector<AttributePtr> &result) const;
       std::map<std::string, slctk::AttributeDefinitionPtr> m_definitions;
