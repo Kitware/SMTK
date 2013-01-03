@@ -107,7 +107,7 @@ slctk::ConstAttributeDefinitionPtr Definition::findIsUniqueBaseClass() const
 }
 //----------------------------------------------------------------------------
 bool 
-Definition::canBeAssociated(slctk::ModelEntity *entity,
+Definition::canBeAssociated(slctk::model::Item *entity,
                             std::vector<Attribute *>*conflicts) const
 {
   // TO DO - Need to pull in Model Entity class to do this

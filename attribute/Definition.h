@@ -36,7 +36,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace slctk
 {
-  class ModelEntity;
+  namespace model
+  {
+    class Item;
+  };
+
   namespace attribute
   {
     class Attribute;
@@ -132,7 +136,10 @@ namespace slctk
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
-      bool canBeAssociated(slctk::ModelEntity *entity,
+      bool canBeAssociated(int type) const
+      { return (type == (type & this->m_associationMask));}
+
+      bool canBeAssociated(slctk::model::Item *entity,
                            std::vector<slctk::attribute::Attribute *>*conflicts) const;
       bool conflicts(slctk::AttributeDefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const
