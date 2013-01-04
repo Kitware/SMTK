@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 2.8)
-project(Slctk)
+project(SMTK)
 
 # include some cmake code that builds automatic header tests
 # and can targets for unit tests
-include(CMake/SlctkMacros.cmake)
+include(CMake/SMTKMacros.cmake)
 
 # include export header so that we can easily expose symbols
 # in dynamic libraries
@@ -12,7 +12,7 @@ include(GenerateExportHeader)
 # Include mechanism for determining shared and weak pointer support
 include(CMake/SharedPtr.cmake)
 
-option(BUILD_SHARED_LIBS "Build Slctk using shared libraries" OFF)
+option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 
 determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
 
@@ -27,19 +27,19 @@ endif()
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/PublicPointerDefs.h.in
-  ${PROJECT_BINARY_DIR}/PublicPointerDefs.h
+  ${PROJECT_BINARY_DIR}/smtk/PublicPointerDefs.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/PublicPointerDefs.h
-  DESTINATION include/attribute)
+install (FILES ${PROJECT_BINARY_DIR}/smtk/PublicPointerDefs.h
+  DESTINATION include/smtk)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${Slctk_SOURCE_DIR}/CMake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 
-option(Slctk_ENABLE_TESTING "Enable Testing" ON)
-#option(Slctk_ENABLE_EXAMPLES "Enable Examples" ON)
+option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+#option(SMTK_ENABLE_EXAMPLES "Enable Examples" ON)
 
 #turn on ctest if we want testing
-if (Slctk_ENABLE_TESTING)
+if (SMTK_ENABLE_TESTING)
   enable_testing()
   include(CTest)
 endif()
@@ -62,17 +62,12 @@ mark_as_advanced(
   EXECUTABLE_OUTPUT_PATH
   LIBRARY_OUTPUT_PATH)
 
-#add this directory so we can include files like: <slctk/internal/Test.h>
+#add this directory so we can include files like: <smtk/internal/Test.h>
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 
-#add the actual code
-add_subdirectory(attribute)
-
-#add the examples code
-if(Slctk_ENABLE_EXAMPLES)
-  add_subdirectory(Examples)
-endif()
+#Build the actual code
+add_subdirectory(smtk)

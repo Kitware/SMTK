@@ -1,0 +1,86 @@
+project(SMTK_Attribute)
+
+set(AttributeHeaders
+  Attribute.h
+  AttributeRefItem.h
+  AttributeRefItemDefinition.h
+  AttributeSection.h
+  AttributeReader.h
+  AttributeWriter.h
+  Item.h
+  ItemDefinition.h
+  Definition.h
+  DirectoryItem.h
+  DirectoryItemDefinition.h
+  DoubleItem.h
+  DoubleItemDefinition.h
+  FileItem.h
+  FileItemDefinition.h
+  GroupItem.h
+  GroupItemDefinition.h
+  GroupSection.h
+  InstancedSection.h
+  IntItem.h
+  IntItemDefinition.h
+  Manager.h
+  ModelEntitySection.h
+  RootSection.h
+  Section.h
+  SimpleExpressionSection.h
+  StringItem.h
+  StringItemDefinition.h
+  ValueItem.h
+  ValueItemDefinition.h
+  ValueItemDefinitionTemplate.h
+  ValueItemTemplate.h
+  VoidItem.h
+  VoidItemDefinition.h
+  XmlDocV1Parser.h
+  XmlV1StringWriter.h
+  )
+
+set(AttributeSrcs
+  Attribute.cxx
+  AttributeRefItem.cxx
+  AttributeRefItemDefinition.cxx
+  AttributeSection.cxx
+  AttributeReader.cxx
+  AttributeWriter.cxx
+  Item.cxx
+  ItemDefinition.cxx
+  Definition.cxx
+  DirectoryItem.cxx
+  DirectoryItemDefinition.cxx
+  DoubleItem.cxx
+  DoubleItemDefinition.cxx
+  FileItem.cxx
+  FileItemDefinition.cxx
+  GroupItem.cxx
+  GroupItemDefinition.cxx
+  GroupSection.cxx
+  InstancedSection.cxx
+  IntItem.cxx
+  IntItemDefinition.cxx
+  Manager.cxx
+  ModelEntitySection.cxx
+  RootSection.cxx
+  Section.cxx
+  SimpleExpressionSection.cxx
+  StringItem.cxx
+  StringItemDefinition.cxx
+  ValueItem.cxx
+  ValueItemDefinition.cxx
+  VoidItem.cxx
+  VoidItemDefinition.cxx
+  XmlV1StringWriter.cxx
+  XmlDocV1Parser.cxx
+)
+
+#install the headers
+smtk_public_headers(${AttributeHeaders})
+
+
+if(SMTK_ENABLE_TESTING)
+  add_subdirectory(Testing)
+endif(SMTK_ENABLE_TESTING)
+

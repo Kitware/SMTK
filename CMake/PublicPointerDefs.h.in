@@ -24,12 +24,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __slctk_attribute_PublicPointerDefs_h
-#define __slctk_attribute_PublicPointerDefs_h
+#ifndef __smtk_attribute_PublicPointerDefs_h
+#define __smtk_attribute_PublicPointerDefs_h
 
 @POINTER_TYPE_HEADERS@
 
-namespace slctk
+namespace smtk
 {
   template <typename T, typename U>
   inline @POINTER_NAMESPACE@::shared_ptr<T> dynamicCastPointer(const @POINTER_NAMESPACE@::shared_ptr<U> &r)
@@ -136,7 +136,7 @@ namespace slctk
   };
 */
 
-  // These are used internally by SLCTK
+  // These are used internally by SMTK
   namespace internal
   {
     template <typename T>
@@ -165,4 +165,4 @@ namespace slctk
     };
   };
 };
-#endif /* __slctk_attribute_PublicPointerDefs_h */
+#endif /* __smtk_attribute_PublicPointerDefs_h */
