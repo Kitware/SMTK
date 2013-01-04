@@ -41,7 +41,7 @@ namespace smtk
     class qtGroupSection;
     class qtSection;
    
-    class SMTKCORE_EXPORT qtUIManager : public QObject
+    class QTSMTK_EXPORT qtUIManager : public QObject
     {
 
     Q_OBJECT

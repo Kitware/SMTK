@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtAttribute_h
 
 #include <QObject>
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 class qtAttributeInternals;
@@ -37,7 +37,7 @@ namespace smtk
   namespace attribute
   {
   class qtItem;
-    class SMTKCORE_EXPORT qtAttribute : public QObject
+    class QTSMTK_EXPORT qtAttribute : public QObject
     {
       Q_OBJECT
 

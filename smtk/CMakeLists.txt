@@ -81,17 +81,19 @@ if(SMTK_BUILD_QT)
    ${UI_BUILT_SOURCES}
    )
 
-add_library(QtSMTK ${LIBTYPE}
-   ${qtsmtk_srcs} ${qtsmtk_headers}
-   )
+  add_library(QtSMTK ${LIBTYPE}
+     ${qtsmtk_srcs} ${qtsmtk_headers}
+     )
+  smtk_set_includes(QtSMTK ${QtSMTK_INCLUDE_DIRS})
 
-target_link_libraries(QtSMTK ${smtkQtDepends} SMTKCore)
+  target_link_libraries(QtSMTK ${smtkQtDepends} SMTKCore)
+  smtk_export_header(QtSMTK QtSMTKExports.h)
 
-#install the library
-smtk_install_library(QtSMTK)
+  #install the library
+  smtk_install_library(QtSMTK)
 
-#setup the exports for the library when used from a build tree
-export(PACKAGE QtSMTK)
-export(TARGETS QtSMTK SMTKCore FILE QtSMTK-exports.cmake)
+  #setup the exports for the library when used from a build tree
+  export(PACKAGE QtSMTK)
+  export(TARGETS QtSMTK SMTKCore FILE QtSMTK-exports.cmake)
 
 endif()

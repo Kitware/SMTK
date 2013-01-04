@@ -38,12 +38,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef _qtTableWidget_h
 #define _qtTableWidget_h
 
-#include "smtk/SMTKCoreExports.h"
 #include <QTableWidget>
+#include "smtk/QtSMTKExports.h"
 
 class QKeyEvent;
 
-class SMTKCORE_EXPORT qtTableWidget : public QTableWidget
+class QTSMTK_EXPORT qtTableWidget : public QTableWidget
 {
   Q_OBJECT
   

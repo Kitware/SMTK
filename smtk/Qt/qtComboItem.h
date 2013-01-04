@@ -35,7 +35,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT qtComboItem : public qtItem
+    class QTSMTK_EXPORT qtComboItem : public qtItem
     {
       Q_OBJECT
 

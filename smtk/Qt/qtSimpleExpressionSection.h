@@ -40,7 +40,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT qtSimpleExpressionSection : public qtSection
+    class QTSMTK_EXPORT qtSimpleExpressionSection : public qtSection
     {
       Q_OBJECT
 

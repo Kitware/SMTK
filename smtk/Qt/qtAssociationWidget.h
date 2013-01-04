@@ -19,7 +19,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtAssociationWidget - the Attribute Section
+// .NAME qtAssociationWidget - the Attribute-Model association widget
 // .SECTION Description
 // .SECTION See Also
 // qtSection
@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtAssociationWidget_h
 
 #include <QWidget>
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 class qtAssociationWidgetInternals;
@@ -40,7 +40,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT qtAssociationWidget : public QWidget
+    class QTSMTK_EXPORT qtAssociationWidget : public QWidget
     {
       Q_OBJECT
 

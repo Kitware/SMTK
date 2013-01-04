@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtReferencesWidget_h
 
 #include <QWidget>
-#include "smtk/SMTKCoreExports.h"
+#include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 class qtReferencesWidgetInternals;
@@ -40,7 +40,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT qtReferencesWidget : public QWidget
+    class QTSMTK_EXPORT qtReferencesWidget : public QWidget
     {
       Q_OBJECT
 
