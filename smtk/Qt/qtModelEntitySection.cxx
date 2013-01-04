@@ -113,8 +113,10 @@ void qtModelEntitySection::createWidget( )
   leftLayout->setMargin(0);
   QVBoxLayout* rightLayout = new QVBoxLayout(bottomFrame);
   rightLayout->setMargin(0);
-
   
+  this->Internals->FiltersFrame = new QFrame(bottomFrame);
+  QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
+  filterLayout->setMargin(0);
   this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
 
   const Manager* attMan = qtUIManager::instance()->attManager();
@@ -125,18 +127,18 @@ void qtModelEntitySection::createWidget( )
     this->Internals->ShowCategoryCombo->addItem(it->c_str());
     }
 
-  this->Internals->FiltersFrame = new QFrame(frame);
-  QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
-  filterLayout->setMargin(0);
-
   QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
   filterLayout->addWidget(labelShow);
   filterLayout->addWidget(this->Internals->ShowCategoryCombo);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   // create a list box for all the entries
-  this->Internals->ListBox = new QListWidget(frame);
+  this->Internals->ListBox = new QListWidget(topFrame);
   this->Internals->ListBox->setSelectionMode(QAbstractItemView::SingleSelection);
+
+  this->Internals->AssociationsWidget = new qtAssociationWidget(bottomFrame);
+  rightLayout->addWidget(this->Internals->FiltersFrame);
+  rightLayout->addWidget(this->Internals->AssociationsWidget);
 
   leftLayout->addWidget(this->Internals->ListBox);
 
