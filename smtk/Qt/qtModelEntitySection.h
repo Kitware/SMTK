@@ -55,8 +55,6 @@ namespace smtk
       smtk::AttributePtr getSelectedAttribute();
       smtk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
       QListWidgetItem* addAttributeListItem(smtk::AttributePtr childData);
-      virtual void getAllDefinitions(
-        QList<smtk::AttributeDefinitionPtr>& defs);
 
     private:
 

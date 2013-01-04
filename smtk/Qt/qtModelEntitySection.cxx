@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtTableWidget.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtItem.h"
+#include "smtk/Qt/qtAssociationWidget.h"
 
 #include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/Attribute.h"
@@ -49,7 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QModelIndexList>
 #include <QMessageBox>
 #include <QSplitter>
-
+#include <QPointer>
 
 using namespace smtk::attribute;
 
@@ -60,9 +61,9 @@ public:
   QListWidget* ListBox;
   QComboBox* ShowCategoryCombo;
   QFrame* FiltersFrame;
-  QFrame* leftFrame;
-  QFrame* rightFrame;
-
+  QFrame* topFrame;
+  QFrame* bottomFrame;
+  QPointer<qtAssociationWidget> AssociationsWidget;
 };
 
 //----------------------------------------------------------------------------
@@ -85,6 +86,13 @@ void qtModelEntitySection::createWidget( )
     {
     return;
     }
+ smtk::ModelEntitySectionPtr sec =
+   smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+ if(!sec)
+   {
+   return;
+   }
+
   // Create a frame to contain all gui components for this object
   // Create a list box for the group entries
   // Create a table widget
@@ -95,15 +103,15 @@ void qtModelEntitySection::createWidget( )
   //this panel looks better in a over / under layout, rather than left / right
   frame->setOrientation( Qt::Vertical );
 
-  QFrame* leftFrame = new QFrame(frame);
-  QFrame* rightFrame = new QFrame(frame);
+  QFrame* topFrame = new QFrame(frame);
+  QFrame* bottomFrame = new QFrame(frame);
 
-  this->Internals->leftFrame = leftFrame;
-  this->Internals->rightFrame = rightFrame;
+  this->Internals->topFrame = topFrame;
+  this->Internals->bottomFrame = bottomFrame;
 
-  QVBoxLayout* leftLayout = new QVBoxLayout(leftFrame);
+  QVBoxLayout* leftLayout = new QVBoxLayout(topFrame);
   leftLayout->setMargin(0);
-  QVBoxLayout* rightLayout = new QVBoxLayout(rightFrame);
+  QVBoxLayout* rightLayout = new QVBoxLayout(bottomFrame);
   rightLayout->setMargin(0);
 
   
@@ -132,34 +140,38 @@ void qtModelEntitySection::createWidget( )
 
   leftLayout->addWidget(this->Internals->ListBox);
 
-  frame->addWidget(leftFrame);
-  frame->addWidget(rightFrame);
-
-
-  smtk::ModelEntitySectionPtr sec =
-    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-  if(!sec || !sec->definition())
-    {
-    return;
-    }
+  frame->addWidget(topFrame);
+  frame->addWidget(bottomFrame);
 
   this->Internals->ListBox->blockSignals(true);
+  std::vector<smtk::AttributeDefinitionPtr> attDefs;
+  Manager *attManager = qtUIManager::instance()->attManager();
 
-  //AttributeDefinitionPtr attDef = sec->definition();
-  //Manager *attManager = attDef->manager();
-  //std::vector<smtk::AttributeDefinitionPtr> defs;
-  //this->getAllDefinitions(defs);
-  //std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
-  //for (itDef=defs.begin(); itDef!=defs.end(); ++itDef)
-  //  {
-  //  std::vector<smtk::AttributePtr> result;
-  //  attManager->findAttributes(*itDef, result);
-  //  std::vector<smtk::AttributePtr>::iterator itAtt;
-  //  for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
-  //    {
-  //    this->addAttributeListItem(*itAtt);
-  //    }
-  //  }
+  if(unsigned long mask = sec->modelEntityMask())
+    {
+    attManager->findDefinitions(mask, attDefs);
+    }
+
+  // if there is a definition, the section should
+  // display all model entities of the requested mask along
+  // with the attribute of this type in a table view
+  AttributeDefinitionPtr attDef = sec->definition();
+  if(attDef)
+    {
+    attDefs.push_back(attDef);
+    }
+
+  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
+  for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
+    {
+    std::vector<smtk::AttributePtr> result;
+    attManager->findAttributes(*itAttDef, result);
+    std::vector<smtk::AttributePtr>::iterator itAtt;
+    for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+      {
+      this->addAttributeListItem(*itAtt);
+      }
+    }
   this->Internals->ListBox->blockSignals(false);
 
   // signals/slots
@@ -169,9 +181,6 @@ void qtModelEntitySection::createWidget( )
   QObject::connect(this->Internals->ListBox,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
     this, SLOT(onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
-  QObject::connect(this->Internals->ListBox,
-    SIGNAL(itemChanged (QListWidgetItem *)),
-    this, SLOT(onAttributeNameChanged(QListWidgetItem * )));
 
   this->Widget = frame;
   if(this->parentWidget()->layout())
@@ -243,18 +252,4 @@ QListWidgetItem* qtModelEntitySection::addAttributeListItem(
   item->setFlags(item->flags() | Qt::ItemIsEditable);
   this->Internals->ListBox->addItem(item);
   return item;
-}
-//----------------------------------------------------------------------------
-void qtModelEntitySection::getAllDefinitions(
-  QList<smtk::AttributeDefinitionPtr>& defs)
-{
-  smtk::ModelEntitySectionPtr sec =
-    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-  if(!sec || !sec->definition())
-    {
-    return;
-    }
-
-  AttributeDefinitionPtr attDef = sec->definition();
-  this->qtSection::getDefinitions(attDef, defs);
 }

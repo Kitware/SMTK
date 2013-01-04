@@ -433,11 +433,11 @@ void qtAttributeSection::onCreateNew()
   bool multiDef = this->hasMultiDefinition(strCategory);
   if(multiDef)
     {
-    QString strCategory = this->Internals->DefsCombo->currentText();
+    QString strDef = this->Internals->DefsCombo->currentText();
     foreach (AttributeDefinitionPtr attDef,
       this->Internals->AttDefMap[strCategory])
       {
-      if(strCategory == QString::fromUtf8(attDef->type().c_str()))
+      if(strDef == QString::fromUtf8(attDef->type().c_str()))
         {
         newAttDef = attDef;
         break;
