@@ -104,7 +104,6 @@ function(ms_prepend_string prefix result)
     set(newName "${prefix}/${name}")
     set(newNames ${newNames} ${newName})
   endforeach (name)
-  message("NewNames = ${newNames}")
   set(${result} ${newNames} PARENT_SCOPE)
 endfunction(ms_prepend_string)
 
