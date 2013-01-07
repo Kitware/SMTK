@@ -291,7 +291,12 @@ void qtAttributeSection::updateAssociationEnableState(
   bool rvisible=false, avisible=false;
   if(theAtt)
     {
-    //if(theAtt->definition()->canBeAssociated())
+    if(theAtt->definition()->associationMask())
+      {
+      avisible = true;
+      this->Internals->AssociationsWidget->showEntityAssociation(
+        theAtt, this->Internals->ShowCategoryCombo->currentText());
+      }
     }
   this->Internals->AssociationsWidget->setVisible(avisible);
   this->Internals->ReferencesWidget->setVisible(rvisible);

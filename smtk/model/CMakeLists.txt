@@ -3,12 +3,14 @@ set(ModelSrcs
   Model.cxx
   ModelDomainItem.cxx
   Item.cxx
+  GroupItem.cxx
   )
 
 set(ModelHeaders
   Model.h
   ModelDomainItem.h
   Item.h
+  GroupItem.h
   )
 
 #install the headers

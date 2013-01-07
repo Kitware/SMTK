@@ -106,9 +106,19 @@ void qtAssociationWidget::showAdvanced(int checked)
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showEntityAssociation(
-  smtk::ModelItemPtr entity, QString& category)
+  smtk::AttributePtr theAtt, QString& category)
 {
 
+  if(!theAtt || theAtt->definition()->associationMask()==0)
+    {
+    return;
+    }
+
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
 }
 
 //----------------------------------------------------------------------------

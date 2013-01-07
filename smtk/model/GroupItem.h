@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_model_GroupItem_h
 #define __smtk_model_GroupItem_h
 
-#include "smtk/ModelExports.h"
+#include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Item.h"
 #include <string>
@@ -36,16 +36,16 @@ namespace smtk
 {
   namespace model
   {
-    class SMTKMODEL_EXPORT GroupItem : public Item
+    class SMTKCORE_EXPORT GroupItem : public Item
     {
       GroupItem(Model *model, int myid, unsigned int mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
       unsigned long entityMask() const
       { return this->m_entityMask;}
-      bool canContain(const smtk::ModelItemPtr &ptr) const
-      {return ((this->m_entityMask & ptr->Type()) == ptr->Type());}
-      std::size_t numberOfItems() const = 0;
+      bool canContain(const smtk::ModelItemPtr ptr) const
+      {return ((this->m_entityMask & ptr->type()) == ptr->type());}
+      virtual std::size_t numberOfItems() const = 0;
       virtual smtk::ModelItemPtr item(int i) const = 0;
       virtual bool insert(smtk::ModelItemPtr &ptr) = 0;
       virtual bool remove(smtk::ModelItemPtr &ptr) = 0;
@@ -55,6 +55,5 @@ namespace smtk
     };
   };
 };
-
 
 #endif /* __smtk_model_GroupItem_h */

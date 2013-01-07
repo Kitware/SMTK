@@ -50,7 +50,7 @@ namespace smtk
 
     public slots:
       virtual void showAdvanced(int show);
-      virtual void showEntityAssociation(smtk::ModelItemPtr entity, QString& category);
+      virtual void showEntityAssociation(smtk::AttributePtr theAtt, QString& category);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
