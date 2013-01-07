@@ -38,6 +38,7 @@ namespace smtk
   {
     class SMTKCORE_EXPORT GroupItem : public Item
     {
+    public:
       GroupItem(Model *model, int myid, unsigned int mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
