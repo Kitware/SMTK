@@ -29,8 +29,8 @@ using namespace smtk::model;
 //----------------------------------------------------------------------------
 Model::Model()
 {
-  this->m_modelDomain = smtk::ModelItemPtr(new ModelDomainItem(this, 0));
-  this->m_items[0] = this->m_modelDomain;
+  this->m_modelDomain = smtk::ModelItemPtr(new ModelDomainItem(this, -1));
+  this->m_items[-1] = this->m_modelDomain;
 }
 
 //----------------------------------------------------------------------------

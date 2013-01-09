@@ -42,7 +42,8 @@ namespace smtk
       Model();
       virtual ~Model();
       virtual smtk::ModelItemPtr findModelItem(int id) const;
-      virtual smtk::ModelGroupItemPtr createModelGroup(const std::string &name, unsigned int mask) = 0;
+      virtual smtk::ModelGroupItemPtr createModelGroup(
+        const std::string &name, int myid, unsigned int mask) = 0;
       virtual bool deleteModelGroup(int id) = 0;
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
