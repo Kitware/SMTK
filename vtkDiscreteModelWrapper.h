@@ -72,30 +72,29 @@ public:
 //BTX
   // Description:
   // Function for getting a model entity from its unique persistent id.
-  vtkModelEntity* GetModelEntity(vtkIdType UniquePersistentId);
+  vtkModelEntity* GetModelEntity(vtkIdType uniquePersistentId);
 
   // Description:
-  // Function for getting a model entity from its unique persistent id.  It 
+  // Function for getting a model entity from its unique persistent id.  It
   // only looks for this entity in the given entity type to make the search
   // more efficient.
   vtkModelEntity* GetModelEntity(int itemType, vtkIdType UniquePersistentId);
 
-  vtkModelEntity* GetEntityObjectByFlatIndex(
-    unsigned int index);
+  vtkModelEntity* GetEntityObjectByFlatIndex(unsigned int index);
 
   // Description:
   // The serializable model that contains all the CMB model APIs.
   vtkDiscreteModel* GetModel();
 
   // Description:
-  // Function to deserialize the model and rebuild the model face geometry 
-  // on the server given a serialized model string 
+  // Function to deserialize the model and rebuild the model face geometry
+  // on the server given a serialized model string
   // ,FaceId/EdgeId->ReverseClassification map and VertexId->ReverseClassification map
   // Return 0 on failure, 1 on success
-  int RebuildModel(const char* serializedModel, 
-                   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & FaceToIds,
-                   std::map<vtkIdType, vtkIdType> & VertexToIds,
-                   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &EntityToProperties);
+  int RebuildModel(const char* serializedModel,
+                   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
+                   std::map<vtkIdType, vtkIdType> & vertexToIds,
+                   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &entityToProperties);
 
   // Description:
   // Add model entities as child dataset.
@@ -123,7 +122,7 @@ public:
 
   // Description:
   // Set the SerializedModel
-  void SetSerializedModel(vtkStringArray* Array);
+  void SetSerializedModel(vtkStringArray* array);
 
   // Description:
   // Retrieve a vtkDiscreteModelWrapper stored inside an information object.
@@ -148,11 +147,9 @@ public:
     vtkIdType EntityId, unsigned int& index);
   // Description:
   // Get the EntityId given composite index, return true if success
-  bool GetEntityIdByChildIndex(
-    unsigned int index, vtkIdType& EntityId);
-  vtkProperty* GetEntityPropertyByChildIndex(
-    unsigned int index);
-  vtkProperty* GetEntityPropertyByEntityId(vtkIdType EntityId);
+  bool GetEntityIdByChildIndex(unsigned int index, vtkIdType& entityId);
+  vtkProperty* GetEntityPropertyByChildIndex(unsigned int index);
+  vtkProperty* GetEntityPropertyByEntityId(vtkIdType entityId);
 
   // Description:
   // Callback function to handle DomainSetCreated/Destroyed event from CMBModel

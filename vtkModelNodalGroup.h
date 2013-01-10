@@ -63,8 +63,8 @@ public:
 
   // Description:
   // Add/remove/clear model entity from the set.
-  virtual void AddModelEntity(vtkModelEntity* ModelEntity);
-  virtual void RemoveModelEntity(vtkModelEntity* ModelEntity);
+  virtual void AddModelEntity(vtkModelEntity* modelEntity);
+  virtual void RemoveModelEntity(vtkModelEntity* modelEntity);
   virtual void ClearEntities();
   std::set<vtkModelEntity*>& GetModelEntities() const;
 
@@ -90,7 +90,7 @@ public:
 
   // Description:
   // Get a list of point Ids.
-  void GetPointIds(vtkIdList* PointIds);
+  void GetPointIds(vtkIdList* pointIds);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -105,7 +105,7 @@ public:
   // Description:
   // Construct the vtkPolyData representation from the set of points
   // in the group.  Returns true if successful.
-  bool ConstructRepresentation(vtkPolyData* Grid);
+  bool ConstructRepresentation(vtkPolyData* grid);
 
   // Description:
   // Get the model that this object is associated with.

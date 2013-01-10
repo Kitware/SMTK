@@ -380,11 +380,11 @@ bool vtkDiscreteModelEdge::SplitModelEdgeLoop(vtkIdType pointId)
   return result;
 }
 
-void vtkDiscreteModelEdge::SetLineResolution(int LineResolution)
+void vtkDiscreteModelEdge::SetLineResolution(int lineResolution)
 {
-  if(LineResolution > 0 && LineResolution != this->GetLineResolution())
+  if(lineResolution > 0 && lineResolution != this->GetLineResolution())
     {
-    this->GetProperties()->Set(LINERESOLUTION(), LineResolution);
+    this->GetProperties()->Set(LINERESOLUTION(), lineResolution);
     // this->UpdateGeometry();
     this->Modified();
     }
@@ -395,9 +395,9 @@ int vtkDiscreteModelEdge::GetLineResolution()
   return this->GetProperties()->Get(LINERESOLUTION());
 }
 
-void vtkDiscreteModelEdge::SetLineAndPointsGeometry(vtkObject* Geometry)
+void vtkDiscreteModelEdge::SetLineAndPointsGeometry(vtkObject* geometry)
 {
-  this->GetProperties()->Set(LINEADNPOINTSGEOMETRY(), Geometry);
+  this->GetProperties()->Set(LINEADNPOINTSGEOMETRY(), geometry);
   this->Modified();
 }
 
@@ -418,10 +418,10 @@ vtkModelRegion* vtkDiscreteModelEdge::GetModelRegion()
   vtkModelItemIterator* iter =
     this->NewIterator(vtkModelRegionType);
   iter->Begin();
-  vtkModelRegion* Region =
+  vtkModelRegion* region =
     vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return Region;
+  return region;
 }
 void vtkDiscreteModelEdge::GetAllPointIds(vtkIdList* ptsList)
 {
@@ -448,12 +448,12 @@ void vtkDiscreteModelEdge::GetAllPointIds(vtkIdList* ptsList)
 }
 void vtkDiscreteModelEdge::GetInteriorPointIds(vtkIdList* ptsList)
 {
-  vtkNew<vtkIdList> BoundaryPtsList;
+  vtkNew<vtkIdList> boundaryPtsList;
   this->GetAllPointIds(ptsList);
-  this->GetBoundaryPointIds(BoundaryPtsList.GetPointer());
-  for(vtkIdType i=0;i<BoundaryPtsList->GetNumberOfIds();i++)
+  this->GetBoundaryPointIds(boundaryPtsList.GetPointer());
+  for(vtkIdType i=0;i<boundaryPtsList->GetNumberOfIds();i++)
     {
-    ptsList->DeleteId(BoundaryPtsList->GetId(i));
+    ptsList->DeleteId(boundaryPtsList->GetId(i));
     }
 }
 void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
@@ -466,11 +466,11 @@ void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
     }
   for(int i=0; i<2; i++)
     {
-    vtkDiscreteModelVertex* ModelVertex =
+    vtkDiscreteModelVertex* modelVertex =
       vtkDiscreteModelVertex::SafeDownCast(this->GetAdjacentModelVertex(i));
-    if(ModelVertex)
+    if(modelVertex)
       {
-      ptsList->InsertUniqueId(ModelVertex->GetPointId());
+      ptsList->InsertUniqueId(modelVertex->GetPointId());
       }
     }
 }

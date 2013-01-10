@@ -49,11 +49,11 @@ vtkCxxRevisionMacro(vtkModelUniqueNodalGroup, "");
 
 vtkModelUniqueNodalGroup* vtkModelUniqueNodalGroup::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelUniqueNodalGroup"); 
-  if(ret) 
-    {                                    
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelUniqueNodalGroup");
+  if(ret)
+    {
     return static_cast<vtkModelUniqueNodalGroup*>(ret);
-    } 
+    }
   return new vtkModelUniqueNodalGroup;
 }
 
@@ -65,20 +65,20 @@ vtkModelUniqueNodalGroup::~vtkModelUniqueNodalGroup()
 {
 }
 
-void vtkModelUniqueNodalGroup::AddPointId(vtkIdType PointId)
+void vtkModelUniqueNodalGroup::AddPointId(vtkIdType pointId)
 {
-  vtkDiscreteModel* Model = this->GetModel();
-  // DiscreteModel will remove PointId from the old unique nodal group
-  Model->SetPointUniqueNodalGroup(this, PointId);
+  vtkDiscreteModel* model = this->GetModel();
+  // DiscreteModel will remove pointId from the old unique nodal group
+  model->SetPointUniqueNodalGroup(this, pointId);
 
-  this->Superclass::AddPointId(PointId);
+  this->Superclass::AddPointId(pointId);
 }
 
-void vtkModelUniqueNodalGroup::RemovePointId(vtkIdType PointId)
+void vtkModelUniqueNodalGroup::RemovePointId(vtkIdType pointId)
 {
-  // DiscreteModel will remove PointId from the old unique nodal group
-  vtkDiscreteModel* Model = this->GetModel();
-  Model->SetPointUniqueNodalGroup(0, PointId);
+  // DiscreteModel will remove pointId from the old unique nodal group
+  vtkDiscreteModel* model = this->GetModel();
+  model->SetPointUniqueNodalGroup(0, pointId);
 }
 
 void vtkModelUniqueNodalGroup::Serialize(vtkSerializer* ser)
@@ -89,14 +89,14 @@ void vtkModelUniqueNodalGroup::Serialize(vtkSerializer* ser)
 bool vtkModelUniqueNodalGroup::Destroy()
 {
   // remove all points first from here so that the model doesn't have
-  // anything in.  
-  vtkIdList* PointIds = vtkIdList::New();
-  this->GetPointIds(PointIds);
+  // anything in.
+  vtkIdList* pointIds = vtkIdList::New();
+  this->GetPointIds(pointIds);
   // if the performance of this is too slow we could get the model once
-  // and just call Model->SetPointUniqueNodalGroup() for each id in PointIds.
+  // and just call Model->SetPointUniqueNodalGroup() for each id in pointIds.
   // I'm doing it this way for now to be clearer.
-  this->RemovePointIds(PointIds);
-  PointIds->Delete();
+  this->RemovePointIds(pointIds);
+  pointIds->Delete();
 
   return 1;
 }

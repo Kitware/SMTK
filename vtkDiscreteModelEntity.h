@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkDiscreteModelEntity - 
+// .NAME vtkDiscreteModelEntity -
 // .SECTION Description
 
 #ifndef __vtkDiscreteModelEntity_h
@@ -50,7 +50,7 @@ public:
   static vtkDiscreteModelEntity* GetThisDiscreteModelEntity(vtkModelEntity*);
 
   // Description:
-  // Get information about the model entity groups associated 
+  // Get information about the model entity groups associated
   // with this object.
   int GetNumberOfModelEntityGroups();
   vtkModelItemIterator* NewModelEntityGroupIterator();
@@ -59,7 +59,7 @@ protected:
   vtkDiscreteModelEntity();
   virtual ~vtkDiscreteModelEntity();
 
-  void CopyModelEntityGroups(vtkDiscreteModelEntity* SourceEntity);
+  void CopyModelEntityGroups(vtkDiscreteModelEntity* sourceEntity);
   void RemoveAllModelEntityGroups();
 
 private:

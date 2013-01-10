@@ -71,7 +71,7 @@ public:
   // inputted Id on this vtkPolyData.  Note that this operation
   // is only valid on the server. Returns -1 if there is no
   // vtkPolyData or Id is greater than the number of cells.
-  vtkIdType GetMasterCellId(vtkIdType Id);
+  vtkIdType GetMasterCellId(vtkIdType id);
 
   // Description:
   // Get the number of cells for discretizing this geometric entity.
@@ -110,14 +110,14 @@ protected:
   // only be called from vtkDiscreteModel on the server as vtkDiscreteModel is
   // responsible for removing this cell from the current
   // vtkDiscreteModelGeometricEntity that is classified on.
-  bool AddCellsToGeometry(vtkIdList* CellIds);
+  bool AddCellsToGeometry(vtkIdList* cellIds);
 
   // Description:
   // Get the array that maps the CellId for this grid to the CellId on
   // the master grid.
   vtkIdTypeArray* GetReverseClassificationArray();
 
-  void SetMaterial(vtkModelMaterial* Material);
+  void SetMaterial(vtkModelMaterial* material);
 //BTX
   friend class vtkModelMaterial;
 //ETX
@@ -131,7 +131,7 @@ private:
   // Ids are with respect to the geometric entity, not with respect
   // to the master geometry.  This is a private function as the only
   // function that I can see that would need to call this is AddCellsToGeometry.
-  bool RemoveCellsFromGeometry(vtkIdList* CellIds);
+  bool RemoveCellsFromGeometry(vtkIdList* cellIds);
 };
 
 #endif

@@ -46,7 +46,7 @@ public:
   // Functions for using a point inside the region used
   // for meshing.
   static vtkInformationDoubleVectorKey* POINTINSIDE();
-  void SetPointInside(double PointInside[3]);
+  void SetPointInside(double pointInside[3]);
   double* GetPointInside();
 
 

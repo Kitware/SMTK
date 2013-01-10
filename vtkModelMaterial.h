@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkModelMaterial - 
+// .NAME vtkModelMaterial -
 // .SECTION Description
 
 #ifndef __vtkModelMaterial_h
@@ -44,7 +44,7 @@ public:
   double* GetWarehouseId();
 
   int GetNumberOfModelGeometricEntities();
-  // take NewModelGeometricEntityIterator out for now until 
+  // take NewModelGeometricEntityIterator out for now until
   // we figure out how to do it for nonmanifold models
   //vtkModelItemIterator* NewModelGeometricEntityIterator();
 
@@ -61,7 +61,7 @@ public:
   // Add in GeometricEntity to this material.  If
   // GeometricEntity is associated with another vtkMaterial, remove
   // it from that one.
-  void AddModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
+  void AddModelGeometricEntity(vtkModelGeometricEntity* geometricEntity);
 
 protected:
   vtkModelMaterial();
@@ -69,9 +69,9 @@ protected:
   static vtkModelMaterial* New();
 
   // Description:
-  // Remove GeometricEntity from this material.  It is assumed that it 
+  // Remove GeometricEntity from this material.  It is assumed that it
   // will be added to another material.
-  bool RemoveModelGeometricEntity(vtkModelGeometricEntity* GeometricEntity);
+  bool RemoveModelGeometricEntity(vtkModelGeometricEntity* geometricEntity);
 
   virtual bool IsDestroyable();
   virtual bool Destroy();

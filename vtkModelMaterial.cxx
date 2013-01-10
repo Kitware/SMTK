@@ -37,11 +37,11 @@ vtkInformationKeyRestrictedMacro(vtkModelMaterial, WAREHOUSEID, DoubleVector, 2)
 
 vtkModelMaterial* vtkModelMaterial::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelMaterial"); 
-  if(ret) 
-    {                                    
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelMaterial");
+  if(ret)
+    {
     return static_cast<vtkModelMaterial*>(ret);
-    } 
+    }
   return new vtkModelMaterial;
 }
 
@@ -69,7 +69,7 @@ bool vtkModelMaterial::Destroy()
   this->RemoveAllAssociations(vtkModelFaceType);
   this->RemoveAllAssociations(vtkModelRegionType);
 
-  this->Modified();  
+  this->Modified();
   return true;
 }
 
@@ -91,24 +91,24 @@ double* vtkModelMaterial::GetWarehouseId()
 }
 
 void vtkModelMaterial::AddModelGeometricEntity(
-  vtkModelGeometricEntity* GeometricEntity)
+  vtkModelGeometricEntity* geometricEntity)
 {
   // first remove the GeometricEntities association with any other material
-  vtkDiscreteModelGeometricEntity* ModelGeometricEntity = 
-    vtkDiscreteModelRegion::SafeDownCast(GeometricEntity);
-  if(!ModelGeometricEntity)
+  vtkDiscreteModelGeometricEntity* modelGeometricEntity =
+    vtkDiscreteModelRegion::SafeDownCast(geometricEntity);
+  if(!modelGeometricEntity)
     {
-    ModelGeometricEntity = vtkDiscreteModelFace::SafeDownCast(GeometricEntity);
+    modelGeometricEntity = vtkDiscreteModelFace::SafeDownCast(geometricEntity);
     }
-  if(ModelGeometricEntity)
+  if(modelGeometricEntity)
     {
-    vtkModelMaterial* PreviousMaterial = ModelGeometricEntity->GetMaterial();
-    if(PreviousMaterial)
+    vtkModelMaterial* previousMaterial = modelGeometricEntity->GetMaterial();
+    if(previousMaterial)
       {
-      PreviousMaterial->RemoveModelGeometricEntity(GeometricEntity);
+      previousMaterial->RemoveModelGeometricEntity(geometricEntity);
       }
     }
-  this->AddAssociation(GeometricEntity->GetType(), GeometricEntity);
+  this->AddAssociation(geometricEntity->GetType(), geometricEntity);
   this->Modified();
 }
 
@@ -122,10 +122,10 @@ int vtkModelMaterial::GetNumberOfModelGeometricEntities()
 }
 
 bool vtkModelMaterial::RemoveModelGeometricEntity(
-  vtkModelGeometricEntity* GeometricEntity)
+  vtkModelGeometricEntity* geometricEntity)
 {
-  this->RemoveAssociation(GeometricEntity->GetType(), 
-                          GeometricEntity);
+  this->RemoveAssociation(geometricEntity->GetType(),
+                          geometricEntity);
   this->Modified();
   return 1;
 }

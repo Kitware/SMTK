@@ -34,11 +34,11 @@ vtkCxxRevisionMacro(vtkDiscreteModelEntityGroup, "");
 
 vtkDiscreteModelEntityGroup* vtkDiscreteModelEntityGroup::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEntityGroup"); 
-  if(ret) 
-    {                                    
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelEntityGroup");
+  if(ret)
+    {
     return static_cast<vtkDiscreteModelEntityGroup*>(ret);
-    } 
+    }
   return new vtkDiscreteModelEntityGroup;
 }
 
@@ -63,17 +63,17 @@ bool vtkDiscreteModelEntityGroup::Destroy()
   return 1;
 }
 
-void vtkDiscreteModelEntityGroup::AddModelEntity(vtkDiscreteModelEntity* Object)
+void vtkDiscreteModelEntityGroup::AddModelEntity(vtkDiscreteModelEntity* object)
 {
-  vtkModelEntity* entity = Object->GetThisModelEntity();
+  vtkModelEntity* entity = object->GetThisModelEntity();
   int entityType = entity->GetType();
   this->AddAssociation(entityType, entity);
 }
 
-bool vtkDiscreteModelEntityGroup::RemoveModelEntity(vtkDiscreteModelEntity* Object)
+bool vtkDiscreteModelEntityGroup::RemoveModelEntity(vtkDiscreteModelEntity* object)
 {
-  this->RemoveAssociation(Object->GetThisModelEntity()->GetType(), 
-                          Object->GetThisModelEntity());
+  this->RemoveAssociation(object->GetThisModelEntity()->GetType(),
+                          object->GetThisModelEntity());
   return 1;
 }
 

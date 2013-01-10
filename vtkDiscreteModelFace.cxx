@@ -50,8 +50,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 vtkCxxRevisionMacro(vtkDiscreteModelFace, "");
 
-
-
 vtkDiscreteModelFace* vtkDiscreteModelFace::New()
 {
   vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelFace");
@@ -204,116 +202,118 @@ void vtkDiscreteModelFace::GetAllPointIds(vtkIdList* ptsList)
     }
   Points->Delete();
 }
+
 void vtkDiscreteModelFace::GetInteriorPointIds(vtkIdList* ptsList)
 {
-  vtkBitArray* AllModelFacePoints = vtkBitArray::New();
-  this->GatherAllPointIdsMask(AllModelFacePoints);
-  vtkBitArray* BoundaryModelFacePoints = vtkBitArray::New();
-  this->GatherBoundaryPointIdsMask(BoundaryModelFacePoints);
-  for(vtkIdType i=0;i<AllModelFacePoints->GetNumberOfTuples();i++)
+  vtkBitArray* allModelFacePoints = vtkBitArray::New();
+  this->GatherAllPointIdsMask(allModelFacePoints);
+  vtkBitArray* boundaryModelFacePoints = vtkBitArray::New();
+  this->GatherBoundaryPointIdsMask(boundaryModelFacePoints);
+  for(vtkIdType i=0;i<allModelFacePoints->GetNumberOfTuples();i++)
     {
-    if(AllModelFacePoints->GetValue(i) != 0 &&
-      BoundaryModelFacePoints->GetValue(i) == 0)
+    if(allModelFacePoints->GetValue(i) != 0 &&
+      boundaryModelFacePoints->GetValue(i) == 0)
       {
       ptsList->InsertNextId(i);
       }
     }
-  AllModelFacePoints->Delete();
-  BoundaryModelFacePoints->Delete();
-}
-void vtkDiscreteModelFace::GetBoundaryPointIds(vtkIdList* ptsList)
-{
-  vtkBitArray* Points = vtkBitArray::New();
-  this->GatherBoundaryPointIdsMask(Points);
-  for(vtkIdType i=0;i<Points->GetNumberOfTuples();i++)
-    {
-    if(Points->GetValue(i) != 0)
-      {
-      ptsList->InsertNextId(i);
-      }
-    }
-  Points->Delete();
+  allModelFacePoints->Delete();
+  boundaryModelFacePoints->Delete();
 }
 
-void vtkDiscreteModelFace::GatherAllPointIdsMask(vtkBitArray* Points)
-  {
-  vtkPointSet* Grid = vtkPointSet::SafeDownCast(this->GetGeometry());
-  if(!Grid)
+void vtkDiscreteModelFace::GetBoundaryPointIds(vtkIdList* ptsList)
+{
+  vtkBitArray* points = vtkBitArray::New();
+  this->GatherBoundaryPointIdsMask(points);
+  for(vtkIdType i=0;i<points->GetNumberOfTuples();i++)
+    {
+    if(points->GetValue(i) != 0)
+      {
+      ptsList->InsertNextId(i);
+      }
+    }
+  points->Delete();
+}
+
+void vtkDiscreteModelFace::GatherAllPointIdsMask(vtkBitArray* points)
+{
+  vtkPointSet* grid = vtkPointSet::SafeDownCast(this->GetGeometry());
+  if(!grid)
     {
     vtkWarningMacro("Cannot access model face's grid.");
     return;
     }
   // Since not all points in Grid's points are attached to cells, we
   // iterate over the cells and get their points to set them in Points.
-  Points->SetNumberOfComponents(1);
-  Points->SetNumberOfTuples(Grid->GetNumberOfPoints());
-  for(vtkIdType i=0;i<Grid->GetNumberOfPoints();i++)
+  points->SetNumberOfComponents(1);
+  points->SetNumberOfTuples(grid->GetNumberOfPoints());
+  for(vtkIdType i=0;i<grid->GetNumberOfPoints();i++)
     {
-    Points->SetValue(i, 0);
+    points->SetValue(i, 0);
     }
-  vtkIdType NumberOfCells = Grid->GetNumberOfCells();
-  vtkIdList* CellPoints = vtkIdList::New();
-  for(vtkIdType i=0;i<NumberOfCells;i++)
+  vtkIdType numberOfCells = grid->GetNumberOfCells();
+  vtkIdList* cellPoints = vtkIdList::New();
+  for(vtkIdType i=0;i<numberOfCells;i++)
     {
-    Grid->GetCellPoints(i, CellPoints);
-    for(vtkIdType j=0;j<CellPoints->GetNumberOfIds();j++)
+    grid->GetCellPoints(i, cellPoints);
+    for(vtkIdType j=0;j<cellPoints->GetNumberOfIds();j++)
       {
-      vtkIdType id=CellPoints->GetId(j);
-      Points->SetValue(id, 1);
+      vtkIdType id=cellPoints->GetId(j);
+      points->SetValue(id, 1);
       }
     }
-  CellPoints->Delete();
+  cellPoints->Delete();
 }
 
-void vtkDiscreteModelFace::GatherBoundaryPointIdsMask(vtkBitArray* Points)
+void vtkDiscreteModelFace::GatherBoundaryPointIdsMask(vtkBitArray* points)
 {
-  vtkPointSet* Grid = vtkPointSet::SafeDownCast(this->GetGeometry());
+  vtkPointSet* grid = vtkPointSet::SafeDownCast(this->GetGeometry());
   // add in an array of the original point ids to grid
-  vtkIdTypeArray* OriginalPointIds = vtkIdTypeArray::New();
-  OriginalPointIds->SetNumberOfComponents(1);
-  OriginalPointIds->SetNumberOfTuples(Grid->GetNumberOfPoints());
-  for(vtkIdType i=0;i<Grid->GetNumberOfPoints();i++)
+  vtkIdTypeArray* originalPointIds = vtkIdTypeArray::New();
+  originalPointIds->SetNumberOfComponents(1);
+  originalPointIds->SetNumberOfTuples(grid->GetNumberOfPoints());
+  for(vtkIdType i=0;i<grid->GetNumberOfPoints();i++)
     {
-    OriginalPointIds->SetValue(i, i);
+    originalPointIds->SetValue(i, i);
     }
-  const char ArrayName[] = "vtkModelNodalGroupPointIdArray";
-  OriginalPointIds->SetName(ArrayName);
-  Grid->GetPointData()->AddArray(OriginalPointIds);
-  OriginalPointIds->Delete();
+  const char arrayName[] = "vtkModelNodalGroupPointIdArray";
+  originalPointIds->SetName(arrayName);
+  grid->GetPointData()->AddArray(originalPointIds);
+  originalPointIds->Delete();
 
-  vtkNew<vtkFeatureEdges> FeatureEdges;
-  FeatureEdges->BoundaryEdgesOn();
-  FeatureEdges->NonManifoldEdgesOff();
-  FeatureEdges->ManifoldEdgesOff();
-  FeatureEdges->FeatureEdgesOff();
-  FeatureEdges->SetInputData(Grid);
-  FeatureEdges->Update();
-  vtkPointSet* GridEdges = vtkPointSet::SafeDownCast(FeatureEdges->GetOutput(0));
+  vtkNew<vtkFeatureEdges> featureEdges;
+  featureEdges->BoundaryEdgesOn();
+  featureEdges->NonManifoldEdgesOff();
+  featureEdges->ManifoldEdgesOff();
+  featureEdges->FeatureEdgesOff();
+  featureEdges->SetInputData(grid);
+  featureEdges->Update();
+  vtkPointSet* gridEdges = vtkPointSet::SafeDownCast(featureEdges->GetOutput(0));
 
   // Since not all points in GridEdges's points are attached to cells, we
   // iterate over the cells and get their points to set them in Points.
-  OriginalPointIds = vtkIdTypeArray::SafeDownCast(
-    GridEdges->GetPointData()->GetArray(ArrayName));
+  originalPointIds = vtkIdTypeArray::SafeDownCast(
+    gridEdges->GetPointData()->GetArray(arrayName));
 
-  Points->SetNumberOfComponents(1);
-  Points->SetNumberOfTuples(Grid->GetNumberOfPoints());
-  for(vtkIdType i=0;i<Grid->GetNumberOfPoints();i++)
+  points->SetNumberOfComponents(1);
+  points->SetNumberOfTuples(grid->GetNumberOfPoints());
+  for(vtkIdType i=0;i<grid->GetNumberOfPoints();i++)
     {
-    Points->SetValue(i, 0);
+    points->SetValue(i, 0);
     }
-  vtkIdType NumberOfCells = GridEdges->GetNumberOfCells();
-  vtkNew<vtkIdList> CellPoints;
-  for(vtkIdType i=0;i<NumberOfCells;i++)
+  vtkIdType numberOfCells = gridEdges->GetNumberOfCells();
+  vtkNew<vtkIdList> cellPoints;
+  for(vtkIdType i=0;i<numberOfCells;i++)
     {
-    GridEdges->GetCellPoints(i, CellPoints.GetPointer());
-    for(vtkIdType j=0;j<CellPoints->GetNumberOfIds();j++)
+    gridEdges->GetCellPoints(i, cellPoints.GetPointer());
+    for(vtkIdType j=0;j<cellPoints->GetNumberOfIds();j++)
       {
-      vtkIdType id=CellPoints->GetId(j);
-      vtkIdType MasterGridId = OriginalPointIds->GetValue(id);
-      Points->SetValue(MasterGridId, 1);
+      vtkIdType id=cellPoints->GetId(j);
+      vtkIdType masterGridId = originalPointIds->GetValue(id);
+      points->SetValue(masterGridId, 1);
       }
     }
-  Grid->GetPointData()->RemoveArray(ArrayName);
+  grid->GetPointData()->RemoveArray(arrayName);
 }
 
 void vtkDiscreteModelFace::Serialize(vtkSerializer* ser)
