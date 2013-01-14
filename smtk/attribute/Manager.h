@@ -105,6 +105,10 @@ namespace smtk
 
       smtk::RootSectionPtr rootSection() const
       {return this->m_rootSection;}
+      smtk::ModelPtr model() const
+        {return this->m_refModel.lock();}
+      void setModel(smtk::ModelPtr refmodel )
+        {this->m_refModel = refmodel;}
 
     protected:
       void internalFindAllDerivedDefinitions(AttributeDefinitionPtr def, bool onlyConcrete,
@@ -121,6 +125,8 @@ namespace smtk
       std::map<std::string, std::set<std::string> > m_analyses;
       unsigned long m_nextAttributeId;
       smtk::RootSectionPtr m_rootSection;
+
+      smtk::WeakModelPtr m_refModel;
     private:
     };
 //----------------------------------------------------------------------------

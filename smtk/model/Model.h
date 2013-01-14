@@ -47,6 +47,7 @@ namespace smtk
       virtual bool deleteModelGroup(int id) = 0;
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
+      virtual void updateItems(int grouptype){;}
       
     protected:
       smtk::ModelItemPtr m_modelDomain;

@@ -79,6 +79,8 @@ namespace smtk
     class VoidItemDefinition;
   };
 
+  typedef @POINTER_NAMESPACE@::shared_ptr<model::Model> ModelPtr;
+  typedef @POINTER_NAMESPACE@::weak_ptr<model::Model> WeakModelPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<model::Item> ModelItemPtr;
   typedef @POINTER_NAMESPACE@::weak_ptr<model::Item> WeakModelItemPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<model::GroupItem> ModelGroupItemPtr;

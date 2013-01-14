@@ -117,6 +117,8 @@ void qtAssociationWidget::showEntityAssociation(
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
 
+//  theAtt->definition()->canBeAssociated()->
+
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
