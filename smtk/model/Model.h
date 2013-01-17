@@ -48,7 +48,19 @@ namespace smtk
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
       virtual void updateItems(int grouptype){;}
-      
+      virtual std::size_t numberOfItems()
+      { return this->m_items.size(); }
+      std::map<int, smtk::ModelItemPtr>::const_iterator itemIterator() const
+        {return this->m_items.begin();}
+
+      typedef enum
+        {
+        AllNodesType = 0,
+        BoundaryNodesType,
+        InteriorNodesType
+        } ModelEntityNodalTypes;
+      static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
+
     protected:
       smtk::ModelItemPtr m_modelDomain;
       mutable std::map<int, smtk::ModelItemPtr> m_items;

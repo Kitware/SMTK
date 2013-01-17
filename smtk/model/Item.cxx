@@ -23,6 +23,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/model/Item.h"
+
+#include "smtk/model/Model.h"
+#include "smtk/attribute/Attribute.h"
+
 using namespace smtk::model; 
 
 //----------------------------------------------------------------------------
@@ -33,4 +37,50 @@ Item::Item(Model *model, int myid): m_model(model), m_id(myid)
 //----------------------------------------------------------------------------
 Item::~Item()
 {
+  this->detachAllAttributes();
+}
+//----------------------------------------------------------------------------
+smtk::ModelItemPtr Item::pointer() const
+{
+  if (this->m_model)
+    {
+    return this->m_model->findModelItem(this->m_id);
+    }
+  return smtk::ModelItemPtr();
+}
+//----------------------------------------------------------------------------
+bool Item::isAttributeAssociated(smtk::AttributePtr anAtt) const
+{
+  return (this->m_attributes.find(anAtt) != this->m_attributes.end());
+}
+
+//----------------------------------------------------------------------------
+void Item::attachAttribute(smtk::AttributePtr anAtt)
+{
+  if (this->isAttributeAssociated(anAtt))
+    {
+    // Nothing to be done
+    return;
+    }
+  this->m_attributes.insert(anAtt);
+  anAtt->associateEntity(this->pointer());
+}
+//----------------------------------------------------------------------------
+void Item::detachAttribute(smtk::AttributePtr anAtt)
+{
+  if (this->isAttributeAssociated(anAtt))
+    {
+    this->m_attributes.erase(anAtt);
+    anAtt->disassociateEntity(this->pointer());
+    }
+}
+//----------------------------------------------------------------------------
+void Item::detachAllAttributes()
+{
+  std::set<smtk::AttributePtr>::iterator it;
+  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
+    {
+    (*it)->associateEntity(this->pointer());
+    }
+  this->m_attributes.clear();
 }

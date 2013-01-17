@@ -105,9 +105,9 @@ namespace smtk
 
       smtk::RootSectionPtr rootSection() const
       {return this->m_rootSection;}
-      smtk::ModelPtr model() const
+      smtk::ModelPtr refModel() const
         {return this->m_refModel.lock();}
-      void setModel(smtk::ModelPtr refmodel )
+      void setRefModel(smtk::ModelPtr refmodel )
         {this->m_refModel = refmodel;}
 
     protected:

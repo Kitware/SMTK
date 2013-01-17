@@ -42,3 +42,19 @@ Model::~Model()
     it->second->clearModel();
     }
 }
+//----------------------------------------------------------------------------
+std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
+{
+  switch(t)
+    {
+    case ModelEntityNodalTypes::AllNodesType:
+      return "All Nodes";
+    case ModelEntityNodalTypes::BoundaryNodesType:
+      return "Boundary Nodes";
+    case ModelEntityNodalTypes::InteriorNodesType:
+      return "Interior Nodes";
+    default:
+      break;
+    }
+  return "Undefined";
+}

@@ -27,13 +27,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
+#include "smtk/model/Item.h"
 #include <iostream>
 using namespace smtk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, 
-                     smtk::AttributeDefinitionPtr myDefinition, 
-                     unsigned long myId):
-  m_name(myName), m_definition(myDefinition), m_id(myId), m_aboutToBeDeleted(false)
+  smtk::AttributeDefinitionPtr myDefinition, unsigned long myId):
+  m_name(myName), m_definition(myDefinition),
+  m_id(myId), m_aboutToBeDeleted(false),
+  m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false)
 {
   this->m_definition->buildAttribute(this);
 }
@@ -136,14 +138,14 @@ void Attribute::associateEntity(smtk::ModelItemPtr entity)
     return;
     }
   this->m_entities.insert(entity);
-  //TODO Need to attach attribute to the entity!
+  entity->attachAttribute(this->pointer());
 }
 //----------------------------------------------------------------------------
 void Attribute::disassociateEntity(smtk::ModelItemPtr entity)
 {
   if (this->m_entities.erase(entity))
     {
-    // TODO Need to detatch the attribute from the entity
+    entity->detachAttribute(this->pointer());
     }
 }
 //----------------------------------------------------------------------------
@@ -152,7 +154,7 @@ void Attribute::removeAllAssociations()
   std::set<smtk::ModelItemPtr>::iterator it;
   for (it = this->m_entities.begin(); it != this->m_entities.end(); it++)
     {
-    // TODO Need to detatch the attribute from the entity
+    (*it)->detachAttribute(this->pointer());
     }
 }
 //----------------------------------------------------------------------------
@@ -172,4 +174,4 @@ smtk::AttributeItemPtr Attribute::find(const std::string &name)
   int i = this->m_definition->findItemPosition(name);
   return (i < 0) ? smtk::AttributeItemPtr() : this->m_items[i];
 }
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------

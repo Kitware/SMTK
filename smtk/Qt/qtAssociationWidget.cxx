@@ -35,9 +35,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
-#include <QGridLayout>
+#include "smtk/model/Model.h"
+#include "smtk/model/Item.h"
+#include "smtk/model/GroupItem.h"
+
+#include <QStringList>
 #include <QComboBox>
-#include <QTableWidgetItem>
 #include <QVariant>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -45,10 +48,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QLabel>
 #include <QListWidget>
 #include <QKeyEvent>
-#include <QModelIndex>
-#include <QModelIndexList>
-#include <QMessageBox>
-#include <QSplitter>
+#include <QPointer>
+
+#include <set>
 
 #include "ui_qtAttributeAssociation.h"
 
@@ -60,6 +62,8 @@ using namespace smtk::attribute;
 class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
+  QPointer<QComboBox> NodalDropDown;
+  smtk::WeakAttributePtr CurrentAtt;
 
 };
 
@@ -82,6 +86,24 @@ qtAssociationWidget::~qtAssociationWidget()
 //----------------------------------------------------------------------------
 void qtAssociationWidget::initWidget( )
 {
+  this->Internals->NodalDropDown = new QComboBox(this);
+  this->Internals->NodalDropDown->setVisible(false);
+  smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+  QStringList nodalOptions;
+  nodalOptions << smtk::model::Model::convertNodalTypeToString(
+         smtk::model::Model::AllNodesType).c_str()
+    << smtk::model::Model::convertNodalTypeToString(
+         smtk::model::Model::BoundaryNodesType).c_str()
+    << smtk::model::Model::convertNodalTypeToString(
+         smtk::model::Model::InteriorNodesType).c_str();
+  this->Internals->NodalDropDown->addItems(nodalOptions);
+
+  this->Internals->ButtonsFrame->layout()->addWidget(
+    this->Internals->NodalDropDown);
+
+  QObject::connect(this->Internals->NodalDropDown, SIGNAL(currentIndexChanged(int)), 
+    this, SLOT(onNodalOptionChanged(int)));
+
   // signals/slots
   QObject::connect(this->Internals->CurrentList,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
@@ -103,22 +125,85 @@ void qtAssociationWidget::initWidget( )
 void qtAssociationWidget::showAdvanced(int checked)
 {
 }
+//----------------------------------------------------------------------------
+void qtAssociationWidget::showAttributeAssociation(
+  smtk::ModelItemPtr theEntiy, QString& category)
+{
 
+}
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showEntityAssociation(
   smtk::AttributePtr theAtt, QString& category)
 {
+  this->Internals->CurrentAtt = theAtt;
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+  this->Internals->CurrentList->clear();
+  this->Internals->AvailableList->clear();
 
   if(!theAtt || theAtt->definition()->associationMask()==0)
     {
+    this->Internals->CurrentList->blockSignals(false);
+    this->Internals->AvailableList->blockSignals(false);
     return;
     }
 
-  this->Internals->CurrentList->blockSignals(true);
-  this->Internals->AvailableList->blockSignals(true);
+  AttributeDefinitionPtr attDef = theAtt->definition();
+  bool isNodal = attDef->isNodal();
+  this->Internals->NodalDropDown->setVisible(isNodal);
+  if(isNodal)
+    {
+    this->Internals->NodalDropDown->blockSignals(true);
+    int idx=smtk::model::Model::AllNodesType;
+    if(theAtt->appliesToBoundaryNodes())
+      {
+      idx = smtk::model::Model::BoundaryNodesType;
+      }
+    else if(theAtt->appliesToInteriorNodes())
+      {
+      idx = smtk::model::Model::BoundaryNodesType;
+      }
+    this->Internals->NodalDropDown->setCurrentIndex(idx);
+    this->Internals->NodalDropDown->blockSignals(false);
+    }
 
-//  theAtt->definition()->canBeAssociated()->
+  smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+  // add current-associated items
+  int numAstItems = (int)theAtt->numberOfAssociatedEntities();
+  std::set<smtk::ModelItemPtr>::const_iterator it = theAtt->associatedEntities();
+  QList<int> assignedIds;
+  for(int i=0; i<numAstItems; ++it, ++i)
+    {
+    assignedIds.append((*it)->id());
+    this->addModelAssociationListItem(this->Internals->CurrentList, *it);
+    }
 
+  bool isMaterial = theAtt->definition()->associatesWithRegion();
+  int numItems = (int)refModel->numberOfItems();
+  std::map<int, smtk::ModelItemPtr>::const_iterator itemIt =
+    refModel->itemIterator();
+  for(int i=0; i<numItems; ++itemIt, ++i)
+    {
+    // add available, but not-associated-yet items
+    if(itemIt->second->type() == smtk::model::Item::MODEL_DOMAIN)
+      {
+      // item for the whole model
+      }
+    else if(itemIt->second->type() == smtk::model::Item::GROUP)
+      {
+      smtk::ModelGroupItemPtr itemGroup =
+        smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
+      bool bRegion = itemGroup->canContain(smtk::model::Item::REGION);
+      if(isMaterial & bRegion) //both true, or both false
+        {
+        if(!assignedIds.contains(itemIt->second->id()))
+          {
+          this->addModelAssociationListItem(
+            this->Internals->AvailableList, itemIt->second);
+          }
+        }
+      }
+    }
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
@@ -136,19 +221,35 @@ void qtAssociationWidget::onAvailableListSelectionChanged(
 }
 
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getSelectedAttribute(
+smtk::AttributePtr qtAssociationWidget::getSelectedRefAttribute(
   QListWidget* theList)
 {
-  return this->getAttributeFromItem(this->getSelectedItem(theList));
+  return this->getRefAttribute(this->getSelectedItem(theList));
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getAttributeFromItem(
+smtk::AttributePtr qtAssociationWidget::getRefAttribute(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ? 
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
 }
+
+//-----------------------------------------------------------------------------
+smtk::ModelItemPtr qtAssociationWidget::getSelectedModelItem(
+  QListWidget* theList)
+{
+  return this->getModelItem(this->getSelectedItem(theList));
+}
+//-----------------------------------------------------------------------------
+smtk::ModelItemPtr qtAssociationWidget::getModelItem(
+  QListWidgetItem * item)
+{
+  smtk::model::Item* rawPtr = item ? 
+    static_cast<smtk::model::Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
+  return rawPtr ? rawPtr->pointer() : smtk::ModelItemPtr();
+}
+
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
 {
@@ -171,18 +272,118 @@ QListWidgetItem* qtAssociationWidget::addAttributeRefListItem(
   theList->addItem(item);
   return item;
 }
+
+//----------------------------------------------------------------------------
+QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
+  QListWidget* theList, smtk::ModelItemPtr modelItem)
+{
+  QString txtLabel(modelItem->name().c_str());
+
+  QListWidgetItem* item = new QListWidgetItem(txtLabel,
+      theList, smtk_USER_DATA_TYPE);
+  QVariant vdata;
+  vdata.setValue((void*)(modelItem.get()));
+  item->setData(Qt::UserRole, vdata);
+  //item->setFlags(item->flags() | Qt::ItemIsEditable);
+  theList->addItem(item);
+  return item;
+}
+
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onRemoveAssigned()
 {
+  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    this->Internals->CurrentList);
+  if(!this->Internals->CurrentAtt.lock() || !currentItem)
+    {
+    return;
+    } 
+  this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
 
+  this->Internals->CurrentList->removeItemWidget(
+    this->getSelectedItem(this->Internals->CurrentList));
+  this->addModelAssociationListItem(
+    this->Internals->AvailableList, currentItem);
+
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onAddAvailable()
 {
+  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    this->Internals->AvailableList);
+  if(!this->Internals->CurrentAtt.lock() || !currentItem)
+    {
+    return;
+    } 
+  this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+
+  this->Internals->AvailableList->removeItemWidget(
+    this->getSelectedItem(this->Internals->AvailableList));
+  this->addModelAssociationListItem(
+    this->Internals->CurrentList, currentItem);
+
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
 
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onExchange()
 {
+  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    this->Internals->CurrentList);
+  smtk::ModelItemPtr availableItem = this->getSelectedModelItem(
+    this->Internals->AvailableList);
+  if(!this->Internals->CurrentAtt.lock() || !currentItem || !availableItem)
+    {
+    return;
+    } 
+  this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+  this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
 
+  this->Internals->CurrentList->removeItemWidget(
+    this->getSelectedItem(this->Internals->CurrentList));
+  this->addModelAssociationListItem(
+    this->Internals->CurrentList, availableItem);
+
+  this->Internals->AvailableList->removeItemWidget(
+    this->getSelectedItem(this->Internals->AvailableList));
+  this->addModelAssociationListItem(
+    this->Internals->CurrentList, availableItem);
+
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onNodalOptionChanged(int idx)
+{
+  smtk::AttributePtr currAtt = this->Internals->CurrentAtt.lock();
+  if(!currAtt)
+    {
+    return;
+    } 
+  switch(idx)
+    {
+    case smtk::model::Model::InteriorNodesType:
+      currAtt->setAppliesToBoundaryNodes(false);
+      currAtt->setAppliesToInteriorNodes(true);
+      break;
+    case smtk::model::Model::BoundaryNodesType:
+      currAtt->setAppliesToBoundaryNodes(true);
+      currAtt->setAppliesToInteriorNodes(false);
+      break;
+    case smtk::model::Model::AllNodesType:
+      currAtt->setAppliesToBoundaryNodes(false);
+      currAtt->setAppliesToInteriorNodes(false);
+      break;
+    default:
+      break;
+    }
 }

@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include <string>
+#include <set>
 
 namespace smtk
 {
@@ -56,8 +57,16 @@ namespace smtk
       {return this->m_id;}
       virtual std::string name() const = 0;
       virtual Item::Type type() const = 0;
+
+      virtual void attachAttribute(smtk::AttributePtr);
+      virtual void detachAttribute(smtk::AttributePtr);
+      virtual void detachAllAttributes();
+      virtual bool isAttributeAssociated(smtk::AttributePtr) const;
+
       Model *model() const
       {return this->m_model;}
+      // Return the public pointer for this model item.
+      smtk::ModelItemPtr pointer() const;
 
     protected:
       void clearModel()
@@ -65,6 +74,8 @@ namespace smtk
 
       Model *m_model;
       int m_id;
+      std::set<smtk::AttributePtr> m_attributes;
+
     private:
     };
   };

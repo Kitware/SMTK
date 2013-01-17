@@ -45,13 +45,17 @@ namespace smtk
       unsigned long entityMask() const
       { return this->m_entityMask;}
       bool canContain(const smtk::ModelItemPtr ptr) const
-      {return ((this->m_entityMask & ptr->type()) == ptr->type());}
+      {return this->canContain(ptr->type());}
+      bool canContain(smtk::model::Item::Type enType) const
+      {return ((this->m_entityMask & enType) == enType);}
       virtual std::size_t numberOfItems() const = 0;
       virtual smtk::ModelItemPtr item(int i) const = 0;
       virtual bool insert(smtk::ModelItemPtr &ptr) = 0;
       virtual bool remove(smtk::ModelItemPtr &ptr) = 0;
+
     protected:
       unsigned int m_entityMask;
+
     private:
     };
   };

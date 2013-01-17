@@ -173,8 +173,7 @@ bool Definition::addItemDefinition(smtk::AttributeItemDefinitionPtr cdef)
   return true;
 }
 //----------------------------------------------------------------------------
-void 
-Definition::setCategories()
+void Definition::setCategories()
 {
   if (this->m_baseDefinition != NULL)
     {

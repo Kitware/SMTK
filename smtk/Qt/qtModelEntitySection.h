@@ -47,14 +47,15 @@ namespace smtk
 
     public slots:
       void showAdvanced(int show);
+      void updateModelItems();
       void onShowCategory(int);
       void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
     protected:
       virtual void createWidget( );
-      smtk::AttributePtr getSelectedAttribute();
-      smtk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
-      QListWidgetItem* addAttributeListItem(smtk::AttributePtr childData);
+      smtk::ModelItemPtr getSelectedModelItem();
+      smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
+      QListWidgetItem* addModelItem(smtk::ModelItemPtr childData);
 
     private:
 
