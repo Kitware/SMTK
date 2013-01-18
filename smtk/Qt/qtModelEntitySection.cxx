@@ -90,12 +90,12 @@ void qtModelEntitySection::createWidget( )
     {
     return;
     }
- smtk::ModelEntitySectionPtr sec =
-   smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
- if(!sec)
-   {
-   return;
-   }
+  smtk::ModelEntitySectionPtr sec =
+    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+  if(!sec)
+    {
+    return;
+    }
 
   // Create a frame to contain all gui components for this object
   // Create a list box for the group entries
@@ -166,7 +166,7 @@ void qtModelEntitySection::createWidget( )
 
   // signals/slots
   QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory(int)));
+    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
 
   QObject::connect(this->Internals->ListBox,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
@@ -178,7 +178,11 @@ void qtModelEntitySection::createWidget( )
     this->parentWidget()->layout()->addWidget(frame);
     }
   this->updateModelItems();
-  this->onShowCategory(0);
+  if(this->Internals->ListBox->count())
+    {
+    this->Internals->ListBox->setCurrentRow(0);
+    this->onShowCategory();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -189,40 +193,46 @@ void qtModelEntitySection::showAdvanced(int checked)
 //----------------------------------------------------------------------------
 void qtModelEntitySection::updateModelItems()
 {
+  this->Internals->ListBox->blockSignals(true);
+  this->Internals->ListBox->clear();
+
   smtk::ModelEntitySectionPtr sec =
     smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
   if(!sec)
     {
+    this->Internals->ListBox->blockSignals(false);   
     return;
     }
-  this->Internals->ListBox->blockSignals(true);
-  Manager *attManager = qtUIManager::instance()->attManager();
-  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
-  for (itAttDef=this->Internals->attDefs.begin();
-    itAttDef!=this->Internals->attDefs.end(); ++itAttDef)
+  if(unsigned int mask = sec->modelEntityMask())
     {
-    std::vector<smtk::AttributePtr> result;
-    attManager->findAttributes(*itAttDef, result);
-    std::vector<smtk::AttributePtr>::iterator itAtt;
-    for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+    smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+    std::vector<smtk::ModelGroupItemPtr> result;
+    refModel->findGroupItems(mask, result);
+    std::vector<smtk::ModelGroupItemPtr>::iterator it = result.begin();
+    for(; it!=result.end(); ++it)
       {
-//      this->addModelItem(*itAtt);
+      this->addModelItem(*it);
       }
     }
   this->Internals->ListBox->blockSignals(false);
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntitySection::onShowCategory(int category)
+void qtModelEntitySection::onShowCategory()
 {
+  smtk::ModelItemPtr theItem = this->getSelectedModelItem();
+  if(theItem)
+    {
+    this->Internals->AssociationsWidget->showAttributeAssociation(
+      theItem, this->Internals->ShowCategoryCombo->currentText(),
+      this->Internals->attDefs);
+    }
 }
 //----------------------------------------------------------------------------
 void qtModelEntitySection::onListBoxSelectionChanged(
   QListWidgetItem * current, QListWidgetItem * previous)
 {
-  smtk::ModelItemPtr theItem = this->getModelItem(current);
-  this->Internals->AssociationsWidget->showAttributeAssociation(
-    theItem, this->Internals->ShowCategoryCombo->currentText());
+  this->onShowCategory();
 }
 //-----------------------------------------------------------------------------
 smtk::ModelItemPtr qtModelEntitySection::getSelectedModelItem()

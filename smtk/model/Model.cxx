@@ -23,7 +23,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/model/Model.h"
+
 #include "smtk/model/ModelDomainItem.h"
+#include "smtk/model/GroupItem.h"
+
 using namespace smtk::model; 
 
 //----------------------------------------------------------------------------
@@ -42,6 +45,35 @@ Model::~Model()
     it->second->clearModel();
     }
 }
+//----------------------------------------------------------------------------
+void Model::findGroupItems(unsigned int mask, 
+  std::vector<smtk::ModelGroupItemPtr> &result) const
+{
+  std::map<int, smtk::ModelItemPtr>::iterator it;
+  for (it = this->m_items.begin(); it != this->m_items.end(); it++)
+    {
+    if(it->second->type() == Item::GROUP)
+      {
+      smtk::ModelGroupItemPtr itemgrp = dynamicCastPointer<GroupItem>(it->second);
+      if(itemgrp && (itemgrp->entityMask() & mask))
+        {
+        result.push_back(itemgrp);
+        }
+      }
+    }
+}
+//----------------------------------------------------------------------------
+void Model::removeGroupItems(unsigned int mask)
+{
+  std::vector<smtk::ModelGroupItemPtr> result;
+  this->findGroupItems(mask, result);
+  std::vector<smtk::ModelGroupItemPtr>::iterator it = result.begin();
+  for(; it!=result.end(); ++it)
+    {
+    this->deleteModelGroup((*it)->id());
+    }
+}
+
 //----------------------------------------------------------------------------
 std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
 {

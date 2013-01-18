@@ -64,7 +64,7 @@ class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 public:
   QPointer<QComboBox> NodalDropDown;
   smtk::WeakAttributePtr CurrentAtt;
-
+  smtk::WeakModelItemPtr CurrentModelGroup;
 };
 
 //----------------------------------------------------------------------------
@@ -127,15 +127,54 @@ void qtAssociationWidget::showAdvanced(int checked)
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
-  smtk::ModelItemPtr theEntiy, QString& category)
+  smtk::ModelItemPtr theEntiy, QString& category,
+  std::vector<smtk::AttributeDefinitionPtr>& attDefs)
 {
+  this->Internals->CurrentAtt = smtk::AttributePtr();
+  this->Internals->CurrentModelGroup = theEntiy;
+  this->Internals->CurrentList->blockSignals(true);
+  this->Internals->AvailableList->blockSignals(true);
+  this->Internals->CurrentList->clear();
+  this->Internals->AvailableList->clear();
 
+  if(!theEntiy || attDefs.size()==0)
+    {
+    this->Internals->CurrentList->blockSignals(false);
+    this->Internals->AvailableList->blockSignals(false);
+    return;
+    }
+
+  Manager *attManager = qtUIManager::instance()->attManager();
+  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
+  for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
+    {
+    std::vector<smtk::AttributePtr> result;
+    attManager->findAttributes(*itAttDef, result);
+    std::vector<smtk::AttributePtr>::iterator itAtt;
+    for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+      {
+      if(theEntiy->isAttributeAssociated(*itAtt))
+        {
+        this->addAttributeAssociationItem(
+          this->Internals->CurrentList, *itAtt);
+        }
+      else
+        {
+        this->addAttributeAssociationItem(
+          this->Internals->AvailableList, *itAtt);
+        }
+      }
+    }
+
+  this->Internals->CurrentList->blockSignals(false);
+  this->Internals->AvailableList->blockSignals(false);
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showEntityAssociation(
   smtk::AttributePtr theAtt, QString& category)
 {
   this->Internals->CurrentAtt = theAtt;
+  this->Internals->CurrentModelGroup = smtk::ModelItemPtr();
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
   this->Internals->CurrentList->clear();
@@ -221,13 +260,13 @@ void qtAssociationWidget::onAvailableListSelectionChanged(
 }
 
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getSelectedRefAttribute(
+smtk::AttributePtr qtAssociationWidget::getSelectedAttribute(
   QListWidget* theList)
 {
-  return this->getRefAttribute(this->getSelectedItem(theList));
+  return this->getAttribute(this->getSelectedItem(theList));
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getRefAttribute(
+smtk::AttributePtr qtAssociationWidget::getAttribute(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ? 
@@ -256,22 +295,6 @@ QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
   return theList->selectedItems().count()>0 ?
     theList->selectedItems().value(0) : NULL;
 }
-//----------------------------------------------------------------------------
-QListWidgetItem* qtAssociationWidget::addAttributeRefListItem(
-  QListWidget* theList, smtk::AttributeItemPtr refItem)
-{
-  QString txtLabel(refItem->attribute()->name().c_str());
-  txtLabel.append(" : ").append(refItem->owningItem()->name().c_str());
-
-  QListWidgetItem* item = new QListWidgetItem(txtLabel,
-      theList, smtk_USER_DATA_TYPE);
-  QVariant vdata;
-  vdata.setValue((void*)(refItem.get()));
-  item->setData(Qt::UserRole, vdata);
-  item->setFlags(item->flags() | Qt::ItemIsEditable);
-  theList->addItem(item);
-  return item;
-}
 
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
@@ -290,22 +313,52 @@ QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
 }
 
 //----------------------------------------------------------------------------
+QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
+  QListWidget* theList, smtk::AttributePtr att)
+{
+  QString txtLabel(att->name().c_str());
+
+  QListWidgetItem* item = new QListWidgetItem(txtLabel,
+      theList, smtk_USER_DATA_TYPE);
+  QVariant vdata;
+  vdata.setValue((void*)(att.get()));
+  item->setData(Qt::UserRole, vdata);
+  //item->setFlags(item->flags() | Qt::ItemIsEditable);
+  theList->addItem(item);
+  return item;
+}
+//----------------------------------------------------------------------------
 void qtAssociationWidget::onRemoveAssigned()
 {
-  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
-    this->Internals->CurrentList);
-  if(!this->Internals->CurrentAtt.lock() || !currentItem)
-    {
-    return;
-    } 
-  this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
-
-  this->Internals->CurrentList->removeItemWidget(
-    this->getSelectedItem(this->Internals->CurrentList));
-  this->addModelAssociationListItem(
-    this->Internals->AvailableList, currentItem);
+  if(this->Internals->CurrentAtt.lock())
+    {
+    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+      this->Internals->CurrentList);
+    if(currentItem)
+      {
+      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+      this->Internals->CurrentList->removeItemWidget(
+        this->getSelectedItem(this->Internals->CurrentList));
+      this->addModelAssociationListItem(
+        this->Internals->AvailableList, currentItem); 
+      }
+    }
+  else if(this->Internals->CurrentModelGroup.lock())
+    {
+    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+      this->Internals->CurrentList);
+    if(currentAtt)
+      {
+      currentAtt->disassociateEntity(
+        this->Internals->CurrentModelGroup.lock());
+      this->Internals->CurrentList->removeItemWidget(
+        this->getSelectedItem(this->Internals->CurrentList));
+      this->addAttributeAssociationItem(
+        this->Internals->AvailableList, currentAtt); 
+      }
+    }
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
@@ -313,50 +366,88 @@ void qtAssociationWidget::onRemoveAssigned()
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onAddAvailable()
 {
-  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
-    this->Internals->AvailableList);
-  if(!this->Internals->CurrentAtt.lock() || !currentItem)
-    {
-    return;
-    } 
-  this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
-
-  this->Internals->AvailableList->removeItemWidget(
-    this->getSelectedItem(this->Internals->AvailableList));
-  this->addModelAssociationListItem(
-    this->Internals->CurrentList, currentItem);
+  if(this->Internals->CurrentAtt.lock())
+    {
+    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+      this->Internals->AvailableList);
+    if(currentItem)
+      {
+      this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
+      this->Internals->AvailableList->removeItemWidget(
+        this->getSelectedItem(this->Internals->AvailableList));
+      this->addModelAssociationListItem(
+        this->Internals->CurrentList, currentItem);
+      }
+    }
+  else if(this->Internals->CurrentModelGroup.lock())
+    {
+    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+      this->Internals->AvailableList);
+    if(currentAtt)
+      {
+      currentAtt->associateEntity(
+        this->Internals->CurrentModelGroup.lock());
+      this->Internals->AvailableList->removeItemWidget(
+        this->getSelectedItem(this->Internals->AvailableList));
+      this->addAttributeAssociationItem(
+        this->Internals->CurrentList, currentAtt); 
+      }
+    }
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
-
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onExchange()
 {
-  smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
-    this->Internals->CurrentList);
-  smtk::ModelItemPtr availableItem = this->getSelectedModelItem(
-    this->Internals->AvailableList);
-  if(!this->Internals->CurrentAtt.lock() || !currentItem || !availableItem)
-    {
-    return;
-    } 
-  this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
-  this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
+  if(this->Internals->CurrentAtt.lock())
+    {
+    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+      this->Internals->CurrentList);
+    smtk::ModelItemPtr availableItem = this->getSelectedModelItem(
+      this->Internals->AvailableList);
+    if(currentItem && availableItem)
+      {
+      this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
+      this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
+      this->Internals->CurrentList->removeItemWidget(
+        this->getSelectedItem(this->Internals->CurrentList));
+      this->addModelAssociationListItem(
+        this->Internals->CurrentList, availableItem);
 
-  this->Internals->CurrentList->removeItemWidget(
-    this->getSelectedItem(this->Internals->CurrentList));
-  this->addModelAssociationListItem(
-    this->Internals->CurrentList, availableItem);
+      this->Internals->AvailableList->removeItemWidget(
+        this->getSelectedItem(this->Internals->AvailableList));
+      this->addModelAssociationListItem(
+        this->Internals->CurrentList, availableItem);
+      }
+    }
+  else if(this->Internals->CurrentModelGroup.lock())
+    {
+    smtk::AttributePtr availAtt = this->getSelectedAttribute(
+      this->Internals->AvailableList);
+    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+      this->Internals->CurrentList);
+    if(currentAtt && availAtt)
+      {
+      currentAtt->disassociateEntity(
+        this->Internals->CurrentModelGroup.lock());
+      this->Internals->CurrentList->removeItemWidget(
+        this->getSelectedItem(this->Internals->AvailableList));
+      this->addAttributeAssociationItem(
+        this->Internals->AvailableList, currentAtt); 
 
-  this->Internals->AvailableList->removeItemWidget(
-    this->getSelectedItem(this->Internals->AvailableList));
-  this->addModelAssociationListItem(
-    this->Internals->CurrentList, availableItem);
+      availAtt->associateEntity(
+        this->Internals->CurrentModelGroup.lock());
+      this->Internals->AvailableList->removeItemWidget(
+        this->getSelectedItem(this->Internals->AvailableList));
+      this->addAttributeAssociationItem(
+        this->Internals->CurrentList, availAtt); 
+      }
+    }
 
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);

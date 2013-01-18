@@ -51,7 +51,8 @@ namespace smtk
     public slots:
       virtual void showAdvanced(int show);
       virtual void showEntityAssociation(smtk::AttributePtr theAtt, QString& category);
-      virtual void showAttributeAssociation(smtk::ModelItemPtr theEntiy, QString& category);
+      virtual void showAttributeAssociation(smtk::ModelItemPtr theEntiy,
+        QString& category, std::vector<smtk::AttributeDefinitionPtr>& attDefs);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
@@ -64,16 +65,16 @@ namespace smtk
     protected:
       virtual void initWidget( );
       QListWidgetItem* getSelectedItem(QListWidget* theLis);
-      smtk::AttributePtr getRefAttribute(QListWidgetItem * item);
-      smtk::AttributePtr getSelectedRefAttribute(QListWidget* theLis);
+      smtk::AttributePtr getAttribute(QListWidgetItem * item);
+      smtk::AttributePtr getSelectedAttribute(QListWidget* theLis);
 
       smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
       smtk::ModelItemPtr getSelectedModelItem(QListWidget* theLis);
 
-      virtual QListWidgetItem* addAttributeRefListItem(QListWidget* theList,
-        smtk::AttributeItemPtr refItem);
       virtual QListWidgetItem* addModelAssociationListItem(
         QListWidget* theList, smtk::ModelItemPtr refItem);
+      virtual QListWidgetItem* addAttributeAssociationItem(
+        QListWidget* theList, smtk::AttributePtr att);
 
     private:
 

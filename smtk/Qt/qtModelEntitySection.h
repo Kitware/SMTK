@@ -48,7 +48,7 @@ namespace smtk
     public slots:
       void showAdvanced(int show);
       void updateModelItems();
-      void onShowCategory(int);
+      void onShowCategory();
       void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
     protected:

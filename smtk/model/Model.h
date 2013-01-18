@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/PublicPointerDefs.h"
 #include <string>
 #include <map>
+#include <vector>
 
 namespace smtk
 {
@@ -47,7 +48,15 @@ namespace smtk
       virtual bool deleteModelGroup(int id) = 0;
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
-      virtual void updateItems(int grouptype){;}
+
+      virtual unsigned int convertGroupTypeToMask(int grouptype) = 0;
+      virtual void loadGroupItems(int grouptype){;}
+      virtual void removeGroupItems(int grouptype)
+      { return this->removeGroupItems(this->convertGroupTypeToMask(grouptype));}
+      virtual void removeGroupItems(unsigned int mask);
+      virtual void findGroupItems(unsigned int mask, 
+        std::vector<smtk::ModelGroupItemPtr> &result) const;
+      
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }
       std::map<int, smtk::ModelItemPtr>::const_iterator itemIterator() const

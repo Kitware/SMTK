@@ -42,7 +42,7 @@ namespace smtk
       GroupItem(Model *model, int myid, unsigned int mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
-      unsigned long entityMask() const
+      unsigned int entityMask() const
       { return this->m_entityMask;}
       bool canContain(const smtk::ModelItemPtr ptr) const
       {return this->canContain(ptr->type());}
