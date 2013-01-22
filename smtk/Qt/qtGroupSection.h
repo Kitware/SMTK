@@ -46,6 +46,7 @@ namespace smtk
       virtual ~qtGroupSection();
 
       qtSection* getChildSection(smtk::attribute::Section::Type secType);
+      qtSection* getChildSection(int pageIndex);
 
       virtual void addChildSection(qtSection*);
       virtual void clearChildSections();

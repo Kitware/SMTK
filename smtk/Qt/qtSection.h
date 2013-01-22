@@ -50,7 +50,13 @@ namespace smtk
       QWidget* parentWidget();
      
     public slots:
+      virtual void updateUI()
+      {
+      this->updateAttributeData();
+      this->updateModelAssociation();
+      }
       virtual void showAdvanced(int show){;}
+      virtual void updateModelAssociation() {;}
 
     protected slots:
       virtual void updateAttributeData() {;}

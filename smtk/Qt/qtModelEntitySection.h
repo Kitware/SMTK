@@ -50,6 +50,7 @@ namespace smtk
       void updateModelItems();
       void onShowCategory();
       void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
+      virtual void updateModelAssociation();
 
     protected:
       virtual void createWidget( );

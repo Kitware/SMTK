@@ -53,6 +53,7 @@ namespace smtk
       virtual void createNewFunction(smtk::AttributeDefinitionPtr attDef);
       QListWidgetItem* getSelectedItem();
       void displayExpressionError(std::string& errorMsg, int errorPos);
+      smtk::AttributePtr getFunctionFromItem(QListWidgetItem * item);
 
     public slots:
       void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -81,7 +82,6 @@ namespace smtk
       void updateTableHeader();
       smtk::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
       smtk::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
-      smtk::AttributePtr getFunctionFromItem(QListWidgetItem * item);
       smtk::GroupItemPtr getSelectedArrayData();
       smtk::ValueItemPtr getSelectedStringData();
       smtk::AttributePtr getSelectedFunction();

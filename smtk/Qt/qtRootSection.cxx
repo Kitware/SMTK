@@ -111,11 +111,13 @@ void qtRootSection::showAdvanced(int checked)
 
   if(this->Internals->TabGroup)
     {
-    if(this->Internals->TabGroup->childSections().count())
+    QTabWidget* selfW = static_cast<QTabWidget*>(
+      this->Internals->TabGroup->widget());
+    if(selfW)
       {
-      QTabWidget* selfW = static_cast<QTabWidget*>(
-        this->Internals->TabGroup->widget());
-      if(selfW)
+      QObject::disconnect(selfW, SIGNAL(currentChanged(int)),
+        this, SLOT(updateSectionUI(int)));
+      if(this->Internals->TabGroup->childSections().count())
         {
         currentTab = selfW->currentIndex();
         }
@@ -168,14 +170,34 @@ void qtRootSection::showAdvanced(int checked)
   //add the advanced layout, and the scroll area onto the
   //widgets to the frame
   parentlayout->addWidget(this->ScrollArea);
+  QTabWidget* selfW = static_cast<QTabWidget*>(
+    this->Internals->TabGroup->widget());
+  if(selfW)
+    {
+    QObject::connect(selfW, SIGNAL(currentChanged(int)),
+      this, SLOT(updateSectionUI(int)));
+    }
 }
 
 //----------------------------------------------------------------------------
-qtSection* qtRootSection::getSection(smtk::attribute::Section::Type secType)
+void qtRootSection::updateSectionUI(int currentTab)
+{
+  qtSection* curSec = this->Internals->TabGroup->getChildSection(currentTab);
+  if(curSec)
+    {
+    curSec->updateUI();
+    }
+}
+//----------------------------------------------------------------------------
+qtSection* qtRootSection::getChildSection(smtk::attribute::Section::Type secType)
 {
   return this->Internals->TabGroup->getChildSection(secType);
 }
-
+//----------------------------------------------------------------------------
+qtGroupSection* qtRootSection::getRootGroup()
+{
+  return this->Internals->TabGroup;
+}
 //----------------------------------------------------------------------------
 void qtRootSection::initRootTabGroup()
 {

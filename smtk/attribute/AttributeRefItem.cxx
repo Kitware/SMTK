@@ -130,11 +130,11 @@ AttributeRefItem::valueAsString(int element,
   char dummy[300];
   if (format != "")
     {
-    sprintf(dummy, format.c_str(), this->m_values[element].lock()->id());
+    sprintf(dummy, format.c_str(), this->m_values[element].lock()->name().c_str());
     }
   else
     {
-    sprintf(dummy, "%ld", this->m_values[element].lock()->id());
+    sprintf(dummy, "%s", this->m_values[element].lock()->name().c_str());
     }
   return dummy;
 }

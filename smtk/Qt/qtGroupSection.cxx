@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QTabWidget>
 #include <QFile>
 #include <QApplication>
+#include <QVariant>
 
 using namespace smtk::attribute;
 
@@ -86,7 +87,16 @@ qtSection* qtGroupSection::getChildSection(
     }
   return NULL;
 }
-
+//----------------------------------------------------------------------------
+qtSection* qtGroupSection::getChildSection(int pageIndex)
+{
+  QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
+  if(pageIndex >= 0 && pageIndex < this->Internals->ChildSections.count())
+    {
+    return this->Internals->ChildSections.value(pageIndex);
+    }
+  return NULL;
+}
 //----------------------------------------------------------------------------
 void qtGroupSection::addChildSection(qtSection* child)
 {

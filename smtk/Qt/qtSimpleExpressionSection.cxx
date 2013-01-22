@@ -272,11 +272,6 @@ void qtSimpleExpressionSection::createWidget()
     }
   
   this->initFunctionList();
-  
-  if(this->Internals->FuncList->count())
-    {
-    this->Internals->FuncList->setCurrentRow(0);
-    }
 }
 
 //-----------------------------------------------------------------------------
@@ -793,12 +788,18 @@ void qtSimpleExpressionSection::initFunctionList()
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
   std::vector<smtk::AttributePtr>::iterator it;
-  this->Internals->FuncList->blockSignals(true);    
+  this->Internals->FuncList->blockSignals(true);
+  this->Internals->FuncList->clear();    
   for (it=result.begin(); it!=result.end(); ++it)
     {
     this->addFunctionListItem(*it);
     }
   this->Internals->FuncList->blockSignals(false);
+
+  if(this->Internals->FuncList->count())
+    {
+    this->Internals->FuncList->setCurrentRow(0);
+    }  
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::clearFuncExpression()

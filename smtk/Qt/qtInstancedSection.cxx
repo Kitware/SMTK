@@ -117,6 +117,11 @@ void qtInstancedSection::updateAttributeData()
     {
     return;
     }
+  foreach(qtAttribute* att, this->Internals->AttInstances)
+    {
+    this->Widget->layout()->removeWidget(att->widget());
+    delete att->widget();
+    }
   this->Internals->AttInstances.clear();
   std::size_t i, n = sec->numberOfInstances();
   for (i = 0; i < n; i++)

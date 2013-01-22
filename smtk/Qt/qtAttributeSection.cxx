@@ -211,7 +211,7 @@ void qtAttributeSection::createWidget( )
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
   QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory(int)));
+    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
 
   QObject::connect(this->Internals->ListTable,
     SIGNAL(itemSelectionChanged ()),
@@ -244,9 +244,14 @@ void qtAttributeSection::createWidget( )
 
   this->getAllDefinitions();
 
-  this->onViewBy(VIEWBY_Attribute);
+  this->updateModelAssociation();
 }
 
+//----------------------------------------------------------------------------
+void qtAttributeSection::updateModelAssociation()
+{
+  this->onShowCategory();
+}
 //-----------------------------------------------------------------------------
 smtk::AttributePtr qtAttributeSection::getAttributeFromItem(
   QTableWidgetItem * item)
@@ -344,7 +349,7 @@ void qtAttributeSection::onAttributeNameChanged(QTableWidgetItem* item)
     Manager *attManager = aAttribute->definition()->manager();
     attManager->rename(aAttribute, item->text().toAscii().constData());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
-
+/*
     // Lets see what attributes are being referenced
     std::vector<smtk::AttributeItemPtr> refs;
     std::size_t i;
@@ -353,7 +358,8 @@ void qtAttributeSection::onAttributeNameChanged(QTableWidgetItem* item)
       {
       std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
         << "\n";
-      } 
+      }
+*/
     }
 }
 
@@ -685,7 +691,7 @@ void qtAttributeSection::onViewByWithDefinition(
     }
 }
 //----------------------------------------------------------------------------
-void qtAttributeSection::onShowCategory(int category)
+void qtAttributeSection::onShowCategory()
 {
   int viewBy = this->Internals->ViewByCombo->currentIndex();
   this->onViewBy(viewBy);
@@ -887,18 +893,6 @@ int qtAttributeSection::currentViewBy()
 int qtAttributeSection::currentCategory()
 {
   return this->Internals->ShowCategoryCombo->currentIndex();
-}
-//----------------------------------------------------------------------------
-void qtAttributeSection::showUI(int viewBy, int category)
-{
-  this->Internals->ViewByCombo->blockSignals(true);
-  this->Internals->ViewByCombo->setCurrentIndex(viewBy);
-  this->Internals->ViewByCombo->blockSignals(false);
-
-  this->Internals->ShowCategoryCombo->blockSignals(true);
-  this->Internals->ShowCategoryCombo->setCurrentIndex(category);
-  this->Internals->ShowCategoryCombo->blockSignals(false);
-  this->onShowCategory(category);
 }
 //----------------------------------------------------------------------------
 void qtAttributeSection::getAllDefinitions()

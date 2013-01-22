@@ -48,7 +48,6 @@ namespace smtk
       QTableWidgetItem* getSelectedItem();
       int currentViewBy();
       int currentCategory();
-      void showUI(int viewBy, int category);
       virtual void createNewAttribute(smtk::AttributeDefinitionPtr attDef);
 
       enum enumViewBy
@@ -61,7 +60,7 @@ namespace smtk
       void onViewBy(int);
       void onViewByWithDefinition(
         int viewBy, smtk::AttributeDefinitionPtr attDef);
-      void onShowCategory(int category);
+      void onShowCategory();
       void onListBoxSelectionChanged();
       void onAttributeValueChanged(QTableWidgetItem*);
       void onAttributeNameChanged(QTableWidgetItem*);
@@ -70,6 +69,7 @@ namespace smtk
       void onDeleteSelected();
       void onAttributeModified();
       void updateAssociationEnableState(smtk::AttributePtr);
+      virtual void updateModelAssociation();
 
     protected:
       virtual void createWidget( );

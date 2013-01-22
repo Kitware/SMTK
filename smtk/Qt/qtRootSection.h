@@ -37,6 +37,8 @@ namespace smtk
 {
   namespace attribute
   {
+    class qtGroupSection;
+
     class QTSMTK_EXPORT qtRootSection : public qtSection
     {
       Q_OBJECT
@@ -44,10 +46,12 @@ namespace smtk
     public:
       qtRootSection(smtk::RootSectionPtr, QWidget* p);
       virtual ~qtRootSection();
-      qtSection* getSection(smtk::attribute::Section::Type secType);
+      qtSection* getChildSection(smtk::attribute::Section::Type secType);
+      qtGroupSection* getRootGroup();
 
     public slots:
       virtual void showAdvanced(int show);
+      virtual void updateSectionUI(int currentTab);
 
     protected:
       virtual void createWidget( );

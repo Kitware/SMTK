@@ -118,6 +118,23 @@ void qtUIManager::initializeUI(QWidget* pWidget)
 }
 
 //----------------------------------------------------------------------------
+void qtUIManager::updateModelSections()
+{
+  if(!this->RootSection)
+    {
+    return;
+    }
+  foreach(qtSection* childSec, this->RootSection->getRootGroup()->childSections())
+    {
+    if(childSec->getObject()->type() == Section::ATTRIBUTE ||
+       childSec->getObject()->type() == Section::MODEL_ENTITY)
+      {
+      childSec->updateModelAssociation();
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
 bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
 {
   return (!advancedItem || advancedItem==this->showAdvanced());
@@ -890,8 +907,8 @@ bool qtUIManager::updateTableItemCheckState(
   bool bEnabled = true;
   if(attItem->definition()->isOptional())
     {
-    Qt::CheckState checkState = attItem->definition()->isEnabledByDefault() ?
-      Qt::Checked : Qt::Unchecked;
+    Qt::CheckState checkState = attItem->isEnabled() ? Qt::Checked :
+     (attItem->definition()->isEnabledByDefault() ? Qt::Checked : Qt::Unchecked);
     labelitem->setCheckState(checkState);
     QVariant vdata;
     vdata.setValue((void*)attItem.get());

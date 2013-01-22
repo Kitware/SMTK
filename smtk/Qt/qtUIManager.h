@@ -116,6 +116,7 @@ namespace smtk
       void onInputValueChanged();
       void onComboIndexChanged();
       void onExpressionReferenceChanged();
+      void updateModelSections();
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);

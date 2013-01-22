@@ -177,6 +177,12 @@ void qtModelEntitySection::createWidget( )
     {
     this->parentWidget()->layout()->addWidget(frame);
     }
+  this->updateModelAssociation();
+}
+
+//----------------------------------------------------------------------------
+void qtModelEntitySection::updateModelAssociation()
+{
   this->updateModelItems();
   if(this->Internals->ListBox->count())
     {
@@ -184,7 +190,6 @@ void qtModelEntitySection::createWidget( )
     this->onShowCategory();
     }
 }
-
 //----------------------------------------------------------------------------
 void qtModelEntitySection::showAdvanced(int checked)
 {
