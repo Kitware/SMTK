@@ -6,25 +6,33 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
-    <height>250</height>
+    <width>404</width>
+    <height>495</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="margin">
-    <number>0</number>
-   </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QGroupBox" name="currentGroup">
+    <widget class="QGroupBox" name="boundaryGroup">
      <property name="title">
-      <string>Selected Attribute</string>
+      <string>Model Boundary and Attribute Associations</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="2">
-       <widget class="QListWidget" name="AvailableList"/>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCurrent">
+        <property name="text">
+         <string>Current</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Available</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QListWidget" name="CurrentList"/>
@@ -94,18 +102,30 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelCurrent">
-        <property name="text">
-         <string>Current</string>
-        </property>
-       </widget>
+      <item row="1" column="2">
+       <widget class="QListWidget" name="AvailableList"/>
       </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Available</string>
-        </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="domainGroup">
+     <property name="title">
+      <string>Model Domain and Material Associations</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QTableWidget" name="DomainMaterialTable">
+        <column>
+         <property name="text">
+          <string>Domain</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Material</string>
+         </property>
+        </column>
        </widget>
       </item>
      </layout>

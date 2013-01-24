@@ -46,7 +46,6 @@ namespace smtk
       QListWidgetItem* getSelectedItem();
 
     public slots:
-      void showAdvanced(int show);
       void updateModelItems();
       void onShowCategory();
       void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -57,6 +56,7 @@ namespace smtk
       smtk::ModelItemPtr getSelectedModelItem();
       smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
       QListWidgetItem* addModelItem(smtk::ModelItemPtr childData);
+      bool isRegionDomain();
 
     private:
 

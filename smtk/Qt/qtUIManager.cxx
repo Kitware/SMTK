@@ -286,7 +286,7 @@ void qtUIManager::updateArrayTableWidget(
     return;
     }
 
-  std::size_t i, n = dataItem->numberOfGroups();
+  std::size_t n = dataItem->numberOfGroups();
   std::size_t j, m = dataItem->numberOfItemsPerGroup();
   if(!m  || !n)
     {

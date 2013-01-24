@@ -44,7 +44,7 @@ smtk::ModelItemPtr Item::pointer() const
 {
   if (this->m_model)
     {
-    return this->m_model->findModelItem(this->m_id);
+    return this->m_model->getModelItem(this->m_id);
     }
   return smtk::ModelItemPtr();
 }
@@ -80,7 +80,7 @@ void Item::detachAllAttributes()
   std::set<smtk::AttributePtr>::iterator it;
   for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
     {
-    (*it)->associateEntity(this->pointer());
+    (*it)->disassociateEntity(this->pointer());
     }
   this->m_attributes.clear();
 }

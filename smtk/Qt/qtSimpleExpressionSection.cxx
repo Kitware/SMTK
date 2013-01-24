@@ -310,8 +310,7 @@ smtk::AttributePtr qtSimpleExpressionSection::getSelectedFunction()
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtSimpleExpressionSection::getSelectedItem()
 {
-  return this->Internals->FuncList->selectedItems().count()>0 ?
-    this->Internals->FuncList->selectedItems().value(0) : NULL;
+  return this->Internals->FuncList->currentItem();
 }
 
 //-----------------------------------------------------------------------------

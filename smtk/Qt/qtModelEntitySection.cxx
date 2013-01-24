@@ -97,6 +97,13 @@ void qtModelEntitySection::createWidget( )
     return;
     }
 
+  Manager *attManager = qtUIManager::instance()->attManager();
+  unsigned long mask = sec->modelEntityMask();
+  if(mask != 0)
+    {
+    attManager->findDefinitions(mask, this->Internals->attDefs);
+    }
+
   // Create a frame to contain all gui components for this object
   // Create a list box for the group entries
   // Create a table widget
@@ -149,12 +156,6 @@ void qtModelEntitySection::createWidget( )
   frame->addWidget(topFrame);
   frame->addWidget(bottomFrame);
 
-  Manager *attManager = qtUIManager::instance()->attManager();
-  if(unsigned long mask = sec->modelEntityMask())
-    {
-    attManager->findDefinitions(mask, this->Internals->attDefs);
-    }
-
   // if there is a definition, the section should
   // display all model entities of the requested mask along
   // with the attribute of this type in a table view
@@ -183,18 +184,38 @@ void qtModelEntitySection::createWidget( )
 //----------------------------------------------------------------------------
 void qtModelEntitySection::updateModelAssociation()
 {
-  this->updateModelItems();
-  if(this->Internals->ListBox->count())
+  bool isRegion = this->isRegionDomain();
+  this->Internals->topFrame->setVisible(!isRegion);
+  if(!isRegion)
     {
-    this->Internals->ListBox->setCurrentRow(0);
-    this->onShowCategory();
+    this->updateModelItems();
     }
+  this->onShowCategory();
 }
 //----------------------------------------------------------------------------
-void qtModelEntitySection::showAdvanced(int checked)
+bool qtModelEntitySection::isRegionDomain()
 {
+  smtk::ModelEntitySectionPtr sec =
+    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+  if(!sec)
+    {
+    return false;
+    }
 
+  Manager *attManager = qtUIManager::instance()->attManager();
+  unsigned long mask = sec->modelEntityMask();
+  if(mask & smtk::model::Item::REGION)
+    {
+    return true;
+    }
+  AttributeDefinitionPtr attDef = sec->definition();
+  if(attDef && attDef->associatesWithRegion())
+    {
+    return true;
+    }
+  return false;
 }
+
 //----------------------------------------------------------------------------
 void qtModelEntitySection::updateModelItems()
 {
@@ -219,18 +240,38 @@ void qtModelEntitySection::updateModelItems()
       this->addModelItem(*it);
       }
     }
+  if(this->Internals->ListBox->count())
+    {
+    this->Internals->ListBox->setCurrentRow(0);
+    }
   this->Internals->ListBox->blockSignals(false);
 }
 
 //----------------------------------------------------------------------------
 void qtModelEntitySection::onShowCategory()
 {
-  smtk::ModelItemPtr theItem = this->getSelectedModelItem();
-  if(theItem)
+  if(this->isRegionDomain())
     {
-    this->Internals->AssociationsWidget->showAttributeAssociation(
-      theItem, this->Internals->ShowCategoryCombo->currentText(),
+    smtk::ModelEntitySectionPtr sec =
+      smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
+    unsigned int mask = sec->modelEntityMask() ? sec->modelEntityMask() :
+      smtk::model::Item::REGION;
+    smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+    std::vector<smtk::ModelGroupItemPtr> result;
+    refModel->findGroupItems(mask, result);
+    this->Internals->AssociationsWidget->showDomainsAssociation(
+      result, this->Internals->ShowCategoryCombo->currentText(),
       this->Internals->attDefs);
+    }
+  else
+    {
+    smtk::ModelItemPtr theItem = this->getSelectedModelItem();
+    if(theItem)
+      {
+      this->Internals->AssociationsWidget->showAttributeAssociation(
+        theItem, this->Internals->ShowCategoryCombo->currentText(),
+        this->Internals->attDefs);
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -255,8 +296,7 @@ smtk::ModelItemPtr qtModelEntitySection::getModelItem(
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtModelEntitySection::getSelectedItem()
 {
-  return this->Internals->ListBox->selectedItems().count()>0 ?
-    this->Internals->ListBox->selectedItems().value(0) : NULL;
+  return this->Internals->ListBox->currentItem();
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtModelEntitySection::addModelItem(
@@ -268,7 +308,7 @@ QListWidgetItem* qtModelEntitySection::addModelItem(
   QVariant vdata;
   vdata.setValue((void*)(childData.get()));
   item->setData(Qt::UserRole, vdata);
-  item->setFlags(item->flags() | Qt::ItemIsEditable);
+//  item->setFlags(item->flags() | Qt::ItemIsEditable);
   this->Internals->ListBox->addItem(item);
   return item;
 }

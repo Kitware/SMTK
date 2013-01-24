@@ -42,7 +42,7 @@ namespace smtk
     public:
       Model();
       virtual ~Model();
-      virtual smtk::ModelItemPtr findModelItem(int id) const;
+      virtual smtk::ModelItemPtr getModelItem(int id);
       virtual smtk::ModelGroupItemPtr createModelGroup(
         const std::string &name, int myid, unsigned int mask) = 0;
       virtual bool deleteModelGroup(int id) = 0;
@@ -76,9 +76,9 @@ namespace smtk
     private:
     };
 
-    inline smtk::ModelItemPtr Model::findModelItem(int id) const
+    inline smtk::ModelItemPtr Model::getModelItem(int id)
     {
-      std::map<int, smtk::ModelItemPtr>::const_iterator it = this->m_items.find(id);
+      std::map<int, smtk::ModelItemPtr>::iterator it = this->m_items.find(id);
       if (it == this->m_items.end())
         {
         return smtk::ModelItemPtr();

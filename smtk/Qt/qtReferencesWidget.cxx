@@ -158,8 +158,7 @@ smtk::AttributePtr qtReferencesWidget::getAttributeFromItem(
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)
 {
-  return theList->selectedItems().count()>0 ?
-    theList->selectedItems().value(0) : NULL;
+  return theList->currentItem();
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(

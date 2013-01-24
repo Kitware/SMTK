@@ -53,6 +53,9 @@ namespace smtk
       virtual void showEntityAssociation(smtk::AttributePtr theAtt, QString& category);
       virtual void showAttributeAssociation(smtk::ModelItemPtr theEntiy,
         QString& category, std::vector<smtk::AttributeDefinitionPtr>& attDefs);
+      virtual void showDomainsAssociation(
+        std::vector<smtk::ModelGroupItemPtr>& theDomains, QString& category,
+        std::vector<smtk::AttributeDefinitionPtr>& attDefs);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
@@ -61,10 +64,12 @@ namespace smtk
       virtual void onAddAvailable();
       virtual void onExchange();
       virtual void onNodalOptionChanged(int);
+      virtual void onDomainAssociationChanged();
 
     protected:
       virtual void initWidget( );
       QListWidgetItem* getSelectedItem(QListWidget* theLis);
+      virtual void removeSelectedItem(QListWidget* theLis);
       smtk::AttributePtr getAttribute(QListWidgetItem * item);
       smtk::AttributePtr getSelectedAttribute(QListWidget* theLis);
 
@@ -75,6 +80,8 @@ namespace smtk
         QListWidget* theList, smtk::ModelItemPtr refItem);
       virtual QListWidgetItem* addAttributeAssociationItem(
         QListWidget* theList, smtk::AttributePtr att);
+      virtual void addDomainListItem(
+        smtk::ModelItemPtr domainItem, QList<QString>& attNames);
 
     private:
 

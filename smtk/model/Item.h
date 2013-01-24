@@ -57,11 +57,16 @@ namespace smtk
       {return this->m_id;}
       virtual std::string name() const = 0;
       virtual Item::Type type() const = 0;
+      virtual void setName(std::string & strname){;}
 
       virtual void attachAttribute(smtk::AttributePtr);
       virtual void detachAttribute(smtk::AttributePtr);
       virtual void detachAllAttributes();
       virtual bool isAttributeAssociated(smtk::AttributePtr) const;
+      std::set<smtk::AttributePtr>::const_iterator associatedAttributes() const
+        {return this->m_attributes.begin();}
+      std::size_t numberOfAssociatedAttributes() const
+        { return this->m_attributes.size();}
 
       Model *model() const
       {return this->m_model;}

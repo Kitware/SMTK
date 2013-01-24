@@ -49,6 +49,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QListWidget>
 #include <QKeyEvent>
 #include <QPointer>
+#include <QMessageBox>
 
 #include <set>
 
@@ -75,6 +76,8 @@ qtAssociationWidget::qtAssociationWidget(
   this->Internals->setupUi(this);
 
   this->initWidget( );
+  this->Internals->domainGroup->setVisible(false);
+  this->Internals->boundaryGroup->setVisible(false);
 }
 
 //----------------------------------------------------------------------------
@@ -125,13 +128,74 @@ void qtAssociationWidget::initWidget( )
 void qtAssociationWidget::showAdvanced(int checked)
 {
 }
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::showDomainsAssociation(
+  std::vector<smtk::ModelGroupItemPtr>& theDomains, QString& category,
+  std::vector<smtk::AttributeDefinitionPtr>& attDefs)
+{
+  this->Internals->domainGroup->setVisible(true);
+  this->Internals->boundaryGroup->setVisible(false);
+
+  this->Internals->CurrentAtt = smtk::AttributePtr();
+  this->Internals->CurrentModelGroup = smtk::ModelItemPtr();
+
+  this->Internals->DomainMaterialTable->blockSignals(true);
+  this->Internals->DomainMaterialTable->setRowCount(0);
+  this->Internals->DomainMaterialTable->clear();
+
+  if(theDomains.size()==0 || attDefs.size()==0)
+    {
+    this->Internals->DomainMaterialTable->blockSignals(false);
+    return;
+    }
+
+  Manager *attManager = qtUIManager::instance()->attManager();
+  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
+  QList<QString> attNames;
+  for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
+    {
+    if((*itAttDef)->isAbstract())
+      {
+      continue;
+      }
+    if((*itAttDef)->associatesWithRegion())
+      {
+      std::vector<smtk::AttributePtr> result;
+      attManager->findAttributes(*itAttDef, result);
+      std::vector<smtk::AttributePtr>::iterator itAtt;
+      QString attname;
+      for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+        {
+        attname = (*itAtt)->name().c_str();
+        if(!attNames.contains(attname))
+          {
+          attNames.push_back(attname);
+          }
+        }
+      }
+    }
+
+  std::vector<smtk::ModelGroupItemPtr>::iterator itDomain;
+  for (itDomain=theDomains.begin(); itDomain!=theDomains.end(); ++itDomain)
+    {
+    this->addDomainListItem(*itDomain, attNames);
+    }
+
+  this->Internals->DomainMaterialTable->blockSignals(false);
+}
+
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
   smtk::ModelItemPtr theEntiy, QString& category,
   std::vector<smtk::AttributeDefinitionPtr>& attDefs)
 {
+  this->Internals->domainGroup->setVisible(false);
+  this->Internals->boundaryGroup->setVisible(true);
+
   this->Internals->CurrentAtt = smtk::AttributePtr();
   this->Internals->CurrentModelGroup = theEntiy;
+
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
   this->Internals->CurrentList->clear();
@@ -146,13 +210,23 @@ void qtAssociationWidget::showAttributeAssociation(
 
   Manager *attManager = qtUIManager::instance()->attManager();
   std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
+  std::set<smtk::AttributePtr> doneAtts;
   for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
     {
+    if((*itAttDef)->isAbstract())
+      {
+      continue;
+      }
     std::vector<smtk::AttributePtr> result;
     attManager->findAttributes(*itAttDef, result);
     std::vector<smtk::AttributePtr>::iterator itAtt;
     for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
       {
+      if(doneAtts.find(*itAtt) != doneAtts.end())
+        {
+        continue;
+        }
+      doneAtts.insert(*itAtt);
       if(theEntiy->isAttributeAssociated(*itAtt))
         {
         this->addAttributeAssociationItem(
@@ -173,6 +247,9 @@ void qtAssociationWidget::showAttributeAssociation(
 void qtAssociationWidget::showEntityAssociation(
   smtk::AttributePtr theAtt, QString& category)
 {
+  this->Internals->domainGroup->setVisible(false);
+  this->Internals->boundaryGroup->setVisible(true);
+
   this->Internals->CurrentAtt = theAtt;
   this->Internals->CurrentModelGroup = smtk::ModelItemPtr();
   this->Internals->CurrentList->blockSignals(true);
@@ -233,7 +310,7 @@ void qtAssociationWidget::showEntityAssociation(
       smtk::ModelGroupItemPtr itemGroup =
         smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
       bool bRegion = itemGroup->canContain(smtk::model::Item::REGION);
-      if(isMaterial & bRegion) //both true, or both false
+      if(isMaterial == bRegion) //both true, or both false
         {
         if(!assignedIds.contains(itemIt->second->id()))
           {
@@ -292,10 +369,17 @@ smtk::ModelItemPtr qtAssociationWidget::getModelItem(
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
 {
-  return theList->selectedItems().count()>0 ?
-    theList->selectedItems().value(0) : NULL;
+  return theList->currentItem();
 }
-
+//-----------------------------------------------------------------------------
+void qtAssociationWidget::removeSelectedItem(QListWidget* theList)
+{
+  QListWidgetItem* selItem = this->getSelectedItem(theList);
+  if(selItem)
+    {
+    theList->takeItem(theList->row(selItem));
+    }
+}
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
   QListWidget* theList, smtk::ModelItemPtr modelItem)
@@ -328,6 +412,38 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   return item;
 }
 //----------------------------------------------------------------------------
+void qtAssociationWidget::addDomainListItem(
+  smtk::ModelItemPtr domainEnt, QList<QString>& attNames)
+{
+  QString domainName = domainEnt->name().c_str();
+  QTableWidgetItem* domainItem = new QTableWidgetItem(domainName);
+  domainItem->setFlags(Qt::ItemIsEnabled);
+  int numRows = this->Internals->DomainMaterialTable->rowCount();
+  this->Internals->DomainMaterialTable->setRowCount(++numRows);
+  this->Internals->DomainMaterialTable->setItem(numRows-1, 0, domainItem);
+
+  QComboBox* combo = new QComboBox(this);
+  combo->addItems(attNames);
+  int idx = -1;
+  if(domainEnt->numberOfAssociatedAttributes() > 0)
+    {
+    std::set<smtk::AttributePtr>::const_iterator associatedAtt =
+      domainEnt->associatedAttributes();
+    idx = attNames.indexOf((*associatedAtt)->name().c_str());
+    }
+  combo->setCurrentIndex(idx);
+  QObject::connect(combo, SIGNAL(currentIndexChanged(int)), 
+    this, SLOT(onDomainAssociationChanged()), Qt::QueuedConnection);
+
+  QVariant vdata;
+  vdata.setValue((void*)(domainEnt.get()));
+  combo->setProperty("DomainEntityObj", vdata);
+
+  this->Internals->DomainMaterialTable->setCellWidget(numRows-1, 1, combo);
+  this->Internals->DomainMaterialTable->setItem(numRows-1, 1, new QTableWidgetItem());
+}
+
+//----------------------------------------------------------------------------
 void qtAssociationWidget::onRemoveAssigned()
 {
   this->Internals->CurrentList->blockSignals(true);
@@ -339,8 +455,7 @@ void qtAssociationWidget::onRemoveAssigned()
     if(currentItem)
       {
       this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
-      this->Internals->CurrentList->removeItemWidget(
-        this->getSelectedItem(this->Internals->CurrentList));
+      this->removeSelectedItem(this->Internals->CurrentList);
       this->addModelAssociationListItem(
         this->Internals->AvailableList, currentItem); 
       }
@@ -353,8 +468,7 @@ void qtAssociationWidget::onRemoveAssigned()
       {
       currentAtt->disassociateEntity(
         this->Internals->CurrentModelGroup.lock());
-      this->Internals->CurrentList->removeItemWidget(
-        this->getSelectedItem(this->Internals->CurrentList));
+      this->removeSelectedItem(this->Internals->CurrentList);
       this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt); 
       }
@@ -375,8 +489,7 @@ void qtAssociationWidget::onAddAvailable()
     if(currentItem)
       {
       this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
-      this->Internals->AvailableList->removeItemWidget(
-        this->getSelectedItem(this->Internals->AvailableList));
+      this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, currentItem);
       }
@@ -389,8 +502,7 @@ void qtAssociationWidget::onAddAvailable()
       {
       currentAtt->associateEntity(
         this->Internals->CurrentModelGroup.lock());
-      this->Internals->AvailableList->removeItemWidget(
-        this->getSelectedItem(this->Internals->AvailableList));
+      this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->CurrentList, currentAtt); 
       }
@@ -414,13 +526,11 @@ void qtAssociationWidget::onExchange()
       {
       this->Internals->CurrentAtt.lock()->disassociateEntity(currentItem);
       this->Internals->CurrentAtt.lock()->associateEntity(availableItem);
-      this->Internals->CurrentList->removeItemWidget(
-        this->getSelectedItem(this->Internals->CurrentList));
+      this->removeSelectedItem(this->Internals->CurrentList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, availableItem);
 
-      this->Internals->AvailableList->removeItemWidget(
-        this->getSelectedItem(this->Internals->AvailableList));
+      this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, availableItem);
       }
@@ -435,15 +545,13 @@ void qtAssociationWidget::onExchange()
       {
       currentAtt->disassociateEntity(
         this->Internals->CurrentModelGroup.lock());
-      this->Internals->CurrentList->removeItemWidget(
-        this->getSelectedItem(this->Internals->AvailableList));
+      this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt); 
 
       availAtt->associateEntity(
         this->Internals->CurrentModelGroup.lock());
-      this->Internals->AvailableList->removeItemWidget(
-        this->getSelectedItem(this->Internals->AvailableList));
+      this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->CurrentList, availAtt); 
       }
@@ -476,5 +584,40 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
       break;
     default:
       break;
+    }
+}
+//----------------------------------------------------------------------------
+void qtAssociationWidget::onDomainAssociationChanged()
+{
+  QComboBox* const combo = qobject_cast<QComboBox*>(
+    QObject::sender());
+  if(!combo)
+    {
+    return;
+    }
+  smtk::model::Item* domainItem =static_cast<smtk::model::Item*>(
+    combo->property("DomainEntityObj").value<void *>());
+  if(!domainItem)
+    {
+    return;
+    }
+  domainItem->detachAllAttributes();
+  if(combo->currentText().isEmpty())
+    {
+    return;
+    }
+  QString attName = combo->currentText();
+  AttributePtr attPtr = qtUIManager::instance()->attManager()->
+    findAttribute(attName.toStdString());
+  if(attPtr)
+    {
+    domainItem->attachAttribute(attPtr);
+    }
+  else
+    {
+    QString strMessage = QString("Can't find attribute with this name: ") + 
+      attName;
+    QMessageBox::warning(this, tr("Domain Associations"),strMessage);
+    combo->setCurrentIndex(-1);
     }
 }
