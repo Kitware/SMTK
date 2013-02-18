@@ -62,41 +62,41 @@ vtkModelMaterial* vtkDiscreteModelGeometricEntity::GetMaterial()
 {
   vtkModelItemIterator* iter = this->GetThisModelEntity()->NewIterator(vtkModelMaterialType);
   iter->Begin();
-  vtkModelMaterial* Material = 0;
+  vtkModelMaterial* material = 0;
   if(!iter->IsAtEnd())
     {
-    Material = vtkModelMaterial::SafeDownCast(iter->GetCurrentItem());
+    material = vtkModelMaterial::SafeDownCast(iter->GetCurrentItem());
     }
   iter->Delete();
-  return Material;
+  return material;
 }
 
-vtkIdType vtkDiscreteModelGeometricEntity::GetMasterCellId(vtkIdType Id)
+vtkIdType vtkDiscreteModelGeometricEntity::GetMasterCellId(vtkIdType id)
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
-  vtkPolyData* Geometry = vtkPolyData::SafeDownCast(
+  vtkPolyData* geometry = vtkPolyData::SafeDownCast(
     thisEntity->GetGeometry());
-  if(!Geometry || Geometry->GetNumberOfCells() <= Id)
+  if(!geometry || geometry->GetNumberOfCells() <= id)
     {
     return -1;
     }
-  vtkIdTypeArray* MasterCellIds = vtkIdTypeArray::SafeDownCast(
-    Geometry->GetCellData()->GetArray(ReverseClassificationArrayName));
-  return MasterCellIds->GetValue(Id);
+  vtkIdTypeArray* masterCellIds = vtkIdTypeArray::SafeDownCast(
+    geometry->GetCellData()->GetArray(ReverseClassificationArrayName));
+  return masterCellIds->GetValue(id);
 }
 
 vtkIdType vtkDiscreteModelGeometricEntity::GetNumberOfCells()
 {
   vtkModelGeometricEntity* thisEntity =
     vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
-  vtkPolyData* Geometry = vtkPolyData::SafeDownCast(
+  vtkPolyData* geometry = vtkPolyData::SafeDownCast(
     thisEntity->GetGeometry());
-  if(!Geometry)
+  if(!geometry)
     {
     return -1;
     }
-  return Geometry->GetNumberOfCells();
+  return geometry->GetNumberOfCells();
 }
 
 vtkDiscreteModelGeometricEntity*

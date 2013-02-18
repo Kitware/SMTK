@@ -86,13 +86,13 @@ public:
   // vtkSmartPointer<vtkvtkCMBShell> shell = vtkSmartPointer<vtkvtkCMBShell>::New();
   // vtkvtkDiscreteModelFaceUse* fu1 = vtkvtkDiscreteModelFaceUse::New();
   // shell->AddModelFaceUse(fu1);
-  // 
-  // vtkSmartPointer<vtkvtkDiscreteModelFaceUse> fu2 = 
+  //
+  // vtkSmartPointer<vtkvtkDiscreteModelFaceUse> fu2 =
   //   vtkSmartPointer<vtkvtkDiscreteModelFaceUse>::New();
   // shell->AddModelFaceUse(fu2);
   // fu2->SetColor(1, 0, 0, 0);
-  // 
-  // vtkSmartPointer<vtkXMLModelWriter> writer = 
+  //
+  // vtkSmartPointer<vtkXMLModelWriter> writer =
   //   vtkSmartPointer<vtkXMLModelWriter>::New();
   // vtksys_ios::ostringstream ostr;
   // writer->SetArchiveVersion(1);
@@ -100,7 +100,7 @@ public:
   // objs.push_back(shell);
   // writer->Serialize(ostr, "ConceptualModel", objs);
   // \endcode
-  virtual void Serialize(vtksys_ios::ostringstream& ostr, const char* rootName, 
+  virtual void Serialize(vtksys_ios::ostringstream& ostr, const char* rootName,
     std::vector<vtkSmartPointer<vtkObject> >& objs);
 //ETX
 
@@ -115,7 +115,7 @@ public:
   // Description:
   // Serializes a single unsigned long.
   virtual void Serialize(const char* name, unsigned long& val) ;
-  
+
  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
@@ -162,13 +162,13 @@ public:
 //BTX
   // Description:
   // Serializes a vector of vtkSerializableObjects.
-  virtual void Serialize(const char* name, 
+  virtual void Serialize(const char* name,
                          std::vector<vtkSmartPointer<vtkObject> >& objs,
                          bool weakPtr = false);
 
   // Description:
   // Serializes a map from int to vector of vtkSerializableObject.
-  virtual void Serialize(const char* name, 
+  virtual void Serialize(const char* name,
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
 //ETX
 
@@ -178,18 +178,18 @@ protected:
 
   virtual void Initialize(const char* name);
   virtual vtkIdType Serialize(vtkSerializableObject*& obj);
-  
+
 private:
   vtkXMLModelWriter(const vtkXMLModelWriter&);  // Not implemented.
   void operator=(const vtkXMLModelWriter&);  // Not implemented.
 
 //BTX
-  virtual vtkXMLElement* CreateDOM(const char* rootName, 
+  virtual vtkXMLElement* CreateDOM(const char* rootName,
     std::vector<vtkSmartPointer<vtkObject> >& objs);
 //ETX
 
   void SetRootElement(vtkXMLElement*);
-  
+
   vtkXMLModelWriterInternals* Internal;
   vtkXMLElement* RootElement;
 };

@@ -51,7 +51,7 @@ public:
   // Split this model face based on SplitAngle.  The function
   // fills the created model face UniquePersistentId in
   // CreatedModelFace, and returns true if successful.
-  bool Split(double SplitAngle, vtkIdTypeArray* CreatedModelFace);
+  bool Split(double splitAngle, vtkIdTypeArray* createdModelFace);
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model face.
@@ -62,13 +62,13 @@ public:
   // Description:
   // Mark each index in PointsMask with 0 (out) or 1 (in) for
   // master vtkPoints that are in the vtkDiscreteModelFace grid.
-  void GatherAllPointIdsMask(vtkBitArray* PointsMask);
+  void GatherAllPointIdsMask(vtkBitArray* pointsMask);
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model face.
   // Mark each index in PointsMask with 0 (out) or 1 (in) for
   // master vtkPoints that are on the boundary of vtkDiscreteModelFace grid.
-  void GatherBoundaryPointIdsMask(vtkBitArray* Points);
+  void GatherBoundaryPointIdsMask(vtkBitArray* points);
 
 protected:
 //BTX
@@ -82,7 +82,7 @@ protected:
   // Description:
   // Build a new model face from the cells listed in CellIds.
   // The Ids listed in CellIds are with respect to the master grid.
-  vtkDiscreteModelFace* BuildFromExistingModelFace(vtkIdList* CellIds);
+  vtkDiscreteModelFace* BuildFromExistingModelFace(vtkIdList* cellIds);
   friend class vtkSelectionSplitOperator;
   friend class vtkCmbIncorporateMeshOperator;
 

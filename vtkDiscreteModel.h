@@ -90,8 +90,8 @@ public:
   // Functions to get the vtkDiscreteModelGeometricEntity object that CellId
   // is classified on and the cell index of the copy of CellId in that
   // vtkPolyData.  Note that these should only be called on the server.
-  vtkDiscreteModelGeometricEntity* GetCellModelGeometricEntity(vtkIdType CellId);
-  vtkIdType GetCellModelGeometricEntityIndex(vtkIdType CellId);
+  vtkDiscreteModelGeometricEntity* GetCellModelGeometricEntity(vtkIdType cellId);
+  vtkIdType GetCellModelGeometricEntityIndex(vtkIdType cellId);
 
   // Description:
   // Get the geometric representation of the model. Returns null on the
@@ -122,59 +122,59 @@ public:
   // Build a model entity. The model is responsible for the management
   // of the built model entity.  The build model entity is deleted
   // from the model with the corresponding DestroyModel function.
-  virtual vtkModelVertex* BuildModelVertex(vtkIdType PointId);
-  virtual vtkModelVertex* BuildModelVertex(vtkIdType PointId,
-                                           vtkIdType VertexId);
-  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* Vertex0,
-                                       vtkModelVertex* Vertex1);
+  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId);
+  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId,
+                                           vtkIdType vertexId);
+  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0,
+                                       vtkModelVertex* vertex1);
 
   virtual vtkModelEdge* BuildModelEdge(
-    vtkModelVertex* Vertex0, vtkModelVertex* Vertex1, vtkIdType EdgeId);
+    vtkModelVertex* vertex0, vtkModelVertex* vertex1, vtkIdType edgeId);
 
+  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
+                                       int* edgeDirections, vtkModelMaterial* material);
+  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
+                                       int* edgeDirections);
   virtual vtkModelFace* BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                       int* EdgeDirections, vtkModelMaterial* Material);
-  virtual vtkModelFace* BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                       int* EdgeDirections);
-  virtual vtkModelFace* BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                       int* EdgeDirections,
-                                       vtkIdType ModelFaceId);
+                                       int* edgeDirections,
+                                       vtkIdType modelFaceId);
   virtual vtkModelRegion* BuildModelRegion();
-  virtual vtkModelRegion* BuildModelRegion(vtkIdType ModelRegionId);
+  virtual vtkModelRegion* BuildModelRegion(vtkIdType modelRegionId);
   virtual vtkModelRegion* BuildModelRegion(
-    int NumFaces, vtkModelFace** Faces, int* FaceSides);
+    int numFaces, vtkModelFace** faces, int* faceSides);
   virtual vtkModelRegion* BuildModelRegion(
-    int NumFaces, vtkModelFace** Faces, int* FaceSides,
-    vtkIdType ModelRegionId);
+    int numFaces, vtkModelFace** faces, int* faceSides,
+    vtkIdType modelRegionId);
   virtual vtkModelRegion* BuildModelRegion(
-    int NumFaces, vtkModelFace** Faces, int* FaceSides,
-    vtkModelMaterial* Material);
+    int numFaces, vtkModelFace** faces, int* faceSides,
+    vtkModelMaterial* material);
   virtual vtkModelRegion* BuildModelRegion(
-    int NumFaces, vtkModelFace** Faces, int* FaceSides,
-    vtkIdType ModelRegionId, vtkModelMaterial* Material);
+    int numFaces, vtkModelFace** faces, int* faceSides,
+    vtkIdType modelRegionId, vtkModelMaterial* material);
 
   virtual bool DestroyModelGeometricEntity(
-    vtkDiscreteModelGeometricEntity* GeomEntity);
+    vtkDiscreteModelGeometricEntity* geomEntity);
 
   virtual void GetBounds(double bounds[6]);
 
   virtual vtkModelMaterial* BuildMaterial();
-  virtual vtkModelMaterial* BuildMaterial(vtkIdType Id);
+  virtual vtkModelMaterial* BuildMaterial(vtkIdType id);
 
   // Description:
   // Remove an existing material from the model.  Note that no model entities
   // should be associated with this material.
-  virtual bool DestroyMaterial(vtkModelMaterial* Material);
+  virtual bool DestroyMaterial(vtkModelMaterial* material);
 
   // Description:
   // Build a vtkDiscreteModelEntityGroup and initialize it with some some objects.
   virtual vtkDiscreteModelEntityGroup* BuildModelEntityGroup(
-    int itemType, int NumEntities, vtkDiscreteModelEntity** Entities);
+    int itemType, int numEntities, vtkDiscreteModelEntity** entities);
   virtual vtkDiscreteModelEntityGroup* BuildModelEntityGroup(
-    int itemType, int NumEntities, vtkDiscreteModelEntity** Entities, vtkIdType Id);
+    int itemType, int numEntities, vtkDiscreteModelEntity** entities, vtkIdType id);
 
   // Description:
   // Destroy EntityGroup.  Returns true if successful.
-  virtual bool DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* EntityGroup);
+  virtual bool DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* entityGroup);
 
   // Description:
   // Build a vtkModelNodalGroup and populate it with the vtkPoint Ids
@@ -182,25 +182,25 @@ public:
   // be created and if Type is 1/UNIQUE_NODAL_GROUP a vtkModelUniqueNodalGroup
   // will be created. Id is the unique persistent Id to be assigned
   // to the nodal group.
-  virtual vtkModelNodalGroup* BuildNodalGroup(int Type, vtkIdList* PointIds);
-  virtual vtkModelNodalGroup* BuildNodalGroup(int Type, vtkIdList* PointIds,
-                                            vtkIdType Id);
+  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds);
+  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds,
+                                            vtkIdType id);
 
   // Description:
   // Destroy EntityGroup.  Returns true if successful.
-  virtual bool DestroyNodalGroup(vtkModelNodalGroup* NodalGroup);
+  virtual bool DestroyNodalGroup(vtkModelNodalGroup* nodalGroup);
 
   // Description:
   // Build/Destroy a floating vtkDiscreteModelEdge.
   virtual vtkModelEdge* BuildFloatingRegionEdge(
     double point1[3], double point2[3],
-    int resolution, vtkIdType RegionId)
+    int resolution, vtkIdType regionId)
     {return this->BuildFloatingRegionEdge(this->GetNextUniquePersistentId(),
-      point1, point2, resolution, RegionId);}
+      point1, point2, resolution, regionId);}
   virtual vtkModelEdge* BuildFloatingRegionEdge(vtkIdType edgeId,
     double point1[3], double point2[3],
-    int resolution, vtkIdType RegionId);
-  virtual bool DestroyModelEdge(vtkDiscreteModelEdge* ModelEdge);
+    int resolution, vtkIdType regionId);
+  virtual bool DestroyModelEdge(vtkDiscreteModelEdge* modelEdge);
 
   vtkGetMacro(AnalysisGridInfo, vtkModelGridRepresentation*);
   void SetAnalysisGridInfo(vtkModelGridRepresentation*);
@@ -232,8 +232,8 @@ protected:
   // Function to get the next default name for a model entity.  It
   // is used for giving a default value when creating a model entity
   // that the user can change.
-  void GetModelEntityDefaultName(int EntityType, const char* BaseName,
-                                 std::string & DefaultEntityName);
+  void GetModelEntityDefaultName(int entityType, const char* baseName,
+                                 std::string & defaultEntityName);
 
   // Description:
   // Function to set the vtkDiscreteModelGeometricEntity object and Geometric
@@ -241,8 +241,8 @@ protected:
   // This does not set the reverse classification information though.
   // Note that this should only be called on the server as it won't do
   // anything on the client.
-  void SetCellClassification(vtkIdType MasterCellId,vtkIdType GeomEntityCellId,
-                             vtkDiscreteModelGeometricEntity* GeomEntity);
+  void SetCellClassification(vtkIdType masterCellId,vtkIdType geomEntityCellId,
+                             vtkDiscreteModelGeometricEntity* geomEntity);
 //BTX
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkCMBParserBase;
@@ -261,15 +261,15 @@ protected:
   // Set/get the vtkCMBUniqueNodalGroups that a point is assigned to.
   // For setting, it removes the point from its current vtkCMBUniqueNodalGroups
   // if it belongs to one.
-  void SetPointUniqueNodalGroup(vtkModelUniqueNodalGroup* NodalGroup,
-                                vtkIdType PointId);
-  vtkModelUniqueNodalGroup* GetPointUniqueNodalGroup(vtkIdType PointId);
+  void SetPointUniqueNodalGroup(vtkModelUniqueNodalGroup* nodalGroup,
+                                vtkIdType pointId);
+  vtkModelUniqueNodalGroup* GetPointUniqueNodalGroup(vtkIdType pointId);
 
   // Description:
   // Set the vtkObject that is used to represent the Geometry.  This should
   // only be called on the server. Note: Sometimes UpdateGeometry() needs to
   // be called if the master polydata is modified.
-  void SetGeometry(vtkObject* Geometry);
+  void SetGeometry(vtkObject* geometry);
   void UpdateGeometry();
 
   // Description:

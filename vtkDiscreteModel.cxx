@@ -71,18 +71,18 @@ vtkDiscreteModel::~vtkDiscreteModel()
   this->SetAnalysisGridInfo(NULL);
 }
 
-vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType PointId)
+vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId)
 {
-  return this->BuildModelVertex(PointId, this->GetNextUniquePersistentId());
+  return this->BuildModelVertex(pointId, this->GetNextUniquePersistentId());
 }
 
-vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType PointId, vtkIdType vertexId)
+vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, vtkIdType vertexId)
 {
   vtkDiscreteModelVertex* vertex = vtkDiscreteModelVertex::New();
   vertex->SetUniquePersistentId(vertexId);
   this->AddAssociation(vertex->GetType(), vertex);
   vertex->Delete();
-  vertex->SetPointId(PointId);
+  vertex->SetPointId(pointId);
   if(vertexId > this->GetLargestUsedUniqueId())
     {
     this->SetLargestUsedUniqueId(vertexId);
@@ -91,11 +91,11 @@ vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType PointId, vtkIdType 
   return vertex;
 }
 
-vtkModelEdge* vtkDiscreteModel::BuildModelEdge(vtkModelVertex* Vertex0,
+vtkModelEdge* vtkDiscreteModel::BuildModelEdge(vtkModelVertex* vertex0,
                                           vtkModelVertex* vertex1)
 {
   return this->BuildModelEdge(
-    Vertex0, vertex1, this->GetNextUniquePersistentId());
+    vertex0, vertex1, this->GetNextUniquePersistentId());
 }
 
 vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
@@ -149,18 +149,18 @@ vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
 }
 
 vtkModelFace* vtkDiscreteModel::BuildModelFace(
-  int NumEdges, vtkModelEdge** Edges, int* EdgeDirections, vtkModelMaterial* Material)
+  int numEdges, vtkModelEdge** edges, int* edgeDirections, vtkModelMaterial* material)
 {
-  vtkModelFace* Face = this->BuildModelFace(NumEdges, Edges, EdgeDirections);
-  Material->AddModelGeometricEntity(vtkDiscreteModelFace::SafeDownCast(Face));
-  return Face;
+  vtkModelFace* face = this->BuildModelFace(numEdges, edges, edgeDirections);
+  material->AddModelGeometricEntity(vtkDiscreteModelFace::SafeDownCast(face));
+  return face;
 }
 
-vtkModelFace* vtkDiscreteModel::BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                          int* EdgeDirections)
+vtkModelFace* vtkDiscreteModel::BuildModelFace(int numEdges, vtkModelEdge** edges,
+                                          int* edgeDirections)
 {
   return this->BuildModelFace(
-    NumEdges, Edges, EdgeDirections, this->GetNextUniquePersistentId());
+    numEdges, edges, edgeDirections, this->GetNextUniquePersistentId());
 }
 
 vtkModelFace* vtkDiscreteModel::BuildModelFace(int numEdges, vtkModelEdge** edges,
@@ -210,11 +210,10 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(vtkIdType modelRegionId)
   return region;
 }
 
-vtkModelRegion* vtkDiscreteModel::BuildModelRegion(int NumFaces,
-                                              vtkModelFace** Faces,
-                                              int* FaceSides)
+vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
+  int numFaces, vtkModelFace** faces, int* faceSides)
 {
-  return this->BuildModelRegion(NumFaces, Faces, FaceSides,
+  return this->BuildModelRegion(numFaces, faces, faceSides,
                                 this->GetNextUniquePersistentId());
 }
 
@@ -242,46 +241,46 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
 }
 
 vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
-  int NumFaces, vtkModelFace** Faces, int* FaceSides,
-  vtkModelMaterial* Material)
+  int numFaces, vtkModelFace** faces, int* faceSides,
+  vtkModelMaterial* material)
 {
   return this->BuildModelRegion(
-    NumFaces, Faces, FaceSides,
-    this->GetNextUniquePersistentId(), Material);
+    numFaces, faces, faceSides,
+    this->GetNextUniquePersistentId(), material);
 }
 
 vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
-  int NumFaces, vtkModelFace** Faces, int* FaceSides,
-  vtkIdType ModelRegionId, vtkModelMaterial* Material)
+  int numFaces, vtkModelFace** faces, int* faceSides,
+  vtkIdType modelRegionId, vtkModelMaterial* material)
 {
-  vtkDiscreteModelRegion* Region = vtkDiscreteModelRegion::SafeDownCast(
-    this->BuildModelRegion(NumFaces, Faces, FaceSides, ModelRegionId));
-  if(Material)
+  vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::SafeDownCast(
+    this->BuildModelRegion(numFaces, faces, faceSides, modelRegionId));
+  if(material)
     {
-    Material->AddModelGeometricEntity(Region);
+    material->AddModelGeometricEntity(region);
     }
-  return Region;
+  return region;
 }
 
-bool vtkDiscreteModel::DestroyModelGeometricEntity(vtkDiscreteModelGeometricEntity* GeomEntity)
+bool vtkDiscreteModel::DestroyModelGeometricEntity(vtkDiscreteModelGeometricEntity* geomEntity)
 {
-  vtkModelMaterial* Material = GeomEntity->GetMaterial();
-  if(Material)
+  vtkModelMaterial* material = geomEntity->GetMaterial();
+  if(material)
     {
     vtkModelGeometricEntity* vtkGeomEntity =
-      vtkModelGeometricEntity::SafeDownCast(GeomEntity->GetThisModelEntity());
-    Material->RemoveModelGeometricEntity(vtkGeomEntity);
+      vtkModelGeometricEntity::SafeDownCast(geomEntity->GetThisModelEntity());
+    material->RemoveModelGeometricEntity(vtkGeomEntity);
     }
-  vtkModelItemIterator* iter = GeomEntity->NewModelEntityGroupIterator();
-  while(GeomEntity->GetNumberOfModelEntityGroups())
+  vtkModelItemIterator* iter = geomEntity->NewModelEntityGroupIterator();
+  while(geomEntity->GetNumberOfModelEntityGroups())
     {
     iter->Begin();
-    vtkDiscreteModelEntityGroup::SafeDownCast(iter->GetCurrentItem())->RemoveModelEntity(GeomEntity);
+    vtkDiscreteModelEntityGroup::SafeDownCast(iter->GetCurrentItem())->RemoveModelEntity(geomEntity);
     }
   iter->Delete();
 
   vtkModelGeometricEntity* vtkGeomEntity =
-    vtkModelGeometricEntity::SafeDownCast(GeomEntity->GetThisModelEntity());
+    vtkModelGeometricEntity::SafeDownCast(geomEntity->GetThisModelEntity());
   this->Modified();
   return this->Superclass::DestroyModelGeometricEntity(vtkGeomEntity);
 }
@@ -298,36 +297,36 @@ vtkModelMaterial* vtkDiscreteModel::BuildMaterial()
 
 vtkModelMaterial* vtkDiscreteModel::BuildMaterial(vtkIdType id)
 {
-  vtkModelMaterial* Material = vtkModelMaterial::New();
-  Material->Initialize(id);
-  this->AddAssociation(Material->GetType(), Material);
+  vtkModelMaterial* material = vtkModelMaterial::New();
+  material->Initialize(id);
+  this->AddAssociation(material->GetType(), material);
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
-  Material->Delete();
+  material->Delete();
 
-  std::string DefaultEntityName;
+  std::string defaultEntityName;
   this->GetModelEntityDefaultName(vtkModelMaterialType, "DomainSet",
-                                  DefaultEntityName);
-  vtkModelUserName::SetUserName(Material, DefaultEntityName.c_str());
-  vtkIdType entityId = Material->GetUniquePersistentId();
+                                  defaultEntityName);
+  vtkModelUserName::SetUserName(material, defaultEntityName.c_str());
+  vtkIdType entityId = material->GetUniquePersistentId();
   this->InternalInvokeEvent(DomainSetCreated, &entityId);
 
-  return Material;
+  return material;
 }
 
-bool vtkDiscreteModel::DestroyMaterial(vtkModelMaterial* Material)
+bool vtkDiscreteModel::DestroyMaterial(vtkModelMaterial* material)
 {
-  if(!Material->IsDestroyable())
+  if(!material->IsDestroyable())
     {
     return false;
     }
-  vtkIdType entityId = Material->GetUniquePersistentId();
+  vtkIdType entityId = material->GetUniquePersistentId();
   this->InternalInvokeEvent(DomainSetAboutToDestroy, &entityId);
-  if(!Material->Destroy())
+  if(!material->Destroy())
     {
     vtkErrorMacro("Problem destroying material.");
     return false;
     }
-  this->RemoveAssociation(Material->GetType(), Material);
+  this->RemoveAssociation(material->GetType(), material);
   this->InternalInvokeEvent(DomainSetDestroyed, &entityId);
 
   this->Modified();
@@ -335,164 +334,164 @@ bool vtkDiscreteModel::DestroyMaterial(vtkModelMaterial* Material)
 }
 
 vtkDiscreteModelEntityGroup* vtkDiscreteModel::BuildModelEntityGroup(
-  int itemType, int NumEntities, vtkDiscreteModelEntity** Entities)
+  int itemType, int numEntities, vtkDiscreteModelEntity** entities)
 {
   return this->BuildModelEntityGroup(
-    itemType, NumEntities, Entities, this->GetNextUniquePersistentId());
+    itemType, numEntities, entities, this->GetNextUniquePersistentId());
 }
 
 vtkDiscreteModelEntityGroup* vtkDiscreteModel::BuildModelEntityGroup(
-  int itemType, int NumEntities, vtkDiscreteModelEntity** Entities,
+  int itemType, int numEntities, vtkDiscreteModelEntity** entities,
   vtkIdType id)
 {
-  vtkDiscreteModelEntityGroup* EntityGroup = vtkDiscreteModelEntityGroup::New();
-  EntityGroup->Initialize(id);
-  EntityGroup->SetEntityType(itemType);
-  for(int i=0;i<NumEntities;i++)
+  vtkDiscreteModelEntityGroup* entityGroup = vtkDiscreteModelEntityGroup::New();
+  entityGroup->Initialize(id);
+  entityGroup->SetEntityType(itemType);
+  for(int i=0;i<numEntities;i++)
     {
-    EntityGroup->AddModelEntity(Entities[i]);
+    entityGroup->AddModelEntity(entities[i]);
     }
-  this->AddAssociation(EntityGroup->GetType(), EntityGroup);
-  EntityGroup->Delete();
+  this->AddAssociation(entityGroup->GetType(), entityGroup);
+  entityGroup->Delete();
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
 
-  std::string DefaultEntityName;
+  std::string defaultEntityName;
   this->GetModelEntityDefaultName(vtkDiscreteModelEntityGroupType, "BCS Group",
-                                  DefaultEntityName);
-  vtkModelUserName::SetUserName(EntityGroup, DefaultEntityName.c_str());
-  vtkIdType entityId = EntityGroup->GetUniquePersistentId();
+                                  defaultEntityName);
+  vtkModelUserName::SetUserName(entityGroup, defaultEntityName.c_str());
+  vtkIdType entityId = entityGroup->GetUniquePersistentId();
   this->InternalInvokeEvent(ModelEntityGroupCreated, &entityId);
 
-  return EntityGroup;
+  return entityGroup;
 }
 
-bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* EntityGroup)
+bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* entityGroup)
 {
-  if(!EntityGroup->IsDestroyable())
+  if(!entityGroup->IsDestroyable())
     {
     return 0;
     }
-  vtkIdType entityId = EntityGroup->GetUniquePersistentId();
+  vtkIdType entityId = entityGroup->GetUniquePersistentId();
   this->InternalInvokeEvent(ModelEntityGroupAboutToDestroy, &entityId);
 
-  if(!EntityGroup->Destroy())
+  if(!entityGroup->Destroy())
     {
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(EntityGroup->GetType(), EntityGroup);
+  this->RemoveAssociation(entityGroup->GetType(), entityGroup);
   this->InternalInvokeEvent(ModelEntityGroupDestroyed, &entityId);
 
   this->Modified();
   return 1;
 }
 
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int Type, vtkIdList* PointIds)
+vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds)
 {
-  return this->BuildNodalGroup(Type, PointIds, this->GetNextUniquePersistentId());
+  return this->BuildNodalGroup(type, pointIds, this->GetNextUniquePersistentId());
 }
 
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int Type, vtkIdList* PointIds,
-                                               vtkIdType Id)
+vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds,
+                                               vtkIdType id)
 {
-  vtkModelNodalGroup* NodalGroup = 0;
-  if(Type == BASE_NODAL_GROUP)
+  vtkModelNodalGroup* nodalGroup = 0;
+  if(type == BASE_NODAL_GROUP)
     {
-    NodalGroup = vtkModelNodalGroup::New();
+    nodalGroup = vtkModelNodalGroup::New();
     }
-  else if(Type == UNIQUE_NODAL_GROUP)
+  else if(type == UNIQUE_NODAL_GROUP)
     {
-    NodalGroup = vtkModelUniqueNodalGroup::New();
+    nodalGroup = vtkModelUniqueNodalGroup::New();
     }
   else
     {
     vtkErrorMacro("Bad Type.");
     return 0;
     }
-  if(PointIds && PointIds->GetNumberOfIds())
+  if(pointIds && pointIds->GetNumberOfIds())
     {
-    NodalGroup->AddPointIds(PointIds);
+    nodalGroup->AddPointIds(pointIds);
     }
-  NodalGroup->Initialize(Id);
+  nodalGroup->Initialize(id);
 
-  this->AddAssociation(NodalGroup->GetType(), NodalGroup);
-  NodalGroup->Delete();
+  this->AddAssociation(nodalGroup->GetType(), nodalGroup);
+  nodalGroup->Delete();
 
-  std::string DefaultEntityName;
+  std::string defaultEntityName;
   this->GetModelEntityDefaultName(vtkModelNodalGroupType, "Nodal Group",
-                                  DefaultEntityName);
-  vtkModelUserName::SetUserName(NodalGroup, DefaultEntityName.c_str());
-  vtkIdType entityId = NodalGroup->GetUniquePersistentId();
+                                  defaultEntityName);
+  vtkModelUserName::SetUserName(nodalGroup, defaultEntityName.c_str());
+  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
   this->InternalInvokeEvent(NodalGroupCreated, &entityId);
 
-  return NodalGroup;
+  return nodalGroup;
 }
 
-bool vtkDiscreteModel::DestroyNodalGroup(vtkModelNodalGroup* NodalGroup)
+bool vtkDiscreteModel::DestroyNodalGroup(vtkModelNodalGroup* nodalGroup)
 {
-  if(!NodalGroup->IsDestroyable())
+  if(!nodalGroup->IsDestroyable())
     {
     return 0;
     }
-  vtkIdType entityId = NodalGroup->GetUniquePersistentId();
+  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
   this->InternalInvokeEvent(NodalGroupAboutToDestroy, &entityId);
-  if(!NodalGroup->Destroy())
+  if(!nodalGroup->Destroy())
     {
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(NodalGroup->GetType(), NodalGroup);
+  this->RemoveAssociation(nodalGroup->GetType(), nodalGroup);
   this->InternalInvokeEvent(NodalGroupDestroyed, &entityId);
 
   this->Modified();
   return 1;
 }
 
-bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* ModelEdge)
+bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
 {
-  if(!ModelEdge->IsDestroyable())
+  if(!modelEdge->IsDestroyable())
     {
     return 0;
     }
   this->Modified();
-  if(!ModelEdge->Destroy())
+  if(!modelEdge->Destroy())
     {
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(ModelEdge->GetType(), ModelEdge);
+  this->RemoveAssociation(modelEdge->GetType(), modelEdge);
 
   return 1;
 }
 
 vtkDiscreteModelGeometricEntity* vtkDiscreteModel::GetCellModelGeometricEntity(
-  vtkIdType CellId)
+  vtkIdType cellId)
 {
-  size_t size = CellId;
-  if(CellId < 0 || size >= this->CellClassification.size())
+  size_t size = static_cast<size_t>(cellId);
+  if(cellId < 0 || size >= this->CellClassification.size())
     {
     vtkWarningMacro("Bad CellId.");
     return 0;
     }
-  return this->CellClassification[CellId];
+  return this->CellClassification[cellId];
 }
 
-void vtkDiscreteModel::SetGeometry(vtkObject* Geometry)
+void vtkDiscreteModel::SetGeometry(vtkObject* geometry)
 {
   // may want to make a deep copy of geometry
   // for now assume that we don't need to
-  this->GetProperties()->Set(GEOMETRY(), Geometry);
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(Geometry);
+  this->GetProperties()->Set(GEOMETRY(), geometry);
+  vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
   if(poly)
     {
     poly->GetBounds(this->ModelBounds);
     // we're on the server so set the vector sizes for classification
-    vtkIdType NumCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* GeomEnt = 0;
-    this->CellClassification.resize(NumCells, GeomEnt);
-    this->ClassifiedCellIndex.resize(NumCells, -1);
-    vtkModelUniqueNodalGroup* NodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), NodalGroup);
+    vtkIdType numCells = poly->GetNumberOfCells();
+    vtkDiscreteModelGeometricEntity* geomEnt = 0;
+    this->CellClassification.resize(numCells, geomEnt);
+    this->ClassifiedCellIndex.resize(numCells, -1);
+    vtkModelUniqueNodalGroup* nodalGroup = 0;
+    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
     }
   this->Modified();
 }
@@ -504,47 +503,47 @@ void vtkDiscreteModel::UpdateGeometry()
     {
     poly->GetBounds(this->ModelBounds);
     // we're on the server so set the vector sizes for classification
-    vtkIdType NumCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* GeomEnt = 0;
-    this->CellClassification.resize(NumCells, GeomEnt);
-    this->ClassifiedCellIndex.resize(NumCells, -1);
-    vtkModelUniqueNodalGroup* NodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), NodalGroup);
+    vtkIdType numCells = poly->GetNumberOfCells();
+    vtkDiscreteModelGeometricEntity* geomEnt = 0;
+    this->CellClassification.resize(numCells, geomEnt);
+    this->ClassifiedCellIndex.resize(numCells, -1);
+    vtkModelUniqueNodalGroup* nodalGroup = 0;
+    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
     }
   this->Modified();
 }
 
-void vtkDiscreteModel::GetModelEntityDefaultName(int EntityType, const char* BaseName,
-                                            std::string & DefaultEntityName)
+void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* baseName,
+                                            std::string & defaultEntityName)
 {
   // Default names are BaseName + LocalEntityNumber (e.g. "Material 8").
-  int LargestDefaultNameNumber = 0;
-  vtkModelItemIterator* Iter = this->NewIterator(EntityType);
-  for(Iter->Begin();!Iter->IsAtEnd();Iter->Next())
+  int largestDefaultNameNumber = 0;
+  vtkModelItemIterator* iter = this->NewIterator(entityType);
+  for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
-    int BaseNameLength = strlen(BaseName);
-    vtkModelEntity* Entity = vtkModelEntity::SafeDownCast(
-      Iter->GetCurrentItem());
-    if(!Entity || vtkModelUserName::GetUserName(Entity) == 0)
+    int baseNameLength = strlen(baseName);
+    vtkModelEntity* entity = vtkModelEntity::SafeDownCast(
+      iter->GetCurrentItem());
+    if(!entity || vtkModelUserName::GetUserName(entity) == 0)
       {
       continue;
       }
-    const char* UserName = vtkModelUserName::GetUserName(Entity);
-    if(!strncmp(BaseName, UserName, BaseNameLength))
+    const char* userName = vtkModelUserName::GetUserName(entity);
+    if(!strncmp(baseName, userName, baseNameLength))
       {
-      int Number = atoi(UserName+BaseNameLength);
-      if(Number > LargestDefaultNameNumber)
+      int number = atoi(userName+baseNameLength);
+      if(number > largestDefaultNameNumber)
         {
-        LargestDefaultNameNumber = Number;
+        largestDefaultNameNumber = number;
         }
 
       }
     }
-  char Name[200];
-  sprintf(Name, "%s%d", BaseName, LargestDefaultNameNumber+1);
-  DefaultEntityName = Name;
+  char name[200];
+  sprintf(name, "%s%d", baseName, largestDefaultNameNumber+1);
+  defaultEntityName = name;
 
-  Iter->Delete();
+  iter->Delete();
 }
 
 vtkObject* vtkDiscreteModel::GetGeometry()
@@ -569,25 +568,25 @@ const char* vtkDiscreteModel::GetCanonicalSideArrayName()
   return "ModelCanonicalSideArray";
 }
 
-vtkIdType vtkDiscreteModel::GetCellModelGeometricEntityIndex(vtkIdType CellId)
+vtkIdType vtkDiscreteModel::GetCellModelGeometricEntityIndex(vtkIdType cellId)
 {
-  size_t size = CellId;
-  if(CellId < 0 || size >= this->ClassifiedCellIndex.size())
+  size_t size = static_cast<size_t>(cellId);
+  if(cellId < 0 || size >= this->ClassifiedCellIndex.size())
     {
-    vtkWarningMacro("Bad CellId.");
+    vtkWarningMacro("Bad cell id.");
     return 0;
     }
-  return this->ClassifiedCellIndex[CellId];
+  return this->ClassifiedCellIndex[cellId];
 }
 
 void vtkDiscreteModel::SetCellClassification(
-  vtkIdType MasterCellId, vtkIdType GeomEntityCellId, vtkDiscreteModelGeometricEntity* Entity)
+  vtkIdType masterCellId, vtkIdType geomEntityCellId, vtkDiscreteModelGeometricEntity* entity)
 {
-  vtkIdType NumCells = this->ClassifiedCellIndex.size();
-  if(MasterCellId >= 0 && MasterCellId < NumCells)
+  size_t numCells = this->ClassifiedCellIndex.size();
+  if(masterCellId >= 0 && static_cast<size_t>(masterCellId) < numCells)
     {
-    this->ClassifiedCellIndex[MasterCellId] = GeomEntityCellId;
-    this->CellClassification[MasterCellId] = Entity;
+    this->ClassifiedCellIndex[masterCellId] = geomEntityCellId;
+    this->CellClassification[masterCellId] = entity;
     }
   else
     {
@@ -596,78 +595,78 @@ void vtkDiscreteModel::SetCellClassification(
 }
 
 void vtkDiscreteModel::SetPointUniqueNodalGroup(
-  vtkModelUniqueNodalGroup* NodalGroup, vtkIdType PointId)
+  vtkModelUniqueNodalGroup* nodalGroup, vtkIdType pointId)
 {
-  vtkIdType NumPoints = this->UniquePointGroup.size();
-  if(PointId < 0 || PointId >= NumPoints)
+  size_t numPoints = this->UniquePointGroup.size();
+  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
     {
     vtkErrorMacro("Bad master point id value.");
     }
   else
     {
-    if(this->UniquePointGroup[PointId] &&
-       this->UniquePointGroup[PointId] != NodalGroup)
+    if(this->UniquePointGroup[pointId] &&
+       this->UniquePointGroup[pointId] != nodalGroup)
       {
-      this->UniquePointGroup[PointId]->vtkModelUniqueNodalGroup::Superclass::RemovePointId(PointId);
+      this->UniquePointGroup[pointId]->vtkModelUniqueNodalGroup::Superclass::RemovePointId(pointId);
       }
-    this->UniquePointGroup[PointId] = NodalGroup;
+    this->UniquePointGroup[pointId] = nodalGroup;
     }
 }
 
-vtkModelUniqueNodalGroup* vtkDiscreteModel::GetPointUniqueNodalGroup(vtkIdType PointId)
+vtkModelUniqueNodalGroup* vtkDiscreteModel::GetPointUniqueNodalGroup(vtkIdType pointId)
 {
-  vtkIdType NumPoints = this->UniquePointGroup.size();
-  if(PointId < 0 || PointId >= NumPoints)
+  size_t numPoints = this->UniquePointGroup.size();
+  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
     {
     vtkErrorMacro("Bad master point id value.");
     return 0;
     }
-  return this->UniquePointGroup[PointId];
+  return this->UniquePointGroup[pointId];
 }
 
 void vtkDiscreteModel::Reset()
 {
  // Destroy entity groups
   // model entity groups
-  vtkModelItemIterator* EntityGroupIter = this->NewIterator(vtkDiscreteModelEntityGroupType);
-  for(EntityGroupIter->Begin();!EntityGroupIter->IsAtEnd();EntityGroupIter->Next())
+  vtkModelItemIterator* entityGroupIter = this->NewIterator(vtkDiscreteModelEntityGroupType);
+  for(entityGroupIter->Begin();!entityGroupIter->IsAtEnd();entityGroupIter->Next())
     {
     bool destroyed =
-      vtkDiscreteModelEntityGroup::SafeDownCast(EntityGroupIter->GetCurrentItem())->Destroy();
+      vtkDiscreteModelEntityGroup::SafeDownCast(entityGroupIter->GetCurrentItem())->Destroy();
     if(!destroyed)
       {
       vtkErrorMacro("Problem destroying an entity group.");
       }
     }
-  EntityGroupIter->Delete();
+  entityGroupIter->Delete();
   this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
   // nodal groups
-  vtkModelItemIterator* NodalGroupIter = this->NewIterator(vtkModelNodalGroupType);
-  for(NodalGroupIter->Begin();!NodalGroupIter->IsAtEnd();NodalGroupIter->Next())
+  vtkModelItemIterator* nodalGroupIter = this->NewIterator(vtkModelNodalGroupType);
+  for(nodalGroupIter->Begin();!nodalGroupIter->IsAtEnd();nodalGroupIter->Next())
     {
     bool destroyed =
-      vtkModelNodalGroup::SafeDownCast(NodalGroupIter->GetCurrentItem())->Destroy();
+      vtkModelNodalGroup::SafeDownCast(nodalGroupIter->GetCurrentItem())->Destroy();
     if(!destroyed)
       {
       vtkErrorMacro("Problem destroying a nodal group.");
       }
     }
-  NodalGroupIter->Delete();
+  nodalGroupIter->Delete();
   this->RemoveAllAssociations(vtkModelNodalGroupType);
   this->UniquePointGroup.clear();
 
   // Destroy materials
-  vtkModelItemIterator* MaterialIter = this->NewIterator(vtkModelMaterialType);
-  for(MaterialIter->Begin();!MaterialIter->IsAtEnd();MaterialIter->Next())
+  vtkModelItemIterator* materialIter = this->NewIterator(vtkModelMaterialType);
+  for(materialIter->Begin();!materialIter->IsAtEnd();materialIter->Next())
     {
     bool destroyed =
-      vtkModelMaterial::SafeDownCast(MaterialIter->GetCurrentItem())->Destroy();
+      vtkModelMaterial::SafeDownCast(materialIter->GetCurrentItem())->Destroy();
     if(!destroyed)
       {
       vtkErrorMacro("Problem destroying a material.");
       }
     }
-  MaterialIter->Delete();
+  materialIter->Delete();
   this->RemoveAllAssociations(vtkModelMaterialType);
 
   this->Superclass::Reset();

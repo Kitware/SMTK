@@ -49,7 +49,7 @@ public:
   // Description:
   // The point id of the model vertex defined on the master polydata.
   // This will not create geometry automatically anymore.
-  void SetPointId(vtkIdType Id);
+  void SetPointId(vtkIdType id);
   vtkIdType GetPointId();
 
   static vtkInformationIdTypeKey* POINTID();

@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkDiscreteModelEntityGroup - An object to store a group of model entities.
 // .SECTION Description
-// An object that stores a group of model entities of the same EntityType.  
-// This class stores an association to those types as well as those 
+// An object that stores a group of model entities of the same EntityType.
+// This class stores an association to those types as well as those
 // types storing an association to this.  Note that a vtkModelEntity can
 // belong to multiple vtkDiscreteModelEntityGroups (including none at all).
 
@@ -45,7 +45,7 @@ public:
 
   void AddModelEntity(vtkDiscreteModelEntity*);
   bool RemoveModelEntity(vtkDiscreteModelEntity*);
-  
+
   // Description:
   // Returns the number of model entities of type this->EntityType
   // that is grouped by this object.
@@ -55,7 +55,7 @@ public:
   // Returns an iterator over entities of type this->EntityType
   // that is grouped by this object.
   vtkModelItemIterator* NewModelEntityIterator();
-  
+
   virtual int GetType();
 
   vtkSetMacro(EntityType, int);

@@ -15,13 +15,13 @@
 // .NAME vtkXMLModelReader - Reads an XML archive from input stream
 // .SECTION Description
 // This concrete sub-class of vtkSerializer reads an XML archive from
-// an input stream and create a collection of sub-classes of 
+// an input stream and create a collection of sub-classes of
 // vtkSerializableObject. For example:
 // \code
 //  std::vector<vtkSmartPointer<vtkSerializableObject> > objs;
 //  ifstream ifs(filename);
-//  
-//  vtkSmartPointer<vtkXMLModelReader> reader = 
+//
+//  vtkSmartPointer<vtkXMLModelReader> reader =
 //    vtkSmartPointer<vtkXMLModelReader>::New();
 //  reader->Serialize(istr, "ConceptualModel", objs);
 // .. Do something with objs
@@ -83,7 +83,7 @@ public:
   // Description:
   // Serializes a single unsigned long.
   virtual void Serialize(const char* name, unsigned long& val) ;
-  
+
  // Description:
   // Serializes an array.
   virtual void Serialize(const char* name, unsigned long*& val, unsigned int& length);
@@ -103,7 +103,7 @@ public:
   // Description:
   // Reads a single double.
   virtual void Serialize(const char* name, double& val);
-  
+
   // Description:
   // Reads an array.
   virtual void Serialize(const char* name, double*& val, unsigned int& length);
@@ -143,13 +143,13 @@ public:
   // Description:
   // Serializes a vector of vtkSerializableObjects.
   virtual void Serialize(
-    const char* name, 
+    const char* name,
     std::vector<vtkSmartPointer<vtkObject> >& objs, bool weakPtr = false);
 
   // Description:
   // Serializes a map from int to vector of vtkSerializableObject.
   virtual void Serialize(
-    const char* name, 
+    const char* name,
     std::map<int, std::vector<vtkSmartPointer<vtkObject> > >& objs);
 //ETX
 
@@ -160,7 +160,7 @@ public:
   // Description:
   // Get all XML elements that have a "type" attribute matching type.  The
   // elements collection will be appended with any matching objects.
-  void GetElementsByType(vtkXMLElement* element, const char* type, 
+  void GetElementsByType(vtkXMLElement* element, const char* type,
                                 vtkCollection* elements);
 
 protected:
@@ -170,7 +170,7 @@ protected:
 //BTX
   // Description:
   // Gets the associations.
-  void GetAssociations(vtkXMLElement* elem, 
+  void GetAssociations(vtkXMLElement* elem,
                        std::map<int, std::vector<vtkIdType> >& objs);
 
   // Description:
@@ -198,7 +198,7 @@ private:
   int ParseStream(istream& str);
   vtkObject* ReadObject(vtkIdType id, bool weakPtr);
   void SetRootElement(vtkXMLElement* re);
-  
+
   vtkXMLElement* RootElement;
   vtkXMLElement* CurrentElement;
   vtkDiscreteModel* Model;

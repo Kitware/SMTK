@@ -42,9 +42,9 @@ public:
 
   // Description:
   // Add/remove point Ids to/from the set.
-  virtual void AddPointId(vtkIdType PointId);
-  virtual void RemovePointId(vtkIdType PointId);
-  
+  virtual void AddPointId(vtkIdType pointId);
+  virtual void RemovePointId(vtkIdType pointId);
+
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
@@ -64,7 +64,7 @@ protected:
 //ETX
 
   virtual bool Destroy();
-  
+
 private:
   vtkModelUniqueNodalGroup(const vtkModelUniqueNodalGroup&);  // Not implemented.
   void operator=(const vtkModelUniqueNodalGroup&);  // Not implemented.

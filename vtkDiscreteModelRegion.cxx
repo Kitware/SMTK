@@ -40,11 +40,11 @@ vtkInformationKeyMacro(vtkDiscreteModelRegion, SOLIDFILENAME, String);
 
 vtkDiscreteModelRegion* vtkDiscreteModelRegion::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelRegion"); 
-  if(ret) 
-    {                                    
-    return static_cast<vtkDiscreteModelRegion*>(ret); 
-    } 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkDiscreteModelRegion");
+  if(ret)
+    {
+    return static_cast<vtkDiscreteModelRegion*>(ret);
+    }
   return new vtkDiscreteModelRegion;
 }
 
@@ -68,9 +68,9 @@ bool vtkDiscreteModelRegion::Destroy()
   return 1;
 }
 
-void vtkDiscreteModelRegion::SetPointInside(double* Point)
+void vtkDiscreteModelRegion::SetPointInside(double* point)
 {
-  this->GetProperties()->Set(POINTINSIDE(),Point,3);
+  this->GetProperties()->Set(POINTINSIDE(),point,3);
   this->Modified();
 }
 

@@ -60,6 +60,7 @@ vtkStandardNewMacro(vtkDiscreteModelWrapper);
 vtkCxxSetObjectMacro(vtkDiscreteModelWrapper, SerializedModel, vtkStringArray);
 vtkInformationKeyMacro(vtkDiscreteModelWrapper, NAME, String);
 
+//----------------------------------------------------------------------------
 vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
 {
   this->ModelCBC = vtkCallbackCommand::New();
@@ -74,6 +75,7 @@ vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
   this->SerializedModel = 0;
 }
 
+//----------------------------------------------------------------------------
 vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
 {
   if(this->Model)
@@ -87,6 +89,7 @@ vtkDiscreteModelWrapper::~vtkDiscreteModelWrapper()
  this->SetSerializedModel(0);
 }
 
+//----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::ResetModel()
 {
   if(this->Model)
@@ -98,30 +101,27 @@ void vtkDiscreteModelWrapper::ResetModel()
 //----------------------------------------------------------------------------
 void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 {
-  vtkDiscreteModel* Model = this->GetModel();
-  vtkPolyData* MasterPoly = vtkPolyData::SafeDownCast(
-    Model->GetGeometry());
-  if(!MasterPoly)
+  vtkDiscreteModel* model = this->GetModel();
+  vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(
+    model->GetGeometry());
+  if(!masterPoly)
     {
     vtkErrorMacro("The discrete model does not have a valid master polydata.");
     return;
     }
-  MasterPoly->SetPoints(points);
+  masterPoly->SetPoints(points);
 
-  unsigned int curr_idx;
-  vtkModelGeometricEntity* geomEntity;
-  vtkPolyData* entityPoly;
   vtkCompositeDataIterator* iter = this->NewIterator();
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
     {
-    curr_idx = iter->GetCurrentFlatIndex();
-    geomEntity = vtkModelGeometricEntity::SafeDownCast(
+    unsigned int curr_idx = iter->GetCurrentFlatIndex();
+    vtkModelGeometricEntity* geomEntity = vtkModelGeometricEntity::SafeDownCast(
       this->GetEntityObjectByFlatIndex(curr_idx));
     if(!geomEntity)
       {
       continue;
       }
-    entityPoly = vtkPolyData::SafeDownCast(geomEntity->GetGeometry());
+    vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(geomEntity->GetGeometry());
     if(entityPoly)
       {
       entityPoly->SetPoints(points);
@@ -149,11 +149,6 @@ void vtkDiscreteModelWrapper::SetModel(vtkDiscreteModel *model)
     //this->Model->UnRegister(this);
     this->Model = NULL;
     }
-
-  //if ( model )
-  //  {
-  //  model->Register(this);
-  //  }
 
   this->Model = model;
 
@@ -211,16 +206,16 @@ const char* vtkDiscreteModelWrapper::GetAnalysisGridFileName()
 
 //----------------------------------------------------------------------------
 vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
-  vtkIdType UniquePersistentId)
+  vtkIdType uniquePersistentId)
 {
-  return this->Model->GetModelEntity(UniquePersistentId);
+  return this->Model->GetModelEntity(uniquePersistentId);
 }
 
 //----------------------------------------------------------------------------
 vtkModelEntity* vtkDiscreteModelWrapper::GetModelEntity(
-  int itemType, vtkIdType UniquePersistentId)
+  int itemType, vtkIdType uniquePersistentId)
 {
-  return this->Model->GetModelEntity(itemType, UniquePersistentId);
+  return this->Model->GetModelEntity(itemType, uniquePersistentId);
 }
 
 //----------------------------------------------------------------------------
@@ -232,7 +227,7 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
     vtkWarningMacro("No model to serialize.");
     return 0;
     }
-  vtkSmartPointer<vtkXMLModelWriter> serializer = 
+  vtkSmartPointer<vtkXMLModelWriter> serializer =
     vtkSmartPointer<vtkXMLModelWriter>::New();
   vtksys_ios::ostringstream ostr;
   // Set to version to 1 (default is 0)
@@ -259,9 +254,9 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
 
 //----------------------------------------------------------------------------
 int vtkDiscreteModelWrapper::RebuildModel(const char* data,
-  std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & FaceToIds,
-  std::map<vtkIdType, vtkIdType> & VertexToIds,
-  std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &EntityToProperties)
+  std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
+  std::map<vtkIdType, vtkIdType> & vertexToIds,
+  std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &entityToProperties)
 {
   vtkDebugMacro("Serializing the model on the server.");
   if(!this->Model || !data || !(*data))
@@ -289,7 +284,7 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
 
   // Create an input stream to read the XML back
   vtksys_ios::istringstream istr(data);
-  vtkSmartPointer<vtkXMLModelReader> reader = 
+  vtkSmartPointer<vtkXMLModelReader> reader =
     vtkSmartPointer<vtkXMLModelReader>::New();
 
   reader->SetModel(this->Model);
@@ -304,8 +299,8 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   this->SerializedModel->SetValue(0, vtkStdString(istr.str().c_str()));
 
   // Now rebuild the model face geometry
-  vtkPolyData* MasterPoly = vtkPolyData::SafeDownCast(this->Model->GetGeometry());
-  if(MasterPoly == 0)
+  vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(this->Model->GetGeometry());
+  if(masterPoly == 0)
     {
     // There is no master poly on the server yet
     vtkErrorMacro("There is no new master poly on the server.");
@@ -316,8 +311,8 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     vtkModelRegionType) > 0 ? false : true;
   int enumEnType = dim2D ? vtkModelEdgeType : vtkModelFaceType;
   vtkDiscreteModelGeometricEntity* modelEntity = NULL;
-  std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it;  
-  for(it=FaceToIds.begin(); it!=FaceToIds.end(); it++)
+  std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it;
+  for(it=faceToIds.begin(); it!=faceToIds.end(); it++)
     {
     vtkModelEntity* tmpEntity = this->Model->GetModelEntity(enumEnType, it->first);
     if(dim2D)
@@ -329,17 +324,17 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
       modelEntity = vtkDiscreteModelFace::SafeDownCast(tmpEntity);
       }
     modelEntity->AddCellsToGeometry(it->second);
-    if(EntityToProperties.find(it->first) != EntityToProperties.end())
+    if(entityToProperties.find(it->first) != entityToProperties.end())
       {
       vtkModelGeometricEntity::SafeDownCast(modelEntity->GetThisModelEntity())
-        ->SetDisplayProperty(EntityToProperties[it->first]);
+        ->SetDisplayProperty(entityToProperties[it->first]);
       }
     }
 
-  if(enumEnType == vtkModelEdgeType && VertexToIds.size()>0)
+  if(enumEnType == vtkModelEdgeType && vertexToIds.size()>0)
     {
-    std::map<vtkIdType, vtkIdType >::iterator it;  
-    for(it=VertexToIds.begin(); it!=VertexToIds.end(); it++)
+    std::map<vtkIdType, vtkIdType >::iterator it;
+    for(it=vertexToIds.begin(); it!=vertexToIds.end(); it++)
       {
       vtkModelEntity* entity = this->Model->GetModelEntity(vtkModelVertexType, it->first);
       vtkDiscreteModelVertex* vtxEntity = vtkDiscreteModelVertex::SafeDownCast(entity);
@@ -354,24 +349,24 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
 
 //----------------------------------------------------------------------------
 bool vtkDiscreteModelWrapper::GetEntityIdByChildIndex(
-  unsigned int index, vtkIdType& EntityId)
+  unsigned int index, vtkIdType& entityId)
 {
   if (this->HasChildMetaData(index))
     {
     vtkInformation* childInfo = this->GetChildMetaData(index);
     vtkIdType entId = static_cast<vtkIdType>(
       childInfo->Get(vtkModelEntity::UNIQUEPERSISTENTID()));
-    EntityId = entId;
+    entityId = entId;
     return true;
     }
   return false;
 }
 //----------------------------------------------------------------------------
 vtkProperty* vtkDiscreteModelWrapper::GetEntityPropertyByEntityId(
-  vtkIdType EntityId)
+  vtkIdType entityId)
 {
   unsigned int cur_index;
-  if(this->GetChildIndexByEntityId(EntityId, cur_index))
+  if(this->GetChildIndexByEntityId(entityId, cur_index))
     {
     return this->GetEntityPropertyByChildIndex(cur_index);
     }

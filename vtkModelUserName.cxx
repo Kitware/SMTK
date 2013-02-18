@@ -30,18 +30,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 
 vtkStandardNewMacro(vtkModelUserName);
-vtkInformationKeyMacro(vtkModelUserName, USERNAME, String); 
+vtkInformationKeyMacro(vtkModelUserName, USERNAME, String);
 
 //----------------------------------------------------------------------------
-void vtkModelUserName::SetUserName(vtkModelEntity* Entity, const char* UserName)
+void vtkModelUserName::SetUserName(vtkModelEntity* entity, const char* userName)
 {
-  Entity->GetAttributes()->Set(vtkModelUserName::USERNAME(), UserName);
+  entity->GetAttributes()->Set(vtkModelUserName::USERNAME(), userName);
 }
 
 //----------------------------------------------------------------------------
-const char* vtkModelUserName::GetUserName(vtkModelEntity* Entity)
+const char* vtkModelUserName::GetUserName(vtkModelEntity* entity)
 {
-  return Entity->GetAttributes()->Get(vtkModelUserName::USERNAME());
+  return entity->GetAttributes()->Get(vtkModelUserName::USERNAME());
 }
 
 //----------------------------------------------------------------------------

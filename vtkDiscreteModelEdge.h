@@ -45,29 +45,29 @@ public:
   vtkTypeMacro(vtkDiscreteModelEdge,vtkModelEdge);
   static vtkDiscreteModelEdge* New();
   void PrintSelf(ostream& os, vtkIndent indent);
-  
+
   // Description:
-  // Add the association to a region.  This is intended for 
+  // Add the association to a region.  This is intended for
   // "floating" edges used to model things like wells that are
   // not adjacent to a model face.
   void AddRegionAssociation(vtkIdType regionId);
-  
+
   // Description:
   // Return the vtkModelRegion that contains this floating edge.
-  // This is intended for "floating" edges used to model things 
+  // This is intended for "floating" edges used to model things
   // like wells that are not adjacent to a model face.
   vtkModelRegion* GetModelRegion();
 
   // Description:
   // Get/Set the line resolution of the edge.
   static vtkInformationIntegerKey* LINERESOLUTION();
-  void SetLineResolution(int Resolution);
+  void SetLineResolution(int resolution);
   int GetLineResolution();
 
   // Function for settting/getting the information object
   // used to store the geometric representation of the edge with points
   static vtkInformationObjectBaseKey* LINEADNPOINTSGEOMETRY();
-  void SetLineAndPointsGeometry(vtkObject* Geometry);
+  void SetLineAndPointsGeometry(vtkObject* geometry);
   vtkObject* GetLineAndPointsGeometry();
 
   // Description:
@@ -102,13 +102,13 @@ protected:
   virtual bool Destroy();
 
   virtual vtkModelEntity* GetThisModelEntity();
-  
+
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
-  
+
   // Description:
   // This function is intended for use with floating model edges.
   // Construct the vtkPolyData representation from the two end points
@@ -118,9 +118,9 @@ protected:
 
   friend class vtkEdgeSplitOperatorClient;
   // Description:
-  // Function to split a model edge if it is a loop (i.e. has 
+  // Function to split a model edge if it is a loop (i.e. has
   // no beginning or end point)
-  bool SplitModelEdgeLoop(vtkIdType PointId);
+  bool SplitModelEdgeLoop(vtkIdType pointId);
 
 private:
   vtkDiscreteModelEdge(const vtkDiscreteModelEdge&);  // Not implemented.
@@ -129,7 +129,7 @@ private:
   friend class vtkDiscreteModel;
   friend class vtkCmbMapToCmbModel;
 //ETX
-  
+
 };
 
 #endif
