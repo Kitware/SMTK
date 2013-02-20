@@ -481,7 +481,7 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(
 
   std::vector<vtkModelGeometricEntity* >::iterator it;
   unsigned int i=0;
-  for(it = entities.begin(); it != entities.end(), i<numEnt; ++it)
+  for(it = entities.begin(); it != entities.end() && i<numEnt; ++it)
     {
     vtkPolyData* Geometry = vtkPolyData::SafeDownCast(
       (*it)->GetGeometry());
