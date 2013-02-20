@@ -28,16 +28,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelLoopUse_h
 #define __vtkModelLoopUse_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkModelEdgeUse;
 class vtkModelFace;
 class vtkModelItemIterator;
 
-class VTK_EXPORT vtkModelLoopUse : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelLoopUse : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelLoopUse,vtkModelEntity);
+  vtkTypeMacro(vtkModelLoopUse,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual int GetType();

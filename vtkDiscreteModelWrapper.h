@@ -40,7 +40,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelWrapper_h
 #define __vtkDiscreteModelWrapper_h
 
-#include "vtkCompositeDataSet.h"
+#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkDataObjectTree.h"
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
 #include <map>
@@ -58,10 +59,10 @@ class vtkAlgorithmOutput;
 class vtkProperty;
 class vtkPoints;
 
-class VTK_EXPORT vtkDiscreteModelWrapper : public vtkCompositeDataSet
+class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelWrapper : public vtkDataObjectTree
 {
 public:
-  vtkTypeMacro(vtkDiscreteModelWrapper, vtkCompositeDataSet);
+  vtkTypeMacro(vtkDiscreteModelWrapper, vtkDataObjectTree);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkDiscreteModelWrapper* New();
 

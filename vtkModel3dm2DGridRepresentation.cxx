@@ -36,7 +36,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSmartPointer.h>
 
 vtkStandardNewMacro(vtkModel3dm2DGridRepresentation);
-vtkCxxRevisionMacro(vtkModel3dm2DGridRepresentation, "");
 
 //----------------------------------------------------------------------------
 vtkModel3dm2DGridRepresentation::vtkModel3dm2DGridRepresentation()

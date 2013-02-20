@@ -53,7 +53,6 @@
 #include <vtksys/SystemTools.hxx>
 
 
-vtkCxxRevisionMacro(vtkXMLModelReader, "$Revision: 2586 $");
 vtkStandardNewMacro(vtkXMLModelReader);
 
 vtkCxxSetObjectMacro(vtkXMLModelReader, RootElement, vtkXMLElement);

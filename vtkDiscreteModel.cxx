@@ -52,7 +52,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <algorithm>
 
-vtkCxxRevisionMacro(vtkDiscreteModel, "$Revision: 2586 $");
 vtkCxxSetObjectMacro(vtkDiscreteModel, AnalysisGridInfo, vtkModelGridRepresentation);
 vtkStandardNewMacro(vtkDiscreteModel);
 vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);

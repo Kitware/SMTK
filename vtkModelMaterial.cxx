@@ -32,7 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkObjectFactory.h"
 #include "vtkSerializer.h"
 
-vtkCxxRevisionMacro(vtkModelMaterial, "");
 vtkInformationKeyRestrictedMacro(vtkModelMaterial, WAREHOUSEID, DoubleVector, 2);
 
 vtkModelMaterial* vtkModelMaterial::New()

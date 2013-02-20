@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelEdge_h
 #define __vtkDiscreteModelEdge_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelEdge.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 
@@ -37,11 +38,11 @@ class vtkModelVertex;
 class vtkModelRegion;
 class vtkIdList;
 
-class VTK_EXPORT vtkDiscreteModelEdge : public vtkModelEdge,
+class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelEdge : public vtkModelEdge,
   public vtkDiscreteModelGeometricEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkDiscreteModelEdge,vtkModelEdge);
+  vtkTypeMacro(vtkDiscreteModelEdge,vtkModelEdge);
   static vtkDiscreteModelEdge* New();
   void PrintSelf(ostream& os, vtkIndent indent);
 

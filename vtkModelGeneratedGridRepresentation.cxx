@@ -23,7 +23,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkModelGeneratedGridRepresentation.h"
 
-vtkCxxRevisionMacro(vtkModelGeneratedGridRepresentation, "");
 
 //----------------------------------------------------------------------------
 vtkModelGeneratedGridRepresentation::vtkModelGeneratedGridRepresentation()

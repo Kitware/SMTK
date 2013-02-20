@@ -53,7 +53,6 @@ struct vtkModelNodalGroupInternals
   EntitySet Entities;
 };
 
-vtkCxxRevisionMacro(vtkModelNodalGroup, "");
 
 vtkModelNodalGroup* vtkModelNodalGroup::New()
 {

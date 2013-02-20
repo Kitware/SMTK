@@ -37,7 +37,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkOpenGLProperty.h"
 #include "vtkSerializer.h"
 
-vtkCxxRevisionMacro(vtkModelEntity, "$Revision: 2466 $");
 
 vtkInformationKeyRestrictedMacro(vtkModelEntity, COLOR, DoubleVector, 4);
 vtkInformationKeyMacro(vtkModelEntity, VISIBILITY, Integer);

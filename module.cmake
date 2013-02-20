@@ -1,0 +1,11 @@
+vtk_module(vtkDiscreteModel
+  GROUPS
+   CmbCore
+  DEPENDS
+   vtkCommonDataModel
+   vtkRenderingOpenGL
+   vtkRenderingFreeTypeOpenGL
+   vtkInteractionStyle
+   vtkIOCore
+  EXCLUDE_FROM_WRAP_HIERARCHY
+)

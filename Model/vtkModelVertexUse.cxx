@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelVertex.h"
 #include "vtkObjectFactory.h"
 
-vtkCxxRevisionMacro(vtkModelVertexUse, "");
 
 vtkModelVertexUse* vtkModelVertexUse::New()
 {

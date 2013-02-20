@@ -22,7 +22,6 @@
 
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkSerializationHelper, "1774");
 
 //-----------------------------------------------------------------------------
 void vtkSerializationHelper::PrintSelf(ostream& os, vtkIndent indent)

@@ -27,7 +27,6 @@
 #include <map>
 #include <string>
 
-vtkCxxRevisionMacro(vtkInformationKeyMap, "1774");
 vtkStandardNewMacro(vtkInformationKeyMap);
 
 namespace

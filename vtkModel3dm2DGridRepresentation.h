@@ -35,16 +35,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModel3dm2DGridRepresentation_h
 #define __vtkModel3dm2DGridRepresentation_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 
 class vtkIdTypeArray;
 class vtkCharArray;
 
-class VTK_EXPORT vtkModel3dm2DGridRepresentation : public vtkModelGridRepresentation
+class VTKDISCRETEMODEL_EXPORT vtkModel3dm2DGridRepresentation : public vtkModelGridRepresentation
 {
 public:
   static vtkModel3dm2DGridRepresentation* New();
-  vtkTypeRevisionMacro(vtkModel3dm2DGridRepresentation,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkModel3dm2DGridRepresentation,vtkModelGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:

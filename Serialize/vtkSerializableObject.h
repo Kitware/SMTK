@@ -88,15 +88,16 @@
 #ifndef __vtkSerializableObject_h
 #define __vtkSerializableObject_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 
 class vtkSerializer;
 
-class VTK_EXPORT vtkSerializableObject : public vtkObject
+class VTKDISCRETEMODEL_EXPORT vtkSerializableObject : public vtkObject
 {
 public:
   static vtkSerializableObject *New();
-  vtkTypeRevisionMacro(vtkSerializableObject,vtkObject);
+  vtkTypeMacro(vtkSerializableObject,vtkObject);
 
   // Description:
   // Reads the state of an instance from an archive OR

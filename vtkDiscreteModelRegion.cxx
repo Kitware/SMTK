@@ -35,7 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSerializer.h"
 #include "vtkSmartPointer.h"
 
-vtkCxxRevisionMacro(vtkDiscreteModelRegion, "");
 vtkInformationKeyRestrictedMacro(vtkDiscreteModelRegion, POINTINSIDE, DoubleVector, 3);
 vtkInformationKeyMacro(vtkDiscreteModelRegion, SOLIDFILENAME, String);
 

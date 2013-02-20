@@ -25,14 +25,15 @@
 #ifndef __vtkModelXMLParser_h
 #define __vtkModelXMLParser_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"
 
 class vtkXMLElement;
 
-class VTK_EXPORT vtkModelXMLParser : public vtkXMLParser
+class VTKDISCRETEMODEL_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
-  vtkTypeRevisionMacro(vtkModelXMLParser,vtkXMLParser);
+  vtkTypeMacro(vtkModelXMLParser,vtkXMLParser);
   void PrintSelf(ostream& os, vtkIndent indent);
   static vtkModelXMLParser* New();
 

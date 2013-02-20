@@ -33,7 +33,6 @@
 #include <map>
 #include "vtksys/ios/sstream"
 
-vtkCxxRevisionMacro(vtkXMLModelWriter, "");
 vtkStandardNewMacro(vtkXMLModelWriter);
 
 vtkCxxSetObjectMacro(vtkXMLModelWriter, RootElement, vtkXMLElement);

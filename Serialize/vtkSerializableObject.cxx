@@ -22,7 +22,6 @@
 
 #include <vtkObjectFactory.h>
 
-vtkCxxRevisionMacro(vtkSerializableObject, "1774");
 vtkStandardNewMacro(vtkSerializableObject);
 
 vtkSerializableObject::vtkSerializableObject()

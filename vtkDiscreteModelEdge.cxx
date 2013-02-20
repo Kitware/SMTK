@@ -46,7 +46,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSmartPointer.h"
 #include "vtkSplitEventData.h"
 
-vtkCxxRevisionMacro(vtkDiscreteModelEdge, "");
 vtkInformationKeyMacro(vtkDiscreteModelEdge, LINERESOLUTION, Integer);
 vtkInformationKeyMacro(vtkDiscreteModelEdge, LINEADNPOINTSGEOMETRY, ObjectBase);
 

@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItem_h
 #define __vtkModelItem_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "../Serialize/vtkSerializableObject.h"
 
 struct vtkModelItemInternals;
@@ -39,10 +40,10 @@ class vtkInformation;
 class vtkInformationObjectBaseKey;
 class vtkModelItemIterator;
 
-class VTK_EXPORT vtkModelItem : public vtkSerializableObject
+class VTKDISCRETEMODEL_EXPORT vtkModelItem : public vtkSerializableObject
 {
 public:
-  vtkTypeRevisionMacro(vtkModelItem,vtkSerializableObject);
+  vtkTypeMacro(vtkModelItem,vtkSerializableObject);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetObjectMacro(Properties, vtkInformation);

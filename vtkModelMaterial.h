@@ -28,16 +28,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelMaterial_h
 #define __vtkModelMaterial_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 
 class vtkInformationStringKey;
 class vtkModelGeometricEntity;
 class vtkModelItemIterator;
 
-class VTK_EXPORT vtkModelMaterial : public vtkModelEntity
+class VTKDISCRETEMODEL_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
-  vtkTypeRevisionMacro(vtkModelMaterial,vtkModelEntity);
+  vtkTypeMacro(vtkModelMaterial,vtkModelEntity);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   bool SetWarehouseId(double* uuid);

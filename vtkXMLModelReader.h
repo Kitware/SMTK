@@ -33,6 +33,7 @@
 #ifndef __vtkXMLModelReader_h
 #define __vtkXMLModelReader_h
 
+#include "vtkDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
 
 //BTX
@@ -53,11 +54,11 @@ class vtkModelVertex;
 class vtkModelVertexUse;
 //ETX
 
-class VTK_EXPORT vtkXMLModelReader : public vtkSerializer
+class VTKDISCRETEMODEL_EXPORT vtkXMLModelReader : public vtkSerializer
 {
 public:
   static vtkXMLModelReader *New();
-  vtkTypeRevisionMacro(vtkXMLModelReader,vtkSerializer);
+  vtkTypeMacro(vtkXMLModelReader,vtkSerializer);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
