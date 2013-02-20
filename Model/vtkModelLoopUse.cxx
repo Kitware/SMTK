@@ -117,7 +117,7 @@ void vtkModelLoopUse::InsertModelEdgeUse(int Index, vtkModelEdgeUse* EdgeUse)
 
 void vtkModelLoopUse::RemoveModelEdgeUseAssociation(vtkModelEdgeUse* EdgeUse)
 {
-  this->RemoveAssociation(EdgeUse->GetType(), EdgeUse);
+  this->RemoveAssociation(EdgeUse);
 }
 
 void vtkModelLoopUse::Serialize(vtkSerializer* ser)

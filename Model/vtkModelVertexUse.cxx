@@ -95,7 +95,7 @@ void vtkModelVertexUse::AddModelEdgeUse(vtkModelEdgeUse* EdgeUse)
 
 void vtkModelVertexUse::RemoveModelEdgeUse(vtkModelEdgeUse* EdgeUse)
 {
-  this->RemoveAssociation(EdgeUse->GetType(), EdgeUse);
+  this->RemoveAssociation(EdgeUse);
 }
 
 void vtkModelVertexUse::Serialize(vtkSerializer* ser)

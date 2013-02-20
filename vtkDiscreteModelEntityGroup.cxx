@@ -70,8 +70,7 @@ void vtkDiscreteModelEntityGroup::AddModelEntity(vtkDiscreteModelEntity* object)
 
 bool vtkDiscreteModelEntityGroup::RemoveModelEntity(vtkDiscreteModelEntity* object)
 {
-  this->RemoveAssociation(object->GetThisModelEntity()->GetType(),
-                          object->GetThisModelEntity());
+  this->RemoveAssociation(object->GetThisModelEntity());
   return 1;
 }
 

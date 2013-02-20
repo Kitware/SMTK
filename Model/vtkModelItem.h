@@ -90,6 +90,12 @@ protected:
   void AddAssociation(vtkModelItem* item);
 
   // Description:
+  // Remove an association between this object and items.  This also
+  // then calls RemoveReverseAssociation for each item.
+  void RemoveAssociation(vtkModelItem* item);
+  void RemoveAllAssociations(int itemType);
+
+  // Description:
   // Add an association between this object and item at a specified
   // ordered index.  This also then calls AddReverseAssociation.
   void AddAssociationInPosition(int index,
@@ -100,7 +106,7 @@ protected:
   // then calls AddReverseAssociation.  Can be used in constructors
   // since GetType() is a virtual function that is not expected to
   // work in the constructor so we can use myType.
-  void AddAssociation(vtkModelItem* item, int myType);
+  void AddAssociationToType(vtkModelItem* item, int myType);
 
 
   // Description:
@@ -109,13 +115,7 @@ protected:
   // is added through AddAssociation 
   // then this function automatically gets rid of the reverse
   // association.
-  void AddReverseAssociation(int itemType, vtkModelItem* item);
-
-  // Description:
-  // Remove an association between this object and items.  This also
-  // then calls RemoveReverseAssociation for each item.
-  void RemoveAssociation(int itemType, vtkModelItem* item);
-  void RemoveAllAssociations(int itemType);
+  void AddReverseAssociationToType(vtkModelItem* item, int itemType);
 
   // Description:
   // Since every association is symmetric, this is used to get
@@ -123,7 +123,7 @@ protected:
   // is removed through RemoveAssociation or RemoveAllAssociations
   // then this function automatically gets rid of the reverse
   // association.
-  void RemoveReverseAssociation(int itemType, vtkModelItem* item);
+  void RemoveReverseAssociationToType(vtkModelItem* item, int itemType);
 
   // Description:
   // Returns a list of item types that are stored.

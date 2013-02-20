@@ -120,7 +120,7 @@ bool vtkModelRegion::DestroyModelShellUse(vtkModelShellUse* ShellUse)
     vtkErrorMacro("Error destroying model shell use.");
     return false;
     }
-  this->RemoveAssociation(ShellUse->GetType(), ShellUse);
+  this->RemoveAssociation(ShellUse);
   return true;
 }
 

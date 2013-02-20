@@ -54,13 +54,13 @@ vtkModelItem::~vtkModelItem()
 
 void vtkModelItem::AddAssociation(vtkModelItem* item)
 {
-  this->AddAssociation(item, this->GetType());
+  this->AddAssociationToType(item, this->GetType());
 }
 
-void vtkModelItem::AddAssociation(vtkModelItem* item, int myType)
+void vtkModelItem::AddAssociationToType(vtkModelItem* item, int myType)
 {
   this->Internal->Associations[item->GetType()].push_back(item);
-  item->AddReverseAssociation(myType, this);
+  item->AddReverseAssociationToType(this,myType);
   this->Modified();
 }
 
@@ -80,7 +80,7 @@ void vtkModelItem::AddAssociationInPosition(int index,
         // he/she is doing
         // use add reverse association since it won't attempt to add an 
         // association to a null pointer
-        this->AddReverseAssociation(itemType, 0);
+        this->AddReverseAssociationToType(NULL,itemType);
         }
       }
     this->AddAssociation(item);
@@ -96,12 +96,12 @@ void vtkModelItem::AddAssociationInPosition(int index,
       it++;
       }
     this->Internal->Associations[itemType].insert(it, item);
-    item->AddReverseAssociation(this->GetType(), this);
+    item->AddReverseAssociationToType(this,this->GetType());
     }
 }
 
-void vtkModelItem::AddReverseAssociation(int itemType, 
-                                         vtkModelItem* item)
+void vtkModelItem::AddReverseAssociationToType(vtkModelItem* item,
+                                               int itemType)
 {
   this->Internal->Associations[itemType].push_back(item);
   this->Modified();
@@ -116,26 +116,28 @@ void vtkModelItem::RemoveAllAssociations(int itemType)
   vtkModelItemIterator * iter = this->NewIterator(itemType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
-    iter->GetCurrentItem()->RemoveReverseAssociation(
-      this->GetType(), this);
+    iter->GetCurrentItem()->RemoveReverseAssociationToType(this,
+                                                           this->GetType());
     }
   iter->Delete();
   this->Internal->Associations.erase(itemType);
   this->Modified();
 }
 
-void vtkModelItem::RemoveAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::RemoveAssociation(vtkModelItem* item)
 {
+  const int itemType = item->GetType();
   if(this->Internal->Associations.find(itemType) !=
      this->Internal->Associations.end())
     {
-    item->RemoveReverseAssociation(this->GetType(), this);
+    item->RemoveReverseAssociationToType(this,this->GetType());
     this->Internal->Associations[itemType].remove(item);
     this->Modified();
     }
 }
 
-void vtkModelItem::RemoveReverseAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::RemoveReverseAssociationToType(vtkModelItem* item,
+                                                  int itemType)
 {
   if(this->Internal->Associations.find(itemType) !=
      this->Internal->Associations.end())

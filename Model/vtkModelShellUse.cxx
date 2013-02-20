@@ -68,7 +68,7 @@ void vtkModelShellUse::AddModelFaceUse(vtkModelFaceUse* FaceUse)
 
 void vtkModelShellUse::RemoveModelFaceUse(vtkModelFaceUse* FaceUse)
 {
-  this->RemoveAssociation(FaceUse->GetType(), FaceUse);
+  this->RemoveAssociation(FaceUse);
 }
 
 vtkModelItemIterator* vtkModelShellUse::NewModelFaceUseIterator()

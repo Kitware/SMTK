@@ -326,7 +326,7 @@ bool vtkDiscreteModel::DestroyMaterial(vtkModelMaterial* material)
     vtkErrorMacro("Problem destroying material.");
     return false;
     }
-  this->RemoveAssociation(material->GetType(), material);
+  this->RemoveAssociation(material);
   this->InternalInvokeEvent(DomainSetDestroyed, &entityId);
 
   this->Modified();
@@ -379,7 +379,7 @@ bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* enti
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(entityGroup->GetType(), entityGroup);
+  this->RemoveAssociation(entityGroup);
   this->InternalInvokeEvent(ModelEntityGroupDestroyed, &entityId);
 
   this->Modified();
@@ -440,7 +440,7 @@ bool vtkDiscreteModel::DestroyNodalGroup(vtkModelNodalGroup* nodalGroup)
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(nodalGroup->GetType(), nodalGroup);
+  this->RemoveAssociation(nodalGroup);
   this->InternalInvokeEvent(NodalGroupDestroyed, &entityId);
 
   this->Modified();
@@ -459,7 +459,7 @@ bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(modelEdge->GetType(), modelEdge);
+  this->RemoveAssociation(modelEdge);
 
   return 1;
 }

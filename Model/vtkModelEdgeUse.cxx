@@ -89,7 +89,7 @@ bool vtkModelEdgeUse::Destroy()
 
   this->RemoveAllAssociations(vtkModelVertexUseType);
   // my pair will have to remove me separately
-  this->RemoveReverseAssociation(this->GetType(), this->GetPairedModelEdgeUse());
+  this->RemoveReverseAssociationToType(this->GetPairedModelEdgeUse(),this->GetType());
   
   return true;
 }
@@ -211,7 +211,7 @@ void vtkModelEdgeUse::Initialize(
   this->SetDirection(direction);
   // only add reverse association as my pair also will have to call
   // initialize and do the same thing
-  this->AddReverseAssociation(vtkModelEdgeUseType, PairedEdgeUse);
+  this->AddReverseAssociationToType(PairedEdgeUse,vtkModelEdgeUseType);
 }
 
 

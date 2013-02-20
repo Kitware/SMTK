@@ -158,7 +158,7 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
 //-----------------------------------------------------------------------------
 void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* EdgeUse)
 {
-  this->RemoveAssociation(EdgeUse->GetType(), EdgeUse);
+  this->RemoveAssociation(EdgeUse);
   this->Modified();
 }
 

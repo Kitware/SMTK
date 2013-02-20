@@ -132,7 +132,7 @@ bool vtkModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* entity)
     return 0;
     }
 
-  this->RemoveAssociation(entity->GetType(), entity);
+  this->RemoveAssociation(entity);
   this->Modified();
   return 1;
 }
