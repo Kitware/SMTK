@@ -116,7 +116,7 @@ vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
 //-----------------------------------------------------------------------------
 void vtkModelFaceUse::AddLoopUse(vtkModelLoopUse* LoopUse)
 {
-  this->AddAssociation(LoopUse->GetType(), LoopUse);
+  this->AddAssociation(LoopUse);
 }
 
 //-----------------------------------------------------------------------------

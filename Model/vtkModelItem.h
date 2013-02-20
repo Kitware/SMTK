@@ -87,21 +87,21 @@ protected:
   // Description:
   // Add an association between this object and item.  This also
   // then calls AddReverseAssociation.
-  void AddAssociation(int itemType, vtkModelItem* item);
+  void AddAssociation(vtkModelItem* item);
 
   // Description:
   // Add an association between this object and item at a specified
   // ordered index.  This also then calls AddReverseAssociation.
-  void AddAssociationInPosition(int itemType, int Index, 
+  void AddAssociationInPosition(int index,
                                 vtkModelItem* item);
 
   // Description:
   // Add an association between this object and item.  This also
   // then calls AddReverseAssociation.  Can be used in constructors
-  // since GetType() is a virtual function that is not expected to 
+  // since GetType() is a virtual function that is not expected to
   // work in the constructor so we can use myType.
-  void AddAssociation(int itemType, vtkModelItem* item, int myType);
-  
+  void AddAssociation(vtkModelItem* item, int myType);
+
 
   // Description:
   // Since every association is symmetric, this is used to get

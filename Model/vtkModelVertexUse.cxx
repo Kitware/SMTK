@@ -85,12 +85,12 @@ vtkModelItemIterator* vtkModelVertexUse::NewModelEdgeUseIterator()
 
 void vtkModelVertexUse::Initialize(vtkModelVertex* Vertex)
 {
-  this->AddAssociation(Vertex->GetType(), Vertex);
+  this->AddAssociation(Vertex);
 }
 
 void vtkModelVertexUse::AddModelEdgeUse(vtkModelEdgeUse* EdgeUse)
 {
-  this->AddAssociation(EdgeUse->GetType(), EdgeUse);
+  this->AddAssociation(EdgeUse);
 }
 
 void vtkModelVertexUse::RemoveModelEdgeUse(vtkModelEdgeUse* EdgeUse)

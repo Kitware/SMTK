@@ -136,10 +136,10 @@ void vtkModelEdgeUse::SetModelVertexUses(vtkModelVertexUse* VertexUse0,
   this->RemoveAllAssociations(vtkModelVertexUseType);
   if(VertexUse0)
     {
-    this->AddAssociation(VertexUse0->GetType(), VertexUse0);
+    this->AddAssociation(VertexUse0);
     if(VertexUse1)
       {
-      this->AddAssociation(VertexUse1->GetType(), VertexUse1);
+      this->AddAssociation(VertexUse1);
       }
     }
   else if(VertexUse1)
@@ -194,13 +194,13 @@ void vtkModelEdgeUse::Initialize(
     {
     vtkModelVertexUse* VertexUse = vtkModelVertexUse::New();
     VertexUse->Initialize(Vertex0);
-    this->AddAssociation(VertexUse->GetType(), VertexUse);
+    this->AddAssociation(VertexUse);
     VertexUse->Delete();
     if(Vertex1)
       {
       VertexUse = vtkModelVertexUse::New();
       VertexUse->Initialize(Vertex1);
-      this->AddAssociation(VertexUse->GetType(), VertexUse);
+      this->AddAssociation(VertexUse);
       VertexUse->Delete();
       }
     }

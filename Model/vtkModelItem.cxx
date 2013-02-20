@@ -52,28 +52,29 @@ vtkModelItem::~vtkModelItem()
     }
 }
 
-void vtkModelItem::AddAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::AddAssociation(vtkModelItem* item)
 {
-  this->AddAssociation(itemType, item, this->GetType());
+  this->AddAssociation(item, this->GetType());
 }
 
-void vtkModelItem::AddAssociation(int itemType, vtkModelItem* item, int myType)
+void vtkModelItem::AddAssociation(vtkModelItem* item, int myType)
 {
-  this->Internal->Associations[itemType].push_back(item);
+  this->Internal->Associations[item->GetType()].push_back(item);
   item->AddReverseAssociation(myType, this);
   this->Modified();
 }
 
-void vtkModelItem::AddAssociationInPosition(int itemType, int Index,
+void vtkModelItem::AddAssociationInPosition(int index,
                                             vtkModelItem* item)
 {
-  int numItems = this->GetNumberOfAssociations(itemType);
-  if(numItems < Index)
+  const int itemType = item->GetType();
+  const int numItems = this->GetNumberOfAssociations(itemType);
+  if(numItems < index)
     {
-    if((numItems+1) < Index)
+    if((numItems+1) < index)
       {
       vtkWarningMacro("Possible bad Index value.");
-      for(int i=numItems+1;i<Index;i++)
+      for(int i=numItems+1;i<index;i++)
         {
         // fill the proper places in just in case the user knows what 
         // he/she is doing
@@ -82,14 +83,14 @@ void vtkModelItem::AddAssociationInPosition(int itemType, int Index,
         this->AddReverseAssociation(itemType, 0);
         }
       }
-    this->AddAssociation(itemType, item, this->GetType());
+    this->AddAssociation(item);
     }
   else
     {
     std::list<vtkSmartPointer<vtkModelItem> >::iterator it=
       this->Internal->Associations[itemType].begin();
     int count = 0;
-    while(count < Index)
+    while(count < index)
       {
       count++;
       it++;

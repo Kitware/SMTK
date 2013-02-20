@@ -80,7 +80,7 @@ vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, vtkIdType 
 {
   vtkDiscreteModelVertex* vertex = vtkDiscreteModelVertex::New();
   vertex->SetUniquePersistentId(vertexId);
-  this->AddAssociation(vertex->GetType(), vertex);
+  this->AddAssociation(vertex);
   vertex->Delete();
   vertex->SetPointId(pointId);
   if(vertexId > this->GetLargestUsedUniqueId())
@@ -109,7 +109,7 @@ vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
   vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
   edge->Initialize(vertex0, vertex1, edgeId);
 
-  this->AddAssociation(edge->GetType(), edge);
+  this->AddAssociation(edge);
   edge->Delete();
   std::string defaultEntityName;
   this->GetModelEntityDefaultName(vtkModelEdgeType, "Edge",
@@ -133,7 +133,7 @@ vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
     vtkModelVertex* vertex2 = this->BuildModelVertex(pointId);
     vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
     edge->Initialize(vertex1, vertex2, edgeId);
-    this->AddAssociation(edge->GetType(), edge);
+    this->AddAssociation(edge);
     edge->AddRegionAssociation(regionId);
     edge->Delete();
 
@@ -167,7 +167,7 @@ vtkModelFace* vtkDiscreteModel::BuildModelFace(int numEdges, vtkModelEdge** edge
                                           int* edgeDirections, vtkIdType modelFaceId)
 {
   vtkDiscreteModelFace* face = vtkDiscreteModelFace::New();
-  this->AddAssociation(face->GetType(), face);
+  this->AddAssociation(face);
   face->Initialize(numEdges, edges, edgeDirections, modelFaceId);
 
   if(modelFaceId > this->GetLargestUsedUniqueId())
@@ -193,7 +193,7 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(vtkIdType modelRegionId)
 {
   vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::New();
   region->Initialize(modelRegionId);
-  this->AddAssociation(region->GetType(), region);
+  this->AddAssociation(region);
 
   if(modelRegionId > this->GetLargestUsedUniqueId())
     {
@@ -223,7 +223,7 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
   vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::New();
   region->Initialize(numFaces, faces, faceSides,
                      modelRegionId);
-  this->AddAssociation(region->GetType(), region);
+  this->AddAssociation(region);
 
   if(modelRegionId > this->GetLargestUsedUniqueId())
     {
@@ -299,7 +299,7 @@ vtkModelMaterial* vtkDiscreteModel::BuildMaterial(vtkIdType id)
 {
   vtkModelMaterial* material = vtkModelMaterial::New();
   material->Initialize(id);
-  this->AddAssociation(material->GetType(), material);
+  this->AddAssociation(material);
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
   material->Delete();
 
@@ -351,7 +351,7 @@ vtkDiscreteModelEntityGroup* vtkDiscreteModel::BuildModelEntityGroup(
     {
     entityGroup->AddModelEntity(entities[i]);
     }
-  this->AddAssociation(entityGroup->GetType(), entityGroup);
+  this->AddAssociation(entityGroup);
   entityGroup->Delete();
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
 
@@ -414,7 +414,7 @@ vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* point
     }
   nodalGroup->Initialize(id);
 
-  this->AddAssociation(nodalGroup->GetType(), nodalGroup);
+  this->AddAssociation(nodalGroup);
   nodalGroup->Delete();
 
   std::string defaultEntityName;

@@ -107,7 +107,7 @@ vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
     {
     ShellUse->AddModelFaceUse(ModelFaces[i]->GetModelFaceUse(FaceSides[i]));
     }
-  this->AddAssociation(ShellUse->GetType(), ShellUse);
+  this->AddAssociation(ShellUse);
   ShellUse->Delete();
   return ShellUse;
 }

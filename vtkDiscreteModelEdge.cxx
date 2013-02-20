@@ -122,7 +122,7 @@ void vtkDiscreteModelEdge::AddRegionAssociation(vtkIdType regionId)
     this->GetModel()->GetModelEntity(vtkModelRegionType, regionId));
   if(region)
     {
-    this->AddAssociation(region->GetType(), region);
+    this->AddAssociation(region);
     this->GetModel()->InvokeModelGeometricEntityEvent(
       ModelGeometricEntityBoundaryModified, region);
     }

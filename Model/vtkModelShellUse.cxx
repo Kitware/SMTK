@@ -63,7 +63,7 @@ int vtkModelShellUse::GetType()
 void vtkModelShellUse::AddModelFaceUse(vtkModelFaceUse* FaceUse)
 {
   FaceUse->RemoveAllAssociations(this->GetType());
-  this->AddAssociation(FaceUse->GetType(), FaceUse);
+  this->AddAssociation(FaceUse);
 }
 
 void vtkModelShellUse::RemoveModelFaceUse(vtkModelFaceUse* FaceUse)

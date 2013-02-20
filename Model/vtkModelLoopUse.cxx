@@ -112,7 +112,7 @@ vtkModelItemIterator* vtkModelLoopUse::NewModelEdgeUseIterator()
 
 void vtkModelLoopUse::InsertModelEdgeUse(int Index, vtkModelEdgeUse* EdgeUse)
 {
-  this->AddAssociationInPosition(EdgeUse->GetType(), Index, EdgeUse);
+  this->AddAssociationInPosition(Index, EdgeUse);
 }
 
 void vtkModelLoopUse::RemoveModelEdgeUseAssociation(vtkModelEdgeUse* EdgeUse)

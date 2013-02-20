@@ -128,7 +128,7 @@ vtkModelItemIterator* vtkModelVertex::NewAdjacentModelEdgeIterator()
 vtkModelVertexUse* vtkModelVertex::BuildModelVertexUse()
 {
   vtkModelVertexUse* VertexUse = vtkModelVertexUse::New();
-  this->AddAssociation(VertexUse->GetType(), VertexUse);
+  this->AddAssociation(VertexUse);
   VertexUse->Delete();
   return VertexUse;
 }

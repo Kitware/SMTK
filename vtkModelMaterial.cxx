@@ -107,7 +107,7 @@ void vtkModelMaterial::AddModelGeometricEntity(
       previousMaterial->RemoveModelGeometricEntity(geometricEntity);
       }
     }
-  this->AddAssociation(geometricEntity->GetType(), geometricEntity);
+  this->AddAssociation(geometricEntity);
   this->Modified();
 }
 
