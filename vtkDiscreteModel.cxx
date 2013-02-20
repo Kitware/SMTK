@@ -64,11 +64,17 @@ vtkDiscreteModel::vtkDiscreteModel()
   this->ModelBounds[1] = this->ModelBounds[3] = this->ModelBounds[5] = -1;
   this->AnalysisGridInfo = NULL;
   this->BlockEvent = false;
+  this->MasterGeometry = NULL;
 }
 
 vtkDiscreteModel::~vtkDiscreteModel()
 {
   this->SetAnalysisGridInfo(NULL);
+
+  if(this->MasterGeometry)
+    {
+    this->MasterGeometry->Delete();
+    }
 }
 
 vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId)
@@ -480,8 +486,10 @@ void vtkDiscreteModel::SetGeometry(vtkObject* geometry)
 {
   // may want to make a deep copy of geometry
   // for now assume that we don't need to
-  this->GetProperties()->Set(GEOMETRY(), geometry);
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
+  this->MasterGeometry = geometry;
+  this->MasterGeometry->Register(this);
+
+  vtkPolyData* poly = vtkPolyData::SafeDownCast(this->MasterGeometry);
   if(poly)
     {
     poly->GetBounds(this->ModelBounds);
@@ -497,8 +505,7 @@ void vtkDiscreteModel::SetGeometry(vtkObject* geometry)
 }
 void vtkDiscreteModel::UpdateGeometry()
 {
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(
-    this->GetGeometry());
+  vtkPolyData* poly = vtkPolyData::SafeDownCast(this->MasterGeometry);
   if(poly)
     {
     poly->GetBounds(this->ModelBounds);
@@ -548,9 +555,7 @@ void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* bas
 
 vtkObject* vtkDiscreteModel::GetGeometry()
 {
-  vtkObject* object = vtkObject::SafeDownCast(
-    this->GetProperties()->Get(GEOMETRY()));
-  return object;
+  return this->MasterGeometry;
 }
 
 const char* vtkDiscreteModel::GetPointMapArrayName()
@@ -672,7 +677,12 @@ void vtkDiscreteModel::Reset()
   this->Superclass::Reset();
 
   // and finally the polydata representation and classification
-  this->GetProperties()->Remove(GEOMETRY());
+  if(this->MasterGeometry)
+    {
+    this->MasterGeometry->Delete();
+    this->MasterGeometry = NULL;
+    }
+
   this->CellClassification.clear();
   this->ClassifiedCellIndex.clear();
   this->InternalInvokeEvent(ModelReset, this);

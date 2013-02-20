@@ -31,6 +31,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkOpenGLProperty.h"
 
+vtkInformationKeyMacro(vtkModelGeometricEntity, GEOMETRY, ObjectBase);
+
 
 vtkModelGeometricEntity::vtkModelGeometricEntity()
 {

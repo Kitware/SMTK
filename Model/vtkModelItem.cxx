@@ -35,8 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModelItemInternals.h"
 
-vtkInformationKeyMacro(vtkModelItem, GEOMETRY, ObjectBase);
-
 vtkModelItem::vtkModelItem()
 {
   this->Internal = new vtkModelItemInternals;

@@ -56,12 +56,6 @@ public:
   // through use objects instead of directly being associated
   // with each other.
   vtkModelItemIterator* NewIterator(int itemType);
-  
-  // Description:
-  // Static function for getting the information object
-  // used to store the geometric representation of a
-  // model item.
-  static vtkInformationObjectBaseKey* GEOMETRY();
 
   // Description:
   // Get the type of object that this entity is.  The base

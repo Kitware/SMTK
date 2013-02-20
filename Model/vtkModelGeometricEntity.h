@@ -50,6 +50,12 @@ public:
   void SetGeometry(vtkObject* Geometry);
   virtual vtkObject* GetGeometry();
 
+  // Description:
+  // Static function for getting the information object
+  // used to store the geometric representation of a
+  // model item.
+  static vtkInformationObjectBaseKey* GEOMETRY();
+
   // Definition:
   // Function to get the bounds of the implemented object.
   // For now it assumes that the geometric entity is a

@@ -271,6 +271,7 @@ protected:
   // be called if the master polydata is modified.
   void SetGeometry(vtkObject* geometry);
   void UpdateGeometry();
+  vtkObject* MasterGeometry;
 
   // Description:
   // The mappings from a cell on the master geometry to the geometric model
