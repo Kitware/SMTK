@@ -29,10 +29,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelEdge.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
-#include <vtkCell.h>
-#include <vtkCellData.h>
-#include <vtkIdList.h>
-#include <vtkIdTypeArray.h>
+#include "vtkCell.h"
+#include "vtkCellData.h"
+#include "vtkIdList.h"
+#include "vtkIdTypeArray.h"
 #include "vtkMergeEventData.h"
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFaceUse.h"
@@ -41,8 +41,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelShellUse.h"
 #include "vtkModelVertex.h"
 #include "vtkModelVertexUse.h"
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
+#include "vtkNew.h"
+#include "vtkPolyData.h"
+#include "vtkSmartPointer.h"
 #include <map>
 
 namespace
@@ -132,7 +133,7 @@ bool vtkDiscreteModelGeometricEntity::Merge(
   mergeEventData->Delete();
 
   // check to see if we're on the server or client
-  if(model->GetGeometry() != 0)
+  if(model->HasValidMesh())
     { // for the server side only
     vtkIdList* cells = vtkIdList::New();
     vtkIdTypeArray* masterGeometryCellIndex = sourceEntity->GetReverseClassificationArray();
@@ -319,8 +320,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     thisEntity->GetModel());
   vtkObject* geometry = thisEntity->GetGeometry();
   vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(geometry);
-  vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(model->GetGeometry());
-  if(masterPoly == 0)
+  if(model->HasInValidMesh())
     {
     // we are on the client
     return 1;
@@ -335,6 +335,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     entityPoly= vtkPolyData::New();
     vtkModelGeometricEntity::SafeDownCast(
       this->GetThisModelEntity())->SetGeometry(entityPoly);
+
     entityPoly->Allocate(masterCellIds->GetNumberOfIds());
     vtkIdTypeArray* reverseClassificationArray = vtkIdTypeArray::New();
     reverseClassificationArray->SetNumberOfComponents(1);
@@ -342,7 +343,10 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     reverseClassificationArray->SetName(ReverseClassificationArrayName);;
     entityPoly->GetCellData()->AddArray(reverseClassificationArray);
     reverseClassificationArray->Delete();
-    entityPoly->SetPoints(masterPoly->GetPoints());
+
+    //extract the points from the master polydata and use them for this
+    //geometeric entity
+    entityPoly->SetPoints(model->GetMesh().SharePointsPtr());
     entityPoly->Delete();
     }
 
@@ -380,13 +384,18 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     }
 
   // now add cells on this entity
+  const DiscreteMesh& mesh = model->GetMesh();
+  vtkNew<vtkIdList> pointIds;
   for(vtkIdType i=0;i<masterCellIds->GetNumberOfIds();i++)
     {
-    vtkIdType masterCellId = masterCellIds->GetId(i);
-    vtkCell* cell = vtkPolyData::SafeDownCast(model->GetGeometry())->GetCell(masterCellId);
-    vtkIdType newLocalCellId = entityPoly->GetNumberOfCells();
-    entityPoly->InsertNextCell(cell->GetCellType(), cell->GetPointIds());
+    const vtkIdType masterCellId = masterCellIds->GetId(i);
+    const vtkIdType cellType = mesh.GetCellType(masterCellId);
+    mesh.GetCellPointIds(masterCellId,pointIds.GetPointer());
+
+    const vtkIdType newLocalCellId =
+              entityPoly->InsertNextCell(cellType,pointIds.GetPointer());
     this->GetReverseClassificationArray()->InsertNextTupleValue(&masterCellId);
+
     // update the classification on the model to this info
     model->SetCellClassification(masterCellId, newLocalCellId, this);
     }

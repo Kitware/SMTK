@@ -57,24 +57,19 @@ vtkStandardNewMacro(vtkDiscreteModel);
 vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);
 vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
-vtkDiscreteModel::vtkDiscreteModel()
+vtkDiscreteModel::vtkDiscreteModel():
+  Mesh()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
   this->ModelBounds[1] = this->ModelBounds[3] = this->ModelBounds[5] = -1;
   this->AnalysisGridInfo = NULL;
   this->BlockEvent = false;
-  this->MasterGeometry = NULL;
 }
 
 vtkDiscreteModel::~vtkDiscreteModel()
 {
   this->SetAnalysisGridInfo(NULL);
-
-  if(this->MasterGeometry)
-    {
-    this->MasterGeometry->Delete();
-    }
 }
 
 vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId)
@@ -130,13 +125,14 @@ vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
 vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
   double point1[3], double point2[3], int resolution, vtkIdType regionId)
 {
-  if(vtkPolyData* masterPoly =
-     vtkPolyData::SafeDownCast(this->GetGeometry()))
+  if(this->HasValidMesh())
     {
-    vtkIdType pointId = masterPoly->GetPoints()->InsertNextPoint(point1);
-    vtkModelVertex* vertex1 = this->BuildModelVertex(pointId);
-    pointId = masterPoly->GetPoints()->InsertNextPoint(point2);
-    vtkModelVertex* vertex2 = this->BuildModelVertex(pointId);
+    DiscreteMesh::Edge dmEdge(point1,point2);
+    DiscreteMesh::EdgeResult edgeIds = this->Mesh.AddEdge(dmEdge);
+
+    vtkModelVertex* vertex1 = this->BuildModelVertex(edgeIds.first);
+    vtkModelVertex* vertex2 = this->BuildModelVertex(edgeIds.second);
+
     vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
     edge->Initialize(vertex1, vertex2, edgeId);
     this->AddAssociation(edge);
@@ -482,41 +478,23 @@ vtkDiscreteModelGeometricEntity* vtkDiscreteModel::GetCellModelGeometricEntity(
   return this->CellClassification[cellId];
 }
 
-void vtkDiscreteModel::SetGeometry(vtkObject* geometry)
+void vtkDiscreteModel::SetMesh(DiscreteMesh& m)
 {
-  // may want to make a deep copy of geometry
-  // for now assume that we don't need to
-  this->MasterGeometry = geometry;
-  this->MasterGeometry->Register(this);
-
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(this->MasterGeometry);
-  if(poly)
-    {
-    poly->GetBounds(this->ModelBounds);
-    // we're on the server so set the vector sizes for classification
-    vtkIdType numCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* geomEnt = 0;
-    this->CellClassification.resize(numCells, geomEnt);
-    this->ClassifiedCellIndex.resize(numCells, -1);
-    vtkModelUniqueNodalGroup* nodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
-    }
-  this->Modified();
+  this->Mesh = m;
+  this->UpdateMesh();
 }
-void vtkDiscreteModel::UpdateGeometry()
+
+void vtkDiscreteModel::UpdateMesh()
 {
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(this->MasterGeometry);
-  if(poly)
-    {
-    poly->GetBounds(this->ModelBounds);
-    // we're on the server so set the vector sizes for classification
-    vtkIdType numCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* geomEnt = 0;
-    this->CellClassification.resize(numCells, geomEnt);
-    this->ClassifiedCellIndex.resize(numCells, -1);
-    vtkModelUniqueNodalGroup* nodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
-    }
+  this->Mesh.GetBounds(this->ModelBounds);
+
+  const vtkIdType numCells = this->Mesh.GetNumberOfCells();
+  const vtkIdType numPoints = this->Mesh.GetNumberOfPoints();
+
+  this->CellClassification.resize(numCells, NULL);
+  this->ClassifiedCellIndex.resize(numCells, -1);
+  this->UniquePointGroup.resize(numPoints, NULL);
+
   this->Modified();
 }
 
@@ -553,9 +531,19 @@ void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* bas
   iter->Delete();
 }
 
-vtkObject* vtkDiscreteModel::GetGeometry()
+const DiscreteMesh & vtkDiscreteModel::GetMesh() const
 {
-  return this->MasterGeometry;
+  return this->Mesh;
+}
+
+bool vtkDiscreteModel::HasValidMesh() const
+{
+  return this->Mesh.IsValid();
+}
+
+bool vtkDiscreteModel::HasInValidMesh() const
+{
+  return !this->Mesh.IsValid();
 }
 
 const char* vtkDiscreteModel::GetPointMapArrayName()
@@ -676,12 +664,8 @@ void vtkDiscreteModel::Reset()
 
   this->Superclass::Reset();
 
-  // and finally the polydata representation and classification
-  if(this->MasterGeometry)
-    {
-    this->MasterGeometry->Delete();
-    this->MasterGeometry = NULL;
-    }
+  // reset the mesh to an empty mesh
+  this->Mesh = DiscreteMesh();
 
   this->CellClassification.clear();
   this->ClassifiedCellIndex.clear();

@@ -79,7 +79,7 @@ bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
     this->Reset();
     return false;
     }
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+  if(model->HasInValidMesh())
     {  // we're on the client and don't know this info
     return false;
     }
@@ -160,7 +160,7 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
     this->Reset();
     return false;
     }
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+  if(model->HasInValidMesh())
     {  // we're on the client and don't know this info
     return false;
     }
@@ -199,18 +199,19 @@ bool vtkModel3dmGridRepresentation::GetBoundaryGroupAnalysisFacets(
 //----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
 {
-  if(vtkPolyData* poly = vtkPolyData::SafeDownCast(model->GetGeometry()))
+  if(model->HasInValidMesh())
     {  // we're on the server
-    if(poly->GetNumberOfPoints() !=
+    const DiscreteMesh& mesh = model->GetMesh();
+    if(mesh.GetNumberOfPoints() !=
        this->ModelPointToAnalysisPoint->GetNumberOfTuples())
       {
       vtkErrorMacro("Model does not match analysis grid.");
       this->Reset();
       return false;
       }
-    if(poly->GetNumberOfCells() !=
+    if(mesh.GetNumberOfCells() !=
        this->ModelCellToAnalysisCellSides->GetNumberOfTuples() ||
-       poly->GetNumberOfCells() !=
+       mesh.GetNumberOfCells() !=
        this->ModelCellToAnalysisCells->GetNumberOfTuples())
       {
       vtkErrorMacro("Model does not match analysis grid.");

@@ -137,7 +137,7 @@ vtkObject* vtkDiscreteModelEdge::GetGeometry()
   if(this->GetNumberOfAssociations(vtkModelRegionType))
     {
     vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
-    if(model->GetGeometry()->IsA("vtkDataObject"))
+    if(model->HasValidMesh())
       { // only construct the representation if it is a floating edge on the server
       this->ConstructRepresentation();
       return this->Superclass::GetGeometry();

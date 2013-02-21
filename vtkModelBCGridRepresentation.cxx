@@ -232,7 +232,7 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
     this->Reset();
     return false;
     }
-  vtkIdType numCells = vtkPolyData::SafeDownCast(model->GetGeometry())->GetNumberOfCells();
+  vtkIdType numCells = model->GetMesh().GetNumberOfCells();
   if(numCells !=  static_cast<vtkIdType>(this->MasterCellToMeshCellInfo.size()))
     {
     vtkErrorMacro("There are " << numCells << " model cells but the bc file has "

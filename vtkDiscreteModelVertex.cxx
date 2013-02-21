@@ -57,13 +57,14 @@ vtkDiscreteModelVertex::~vtkDiscreteModelVertex()
 
 bool vtkDiscreteModelVertex::GetPoint(double* xyz)
 {
-  if(vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(
-       vtkDiscreteModel::SafeDownCast(this->GetModel())->GetGeometry()))
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(this->GetModel());
+  if(model && model->HasValidMesh())
     {
+    const DiscreteMesh& mesh = model->GetMesh();
     vtkIdType pointId = this->GetPointId();
-    if(pointId >= 0 && pointId < masterPoly->GetNumberOfPoints())
+    if(pointId >= 0 && pointId < mesh.GetNumberOfPoints())
       {
-      masterPoly->GetPoint(pointId, xyz);
+      mesh.GetPoint(pointId, xyz);
       return true;
       }
     else
@@ -95,17 +96,20 @@ void vtkDiscreteModelVertex::CreateGeometry()
     {
     return;
     }
-  if(vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(
-    vtkDiscreteModel::SafeDownCast(this->GetModel())->GetGeometry()))
+  vtkDiscreteModel* model  = vtkDiscreteModel::SafeDownCast(this->GetModel());
+  if(model->HasValidMesh())
     {
+    const DiscreteMesh& mesh = model->GetMesh();
     vtkIdType pointId = this->GetPointId();
-    if(pointId >= 0 && pointId < masterPoly->GetNumberOfPoints())
+    if(pointId >= 0 && pointId < mesh.GetNumberOfPoints())
       {
       vtkPolyData* poly = vtkPolyData::New();
-      poly->SetPoints(masterPoly->GetPoints());
+      poly->SetPoints(mesh.SharePointsPtr());
       poly->Allocate(1);
       poly->InsertNextCell(VTK_VERTEX, 1, &pointId);
+
       this->SetGeometry(poly);
+
       vtkProperty* displayProp = this->GetDisplayProperty();
       displayProp->SetPointSize(8.0);
       displayProp->SetColor(0.0, 1.0, 0.0);

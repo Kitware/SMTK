@@ -102,14 +102,16 @@ void vtkDiscreteModelWrapper::ResetModel()
 void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 {
   vtkDiscreteModel* model = this->GetModel();
-  vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(
-    model->GetGeometry());
-  if(!masterPoly)
+  if(model->HasInValidMesh())
     {
     vtkErrorMacro("The discrete model does not have a valid master polydata.");
     return;
     }
-  masterPoly->SetPoints(points);
+
+  //get the current mesh and set a new point set
+  const DiscreteMesh& mesh = model->GetMesh();
+  mesh.UpdatePoints(points);
+  model->UpdateMesh();
 
   vtkCompositeDataIterator* iter = this->NewIterator();
   for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
@@ -265,17 +267,16 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     return 0;
     }
 
-  vtkPolyData* oldMasterPoly = vtkPolyData::SafeDownCast(this->Model->GetGeometry());
-  if(oldMasterPoly == 0)
+  if(this->Model->HasInValidMesh())
     {
     // There is no master poly on the server yet
-    vtkErrorMacro("There is no master poly on the server.");
+    vtkErrorMacro("There is no mesh on the server.");
     return 0;
     }
 
   // make a new poly data and copy the necessary old stuff
-  vtkPolyData* poly = vtkPolyData::New();
-  poly->ShallowCopy(oldMasterPoly);
+  vtkSmartPointer<vtkPolyData> poly = this->Model->GetMesh().ShallowCopy();
+
   poly->GetFieldData()->Initialize();
   poly->GetPointData()->Initialize();
   poly->GetCellData()->Initialize();
@@ -290,20 +291,19 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   reader->SetModel(this->Model);
   reader->Serialize(istr, "ConceptualModel");
 
-  this->Model->SetGeometry(poly);
-  poly->Delete();
-  poly = 0; // just to be safe since we don't want to do anything with this poly
+
+  DiscreteMesh newMesh(poly);
+  this->Model->SetMesh(newMesh);
 
   this->SerializedModel->Reset();
   this->SerializedModel->SetNumberOfTuples(1);
   this->SerializedModel->SetValue(0, vtkStdString(istr.str().c_str()));
 
   // Now rebuild the model face geometry
-  vtkPolyData* masterPoly = vtkPolyData::SafeDownCast(this->Model->GetGeometry());
-  if(masterPoly == 0)
+  if(this->Model->HasInValidMesh())
     {
     // There is no master poly on the server yet
-    vtkErrorMacro("There is no new master poly on the server.");
+    vtkErrorMacro("There is no new mesh on the server.");
     return 0;
     }
 

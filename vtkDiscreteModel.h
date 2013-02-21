@@ -53,6 +53,8 @@ class vtkIntArray;
 class vtkModelVertex;
 class vtkModelVertexUse;
 
+#include "DiscreteMesh.h"
+
 //BTX
 #include <string>
 enum vtkDiscreteModelEntityTypes
@@ -96,7 +98,17 @@ public:
   // Description:
   // Get the geometric representation of the model. Returns null on the
   // client.
-  vtkObject* GetGeometry();
+  const DiscreteMesh& GetMesh() const;
+
+  // Description:
+  // Returns true if the DiscreteModel has a non empty Mesh.
+  // we define empty to be a NULL pointer OR a mesh with zero points and cells
+  bool HasValidMesh() const;
+
+  // Description:
+  // Returns false if the DiscreteModel has a non empty Mesh.
+  // we define empty to be a NULL pointer OR a mesh with zero points and cells
+  bool HasInValidMesh() const;
 
   // Description:
   // Get the name of the array that stores the point mapping information.
@@ -266,12 +278,14 @@ protected:
   vtkModelUniqueNodalGroup* GetPointUniqueNodalGroup(vtkIdType pointId);
 
   // Description:
-  // Set the vtkObject that is used to represent the Geometry.  This should
-  // only be called on the server. Note: Sometimes UpdateGeometry() needs to
-  // be called if the master polydata is modified.
-  void SetGeometry(vtkObject* geometry);
-  void UpdateGeometry();
-  vtkObject* MasterGeometry;
+  // Set the Discrete mesh. This should only be called on the server.
+  void SetMesh(DiscreteMesh& mesh);
+
+  // Description:
+  // If an operator or model item modify the point set that is attached
+  // to the DiscreteMesh it can cause a desync. If that happens you should
+  // call UpdateMesh.
+  void UpdateMesh();
 
   // Description:
   // The mappings from a cell on the master geometry to the geometric model
@@ -302,6 +316,7 @@ protected:
   void InternalInvokeEvent(unsigned long event, void *callData);
 
 private:
+  DiscreteMesh Mesh;
   vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
   void operator=(const vtkDiscreteModel&);  // Not implemented.
 //ETX

@@ -260,13 +260,13 @@ bool vtkModelNodalGroup::ConstructRepresentation(vtkPolyData* grid)
 {
   grid->Initialize();
   vtkDiscreteModel* model = this->GetModel();
-  vtkPointSet* masterGrid = vtkPointSet::SafeDownCast(model->GetGeometry());
-  if(!masterGrid)
+  const DiscreteMesh& mesh = model->GetMesh();
+  if(!mesh.IsValid())
     {
     vtkWarningMacro("Could not access the main grid.");
     return false;
     }
-  grid->SetPoints(masterGrid->GetPoints());
+  grid->SetPoints(mesh.SharePointsPtr());
 
   vtkIdList* pointIds = vtkIdList::New();
   this->GetPointIds(pointIds);
