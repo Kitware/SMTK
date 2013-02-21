@@ -116,6 +116,7 @@ SET(ModelFiles
 )
 
 SET(DiscreteModelFiles
+  DiscreteMesh.cxx
   vtkModel3dmGridRepresentation.cxx
   vtkModel3dm2DGridRepresentation.cxx
   vtkModelBCGridRepresentation.cxx
