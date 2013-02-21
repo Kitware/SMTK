@@ -86,7 +86,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
     return false;
     }
 
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+  if(model->HasInValidMesh())
     {  // we're on the client and don't know this info
     return false;
     }
@@ -164,7 +164,7 @@ bool vtkCmbMeshGridRepresentationServer::GetModelEdgeAnalysisPoints(
   vtkDiscreteModel* model, vtkIdType edgeId, vtkIdTypeArray* edgePoints)
 {
   edgePoints->Reset();
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+  if(model->HasInValidMesh())
     {  // we're on the client and don't know this info
     return false;
     }
@@ -240,7 +240,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
     this->Reset();
     return false;
     }
-  if(vtkPolyData::SafeDownCast(model->GetGeometry()) == NULL)
+  if(model->HasInValidMesh())
     {  // we're on the client and don't know this info
     return false;
     }
