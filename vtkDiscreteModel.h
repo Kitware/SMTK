@@ -53,7 +53,8 @@ class vtkIntArray;
 class vtkModelVertex;
 class vtkModelVertexUse;
 
-#include "DiscreteMesh.h"
+#include "DiscreteMesh.h" //needed for Discrete Mesh
+#include "DiscreteMeshClassification.h" //needed for Discrete Mesh Classification
 
 //BTX
 #include <string>
@@ -82,6 +83,9 @@ enum DiscreteModelEventIds {
 class VTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
+  typedef DiscreteMeshClassification< vtkDiscreteModelGeometricEntity >
+          ClassificationType;
+
   static vtkDiscreteModel* New();
 
 //BTX
@@ -89,16 +93,18 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // Functions to get the vtkDiscreteModelGeometricEntity object that CellId
-  // is classified on and the cell index of the copy of CellId in that
-  // vtkPolyData.  Note that these should only be called on the server.
-  vtkDiscreteModelGeometricEntity* GetCellModelGeometricEntity(vtkIdType cellId);
-  vtkIdType GetCellModelGeometricEntityIndex(vtkIdType cellId);
+  // Get the geometric representation of the model.
+  const DiscreteMesh& GetMesh() const
+    {
+    return this->Mesh;
+    }
 
   // Description:
-  // Get the geometric representation of the model. Returns null on the
-  // client.
-  const DiscreteMesh& GetMesh() const;
+  // Get the classification model to the mesh.
+  ClassificationType& GetMeshClassification()
+    {
+    return this->MeshClassification;
+    }
 
   // Description:
   // Returns true if the DiscreteModel has a non empty Mesh.
@@ -247,14 +253,6 @@ protected:
   void GetModelEntityDefaultName(int entityType, const char* baseName,
                                  std::string & defaultEntityName);
 
-  // Description:
-  // Function to set the vtkDiscreteModelGeometricEntity object and Geometric
-  // Entity grid Id (GeomeEntityCellId) that MasterCellId is classified on.
-  // This does not set the reverse classification information though.
-  // Note that this should only be called on the server as it won't do
-  // anything on the client.
-  void SetCellClassification(vtkIdType masterCellId,vtkIdType geomEntityCellId,
-                             vtkDiscreteModelGeometricEntity* geomEntity);
 //BTX
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkCMBParserBase;
@@ -288,13 +286,6 @@ protected:
   void UpdateMesh();
 
   // Description:
-  // The mappings from a cell on the master geometry to the geometric model
-  // entity it is classified on (CellClassification) as well as the index
-  // of the cell on the geometric model entity geometric representation.
-  std::vector<vtkDiscreteModelGeometricEntity*> CellClassification;
-  std::vector<vtkIdType> ClassifiedCellIndex;
-
-  // Description:
   // The vector of vtkCMBUniqueNodalGroups that grid points are assigned to.
   // A point can be assigned to at most one vtkCMBUniqueNodalGroups but
   // is not required to be assigned to any.
@@ -317,9 +308,12 @@ protected:
 
 private:
   DiscreteMesh Mesh;
+  ClassificationType MeshClassification;
+
   vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
   void operator=(const vtkDiscreteModel&);  // Not implemented.
 //ETX
 };
+
 
 #endif

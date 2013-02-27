@@ -352,10 +352,13 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
 
   // first remove the cells from other model faces
   std::map<vtkDiscreteModelGeometricEntity*, vtkSmartPointer<vtkIdList> > removeInfo;
+  vtkDiscreteModel::ClassificationType& classification =
+                                            model->GetMeshClassification();
   for(vtkIdType i=0;i<masterCellIds->GetNumberOfIds();i++)
     {
     vtkDiscreteModelGeometricEntity* sourceEntity =
-      model->GetCellModelGeometricEntity(masterCellIds->GetId(i));
+        classification.GetEntity(masterCellIds->GetId(i));
+
     std::map<vtkDiscreteModelGeometricEntity*, vtkSmartPointer<vtkIdList> >::iterator it=
       removeInfo.find(sourceEntity);
     if(it != removeInfo.end() && it->first == this)
@@ -365,12 +368,12 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     else if(it == removeInfo.end())
       {
       vtkSmartPointer<vtkIdList> idList = vtkSmartPointer<vtkIdList>::New();
-      idList->InsertNextId(model->GetCellModelGeometricEntityIndex(masterCellIds->GetId(i)));
+      idList->InsertNextId(classification.GetEntityIndex(masterCellIds->GetId(i)));
       removeInfo[sourceEntity] = idList;
       }
     else
       {
-      vtkIdType localId = model->GetCellModelGeometricEntityIndex(masterCellIds->GetId(i));
+      vtkIdType localId = classification.GetEntityIndex(masterCellIds->GetId(i));
       it->second->InsertNextId(localId);
       }
     }
@@ -397,7 +400,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     this->GetReverseClassificationArray()->InsertNextTupleValue(&masterCellId);
 
     // update the classification on the model to this info
-    model->SetCellClassification(masterCellId, newLocalCellId, this);
+    classification.SetEntity(masterCellId, newLocalCellId, this);
     }
   if(masterCellIds->GetNumberOfIds())
     {
@@ -442,10 +445,11 @@ bool vtkDiscreteModelGeometricEntity::RemoveCellsFromGeometry(vtkIdList* cellIds
   // now we need to update the mapping from the master grid cells to the
   // local grid cell id
   vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(thisEntity->GetModel());
+  vtkDiscreteModel::ClassificationType& classified = model->GetMeshClassification();
   for(vtkIdType i=0;i<poly->GetNumberOfCells();i++)
     {
     vtkIdType masterCellId = this->GetMasterCellId(i);
-    model->SetCellClassification(masterCellId, i, this);
+    classified.SetEntity(masterCellId, i, this);
     }
 
   return 1;

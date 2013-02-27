@@ -58,7 +58,8 @@ vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);
 vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
 vtkDiscreteModel::vtkDiscreteModel():
-  Mesh()
+  Mesh(),
+  MeshClassification()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
@@ -466,18 +467,6 @@ bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
   return 1;
 }
 
-vtkDiscreteModelGeometricEntity* vtkDiscreteModel::GetCellModelGeometricEntity(
-  vtkIdType cellId)
-{
-  size_t size = static_cast<size_t>(cellId);
-  if(cellId < 0 || size >= this->CellClassification.size())
-    {
-    vtkWarningMacro("Bad CellId.");
-    return 0;
-    }
-  return this->CellClassification[cellId];
-}
-
 void vtkDiscreteModel::SetMesh(DiscreteMesh& m)
 {
   this->Mesh = m;
@@ -491,8 +480,7 @@ void vtkDiscreteModel::UpdateMesh()
   const vtkIdType numCells = this->Mesh.GetNumberOfCells();
   const vtkIdType numPoints = this->Mesh.GetNumberOfPoints();
 
-  this->CellClassification.resize(numCells, NULL);
-  this->ClassifiedCellIndex.resize(numCells, -1);
+  this->MeshClassification.resize(numCells);
   this->UniquePointGroup.resize(numPoints, NULL);
 
   this->Modified();
@@ -531,11 +519,6 @@ void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* bas
   iter->Delete();
 }
 
-const DiscreteMesh & vtkDiscreteModel::GetMesh() const
-{
-  return this->Mesh;
-}
-
 bool vtkDiscreteModel::HasValidMesh() const
 {
   return this->Mesh.IsValid();
@@ -559,32 +542,6 @@ const char* vtkDiscreteModel::GetCellMapArrayName()
 const char* vtkDiscreteModel::GetCanonicalSideArrayName()
 {
   return "ModelCanonicalSideArray";
-}
-
-vtkIdType vtkDiscreteModel::GetCellModelGeometricEntityIndex(vtkIdType cellId)
-{
-  size_t size = static_cast<size_t>(cellId);
-  if(cellId < 0 || size >= this->ClassifiedCellIndex.size())
-    {
-    vtkWarningMacro("Bad cell id.");
-    return 0;
-    }
-  return this->ClassifiedCellIndex[cellId];
-}
-
-void vtkDiscreteModel::SetCellClassification(
-  vtkIdType masterCellId, vtkIdType geomEntityCellId, vtkDiscreteModelGeometricEntity* entity)
-{
-  size_t numCells = this->ClassifiedCellIndex.size();
-  if(masterCellId >= 0 && static_cast<size_t>(masterCellId) < numCells)
-    {
-    this->ClassifiedCellIndex[masterCellId] = geomEntityCellId;
-    this->CellClassification[masterCellId] = entity;
-    }
-  else
-    {
-    vtkErrorMacro("Bad master cell id value.");
-    }
 }
 
 void vtkDiscreteModel::SetPointUniqueNodalGroup(
@@ -666,9 +623,9 @@ void vtkDiscreteModel::Reset()
 
   // reset the mesh to an empty mesh
   this->Mesh = DiscreteMesh();
+  this->MeshClassification =
+      DiscreteMeshClassification<vtkDiscreteModelGeometricEntity>();
 
-  this->CellClassification.clear();
-  this->ClassifiedCellIndex.clear();
   this->InternalInvokeEvent(ModelReset, this);
 }
 
