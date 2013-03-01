@@ -33,7 +33,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "vtkDiscreteModelVertex.h"
-#include "vtkModelNodalGroup.h"
 #include "vtkCmbMeshServer.h"
 #include "vtkCMBParserBase.h"
 #include "vtkModelItemIterator.h"

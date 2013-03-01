@@ -34,7 +34,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelWrapper.h"
-#include "vtkModelNodalGroup.h"
 #include "vtkModelUserName.h"
 #include "vtkDoubleArray.h"
 #include "vtkErrorCode.h"
