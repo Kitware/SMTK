@@ -106,7 +106,6 @@ bool vtkDiscreteModelEdge::Destroy()
   // For the floating edge, we have associations with regions
   this->RemoveAllAssociations(vtkModelRegionType);
   this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
-  this->RemoveAllAssociations(vtkModelNodalGroupType);
   this->Modified();
   return true;
 }

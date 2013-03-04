@@ -325,7 +325,6 @@ bool vtkDiscreteModelFace::Destroy()
   if(this->Superclass::Destroy())
     {
     this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
-    this->RemoveAllAssociations(vtkModelNodalGroupType);
     this->Modified();
     return true;
     }

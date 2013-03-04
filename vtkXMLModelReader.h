@@ -39,8 +39,6 @@
 //BTX
 class vtkDiscreteModel;
 class vtkDiscreteModelEntityGroup;
-class vtkModelNodalGroup;
-class vtkModelUniqueNodalGroup;
 class vtkCollection;
 class vtkXMLElement;
 class vtkModelEdge;
@@ -188,8 +186,6 @@ protected:
   vtkModelVertex* ConstructModelVertex(int id);
   vtkModelVertexUse* ConstructModelVertexUse(int id);
   vtkDiscreteModelEntityGroup* ConstructModelEntityGroup(int id);
-  vtkModelNodalGroup* ConstructNodalGroup(int id);
-  vtkModelUniqueNodalGroup* ConstructUniqueNodalGroup(int id);
 
 private:
   vtkXMLModelReader(const vtkXMLModelReader&);  // Not implemented.

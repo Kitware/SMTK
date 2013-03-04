@@ -45,8 +45,6 @@ class vtkDiscreteModelEntity;
 class vtkDiscreteModelEntityGroup;
 class vtkDiscreteModelFace;
 class vtkDiscreteModelGeometricEntity;
-class vtkModelNodalGroup;
-class vtkModelUniqueNodalGroup;
 class vtkIdTypeArray;
 class vtkInformationDataObjectKey;
 class vtkIntArray;
@@ -62,7 +60,6 @@ enum vtkDiscreteModelEntityTypes
 {
   vtkDiscreteModelEntityGroupType = 100,
   vtkModelMaterialType,
-  vtkModelNodalGroupType
 };
 
 // Description:
@@ -195,20 +192,6 @@ public:
   virtual bool DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* entityGroup);
 
   // Description:
-  // Build a vtkModelNodalGroup and populate it with the vtkPoint Ids
-  // in PointIds. If Type is 0/BASE_NODAL_GROUP a vtkModelNodalGroup will
-  // be created and if Type is 1/UNIQUE_NODAL_GROUP a vtkModelUniqueNodalGroup
-  // will be created. Id is the unique persistent Id to be assigned
-  // to the nodal group.
-  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds);
-  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds,
-                                            vtkIdType id);
-
-  // Description:
-  // Destroy EntityGroup.  Returns true if successful.
-  virtual bool DestroyNodalGroup(vtkModelNodalGroup* nodalGroup);
-
-  // Description:
   // Build/Destroy a floating vtkDiscreteModelEdge.
   virtual vtkModelEdge* BuildFloatingRegionEdge(
     double point1[3], double point2[3],
@@ -263,17 +246,8 @@ protected:
   friend class CmbSceneBuilderCore;
   friend class CmbGeologyBuilderCore;
   friend class vtkCmbMapToCmbModel;
-  friend class vtkModelUniqueNodalGroup;
   friend class vtkCmbIncorporateMeshOperator;
 //ETX
-
-  // Description:
-  // Set/get the vtkCMBUniqueNodalGroups that a point is assigned to.
-  // For setting, it removes the point from its current vtkCMBUniqueNodalGroups
-  // if it belongs to one.
-  void SetPointUniqueNodalGroup(vtkModelUniqueNodalGroup* nodalGroup,
-                                vtkIdType pointId);
-  vtkModelUniqueNodalGroup* GetPointUniqueNodalGroup(vtkIdType pointId);
 
   // Description:
   // Set the Discrete mesh. This should only be called on the server.
@@ -284,12 +258,6 @@ protected:
   // to the DiscreteMesh it can cause a desync. If that happens you should
   // call UpdateMesh.
   void UpdateMesh();
-
-  // Description:
-  // The vector of vtkCMBUniqueNodalGroups that grid points are assigned to.
-  // A point can be assigned to at most one vtkCMBUniqueNodalGroups but
-  // is not required to be assigned to any.
-  std::vector<vtkModelUniqueNodalGroup*> UniquePointGroup;
 
   // Description:
   // The bounds of the model; set (on the server) when doing a SetGeometry,

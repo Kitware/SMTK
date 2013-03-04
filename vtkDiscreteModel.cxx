@@ -32,7 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelVertex.h"
-#include "vtkModelUniqueNodalGroup.h"
 #include "vtkModelUserName.h"
 #include "vtkConnectivityFilter.h"
 #include "vtkDataObject.h"
@@ -389,67 +388,6 @@ bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* enti
   return 1;
 }
 
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds)
-{
-  return this->BuildNodalGroup(type, pointIds, this->GetNextUniquePersistentId());
-}
-
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds,
-                                               vtkIdType id)
-{
-  vtkModelNodalGroup* nodalGroup = 0;
-  if(type == BASE_NODAL_GROUP)
-    {
-    nodalGroup = vtkModelNodalGroup::New();
-    }
-  else if(type == UNIQUE_NODAL_GROUP)
-    {
-    nodalGroup = vtkModelUniqueNodalGroup::New();
-    }
-  else
-    {
-    vtkErrorMacro("Bad Type.");
-    return 0;
-    }
-  if(pointIds && pointIds->GetNumberOfIds())
-    {
-    nodalGroup->AddPointIds(pointIds);
-    }
-  nodalGroup->Initialize(id);
-
-  this->AddAssociation(nodalGroup);
-  nodalGroup->Delete();
-
-  std::string defaultEntityName;
-  this->GetModelEntityDefaultName(vtkModelNodalGroupType, "Nodal Group",
-                                  defaultEntityName);
-  vtkModelUserName::SetUserName(nodalGroup, defaultEntityName.c_str());
-  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
-  this->InternalInvokeEvent(NodalGroupCreated, &entityId);
-
-  return nodalGroup;
-}
-
-bool vtkDiscreteModel::DestroyNodalGroup(vtkModelNodalGroup* nodalGroup)
-{
-  if(!nodalGroup->IsDestroyable())
-    {
-    return 0;
-    }
-  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
-  this->InternalInvokeEvent(NodalGroupAboutToDestroy, &entityId);
-  if(!nodalGroup->Destroy())
-    {
-    vtkErrorMacro("Problem destroying entity group.");
-    return 0;
-    }
-  this->RemoveAssociation(nodalGroup);
-  this->InternalInvokeEvent(NodalGroupDestroyed, &entityId);
-
-  this->Modified();
-  return 1;
-}
-
 bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
 {
   if(!modelEdge->IsDestroyable())
@@ -478,10 +416,7 @@ void vtkDiscreteModel::UpdateMesh()
   this->Mesh.GetBounds(this->ModelBounds);
 
   const vtkIdType numCells = this->Mesh.GetNumberOfCells();
-  const vtkIdType numPoints = this->Mesh.GetNumberOfPoints();
-
   this->MeshClassification.resize(numCells);
-  this->UniquePointGroup.resize(numPoints, NULL);
 
   this->Modified();
 }
@@ -544,36 +479,6 @@ const char* vtkDiscreteModel::GetCanonicalSideArrayName()
   return "ModelCanonicalSideArray";
 }
 
-void vtkDiscreteModel::SetPointUniqueNodalGroup(
-  vtkModelUniqueNodalGroup* nodalGroup, vtkIdType pointId)
-{
-  size_t numPoints = this->UniquePointGroup.size();
-  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
-    {
-    vtkErrorMacro("Bad master point id value.");
-    }
-  else
-    {
-    if(this->UniquePointGroup[pointId] &&
-       this->UniquePointGroup[pointId] != nodalGroup)
-      {
-      this->UniquePointGroup[pointId]->vtkModelUniqueNodalGroup::Superclass::RemovePointId(pointId);
-      }
-    this->UniquePointGroup[pointId] = nodalGroup;
-    }
-}
-
-vtkModelUniqueNodalGroup* vtkDiscreteModel::GetPointUniqueNodalGroup(vtkIdType pointId)
-{
-  size_t numPoints = this->UniquePointGroup.size();
-  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
-    {
-    vtkErrorMacro("Bad master point id value.");
-    return 0;
-    }
-  return this->UniquePointGroup[pointId];
-}
-
 void vtkDiscreteModel::Reset()
 {
  // Destroy entity groups
@@ -590,20 +495,6 @@ void vtkDiscreteModel::Reset()
     }
   entityGroupIter->Delete();
   this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
-  // nodal groups
-  vtkModelItemIterator* nodalGroupIter = this->NewIterator(vtkModelNodalGroupType);
-  for(nodalGroupIter->Begin();!nodalGroupIter->IsAtEnd();nodalGroupIter->Next())
-    {
-    bool destroyed =
-      vtkModelNodalGroup::SafeDownCast(nodalGroupIter->GetCurrentItem())->Destroy();
-    if(!destroyed)
-      {
-      vtkErrorMacro("Problem destroying a nodal group.");
-      }
-    }
-  nodalGroupIter->Delete();
-  this->RemoveAllAssociations(vtkModelNodalGroupType);
-  this->UniquePointGroup.clear();
 
   // Destroy materials
   vtkModelItemIterator* materialIter = this->NewIterator(vtkModelMaterialType);

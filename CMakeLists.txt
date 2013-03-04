@@ -132,9 +132,7 @@ SET(DiscreteModelFiles
   vtkDiscreteModelGeometricEntity.cxx
   vtkDiscreteModelRegion.cxx
   vtkDiscreteModelVertex.cxx
-  vtkModelNodalGroup.cxx
   #vtkDiscreteModelWrapper.cxx
-  vtkModelUniqueNodalGroup.cxx
   vtkModelUserName.cxx
   vtkXMLModelReader.cxx
   vtkXMLModelWriter.cxx

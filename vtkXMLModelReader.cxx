@@ -21,8 +21,6 @@
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelVertex.h"
-#
-#include "vtkModelUniqueNodalGroup.h"
 #include "vtkModelUserName.h"
 #include "vtkCollection.h"
 #include "vtkInformation.h"
@@ -184,8 +182,6 @@ void vtkXMLModelReader::Serialize(istream& str, const char*)
   this->Serialize("vtkDiscreteModelRegion");
   this->Serialize("vtkModelShellUse");
   this->Serialize("vtkDiscreteModelEntityGroup");
-  this->Serialize("vtkModelNodalGroup");
-  this->Serialize("vtkModelUniqueNodalGroup");
 
   model->SetBlockModelGeometricEntityEvent(blockEvent);
   int types[4] = {vtkModelVertexType, vtkModelEdgeType,
@@ -326,22 +322,6 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
     else if(!strcmp(ObjectName, "vtkDiscreteModelEntityGroup"))
       {
       obj = this->ConstructModelEntityGroup(id);
-      if(!obj)
-        {
-        return;
-        }
-      }
-    else if(!strcmp(ObjectName, "vtkModelNodalGroup"))
-      {
-      obj = this->ConstructNodalGroup(id);
-      if(!obj)
-        {
-        return;
-        }
-      }
-    else if(!strcmp(ObjectName, "vtkModelUniqueNodalGroup"))
-      {
-      obj = this->ConstructUniqueNodalGroup(id);
       if(!obj)
         {
         return;
@@ -743,23 +723,6 @@ vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id
 
   vtkErrorMacro("Model entity group contains more than one type.");
   return 0;
-}
-
-vtkModelNodalGroup* vtkXMLModelReader::ConstructNodalGroup(int id)
-{
-  // nodal groups only have an association with the model
-  // and the model will take care of keeping track of that association
-  // when the nodal group is built
-  return this->Model->BuildNodalGroup(BASE_NODAL_GROUP, 0, id);
-}
-
-vtkModelUniqueNodalGroup* vtkXMLModelReader::ConstructUniqueNodalGroup(int id)
-{
-  // nodal groups only have an association with the model
-  // and the model will take care of keeping track of that association
-  // when the nodal group is built
-  return vtkModelUniqueNodalGroup::SafeDownCast(
-    this->Model->BuildNodalGroup(UNIQUE_NODAL_GROUP, 0, id));
 }
 
 void vtkXMLModelReader::Serialize(const char* name, vtkInformation* info)
