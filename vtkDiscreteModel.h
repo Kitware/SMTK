@@ -52,7 +52,7 @@ class vtkModelVertex;
 class vtkModelVertexUse;
 
 #include "DiscreteMesh.h" //needed for Discrete Mesh
-#include "DiscreteMeshClassification.h" //needed for Discrete Mesh Classification
+#include "MeshClassification.h" //needed for Discrete Mesh Classification
 
 //BTX
 #include <string>
@@ -80,7 +80,7 @@ enum DiscreteModelEventIds {
 class VTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
-  typedef DiscreteMeshClassification< vtkDiscreteModelGeometricEntity >
+  typedef MeshClassification< vtkDiscreteModelGeometricEntity >
           ClassificationType;
 
   static vtkDiscreteModel* New();

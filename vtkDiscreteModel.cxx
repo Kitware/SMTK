@@ -127,8 +127,8 @@ vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
 {
   if(this->HasValidMesh())
     {
-    DiscreteMesh::Edge dmEdge(point1,point2);
-    DiscreteMesh::EdgeResult edgeIds = this->Mesh.AddEdge(dmEdge);
+    DiscreteMesh::EdgePoints dmEdge(point1,point2);
+    DiscreteMesh::EdgePointIds edgeIds = this->Mesh.AddEdgePoints(dmEdge);
 
     vtkModelVertex* vertex1 = this->BuildModelVertex(edgeIds.first);
     vtkModelVertex* vertex2 = this->BuildModelVertex(edgeIds.second);
@@ -514,8 +514,7 @@ void vtkDiscreteModel::Reset()
 
   // reset the mesh to an empty mesh
   this->Mesh = DiscreteMesh();
-  this->MeshClassification =
-      DiscreteMeshClassification<vtkDiscreteModelGeometricEntity>();
+  this->MeshClassification = vtkDiscreteModel::ClassificationType();
 
   this->InternalInvokeEvent(ModelReset, this);
 }

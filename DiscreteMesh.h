@@ -1,4 +1,4 @@
-/*=========================================================================
+/*  =========================================================================
 
 Copyright (c) 1998-2005 Kitware Inc. 28 Corporate Drive, Suite 204,
 Clifton Park, NY, 12065, USA.
@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkType.h" //needed for vtkIdType
 #include "vtkSmartPointer.h" //needed for vtkSmartPointer
 #include <vector> //needed for Face and FaceIds;
+#include <map> //needed for the edge storage
 
 class vtkCell;
 class vtkCellLocator;
@@ -59,17 +60,28 @@ class vtkCMBXMLBCSWriter;
  *##  End of classes that need to be rewritten ##
 */
 
-
 //currently this class is a shim to vtkPolyData, as we work
 //on detaching vtkDiscreteModels, mesh representation for VTK
 class VTKDISCRETEMODEL_EXPORT DiscreteMesh
 {
 public:
-  typedef std::pair<vtkIdType,vtkIdType> EdgeResult;
-  typedef std::vector<vtkIdType> FaceResult;
+  typedef std::pair<vtkIdType,vtkIdType> EdgePointIds;
+  typedef std::vector<vtkIdType> FaceIds;
 
-  class Edge;
+  class EdgePoints;
   class Face;
+
+  class EdgeMap : private std::map< DiscreteMesh::EdgePointIds, vtkIdType >
+  {
+   public:
+    //returns the id for the passed in edge
+    vtkIdType AddEdge(const DiscreteMesh::EdgePointIds& edge,
+                      const vtkIdType geometricEdgeId);
+
+    //returns the geometric id of the edge that this mesh edge
+    //is mapped to.
+    vtkIdType GetId(const DiscreteMesh::EdgePointIds & edge) const;
+  };
 
   DiscreteMesh();
   DiscreteMesh(vtkPolyData* data);
@@ -137,9 +149,13 @@ public:
   void MovePoint(vtkIdType pos, double xyz[3]) const;
 
   //Doesn't verify Data is valid!
-  DiscreteMesh::EdgeResult AddEdge( const DiscreteMesh::Edge& e);
+  //doesn't add the edge to mesh, just adds the points
+  DiscreteMesh::EdgePointIds AddEdgePoints( const DiscreteMesh::EdgePoints& e);
 
-  DiscreteMesh::FaceResult AddFace( const DiscreteMesh::Face& f) const;
+  //returns the edge Id
+  vtkIdType AddEdge( const DiscreteMesh::EdgePointIds& e, const vtkIdType geometricEdgeId);
+
+  DiscreteMesh::FaceIds AddFace( const DiscreteMesh::Face& f) const;
 
   friend class vtkDiscreteModelWrapper;
   friend class vtkEnclosingModelEntityOperator;
@@ -153,15 +169,14 @@ private:
 
 
   vtkPolyData* Data;
+  DiscreteMesh::EdgeMap Edges;
 };
 
-
-
 //----------------------------------------------------------------------------
-class DiscreteMesh::Edge : public std::pair<double[3],double[3]>
+class DiscreteMesh::EdgePoints : public std::pair<double[3],double[3]>
 {
 public:
-  Edge(double f[3], double s[3])
+  EdgePoints(double f[3], double s[3])
   {
     this->first[0] = f[0];
     this->first[1] = f[1];

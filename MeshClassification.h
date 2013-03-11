@@ -1,11 +1,11 @@
-#ifndef DISCRETEMESHCLASSIFICATION_H
-#define DISCRETEMESHCLASSIFICATION_H
+#ifndef __MESHCLASSIFICATION_H
+#define __MESHCLASSIFICATION_H
 
 #include "vtkType.h"
 #include <vector> //needed for vector
 
 template<class EntityType>
-class DiscreteMeshClassification
+class MeshClassification
 {
 public:
   // Description:
@@ -24,7 +24,7 @@ private:
 
 //=============================================================================
 template<class EntityType>
-EntityType* DiscreteMeshClassification<EntityType>::GetEntity(
+EntityType* MeshClassification<EntityType>::GetEntity(
                                                           vtkIdType id) const
 {
   return this->Classification[id].second;
@@ -32,7 +32,7 @@ EntityType* DiscreteMeshClassification<EntityType>::GetEntity(
 
 //=============================================================================
 template<class EntityType>
-vtkIdType DiscreteMeshClassification<EntityType>::GetEntityIndex(
+vtkIdType MeshClassification<EntityType>::GetEntityIndex(
                                                           vtkIdType id) const
 {
   return this->Classification[id].first;
@@ -40,7 +40,7 @@ vtkIdType DiscreteMeshClassification<EntityType>::GetEntityIndex(
 
 //=============================================================================
 template<class EntityType>
-void DiscreteMeshClassification<EntityType>::SetEntity(vtkIdType id,
+void MeshClassification<EntityType>::SetEntity(vtkIdType id,
                                                        vtkIdType entityIndex,
                                                        EntityType* entity)
 {
@@ -50,7 +50,7 @@ void DiscreteMeshClassification<EntityType>::SetEntity(vtkIdType id,
 
 //=============================================================================
 template<class EntityType>
-void DiscreteMeshClassification<EntityType>::resize(vtkIdType size)
+void MeshClassification<EntityType>::resize(vtkIdType size)
 {
   classificationStorageType empty(-1,NULL);
   this->Classification.resize(size, empty);

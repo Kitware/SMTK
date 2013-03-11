@@ -293,22 +293,30 @@ void DiscreteMesh::MovePoint(vtkIdType pos, double xyz[3]) const
 }
 
 //=============================================================================
-DiscreteMesh::EdgeResult DiscreteMesh::AddEdge(const DiscreteMesh::Edge& e)
+DiscreteMesh::EdgePointIds DiscreteMesh::AddEdgePoints(const DiscreteMesh::EdgePoints& e)
 {
-  return DiscreteMesh::EdgeResult(
+  DiscreteMesh::EdgePointIds edge(
         this->Data->GetPoints()->InsertNextPoint(e.first),
         this->Data->GetPoints()->InsertNextPoint(e.second) );
+   return edge;
 }
 
 //=============================================================================
-DiscreteMesh::FaceResult DiscreteMesh::AddFace(const DiscreteMesh::Face& f) const
+vtkIdType DiscreteMesh::AddEdge(const DiscreteMesh::EdgePointIds& e,
+                                const vtkIdType geometricEdgeId)
+{
+  return this->Edges.AddEdge(e,geometricEdgeId);
+}
+
+//=============================================================================
+DiscreteMesh::FaceIds DiscreteMesh::AddFace(const DiscreteMesh::Face& f) const
 {
   typedef DiscreteMesh::Face::ids_const_iterator iter;
   typedef DiscreteMesh::Face::points_const_iterator points_iter;
 
   const vtkIdType numPoints = f.GetNumberOfPoints();
 
-  DiscreteMesh::FaceResult result;
+  DiscreteMesh::FaceIds result;
   result.reserve(numPoints);
 
   points_iter newPoints = f.points_begin();
@@ -329,4 +337,42 @@ DiscreteMesh::FaceResult DiscreteMesh::AddFace(const DiscreteMesh::Face& f) cons
     }
   this->Data->InsertNextCell(f.CellType(),numPoints,&result[0]);
   return result;
+}
+
+namespace
+{
+  DiscreteMesh::EdgePointIds make_SortedEdge(
+                                      const DiscreteMesh::EdgePointIds& e)
+  {
+    return DiscreteMesh::EdgePointIds( std::min(e.first, e.second),
+                                       std::max(e.first, e.second) );
+  }
+}
+
+//=============================================================================
+vtkIdType DiscreteMesh::EdgeMap::AddEdge(const DiscreteMesh::EdgePointIds& origEdge,
+                                         const vtkIdType geometricEdgeId)
+{
+  const EdgePointIds sortedEdge = make_SortedEdge( origEdge );
+  const DiscreteMesh::EdgeMap::const_iterator found = this->find(sortedEdge);
+  if(found == this->end())
+    {
+    const std::pair<EdgePointIds,vtkIdType> inserted_edge(sortedEdge,
+                                                          geometricEdgeId);
+    this->insert(inserted_edge);
+    return geometricEdgeId;
+    }
+  return found->second;
+}
+
+//=============================================================================
+vtkIdType DiscreteMesh::EdgeMap::GetId(const DiscreteMesh::EdgePointIds &origEdge) const
+{
+  const EdgePointIds sortedEdge = make_SortedEdge( origEdge );
+  const DiscreteMesh::EdgeMap::const_iterator found = this->find(sortedEdge);
+  if(found != this->end())
+    {
+    return found->second;
+    }
+  return 0;
 }
