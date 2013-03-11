@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 
+#include "DiscreteMeshCellIdIterator.h" //needed for iterator
 #include "vtkType.h" //needed for vtkIdType
 #include "vtkSmartPointer.h" //needed for vtkSmartPointer
 #include <vector> //needed for Face and FaceIds;
@@ -69,17 +70,19 @@ class vtkCMBXMLBCSWriter;
 class VTKDISCRETEMODEL_EXPORT DiscreteMesh
 {
 public:
-  enum DataType{ FACE_DATA=0, EDGE_DATA=1};
+  enum DataType{ FACE_DATA=0, EDGE_DATA=1, BOTH_DATA=2};
 
+  typedef DiscreteMeshCellIdIterator cell_const_iterator;
   typedef std::pair<vtkIdType,vtkIdType> EdgePointIds;
-  typedef std::vector<vtkIdType> FaceIds;
+
 
   class EdgePoints;
   class Face;
+  class FaceResult;
 
   DiscreteMesh();
-  DiscreteMesh(vtkPolyData* faceData);
-  DiscreteMesh(vtkPolyData* faceData, vtkPolyData* edgeData);
+  DiscreteMesh(vtkPolyData* allData);
+
   DiscreteMesh(const DiscreteMesh& other);
   DiscreteMesh& operator=(const DiscreteMesh&);
 
@@ -90,12 +93,20 @@ public:
   //verifies that Data is valid.
   vtkIdType GetNumberOfCells() const;
 
-  //verifies thata Data is valid.
-  vtkIdType GetNumberOfPoints() const;
+  //verifies that Data is valid.
+  vtkIdType GetNumberOfFaces() const;
 
   //verifies that Data is valid.
-  //does a deep copy of Data into the returned polydata
-  vtkSmartPointer<vtkPolyData> DeepCopyFaceData() const;
+  vtkIdType GetNumberOfEdges() const;
+
+  //verifies that Data is valid.
+  vtkIdType GetNumberOfPoints() const;
+
+  cell_const_iterator CellsBegin() const;
+  cell_const_iterator CellsEnd() const;
+  //verifies that Data is valid.
+  //does a deep copy of Edge and Face Data into the returned polydata
+  vtkSmartPointer<vtkPolyData> GetAsSinglePolyData() const;
 
   //Doesn't verify Data is valid!
   //special method to signify that something is sharing
@@ -106,7 +117,7 @@ public:
   void BuildLinks() const;
 
   //Doesn't verify Data is valid!
-  vtkSmartPointer<vtkIncrementalOctreePointLocator> BuildPointLocator() const;
+  vtkSmartPointer<vtkIncrementalOctreePointLocator> BuildPointLocator( DataType type = FACE_DATA) const;
 
   //Doesn't verify Data is valid!
   bool ComputeCellNormal(vtkIdType index, double norm[3]) const;
@@ -151,12 +162,13 @@ public:
   //returns the edge Id
   vtkIdType AddEdge(EdgePointIds &e);
 
-  DiscreteMesh::FaceIds AddFace( const DiscreteMesh::Face& f) const;
+  DiscreteMesh::FaceResult AddFace( const DiscreteMesh::Face& f) const;
 
   friend class vtkDiscreteModelWrapper;
   friend class vtkEnclosingModelEntityOperator;
   friend class vtkCMBPolyDataProvider;
   friend class vtkCMBXMLBCSWriter;
+  friend class vtkDiscreteModelEdge;
 private:
   //verifies that Data is valid.
   //does a shallow copy of Data into the returned polydata
@@ -169,10 +181,16 @@ private:
   //given a data type ( face or edge ) return the corect poly data
   vtkPolyData* GetDataFromType(DiscreteMesh::DataType type ) const;
 
+  //static method to help with conversion
+  static inline void FlatIdSpaceToEdgeIdSpace(vtkIdType* cellIds, vtkIdType num)
+    { for(vtkIdType i=0; i < num; ++i) { cellIds[i] ^= -1; } }
+
   vtkPolyData* FaceData;
   vtkPolyData* EdgeData;
   //both poly data's point to the same vtkPoints
   vtkPoints* SharedPoints;
+
+
 };
 
 //----------------------------------------------------------------------------
@@ -214,6 +232,8 @@ public:
     NewPoints()
   {
   }
+  vtkIdType InvalidId() const { return -1; }
+
   void AddExistingPointId(vtkIdType id)
     {
     this->PointIds.push_back(id);
@@ -222,10 +242,8 @@ public:
   void AddNewPoint(double pos[3])
     {
     this->NewPoints.push_back(Face::point(pos));
-    this->PointIds.push_back(-1);
+    this->PointIds.push_back(InvalidId());
     }
-
-  vtkIdType InvalidId() const { return -1; }
 
   int CellType() const { return this->CType; }
 
@@ -236,6 +254,29 @@ public:
   points_const_iterator points_end() const { return this->NewPoints.end(); }
 
   vtkIdType GetNumberOfPoints() const { return this->PointIds.size(); }
+};
+
+//----------------------------------------------------------------------------
+class DiscreteMesh::FaceResult: private std::vector<vtkIdType>
+{
+  typedef vtkIdType T;
+  typedef std::vector<vtkIdType> vector;
+public:
+  typedef vector::const_iterator const_iterator;
+  typedef vector::iterator iterator;
+
+  FaceResult():vector(),CellId(0){}
+
+  using vector::front;
+  using vector::begin;
+  using vector::end;
+  using vector::push_back;
+  using vector::reserve;
+  using vector::resize;
+  using vector::size;
+  using vector::operator[];
+  vtkIdType CellId;
+
 };
 
 

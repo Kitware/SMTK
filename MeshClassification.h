@@ -15,7 +15,7 @@ public:
 
   void SetEntity(vtkIdType meshId, vtkIdType entityIndex, EntityType* entity);
 
-  void resize(vtkIdType size);
+  void resize(vtkIdType numEdges, vtkIdType numFaces);
 
 private:
   typedef std::pair<vtkIdType,EntityType* > classificationStorageType;
@@ -53,11 +53,11 @@ void MeshClassification<EntityType>::SetEntity(vtkIdType meshId,
 
 //=============================================================================
 template<class EntityType>
-void MeshClassification<EntityType>::resize(vtkIdType size)
+void MeshClassification<EntityType>::resize(vtkIdType numEdges, vtkIdType numFaces)
 {
   classificationStorageType empty(-1,NULL);
-  this->Classifications[0].resize(size, empty);
-  this->Classifications[1].resize(size, empty);
+  this->Classifications[0].resize(numFaces, empty);
+  this->Classifications[1].resize(numEdges, empty);
 }
 
 //=============================================================================

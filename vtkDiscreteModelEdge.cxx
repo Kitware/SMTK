@@ -473,6 +473,61 @@ void vtkDiscreteModelEdge::GetBoundaryPointIds(vtkIdList* ptsList)
     }
 }
 
+bool vtkDiscreteModelEdge::AddCellsToGeometry(vtkIdList* masterCellIds)
+{
+  const vtkIdType numCells = masterCellIds->GetNumberOfIds();
+  vtkIdType* cellids = masterCellIds->GetPointer(0);
+
+  //only transform the ids if they are already positive
+  //otherwise we are doing something like a split and we already have
+  //have ids in edge index space
+  if(numCells > 0 && cellids[0] >= 0)
+    {
+    DiscreteMesh::FlatIdSpaceToEdgeIdSpace(cellids,numCells);
+    }
+
+  return vtkDiscreteModelGeometricEntity::AddCellsToGeometry(masterCellIds);
+}
+
+bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
+{
+  // now add cells on this entity
+  vtkModelGeometricEntity* thisEntity =
+    vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(
+                                thisEntity->GetModel());
+
+  vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(
+                                                    thisEntity->GetGeometry());
+
+
+  const DiscreteMesh& mesh = model->GetMesh();
+  vtkDiscreteModel::ClassificationType& classification =
+                                            model->GetMeshClassification();
+
+  vtkNew<vtkIdList> pointIds;
+  for(vtkIdType i=0;i<cellids->GetNumberOfIds();i++)
+    {
+    const vtkIdType masterCellId = cellids->GetId(i);
+    const vtkIdType cellType = mesh.GetCellType(masterCellId);
+    mesh.GetCellPointIds(masterCellId,pointIds.GetPointer());
+
+    const vtkIdType newLocalCellId =
+              entityPoly->InsertNextCell(cellType,pointIds.GetPointer());
+    this->GetReverseClassificationArray()->InsertNextTupleValue(&masterCellId);
+
+    // update the classification on the model to this info
+    classification.SetEntity(masterCellId, newLocalCellId, this);
+    }
+  if(cellids->GetNumberOfIds())
+    {
+    entityPoly->Modified();
+    }
+
+  return true;
+}
+
+
 void vtkDiscreteModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

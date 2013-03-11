@@ -99,7 +99,6 @@ protected:
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBModelStateOperator;
-  //friend class vtkCMB3dmReader;
   friend class vtkCMBModelBuilder;
   friend class vtkCmbMeshToModelWriter;
   friend class CmbGeologyBuilderCore;
@@ -111,7 +110,11 @@ protected:
   // only be called from vtkDiscreteModel on the server as vtkDiscreteModel is
   // responsible for removing this cell from the current
   // vtkDiscreteModelGeometricEntity that is classified on.
-  bool AddCellsToGeometry(vtkIdList* cellIds);
+  virtual bool AddCellsToGeometry(vtkIdList* cellIds);
+
+  // This can be overriden by subclasses to modify the behavior of
+  // adding the cell ids classification to the mesh
+  virtual bool AddCellsClassificationToMesh(vtkIdList* cellIds);
 
   // Description:
   // Get the array that maps the CellId for this grid to the CellId on

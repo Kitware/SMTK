@@ -386,12 +386,29 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
       }
     }
 
+  return this->AddCellsClassificationToMesh(masterCellIds);
+}
+
+bool vtkDiscreteModelGeometricEntity::AddCellsClassificationToMesh(vtkIdList* cellids)
+{
   // now add cells on this entity
+  vtkModelGeometricEntity* thisEntity =
+    vtkModelGeometricEntity::SafeDownCast(this->GetThisModelEntity());
+  vtkDiscreteModel* model = vtkDiscreteModel::SafeDownCast(
+    thisEntity->GetModel());
+
+  vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(
+                                                    thisEntity->GetGeometry());
+
+
   const DiscreteMesh& mesh = model->GetMesh();
+  vtkDiscreteModel::ClassificationType& classification =
+                                            model->GetMeshClassification();
+
   vtkNew<vtkIdList> pointIds;
-  for(vtkIdType i=0;i<masterCellIds->GetNumberOfIds();i++)
+  for(vtkIdType i=0;i<cellids->GetNumberOfIds();i++)
     {
-    const vtkIdType masterCellId = masterCellIds->GetId(i);
+    const vtkIdType masterCellId = cellids->GetId(i);
     const vtkIdType cellType = mesh.GetCellType(masterCellId);
     mesh.GetCellPointIds(masterCellId,pointIds.GetPointer());
 
@@ -402,7 +419,7 @@ bool vtkDiscreteModelGeometricEntity::AddCellsToGeometry(vtkIdList* masterCellId
     // update the classification on the model to this info
     classification.SetEntity(masterCellId, newLocalCellId, this);
     }
-  if(masterCellIds->GetNumberOfIds())
+  if(cellids->GetNumberOfIds())
     {
     entityPoly->Modified();
     }

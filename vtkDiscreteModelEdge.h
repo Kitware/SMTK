@@ -103,6 +103,27 @@ protected:
 
   virtual vtkModelEntity* GetThisModelEntity();
 
+  //BTX
+  // for using AddCellsToGeometry
+  friend class vtkDiscreteModel;
+  friend class vtkCMBParserBase;
+  friend class vtkDiscreteModelWrapper;
+  friend class vtkCMBModelStateOperator;
+  friend class vtkCMBModelBuilder;
+  friend class vtkCmbMeshToModelWriter;
+  friend class CmbGeologyBuilderCore;
+  friend class CmbSceneBuilderCore;
+  //ETX
+
+  // Description:
+  // Add cells to this geometric representation.  This should
+  // only be called from vtkDiscreteModel on the server as vtkDiscreteModel is
+  // responsible for removing this cell from the current
+  // vtkDiscreteModelGeometricEntity that is classified on.
+  virtual bool AddCellsToGeometry(vtkIdList* cellIds);
+
+  virtual bool AddCellsClassificationToMesh(vtkIdList* cellIds);
+
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See

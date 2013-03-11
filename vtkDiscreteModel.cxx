@@ -415,8 +415,8 @@ void vtkDiscreteModel::UpdateMesh()
 {
   this->Mesh.GetBounds(this->ModelBounds);
 
-  const vtkIdType numCells = this->Mesh.GetNumberOfCells();
-  this->MeshClassification.resize(numCells);
+  this->MeshClassification.resize(this->Mesh.GetNumberOfEdges(),
+                                  this->Mesh.GetNumberOfFaces());
 
   this->Modified();
 }
