@@ -36,37 +36,108 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
 
+namespace detail
+{
+  DiscreteMesh::EdgePointIds make_SortedEdge(
+                                      const DiscreteMesh::EdgePointIds& e)
+  {
+    return DiscreteMesh::EdgePointIds( std::min(e.first, e.second),
+                                       std::max(e.first, e.second) );
+  }
+
+  //converts an edge id into the global id space
+  //will return the new id
+  vtkIdType GetDataTypeIndex(vtkIdType globalId)
+    {
+    const int is_negative = static_cast<int>(globalId < 0);
+    return (globalId ^ -is_negative);
+    }
+
+  DiscreteMesh::DataType GetDataType(vtkIdType globalId)
+    {
+    return static_cast<DiscreteMesh::DataType>(globalId < 0);
+    }
+
+  //type represents the type of id we are transforming
+  vtkIdType ConvertIndex(DiscreteMesh::DataType type,
+                         vtkIdType& id)
+    {
+    //convert the type to 0 or -1 where -1 represents is_negative
+    const int is_negative_type = -type;
+    return id ^ is_negative_type;
+    }
+
+  //type represents the type of ids we are transforming
+  void ConvertIndices(DiscreteMesh::DataType type,
+                           vtkIdList* idsToTransform)
+    {
+    //convert the type to 0 or -1 where -1 represents is_negative
+    const int is_negative_type = -type;
+    const vtkIdType size = idsToTransform->GetNumberOfIds();
+    vtkIdType* values = idsToTransform->GetPointer(0);
+    for(vtkIdType i=0; i < size; ++i)
+      {
+      values[i] = (values[i] ^ is_negative_type);
+      }
+    }
+}
+
 //=============================================================================
 DiscreteMesh::DiscreteMesh()
 {
-  this->Data=NULL;
+  this->FaceData=NULL;
+  this->EdgeData=NULL;
+  this->SharedPoints=NULL;
 }
 
 //=============================================================================
 DiscreteMesh::DiscreteMesh(vtkPolyData* data)
 {
-  this->Data = data;
-  if(this->Data)
+  this->FaceData = data;
+  this->EdgeData = NULL;
+  this->SharedPoints = NULL;
+
+  if(this->FaceData)
     {
-    this->Data->Register(NULL);
+    this->FaceData->Register(NULL);
+    this->SharedPoints=this->FaceData->GetPoints();
+    }
+
+  if(this->SharedPoints)
+    {
+    this->SharedPoints->Register(NULL);
+    }
+}
+
+//=============================================================================
+DiscreteMesh::DiscreteMesh(vtkPolyData* faceData, vtkPolyData* edgeData)
+{
+  this->FaceData = faceData;
+  this->EdgeData = edgeData;
+  this->SharedPoints = NULL;
+
+  if(this->FaceData)
+    {
+    this->FaceData->Register(NULL);
+    this->SharedPoints=this->FaceData->GetPoints();
+    }
+
+  if(this->EdgeData)
+    {
+    this->EdgeData->Register(NULL);
+    this->SharedPoints=this->EdgeData->GetPoints();
+    }
+
+  if(this->SharedPoints)
+    {
+    this->SharedPoints->Register(NULL);
     }
 }
 
 //=============================================================================
 DiscreteMesh::DiscreteMesh(const DiscreteMesh& other)
 {
-  if(this->Data)
-    {
-    this->Data->Delete();
-    this->Data=NULL;
-    }
-
-  this->Data = other.Data;
-
-  if(this->Data)
-    {
-    this->Data->Register(NULL);
-    }
+  this->ShallowAssignment(other);
 }
 
 //=============================================================================
@@ -79,35 +150,35 @@ DiscreteMesh& DiscreteMesh::operator=(const DiscreteMesh& other)
     }
 
   //don't overwrite if the data object is shared
-  if(this->Data == other.Data)
+  if( (this->FaceData == other.FaceData) &&
+      (this->EdgeData == other.EdgeData) )
     {
     return *this;
     }
 
-  //decrement our count
-  if(this->Data)
-    {
-    this->Data->Delete();
-    this->Data=NULL;
-    }
-
-  this->Data = other.Data;
-
-  if(this->Data)
-    {
-    this->Data->Register(NULL);
-    }
-
+  this->ShallowAssignment(other);
   return *this;
 }
 
 //=============================================================================
 DiscreteMesh::~DiscreteMesh()
 {
-  if(this->Data)
+  if(this->FaceData)
     {
-    this->Data->Delete();
-    this->Data=NULL;
+    this->FaceData->Delete();
+    this->FaceData=NULL;
+    }
+
+  if(this->EdgeData)
+    {
+    this->EdgeData->Delete();
+    this->EdgeData=NULL;
+    }
+
+  if(this->SharedPoints)
+    {
+    this->SharedPoints->Delete();
+    this->SharedPoints=NULL;
     }
 }
 
@@ -121,9 +192,9 @@ bool DiscreteMesh::IsValid() const
 //=============================================================================
 vtkIdType DiscreteMesh::GetNumberOfCells() const
 {
-    if(this->Data)
+    if(this->FaceData)
       {
-      return this->Data->GetNumberOfCells();
+      return this->FaceData->GetNumberOfCells();
       }
     return 0;
 }
@@ -131,31 +202,20 @@ vtkIdType DiscreteMesh::GetNumberOfCells() const
 //=============================================================================
 vtkIdType DiscreteMesh::GetNumberOfPoints() const
 {
-  if(this->Data)
+  if(this->SharedPoints)
     {
-    return this->Data->GetNumberOfPoints();
+    return this->SharedPoints->GetNumberOfPoints();
     }
   return 0;
 }
 
 //=============================================================================
-vtkSmartPointer<vtkPolyData> DiscreteMesh::ShallowCopy() const
+vtkSmartPointer<vtkPolyData> DiscreteMesh::DeepCopyFaceData() const
 {
   vtkSmartPointer<vtkPolyData> copy = vtkSmartPointer<vtkPolyData>::New();
-  if(this->Data)
+  if(this->FaceData)
     {
-    copy->ShallowCopy(this->Data);
-    }
-  return copy;
-}
-
-//=============================================================================
-vtkSmartPointer<vtkPolyData> DiscreteMesh::DeepCopy() const
-{
-  vtkSmartPointer<vtkPolyData> copy = vtkSmartPointer<vtkPolyData>::New();
-  if(this->Data)
-    {
-    copy->DeepCopy(this->Data);
+    copy->DeepCopy(this->FaceData);
     }
   return copy;
 }
@@ -163,20 +223,28 @@ vtkSmartPointer<vtkPolyData> DiscreteMesh::DeepCopy() const
 //=============================================================================
 vtkPoints* DiscreteMesh::SharePointsPtr() const
 {
-  return this->Data->GetPoints();
+  return this->SharedPoints;
 }
 
 //=============================================================================
 void DiscreteMesh::BuildLinks() const
 {
-  this->Data->BuildLinks();
+  if(this->FaceData)
+    {
+    this->FaceData->BuildLinks();
+    }
+
+  if(this->EdgeData)
+    {
+    this->EdgeData->BuildLinks();
+    }
 }
 
 //=============================================================================
 vtkSmartPointer<vtkIncrementalOctreePointLocator> DiscreteMesh::BuildPointLocator() const
 {
   vtkSmartPointer<vtkIncrementalOctreePointLocator> locator;
-  locator->SetDataSet(this->Data);
+  locator->SetDataSet(this->FaceData);
   locator->AutomaticOn();
   locator->SetTolerance(0.0);
   locator->BuildLocator();
@@ -186,7 +254,11 @@ vtkSmartPointer<vtkIncrementalOctreePointLocator> DiscreteMesh::BuildPointLocato
 //=============================================================================
 bool DiscreteMesh::ComputeCellNormal(vtkIdType index, double norm[3]) const
 {
-  vtkDataArray *normals = this->Data->GetCellData()->GetNormals();
+  const DiscreteMesh::DataType type = detail::GetDataType(index);
+  index = detail::GetDataTypeIndex(index);
+  vtkPolyData* data = this->GetDataFromType(type);
+
+  vtkDataArray *normals = data->GetCellData()->GetNormals();
   if(normals)
     {
     normals->GetTuple(index,norm);
@@ -197,7 +269,7 @@ bool DiscreteMesh::ComputeCellNormal(vtkIdType index, double norm[3]) const
     vtkNew<vtkIdList> pointIds;
     this->GetCellPointIds(index,pointIds.GetPointer());
 
-    vtkPolygon::ComputeNormal(this->Data->GetPoints(),
+    vtkPolygon::ComputeNormal(this->SharedPoints,
                               pointIds->GetNumberOfIds(),
                               pointIds->GetPointer(0),
                               norm);
@@ -238,74 +310,105 @@ bool DiscreteMesh::ComputeCellCentroid(vtkIdType index, double centroid[3]) cons
 //=============================================================================
 int DiscreteMesh::GetCellType(vtkIdType index) const
 {
-  return this->Data->GetCellType(index);
+  const DiscreteMesh::DataType type = detail::GetDataType(index);
+  index = detail::GetDataTypeIndex(index);
+  vtkPolyData* data = this->GetDataFromType(type);
+
+  return data->GetCellType(index);
 }
 
 //=============================================================================
 void DiscreteMesh::GetCellPointIds(vtkIdType index, vtkIdList* points) const
 {
-  this->Data->GetCellPoints(index,points);
+  const DiscreteMesh::DataType type = detail::GetDataType(index);
+  index = detail::GetDataTypeIndex(index);
+  vtkPolyData* data = this->GetDataFromType(type);
+
+  data->GetCellPoints(index,points);
 }
 
 //=============================================================================
 void DiscreteMesh::GetCellNeighbors(vtkIdType index, vtkIdList* edge,
                                     vtkIdList* neighbors) const
 {
-  this->Data->GetCellNeighbors(index,edge,neighbors);
+  const DiscreteMesh::DataType type = detail::GetDataType(index);
+  index = detail::GetDataTypeIndex(index);
+  vtkPolyData* data = this->GetDataFromType(type);
+
+  //we have to convert the input edge list so copy
+  vtkNew<vtkIdList> transformedEdges;
+  transformedEdges->DeepCopy(edge);
+
+  detail::ConvertIndices(type,transformedEdges.GetPointer());
+
+  data->GetCellNeighbors(index,transformedEdges.GetPointer(),neighbors);
+
+  detail::ConvertIndices(type,neighbors);
 }
 
 //=============================================================================
 void DiscreteMesh::GetCellEdgeNeighbors(vtkIdType index, vtkIdType startEdge,
                           vtkIdType endEdge, vtkIdList* neighbors) const
 {
-  this->Data->GetCellEdgeNeighbors(index,startEdge,endEdge,neighbors);
+  const DiscreteMesh::DataType type = detail::GetDataType(index);
+  index = detail::GetDataTypeIndex(index);
+  vtkPolyData* data = this->GetDataFromType(type);
+
+  //start amd end are point indicies so they don't need to be converted/
+  //neighbors are cell ids so they do need to be converted
+  data->GetCellEdgeNeighbors(index,
+                             startEdge,
+                             endEdge,
+                             neighbors);
+
+  detail::ConvertIndices(type,neighbors);
 }
 
 //=============================================================================
 void DiscreteMesh::UpdatePoints(vtkPoints* points) const
 {
-  this->Data->SetPoints(points);
+  this->SharedPoints->ShallowCopy(points);
 }
 
 //=============================================================================
 void DiscreteMesh::GetPoint(vtkIdType index, double xyz[3]) const
 {
-  this->Data->GetPoint(index,xyz);
+  this->SharedPoints->GetPoint(index,xyz);
 }
 
 //=============================================================================
-void DiscreteMesh::GetPointCells(vtkIdType index, vtkIdList* cellsForPoint) const
+void DiscreteMesh::GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint) const
 {
-  this->Data->GetPointCells(index,cellsForPoint);
+  this->FaceData->GetPointCells(index,cellsForPoint);
 }
-
 
 //=============================================================================
 void DiscreteMesh::GetBounds(double bounds[6]) const
 {
-  this->Data->GetBounds(bounds);
+  this->SharedPoints->GetBounds(bounds);
 }
 
 //=============================================================================
 void DiscreteMesh::MovePoint(vtkIdType pos, double xyz[3]) const
 {
-  this->Data->GetPoints()->SetPoint(pos,xyz);
+  this->SharedPoints->SetPoint(pos,xyz);
 }
 
 //=============================================================================
-DiscreteMesh::EdgePointIds DiscreteMesh::AddEdgePoints(const DiscreteMesh::EdgePoints& e)
+DiscreteMesh::EdgePointIds DiscreteMesh::AddEdgePoints(
+                                         const DiscreteMesh::EdgePoints& e)
 {
   DiscreteMesh::EdgePointIds edge(
-        this->Data->GetPoints()->InsertNextPoint(e.first),
-        this->Data->GetPoints()->InsertNextPoint(e.second) );
+        this->SharedPoints->InsertNextPoint(e.first),
+        this->SharedPoints->InsertNextPoint(e.second) );
    return edge;
 }
 
 //=============================================================================
-vtkIdType DiscreteMesh::AddEdge(const DiscreteMesh::EdgePointIds& e,
-                                const vtkIdType geometricEdgeId)
+vtkIdType DiscreteMesh::AddEdge(DiscreteMesh::EdgePointIds& e)
 {
-  return this->Edges.AddEdge(e,geometricEdgeId);
+  vtkIdType id = this->FaceData->InsertNextCell(VTK_LINE,2,&e.first);
+  return detail::ConvertIndex(DiscreteMesh::EDGE_DATA,id);
 }
 
 //=============================================================================
@@ -324,7 +427,7 @@ DiscreteMesh::FaceIds DiscreteMesh::AddFace(const DiscreteMesh::Face& f) const
     {
     if(*i==f.InvalidId())
       {
-      const vtkIdType pointId = this->Data->GetPoints()->InsertNextPoint(
+      const vtkIdType pointId = this->SharedPoints->InsertNextPoint(
                                   newPoints->x, newPoints->y, newPoints->z);
 
       result.push_back(pointId);
@@ -335,44 +438,75 @@ DiscreteMesh::FaceIds DiscreteMesh::AddFace(const DiscreteMesh::Face& f) const
       result.push_back(*i);
       }
     }
-  this->Data->InsertNextCell(f.CellType(),numPoints,&result[0]);
+  this->FaceData->InsertNextCell(f.CellType(),numPoints,&result[0]);
   return result;
 }
 
-namespace
+//=============================================================================
+//=============================================================================
+// Private methods
+//=============================================================================
+//=============================================================================
+
+//=============================================================================
+vtkSmartPointer<vtkPolyData> DiscreteMesh::ShallowCopyFaceData() const
 {
-  DiscreteMesh::EdgePointIds make_SortedEdge(
-                                      const DiscreteMesh::EdgePointIds& e)
-  {
-    return DiscreteMesh::EdgePointIds( std::min(e.first, e.second),
-                                       std::max(e.first, e.second) );
-  }
+  vtkSmartPointer<vtkPolyData> copy = vtkSmartPointer<vtkPolyData>::New();
+  if(this->FaceData)
+    {
+    copy->ShallowCopy(this->FaceData);
+    }
+  return copy;
+}
+
+
+//=============================================================================
+void DiscreteMesh::ShallowAssignment(const DiscreteMesh& other)
+{
+  if(this->FaceData)
+    {
+    this->FaceData->Delete();
+    this->FaceData=NULL;
+    }
+
+  this->FaceData = other.FaceData;
+
+  if(this->FaceData)
+    {
+    this->FaceData->Register(NULL);
+    }
+
+  if(this->EdgeData)
+    {
+    this->EdgeData->Delete();
+    this->EdgeData=NULL;
+    }
+
+  this->EdgeData = other.EdgeData;
+
+  if(this->EdgeData)
+    {
+    this->EdgeData->Register(NULL);
+    }
+
+
+  if(this->SharedPoints)
+    {
+    this->SharedPoints->Delete();
+    this->SharedPoints=NULL;
+    }
+
+  this->SharedPoints = other.SharedPoints;
+
+  if(this->SharedPoints)
+    {
+    this->SharedPoints->Register(NULL);
+    }
 }
 
 //=============================================================================
-vtkIdType DiscreteMesh::EdgeMap::AddEdge(const DiscreteMesh::EdgePointIds& origEdge,
-                                         const vtkIdType geometricEdgeId)
+vtkPolyData* DiscreteMesh::GetDataFromType(DiscreteMesh::DataType type) const
 {
-  const EdgePointIds sortedEdge = make_SortedEdge( origEdge );
-  const DiscreteMesh::EdgeMap::const_iterator found = this->find(sortedEdge);
-  if(found == this->end())
-    {
-    const std::pair<EdgePointIds,vtkIdType> inserted_edge(sortedEdge,
-                                                          geometricEdgeId);
-    this->insert(inserted_edge);
-    return geometricEdgeId;
-    }
-  return found->second;
-}
-
-//=============================================================================
-vtkIdType DiscreteMesh::EdgeMap::GetId(const DiscreteMesh::EdgePointIds &origEdge) const
-{
-  const EdgePointIds sortedEdge = make_SortedEdge( origEdge );
-  const DiscreteMesh::EdgeMap::const_iterator found = this->find(sortedEdge);
-  if(found != this->end())
-    {
-    return found->second;
-    }
-  return 0;
+  vtkPolyData* data_arrays[2] = { this->FaceData, this->EdgeData };
+  return data_arrays[static_cast<int>(type)];
 }

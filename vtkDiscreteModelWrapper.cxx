@@ -275,7 +275,7 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     }
 
   // make a new poly data and copy the necessary old stuff
-  vtkSmartPointer<vtkPolyData> poly = this->Model->GetMesh().ShallowCopy();
+  vtkSmartPointer<vtkPolyData> poly = this->Model->GetMesh().ShallowCopyFaceData();
 
   poly->GetFieldData()->Initialize();
   poly->GetPointData()->Initialize();

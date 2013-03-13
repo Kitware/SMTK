@@ -62,29 +62,24 @@ class vtkCMBXMLBCSWriter;
 
 //currently this class is a shim to vtkPolyData, as we work
 //on detaching vtkDiscreteModels, mesh representation for VTK
+
+//we mangle the id spaces, so that all negative ids
+//that are passed in represent edges, while all postive represent faces
+
 class VTKDISCRETEMODEL_EXPORT DiscreteMesh
 {
 public:
+  enum DataType{ FACE_DATA=0, EDGE_DATA=1};
+
   typedef std::pair<vtkIdType,vtkIdType> EdgePointIds;
   typedef std::vector<vtkIdType> FaceIds;
 
   class EdgePoints;
   class Face;
 
-  class EdgeMap : private std::map< DiscreteMesh::EdgePointIds, vtkIdType >
-  {
-   public:
-    //returns the id for the passed in edge
-    vtkIdType AddEdge(const DiscreteMesh::EdgePointIds& edge,
-                      const vtkIdType geometricEdgeId);
-
-    //returns the geometric id of the edge that this mesh edge
-    //is mapped to.
-    vtkIdType GetId(const DiscreteMesh::EdgePointIds & edge) const;
-  };
-
   DiscreteMesh();
-  DiscreteMesh(vtkPolyData* data);
+  DiscreteMesh(vtkPolyData* faceData);
+  DiscreteMesh(vtkPolyData* faceData, vtkPolyData* edgeData);
   DiscreteMesh(const DiscreteMesh& other);
   DiscreteMesh& operator=(const DiscreteMesh&);
 
@@ -100,7 +95,7 @@ public:
 
   //verifies that Data is valid.
   //does a deep copy of Data into the returned polydata
-  vtkSmartPointer<vtkPolyData> DeepCopy() const;
+  vtkSmartPointer<vtkPolyData> DeepCopyFaceData() const;
 
   //Doesn't verify Data is valid!
   //special method to signify that something is sharing
@@ -139,7 +134,8 @@ public:
   void GetPoint(vtkIdType index, double xyz[3]) const;
 
   //Doesn't verify Data is valid!
-  void GetPointCells(vtkIdType index, vtkIdList* cellsForPoint) const;
+  //Todo this need a modifier for edges
+  void GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint) const;
 
   //Doesn't verify Data is valid!
   void GetBounds(double bounds[6]) const;
@@ -153,7 +149,7 @@ public:
   DiscreteMesh::EdgePointIds AddEdgePoints( const DiscreteMesh::EdgePoints& e);
 
   //returns the edge Id
-  vtkIdType AddEdge( const DiscreteMesh::EdgePointIds& e, const vtkIdType geometricEdgeId);
+  vtkIdType AddEdge(EdgePointIds &e);
 
   DiscreteMesh::FaceIds AddFace( const DiscreteMesh::Face& f) const;
 
@@ -165,11 +161,18 @@ private:
   //verifies that Data is valid.
   //does a shallow copy of Data into the returned polydata
   //private as people shouldn't break encapsulation
-  vtkSmartPointer<vtkPolyData> ShallowCopy() const;
+  vtkSmartPointer<vtkPolyData> ShallowCopyFaceData() const;
 
+  //used by copy constructor and assign operator to simplify copying
+  void ShallowAssignment(const DiscreteMesh& other);
 
-  vtkPolyData* Data;
-  DiscreteMesh::EdgeMap Edges;
+  //given a data type ( face or edge ) return the corect poly data
+  vtkPolyData* GetDataFromType(DiscreteMesh::DataType type ) const;
+
+  vtkPolyData* FaceData;
+  vtkPolyData* EdgeData;
+  //both poly data's point to the same vtkPoints
+  vtkPoints* SharedPoints;
 };
 
 //----------------------------------------------------------------------------
