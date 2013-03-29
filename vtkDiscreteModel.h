@@ -45,13 +45,14 @@ class vtkDiscreteModelEntity;
 class vtkDiscreteModelEntityGroup;
 class vtkDiscreteModelFace;
 class vtkDiscreteModelGeometricEntity;
-class vtkModelNodalGroup;
-class vtkModelUniqueNodalGroup;
 class vtkIdTypeArray;
 class vtkInformationDataObjectKey;
 class vtkIntArray;
 class vtkModelVertex;
 class vtkModelVertexUse;
+
+#include "DiscreteMesh.h" //needed for Discrete Mesh
+#include "MeshClassification.h" //needed for Discrete Mesh Classification
 
 //BTX
 #include <string>
@@ -59,7 +60,6 @@ enum vtkDiscreteModelEntityTypes
 {
   vtkDiscreteModelEntityGroupType = 100,
   vtkModelMaterialType,
-  vtkModelNodalGroupType
 };
 
 // Description:
@@ -80,6 +80,9 @@ enum DiscreteModelEventIds {
 class VTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
+  typedef MeshClassification< vtkDiscreteModelGeometricEntity >
+          ClassificationType;
+
   static vtkDiscreteModel* New();
 
 //BTX
@@ -87,16 +90,28 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
-  // Functions to get the vtkDiscreteModelGeometricEntity object that CellId
-  // is classified on and the cell index of the copy of CellId in that
-  // vtkPolyData.  Note that these should only be called on the server.
-  vtkDiscreteModelGeometricEntity* GetCellModelGeometricEntity(vtkIdType cellId);
-  vtkIdType GetCellModelGeometricEntityIndex(vtkIdType cellId);
+  // Get the geometric representation of the model.
+  const DiscreteMesh& GetMesh() const
+    {
+    return this->Mesh;
+    }
 
   // Description:
-  // Get the geometric representation of the model. Returns null on the
-  // client.
-  vtkObject* GetGeometry();
+  // Get the classification model to the mesh.
+  ClassificationType& GetMeshClassification()
+    {
+    return this->MeshClassification;
+    }
+
+  // Description:
+  // Returns true if the DiscreteModel has a non empty Mesh.
+  // we define empty to be a NULL pointer OR a mesh with zero points and cells
+  bool HasValidMesh() const;
+
+  // Description:
+  // Returns false if the DiscreteModel has a non empty Mesh.
+  // we define empty to be a NULL pointer OR a mesh with zero points and cells
+  bool HasInValidMesh() const;
 
   // Description:
   // Get the name of the array that stores the point mapping information.
@@ -177,20 +192,6 @@ public:
   virtual bool DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* entityGroup);
 
   // Description:
-  // Build a vtkModelNodalGroup and populate it with the vtkPoint Ids
-  // in PointIds. If Type is 0/BASE_NODAL_GROUP a vtkModelNodalGroup will
-  // be created and if Type is 1/UNIQUE_NODAL_GROUP a vtkModelUniqueNodalGroup
-  // will be created. Id is the unique persistent Id to be assigned
-  // to the nodal group.
-  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds);
-  virtual vtkModelNodalGroup* BuildNodalGroup(int type, vtkIdList* pointIds,
-                                            vtkIdType id);
-
-  // Description:
-  // Destroy EntityGroup.  Returns true if successful.
-  virtual bool DestroyNodalGroup(vtkModelNodalGroup* nodalGroup);
-
-  // Description:
   // Build/Destroy a floating vtkDiscreteModelEdge.
   virtual vtkModelEdge* BuildFloatingRegionEdge(
     double point1[3], double point2[3],
@@ -235,14 +236,6 @@ protected:
   void GetModelEntityDefaultName(int entityType, const char* baseName,
                                  std::string & defaultEntityName);
 
-  // Description:
-  // Function to set the vtkDiscreteModelGeometricEntity object and Geometric
-  // Entity grid Id (GeomeEntityCellId) that MasterCellId is classified on.
-  // This does not set the reverse classification information though.
-  // Note that this should only be called on the server as it won't do
-  // anything on the client.
-  void SetCellClassification(vtkIdType masterCellId,vtkIdType geomEntityCellId,
-                             vtkDiscreteModelGeometricEntity* geomEntity);
 //BTX
   friend class vtkDiscreteModelGeometricEntity;
   friend class vtkCMBParserBase;
@@ -253,37 +246,18 @@ protected:
   friend class CmbSceneBuilderCore;
   friend class CmbGeologyBuilderCore;
   friend class vtkCmbMapToCmbModel;
-  friend class vtkModelUniqueNodalGroup;
   friend class vtkCmbIncorporateMeshOperator;
 //ETX
 
   // Description:
-  // Set/get the vtkCMBUniqueNodalGroups that a point is assigned to.
-  // For setting, it removes the point from its current vtkCMBUniqueNodalGroups
-  // if it belongs to one.
-  void SetPointUniqueNodalGroup(vtkModelUniqueNodalGroup* nodalGroup,
-                                vtkIdType pointId);
-  vtkModelUniqueNodalGroup* GetPointUniqueNodalGroup(vtkIdType pointId);
+  // Set the Discrete mesh. This should only be called on the server.
+  void SetMesh(DiscreteMesh& mesh);
 
   // Description:
-  // Set the vtkObject that is used to represent the Geometry.  This should
-  // only be called on the server. Note: Sometimes UpdateGeometry() needs to
-  // be called if the master polydata is modified.
-  void SetGeometry(vtkObject* geometry);
-  void UpdateGeometry();
-
-  // Description:
-  // The mappings from a cell on the master geometry to the geometric model
-  // entity it is classified on (CellClassification) as well as the index
-  // of the cell on the geometric model entity geometric representation.
-  std::vector<vtkDiscreteModelGeometricEntity*> CellClassification;
-  std::vector<vtkIdType> ClassifiedCellIndex;
-
-  // Description:
-  // The vector of vtkCMBUniqueNodalGroups that grid points are assigned to.
-  // A point can be assigned to at most one vtkCMBUniqueNodalGroups but
-  // is not required to be assigned to any.
-  std::vector<vtkModelUniqueNodalGroup*> UniquePointGroup;
+  // If an operator or model item modify the point set that is attached
+  // to the DiscreteMesh it can cause a desync. If that happens you should
+  // call UpdateMesh.
+  void UpdateMesh();
 
   // Description:
   // The bounds of the model; set (on the server) when doing a SetGeometry,
@@ -301,9 +275,13 @@ protected:
   void InternalInvokeEvent(unsigned long event, void *callData);
 
 private:
+  DiscreteMesh Mesh;
+  ClassificationType MeshClassification;
+
   vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
   void operator=(const vtkDiscreteModel&);  // Not implemented.
 //ETX
 };
+
 
 #endif

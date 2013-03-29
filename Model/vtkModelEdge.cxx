@@ -114,9 +114,9 @@ void vtkModelEdge::Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
   vtkModelEdgeUse* edgeUse1 = vtkModelEdgeUse::New();
   edgeUse0->Initialize(vertex1, vertex0, edgeUse1, 0); //0 is for opposite direction
   edgeUse1->Initialize(vertex0, vertex1, edgeUse0, 1); //1 is for same direction
-  this->AddAssociation(edgeUse0->GetType(), edgeUse0);
+  this->AddAssociation(edgeUse0);
   edgeUse0->Delete();
-  this->AddAssociation(edgeUse1->GetType(), edgeUse1);
+  this->AddAssociation(edgeUse1);
   edgeUse1->Delete();
   this->SetUniquePersistentId(edgeId);
 }
@@ -148,8 +148,8 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
   vtkModelEdgeUse* edgeUse1 = vtkModelEdgeUse::New();
   edgeUse0->Initialize(vertex1, vertex0, edgeUse1, 0);
   edgeUse1->Initialize(vertex0, vertex1, edgeUse0, 1);
-  this->AddAssociation(edgeUse0->GetType(), edgeUse0);
-  this->AddAssociation(edgeUse1->GetType(), edgeUse1);
+  this->AddAssociation(edgeUse0);
+  this->AddAssociation(edgeUse1);
   edgeUse0->Delete();
   edgeUse1->Delete();
   return edgeUse1;
@@ -158,7 +158,7 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
 //-----------------------------------------------------------------------------
 void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* EdgeUse)
 {
-  this->RemoveAssociation(EdgeUse->GetType(), EdgeUse);
+  this->RemoveAssociation(EdgeUse);
   this->Modified();
 }
 

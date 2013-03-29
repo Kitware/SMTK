@@ -32,7 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelVertex.h"
-#include "vtkModelUniqueNodalGroup.h"
 #include "vtkModelUserName.h"
 #include "vtkConnectivityFilter.h"
 #include "vtkDataObject.h"
@@ -57,7 +56,9 @@ vtkStandardNewMacro(vtkDiscreteModel);
 vtkInformationKeyMacro(vtkDiscreteModel, POINTMAPARRAY, ObjectBase);
 vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
-vtkDiscreteModel::vtkDiscreteModel()
+vtkDiscreteModel::vtkDiscreteModel():
+  Mesh(),
+  MeshClassification()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
@@ -80,7 +81,7 @@ vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, vtkIdType 
 {
   vtkDiscreteModelVertex* vertex = vtkDiscreteModelVertex::New();
   vertex->SetUniquePersistentId(vertexId);
-  this->AddAssociation(vertex->GetType(), vertex);
+  this->AddAssociation(vertex);
   vertex->Delete();
   vertex->SetPointId(pointId);
   if(vertexId > this->GetLargestUsedUniqueId())
@@ -109,7 +110,7 @@ vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
   vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
   edge->Initialize(vertex0, vertex1, edgeId);
 
-  this->AddAssociation(edge->GetType(), edge);
+  this->AddAssociation(edge);
   edge->Delete();
   std::string defaultEntityName;
   this->GetModelEntityDefaultName(vtkModelEdgeType, "Edge",
@@ -124,16 +125,17 @@ vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
 vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
   double point1[3], double point2[3], int resolution, vtkIdType regionId)
 {
-  if(vtkPolyData* masterPoly =
-     vtkPolyData::SafeDownCast(this->GetGeometry()))
+  if(this->HasValidMesh())
     {
-    vtkIdType pointId = masterPoly->GetPoints()->InsertNextPoint(point1);
-    vtkModelVertex* vertex1 = this->BuildModelVertex(pointId);
-    pointId = masterPoly->GetPoints()->InsertNextPoint(point2);
-    vtkModelVertex* vertex2 = this->BuildModelVertex(pointId);
+    DiscreteMesh::EdgePoints dmEdge(point1,point2);
+    DiscreteMesh::EdgePointIds edgeIds = this->Mesh.AddEdgePoints(dmEdge);
+
+    vtkModelVertex* vertex1 = this->BuildModelVertex(edgeIds.first);
+    vtkModelVertex* vertex2 = this->BuildModelVertex(edgeIds.second);
+
     vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
     edge->Initialize(vertex1, vertex2, edgeId);
-    this->AddAssociation(edge->GetType(), edge);
+    this->AddAssociation(edge);
     edge->AddRegionAssociation(regionId);
     edge->Delete();
 
@@ -167,7 +169,7 @@ vtkModelFace* vtkDiscreteModel::BuildModelFace(int numEdges, vtkModelEdge** edge
                                           int* edgeDirections, vtkIdType modelFaceId)
 {
   vtkDiscreteModelFace* face = vtkDiscreteModelFace::New();
-  this->AddAssociation(face->GetType(), face);
+  this->AddAssociation(face);
   face->Initialize(numEdges, edges, edgeDirections, modelFaceId);
 
   if(modelFaceId > this->GetLargestUsedUniqueId())
@@ -193,7 +195,7 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(vtkIdType modelRegionId)
 {
   vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::New();
   region->Initialize(modelRegionId);
-  this->AddAssociation(region->GetType(), region);
+  this->AddAssociation(region);
 
   if(modelRegionId > this->GetLargestUsedUniqueId())
     {
@@ -223,7 +225,7 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
   vtkDiscreteModelRegion* region = vtkDiscreteModelRegion::New();
   region->Initialize(numFaces, faces, faceSides,
                      modelRegionId);
-  this->AddAssociation(region->GetType(), region);
+  this->AddAssociation(region);
 
   if(modelRegionId > this->GetLargestUsedUniqueId())
     {
@@ -299,7 +301,7 @@ vtkModelMaterial* vtkDiscreteModel::BuildMaterial(vtkIdType id)
 {
   vtkModelMaterial* material = vtkModelMaterial::New();
   material->Initialize(id);
-  this->AddAssociation(material->GetType(), material);
+  this->AddAssociation(material);
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
   material->Delete();
 
@@ -326,7 +328,7 @@ bool vtkDiscreteModel::DestroyMaterial(vtkModelMaterial* material)
     vtkErrorMacro("Problem destroying material.");
     return false;
     }
-  this->RemoveAssociation(material->GetType(), material);
+  this->RemoveAssociation(material);
   this->InternalInvokeEvent(DomainSetDestroyed, &entityId);
 
   this->Modified();
@@ -351,7 +353,7 @@ vtkDiscreteModelEntityGroup* vtkDiscreteModel::BuildModelEntityGroup(
     {
     entityGroup->AddModelEntity(entities[i]);
     }
-  this->AddAssociation(entityGroup->GetType(), entityGroup);
+  this->AddAssociation(entityGroup);
   entityGroup->Delete();
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
 
@@ -379,69 +381,8 @@ bool vtkDiscreteModel::DestroyModelEntityGroup(vtkDiscreteModelEntityGroup* enti
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(entityGroup->GetType(), entityGroup);
+  this->RemoveAssociation(entityGroup);
   this->InternalInvokeEvent(ModelEntityGroupDestroyed, &entityId);
-
-  this->Modified();
-  return 1;
-}
-
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds)
-{
-  return this->BuildNodalGroup(type, pointIds, this->GetNextUniquePersistentId());
-}
-
-vtkModelNodalGroup* vtkDiscreteModel::BuildNodalGroup(int type, vtkIdList* pointIds,
-                                               vtkIdType id)
-{
-  vtkModelNodalGroup* nodalGroup = 0;
-  if(type == BASE_NODAL_GROUP)
-    {
-    nodalGroup = vtkModelNodalGroup::New();
-    }
-  else if(type == UNIQUE_NODAL_GROUP)
-    {
-    nodalGroup = vtkModelUniqueNodalGroup::New();
-    }
-  else
-    {
-    vtkErrorMacro("Bad Type.");
-    return 0;
-    }
-  if(pointIds && pointIds->GetNumberOfIds())
-    {
-    nodalGroup->AddPointIds(pointIds);
-    }
-  nodalGroup->Initialize(id);
-
-  this->AddAssociation(nodalGroup->GetType(), nodalGroup);
-  nodalGroup->Delete();
-
-  std::string defaultEntityName;
-  this->GetModelEntityDefaultName(vtkModelNodalGroupType, "Nodal Group",
-                                  defaultEntityName);
-  vtkModelUserName::SetUserName(nodalGroup, defaultEntityName.c_str());
-  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
-  this->InternalInvokeEvent(NodalGroupCreated, &entityId);
-
-  return nodalGroup;
-}
-
-bool vtkDiscreteModel::DestroyNodalGroup(vtkModelNodalGroup* nodalGroup)
-{
-  if(!nodalGroup->IsDestroyable())
-    {
-    return 0;
-    }
-  vtkIdType entityId = nodalGroup->GetUniquePersistentId();
-  this->InternalInvokeEvent(NodalGroupAboutToDestroy, &entityId);
-  if(!nodalGroup->Destroy())
-    {
-    vtkErrorMacro("Problem destroying entity group.");
-    return 0;
-    }
-  this->RemoveAssociation(nodalGroup->GetType(), nodalGroup);
-  this->InternalInvokeEvent(NodalGroupDestroyed, &entityId);
 
   this->Modified();
   return 1;
@@ -459,57 +400,24 @@ bool vtkDiscreteModel::DestroyModelEdge(vtkDiscreteModelEdge* modelEdge)
     vtkErrorMacro("Problem destroying entity group.");
     return 0;
     }
-  this->RemoveAssociation(modelEdge->GetType(), modelEdge);
+  this->RemoveAssociation(modelEdge);
 
   return 1;
 }
 
-vtkDiscreteModelGeometricEntity* vtkDiscreteModel::GetCellModelGeometricEntity(
-  vtkIdType cellId)
+void vtkDiscreteModel::SetMesh(DiscreteMesh& m)
 {
-  size_t size = static_cast<size_t>(cellId);
-  if(cellId < 0 || size >= this->CellClassification.size())
-    {
-    vtkWarningMacro("Bad CellId.");
-    return 0;
-    }
-  return this->CellClassification[cellId];
+  this->Mesh = m;
+  this->UpdateMesh();
 }
 
-void vtkDiscreteModel::SetGeometry(vtkObject* geometry)
+void vtkDiscreteModel::UpdateMesh()
 {
-  // may want to make a deep copy of geometry
-  // for now assume that we don't need to
-  this->GetProperties()->Set(GEOMETRY(), geometry);
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(geometry);
-  if(poly)
-    {
-    poly->GetBounds(this->ModelBounds);
-    // we're on the server so set the vector sizes for classification
-    vtkIdType numCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* geomEnt = 0;
-    this->CellClassification.resize(numCells, geomEnt);
-    this->ClassifiedCellIndex.resize(numCells, -1);
-    vtkModelUniqueNodalGroup* nodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
-    }
-  this->Modified();
-}
-void vtkDiscreteModel::UpdateGeometry()
-{
-  vtkPolyData* poly = vtkPolyData::SafeDownCast(
-    this->GetGeometry());
-  if(poly)
-    {
-    poly->GetBounds(this->ModelBounds);
-    // we're on the server so set the vector sizes for classification
-    vtkIdType numCells = poly->GetNumberOfCells();
-    vtkDiscreteModelGeometricEntity* geomEnt = 0;
-    this->CellClassification.resize(numCells, geomEnt);
-    this->ClassifiedCellIndex.resize(numCells, -1);
-    vtkModelUniqueNodalGroup* nodalGroup = 0;
-    this->UniquePointGroup.resize(poly->GetNumberOfPoints(), nodalGroup);
-    }
+  this->Mesh.GetBounds(this->ModelBounds);
+
+  this->MeshClassification.resize(this->Mesh.GetNumberOfEdges(),
+                                  this->Mesh.GetNumberOfFaces());
+
   this->Modified();
 }
 
@@ -546,11 +454,14 @@ void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* bas
   iter->Delete();
 }
 
-vtkObject* vtkDiscreteModel::GetGeometry()
+bool vtkDiscreteModel::HasValidMesh() const
 {
-  vtkObject* object = vtkObject::SafeDownCast(
-    this->GetProperties()->Get(GEOMETRY()));
-  return object;
+  return this->Mesh.IsValid();
+}
+
+bool vtkDiscreteModel::HasInValidMesh() const
+{
+  return !this->Mesh.IsValid();
 }
 
 const char* vtkDiscreteModel::GetPointMapArrayName()
@@ -566,62 +477,6 @@ const char* vtkDiscreteModel::GetCellMapArrayName()
 const char* vtkDiscreteModel::GetCanonicalSideArrayName()
 {
   return "ModelCanonicalSideArray";
-}
-
-vtkIdType vtkDiscreteModel::GetCellModelGeometricEntityIndex(vtkIdType cellId)
-{
-  size_t size = static_cast<size_t>(cellId);
-  if(cellId < 0 || size >= this->ClassifiedCellIndex.size())
-    {
-    vtkWarningMacro("Bad cell id.");
-    return 0;
-    }
-  return this->ClassifiedCellIndex[cellId];
-}
-
-void vtkDiscreteModel::SetCellClassification(
-  vtkIdType masterCellId, vtkIdType geomEntityCellId, vtkDiscreteModelGeometricEntity* entity)
-{
-  size_t numCells = this->ClassifiedCellIndex.size();
-  if(masterCellId >= 0 && static_cast<size_t>(masterCellId) < numCells)
-    {
-    this->ClassifiedCellIndex[masterCellId] = geomEntityCellId;
-    this->CellClassification[masterCellId] = entity;
-    }
-  else
-    {
-    vtkErrorMacro("Bad master cell id value.");
-    }
-}
-
-void vtkDiscreteModel::SetPointUniqueNodalGroup(
-  vtkModelUniqueNodalGroup* nodalGroup, vtkIdType pointId)
-{
-  size_t numPoints = this->UniquePointGroup.size();
-  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
-    {
-    vtkErrorMacro("Bad master point id value.");
-    }
-  else
-    {
-    if(this->UniquePointGroup[pointId] &&
-       this->UniquePointGroup[pointId] != nodalGroup)
-      {
-      this->UniquePointGroup[pointId]->vtkModelUniqueNodalGroup::Superclass::RemovePointId(pointId);
-      }
-    this->UniquePointGroup[pointId] = nodalGroup;
-    }
-}
-
-vtkModelUniqueNodalGroup* vtkDiscreteModel::GetPointUniqueNodalGroup(vtkIdType pointId)
-{
-  size_t numPoints = this->UniquePointGroup.size();
-  if(pointId < 0 || static_cast<size_t>(pointId) >= numPoints)
-    {
-    vtkErrorMacro("Bad master point id value.");
-    return 0;
-    }
-  return this->UniquePointGroup[pointId];
 }
 
 void vtkDiscreteModel::Reset()
@@ -640,20 +495,6 @@ void vtkDiscreteModel::Reset()
     }
   entityGroupIter->Delete();
   this->RemoveAllAssociations(vtkDiscreteModelEntityGroupType);
-  // nodal groups
-  vtkModelItemIterator* nodalGroupIter = this->NewIterator(vtkModelNodalGroupType);
-  for(nodalGroupIter->Begin();!nodalGroupIter->IsAtEnd();nodalGroupIter->Next())
-    {
-    bool destroyed =
-      vtkModelNodalGroup::SafeDownCast(nodalGroupIter->GetCurrentItem())->Destroy();
-    if(!destroyed)
-      {
-      vtkErrorMacro("Problem destroying a nodal group.");
-      }
-    }
-  nodalGroupIter->Delete();
-  this->RemoveAllAssociations(vtkModelNodalGroupType);
-  this->UniquePointGroup.clear();
 
   // Destroy materials
   vtkModelItemIterator* materialIter = this->NewIterator(vtkModelMaterialType);
@@ -671,10 +512,10 @@ void vtkDiscreteModel::Reset()
 
   this->Superclass::Reset();
 
-  // and finally the polydata representation and classification
-  this->GetProperties()->Remove(GEOMETRY());
-  this->CellClassification.clear();
-  this->ClassifiedCellIndex.clear();
+  // reset the mesh to an empty mesh
+  this->Mesh = DiscreteMesh();
+  this->MeshClassification = vtkDiscreteModel::ClassificationType();
+
   this->InternalInvokeEvent(ModelReset, this);
 }
 

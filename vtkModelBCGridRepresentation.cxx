@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelEntityGroup.h"
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include "vtkModelNodalGroup.h"
 #include <vtkIdList.h>
 #include <vtkIdTypeArray.h>
 #include <vtkIntArray.h>
@@ -232,7 +231,7 @@ bool vtkModelBCGridRepresentation::IsModelConsistent(vtkDiscreteModel* model)
     this->Reset();
     return false;
     }
-  vtkIdType numCells = vtkPolyData::SafeDownCast(model->GetGeometry())->GetNumberOfCells();
+  vtkIdType numCells = model->GetMesh().GetNumberOfCells();
   if(numCells !=  static_cast<vtkIdType>(this->MasterCellToMeshCellInfo.size()))
     {
     vtkErrorMacro("There are " << numCells << " model cells but the bc file has "

@@ -81,7 +81,7 @@ bool vtkModelVertex::GetBounds(double bounds[6])
 
 void vtkModelVertex::DestroyModelVertexUse(vtkModelVertexUse* VertexUse)
 {
-  this->RemoveAssociation(VertexUse->GetType(), VertexUse);
+  this->RemoveAssociation(VertexUse);
 }
 
 int vtkModelVertex::GetNumberOfModelVertexUses()
@@ -128,7 +128,7 @@ vtkModelItemIterator* vtkModelVertex::NewAdjacentModelEdgeIterator()
 vtkModelVertexUse* vtkModelVertex::BuildModelVertexUse()
 {
   vtkModelVertexUse* VertexUse = vtkModelVertexUse::New();
-  this->AddAssociation(VertexUse->GetType(), VertexUse);
+  this->AddAssociation(VertexUse);
   VertexUse->Delete();
   return VertexUse;
 }

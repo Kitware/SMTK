@@ -35,8 +35,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModelItemInternals.h"
 
-vtkInformationKeyMacro(vtkModelItem, GEOMETRY, ObjectBase);
-
 vtkModelItem::vtkModelItem()
 {
   this->Internal = new vtkModelItemInternals;
@@ -52,55 +50,56 @@ vtkModelItem::~vtkModelItem()
     }
 }
 
-void vtkModelItem::AddAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::AddAssociation(vtkModelItem* item)
 {
-  this->AddAssociation(itemType, item, this->GetType());
+  this->AddAssociationToType(item, this->GetType());
 }
 
-void vtkModelItem::AddAssociation(int itemType, vtkModelItem* item, int myType)
+void vtkModelItem::AddAssociationToType(vtkModelItem* item, int myType)
 {
-  this->Internal->Associations[itemType].push_back(item);
-  item->AddReverseAssociation(myType, this);
+  this->Internal->Associations[item->GetType()].push_back(item);
+  item->AddReverseAssociationToType(this,myType);
   this->Modified();
 }
 
-void vtkModelItem::AddAssociationInPosition(int itemType, int Index,
+void vtkModelItem::AddAssociationInPosition(int index,
                                             vtkModelItem* item)
 {
-  int numItems = this->GetNumberOfAssociations(itemType);
-  if(numItems < Index)
+  const int itemType = item->GetType();
+  const int numItems = this->GetNumberOfAssociations(itemType);
+  if(numItems < index)
     {
-    if((numItems+1) < Index)
+    if((numItems+1) < index)
       {
       vtkWarningMacro("Possible bad Index value.");
-      for(int i=numItems+1;i<Index;i++)
+      for(int i=numItems+1;i<index;i++)
         {
         // fill the proper places in just in case the user knows what 
         // he/she is doing
         // use add reverse association since it won't attempt to add an 
         // association to a null pointer
-        this->AddReverseAssociation(itemType, 0);
+        this->AddReverseAssociationToType(NULL,itemType);
         }
       }
-    this->AddAssociation(itemType, item, this->GetType());
+    this->AddAssociation(item);
     }
   else
     {
     std::list<vtkSmartPointer<vtkModelItem> >::iterator it=
       this->Internal->Associations[itemType].begin();
     int count = 0;
-    while(count < Index)
+    while(count < index)
       {
       count++;
       it++;
       }
     this->Internal->Associations[itemType].insert(it, item);
-    item->AddReverseAssociation(this->GetType(), this);
+    item->AddReverseAssociationToType(this,this->GetType());
     }
 }
 
-void vtkModelItem::AddReverseAssociation(int itemType, 
-                                         vtkModelItem* item)
+void vtkModelItem::AddReverseAssociationToType(vtkModelItem* item,
+                                               int itemType)
 {
   this->Internal->Associations[itemType].push_back(item);
   this->Modified();
@@ -115,26 +114,28 @@ void vtkModelItem::RemoveAllAssociations(int itemType)
   vtkModelItemIterator * iter = this->NewIterator(itemType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
-    iter->GetCurrentItem()->RemoveReverseAssociation(
-      this->GetType(), this);
+    iter->GetCurrentItem()->RemoveReverseAssociationToType(this,
+                                                           this->GetType());
     }
   iter->Delete();
   this->Internal->Associations.erase(itemType);
   this->Modified();
 }
 
-void vtkModelItem::RemoveAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::RemoveAssociation(vtkModelItem* item)
 {
+  const int itemType = item->GetType();
   if(this->Internal->Associations.find(itemType) !=
      this->Internal->Associations.end())
     {
-    item->RemoveReverseAssociation(this->GetType(), this);
+    item->RemoveReverseAssociationToType(this,this->GetType());
     this->Internal->Associations[itemType].remove(item);
     this->Modified();
     }
 }
 
-void vtkModelItem::RemoveReverseAssociation(int itemType, vtkModelItem* item)
+void vtkModelItem::RemoveReverseAssociationToType(vtkModelItem* item,
+                                                  int itemType)
 {
   if(this->Internal->Associations.find(itemType) !=
      this->Internal->Associations.end())

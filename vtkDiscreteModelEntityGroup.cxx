@@ -65,14 +65,12 @@ bool vtkDiscreteModelEntityGroup::Destroy()
 void vtkDiscreteModelEntityGroup::AddModelEntity(vtkDiscreteModelEntity* object)
 {
   vtkModelEntity* entity = object->GetThisModelEntity();
-  int entityType = entity->GetType();
-  this->AddAssociation(entityType, entity);
+  this->AddAssociation(entity);
 }
 
 bool vtkDiscreteModelEntityGroup::RemoveModelEntity(vtkDiscreteModelEntity* object)
 {
-  this->RemoveAssociation(object->GetThisModelEntity()->GetType(),
-                          object->GetThisModelEntity());
+  this->RemoveAssociation(object->GetThisModelEntity());
   return 1;
 }
 

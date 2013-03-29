@@ -45,10 +45,10 @@ vtkModelFace::vtkModelFace()
   // We build the face uses automatically because we know all we need
   // to know about them now to build them.
   vtkModelFaceUse* FaceUse0 = vtkModelFaceUse::New();
-  this->AddAssociation(FaceUse0->GetType(), FaceUse0, vtkModelFaceType);
+  this->AddAssociationToType(FaceUse0, vtkModelFaceType);
   FaceUse0->Delete();
   vtkModelFaceUse* FaceUse1 = vtkModelFaceUse::New();
-  this->AddAssociation(FaceUse1->GetType(), FaceUse1, vtkModelFaceType);
+  this->AddAssociationToType(FaceUse1, vtkModelFaceType);
   FaceUse1->Delete();
 }
 

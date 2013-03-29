@@ -116,6 +116,9 @@ SET(ModelFiles
 )
 
 SET(DiscreteModelFiles
+  DiscreteMesh.cxx
+  DiscreteMeshCellIdIterator.h
+  MeshClassification.h
   vtkModel3dmGridRepresentation.cxx
   vtkModel3dm2DGridRepresentation.cxx
   vtkModelBCGridRepresentation.cxx
@@ -130,9 +133,7 @@ SET(DiscreteModelFiles
   vtkDiscreteModelGeometricEntity.cxx
   vtkDiscreteModelRegion.cxx
   vtkDiscreteModelVertex.cxx
-  vtkModelNodalGroup.cxx
   #vtkDiscreteModelWrapper.cxx
-  vtkModelUniqueNodalGroup.cxx
   vtkModelUserName.cxx
   vtkXMLModelReader.cxx
   vtkXMLModelWriter.cxx

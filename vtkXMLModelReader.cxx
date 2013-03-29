@@ -21,8 +21,6 @@
 #include "vtkDiscreteModelFace.h"
 #include "vtkDiscreteModelRegion.h"
 #include "vtkDiscreteModelVertex.h"
-#
-#include "vtkModelUniqueNodalGroup.h"
 #include "vtkModelUserName.h"
 #include "vtkCollection.h"
 #include "vtkInformation.h"
@@ -184,8 +182,6 @@ void vtkXMLModelReader::Serialize(istream& str, const char*)
   this->Serialize("vtkDiscreteModelRegion");
   this->Serialize("vtkModelShellUse");
   this->Serialize("vtkDiscreteModelEntityGroup");
-  this->Serialize("vtkModelNodalGroup");
-  this->Serialize("vtkModelUniqueNodalGroup");
 
   model->SetBlockModelGeometricEntityEvent(blockEvent);
   int types[4] = {vtkModelVertexType, vtkModelEdgeType,
@@ -331,22 +327,6 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
         return;
         }
       }
-    else if(!strcmp(ObjectName, "vtkModelNodalGroup"))
-      {
-      obj = this->ConstructNodalGroup(id);
-      if(!obj)
-        {
-        return;
-        }
-      }
-    else if(!strcmp(ObjectName, "vtkModelUniqueNodalGroup"))
-      {
-      obj = this->ConstructUniqueNodalGroup(id);
-      if(!obj)
-        {
-        return;
-        }
-      }
     obj->Serialize(this);
     }
 }
@@ -409,7 +389,7 @@ vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int id)
       this->Model->GetModelEntity(vtkModelEdgeType, edgeUseEdge[0]));
     vtkModelEntity* edgeUse = edge->GetModelEntity(vtkModelEdgeUseType,
                                                    associatedModelEdgeUses[i]);
-    loopUse->AddAssociation(edgeUse->GetType(), edgeUse);
+    loopUse->AddAssociation(edgeUse);
     }
 
   return loopUse;
@@ -426,7 +406,7 @@ vtkModelFace* vtkXMLModelReader::ConstructModelFace(int id)
     return 0;
     }
   vtkDiscreteModelFace* modelFace = vtkDiscreteModelFace::New();
-  this->Model->AddAssociation(modelFace->GetType(), modelFace);
+  this->Model->AddAssociation(modelFace);
   modelFace->Delete();
   modelFace->SetUniquePersistentId(id);
   modelFace->GetModelFaceUse(0)->SetUniquePersistentId(modelFaceUses[0]);
@@ -533,7 +513,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
   if(floatingEdges.size() != 0)
     {
     vtkModelItem* edge = this->Model->GetModelEntity(vtkModelEdgeType, floatingEdges[0]);
-    region->AddAssociation(edge->GetType(), edge);
+    region->AddAssociation(edge);
     }
   return region;
 }
@@ -581,7 +561,7 @@ vtkModelEdge* vtkXMLModelReader::ConstructModelEdge(int id)
 
   vtkDiscreteModelEdge* edge = vtkDiscreteModelEdge::New();
   edge->SetUniquePersistentId(id);
-  this->Model->AddAssociation(edge->GetType(), edge);
+  this->Model->AddAssociation(edge);
   edge->Delete();
   // we add in the model edge uses now so that we make sure
   // to get them in in the proper order
@@ -590,7 +570,7 @@ vtkModelEdge* vtkXMLModelReader::ConstructModelEdge(int id)
     { // iterate through the edge uses
     vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::New();
     edgeUse->SetUniquePersistentId(*it);
-    edge->AddAssociation(edgeUse->GetType(), edgeUse);
+    edge->AddAssociation(edgeUse);
     edgeUse->Delete();
     }
 
@@ -630,7 +610,7 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
                                                        edgeUsePairId);
     if(edgeUsePair)
       {
-      edgeUse->AddAssociation(edgeUsePair->GetType(), edgeUsePair);
+      edgeUse->AddAssociation(edgeUsePair);
       }
     }
 
@@ -653,7 +633,7 @@ vtkModelEdgeUse* vtkXMLModelReader::ConstructModelEdgeUse(int id)
       vtkErrorMacro("Could not find vertex use for edge use.");
       return 0;
       }
-    edgeUse->AddAssociation(vertexUse->GetType(), vertexUse);
+    edgeUse->AddAssociation(vertexUse);
     }
 
   return edgeUse;
@@ -743,23 +723,6 @@ vtkDiscreteModelEntityGroup* vtkXMLModelReader::ConstructModelEntityGroup(int id
 
   vtkErrorMacro("Model entity group contains more than one type.");
   return 0;
-}
-
-vtkModelNodalGroup* vtkXMLModelReader::ConstructNodalGroup(int id)
-{
-  // nodal groups only have an association with the model
-  // and the model will take care of keeping track of that association
-  // when the nodal group is built
-  return this->Model->BuildNodalGroup(BASE_NODAL_GROUP, 0, id);
-}
-
-vtkModelUniqueNodalGroup* vtkXMLModelReader::ConstructUniqueNodalGroup(int id)
-{
-  // nodal groups only have an association with the model
-  // and the model will take care of keeping track of that association
-  // when the nodal group is built
-  return vtkModelUniqueNodalGroup::SafeDownCast(
-    this->Model->BuildNodalGroup(UNIQUE_NODAL_GROUP, 0, id));
 }
 
 void vtkXMLModelReader::Serialize(const char* name, vtkInformation* info)

@@ -107,7 +107,7 @@ vtkModelShellUse* vtkModelRegion::BuildModelShellUse(
     {
     ShellUse->AddModelFaceUse(ModelFaces[i]->GetModelFaceUse(FaceSides[i]));
     }
-  this->AddAssociation(ShellUse->GetType(), ShellUse);
+  this->AddAssociation(ShellUse);
   ShellUse->Delete();
   return ShellUse;
 }
@@ -120,7 +120,7 @@ bool vtkModelRegion::DestroyModelShellUse(vtkModelShellUse* ShellUse)
     vtkErrorMacro("Error destroying model shell use.");
     return false;
     }
-  this->RemoveAssociation(ShellUse->GetType(), ShellUse);
+  this->RemoveAssociation(ShellUse);
   return true;
 }
 
