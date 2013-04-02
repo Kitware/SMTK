@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "DiscreteMesh.h"
 
+#include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkCellLocator.h"
 #include "vtkIncrementalOctreePointLocator.h"
@@ -366,18 +367,18 @@ void DiscreteMesh::GetCellNeighbors(vtkIdType index, vtkIdList* edge,
 }
 
 //=============================================================================
-void DiscreteMesh::GetCellEdgeNeighbors(vtkIdType index, vtkIdType startEdge,
-                          vtkIdType endEdge, vtkIdList* neighbors) const
+void DiscreteMesh::GetCellEdgeNeighbors(vtkIdType cellIndex, vtkIdType pointIdOne,
+                          vtkIdType pointIdTwo, vtkIdList* neighbors) const
 {
-  const DiscreteMesh::DataType type = detail::GetDataType(index);
-  index = detail::GetDataTypeIndex(index);
+  const DiscreteMesh::DataType type = detail::GetDataType(cellIndex);
+  cellIndex = detail::GetDataTypeIndex(cellIndex);
   vtkPolyData* data = this->GetDataFromType(type);
 
   //start amd end are point indicies so they don't need to be converted/
   //neighbors are cell ids so they do need to be converted
-  data->GetCellEdgeNeighbors(index,
-                             startEdge,
-                             endEdge,
+  data->GetCellEdgeNeighbors(cellIndex,
+                             pointIdOne,
+                             pointIdTwo,
                              neighbors);
 
   detail::ConvertIndices(type,neighbors);
@@ -415,7 +416,7 @@ void DiscreteMesh::MovePoint(vtkIdType pos, double xyz[3]) const
 
 //=============================================================================
 DiscreteMesh::EdgePointIds DiscreteMesh::AddEdgePoints(
-                                         const DiscreteMesh::EdgePoints& e)
+                                        const DiscreteMesh::EdgePoints& e) const
 {
   DiscreteMesh::EdgePointIds edge(
         this->SharedPoints->InsertNextPoint(e.first),
@@ -424,10 +425,59 @@ DiscreteMesh::EdgePointIds DiscreteMesh::AddEdgePoints(
 }
 
 //=============================================================================
-vtkIdType DiscreteMesh::AddEdge(DiscreteMesh::EdgePointIds& e)
+bool DiscreteMesh::EdgeExists(EdgePointIds &e, vtkIdType &edgeId) const
+{
+  bool found=false;
+  vtkIdType foundEdgeId=0;
+
+  vtkCellArray* lines = this->EdgeData->GetLines();
+  vtkIdType npts, *pts;
+  for(lines->InitTraversal();lines->GetNextCell(npts,pts) && found; ++foundEdgeId)
+    {
+    found = (e.first==pts[0] && e.second==pts[1]) ||
+            (e.first==pts[1] && e.second==pts[0]);
+    }
+  if(found)
+    {
+    edgeId=foundEdgeId;
+    }
+  return found;
+}
+
+//=============================================================================
+vtkIdType DiscreteMesh::AddEdge(DiscreteMesh::EdgePointIds& e) const
 {
   vtkIdType id = this->EdgeData->InsertNextCell(VTK_LINE,2,&e.first);
   return detail::ConvertIndex(DiscreteMesh::EDGE_DATA,id);
+}
+
+//=============================================================================
+vtkIdType DiscreteMesh::AddEdgeIfNotExisting(DiscreteMesh::EdgePointIds& e,
+                                             bool& orientation) const
+{
+  vtkIdType meshId=0; //should be noted that zero is an invalid edge id
+  if(!this->EdgeExists(e,meshId))
+    {
+    //doesn't exist, add it
+    orientation=1;
+    return this->AddEdge(e);
+    }
+  //we only have lines, so we know they take up 3 spots in memory each
+  //so we can compute the offset index
+  const vtkIdType realEdgeId =
+          detail::ConvertIndex(DiscreteMesh::EDGE_DATA,meshId);
+
+  //compute the location in memory for realEdgeId
+  const vtkIdType location = (realEdgeId*3);
+
+  //get the cell at that location
+  vtkIdType npts,*pts;
+  this->EdgeData->GetLines()->GetCell(location,npts,pts);
+
+  //if the first point id in the line is equal to our first point id,
+  //we know that the orientation is the same
+  orientation = (pts[0] == e.first);
+  return meshId;
 }
 
 //=============================================================================

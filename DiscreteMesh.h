@@ -134,8 +134,12 @@ public:
   //Doesn't verify Data is valid!
   void GetCellNeighbors(vtkIdType index, vtkIdList* edge, vtkIdList* neighbors) const;
 
-  void GetCellEdgeNeighbors(vtkIdType index, vtkIdType startEdge,
-                            vtkIdType endEdge, vtkIdList* neighbors) const;
+  //Get the neighbors at an edge.
+  //More efficient than the general GetCellNeighbors().
+  //Assumes links have been built (with BuildLinks()),
+  //and looks specifically for edge neighbors.
+  void GetCellEdgeNeighbors(vtkIdType cellIndex, vtkIdType pointIdOne,
+                            vtkIdType pointIdTwo, vtkIdList* neighbors) const;
 
   //Doesn't verify Data is valid!
   //overwrite the points that represent the mesh
@@ -156,11 +160,30 @@ public:
   void MovePoint(vtkIdType pos, double xyz[3]) const;
 
   //Doesn't verify Data is valid!
-  //doesn't add the edge to mesh, just adds the points
-  DiscreteMesh::EdgePointIds AddEdgePoints( const DiscreteMesh::EdgePoints& e);
+  //doesn't add the edge to mesh, just adds the points to the shared points
+  //array. EdgePoints is composed of two xyz double values
+  DiscreteMesh::EdgePointIds AddEdgePoints(const DiscreteMesh::EdgePoints& e) const;
 
-  //returns the edge Id
-  vtkIdType AddEdge(EdgePointIds &e);
+
+  //Returns true if the e or the inverse of the edge ( A,B or B,A ) exists
+  //in the mesh. Will set edgeId with the meshIndex if the edge exists, otherwise
+  //will not touch the parameter.
+  bool EdgeExists(EdgePointIds& e, vtkIdType& edgeId) const;
+
+  //Adds an edge to the mesh without any checks. Will return
+  //the meshId for the edge. You can seriously break the mesh if you
+  //add duplicate edges, or an existing edge in the opposite direction.
+  //The edge is added in passed in order, so orientation is alway 1/true
+  //THIS IS AN ADVANCED METHOD FOR OPTIMIZED ALGORITHMS
+  vtkIdType AddEdge(EdgePointIds &e) const;
+
+  //Conditional add an edge to the discrete mesh given two point ids.
+  //If the edge already exists in the mesh this will return the existing
+  //mesh id. It should be noted that the edge between A and B is considered
+  //to be equal to the edge between B and A. This means that trying to
+  //add the edge B,A when A,B exists will cause the function to return
+  //the meshId for A,B
+  vtkIdType AddEdgeIfNotExisting(EdgePointIds& e, bool& orientation)const;
 
   DiscreteMesh::FaceResult AddFace( const DiscreteMesh::Face& f) const;
 
