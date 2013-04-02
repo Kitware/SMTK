@@ -416,7 +416,10 @@ void vtkDiscreteModel::UpdateMesh()
   this->Mesh.GetBounds(this->ModelBounds);
 
   this->MeshClassification.resize(this->Mesh.GetNumberOfEdges(),
-                                  this->Mesh.GetNumberOfFaces());
+                                  ClassificationType::EDGE_DATA);
+
+  this->MeshClassification.resize(this->Mesh.GetNumberOfFaces(),
+                                  ClassificationType::FACE_DATA);
 
   this->Modified();
 }
