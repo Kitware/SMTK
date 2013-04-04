@@ -19,10 +19,6 @@ public:
   //id expect undefined behavior
   void SetEntity(vtkIdType meshId, vtkIdType entityIndex, EntityType* entity);
 
-  //Will verify that meshId is within current classification memory, otherwise
-  //will resize memory to include it
-  void AddEntity(vtkIdType meshId, vtkIdType entityIndex, EntityType* entity);
-
   vtkIdType size(DataType type) const;
   void resize(vtkIdType size,DataType type);
 
@@ -72,24 +68,6 @@ void MeshClassification<EntityType>::SetEntity(vtkIdType meshId,
   classificationStorageType element(entityIndex,entity);
   const vtkIdType index = this->ToIndex(meshId);
   this->GetVectorFromId(meshId)[index]=element;
-}
-
-//=============================================================================
-template<class EntityType>
-void MeshClassification<EntityType>::AddEntity(vtkIdType meshId,
-                                               vtkIdType entityIndex,
-                                               EntityType* entity)
-{
-  classificationStorageType element(entityIndex,entity);
-  std::vector<classificationStorageType>& v = this->GetVectorFromId(meshId);
-  const vtkIdType index = this->ToIndex(meshId);
-
-  const std::size_t sizeOfStorage = v.size();
-  if(sizeOfStorage <= index)
-    {
-    v.resize(index+1); //resize to make meshIndex a valid index
-    }
-  v[index]=element;
 }
 
 //=============================================================================
