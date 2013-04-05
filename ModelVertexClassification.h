@@ -37,7 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;
 
-class ModelVertexClassification
+class VTKDISCRETEMODEL_EXPORT ModelVertexClassification
 {
 public:
   ModelVertexClassification(vtkDiscreteModel* model);

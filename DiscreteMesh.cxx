@@ -453,15 +453,20 @@ vtkIdType DiscreteMesh::AddEdge(DiscreteMesh::EdgePointIds& e) const
 
 //=============================================================================
 vtkIdType DiscreteMesh::AddEdgeIfNotExisting(DiscreteMesh::EdgePointIds& e,
-                                             bool& orientation) const
+                                             bool& orientation,
+                                             bool& createdEdge) const
 {
   vtkIdType meshId=0; //should be noted that zero is an invalid edge id
   if(!this->EdgeExists(e,meshId))
     {
     //doesn't exist, add it
     orientation=1;
+    createdEdge = true;
     return this->AddEdge(e);
     }
+  // We know the edge exists
+  createdEdge = false;
+
   //we only have lines, so we know they take up 3 spots in memory each
   //so we can compute the offset index
   const vtkIdType realEdgeId =

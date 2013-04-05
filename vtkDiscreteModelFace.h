@@ -37,6 +37,7 @@ class vtkDiscreteModelFaceUse;
 class vtkIdList;
 class vtkIdTypeArray;
 class vtkBitArray;
+class vtkPolyData;
 
 class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelFace : public vtkModelFace,
   public vtkDiscreteModelGeometricEntity
@@ -69,6 +70,11 @@ public:
   // Mark each index in PointsMask with 0 (out) or 1 (in) for
   // master vtkPoints that are on the boundary of vtkDiscreteModelFace grid.
   void GatherBoundaryPointIdsMask(vtkBitArray* points);
+
+  // Description:
+  // Extract the edges of the face and return the information
+  // as polydata.
+  void ExtractEdges(vtkPolyData* result);
 
 protected:
 //BTX

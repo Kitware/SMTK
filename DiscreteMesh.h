@@ -183,7 +183,11 @@ public:
   //to be equal to the edge between B and A. This means that trying to
   //add the edge B,A when A,B exists will cause the function to return
   //the meshId for A,B
-  vtkIdType AddEdgeIfNotExisting(EdgePointIds& e, bool& orientation)const;
+  vtkIdType AddEdgeIfNotExisting(EdgePointIds& e, bool& orientation,
+                                 bool &createdEdge) const;
+
+  vtkIdType AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
+                                 bool &createdEdge) const;
 
   DiscreteMesh::FaceResult AddFace( const DiscreteMesh::Face& f) const;
 
@@ -301,6 +305,16 @@ public:
   vtkIdType CellId;
 
 };
+
+//----------------------------------------------------------------------------
+inline vtkIdType DiscreteMesh::
+AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
+                     bool &createdEdge) const
+{
+  EdgePointIds temp(p0, p1);
+  return this->AddEdgeIfNotExisting(temp, orientation,
+                                    createdEdge);
+}
 
 
 

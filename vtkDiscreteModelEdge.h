@@ -113,6 +113,7 @@ protected:
   friend class vtkCmbMeshToModelWriter;
   friend class CmbGeologyBuilderCore;
   friend class CmbSceneBuilderCore;
+  friend class vtkCreateModelEdgesOperator;
   //ETX
 
   // Description:

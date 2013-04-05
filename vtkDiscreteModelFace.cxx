@@ -314,6 +314,55 @@ void vtkDiscreteModelFace::GatherBoundaryPointIdsMask(vtkBitArray* points)
     }
   grid->GetPointData()->RemoveArray(arrayName);
 }
+void vtkDiscreteModelFace::ExtractEdges(vtkPolyData* result)
+{
+  vtkPolyData* grid = vtkPolyData::SafeDownCast(this->GetGeometry());
+  result->Reset();
+  // add in an array for storing the cell ID that "owns" the edge
+  vtkNew<vtkIdTypeArray> cellIds;
+  cellIds->SetNumberOfComponents(1);
+  cellIds->Allocate(grid->GetNumberOfCells() * 0.1);
+  result->SetPoints(grid->GetPoints());
+  const char arrayName[] = "OriginalFacetCellID";
+  cellIds->SetName(arrayName);
+  result->GetCellData()->AddArray(cellIds.GetPointer());
+
+  // Setup the resulting edges
+  vtkNew<vtkCellArray> newLines;
+  newLines->Allocate(grid->GetNumberOfCells() * 0.1);
+  result->SetLines(newLines.GetPointer());
+
+  // Get the original cell IDs w/r to the mesh
+  vtkIdTypeArray* masterGeometryCellIndex = this->GetReverseClassificationArray();
+
+  // Iterate over all of the cells of the face and find any boundary edge
+  vtkIdType cellId, npts, *pts, i, linePts[2];
+  vtkNew<vtkIdList> neighbors;
+  vtkCellArray *facePolys = grid->GetPolys();
+  neighbors->Allocate(VTK_CELL_SIZE);
+  grid->BuildLinks();
+  for(cellId = 0, facePolys->InitTraversal();
+      facePolys->GetNextCell(npts, pts); cellId++)
+    {
+    if (npts < 3)
+      {
+      continue; // Degenerate Cell!
+      }
+    // Set the "first line point to be the last one in the poly
+    linePts[0] = pts[npts-1];
+    for (i = 0; i < npts; i++)
+      {
+      grid->GetCellEdgeNeighbors(cellId, linePts[0], pts[i], neighbors.GetPointer());
+      if (!(neighbors->GetNumberOfIds()))
+        {
+        linePts[1] = pts[i];
+        newLines->InsertNextCell(2, linePts);
+        cellIds->InsertNextValue(masterGeometryCellIndex->GetValue(cellId));
+        }
+      linePts[0] = pts[i]; // Set this to be the new start point
+      }
+    }
+}
 
 void vtkDiscreteModelFace::Serialize(vtkSerializer* ser)
 {
