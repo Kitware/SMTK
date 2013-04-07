@@ -432,14 +432,18 @@ bool DiscreteMesh::EdgeExists(EdgePointIds &e, vtkIdType &edgeId) const
 
   vtkCellArray* lines = this->EdgeData->GetLines();
   vtkIdType npts, *pts;
-  for(lines->InitTraversal();lines->GetNextCell(npts,pts) && found; ++foundEdgeId)
+  for(lines->InitTraversal();lines->GetNextCell(npts,pts); ++foundEdgeId)
     {
     found = (e.first==pts[0] && e.second==pts[1]) ||
             (e.first==pts[1] && e.second==pts[0]);
+    if (found)
+      {
+      break;
+      }
     }
   if(found)
     {
-    edgeId=foundEdgeId;
+    edgeId = detail::ConvertIndex(DiscreteMesh::EDGE_DATA,foundEdgeId);
     }
   return found;
 }
