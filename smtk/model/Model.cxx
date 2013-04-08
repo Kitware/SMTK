@@ -79,11 +79,11 @@ std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
 {
   switch(t)
     {
-    case ModelEntityNodalTypes::AllNodesType:
+    case AllNodesType:
       return "All Nodes";
-    case ModelEntityNodalTypes::BoundaryNodesType:
+    case BoundaryNodesType:
       return "Boundary Nodes";
-    case ModelEntityNodalTypes::InteriorNodesType:
+    case InteriorNodesType:
       return "Interior Nodes";
     default:
       break;

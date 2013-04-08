@@ -50,11 +50,12 @@ namespace smtk
 
     public slots:
       virtual void showAdvanced(int show);
-      virtual void showEntityAssociation(smtk::AttributePtr theAtt, QString& category);
+      virtual void showEntityAssociation(smtk::AttributePtr theAtt, const QString& category);
       virtual void showAttributeAssociation(smtk::ModelItemPtr theEntiy,
-        QString& category, std::vector<smtk::AttributeDefinitionPtr>& attDefs);
+                                            const QString& category,
+                                            std::vector<smtk::AttributeDefinitionPtr>& attDefs);
       virtual void showDomainsAssociation(
-        std::vector<smtk::ModelGroupItemPtr>& theDomains, QString& category,
+        std::vector<smtk::ModelGroupItemPtr>& theDomains, const QString& category,
         std::vector<smtk::AttributeDefinitionPtr>& attDefs);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );

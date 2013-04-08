@@ -131,7 +131,7 @@ void qtAssociationWidget::showAdvanced(int checked)
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showDomainsAssociation(
-  std::vector<smtk::ModelGroupItemPtr>& theDomains, QString& category,
+  std::vector<smtk::ModelGroupItemPtr>& theDomains, const QString& category,
   std::vector<smtk::AttributeDefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(true);
@@ -187,7 +187,7 @@ void qtAssociationWidget::showDomainsAssociation(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
-  smtk::ModelItemPtr theEntiy, QString& category,
+  smtk::ModelItemPtr theEntiy, const QString& category,
   std::vector<smtk::AttributeDefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(false);
@@ -244,8 +244,8 @@ void qtAssociationWidget::showAttributeAssociation(
   this->Internals->AvailableList->blockSignals(false);
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showEntityAssociation(
-  smtk::AttributePtr theAtt, QString& category)
+void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
+                                                 const QString& category)
 {
   this->Internals->domainGroup->setVisible(false);
   this->Internals->boundaryGroup->setVisible(true);
