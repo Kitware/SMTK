@@ -169,6 +169,7 @@ public:
   //in the mesh. Will set edgeId with the meshIndex if the edge exists, otherwise
   //will not touch the parameter.
   bool EdgeExists(EdgePointIds& e, vtkIdType& edgeId) const;
+  bool EdgeExists(vtkIdType p0, vtkIdType p1, vtkIdType& edgeId) const;
 
   //Adds an edge to the mesh without any checks. Will return
   //the meshId for the edge. You can seriously break the mesh if you
@@ -314,6 +315,14 @@ AddEdgeIfNotExisting(vtkIdType p0, vtkIdType p1, bool& orientation,
   EdgePointIds temp(p0, p1);
   return this->AddEdgeIfNotExisting(temp, orientation,
                                     createdEdge);
+}
+
+//----------------------------------------------------------------------------
+inline bool DiscreteMesh::
+EdgeExists(vtkIdType p0, vtkIdType p1, vtkIdType &edgeId) const
+{
+  EdgePointIds temp(p0, p1);
+  return this->EdgeExists(temp, edgeId);
 }
 
 
