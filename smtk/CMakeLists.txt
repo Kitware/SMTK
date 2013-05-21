@@ -73,7 +73,7 @@ if(SMTK_BUILD_QT)
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
   source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
-  
+
   set(qtsmtk_headers ${QAttrLibMocHeaders})
   set(qtsmtk_srcs
    ${QAttrLibSrcs}
@@ -97,3 +97,6 @@ if(SMTK_BUILD_QT)
   export(TARGETS QtSMTK SMTKCore FILE QtSMTK-exports.cmake)
 
 endif()
+
+#setup the exports for the library when used from an installed location
+install(EXPORT SMTK-targets DESTINATION lib)
