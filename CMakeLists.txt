@@ -54,7 +54,7 @@ set( EXECUTABLE_OUTPUT_PATH
 
 ## Set the directory where the libraries will be stored
 set( LIBRARY_OUTPUT_PATH
-  ${PROJECT_BINARY_DIR}/libs
+  ${PROJECT_BINARY_DIR}/lib
   CACHE PATH
   "Directory where all the libraries will be stored"
 )
