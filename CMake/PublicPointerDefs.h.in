@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_PublicPointerDefs_h
 
 @POINTER_TYPE_HEADERS@
+#include <set>
 
 namespace smtk
 {
@@ -130,13 +131,36 @@ namespace smtk
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::RootSection> RootSectionPtr;
   typedef @POINTER_NAMESPACE@::shared_ptr<attribute::SimpleExpressionSection> SimpleExpressionSectionPtr;
 
-/*
-  template<typename T>
-  struct shared_ptr_type
-  {
-    typedef @POINTER_NAMESPACE@::shared_ptr<T> type;
-  };
-*/
+#if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER >= 1600
+  //special map and set typedefs to work around VS removing less
+  //than from weak pointer in 2010 and greater
+  typedef std::set< WeakAttributeDefinitionPtr,
+          std::owner_less<WeakAttributeDefinitionPtr> > WeakAttributeDefinitionPtrSet;
+
+  typedef std::set< WeakAttributeItemDefinitionPtr,
+          std::owner_less<WeakAttributeItemDefinitionPtr> >
+                                              WeakAttributeItemDefinitionPtrSet;
+
+  typedef std::set< WeakAttributeItemPtr,
+          std::owner_less<WeakAttributeItemPtr> > WeakAttributeItemPtrSet;
+  typedef std::set< WeakAttributePtr,
+          std::owner_less<WeakAttributePtr> > WeakAttributePtrSet;
+  typedef std::set< WeakModelItemPtr,
+          std::owner_less<WeakModelItemPtr> > WeakModelItemPtrSet;
+  typedef std::set< WeakModelPtr,
+          std::owner_less<WeakModelPtr> > WeakModelPtrSet;
+  typedef std::set< WeakSectionPtr,
+          std::owner_less<WeakSectionPtr> > WeakSectionPtrSet;
+#else
+  //we can use less than operator
+  typedef std::set< WeakAttributeDefinitionPtr > WeakAttributeDefinitionPtrSet;
+  typedef std::set< WeakAttributeItemDefinitionPtr > WeakAttributeItemDefinitionPtrSet;
+  typedef std::set< WeakAttributeItemPtr > WeakAttributeItemPtrSet;
+  typedef std::set< WeakAttributePtr > WeakAttributePtrSet;
+  typedef std::set< WeakModelItemPtr > WeakModelItemPtrSet;
+  typedef std::set< WeakModelPtr > WeakModelPtrSet;
+  typedef std::set< WeakSectionPtr > WeakSectionPtrSet;
+#endif
 
   // These are used internally by SMTK
   namespace internal
@@ -151,20 +175,21 @@ namespace smtk
     {
       enum{type=true};
     };
-    
+
     template<typename T, int Enabled = is_shared_ptr<T>::type >
     struct shared_ptr_type
     {
       typedef @POINTER_NAMESPACE@::shared_ptr<T> SharedPointerType;
       typedef T RawPointerType;
     };
-    
+
     template<typename T>
     struct shared_ptr_type<T,true>
     {
       typedef T SharedPointerType;
       typedef typename T::element_type RawPointerType;
     };
+
   };
 };
 #endif /* __smtk_attribute_PublicPointerDefs_h */

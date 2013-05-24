@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <sstream>
 #include <queue>
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 Manager::Manager(): m_nextAttributeId(0), m_rootSection(new RootSection(""))
@@ -50,7 +50,7 @@ Manager::~Manager()
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createDefinition(const std::string &typeName, 
+Manager::createDefinition(const std::string &typeName,
                           const std::string &baseTypeName)
 {
   smtk::AttributeDefinitionPtr def = this->findDefinition(typeName);
@@ -81,7 +81,7 @@ Manager::createDefinition(const std::string &typeName,
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createDefinition(const std::string &typeName, 
+Manager::createDefinition(const std::string &typeName,
                           smtk::AttributeDefinitionPtr baseDef)
 {
   smtk::AttributeDefinitionPtr  def = this->findDefinition(typeName);
@@ -152,7 +152,7 @@ smtk::AttributePtr Manager::createAttribute(const std::string &name,
 }
 
 //----------------------------------------------------------------------------
-void Manager::recomputeNextAttributeID() 
+void Manager::recomputeNextAttributeID()
 {
   std::map<std::string, AttributePtr>::const_iterator it;
   for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
@@ -239,7 +239,7 @@ void Manager::findDefinitions(long mask, std::vector<smtk::AttributeDefinitionPt
 
 //----------------------------------------------------------------------------
 void Manager::
-findAttributes(smtk::AttributeDefinitionPtr def, 
+findAttributes(smtk::AttributeDefinitionPtr def,
                std::vector<smtk::AttributePtr> &result) const
 {
   result.clear();
@@ -250,7 +250,7 @@ findAttributes(smtk::AttributeDefinitionPtr def,
 }
 //----------------------------------------------------------------------------
 void Manager::
-internalFindAttributes(smtk::AttributeDefinitionPtr def, 
+internalFindAttributes(smtk::AttributeDefinitionPtr def,
                        std::vector<smtk::AttributePtr> &result) const
 {
   if (!def->isAbstract())
@@ -263,13 +263,13 @@ internalFindAttributes(smtk::AttributeDefinitionPtr def,
       }
     }
   std::map<smtk::AttributeDefinitionPtr,
-    std::set<smtk::WeakAttributeDefinitionPtr> >::const_iterator dit;
+           smtk::WeakAttributeDefinitionPtrSet >::const_iterator dit;
   dit = this->m_derivedDefInfo.find(def);
   if (dit == this->m_derivedDefInfo.end())
     {
     return;
     }
-  std::set<smtk::WeakAttributeDefinitionPtr>::const_iterator defIt;
+  smtk::WeakAttributeDefinitionPtrSet::const_iterator defIt;
   for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
     {
     this->internalFindAttributes(defIt->lock(), result);
@@ -278,7 +278,7 @@ internalFindAttributes(smtk::AttributeDefinitionPtr def,
 
 //----------------------------------------------------------------------------
 void Manager::
-findAllDerivedDefinitions(smtk::AttributeDefinitionPtr def, 
+findAllDerivedDefinitions(smtk::AttributeDefinitionPtr def,
                           bool onlyConcrete,
                           std::vector<smtk::AttributeDefinitionPtr> &result) const
 {
@@ -299,13 +299,13 @@ internalFindAllDerivedDefinitions(smtk::AttributeDefinitionPtr def,
     result.push_back(def);
     }
   std::map<smtk::AttributeDefinitionPtr,
-    std::set<smtk::WeakAttributeDefinitionPtr> >::const_iterator dit;
+           smtk::WeakAttributeDefinitionPtrSet >::const_iterator dit;
   dit = this->m_derivedDefInfo.find(def);
   if (dit == this->m_derivedDefInfo.end())
     {
     return;
     }
-  std::set<smtk::WeakAttributeDefinitionPtr>::const_iterator defIt;
+  smtk::WeakAttributeDefinitionPtrSet::const_iterator defIt;
   for (defIt = dit->second.begin(); defIt != dit->second.end(); defIt++)
     {
     this->internalFindAllDerivedDefinitions(defIt->lock(), onlyConcrete, result);
@@ -389,11 +389,11 @@ void Manager::updateCategories()
     def->setCategories();
     // Does this definition have derived defs from it?
     std::map<smtk::AttributeDefinitionPtr,
-      std::set<smtk::WeakAttributeDefinitionPtr> >::iterator dit = 
+             smtk::WeakAttributeDefinitionPtrSet>::iterator dit =
       this-> m_derivedDefInfo.find(def);
     if (dit != this-> m_derivedDefInfo.end())
       {
-      std::set<smtk::WeakAttributeDefinitionPtr>::iterator ddit;
+      smtk::WeakAttributeDefinitionPtrSet::iterator ddit;
       for (ddit = dit->second.begin(); ddit != dit->second.end(); ddit++)
         {
         toBeProcessed.push(ddit->lock());
@@ -415,8 +415,8 @@ void Manager::
 derivedDefinitions(smtk::AttributeDefinitionPtr def,
                    std::vector<smtk::AttributeDefinitionPtr> &result) const
 {
-  std::map<smtk::AttributeDefinitionPtr, 
-    std::set<smtk::WeakAttributeDefinitionPtr> >::const_iterator it;
+  std::map<smtk::AttributeDefinitionPtr,
+           smtk::WeakAttributeDefinitionPtrSet >::const_iterator it;
   it = this->m_derivedDefInfo.find(def);
   result.clear();
   if (it == this->m_derivedDefInfo.end())
@@ -425,11 +425,11 @@ derivedDefinitions(smtk::AttributeDefinitionPtr def,
     }
   int i, n = it->second.size();
   result.resize(n);
-  std::set<smtk::WeakAttributeDefinitionPtr>::const_iterator dit;
+  smtk::WeakAttributeDefinitionPtrSet::const_iterator dit;
   for (i = 0, dit = it->second.begin(); i < n; dit++, i++)
     {
     result[i] = dit->lock();
     }
 }
-    
+
 //----------------------------------------------------------------------------

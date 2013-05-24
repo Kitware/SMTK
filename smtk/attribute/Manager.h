@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <set>
 #include <string>
 #include <vector>
- 
+
 
 namespace smtk
 {
@@ -46,13 +46,13 @@ namespace smtk
     class SMTKCORE_EXPORT Manager
     {
     public:
-      
+
       Manager();
       virtual ~Manager();
-      
+
       smtk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
                                                      const std::string &baseTypeName = "");
-      smtk::AttributeDefinitionPtr createDefinition(const std::string &name, 
+      smtk::AttributeDefinitionPtr createDefinition(const std::string &name,
                                                      AttributeDefinitionPtr baseDefiniiton);
       smtk::AttributePtr createAttribute(const std::string &name, const std::string &type);
       smtk::AttributePtr createAttribute(const std::string &type);
@@ -63,10 +63,10 @@ namespace smtk
       void findAttributes(const std::string &type, std::vector<smtk::AttributePtr> &result) const;
       void findAttributes(smtk::AttributeDefinitionPtr def, std::vector<AttributePtr> &result) const;
       smtk::AttributeDefinitionPtr findDefinition(const std::string &type) const;
-      
+
       // Return a list of definitions that are not derived from another definition
       void findBaseDefinitions(std::vector<smtk::AttributeDefinitionPtr> &result) const;
-      
+
       void derivedDefinitions(smtk::AttributeDefinitionPtr def,
                               std::vector<smtk::AttributeDefinitionPtr> &result) const;
 
@@ -120,7 +120,7 @@ namespace smtk
       std::map<std::string, smtk::AttributePtr> m_attributes;
       std::map<unsigned long, smtk::AttributePtr> m_attributeIdMap;
       std::map<smtk::AttributeDefinitionPtr,
-        std::set<smtk::WeakAttributeDefinitionPtr> > m_derivedDefInfo;
+        smtk::WeakAttributeDefinitionPtrSet > m_derivedDefInfo;
       std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
       unsigned long m_nextAttributeId;
@@ -144,7 +144,7 @@ namespace smtk
       return (it == this->m_attributeIdMap.end()) ? smtk::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline smtk::AttributeDefinitionPtr 
+    inline smtk::AttributeDefinitionPtr
     Manager::findDefinition(const std::string &typeName) const
     {
       std::map<std::string, smtk::AttributeDefinitionPtr>::const_iterator it;
@@ -152,7 +152,7 @@ namespace smtk
       return (it == this->m_definitions.end()) ? smtk::AttributeDefinitionPtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline void  
+    inline void
     Manager::findDefinitionAttributes(const std::string &typeName,
                                       std::vector<smtk::AttributePtr> &result) const
     {
@@ -166,7 +166,7 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     inline void Manager::
-    findAttributes(const std::string &type, 
+    findAttributes(const std::string &type,
                    std::vector<smtk::AttributePtr> &result) const
     {
       result.clear();

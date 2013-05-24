@@ -46,7 +46,7 @@ namespace smtk
     class Attribute;
     class ItemDefinition;
     class Manager;
- 
+
     class SMTKCORE_EXPORT Definition
     {
     public:
@@ -134,7 +134,7 @@ namespace smtk
       bool canBeAssociated(unsigned long type) const
       { return (type == (type & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
-      // We look at the model's dimension and based on that return 
+      // We look at the model's dimension and based on that return
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
@@ -146,7 +146,7 @@ namespace smtk
       smtk::AttributeItemDefinitionPtr itemDefinition(int ith) const
       {
         return (ith < 0) ? smtk::AttributeItemDefinitionPtr()
-          : (ith >= this->m_itemDefs.size() ? 
+          : (ith >= this->m_itemDefs.size() ?
              smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
@@ -156,7 +156,7 @@ namespace smtk
         addItemDefinition(const std::string &name)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::SharedPointerType 
+        typename SharedTypes::SharedPointerType
           item(new typename SharedTypes::RawPointerType(name));
         this->m_itemDefs.push_back(item);
         return item;
@@ -187,7 +187,6 @@ namespace smtk
       int m_version;
       bool m_isAbstract;
       smtk::AttributeDefinitionPtr m_baseDefinition;
-      std::set<WeakAttributeDefinitionPtr> m_derivedDefinitions;
       std::string m_type;
       std::string m_label;
       bool m_isNodal;
@@ -195,7 +194,7 @@ namespace smtk
       int m_advanceLevel;
       std::vector<smtk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
-//Is Unique indicates if more than one attribute of this type can be assigned to a 
+//Is Unique indicates if more than one attribute of this type can be assigned to a
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
 // has isUnique = true it will also prevent an attribute from this definition being assigned if the
 // targeted model entity has an attribute derived from the Super Definition
@@ -205,7 +204,7 @@ namespace smtk
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
-      
+
     };
 //----------------------------------------------------------------------------
     inline int Definition::findItemPosition(const std::string &name) const
