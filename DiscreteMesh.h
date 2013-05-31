@@ -217,9 +217,11 @@ private:
 };
 
 //----------------------------------------------------------------------------
-class DiscreteMesh::EdgePoints : public std::pair<double[3],double[3]>
+class DiscreteMesh::EdgePoints
 {
 public:
+  double first[3];
+  double second[3];
   EdgePoints(double f[3], double s[3])
   {
     this->first[0] = f[0];
