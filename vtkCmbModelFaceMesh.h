@@ -99,7 +99,7 @@ protected:
   // Description:
   // Set the MeshedMinimumAngle.  This is protected so that derived
   // classes can use this method.
-  vtkSetClampMacro(MeshedMinimumAngle, double, 0, VTK_LARGE_FLOAT);
+  vtkSetClampMacro(MeshedMinimumAngle, double, 0, VTK_FLOAT_MAX);
 
   // Description:
   // This method builds the model entity's mesh without checking

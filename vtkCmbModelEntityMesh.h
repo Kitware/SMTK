@@ -78,7 +78,7 @@ public:
   // used length gets modified then the model entity
   // automatically gets remeshed.
   vtkGetMacro(Length, double);
-  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
+  vtkSetClampMacro(Length, double, 0, VTK_FLOAT_MAX);
 
   // Description:
   // Get the actual length used to mesh this entity (0 indicates
@@ -119,7 +119,7 @@ protected:
   // Description:
   // Set the MeshedLength.  This is protected so that derived
   // classes can use this method.
-  vtkSetClampMacro(MeshedLength, double, 0, VTK_LARGE_FLOAT);
+  vtkSetClampMacro(MeshedLength, double, 0, VTK_FLOAT_MAX);
 
 
 private:

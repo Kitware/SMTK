@@ -52,7 +52,7 @@ public:
 
   // Description:
   // Set/get the desired length for the cells discretizing the model face.
-  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
+  vtkSetClampMacro(Length, double, 0, VTK_FLOAT_MAX);
   vtkGetMacro(Length, double);
 
   // Description:

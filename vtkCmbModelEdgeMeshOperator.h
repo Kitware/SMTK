@@ -52,7 +52,7 @@ public:
 
   // Description:
   // Set/get the length for the cells discretizing the model edge.
-  vtkSetClampMacro(Length, double, 0, VTK_LARGE_FLOAT);
+  vtkSetClampMacro(Length, double, 0, VTK_FLOAT_MAX);
   vtkGetMacro(Length, double);
 
   // Description:
