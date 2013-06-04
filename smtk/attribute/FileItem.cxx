@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
+#include <stdio.h>
 
 using namespace smtk::attribute; 
 

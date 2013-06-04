@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <vector>
+#include <stdio.h>
 
 namespace smtk
 {
