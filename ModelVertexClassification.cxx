@@ -89,8 +89,12 @@ std::pair<vtkIdType, vtkDiscreteModelVertex*>
 {
   typedef std::map<vtkIdType,ModelVertexInfo>::iterator iterator;
   typedef std::pair<vtkIdType,ModelVertexInfo> insertPair;
-  std::pair<iterator,bool> inserted = this->ModelVertInfo.insert(
-                            insertPair(pointId,ModelVertexInfo(-1,NULL)) );
+
+  vtkDiscreteModelVertex* emptyVertex = NULL;
+  ModelVertexInfo empty(-1,emptyVertex);
+  insertPair insertedItem(pointId,empty);
+
+  std::pair<iterator,bool> inserted =this->ModelVertInfo.insert(insertedItem);
   if(inserted.second)
     {
     //we have inserted the item, so that means we have to actually
