@@ -520,7 +520,7 @@ vtkModelRegion* vtkXMLModelReader::ConstructModelRegion(int id)
 
 vtkModelVertex* vtkXMLModelReader::ConstructModelVertex(int id)
 {
-  vtkModelVertex* vertex = this->Model->BuildModelVertex(-2, id);
+  vtkModelVertex* vertex = this->Model->BuildModelVertex(-2, id, false);
 
   // add in the vertex uses here so that we keep the order
   std::vector<vtkIdType> associatedVertexUses;

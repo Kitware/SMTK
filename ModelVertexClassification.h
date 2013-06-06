@@ -52,7 +52,7 @@ public:
   //associated with that pointId this will return the exists ModelVertex and
   //ModelId
   std::pair<vtkIdType, vtkDiscreteModelVertex*>
-  AddModelVertex( vtkIdType pointId );
+  AddModelVertex( vtkIdType pointId, bool bCreateGeometry=false);
 
 
 private:

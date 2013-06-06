@@ -85,7 +85,8 @@ bool ModelVertexClassification::HasModelVertex( vtkIdType pointId ) const
 
 //=============================================================================
 std::pair<vtkIdType, vtkDiscreteModelVertex*>
-  ModelVertexClassification::AddModelVertex( vtkIdType pointId )
+  ModelVertexClassification::AddModelVertex( vtkIdType pointId,
+  bool bCreateGeometry )
 {
   typedef std::map<vtkIdType,ModelVertexInfo>::iterator iterator;
   typedef std::pair<vtkIdType,ModelVertexInfo> insertPair;
@@ -99,7 +100,8 @@ std::pair<vtkIdType, vtkDiscreteModelVertex*>
     {
     //we have inserted the item, so that means we have to actually
     //update the model.
-    vtkModelVertex* newVertex = this->Model->BuildModelVertex(pointId);
+    vtkModelVertex* newVertex = this->Model->BuildModelVertex(
+      pointId, bCreateGeometry);
     vtkDiscreteModelVertex* dvert =
                         vtkDiscreteModelVertex::SafeDownCast(newVertex);
     const vtkIdType vertexModelId = newVertex->GetUniquePersistentId();

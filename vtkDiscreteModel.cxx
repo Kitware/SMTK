@@ -72,12 +72,15 @@ vtkDiscreteModel::~vtkDiscreteModel()
   this->SetAnalysisGridInfo(NULL);
 }
 
-vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId)
+vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId,
+  bool bCreateGeometry)
 {
-  return this->BuildModelVertex(pointId, this->GetNextUniquePersistentId());
+  return this->BuildModelVertex(pointId,
+    this->GetNextUniquePersistentId(), bCreateGeometry);
 }
 
-vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, vtkIdType vertexId)
+vtkModelVertex* vtkDiscreteModel::BuildModelVertex(
+  vtkIdType pointId, vtkIdType vertexId, bool bCreateGeometry)
 {
   vtkDiscreteModelVertex* vertex = vtkDiscreteModelVertex::New();
   vertex->SetUniquePersistentId(vertexId);
@@ -87,6 +90,10 @@ vtkModelVertex* vtkDiscreteModel::BuildModelVertex(vtkIdType pointId, vtkIdType 
   if(vertexId > this->GetLargestUsedUniqueId())
     {
     this->SetLargestUsedUniqueId(vertexId);
+    }
+  if(bCreateGeometry)
+    {
+    vertex->CreateGeometry();
     }
   this->InvokeModelGeometricEntityEvent(ModelGeometricEntityCreated, vertex);
   return vertex;

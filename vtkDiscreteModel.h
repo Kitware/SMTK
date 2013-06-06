@@ -137,9 +137,10 @@ public:
   // Build a model entity. The model is responsible for the management
   // of the built model entity.  The build model entity is deleted
   // from the model with the corresponding DestroyModel function.
-  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId);
   virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId,
-                                           vtkIdType vertexId);
+    bool bCreateGeometry=false);
+  virtual vtkModelVertex* BuildModelVertex(vtkIdType pointId,
+    vtkIdType vertexId, bool bCreateGeometry=false);
   virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0,
                                        vtkModelVertex* vertex1);
 
