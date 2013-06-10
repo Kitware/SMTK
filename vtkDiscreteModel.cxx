@@ -58,7 +58,7 @@ vtkInformationKeyMacro(vtkDiscreteModel, CELLMAPARRAY, ObjectBase);
 
 vtkDiscreteModel::vtkDiscreteModel():
   Mesh(),
-  MeshClassification()
+  MeshClassificationInstance()
 {
   // initialize bounds to be invalid
   this->ModelBounds[0] = this->ModelBounds[2] = this->ModelBounds[4] = 1;
@@ -415,11 +415,11 @@ void vtkDiscreteModel::UpdateMesh()
 {
   this->Mesh.GetBounds(this->ModelBounds);
 
-  this->MeshClassification.resize(this->Mesh.GetNumberOfEdges(),
-                                  ClassificationType::EDGE_DATA);
+  this->MeshClassificationInstance.resize(this->Mesh.GetNumberOfEdges(),
+                                          ClassificationType::EDGE_DATA);
 
-  this->MeshClassification.resize(this->Mesh.GetNumberOfFaces(),
-                                  ClassificationType::FACE_DATA);
+  this->MeshClassificationInstance.resize(this->Mesh.GetNumberOfFaces(),
+                                          ClassificationType::FACE_DATA);
 
   this->Modified();
 }
@@ -517,7 +517,7 @@ void vtkDiscreteModel::Reset()
 
   // reset the mesh to an empty mesh
   this->Mesh = DiscreteMesh();
-  this->MeshClassification = vtkDiscreteModel::ClassificationType();
+  this->MeshClassificationInstance = vtkDiscreteModel::ClassificationType();
 
   this->InternalInvokeEvent(ModelReset, this);
 }

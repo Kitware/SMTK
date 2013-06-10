@@ -100,7 +100,7 @@ public:
   // Get the classification model to the mesh.
   ClassificationType& GetMeshClassification()
     {
-    return this->MeshClassification;
+    return this->MeshClassificationInstance;
     }
 
   // Description:
@@ -276,7 +276,7 @@ protected:
 
 private:
   DiscreteMesh Mesh;
-  ClassificationType MeshClassification;
+  ClassificationType MeshClassificationInstance;
 
   vtkDiscreteModel(const vtkDiscreteModel&);  // Not implemented.
   void operator=(const vtkDiscreteModel&);  // Not implemented.
