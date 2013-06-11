@@ -364,8 +364,9 @@ vtkDiscreteModelEntityGroup* vtkDiscreteModel::BuildModelEntityGroup(
   entityGroup->Delete();
   this->SetLargestUsedUniqueId(std::max(this->GetLargestUsedUniqueId(), id));
 
+  std::string baseEntityName = itemType==vtkModelFaceType ? "Face Group" : "Edge Group";
   std::string defaultEntityName;
-  this->GetModelEntityDefaultName(vtkDiscreteModelEntityGroupType, "BCS Group",
+  this->GetModelEntityDefaultName(vtkDiscreteModelEntityGroupType, baseEntityName.c_str(),
                                   defaultEntityName);
   vtkModelUserName::SetUserName(entityGroup, defaultEntityName.c_str());
   vtkIdType entityId = entityGroup->GetUniquePersistentId();
