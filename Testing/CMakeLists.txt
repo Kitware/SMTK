@@ -3,7 +3,7 @@ include_directories(
 )
 
 #only build these tests when we have meshing turned on
-if(BUILD_MESHING_SUPPORT)
+if(BUILD_MESH_WORKERS)
 
   include_directories(
   ${Omicron_BINARY_DIR}/include
