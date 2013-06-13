@@ -108,6 +108,7 @@ protected:
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelWrapper;
+  friend class vtkCmbMapToCmbModel;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;
   friend class vtkCmbMeshToModelWriter;
@@ -147,11 +148,6 @@ protected:
 private:
   vtkDiscreteModelEdge(const vtkDiscreteModelEdge&);  // Not implemented.
   void operator=(const vtkDiscreteModelEdge&);  // Not implemented.
-//BTX
-  friend class vtkDiscreteModel;
-  friend class vtkCmbMapToCmbModel;
-//ETX
-
 };
 
 #endif
