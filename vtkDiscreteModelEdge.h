@@ -107,6 +107,7 @@ protected:
   // for using AddCellsToGeometry
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
+  friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCmbMapToCmbModel;
   friend class vtkCMBModelStateOperator;

@@ -24,12 +24,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 #include "vtkDiscreteModelFace.h"
 
+#include "ModelVertexClassification.h"
 #include "vtkBitArray.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
-#include "vtkDiscreteModelEntityGroup.h"
-#include "vtkDiscreteModel.h"
 #include "vtkConnectivityFilter.h"
+#include "vtkDiscreteModel.h"
+#include "vtkDiscreteModelEdge.h"
+#include "vtkDiscreteModelEntityGroup.h"
+#include "vtkDiscreteModelVertex.h"
 #include "vtkFeatureEdges.h"
 #include "vtkIdList.h"
 #include "vtkIdTypeArray.h"
@@ -46,8 +49,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPolyDataNormals.h"
 #include "vtkSmartPointer.h"
 #include "vtkSplitEventData.h"
-#include <map>
-
 
 vtkDiscreteModelFace* vtkDiscreteModelFace::New()
 {
@@ -364,6 +365,474 @@ void vtkDiscreteModelFace::ExtractEdges(vtkPolyData* result)
     }
 }
 
+void vtkDiscreteModelFace::BuildEdges()
+{
+  vtkModelEdge *gedge;
+  vtkNew<vtkPolyData> edges;
+  std::vector<LoopInfo> loops;
+  std::vector<bool> visited;
+  NewModelEdgeInfo newEdgesInfo;
+  int i, nlines, currentLoop, dummyInt, nLoops, j, nEdges;
+  vtkIdType gid;
+
+  vtkCellArray *lines;
+
+  this->ExtractEdges(edges.GetPointer());
+  vtkIdTypeArray *facetIds =
+    dynamic_cast<vtkIdTypeArray*>(edges->GetCellData()->
+                                  GetArray("OriginalFacetCellID", dummyInt));
+  if (!facetIds)
+    {
+    std::cout << "Could not find Facet Mapping!!\n";
+    return;
+    }
+
+  edges->BuildLinks(); // We need to "walk" the loops
+
+  lines = edges->GetLines();
+  nlines = lines->GetNumberOfCells();
+  if (!nlines)
+    {
+    std::cout << "\tFace " << this->GetUniquePersistentId() << "has no edges!\n";
+    return;
+    }
+  visited.assign(nlines, false);
+  loops.clear();
+  newEdgesInfo.Reset();
+  for (i = 0; i < nlines; i++)
+    {
+    if (visited[i])
+      {
+      continue;
+      }
+    //Create a new loop
+    currentLoop = loops.size();
+    loops.resize(currentLoop+1);
+
+    this->WalkLoop(i, edges.GetPointer(), visited, facetIds,
+                   newEdgesInfo, loops[currentLoop]);
+    }
+
+  // OK so we have now processed all of the loops we now need to create
+  // any new model edges
+  std::map<int, vtkDiscreteModelEdge*> newModelEdges;
+  this->CreateModelEdges(newEdgesInfo, newModelEdges);
+
+  // Now we are ready to add the model edges to the model face
+  nLoops = loops.size();
+  if (!nLoops)
+    {
+    // This face has no loops - like a sphere
+    return;
+    }
+  std::vector<int> orientations;
+  std::vector<vtkModelEdge *> gedges;
+  for (i = 0; i < nLoops; i++)
+    {
+    // std::cout << "\tLoop " << i << ":";
+    nEdges = loops[i].loop.size();
+    orientations.resize(nEdges);
+    gedges.resize(nEdges);
+    for (j = 0; j < nEdges; j++)
+      {
+      // Is this a new model edge or a prexisting one
+      gid = loops[i].loop[j].first;
+      if (gid < 0)
+        {
+        gedge = newModelEdges[gid];
+        }
+      else
+        {
+        gedge = dynamic_cast<vtkModelEdge *>
+          (this->GetModel()->GetModelEntity(vtkModelEdgeType, gid));
+        }
+      if (!gedge)
+        {
+        std::cout << "Could not find model edge: " << gid << "\n";
+        continue;
+        }
+      if (loops[i].loop[j].second)
+        {
+        orientations[j] = 1;
+        // std::cout << gedge->GetUniquePersistentId() << " ";
+        }
+      else
+        {
+        orientations[j] = 0;
+        // std::cout << "~" << gedge->GetUniquePersistentId() << " ";
+        }
+      gedges[j] = gedge;
+      }
+    // std::cout << "\n";
+    this->AddLoop(nEdges, &gedges.front(), &orientations.front());
+    }
+}
+
+//----------------------------------------------------------------------------
+void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
+                                           vtkPolyData *edges,
+                                           std::vector<bool> &visited,
+                                           vtkIdTypeArray *facetIds,
+                                           NewModelEdgeInfo &newEdgesInfo,
+                                           LoopInfo &loopInfo)
+{
+  vtkIdType currentEdge = startingEdge;
+  vtkNew<vtkIdList>cellIds, pointIds;
+  vtkIdType currentPoint, firstPoint, nextPoint;
+  vtkIdType gedge;
+  std::string currentFaceInfo;
+  vtkDiscreteModel* thisModel = vtkDiscreteModel::SafeDownCast(
+    this->GetModel());
+  const DiscreteMesh &mesh = thisModel->GetMesh();
+  vtkDiscreteModel::ClassificationType &classificationInfo =
+    thisModel->GetMeshClassification();
+  vtkDiscreteModelEdge *dedge;
+  // Setup the newEdgesInfo to tag the first mesh that needs to be
+  // created and to force a new model edge to be "defined" when that
+  // happens
+  newEdgesInfo.ClearCurrentFaceInfo();
+  newEdgesInfo.ClearTaggedFaceInfo();
+  // Walk the loop
+  currentPoint = -1; // Indicates the point has not been set
+
+  while(!visited[currentEdge])
+    {
+    visited[currentEdge] = true;
+    // Get the points of the edge
+    edges->GetCellPoints(currentEdge, pointIds.GetPointer());
+    if (pointIds->GetNumberOfIds() != 2)
+      {
+      std::cout << "Found incorrect number of points: "
+                << pointIds->GetNumberOfIds() << "\n";
+      break;
+      }
+    if (currentPoint == -1)
+      {
+      firstPoint = currentPoint = pointIds->GetId(0);
+      nextPoint = pointIds->GetId(1);
+     }
+    else if (currentPoint != pointIds->GetId(0))
+      {
+      if (currentPoint == pointIds->GetId(1))
+        {
+        std::cout << "Found flipped Edge!\n" ;
+        nextPoint = pointIds->GetId(0);
+        }
+      else
+        {
+        std::cout << "Found Disconnected Edge!\n" ;
+        }
+      }
+    else
+      {
+      nextPoint = pointIds->GetId(1);
+      }
+    // Does the edge exist?
+    bool createdEdge, orientation;
+    vtkIdType medge = mesh.AddEdgeIfNotExisting(currentPoint,
+                                                nextPoint,
+                                                orientation,
+                                                createdEdge);
+    // std::cout << "Edge: " << currentEdge << " Verts: "
+    //           << currentPoint << ", " << nextPoint << " MEdge: "
+    //           << medge << " Created: " << createdEdge << "\n";
+    if (createdEdge)
+      {
+      //Need to get the face information bounding the edge
+      currentFaceInfo =
+        this->EncodeModelFaces(facetIds->GetValue(currentEdge),
+                               currentPoint, nextPoint);
+      gedge = newEdgesInfo.InsertMeshEdge(medge, currentFaceInfo);
+      loopInfo.InsertModelEdge(gedge, true);
+      }
+    else
+      {
+      // The model edge exists so the next time we find an edge
+      // that doesn't exist it must be on a new model edge
+      newEdgesInfo.ClearCurrentFaceInfo();
+      // Need to get the model edge classified on the mesh edge
+      dedge = dynamic_cast<vtkDiscreteModelEdge*>
+        (classificationInfo.GetEntity(medge));
+
+      gedge = dedge->GetUniquePersistentId();
+      loopInfo.InsertModelEdge(gedge, orientation);
+      }
+    // Lets get the next edge in the loop
+    currentPoint = nextPoint;
+    edges->GetPointCells(currentPoint, cellIds.GetPointer());
+    // Should be 2 lines comming into the point
+    if (cellIds->GetNumberOfIds() < 2)
+      {
+      std::cout << "Found unconnected edge!\n";
+      }
+    else if (cellIds->GetNumberOfIds() > 2)
+      {
+      std::cout << "Found non-manifold edge!\n";
+      // Is there only one edge left to visit?
+      vtkIdType  numEdgesToVisit = 0, lastEdgeToBeVisited, j;
+      vtkIdType testMEdge, testEdge;
+      for (j = 0;  j < cellIds->GetNumberOfIds(); j++)
+        {
+        if (!visited[cellIds->GetId(j)])
+          {
+          ++numEdgesToVisit;
+          lastEdgeToBeVisited = cellIds->GetId(j);
+          }
+        }
+      if (!numEdgesToVisit)
+        {
+        continue; // We have reached the end of the loop
+        }
+      if (numEdgesToVisit == 1)
+        {
+        // There is only one way to go - take it!
+        currentEdge = lastEdgeToBeVisited;
+        continue;
+        }
+      // OK we need to determine how to go - if we created a new model
+      // edge then we should look for an edge with the same face classification
+      // else we should see if we have an edge on the same model edge
+      if (createdEdge)
+        {
+        // For each edge see if we can find the same bounding faces
+        std::string nextFaceInfo;
+        for (j = 0;  j < cellIds->GetNumberOfIds(); j++)
+          {
+          testEdge = cellIds->GetId(j);
+          // Skip if we have already visited the edge or if the edge is on
+          // an existing model edge
+          if (visited[testEdge])
+            {
+            continue;
+            }
+          edges->GetCellPoints(testEdge, pointIds.GetPointer());
+          if (mesh.EdgeExists(pointIds->GetId(0), pointIds->GetId(1), testMEdge))
+            {
+            continue;
+            }
+          nextFaceInfo = this->EncodeModelFaces(facetIds->GetValue(testEdge),
+                                                pointIds->GetId(0),
+                                                pointIds->GetId(1));
+          if (currentFaceInfo == nextFaceInfo)
+            {
+            // Found next edge!
+            currentEdge = testEdge;
+            break;
+            }
+          }
+        }
+      else
+        {
+        // This is the reverse of the previous method - here we want to follow
+        // only existing model edges
+        for (j = 0;  j < cellIds->GetNumberOfIds(); j++)
+          {
+          testEdge = cellIds->GetId(j);
+          // Skip if we have already visited the edge or if the edge is not on
+          // an existing model edge
+          if (visited[testEdge])
+            {
+            continue;
+            }
+          edges->GetCellPoints(testEdge, pointIds.GetPointer());
+          if (!mesh.EdgeExists(pointIds->GetId(0), pointIds->GetId(1), testMEdge))
+            {
+            continue;
+            }
+          // Need to get the model edge classified on the mesh edge
+          dedge = dynamic_cast<vtkDiscreteModelEdge*>
+            (classificationInfo.GetEntity(testMEdge));
+          if (dedge->GetUniquePersistentId() == gedge)
+            {
+            // Found next edge!
+            currentEdge = testEdge;
+            break;
+            }
+          }
+        }
+      }
+    else
+      {
+      if (cellIds->GetId(0) == currentEdge)
+        {
+        currentEdge = cellIds->GetId(1);
+        }
+      else if (cellIds->GetId(1) != currentEdge)
+        {
+        std::cout << "Invalid Cell Structure!!\n";
+        }
+      else
+        {
+        currentEdge = cellIds->GetId(0);
+        }
+      }
+    }
+  // Do we need to fix the first edge in the loop?  This would occur if
+  // we didn't  not start at a "model vertex".  The condition we need to
+  // check for is if the first and last edges are either both "new" or both
+  // existing
+  int numLoops = loopInfo.loop.size();
+  if (numLoops == 1)
+    {
+    // There is only a single model edge so there is no problem
+    return;
+    }
+  // Does the loop start and end with the same model edge?  If so remove one
+  if (loopInfo.loop[0].first == loopInfo.loop[numLoops - 1].first)
+    {
+    loopInfo.loop.erase(loopInfo.loop.begin());
+    }
+  else if ((loopInfo.loop[0].first < 0) && (loopInfo.loop[numLoops - 1].first < 0))
+    {
+    // OK so we know that the first and last edges of the loop need to be
+    // created.  If they are bounding the same model faces they need to be
+    // combined.
+    if (newEdgesInfo.CheckLastModelEdge(gedge))
+      {
+      loopInfo.RemoveModelEdge(gedge);
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+std::string vtkDiscreteModelFace::
+EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
+{
+  vtkDiscreteModel* thisModel = vtkDiscreteModel::SafeDownCast(
+    this->GetModel());
+
+  vtkNew<vtkIdList> cellIds;
+  vtkDiscreteModel::ClassificationType &classificationInfo =
+    thisModel->GetMeshClassification();
+  int j, nids;
+  vtkDiscreteModelFace *dface;
+  vtkIdType gface;
+  thisModel->GetMesh().GetCellEdgeNeighbors(facetId, v0, v1,
+                                              cellIds.GetPointer());
+  // Convert the facet Ids to model Ids
+  nids = cellIds->GetNumberOfIds();
+  for (j = 0; j < nids; j++)
+    {
+    dface = dynamic_cast<vtkDiscreteModelFace*>
+      (classificationInfo.GetEntity(cellIds->GetId(j)));
+    gface = dface->GetUniquePersistentId();
+    cellIds->SetId(j, gface);
+    }
+  return NewModelEdgeInfo::to_key(cellIds.GetPointer());
+}
+//----------------------------------------------------------------------------
+void vtkDiscreteModelFace::
+CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
+                 std::map<int, vtkDiscreteModelEdge*> &newEdges)
+{
+  // Lets walk the new edge information and create the appropriate model
+  // topology
+  vtkDiscreteModel* thisModel = vtkDiscreteModel::SafeDownCast(
+    this->GetModel());
+
+  newEdges.clear();
+  vtkIdType currentModelEdgeId = 0, numEdges;
+  vtkNew<vtkIdList> edgeCells, edgePnts;
+  const DiscreteMesh &mesh = thisModel->GetMesh();
+  vtkDiscreteModel::ClassificationType &classificationInfo =
+    thisModel->GetMeshClassification();
+  ModelVertexClassification vertexInfo(thisModel);
+  vtkDiscreteModelVertex *v0 = NULL, *v1;
+  vtkDiscreteModelEdge *gedge;
+  std::vector<std::pair<vtkIdType, vtkIdType> > &info = newEdgesInfo.info;
+  std::size_t i, numMeshEdges = info.size();
+
+  //First we need to extend the classification information to include the
+  // mesh edges we created
+  numEdges = classificationInfo.size(vtkDiscreteModel::ClassificationType::EDGE_DATA);
+  classificationInfo.resize(numEdges+numMeshEdges,
+                            vtkDiscreteModel::ClassificationType::EDGE_DATA);
+
+  for (i = 0; i < numMeshEdges; i++)
+    {
+    //Are we on the same model edge?
+    if (info[i].second == currentModelEdgeId)
+      {
+      // Just add the cell to the list
+      edgeCells->InsertNextId(info[i].first);
+      continue;
+      }
+
+    // Have we found any mesh edges to create a model edge yet?
+    // Note that the first time into the loop this will not be true
+    numEdges = edgeCells->GetNumberOfIds();
+    if (numEdges)
+      {
+      // We need to create v1 for this model edge by looking at the
+      // last mesh edge added
+      mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
+      v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+
+      if (v0 && v1)
+        {
+        gedge =
+          dynamic_cast<vtkDiscreteModelEdge*>(thisModel->BuildModelEdge(v0, v1));
+        // Don't show edges by default
+        gedge->SetVisibility(false);
+        v0->SetVisibility(false);
+        v1->SetVisibility(false);
+
+        gedge->AddCellsToGeometry(edgeCells.GetPointer());
+        newEdges[currentModelEdgeId] = gedge;
+        // std::cout << "Create Model Edge: " << gedge->GetUniquePersistentId()
+        //           << " (ID = " << currentModelEdgeId
+        //           << ") From Vertices ("
+        //           << v0->GetUniquePersistentId() << ","
+        //           << v1->GetUniquePersistentId() << ")\n";
+        }
+      else
+        {
+        std::cout << "Could not build model edge!!\n";
+        }
+      edgeCells->Reset();
+      }
+
+    currentModelEdgeId = info[i].second;
+    // Get the first vertex of the edge
+    mesh.GetCellPointIds(info[i].first, edgePnts.GetPointer());
+    v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true).second;
+    // Add the mesh edge to the list
+    edgeCells->InsertNextId(info[i].first);
+    }
+
+  // Finally we need to process the last model edge
+  // Have we found any mesh edges to create a model edge yet?
+  // Note that the first time into the loop this will not be true
+  numEdges = edgeCells->GetNumberOfIds();
+  if (numEdges)
+    {
+    // We need to create v1 for this model edge by looking at the
+    // last mesh edge added
+    mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
+    v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+
+    if (v0 && v1)
+      {
+      gedge =
+        dynamic_cast<vtkDiscreteModelEdge*>(thisModel->BuildModelEdge(v0, v1));
+      // Don't show edges and vertex by default
+      gedge->SetVisibility(false);
+      v0->SetVisibility(false);
+      v1->SetVisibility(false);
+      gedge->AddCellsToGeometry(edgeCells.GetPointer());
+      newEdges[currentModelEdgeId] = gedge;
+      // std::cout << "Create Model Edge: " << gedge->GetUniquePersistentId()
+      //           << " (ID = " << currentModelEdgeId
+      //           << ") From Vertices ("
+      //           << v0->GetUniquePersistentId() << ","
+      //           << v1->GetUniquePersistentId() << ")\n";
+      }
+    else
+      {
+      std::cout << "Could not build model edge!!\n";
+      }
+    }
+}
 void vtkDiscreteModelFace::Serialize(vtkSerializer* ser)
 {
   this->Superclass::Serialize(ser);

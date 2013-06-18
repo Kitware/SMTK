@@ -31,8 +31,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
+#include "ModelEdgeHelper.h"
 
-
+class vtkDiscreteModelEdge;
 class vtkDiscreteModelFaceUse;
 class vtkIdList;
 class vtkIdTypeArray;
@@ -72,9 +73,9 @@ public:
   void GatherBoundaryPointIdsMask(vtkBitArray* points);
 
   // Description:
-  // Extract the edges of the face and return the information
-  // as polydata.
-  void ExtractEdges(vtkPolyData* result);
+  // Extract the edges of the face and build new model edges from the extracted
+  // edges with proper loop and use information.
+  void BuildEdges();
 
 protected:
 //BTX
@@ -94,6 +95,25 @@ protected:
 
   virtual vtkModelEntity* GetThisModelEntity();
   virtual bool Destroy();
+
+  // Description:
+  // Extract the edges of the face and return the information
+  // as polydata.
+  void ExtractEdges(vtkPolyData* result);
+
+  // Description:
+  // Takes in a mesh facet and 2 points that represent an edge on the facet
+  // it returns a string that represents an encoded representation of the
+  // other model faces along that edge
+  std::string EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1);
+
+  void WalkLoop(vtkIdType startingEdge, vtkPolyData *edges,
+                std::vector<bool> &visited,
+                vtkIdTypeArray *facetIds,
+                NewModelEdgeInfo &newEdgesInfo,
+                LoopInfo &loopInfo);
+  void CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
+                        std::map<int, vtkDiscreteModelEdge*> &newEdges);
 
   // Description:
   // Reads the state of an instance from an archive OR

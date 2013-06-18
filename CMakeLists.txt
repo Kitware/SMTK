@@ -119,6 +119,7 @@ SET(DiscreteModelFiles
   DiscreteMesh.cxx
   DiscreteMeshCellIdIterator.h
   MeshClassification.h
+  ModelEdgeHelper.h
   ModelVertexClassification.cxx
   vtkModel3dmGridRepresentation.cxx
   vtkModel3dm2DGridRepresentation.cxx
