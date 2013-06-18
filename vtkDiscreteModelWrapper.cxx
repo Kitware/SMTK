@@ -454,14 +454,21 @@ void vtkDiscreteModelWrapper::AddGeometricEntities(int entType)
 }
 
 //----------------------------------------------------------------------------
-void vtkDiscreteModelWrapper::AddGeometricEntities(std::vector<vtkIdType> &entities)
+void vtkDiscreteModelWrapper::AddGeometricEntities(std::set<vtkIdType> &entities)
 {
   std::vector<vtkModelGeometricEntity*> geoentities;
-  std::vector<vtkIdType>::iterator iter;
+  std::set<vtkIdType>::iterator iter;
+  unsigned int dummyIdx;
   for(iter = entities.begin();iter != entities.end();++iter)
     {
-    geoentities.push_back(vtkModelGeometricEntity::SafeDownCast(
-      this->Model->GetModelEntity(*iter)));
+    // skip if it is already a child
+    if(this->GetChildIndexByEntityId(*iter, dummyIdx))
+      {
+      continue;
+      }
+    vtkModelGeometricEntity* entity = vtkModelGeometricEntity::SafeDownCast(
+      this->Model->GetModelEntity(*iter));
+    geoentities.push_back(entity);
     }
   this->AddGeometricEntities(geoentities);
   geoentities.clear();

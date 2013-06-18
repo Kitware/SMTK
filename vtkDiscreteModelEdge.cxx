@@ -527,6 +527,18 @@ bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
   return true;
 }
 
+bool vtkDiscreteModelEdge::IsEdgeCellPoint(vtkIdType pointId)
+{
+  vtkPolyData* edgePoly = vtkPolyData::SafeDownCast(this->GetGeometry());
+  if(edgePoly == NULL)
+    {  // we're on the client and don't know this info
+    return false;
+    }
+  vtkSmartPointer<vtkIdList> pointCells =
+    vtkSmartPointer<vtkIdList>::New();
+  edgePoly->GetPointCells(pointId, pointCells);
+  return (pointCells->GetNumberOfIds() != 0);
+}
 
 void vtkDiscreteModelEdge::PrintSelf(ostream& os, vtkIndent indent)
 {

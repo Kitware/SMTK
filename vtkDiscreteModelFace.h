@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 class vtkDiscreteModelEdge;
 class vtkDiscreteModelFaceUse;
+class vtkDiscreteModelVertex;
 class vtkIdList;
 class vtkIdTypeArray;
 class vtkBitArray;
@@ -75,7 +76,7 @@ public:
   // Description:
   // Extract the edges of the face and build new model edges from the extracted
   // edges with proper loop and use information.
-  void BuildEdges();
+  void BuildEdges(bool showEdge, bool checkExistingEdges=false);
 
 protected:
 //BTX
@@ -90,6 +91,12 @@ protected:
   // Build a new model face from the cells listed in CellIds.
   // The Ids listed in CellIds are with respect to the master grid.
   vtkDiscreteModelFace* BuildFromExistingModelFace(vtkIdList* cellIds);
+
+  // Description:
+  // Invoked from BuildFromExistingModelFace when existing model face
+  // has edges, and splitting that face may need split its edges too.
+  void SplitEdges(vtkIdList* masterCellIds);
+
   friend class vtkSelectionSplitOperator;
   friend class vtkCmbIncorporateMeshOperator;
 
@@ -113,7 +120,13 @@ protected:
                 NewModelEdgeInfo &newEdgesInfo,
                 LoopInfo &loopInfo);
   void CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
-                        std::map<int, vtkDiscreteModelEdge*> &newEdges);
+    std::map<int, vtkDiscreteModelEdge*> &newEdges,
+    bool bShow, bool checkExistingEdges=false);
+
+  // Description:
+  // Split the edge with the given point.
+  vtkDiscreteModelVertex* SplitEdgeWithPointId(vtkIdType ptId,
+      std::vector<vtkModelEdge*>& adjEdges);
 
   // Description:
   // Reads the state of an instance from an archive OR

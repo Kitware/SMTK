@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelFaceUse.h"
 #include "vtkModelLoopUse.h"
 #include "vtkModelShellUse.h"
+#include "vtkModelVertex.h"
 #include "vtkModelVertexUse.h"
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
@@ -90,6 +91,17 @@ bool vtkModelFace::Destroy()
     }
   this->RemoveAllAssociations(vtkModelFaceUseType);
   return 1;
+}
+
+//-----------------------------------------------------------------------------
+bool vtkModelFace::DestroyLoopUses()
+{
+  bool res = this->GetModelFaceUse(0)->DestroyLoopUses();
+  if(!res)
+    {
+    return res;
+    }
+  return this->GetModelFaceUse(1)->DestroyLoopUses();
 }
 
 //-----------------------------------------------------------------------------
@@ -213,6 +225,78 @@ int vtkModelFace::GetNumberOfModelEdges()
     }
   loopUses->Delete();
   return static_cast<int>(edgeIds.size());
+}
+
+//-----------------------------------------------------------------------------
+void vtkModelFace::GetModelEdgeIds(std::set<vtkIdType>& edgeIds)
+{
+  vtkModelItemIterator* loopUses =
+    this->GetModelFaceUse(0)->NewLoopUseIterator();
+  for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
+    {
+    vtkModelLoopUse* loopUse =
+      vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem());
+    vtkModelItemIterator* edgeUses = loopUse->NewModelEdgeUseIterator();
+    for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+      {
+      vtkModelEdge* edge = vtkModelEdgeUse::SafeDownCast(
+        edgeUses->GetCurrentItem())->GetModelEdge();
+      edgeIds.insert(edge->GetUniquePersistentId());
+      }
+    edgeUses->Delete();
+    }
+  loopUses->Delete();
+}
+
+//-----------------------------------------------------------------------------
+void vtkModelFace::GetModelEdges(std::vector<vtkModelEdge*>& edges)
+{
+  vtkModelItemIterator* loopUses =
+    this->GetModelFaceUse(0)->NewLoopUseIterator();
+  for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
+    {
+    vtkModelLoopUse* loopUse =
+      vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem());
+    vtkModelItemIterator* edgeUses = loopUse->NewModelEdgeUseIterator();
+    for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+      {
+      vtkModelEdge* edge = vtkModelEdgeUse::SafeDownCast(
+        edgeUses->GetCurrentItem())->GetModelEdge();
+      edges.push_back(edge);
+      }
+    edgeUses->Delete();
+    }
+  loopUses->Delete();
+}
+
+//-----------------------------------------------------------------------------
+void vtkModelFace::GetModelVertexIds(std::set<vtkIdType>& verIds)
+{
+  vtkModelItemIterator* loopUses =
+    this->GetModelFaceUse(0)->NewLoopUseIterator();
+  for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
+    {
+    vtkModelLoopUse* loopUse =
+      vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem());
+    vtkModelItemIterator* edgeUses = loopUse->NewModelEdgeUseIterator();
+    for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+      {
+      vtkModelEdge* edge = vtkModelEdgeUse::SafeDownCast(
+        edgeUses->GetCurrentItem())->GetModelEdge();
+      vtkModelVertex* vertex1 = edge->GetAdjacentModelVertex(0);
+      vtkModelVertex* vertex2 = edge->GetAdjacentModelVertex(1);
+      if(vertex1)
+        {
+        verIds.insert(vertex1->GetUniquePersistentId());
+        }
+      if(vertex2)
+        {
+        verIds.insert(vertex2->GetUniquePersistentId());
+        }
+      }
+    edgeUses->Delete();
+    }
+  loopUses->Delete();
 }
 
 //-----------------------------------------------------------------------------

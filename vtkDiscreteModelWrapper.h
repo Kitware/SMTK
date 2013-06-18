@@ -46,6 +46,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkWeakPointer.h"
 #include <map>
 #include <vector>
+#include <set>
 
 class vtkDiscreteModel;
 class vtkModelEntity;
@@ -99,7 +100,7 @@ public:
 
   // Description:
   // Add model entities as child dataset.
-  void AddGeometricEntities(std::vector<vtkIdType> &entities);
+  void AddGeometricEntities(std::set<vtkIdType> &entities);
   void AddGeometricEntities(std::vector<vtkModelGeometricEntity*> &entities);
   void AddGeometricEntities(int entType);
 //ETX

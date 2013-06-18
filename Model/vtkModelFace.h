@@ -37,6 +37,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 
+#include <set>
+#include <vector>
+
 class vtkModel;
 class vtkModelEdge;
 class vtkModelEdgeUse;
@@ -69,6 +72,15 @@ public:
   // Description:
   // Get the number of unique model edges adjacent to this model face.
   int GetNumberOfModelEdges();
+
+  // Description:
+  // Get the all the model edge/vertex Ids adjacent to this model face.
+  void GetModelEdgeIds(std::set<vtkIdType>& edgeIds);
+  void GetModelVertexIds(std::set<vtkIdType>& verIds);
+
+  // Description:
+  // Get the model edges adjacent to this model face.
+  void GetModelEdges(std::vector<vtkModelEdge*>& edges);
 
   // Description:
   // Create an iterator to loop over the adjacent model edges.  It
@@ -112,6 +124,7 @@ protected:
 
   virtual bool IsDestroyable();
   virtual bool Destroy();
+  virtual bool DestroyLoopUses();
 
   // Description:
   // Helper function that combines "end" of edgeUse1 with "beginning" of edgeUse2.

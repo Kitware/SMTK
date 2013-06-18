@@ -71,6 +71,7 @@ protected:
   void AddLoopUse(vtkModelLoopUse* LoopUse);
   //bool DestroyModelLoopUse(vtkModelLoopUse* LoopUse);
   virtual bool Destroy();
+  virtual bool DestroyLoopUses();
 
 private:
   vtkModelFaceUse(const vtkModelFaceUse&);  // Not implemented.

@@ -94,6 +94,10 @@ public:
   virtual void GetInteriorPointIds(vtkIdList* ptsList);
   virtual void GetBoundaryPointIds(vtkIdList* ptsList);
 
+  // Description:
+  // Check if the pointId is used by this model edge cells.
+  virtual bool IsEdgeCellPoint(vtkIdType pointId);
+
 protected:
   vtkDiscreteModelEdge();
   virtual ~vtkDiscreteModelEdge();

@@ -60,6 +60,12 @@ bool vtkModelFaceUse::Destroy()
     }
   this->RemoveAllAssociations(vtkModelShellUseType);
 
+  return this->DestroyLoopUses();
+}
+
+//-----------------------------------------------------------------------------
+bool vtkModelFaceUse::DestroyLoopUses()
+{
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {

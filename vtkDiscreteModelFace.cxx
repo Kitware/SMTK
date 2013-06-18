@@ -156,6 +156,8 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(
 {
   bool blockEvent = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(true);
+
+
   vtkDiscreteModelFace* newModelFace = vtkDiscreteModelFace::SafeDownCast(
     this->GetModel()->BuildModelFace(0, 0, 0));
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockEvent);
@@ -186,6 +188,14 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(
         ModelGeometricEntityBoundaryModified, region);
       }
     }
+
+  // update loops and edges info if needed
+  if(this->GetNumberOfModelEdges())
+    {
+    this->BuildEdges(true, true);
+    newModelFace->BuildEdges(true);
+    }
+
   return newModelFace;
 }
 
@@ -365,7 +375,7 @@ void vtkDiscreteModelFace::ExtractEdges(vtkPolyData* result)
     }
 }
 
-void vtkDiscreteModelFace::BuildEdges()
+void vtkDiscreteModelFace::BuildEdges(bool showEdge, bool checkExistingEdges)
 {
   vtkModelEdge *gedge;
   vtkNew<vtkPolyData> edges;
@@ -416,7 +426,8 @@ void vtkDiscreteModelFace::BuildEdges()
   // OK so we have now processed all of the loops we now need to create
   // any new model edges
   std::map<int, vtkDiscreteModelEdge*> newModelEdges;
-  this->CreateModelEdges(newEdgesInfo, newModelEdges);
+  this->CreateModelEdges(newEdgesInfo, newModelEdges,
+    showEdge, checkExistingEdges);
 
   // Now we are ready to add the model edges to the model face
   nLoops = loops.size();
@@ -425,6 +436,10 @@ void vtkDiscreteModelFace::BuildEdges()
     // This face has no loops - like a sphere
     return;
     }
+
+  // destroy the existing loop uses
+  this->DestroyLoopUses();
+
   std::vector<int> orientations;
   std::vector<vtkModelEdge *> gedges;
   for (i = 0; i < nLoops; i++)
@@ -510,7 +525,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
       {
       firstPoint = currentPoint = pointIds->GetId(0);
       nextPoint = pointIds->GetId(1);
-     }
+      }
     else if (currentPoint != pointIds->GetId(0))
       {
       if (currentPoint == pointIds->GetId(1))
@@ -723,7 +738,8 @@ EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
 //----------------------------------------------------------------------------
 void vtkDiscreteModelFace::
 CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
-                 std::map<int, vtkDiscreteModelEdge*> &newEdges)
+                 std::map<int, vtkDiscreteModelEdge*> &newEdges,
+                 bool bShow, bool checkExistingEdges)
 {
   // Lets walk the new edge information and create the appropriate model
   // topology
@@ -748,6 +764,9 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
   classificationInfo.resize(numEdges+numMeshEdges,
                             vtkDiscreteModel::ClassificationType::EDGE_DATA);
 
+  std::vector<vtkModelEdge*> adjEdges;
+  this->GetModelEdges(adjEdges);
+
   for (i = 0; i < numMeshEdges; i++)
     {
     //Are we on the same model edge?
@@ -766,16 +785,21 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
       // We need to create v1 for this model edge by looking at the
       // last mesh edge added
       mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
-      v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+
+      v1 = this->SplitEdgeWithPointId(edgePnts->GetId(1), adjEdges);
+      if(!v1)
+        {
+        v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+        }
 
       if (v0 && v1)
         {
         gedge =
           dynamic_cast<vtkDiscreteModelEdge*>(thisModel->BuildModelEdge(v0, v1));
         // Don't show edges by default
-        gedge->SetVisibility(false);
-        v0->SetVisibility(false);
-        v1->SetVisibility(false);
+        gedge->SetVisibility(bShow);
+        v0->SetVisibility(bShow);
+        v1->SetVisibility(bShow);
 
         gedge->AddCellsToGeometry(edgeCells.GetPointer());
         newEdges[currentModelEdgeId] = gedge;
@@ -795,7 +819,14 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
     currentModelEdgeId = info[i].second;
     // Get the first vertex of the edge
     mesh.GetCellPointIds(info[i].first, edgePnts.GetPointer());
-    v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true).second;
+
+    v0 = this->SplitEdgeWithPointId(edgePnts->GetId(0), adjEdges);
+    if(!v0)
+      {
+      v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true).second;
+      }
+
+    //v0 = vertexInfo.AddModelVertex(edgePnts->GetId(0), true).second;
     // Add the mesh edge to the list
     edgeCells->InsertNextId(info[i].first);
     }
@@ -809,16 +840,21 @@ CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
     // We need to create v1 for this model edge by looking at the
     // last mesh edge added
     mesh.GetCellPointIds(edgeCells->GetId(numEdges-1), edgePnts.GetPointer());
-    v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+
+    v1 = this->SplitEdgeWithPointId(edgePnts->GetId(1), adjEdges);
+    if(!v1)
+      {
+      v1 = vertexInfo.AddModelVertex(edgePnts->GetId(1), true).second;
+      }
 
     if (v0 && v1)
       {
       gedge =
         dynamic_cast<vtkDiscreteModelEdge*>(thisModel->BuildModelEdge(v0, v1));
       // Don't show edges and vertex by default
-      gedge->SetVisibility(false);
-      v0->SetVisibility(false);
-      v1->SetVisibility(false);
+      gedge->SetVisibility(bShow);
+      v0->SetVisibility(bShow);
+      v1->SetVisibility(bShow);
       gedge->AddCellsToGeometry(edgeCells.GetPointer());
       newEdges[currentModelEdgeId] = gedge;
       // std::cout << "Create Model Edge: " << gedge->GetUniquePersistentId()
@@ -847,6 +883,28 @@ bool vtkDiscreteModelFace::Destroy()
     return true;
     }
   return false;
+}
+
+vtkDiscreteModelVertex* vtkDiscreteModelFace::SplitEdgeWithPointId(
+  vtkIdType ptId, std::vector<vtkModelEdge*>& adjEdges)
+{
+  vtkDiscreteModelVertex* res = NULL;
+  for(std::vector<vtkModelEdge*>::iterator eit=adjEdges.begin();
+    eit != adjEdges.end(); ++eit)
+    {
+    vtkDiscreteModelEdge* splitEdge = vtkDiscreteModelEdge::SafeDownCast(*eit);
+    if(splitEdge && splitEdge->IsEdgeCellPoint(ptId))
+      {
+      vtkIdType newEdgeId=-1, newVertexId=-1;
+      if(splitEdge->Split(ptId, newVertexId, newEdgeId))
+        {
+        res = vtkDiscreteModelVertex::SafeDownCast(
+          this->GetModel()->GetModelEntity(vtkModelVertexType, newVertexId));
+        }
+      break;
+      }
+    }
+  return res;
 }
 
 void vtkDiscreteModelFace::PrintSelf(ostream& os, vtkIndent indent)
