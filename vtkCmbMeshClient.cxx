@@ -273,7 +273,6 @@ bool vtkCmbMeshClient::BuildModelEntityMeshes()
       vtkCmbModelFaceMeshClient::SafeDownCast(this->GetModelEntityMesh(face));
     if(faceMesh->BuildModelEntityMesh(false) == false)
       {
-      vtkErrorMacro("Unable to build model face mesh.");
       return false;
       }
     }

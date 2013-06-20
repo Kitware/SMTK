@@ -228,6 +228,17 @@
           Return if the operation on the server was successful.
         </Documentation>
       </IntVectorProperty>
+      <IntVectorProperty
+         name="FaceMesherFailed"
+         command="GetFaceMesherFailed"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the mesher on the server was failed to run or crashed.
+        </Documentation>
+      </IntVectorProperty>
       <!-- End of ModelFaceMeshOperator -->
     </OperatorProxy>
 

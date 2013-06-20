@@ -48,6 +48,8 @@ public:
   virtual bool SetLocalLength(double length);
   virtual bool SetLocalMinimumAngle(double angle);
 
+  int GetFaceMesherFailed() const { return this->FaceMesherFailed; }
+
 protected:
   vtkCmbModelFaceMeshServer();
   virtual ~vtkCmbModelFaceMeshServer();
@@ -64,6 +66,7 @@ protected:
   void DetermineZValueOfFace();
 
 private:
+  int FaceMesherFailed;
 
   double ZValue;
   vtkCmbModelFaceMeshServer(const vtkCmbModelFaceMeshServer&);  // Not implemented.

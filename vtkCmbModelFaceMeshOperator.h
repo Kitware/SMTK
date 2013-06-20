@@ -76,6 +76,11 @@ public:
   // Returns success (1) or failue (0) for Operation.
   vtkGetMacro(OperateSucceeded, int);
 
+  // Description:
+  // Returns (1) if the failure was caused by no mesher being found
+  // to generate the face
+  vtkGetMacro(FaceMesherFailed, int);
+
 protected:
   vtkCmbModelFaceMeshOperator();
   virtual ~vtkCmbModelFaceMeshOperator();
@@ -87,6 +92,11 @@ private:
   // Description:
   // Flag to indicate that the operation on the model succeeded (1) or not (0).
   int OperateSucceeded;
+
+  // Description:
+  // Flag to describe if the failure of the meshing was casued by no mesher
+  // existing or it crashing
+  int FaceMesherFailed;
 
   vtkIdType Id;
   double Length;

@@ -125,14 +125,28 @@ bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
     vtkSMIntVectorProperty::SafeDownCast(
       operatorProxy->GetProperty("OperateSucceeded"));
 
+  //check and see if the problem was caused by a mesher not existing
+  vtkSMIntVectorProperty* noFaceMesherError =
+    vtkSMIntVectorProperty::SafeDownCast(
+      operatorProxy->GetProperty("FaceMesherFailed"));
+
   operatorProxy->UpdatePropertyInformation();
 
   int succeeded = operateSucceeded->GetElement(0);
+  int faceMesherFailed = noFaceMesherError->GetElement(0);
+
   operatorProxy->Delete();
   operatorProxy = NULL;
   if(!succeeded)
     {
-    vtkErrorMacro("Server side operator failed.");
+    if(faceMesherFailed)
+      {
+      vtkErrorMacro("No suitable face meshing worker was found or the face meshing worker crashed.");
+      }
+    else
+      {
+      vtkErrorMacro("Unable to construct a valid face.");
+      }
     return false;
     }
   this->SetMeshedLength(this->GetActualLength());

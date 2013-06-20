@@ -81,6 +81,8 @@ bool vtkCmbModelFaceMeshServer::SetLocalMinimumAngle(double minAngle)
 //----------------------------------------------------------------------------
 bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
 {
+  this->FaceMesherFailed = 0;
+
   double length = this->GetActualLength();
   double angle = this->GetActualMinimumAngle();
   if(length <= 0. || angle <= 0.)
@@ -101,6 +103,7 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   bool valid = this->CreateMeshInfo();
   vtkPolyData* mesh = vtkPolyData::New();
   valid = valid && this->Triangulate(mesh,length, angle);
+
   // it would seem like we could just do this->SetModelEntityMesh(mesh);
   // but we can't.  i think this has to do with the polydataprovider.
   vtkPolyData* faceMesh = this->GetModelEntityMesh();
@@ -110,10 +113,16 @@ bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
     this->SetModelEntityMesh(faceMesh);
     faceMesh->FastDelete();
     }
+
+
   faceMesh->ShallowCopy(mesh);
   mesh->Delete();
-  cerr << "model face " << vtkModelUserName::GetUserName(this->GetModelFace())
-       << " mesh built with numcells " << faceMesh->GetNumberOfCells() << endl;
+  if(!valid && (faceMesh->GetNumberOfCells() == 0 ||
+                faceMesh->GetNumberOfPoints() == 0) )
+    {
+    //we can presume at this point the face mesher didn't work properly
+    this->FaceMesherFailed = 1;
+    }
 
   this->SetMeshedLength(length);
   this->SetMeshedMinimumAngle(angle);

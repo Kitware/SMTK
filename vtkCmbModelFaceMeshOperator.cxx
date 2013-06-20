@@ -37,6 +37,7 @@ vtkStandardNewMacro(vtkCmbModelFaceMeshOperator);
 vtkCmbModelFaceMeshOperator::vtkCmbModelFaceMeshOperator()
 {
   this->OperateSucceeded = 0;
+  this->FaceMesherFailed = 0;
   this->Id = 0;
   this->Length = 0;
   this->MinimumAngle = 0;
@@ -50,9 +51,12 @@ vtkCmbModelFaceMeshOperator::~vtkCmbModelFaceMeshOperator()
 
 void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
 {
+  //reset these to the defaults each time we call operate
+  this->OperateSucceeded = 0;
+  this->FaceMesherFailed = 0;
+
   if(this->Id == 0)
     {  // id not set
-    this->OperateSucceeded = 0;
     return;
     }
   vtkCmbMeshServer* mesh = meshWrapper->GetMesh();
@@ -64,18 +68,18 @@ void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
   if(!faceMesh)
     {
     vtkWarningMacro("There is no face mesh on the server for changing local parameters");
-    this->OperateSucceeded = 0;
     return;
     }
   faceMesh->SetLength(this->Length);
   faceMesh->SetMinimumAngle(this->MinimumAngle);
+
   this->OperateSucceeded = 1;
   if(this->BuildModelEntityMesh)
     {
     this->OperateSucceeded =
       faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+    this->FaceMesherFailed = faceMesh->GetFaceMesherFailed();
     }
-
   return;
 }
 
