@@ -397,9 +397,17 @@ void DiscreteMesh::GetPoint(vtkIdType index, double xyz[3]) const
 }
 
 //=============================================================================
-void DiscreteMesh::GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint) const
+void DiscreteMesh::GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint,
+                                     DataType type) const
 {
-  this->FaceData->GetPointCells(index,cellsForPoint);
+  if(type == FACE_DATA)
+    {
+    this->FaceData->GetPointCells(index,cellsForPoint);
+    }
+  else if(type == EDGE_DATA )
+    {
+    this->EdgeData->GetPointCells(index,cellsForPoint);
+    }
 }
 
 //=============================================================================

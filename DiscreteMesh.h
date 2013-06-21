@@ -150,7 +150,7 @@ public:
 
   //Doesn't verify Data is valid!
   //Todo this need a modifier for edges
-  void GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint) const;
+  void GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint, DataType type =  FACE_DATA) const;
 
   //Doesn't verify Data is valid!
   void GetBounds(double bounds[6]) const;
