@@ -149,8 +149,9 @@ public:
   void GetPoint(vtkIdType index, double xyz[3]) const;
 
   //Doesn't verify Data is valid!
-  //Todo this need a modifier for edges
-  void GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint, DataType type =  FACE_DATA) const;
+  //Fills cellsForPoint with the cells that a given point index ( index ) is
+  //used by. Specify the DataType you want to query ( Face, Edge, Both ).
+  void GetCellsUsingPoint(vtkIdType index, vtkIdList* cellsForPoint, DataType type =  FACE_DATA) const;
 
   //Doesn't verify Data is valid!
   void GetBounds(double bounds[6]) const;

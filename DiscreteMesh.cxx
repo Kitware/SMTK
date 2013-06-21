@@ -397,16 +397,43 @@ void DiscreteMesh::GetPoint(vtkIdType index, double xyz[3]) const
 }
 
 //=============================================================================
-void DiscreteMesh::GetPointFaceCells(vtkIdType index, vtkIdList* cellsForPoint,
+void DiscreteMesh::GetCellsUsingPoint(vtkIdType index, vtkIdList* cellsForPoint,
                                      DataType type) const
 {
-  if(type == FACE_DATA)
+  if(type == FACE_DATA || type == EDGE_DATA)
     {
-    this->FaceData->GetPointCells(index,cellsForPoint);
+    vtkPolyData* data = this->GetDataFromType(type);
+    data->GetPointCells(index,cellsForPoint);
+    detail::ConvertIndices(type,cellsForPoint);
     }
-  else if(type == EDGE_DATA )
+  else
     {
-    this->EdgeData->GetPointCells(index,cellsForPoint);
+    //create temporary arrays to hold the ids from each data set
+    vtkNew<vtkIdList> edgeCells;
+    vtkNew<vtkIdList> faceCells;
+
+    //query both
+    this->FaceData->GetPointCells(index,faceCells.GetPointer());
+    this->EdgeData->GetPointCells(index,edgeCells.GetPointer());
+
+    //convert ids
+    detail::ConvertIndices(FACE_DATA,faceCells.GetPointer());
+    detail::ConvertIndices(EDGE_DATA,edgeCells.GetPointer());
+
+    //now combine the face and edge ids
+    const vtkIdType esize = edgeCells->GetNumberOfIds();
+    const vtkIdType fsize = faceCells->GetNumberOfIds();
+    cellsForPoint->SetNumberOfIds(esize + fsize);
+    //set edge ids first
+    for(vtkIdType i=0; i < esize; ++i)
+      {
+      cellsForPoint->SetId(i,edgeCells->GetId(i));
+      }
+    //set face ids second
+    for(vtkIdType i=0; i < fsize; ++i)
+      {
+      cellsForPoint->SetId(esize+i,edgeCells->GetId(i));
+      }
     }
 }
 
