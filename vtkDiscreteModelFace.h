@@ -76,7 +76,7 @@ public:
   // Description:
   // Extract the edges of the face and build new model edges from the extracted
   // edges with proper loop and use information.
-  void BuildEdges(bool showEdge, bool checkExistingEdges=false);
+  void BuildEdges(bool showEdge);
 
 protected:
 //BTX
@@ -120,13 +120,7 @@ protected:
                 NewModelEdgeInfo &newEdgesInfo,
                 LoopInfo &loopInfo);
   void CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
-    std::map<int, vtkDiscreteModelEdge*> &newEdges,
-    bool bShow, bool checkExistingEdges=false);
-
-  // Description:
-  // Split the edge with the given point.
-  vtkDiscreteModelVertex* SplitEdgeWithPointId(vtkIdType ptId,
-      std::vector<vtkModelEdge*>& adjEdges);
+    std::map<int, vtkDiscreteModelEdge*> &newEdges, bool bShow);
 
   // Description:
   // Reads the state of an instance from an archive OR
