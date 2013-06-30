@@ -52,9 +52,10 @@ public:
 
   // Description:
   // Split this model face based on SplitAngle.  The function
-  // fills the created model face UniquePersistentId in
-  // CreatedModelFace, and returns true if successful.
-  bool Split(double splitAngle, vtkIdTypeArray* createdModelFace);
+  // fills the created model face UniquePersistentId and edge splitinfo in
+  // FaceSplitInfo, and returns true if successful.
+  bool Split(double splitAngle,
+    std::map<vtkIdType, FaceEdgeSplitInfo>& FaceSplitInfo);
 
   // Description:
   // Get All/Boundary/Interior point Ids of this model face.
@@ -76,7 +77,8 @@ public:
   // Description:
   // Extract the edges of the face and build new model edges from the extracted
   // edges with proper loop and use information.
-  void BuildEdges(bool showEdge);
+  void BuildEdges(bool showEdge, FaceEdgeSplitInfo& splitInfo,
+    bool saveLoopInfo=true);
 
 protected:
 //BTX
@@ -90,12 +92,18 @@ protected:
   // Description:
   // Build a new model face from the cells listed in CellIds.
   // The Ids listed in CellIds are with respect to the master grid.
-  vtkDiscreteModelFace* BuildFromExistingModelFace(vtkIdList* cellIds);
+  // The 'saveLoopForExistingFace' argument is a flag to save loopinfo for
+  // existing face. This is used for cases like SplitWithFeatureAngle, which
+  // may result in many new faces from existing face, and we only want to cache
+  // the loopinfo for existing face after the last new face is created.
+  vtkDiscreteModelFace* BuildFromExistingModelFace(
+    vtkIdList* cellIds, FaceEdgeSplitInfo& splitInfo,
+    bool saveLoopForExistingFace);
 
   // Description:
   // Invoked from BuildFromExistingModelFace when existing model face
   // has edges, and splitting that face may need split its edges too.
-  void SplitEdges(vtkIdList* masterCellIds);
+  void SplitEdges(vtkDiscreteModelFace* newModelFace, FaceEdgeSplitInfo& splitInfo);
 
   friend class vtkSelectionSplitOperator;
   friend class vtkCmbIncorporateMeshOperator;
@@ -120,7 +128,8 @@ protected:
                 NewModelEdgeInfo &newEdgesInfo,
                 LoopInfo &loopInfo);
   void CreateModelEdges(NewModelEdgeInfo &newEdgesInfo,
-    std::map<int, vtkDiscreteModelEdge*> &newEdges, bool bShow);
+    std::map<int, vtkDiscreteModelEdge*> &newEdges,
+    bool bShow, FaceEdgeSplitInfo& splitInfo);
 
   // Description:
   // Reads the state of an instance from an archive OR
