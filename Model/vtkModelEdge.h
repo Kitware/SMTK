@@ -71,6 +71,14 @@ public:
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
 
+  // Description:
+  // Split the edge with given vertex and/or edge. This is mainly used
+  // to update the topology associations, for example the edge uses,
+  // for the related oldEdge, newEdge, and newVert after Split.
+  // It is particualarly useful for updating client model without geometry.
+  void SplitModelEdge(vtkModelVertex* newVertex, vtkModelEdge* newEdge);
+  bool SplitModelEdgeLoop(vtkModelVertex* Vertex);
+
 protected:
   vtkModelEdge();
   virtual ~vtkModelEdge();
@@ -83,14 +91,11 @@ protected:
 
   void DestroyModelEdgeUse(vtkModelEdgeUse* EdgeUse);
 
-  void SplitModelEdge(vtkModelVertex* Vertex,
-                      vtkModelEdge* Edge);
   void SplitModelEdgeUse(
     vtkModelEdgeUse* FirstEdgeUse, vtkModelEdgeUse* SecondEdgeUse,
     vtkModelVertexUse* VertexUse0, vtkModelVertexUse* VertexUse1,
     vtkModelVertexUse* VertexUse2);
 
-  bool SplitModelEdgeLoop(vtkModelVertex* Vertex);
 
 //BTX
   friend class vtkModel;
