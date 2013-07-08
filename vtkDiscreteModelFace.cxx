@@ -975,7 +975,7 @@ void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
           {splitEdge->GetUniquePersistentId(), newVertexId, newEdgeId};
         splitInfo.SplitEdgeVertIds->InsertNextTupleValue(splitEdgeVEdge);
         splitEdge = vtkDiscreteModelEdge::SafeDownCast(
-          thisModel->GetModelEntity(newEdgeId, vtkModelEdgeType));
+          thisModel->GetModelEntity(vtkModelEdgeType, newEdgeId));
         // The map of <OldEdgeId, NewVertId, NewEdgId>
         }
       else
