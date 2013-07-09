@@ -107,6 +107,10 @@ public:
                        int* EdgeDirections);
 
   // Description:
+  // Destroy all loopuses of a model face
+  virtual bool DestroyLoopUses();
+
+  // Description:
   // Gets the number of holes in the model face.  This is NOT the
   // number of loops-1 since an "inner" loop could be degenerate
   // and isn't considered a hole.
@@ -124,7 +128,6 @@ protected:
 
   virtual bool IsDestroyable();
   virtual bool Destroy();
-  virtual bool DestroyLoopUses();
 
   // Description:
   // Helper function that combines "end" of edgeUse1 with "beginning" of edgeUse2.
