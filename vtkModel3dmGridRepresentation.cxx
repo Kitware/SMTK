@@ -134,7 +134,7 @@ bool vtkModel3dmGridRepresentation::GetBCSNodalAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
-  vtkDiscreteModel* model, vtkIdType nodalGroupId, vtkIdList* pointIds)
+  vtkDiscreteModel*, vtkIdType, vtkIdList*)
 {
   vtkErrorMacro("3dm file does not support floating edges.");
   return false;
@@ -142,7 +142,7 @@ bool vtkModel3dmGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkModel3dmGridRepresentation::GetModelEdgeAnalysisPoints(
-  vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdTypeArray* edgePoints)
+  vtkDiscreteModel*, vtkIdType, vtkIdTypeArray*)
 {
   vtkErrorMacro("Does not support 2D models.");
   return false;
