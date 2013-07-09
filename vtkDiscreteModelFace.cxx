@@ -928,7 +928,7 @@ void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
     for(lines->InitTraversal();lines->GetNextCell(npts,pts); )
       {
       // process first point
-      mesh.GetPointFaceCells(pts[0], cellIds.GetPointer());
+      mesh.GetCellsUsingPoint(pts[0], cellIds.GetPointer());
       // Convert the facet Ids to model Ids
       nids = cellIds->GetNumberOfIds();
       newFace1 = false;
@@ -943,7 +943,7 @@ void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
           }
         }
        // process second point
-      mesh.GetPointFaceCells(pts[1], cellIds.GetPointer());
+      mesh.GetCellsUsingPoint(pts[1], cellIds.GetPointer());
       // Convert the facet Ids to model Ids
       nids = cellIds->GetNumberOfIds();
       newFace2 = false;
