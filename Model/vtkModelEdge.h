@@ -62,8 +62,8 @@ public:
   int GetNumberOfAdjacentModelFaces();
   vtkModelItemIterator* NewAdjacentModelFaceIterator();
 
-  virtual void Initialize(vtkModelVertex* Vertex0, vtkModelVertex* Vertex1,
-                          vtkIdType EdgeId);
+  virtual void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
+                          vtkIdType edgeId);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -81,16 +81,16 @@ protected:
   // vtkModelEdgeUse::GetPairedModelEdgeUse() to get the other one.
   vtkModelEdgeUse* BuildModelEdgeUsePair();
 
-  void DestroyModelEdgeUse(vtkModelEdgeUse* EdgeUse);
+  void DestroyModelEdgeUse(vtkModelEdgeUse* edgeUse);
 
-  void SplitModelEdge(vtkModelVertex* Vertex,
-                      vtkModelEdge* Edge);
+  void SplitModelEdge(vtkModelVertex* vertex,
+                      vtkModelEdge* edge);
   void SplitModelEdgeUse(
-    vtkModelEdgeUse* FirstEdgeUse, vtkModelEdgeUse* SecondEdgeUse,
-    vtkModelVertexUse* VertexUse0, vtkModelVertexUse* VertexUse1,
-    vtkModelVertexUse* VertexUse2);
+    vtkModelEdgeUse* firstEdgeUse, vtkModelEdgeUse* secondEdgeUse,
+    vtkModelVertexUse* vertexUse0, vtkModelVertexUse* vertexUse1,
+    vtkModelVertexUse* vertexUse2);
 
-  bool SplitModelEdgeLoop(vtkModelVertex* Vertex);
+  bool SplitModelEdgeLoop(vtkModelVertex* vertex);
 
 //BTX
   friend class vtkModel;

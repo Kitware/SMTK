@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkModelItemIterator - Abstract interface for iterating over vtkModelItems
 // .SECTION Description
-// Abstract class for iterating over vtkModelItems. 
-// The intended use is: 
+// Abstract class for iterating over vtkModelItems.
+// The intended use is:
 // \code
 //   vtkModelItemIterator* iterator = ModelItem->NewIterator(itemType);
 //   for(iterator->Begin();!iterator->IsAtEnd();iterator->Next())

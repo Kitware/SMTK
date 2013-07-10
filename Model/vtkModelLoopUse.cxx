@@ -76,16 +76,16 @@ vtkModelFace* vtkModelLoopUse::GetModelFace()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceUseType);
   iter->Begin();
-  vtkModelFace* Face = 0;
+  vtkModelFace* face = 0;
   if(!iter->IsAtEnd())
     {
     if(vtkModelFaceUse* FaceUse = vtkModelFaceUse::SafeDownCast(iter->GetCurrentItem()))
       {
-      Face = FaceUse->GetModelFace();
+      face = FaceUse->GetModelFace();
       }
     }
   iter->Delete();
-  return Face;
+  return face;
 }
 
 vtkModelEdgeUse* vtkModelLoopUse::GetModelEdgeUse(int index)
@@ -110,14 +110,14 @@ vtkModelItemIterator* vtkModelLoopUse::NewModelEdgeUseIterator()
   return this->NewIterator(vtkModelEdgeUseType);
 }
 
-void vtkModelLoopUse::InsertModelEdgeUse(int Index, vtkModelEdgeUse* EdgeUse)
+void vtkModelLoopUse::InsertModelEdgeUse(int index, vtkModelEdgeUse* edgeUse)
 {
-  this->AddAssociationInPosition(Index, EdgeUse);
+  this->AddAssociationInPosition(index, edgeUse);
 }
 
-void vtkModelLoopUse::RemoveModelEdgeUseAssociation(vtkModelEdgeUse* EdgeUse)
+void vtkModelLoopUse::RemoveModelEdgeUseAssociation(vtkModelEdgeUse* edgeUse)
 {
-  this->RemoveAssociation(EdgeUse);
+  this->RemoveAssociation(edgeUse);
 }
 
 void vtkModelLoopUse::Serialize(vtkSerializer* ser)
@@ -167,4 +167,3 @@ void vtkModelLoopUse::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
-

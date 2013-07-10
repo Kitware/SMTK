@@ -63,9 +63,9 @@ bool vtkModelFaceUse::Destroy()
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
-    vtkModelLoopUse* LoopUse = 
+    vtkModelLoopUse* loopUse =
       vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
-    if(!LoopUse->Destroy())
+    if(!loopUse->Destroy())
       {
       iter->Delete();
       vtkErrorMacro("Problem destroying vtkModelLoopUse.");
@@ -83,10 +83,10 @@ vtkModelShellUse* vtkModelFaceUse::GetModelShellUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelShellUseType);
   iter->Begin();
-  vtkModelShellUse* ShellUse = vtkModelShellUse::SafeDownCast(
+  vtkModelShellUse* shellUse = vtkModelShellUse::SafeDownCast(
     iter->GetCurrentItem());
   iter->Delete();
-  return ShellUse;
+  return shellUse;
 }
 
 //-----------------------------------------------------------------------------
@@ -94,29 +94,29 @@ vtkModelFace* vtkModelFaceUse::GetModelFace()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelFaceType);
   iter->Begin();
-  vtkModelFace* Face = vtkModelFace::SafeDownCast(iter->GetCurrentItem());
+  vtkModelFace* face = vtkModelFace::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return Face;
+  return face;
 }
 
 //-----------------------------------------------------------------------------
 vtkModelLoopUse* vtkModelFaceUse::GetOuterLoopUse()
 {
   vtkModelItemIterator* iter = this->NewIterator(vtkModelLoopUseType);
-  vtkModelLoopUse* LoopUse = 0;
+  vtkModelLoopUse* loopUse = 0;
   iter->Begin();
   if(!iter->IsAtEnd())
     {
-    LoopUse = vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
+    loopUse = vtkModelLoopUse::SafeDownCast(iter->GetCurrentItem());
     }
   iter->Delete();
-  return LoopUse;
+  return loopUse;
 }
 
 //-----------------------------------------------------------------------------
-void vtkModelFaceUse::AddLoopUse(vtkModelLoopUse* LoopUse)
+void vtkModelFaceUse::AddLoopUse(vtkModelLoopUse* loopUse)
 {
-  this->AddAssociation(LoopUse);
+  this->AddAssociation(loopUse);
 }
 
 //-----------------------------------------------------------------------------

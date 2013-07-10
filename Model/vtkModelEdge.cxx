@@ -68,18 +68,18 @@ vtkModelEdgeUse* vtkModelEdge::GetModelEdgeUse(int which)
   vtkModelItemIterator* iter =
     this->NewIterator(vtkModelEdgeUseType);
   int counter = 0;
-  vtkModelEdgeUse* EdgeUse = 0;
+  vtkModelEdgeUse* edgeUse = 0;
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
     if(counter == which)
       {
-      EdgeUse = vtkModelEdgeUse::SafeDownCast(iter->GetCurrentItem());
+      edgeUse = vtkModelEdgeUse::SafeDownCast(iter->GetCurrentItem());
       break;
       }
     counter++;
     }
   iter->Delete();
-  return EdgeUse;
+  return edgeUse;
 }
 
 //-----------------------------------------------------------------------------
@@ -91,8 +91,8 @@ vtkModelItemIterator* vtkModelEdge::NewModelEdgeUseIterator()
 //-----------------------------------------------------------------------------
 int vtkModelEdge::GetNumberOfModelVertexUses()
 {
-  vtkModelEdgeUse* EdgeUse = this->GetModelEdgeUse(0);
-  return EdgeUse->GetNumberOfAssociations(vtkModelVertexUseType);
+  vtkModelEdgeUse* edgeUse = this->GetModelEdgeUse(0);
+  return edgeUse->GetNumberOfAssociations(vtkModelVertexUseType);
 }
 
 //-----------------------------------------------------------------------------
@@ -156,9 +156,9 @@ vtkModelEdgeUse* vtkModelEdge::BuildModelEdgeUsePair()
 }
 
 //-----------------------------------------------------------------------------
-void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* EdgeUse)
+void vtkModelEdge::DestroyModelEdgeUse(vtkModelEdgeUse* edgeUse)
 {
-  this->RemoveAssociation(EdgeUse);
+  this->RemoveAssociation(edgeUse);
   this->Modified();
 }
 
@@ -321,7 +321,7 @@ int vtkModelEdge::GetNumberOfAdjacentModelFaces()
 //-----------------------------------------------------------------------------
 vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
 {
-  vtkModelItemGenericIterator* Faces = vtkModelItemGenericIterator::New();
+  vtkModelItemGenericIterator* faces = vtkModelItemGenericIterator::New();
   vtkModelItemIterator* edgeUses =
     this->NewIterator(vtkModelEdgeUseType);
   for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
@@ -330,7 +330,7 @@ vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
       edgeUses->GetCurrentItem()->NewIterator(vtkModelLoopUseType);
     for(loopUses->Begin();!loopUses->IsAtEnd();loopUses->Next())
       {
-      Faces->AddUniqueModelItem(
+      faces->AddUniqueModelItem(
         vtkModelLoopUse::SafeDownCast(loopUses->GetCurrentItem())->
         GetModelFace());
       }
@@ -338,7 +338,7 @@ vtkModelItemIterator* vtkModelEdge::NewAdjacentModelFaceIterator()
     }
   edgeUses->Delete();
 
-  return Faces;
+  return faces;
 }
 
 //-----------------------------------------------------------------------------

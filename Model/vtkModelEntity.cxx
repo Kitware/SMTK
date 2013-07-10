@@ -105,14 +105,14 @@ void vtkModelEntity::GetColor(double RGBA[4])
     }
 }
 
-void vtkModelEntity::SetVisibility(int Visible)
+void vtkModelEntity::SetVisibility(int visible)
 {
   if(this->GetProperties()->Has(VISIBILITY()) &&
-    Visible == this->GetProperties()->Get(VISIBILITY()))
+     visible == this->GetProperties()->Get(VISIBILITY()))
     {
     return;
     }
-  this->GetProperties()->Set(VISIBILITY(), Visible);
+  this->GetProperties()->Set(VISIBILITY(), visible);
   this->Modified();
 }
 
@@ -141,13 +141,13 @@ vtkIdType vtkModelEntity::GetUniquePersistentId()
   return this->GetProperties()->Get(UNIQUEPERSISTENTID());
 }
 
-void vtkModelEntity::Initialize(vtkIdType UniquePersistentId)
+void vtkModelEntity::Initialize(vtkIdType uniquePersistentId)
 {
-  this->SetUniquePersistentId(UniquePersistentId);
+  this->SetUniquePersistentId(uniquePersistentId);
   this->Initialized = 1;
 }
 
-vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType UniquePersistentId)
+vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType uniquePersistentId)
 {
   vtkSmartPointer<vtkIdList> types = vtkSmartPointer<vtkIdList>::New();
   this->GetItemTypesList(types);
@@ -159,7 +159,7 @@ vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType UniquePersistentId)
       vtkModelEntity* modelEntity =
         vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
       if(modelEntity &&
-         modelEntity->GetUniquePersistentId() == UniquePersistentId)
+         modelEntity->GetUniquePersistentId() == uniquePersistentId)
         {
         iter->Delete();
         return modelEntity;
@@ -171,15 +171,15 @@ vtkModelEntity* vtkModelEntity::GetModelEntity(vtkIdType UniquePersistentId)
 }
 
 vtkModelEntity* vtkModelEntity::GetModelEntity(
-  int Type, vtkIdType UniquePersistentId)
+  int type, vtkIdType uniquePersistentId)
 {
-  vtkModelItemIterator* iter=this->NewIterator(Type);
+  vtkModelItemIterator* iter=this->NewIterator(type);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
     vtkModelEntity* modelEntity =
       vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
     if(modelEntity &&
-       modelEntity->GetUniquePersistentId() == UniquePersistentId)
+       modelEntity->GetUniquePersistentId() == uniquePersistentId)
       {
       iter->Delete();
       return modelEntity;
@@ -201,4 +201,3 @@ void vtkModelEntity::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "UniquePersistentId: " << this->GetUniquePersistentId() << "\n";
 }
-

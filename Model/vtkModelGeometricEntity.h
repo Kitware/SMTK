@@ -47,7 +47,7 @@ public:
   // Get/set the representation for the geometry. On the client
   // this will be a vtkSMProxy* and on the server it will be
   // a vtkDataObject*.
-  void SetGeometry(vtkObject* Geometry);
+  void SetGeometry(vtkObject* geometry);
   virtual vtkObject* GetGeometry();
 
   // Description:

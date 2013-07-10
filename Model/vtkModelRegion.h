@@ -47,10 +47,10 @@ public:
 
   virtual int GetType();
 
-  virtual void Initialize(int NumModelFaces, vtkModelFace** Faces, int* FaceSides,
-                          vtkIdType ModelRegionId);
+  virtual void Initialize(int numModelFaces, vtkModelFace** faces, int* faceSides,
+                          vtkIdType modelRegionId);
 
-  virtual void Initialize(vtkIdType ModelRegionId);
+  virtual void Initialize(vtkIdType modelRegionId);
 
   // Description:
   // Get the number of shells the region has
@@ -70,17 +70,17 @@ public:
   // Return an iterator to access the model faces that define
   // the boundaries of this model region.
   vtkModelItemIterator* NewAdjacentModelFaceIterator();
-  
-  virtual void AddShell(int NumFaces, vtkModelFace** Faces,
-                        int* FaceSides);
+
+  virtual void AddShell(int numFaces, vtkModelFace** faces,
+                        int* faceSides);
 protected:
   vtkModelRegion();
   virtual ~vtkModelRegion();
 
   virtual vtkModelShellUse* BuildModelShellUse(
-    int NumModelFaces, vtkModelFace** Faces, int* FaceSides);
-  virtual bool DestroyModelShellUse(vtkModelShellUse* ShellUse);
-  
+    int numModelFaces, vtkModelFace** faces, int* faceSides);
+  virtual bool DestroyModelShellUse(vtkModelShellUse* shellUse);
+
   virtual bool IsDestroyable();
   virtual bool Destroy();
 //BTX
@@ -93,4 +93,3 @@ private:
 };
 
 #endif
-

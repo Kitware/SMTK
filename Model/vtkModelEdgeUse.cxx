@@ -38,11 +38,11 @@ vtkInformationKeyMacro(vtkModelEdgeUse, DIRECTION, Integer);
 
 vtkModelEdgeUse* vtkModelEdgeUse::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelEdgeUse"); 
-  if(ret) 
-    {                                    
-    return static_cast<vtkModelEdgeUse*>(ret); 
-    } 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelEdgeUse");
+  if(ret)
+    {
+    return static_cast<vtkModelEdgeUse*>(ret);
+    }
   return new vtkModelEdgeUse;
 }
 
@@ -62,35 +62,35 @@ bool vtkModelEdgeUse::Destroy()
     return false;
     }
   // if I'm connected to a vertex use that isn't connected to any other edge uses
-  // then I need to destroy that vertex use too.  
+  // then I need to destroy that vertex use too.
 
-  vtkModelVertexUse* VertexUse0 = this->GetModelVertexUse(0);
-  if(VertexUse0)
+  vtkModelVertexUse* vertexUse0 = this->GetModelVertexUse(0);
+  if(vertexUse0)
     {
-    if(VertexUse0->GetNumberOfModelEdgeUses() == 1)
+    if(vertexUse0->GetNumberOfModelEdgeUses() == 1)
       {
-      VertexUse0->Destroy();
+      vertexUse0->Destroy();
       }
     }
-  vtkModelVertexUse* VertexUse1 = this->GetModelVertexUse(1);
-  if(VertexUse1)
+  vtkModelVertexUse* vertexUse1 = this->GetModelVertexUse(1);
+  if(vertexUse1)
     {
-    if(VertexUse1->GetNumberOfModelEdgeUses() == 1)
+    if(vertexUse1->GetNumberOfModelEdgeUses() == 1)
       {
-      VertexUse1->Destroy();
+      vertexUse1->Destroy();
       }
-    else if(VertexUse0 == VertexUse1)
+    else if(vertexUse0 == vertexUse1)
       {
-      // also if this edge use is a loop then I'm connected to the same 
+      // also if this edge use is a loop then I'm connected to the same
       // vertex use twice and must also remove both uses
-      VertexUse0->Destroy();
+      vertexUse0->Destroy();
       }
     }
 
   this->RemoveAllAssociations(vtkModelVertexUseType);
   // my pair will have to remove me separately
   this->RemoveReverseAssociationToType(this->GetPairedModelEdgeUse(),this->GetType());
-  
+
   return true;
 }
 
@@ -101,50 +101,50 @@ int vtkModelEdgeUse::GetType()
 
 vtkModelEdge* vtkModelEdgeUse::GetModelEdge()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelEdgeType);
   iter->Begin();
-  vtkModelEdge* Edge = vtkModelEdge::SafeDownCast(iter->GetCurrentItem());
+  vtkModelEdge* edge = vtkModelEdge::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return Edge;
+  return edge;
 }
 
 vtkModelEdgeUse* vtkModelEdgeUse::GetPairedModelEdgeUse()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelEdgeUseType);
   iter->Begin();
-  vtkModelEdgeUse* EdgeUse = vtkModelEdgeUse::SafeDownCast(iter->GetCurrentItem());
+  vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return EdgeUse;
+  return edgeUse;
 }
 
 vtkModelLoopUse* vtkModelEdgeUse::GetModelLoopUse()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelLoopUseType);
   iter->Begin();
-  vtkModelLoopUse* LoopUse = vtkModelLoopUse::SafeDownCast(
+  vtkModelLoopUse* loopUse = vtkModelLoopUse::SafeDownCast(
     iter->GetCurrentItem());
   iter->Delete();
-  return LoopUse;
+  return loopUse;
 }
 
-void vtkModelEdgeUse::SetModelVertexUses(vtkModelVertexUse* VertexUse0, 
-                                         vtkModelVertexUse* VertexUse1)
+void vtkModelEdgeUse::SetModelVertexUses(vtkModelVertexUse* vertexUse0,
+                                         vtkModelVertexUse* vertexUse1)
 {
   this->RemoveAllAssociations(vtkModelVertexUseType);
-  if(VertexUse0)
+  if(vertexUse0)
     {
-    this->AddAssociation(VertexUse0);
-    if(VertexUse1)
+    this->AddAssociation(vertexUse0);
+    if(vertexUse1)
       {
-      this->AddAssociation(VertexUse1);
+      this->AddAssociation(vertexUse1);
       }
     }
-  else if(VertexUse1)
+  else if(vertexUse1)
     {
-    vtkWarningMacro("Trying to set VertexUse1 without setting VertexUse0");
+    vtkWarningMacro("Trying to set vertexUse1 without setting vertexUse0");
     }
 }
 
@@ -159,10 +159,10 @@ vtkModelVertexUse* vtkModelEdgeUse::GetModelVertexUse(int i)
     }
   if(i == 0)
     {
-    vtkModelVertexUse* VertexUse = 
+    vtkModelVertexUse* vertexUse =
       vtkModelVertexUse::SafeDownCast(iter->GetCurrentItem());
     iter->Delete();
-    return VertexUse;
+    return vertexUse;
     }
   iter->Next();
   if(iter->IsAtEnd())
@@ -170,10 +170,10 @@ vtkModelVertexUse* vtkModelEdgeUse::GetModelVertexUse(int i)
     iter->Delete();
     return 0;
     }
-  vtkModelVertexUse* VertexUse = 
+  vtkModelVertexUse* vertexUse =
     vtkModelVertexUse::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return VertexUse;  
+  return vertexUse;
 }
 
 int vtkModelEdgeUse::GetNumberOfModelVertexUses()
@@ -187,19 +187,19 @@ int vtkModelEdgeUse::GetDirection()
 }
 
 void vtkModelEdgeUse::Initialize(
-  vtkModelVertex* Vertex0, vtkModelVertex* Vertex1,
-  vtkModelEdgeUse* PairedEdgeUse, int direction)
+  vtkModelVertex* vertex0, vtkModelVertex* vertex1,
+  vtkModelEdgeUse* pairedEdgeUse, int direction)
 {
-  if(Vertex0)
+  if(vertex0)
     {
     vtkModelVertexUse* VertexUse = vtkModelVertexUse::New();
-    VertexUse->Initialize(Vertex0);
+    VertexUse->Initialize(vertex0);
     this->AddAssociation(VertexUse);
     VertexUse->Delete();
-    if(Vertex1)
+    if(vertex1)
       {
       VertexUse = vtkModelVertexUse::New();
-      VertexUse->Initialize(Vertex1);
+      VertexUse->Initialize(vertex1);
       this->AddAssociation(VertexUse);
       VertexUse->Delete();
       }
@@ -211,7 +211,7 @@ void vtkModelEdgeUse::Initialize(
   this->SetDirection(direction);
   // only add reverse association as my pair also will have to call
   // initialize and do the same thing
-  this->AddReverseAssociationToType(PairedEdgeUse,vtkModelEdgeUseType);
+  this->AddReverseAssociationToType(pairedEdgeUse,vtkModelEdgeUseType);
 }
 
 
@@ -229,4 +229,3 @@ void vtkModelEdgeUse::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
-
