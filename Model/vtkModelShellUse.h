@@ -53,7 +53,7 @@ public:
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
-  
+
 protected:
   static vtkModelShellUse* New();
   vtkModelShellUse();
@@ -61,13 +61,13 @@ protected:
 
   // Description:
   // Remove a face use from this shell use.
-  void RemoveModelFaceUse(vtkModelFaceUse* FaceUse);
+  void RemoveModelFaceUse(vtkModelFaceUse* faceUse);
 
   // Descrption:
   // Add the model face use to be adjacent to this shell use.
   // If FaceUse is currently adjacent to another face it
   // removes that association.
-  void AddModelFaceUse(vtkModelFaceUse* FaceUse);
+  void AddModelFaceUse(vtkModelFaceUse* faceUse);
 
   virtual bool Destroy();
 //BTX

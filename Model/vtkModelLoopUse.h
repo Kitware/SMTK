@@ -71,9 +71,9 @@ protected:
   vtkModelLoopUse();
   virtual ~vtkModelLoopUse();
 
-  void InsertModelEdgeUse(int Index, vtkModelEdgeUse* EdgeUse);
+  void InsertModelEdgeUse(int Index, vtkModelEdgeUse* edgeUse);
 
-  void RemoveModelEdgeUseAssociation(vtkModelEdgeUse* EdgeUse);
+  void RemoveModelEdgeUseAssociation(vtkModelEdgeUse* edgeUse);
 
 //BTX
   friend class vtkDiscreteModelGeometricEntity;

@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Class for iterating over objects that are explicitly put in the group.
 // Note that the group is allowed to have an object listed multiple times.
 // The objects will be iterated over in the order they were added.
-// The intended use is: 
+// The intended use is:
 // \code
 //   vtkModelItemGenericIterator* iterator = ModelItem->NewIterator(itemType);
 //   for(iterator->Begin();!iterator->IsAtEnd();iterator->Next())
@@ -75,16 +75,16 @@ public:
 
   // Description:
   // Add a model item to the group of objects to be iterated over.
-  void AddModelItem(vtkModelItem* ModelItem);
+  void AddModelItem(vtkModelItem* modelItem);
 
   // Description:
   // Add a model item to the group of objects to be iterated over if it
   // is not already in the group.
-  void AddUniqueModelItem(vtkModelItem* ModelItem);
+  void AddUniqueModelItem(vtkModelItem* modelItem);
 
   // Description:
   // Remove all instances of an object from the group.
-  void RemoveModelItem(vtkModelItem* ModelItem);
+  void RemoveModelItem(vtkModelItem* modelItem);
 
   // Description:
   // Clear objects in group and reset the current iterator.

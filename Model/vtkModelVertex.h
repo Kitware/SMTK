@@ -82,7 +82,7 @@ protected:
   // is responsible for the management of the associated
   // vtkModelVertexUse.
   vtkModelVertexUse* BuildModelVertexUse();
-  void DestroyModelVertexUse(vtkModelVertexUse* VertexUse);
+  void DestroyModelVertexUse(vtkModelVertexUse* vertexUse);
 //BTX
   friend class vtkDiscreteModel;
   friend class vtkDiscreteModelGeometricEntity;

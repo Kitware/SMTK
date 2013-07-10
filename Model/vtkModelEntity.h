@@ -59,7 +59,7 @@ public:
 
   // Description:
   // Set/get visible (non-zero is visible).
-  void SetVisibility(int Visible);
+  void SetVisibility(int visible);
   int GetVisibility();
 
   vtkIdType GetUniquePersistentId();
@@ -80,13 +80,13 @@ public:
 
   // Description:
   // Function for getting a model entity from a unique persistent id.
-  vtkModelEntity* GetModelEntity(vtkIdType UniquePersistentId);
+  vtkModelEntity* GetModelEntity(vtkIdType uniquePersistentId);
 
   // Description:
   // Function for getting a model entity from a unique persistent id and type.
   // This should be faster as it will only look for associated types
   // of Type.
-  vtkModelEntity* GetModelEntity(int Type, vtkIdType UniquePersistentId);
+  vtkModelEntity* GetModelEntity(int type, vtkIdType uniquePersistentId);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -94,7 +94,7 @@ public:
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
 
-  virtual void Initialize(vtkIdType UniquePersistentId);
+  virtual void Initialize(vtkIdType uniquePersistentId);
 
   // Description:
   // Return whether or not this object has been initialized.

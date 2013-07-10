@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelItem - Base class for a model object.
 // .SECTION Description
 // This class is meant to be used as the base class for model entities
-// for storing associations to other model entities and iterating 
+// for storing associations to other model entities and iterating
 // over the associated objects.
 
 #ifndef __vtkModelItem_h
@@ -47,12 +47,12 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   vtkGetObjectMacro(Properties, vtkInformation);
-  
+
   // Description:
   // Return a vtkModelItemIterator to iterate through the
   // associated model entities of type itemType.  Note that
   // this cannot be used to iterate over the model faces that
-  // are adjacent to a model region as they are associated 
+  // are adjacent to a model region as they are associated
   // through use objects instead of directly being associated
   // with each other.
   vtkModelItemIterator* NewIterator(int itemType);
@@ -106,7 +106,7 @@ protected:
   // Description:
   // Since every association is symmetric, this is used to get
   // create the reverse association.  When an association
-  // is added through AddAssociation 
+  // is added through AddAssociation
   // then this function automatically gets rid of the reverse
   // association.
   void AddReverseAssociationToType(vtkModelItem* item, int itemType);
@@ -121,15 +121,15 @@ protected:
 
   // Description:
   // Returns a list of item types that are stored.
-  void GetItemTypesList(vtkIdList * ItemTypes);
-  
+  void GetItemTypesList(vtkIdList * itemTypes);
+
 private:
   vtkModelItem(const vtkModelItem&);  // Not implemented.
   void operator=(const vtkModelItem&);  // Not implemented.
 
   vtkInformation* Properties;
   vtkModelItemInternals* Internal;
-  
+
 //BTX
   friend class vtkModelItemListIterator;
   friend class vtkXMLModelReader;

@@ -94,30 +94,30 @@ vtkModelItem* vtkModelItemGenericIterator::GetCurrentItem()
 }
 
 //---------------------------------------------------------------------------
-void vtkModelItemGenericIterator::AddModelItem(vtkModelItem* ModelItem)
+void vtkModelItemGenericIterator::AddModelItem(vtkModelItem* modelItem)
 {
-  this->Internal->Objects.push_back(ModelItem);
+  this->Internal->Objects.push_back(modelItem);
 }
 
 //---------------------------------------------------------------------------
-void vtkModelItemGenericIterator::AddUniqueModelItem(vtkModelItem* ModelItem)
+void vtkModelItemGenericIterator::AddUniqueModelItem(vtkModelItem* modelItem)
 {
   for(vtkModelItemGenericIteratorInternals::ContainerIterator it=
         this->Internal->Objects.begin();
       it!=this->Internal->Objects.end();it++)
     {
-    if(*it == ModelItem)
+    if(*it == modelItem)
       {
       return;
       }
     }
-  this->Internal->Objects.push_back(ModelItem);
+  this->Internal->Objects.push_back(modelItem);
 }
 
 //---------------------------------------------------------------------------
-void vtkModelItemGenericIterator::RemoveModelItem(vtkModelItem* ModelItem)
+void vtkModelItemGenericIterator::RemoveModelItem(vtkModelItem* modelItem)
 {
-  this->Internal->Objects.remove(ModelItem);
+  this->Internal->Objects.remove(modelItem);
 }
 
 //---------------------------------------------------------------------------

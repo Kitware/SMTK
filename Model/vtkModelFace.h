@@ -80,8 +80,8 @@ public:
   // Assume that the loop is the face's outer loop
   // Initializes the model face by creating the outer loop for it.
   // The edges need to be passed in in counterclockwise order.
-  virtual void Initialize(int NumEdges, vtkModelEdge** Edges,
-                          int* EdgeDirections, vtkIdType ModelFaceId);
+  virtual void Initialize(int NumEdges, vtkModelEdge** edges,
+                          int* edgeDirections, vtkIdType modelFaceId);
 
   // Description:
   // Reads the state of an instance from an archive OR
@@ -91,8 +91,8 @@ public:
 
   // Description:
   // Adds an edge loop to a model face
-  virtual void AddLoop(int NumEdges, vtkModelEdge** Edges,
-                       int* EdgeDirections);
+  virtual void AddLoop(int numEdges, vtkModelEdge** edges,
+                       int* edgeDirections);
 
   // Description:
   // Gets the number of holes in the model face.  This is NOT the
@@ -130,4 +130,3 @@ private:
 };
 
 #endif
-
