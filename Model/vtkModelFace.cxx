@@ -241,7 +241,8 @@ void vtkModelFace::GetModelEdgeIds(std::set<vtkIdType>& edgeIds)
       {
       vtkModelEdge* edge = vtkModelEdgeUse::SafeDownCast(
         edgeUses->GetCurrentItem())->GetModelEdge();
-      edgeIds.insert(edge->GetUniquePersistentId());
+      vtkIdType edgeId = edge->GetUniquePersistentId();
+      edgeIds.insert(edgeId);
       }
     edgeUses->Delete();
     }
