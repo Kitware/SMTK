@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME vtkModelItemListIterator - Class for iterating over associated vtkModelItems
 // .SECTION Description
-// Abstract class for iterating over associated objects of a vtkModelItem. 
-// The intended use is: 
+// Abstract class for iterating over associated objects of a vtkModelItem.
+// The intended use is:
 // \code
 //   vtkModelItemListIterator* iterator = ModelItem->NewIterator(itemType);
 //   for(iterator->Begin();!iterator->IsAtEnd();iterator->Next())
@@ -95,7 +95,7 @@ private:
   vtkModelItemListIterator(const vtkModelItemListIterator&);  // Not implemented.
   void operator=(const vtkModelItemListIterator&);  // Not implemented.
 
-//BTX  
+//BTX
   // Description:
   // Root is the object that will have its associated model entities
   // iterated over.

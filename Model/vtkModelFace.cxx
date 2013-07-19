@@ -45,12 +45,12 @@ vtkModelFace::vtkModelFace()
 {
   // We build the face uses automatically because we know all we need
   // to know about them now to build them.
-  vtkModelFaceUse* FaceUse0 = vtkModelFaceUse::New();
-  this->AddAssociationToType(FaceUse0, vtkModelFaceType);
-  FaceUse0->Delete();
-  vtkModelFaceUse* FaceUse1 = vtkModelFaceUse::New();
-  this->AddAssociationToType(FaceUse1, vtkModelFaceType);
-  FaceUse1->Delete();
+  vtkModelFaceUse* faceUse0 = vtkModelFaceUse::New();
+  this->AddAssociationToType(faceUse0, vtkModelFaceType);
+  faceUse0->FastDelete();
+  vtkModelFaceUse* faceUse1 = vtkModelFaceUse::New();
+  this->AddAssociationToType(faceUse1, vtkModelFaceType);
+  faceUse1->FastDelete();
 }
 
 //-----------------------------------------------------------------------------
@@ -63,8 +63,7 @@ bool vtkModelFace::IsDestroyable()
 {
   for(int i=0;i<2;i++)
     {
-    vtkModelFaceUse* FaceUse = this->GetModelFaceUse(i);
-    if(FaceUse->GetModelShellUse())
+    if(this->GetModelFaceUse(i)->GetModelShellUse())
       {
       return 0;
       }
@@ -106,15 +105,15 @@ bool vtkModelFace::DestroyLoopUses()
 
 //-----------------------------------------------------------------------------
 void vtkModelFace::Initialize(
-  int NumEdges, vtkModelEdge** Edges, int* EdgeDirections,
-  vtkIdType ModelFaceId)
+  int numEdges, vtkModelEdge** edges, int* edgeDirections,
+  vtkIdType modelFaceId)
 {
   bool blockSignal = this->GetModel()->GetBlockModelGeometricEntityEvent();
   this->GetModel()->SetBlockModelGeometricEntityEvent(true);
-  this->Superclass::Initialize(ModelFaceId);
-  if (NumEdges)
+  this->Superclass::Initialize(modelFaceId);
+  if (numEdges)
     {
-    this->AddLoop(NumEdges, Edges, EdgeDirections);
+    this->AddLoop(numEdges, edges, edgeDirections);
     }
   this->GetModel()->SetBlockModelGeometricEntityEvent(blockSignal);
 }
@@ -183,8 +182,7 @@ int vtkModelFace::GetNumberOfModelRegions()
   int result = 0;
   for(int direction=0;direction<2;direction++)
     {
-    vtkModelFaceUse* FaceUse = this->GetModelFaceUse(direction);
-    if(vtkModelShellUse* ShellUse = FaceUse->GetModelShellUse())
+    if(this->GetModelFaceUse(direction)->GetModelShellUse())
       {
       result++;
       }
@@ -195,13 +193,13 @@ int vtkModelFace::GetNumberOfModelRegions()
 //-----------------------------------------------------------------------------
 vtkModelRegion* vtkModelFace::GetModelRegion(int direction)
 {
-  vtkModelFaceUse* FaceUse = this->GetModelFaceUse(direction);
-  vtkModelShellUse* ShellUse = FaceUse->GetModelShellUse();
-  if(!ShellUse)
+  vtkModelFaceUse* faceUse = this->GetModelFaceUse(direction);
+  vtkModelShellUse* shellUse = faceUse->GetModelShellUse();
+  if(!shellUse)
     {
     return 0;
     }
-  return ShellUse->GetModelRegion();
+  return shellUse->GetModelRegion();
 }
 
 //-----------------------------------------------------------------------------

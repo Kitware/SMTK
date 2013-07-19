@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkModelFaceUse - 
+// .NAME vtkModelFaceUse -
 // .SECTION Description
 
 #ifndef __vtkModelFaceUse_h
@@ -46,7 +46,7 @@ public:
   virtual int GetType();
 
   // Description:
-  // Adjacency information.  
+  // Adjacency information.
   vtkModelShellUse* GetModelShellUse();
   vtkModelFace* GetModelFace();
   vtkModelLoopUse* GetOuterLoopUse();
@@ -68,7 +68,7 @@ protected:
 
   // Description:
   // Add a loop to the face use.
-  void AddLoopUse(vtkModelLoopUse* LoopUse);
+  void AddLoopUse(vtkModelLoopUse* loopUse);
   //bool DestroyModelLoopUse(vtkModelLoopUse* LoopUse);
   virtual bool Destroy();
   virtual bool DestroyLoopUses();
@@ -83,7 +83,7 @@ private:
   friend class vtkModelShellUse;
   friend class vtkModelFace;
 //ETX
- 
+
 };
 
 #endif

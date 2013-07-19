@@ -79,9 +79,9 @@ bool vtkModelVertex::GetBounds(double bounds[6])
   return false;
 }
 
-void vtkModelVertex::DestroyModelVertexUse(vtkModelVertexUse* VertexUse)
+void vtkModelVertex::DestroyModelVertexUse(vtkModelVertexUse* vertexUse)
 {
-  this->RemoveAssociation(VertexUse);
+  this->RemoveAssociation(vertexUse);
 }
 
 int vtkModelVertex::GetNumberOfModelVertexUses()

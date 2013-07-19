@@ -46,9 +46,9 @@ vtkModelGeometricEntity::~vtkModelGeometricEntity()
   this->SetDisplayProperty(0);
 }
 
-void vtkModelGeometricEntity::SetGeometry(vtkObject* Geometry)
+void vtkModelGeometricEntity::SetGeometry(vtkObject* geometry)
 {
-  this->GetProperties()->Set(GEOMETRY(), Geometry);
+  this->GetProperties()->Set(GEOMETRY(), geometry);
   this->Modified();
   this->GetModel()->InvokeModelGeometricEntityEvent(
     ModelEntityGeometrySet, this);

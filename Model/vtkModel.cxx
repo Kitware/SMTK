@@ -66,7 +66,7 @@ int vtkModel::GetNumberOfModelEntities(int itemType)
 }
 
 //----------------------------------------------------------------------------
-vtkModelEntity* vtkModel::GetModelEntity(vtkIdType UniquePersistentId)
+vtkModelEntity* vtkModel::GetModelEntity(vtkIdType uniquePersistentId)
 {
   vtkSmartPointer<vtkIdList> types = vtkSmartPointer<vtkIdList>::New();
   this->GetItemTypesList(types);
@@ -79,13 +79,13 @@ vtkModelEntity* vtkModel::GetModelEntity(vtkIdType UniquePersistentId)
         vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
       if(modelEntity)
         {
-        if(modelEntity->GetUniquePersistentId() == UniquePersistentId)
+        if(modelEntity->GetUniquePersistentId() == uniquePersistentId)
           {
           iter->Delete();
           return modelEntity;
           }
         vtkModelEntity* adjacentModelEntity =
-          modelEntity->GetModelEntity(UniquePersistentId);
+          modelEntity->GetModelEntity(uniquePersistentId);
         if(adjacentModelEntity)
           {
           iter->Delete();
@@ -99,7 +99,7 @@ vtkModelEntity* vtkModel::GetModelEntity(vtkIdType UniquePersistentId)
 }
 
 //----------------------------------------------------------------------------
-vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType UniquePersistentId)
+vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType uniquePersistentId)
 {
   vtkModelItemIterator* iter=this->NewIterator(itemType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
@@ -108,7 +108,7 @@ vtkModelEntity* vtkModel::GetModelEntity(int itemType, vtkIdType UniquePersisten
       vtkModelEntity::SafeDownCast(iter->GetCurrentItem());
     if(modelEntity)
       {
-      if(modelEntity->GetUniquePersistentId() == UniquePersistentId)
+      if(modelEntity->GetUniquePersistentId() == uniquePersistentId)
         {
         iter->Delete();
         return modelEntity;
@@ -226,4 +226,3 @@ void vtkModel::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "BlockModelGeometricEntityEvent: "
      << this->BlockModelGeometricEntityEvent << "\n";
 }
-

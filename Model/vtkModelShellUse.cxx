@@ -33,11 +33,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 vtkModelShellUse* vtkModelShellUse::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelShellUse"); 
-  if(ret) 
-    {                                    
-    return static_cast<vtkModelShellUse*>(ret); 
-    } 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelShellUse");
+  if(ret)
+    {
+    return static_cast<vtkModelShellUse*>(ret);
+    }
   return new vtkModelShellUse;
 }
 
@@ -60,20 +60,20 @@ int vtkModelShellUse::GetType()
   return vtkModelShellUseType;
 }
 
-void vtkModelShellUse::AddModelFaceUse(vtkModelFaceUse* FaceUse)
+void vtkModelShellUse::AddModelFaceUse(vtkModelFaceUse* faceUse)
 {
-  FaceUse->RemoveAllAssociations(this->GetType());
-  this->AddAssociation(FaceUse);
+  faceUse->RemoveAllAssociations(this->GetType());
+  this->AddAssociation(faceUse);
 }
 
-void vtkModelShellUse::RemoveModelFaceUse(vtkModelFaceUse* FaceUse)
+void vtkModelShellUse::RemoveModelFaceUse(vtkModelFaceUse* faceUse)
 {
-  this->RemoveAssociation(FaceUse);
+  this->RemoveAssociation(faceUse);
 }
 
 vtkModelItemIterator* vtkModelShellUse::NewModelFaceUseIterator()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelFaceUseType);
   return iter;
 }
@@ -85,13 +85,13 @@ int vtkModelShellUse::GetNumberOfModelFaceUses()
 
 vtkModelRegion* vtkModelShellUse::GetModelRegion()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelRegionType);
   iter->Begin();
-  vtkModelRegion* Region = 
+  vtkModelRegion* region =
     vtkModelRegion::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return Region;
+  return region;
 }
 
 void vtkModelShellUse::Serialize(vtkSerializer* ser)

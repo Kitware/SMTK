@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelEdgeUse - Model edge use class.
 // .SECTION Description
 // Model edge use class that directly stores adjacency information
-// to 0 to 2 model vertex uses, a model loop use, and another 
+// to 0 to 2 model vertex uses, a model loop use, and another
 // model edge use that is in the opposite direction (i.e. they combine
 // to be a model edge use pair).
 
@@ -61,12 +61,12 @@ public:
   int GetNumberOfModelVertexUses();
 
   // Description:
-  // Get the direction of this edge use with respect to its 
+  // Get the direction of this edge use with respect to its
   // associated model edge's direction (0 is the opposite direction).
   int GetDirection();
-  
-  void Initialize(vtkModelVertex* Vertex0, vtkModelVertex* Vertex1,
-                  vtkModelEdgeUse* PairedEdgeUse, int direction);
+
+  void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
+                  vtkModelEdgeUse* pairedEdgeUse, int direction);
 
   // Description:
   // Static functions for declaring the direction of
@@ -84,13 +84,13 @@ public:
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
-  
+
 protected:
   vtkModelEdgeUse();
   virtual ~vtkModelEdgeUse();
 
-  void SetModelVertexUses(vtkModelVertexUse* VertexUse0, 
-                          vtkModelVertexUse* VertexUse1);
+  void SetModelVertexUses(vtkModelVertexUse* vertexUse0,
+                          vtkModelVertexUse* vertexUse1);
 
   void SetDirection(int direction);
 

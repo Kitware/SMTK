@@ -74,9 +74,9 @@ void vtkModelItem::AddAssociationInPosition(int index,
       vtkWarningMacro("Possible bad Index value.");
       for(int i=numItems+1;i<index;i++)
         {
-        // fill the proper places in just in case the user knows what 
+        // fill the proper places in just in case the user knows what
         // he/she is doing
-        // use add reverse association since it won't attempt to add an 
+        // use add reverse association since it won't attempt to add an
         // association to a null pointer
         this->AddReverseAssociationToType(NULL,itemType);
         }
@@ -152,8 +152,8 @@ int vtkModelItem::GetNumberOfAssociations(int itemType)
     {
     return this->Internal->Associations[itemType].size();
     }
-  return 0;     
-}                   
+  return 0;
+}
 
 vtkModelItemIterator* vtkModelItem::NewIterator(int itemType)
 {
@@ -164,20 +164,20 @@ vtkModelItemIterator* vtkModelItem::NewIterator(int itemType)
 }
 
 //---------------------------------------------------------------------------
-void vtkModelItem::GetItemTypesList(vtkIdList * ItemTypes)
+void vtkModelItem::GetItemTypesList(vtkIdList * itemTypes)
 {
-  ItemTypes->Reset();
+  itemTypes->Reset();
 
   size_t size = this->Internal->Associations.size();
-  ItemTypes->Allocate(size);
-  ItemTypes->SetNumberOfIds(size);
-  
+  itemTypes->Allocate(size);
+  itemTypes->SetNumberOfIds(size);
+
   int counter = 0;
   for(vtkModelItemInternals::AssociationsMap::iterator it=
         this->Internal->Associations.begin();
       it!= this->Internal->Associations.end();it++)
     {
-    ItemTypes->InsertId(counter, it->first);
+    itemTypes->InsertId(counter, it->first);
     counter++;
     }
 }
@@ -206,13 +206,13 @@ void vtkModelItem::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "ItemTypesAssociation:\n";
   vtkIndent indent2 = indent.GetNextIndent();
-  vtkIdList* ItemTypes = vtkIdList::New();
-  this->GetItemTypesList(ItemTypes);
-  for(vtkIdType id=0;id<ItemTypes->GetNumberOfIds();id++)
+  vtkIdList* itemTypes = vtkIdList::New();
+  this->GetItemTypesList(itemTypes);
+  for(vtkIdType id=0;id<itemTypes->GetNumberOfIds();id++)
     {
-    os << indent2 << "Type: " << ItemTypes->GetId(id) << ", Quantity: " 
-       << this->GetNumberOfAssociations(ItemTypes->GetId(id)) << "\n";
+    os << indent2 << "Type: " << itemTypes->GetId(id) << ", Quantity: "
+       << this->GetNumberOfAssociations(itemTypes->GetId(id)) << "\n";
     }
-  ItemTypes->Delete();
+  itemTypes->Delete();
 }
 

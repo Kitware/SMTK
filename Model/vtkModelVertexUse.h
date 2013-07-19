@@ -48,28 +48,28 @@ public:
   int GetNumberOfModelEdgeUses();
   vtkModelItemIterator* NewModelEdgeUseIterator();
 
-  void Initialize(vtkModelVertex* Vertex);
+  void Initialize(vtkModelVertex* vertex);
 
   // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
   virtual void Serialize(vtkSerializer* ser);
-  
+
 protected:
   vtkModelVertexUse();
   virtual ~vtkModelVertexUse();
 
 
-  void AddModelEdgeUse(vtkModelEdgeUse* EdgeUse);
-  void RemoveModelEdgeUse(vtkModelEdgeUse* EdgeUse);
+  void AddModelEdgeUse(vtkModelEdgeUse* edgeUse);
+  void RemoveModelEdgeUse(vtkModelEdgeUse* edgeUse);
 //BTX
   friend class vtkModelEdge;
   friend class vtkModelEdgeUse;
 //ETX
 
   virtual bool Destroy();
-  // for destroying 
+  // for destroying
 //BTX
   friend class vtkModelFace;
   friend class vtkModelFaceUse;

@@ -83,7 +83,7 @@ void vtkModelItemListIterator::Begin()
     return;
     }
 
-  this->Internal->ConceptualModelItemListIterator = 
+  this->Internal->ConceptualModelItemListIterator =
     this->Root->Internal->Associations[this->Internal->ItemType].begin();
 }
 
@@ -97,7 +97,7 @@ int vtkModelItemListIterator::IsAtEnd()
     }
   if ( this->Root->Internal->Associations.find(this->Internal->ItemType) ==
      this->Root->Internal->Associations.end() ||
-       this->Internal->ConceptualModelItemListIterator == 
+       this->Internal->ConceptualModelItemListIterator ==
          this->Root->Internal->Associations[this->Internal->ItemType].end() )
     {
     return 1;

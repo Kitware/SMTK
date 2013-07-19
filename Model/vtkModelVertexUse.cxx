@@ -33,11 +33,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 vtkModelVertexUse* vtkModelVertexUse::New()
 {
-  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelVertexUse"); 
-  if(ret) 
-    {                                    
-    return static_cast<vtkModelVertexUse*>(ret); 
-    } 
+  vtkObject* ret = vtkObjectFactory::CreateInstance("vtkModelVertexUse");
+  if(ret)
+    {
+    return static_cast<vtkModelVertexUse*>(ret);
+    }
   return new vtkModelVertexUse;
 }
 
@@ -64,13 +64,13 @@ int vtkModelVertexUse::GetType()
 
 vtkModelVertex* vtkModelVertexUse::GetModelVertex()
 {
-  vtkModelItemIterator* iter = 
+  vtkModelItemIterator* iter =
     this->NewIterator(vtkModelVertexType);
   iter->Begin();
-  vtkModelVertex* Vertex = 
+  vtkModelVertex* vertex =
     vtkModelVertex::SafeDownCast(iter->GetCurrentItem());
   iter->Delete();
-  return Vertex;
+  return vertex;
 }
 
 int vtkModelVertexUse::GetNumberOfModelEdgeUses()
@@ -83,19 +83,19 @@ vtkModelItemIterator* vtkModelVertexUse::NewModelEdgeUseIterator()
   return this->NewIterator(vtkModelEdgeUseType);
 }
 
-void vtkModelVertexUse::Initialize(vtkModelVertex* Vertex)
+void vtkModelVertexUse::Initialize(vtkModelVertex* vertex)
 {
-  this->AddAssociation(Vertex);
+  this->AddAssociation(vertex);
 }
 
-void vtkModelVertexUse::AddModelEdgeUse(vtkModelEdgeUse* EdgeUse)
+void vtkModelVertexUse::AddModelEdgeUse(vtkModelEdgeUse* edgeUse)
 {
-  this->AddAssociation(EdgeUse);
+  this->AddAssociation(edgeUse);
 }
 
-void vtkModelVertexUse::RemoveModelEdgeUse(vtkModelEdgeUse* EdgeUse)
+void vtkModelVertexUse::RemoveModelEdgeUse(vtkModelEdgeUse* edgeUse)
 {
-  this->RemoveAssociation(EdgeUse);
+  this->RemoveAssociation(edgeUse);
 }
 
 void vtkModelVertexUse::Serialize(vtkSerializer* ser)
@@ -107,4 +107,3 @@ void vtkModelVertexUse::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);
 }
-

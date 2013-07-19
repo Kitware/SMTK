@@ -98,12 +98,12 @@ public:
   // state, the implementations of these methods will have to do
   // all of the operations necessary to get them into a valid state
   // (e.g. create a valid model shell use for a model region).
-  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* Vertex0,
-                                       vtkModelVertex* Vertex1) = 0;
-  virtual vtkModelFace* BuildModelFace(int NumEdges, vtkModelEdge** Edges,
-                                       int* EdgeDirections) = 0;
-  virtual vtkModelRegion* BuildModelRegion(int NumFaces, vtkModelFace** Faces,
-                                           int* FaceSides) = 0;
+  virtual vtkModelEdge* BuildModelEdge(vtkModelVertex* vertex0,
+                                       vtkModelVertex* vertex1) = 0;
+  virtual vtkModelFace* BuildModelFace(int numEdges, vtkModelEdge** edges,
+                                       int* edgeDirections) = 0;
+  virtual vtkModelRegion* BuildModelRegion(int numFaces, vtkModelFace** faces,
+                                           int* faceSides) = 0;
   virtual vtkModelRegion* BuildModelRegion() = 0;
 
   // Description:
@@ -115,20 +115,20 @@ public:
 
   // Description:
   // Function for getting a model entity from its unique persistent id.
-  vtkModelEntity* GetModelEntity(vtkIdType UniquePersistentId);
+  vtkModelEntity* GetModelEntity(vtkIdType uniquePersistentId);
 
   // Description:
   // Function for getting a model entity from its unique persistent id.  It
   // only looks for this entity in the given entity type to make the search
   // more efficient.
-  vtkModelEntity* GetModelEntity(int itemType, vtkIdType UniquePersistentId);
+  vtkModelEntity* GetModelEntity(int itemType, vtkIdType uniquePersistentId);
 
   // Description:
   // Destroy a model entity if possible.  A situation where a
   // model entity cannot be destroyed is when it is "used" by
   // a higher order entity that has not yet been deleted.
   // Returns true if the model entity was able to be destroyed.
-  virtual bool DestroyModelGeometricEntity(vtkModelGeometricEntity* Entity);
+  virtual bool DestroyModelGeometricEntity(vtkModelGeometricEntity* entity);
 
   // Description:
   // Function to clear out the current model data.  This must be called
@@ -136,7 +136,7 @@ public:
   // associations to the model of objects aggregated by the model.
   virtual void Reset();
 
-  virtual void GetBounds(double Bounds[6]) = 0;
+  virtual void GetBounds(double bounds[6]) = 0;
 
   virtual int GetType();
 
@@ -170,10 +170,10 @@ protected:
   // Build up the associations of a model geometric entity.  This avoids
   // the problems of dealing with friend classes for models derived
   // from vtkModel.
-  void BuildModelEdgeAssociations(vtkModelEdge* Edge, vtkModelVertex* Vertex0,
-                                  vtkModelVertex* Vertex1);
-  void BuildModelRegionAssociations(vtkModelRegion* Region, int NumFaces,
-                                    vtkModelFace** Faces, int* FaceSides);
+  void BuildModelEdgeAssociations(vtkModelEdge* edge, vtkModelVertex* vertex0,
+                                  vtkModelVertex* vertex1);
+  void BuildModelRegionAssociations(vtkModelRegion* region, int numFaces,
+                                    vtkModelFace** faces, int* faceSides);
 
   // Description:
   // Set/get LargestUsedUniqueId.
