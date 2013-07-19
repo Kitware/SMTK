@@ -100,6 +100,7 @@ protected:
 //BTX
   friend class vtkModel;
   friend class vtkModelFace;
+  friend class vtkModelLoopUse;
 //ETX
 
 private:

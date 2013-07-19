@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelLoopUse.h"
 
 #include "vtkModel.h"
+#include "vtkModelEdge.h"
 #include "vtkModelEdgeUse.h"
 #include "vtkModelFace.h"
 #include "vtkModelFaceUse.h"
@@ -58,7 +59,27 @@ vtkModelLoopUse::~vtkModelLoopUse()
 bool vtkModelLoopUse::Destroy()
 {
   // a modelloopuse shouldn't be connected to any model use object of higher dimension
+  // Here we go through each model edge use of this loopuse and destroy any
+  // endge use whose edge contains more than 2 edge uses which are by default for an edge.
+  vtkSmartPointer<vtkModelItemIterator> edgeUses;
+  edgeUses.TakeReference(this->NewIterator(vtkModelEdgeUseType));
+  std::set<vtkModelEdgeUse*> destroyEdgeUses;
+  for(edgeUses->Begin();!edgeUses->IsAtEnd();edgeUses->Next())
+    {
+    vtkModelEdgeUse* edgeUse = vtkModelEdgeUse::SafeDownCast(edgeUses->GetCurrentItem());
+    if(edgeUse->GetModelEdge()->GetNumberOfModelEdgeUses() > 2)
+      {
+     destroyEdgeUses.insert(edgeUse);
+      }
+    }
+
   this->RemoveAllAssociations(vtkModelEdgeUseType);
+  for(std::set<vtkModelEdgeUse*>::iterator it=destroyEdgeUses.begin();
+      it != destroyEdgeUses.end(); ++it)
+    {
+    (*it)->Destroy();
+    (*it)->GetModelEdge()->DestroyModelEdgeUse(*it);
+    }
   return true;
 }
 

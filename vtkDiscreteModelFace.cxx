@@ -201,6 +201,8 @@ vtkDiscreteModelFace* vtkDiscreteModelFace::BuildFromExistingModelFace(
   // update loops and edges info if needed
   if(this->GetNumberOfModelEdges())
     {
+    // destroy the existing loop uses
+    this->DestroyLoopUses();
     newModelFace->BuildEdges(true, splitInfo);
     this->BuildEdges(true, splitInfo, saveLoopForExistingFace);
     }
@@ -446,9 +448,6 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
     // This face has no loops - like a sphere
     return;
     }
-
-  // destroy the existing loop uses
-  this->DestroyLoopUses();
 
   if(saveLoopInfo)
     {
@@ -909,7 +908,6 @@ void vtkDiscreteModelFace::SplitEdges(vtkDiscreteModelFace* newModelFace,
   const DiscreteMesh &mesh = thisModel->GetMesh();
   vtkDiscreteModel::ClassificationType &classificationInfo =
     thisModel->GetMeshClassification();
-  vtkDiscreteModelEdge *dedge;
   vtkDiscreteModelFace *dface;
 
   std::vector<vtkModelEdge*> adjEdges;
