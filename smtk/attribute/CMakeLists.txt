@@ -7,8 +7,8 @@ set(AttributeHeaders
   AttributeSection.h
   AttributeReader.h
   AttributeWriter.h
-  Item.h
-  ItemDefinition.h
+  ColorItem.h
+  ColorItemDefinition.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -22,6 +22,8 @@ set(AttributeHeaders
   InstancedSection.h
   IntItem.h
   IntItemDefinition.h
+  Item.h
+  ItemDefinition.h
   Manager.h
   ModelEntitySection.h
   RootSection.h
@@ -46,8 +48,8 @@ set(AttributeSrcs
   AttributeSection.cxx
   AttributeReader.cxx
   AttributeWriter.cxx
-  Item.cxx
-  ItemDefinition.cxx
+  ColorItem.cxx
+  ColorItemDefinition.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -61,6 +63,8 @@ set(AttributeSrcs
   InstancedSection.cxx
   IntItem.cxx
   IntItemDefinition.cxx
+  Item.cxx
+  ItemDefinition.cxx
   Manager.cxx
   ModelEntitySection.cxx
   RootSection.cxx

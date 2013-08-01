@@ -55,6 +55,7 @@ namespace smtk
        VOID,
        FILE,
        DIRECTORY,
+       COLOR,
        NUMBER_OF_TYPES
      };
        
