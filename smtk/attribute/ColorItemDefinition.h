@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/attribute/ItemDefinition.h"
+#include <cstdio>
 
 namespace smtk
 {

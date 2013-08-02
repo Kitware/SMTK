@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h"
+#include <cstdio>
 #include <string>
 #include <vector>
 

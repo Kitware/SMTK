@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ColorItem.h"
+#include <cstring>
 #include <sstream>
 #include <iostream>
 
