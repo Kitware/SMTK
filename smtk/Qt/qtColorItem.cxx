@@ -70,7 +70,7 @@ void qtColorItem::createWidget()
     return;
     }
   qtColorButton* colorBT = new qtColorButton(this->parentWidget());
-  colorBT->setText(item->label().c_str());
+  colorBT->setText(item->definition()->label().c_str());
   
   this->updateItemData();
 

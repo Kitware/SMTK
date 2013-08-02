@@ -78,13 +78,7 @@ Item::Type ColorItem::type() const
     static_cast<const ColorItemDefinition *>(this->definition().get());
   return def->type();
 }
-//----------------------------------------------------------------------------
-const std::string& ColorItem::label() const
-{
-  const ColorItemDefinition *def = 
-    static_cast<const ColorItemDefinition *>(this->definition().get());
-  return def->getLabel();
-}
+
 //----------------------------------------------------------------------------
 bool ColorItem::setRGB(double val[3])
 {

@@ -81,6 +81,10 @@ namespace smtk
                                    smtk::AttributeRefItemPtr item);
       void processAttributeRefDef(pugi::xml_node &node,
                                   smtk::AttributeRefItemDefinitionPtr idef);
+      void processColorItem(pugi::xml_node &node, 
+                             smtk::ColorItemPtr item);
+      void processColorDef(pugi::xml_node &node,
+                            smtk::ColorItemDefinitionPtr idef);
       void processDoubleItem(pugi::xml_node &node, 
                              smtk::DoubleItemPtr item);
       void processDoubleDef(pugi::xml_node &node,

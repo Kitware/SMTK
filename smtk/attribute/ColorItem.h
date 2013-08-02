@@ -46,7 +46,6 @@ namespace smtk
       virtual ~ColorItem();
       virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       virtual Item::Type type() const;
-      const std::string& label() const;
       void getRGB(double color[3]);
       void getRGB(double& r, double& g, double& b);
       bool setRGB(double r, double g, double b);
@@ -54,6 +53,17 @@ namespace smtk
       virtual void reset();
       virtual bool isSet() const
       {return this->m_isSet;}
+      std::string valueAsString() const
+      {
+        if (this->m_isSet)
+          {
+          char dummy[256];
+          sprintf(dummy, "%f %f %f", m_rgb[0], m_rgb[1], m_rgb[2]);
+          return dummy;
+          }
+        return "VALUE_IS_NOT_SET";
+      }
+
     protected:
       double m_rgb[3];
       bool m_isSet;

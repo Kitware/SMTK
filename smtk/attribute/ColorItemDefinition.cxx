@@ -25,15 +25,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ColorItem.h"
+#include <sstream>
+#include <iostream>
 
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 ColorItemDefinition::
 ColorItemDefinition(const std::string &myName):
-  ItemDefinition(myName), m_label("Color")
+  ItemDefinition(myName)
 {
   this->setDefaultRGB(1.0, 1.0, 1.0);
+  this->setLabel("Color");
 }
 
 //----------------------------------------------------------------------------
@@ -71,3 +74,16 @@ smtk::AttributeItemPtr ColorItemDefinition::buildItem(Item *owningItem,
                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
+bool ColorItemDefinition::convertRGBFromString(std::string& dval, double rgb[3])
+{
+  char * pch;
+  pch = strtok(const_cast<char*>(dval.c_str()), " ,");
+  int i=0;
+  while (pch != NULL && i<3)
+    {
+    std::istringstream strval(pch);
+    strval >> rgb[i++];
+    pch = strtok (NULL, " ,");
+    }
+  return i==3;
+}

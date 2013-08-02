@@ -53,10 +53,6 @@ namespace smtk
       virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
                                                 int position,
                                                 int subGroupPosition) const;
-      void setLabel(const std::string &elabel)
-      {this->m_label = elabel;}
-      const std::string& getLabel() const
-      {return this->m_label;}
       void getDefaultRGB(double& r, double& g, double& b)
         {
         r = this->m_defaultRGB[0];
@@ -83,8 +79,16 @@ namespace smtk
         return this->setDefaultRGB(rgb);
         }
 
+      std::string defaultRGBAsString() const
+        {
+        char dummy[256];
+        sprintf(dummy, "%f %f %f", m_defaultRGB[0], m_defaultRGB[1], m_defaultRGB[2]);
+        return dummy;
+        }
+
+      static bool convertRGBFromString(std::string& dval, double rgb[3]);
+
     protected:
-        std::string m_label;
         int m_defaultRGB[3];
       
     };

@@ -53,7 +53,6 @@ namespace smtk
       virtual void createWidget();
       
     private:
-
       qtColorItemInternals *Internals;
 
     }; // class
