@@ -62,9 +62,13 @@ endfunction(smtk_private_headers)
 
 # Declare a library as needed to be installed
 function(smtk_install_library target)
-  install(TARGETS ${target} DESTINATION lib EXPORT SMTK-targets)
+  install(TARGETS ${target}
+    EXPORT SMTK-targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
 endfunction(smtk_install_library)
-
 
 #setup include directories as target properties
 function(smtk_set_includes target)
