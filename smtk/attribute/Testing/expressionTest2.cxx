@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 int main()
 {
-  int status;
+  int status = 0;
   {
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";

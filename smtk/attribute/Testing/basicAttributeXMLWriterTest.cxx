@@ -40,7 +40,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 int main(int argc, char *argv[])
 {
-  int status;
+  int status = 0;
   {
   if (argc != 2)
     {
