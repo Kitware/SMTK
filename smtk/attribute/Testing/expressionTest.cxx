@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 int main()
 {
-  int status;
+  int status = 0;
   {
   typedef smtk::attribute::IntItemDefinition IntItemDef;
   typedef smtk::attribute::DoubleItemDefinition DoubleItemDef;
