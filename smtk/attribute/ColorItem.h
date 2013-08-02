@@ -57,8 +57,8 @@ namespace smtk
       {
         if (this->m_isSet)
           {
-          char dummy[256];
-          sprintf(dummy, "%f %f %f", m_rgb[0], m_rgb[1], m_rgb[2]);
+          char dummy[100];
+          sprintf(dummy, "%1.2f %1.2f %1.2f", m_rgb[0], m_rgb[1], m_rgb[2]);
           return dummy;
           }
         return "VALUE_IS_NOT_SET";

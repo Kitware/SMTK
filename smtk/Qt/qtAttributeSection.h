@@ -89,11 +89,15 @@ namespace smtk
       void addTableValueItems(
         smtk::ValueItemPtr attItem, int& numRows,
         const char* attLabel, int advanced);
+      void addTableColorItem(
+        smtk::ColorItemPtr attItem, int& numRows);
 
       void updateChildWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);
       void updateItemWidgetsEnableState(
         smtk::ValueItemPtr linkedData, int &startRow, bool enabled);
+      void updateColorWidgetsEnableState(
+        smtk::ColorItemPtr linkedData, int& startRow, bool enabled);
       virtual void getAllDefinitions();
       bool hasMultiDefinition(const QString& group);
 

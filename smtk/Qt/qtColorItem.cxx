@@ -72,11 +72,11 @@ void qtColorItem::createWidget()
   qtColorButton* colorBT = new qtColorButton(this->parentWidget());
   colorBT->setText(item->definition()->label().c_str());
   
+  this->Widget = colorBT;
   this->updateItemData();
 
   QObject::connect(colorBT,  SIGNAL(chosenColorChanged(const QColor&)),
       this, SLOT(onColorChanged()), Qt::QueuedConnection);
-  this->Widget = colorBT;
 }
 
 //----------------------------------------------------------------------------

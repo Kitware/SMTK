@@ -76,7 +76,7 @@ Item::Type ColorItem::type() const
 {
   const ColorItemDefinition *def = 
     static_cast<const ColorItemDefinition *>(this->definition().get());
-  return def->type();
+  return def ? def->type() : COLOR;
 }
 
 //----------------------------------------------------------------------------
@@ -85,13 +85,11 @@ bool ColorItem::setRGB(double val[3])
   //First - are we allowed to change the number of values?
   const ColorItemDefinition *def =
     static_cast<const ColorItemDefinition *>(this->definition().get());
-  if (!def->isValueValid(val))
+  if (def && !def->isValueValid(val))
     {
     return false;
     }
   
-  if (def->isValueValid(val))
-
   for(int i=0; i<3; i++)
     {
     this->m_rgb[i] = val[i];
@@ -124,7 +122,10 @@ void ColorItem::reset()
 {
   const ColorItemDefinition *def
     = static_cast<const ColorItemDefinition *>(this->definition().get());
-  def->getDefaultRGB(m_rgb);
-  this->m_isSet = false;
+  if(def)
+    {
+    def->getDefaultRGB(m_rgb);
+    this->m_isSet = false;
+    }
 }
 //----------------------------------------------------------------------------

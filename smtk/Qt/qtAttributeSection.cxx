@@ -28,9 +28,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAssociationWidget.h"
 #include "smtk/Qt/qtReferencesWidget.h"
 #include "smtk/Qt/qtItem.h"
-
 #include "smtk/attribute/AttributeSection.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ColorItem.h"
+#include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
@@ -408,10 +409,27 @@ void qtAttributeSection::updateChildWidgetsEnableState(
         }
       }
     }
+  else if(attItem->type() == smtk::attribute::Item::COLOR)
+    {
+    this->updateColorWidgetsEnableState(
+      dynamicCastPointer<ColorItem>(attItem), startRow, bEnabled);    
+    }
   else
     {
     this->updateItemWidgetsEnableState(
       dynamicCastPointer<ValueItem>(attItem), startRow, bEnabled);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeSection::updateColorWidgetsEnableState(
+  smtk::ColorItemPtr linkedData, int& startRow, bool enabled)
+{
+  QTableWidget* tableWidget = this->Internals->ValuesTable;
+  QWidget* cellWidget = tableWidget->cellWidget(startRow++, 1);
+  if(cellWidget)
+    {
+    cellWidget->setEnabled(enabled);
     }
 }
 
@@ -729,6 +747,11 @@ void qtAttributeSection::updateTableWithAttribute(
         this->addTableGroupItems(
           dynamicCastPointer<GroupItem>(attItem), numRows);
         }
+      else if(attItem->type() == smtk::attribute::Item::COLOR)
+        {
+        this->addTableColorItem(
+          dynamicCastPointer<ColorItem>(attItem), numRows);
+        }
       else
         {
         this->addTableValueItems(
@@ -790,6 +813,11 @@ void qtAttributeSection::updateTableWithProperty(QString& propertyName)
             dynamicCastPointer<GroupItem>(attItem), numRows,
             (*it)->name().c_str());
           }
+        else if(attItem->type() == smtk::attribute::Item::COLOR)
+          {
+          this->addTableColorItem(
+            dynamicCastPointer<ColorItem>(attItem), numRows);
+          }
         else
           {
           this->addTableValueItems(
@@ -838,7 +866,32 @@ void qtAttributeSection::addTableValueItems(
   this->addTableValueItems(
     attItem, numRows, attLabel, vItemDef->advanceLevel());
 }
+//----------------------------------------------------------------------------
+void qtAttributeSection::addTableColorItem(
+  smtk::ColorItemPtr attItem, int& numRows)
+{
+  QTableWidget* widget = this->Internals->ValuesTable;
+  const ColorItemDefinition *vItemDef = 
+    dynamic_cast<const ColorItemDefinition*>(attItem->definition().get());
 
+  Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  widget->setRowCount(++numRows);
+  QString labelText = vItemDef->label().empty() ?
+    vItemDef->name().c_str() : vItemDef->label().c_str();
+  QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
+  if(vItemDef->advanceLevel())
+    {
+    labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
+    }
+  labelitem->setFlags(nonEditableFlags);
+  widget->setItem(numRows-1, 0, labelitem);
+  qtItem* aItem = qtAttribute::createColorItem(attItem, this->Widget);
+  if(aItem && aItem->widget())
+    {
+    widget->setCellWidget(numRows-1, 1, aItem->widget());
+    widget->setItem(numRows-1, 1, new QTableWidgetItem());
+    }
+}
 //----------------------------------------------------------------------------
 void qtAttributeSection::addTableValueItems(smtk::ValueItemPtr attItem,
   int& numRows, const char* attLabel, int advanced)

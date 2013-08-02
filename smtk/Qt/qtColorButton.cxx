@@ -47,7 +47,8 @@ using namespace smtk::attribute;
 qtColorButton::qtColorButton(QWidget* p)
   : QToolButton(p)
 {
-  this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+  //this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+  //this->setToolButtonStyle(Qt::ToolButtonIconOnly);
   this->connect(this, SIGNAL(clicked()), SLOT(chooseColor()));
 }
 

@@ -57,6 +57,7 @@ namespace smtk
       // create all the items
       static qtItem* createItem(smtk::AttributeItemPtr item, QWidget* p);
       static qtItem* createValueItem(smtk::ValueItemPtr item, QWidget* p);
+      static qtItem* createColorItem(smtk::ColorItemPtr item, QWidget* p);
       static qtItem* createDirectoryItem(smtk::DirectoryItemPtr item, QWidget* p);
       static qtItem* createAttributeRefItem(smtk::AttributeRefItemPtr item, QWidget* p);
       static qtItem* createFileItem(smtk::FileItemPtr item, QWidget* p, bool dirOnly=false);

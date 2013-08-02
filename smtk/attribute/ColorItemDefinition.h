@@ -81,15 +81,15 @@ namespace smtk
 
       std::string defaultRGBAsString() const
         {
-        char dummy[256];
-        sprintf(dummy, "%f %f %f", m_defaultRGB[0], m_defaultRGB[1], m_defaultRGB[2]);
+        char dummy[100];
+        sprintf(dummy, "%1.2f %1.2f %1.2f", m_defaultRGB[0], m_defaultRGB[1], m_defaultRGB[2]);
         return dummy;
         }
 
       static bool convertRGBFromString(std::string& dval, double rgb[3]);
 
     protected:
-        int m_defaultRGB[3];
+        double m_defaultRGB[3];
       
     };
   };

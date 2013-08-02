@@ -146,6 +146,8 @@ std::string Item::type2String(Item::Type t)
     {
     case ATTRIBUTE_REF:
       return "AttributeRef";
+    case COLOR:
+      return "Color";
     case DIRECTORY:
       return "Directory";
     case DOUBLE:
@@ -171,6 +173,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "AttributeRef")
     {
     return ATTRIBUTE_REF;
+    }
+  if (s == "Color")
+    {
+    return COLOR;
     }
   if (s == "Directory")
     {

@@ -1368,18 +1368,19 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
 void XmlDocV1Parser::processColorItem(pugi::xml_node &node, 
                              smtk::ColorItemPtr item)
 {
-  std::string strRGB = node.value();
-  double rgb[3]={1.0, 1.0, 1.0};
-  // assuming RGB are separated by space or ,
-  if(ColorItemDefinition::convertRGBFromString(strRGB, rgb))
+  if(node.first_child())
     {
-    item->setRGB(rgb);
+    std::string strRGB = node.first_child().value();
+    double rgb[3]={1.0, 1.0, 1.0};
+    // assuming RGB are separated by space or ,
+    if(ColorItemDefinition::convertRGBFromString(strRGB, rgb))
+      {
+      item->setRGB(rgb);
+      return;
+      }
     }
-  else
-    {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " <<
-      item->name() << "\n";
-    }
+  this->m_errorStatus << "Error: XML Node Values is missing for Item: " <<
+    item->name() << "\n";
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processColorDef(pugi::xml_node &node,
@@ -1390,10 +1391,10 @@ void XmlDocV1Parser::processColorDef(pugi::xml_node &node,
 
   // Lets see if there are default values
   dnode = node.child("DefaultValue");
-  if (dnode)
+  if (dnode && dnode.first_child())
     {
     // assuming RGB are separated by space or ,
-    std::string dval = dnode.value();
+    std::string dval = dnode.first_child().value();
     double rgb[3]={1.0, 1.0, 1.0};
 
     if(ColorItemDefinition::convertRGBFromString(dval, rgb))
