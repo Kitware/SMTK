@@ -91,8 +91,9 @@ void qtAttributeRefItem::createWidget()
     layout = new QVBoxLayout(this->Widget);
     }
   layout->setMargin(0);
-  QLabel* label = new QLabel(this->getObject()->name().c_str(),
-    this->Widget);
+  QString lText = this->getObject()->label().empty() ?
+    this->getObject()->name().c_str() : this->getObject()->label().c_str();
+  QLabel* label = new QLabel(lText, this->Widget);
   layout->addWidget(label);
 
   for(i = 0; i < n; i++)

@@ -98,6 +98,15 @@ std::string Item::name() const
   return this->m_definition->name();
 }
 //----------------------------------------------------------------------------
+std::string Item::label() const
+{
+  if (this->m_definition == NULL)
+    {
+    return "";
+    }
+  return this->m_definition->label();
+}
+//----------------------------------------------------------------------------
 bool Item::setDefinition(smtk::ConstAttributeItemDefinitionPtr def)
 {
   if (this->m_definition != NULL)

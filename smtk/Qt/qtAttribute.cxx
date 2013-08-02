@@ -183,7 +183,7 @@ qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
-      // aItem = qtAttribute::createAttributeRefItem(smtk::dynamicCastPointer<AttributeRefItem>(item), pW);
+      aItem = qtAttribute::createAttributeRefItem(smtk::dynamicCastPointer<AttributeRefItem>(item), pW);
       break;
     case smtk::attribute::Item::DOUBLE:
     case smtk::attribute::Item::INT:

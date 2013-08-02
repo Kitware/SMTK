@@ -63,6 +63,7 @@ namespace smtk
      Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
      virtual ~Item();
      std::string name() const;
+     std::string label() const;
      virtual Item::Type type() const = 0;
      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
      smtk::ConstAttributeItemDefinitionPtr definition() const
