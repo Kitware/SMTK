@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -149,6 +150,14 @@ int main(int argc, char *argv[])
   sitemdef->setDefaultValue("Something Cool");
   sitemdef->addCategory("General");
   sitemdef->addCategory("Flow");
+
+  // Add in a Attribute definition with a reference to another attribute
+  smtk::AttributeDefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
+  smtk::AttributeRefItemDefinitionPtr aritemdef =
+    attrefdef->addItemDefinition<smtk::AttributeRefItemDefinitionPtr>("BaseDefItem");
+  aritemdef->setCommonValueLabel("A reference to another attribute");
+  aritemdef->setAttributeDefinition(base);
+
   // Process Categories
   manager.updateCategories();
   // Lets test creating an attribute by passing in the expression definition explicitly
