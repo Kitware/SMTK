@@ -47,6 +47,7 @@
 #include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ColorItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/AttributeRefItem.h"
@@ -893,6 +894,11 @@ std::string qtUIManager::getItemCommonLabel(
   if(attItem->type() == smtk::attribute::Item::GROUP)
     {
     return this->getGroupItemCommonLabel(dynamicCastPointer<GroupItem>(attItem));
+    }
+  if(attItem->type() == smtk::attribute::Item::COLOR)
+    {
+    smtk::ColorItemPtr colorItem = dynamicCastPointer<ColorItem>(attItem);
+    return colorItem ? colorItem->label() : "";
     }
   else
     {
