@@ -91,6 +91,8 @@ namespace smtk
         const char* attLabel, int advanced);
       void addTableColorItem(
         smtk::ColorItemPtr attItem, int& numRows);
+      void addTableColorItem(smtk::ColorItemPtr attItem,
+        int& numRows, const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);
