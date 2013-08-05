@@ -756,6 +756,10 @@ EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
                                               cellIds.GetPointer());
   // Convert the facet Ids to model Ids
   nids = cellIds->GetNumberOfIds();
+  if(nids == 0)
+    {
+    return "";
+    }
   for (j = 0; j < nids; j++)
     {
     dface = dynamic_cast<vtkDiscreteModelFace*>
