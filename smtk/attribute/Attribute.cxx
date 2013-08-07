@@ -174,4 +174,11 @@ smtk::AttributeItemPtr Attribute::find(const std::string &name)
   int i = this->m_definition->findItemPosition(name);
   return (i < 0) ? smtk::AttributeItemPtr() : this->m_items[i];
 }
+//----------------------------------------------------------------------------
+bool Attribute::isUsingDefaultColor() const
+{
+  const double *dc = this->m_definition->defaultColor();
+  return (this->m_color[0] == dc[0]) && (this->m_color[1] == dc[1]) 
+    && (this->m_color[2] == dc[2]) &&  (this->m_color[3] == dc[3]);
+}
 //-----------------------------------------------------------------------------

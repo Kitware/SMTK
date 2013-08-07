@@ -58,7 +58,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace pugi;
 using namespace smtk; 
 using namespace smtk::attribute; 
- 
+
 //----------------------------------------------------------------------------
 XmlV1StringWriter::XmlV1StringWriter(const Manager &myManager):
 m_manager(myManager)
@@ -169,8 +169,15 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     {
     node.append_attribute("Nodal").set_value("true");
     }
+  // Save Color Information
+  std::string s;
+  s = this->encodeColor(def->notApplicableColor());
+  node.append_child("NotApplicableColor").text().set(s.c_str());
+  s = this->encodeColor(def->defaultColor());
+  node.append_child("DefaultColor").text().set(s.c_str());
+  
   // Create association string
-  std::string s = this->encodeModelEntityMask(def->associationMask());
+  s = this->encodeModelEntityMask(def->associationMask());
   node.append_attribute("Associations").set_value(s.c_str());
 
   if (def->briefDescription() != "")
@@ -660,6 +667,13 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
       }
     }
   node.append_attribute("ID").set_value((unsigned int)att->id());
+  // Save Color Information
+  if (!att->isUsingDefaultColor())
+    {
+    std::string s;
+    s = this->encodeColor(att->color());
+    node.append_child("Color").text().set(s.c_str());
+    }
   std::size_t i, n = att->numberOfItems();
   if (n)
     {
@@ -1116,18 +1130,11 @@ void XmlV1StringWriter::processSections()
   this->m_root.append_child(node_comment).set_value("********** Workflow Sections ***********");
   xml_node sections = this->m_root.append_child("RootSection");
   smtk::RootSectionPtr rs = this->m_manager.rootSection();
-  xml_node node;
-  double c[3];
-  rs->defaultColor(c);
-  node = sections.append_child("DefaultColor");
-  node.append_attribute("R").set_value(c[0]);
-  node.append_attribute("G").set_value(c[1]);
-  node.append_attribute("B").set_value(c[2]);
-  rs->invalidColor(c);
-  node = sections.append_child("InvalidColor");
-  node.append_attribute("R").set_value(c[0]);
-  node.append_attribute("G").set_value(c[1]);
-  node.append_attribute("B").set_value(c[2]);
+  std::string s;
+  s = this->encodeColor(rs->defaultColor());
+  sections.append_child("DefaultColor").text().set(s.c_str());
+  s = this->encodeColor(rs->invalidColor());
+  sections.append_child("InvalidColor").text().set(s.c_str());
   this->processGroupSection(sections,
                             smtk::dynamicCastPointer<GroupSection>(rs));
 }
@@ -1262,6 +1269,14 @@ void XmlV1StringWriter::processBasicSection(xml_node &node,
 void XmlV1StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_root.append_child("ModelInfo");
+}
+//----------------------------------------------------------------------------
+std::string XmlV1StringWriter::encodeColor(const double *c)
+{
+  std::stringstream oss;
+  oss << c[0] << ", " << c[1] << ", " << c[2] << ", " << c[3];
+  std::string result = oss.str();
+  return result;
 }
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)

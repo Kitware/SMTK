@@ -136,6 +136,7 @@ namespace smtk
                     const std::string &colorName);
 
       unsigned long  decodeModelEntityMask(const std::string &s);
+      static int decodeColorInfo(const std::string &s, double *color);
 
       smtk::attribute::Manager &m_manager;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;

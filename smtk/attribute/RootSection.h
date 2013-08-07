@@ -40,55 +40,41 @@ namespace smtk
       
       virtual Section::Type type() const;
       
-      void defaultColor(double c[3]) const
-      {this->defaultColor(c[0], c[1], c[2]);}
-      void defaultColor(double &r, double &g, double &b) const;
-      void setDefaultColor(double c[3])
-      {this->setDefaultColor(c[0], c[1], c[2]);}
-      void setDefaultColor(double r, double g, double b);
+      const double *defaultColor() const
+      {return this->m_defaultColor;}
+      void setDefaultColor(const double *c)
+      {this->setDefaultColor(c[0], c[1], c[2], c[3]);}
+      void setDefaultColor(double r, double g, double b, double a);
       
-      void invalidColor(double c[3]) const
-      {this->invalidColor(c[0], c[1], c[2]);}
-      void invalidColor(double &r, double &g, double &b) const;
-      void setInvalidColor(double c[3])
-      {this->setInvalidColor(c[0], c[1], c[2]);}
-      void setInvalidColor(double r, double g, double b);
+      const double *invalidColor() const
+      {return this->m_invalidColor;}
+      void setInvalidColor(const double *c)
+      {this->setInvalidColor(c[0], c[1], c[2], c[3]);}
+      void setInvalidColor(double r, double g, double b, double a);
       
     protected:
-      double m_defaultColor[3];
-      double m_invalidColor[3];
+      double m_defaultColor[4];
+      double m_invalidColor[4];
     private:
       
     };
 //----------------------------------------------------------------------------
-    inline void RootSection::defaultColor(double &r, double &g, 
-                                          double &b) const
-    {
-      r = this->m_defaultColor[0];
-      g = this->m_defaultColor[1];
-      b = this->m_defaultColor[2];
-    }
-//----------------------------------------------------------------------------
-    inline void RootSection::setDefaultColor(double r, double g, double b)
+    inline void RootSection::setDefaultColor(double r, double g, double b,
+                                             double a)
     {
       this->m_defaultColor[0] = r;
       this->m_defaultColor[1] = g;
       this->m_defaultColor[2] = b;
+      this->m_defaultColor[3] = a;
     }
 //----------------------------------------------------------------------------
-    inline void RootSection::invalidColor(double &r, double &g, 
-                                          double &b) const
-    {
-      r = this->m_invalidColor[0];
-      g = this->m_invalidColor[1];
-      b = this->m_invalidColor[2];
-    }
-//----------------------------------------------------------------------------
-    inline void RootSection::setInvalidColor(double r, double g, double b)
+    inline void RootSection::setInvalidColor(double r, double g, double b,
+                                             double a)
     {
       this->m_invalidColor[0] = r;
       this->m_invalidColor[1] = g;
-      this->m_defaultColor[2] = b;
+      this->m_invalidColor[2] = b;
+      this->m_invalidColor[3] = a;
     }
 //----------------------------------------------------------------------------
   };

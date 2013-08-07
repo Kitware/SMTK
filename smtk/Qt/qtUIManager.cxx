@@ -114,6 +114,9 @@ void qtUIManager::initializeUI(QWidget* pWidget)
     {
     delete this->RootSection;
     }
+  RootSectionPtr rs = this->m_AttManager.rootSection();
+  const double *dcolor = rs->defaultColor();
+  this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
   this->RootSection = new qtRootSection(
     this->m_AttManager.rootSection(), pWidget);
 }

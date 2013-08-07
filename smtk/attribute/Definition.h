@@ -117,6 +117,20 @@ namespace smtk
       void setIsNodal(bool isNodalValue)
       {this->m_isNodal = isNodalValue;}
 
+      //Color Specifications
+      // Color in the case the attribute does not exist on the model entity - default is 0, 0, 0, 0
+      const double * notApplicableColor() const
+      {return this->m_notApplicableColor;}
+      void setNotApplicableColor(double r, double g, double b, double alpha);
+      void setNotApplicableColor(const double *color)
+      {this->setNotApplicableColor(color[0], color[1], color[2], color[3]);}
+      // Default Color for attributes created from this definition - default is 1, 1, 1, 1
+      const double * defaultColor() const
+      {return this->m_defaultColor;}
+      void setDefaultColor(double r, double g, double b, double alpha);
+      void setDefaultColor(const double *color)
+      {this->setDefaultColor(color[0], color[1], color[2], color[3]);}
+
       unsigned long associationMask() const
       {return this->m_associationMask;}
       void setAssociationMask(unsigned long mask)
@@ -177,6 +191,7 @@ namespace smtk
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
       smtk::ConstAttributeDefinitionPtr findIsUniqueBaseClass() const;
 
+      
     protected:
       void clearManager()
       { this->m_manager = NULL;}
@@ -201,6 +216,8 @@ namespace smtk
       int m_isUnique;
       bool m_isRequired;
       unsigned long m_associationMask;
+      double m_notApplicableColor[4];
+      double m_defaultColor[4];
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
@@ -216,6 +233,22 @@ namespace smtk
         return -1; // named item doesn't exist
         }
       return it->second;
+    }
+//----------------------------------------------------------------------------
+    inline void Definition::setNotApplicableColor(double r, double g, double b, double a)
+    {
+      this->m_notApplicableColor[0]= r;
+      this->m_notApplicableColor[1]= g;
+      this->m_notApplicableColor[2]= b;
+      this->m_notApplicableColor[3]= a;
+    }
+//----------------------------------------------------------------------------
+    inline void Definition::setDefaultColor(double r, double g, double b, double a)
+    {
+      this->m_defaultColor[0]= r;
+      this->m_defaultColor[1]= g;
+      this->m_defaultColor[2]= b;
+      this->m_defaultColor[3]= a;
     }
   };
 };

@@ -31,9 +31,11 @@ RootSection::RootSection(const std::string &myTitle): GroupSection(myTitle)
   this->m_defaultColor[0] = 1.0;
   this->m_defaultColor[1] = 1.0;
   this->m_defaultColor[2] = 0.5;
+  this->m_defaultColor[3] = 1.0;
   this->m_invalidColor[0] = 1.0;
   this->m_invalidColor[1] = 0.5;
   this->m_invalidColor[2] = 0.5;
+  this->m_invalidColor[3] = 1.0;
 }
 
 //----------------------------------------------------------------------------

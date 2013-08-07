@@ -300,6 +300,20 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     this->decodeModelEntityMask(defNode.attribute("Associations").value());
   def->setAssociationMask(mask);
 
+  double color[4];
+
+  node = defNode.child("NotApplicableColor");
+  if (node && this->getColor(node, color, "NotApplicableColor"))
+    {
+    def->setNotApplicableColor(color);
+    }
+
+  node = defNode.child("DefaultColor");
+  if (node && this->getColor(node, color, "DefaultColor"))
+    {
+    def->setDefaultColor(color);
+    }
+
   node = defNode.child("BriefDescription");
   if (node)
     {
@@ -1033,6 +1047,14 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
     att->setAppliesToBoundaryNodes(xatt.as_bool());
     }
   
+  double color[4];
+
+  node = attNode.child("Color");
+  if (node && this->getColor(node, color, "Color"))
+    {
+    att->setColor(color);
+    }
+
   itemsNode = attNode.child("Items");
   if (!itemsNode)
     {
@@ -1924,44 +1946,15 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-bool XmlDocV1Parser::getColor(xml_node &node, double color[3],
+bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
                                  const std::string &colorName)
 {
-  xml_attribute xatt;
-  xatt = node.attribute("R");
-  if (xatt)
+  std::string s = node.text().get();
+  int i = this->decodeColorInfo(s, color);
+  if (i)
     {
-    color[0] = xatt.as_double();
-    }
-  else
-    {
-    this->m_errorStatus << "Error: Missing XML Attribute R for " 
-                        << colorName
-                        << "\n";
-    return false;
-    }
-
-  xatt = node.attribute("G");
-  if (xatt)
-    {
-    color[1] = xatt.as_double();
-    }
-  else
-    {
-    this->m_errorStatus << "Error: Missing XML Attribute G for " 
-                        << colorName
-                        << "\n";
-    return false;
-    }
-
-  xatt = node.attribute("B");
-  if (xatt)
-    {
-    color[2] = xatt.as_double();
-    }
-  else
-    {
-    this->m_errorStatus << "Error: Missing XML Attribute B for " 
+    this->m_errorStatus << "Error: Color Format Probem - only found " << i 
+                        << "components for " 
                         << colorName
                         << "\n";
     return false;
@@ -1980,7 +1973,7 @@ void XmlDocV1Parser::processSections(xml_node &root)
   smtk::RootSectionPtr rs = this->m_manager.rootSection();
   xml_node node;
   xml_attribute xatt;
-  double c[3];
+  double c[4];
   node = sections.child("DefaultColor");
   if (node && this->getColor(node, c, "DefaultColor"))
     {
@@ -2223,6 +2216,26 @@ void XmlDocV1Parser::processBasicSection(xml_node &node,
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
   //xml_node modelInfo = this->m_root.append_child("ModelInfo");
+}
+//----------------------------------------------------------------------------
+int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
+{
+  // Assume that the string is seperated by spaces and or commas
+  std::istringstream iss(s);
+  int i = 0;
+  char c;
+  while (!((i == 4) || iss.eof()))
+    {
+    iss.get(c);
+    if ((c == ' ') || (c == ','))
+      {
+      continue;
+      }
+    iss.putback(c);
+    iss >> color[i];
+    i++;
+    }
+  return 4 - i; // If we processed all the components this would be 0
 }
 //----------------------------------------------------------------------------
 unsigned long  XmlDocV1Parser::decodeModelEntityMask(const std::string &s)

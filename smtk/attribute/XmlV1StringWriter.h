@@ -115,7 +115,8 @@ namespace smtk
       void processBasicSection(pugi::xml_node &node,
                                smtk::SectionPtr sec);
 
-      std::string encodeModelEntityMask(unsigned long m);
+      static std::string encodeModelEntityMask(unsigned long m);
+      static std::string encodeColor(const double *color);
 
       const smtk::attribute::Manager &m_manager;
       pugi::xml_document m_doc;
