@@ -29,6 +29,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtSection.h"
 
+#include <QMap>
+
 class qtAttributeSectionInternals;
 class QTableWidgetItem;
 class QKeyEvent;
@@ -44,6 +46,7 @@ namespace smtk
     public:
       qtAttributeSection(smtk::SectionPtr, QWidget* p);
       virtual ~qtAttributeSection();
+      const QMap<QString, QList<smtk::AttributeDefinitionPtr> > &attDefinitionMap() const;
 
       QTableWidgetItem* getSelectedItem();
       int currentViewBy();
@@ -55,7 +58,6 @@ namespace smtk
         VIEWBY_Attribute = 0,
         VIEWBY_PROPERTY
         };
-
     public slots:
       void onViewBy(int);
       void onViewByWithDefinition(
@@ -70,6 +72,9 @@ namespace smtk
       void onAttributeModified();
       void updateAssociationEnableState(smtk::AttributePtr);
       virtual void updateModelAssociation();
+
+    signals:
+      void numOfAttriubtesChanged();
 
     protected:
       virtual void createWidget( );

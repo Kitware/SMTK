@@ -109,7 +109,8 @@ namespace smtk
         {return this->m_refModel.lock();}
       void setRefModel(smtk::ModelPtr refmodel )
         {this->m_refModel = refmodel;}
-
+      bool hasAttributes()
+        {return this->m_attributes.size()>0; }
     protected:
       void internalFindAllDerivedDefinitions(AttributeDefinitionPtr def, bool onlyConcrete,
                                              std::vector<AttributeDefinitionPtr> &result) const;

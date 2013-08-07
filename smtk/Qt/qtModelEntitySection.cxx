@@ -83,6 +83,13 @@ qtModelEntitySection::~qtModelEntitySection()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+const std::vector<smtk::AttributeDefinitionPtr> &qtModelEntitySection::attDefinitions() const
+{
+  return this->Internals->attDefs;
+}
+
 //----------------------------------------------------------------------------
 void qtModelEntitySection::createWidget( )
 {

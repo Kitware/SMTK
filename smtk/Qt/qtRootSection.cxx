@@ -189,9 +189,10 @@ void qtRootSection::updateSectionUI(int currentTab)
     }
 }
 //----------------------------------------------------------------------------
-qtSection* qtRootSection::getChildSection(smtk::attribute::Section::Type secType)
+void qtRootSection::getChildSection(
+  smtk::attribute::Section::Type secType, QList<qtSection*>& sections)
 {
-  return this->Internals->TabGroup->getChildSection(secType);
+  return this->Internals->TabGroup->getChildSection(secType, sections);
 }
 //----------------------------------------------------------------------------
 qtGroupSection* qtRootSection::getRootGroup()

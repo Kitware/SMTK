@@ -29,6 +29,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtSection.h"
 
+#include <vector>;
+
 class qtModelEntitySectionInternals;
 class QListWidgetItem;
 
@@ -44,6 +46,7 @@ namespace smtk
       qtModelEntitySection(smtk::SectionPtr, QWidget* p);
       virtual ~qtModelEntitySection();
       QListWidgetItem* getSelectedItem();
+      const std::vector<smtk::AttributeDefinitionPtr> &attDefinitions() const;
 
     public slots:
       void updateModelItems();

@@ -55,7 +55,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QMessageBox>
 #include <QSplitter>
 #include <QPointer>
-#include <QMap>
 
 #include <iostream>
 #include <set>
@@ -102,6 +101,14 @@ qtAttributeSection::~qtAttributeSection()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+const QMap<QString, QList<smtk::AttributeDefinitionPtr> > &qtAttributeSection::
+ attDefinitionMap() const
+ {
+   return this->Internals->AttDefMap;
+ }
+
 //----------------------------------------------------------------------------
 void qtAttributeSection::createWidget( )
 {
@@ -493,6 +500,7 @@ void qtAttributeSection::createNewAttribute(
     {
     this->Internals->ListTable->selectRow(item->row());
     }
+  emit this->numOfAttriubtesChanged();
 }
 //----------------------------------------------------------------------------
 void qtAttributeSection::onAttributeModified()
@@ -536,6 +544,7 @@ void qtAttributeSection::onDeleteSelected()
 
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());
+    emit this->numOfAttriubtesChanged();
     }
 }
 //----------------------------------------------------------------------------

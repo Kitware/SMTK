@@ -75,17 +75,16 @@ void qtGroupSection::createWidget( )
   this->parentWidget()->layout()->addWidget(this->Widget);    
 }
 //----------------------------------------------------------------------------
-qtSection* qtGroupSection::getChildSection(
-  smtk::attribute::Section::Type secType)
+void qtGroupSection::getChildSection(
+  smtk::attribute::Section::Type secType, QList<qtSection*>& sections)
 {
   foreach(qtSection* childSec, this->Internals->ChildSections)
     {
     if(childSec->getObject()->type() == secType)
       {
-      return childSec;
+      sections.append(childSec);
       }
     }
-  return NULL;
 }
 //----------------------------------------------------------------------------
 qtSection* qtGroupSection::getChildSection(int pageIndex)

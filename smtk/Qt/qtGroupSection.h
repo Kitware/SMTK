@@ -31,7 +31,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Section.h"
 
 class qtGroupSectionInternals;
-class QScrollArea;
 
 namespace smtk
 {
@@ -45,7 +44,8 @@ namespace smtk
       qtGroupSection(smtk::SectionPtr, QWidget* p);
       virtual ~qtGroupSection();
 
-      qtSection* getChildSection(smtk::attribute::Section::Type secType);
+      void getChildSection(smtk::attribute::Section::Type secType,
+        QList<qtSection*>& sections);
       qtSection* getChildSection(int pageIndex);
 
       virtual void addChildSection(qtSection*);

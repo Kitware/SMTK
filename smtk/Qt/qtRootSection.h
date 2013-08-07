@@ -46,7 +46,8 @@ namespace smtk
     public:
       qtRootSection(smtk::RootSectionPtr, QWidget* p);
       virtual ~qtRootSection();
-      qtSection* getChildSection(smtk::attribute::Section::Type secType);
+      void getChildSection(smtk::attribute::Section::Type secType,
+        QList<qtSection*>& sections);
       qtGroupSection* getRootGroup();
 
     public slots:
