@@ -758,15 +758,19 @@ EncodeModelFaces(vtkIdType facetId, vtkIdType v0, vtkIdType v1)
   nids = cellIds->GetNumberOfIds();
   if(nids == 0)
     {
-    return "";
+    cellIds->InsertNextId(this->GetUniquePersistentId());
     }
-  for (j = 0; j < nids; j++)
+  else
     {
-    dface = dynamic_cast<vtkDiscreteModelFace*>
-      (classificationInfo.GetEntity(cellIds->GetId(j)));
-    gface = dface->GetUniquePersistentId();
-    cellIds->SetId(j, gface);
+    for (j = 0; j < nids; j++)
+      {
+      dface = dynamic_cast<vtkDiscreteModelFace*>
+        (classificationInfo.GetEntity(cellIds->GetId(j)));
+      gface = dface->GetUniquePersistentId();
+      cellIds->SetId(j, gface);
+      }
     }
+
   return NewModelEdgeInfo::to_key(cellIds.GetPointer());
 }
 //----------------------------------------------------------------------------
