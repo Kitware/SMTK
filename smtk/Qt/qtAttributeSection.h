@@ -29,7 +29,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtSection.h"
 
-#include "smtk/Qt/qtColorButton.h"
 #include <QMap>
 
 class qtAttributeSectionInternals;
@@ -73,7 +72,7 @@ namespace smtk
       void onAttributeModified();
       void updateAssociationEnableState(smtk::AttributePtr);
       virtual void updateModelAssociation();
-      void onAttColorChanged();
+      void onListBoxClicked(QTableWidgetItem* item);
 
     signals:
       void numOfAttriubtesChanged();
@@ -98,21 +97,13 @@ namespace smtk
       void addTableValueItems(
         smtk::ValueItemPtr attItem, int& numRows,
         const char* attLabel, int advanced);
-      void addTableColorItem(
-        smtk::ColorItemPtr attItem, int& numRows);
-      void addTableColorItem(smtk::ColorItemPtr attItem,
-        int& numRows, const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);
       void updateItemWidgetsEnableState(
         smtk::ValueItemPtr linkedData, int &startRow, bool enabled);
-      void updateColorWidgetsEnableState(
-        smtk::ColorItemPtr linkedData, int& startRow, bool enabled);
       virtual void getAllDefinitions();
       bool hasMultiDefinition(const QString& group);
-      void updateAttributeColor(
-        smtk::AttributePtr att, smtk::attribute::qtColorButton* colorBT);
 
     private:
 

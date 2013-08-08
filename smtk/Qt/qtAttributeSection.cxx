@@ -31,8 +31,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/AttributeSection.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ColorItem.h"
-#include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
@@ -56,6 +54,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QMessageBox>
 #include <QSplitter>
 #include <QPointer>
+#include <QBrush>
+#include <QColorDialog>
+#include <QHeaderView>
 
 #include <iostream>
 #include <set>
@@ -216,12 +217,20 @@ void qtAttributeSection::createWidget( )
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
   BottomLayout->addWidget(this->Internals->ReferencesWidget);
 
+  this->Internals->ListTable->horizontalHeader()->setResizeMode(
+    QHeaderView::ResizeToContents);  
+  this->Internals->ValuesTable->horizontalHeader()->setResizeMode(
+    QHeaderView::ResizeToContents);  
+
   // signals/slots
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
   QObject::connect(this->Internals->ShowCategoryCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
 
+  QObject::connect(this->Internals->ListTable,
+    SIGNAL(itemClicked (QTableWidgetItem*)),
+    this, SLOT(onListBoxClicked(QTableWidgetItem*)));
   QObject::connect(this->Internals->ListTable,
     SIGNAL(itemSelectionChanged ()),
     this, SLOT(onListBoxSelectionChanged()));
@@ -347,8 +356,8 @@ void qtAttributeSection::onListBoxSelectionChanged()
       }
     }
 
-  this->Internals->ValuesTable->resizeColumnsToContents();
   this->Internals->ValuesTable->blockSignals(false);
+  this->Internals->ValuesTable->resizeColumnsToContents();
 }
 
 //----------------------------------------------------------------------------
@@ -419,27 +428,10 @@ void qtAttributeSection::updateChildWidgetsEnableState(
         }
       }
     }
-  else if(attItem->type() == smtk::attribute::Item::COLOR)
-    {
-    this->updateColorWidgetsEnableState(
-      dynamicCastPointer<ColorItem>(attItem), startRow, bEnabled);    
-    }
   else
     {
     this->updateItemWidgetsEnableState(
       dynamicCastPointer<ValueItem>(attItem), startRow, bEnabled);
-    }
-}
-
-//----------------------------------------------------------------------------
-void qtAttributeSection::updateColorWidgetsEnableState(
-  smtk::ColorItemPtr linkedData, int& startRow, bool enabled)
-{
-  QTableWidget* tableWidget = this->Internals->ValuesTable;
-  QWidget* cellWidget = tableWidget->cellWidget(startRow++, 1);
-  if(cellWidget)
-    {
-    cellWidget->setEnabled(enabled);
     }
 }
 
@@ -630,11 +622,6 @@ QTableWidgetItem* qtAttributeSection::addAttributeListItem(
   this->Internals->ListTable->setRowCount(++numRows);
   this->Internals->ListTable->setItem(numRows-1, 0, item);
 
-  smtk::attribute::qtColorButton* colorBT = new qtColorButton(this->Widget);
-  this->updateAttributeColor(childData, colorBT);
-  QObject::connect(colorBT, SIGNAL(chosenColorChanged(const QColor&)),
-      this, SLOT(onAttColorChanged()), Qt::QueuedConnection);
-
   int colorCol = 1;
   bool multiDef = this->hasMultiDefinition(strCategory);
   if(multiDef)
@@ -647,9 +634,12 @@ QTableWidgetItem* qtAttributeSection::addAttributeListItem(
     this->Internals->ListTable->setItem(numRows-1, 1, defitem);
     colorCol = 2;
     }
-  this->Internals->ListTable->setCellWidget(numRows-1, colorCol, colorBT);
-  this->Internals->ListTable->setItem(numRows-1, colorCol, new QTableWidgetItem());
-
+  QTableWidgetItem* colorItem =  new QTableWidgetItem();
+  this->Internals->ListTable->setItem(numRows-1, colorCol,colorItem);
+  const double* rgba = childData->color();
+  QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
+  colorItem->setBackground(bgBrush);
+  colorItem->setFlags(Qt::ItemIsEnabled);
   return item;
 }
 
@@ -671,14 +661,17 @@ void qtAttributeSection::onViewBy(int viewBy)
 
   QString strCategory = this->Internals->ShowCategoryCombo->currentText();
   bool multiDef = this->hasMultiDefinition(strCategory);
-  this->Internals->ListTable->setColumnCount(multiDef ? 3 : 2);
-  
+  int numCols = multiDef && viewAtt ? 3 : (viewAtt ? 2 : 1);
+  this->Internals->ListTable->setColumnCount(numCols);
   this->Internals->ListTable->setHorizontalHeaderItem(
     0, new QTableWidgetItem(viewAtt ? "Attribute" : "Property"));
   if(multiDef)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
-    this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
+    if(viewAtt)
+      {
+      this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
+      }
     this->Internals->DefsCombo->clear();
     foreach (AttributeDefinitionPtr attDef,
       this->Internals->AttDefMap[strCategory])
@@ -688,7 +681,7 @@ void qtAttributeSection::onViewBy(int viewBy)
       }
     this->Internals->DefsCombo->setCurrentIndex(0);
     }
-  else
+  else if(viewAtt)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Color"));
     }
@@ -699,8 +692,8 @@ void qtAttributeSection::onViewBy(int viewBy)
     {
     this->onViewByWithDefinition(viewBy, attDef);
     }
-  this->Internals->ListTable->resizeColumnsToContents();
   this->Internals->ListTable->blockSignals(false);
+  this->Internals->ListTable->resizeColumnsToContents();
   if(this->Internals->ListTable->rowCount())
     {
     this->Internals->ListTable->selectRow(0);
@@ -775,11 +768,6 @@ void qtAttributeSection::updateTableWithAttribute(
         this->addTableGroupItems(
           dynamicCastPointer<GroupItem>(attItem), numRows);
         }
-      else if(attItem->type() == smtk::attribute::Item::COLOR)
-        {
-        this->addTableColorItem(
-          dynamicCastPointer<ColorItem>(attItem), numRows);
-        }
       else
         {
         this->addTableValueItems(
@@ -839,12 +827,6 @@ void qtAttributeSection::updateTableWithProperty(
           this->addTableGroupItems(
             dynamicCastPointer<GroupItem>(attItem), numRows,
             (*it)->name().c_str());
-          }
-        else if(attItem->type() == smtk::attribute::Item::COLOR)
-          {
-          this->addTableColorItem(
-            dynamicCastPointer<ColorItem>(attItem), numRows,
-            (*it)->name().c_str(), itemDef->advanceLevel());
           }
         else
           {
@@ -941,38 +923,6 @@ void qtAttributeSection::addTableValueItems(smtk::ValueItemPtr attItem,
 }
 
 //----------------------------------------------------------------------------
-void qtAttributeSection::addTableColorItem(
-  smtk::ColorItemPtr attItem, int& numRows)
-{
-  const ColorItemDefinition *vItemDef = 
-    dynamic_cast<const ColorItemDefinition*>(attItem->definition().get());
-  const char* labelText = vItemDef->label().empty() ?
-    vItemDef->name().c_str() : vItemDef->label().c_str();
-  this->addTableColorItem(attItem, numRows, labelText, vItemDef->advanceLevel());
-}
-//----------------------------------------------------------------------------
-void qtAttributeSection::addTableColorItem(smtk::ColorItemPtr attItem,
-  int& numRows, const char* attLabel, int advanced)
-{
-  QTableWidget* widget = this->Internals->ValuesTable;
-  Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  widget->setRowCount(++numRows);
-  QString labelText = attLabel ? attLabel : "";
-  QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
-  if(advanced)
-    {
-    labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
-    }
-  labelitem->setFlags(nonEditableFlags);
-  widget->setItem(numRows-1, 0, labelitem);
-  qtItem* aItem = qtAttribute::createColorItem(attItem, this->Widget);
-  if(aItem && aItem->widget())
-    {
-    widget->setCellWidget(numRows-1, 1, aItem->widget());
-    widget->setItem(numRows-1, 1, new QTableWidgetItem());
-    }
-}
-//----------------------------------------------------------------------------
 int qtAttributeSection::currentViewBy()
 {
   return this->Internals->ViewByCombo->currentIndex();
@@ -1016,34 +966,32 @@ bool qtAttributeSection::hasMultiDefinition(const QString& group)
 {
   return (this->Internals->AttDefMap[group].count() > 1);
 }
-
 //----------------------------------------------------------------------------
-void qtAttributeSection::updateAttributeColor(
-  smtk::AttributePtr att, smtk::attribute::qtColorButton* colorBT)
+void qtAttributeSection::onListBoxClicked(QTableWidgetItem* item)
 {
-  if(!att || !colorBT)
+  if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
-    return;
-    }
-  
-  const double* rgba = att->color();
-  colorBT->setChosenColor(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
-}
-//----------------------------------------------------------------------------
-void qtAttributeSection::onAttColorChanged()
-{
-  qtColorButton* const colorBT = qobject_cast<qtColorButton*>(
-    QObject::sender());
-  if(!colorBT)
-    {
-    return;
-    }
-
-  smtk::AttributePtr selAtt = this->getSelectedAttribute();
-  if(selAtt)
-    {
-    QColor color = colorBT->chosenColor();
-    selAtt->setColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
-    emit this->attColorChanged();
+    QString strCategory = this->Internals->ShowCategoryCombo->currentText();
+    bool multiDef = this->hasMultiDefinition(strCategory);
+    bool isColor = multiDef ? (item->column() == 2) :  (item->column() == 1);
+    if(isColor)
+      {
+      QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);
+      smtk::AttributePtr selAtt = this->getAttributeFromItem(selItem);
+      QBrush bgBrush = item->background();
+      QColor color = QColorDialog::getColor(bgBrush.color(), this->Widget);
+      if(color.isValid() && color != bgBrush.color() && selAtt)
+        {
+        bgBrush.setColor(color);
+        item->setBackground(bgBrush);
+        selAtt->setColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+        emit this->attColorChanged();
+        }
+      if(!selItem->isSelected())
+        {
+        this->Internals->ListTable->setCurrentItem(selItem);
+        selItem->setSelected(true);
+        }
+      }
     }
 }
