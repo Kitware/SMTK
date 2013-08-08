@@ -458,6 +458,7 @@ void qtAssociationWidget::onRemoveAssigned()
       this->removeSelectedItem(this->Internals->CurrentList);
       this->addModelAssociationListItem(
         this->Internals->AvailableList, currentItem); 
+      emit this->attAssociationChanged();
       }
     }
   else if(this->Internals->CurrentModelGroup.lock())
@@ -471,6 +472,7 @@ void qtAssociationWidget::onRemoveAssigned()
       this->removeSelectedItem(this->Internals->CurrentList);
       this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt); 
+      emit this->attAssociationChanged();
       }
     }
 
@@ -492,6 +494,7 @@ void qtAssociationWidget::onAddAvailable()
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, currentItem);
+      emit this->attAssociationChanged();
       }
     }
   else if(this->Internals->CurrentModelGroup.lock())
@@ -505,6 +508,7 @@ void qtAssociationWidget::onAddAvailable()
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->CurrentList, currentAtt); 
+      emit this->attAssociationChanged();
       }
     }
 
@@ -533,6 +537,7 @@ void qtAssociationWidget::onExchange()
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
         this->Internals->CurrentList, availableItem);
+      emit this->attAssociationChanged();
       }
     }
   else if(this->Internals->CurrentModelGroup.lock())
@@ -554,6 +559,7 @@ void qtAssociationWidget::onExchange()
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->CurrentList, availAtt); 
+      emit this->attAssociationChanged();
       }
     }
 
@@ -612,6 +618,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
   if(attPtr)
     {
     domainItem->attachAttribute(attPtr);
+    emit this->attAssociationChanged();
     }
   else
     {

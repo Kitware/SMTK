@@ -77,6 +77,7 @@ namespace smtk
     signals:
       void numOfAttriubtesChanged();
       void attColorChanged();
+      void attAssociationChanged();
 
     protected:
       virtual void createWidget( );

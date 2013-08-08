@@ -60,6 +60,9 @@ namespace smtk
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
+    signals:
+      void attAssociationChanged();
+
     protected slots:
       virtual void onRemoveAssigned();
       virtual void onAddAvailable();

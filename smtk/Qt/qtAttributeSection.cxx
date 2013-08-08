@@ -223,6 +223,9 @@ void qtAttributeSection::createWidget( )
     QHeaderView::ResizeToContents);  
 
   // signals/slots
+  QObject::connect(this->Internals->AssociationsWidget,
+    SIGNAL(attAssociationChanged()), this, SIGNAL(attAssociationChanged()));
+
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
   QObject::connect(this->Internals->ShowCategoryCombo,
