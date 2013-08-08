@@ -118,18 +118,31 @@ namespace smtk
       {this->m_isNodal = isNodalValue;}
 
       //Color Specifications
-      // Color in the case the attribute does not exist on the model entity - default is 0, 0, 0, 0
-      const double * notApplicableColor() const
-      {return this->m_notApplicableColor;}
+      // Color in the case the attribute does not exist on the model entity
+      // If the color has not been set and the def has no base definition it will
+      // return s_notApplicableBaseColor
+      const double * notApplicableColor() const;
       void setNotApplicableColor(double r, double g, double b, double alpha);
       void setNotApplicableColor(const double *color)
       {this->setNotApplicableColor(color[0], color[1], color[2], color[3]);}
-      // Default Color for attributes created from this definition - default is 1, 1, 1, 1
-      const double * defaultColor() const
-      {return this->m_defaultColor;}
+      // By unsetting the color it is now inherited from the def's base definition
+      void unsetNotApplicableColor()
+      {this->m_isNotApplicableColorSet = false;}
+      bool isNotApplicableColorSet() const
+      {return this->m_isNotApplicableColorSet;}
+
+      // Default Color for attributes created from this definition -
+      // If the color has not been set and the def has no base definition it will
+      // return s_defaultBaseColor
+      const double * defaultColor() const;
       void setDefaultColor(double r, double g, double b, double alpha);
       void setDefaultColor(const double *color)
       {this->setDefaultColor(color[0], color[1], color[2], color[3]);}
+      // By unsetting the color it is now inherited from the def's base definition
+      void unsetDefaultColor()
+      {this->m_isDefaultColorSet = false;}
+      bool isDefaultColorSet() const
+      {return this->m_isDefaultColorSet;}
 
       unsigned long associationMask() const
       {return this->m_associationMask;}
@@ -215,9 +228,14 @@ namespace smtk
 // targeted model entity has an attribute derived from the Super Definition
       int m_isUnique;
       bool m_isRequired;
+      bool m_isNotApplicableColorSet;
+      bool m_isDefaultColorSet;
       unsigned long m_associationMask;
       double m_notApplicableColor[4];
       double m_defaultColor[4];
+      // These colors are returned for base definitions w/o set colors
+      static double s_notApplicableBaseColor[4];
+      static double s_defaultBaseColor[4];
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
@@ -235,16 +253,44 @@ namespace smtk
       return it->second;
     }
 //----------------------------------------------------------------------------
+    inline const double * Definition::notApplicableColor() const
+    {
+      if (this->m_isNotApplicableColorSet)
+        {
+        return this->m_notApplicableColor;
+        }
+      else if (this->m_baseDefinition)
+        {
+        return this->m_baseDefinition->notApplicableColor();
+        }
+      return s_notApplicableBaseColor;
+    }
+//----------------------------------------------------------------------------
     inline void Definition::setNotApplicableColor(double r, double g, double b, double a)
     {
+      this->m_isNotApplicableColorSet = true;
       this->m_notApplicableColor[0]= r;
       this->m_notApplicableColor[1]= g;
       this->m_notApplicableColor[2]= b;
       this->m_notApplicableColor[3]= a;
     }
 //----------------------------------------------------------------------------
+    inline const double * Definition::defaultColor() const
+    {
+      if (this->m_isDefaultColorSet)
+        {
+        return this->m_defaultColor;
+        }
+      else if (this->m_baseDefinition)
+        {
+        return this->m_baseDefinition->defaultColor();
+        }
+      return s_defaultBaseColor;
+    }
+//----------------------------------------------------------------------------
     inline void Definition::setDefaultColor(double r, double g, double b, double a)
     {
+      this->m_isDefaultColorSet = true;
       this->m_defaultColor[0]= r;
       this->m_defaultColor[1]= g;
       this->m_defaultColor[2]= b;

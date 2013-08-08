@@ -69,12 +69,14 @@ namespace smtk
       smtk::AttributeDefinitionPtr definition() const
       {return this->m_definition;}
 
-      const double *color() const
-      {return this->m_color;}
+      const double *color() const;
       void setColor(double r, double g, double b, double alpha);
       void setColor(const double *color)
       {this->setColor(color[0], color[1], color[2], color[3]);}
-      bool isUsingDefaultColor() const;
+      bool isColorSet() const
+      {return this->m_isColorSet;}
+      void unsetColor()
+      {this->m_isColorSet = false;}
 
       // Return the public pointer for this attribute.
       smtk::AttributePtr pointer() const;
@@ -152,6 +154,7 @@ namespace smtk
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       double m_color[4];
+      bool m_isColorSet;
       std::map<std::string, void *> m_userData;
       // We need something to indicate that the attribute is in process of
       // being deleted - this is used skip certain clean up steps that 
@@ -170,6 +173,7 @@ namespace smtk
 //----------------------------------------------------------------------------
     inline void Attribute::setColor(double r, double g, double b, double a)
     {
+      this->m_isColorSet = true;
       this->m_color[0]= r;
       this->m_color[1]= g;
       this->m_color[2]= b;

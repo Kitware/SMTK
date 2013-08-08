@@ -171,11 +171,17 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     }
   // Save Color Information
   std::string s;
-  s = this->encodeColor(def->notApplicableColor());
-  node.append_child("NotApplicableColor").text().set(s.c_str());
-  s = this->encodeColor(def->defaultColor());
-  node.append_child("DefaultColor").text().set(s.c_str());
-  
+  if (def->isNotApplicableColorSet())
+    {
+    s = this->encodeColor(def->notApplicableColor());
+    node.append_child("NotApplicableColor").text().set(s.c_str());
+    }
+  if (def->isDefaultColorSet())
+    {
+    s = this->encodeColor(def->defaultColor());
+    node.append_child("DefaultColor").text().set(s.c_str());
+    }
+
   // Create association string
   s = this->encodeModelEntityMask(def->associationMask());
   node.append_attribute("Associations").set_value(s.c_str());
@@ -668,7 +674,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
     }
   node.append_attribute("ID").set_value((unsigned int)att->id());
   // Save Color Information
-  if (!att->isUsingDefaultColor())
+  if (att->isColorSet())
     {
     std::string s;
     s = this->encodeColor(att->color());
