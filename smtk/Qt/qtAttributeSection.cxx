@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAssociationWidget.h"
 #include "smtk/Qt/qtReferencesWidget.h"
 #include "smtk/Qt/qtItem.h"
+
 #include "smtk/attribute/AttributeSection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ColorItem.h"
@@ -339,8 +340,10 @@ void qtAttributeSection::onListBoxSelectionChanged()
     else if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
       {
       this->updateAssociationEnableState(smtk::AttributePtr());
+      smtk::AttributeItemPtr attItem = this->getAttributeItemFromItem(current);
+      smtk::AttributePtr att = attItem->attribute();
       QString temp = current->text();
-      this->updateTableWithProperty(temp);
+      this->updateTableWithProperty(temp, att->definition());
       }
     }
 
@@ -626,6 +629,13 @@ QTableWidgetItem* qtAttributeSection::addAttributeListItem(
   int numRows = this->Internals->ListTable->rowCount();
   this->Internals->ListTable->setRowCount(++numRows);
   this->Internals->ListTable->setItem(numRows-1, 0, item);
+
+  smtk::attribute::qtColorButton* colorBT = new qtColorButton(this->Widget);
+  this->updateAttributeColor(childData, colorBT);
+  QObject::connect(colorBT, SIGNAL(chosenColorChanged(const QColor&)),
+      this, SLOT(onAttColorChanged()), Qt::QueuedConnection);
+
+  int colorCol = 1;
   bool multiDef = this->hasMultiDefinition(strCategory);
   if(multiDef)
     {
@@ -635,7 +645,11 @@ QTableWidgetItem* qtAttributeSection::addAttributeListItem(
       smtk_USER_DATA_TYPE);
     defitem->setFlags(nonEditableFlags);
     this->Internals->ListTable->setItem(numRows-1, 1, defitem);
+    colorCol = 2;
     }
+  this->Internals->ListTable->setCellWidget(numRows-1, colorCol, colorBT);
+  this->Internals->ListTable->setItem(numRows-1, colorCol, new QTableWidgetItem());
+
   return item;
 }
 
@@ -657,13 +671,14 @@ void qtAttributeSection::onViewBy(int viewBy)
 
   QString strCategory = this->Internals->ShowCategoryCombo->currentText();
   bool multiDef = this->hasMultiDefinition(strCategory);
-  this->Internals->ListTable->setColumnCount(multiDef ? 2 : 1);
+  this->Internals->ListTable->setColumnCount(multiDef ? 3 : 2);
   
   this->Internals->ListTable->setHorizontalHeaderItem(
     0, new QTableWidgetItem(viewAtt ? "Attribute" : "Property"));
   if(multiDef)
     {
     this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
+    this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     this->Internals->DefsCombo->clear();
     foreach (AttributeDefinitionPtr attDef,
       this->Internals->AttDefMap[strCategory])
@@ -672,6 +687,10 @@ void qtAttributeSection::onViewBy(int viewBy)
         QString::fromUtf8(attDef->type().c_str()));
       }
     this->Internals->DefsCombo->setCurrentIndex(0);
+    }
+  else
+    {
+    this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Color"));
     }
   this->Internals->DefsCombo->setVisible(multiDef);
   
@@ -770,7 +789,8 @@ void qtAttributeSection::updateTableWithAttribute(
     }
 }
 //----------------------------------------------------------------------------
-void qtAttributeSection::updateTableWithProperty(QString& propertyName)
+void qtAttributeSection::updateTableWithProperty(
+  QString& propertyName, smtk::AttributeDefinitionPtr attDef)
 {
   smtk::AttributeSectionPtr sec =
     smtk::dynamicCastPointer<AttributeSection>(this->getObject());
@@ -778,8 +798,6 @@ void qtAttributeSection::updateTableWithProperty(QString& propertyName)
     {
     return;
     }
-
-  AttributeDefinitionPtr attDef = sec->definition(0);
 
   std::vector<smtk::AttributePtr> result;
   Manager *attManager = attDef->manager();
@@ -997,4 +1015,35 @@ void qtAttributeSection::getAllDefinitions()
 bool qtAttributeSection::hasMultiDefinition(const QString& group)
 {
   return (this->Internals->AttDefMap[group].count() > 1);
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeSection::updateAttributeColor(
+  smtk::AttributePtr att, smtk::attribute::qtColorButton* colorBT)
+{
+  if(!att || !colorBT)
+    {
+    return;
+    }
+  
+  const double* rgba = att->color();
+  colorBT->setChosenColor(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
+}
+//----------------------------------------------------------------------------
+void qtAttributeSection::onAttColorChanged()
+{
+  qtColorButton* const colorBT = qobject_cast<qtColorButton*>(
+    QObject::sender());
+  if(!colorBT)
+    {
+    return;
+    }
+
+  smtk::AttributePtr selAtt = this->getSelectedAttribute();
+  if(selAtt)
+    {
+    QColor color = colorBT->chosenColor();
+    selAtt->setColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+    emit this->attColorChanged();
+    }
 }
