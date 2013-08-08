@@ -30,6 +30,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 
 using namespace smtk::attribute; 
+double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
+double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 
 //----------------------------------------------------------------------------
 Definition::Definition(const std::string &myType, 
@@ -46,14 +48,8 @@ Definition::Definition(const std::string &myType,
   this->m_isUnique = true;
   this->m_isRequired = false;
   this->m_associationMask = 0;
-  this->m_notApplicableColor[0] = 0.0;
-  this->m_notApplicableColor[1] = 0.0;
-  this->m_notApplicableColor[2] = 0.0;
-  this->m_notApplicableColor[3] = 0.0;
-  this->m_defaultColor[0] = 1.0;
-  this->m_defaultColor[1] = 1.0;
-  this->m_defaultColor[2] = 1.0;
-  this->m_defaultColor[3] = 1.0;
+  this->m_isNotApplicableColorSet = false;
+  this->m_isDefaultColorSet = false;
 }
 
 //----------------------------------------------------------------------------
@@ -143,7 +139,6 @@ void Definition::buildAttribute(Attribute *att) const
     // is "empty" of items
     att->removeAllItems();
     }
-  att->setColor(this->m_defaultColor);
 
   // Next - for each item definition we have build and add the appropriate
   // item to the attribute

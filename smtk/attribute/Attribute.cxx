@@ -34,7 +34,7 @@ using namespace smtk::attribute;
 Attribute::Attribute(const std::string &myName, 
   smtk::AttributeDefinitionPtr myDefinition, unsigned long myId):
   m_name(myName), m_definition(myDefinition),
-  m_id(myId), m_aboutToBeDeleted(false),
+  m_id(myId), m_aboutToBeDeleted(false), m_isColorSet(false),
   m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false)
 {
   this->m_definition->buildAttribute(this);
@@ -81,6 +81,15 @@ void Attribute::references(std::vector<smtk::AttributeItemPtr> &list) const
       list.push_back(it->first->pointer());
       }
     }
+}
+//----------------------------------------------------------------------------
+const double *Attribute::color() const
+{
+  if (this->m_isColorSet)
+    {
+    return this->m_color;
+    }
+  return this->m_definition->defaultColor();
 }
 //----------------------------------------------------------------------------
 const std::string &Attribute::type() const
@@ -173,12 +182,5 @@ smtk::AttributeItemPtr Attribute::find(const std::string &name)
 {
   int i = this->m_definition->findItemPosition(name);
   return (i < 0) ? smtk::AttributeItemPtr() : this->m_items[i];
-}
-//----------------------------------------------------------------------------
-bool Attribute::isUsingDefaultColor() const
-{
-  const double *dc = this->m_definition->defaultColor();
-  return (this->m_color[0] == dc[0]) && (this->m_color[1] == dc[1]) 
-    && (this->m_color[2] == dc[2]) &&  (this->m_color[3] == dc[3]);
 }
 //-----------------------------------------------------------------------------
