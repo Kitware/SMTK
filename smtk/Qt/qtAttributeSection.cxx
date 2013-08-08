@@ -652,6 +652,9 @@ void qtAttributeSection::onViewBy(int viewBy)
     {
     return;
     }
+  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
+  this->Internals->AddButton->setEnabled(
+    this->Internals->AttDefMap[strCategory].count()>0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
   this->Internals->ButtonsFrame->setEnabled(viewAtt);
@@ -659,7 +662,6 @@ void qtAttributeSection::onViewBy(int viewBy)
   this->Internals->ListTable->clear();
   this->Internals->ListTable->setRowCount(0);
 
-  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
   bool multiDef = this->hasMultiDefinition(strCategory);
   int numCols = multiDef && viewAtt ? 3 : (viewAtt ? 2 : 1);
   this->Internals->ListTable->setColumnCount(numCols);
