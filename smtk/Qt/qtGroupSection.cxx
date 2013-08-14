@@ -71,6 +71,10 @@ void qtGroupSection::createWidget( )
   QTabWidget *tab = new QTabWidget(this->parentWidget());
   tab->setUsesScrollButtons( true );
   this->Widget = tab;
+  //create the layout for the tabs area
+  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
+  layout->setMargin(0);
+  this->Widget->setLayout( layout );
 
   this->parentWidget()->layout()->addWidget(this->Widget);    
 }
