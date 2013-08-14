@@ -310,12 +310,26 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
       smtk::ModelGroupItemPtr itemGroup =
         smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
       bool bRegion = itemGroup->canContain(smtk::model::Item::REGION);
+      bool bFace = itemGroup->canContain(smtk::model::Item::FACE);
+      bool bEdge = itemGroup->canContain(smtk::model::Item::EDGE);
       if(isMaterial == bRegion) //both true, or both false
         {
         if(!assignedIds.contains(itemIt->second->id()))
           {
-          this->addModelAssociationListItem(
-            this->Internals->AvailableList, itemIt->second);
+          if(bRegion)
+            {
+            this->addModelAssociationListItem(
+              this->Internals->AvailableList, itemIt->second);
+            }
+          else // for BCs, we need to differentiate face and/or edge assocations
+            {
+            if((bFace && attDef->associatesWithFace()) ||
+              (bEdge && attDef->associatesWithEdge()))
+              {
+              this->addModelAssociationListItem(
+                this->Internals->AvailableList, itemIt->second);
+              }
+            }
           }
         }
       }

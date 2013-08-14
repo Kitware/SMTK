@@ -63,7 +63,7 @@ void Model::findGroupItems(unsigned int mask,
     }
 }
 //----------------------------------------------------------------------------
-void Model::removeGroupItems(unsigned int mask)
+void Model::removeGroupItemsByMask(unsigned int mask)
 {
   std::vector<smtk::ModelGroupItemPtr> result;
   this->findGroupItems(mask, result);

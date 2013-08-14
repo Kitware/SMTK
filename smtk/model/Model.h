@@ -49,14 +49,15 @@ namespace smtk
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
-      virtual unsigned int convertGroupTypeToMask(int grouptype) = 0;
-      virtual void loadGroupItems(int grouptype){;}
-      virtual void removeGroupItems(int grouptype)
-      { return this->removeGroupItems(this->convertGroupTypeToMask(grouptype));}
-      virtual void removeGroupItems(unsigned int mask);
+      virtual unsigned int convertGroupTypeToMask(
+        int grouptype, int entType) = 0;
+      virtual void removeGroupItems(int grouptype, int entType)
+      { return this->removeGroupItemsByMask(
+        this->convertGroupTypeToMask(grouptype, entType));}
+      virtual void removeGroupItemsByMask(unsigned int mask);
       virtual void findGroupItems(unsigned int mask, 
         std::vector<smtk::ModelGroupItemPtr> &result) const;
-      
+
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }
       std::map<int, smtk::ModelItemPtr>::const_iterator itemIterator() const

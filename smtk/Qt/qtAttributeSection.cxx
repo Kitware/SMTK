@@ -464,20 +464,17 @@ void qtAttributeSection::onCreateNew()
     }
   AttributeDefinitionPtr newAttDef = sec->definition(0);
   QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-  bool multiDef = this->hasMultiDefinition(strCategory);
-  if(multiDef)
+
+  QString strDef = this->Internals->DefsCombo->currentText();
+  foreach (AttributeDefinitionPtr attDef,
+    this->Internals->AttDefMap[strCategory])
     {
-    QString strDef = this->Internals->DefsCombo->currentText();
-    foreach (AttributeDefinitionPtr attDef,
-      this->Internals->AttDefMap[strCategory])
+    if(strDef == QString::fromUtf8(attDef->type().c_str()))
       {
-      if(strDef == QString::fromUtf8(attDef->type().c_str()))
-        {
-        newAttDef = attDef;
-        break;
-        }
-      }   
-    }
+      newAttDef = attDef;
+      break;
+      }
+    }   
   this->createNewAttribute(newAttDef);
 }
 
@@ -554,8 +551,6 @@ void qtAttributeSection::addAttributePropertyItems(
     return;
     }
 
-  bool multiDef = this->hasMultiDefinition(group);
-
   Qt::ItemFlags nonEditableFlags(
     Qt::ItemIsEnabled | Qt::ItemIsSelectable);
   // Now lets process its items
@@ -586,15 +581,13 @@ void qtAttributeSection::addAttributePropertyItems(
       int numRows = this->Internals->ListTable->rowCount();
       this->Internals->ListTable->setRowCount(++numRows);
       this->Internals->ListTable->setItem(numRows-1, 0, item);
-      if(multiDef)
-        {
-        // add the type column too.
-        QTableWidgetItem* defitem = new QTableWidgetItem(
-          QString::fromUtf8(childData->definition()->type().c_str()),
-          smtk_USER_DATA_TYPE);
-        defitem->setFlags(nonEditableFlags);
-        this->Internals->ListTable->setItem(numRows-1, 1, defitem);
-        }
+
+      // add the type column too.
+      QTableWidgetItem* defitem = new QTableWidgetItem(
+        QString::fromUtf8(childData->definition()->type().c_str()),
+        smtk_USER_DATA_TYPE);
+      defitem->setFlags(nonEditableFlags);
+      this->Internals->ListTable->setItem(numRows-1, 1, defitem);
 
       if(attItem->definition()->advanceLevel())
         {
@@ -625,20 +618,15 @@ QTableWidgetItem* qtAttributeSection::addAttributeListItem(
   this->Internals->ListTable->setRowCount(++numRows);
   this->Internals->ListTable->setItem(numRows-1, 0, item);
 
-  int colorCol = 1;
-  bool multiDef = this->hasMultiDefinition(strCategory);
-  if(multiDef)
-    {
-    // add the type column too.
-    QTableWidgetItem* defitem = new QTableWidgetItem(
-      QString::fromUtf8(childData->definition()->type().c_str()),
-      smtk_USER_DATA_TYPE);
-    defitem->setFlags(nonEditableFlags);
-    this->Internals->ListTable->setItem(numRows-1, 1, defitem);
-    colorCol = 2;
-    }
+  // add the type column too.
+  QTableWidgetItem* defitem = new QTableWidgetItem(
+    QString::fromUtf8(childData->definition()->type().c_str()),
+    smtk_USER_DATA_TYPE);
+  defitem->setFlags(nonEditableFlags);
+  this->Internals->ListTable->setItem(numRows-1, 1, defitem);
+
   QTableWidgetItem* colorItem =  new QTableWidgetItem();
-  this->Internals->ListTable->setItem(numRows-1, colorCol,colorItem);
+  this->Internals->ListTable->setItem(numRows-1, 2,colorItem);
   const double* rgba = childData->color();
   QBrush bgBrush(QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
   colorItem->setBackground(bgBrush);
@@ -665,32 +653,25 @@ void qtAttributeSection::onViewBy(int viewBy)
   this->Internals->ListTable->clear();
   this->Internals->ListTable->setRowCount(0);
 
-  bool multiDef = this->hasMultiDefinition(strCategory);
-  int numCols = multiDef && viewAtt ? 3 : (viewAtt ? 2 : 1);
+  int numCols = viewAtt ? 3 : 2;
   this->Internals->ListTable->setColumnCount(numCols);
   this->Internals->ListTable->setHorizontalHeaderItem(
     0, new QTableWidgetItem(viewAtt ? "Attribute" : "Property"));
-  if(multiDef)
+
+  this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
+  if(viewAtt)
     {
-    this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
-    if(viewAtt)
-      {
-      this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
-      }
-    this->Internals->DefsCombo->clear();
-    foreach (AttributeDefinitionPtr attDef,
-      this->Internals->AttDefMap[strCategory])
-      {
-      this->Internals->DefsCombo->addItem(
-        QString::fromUtf8(attDef->type().c_str()));
-      }
-    this->Internals->DefsCombo->setCurrentIndex(0);
+    this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     }
-  else if(viewAtt)
+  this->Internals->DefsCombo->clear();
+  foreach (AttributeDefinitionPtr attDef,
+    this->Internals->AttDefMap[strCategory])
     {
-    this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Color"));
+    this->Internals->DefsCombo->addItem(
+      QString::fromUtf8(attDef->type().c_str()));
     }
-  this->Internals->DefsCombo->setVisible(multiDef);
+  this->Internals->DefsCombo->setCurrentIndex(0);
+  this->Internals->DefsCombo->setVisible(true);
   
   foreach (AttributeDefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
@@ -702,6 +683,10 @@ void qtAttributeSection::onViewBy(int viewBy)
   if(this->Internals->ListTable->rowCount())
     {
     this->Internals->ListTable->selectRow(0);
+    }
+  else
+    {
+    this->onListBoxSelectionChanged();
     }
 }
 //----------------------------------------------------------------------------
@@ -977,8 +962,7 @@ void qtAttributeSection::onListBoxClicked(QTableWidgetItem* item)
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
     QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-    bool multiDef = this->hasMultiDefinition(strCategory);
-    bool isColor = multiDef ? (item->column() == 2) :  (item->column() == 1);
+    bool isColor = item->column() == 2;
     if(isColor)
       {
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);
