@@ -41,7 +41,7 @@ class qtAttributeRefItemInternals
 {
 public:
   QList<QComboBox*> comboBoxes;
-
+  QLabel* theLabel;
 };
 
 //----------------------------------------------------------------------------
@@ -58,6 +58,19 @@ qtAttributeRefItem::~qtAttributeRefItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+const QString& qtAttributeRefItem::labelText() const
+{
+  return this->Internals->theLabel->text();
+}      
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::setLabelVisible(bool visible)
+{
+  return this->Internals->theLabel->setVisible(visible);
+}
+
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::createWidget()
 {
@@ -93,8 +106,8 @@ void qtAttributeRefItem::createWidget()
   layout->setMargin(0);
   QString lText = this->getObject()->label().empty() ?
     this->getObject()->name().c_str() : this->getObject()->label().c_str();
-  QLabel* label = new QLabel(lText, this->Widget);
-  layout->addWidget(label);
+  this->Internals->theLabel = new QLabel(lText, this->Widget);
+  layout->addWidget(this->Internals->theLabel);
 
   for(i = 0; i < n; i++)
     {

@@ -40,8 +40,11 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtAttributeRefItem(smtk::AttributeItemPtr, QWidget* parent);
+      qtAttributeRefItem(smtk::AttributeItemPtr,
+        QWidget* parent);
       virtual ~qtAttributeRefItem();  
+      const QString& labelText() const;
+      void setLabelVisible(bool);
 
     public slots:
       void onInputValueChanged();

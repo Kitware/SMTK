@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QLabel>
 #include <QTableWidget>
 #include <QScrollArea>
+#include <QMessageBox>
 
 using namespace smtk::attribute;
 
@@ -126,9 +127,24 @@ void qtInstancedSection::updateAttributeData()
   std::size_t i, n = sec->numberOfInstances();
   for (i = 0; i < n; i++)
     {
-    qtAttribute* attInstance = new qtAttribute(sec->instance((int)i), this->widget());
-    this->Widget->layout()->addWidget(attInstance->widget());
-    this->Internals->AttInstances.push_back(attInstance);
+    smtk::AttributePtr attobj = sec->instance((int)i);
+    if(!attobj || attobj->numberOfItems()==0)
+      {
+      QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute Section"),
+      tr("No attribute instance, or no items in the attribute instance!"));
+      }
+    else
+      {
+      qtAttribute* attInstance = new qtAttribute(attobj, this->widget());
+      if(attInstance)
+        {
+        this->Internals->AttInstances.push_back(attInstance);
+        if(attInstance->widget())
+          {
+          this->Widget->layout()->addWidget(attInstance->widget());
+          }
+        }
+      }
     }
 }
 

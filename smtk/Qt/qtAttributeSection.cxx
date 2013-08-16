@@ -25,12 +25,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtTableWidget.h"
 #include "smtk/Qt/qtAttribute.h"
+#include "smtk/Qt/qtAttributeRefItem.h"
 #include "smtk/Qt/qtAssociationWidget.h"
 #include "smtk/Qt/qtReferencesWidget.h"
 #include "smtk/Qt/qtItem.h"
 
 #include "smtk/attribute/AttributeSection.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/AttributeRefItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
@@ -818,7 +820,13 @@ void qtAttributeSection::updateTableWithProperty(
             dynamicCastPointer<GroupItem>(attItem), numRows,
             (*it)->name().c_str());
           }
-        else
+        else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
+          {
+          this->addTableAttRefItems(
+            dynamicCastPointer<AttributeRefItem>(attItem), numRows,
+            (*it)->name().c_str(), itemDef->advanceLevel());
+          }
+        else if(dynamicCastPointer<ValueItem>(attItem))// value types
           {
           this->addTableValueItems(
             dynamicCastPointer<ValueItem>(attItem), numRows,
@@ -858,6 +866,10 @@ void qtAttributeSection::addTableGroupItems(
 void qtAttributeSection::addTableValueItems(
   smtk::ValueItemPtr attItem, int& numRows)
 {
+  if(!attItem)
+    {
+    return;
+    }
   const ValueItemDefinition *vItemDef = 
     dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
   std::string strAttLabel =
@@ -871,6 +883,10 @@ void qtAttributeSection::addTableValueItems(
 void qtAttributeSection::addTableValueItems(smtk::ValueItemPtr attItem,
   int& numRows, const char* attLabel, int advanced)
 {
+  if(!attItem)
+    {
+    return;
+    }
   QTableWidget* widget = this->Internals->ValuesTable;
   const ValueItemDefinition *vItemDef = 
     dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
@@ -910,6 +926,43 @@ void qtAttributeSection::addTableValueItems(smtk::ValueItemPtr attItem,
       numAdded++;
       }
     }
+}
+//----------------------------------------------------------------------------
+void qtAttributeSection::addTableAttRefItems(
+  smtk::AttributeRefItemPtr attItem, int& numRows,
+  const char* attLabel, int advanced)
+{
+  if(!attItem)
+    {
+    return;
+    }
+  QTableWidget* widget = this->Internals->ValuesTable;
+  qtAttributeRefItem* refItem = qobject_cast<qtAttributeRefItem*>(
+    qtAttribute::createAttributeRefItem(attItem, widget));
+  if(!refItem)
+    {
+    return;
+    }
+  refItem->setLabelVisible(false);
+  QString labelText = refItem->labelText();
+  labelText = labelText.isEmpty() ? attLabel : labelText;
+
+  Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  widget->setRowCount(++numRows);
+  QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
+  if(advanced)
+    {
+    labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
+    }
+
+  labelitem->setFlags(nonEditableFlags);
+  widget->setItem(numRows-1, 0, labelitem);
+
+  bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
+    labelitem, dynamicCastPointer<Item>(attItem));
+  refItem->widget()->setEnabled(bEnabled);
+  widget->setCellWidget(numRows-1, 1, refItem->widget());
+  widget->setItem(numRows-1, 1, new QTableWidgetItem());
 }
 
 //----------------------------------------------------------------------------

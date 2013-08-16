@@ -90,7 +90,7 @@ void qtSection::getDefinitions(
 {
   std::vector<smtk::AttributeDefinitionPtr> newdefs;
   Manager *attManager = attDef->manager();
-  attManager->derivedDefinitions(attDef, newdefs);
+  attManager->findAllDerivedDefinitions(attDef, true, newdefs);
   if(!attDef->isAbstract() && !defs.contains(attDef))
     {
     defs.push_back(attDef);
@@ -98,7 +98,7 @@ void qtSection::getDefinitions(
   std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
   for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
     {
-    if(!(*itDef)->isAbstract() && !defs.contains(attDef))
+    if(!(*itDef)->isAbstract() && !defs.contains(*itDef))
       {
       defs.push_back(*itDef);
       }
