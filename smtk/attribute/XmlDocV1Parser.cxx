@@ -90,6 +90,13 @@ void XmlDocV1Parser::process(xml_document &doc)
   node = amnode.child("Categories");
   if (node)
     {
+    // Get the default category if one is specified
+    s = node.attribute("Default").value();
+    if (s != "")
+      {
+      this->m_defaultCategory = s;
+      secCatagories.insert(s.c_str());
+      }
     for (cnode = node.first_child(); cnode; cnode = cnode.next_sibling())
       {
       if (cnode.text().empty())
@@ -422,6 +429,10 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
       {
       idef->addCategory(child.text().get());
       }
+    }
+  else if (this->m_defaultCategory != "")
+    {
+    idef->addCategory(this->m_defaultCategory.c_str());
     }
 }
 //----------------------------------------------------------------------------

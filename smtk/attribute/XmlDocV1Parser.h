@@ -144,6 +144,7 @@ namespace smtk
       std::vector<ItemExpressionInfo> m_itemExpressionInfo;
       std::vector<AttRefInfo> m_attRefInfo;
       std::stringstream m_errorStatus;
+      std::string m_defaultCategory;
       pugi::xml_node m_root; // Dummy for now!
     private:
       
