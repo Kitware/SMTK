@@ -105,7 +105,7 @@ namespace smtk
       void updateChildWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);
       void updateItemWidgetsEnableState(
-        smtk::ValueItemPtr linkedData, int &startRow, bool enabled);
+        smtk::AttributeItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
       bool hasMultiDefinition(const QString& group);
 
