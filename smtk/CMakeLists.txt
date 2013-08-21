@@ -9,15 +9,11 @@ smtk_source_group(model)
 set(smtk_headers ${attributeHeaders} ${modelHeaders})
 set(smtk_srcs ${attributeSrcs} ${modelSrcs})
 
-add_library(SMTKCore ${smtk_srcs} ${smtk_headers})
+add_library(SMTKCore ${smtk_srcs})
 smtk_export_header(SMTKCore SMTKCoreExports.h)
 
-#install the library
+#install the library and exports the library when used from a build tree
 smtk_install_library(SMTKCore)
-
-#setup the exports for the library when used from a build tree
-export(PACKAGE SMTKCore)
-export(TARGETS SMTKCore FILE SMTKCore-exports.cmake)
 
 #add the Qt GUI code
 if(SMTK_BUILD_QT)
@@ -45,7 +41,7 @@ if(SMTK_BUILD_QT)
    ${UI_BUILT_SOURCES}
    )
 
-  add_library(QtSMTK ${qtsmtk_srcs} ${qtsmtk_headers})
+  add_library(QtSMTK ${qtsmtk_srcs})
   #we need to add the location of the moc files to the include dir for
   #qtsmtk
   set_property(TARGET QtSMTK
@@ -58,13 +54,8 @@ if(SMTK_BUILD_QT)
   target_link_libraries(QtSMTK LINK_PUBLIC SMTKCore)
   smtk_export_header(QtSMTK QtSMTKExports.h)
 
-  #install the library
-  smtk_install_library(QtSMTK)
-
-  #setup the exports for the library when used from a build tree
-  export(PACKAGE QtSMTK)
-  export(TARGETS QtSMTK SMTKCore FILE QtSMTK-exports.cmake)
-
+  #install the library and exports the library when used from a build tree
+  smtk_install_library(QtSMTK DEPENDS SMTKCore)
 endif()
 
 #setup the exports for the library when used from an installed location

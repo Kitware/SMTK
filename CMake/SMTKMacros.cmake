@@ -61,13 +61,22 @@ function(smtk_private_headers)
 endfunction(smtk_private_headers)
 
 # Declare a library as needed to be installed
+# supports the signature
+#  smtk_install_library(target [DEPENDS <targets>])
+# which allows you to export a target that has dependencies
 function(smtk_install_library target)
+  set(options)
+  set(oneValueArgs)
+  set(multiValueArgs DEPENDS)
+  cmake_parse_arguments(target "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
   install(TARGETS ${target}
     EXPORT SMTK-targets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
   )
+  export(PACKAGE ${target})
+  export(TARGETS ${target} ${target_DEPENDS} FILE ${target}-exports.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it
@@ -97,6 +106,7 @@ endfunction(smtk_prepend_string)
 # example if you call smtk_source_group(model) we will set the vars:
 #   modelSrcs and modelHeaders
 function(smtk_source_group source_dir)
+
   set(src_prop_name ${source_dir}Srcs)
   set(header_prop_name ${source_dir}Headers)
 
