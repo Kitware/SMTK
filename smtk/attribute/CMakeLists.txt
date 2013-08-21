@@ -1,6 +1,6 @@
 project(SMTK_Attribute)
 
-set(AttributeHeaders
+set(attributeHeaders
   Attribute.h
   AttributeRefItem.h
   AttributeRefItemDefinition.h
@@ -39,7 +39,7 @@ set(AttributeHeaders
   XmlV1StringWriter.h
   )
 
-set(AttributeSrcs
+set(attributeSrcs
   Attribute.cxx
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
@@ -77,7 +77,7 @@ set(AttributeSrcs
 )
 
 #install the headers
-smtk_public_headers(${AttributeHeaders})
+smtk_public_headers(${attributeHeaders})
 
 
 if(SMTK_ENABLE_TESTING)

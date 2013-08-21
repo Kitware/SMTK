@@ -111,3 +111,28 @@ function(smtk_prepend_string prefix result)
   set(${result} ${newNames} PARENT_SCOPE)
 endfunction(smtk_prepend_string)
 
+
+# Builds source groups for the smtk files so that they show up nicely in
+# Visual Studio.
+# this function will set also set two variable in the parent scope.
+# they will be ${source_dir}Srcs and ${source_dir}Headers. So for
+# example if you call smtk_source_group(model) we will set the vars:
+#   modelSrcs and modelHeaders
+function(smtk_source_group source_dir)
+  set(src_prop_name ${source_dir}Srcs)
+  set(header_prop_name ${source_dir}Headers)
+
+  get_directory_property(sources DIRECTORY ${source_dir} DEFINITION ${src_prop_name})
+  get_directory_property(headers DIRECTORY ${source_dir} DEFINITION ${header_prop_name})
+
+  smtk_prepend_string("${source_dir}" sources ${sources})
+  smtk_prepend_string("${source_dir}" headers ${headers})
+
+  source_group("${source_dir}_Source" FILES ${sources})
+  source_group("${source_dir}_Header" FILES ${headers})
+
+  set(${source_dir}Srcs ${sources} PARENT_SCOPE)
+  set(${source_dir}Headers ${headers} PARENT_SCOPE)
+
+endfunction(smtk_source_group)
+

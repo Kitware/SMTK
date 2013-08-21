@@ -1,24 +1,13 @@
 
 #Build the actual code
 add_subdirectory(attribute)
-get_directory_property(AttributeSrcs DIRECTORY attribute DEFINITION AttributeSrcs)
-smtk_prepend_string("attribute" AttributeSrcs ${AttributeSrcs})
-get_directory_property(AttributeHeaders DIRECTORY attribute DEFINITION AttributeHeaders)
-smtk_prepend_string("attribute" AttributeHeaders ${AttributeHeaders})
-source_group("attribute_Source" FILES ${AttributeSrcs})
-source_group("attribute_Header" FILES ${AttributeHeaders})
+smtk_source_group(attribute)
 
 add_subdirectory(model)
-get_directory_property(ModelSrcs DIRECTORY model DEFINITION ModelSrcs)
-smtk_prepend_string("model" ModelSrcs ${ModelSrcs})
-get_directory_property(ModelHeaders DIRECTORY model DEFINITION ModelHeaders)
-smtk_prepend_string("model" ModelHeaders ${ModelHeaders})
-source_group("model_Source" FILES ${ModelSrcs})
-source_group("model_Header" FILES ${ModelHeaders})
+smtk_source_group(model)
 
-set(smtk_headers ${AttributeHeaders} ${ModelHeaders})
-set(smtk_srcs ${AttributeSrcs} ${ModelSrcs})
-
+set(smtk_headers ${attributeHeaders} ${modelHeaders})
+set(smtk_srcs ${attributeSrcs} ${modelSrcs})
 
 add_library(SMTKCore ${smtk_srcs} ${smtk_headers})
 
@@ -52,6 +41,7 @@ if(SMTK_BUILD_QT)
 
   add_subdirectory(Qt)
 
+  #we should at some point roll this into smtk_source_group
   set (smtkQtDepends ${QT_LIBRARIES})
   get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
   smtk_prepend_string("Qt" QAttrLibSrcs ${QAttrLibSrcs})

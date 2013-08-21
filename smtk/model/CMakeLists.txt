@@ -1,12 +1,12 @@
 # set up sources to build
-set(ModelSrcs
+set(modelSrcs
   Model.cxx
   ModelDomainItem.cxx
   Item.cxx
   GroupItem.cxx
   )
 
-set(ModelHeaders
+set(modelHeaders
   Model.h
   ModelDomainItem.h
   Item.h
@@ -14,5 +14,5 @@ set(ModelHeaders
   )
 
 #install the headers
-smtk_public_headers(${ModelHeaders})
+smtk_public_headers(${modelHeaders})
 
