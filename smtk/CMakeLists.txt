@@ -65,7 +65,7 @@ if(SMTK_BUILD_QT)
   add_library(QtSMTK ${qtsmtk_srcs} ${qtsmtk_headers})
   smtk_set_includes(QtSMTK ${QtSMTK_INCLUDE_DIRS})
 
-  target_link_libraries(QtSMTK LINK_PUBLIC Qt4::QtCore SMTKCore)
+  target_link_libraries(QtSMTK LINK_PUBLIC Qt4::QtGui SMTKCore)
   smtk_export_header(QtSMTK QtSMTKExports.h)
 
   #install the library
