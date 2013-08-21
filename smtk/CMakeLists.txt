@@ -10,10 +10,6 @@ set(smtk_headers ${attributeHeaders} ${modelHeaders})
 set(smtk_srcs ${attributeSrcs} ${modelSrcs})
 
 add_library(SMTKCore ${smtk_srcs} ${smtk_headers})
-
-smtk_set_includes(SMTKCore ${SMTK_Attribute_INCLUDE_DIRS})
-
-#create the export header symbol exporting
 smtk_export_header(SMTKCore SMTKCoreExports.h)
 
 #install the library
@@ -23,25 +19,12 @@ smtk_install_library(SMTKCore)
 export(PACKAGE SMTKCore)
 export(TARGETS SMTKCore FILE SMTKCore-exports.cmake)
 
-#add the examples code
-if(SMTK_ENABLE_EXAMPLES)
-  add_subdirectory(Examples)
-endif()
-
-# Option to build Qt ui compoments for attributes
-option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-
 #add the Qt GUI code
 if(SMTK_BUILD_QT)
-  #make find qt4 bring in import targets which are far nicer to use
-  set(QT_USE_IMPORTED_TARGETS TRUE)
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
 
   add_subdirectory(Qt)
 
   #we should at some point roll this into smtk_source_group
-  set (smtkQtDepends ${QT_LIBRARIES})
   get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
   smtk_prepend_string("Qt" QAttrLibSrcs ${QAttrLibSrcs})
   get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
@@ -63,9 +46,16 @@ if(SMTK_BUILD_QT)
    )
 
   add_library(QtSMTK ${qtsmtk_srcs} ${qtsmtk_headers})
-  smtk_set_includes(QtSMTK ${QtSMTK_INCLUDE_DIRS})
+  #we need to add the location of the moc files to the include dir for
+  #qtsmtk
+  set_property(TARGET QtSMTK
+               APPEND PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
 
-  target_link_libraries(QtSMTK LINK_PUBLIC Qt4::QtGui SMTKCore)
+  #set QtSMTK to link to qtGUI and include dirs
+  qt4_use_modules(QtSMTK LINK_PUBLIC Gui)
+
+  #set QtSMTK to publicly link to SMTKCore
+  target_link_libraries(QtSMTK LINK_PUBLIC SMTKCore)
   smtk_export_header(QtSMTK QtSMTKExports.h)
 
   #install the library

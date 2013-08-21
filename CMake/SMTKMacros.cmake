@@ -70,28 +70,6 @@ function(smtk_install_library target)
   )
 endfunction(smtk_install_library)
 
-#setup include directories as target properties
-function(smtk_set_includes target)
-  #attach the current build and source directory
-  set(full_includes ${CMAKE_CURRENT_BINARY_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}
-                    ${ARGN}
-                    )
-  #include everything
-  include_directories(${full_includes})
-
-  #set up a property on the passed in target
-  set_property(TARGET ${target} PROPERTY SAVED_INCLUDE_DIRS ${full_includes})
-endfunction(smtk_set_includes)
-
-#read the include directory proptery for a target and create a variable
-#in the callers scope with the name past names as the variable includes_var_name
-function(smtk_get_includes target includes_var_name)
-  get_property(saved_includes TARGET ${target} PROPERTY SAVED_INCLUDE_DIRS)
-  set(${includes_var_name} ${saved_includes} PARENT_SCOPE)
-endfunction(smtk_get_includes)
-
-
 #generate an export header and create an install target for it
 function(smtk_export_header target file)
   smtk_get_kit_name(name dir_prefix)
