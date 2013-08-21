@@ -33,11 +33,10 @@ option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 
 #add the Qt GUI code
 if(SMTK_BUILD_QT)
+  #make find qt4 bring in import targets which are far nicer to use
+  set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
-  if(NOT QT4_FOUND)
-    message(FATAL_ERROR "QT4 libraries are missing")
-  endif()
-  INCLUDE(${QT_USE_FILE})
+  include(${QT_USE_FILE})
 
   add_subdirectory(Qt)
 
@@ -66,7 +65,7 @@ if(SMTK_BUILD_QT)
   add_library(QtSMTK ${qtsmtk_srcs} ${qtsmtk_headers})
   smtk_set_includes(QtSMTK ${QtSMTK_INCLUDE_DIRS})
 
-  target_link_libraries(QtSMTK ${smtkQtDepends} LINK_PUBLIC SMTKCore)
+  target_link_libraries(QtSMTK LINK_PUBLIC Qt4::QtCore SMTKCore)
   smtk_export_header(QtSMTK QtSMTKExports.h)
 
   #install the library
