@@ -1,9 +1,3 @@
-IF(BUILD_SHARED_LIBS)
-  SET(LIBTYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-  SET(LIBTYPE STATIC)
-ENDIF()
-
 
 #Build the actual code
 add_subdirectory(attribute)
@@ -26,9 +20,7 @@ set(smtk_headers ${AttributeHeaders} ${ModelHeaders})
 set(smtk_srcs ${AttributeSrcs} ${ModelSrcs})
 
 
-add_library(SMTKCore ${LIBTYPE}
-   ${smtk_srcs} ${smtk_headers}
-   )
+add_library(SMTKCore ${smtk_srcs} ${smtk_headers})
 
 smtk_set_includes(SMTKCore ${SMTK_Attribute_INCLUDE_DIRS})
 
@@ -81,9 +73,7 @@ if(SMTK_BUILD_QT)
    ${UI_BUILT_SOURCES}
    )
 
-  add_library(QtSMTK ${LIBTYPE}
-     ${qtsmtk_srcs} ${qtsmtk_headers}
-     )
+  add_library(QtSMTK ${qtsmtk_srcs} ${qtsmtk_headers})
   smtk_set_includes(QtSMTK ${QtSMTK_INCLUDE_DIRS})
 
   target_link_libraries(QtSMTK ${smtkQtDepends} SMTKCore)
