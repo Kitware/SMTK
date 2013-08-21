@@ -163,7 +163,7 @@ void qtSimpleExpressionSection::createWidget()
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   // create a list box for all the array entries
   this->Internals->FuncList = new QListWidget(frame);
-    
+
   this->Internals->FuncTable = new qtTableWidget(frame);
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   this->Internals->FuncTable->setSizePolicy(tableSizePolicy);
@@ -182,7 +182,7 @@ void qtSimpleExpressionSection::createWidget()
   this->Internals->DeltaInput->setValidator(validator);
   this->Internals->InitValueInput = new QLineEdit(frame);
   this->Internals->InitValueInput->setValidator(validator);
-  
+
   QGridLayout* editorLayout = new QGridLayout();
   editorLayout->addWidget(new QLabel("Initial Value",frame), 0, 0);
   editorLayout->addWidget(new QLabel("Delta",frame), 0, 1);
@@ -192,13 +192,13 @@ void qtSimpleExpressionSection::createWidget()
   editorLayout->addWidget(this->Internals->NumberBox, 1, 2);
   this->Internals->InitValueInput->setText("0.0");
   this->Internals->DeltaInput->setText("0.0");
-  
+
   this->Internals->EditorGroup = new QGroupBox("Use Function Expression", frame);
   this->Internals->EditorGroup->setCheckable(1);
   this->Internals->EditorGroup->setChecked(0);
   this->Internals->EditorGroup->setToolTip(
     this->Internals->getFunctionParserDescription());
-  
+
   QVBoxLayout* addLayout = new QVBoxLayout(this->Internals->EditorGroup);
   QHBoxLayout* exprLayout = new QHBoxLayout();
   exprLayout->addWidget(new QLabel("f(X)=",frame));
@@ -235,29 +235,29 @@ void qtSimpleExpressionSection::createWidget()
 
   frame->addWidget(leftFrame);
   frame->addWidget(rightFrame);
-  QObject::connect(this->Internals->FuncList, 
-    SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )), 
+  QObject::connect(this->Internals->FuncList,
+    SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
     this, SLOT(onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
-  QObject::connect(this->Internals->FuncList, 
-    SIGNAL(itemChanged (QListWidgetItem *)), 
+  QObject::connect(this->Internals->FuncList,
+    SIGNAL(itemChanged (QListWidgetItem *)),
     this, SLOT(onFuncNameChanged(QListWidgetItem * )));
 
-  QObject::connect(this->Internals->AddButton, 
+  QObject::connect(this->Internals->AddButton,
     SIGNAL(clicked()), this, SLOT(onCreateNew()));
-  QObject::connect(this->Internals->CopyButton, 
+  QObject::connect(this->Internals->CopyButton,
     SIGNAL(clicked()), this, SLOT(onCopySelected()));
-  QObject::connect(this->Internals->DeleteButton, 
+  QObject::connect(this->Internals->DeleteButton,
     SIGNAL(clicked()), this, SLOT(onDeleteSelected()));
-  QObject::connect(this->Internals->AddValueButton, 
+  QObject::connect(this->Internals->AddValueButton,
     SIGNAL(clicked()), this, SLOT(onAddValue()));
-  QObject::connect(this->Internals->RemoveValueButton, 
+  QObject::connect(this->Internals->RemoveValueButton,
     SIGNAL(clicked()), this, SLOT(onRemoveSelectedValues()));
 
-  QObject::connect(this->Internals->FuncTable, 
-    SIGNAL(itemChanged (QTableWidgetItem *)), 
+  QObject::connect(this->Internals->FuncTable,
+    SIGNAL(itemChanged (QTableWidgetItem *)),
     this, SLOT(onFuncValueChanged(QTableWidgetItem * )));
-  QObject::connect(this->Internals->FuncTable, 
-    SIGNAL(keyPressed (QKeyEvent *)), 
+  QObject::connect(this->Internals->FuncTable,
+    SIGNAL(keyPressed (QKeyEvent *)),
     this, SLOT(onFuncTableKeyPress(QKeyEvent * )));
   this->Internals->FuncTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->Internals->FuncList->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -270,7 +270,7 @@ void qtSimpleExpressionSection::createWidget()
     parentlayout->setAlignment(Qt::AlignJustify);
     parentlayout->addWidget(frame);
     }
-  
+
   this->initFunctionList();
 }
 
@@ -287,8 +287,8 @@ smtk::ValueItemPtr qtSimpleExpressionSection::getStringDataFromItem(QListWidgetI
 //-----------------------------------------------------------------------------
 smtk::AttributePtr qtSimpleExpressionSection::getFunctionFromItem(
   QListWidgetItem * item)
-{ 
-  Attribute* rawPtr = item ? 
+{
+  Attribute* rawPtr = item ?
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
 }
@@ -340,7 +340,7 @@ void qtSimpleExpressionSection::onFuncSelectionChanged(
   this->Internals->FuncTable->blockSignals(true);
   if(dataItem)
     {
-    qtUIManager::instance()->updateArrayTableWidget(dataItem, 
+    qtUIManager::instance()->updateArrayTableWidget(dataItem,
       this->Internals->FuncTable);
     this->Internals->FuncTable->resizeColumnsToContents();
     this->updateTableHeader();
@@ -352,9 +352,9 @@ void qtSimpleExpressionSection::onFuncSelectionChanged(
     this->Internals->FuncTable->setColumnCount(0);
     }
   this->Internals->FuncTable->blockSignals(false);
-  
+
   // Now set up the function editor UI
-  
+
   smtk::ValueItemPtr expressionItem = this->getStringDataFromItem(current);
   this->updateFunctionEditorUI(expressionItem, dataItem);
 }
@@ -367,7 +367,7 @@ void qtSimpleExpressionSection::updateFunctionEditorUI(
   this->Internals->NumberBox->setValue(10);
   this->Internals->DeltaInput->setText("0.0");
   this->Internals->InitValueInput->setText("0.0");
-  
+
   if(!expressionItem)
     {
     return;
@@ -418,10 +418,10 @@ void qtSimpleExpressionSection::onFuncNameChanged(QListWidgetItem* item)
     func->references(refs);
     for (i = 0; i < refs.size(); i++)
       {
-      std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+      std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
         << "\n";
-      } 
-    } 
+      }
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -455,7 +455,7 @@ void qtSimpleExpressionSection::onCreateNew()
       {
       return;
       }
-    const GroupItemDefinition *itemDefinition = 
+    const GroupItemDefinition *itemDefinition =
       dynamic_cast<const GroupItemDefinition *>(attDef->itemDefinition(0).get());
     if(!itemDefinition)
       {
@@ -487,8 +487,8 @@ void qtSimpleExpressionSection::onCreateNew()
 void qtSimpleExpressionSection::displayExpressionError(
   std::string& errorMsg, int errorPos)
 {
-  QString strMessage = QString(errorMsg.c_str()) + 
-    "\nThe function expression has some syntax error at cursor position: " + 
+  QString strMessage = QString(errorMsg.c_str()) +
+    "\nThe function expression has some syntax error at cursor position: " +
     QString::number(errorPos);
   QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),strMessage);
   this->Internals->ExpressionInput->setFocus();
@@ -620,7 +620,7 @@ QListWidgetItem* qtSimpleExpressionSection::addFunctionListItem(
     {
     return NULL;
     }
-    
+
   QListWidgetItem* item = NULL;
   smtk::GroupItemPtr dataItem = this->getFunctionArrayData(childData);
   if(dataItem)
@@ -652,7 +652,7 @@ void qtSimpleExpressionSection::onFuncTableKeyPress(QKeyEvent* e)
     e->accept();
     return;
     }
-  // Allow copying 
+  // Allow copying
   if(e->key() == Qt::Key_C && e->modifiers() == Qt::ControlModifier)
     {
     QStringList list ;
@@ -664,7 +664,7 @@ void qtSimpleExpressionSection::onFuncTableKeyPress(QKeyEvent* e)
         for (int c=0; c<this->Internals->FuncTable->columnCount(); c++)
           {
           list << this->Internals->FuncTable->item(r, c)->text();
-          if(c<this->Internals->FuncTable->columnCount()-1) 
+          if(c<this->Internals->FuncTable->columnCount()-1)
             {
             list << "\t";
             }
@@ -707,12 +707,12 @@ void qtSimpleExpressionSection::pasteFunctionValues(QString& str, bool clearExp)
     {
     QMessageBox::warning(this->parentWidget(), tr("SimBuilder Functions"),
       tr("The information cannot be pasted because the copy "
-      "and paste columns aren’t the same size."));
+      "and paste columns aren't the same size."));
     return;
     }
 
-  // add all the pasted rows  
-  for (int i = 0; i < numRows; ++i) 
+  // add all the pasted rows
+  for (int i = 0; i < numRows; ++i)
     {
     QStringList columns = rows[i].split('\t');
     if(columns.count() != numColumns)
@@ -720,7 +720,7 @@ void qtSimpleExpressionSection::pasteFunctionValues(QString& str, bool clearExp)
       continue;
       }
     double* vals = new double[numColumns];
-    for (int j = 0; j < numColumns; ++j) 
+    for (int j = 0; j < numColumns; ++j)
       {
       vals[j] = columns[j].toDouble();
       }
@@ -766,7 +766,7 @@ void qtSimpleExpressionSection::onRemoveSelectedValues()
     return;
     }
   this->Internals->FuncTable->blockSignals(true);
-  qtUIManager::instance()->removeSelectedTableValues(dataItem, 
+  qtUIManager::instance()->removeSelectedTableValues(dataItem,
     this->Internals->FuncTable);
   this->Internals->FuncTable->blockSignals(false);
   this->clearFuncExpression();
@@ -788,7 +788,7 @@ void qtSimpleExpressionSection::initFunctionList()
   attManager->findAttributes(attDef, result);
   std::vector<smtk::AttributePtr>::iterator it;
   this->Internals->FuncList->blockSignals(true);
-  this->Internals->FuncList->clear();    
+  this->Internals->FuncList->clear();
   for (it=result.begin(); it!=result.end(); ++it)
     {
     this->addFunctionListItem(*it);
@@ -798,7 +798,7 @@ void qtSimpleExpressionSection::initFunctionList()
   if(this->Internals->FuncList->count())
     {
     this->Internals->FuncList->setCurrentRow(0);
-    }  
+    }
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionSection::clearFuncExpression()
