@@ -39,11 +39,11 @@ namespace smtk
     {
       Q_OBJECT
 
-    public:         
+    public:
       qtAttributeRefItem(smtk::AttributeItemPtr,
         QWidget* parent);
-      virtual ~qtAttributeRefItem();  
-      const QString& labelText() const;
+      virtual ~qtAttributeRefItem();
+      QString labelText() const;
       void setLabelVisible(bool);
 
     public slots:
@@ -51,7 +51,7 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      
+
     protected:
       virtual void createWidget();
 
