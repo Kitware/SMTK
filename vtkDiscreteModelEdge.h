@@ -114,6 +114,7 @@ protected:
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCmbMapToCmbModel;
+  friend class vtkCMBModelCreateRectangleModelOperator;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;
   friend class vtkCmbMeshToModelWriter;
@@ -127,6 +128,8 @@ protected:
   // only be called from vtkDiscreteModel on the server as vtkDiscreteModel is
   // responsible for removing this cell from the current
   // vtkDiscreteModelGeometricEntity that is classified on.
+  // Note that it can potentially modify the values inside
+  //  of cellIds.
   virtual bool AddCellsToGeometry(vtkIdList* cellIds);
 
   virtual bool AddCellsClassificationToMesh(vtkIdList* cellIds);

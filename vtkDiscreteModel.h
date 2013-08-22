@@ -243,6 +243,7 @@ protected:
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBModelBuilder;
+  friend class vtkCMBModelCreateRectangleModelOperator;
   friend class vtkDiscreteModelEdge;
   friend class CmbSceneBuilderCore;
   friend class CmbGeologyBuilderCore;
