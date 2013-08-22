@@ -152,7 +152,7 @@ void qtAssociationWidget::showDomainsAssociation(
 
   Manager *attManager = qtUIManager::instance()->attManager();
   std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
-  QList<QString> attNames;
+  QList<smtk::AttributePtr> allAtts;
   for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
     {
     if((*itAttDef)->isAbstract())
@@ -164,13 +164,11 @@ void qtAssociationWidget::showDomainsAssociation(
       std::vector<smtk::AttributePtr> result;
       attManager->findAttributes(*itAttDef, result);
       std::vector<smtk::AttributePtr>::iterator itAtt;
-      QString attname;
       for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
         {
-        attname = (*itAtt)->name().c_str();
-        if(!attNames.contains(attname))
+        if(!allAtts.contains(*itAtt))
           {
-          attNames.push_back(attname);
+          allAtts.push_back(*itAtt);
           }
         }
       }
@@ -179,7 +177,7 @@ void qtAssociationWidget::showDomainsAssociation(
   std::vector<smtk::ModelGroupItemPtr>::iterator itDomain;
   for (itDomain=theDomains.begin(); itDomain!=theDomains.end(); ++itDomain)
     {
-    this->addDomainListItem(*itDomain, attNames);
+    this->addDomainListItem(*itDomain, allAtts);
     }
 
   this->Internals->DomainMaterialTable->blockSignals(false);
@@ -207,6 +205,9 @@ void qtAssociationWidget::showAttributeAssociation(
     this->Internals->AvailableList->blockSignals(false);
     return;
     }
+  // figure out how many unique definitions this model item has
+  QList<smtk::AttributeDefinitionPtr> uniqueDefs;
+  this->processDefUniqueness(theEntiy, uniqueDefs);
 
   Manager *attManager = qtUIManager::instance()->attManager();
   std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
@@ -232,8 +233,10 @@ void qtAssociationWidget::showAttributeAssociation(
         this->addAttributeAssociationItem(
           this->Internals->CurrentList, *itAtt);
         }
-      else
+      else if(!uniqueDefs.contains(*itAttDef))
         {
+        // we need to make sure this att is not associated with other
+        // same type model entities.
         this->addAttributeAssociationItem(
           this->Internals->AvailableList, *itAtt);
         }
@@ -294,7 +297,8 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
     this->addModelAssociationListItem(this->Internals->CurrentList, *it);
     }
 
-  bool isMaterial = theAtt->definition()->associatesWithRegion();
+  this->processAttUniqueness(attDef, assignedIds);
+
   int numItems = (int)refModel->numberOfItems();
   std::map<int, smtk::ModelItemPtr>::const_iterator itemIt =
     refModel->itemIterator();
@@ -309,27 +313,13 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
       {
       smtk::ModelGroupItemPtr itemGroup =
         smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
-      bool bRegion = itemGroup->canContain(smtk::model::Item::REGION);
-      bool bFace = itemGroup->canContain(smtk::model::Item::FACE);
-      bool bEdge = itemGroup->canContain(smtk::model::Item::EDGE);
-      if(isMaterial == bRegion) //both true, or both false
+      if(!assignedIds.contains(itemIt->second->id()))
         {
-        if(!assignedIds.contains(itemIt->second->id()))
+        if((itemGroup->entityMask() & attDef->associationMask()) ==
+           itemGroup->entityMask())
           {
-          if(bRegion)
-            {
-            this->addModelAssociationListItem(
-              this->Internals->AvailableList, itemIt->second);
-            }
-          else // for BCs, we need to differentiate face and/or edge assocations
-            {
-            if((bFace && attDef->associatesWithFace()) ||
-              (bEdge && attDef->associatesWithEdge()))
-              {
-              this->addModelAssociationListItem(
-                this->Internals->AvailableList, itemIt->second);
-              }
-            }
+          this->addModelAssociationListItem(
+            this->Internals->AvailableList, itemIt->second);          
           }
         }
       }
@@ -337,6 +327,83 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::processAttUniqueness(
+  smtk::AttributeDefinitionPtr attDef, QList<int> &assignedIds)
+{
+  if(attDef->isUnique())
+    {
+    // we need to exclude any entities that are already assigned another att
+    // Get the most "basic" definition that is unique
+    Manager *attManager = attDef->manager();
+    smtk::ConstAttributeDefinitionPtr baseDef =
+      attManager->findIsUniqueBaseClass(attDef);
+    smtk::AttributeDefinitionPtr bdef(smtk::constCastPointer<Definition>(baseDef));
+    std::vector<smtk::AttributeDefinitionPtr> newdefs;
+    attManager->findAllDerivedDefinitions(bdef, true, newdefs);
+    std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
+    for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
+      {
+//      if((*itDef) != attDef)
+//        {
+        std::vector<smtk::AttributePtr> result;
+        attManager->findAttributes(*itDef, result);
+        std::vector<smtk::AttributePtr>::iterator itAtt;
+        for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
+          {
+          int numAstItems = (int)(*itAtt)->numberOfAssociatedEntities();
+          std::set<smtk::ModelItemPtr>::const_iterator itIt = (*itAtt)->associatedEntities();
+          for(int i=0; i<numAstItems; ++itIt, ++i)
+            {
+            if(!assignedIds.contains((*itIt)->id()))
+              {
+              assignedIds.append((*itIt)->id());
+              }
+            }
+          }
+//        }
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtAssociationWidget::processDefUniqueness(
+  smtk::ModelItemPtr theEntiy, 
+  QList<smtk::AttributeDefinitionPtr> &uniqueDefs)
+{
+  if(!theEntiy.get())
+    {
+    return;
+    }
+  int numAtts = theEntiy->numberOfAssociatedAttributes();
+  if( numAtts == 0)
+    {
+    return;
+    }
+
+  std::set<smtk::AttributePtr>::const_iterator associatedAtt =
+    theEntiy->associatedAttributes();
+  for(int i=0; i<numAtts; ++associatedAtt, ++i)
+    {
+    smtk::AttributeDefinitionPtr attDef = (*associatedAtt)->definition();
+    if(attDef->isUnique())
+      {
+      Manager *attManager = attDef->manager();
+      smtk::ConstAttributeDefinitionPtr baseDef =
+        attManager->findIsUniqueBaseClass(attDef);
+      smtk::AttributeDefinitionPtr bdef(smtk::constCastPointer<Definition>(baseDef));
+      std::vector<smtk::AttributeDefinitionPtr> newdefs;
+      attManager->findAllDerivedDefinitions(bdef, true, newdefs);
+      std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
+      for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
+        {
+        uniqueDefs.append(*itDef);
+        }
+      }
+    }
+}
+
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onCurrentListSelectionChanged(
@@ -427,7 +494,7 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::addDomainListItem(
-  smtk::ModelItemPtr domainEnt, QList<QString>& attNames)
+  smtk::ModelItemPtr domainEnt, QList<smtk::AttributePtr>& allAtts)
 {
   QString domainName = domainEnt->name().c_str();
   QTableWidgetItem* domainItem = new QTableWidgetItem(domainName);
@@ -435,6 +502,17 @@ void qtAssociationWidget::addDomainListItem(
   int numRows = this->Internals->DomainMaterialTable->rowCount();
   this->Internals->DomainMaterialTable->setRowCount(++numRows);
   this->Internals->DomainMaterialTable->setItem(numRows-1, 0, domainItem);
+
+  QList<QString> attNames;
+  QString attname;
+  foreach (smtk::AttributePtr att, allAtts)
+    {
+    attname = att->name().c_str();
+    if(!attNames.contains(attname))
+      {
+      attNames.push_back(attname);
+      }
+    }
 
   QComboBox* combo = new QComboBox(this);
   combo->addItems(attNames);

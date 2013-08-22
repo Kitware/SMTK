@@ -150,20 +150,30 @@ void Attribute::associateEntity(smtk::ModelItemPtr entity)
   entity->attachAttribute(this->pointer());
 }
 //----------------------------------------------------------------------------
-void Attribute::disassociateEntity(smtk::ModelItemPtr entity)
+void Attribute::disassociateEntity(smtk::ModelItemPtr entity, bool reverse)
 {
+  if (!this->isEntityAssociated(entity))
+    {
+    // Nothing to be done
+    return;
+    }
+
   if (this->m_entities.erase(entity))
     {
-    entity->detachAttribute(this->pointer());
+    if(reverse)
+      {
+      entity->detachAttribute(this->pointer());
+      }
     }
 }
 //----------------------------------------------------------------------------
 void Attribute::removeAllAssociations()
 {
-  std::set<smtk::ModelItemPtr>::iterator it;
-  for (it = this->m_entities.begin(); it != this->m_entities.end(); it++)
+  std::set<smtk::ModelItemPtr>::const_iterator it =
+    this->associatedEntities();
+  for (; it != this->m_entities.end(); it++)
     {
-    (*it)->detachAttribute(this->pointer());
+    (*it)->detachAttribute(this->pointer(), false);
     }
 }
 //----------------------------------------------------------------------------

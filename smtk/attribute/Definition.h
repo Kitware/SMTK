@@ -202,8 +202,6 @@ namespace smtk
         {this->m_briefDescription = text;}
 
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
-      smtk::ConstAttributeDefinitionPtr findIsUniqueBaseClass() const;
-
       
     protected:
       void clearManager()

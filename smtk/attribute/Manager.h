@@ -76,6 +76,10 @@ namespace smtk
       void findDefinitionAttributes(const std::string &type,
                                     std::vector<smtk::AttributePtr> &result) const;
       void findDefinitions(long mask, std::vector<smtk::AttributeDefinitionPtr> &result) const;
+ 
+      smtk::ConstAttributeDefinitionPtr findIsUniqueBaseClass(
+        smtk::AttributeDefinitionPtr attDef) const;
+
       bool rename(AttributePtr att, const std::string &newName);
       bool defineAnalysis(const std::string &analysisName,
                           const std::set<std::string> &categories);
@@ -111,6 +115,7 @@ namespace smtk
         {this->m_refModel = refmodel;}
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
+
     protected:
       void internalFindAllDerivedDefinitions(AttributeDefinitionPtr def, bool onlyConcrete,
                                              std::vector<AttributeDefinitionPtr> &result) const;

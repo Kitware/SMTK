@@ -39,22 +39,22 @@ namespace smtk
     class SMTKCORE_EXPORT GroupItem : public Item
     {
     public:
-      GroupItem(Model *model, int myid, unsigned int mask);
+      GroupItem(Model *model, int myid, unsigned long mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
-      unsigned int entityMask() const
+      unsigned long entityMask() const
       { return this->m_entityMask;}
       bool canContain(const smtk::ModelItemPtr ptr) const
       {return this->canContain(ptr->type());}
       bool canContain(smtk::model::Item::Type enType) const
-      {return ((this->m_entityMask & enType) == enType);}
+      {return ((this->m_entityMask & enType) != 0);}
       virtual std::size_t numberOfItems() const = 0;
       virtual smtk::ModelItemPtr item(int i) const = 0;
       virtual bool insert(smtk::ModelItemPtr &ptr) = 0;
       virtual bool remove(smtk::ModelItemPtr &ptr) = 0;
 
     protected:
-      unsigned int m_entityMask;
+      unsigned long m_entityMask;
 
     private:
     };

@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::model; 
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Model *model, int myid, unsigned int mask): 
+GroupItem::GroupItem(Model *model, int myid, unsigned long mask): 
   Item(model, myid), m_entityMask(mask)
 {
 }
