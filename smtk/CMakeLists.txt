@@ -59,9 +59,25 @@ if(SMTK_BUILD_QT)
 
   #install the library and exports the library when used from a build tree
   smtk_install_library(QtSMTK DEPENDS SMTKCore)
+
 endif()
 
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location
 install(EXPORT SMTK-targets DESTINATION lib)
+
+#wrap everything
+if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+  sbk_wrap_library(SMTKCore
+    GENERATOR_ARGS --avoid-protected-hack
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    LOCAL_INCLUDE_DIRECTORIES
+      ${CMAKE_CURRENT_SOURCE_DIR}/attribute
+      ${CMAKE_CURRENT_SOURCE_DIR}/model
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${CMAKE_CURRENT_BINARY_DIR}
+    TYPESYSTEM typesystem.xml
+    HEADERS ${smtk_headers}
+  )
+endif()
