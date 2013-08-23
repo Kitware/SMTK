@@ -55,7 +55,7 @@ namespace smtk
       { return this->removeGroupItemsByMask(
         this->convertGroupTypeToMask(grouptype, entType));}
       virtual void removeGroupItemsByMask(unsigned long mask);
-      virtual void findGroupItems(unsigned long mask, 
+      virtual void findGroupItems(unsigned long mask,
         std::vector<smtk::ModelGroupItemPtr> &result) const;
 
       virtual std::size_t numberOfItems()
@@ -63,12 +63,13 @@ namespace smtk
       std::map<int, smtk::ModelItemPtr>::const_iterator itemIterator() const
         {return this->m_items.begin();}
 
-      typedef enum
+      enum ModelEntityNodalTypes
         {
         AllNodesType = 0,
         BoundaryNodesType,
         InteriorNodesType
-        } ModelEntityNodalTypes;
+        };
+
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
     protected:
