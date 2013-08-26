@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtSection.h"
 
-#include <vector>;
+#include <vector>
 
 class qtModelEntitySectionInternals;
 class QListWidgetItem;
