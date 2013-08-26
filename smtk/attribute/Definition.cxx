@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/Manager.h"
 #include <iostream>
 
 using namespace smtk::attribute; 
@@ -90,25 +91,13 @@ bool Definition::conflicts(smtk::AttributeDefinitionPtr def) const
     }
 
   // Get the most "basic" definition that is unique
-   smtk::ConstAttributeDefinitionPtr baseDef = this->findIsUniqueBaseClass();
-  // See if the other definition is derived from this base defintion.
+   smtk::ConstAttributeDefinitionPtr baseDef =
+     this->m_manager->findIsUniqueBaseClass(def);
+  // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
 }
-//----------------------------------------------------------------------------
-smtk::ConstAttributeDefinitionPtr Definition::findIsUniqueBaseClass() const
-{
-  const Definition *uDef = this, *def;
-  while (1)
-    {
-    def = uDef->m_baseDefinition.get();
-    if ((def == NULL) || (!def->isUnique()))
-      {
-      return smtk::ConstAttributeDefinitionPtr(uDef);
-      }
-    uDef = def;
-    }
-}
+
 //----------------------------------------------------------------------------
 bool 
 Definition::canBeAssociated(smtk::ModelItemPtr entity,

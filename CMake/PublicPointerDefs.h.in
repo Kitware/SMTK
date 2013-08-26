@@ -38,6 +38,12 @@ namespace smtk
     return @POINTER_NAMESPACE@::dynamic_pointer_cast<T>(r);
   }
 
+  template <typename T, typename U>
+  inline @POINTER_NAMESPACE@::shared_ptr<T> constCastPointer(const @POINTER_NAMESPACE@::shared_ptr<U> &r)
+  {
+    return @POINTER_NAMESPACE@::const_pointer_cast<T>(r);
+  }
+
   namespace model
   {
     class Model;

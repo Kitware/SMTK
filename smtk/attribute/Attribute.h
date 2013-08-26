@@ -105,7 +105,7 @@ namespace smtk
       std::set<smtk::ModelItemPtr>::const_iterator associatedEntities() const
       {return this->m_entities.begin();}
       void associateEntity(smtk::ModelItemPtr entity);
-      void disassociateEntity(smtk::ModelItemPtr entity);
+      void disassociateEntity(smtk::ModelItemPtr entity, bool reverse=true);
       void removeAllAssociations();
 
       // These methods only applies to Attributes whose

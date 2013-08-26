@@ -85,10 +85,15 @@ namespace smtk
       virtual QListWidgetItem* addAttributeAssociationItem(
         QListWidget* theList, smtk::AttributePtr att);
       virtual void addDomainListItem(
-        smtk::ModelItemPtr domainItem, QList<QString>& attNames);
+        smtk::ModelItemPtr domainItem, QList<smtk::AttributePtr>& allAtts);
+
+      void processAttUniqueness(
+        smtk::AttributeDefinitionPtr attDef, QList<int> &assignedIds);
+      void processDefUniqueness(
+        smtk::ModelItemPtr theEntiy,
+        QList<smtk::AttributeDefinitionPtr> &uniqueDefs);
 
     private:
-
       qtAssociationWidgetInternals *Internals;
 
     }; // class

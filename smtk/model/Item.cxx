@@ -66,21 +66,30 @@ void Item::attachAttribute(smtk::AttributePtr anAtt)
   anAtt->associateEntity(this->pointer());
 }
 //----------------------------------------------------------------------------
-void Item::detachAttribute(smtk::AttributePtr anAtt)
+void Item::detachAttribute(smtk::AttributePtr anAtt, bool reverse)
 {
   if (this->isAttributeAssociated(anAtt))
     {
     this->m_attributes.erase(anAtt);
-    anAtt->disassociateEntity(this->pointer());
+    if(reverse)
+      {
+      anAtt->disassociateEntity(this->pointer());
+      }
     }
 }
 //----------------------------------------------------------------------------
 void Item::detachAllAttributes()
 {
-  std::set<smtk::AttributePtr>::iterator it;
-  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
+  if(this->m_attributes.size() == 0)
     {
-    (*it)->disassociateEntity(this->pointer());
+    return;
+    }
+
+  std::set<smtk::AttributePtr>::const_iterator associatedAtt=
+    this->associatedAttributes();
+  for (; associatedAtt != this->m_attributes.end(); ++associatedAtt)
+    {
+    (*associatedAtt)->disassociateEntity(this->pointer(), false);
     }
   this->m_attributes.clear();
 }

@@ -60,7 +60,7 @@ namespace smtk
       virtual void setName(std::string & strname){;}
 
       virtual void attachAttribute(smtk::AttributePtr);
-      virtual void detachAttribute(smtk::AttributePtr);
+      virtual void detachAttribute(smtk::AttributePtr, bool reverse=true);
       virtual void detachAllAttributes();
       virtual bool isAttributeAssociated(smtk::AttributePtr) const;
       std::set<smtk::AttributePtr>::const_iterator associatedAttributes() const

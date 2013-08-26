@@ -46,7 +46,7 @@ Model::~Model()
     }
 }
 //----------------------------------------------------------------------------
-void Model::findGroupItems(unsigned int mask, 
+void Model::findGroupItems(unsigned long mask, 
   std::vector<smtk::ModelGroupItemPtr> &result) const
 {
   std::map<int, smtk::ModelItemPtr>::iterator it;
@@ -63,7 +63,7 @@ void Model::findGroupItems(unsigned int mask,
     }
 }
 //----------------------------------------------------------------------------
-void Model::removeGroupItemsByMask(unsigned int mask)
+void Model::removeGroupItemsByMask(unsigned long mask)
 {
   std::vector<smtk::ModelGroupItemPtr> result;
   this->findGroupItems(mask, result);

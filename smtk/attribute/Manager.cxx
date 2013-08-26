@@ -230,7 +230,9 @@ void Manager::findDefinitions(long mask, std::vector<smtk::AttributeDefinitionPt
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
     def =  (*it).second;
-    if ((!def->isAbstract()) && ((def->associationMask() & mask) == mask))
+    // the mask could be 'ef', so this will return both 'e' and 'f'
+    if (!def->isAbstract() && def->associationMask() != 0 &&
+      ((def->associationMask() & mask) == def->associationMask()))
       {
       result.push_back(def);
       }
@@ -431,5 +433,24 @@ derivedDefinitions(smtk::AttributeDefinitionPtr def,
     result[i] = dit->lock();
     }
 }
-
+//----------------------------------------------------------------------------
+smtk::ConstAttributeDefinitionPtr Manager::findIsUniqueBaseClass(
+  smtk::AttributeDefinitionPtr attDef) const
+{
+  if(!attDef.get() || !attDef->isUnique() || !attDef->baseDefinition().get())
+    {
+    return attDef;
+    }
+  smtk::AttributeDefinitionPtr uDef = attDef, def;
+  while (1 && uDef.get())
+    {
+    def = uDef->baseDefinition();
+    if ((def.get() == NULL) || (!def->isUnique()))
+      {
+      return uDef;
+      }
+    uDef = def;
+    }
+  return smtk::ConstAttributeDefinitionPtr();
+}
 //----------------------------------------------------------------------------
