@@ -60,8 +60,14 @@ namespace smtk
 
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }
-      std::map<int, smtk::ModelItemPtr>::const_iterator itemIterator() const
+
+      typedef std::map<int, smtk::ModelItemPtr>::const_iterator const_iterator;
+
+      const_iterator beginItemIterator() const
         {return this->m_items.begin();}
+
+      const_iterator endItemIterator() const
+        {return this->m_items.end();}
 
       enum ModelEntityNodalTypes
         {
