@@ -680,8 +680,11 @@ void qtAttributeSection::onViewBy(int viewBy)
   foreach (AttributeDefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
     {
-    this->Internals->DefsCombo->addItem(
-      QString::fromUtf8(attDef->type().c_str()));
+    if(!attDef->isAbstract())
+      {
+      this->Internals->DefsCombo->addItem(
+        QString::fromUtf8(attDef->type().c_str()));
+      }
     }
   this->Internals->DefsCombo->setCurrentIndex(0);
   this->Internals->DefsCombo->setVisible(true);
@@ -1028,11 +1031,7 @@ void qtAttributeSection::getAllDefinitions()
       }
     }
 }
-//----------------------------------------------------------------------------
-bool qtAttributeSection::hasMultiDefinition(const QString& group)
-{
-  return (this->Internals->AttDefMap[group].count() > 1);
-}
+
 //----------------------------------------------------------------------------
 void qtAttributeSection::onListBoxClicked(QTableWidgetItem* item)
 {

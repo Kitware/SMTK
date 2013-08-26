@@ -107,7 +107,6 @@ namespace smtk
       void updateItemWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
-      bool hasMultiDefinition(const QString& group);
 
     private:
 
