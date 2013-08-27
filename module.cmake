@@ -4,6 +4,8 @@ vtk_module(vtkDiscreteModel
   DEPENDS
     vtkCommonDataModel
     vtkIOCore
+    vtkFiltersCore
+    vtkRenderingCore
   PRIVATE_DEPENDS
     vtkInteractionStyle
     vtkRenderingFreeTypeOpenGL

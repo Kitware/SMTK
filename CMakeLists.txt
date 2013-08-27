@@ -19,11 +19,12 @@ include_directories(
 ###############################################################################
 ###############################################################################
 # UUID stuff. Probably don't need all of it
+set(UUID_LIBS)
 if(WIN32)
  if (NOT BORLAND)
     # rpcrt4 -> UuidCreate
     #snmpapi -> getting MAC address
-    set(KIT_LIBS ${KIT_LIBS} rpcrt4 snmpapi)
+    set(UUID_LIBS ${KIT_LIBS} rpcrt4 snmpapi)
   endif(NOT BORLAND)
 endif(WIN32)
 
@@ -179,5 +180,5 @@ set(_module_src
 
 set(vtkDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkDiscreteModel ${_module_src})
-set(Depend_LIBS vtkFiltersCore vtkRenderingCore vtkIOCore vtkCommonCore ${KIT_LIBS})
-target_link_libraries(vtkDiscreteModel ${Depend_LIBS})
+
+target_link_libraries(vtkDiscreteModel LINK_PRIVATE ${UUID_LIBS})
