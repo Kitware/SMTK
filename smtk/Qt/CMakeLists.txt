@@ -21,6 +21,7 @@ set(QAttrLibSrcs
     qtComboItem.cxx
     qtInputsItem.cxx
     qtGroupItem.cxx
+    qtVoidItem.cxx
   )
 
   set(QAttrLibUIs
@@ -50,6 +51,7 @@ set(QAttrLibMocHeaders
     qtComboItem.h
     qtInputsItem.h
     qtGroupItem.h
+    qtVoidItem.h
   )
 
 #install the headers

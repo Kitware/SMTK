@@ -101,6 +101,9 @@ namespace smtk
       void addTableAttRefItems(
         smtk::AttributeRefItemPtr attItem, int& numRows,
         const char* attLabel, int advanced);
+      void  addTableVoidItems(
+          smtk::VoidItemPtr attItem, int& numRows,
+          const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
         smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);

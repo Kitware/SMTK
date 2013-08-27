@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtInputsItem.h"
 #include "smtk/Qt/qtFileItem.h"
 #include "smtk/Qt/qtAttributeRefItem.h"
+#include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ColorItem.h"
@@ -45,6 +46,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include <QPointer>
 #include <QFrame>
@@ -203,7 +206,7 @@ qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
       aItem = qtAttribute::createGroupItem(smtk::dynamicCastPointer<GroupItem>(item), pW);
       break;
     case smtk::attribute::Item::VOID:
-      // Nothing to do!
+      aItem = new qtVoidItem(smtk::dynamicCastPointer<VoidItem>(item), pW);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<

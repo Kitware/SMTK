@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAssociationWidget.h"
 #include "smtk/Qt/qtReferencesWidget.h"
 #include "smtk/Qt/qtItem.h"
+#include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/AttributeSection.h"
 #include "smtk/attribute/Attribute.h"
@@ -40,6 +41,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/VoidItem.h"
+#include "smtk/attribute/VoidItemDefinition.h"
 
 #include <QGridLayout>
 #include <QComboBox>
@@ -452,6 +455,14 @@ void qtAttributeSection::updateItemWidgetsEnableState(
       cellWidget->setEnabled(enabled);
       }
     }
+  else if(inData->type() == smtk::attribute::Item::VOID)
+    {
+    QWidget* cellWidget = tableWidget->cellWidget(startRow, 0);
+    if(cellWidget)
+      {
+      cellWidget->setEnabled(enabled);
+      }
+    }
   else if(dynamicCastPointer<ValueItem>(inData))
     {
     smtk::ValueItemPtr linkedData = dynamicCastPointer<ValueItem>(inData);
@@ -780,6 +791,12 @@ void qtAttributeSection::updateTableWithAttribute(
           dynamicCastPointer<AttributeRefItem>(attItem), numRows,
           itemDef->name().c_str(), itemDef->advanceLevel());
         }
+      else if(attItem->type() == smtk::attribute::Item::VOID)
+        {
+        this->addTableVoidItems(
+          dynamicCastPointer<VoidItem>(attItem), numRows,
+          itemDef->name().c_str(), itemDef->advanceLevel());
+        }
       else if(dynamicCastPointer<ValueItem>(attItem))
         {
         this->addTableValueItems(
@@ -846,6 +863,12 @@ void qtAttributeSection::updateTableWithProperty(
             dynamicCastPointer<AttributeRefItem>(attItem), numRows,
             (*it)->name().c_str(), itemDef->advanceLevel());
           }
+        else if(attItem->type() == smtk::attribute::Item::VOID)
+          {
+          this->addTableVoidItems(
+            dynamicCastPointer<VoidItem>(attItem), numRows,
+            (*it)->name().c_str(), itemDef->advanceLevel());
+          }
         else if(dynamicCastPointer<ValueItem>(attItem))// value types
           {
           this->addTableValueItems(
@@ -882,9 +905,25 @@ void qtAttributeSection::addTableGroupItems(
           attItem->item(j)), numRows, NULL, 0);
         }
       }
-    else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
+    else if(attItem->item(0)->type() == smtk::attribute::Item::ATTRIBUTE_REF)
       {
-    
+      this->addTableAttRefItems(dynamicCastPointer<AttributeRefItem>(
+        attItem->item(0)), numRows, attLabel, advanced);
+      for (int j = 1; j < numItems; j++) // expecting one item for each column
+        {
+        this->addTableAttRefItems(dynamicCastPointer<AttributeRefItem>(
+          attItem->item(j)), numRows, NULL, 0);
+        }
+      }
+    else if(attItem->item(0)->type() == smtk::attribute::Item::VOID)
+      {
+      this->addTableVoidItems(dynamicCastPointer<VoidItem>(
+        attItem->item(0)), numRows, attLabel, advanced);
+      for (int j = 1; j < numItems; j++) // expecting one item for each column
+        {
+        this->addTableVoidItems(dynamicCastPointer<VoidItem>(
+          attItem->item(j)), numRows, NULL, 0);
+        }
       }
     }
 }
@@ -990,6 +1029,32 @@ void qtAttributeSection::addTableAttRefItems(
   refItem->widget()->setEnabled(bEnabled);
   widget->setCellWidget(numRows-1, 1, refItem->widget());
   widget->setItem(numRows-1, 1, new QTableWidgetItem());
+}
+//----------------------------------------------------------------------------
+void qtAttributeSection::addTableVoidItems(
+  smtk::VoidItemPtr attItem, int& numRows,
+  const char* attLabel, int advanced)
+{
+  if(!attItem)
+    {
+    return;
+    }
+  QTableWidget* widget = this->Internals->ValuesTable;
+  qtVoidItem* voidItem = qobject_cast<qtVoidItem*>(
+    qtAttribute::createItem(attItem, widget));
+  if(!voidItem)
+    {
+    return;
+    }
+
+  widget->setRowCount(++numRows);
+  widget->setCellWidget(numRows-1, 0, voidItem->widget());
+  widget->setItem(numRows-1, 0, new QTableWidgetItem());
+  if(advanced)
+    {
+    voidItem->widget()->setFont(
+      qtUIManager::instance()->instance()->advancedFont());
+    }
 }
 
 //----------------------------------------------------------------------------
