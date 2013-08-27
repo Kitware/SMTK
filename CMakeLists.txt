@@ -81,14 +81,24 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
 target_link_libraries(SimBuilderMesh_Plugin
-  vtkCMBFiltering vtkCMBFilteringCS
-  vtkCMBGraphics vtkCMBGraphicsCS
-  vtkCMBIO vtkCMBIOCS
-  vtkCMBMeshing vtkCMBMeshingCS
-  vtkCMBGeneral vtkCMBGeneralCS
-  vtkCmbDiscreteModel vtkCmbDiscreteModelCS
-  vtkDiscreteModel vtkDiscreteModelCS
-  vtkFiltersCore vtkFiltersCoreCS
+  LINK_PUBLIC
+    vtkCMBFiltering
+    vtkCMBGraphics
+    vtkCMBIO
+    vtkCMBMeshing
+    vtkCMBGeneral
+    vtkCmbDiscreteModel
+    vtkDiscreteModel
+    vtkFiltersCore
+  LINK_PRIVATE
+    vtkCMBFilteringCS
+    vtkCMBGraphicsCS
+    vtkCMBIOCS
+    vtkCMBMeshingCS
+    vtkCMBGeneralCS
+    vtkCmbDiscreteModelCS
+    vtkDiscreteModelCS
+    vtkFiltersCoreCS
 )
 
 cmb_install_plugin(SimBuilderMesh_Plugin)

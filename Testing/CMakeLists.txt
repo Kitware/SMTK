@@ -24,6 +24,8 @@ if(BUILD_MESH_WORKERS)
   add_executable(MeshSpeedComparison MeshSpeedComparison.cxx)
   target_link_libraries(MeshSpeedComparison
     SimBuilderMesh_Plugin
+    vtkCmbDiscreteModel
+    vtkCMBMeshing
     omicron
     triangle_omicron
     tl_alloc
