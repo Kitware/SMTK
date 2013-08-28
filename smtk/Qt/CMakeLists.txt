@@ -28,7 +28,7 @@ set(QAttrLibSrcs
     )
 
 
-set(QAttrLibMocHeaders
+set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
     qtSection.h
@@ -53,5 +53,5 @@ set(QAttrLibMocHeaders
   )
 
 #install the headers
-smtk_public_headers(${QAttrLibMocHeaders})
+smtk_public_headers(${QAttrLibHeaders})
 

@@ -23,25 +23,28 @@ if(SMTK_BUILD_QT)
   #we should at some point roll this into smtk_source_group
   get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
   smtk_prepend_string("Qt" QAttrLibSrcs ${QAttrLibSrcs})
-  get_directory_property(QAttrLibMocHeaders DIRECTORY Qt DEFINITION QAttrLibMocHeaders)
-  smtk_prepend_string("Qt" QAttrLibMocHeaders ${QAttrLibMocHeaders})
+  get_directory_property(QAttrLibHeaders DIRECTORY Qt DEFINITION QAttrLibHeaders)
+  smtk_prepend_string("Qt" QAttrLibHeaders ${QAttrLibHeaders})
   get_directory_property(QAttrLibUIs DIRECTORY Qt DEFINITION QAttrLibUIs)
   smtk_prepend_string("Qt" QAttrLibUIs ${QAttrLibUIs})
-  qt4_wrap_cpp(QAttrLibMocSrcs ${QAttrLibMocHeaders})
+
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
   source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
 
-  set(qtsmtk_headers ${QAttrLibMocHeaders})
+  set(qtsmtk_headers ${QAttrLibHeaders})
   set(qtsmtk_srcs
    ${QAttrLibSrcs}
-   ${QAttrLibMocSrcs}
    ${UI_BUILT_SOURCES}
    )
 
   add_library(QtSMTK ${qtsmtk_srcs})
+
+  #let cmake do what qt4_wrap_cpp used to do automatically
+  set_target_properties(QtSMTK PROPERTIES AUTOMOC TRUE)
+
   #we need to add the location of the moc files to the include dir for
   #qtsmtk
   set_property(TARGET QtSMTK
