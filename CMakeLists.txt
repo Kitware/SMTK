@@ -1,11 +1,7 @@
-PROJECT(SimBuilderMesh)
+project(SimBuilderMesh)
 
 # trust that the compilers are a match
 set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
-
-SET(QT_QMAKE_EXECUTABLE ${PARAVIEW_QT_QMAKE_EXECUTABLE})
-FIND_PACKAGE(Qt4)
-include(${VXL_CMAKE_DIR}/UseVXL.cmake)
 
 message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
 
@@ -21,12 +17,12 @@ include_directories(
   ${vtkCMBGeneral_INCLUDE_DIRS}
 )
 
-IF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
-  ADD_DEFINITIONS(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS)
-  ADD_DEFINITIONS(-D_SCL_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
-ENDIF(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
+if(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
+  add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_DEPRECATE -D_SCL_SECURE_NO_WARNINGS)
+endif(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
 
-SET(vtkMeshFiles
+set(vtkMeshFiles
   vtkCmbMesh.cxx
   vtkCmbMeshClient.cxx
   vtkCmbMeshServer.cxx
@@ -41,7 +37,7 @@ SET(vtkMeshFiles
   vtkCmbModelFaceMeshServer.cxx
   vtkCmbModelVertexMesh.cxx
 )
-SET(CMBProxyFiles
+set(CMBProxyFiles
   vtkCmbMeshPolyDataProvider.cxx
   vtkCmbMeshWrapper.cxx
   vtkCmbMeshGridRepresentationOperator.cxx
@@ -51,7 +47,7 @@ SET(CMBProxyFiles
   vtkCmbMeshToModelReader.cxx
   vtkCmbMeshToModelReadOperator.cxx
 )
-SET_SOURCE_FILES_PROPERTIES(
+set_source_files_properties(
   vtkCmbMesh
   vtkCmbModelEdgeMesh
   vtkCmbModelEntityMesh
