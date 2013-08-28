@@ -1,8 +1,5 @@
 project(SimBuilderMesh)
 
-# trust that the compilers are a match
-set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
-
 message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
 
 include_directories(
