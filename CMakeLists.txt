@@ -1,8 +1,5 @@
 PROJECT(DiscreteModel)
 
-# trust that the compilers are a match
-set(CMAKE_OVERRIDE_COMPILER_MISMATCH TRUE)
-
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
   "${PROJECT_SOURCE_DIR}/Model/VTKUUIDConfigure.h.in"
