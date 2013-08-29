@@ -59,6 +59,7 @@ class vtkInformationStringKey;
 class vtkAlgorithmOutput;
 class vtkProperty;
 class vtkPoints;
+class vtkPointData;
 
 class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelWrapper : public vtkDataObjectTree
 {
@@ -135,6 +136,11 @@ public:
   // This is a convenient method to switch the points for all the
   // geometric entities in the model
   void SetGeometricEntityPoints(vtkPoints* points);
+
+  // Description:
+  // This is a convenient method to switch the point data for all the
+  // geometric entities in the model
+  void SetGeometricEntityPointData(vtkPointData* pointData);
 
   // Description:
   // Key used to put node name in the meta-data associated with a node.

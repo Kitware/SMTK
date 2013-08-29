@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkCellLocator.h"
 #include "vtkIncrementalOctreePointLocator.h"
 #include "vtkNew.h"
+#include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
 
@@ -388,6 +389,13 @@ void DiscreteMesh::GetCellEdgeNeighbors(vtkIdType cellIndex, vtkIdType pointIdOn
 void DiscreteMesh::UpdatePoints(vtkPoints* points) const
 {
   this->SharedPoints->ShallowCopy(points);
+}
+
+//=============================================================================
+void DiscreteMesh::UpdatePointData(vtkPointData* pointData) const
+{
+  this->FaceData->GetPointData()->ShallowCopy(pointData);
+  this->EdgeData->GetPointData()->ShallowCopy(pointData);
 }
 
 //=============================================================================

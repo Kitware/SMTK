@@ -134,6 +134,41 @@ void vtkDiscreteModelWrapper::SetGeometricEntityPoints(vtkPoints* points)
 }
 
 //----------------------------------------------------------------------------
+void vtkDiscreteModelWrapper::SetGeometricEntityPointData(
+   vtkPointData* pointData)
+{
+  vtkDiscreteModel* model = this->GetModel();
+  if(model->HasInValidMesh())
+    {
+    vtkErrorMacro("The discrete model does not have a valid master polydata.");
+    return;
+    }
+
+  //get the current mesh and set a new point data
+  const DiscreteMesh& mesh = model->GetMesh();
+  mesh.UpdatePointData(pointData);
+
+  vtkCompositeDataIterator* iter = this->NewIterator();
+  for (iter->InitTraversal(); !iter->IsDoneWithTraversal(); iter->GoToNextItem())
+    {
+    unsigned int curr_idx = iter->GetCurrentFlatIndex();
+    vtkModelGeometricEntity* geomEntity = vtkModelGeometricEntity::SafeDownCast(
+      this->GetEntityObjectByFlatIndex(curr_idx));
+    if(!geomEntity)
+      {
+      continue;
+      }
+    vtkPolyData* entityPoly = vtkPolyData::SafeDownCast(geomEntity->GetGeometry());
+    if(entityPoly)
+      {
+      entityPoly->GetPointData()->ShallowCopy(pointData);
+      }
+    }
+  iter->Delete();
+  this->Modified();
+}
+
+//----------------------------------------------------------------------------
 vtkDiscreteModel* vtkDiscreteModelWrapper::GetModel()
 {
   return this->Model;
