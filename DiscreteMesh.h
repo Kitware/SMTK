@@ -210,8 +210,12 @@ private:
   //given a data type ( face or edge ) return the corect poly data
   vtkPolyData* GetDataFromType(DiscreteMesh::DataType type ) const;
 
-  //static method to help with conversion
+  //static method to help with conversions. they actually are implemented
+  // the same but I added in EdgeIdSpaceToFlatIdSpace to be less confusing
+  // as well as if the indexing mapping changes.
   static inline void FlatIdSpaceToEdgeIdSpace(vtkIdType* cellIds, vtkIdType num)
+    { for(vtkIdType i=0; i < num; ++i) { cellIds[i] ^= -1; } }
+  static inline void EdgeIdSpaceToFlatIdSpace(vtkIdType* cellIds, vtkIdType num)
     { for(vtkIdType i=0; i < num; ++i) { cellIds[i] ^= -1; } }
 
   vtkPolyData* FaceData;

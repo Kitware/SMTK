@@ -104,7 +104,15 @@ DiscreteMesh::DiscreteMesh(vtkPolyData* allData)
   //we rip the face and edge data out to the allData,
   //and move it into different polydatas here
   this->FaceData->SetPolys(allData->GetPolys());
-  this->EdgeData->SetLines(allData->GetLines());
+
+  if(allData->GetNumberOfLines())
+    {
+    this->EdgeData->SetLines(allData->GetLines());
+    }
+  else
+    {
+    this->EdgeData->Allocate();
+    }
 
   if(this->SharedPoints)
     {

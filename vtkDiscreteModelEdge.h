@@ -114,6 +114,7 @@ protected:
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
   friend class vtkCmbMapToCmbModel;
+  friend class vtkCMBModelCreateEllipseModelOperator;
   friend class vtkCMBModelCreateRectangleModelOperator;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;

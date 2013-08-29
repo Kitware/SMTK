@@ -481,12 +481,20 @@ bool vtkDiscreteModelEdge::AddCellsToGeometry(vtkIdList* masterCellIds)
   //only transform the ids if they are already positive
   //otherwise we are doing something like a split and we already have
   //have ids in edge index space
+  bool idsModified = false;
   if(numCells > 0 && cellids[0] >= 0)
     {
     DiscreteMesh::FlatIdSpaceToEdgeIdSpace(cellids,numCells);
+    idsModified = true;
     }
 
-  return vtkDiscreteModelGeometricEntity::AddCellsToGeometry(masterCellIds);
+  bool retVal = vtkDiscreteModelGeometricEntity::AddCellsToGeometry(masterCellIds);
+
+  if(idsModified)
+    { // transform the ids back
+    DiscreteMesh::EdgeIdSpaceToFlatIdSpace(cellids,numCells);
+    }
+  return retVal;
 }
 
 bool vtkDiscreteModelEdge::AddCellsClassificationToMesh(vtkIdList* cellids)
