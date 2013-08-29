@@ -61,5 +61,7 @@ if(SMTK_BUILD_QT)
   smtk_install_library(QtSMTK DEPENDS SMTKCore)
 endif()
 
+install(FILES PublicPointerDefs.h DESTINATION include/smtk)
+
 #setup the exports for the library when used from an installed location
 install(EXPORT SMTK-targets DESTINATION lib)

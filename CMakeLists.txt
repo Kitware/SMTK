@@ -55,17 +55,15 @@ determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
 #found in c++ or c++ tr1 we include boost
 if(${POINTER_NAMESPACE_BOOST_TRUE})
   find_package(Boost)
-  include_directories(
-  ${Boost_INCLUDE_DIR}
-  )
+  include_directories( ${Boost_INCLUDE_DIR} )
 endif()
 
 configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/PublicPointerDefs.h.in
-  ${PROJECT_BINARY_DIR}/smtk/PublicPointerDefs.h
+  ${PROJECT_SOURCE_DIR}/CMake/SharedPtr.h.in
+  ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/smtk/PublicPointerDefs.h
+install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
   DESTINATION include/smtk)
 
 
