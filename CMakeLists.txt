@@ -1,7 +1,5 @@
 project(SimBuilderMesh)
 
-message(STATUS "DiscreteModel_SOURCE_DIR='${DiscreteModel_SOURCE_DIR}'")
-
 include_directories(
   ${CMBModel_SOURCE_DIR}
   ${vtkDiscreteModel_SOURCE_DIR}/Model
