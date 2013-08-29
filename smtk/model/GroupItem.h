@@ -50,8 +50,8 @@ namespace smtk
       {return ((this->m_entityMask & enType) != 0);}
       virtual std::size_t numberOfItems() const = 0;
       virtual smtk::ModelItemPtr item(int i) const = 0;
-      virtual bool insert(smtk::ModelItemPtr &ptr) = 0;
-      virtual bool remove(smtk::ModelItemPtr &ptr) = 0;
+      virtual bool insert(smtk::ModelItemPtr ptr) = 0;
+      virtual bool remove(smtk::ModelItemPtr ptr) = 0;
 
     protected:
       unsigned long m_entityMask;
