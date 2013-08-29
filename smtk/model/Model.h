@@ -54,9 +54,10 @@ namespace smtk
       virtual void removeGroupItems(int grouptype, int entType)
       { return this->removeGroupItemsByMask(
         this->convertGroupTypeToMask(grouptype, entType));}
-      virtual void removeGroupItemsByMask(unsigned long mask);
-      virtual void findGroupItems(unsigned long mask,
-        std::vector<smtk::ModelGroupItemPtr> &result) const;
+      virtual void removeGroupItemsByMask(unsigned int mask);
+
+      virtual std::vector<smtk::ModelGroupItemPtr> findGroupItems(
+                                              unsigned int mask) const;
 
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }
