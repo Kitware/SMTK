@@ -44,6 +44,7 @@ class vtkIdList;
 class vtkIncrementalOctreePointLocator;
 class vtkPolyData;
 class vtkPoints;
+class vtkPointData;
 
 /*
  *## Friends that need to be rewritten ##
@@ -144,6 +145,10 @@ public:
   //Doesn't verify Data is valid!
   //overwrite the points that represent the mesh
   void UpdatePoints(vtkPoints* points) const;
+
+  //Doesn't verify Data is valid!
+  //overwrite the point data that represent the mesh
+  void UpdatePointData(vtkPointData* pointData) const;
 
   //Doesn't verify Data is valid!
   void GetPoint(vtkIdType index, double xyz[3]) const;

@@ -2,10 +2,14 @@ vtk_module(vtkDiscreteModel
   GROUPS
    CmbCore
   DEPENDS
-   vtkCommonDataModel
-   vtkRenderingOpenGL
-   vtkRenderingFreeTypeOpenGL
-   vtkInteractionStyle
-   vtkIOCore
+    vtkCommonDataModel
+    vtkIOCore
+    vtkFiltersCore
+    vtkRenderingCore
+  PRIVATE_DEPENDS
+    vtkInteractionStyle
+    vtkRenderingFreeTypeOpenGL
+    vtkRenderingOpenGL
+    vtksys
   EXCLUDE_FROM_WRAP_HIERARCHY
 )
