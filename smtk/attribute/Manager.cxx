@@ -232,7 +232,7 @@ void Manager::findDefinitions(long mask, std::vector<smtk::AttributeDefinitionPt
     def =  (*it).second;
     // the mask could be 'ef', so this will return both 'e' and 'f'
     if (!def->isAbstract() && def->associationMask() != 0 &&
-      ((def->associationMask() & mask) == def->associationMask()))
+      ((def->associationMask() & mask) != 0))
       {
       result.push_back(def);
       }

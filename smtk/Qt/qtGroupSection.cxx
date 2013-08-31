@@ -88,6 +88,11 @@ void qtGroupSection::getChildSection(
       {
       sections.append(childSec);
       }
+    else if(childSec->getObject()->type() == Section::GROUP)
+      {
+      qobject_cast<qtGroupSection*>(childSec)->getChildSection(
+        secType, sections);
+      }
     }
 }
 //----------------------------------------------------------------------------
