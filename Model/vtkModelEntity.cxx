@@ -44,6 +44,7 @@ vtkInformationKeyMacro(vtkModelEntity, UNIQUEPERSISTENTID, IdType);
 vtkInformationKeyMacro(vtkModelEntity, DISPLAY_PROPERTY, ObjectBase);
 vtkInformationKeyMacro(vtkModelEntity, PICKABLE, Integer);
 vtkInformationKeyMacro(vtkModelEntity, USERDATA, String);
+vtkInformationKeyMacro(vtkModelEntity, SHOWTEXTURE, Integer);
 
 // Description:
 // A counter to give each use a unique persistent Id that

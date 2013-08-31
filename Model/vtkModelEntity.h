@@ -73,6 +73,7 @@ public:
   static vtkInformationObjectBaseKey* DISPLAY_PROPERTY();
   static vtkInformationIntegerKey* PICKABLE();
   static vtkInformationStringKey* USERDATA();
+  static vtkInformationIntegerKey* SHOWTEXTURE();
 
   // Description:
   // Methods to add and retrieve generic information.
