@@ -106,6 +106,7 @@ vtkXMLModelReader::vtkXMLModelReader()
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::DISPLAY_PROPERTY());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::PICKABLE());
   vtkInformationKeyMap::RegisterKey(vtkModelEntity::USERDATA());
+  vtkInformationKeyMap::RegisterKey(vtkModelEntity::SHOWTEXTURE());
 
   this->RootElement = 0;
   this->CurrentElement = 0;
