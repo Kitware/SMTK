@@ -38,6 +38,7 @@ vtkModelGeometricEntity::vtkModelGeometricEntity()
 {
   this->InitDefaultDisplayProperty();
   this->SetPickable(1);
+  this->SetShowTexture(1);
 }
 
 vtkModelGeometricEntity::~vtkModelGeometricEntity()
@@ -102,6 +103,26 @@ int vtkModelGeometricEntity::GetPickable()
     return this->GetProperties()->Get(PICKABLE());
     }
   return 1;
+}
+
+void vtkModelGeometricEntity::SetShowTexture(int show)
+{
+  if(this->GetProperties()->Has(SHOWTEXTURE()) &&
+    show == this->GetProperties()->Get(SHOWTEXTURE()))
+    {
+    return;
+    }
+  this->GetProperties()->Set(SHOWTEXTURE(), show);
+  this->Modified();
+}
+
+int vtkModelGeometricEntity::GetShowTexture()
+{
+  if(this->GetProperties()->Has(SHOWTEXTURE()))
+    {
+    return this->GetProperties()->Get(SHOWTEXTURE());
+    }
+  return 0;
 }
 
 bool vtkModelGeometricEntity::GetBounds(double bounds[6])

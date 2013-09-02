@@ -77,6 +77,11 @@ public:
   int GetPickable();
 
   // Description:
+  // Set/get ShowTexture (non-zero is ShowTexture).
+  void SetShowTexture(int show);
+  int GetShowTexture();
+
+  // Description:
   // Reads the state of an instance from an archive OR
   // writes the state of an instance to an archive. See
   // the documentation for this class for details.
