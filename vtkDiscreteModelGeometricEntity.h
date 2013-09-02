@@ -98,11 +98,10 @@ protected:
   friend class vtkDiscreteModel;
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelWrapper;
-  friend class vtkCMBModelCreateEllipseModelOperator;
-  friend class vtkCMBModelCreateRectangleModelOperator;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;
   friend class vtkCmbMeshToModelWriter;
+  friend class vtkGenerateSimpleModelOperator;
   friend class CmbGeologyBuilderCore;
   friend class CmbSceneBuilderCore;
 //ETX
