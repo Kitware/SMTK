@@ -86,8 +86,8 @@ namespace smtk
 
       smtk::AttributeItemPtr item(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemPtr() : 
-          (ith >= this->m_items.size() ? 
+        return (ith < 0) ? smtk::AttributeItemPtr() :
+          (ith >= this->m_items.size() ?
            smtk::AttributeItemPtr() : this->m_items[ith]);
       }
 
@@ -120,13 +120,13 @@ namespace smtk
       {this->m_appliesToInteriorNodes = appliesValue;}
 
       smtk::attribute::Manager *manager() const;
-      void setUserData(const std::string &key, void *value)
-      {this->m_userData[key] = value;}
-      void *userData(const std::string &key) const;
-      void clearUserData(const std::string &key)
-      {this->m_userData.erase(key);}
-      void clearAllUserData()
-      {this->m_userData.clear();}
+      // void setUserData(const std::string &key, void *value)
+      // {this->m_userData[key] = value;}
+      // void *userData(const std::string &key) const;
+      // void clearUserData(const std::string &key)
+      // {this->m_userData.erase(key);}
+      // void clearAllUserData()
+      // {this->m_userData.clear();}
       bool isAboutToBeDeleted() const
       {return this->m_aboutToBeDeleted;}
 
@@ -155,21 +155,21 @@ namespace smtk
       bool m_appliesToInteriorNodes;
       double m_color[4];
       bool m_isColorSet;
-      std::map<std::string, void *> m_userData;
+      // std::map<std::string, void *> m_userData;
       // We need something to indicate that the attribute is in process of
-      // being deleted - this is used skip certain clean up steps that 
+      // being deleted - this is used skip certain clean up steps that
       // would need to be done otherwise
       bool m_aboutToBeDeleted;
     private:
-      
+
     };
 //----------------------------------------------------------------------------
-    inline void *Attribute::userData(const std::string &key) const
-    {
-      std::map<std::string, void *>::const_iterator it =
-        this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? NULL : it->second);
-    }
+    // inline void *Attribute::userData(const std::string &key) const
+    // {
+    //   std::map<std::string, void *>::const_iterator it =
+    //     this->m_userData.find(key);
+    //   return ((it == this->m_userData.end()) ? NULL : it->second);
+    // }
 //----------------------------------------------------------------------------
     inline void Attribute::setColor(double r, double g, double b, double a)
     {
