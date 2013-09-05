@@ -27,8 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ColorItem.h"
-#include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -267,9 +265,6 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
     case Item::ATTRIBUTE_REF:
       this->processAttributeRefDef(node, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
       break;
-    case Item::COLOR:
-      this->processColorDef(node, smtk::dynamicCastPointer<ColorItemDefinition>(idef));
-      break;
     case Item::DOUBLE:
       this->processDoubleDef(node, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
       break;
@@ -295,14 +290,6 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
       this->m_errorStatus << "Error: Unsupported Type: " << Item::type2String(idef->type())
                           << " for Item Definition: " << idef->name() << "\n";
     }
-}
-
-//----------------------------------------------------------------------------
-void XmlV1StringWriter::processColorDef(pugi::xml_node &node,
-                            smtk::ColorItemDefinitionPtr idef)
-{
-  xml_node defnode = node.append_child("DefaultValue");
-  defnode.text().set(idef->defaultRGBAsString().c_str());
 }
 
 //----------------------------------------------------------------------------
@@ -706,9 +693,6 @@ void XmlV1StringWriter::processItem(xml_node &node,
     case Item::ATTRIBUTE_REF:
       this->processAttributeRefItem(node, smtk::dynamicCastPointer<AttributeRefItem>(item));
       break;
-    case Item::COLOR:
-      this->processColorItem(node, smtk::dynamicCastPointer<ColorItem>(item));
-      break;
     case Item::DOUBLE:
       this->processDoubleItem(node, smtk::dynamicCastPointer<DoubleItem>(item));
       break;
@@ -867,12 +851,6 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
       val.append_attribute("Ith").set_value((unsigned int) i);
       }
     }
-}
-//----------------------------------------------------------------------------
-void XmlV1StringWriter::processColorItem(pugi::xml_node &node, 
-                             ColorItemPtr item)
-{
-  node.text().set(item->valueAsString().c_str());
 }
 
 //----------------------------------------------------------------------------

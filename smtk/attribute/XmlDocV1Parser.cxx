@@ -27,8 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ColorItem.h"
-#include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -347,10 +345,6 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
       case Item::ATTRIBUTE_REF:
         idef = def->addItemDefinition<AttributeRefItemDefinition>(itemName);
         this->processAttributeRefDef(node, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
-        break;
-      case Item::COLOR:
-        idef = def->addItemDefinition<ColorItemDefinition>(itemName);
-        this->processColorDef(node, smtk::dynamicCastPointer<ColorItemDefinition>(idef));
         break;
       case Item::DOUBLE:
         idef = def->addItemDefinition<DoubleItemDefinition>(itemName);
@@ -949,10 +943,6 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
         idef = def->addItemDefinition<AttributeRefItemDefinition>(itemName);
         this->processAttributeRefDef(child, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
         break;
-      case Item::COLOR:
-        idef = def->addItemDefinition<ColorItemDefinition>(itemName);
-        this->processColorDef(child, smtk::dynamicCastPointer<ColorItemDefinition>(idef));
-        break;
       case Item::DOUBLE:
         idef = def->addItemDefinition<DoubleItemDefinition>(itemName);
         this->processDoubleDef(child, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
@@ -1131,9 +1121,6 @@ void XmlDocV1Parser::processItem(xml_node &node,
     {
     case Item::ATTRIBUTE_REF:
       this->processAttributeRefItem(node, smtk::dynamicCastPointer<AttributeRefItem>(item));
-      break;
-    case Item::COLOR:
-      this->processColorItem(node, smtk::dynamicCastPointer<ColorItem>(item));
       break;
     case Item::DOUBLE:
       this->processDoubleItem(node, smtk::dynamicCastPointer<DoubleItem>(item));
@@ -1395,45 +1382,6 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
     {
     this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
                         << "\n";
-    }
-}
-//----------------------------------------------------------------------------
-void XmlDocV1Parser::processColorItem(pugi::xml_node &node, 
-                             smtk::ColorItemPtr item)
-{
-  if(node.first_child())
-    {
-    std::string strRGB = node.first_child().value();
-    double rgb[3]={1.0, 1.0, 1.0};
-    // assuming RGB are separated by space or ,
-    if(ColorItemDefinition::convertRGBFromString(strRGB, rgb))
-      {
-      item->setRGB(rgb);
-      return;
-      }
-    }
-  this->m_errorStatus << "Error: XML Node Values is missing for Item: " <<
-    item->name() << "\n";
-}
-//----------------------------------------------------------------------------
-void XmlDocV1Parser::processColorDef(pugi::xml_node &node,
-                            smtk::ColorItemDefinitionPtr idef)
-{
-  xml_node dnode;
-  this->processItemDef(node, idef);
-
-  // Lets see if there are default values
-  dnode = node.child("DefaultValue");
-  if (dnode && dnode.first_child())
-    {
-    // assuming RGB are separated by space or ,
-    std::string dval = dnode.first_child().value();
-    double rgb[3]={1.0, 1.0, 1.0};
-
-    if(ColorItemDefinition::convertRGBFromString(dval, rgb))
-      {
-      idef->setDefaultRGB(rgb);  
-      }
     }
 }
 

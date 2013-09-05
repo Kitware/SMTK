@@ -15,7 +15,6 @@ set(QAttrLibSrcs
     qtAssociationWidget.cxx
     qtReferencesWidget.cxx
     qtColorButton.cxx
-    qtColorItem.cxx
 
     qtItem.cxx
     qtComboItem.cxx
@@ -45,7 +44,6 @@ set(QAttrLibMocHeaders
     qtAssociationWidget.h
     qtReferencesWidget.h
     qtColorButton.h
-    qtColorItem.h
 
     qtItem.h
     qtComboItem.h

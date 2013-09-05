@@ -22,7 +22,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtColorItem.h"
 #include "smtk/Qt/qtComboItem.h"
 #include "smtk/Qt/qtGroupItem.h"
 #include "smtk/Qt/qtInputsItem.h"
@@ -31,8 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/ColorItem.h"
-#include "smtk/attribute/ColorItemDefinition.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
@@ -193,9 +190,6 @@ qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
     case smtk::attribute::Item::STRING:
       aItem = qtAttribute::createValueItem(smtk::dynamicCastPointer<ValueItem>(item), pW);
       break;
-    case smtk::attribute::Item::COLOR:
-      aItem = qtAttribute::createColorItem(smtk::dynamicCastPointer<ColorItem>(item), pW);
-      break;
     case smtk::attribute::Item::DIRECTORY:
       aItem = qtAttribute::createDirectoryItem(smtk::dynamicCastPointer<DirectoryItem>(item), pW);
       break;
@@ -222,12 +216,6 @@ qtItem* qtAttribute::createAttributeRefItem(
 {
   qtItem* returnItem = new qtAttributeRefItem(dynamicCastPointer<Item>(item), pW);
   return returnItem;
-}
-//----------------------------------------------------------------------------
-qtItem* qtAttribute::createColorItem(smtk::ColorItemPtr item, QWidget* pW)
-{
-  qtItem* returnItem = new qtColorItem(dynamicCastPointer<Item>(item), pW);
-  return returnItem;  
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createDirectoryItem(

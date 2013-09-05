@@ -7,8 +7,6 @@ set(AttributeHeaders
   AttributeSection.h
   AttributeReader.h
   AttributeWriter.h
-  ColorItem.h
-  ColorItemDefinition.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -48,8 +46,6 @@ set(AttributeSrcs
   AttributeSection.cxx
   AttributeReader.cxx
   AttributeWriter.cxx
-  ColorItem.cxx
-  ColorItemDefinition.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
