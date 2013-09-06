@@ -52,8 +52,6 @@ namespace smtk
     class AttributeSection;
     class AttributeRefItem;
     class AttributeRefItemDefinition;
-    class ColorItem;
-    class ColorItemDefinition;
     class Definition;
     class DirectoryItem;
     class DirectoryItemDefinition;
@@ -109,10 +107,6 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::ColorItem >                ColorItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ColorItemDefinition >      ColorItemDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::ColorItem >                  WeakColorItemPtr;
-  typedef smtk::weak_ptr< smtk::attribute::ColorItemDefinition >        WeakColorItemDefinitionPtr;
   typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;
   typedef smtk::shared_ptr< smtk::attribute::DoubleItem >               DoubleItemPtr;
