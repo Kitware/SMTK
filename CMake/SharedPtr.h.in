@@ -39,5 +39,9 @@ namespace smtk
 
   //bring in the correct shared_ptr dynamic cast
   using @POINTER_NAMESPACE@::dynamic_pointer_cast;
+
+  //bring in the correct shared_ptr const_pointer_cast
+  using @POINTER_NAMESPACE@::const_pointer_cast;
+
 };
 #endif /* __smtk_SharedPtr_h */

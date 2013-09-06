@@ -341,7 +341,7 @@ void qtAssociationWidget::processAttUniqueness(
     Manager *attManager = attDef->manager();
     smtk::ConstAttributeDefinitionPtr baseDef =
       attManager->findIsUniqueBaseClass(attDef);
-    smtk::AttributeDefinitionPtr bdef(smtk::constCastPointer<Definition>(baseDef));
+    smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
     std::vector<smtk::AttributeDefinitionPtr> newdefs;
     attManager->findAllDerivedDefinitions(bdef, true, newdefs);
     std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
@@ -395,7 +395,7 @@ void qtAssociationWidget::processDefUniqueness(
       Manager *attManager = attDef->manager();
       smtk::ConstAttributeDefinitionPtr baseDef =
         attManager->findIsUniqueBaseClass(attDef);
-      smtk::AttributeDefinitionPtr bdef(smtk::constCastPointer<Definition>(baseDef));
+      smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
       std::vector<smtk::AttributeDefinitionPtr> newdefs;
       attManager->findAllDerivedDefinitions(bdef, true, newdefs);
       std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
