@@ -153,7 +153,6 @@ namespace smtk
       std::map<smtk::attribute::AttributeRefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
-      double m_color[4];
       bool m_isColorSet;
       // std::map<std::string, void *> m_userData;
       // We need something to indicate that the attribute is in process of
@@ -161,6 +160,8 @@ namespace smtk
       // would need to be done otherwise
       bool m_aboutToBeDeleted;
     private:
+      //needs to be private for shiboken wrapping to work properly
+      double m_color[4];
 
     };
 //----------------------------------------------------------------------------

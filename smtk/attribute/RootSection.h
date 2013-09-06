@@ -37,26 +37,27 @@ namespace smtk
     public:
       RootSection(const std::string &myTitle);
       virtual ~RootSection();
-      
+
       virtual Section::Type type() const;
-      
+
       const double *defaultColor() const
       {return this->m_defaultColor;}
       void setDefaultColor(const double *c)
       {this->setDefaultColor(c[0], c[1], c[2], c[3]);}
       void setDefaultColor(double r, double g, double b, double a);
-      
+
       const double *invalidColor() const
       {return this->m_invalidColor;}
       void setInvalidColor(const double *c)
       {this->setInvalidColor(c[0], c[1], c[2], c[3]);}
       void setInvalidColor(double r, double g, double b, double a);
-      
-    protected:
+
+    private:
+      //needs to be private for shiboken wrapping to work properly
       double m_defaultColor[4];
       double m_invalidColor[4];
-    private:
-      
+
+
     };
 //----------------------------------------------------------------------------
     inline void RootSection::setDefaultColor(double r, double g, double b,

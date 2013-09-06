@@ -165,8 +165,6 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItemDefinition" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::ColorItem" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::ColorItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DoubleItem" />
@@ -222,15 +220,7 @@
     </namespace-type>
 
     <namespace-type name="attribute">
-     <object-type name="Manager">
-        <include file-name="smtk/attribute/Manager.h" location="local" />
-      </object-type>
-
-      <object-type name="Item">
-        <include file-name="smtk/attribute/Item.h" location="local"/>
-        <enum-type name="Type"/>
-      </object-type>
-<!--
+      <!-- setup the attribute classes -->
       <object-type name="Attribute">
         <include file-name="smtk/attribute/Attribute.h" location="local"/>
       </object-type>
@@ -253,14 +243,6 @@
 
       <object-type name="AttributeWriter">
         <include file-name="smtk/attribute/AttributeWriter.h" location="local"/>
-      </object-type>
-
-      <object-type name="ColorItem">
-        <include file-name="smtk/attribute/ColorItem.h" location="local"/>
-      </object-type>
-
-      <object-type name="ColorItemDefinition">
-        <include file-name="smtk/attribute/ColorItemDefinition.h" location="local"/>
       </object-type>
 
       <object-type name="Definition">
@@ -368,11 +350,6 @@
       <object-type name="VoidItemDefinition">
         <include file-name="smtk/attribute/VoidItemDefinition.h" location="local" />
       </object-type>
-
-      <object-type name="ValueItemTemplate" generate="no">
-        <include file-name="smtk/attribute/ValueItemTemplate.h" location="local" />
-      </object-type>
-       -->
 
     </namespace-type>
   </namespace-type>

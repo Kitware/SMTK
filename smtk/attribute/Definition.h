@@ -202,7 +202,7 @@ namespace smtk
         {this->m_briefDescription = text;}
 
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
-      
+
     protected:
       void clearManager()
       { this->m_manager = NULL;}
@@ -229,14 +229,19 @@ namespace smtk
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;
       unsigned long m_associationMask;
-      double m_notApplicableColor[4];
-      double m_defaultColor[4];
-      // These colors are returned for base definitions w/o set colors
-      static double s_notApplicableBaseColor[4];
-      static double s_defaultBaseColor[4];
+
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
+
+      // These colors are returned for base definitions w/o set colors
+      //needs to be private for shiboken wrapping to work properly
+      static double s_notApplicableBaseColor[4];
+      static double s_defaultBaseColor[4];
+
+      //needs to be private for shiboken wrapping to work properly
+      double m_notApplicableColor[4];
+      double m_defaultColor[4];
 
     };
 //----------------------------------------------------------------------------
