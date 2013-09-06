@@ -96,9 +96,9 @@ int main()
     {
     smtk::IntItemPtr icptr;
     icptr = smtk::dynamicCastPointer<smtk::attribute::IntItem>(att->item(0));
-    std::cout << "Found IntComp1 - value = " << icptr->valueAsString(" %d") << std::endl;
+    std::cout << "Found IntComp1 - value = " << icptr->valueAsString() << std::endl;
     icptr = smtk::dynamicCastPointer<smtk::attribute::IntItem>(att->item(1));
-    std::cout << "Found IntComp2 - value = " << icptr->valueAsString(" %d") << std::endl;
+    std::cout << "Found IntComp2 - value = " << icptr->valueAsString() << std::endl;
     }
 
   smtk::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");

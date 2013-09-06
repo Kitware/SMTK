@@ -63,8 +63,15 @@ namespace smtk
       virtual void detachAttribute(smtk::AttributePtr, bool reverse=true);
       virtual void detachAllAttributes();
       virtual bool isAttributeAssociated(smtk::AttributePtr) const;
-      std::set<smtk::AttributePtr>::const_iterator associatedAttributes() const
+
+      typedef std::set<smtk::AttributePtr>::const_iterator const_iterator;
+
+      const_iterator beginAssociatedAttributes() const
         {return this->m_attributes.begin();}
+
+      const_iterator endAssociatedAttributes() const
+        {return this->m_attributes.end();}
+
       std::size_t numberOfAssociatedAttributes() const
         { return this->m_attributes.size();}
 

@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/ModelDomainItem.h"
 #include "smtk/model/GroupItem.h"
 
-using namespace smtk::model; 
+using namespace smtk::model;
 
 //----------------------------------------------------------------------------
 Model::Model()
@@ -46,9 +46,11 @@ Model::~Model()
     }
 }
 //----------------------------------------------------------------------------
-void Model::findGroupItems(unsigned long mask, 
-  std::vector<smtk::ModelGroupItemPtr> &result) const
+std::vector<smtk::ModelGroupItemPtr> Model::findGroupItems(
+                                                    unsigned int mask) const
 {
+  std::vector<smtk::ModelGroupItemPtr> result;
+  result.reserve(this->m_items.size()/2); //guess half the items
   std::map<int, smtk::ModelItemPtr>::iterator it;
   for (it = this->m_items.begin(); it != this->m_items.end(); it++)
     {
@@ -61,14 +63,15 @@ void Model::findGroupItems(unsigned long mask,
         }
       }
     }
+  result.reserve(result.size());
+  return result;
 }
 //----------------------------------------------------------------------------
-void Model::removeGroupItemsByMask(unsigned long mask)
+void Model::removeGroupItemsByMask(unsigned int mask)
 {
-  std::vector<smtk::ModelGroupItemPtr> result;
-  this->findGroupItems(mask, result);
-  std::vector<smtk::ModelGroupItemPtr>::iterator it = result.begin();
-  for(; it!=result.end(); ++it)
+  std::vector<smtk::ModelGroupItemPtr> result = this->findGroupItems(mask);
+  typedef std::vector<smtk::ModelGroupItemPtr>::iterator iter;
+  for(iter it=result.begin(); it!=result.end(); ++it)
     {
     this->deleteModelGroup((*it)->id());
     }

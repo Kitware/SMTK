@@ -60,10 +60,10 @@ qtAttributeRefItem::~qtAttributeRefItem()
 }
 
 //----------------------------------------------------------------------------
-const QString& qtAttributeRefItem::labelText() const
+QString qtAttributeRefItem::labelText() const
 {
   return this->Internals->theLabel->text();
-}      
+}
 
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::setLabelVisible(bool visible)
@@ -137,8 +137,8 @@ void qtAttributeRefItem::updateItemData()
     {
     return;
     }
-    
-  const AttributeRefItemDefinition *itemDef = 
+
+  const AttributeRefItemDefinition *itemDef =
     dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
   AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
   if(!attDef)
@@ -186,7 +186,7 @@ void qtAttributeRefItem::onInputValueChanged()
 
   if(curIdx>=0)
     {
-    const AttributeRefItemDefinition *itemDef = 
+    const AttributeRefItemDefinition *itemDef =
       dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
     AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();

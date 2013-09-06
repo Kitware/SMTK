@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Model.h"
 #include "smtk/attribute/Attribute.h"
 
-using namespace smtk::model; 
+using namespace smtk::model;
 
 //----------------------------------------------------------------------------
 Item::Item(Model *model, int myid): m_model(model), m_id(myid)
@@ -85,9 +85,9 @@ void Item::detachAllAttributes()
     return;
     }
 
-  std::set<smtk::AttributePtr>::const_iterator associatedAtt=
-    this->associatedAttributes();
-  for (; associatedAtt != this->m_attributes.end(); ++associatedAtt)
+  for (const_iterator associatedAtt = this->m_attributes.begin();
+       associatedAtt != this->m_attributes.end();
+       ++associatedAtt)
     {
     (*associatedAtt)->disassociateEntity(this->pointer(), false);
     }

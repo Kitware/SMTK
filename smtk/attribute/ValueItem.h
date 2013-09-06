@@ -63,23 +63,22 @@ namespace smtk
       int discreteIndex(int elementIndex=0) const
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
-      
+
       bool setDiscreteIndex(int value)
       {return this->setDiscreteIndex(0, value);}
       bool setDiscreteIndex(int elementIndex, int value);
       // Reset returns the item to its initial state.
-      //If the item is of fixed size, then it's values  to their initial state.  
+      //If the item is of fixed size, then it's values  to their initial state.
       // If there is a default available it will use it, else
       // it will be marked as unset.
-      //If the item's definition indicated a size of 0 then it will go back to 
+      //If the item's definition indicated a size of 0 then it will go back to
       // having no values
       virtual void reset();
       virtual bool setToDefault(int elementIndex=0) = 0;
-      virtual std::string valueAsString(const std::string &format="") const
-      { return this->valueAsString(0, format);}
+      virtual std::string valueAsString() const
+      { return this->valueAsString(0);}
 
-      virtual std::string valueAsString(int elementIndex,
-                                        const std::string &format="") const = 0;
+      virtual std::string valueAsString(int elementIndex) const = 0;
       virtual bool isSet(int elementIndex = 0) const
       {return this->m_isSet[elementIndex];}
       virtual void unset(int elementIndex=0)
@@ -93,7 +92,7 @@ namespace smtk
       std::vector<bool> m_isSet;
       std::vector<smtk::AttributeRefItemPtr > m_expressions;
     private:
-      
+
     };
   };
 };

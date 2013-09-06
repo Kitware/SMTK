@@ -110,7 +110,7 @@ int main()
     std::cout << "ERROR: Can not set expression on " << vitem->name() << "\n";
     status = -1;
     }
-  
+
   int i, n = att->numberOfItems();
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
@@ -129,13 +129,11 @@ int main()
         switch (vitem->type())
           {
           case AttItem::DOUBLE:
-            std::cout << " Value = " << vitem->valueAsString("%g") << "\n";
-            break;
           case AttItem::INT:
-            std::cout << " Value = " << vitem->valueAsString("%d") << "\n";
+            std::cout << " Value = "  << vitem->valueAsString() << std::endl;
             break;
           case AttItem::STRING:
-            std::cout << vitem->valueAsString(" String Val = %s") << "\n";
+            std::cout << " String Val = " << vitem->valueAsString() << std::endl;
             break;
           default:
             break;

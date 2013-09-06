@@ -131,7 +131,7 @@ void qtModelEntitySection::createWidget( )
   leftLayout->setMargin(0);
   QVBoxLayout* rightLayout = new QVBoxLayout(bottomFrame);
   rightLayout->setMargin(0);
-  
+
   this->Internals->FiltersFrame = new QFrame(bottomFrame);
   QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
   filterLayout->setMargin(0);
@@ -233,14 +233,13 @@ void qtModelEntitySection::updateModelItems()
     smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
   if(!sec)
     {
-    this->Internals->ListBox->blockSignals(false);   
+    this->Internals->ListBox->blockSignals(false);
     return;
     }
   if(unsigned int mask = sec->modelEntityMask())
     {
     smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
-    std::vector<smtk::ModelGroupItemPtr> result;
-    refModel->findGroupItems(mask, result);
+    std::vector<smtk::ModelGroupItemPtr> result=refModel->findGroupItems(mask);
     std::vector<smtk::ModelGroupItemPtr>::iterator it = result.begin();
     for(; it!=result.end(); ++it)
       {
@@ -264,8 +263,7 @@ void qtModelEntitySection::onShowCategory()
     unsigned int mask = sec->modelEntityMask() ? sec->modelEntityMask() :
       smtk::model::Item::REGION;
     smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
-    std::vector<smtk::ModelGroupItemPtr> result;
-    refModel->findGroupItems(mask, result);
+    std::vector<smtk::ModelGroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(
       result, this->Internals->ShowCategoryCombo->currentText(),
       this->Internals->attDefs);
@@ -296,7 +294,7 @@ smtk::ModelItemPtr qtModelEntitySection::getSelectedModelItem()
 smtk::ModelItemPtr qtModelEntitySection::getModelItem(
   QListWidgetItem * item)
 {
-  smtk::model::Item* rawPtr = item ? 
+  smtk::model::Item* rawPtr = item ?
     static_cast<smtk::model::Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->pointer() : smtk::ModelItemPtr();
 }

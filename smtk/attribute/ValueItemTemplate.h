@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <vector>
 #include <stdio.h>
+#include <sstream>
 
 namespace smtk
 {
@@ -44,7 +45,7 @@ namespace smtk
     public:
       typedef DataT DataType;
       typedef ValueItemDefinitionTemplate<DataType> DefType;
-      
+
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
       ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~ValueItemTemplate() {}
@@ -54,9 +55,9 @@ namespace smtk
       virtual bool setNumberOfValues(std::size_t newSize);
       DataT value(int element=0) const
       {return this->m_values[element];}
-      virtual std::string valueAsString(const std::string &format="") const
-      {return this->valueAsString(0, format);}
-      virtual std::string valueAsString(int element, const std::string &format="") const;
+      virtual std::string valueAsString() const
+      {return this->valueAsString(0);}
+      virtual std::string valueAsString(int element) const;
       bool setValue(const DataT &val)
       {return this->setValue(0, val);}
       bool setValue(int element, const DataT &val);
@@ -74,8 +75,8 @@ namespace smtk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueItemTemplate<DataT>::ValueItemTemplate(Attribute *owningAttribute, 
-                                                int itemPosition): 
+    ValueItemTemplate<DataT>::ValueItemTemplate(Attribute *owningAttribute,
+                                                int itemPosition):
       ValueItem(owningAttribute, itemPosition)
     {
     }
@@ -84,7 +85,7 @@ namespace smtk
     template<typename DataT>
     ValueItemTemplate<DataT>::ValueItemTemplate(Item *owningItem,
                                                 int itemPosition,
-                                                int mySubGroupPosition): 
+                                                int mySubGroupPosition):
       ValueItem(owningItem, itemPosition, mySubGroupPosition)
     {
     }
@@ -95,7 +96,7 @@ namespace smtk
     {
       // Note that we do a dynamic cast here since we don't
       // know if the proper definition is being passed
-      const DefType *def = 
+      const DefType *def =
         dynamic_cast<const DefType *>(tdef.get());
       // Call the parent's set definition - similar to constructor calls
       // we call from base to derived
@@ -159,10 +160,8 @@ namespace smtk
 //----------------------------------------------------------------------------
     template<typename DataT>
     std::string
-    ValueItemTemplate<DataT>::valueAsString(int element, 
-                                          const std::string &format) const
+    ValueItemTemplate<DataT>::valueAsString(int element) const
     {
-      // For the initial design we will use sprintf and force a limit of 300 char
       if (this->m_isSet[element])
         {
         if (this->isExpression(element))
@@ -171,96 +170,9 @@ namespace smtk
           }
         else
           {
-          char dummy[300];
-          sprintf(dummy, format.c_str(), this->m_values[element]);
-          return dummy;
-          }
-        }
-      return "VALUE_IS_NOT_SET";
-    }
-//----------------------------------------------------------------------------
-    template<>
-    inline std::string
-    ValueItemTemplate<std::string>::valueAsString(int element, 
-                                          const std::string &format) const
-    {
-      // For the initial design we will use sprintf and force a limit of 300 char
-      if (this->m_isSet[element])
-        {
-        if (this->isExpression(element))
-          {
-          return "VALUE_IS_EXPRESSION";
-          }
-        else
-          {
-          char dummy[300];
-          if (format == "")
-            {
-            sprintf(dummy, "%s", this->m_values[element].c_str());
-            }
-          else
-            {
-            sprintf(dummy, format.c_str(), this->m_values[element].c_str());
-            }
-          return dummy;
-          }
-        }
-      return "VALUE_IS_NOT_SET";
-    }
-//----------------------------------------------------------------------------
-    template<>
-    inline std::string
-    ValueItemTemplate<int>::valueAsString(int element, 
-                                               const std::string &format) const
-    {
-      // For the initial design we will use sprintf and force a limit of 300 char
-      if (this->m_isSet[element])
-        {
-        if (this->isExpression(element))
-          {
-          return "VALUE_IS_EXPRESSION";
-          }
-        else
-          {
-          char dummy[300];
-          if (format == "")
-            {
-            sprintf(dummy, "%d", this->m_values[element]);
-            }
-          else
-            {
-            sprintf(dummy, format.c_str(), this->m_values[element]);
-            }
-          return dummy;
-          }
-        }
-      return "VALUE_IS_NOT_SET";
-    }
-//----------------------------------------------------------------------------
-    template<>
-    inline std::string
-    ValueItemTemplate<double>::valueAsString(int element, 
-                                               const std::string &format) const
-    {
-      // For the initial design we will use sprintf and force a limit of 300 char
-      if (this->m_isSet[element])
-        {
-        if (this->isExpression(element))
-          {
-          return "VALUE_IS_EXPRESSION";
-          }
-        else
-          {
-          char dummy[300];
-          if (format == "")
-            {
-            sprintf(dummy, "%g", this->m_values[element]);
-            }
-          else
-            {
-            sprintf(dummy, format.c_str(), this->m_values[element]);
-            }
-          return dummy;
+          std::stringstream buffer;
+          buffer << this->m_values[element];
+          return buffer.str();
           }
         }
       return "VALUE_IS_NOT_SET";
@@ -277,7 +189,7 @@ namespace smtk
         {
         return false; // The number of values is fixed
         }
-      
+
       if (def->isDiscrete())
         {
         int index = def->findDiscreteIndex(val);

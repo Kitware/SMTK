@@ -28,7 +28,7 @@ function(determineSharedPtrType type incType)
     )
     if(${SHARED_PTR_TYPE_FOUND})
       set(RESULT "std::tr1")
-      set(INCLUDE_RESULT "#include<tr1/memory>")
+      set(INCLUDE_RESULT "#include <tr1/memory>")
     endif()
   endif()
 

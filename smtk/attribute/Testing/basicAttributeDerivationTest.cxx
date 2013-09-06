@@ -94,13 +94,11 @@ int main()
       switch (vcomp->type())
         {
         case AttComp::DOUBLE:
-          std::cout << " Value = " << vcomp->valueAsString("%g") << "\n";
-          break;
         case AttComp::INT:
-          std::cout << " Value = " << vcomp->valueAsString("%d") << "\n";
+          std::cout << " Value = "  << vcomp->valueAsString() << std::endl;
           break;
         case AttComp::STRING:
-          std::cout << vcomp->valueAsString(" String Val = %s") << "\n";
+          std::cout << " String Val = " << vcomp->valueAsString() << std::endl;
           break;
         default:
           break;
