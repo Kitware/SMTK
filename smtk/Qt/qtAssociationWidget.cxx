@@ -385,8 +385,6 @@ void qtAssociationWidget::processDefUniqueness(
     }
 
   typedef smtk::model::Item::const_iterator c_iter;
-  std::set<smtk::AttributePtr>::const_iterator associatedAtt =
-    theEntiy->associatedAttributes();
   for(c_iter i = theEntiy->beginAssociatedAttributes();
       i != theEntiy->endAssociatedAttributes();
       ++i)
