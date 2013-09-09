@@ -121,8 +121,6 @@ namespace smtk
      static Item::Type string2Type(const std::string &s);
 
      protected:
-      // This method allows any Item to delete another - USE WITH CARE!
-      void deleteItem();
       Attribute *m_attribute;
       Item *m_owningItem;
       int m_position;
