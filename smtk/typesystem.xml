@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<typesystem package="smtk">
+<typesystem package="@TYPESYSTEM_NAME@">
 
   <suppress-warning text="template baseclass 'std::shared_ptr&lt;*&gt;' of 'ptr' is not known"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
