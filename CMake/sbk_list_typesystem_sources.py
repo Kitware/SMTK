@@ -68,7 +68,14 @@ class typesystem_parser(xml.sax.ContentHandler):
 
     elif name in class_types:
       self.current_namespace.append(typeName(attrs))
-      self.printWrapperFiles(self.current_namespace)
+
+      #AttributesImpl doesn't have a setdefault method so we have to
+      #do the long check for the generate key/value
+      generate = True
+      if ('generate' in attrs):
+        generate = (attrs['generate'].lower() == "yes")
+      if(generate):
+        self.printWrapperFiles(self.current_namespace)
 
   #----------------------------------------------------------------------------
   def endElement(self, name):

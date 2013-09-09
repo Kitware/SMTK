@@ -61,7 +61,7 @@ namespace smtk
       smtk::AttributePtr findAttribute(const std::string &name) const;
       smtk::AttributePtr findAttribute(unsigned long id) const;
       void findAttributes(const std::string &type, std::vector<smtk::AttributePtr> &result) const;
-      void findAttributes(smtk::AttributeDefinitionPtr def, std::vector<AttributePtr> &result) const;
+      void findAttributes(smtk::AttributeDefinitionPtr def, std::vector<smtk::AttributePtr> &result) const;
       smtk::AttributeDefinitionPtr findDefinition(const std::string &type) const;
 
       // Return a list of definitions that are not derived from another definition
@@ -76,7 +76,7 @@ namespace smtk
       void findDefinitionAttributes(const std::string &type,
                                     std::vector<smtk::AttributePtr> &result) const;
       void findDefinitions(long mask, std::vector<smtk::AttributeDefinitionPtr> &result) const;
- 
+
       smtk::ConstAttributeDefinitionPtr findIsUniqueBaseClass(
         smtk::AttributeDefinitionPtr attDef) const;
 
@@ -117,10 +117,10 @@ namespace smtk
         {return this->m_attributes.size()>0; }
 
     protected:
-      void internalFindAllDerivedDefinitions(AttributeDefinitionPtr def, bool onlyConcrete,
-                                             std::vector<AttributeDefinitionPtr> &result) const;
+      void internalFindAllDerivedDefinitions(smtk::AttributeDefinitionPtr def, bool onlyConcrete,
+                                             std::vector<smtk::AttributeDefinitionPtr> &result) const;
       void internalFindAttributes(AttributeDefinitionPtr def,
-                                  std::vector<AttributePtr> &result) const;
+                                  std::vector<smtk::AttributePtr> &result) const;
       std::map<std::string, smtk::AttributeDefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::AttributePtr> > m_attributeClusters;
       std::map<std::string, smtk::AttributePtr> m_attributes;
