@@ -24,7 +24,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
-option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" ON)
+option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 
 ################################################################################
 # Testing Related Settings
