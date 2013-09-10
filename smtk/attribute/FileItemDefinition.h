@@ -42,7 +42,9 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      FileItemDefinition(const std::string &myName);
+      static smtk::FileItemDefinitionPtr New(const std::string &myName)
+      { return smtk::FileItemDefinitionPtr(new FileItemDefinition(myName));}
+
       virtual ~FileItemDefinition();
       
       virtual Item::Type type() const;
@@ -79,13 +81,14 @@ namespace smtk
       {this->m_fileFilters = filters;}
 
     protected:
-        bool m_shouldExist;
-        bool m_shouldBeRelative;
-        bool m_useCommonLabel;
-        std::vector<std::string> m_valueLabels;
-        int m_numberOfRequiredValues;
-        std::string m_fileFilters;
-
+      FileItemDefinition(const std::string &myName);
+      bool m_shouldExist;
+      bool m_shouldBeRelative;
+      bool m_useCommonLabel;
+      std::vector<std::string> m_valueLabels;
+      int m_numberOfRequiredValues;
+      std::string m_fileFilters;
+      
      private:
       
     };

@@ -49,9 +49,9 @@ int main()
     status = -1;
     }
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr icompdef(new smtk::attribute::IntItemDefinition("IntComp1"));
+  smtk::IntItemDefinitionPtr icompdef = smtk::attribute::IntItemDefinition::New("IntComp1");
   def->addItemDefinition(icompdef);
-  smtk::IntItemDefinitionPtr icompdef2(new smtk::attribute::IntItemDefinition("IntComp2"));
+  smtk::IntItemDefinitionPtr icompdef2 = smtk::attribute::IntItemDefinition::New("IntComp2");
   icompdef2->setDefaultValue(10);
   def->addItemDefinition(icompdef2);
   smtk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");

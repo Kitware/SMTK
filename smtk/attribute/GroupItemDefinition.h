@@ -41,7 +41,9 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      GroupItemDefinition(const std::string &myname);
+      static smtk::GroupItemDefinitionPtr New(const std::string &myName)
+      { return smtk::GroupItemDefinitionPtr(new GroupItemDefinition(myName));}
+
       virtual ~GroupItemDefinition();
       virtual Item::Type type() const;
       std::size_t numberOfItemDefinitions() const
@@ -59,7 +61,7 @@ namespace smtk
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::SharedPointerType 
-          item(new typename SharedTypes::RawPointerType(name));
+          item = SharedTypes::RawPointerType::New(name);
         this->m_itemDefs.push_back(item);
         return item;
       }
@@ -89,6 +91,7 @@ namespace smtk
       virtual void removeCategory(const std::string &category);
       
     protected:
+      GroupItemDefinition(const std::string &myname);
       virtual void updateCategories();
       std::vector<smtk::AttributeItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;

@@ -40,7 +40,9 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      VoidItemDefinition(const std::string &myName);
+      static smtk::VoidItemDefinitionPtr New(const std::string &myName)
+      { return smtk::VoidItemDefinitionPtr(new VoidItemDefinition(myName));}
+
       virtual ~VoidItemDefinition();
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
@@ -49,6 +51,7 @@ namespace smtk
                                                 int position,
                                                 int subGroupPosition) const;
     protected:
+      VoidItemDefinition(const std::string &myName);
     private:
       
     };

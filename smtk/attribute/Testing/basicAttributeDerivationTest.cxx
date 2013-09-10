@@ -46,25 +46,25 @@ int main()
   std::cout << "Manager Created\n";
   smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr icompdef(new IntCompDef("IntComp1"));
+  smtk::IntItemDefinitionPtr icompdef = IntCompDef::New("IntComp1");
   base->addItemDefinition(icompdef);
-  smtk::IntItemDefinitionPtr icompdef2(new IntCompDef("IntComp2"));
+  smtk::IntItemDefinitionPtr icompdef2 = IntCompDef::New("IntComp2");
   icompdef2->setDefaultValue(10);
   base->addItemDefinition(icompdef2);
 
   smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr dcompdef(new DoubleCompDef("DoubleComp1"));
+  smtk::DoubleItemDefinitionPtr dcompdef = DoubleCompDef::New("DoubleComp1");
   def1->addItemDefinition(dcompdef);
-  smtk::DoubleItemDefinitionPtr dcompdef2(new DoubleCompDef("DoubleComp2"));
+  smtk::DoubleItemDefinitionPtr dcompdef2 = DoubleCompDef::New("DoubleComp2");
   dcompdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(dcompdef2);
 
   smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr scompdef(new StringCompDef("StringComp1"));
+  smtk::StringItemDefinitionPtr scompdef = StringCompDef::New("StringComp1");
   def1->addItemDefinition(scompdef);
-  smtk::StringItemDefinitionPtr scompdef2(new StringCompDef("StringComp2"));
+  smtk::StringItemDefinitionPtr scompdef2 = StringCompDef::New("StringComp2");
   scompdef2->setDefaultValue("Default");
   def1->addItemDefinition(scompdef2);
 

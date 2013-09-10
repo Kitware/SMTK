@@ -37,7 +37,9 @@ namespace smtk
       public ValueItemDefinitionTemplate<int>
     {
     public:
-      IntItemDefinition(const std::string &myName);
+      static smtk::IntItemDefinitionPtr New(const std::string &myName)
+      { return smtk::IntItemDefinitionPtr(new IntItemDefinition(myName));}
+
       virtual ~IntItemDefinition();
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
@@ -47,6 +49,7 @@ namespace smtk
                                                 int subGroupPosition) const;
 
     protected:
+      IntItemDefinition(const std::string &myName);
 
     private:
 

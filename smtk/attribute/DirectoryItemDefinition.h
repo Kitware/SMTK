@@ -42,7 +42,8 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      DirectoryItemDefinition(const std::string &myName);
+      static smtk::DirectoryItemDefinitionPtr New(const std::string &myName)
+      { return smtk::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));}
       virtual ~DirectoryItemDefinition();
       
       virtual Item::Type type() const;
@@ -75,12 +76,13 @@ namespace smtk
       {this->m_shouldBeRelative = val;}
 
     protected:
-        bool m_shouldExist;
-        bool m_shouldBeRelative;
-        bool m_useCommonLabel;
-        std::vector<std::string> m_valueLabels;
-        int m_numberOfRequiredValues;
-     private:
+      DirectoryItemDefinition(const std::string &myName);
+      bool m_shouldExist;
+      bool m_shouldBeRelative;
+      bool m_useCommonLabel;
+      std::vector<std::string> m_valueLabels;
+      int m_numberOfRequiredValues;
+    private:
       
     };
   };

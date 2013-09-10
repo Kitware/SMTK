@@ -37,8 +37,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
   this->m_numberOfRequiredValues = 1;
-  this->m_expressionDefinition = 
-    smtk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition("expression"));
+  this->m_expressionDefinition = AttributeRefItemDefinition::New("expression");
   this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
