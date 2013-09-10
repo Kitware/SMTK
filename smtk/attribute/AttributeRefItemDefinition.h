@@ -46,7 +46,7 @@ namespace smtk
       { return smtk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition(myName));}
 
       virtual ~AttributeRefItemDefinition();
-      
+
       virtual Item::Type type() const;
       smtk::AttributeDefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
@@ -58,7 +58,7 @@ namespace smtk
 
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       int numberOfRequiredValues() const
@@ -81,9 +81,9 @@ namespace smtk
       std::vector<std::string> m_valueLabels;
       int m_numberOfRequiredValues;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_AttributeRefItemDefinition_h */

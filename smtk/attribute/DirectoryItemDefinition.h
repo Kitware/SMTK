@@ -45,13 +45,13 @@ namespace smtk
       static smtk::DirectoryItemDefinitionPtr New(const std::string &myName)
       { return smtk::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));}
       virtual ~DirectoryItemDefinition();
-      
+
       virtual Item::Type type() const;
       bool isValueValid(const std::string &val) const;
 
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       int numberOfRequiredValues() const
@@ -83,9 +83,9 @@ namespace smtk
       std::vector<std::string> m_valueLabels;
       int m_numberOfRequiredValues;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_DirectoryItemDefinition_h */

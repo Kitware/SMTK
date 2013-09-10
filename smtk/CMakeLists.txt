@@ -59,9 +59,40 @@ if(SMTK_BUILD_QT)
 
   #install the library and exports the library when used from a build tree
   smtk_install_library(QtSMTK DEPENDS SMTKCore)
+
 endif()
 
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location
 install(EXPORT SMTK-targets DESTINATION lib)
+
+#wrap everything
+if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+  sbk_wrap_library(SMTKCore
+    GENERATOR_ARGS --avoid-protected-hack
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    LOCAL_INCLUDE_DIRECTORIES
+      ${CMAKE_CURRENT_SOURCE_DIR}/attribute
+      ${CMAKE_CURRENT_SOURCE_DIR}/model
+      ${CMAKE_CURRENT_SOURCE_DIR}
+      ${CMAKE_CURRENT_BINARY_DIR}
+    TYPESYSTEM typesystem.xml
+    HEADERS ${smtk_headers}
+  )
+
+#get the location to copy the shiboken library so developers have an
+#easier time testing the python wrapping
+
+#first we have to resolve the path since shiboken library most likely
+#uses symlinks and we have to copy that version
+get_filename_component(shiboken_path "${SHIBOKEN_LIBRARY}" REALPATH)
+file(COPY "${shiboken_path}" DESTINATION "${SMTK_BINARY_DIR}")
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/smtk.py"
+               "${SMTK_BINARY_DIR}/smtk.py" @ONLY)
+
+#todo we need to install this file in such a way that it can resolve
+#the location of shiboken, which is going to mean running fixup bundle
+#on the mac, and than fixing up the smtk.py package script
+endif()

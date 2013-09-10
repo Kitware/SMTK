@@ -39,18 +39,18 @@ namespace smtk
     class SMTKCORE_EXPORT DoubleItem :
       public ValueItemTemplate<double>
     {
-      friend class DoubleItemDefinition; 
+      friend class DoubleItemDefinition;
     public:
       DoubleItem(Attribute *owningAttribute, int itemPosition);
       DoubleItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~DoubleItem();
       virtual Item::Type type() const;
     protected:
-      
+
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_DoubleItem_h */

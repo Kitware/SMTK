@@ -45,7 +45,7 @@ namespace smtk
     class Definition;
     class Cluster;
     class ValueItem;
-    class SMTKCORE_EXPORT ValueItemDefinition : 
+    class SMTKCORE_EXPORT ValueItemDefinition :
       public smtk::attribute::ItemDefinition
     {
     public:
@@ -66,7 +66,7 @@ namespace smtk
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}
       void setDefaultDiscreteIndex(int discreteIndex);
-      
+
       bool allowsExpressions() const;
       bool isValidExpression(smtk::AttributePtr exp) const;
       smtk::AttributeDefinitionPtr expressionDefinition() const;
@@ -105,9 +105,9 @@ namespace smtk
       std::string m_units;
       smtk::AttributeRefItemDefinitionPtr m_expressionDefinition;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_ValueItemDefinition_h */

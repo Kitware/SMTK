@@ -74,6 +74,7 @@ namespace smtk
     class SimpleExpressionSection;
     class StringItem;
     class StringItemDefinition;
+    class UserData;
     class ValueItem;
     class ValueItemDefinition;
     class VoidItem;
@@ -121,6 +122,7 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
   typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+
   typedef smtk::shared_ptr< smtk::attribute::Manager >                  AttributeManagerPtr;
 
   // Section Related Pointer Classes
@@ -132,6 +134,9 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::ModelEntitySection >       ModelEntitySectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::RootSection >              RootSectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::SimpleExpressionSection >  SimpleExpressionSectionPtr;
+
+  //custom user data classes
+  typedef smtk::shared_ptr< smtk::attribute::UserData >                 UserDataPtr;
 
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less

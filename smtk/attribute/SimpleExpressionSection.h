@@ -51,8 +51,8 @@ namespace smtk
       smtk::AttributeDefinitionPtr m_definition;
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __SimpleExpressionSection_h */

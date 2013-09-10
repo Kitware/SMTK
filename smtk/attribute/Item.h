@@ -58,7 +58,7 @@ namespace smtk
        COLOR,
        NUMBER_OF_TYPES
      };
-       
+
      Item(Attribute *owningAttribute, int itemPosition);
      Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
      virtual ~Item();
@@ -68,11 +68,11 @@ namespace smtk
      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
      smtk::ConstAttributeItemDefinitionPtr definition() const
      {return this->m_definition;}
-     
+
      // Return the attribute that owns this item
      smtk::AttributePtr attribute() const;
      smtk::AttributeItemPtr owningItem() const
-     {return (this->m_owningItem ? this->m_owningItem->pointer() : 
+     {return (this->m_owningItem ? this->m_owningItem->pointer() :
               smtk::AttributeItemPtr());}
      //Position is the item's location w/r to the owning item if not null
      // or the owning attribute. Currently the only items that can own other items are
@@ -88,25 +88,25 @@ namespace smtk
      // an empty shared pointer
      smtk::AttributeItemPtr pointer() const;
      bool isOptional() const;
-     
+
      // isEnabled only matters for optional items.  All non-optional
-     // items will return true for isEnabled regardless of the value 
+     // items will return true for isEnabled regardless of the value
      // of m_isEnabled
      bool isEnabled() const;
      void setIsEnabled(bool isEnabledValue)
      {this->m_isEnabled = isEnabledValue;}
-     
+
      bool isMemberOf(const std::string &category) const;
      bool isMemberOf(const std::vector<std::string> &categories) const;
-     
-     void setUserData(const std::string &key, void *value)
+
+     void setUserData(const std::string &key, smtk::UserDataPtr value)
        {this->m_userData[key] = value;}
-     void *userData(const std::string &key) const;
+     smtk::UserDataPtr userData(const std::string &key) const;
      void clearUserData(const std::string &key)
      {this->m_userData.erase(key);}
      void clearAllUserData()
      {this->m_userData.clear();}
-     
+
      virtual void reset();
 
      //This should be used only by attributes
@@ -121,8 +121,6 @@ namespace smtk
      static Item::Type string2Type(const std::string &s);
 
      protected:
-      // This method allows any Item to delete another - USE WITH CARE!
-      void deleteItem();
       Attribute *m_attribute;
       Item *m_owningItem;
       int m_position;
@@ -130,18 +128,18 @@ namespace smtk
       bool m_isEnabled;
       mutable std::string m_tempString;
       smtk::ConstAttributeItemDefinitionPtr m_definition;
-      std::map<std::string, void *> m_userData;
+      std::map<std::string, smtk::UserDataPtr > m_userData;
     private:
-      
+
     };
 //----------------------------------------------------------------------------
-    inline void *Item::userData(const std::string &key) const
+    inline smtk::UserDataPtr Item::userData(const std::string &key) const
     {
-      std::map<std::string, void *>::const_iterator it =
+      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? NULL : it->second);
+      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
     }
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_Item_h */

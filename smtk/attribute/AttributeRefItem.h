@@ -65,14 +65,14 @@ namespace smtk
       virtual bool isSet(int element=0) const
       {return this->m_values[element].lock().get() != NULL;}
       virtual void unset(int element=0);
-      
+
     protected:
       void clearAllReferences();
       std::vector<WeakAttributePtr>m_values;
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_AttributeRefItem_h */

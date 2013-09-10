@@ -56,10 +56,10 @@ namespace smtk
     protected:
       std::vector<smtk::AttributePtr> m_instances;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_InstancedSection_h */

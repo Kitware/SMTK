@@ -46,13 +46,13 @@ namespace smtk
       { return smtk::FileItemDefinitionPtr(new FileItemDefinition(myName));}
 
       virtual ~FileItemDefinition();
-      
+
       virtual Item::Type type() const;
       bool isValueValid(const std::string &val) const;
 
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       int numberOfRequiredValues() const
@@ -88,11 +88,11 @@ namespace smtk
       std::vector<std::string> m_valueLabels;
       int m_numberOfRequiredValues;
       std::string m_fileFilters;
-      
+
      private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_FileItemDefinition_h */

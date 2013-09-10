@@ -20,37 +20,33 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME IntItem.h -
+// .NAME smtkAttribute.h - Represents a standalone piece of simulation information
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_IntItem_h
-#define __smtk_attribute_IntItem_h
+#ifndef __smtk_attribute_UserData_h
+#define __smtk_attribute_UserData_h
 
-#include "smtk/attribute/ValueItemTemplate.h"
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/PublicPointerDefs.h"
+
 
 namespace smtk
 {
   namespace attribute
   {
-    class Attribute;
-    class IntItemDefinition;
-    class SMTKCORE_EXPORT IntItem :
-      public ValueItemTemplate<int>
+    //derive from this class to create custom user data.
+    class SMTKCORE_EXPORT UserData
     {
-      friend class IntItemDefinition;
     public:
-      IntItem(Attribute *owningAttribute, int itemPosition);
-      IntItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual ~IntItem();
-      virtual Item::Type type() const;
+      static smtk::UserDataPtr New()
+      { return smtk::UserDataPtr(new UserData()); }
+
+      virtual ~UserData(){};
     protected:
-
-    private:
-
+      UserData(){}
     };
   }
 }
 
-#endif /* __smtk_attribute_IntItem_h */
+#endif

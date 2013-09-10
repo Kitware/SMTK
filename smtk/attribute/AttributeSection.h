@@ -65,8 +65,8 @@ namespace smtk
 
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __AttributeSection_h */

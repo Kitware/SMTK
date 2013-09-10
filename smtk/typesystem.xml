@@ -1,0 +1,415 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  <suppress-warning text="template baseclass 'std::shared_ptr&lt;*&gt;' of 'ptr' is not known"/>
+  <suppress-warning text="namespace 'std' does not have a type entry"/>
+
+  @EXTRA_TYPESYSTEMS@
+
+  <primitive-type name="bool"/>
+  <primitive-type name="double"/>
+  <primitive-type name="real"/>
+  <primitive-type name="int"/>
+  <primitive-type name="short"/>
+  <primitive-type name="unsigned short"/>
+  <primitive-type name="ushort"/>
+  <primitive-type name="unsigned int" />
+  <primitive-type name="signed int" />
+  <primitive-type name="char"/>
+  <primitive-type name="unsigned char"/>
+  <primitive-type name="long"/>
+  <primitive-type name="unsigned long"/>
+  <primitive-type name="long long"/>
+  <primitive-type name="unsigned long long"/>
+
+  <primitive-type name="std::size_t"/>
+  <primitive-type name="std::string"/>
+
+  <container-type name="std::pair" type="pair">
+    <include file-name="utility" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+        PyObject* %out = PyTuple_New(2);
+        PyTuple_SET_ITEM(%out, 0, %CONVERTTOPYTHON[%INTYPE_0](%in.first));
+        PyTuple_SET_ITEM(%out, 1, %CONVERTTOPYTHON[%INTYPE_1](%in.second));
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PySequence">
+          %out.first = %CONVERTTOCPP[%OUTTYPE_0](PySequence_Fast_GET_ITEM(%in, 0));
+          %out.second = %CONVERTTOCPP[%OUTTYPE_1](PySequence_Fast_GET_ITEM(%in, 1));
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </container-type>
+
+  <template name="cpplist_to_pylist_convertion">
+    PyObject* %out = PyList_New((int) %in.size());
+    %INTYPE::const_iterator it = %in.begin();
+    for (int idx = 0; it != %in.end(); ++it, ++idx) {
+    %INTYPE_0 cppItem(*it);
+    PyList_SET_ITEM(%out, idx, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
+    }
+    return %out;
+  </template>
+
+  <template name="pyseq_to_cpplist_convertion">
+    Shiboken::AutoDecRef seq(PySequence_Fast(%in, 0));
+    for (int i = 0; i != PySequence_Fast_GET_SIZE(seq.object()); i++) {
+    PyObject* pyItem = PySequence_Fast_GET_ITEM(seq.object(), i);
+    %OUTTYPE_0 cppItem = %CONVERTTOCPP[%OUTTYPE_0](pyItem);
+    %out.push_back(cppItem);
+    }
+  </template>
+
+  <!-- Code to allow us to wrap std::lists -->
+  <container-type name="std::list" type="list">
+    <include file-name="list" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+        PyObject* %out = PyList_New((int) %in.size());
+        %INTYPE::const_iterator it = %in.begin();
+        for (int idx = 0; it != %in.end(); ++it, ++idx) {
+        %INTYPE_0 cppItem(*it);
+        PyList_SET_ITEM(%out, idx, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
+        }
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PySequence">
+          Shiboken::AutoDecRef seq(PySequence_Fast(%in, 0));
+          for (int i = 0; i != PySequence_Fast_GET_SIZE(seq.object()); i++) {
+          PyObject* pyItem = PySequence_Fast_GET_ITEM(seq.object(), i);
+          %OUTTYPE_0 cppItem = %CONVERTTOCPP[%OUTTYPE_0](pyItem);
+          %out.push_back(cppItem);
+          }
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </container-type>
+
+  <!-- Code to allow us to wrap std::vectors -->
+  <container-type name="std::vector" type="vector">
+    <include file-name="vector" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+        %INTYPE::size_type vectorSize = %in.size();
+        PyObject* %out = PyList_New((int) vectorSize);
+        for (%INTYPE::size_type idx = 0; idx != vectorSize; ++idx) {
+        %INTYPE_0 cppItem(%in[idx]);
+        PyList_SET_ITEM(%out, idx, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
+        }
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PySequence">
+          Shiboken::AutoDecRef seq(PySequence_Fast(%in, 0));
+          int vectorSize = PySequence_Fast_GET_SIZE(seq.object());
+          %out.reserve(vectorSize);
+          for (int idx = 0; idx != vectorSize; ++idx ) {
+          PyObject* pyItem = PySequence_Fast_GET_ITEM(seq.object(), idx);
+          %OUTTYPE_0 cppItem = %CONVERTTOCPP[%OUTTYPE_0](pyItem);
+          %out.push_back(cppItem);
+          }
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </container-type>
+
+  <container-type name="std::map" type="map">
+    <include file-name="map" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+        PyObject* %out = PyDict_New();
+        %INTYPE::const_iterator it = %in.begin();
+        for (; it != %in.end(); ++it) {
+        %INTYPE_0 key = it->first;
+        %INTYPE_1 value = it->second;
+        PyDict_SetItem(%out,
+        %CONVERTTOPYTHON[%INTYPE_0](key),
+        %CONVERTTOPYTHON[%INTYPE_1](value));
+        }
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PyDict">
+          PyObject* key;
+          PyObject* value;
+          Py_ssize_t pos = 0;
+          while (PyDict_Next(%in, &amp;pos, &amp;key, &amp;value)) {
+          %OUTTYPE_0 cppKey = %CONVERTTOCPP[%OUTTYPE_0](key);
+          %OUTTYPE_1 cppValue = %CONVERTTOCPP[%OUTTYPE_1](value);
+          %out.insert(%OUTTYPE::value_type(cppKey, cppValue));
+          }
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </container-type>
+
+ <container-type name="std::set" type="set">
+    <include file-name="set" location="global"/>
+
+    <conversion-rule>
+
+      <native-to-target>
+      PyObject* %out = PySet_New(0);
+      %INTYPE::const_iterator it;
+      for (it = %in.begin(); it != %in.end(); ++it) {
+        %INTYPE_0 value = *it;
+        PyObject* pyValue = %CONVERTTOPYTHON[%INTYPE_0](value);
+        PySet_Add(%out, pyValue);
+      }
+      return %out;
+      </native-to-target>
+
+      <target-to-native>
+
+        <add-conversion type="PySet">
+        Shiboken::AutoDecRef iter(PyObject_GetIter(%in));
+        if (iter.object()) {
+          PyObject* item;
+          while ((item = PyIter_Next(iter))) {
+            %OUTTYPE_0 cppItem = %CONVERTTOCPP[%OUTTYPE_0](item);
+            %out.insert(cppItem);
+            Py_DECREF(item);
+          }
+        }
+        </add-conversion>
+
+        <add-conversion type="PySequence">
+        Shiboken::AutoDecRef seq(PySequence_Fast(%in, 0));
+        Py_ssize_t vectorSize = PySequence_Fast_GET_SIZE(seq.object());
+        for (Py_ssize_t idx = 0; idx &lt; vectorSize; ++idx) {
+          PyObject* pyItem = PySequence_Fast_GET_ITEM(seq.object(), idx);
+          %OUTTYPE_0 cppItem = %CONVERTTOCPP[%OUTTYPE_0](pyItem);
+          %out.insert(cppItem);
+        }
+        </add-conversion>
+
+      </target-to-native>
+
+    </conversion-rule>
+  </container-type>
+
+
+  <!-- setup the shared pointer type outside the namesapces -->
+  <type-template name="smtk::shared_ptr">
+    <include file-name="memory" location="global"/>
+    <arg redirect="%CPPSELF-&gt;get()-&gt;"/>
+  </type-template>
+
+  <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Item" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DirectoryItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DoubleItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::DoubleItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Manager" />
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Section" />
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeSection" />
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::InstancedSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntitySection" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
+
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::UserData" />
+
+<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition" /> -->
+<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item" /> -->
+<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::ItemDefinition" /> -->
+
+
+  <namespace-type name="smtk">
+    <namespace-type name="model">
+      <!-- setup the model classes -->
+      <object-type name="Item">
+        <include file-name="smtk/model/Item.h" location="local"/>
+        <enum-type name="Type"/>
+      </object-type>
+
+      <object-type name="GroupItem">
+        <include file-name="smtk/model/GroupItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="ModelDomainItem">
+        <include file-name="smtk/model/ModelDomainItem.h" location="local"/>
+      </object-type>
+
+    <object-type name="Model">
+      <include file-name="smtk/model/Model.h" location="local"/>
+      <enum-type name="ModelEntityNodalTypes"/>
+    </object-type>
+
+    </namespace-type>
+
+    <namespace-type name="attribute">
+      <!-- setup the attribute classes -->
+      <object-type name="Attribute">
+        <include file-name="smtk/attribute/Attribute.h" location="local"/>
+      </object-type>
+
+     <object-type name="AttributeReader">
+        <include file-name="smtk/attribute/AttributeReader.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeRefItem">
+        <include file-name="smtk/attribute/AttributeRefItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeRefItemDefinition">
+        <include file-name="smtk/attribute/AttributeRefItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeSection">
+        <include file-name="smtk/attribute/AttributeSection.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeWriter">
+        <include file-name="smtk/attribute/AttributeWriter.h" location="local"/>
+      </object-type>
+
+      <object-type name="Definition">
+        <include file-name="smtk/attribute/Definition.h" location="local"/>
+      </object-type>
+
+      <object-type name="DirectoryItem">
+        <include file-name="smtk/attribute/DirectoryItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="DirectoryItemDefinition">
+        <include file-name="smtk/attribute/DirectoryItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="DoubleItem">
+        <include file-name="smtk/attribute/DoubleItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="DoubleItemDefinition">
+        <include file-name="smtk/attribute/DoubleItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="FileItem">
+        <include file-name="smtk/attribute/FileItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="FileItemDefinition">
+        <include file-name="smtk/attribute/FileItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="GroupItem">
+        <include file-name="smtk/attribute/GroupItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="GroupItemDefinition">
+        <include file-name="smtk/attribute/GroupItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="GroupSection">
+        <include file-name="smtk/attribute/GroupSection.h" location="local"/>
+      </object-type>
+
+      <object-type name="InstancedSection">
+        <include file-name="smtk/attribute/InstancedSection.h" location="local"/>
+      </object-type>
+
+      <object-type name="IntItem">
+        <include file-name="smtk/attribute/IntItem.h" location="local"/>
+      </object-type>
+
+      <object-type name="IntItemDefinition">
+        <include file-name="smtk/attribute/IntItemDefinition.h" location="local"/>
+      </object-type>
+
+      <object-type name="Item">
+        <include file-name="smtk/attribute/Item.h" location="local"/>
+        <enum-type name="Type"/>
+      </object-type>
+
+      <object-type name="ItemDefinition">
+        <include file-name="smtk/attribute/ItemDefinition.h" location="local" />
+      </object-type>
+
+      <object-type name="Manager">
+        <include file-name="smtk/attribute/Manager.h" location="local" />
+      </object-type>
+
+      <object-type name="ModelEntitySection">
+        <include file-name="smtk/attribute/ModelEntitySection.h" location="local" />
+      </object-type>
+
+      <object-type name="RootSection">
+        <include file-name="smtk/attribute/RootSection.h" location="local" />
+      </object-type>
+
+      <object-type name="Section">
+        <include file-name="smtk/attribute/Section.h" location="local" />
+        <enum-type name="Type" />
+      </object-type>
+
+      <object-type name="SimpleExpressionSection">
+        <include file-name="smtk/attribute/SimpleExpressionSection.h" location="local" />
+      </object-type>
+
+      <object-type name="StringItem">
+        <include file-name="smtk/attribute/StringItem.h" location="local" />
+      </object-type>
+
+      <object-type name="StringItemDefinition">
+        <include file-name="smtk/attribute/StringItemDefinition.h" location="local" />
+      </object-type>
+
+      <object-type name="UserData">
+        <include file-name="smtk/attribute/UserData.h" location="local" />
+      </object-type>
+
+      <object-type name="ValueItem">
+        <include file-name="smtk/attribute/ValueItem.h" location="local" />
+      </object-type>
+
+      <object-type name="ValueItemDefinition">
+        <include file-name="smtk/attribute/ValueItemDefinition.h" location="local" />
+      </object-type>
+
+      <object-type name="VoidItem">
+        <include file-name="smtk/attribute/VoidItem.h" location="local" />
+      </object-type>
+
+      <object-type name="VoidItemDefinition">
+        <include file-name="smtk/attribute/VoidItemDefinition.h" location="local" />
+      </object-type>
+
+      <value-type name="ValueItemTemplate" generate="no" />
+      <value-type name="ValueItemDefinitionTemplate" generate="no" />
+
+
+    </namespace-type>
+  </namespace-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

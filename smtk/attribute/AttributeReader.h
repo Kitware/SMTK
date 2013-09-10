@@ -47,8 +47,8 @@ namespace smtk
       std::string m_errorMessages;
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_AttributeReader_h */

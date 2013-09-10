@@ -73,39 +73,39 @@ namespace smtk
 
       void processDefinition(pugi::xml_node &defNode);
       void processAttribute(pugi::xml_node &attNode);
-      void processItem(pugi::xml_node &node, 
+      void processItem(pugi::xml_node &node,
                        smtk::AttributeItemPtr item);
-      void processItemDef(pugi::xml_node &node, 
+      void processItemDef(pugi::xml_node &node,
                           smtk::AttributeItemDefinitionPtr idef);
-      void processAttributeRefItem(pugi::xml_node &node, 
+      void processAttributeRefItem(pugi::xml_node &node,
                                    smtk::AttributeRefItemPtr item);
       void processAttributeRefDef(pugi::xml_node &node,
                                   smtk::AttributeRefItemDefinitionPtr idef);
-      void processDoubleItem(pugi::xml_node &node, 
+      void processDoubleItem(pugi::xml_node &node,
                              smtk::DoubleItemPtr item);
       void processDoubleDef(pugi::xml_node &node,
                             smtk::DoubleItemDefinitionPtr idef);
-      void processDirectoryItem(pugi::xml_node &node, 
+      void processDirectoryItem(pugi::xml_node &node,
                                 smtk::DirectoryItemPtr item);
       void processDirectoryDef(pugi::xml_node &node,
                                smtk::DirectoryItemDefinitionPtr idef);
-      void processFileItem(pugi::xml_node &node, 
+      void processFileItem(pugi::xml_node &node,
                            smtk::FileItemPtr item);
       void processFileDef(pugi::xml_node &node,
                           smtk::FileItemDefinitionPtr idef);
-      void processGroupItem(pugi::xml_node &node, 
+      void processGroupItem(pugi::xml_node &node,
                              smtk::GroupItemPtr item);
       void processGroupDef(pugi::xml_node &node,
                            smtk::GroupItemDefinitionPtr idef);
-      void processIntItem(pugi::xml_node &node, 
+      void processIntItem(pugi::xml_node &node,
                           smtk::IntItemPtr item);
       void processIntDef(pugi::xml_node &node,
                          smtk::IntItemDefinitionPtr idef);
-      void processStringItem(pugi::xml_node &node, 
+      void processStringItem(pugi::xml_node &node,
                              smtk::StringItemPtr item);
       void processStringDef(pugi::xml_node &node,
                             smtk::StringItemDefinitionPtr idef);
-      void processValueItem(pugi::xml_node &node, 
+      void processValueItem(pugi::xml_node &node,
                              smtk::ValueItemPtr item);
       void processValueDef(pugi::xml_node &node,
                            smtk::ValueItemDefinitionPtr idef);
@@ -143,10 +143,10 @@ namespace smtk
       std::string m_defaultCategory;
       pugi::xml_node m_root; // Dummy for now!
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_XmlDocV1Parser_h */

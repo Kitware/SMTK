@@ -54,7 +54,7 @@ namespace smtk
       friend class smtk::attribute::AttributeRefItem;
     public:
       static smtk::AttributePtr New(const std::string &myName,
-                                    smtk::AttributeDefinitionPtr myDefinition, 
+                                    smtk::AttributeDefinitionPtr myDefinition,
                                     unsigned long myId)
       { return smtk::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
@@ -89,8 +89,8 @@ namespace smtk
 
       smtk::AttributeItemPtr item(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemPtr() : 
-          (ith >= this->m_items.size() ? 
+        return (ith < 0) ? smtk::AttributeItemPtr() :
+          (ith >= this->m_items.size() ?
            smtk::AttributeItemPtr() : this->m_items[ith]);
       }
 
@@ -123,13 +123,15 @@ namespace smtk
       {this->m_appliesToInteriorNodes = appliesValue;}
 
       smtk::attribute::Manager *manager() const;
-      void setUserData(const std::string &key, void *value)
-      {this->m_userData[key] = value;}
-      void *userData(const std::string &key) const;
-      void clearUserData(const std::string &key)
-      {this->m_userData.erase(key);}
-      void clearAllUserData()
-      {this->m_userData.clear();}
+
+     void setUserData(const std::string &key, smtk::UserDataPtr value)
+       {this->m_userData[key] = value;}
+     smtk::UserDataPtr userData(const std::string &key) const;
+     void clearUserData(const std::string &key)
+     {this->m_userData.erase(key);}
+     void clearAllUserData()
+     {this->m_userData.clear();}
+
       bool isAboutToBeDeleted() const
       {return this->m_aboutToBeDeleted;}
 
@@ -159,22 +161,23 @@ namespace smtk
       std::map<smtk::attribute::AttributeRefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
-      double m_color[4];
       bool m_isColorSet;
-      std::map<std::string, void *> m_userData;
+      std::map<std::string, smtk::UserDataPtr > m_userData;
       // We need something to indicate that the attribute is in process of
-      // being deleted - this is used skip certain clean up steps that 
+      // being deleted - this is used skip certain clean up steps that
       // would need to be done otherwise
       bool m_aboutToBeDeleted;
     private:
-      
+      //needs to be private for shiboken wrapping to work properly
+      double m_color[4];
+
     };
 //----------------------------------------------------------------------------
-    inline void *Attribute::userData(const std::string &key) const
+    inline smtk::UserDataPtr Attribute::userData(const std::string &key) const
     {
-      std::map<std::string, void *>::const_iterator it =
+      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? NULL : it->second);
+      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
     }
 //----------------------------------------------------------------------------
     inline void Attribute::setColor(double r, double g, double b, double a)
@@ -185,8 +188,8 @@ namespace smtk
       this->m_color[2]= b;
       this->m_color[3]= a;
     }
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_Attribute_h */

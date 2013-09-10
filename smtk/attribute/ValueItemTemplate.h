@@ -405,8 +405,8 @@ namespace smtk
         }
       return false;
     }
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_ValueItemTemplate_h */

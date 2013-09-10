@@ -44,7 +44,7 @@ namespace smtk
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       bool isMultiline() const
@@ -57,7 +57,7 @@ namespace smtk
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_StringItemDefinition_h */

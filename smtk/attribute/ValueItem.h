@@ -94,7 +94,7 @@ namespace smtk
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_ValueItem_h */

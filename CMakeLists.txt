@@ -8,8 +8,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 # in dynamic libraries
 include(GenerateExportHeader)
 
-# include some cmake code that builds automatic header tests
-# and can targets for unit tests
+# include cmake code that builds automatic header tests,
+# makes targets for unit tests, and makes it easier to generate
+# export install targets
 include(CMake/SMTKMacros.cmake)
 
 # Include mechanism for determining shared and weak pointer support
@@ -22,8 +23,8 @@ include(CMake/SharedPtr.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
+option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" ON)
 
 ################################################################################
 # Testing Related Settings
@@ -44,6 +45,14 @@ if(SMTK_BUILD_QT)
   set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
+endif()
+
+
+################################################################################
+# Wrapping Related Settings
+################################################################################
+if(SMTK_BUILD_PYTHON_WRAPPINGS)
+  include(UseShiboken)
 endif()
 
 ################################################################################
