@@ -292,6 +292,7 @@ vtkStringArray* vtkDiscreteModelWrapper::SerializeModel()
 //----------------------------------------------------------------------------
 int vtkDiscreteModelWrapper::RebuildModel(const char* data,
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
+  std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & edgeToIds,
   std::map<vtkIdType, vtkIdType> & vertexToIds,
   std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &entityToProperties)
 {
@@ -310,7 +311,7 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     }
 
   // make a new poly data and copy the necessary old stuff
-  vtkSmartPointer<vtkPolyData> poly = this->Model->GetMesh().ShallowCopyFaceData();
+  vtkSmartPointer<vtkPolyData> poly = this->Model->GetMesh().GetAsSinglePolyData();
 
   poly->GetFieldData()->Initialize();
   poly->GetPointData()->Initialize();
@@ -325,7 +326,6 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
 
   reader->SetModel(this->Model);
   reader->Serialize(istr, "ConceptualModel");
-
 
   DiscreteMesh newMesh(poly);
   this->Model->SetMesh(newMesh);
@@ -342,22 +342,13 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
     return 0;
     }
 
-  bool dim2D = this->Model->GetNumberOfAssociations(
-    vtkModelRegionType) > 0 ? false : true;
-  int enumEnType = dim2D ? vtkModelEdgeType : vtkModelFaceType;
   vtkDiscreteModelGeometricEntity* modelEntity = NULL;
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> >::iterator it;
+  // Faces
   for(it=faceToIds.begin(); it!=faceToIds.end(); it++)
     {
-    vtkModelEntity* tmpEntity = this->Model->GetModelEntity(enumEnType, it->first);
-    if(dim2D)
-      {
-      modelEntity = vtkDiscreteModelEdge::SafeDownCast(tmpEntity);
-      }
-    else
-      {
-      modelEntity = vtkDiscreteModelFace::SafeDownCast(tmpEntity);
-      }
+    vtkModelEntity* tmpEntity = this->Model->GetModelEntity(vtkModelFaceType, it->first);
+    modelEntity = vtkDiscreteModelFace::SafeDownCast(tmpEntity);
     modelEntity->AddCellsToGeometry(it->second);
     if(entityToProperties.find(it->first) != entityToProperties.end())
       {
@@ -365,18 +356,28 @@ int vtkDiscreteModelWrapper::RebuildModel(const char* data,
         ->SetDisplayProperty(entityToProperties[it->first]);
       }
     }
-
-  if(enumEnType == vtkModelEdgeType && vertexToIds.size()>0)
+  // Edges
+  for(it=edgeToIds.begin(); it!=edgeToIds.end(); it++)
     {
-    std::map<vtkIdType, vtkIdType >::iterator it;
-    for(it=vertexToIds.begin(); it!=vertexToIds.end(); it++)
+    vtkModelEntity* tmpEntity = this->Model->GetModelEntity(vtkModelEdgeType, it->first);
+    modelEntity = vtkDiscreteModelEdge::SafeDownCast(tmpEntity);
+    modelEntity->AddCellsToGeometry(it->second);
+    if(entityToProperties.find(it->first) != entityToProperties.end())
       {
-      vtkModelEntity* entity = this->Model->GetModelEntity(vtkModelVertexType, it->first);
-      vtkDiscreteModelVertex* vtxEntity = vtkDiscreteModelVertex::SafeDownCast(entity);
-      vtxEntity->SetPointId(it->second);
-      vtxEntity->CreateGeometry();
+      vtkModelGeometricEntity::SafeDownCast(modelEntity->GetThisModelEntity())
+        ->SetDisplayProperty(entityToProperties[it->first]);
       }
     }
+  // Vetex
+  std::map<vtkIdType, vtkIdType >::iterator vit;
+  for(vit=vertexToIds.begin(); vit!=vertexToIds.end(); vit++)
+    {
+    vtkModelEntity* entity = this->Model->GetModelEntity(vtkModelVertexType, vit->first);
+    vtkDiscreteModelVertex* vtxEntity = vtkDiscreteModelVertex::SafeDownCast(entity);
+    vtxEntity->SetPointId(vit->second);
+    vtxEntity->CreateGeometry();
+    }
+
   this->Modified();
   this->InitializeWithModelGeometry();
   return 1;

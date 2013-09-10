@@ -110,6 +110,10 @@ void vtkDiscreteModelVertex::CreateGeometry()
 
       this->SetGeometry(poly);
 
+      if(!this->GetDisplayProperty())
+        {
+        this->InitDefaultDisplayProperty();
+        }
       vtkProperty* displayProp = this->GetDisplayProperty();
       displayProp->SetPointSize(8.0);
       displayProp->SetColor(0.0, 1.0, 0.0);

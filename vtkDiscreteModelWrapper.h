@@ -96,6 +96,7 @@ public:
   // Return 0 on failure, 1 on success
   int RebuildModel(const char* serializedModel,
                    std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & faceToIds,
+                   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > & edgeToIds,
                    std::map<vtkIdType, vtkIdType> & vertexToIds,
                    std::map<vtkIdType, vtkSmartPointer<vtkProperty> > &entityToProperties);
 
