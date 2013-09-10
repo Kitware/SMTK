@@ -236,6 +236,9 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
 
+
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::UserData" />
+
 <!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition" /> -->
 <!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item" /> -->
 <!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::ItemDefinition" /> -->
@@ -378,6 +381,10 @@
 
       <object-type name="StringItemDefinition">
         <include file-name="smtk/attribute/StringItemDefinition.h" location="local" />
+      </object-type>
+
+      <object-type name="UserData">
+        <include file-name="smtk/attribute/UserData.h" location="local" />
       </object-type>
 
       <object-type name="ValueItem">

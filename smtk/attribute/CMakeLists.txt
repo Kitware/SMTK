@@ -29,6 +29,7 @@ set(attributeHeaders
   SimpleExpressionSection.h
   StringItem.h
   StringItemDefinition.h
+  UserData.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h

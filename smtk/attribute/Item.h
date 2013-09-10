@@ -99,13 +99,13 @@ namespace smtk
      bool isMemberOf(const std::string &category) const;
      bool isMemberOf(const std::vector<std::string> &categories) const;
 
-     // void setUserData(const std::string &key, void *value)
-     //   {this->m_userData[key] = value;}
-     // void *userData(const std::string &key) const;
-     // void clearUserData(const std::string &key)
-     // {this->m_userData.erase(key);}
-     // void clearAllUserData()
-     // {this->m_userData.clear();}
+     void setUserData(const std::string &key, smtk::UserDataPtr value)
+       {this->m_userData[key] = value;}
+     smtk::UserDataPtr userData(const std::string &key) const;
+     void clearUserData(const std::string &key)
+     {this->m_userData.erase(key);}
+     void clearAllUserData()
+     {this->m_userData.clear();}
 
      virtual void reset();
 
@@ -128,17 +128,17 @@ namespace smtk
       bool m_isEnabled;
       mutable std::string m_tempString;
       smtk::ConstAttributeItemDefinitionPtr m_definition;
-      // std::map<std::string, void *> m_userData;
+      std::map<std::string, smtk::UserDataPtr > m_userData;
     private:
 
     };
 //----------------------------------------------------------------------------
-    // inline void *Item::userData(const std::string &key) const
-    // {
-    //   std::map<std::string, void *>::const_iterator it =
-    //     this->m_userData.find(key);
-    //   return ((it == this->m_userData.end()) ? NULL : it->second);
-    // }
+    inline smtk::UserDataPtr Item::userData(const std::string &key) const
+    {
+      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
+        this->m_userData.find(key);
+      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
+    }
   };
 };
 
