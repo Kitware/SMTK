@@ -118,7 +118,7 @@ smtk::AttributePtr Manager::createAttribute(const std::string &name,
     {
     return smtk::AttributePtr();
     }
-  a = smtk::AttributePtr(new Attribute(name, def, this->m_nextAttributeId++));
+  a = Attribute::New(name, def, this->m_nextAttributeId++);
   this->m_attributeClusters[def->type()].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[a->id()] = a;
@@ -177,7 +177,7 @@ smtk::AttributePtr Manager::createAttribute(const std::string &name,
     return smtk::AttributePtr();
     }
 
-  a = smtk::AttributePtr(new Attribute(name, def, id));
+  a = Attribute::New(name, def, id);
   this->m_attributeClusters[def->type()].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[id] = a;
@@ -202,7 +202,7 @@ smtk::AttributePtr Manager::createAttribute(const std::string &name,
     {
     return smtk::AttributePtr();
     }
-  a = smtk::AttributePtr(new Attribute(name, def, id));
+  a = Attribute::New(name, def, id);
   this->m_attributeClusters[typeName].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[id] = a;

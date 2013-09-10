@@ -42,7 +42,9 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      AttributeRefItemDefinition(const std::string &myName);
+      static smtk::AttributeRefItemDefinitionPtr New(const std::string &myName)
+      { return smtk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition(myName));}
+
       virtual ~AttributeRefItemDefinition();
       
       virtual Item::Type type() const;
@@ -73,11 +75,12 @@ namespace smtk
 
       std::string valueLabel(int element) const;
     protected:
-        smtk::WeakAttributeDefinitionPtr m_definition;
-        bool m_useCommonLabel;
-        std::vector<std::string> m_valueLabels;
-        int m_numberOfRequiredValues;
-     private:
+      AttributeRefItemDefinition(const std::string &myName);
+      smtk::WeakAttributeDefinitionPtr m_definition;
+      bool m_useCommonLabel;
+      std::vector<std::string> m_valueLabels;
+      int m_numberOfRequiredValues;
+    private:
       
     };
   };

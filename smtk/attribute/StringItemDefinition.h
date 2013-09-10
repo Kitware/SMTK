@@ -37,7 +37,9 @@ namespace smtk
       public ValueItemDefinitionTemplate<std::string>
     {
     public:
-      StringItemDefinition(const std::string &myName);
+      static smtk::StringItemDefinitionPtr New(const std::string &myName)
+      { return smtk::StringItemDefinitionPtr(new StringItemDefinition(myName));}
+
       virtual ~StringItemDefinition();
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
@@ -50,6 +52,7 @@ namespace smtk
       void setIsMultiline(bool val)
       {this->m_multiline = val;}
     protected:
+      StringItemDefinition(const std::string &myName);
       bool m_multiline;
     private:
 

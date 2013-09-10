@@ -42,7 +42,6 @@ namespace smtk
     public:
       typedef DataT DataType;
 
-      ValueItemDefinitionTemplate(const std::string &myname);
       virtual ~ValueItemDefinitionTemplate() {}
       
       const DataT &defaultValue() const
@@ -72,6 +71,7 @@ namespace smtk
       int findDiscreteIndex(const DataT &val) const;
       bool isValueValid(const DataT &val) const;
     protected:
+      ValueItemDefinitionTemplate(const std::string &myname);
       DataT m_defaultValue;
       DataT m_minRange;
       bool m_minRangeSet;

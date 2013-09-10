@@ -184,7 +184,7 @@ namespace smtk
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::SharedPointerType
-          item(new typename SharedTypes::RawPointerType(name));
+          item = SharedTypes::RawPointerType::New(name);
         this->m_itemDefs.push_back(item);
         return item;
       }

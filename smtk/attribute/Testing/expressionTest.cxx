@@ -46,20 +46,20 @@ int main()
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
   smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  smtk::StringItemDefinitionPtr eitemdef(new StringItemDef("Expression String"));
+  smtk::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
   expDef->addItemDefinition(eitemdef);
 
   smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr iitemdef(new IntItemDef("IntItem1"));
+  smtk::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
   base->addItemDefinition(iitemdef);
-  smtk::IntItemDefinitionPtr iitemdef2(new IntItemDef("IntItem2"));
+  smtk::IntItemDefinitionPtr iitemdef2 = IntItemDef::New("IntItem2");
   iitemdef2->setDefaultValue(10);
   base->addItemDefinition(iitemdef2);
 
   smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr ditemdef(new DoubleItemDef("DoubleItem1"));
+  smtk::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
   // Allow this one to hold an expression
   ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
@@ -69,15 +69,15 @@ int main()
     status = -1;
     }
   def1->addItemDefinition(ditemdef);
-  smtk::DoubleItemDefinitionPtr ditemdef2(new DoubleItemDef("DoubleItem2"));
+  smtk::DoubleItemDefinitionPtr ditemdef2 = DoubleItemDef::New("DoubleItem2");
   ditemdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(ditemdef2);
 
   smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr sitemdef(new StringItemDef("StringItem1"));
+  smtk::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
   def1->addItemDefinition(sitemdef);
-  smtk::StringItemDefinitionPtr sitemdef2(new StringItemDef("StringItem2"));
+  smtk::StringItemDefinitionPtr sitemdef2 = StringItemDef::New("StringItem2");
   sitemdef2->setDefaultValue("Default");
   def1->addItemDefinition(sitemdef2);
 

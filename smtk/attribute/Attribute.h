@@ -53,8 +53,11 @@ namespace smtk
       friend class smtk::attribute::Manager;
       friend class smtk::attribute::AttributeRefItem;
     public:
-      Attribute(const std::string &myName,
-                smtk::AttributeDefinitionPtr myDefinition, unsigned long myId);
+      static smtk::AttributePtr New(const std::string &myName,
+                                    smtk::AttributeDefinitionPtr myDefinition, 
+                                    unsigned long myId)
+      { return smtk::AttributePtr(new Attribute(myName, myDefinition, myId)); }
+
       virtual ~Attribute();
       // NOTE: To rename an attribute use the manager!
       const std::string &name() const
@@ -131,6 +134,9 @@ namespace smtk
       {return this->m_aboutToBeDeleted;}
 
     protected:
+      Attribute(const std::string &myName,
+                smtk::AttributeDefinitionPtr myDefinition, unsigned long myId);
+
       void removeAllItems();
       void addItem(smtk::AttributeItemPtr item)
       {this->m_items.push_back(item);}
