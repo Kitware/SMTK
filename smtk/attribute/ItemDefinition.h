@@ -112,7 +112,7 @@ namespace smtk
 
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const = 0;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const = 0;
     protected:
@@ -127,9 +127,9 @@ namespace smtk
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_ItemDefinition_h */

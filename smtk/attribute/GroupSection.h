@@ -49,7 +49,7 @@ namespace smtk
         addSubsection(const std::string &name)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::SharedPointerType 
+        typename SharedTypes::SharedPointerType
           section(new typename SharedTypes::RawPointerType(name));
         this->m_subSections.push_back(section);
         return section;
@@ -58,9 +58,9 @@ namespace smtk
     protected:
       std::vector<smtk::SectionPtr> m_subSections;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_GroupSection_h */

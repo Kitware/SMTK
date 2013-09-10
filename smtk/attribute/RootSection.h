@@ -78,8 +78,8 @@ namespace smtk
       this->m_invalidColor[3] = a;
     }
 //----------------------------------------------------------------------------
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_RootSection_h */

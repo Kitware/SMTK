@@ -39,18 +39,18 @@ namespace smtk
     class SMTKCORE_EXPORT StringItem :
       public ValueItemTemplate<std::string>
     {
-      friend class StringItemDefinition; 
+      friend class StringItemDefinition;
     public:
       StringItem(Attribute *owningAttribute, int itemPosition);
       StringItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~StringItem();
       virtual Item::Type type() const;
     protected:
-      
+
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_StringItem_h */

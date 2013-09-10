@@ -50,8 +50,8 @@ namespace smtk
       {return this->m_itemDefs.size();}
       smtk::AttributeItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemDefinitionPtr() : 
-          (ith >= this->m_itemDefs.size() ? 
+        return (ith < 0) ? smtk::AttributeItemDefinitionPtr() :
+          (ith >= this->m_itemDefs.size() ?
            smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
       bool addItemDefinition(smtk::AttributeItemDefinitionPtr cdef);
@@ -60,7 +60,7 @@ namespace smtk
         addItemDefinition(const std::string &name)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::SharedPointerType 
+        typename SharedTypes::SharedPointerType
           item = SharedTypes::RawPointerType::New(name);
         this->m_itemDefs.push_back(item);
         return item;
@@ -83,13 +83,13 @@ namespace smtk
 
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       void buildGroup(smtk::attribute::GroupItem *group, int subGroupPosition) const;
       virtual void addCategory(const std::string &category);
       virtual void removeCategory(const std::string &category);
-      
+
     protected:
       GroupItemDefinition(const std::string &myname);
       virtual void updateCategories();
@@ -112,8 +112,8 @@ namespace smtk
         }
       return it->second;
     }
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_GroupItemDefinition_h */

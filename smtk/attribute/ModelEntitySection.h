@@ -49,7 +49,7 @@ namespace smtk
       {return this->m_modelEntityMask;}
       void setModelEntityMask(unsigned long mask)
       {this->m_modelEntityMask = mask;}
-      
+
       // If this def is not null then the section should
       // display all model entities of the requested mask along
       // with the attribute of this type in a table view
@@ -62,9 +62,9 @@ namespace smtk
       unsigned long m_modelEntityMask;
       smtk::AttributeDefinitionPtr m_attributeDefinition;
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_ModelEntitySection_h */

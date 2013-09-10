@@ -47,15 +47,15 @@ namespace smtk
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem, 
+      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
     protected:
       VoidItemDefinition(const std::string &myName);
     private:
-      
+
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_VoidItemDefinition_h */

@@ -66,15 +66,15 @@ namespace smtk
 
       virtual void reset();
     protected:
-      // This method will detach all of the items directly owned by 
+      // This method will detach all of the items directly owned by
       // this group
       void detachAllItems();
       std::vector<std::vector<smtk::AttributeItemPtr> >m_items;
-  
+
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __GroupItem_h */

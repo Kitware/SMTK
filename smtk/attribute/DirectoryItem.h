@@ -67,14 +67,14 @@ namespace smtk
       {return this->m_isSet[element];}
       virtual void unset(int element=0)
       {this->m_isSet[element] = false;}
-     
+
     protected:
       std::vector<std::string>m_values;
       std::vector<bool> m_isSet;
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_DirectoryItem_h */

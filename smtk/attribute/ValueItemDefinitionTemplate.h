@@ -43,7 +43,7 @@ namespace smtk
       typedef DataT DataType;
 
       virtual ~ValueItemDefinitionTemplate() {}
-      
+
       const DataT &defaultValue() const
       {return this->m_defaultValue;}
       void setDefaultValue(const DataT &val);
@@ -81,7 +81,7 @@ namespace smtk
       bool m_maxRangeInclusive;
       std::vector<DataT> m_discreteValues;
     private:
-      
+
     };
 
 //----------------------------------------------------------------------------
@@ -191,21 +191,21 @@ namespace smtk
         {
         return true;
         }
-      if (this->m_minRangeSet && 
-          ((val < this->m_minRange) || 
+      if (this->m_minRangeSet &&
+          ((val < this->m_minRange) ||
            ((!this->m_minRangeInclusive) && (val == this->m_minRange))))
         {
         return false;
         }
-      if (this->m_maxRangeSet && 
-          ((val > this->m_maxRange) || 
+      if (this->m_maxRangeSet &&
+          ((val > this->m_maxRange) ||
            ((!this->m_maxRangeInclusive) && (val == this->m_maxRange))))
         {
         return false;
         }
       return true;
     }
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_ValueItemDefinitionTemplate_h */

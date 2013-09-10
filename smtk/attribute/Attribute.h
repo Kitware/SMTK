@@ -54,7 +54,7 @@ namespace smtk
       friend class smtk::attribute::AttributeRefItem;
     public:
       static smtk::AttributePtr New(const std::string &myName,
-                                    smtk::AttributeDefinitionPtr myDefinition, 
+                                    smtk::AttributeDefinitionPtr myDefinition,
                                     unsigned long myId)
       { return smtk::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
@@ -188,8 +188,8 @@ namespace smtk
       this->m_color[2]= b;
       this->m_color[3]= a;
     }
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_Attribute_h */

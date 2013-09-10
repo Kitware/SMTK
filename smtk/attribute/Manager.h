@@ -208,8 +208,8 @@ namespace smtk
       this->m_analyses[analysisName] = categories;
       return true;
     }
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_Manager_h */

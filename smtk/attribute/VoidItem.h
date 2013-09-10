@@ -45,12 +45,12 @@ namespace smtk
       virtual ~VoidItem();
       virtual Item::Type type() const;
       virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
-     
+
     protected:
     private:
     };
-  };
-};
+  }
+}
 
 
 #endif /* __smtk_attribute_VoidItem_h */

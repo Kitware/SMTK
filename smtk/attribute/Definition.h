@@ -299,7 +299,7 @@ namespace smtk
       this->m_defaultColor[2]= b;
       this->m_defaultColor[3]= a;
     }
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_Definition_h */

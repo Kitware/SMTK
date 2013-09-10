@@ -39,18 +39,18 @@ namespace smtk
     class SMTKCORE_EXPORT IntItem :
       public ValueItemTemplate<int>
     {
-      friend class IntItemDefinition; 
+      friend class IntItemDefinition;
     public:
       IntItem(Attribute *owningAttribute, int itemPosition);
       IntItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~IntItem();
       virtual Item::Type type() const;
     protected:
-      
+
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_IntItem_h */

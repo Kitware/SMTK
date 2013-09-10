@@ -86,7 +86,7 @@ namespace smtk
       return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
     }
 
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_Section_h */

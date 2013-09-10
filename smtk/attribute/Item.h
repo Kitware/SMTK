@@ -139,7 +139,7 @@ namespace smtk
         this->m_userData.find(key);
       return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
     }
-  };
-};
+  }
+}
 
 #endif /* __smtk_attribute_Item_h */
