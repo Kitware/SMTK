@@ -80,4 +80,19 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     TYPESYSTEM typesystem.xml
     HEADERS ${smtk_headers}
   )
+
+#get the location to copy the shiboken library so developers have an
+#easier time testing the python wrapping
+
+#first we have to resolve the path since shiboken library most likely
+#uses symlinks and we have to copy that version
+get_filename_component(shiboken_path "${SHIBOKEN_LIBRARY}" REALPATH)
+file(COPY "${shiboken_path}" DESTINATION "${SMTK_BINARY_DIR}")
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/smtk.py"
+               "${SMTK_BINARY_DIR}/smtk.py" @ONLY)
+
+#todo we need to install this file in such a way that it can resolve
+#the location of shiboken, which is going to mean running fixup bundle
+#on the mac, and than fixing up the smtk.py package script
 endif()
