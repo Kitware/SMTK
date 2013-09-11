@@ -52,6 +52,10 @@ namespace smtk
       ValueItemDefinition(const std::string &myname);
       virtual ~ValueItemDefinition();
 
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::ValueItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      {return smtk::dynamic_pointer_cast<ValueItemDefinition>(p);}
+
       const std::string &units() const
       { return this->m_units;}
       void setUnits(const std::string &newUnits)

@@ -41,11 +41,15 @@ namespace smtk
     {
       friend class StringItemDefinition;
     public:
-      StringItem(Attribute *owningAttribute, int itemPosition);
-      StringItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::StringItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<StringItem>(p);}
+
       virtual ~StringItem();
       virtual Item::Type type() const;
     protected:
+      StringItem(Attribute *owningAttribute, int itemPosition);
+      StringItem(Item *owningItem, int myPosition, int mySubGroupPosition);
 
     private:
 

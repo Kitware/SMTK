@@ -39,6 +39,11 @@ namespace smtk
     public:
       static smtk::DoubleItemDefinitionPtr New(const std::string &myName)
       { return smtk::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));}
+
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::DoubleItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      {return smtk::dynamic_pointer_cast<DoubleItemDefinition>(p);}
+
       virtual ~DoubleItemDefinition();
       virtual Item::Type type() const;
       virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,

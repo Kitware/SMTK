@@ -38,15 +38,18 @@ namespace smtk
   {
     class Attribute;
     class AttributeRefItemDefinition;
+    class ValueItemDefinition;
     class SMTKCORE_EXPORT AttributeRefItem : public Item
     {
-      friend class Attribute;
+      friend class AttributeRefItemDefinition;
+      friend class ValueItemDefinition;
     public:
-      AttributeRefItem(Attribute *owningAttribute, int itemPosition);
-      AttributeRefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::AttributeRefItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<AttributeRefItem>(p);}
+
       virtual ~AttributeRefItem();
       virtual Item::Type type() const;
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
@@ -67,6 +70,9 @@ namespace smtk
       virtual void unset(int element=0);
 
     protected:
+      AttributeRefItem(Attribute *owningAttribute, int itemPosition);
+      AttributeRefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       void clearAllReferences();
       std::vector<WeakAttributePtr>m_values;
     private:

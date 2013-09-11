@@ -45,6 +45,11 @@ namespace smtk
       static smtk::AttributeRefItemDefinitionPtr New(const std::string &myName)
       { return smtk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition(myName));}
 
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::AttributeRefItemDefinitionPtr 
+        CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      {return smtk::dynamic_pointer_cast<AttributeRefItemDefinition>(p);}
+
       virtual ~AttributeRefItemDefinition();
 
       virtual Item::Type type() const;

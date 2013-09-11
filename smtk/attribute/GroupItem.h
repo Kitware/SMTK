@@ -39,11 +39,12 @@ namespace smtk
     {
       friend class GroupItemDefinition;
     public:
-      GroupItem(Attribute *owningAttribute, int itemPosition);
-      GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::GroupItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<GroupItem>(p);}
+
       virtual ~GroupItem();
       virtual Item::Type type() const;
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       std::size_t numberOfRequiredGroups() const;
       std::size_t numberOfGroups() const
       {return this->m_items.size();}
@@ -66,6 +67,9 @@ namespace smtk
 
       virtual void reset();
     protected:
+      GroupItem(Attribute *owningAttribute, int itemPosition);
+      GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       // This method will detach all of the items directly owned by
       // this group
       void detachAllItems();

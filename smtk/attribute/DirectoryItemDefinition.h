@@ -44,6 +44,11 @@ namespace smtk
     public:
       static smtk::DirectoryItemDefinitionPtr New(const std::string &myName)
       { return smtk::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));}
+
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::DirectoryItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      {return smtk::dynamic_pointer_cast<DirectoryItemDefinition>(p);}
+
       virtual ~DirectoryItemDefinition();
 
       virtual Item::Type type() const;

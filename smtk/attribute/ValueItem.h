@@ -42,14 +42,15 @@ namespace smtk
     {
     public:
       friend class ValueItemDefinition;
-      ValueItem(Attribute *owningAttribute, int itemPosition);
-      ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::ValueItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<ValueItem>(p);}
+
       virtual ~ValueItem();
       std::size_t numberOfValues() const
       {return this->m_isSet.size();}
       int numberOfRequiredValues() const;
 
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
       { return (this->expression(elementIndex) != NULL);}
@@ -87,6 +88,9 @@ namespace smtk
       {return this->m_expressions[elementIndex];}
 
     protected:
+      ValueItem(Attribute *owningAttribute, int itemPosition);
+      ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       virtual void updateDiscreteValue(int elementIndex) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;

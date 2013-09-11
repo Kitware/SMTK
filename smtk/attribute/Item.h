@@ -40,32 +40,33 @@ namespace smtk
   {
     class ItemDefinition;
     class GroupItem;
+    class GroupItemDefinition;
     class Attribute;
-
+    class Definition;
+    
     class SMTKCORE_EXPORT Item
     {
+      friend class Definition;
+      friend class GroupItemDefinition;
     public:
-     enum Type
-     {
-       ATTRIBUTE_REF,
-       DOUBLE,
-       GROUP,
-       INT,
-       STRING,
-       VOID,
-       FILE,
-       DIRECTORY,
-       COLOR,
-       NUMBER_OF_TYPES
-     };
+      enum Type
+      {
+        ATTRIBUTE_REF,
+        DOUBLE,
+        GROUP,
+        INT,
+        STRING,
+        VOID,
+        FILE,
+        DIRECTORY,
+        COLOR,
+        NUMBER_OF_TYPES
+      };
 
-     Item(Attribute *owningAttribute, int itemPosition);
-     Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
      virtual ~Item();
      std::string name() const;
      std::string label() const;
      virtual Item::Type type() const = 0;
-     virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
      smtk::ConstAttributeItemDefinitionPtr definition() const
      {return this->m_definition;}
 
@@ -120,17 +121,20 @@ namespace smtk
      static std::string type2String(Item::Type t);
      static Item::Type string2Type(const std::string &s);
 
-     protected:
-      Attribute *m_attribute;
-      Item *m_owningItem;
-      int m_position;
-      int m_subGroupPosition;
-      bool m_isEnabled;
-      mutable std::string m_tempString;
-      smtk::ConstAttributeItemDefinitionPtr m_definition;
-      std::map<std::string, smtk::UserDataPtr > m_userData;
+    protected:
+     Item(Attribute *owningAttribute, int itemPosition);
+     Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
+     virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+     Attribute *m_attribute;
+     Item *m_owningItem;
+     int m_position;
+     int m_subGroupPosition;
+     bool m_isEnabled;
+     mutable std::string m_tempString;
+     smtk::ConstAttributeItemDefinitionPtr m_definition;
+     std::map<std::string, smtk::UserDataPtr > m_userData;
     private:
-
+     
     };
 //----------------------------------------------------------------------------
     inline smtk::UserDataPtr Item::userData(const std::string &key) const

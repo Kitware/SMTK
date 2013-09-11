@@ -41,11 +41,15 @@ namespace smtk
     {
       friend class DoubleItemDefinition;
     public:
-      DoubleItem(Attribute *owningAttribute, int itemPosition);
-      DoubleItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::DoubleItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<DoubleItem>(p);}
+
       virtual ~DoubleItem();
       virtual Item::Type type() const;
     protected:
+      DoubleItem(Attribute *owningAttribute, int itemPosition);
+      DoubleItem(Item *owningItem, int myPosition, int mySubGroupPosition);
 
     private:
 

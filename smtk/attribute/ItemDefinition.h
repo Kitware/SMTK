@@ -48,7 +48,6 @@ namespace smtk
       friend class smtk::attribute::Definition;
       friend class smtk::attribute::GroupItemDefinition;
     public:
-      ItemDefinition(const std::string &myname);
       virtual ~ItemDefinition();
       const std::string &name() const
       { return this->m_name;}
@@ -116,6 +115,7 @@ namespace smtk
                                                 int position,
                                                 int subGroupPosition) const = 0;
     protected:
+      ItemDefinition(const std::string &myname);
       virtual void updateCategories();
       int m_version;
       bool m_isOptional;

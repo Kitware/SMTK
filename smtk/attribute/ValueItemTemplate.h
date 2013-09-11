@@ -46,10 +46,7 @@ namespace smtk
       typedef DataT DataType;
       typedef ValueItemDefinitionTemplate<DataType> DefType;
 
-      ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
-      ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual ~ValueItemTemplate() {}
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       virtual bool setNumberOfValues(std::size_t newSize);
@@ -68,6 +65,9 @@ namespace smtk
       bool setToDefault(int element=0);
 
     protected:
+      ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
+      ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       virtual void updateDiscreteValue(int element);
       std::vector<DataT> m_values;
     private:

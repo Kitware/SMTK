@@ -40,11 +40,13 @@ namespace smtk
     class DirectoryItemDefinition;
     class SMTKCORE_EXPORT DirectoryItem : public Item
     {
+    friend class DirectoryItemDefinition;
     public:
-      DirectoryItem(Attribute *owningAttribute, int itemPosition);
-      DirectoryItem(Item *owningItem, int position, int subGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::DirectoryItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<DirectoryItem>(p);}
+
       virtual ~DirectoryItem();
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       virtual Item::Type type() const;
       bool shouldBeRelative() const;
       bool shouldExist() const;
@@ -69,6 +71,9 @@ namespace smtk
       {this->m_isSet[element] = false;}
 
     protected:
+      DirectoryItem(Attribute *owningAttribute, int itemPosition);
+      DirectoryItem(Item *owningItem, int position, int subGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       std::vector<std::string>m_values;
       std::vector<bool> m_isSet;
     private:

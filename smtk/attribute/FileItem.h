@@ -40,11 +40,13 @@ namespace smtk
     class FileItemDefinition;
     class SMTKCORE_EXPORT FileItem : public Item
     {
+    friend class FileItemDefinition;
     public:
-      FileItem(Attribute *owningAttribute, int itemPosition);
-      FileItem(Item *owningItem, int position, int subGroupPosition);
+      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      static smtk::FileItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      {return smtk::dynamic_pointer_cast<FileItem>(p);}
+
       virtual ~FileItem();
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       virtual Item::Type type() const;
       bool shouldBeRelative() const;
       bool shouldExist() const;
@@ -69,6 +71,9 @@ namespace smtk
       {this->m_isSet[element] = false;}
 
     protected:
+      FileItem(Attribute *owningAttribute, int itemPosition);
+      FileItem(Item *owningItem, int position, int subGroupPosition);
+      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
       std::vector<std::string>m_values;
       std::vector<bool> m_isSet;
     private:
