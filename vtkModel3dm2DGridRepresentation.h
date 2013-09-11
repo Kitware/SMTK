@@ -68,7 +68,7 @@ public:
   virtual bool GetBoundaryGroupAnalysisFacets(vtkDiscreteModel* model, vtkIdType boundaryGroupId,
                                               vtkIdList* cellIds, vtkIdList* cellSides);
 
-  virtual bool IsModelConsistent(vtkDiscreteModel* model)
+  virtual bool IsModelConsistent(vtkDiscreteModel*)
   {
     return true;
   }

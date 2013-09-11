@@ -72,10 +72,10 @@ void MeshClassification<EntityType>::SetEntity(vtkIdType meshId,
 
 //=============================================================================
 template<class EntityType>
-void MeshClassification<EntityType>::resize(vtkIdType size, DataType type)
+void MeshClassification<EntityType>::resize(vtkIdType sz, DataType type)
 {
   //abuse enums are ints to make edge (1) be negative
-  this->GetVectorFromId(-type).resize(size);
+  this->GetVectorFromId(-type).resize(sz);
 }
 
 //=============================================================================
