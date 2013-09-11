@@ -722,10 +722,10 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
       this->m_itemExpressionDefInfo.push_back(ItemExpressionDefInfo(idef, etype));
       }
     }
-  child = node.child("Units");
-  if (child)
+  xatt = node.attribute("Units");
+  if (xatt)
     {
-    idef->setUnits(child.text().get());
+    idef->setUnits(xatt.value());
     }
 }
 //----------------------------------------------------------------------------

@@ -26,6 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 
+#include <iostream>
+
 using namespace smtk::attribute; 
 using namespace pugi;
 //----------------------------------------------------------------------------
@@ -65,6 +67,12 @@ bool AttributeReader::read(Manager &manager, const std::string &filename)
   XmlDocV1Parser theReader(manager);
   theReader.process(doc);
   this->m_errorMessages = theReader.errorStatus();
+  if(this->m_errorMessages != "")
+    {
+    std::cerr << "============== AttributeReader.cxx Error Messages ==============\n";
+    std::cerr << this->m_errorMessages << std::endl;
+    std::cerr << "================================================================\n";
+    }
   return this->m_errorMessages != "";
 }
 
