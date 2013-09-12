@@ -40,6 +40,7 @@ namespace smtk
     public:
       // Returns true if there was a problem with reading the file
       bool read(Manager &manager, const std::string &filename);
+      bool readContents(Manager &manager, const std::string &filecontents);
       const std::string &errorMessages() const
       {return this->m_errorMessages;}
 

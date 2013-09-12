@@ -40,6 +40,8 @@ namespace smtk
     public:
       // Returns true if there was a problem with writing the file
       bool write(const Manager &manager, const std::string &filename);
+      bool writeContents(const std::string &filename,
+        const std::string &filecontents);
       const std::string &errorMessages() const
       {return this->m_errorMessages;}
 

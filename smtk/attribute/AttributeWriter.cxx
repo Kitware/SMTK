@@ -34,9 +34,16 @@ bool AttributeWriter::write(const Manager &manager, const std::string &filename)
   XmlV1StringWriter theWriter(manager);
   std::string result = theWriter.convertToString();
   this->m_errorMessages = theWriter.errorStatus();
+  return this->writeContents(filename, result);
+}
+
+//----------------------------------------------------------------------------
+bool AttributeWriter::writeContents(const std::string &filename,
+  const std::string &filecontents)
+{
   std::ofstream outfile;
   outfile.open(filename.c_str());
-  outfile << result;
+  outfile << filecontents;
   outfile.close();
   return this->m_errorMessages != "";
 }
