@@ -64,9 +64,16 @@ namespace smtk
         addItemDefinition(const std::string &name)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::SharedPointerType
+        typename SharedTypes::SharedPointerType item;
+
+        // First see if there is a item by the same name
+        if (this->findItemPosition(name) < 0)
+          {
+          std::size_t n = this->m_itemDefs.size();
           item = SharedTypes::RawPointerType::New(name);
-        this->m_itemDefs.push_back(item);
+          this->m_itemDefs.push_back(item);
+          this->m_itemDefPositions[name] = n;
+          }
         return item;
       }
 
