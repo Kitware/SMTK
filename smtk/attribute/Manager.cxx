@@ -32,6 +32,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 using namespace smtk::attribute;
 
+namespace
+{
+  Manager* s_globalManager = 0;
+}
+
+//----------------------------------------------------------------------------
+Manager* Manager::getGlobalManager()
+{
+  return s_globalManager;
+}
+
+//----------------------------------------------------------------------------
+void Manager::setGlobalManager(Manager* m)
+{
+  s_globalManager = m;
+}
+
 //----------------------------------------------------------------------------
 Manager::Manager(): m_nextAttributeId(0), m_rootSection(new RootSection(""))
 {
@@ -40,6 +57,10 @@ Manager::Manager(): m_nextAttributeId(0), m_rootSection(new RootSection(""))
 //----------------------------------------------------------------------------
 Manager::~Manager()
 {
+  if(s_globalManager == this)
+    {
+    s_globalManager = NULL;
+    }
   std::map<std::string,  smtk::AttributeDefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {

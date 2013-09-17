@@ -55,7 +55,7 @@ namespace smtk
       this->updateAttributeData();
       this->updateModelAssociation();
       }
-      virtual void showAdvanced(int show){;}
+      virtual void showAdvanced(int){;}
       virtual void updateModelAssociation() {;}
 
     protected slots:
