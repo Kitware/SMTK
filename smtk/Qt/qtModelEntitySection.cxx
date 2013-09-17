@@ -106,7 +106,7 @@ void qtModelEntitySection::createWidget( )
 
   Manager *attManager = qtUIManager::instance()->attManager();
   unsigned long mask = sec->modelEntityMask();
-  if(mask != 0)
+  if(mask != 0 && sec->definition()==NULL)
     {
     attManager->findDefinitions(mask, this->Internals->attDefs);
     }
@@ -208,7 +208,7 @@ bool qtModelEntitySection::isRegionDomain()
     {
     return false;
     }
-
+/*
   Manager *attManager = qtUIManager::instance()->attManager();
   unsigned long mask = sec->modelEntityMask();
   if(mask & smtk::model::Item::REGION)
@@ -220,6 +220,7 @@ bool qtModelEntitySection::isRegionDomain()
     {
     return true;
     }
+*/
   return false;
 }
 

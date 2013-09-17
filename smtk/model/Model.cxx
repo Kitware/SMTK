@@ -54,7 +54,7 @@ std::vector<smtk::ModelGroupItemPtr> Model::findGroupItems(
   std::map<int, smtk::ModelItemPtr>::iterator it;
   for (it = this->m_items.begin(); it != this->m_items.end(); it++)
     {
-    if(it->second->type() == Item::GROUP)
+    if(it->second->type() == Item::BOUNDARY_GROUP)
       {
       smtk::ModelGroupItemPtr itemgrp = dynamicCastPointer<GroupItem>(it->second);
       if(itemgrp && (itemgrp->entityMask() & mask))

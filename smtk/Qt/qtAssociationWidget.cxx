@@ -311,14 +311,16 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
       {
       // item for the whole model
       }
-    else if(itemIt->second->type() == smtk::model::Item::GROUP)
+    else if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
+      || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
       {
       smtk::ModelGroupItemPtr itemGroup =
         smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
       if(!assignedIds.contains(itemIt->second->id()))
         {
+//        if((itemGroup->entityMask() & attDef->associationMask()) != 0)
         if((itemGroup->entityMask() & attDef->associationMask()) ==
-           itemGroup->entityMask())
+           attDef->associationMask())
           {
           this->addModelAssociationListItem(
             this->Internals->AvailableList, itemIt->second);
