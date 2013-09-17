@@ -22,6 +22,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME GroupItem.h -
 // .SECTION Description
+//  Now the attribute association is only linked with group (bc group or domain set)
+//  with an id and type, whose enumeration is defined in model::Item.h file.
+//  The entityMask variable in this class will be matching
+//  with the associationMask inside attribute::Definition.h.
 // .SECTION See Also
 
 #ifndef __smtk_model_GroupItem_h
@@ -42,8 +46,10 @@ namespace smtk
       GroupItem(Model *model, int myid, unsigned long mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
+
       unsigned long entityMask() const
       { return this->m_entityMask;}
+
       bool canContain(const smtk::ModelItemPtr ptr) const
       {return this->canContain(ptr->type());}
       bool canContain(smtk::model::Item::Type enType) const
