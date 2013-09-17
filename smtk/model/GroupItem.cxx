@@ -18,7 +18,7 @@ BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
 PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.s
 =========================================================================*/
 
 
@@ -38,6 +38,6 @@ GroupItem::~GroupItem()
 //----------------------------------------------------------------------------
 Item::Type GroupItem::type() const
 {
-  return GROUP;
+  return BOUNDARY_GROUP;
 }
 //----------------------------------------------------------------------------

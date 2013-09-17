@@ -43,6 +43,6 @@ Item::Type ModelDomainItem::type() const
 //----------------------------------------------------------------------------
 std::string ModelDomainItem::name() const
 {
-  return "ModelDomain";
+  return "Model";
 }
 //----------------------------------------------------------------------------

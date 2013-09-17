@@ -311,14 +311,16 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
       {
       // item for the whole model
       }
-    else if(itemIt->second->type() == smtk::model::Item::GROUP)
+    else if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
+      || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
       {
       smtk::ModelGroupItemPtr itemGroup =
         smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
       if(!assignedIds.contains(itemIt->second->id()))
         {
+//        if((itemGroup->entityMask() & attDef->associationMask()) != 0)
         if((itemGroup->entityMask() & attDef->associationMask()) ==
-           itemGroup->entityMask())
+           attDef->associationMask())
           {
           this->addModelAssociationListItem(
             this->Internals->AvailableList, itemIt->second);
@@ -426,6 +428,16 @@ smtk::AttributePtr qtAssociationWidget::getSelectedAttribute(
 {
   return this->getAttribute(this->getSelectedItem(theList));
 }
+
+/*
+//-----------------------------------------------------------------------------
+smtk::AttributePtr qtAssociationWidget::getAssociatedUniqueAttribute(
+  QListWidget* theLis, smtk::AttributeDefinitionPtr attDef)
+{
+  
+}
+*/
+
 //-----------------------------------------------------------------------------
 smtk::AttributePtr qtAssociationWidget::getAttribute(
   QListWidgetItem * item)
@@ -453,6 +465,10 @@ smtk::ModelItemPtr qtAssociationWidget::getModelItem(
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtAssociationWidget::getSelectedItem(QListWidget* theList)
 {
+  if(theList->count() == 1)
+    {
+    return theList->item(0);
+    }
   return theList->currentItem();
 }
 //-----------------------------------------------------------------------------
@@ -584,6 +600,12 @@ void qtAssociationWidget::onAddAvailable()
       this->Internals->AvailableList);
     if(currentItem)
       {
+      if(this->Internals->CurrentAtt.lock()->definition()->isUnique() &&
+        this->Internals->CurrentList->count())
+        {
+        this->onExchange();
+        return;
+        }
       this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
@@ -597,6 +619,12 @@ void qtAssociationWidget::onAddAvailable()
       this->Internals->AvailableList);
     if(currentAtt)
       {
+      if(currentAtt->definition()->isUnique() &&
+        this->Internals->CurrentList->count())
+        {
+        this->onExchange();
+        return;
+        }
       currentAtt->associateEntity(
         this->Internals->CurrentModelGroup.lock());
       this->removeSelectedItem(this->Internals->AvailableList);
@@ -630,7 +658,7 @@ void qtAssociationWidget::onExchange()
 
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
-        this->Internals->CurrentList, availableItem);
+        this->Internals->AvailableList, currentItem);
       emit this->attAssociationChanged();
       }
     }
@@ -644,15 +672,16 @@ void qtAssociationWidget::onExchange()
       {
       currentAtt->disassociateEntity(
         this->Internals->CurrentModelGroup.lock());
-      this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->AvailableList, currentAtt);
+      this->removeSelectedItem(this->Internals->CurrentList);
 
       availAtt->associateEntity(
         this->Internals->CurrentModelGroup.lock());
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addAttributeAssociationItem(
         this->Internals->CurrentList, availAtt);
+
       emit this->attAssociationChanged();
       }
     }

@@ -48,8 +48,8 @@ namespace smtk
         FACE=4,
         REGION=8,
         MODEL_DOMAIN=16,
-        GROUP=32,
-        AUXILIARY_GEOMETRY=64,
+        BOUNDARY_GROUP=32,
+        DOMAIN_SET=64
       };
       Item(Model *model, int myid);
       virtual ~Item();
