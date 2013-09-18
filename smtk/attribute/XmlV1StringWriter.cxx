@@ -1282,7 +1282,7 @@ void XmlV1StringWriter::processModelInfo()
               i != itemGroup->endAssociatedAttributes();
               ++i)
             {
-            xml_node anode = modelInfo.append_child("Attribute");
+            xml_node anode = gnode.append_child("Attribute");
             anode.append_attribute("Name").set_value((*i)->name().c_str());
             }
 
