@@ -40,6 +40,8 @@ namespace smtk
     class SMTKCORE_EXPORT Model
     {
     public:
+      typedef void (*groupCellIdsCallback)(void*, int, std::vector<int>&);
+
       Model();
       virtual ~Model();
       virtual smtk::ModelItemPtr getModelItem(int id);
@@ -79,10 +81,15 @@ namespace smtk
 
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
+      void setGroupCellIdsCallback(groupCellIdsCallback f, void* object);
+      std::vector<int> getGroupCellIds(int groupId);
+
     protected:
       smtk::ModelItemPtr m_modelDomain;
       mutable std::map<int, smtk::ModelItemPtr> m_items;
+      groupCellIdsCallback m_cmbCallback;
     private:
+      void* m_object;
     };
 
     inline smtk::ModelItemPtr Model::getModelItem(int id)

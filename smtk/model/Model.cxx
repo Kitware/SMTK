@@ -34,6 +34,8 @@ Model::Model()
 {
   this->m_modelDomain = smtk::ModelItemPtr(new ModelDomainItem(this, -1));
   this->m_items[-1] = this->m_modelDomain;
+  this->m_cmbCallback = NULL;
+  this->m_object = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -92,4 +94,30 @@ std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
       break;
     }
   return "Undefined";
+}
+
+//----------------------------------------------------------------------------
+void Model::setGroupCellIdsCallback(groupCellIdsCallback f, void* object)
+{
+  this->m_cmbCallback = f;
+  this->m_object = object;
+}
+
+#include <iostream>
+
+//----------------------------------------------------------------------------
+std::vector<int> Model::getGroupCellIds(int groupId)
+{
+  std::vector<int> values;
+  std::cerr << "in location1\n";
+  if(this->m_object)
+    std::cerr << "have an mobj\n";
+  if(this->m_object)
+    {
+    std::cerr << "in location2\n";
+    (*this->m_cmbCallback)(m_object, groupId, values);
+    }
+  std::cerr << "in location3\n";
+
+  return values;
 }
