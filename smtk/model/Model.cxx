@@ -47,6 +47,18 @@ Model::~Model()
     it->second->clearModel();
     }
 }
+
+//----------------------------------------------------------------------------
+smtk::ModelGroupItemPtr Model::createModelGroup(
+  const std::string &name, int groupid,unsigned long mask)
+{
+  smtk::ModelGroupItemPtr aGroup =
+    smtk::ModelGroupItemPtr(new GroupItem(this, groupid, mask));
+  this->m_items[groupid] = aGroup;
+  aGroup->setName(name);
+  return aGroup;
+}
+
 //----------------------------------------------------------------------------
 std::vector<smtk::ModelGroupItemPtr> Model::findGroupItems(
                                                     unsigned int mask) const
@@ -56,10 +68,10 @@ std::vector<smtk::ModelGroupItemPtr> Model::findGroupItems(
   std::map<int, smtk::ModelItemPtr>::iterator it;
   for (it = this->m_items.begin(); it != this->m_items.end(); it++)
     {
-    if(it->second->type() == Item::BOUNDARY_GROUP)
+    if(it->second->type() == Item::BOUNDARY_GROUP || it->second->type() == Item::DOMAIN_SET)
       {
       smtk::ModelGroupItemPtr itemgrp = dynamicCastPointer<GroupItem>(it->second);
-      if(itemgrp && (itemgrp->entityMask() & mask))
+      if(itemgrp && ((itemgrp->entityMask() & mask) == mask))
         {
         result.push_back(itemgrp);
         }

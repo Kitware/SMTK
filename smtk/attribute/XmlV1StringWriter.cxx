@@ -51,6 +51,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/model/Item.h"
+#include "smtk/model/GroupItem.h"
+#include "smtk/model/Model.h"
 #include <sstream>
 
 using namespace pugi;
@@ -1253,6 +1256,40 @@ void XmlV1StringWriter::processBasicSection(xml_node &node,
 void XmlV1StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_root.append_child("ModelInfo");
+  smtk::ModelPtr refModel = this->m_manager.refModel();
+  if ( refModel && refModel->numberOfItems())
+    {
+    typedef smtk::model::Model::const_iterator c_iter;
+    for(c_iter itemIt = refModel->beginItemIterator();
+        itemIt != refModel->endItemIterator();
+        ++itemIt)
+      {
+      if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
+        || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
+        {
+        smtk::ModelGroupItemPtr itemGroup =
+          smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
+        if(itemGroup)
+          {
+          xml_node gnode = modelInfo.append_child("GroupItem");
+          gnode.append_attribute("Id").set_value((unsigned int)itemGroup->id());
+          gnode.append_attribute("Name").set_value(itemGroup->name().c_str());
+          gnode.append_attribute("Mask").set_value((unsigned int)itemGroup->entityMask());
+
+          // associated attributes
+          typedef smtk::model::Item::const_iterator a_iter;
+          for(a_iter i = itemGroup->beginAssociatedAttributes();
+              i != itemGroup->endAssociatedAttributes();
+              ++i)
+            {
+            xml_node anode = modelInfo.append_child("Attribute");
+            anode.append_attribute("Name").set_value((*i)->name().c_str());
+            }
+
+          }
+        }
+      }
+    }
 }
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::encodeColor(const double *c)

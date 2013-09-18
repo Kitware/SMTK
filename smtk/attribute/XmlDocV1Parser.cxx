@@ -53,6 +53,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/model/Item.h"
+#include "smtk/model/GroupItem.h"
+#include "smtk/model/Model.h"
 #include <sstream>
 #include <iostream>
 
@@ -2171,11 +2174,65 @@ void XmlDocV1Parser::processBasicSection(xml_node &node,
     sec->setIconName(xatt.value());
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
-  //xml_node modelInfo = this->m_root.append_child("ModelInfo");
+  xml_node modelInfo = root.child("ModelInfo");
+  smtk::ModelPtr refModel = this->m_manager.refModel();
+  if ( modelInfo && refModel)
+    {
+    std::string name;
+    unsigned long mask;
+    int gid;
+    smtk::ModelGroupItemPtr modelGroup;
+    xml_node gnode;
+    for (gnode = modelInfo.child("GroupItem"); gnode; gnode = gnode.next_sibling("GroupItem"))
+      {
+      xml_attribute xatt;
+      xatt = gnode.attribute("Id");
+      if(!xatt)
+        {
+        this->m_errorStatus << "Error: Model Group is missing XML Attribute Id\n";
+        continue;
+        }
+      gid = xatt.as_int();
+      xatt = gnode.attribute("Mask");
+      if(!xatt)
+        {
+        this->m_errorStatus << "Error: Model Group is missing XML Attribute Mask\n";
+        continue;
+        }
+      mask = xatt.as_int();
+      xatt = gnode.attribute("Name");
+      name = xatt ? xatt.value() : "noname-group";
+      modelGroup = refModel->createModelGroup(name, gid, mask);
+      if(modelGroup)
+        {
+        xml_node anode;
+        for (anode = gnode.child("Attribute"); anode; anode = anode.next_sibling("Attribute"))
+          {
+          xatt = anode.attribute("Name");
+          if(!xatt)
+            {
+            this->m_errorStatus << "Error: Model Group associated Attribute is missing XML Attribute Name\n";
+            continue;
+            }
+          name = xatt.value();
+          if(smtk::AttributePtr att = this->m_manager.findAttribute(name))
+            {
+            modelGroup->attachAttribute(att);
+            }
+          else
+            {
+            this->m_errorStatus << "Error: Can find Model Group associated Attribute with Name: " << name << "\n";  
+            }
+          }
+        }
+      }
+    }
 }
+
 //----------------------------------------------------------------------------
 int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
 {

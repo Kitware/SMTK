@@ -39,7 +39,7 @@ namespace smtk
     class SMTKCORE_EXPORT ModelDomainItem : public Item
     {
     public:
-      ModelDomainItem(Model *model, unsigned long myid);
+      ModelDomainItem(Model *model, unsigned long myid, unsigned long mask=16);
       virtual ~ModelDomainItem();
       virtual std::string name() const;
       virtual Item::Type type() const;

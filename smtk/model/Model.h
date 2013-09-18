@@ -46,13 +46,14 @@ namespace smtk
       virtual ~Model();
       virtual smtk::ModelItemPtr getModelItem(int id);
       virtual smtk::ModelGroupItemPtr createModelGroup(
-        const std::string &name, int myid, unsigned long mask) = 0;
-      virtual bool deleteModelGroup(int id) = 0;
+        const std::string &name, int myid, unsigned long mask);
+
+      virtual bool deleteModelGroup(int id) {return false;}
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
       virtual unsigned long convertGroupTypeToMask(
-        int grouptype, int entType) = 0;
+        int grouptype, int entType) {return 0;}
       virtual void removeGroupItems(int grouptype, int entType)
       { return this->removeGroupItemsByMask(
         this->convertGroupTypeToMask(grouptype, entType));}
