@@ -40,7 +40,11 @@ namespace smtk
     class SMTKCORE_EXPORT Model
     {
     public:
-      typedef void (*groupCellIdsCallback)(void*, int, std::vector<int>&);
+      typedef void (*groupCellIdsCallback)(void* object, int, std::vector<int>&);
+      typedef double (*groupAreaCallback)(void* object, int groupId);
+      typedef void (*agentsInGroupDomainCallback)(
+        void* object, int groupId, int numberOfAgents,
+        std::vector<std::pair<int, std::pair<double, double> > >& locations);
 
       Model();
       virtual ~Model();
@@ -82,13 +86,24 @@ namespace smtk
 
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
-      void setGroupCellIdsCallback(groupCellIdsCallback f, void* object);
+      // callback methods to get analysis grid information in SMTK.
+      // note that for some reason shiboken segfaults when I have
+      // a method "void setObject(void*);" so I don't do it.
+      void setCallbacks(groupCellIdsCallback f1, groupAreaCallback f2,
+                        agentsInGroupDomainCallback f3, void* object);
       std::vector<int> getGroupCellIds(int groupId);
+      //void setGroupAreaCallback(groupAreaCallback f);
+      double getGroupArea(int groupId);
+      //void setAgentsInGroupDomainCallback(agentsInGroupDomainCallback f);
+      std::vector<std::pair<int, std::pair<double, double> > >
+        agentsInGroupDomain(int groupId, int numberOfAgents);
 
     protected:
       smtk::ModelItemPtr m_modelDomain;
       mutable std::map<int, smtk::ModelItemPtr> m_items;
-      groupCellIdsCallback m_cmbCallback;
+      groupCellIdsCallback m_groupCellIdsCallback;
+      groupAreaCallback m_groupAreaCallback;
+      agentsInGroupDomainCallback m_agentsInGroupDomainCallback;
     private:
       void* m_object;
     };

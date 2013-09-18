@@ -34,7 +34,9 @@ Model::Model()
 {
   this->m_modelDomain = smtk::ModelItemPtr(new ModelDomainItem(this, -1));
   this->m_items[-1] = this->m_modelDomain;
-  this->m_cmbCallback = NULL;
+  this->m_groupCellIdsCallback = NULL;
+  this->m_groupAreaCallback = NULL;
+  this->m_agentsInGroupDomainCallback = NULL;
   this->m_object = NULL;
 }
 
@@ -109,27 +111,48 @@ std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
 }
 
 //----------------------------------------------------------------------------
-void Model::setGroupCellIdsCallback(groupCellIdsCallback f, void* object)
+void Model::setCallbacks(groupCellIdsCallback f1, groupAreaCallback f2,
+                         agentsInGroupDomainCallback f3, void* object)
 {
-  this->m_cmbCallback = f;
+  this->m_groupCellIdsCallback = f1;
+  this->m_groupAreaCallback = f2;
+  this->m_agentsInGroupDomainCallback = f3;
   this->m_object = object;
 }
-
-#include <iostream>
 
 //----------------------------------------------------------------------------
 std::vector<int> Model::getGroupCellIds(int groupId)
 {
   std::vector<int> values;
-  std::cerr << "in location1\n";
-  if(this->m_object)
-    std::cerr << "have an mobj\n";
   if(this->m_object)
     {
-    std::cerr << "in location2\n";
-    (*this->m_cmbCallback)(m_object, groupId, values);
+    (*this->m_groupCellIdsCallback)(this->m_object, groupId, values);
     }
-  std::cerr << "in location3\n";
+
+  return values;
+}
+
+//----------------------------------------------------------------------------
+double Model::getGroupArea(int groupId)
+{
+  double value = -1;
+  if(this->m_object && this->m_groupAreaCallback)
+    {
+    value = (*this->m_groupAreaCallback)(this->m_object, groupId);
+    }
+
+  return value;
+}
+
+//----------------------------------------------------------------------------
+std::vector<std::pair<int, std::pair<double, double> > >
+Model::agentsInGroupDomain(int groupId, int numberOfAgents)
+{
+  std::vector<std::pair<int, std::pair<double, double> > > values;
+  if(this->m_object && this->m_agentsInGroupDomainCallback)
+    {
+    (*this->m_agentsInGroupDomainCallback)(this->m_object, groupId, numberOfAgents, values);
+    }
 
   return values;
 }
