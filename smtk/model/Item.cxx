@@ -30,8 +30,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::model;
 
 //----------------------------------------------------------------------------
-Item::Item(Model *model, int myid): m_model(model), m_id(myid)
+Item::Item(Model *model, int myid, unsigned long mask):
+  m_model(model), m_id(myid), m_entityMask(mask)
 {
+  this->m_UserName = "";
 }
 
 //----------------------------------------------------------------------------

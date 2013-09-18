@@ -27,7 +27,7 @@ using namespace smtk::model;
 
 //----------------------------------------------------------------------------
 GroupItem::GroupItem(Model *model, int myid, unsigned long mask): 
-  Item(model, myid), m_entityMask(mask)
+  Item(model, myid, mask)
 {
 }
 
