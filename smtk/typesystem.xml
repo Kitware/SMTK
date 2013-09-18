@@ -195,14 +195,21 @@
   <!-- setup the shared pointer type outside the namesapces -->
   <type-template name="smtk::shared_ptr">
     <include file-name="memory" location="global"/>
-    <arg redirect="%CPPSELF-&gt;get()-&gt;"/>
+    <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
 
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
+        <add-function signature="get_wrapped()" return-type="smtk::attribute::Attribute*">
+            <inject-code>
+                %RETURN_TYPE %0 = %CPPSELF->get();
+                %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+            </inject-code>
+        </add-function>
+  </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItemDefinition" />
