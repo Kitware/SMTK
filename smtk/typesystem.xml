@@ -382,42 +382,16 @@
 
       <object-type name="Manager">
         <include file-name="smtk/attribute/Manager.h" location="local" />
-    <modify-function signature="findAttributes(std::string, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;&amp;) const" remove="all">
-      <!--modify-argument index="2">
-        <remove-argument />
-      </modify-argument>
-      <modify-argument index="return">
-        <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;" />
-      </modify-argument>
-      <inject-code class="target" position="beginning">
-        std::cout &lt;&lt; " ***modified!*** ";
-        %RETURN_TYPE _out;
-        %CPPSELF->findAttributes(%1, _out);
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](_out);
-      </inject-code-->
-    </modify-function>
-     <modify-function signature="findAttributes(smtk::shared_ptr&lt;smtk::attribute::Definition&gt;, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;&amp;) const" remove="all">
-      <!--modify-argument index="2">
-        <remove-argument />
-      </modify-argument>
-      <modify-argument index="return">
-        <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;" />
-      </modify-argument>
-      <inject-code class="target" position="beginning">
-        std::cout &lt;&lt; " ***modified!*** ";
-        %RETURN_TYPE _out;
-        %CPPSELF->findAttributes(%1, _out);
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](_out);
-      </inject-code-->
-    </modify-function>
-    <add-function signature="findAttributes(std::string)" return-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;)">
-      <inject-code class="target" position="beginning">
-        std::cout &lt;&lt; " ***findAtts()*** ";
-        %RETURN_TYPE %0;
-        %CPPSELF->findAttributes(%1, %0);
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-      </inject-code>
-    </add-function>
+        <rejection function-name="findAttributes(std::string, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;&amp;) const" />
+        <rejection function-name="findAttributes(smtk::shared_ptr&lt;smtk::attribute::Definition&gt;, std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;&amp;) const" />
+        <add-function signature="findAttributes(std::string)" return-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;)">
+          <inject-code class="target" position="beginning">
+            std::cout &lt;&lt; " ***findAtts()*** ";
+            %RETURN_TYPE %0;
+            %CPPSELF->findAttributes(%1, %0);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="ModelEntitySection">
