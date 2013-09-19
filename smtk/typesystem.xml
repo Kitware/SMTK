@@ -248,9 +248,9 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::Manager" >
-    <modify-function signature="findAtts(std::string)" remove="all"/>
-  </value-type>
+  <!--value-type template="smtk::shared_ptr" args="smtk::attribute::Manager" >
+    <modify-function signature="findAttributes(std::string)" remove="all"/>
+  </value-type-->
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Section" />
 
@@ -410,7 +410,7 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](_out);
       </inject-code-->
     </modify-function>
-    <add-function signature="findAtts(std::string)" return-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;)">
+    <add-function signature="findAttributes(std::string)" return-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Attribute&gt; &gt;)">
       <inject-code class="target" position="beginning">
         std::cout &lt;&lt; " ***findAtts()*** ";
         %RETURN_TYPE %0;
