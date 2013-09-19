@@ -41,6 +41,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModelGeneratedGridRepresentation.h"
 #include "vtkWeakPointer.h"
+#include <vector>
 #include <map>
 #include <set>
 
@@ -49,6 +50,8 @@ class vtkCmbMeshServer;
 class vtkDiscreteModel;
 class vtkAlgorithm;
 class vtkIntArray;
+class vtkModelEntity;
+class vtkIdTypeArray;
 
 class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkModelGeneratedGridRepresentation
 {
@@ -99,6 +102,16 @@ public:
   vtkGetObjectMacro(Representation, vtkPolyData);
   void SetRepresentation(vtkPolyData* mesh);
 
+  // Description:
+  // Convenient methods for EMS simulation exports.
+  // Meant for 2D models with triangle meshes.
+  bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
+    std::vector<int>& cellIds);
+  bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area);
+  bool GetAgentsInGroupDomain(
+    vtkDiscreteModel* model, int groupId, int numberOfAgents,
+    std::vector<std::pair<int, std::pair<double, double> > >& locations);
+
   virtual void WriteMeshToFile( );
 protected:
   vtkCmbMeshGridRepresentationServer();
@@ -112,6 +125,9 @@ protected:
   vtkIdTypeArray* GetPointIdMapArray();
   vtkIntArray* GetPointTypeMapArray();
   vtkIdTypeArray* GetCellPointIdsArray();
+  bool CanProcessModelGroup(
+    vtkDiscreteModel* model, int groupId,
+    vtkIdTypeArray *maparray, std::set<vtkIdType>& faceIdList);
 
   vtkPolyData* Representation;
   vtkWeakPointer<vtkDiscreteModel> Model;
