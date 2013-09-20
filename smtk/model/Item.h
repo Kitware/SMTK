@@ -78,6 +78,9 @@ namespace smtk
       const_iterator endAssociatedAttributes() const
         {return this->m_attributes.end();}
 
+      std::set<smtk::AttributePtr> attributes() const
+        {return this->m_attributes;}
+
       std::size_t numberOfAssociatedAttributes() const
         { return this->m_attributes.size();}
 
