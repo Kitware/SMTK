@@ -195,7 +195,7 @@
   <!-- setup the shared pointer type outside the namesapces -->
   <type-template name="smtk::shared_ptr">
     <include file-name="memory" location="global"/>
-    <arg redirect="%CPPSELF-&gt;get()-&gt;"/>
+    <arg wraps-pointer-as="%CPPSELF-&gt;get()-&gt;"/>
   </type-template>
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
