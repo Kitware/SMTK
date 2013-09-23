@@ -70,6 +70,32 @@ using namespace smtk::attribute;
 qtUIManager* qtUIManager::Instance = 0;
 
 //-----------------------------------------------------------------------------
+qtDoubleValidator::qtDoubleValidator(QObject * parent)
+  :QDoubleValidator(parent)
+{
+  this->setNotation( QDoubleValidator::StandardNotation );
+}
+
+//-----------------------------------------------------------------------------
+void qtDoubleValidator::fixup(QString &input) const
+{
+  if ( input.length() == 0 )
+    {
+    return;
+    }
+
+  double v = input.toDouble();
+  if (v < this->bottom())
+    {
+    input = QString::number(this->bottom()+smtk_DOUBLE_CONSTRAINT_PRECISION);
+    }
+  else if (v > this->top())
+    {
+    input = QString::number(this->top()-smtk_DOUBLE_CONSTRAINT_PRECISION);
+    }
+}
+
+//-----------------------------------------------------------------------------
 qtUIManager* qtUIManager::instance()
 {
   return qtUIManager::Instance;
@@ -662,7 +688,7 @@ QWidget* qtUIManager::createEditBox(
       QLineEdit* editBox = new QLineEdit(pWidget);
       const DoubleItemDefinition *dDef = 
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
-      QDoubleValidator *validator = new QDoubleValidator(pWidget);
+      qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
       

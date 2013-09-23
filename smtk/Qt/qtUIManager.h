@@ -22,6 +22,7 @@
 #include "smtk/attribute/Manager.h"
 #include <QFont>
 #include <QColor>
+#include <QDoubleValidator>
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -142,6 +143,16 @@ namespace smtk
       smtk::attribute::Manager &m_AttManager;
 
     }; // class
+
+    //A sublcass of QDoubleValidator to fixup input outside of range
+    class QTSMTK_EXPORT qtDoubleValidator : public QDoubleValidator
+    {
+      Q_OBJECT
+    public:
+        qtDoubleValidator(QObject * parent);
+        virtual void fixup(QString &input) const;
+    };
+
   }; // namespace attribute
 }; // namespace smtk
 
