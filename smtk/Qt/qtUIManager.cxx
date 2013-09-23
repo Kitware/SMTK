@@ -31,7 +31,6 @@
 #include <QClipboard>
 #include <QSpinBox>
 #include <QLineEdit>
-#include <QDoubleValidator>
 #include <QApplication>
 #include <QComboBox>
 #include <QStringList>
@@ -84,14 +83,26 @@ void qtDoubleValidator::fixup(QString &input) const
     return;
     }
 
+  QLineEdit* editBox = 
+    static_cast<QLineEdit*>(this->property("MyWidget").value<void *>());
+  
   double v = input.toDouble();
+  bool outofrange = false;
   if (v < this->bottom())
     {
     input = QString::number(this->bottom()+smtk_DOUBLE_CONSTRAINT_PRECISION);
+    outofrange = true;
     }
   else if (v > this->top())
     {
     input = QString::number(this->top()-smtk_DOUBLE_CONSTRAINT_PRECISION);
+    outofrange = true;
+    }
+  if(editBox && outofrange)
+    {
+    QPalette pal = editBox->palette();
+    pal.setColor(QPalette::Base, qtUIManager::instance()->invalidValueColor());
+    editBox->setPalette(pal);
     }
 }
 
@@ -113,6 +124,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
   this->ShowAdvanced =false;
   this->advFont.setBold(true);
   this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
+  this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
 }
 
 //----------------------------------------------------------------------------
@@ -142,6 +154,9 @@ void qtUIManager::initializeUI(QWidget* pWidget)
   RootSectionPtr rs = this->m_AttManager.rootSection();
   const double *dcolor = rs->defaultColor();
   this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+  dcolor = rs->invalidColor();
+  this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+
   this->RootSection = new qtRootSection(
     this->m_AttManager.rootSection(), pWidget);
 }
@@ -286,6 +301,12 @@ void qtUIManager::clearRoot()
   this->setShowAdvanced(false);
 }
 
+//----------------------------------------------------------------------------
+void qtUIManager::setInvalidValueColor(const QColor &color)
+{
+  this->InvalidValueColor = color;
+}
+ 
 //----------------------------------------------------------------------------
 void qtUIManager::setWidgetToDefaultValueColor(QWidget *widget,
                                                        bool setToDefault)
@@ -691,13 +712,14 @@ QWidget* qtUIManager::createEditBox(
       qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
-      
+      QString tooltip;
       double value=smtk_DOUBLE_MIN;
       if(dDef->hasMinRange())
         {
         value = dDef->minRangeInclusive() ?
           dDef->minRange() : dDef->minRange() + smtk_DOUBLE_CONSTRAINT_PRECISION;
         validator->setBottom(value);
+        tooltip.append("Min: ").append(QString::number(value));
         }
       value=smtk_DOUBLE_MAX;
       if(dDef->hasMaxRange())
@@ -705,6 +727,11 @@ QWidget* qtUIManager::createEditBox(
         value = dDef->maxRangeInclusive() ?
           dDef->maxRange() : dDef->maxRange() - smtk_DOUBLE_CONSTRAINT_PRECISION;
         validator->setTop(value);
+        if(!tooltip.isEmpty())
+          {
+          tooltip.append("; ");
+          }
+        tooltip.append("Max: ").append(QString::number(value));
         }
 
       smtk::DoubleItemPtr ditem =dynamicCastPointer<DoubleItem>(item);
@@ -720,6 +747,13 @@ QWidget* qtUIManager::createEditBox(
         editBox->setText(QString::number(dDef->defaultValue()));
         isDefault = true;
         }
+      if(!tooltip.isEmpty())
+        {
+        editBox->setToolTip(tooltip);
+        }
+      QVariant vdata;
+      vdata.setValue((void*)editBox);
+      validator->setProperty("MyWidget", vdata);
       inputWidget = editBox;
       break;
       }
@@ -731,6 +765,7 @@ QWidget* qtUIManager::createEditBox(
       QIntValidator *validator = new QIntValidator(pWidget);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
+      QString tooltip;
 
       int value=smtk_INT_MIN;
       if(iDef->hasMinRange())
@@ -738,6 +773,7 @@ QWidget* qtUIManager::createEditBox(
         value = iDef->minRangeInclusive() ?
           iDef->minRange() : iDef->minRange() + 1;
         validator->setBottom(value);
+        tooltip.append("Min: ").append(QString::number(value));
         }
       value=smtk_INT_MAX;
       if(iDef->hasMaxRange())
@@ -745,6 +781,11 @@ QWidget* qtUIManager::createEditBox(
         value = iDef->maxRangeInclusive() ?
           iDef->maxRange() : iDef->maxRange() - 1;
         validator->setTop(value);
+        if(!tooltip.isEmpty())
+          {
+          tooltip.append("; ");
+          }
+        tooltip.append("Max: ").append(QString::number(value));
         }
 
       smtk::IntItemPtr iItem =dynamicCastPointer<IntItem>(item);
@@ -760,6 +801,13 @@ QWidget* qtUIManager::createEditBox(
         editBox->setText(QString::number(iDef->defaultValue()));
         isDefault = true;
         }
+      if(!tooltip.isEmpty())
+        {
+        editBox->setToolTip(tooltip);
+        }
+      QVariant vdata;
+      vdata.setValue((void*)editBox);
+      validator->setProperty("MyWidget", vdata);
       inputWidget = editBox;
       break;
       }
