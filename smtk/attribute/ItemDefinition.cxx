@@ -39,7 +39,6 @@ ItemDefinition::ItemDefinition(const std::string &myName)
 //----------------------------------------------------------------------------
 ItemDefinition::~ItemDefinition()
 {
-  std::cout << "Item Definition " << m_name << " deleted\n";
 }
 //----------------------------------------------------------------------------
 bool ItemDefinition::isMemberOf(const std::vector<std::string> &categories) const

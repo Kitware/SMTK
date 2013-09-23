@@ -50,7 +50,6 @@ Item::Item(Item *owningItem, int itemPosition, int subGroupPosition):
 //----------------------------------------------------------------------------
 Item::~Item()
 {
-  std::cout << "Item " << this->name() << " deleted\n";
 }
 //----------------------------------------------------------------------------
 AttributePtr Item::attribute() const
