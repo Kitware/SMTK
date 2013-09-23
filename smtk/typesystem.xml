@@ -337,6 +337,14 @@
 
       <object-type name="DoubleItemDefinition">
         <include file-name="smtk/attribute/DoubleItemDefinition.h" location="local"/>
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::DoubleItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="FileItem">
@@ -444,6 +452,14 @@
 
       <object-type name="StringItemDefinition">
         <include file-name="smtk/attribute/StringItemDefinition.h" location="local" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::StringItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="UserData">
