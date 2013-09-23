@@ -65,6 +65,9 @@ namespace smtk
       void setDefaultValueColor(const QColor &color);
       QColor defaultValueColor() const
       {return this->DefaultValueColor;}
+      void setInvalidValueColor(const QColor &color);
+      QColor invalidValueColor() const
+      {return this->InvalidValueColor;}
 
       qtRootSection* rootSection()
         {return this->RootSection;}
@@ -139,7 +142,8 @@ namespace smtk
       qtRootSection* RootSection;
       QFont advFont;
       QColor DefaultValueColor;
-      //smtk::attribute::Manager &m_AttManager;
+      QColor InvalidValueColor;
+
       smtk::attribute::Manager &m_AttManager;
 
     }; // class
