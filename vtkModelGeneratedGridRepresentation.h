@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
+#include <vector>
 
 class VTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation
 {
@@ -43,6 +44,25 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
   virtual void WriteMeshToFile()=0;
+
+  // Description:
+  // Get cellIds or area given a group id of model entities.
+  // Meant for 2D models with triangle meshes.
+  virtual bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
+    std::vector<int>& cellIds){return false;}
+  virtual bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area)
+  {return false;}
+
+  // Description:
+  // Get the locations of points and its containing cells given the group id
+  // of model enities. These points are randomly placed inside of the randomly
+  // located cell withint the model group.
+  // Meant for 2D models with triangle meshes.
+  virtual bool GetRandomPointsInGroupDomain(
+    vtkDiscreteModel* model, int groupId, int numberOfAgents,
+    std::vector<std::pair<int, std::pair<double, double> > >& locations)
+  {return false;}
+
 protected:
   vtkModelGeneratedGridRepresentation();
   virtual ~vtkModelGeneratedGridRepresentation();
