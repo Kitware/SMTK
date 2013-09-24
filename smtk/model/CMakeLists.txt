@@ -10,6 +10,7 @@ set(modelHeaders
   Model.h
   ModelDomainItem.h
   Item.h
+  GridInfo.h
   GroupItem.h
   )
 

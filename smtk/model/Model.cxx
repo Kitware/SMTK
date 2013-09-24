@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/model/Model.h"
 
+#include "smtk/model/GridInfo.h"
 #include "smtk/model/ModelDomainItem.h"
 #include "smtk/model/GroupItem.h"
 
@@ -34,10 +35,6 @@ Model::Model()
 {
   this->m_modelDomain = smtk::ModelItemPtr(new ModelDomainItem(this, -1));
   this->m_items[-1] = this->m_modelDomain;
-  this->m_groupCellIdsCallback = NULL;
-  this->m_groupAreaCallback = NULL;
-  this->m_agentsInGroupDomainCallback = NULL;
-  this->m_object = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -111,22 +108,12 @@ std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
 }
 
 //----------------------------------------------------------------------------
-void Model::setCallbacks(groupCellIdsCallback f1, groupAreaCallback f2,
-                         agentsInGroupDomainCallback f3, void* object)
-{
-  this->m_groupCellIdsCallback = f1;
-  this->m_groupAreaCallback = f2;
-  this->m_agentsInGroupDomainCallback = f3;
-  this->m_object = object;
-}
-
-//----------------------------------------------------------------------------
 std::vector<int> Model::getGroupCellIds(int groupId)
 {
   std::vector<int> values;
-  if(this->m_object)
+  if(this->m_gridInfo)
     {
-    (*this->m_groupCellIdsCallback)(this->m_object, groupId, values);
+    this->m_gridInfo->getGroupCellIds(groupId, values);
     }
 
   return values;
@@ -135,13 +122,12 @@ std::vector<int> Model::getGroupCellIds(int groupId)
 //----------------------------------------------------------------------------
 double Model::getGroupArea(int groupId)
 {
-  double value = -1;
-  if(this->m_object && this->m_groupAreaCallback)
+  if(this->m_gridInfo)
     {
-    value = (*this->m_groupAreaCallback)(this->m_object, groupId);
+    return this->m_gridInfo->getGroupArea(groupId);
     }
 
-  return value;
+  return -1;
 }
 
 //----------------------------------------------------------------------------
@@ -149,9 +135,9 @@ std::vector<std::pair<int, std::pair<double, double> > >
 Model::agentsInGroupDomain(int groupId, int numberOfAgents)
 {
   std::vector<std::pair<int, std::pair<double, double> > > values;
-  if(this->m_object && this->m_agentsInGroupDomainCallback)
+  if(this->m_gridInfo)
     {
-    (*this->m_agentsInGroupDomainCallback)(this->m_object, groupId, numberOfAgents, values);
+    this->m_gridInfo->getAgentsInGroupDomain(groupId, numberOfAgents, values);
     }
 
   return values;

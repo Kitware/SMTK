@@ -37,27 +37,22 @@ namespace smtk
 {
   namespace model
   {
+    class GridInfo;
     class SMTKCORE_EXPORT Model
     {
     public:
-      typedef void (*groupCellIdsCallback)(void* object, int, std::vector<int>&);
-      typedef double (*groupAreaCallback)(void* object, int groupId);
-      typedef void (*agentsInGroupDomainCallback)(
-        void* object, int groupId, int numberOfAgents,
-        std::vector<std::pair<int, std::pair<double, double> > >& locations);
-
       Model();
       virtual ~Model();
       virtual smtk::ModelItemPtr getModelItem(int id);
       virtual smtk::ModelGroupItemPtr createModelGroup(
         const std::string &name, int myid, unsigned long mask);
 
-      virtual bool deleteModelGroup(int id) {return false;}
+      virtual bool deleteModelGroup(int /*id*/) {return false;}
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
       virtual unsigned long convertGroupTypeToMask(
-        int grouptype, int entType) {return 0;}
+        int /*grouptype*/, int /*entType*/) {return 0;}
       virtual void removeGroupItems(int grouptype, int entType)
       { return this->removeGroupItemsByMask(
         this->convertGroupTypeToMask(grouptype, entType));}
@@ -89,23 +84,21 @@ namespace smtk
       // callback methods to get analysis grid information in SMTK.
       // note that for some reason shiboken segfaults when I have
       // a method "void setObject(void*);" so I don't do it.
-      void setCallbacks(groupCellIdsCallback f1, groupAreaCallback f2,
-                        agentsInGroupDomainCallback f3, void* object);
       std::vector<int> getGroupCellIds(int groupId);
-      //void setGroupAreaCallback(groupAreaCallback f);
       double getGroupArea(int groupId);
-      //void setAgentsInGroupDomainCallback(agentsInGroupDomainCallback f);
       std::vector<std::pair<int, std::pair<double, double> > >
         agentsInGroupDomain(int groupId, int numberOfAgents);
+
+      void setGridInfo(smtk::GridInfoPtr gridInfo)
+      {
+        this->m_gridInfo = gridInfo;
+      }
 
     protected:
       smtk::ModelItemPtr m_modelDomain;
       mutable std::map<int, smtk::ModelItemPtr> m_items;
-      groupCellIdsCallback m_groupCellIdsCallback;
-      groupAreaCallback m_groupAreaCallback;
-      agentsInGroupDomainCallback m_agentsInGroupDomainCallback;
     private:
-      void* m_object;
+      smtk::GridInfoPtr m_gridInfo;
     };
 
     inline smtk::ModelItemPtr Model::getModelItem(int id)

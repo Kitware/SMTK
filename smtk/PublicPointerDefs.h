@@ -42,6 +42,7 @@ namespace smtk
   {
     class Model;
     class Item;
+    class GridInfo;
     class GroupItem;
     class ModelDomainItem;
   };
@@ -137,6 +138,9 @@ namespace smtk
 
   //custom user data classes
   typedef smtk::shared_ptr< smtk::attribute::UserData >                 UserDataPtr;
+
+  // class for making the analysis grid information available in SMTK
+  typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
 
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less
