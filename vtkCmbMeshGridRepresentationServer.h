@@ -57,7 +57,7 @@ class VTK_EXPORT vtkCmbMeshGridRepresentationServer : public vtkModelGeneratedGr
 {
 public:
   static vtkCmbMeshGridRepresentationServer* New();
-  vtkTypeMacro(vtkCmbMeshGridRepresentationServer,vtkModelGridRepresentation);
+  vtkTypeMacro(vtkCmbMeshGridRepresentationServer,vtkModelGeneratedGridRepresentation);
   void PrintSelf(ostream& os, vtkIndent indent);
 
   // Description:
@@ -103,12 +103,18 @@ public:
   void SetRepresentation(vtkPolyData* mesh);
 
   // Description:
-  // Convenient methods for EMS simulation exports.
+  // Get cellIds or area given a group id of model entities.
   // Meant for 2D models with triangle meshes.
-  bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
+  virtual bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
     std::vector<int>& cellIds);
-  bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area);
-  bool GetAgentsInGroupDomain(
+  virtual bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area);
+
+  // Description:
+  // Get the locations of points and its containing cells given the group id
+  // of model enities. These points are randomly placed inside of the randomly
+  // located cell withint the model group.
+  // Meant for 2D models with triangle meshes.
+  virtual bool GetRandomPointsInGroupDomain(
     vtkDiscreteModel* model, int groupId, int numberOfAgents,
     std::vector<std::pair<int, std::pair<double, double> > >& locations);
 
@@ -126,8 +132,7 @@ protected:
   vtkIntArray* GetPointTypeMapArray();
   vtkIdTypeArray* GetCellPointIdsArray();
   bool CanProcessModelGroup(
-    vtkDiscreteModel* model, int groupId,
-    vtkIdTypeArray *maparray, std::set<vtkIdType>& faceIdList);
+    vtkDiscreteModel* model, int groupId, std::set<vtkIdType>& faceIdList);
 
   vtkPolyData* Representation;
   vtkWeakPointer<vtkDiscreteModel> Model;

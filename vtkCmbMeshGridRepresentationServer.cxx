@@ -519,8 +519,7 @@ vtkIdTypeArray* vtkCmbMeshGridRepresentationServer::GetCellPointIdsArray()
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::CanProcessModelGroup(
-  vtkDiscreteModel* model, int groupId, vtkIdTypeArray *maparray,
-  std::set<vtkIdType>& faceIdList)
+  vtkDiscreteModel* model, int groupId, std::set<vtkIdType>& faceIdList)
 {
   if(this->IsModelConsistent(model) == false)
     {
@@ -542,15 +541,12 @@ bool vtkCmbMeshGridRepresentationServer::CanProcessModelGroup(
   // identifies the model id for each cell. Normally this array should
   // be there when we have a generated 2d mesh.
   // See ModelFaceRep::RelateMeshToModel()
-  if (this->Representation->GetCellData()->HasArray("ModelId") )
-    {
-    maparray = vtkIdTypeArray::SafeDownCast(
-      this->Representation->GetCellData()->GetArray("ModelId"));
-    }
-  if (!maparray )
+  if (!this->Representation->GetCellData()->HasArray("ModelId") ||
+     !vtkIdTypeArray::SafeDownCast(this->Representation->GetCellData()->GetArray("ModelId")))
     {
     return false;
     }
+
   vtkModelEntity* entityGroup = model->GetModelEntity(groupId);
   if(!entityGroup)
     {
@@ -579,14 +575,15 @@ bool vtkCmbMeshGridRepresentationServer::CanProcessModelGroup(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetGroupFacetIds(
-  vtkDiscreteModel* model, int groupId, std::vector<int>& cellIds)
+  vtkDiscreteModel* model,int groupId, std::vector<int>& cellIds)
 {
-  vtkIdTypeArray* maparray = NULL;
   std::set<vtkIdType> faceIdList;
-  if(!this->CanProcessModelGroup(model, groupId, maparray, faceIdList))
+  if(!this->CanProcessModelGroup(model, groupId, faceIdList))
     {
     return false;
     }
+  vtkIdTypeArray* maparray = vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetCellData()->GetArray("ModelId"));
 
   vtkIdType length = maparray->GetNumberOfComponents() * maparray->GetNumberOfTuples();
   vtkIdType *idBuffer = reinterpret_cast<vtkIdType *>(
@@ -606,14 +603,15 @@ bool vtkCmbMeshGridRepresentationServer::GetGroupFacetIds(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetGroupFacetsArea(
-  vtkDiscreteModel* model, int groupId, double& area)
+  vtkDiscreteModel* model,int groupId, double& area)
 {
-  vtkIdTypeArray* maparray = NULL;
   std::set<vtkIdType> faceIdList;
-  if(!this->CanProcessModelGroup(model, groupId, maparray, faceIdList))
+  if(!this->CanProcessModelGroup(model, groupId, faceIdList))
     {
     return false;
     }
+  vtkIdTypeArray* maparray = vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetCellData()->GetArray("ModelId"));
 
   area = 0.0;
   vtkIdType length = maparray->GetNumberOfComponents() * maparray->GetNumberOfTuples();
@@ -634,16 +632,17 @@ bool vtkCmbMeshGridRepresentationServer::GetGroupFacetsArea(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::GetAgentsInGroupDomain(
-  vtkDiscreteModel* model,int groupId, int numberOfAgents,
-  std::vector<std::pair<int, std::pair<double, double> > >& locations)
+bool vtkCmbMeshGridRepresentationServer::GetRandomPointsInGroupDomain(
+    vtkDiscreteModel* model, int groupId, int numberOfAgents,
+    std::vector<std::pair<int, std::pair<double, double> > >& locations)
 {
-  vtkIdTypeArray* maparray = NULL;
   std::set<vtkIdType> faceIdList;
-  if(!this->CanProcessModelGroup(model, groupId, maparray, faceIdList))
+  if(!this->CanProcessModelGroup(model, groupId, faceIdList))
     {
     return false;
     }
+  vtkIdTypeArray* maparray = vtkIdTypeArray::SafeDownCast(
+      this->Representation->GetCellData()->GetArray("ModelId"));
 
   vtkIdType numCells = this->Representation->GetNumberOfCells();
   int count = 0;
