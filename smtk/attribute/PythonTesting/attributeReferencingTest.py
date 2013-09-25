@@ -57,13 +57,12 @@ if __name__ == '__main__':
     smtk.attribute.ValueItem.CastTo(att2.item(0)).setExpression(expAtt2)
     
     #Lets see what attributes are being referenced
-    refs = list()
-    expAtt1.references(refs)
+    refs = expAtt1.references()
     print "Number of Items referencing expAtt1: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
     
-    expAtt2.references(refs)
+    refs = expAtt2.references()
     print "Number of Items referencing expAtt2: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
@@ -71,12 +70,12 @@ if __name__ == '__main__':
     manager.removeAttribute(att1)
     del att1 #Should delete att1
     print "testAtt1 deleted"
-    expAtt1.references(refs)
+    refs = expAtt1.references()
     print "Number of Items referencing expAtt1: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
     
-    expAtt2.references(refs)
+    refs = expAtt2.references()
     print "Number of Items referencing expAtt2: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
@@ -84,12 +83,12 @@ if __name__ == '__main__':
     smtk.attribute.ValueItem.CastTo(att2.item(0)).setExpression(expAtt1)
     print "testAtt3 now using Exp2"
     
-    expAtt1.references(refs)
+    refs = expAtt1.references()
     print "Number of Items referencing expAtt1: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
     
-    expAtt2.references(refs)
+    refs = expAtt2.references()
     print "Number of Items referencing expAtt2: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())

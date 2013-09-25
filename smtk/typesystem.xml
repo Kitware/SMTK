@@ -202,7 +202,22 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
 
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute"/>
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
+    <modify-function signature="references(std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;&amp;)">
+      <modify-argument index="1">
+        <remove-argument />
+      </modify-argument>
+      <modify-argument index="return">
+        <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;" />
+      </modify-argument>
+      <inject-code class="target" position="beginning">
+        std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt; _out;
+        %CPPSELF->get()->references(_out);
+        %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
+      </inject-code>
+    </modify-function>
+  </value-type>
+
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItemDefinition" />
@@ -273,6 +288,19 @@
       <!-- setup the attribute classes -->
       <object-type name="Attribute">
         <include file-name="smtk/attribute/Attribute.h" location="local"/>
+        <modify-function signature="references(std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;&amp;) const">
+          <modify-argument index="1">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt; _out;
+            %CPPSELF->references(_out);
+            %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
+          </inject-code>
+        </modify-function>
       </object-type>
 
      <object-type name="AttributeReader">
