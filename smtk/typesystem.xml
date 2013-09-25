@@ -361,10 +361,19 @@
 
       <object-type name="GroupItem">
         <include file-name="smtk/attribute/GroupItem.h" location="local"/>
+
       </object-type>
 
       <object-type name="GroupItemDefinition">
         <include file-name="smtk/attribute/GroupItemDefinition.h" location="local"/>
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::GroupItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+         </add-function>
       </object-type>
 
       <object-type name="GroupSection">
