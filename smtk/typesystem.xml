@@ -196,30 +196,6 @@
   <type-template name="smtk::shared_ptr">
     <include file-name="memory" location="global"/>
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
-        <add-function signature="isNull()" return-type="bool">
-            <inject-code>
-              std::cout &lt;&lt; " ***HI*** ";
-                %PYARG_0 = %CPPSELF->get() ? Py_False : Py_True;
-            </inject-code>
-        </add-function>
-        <add-function signature="__nonzero__()" return-type="bool">
-            <inject-code>
-                %PYARG_0 = %CPPSELF->get() ? Py_True : Py_False;
-            </inject-code>
-        </add-function>
-        <add-function signature="INT__nonzero__()" return-type="int">
-            <inject-code>
-              std::cout &lt;&lt; " ***HI*** ";
-              %RETURN_TYPE %0 = %CPPSELF->get() ? 1 : 0;
-                %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-            </inject-code>
-        </add-function>
-        <add-function signature="get_wrapped()" return-type="%INTYPE_0*">
-            <inject-code>
-                %RETURN_TYPE %0 = %CPPSELF->get();
-                %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-            </inject-code>
-        </add-function>
   </type-template>
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
