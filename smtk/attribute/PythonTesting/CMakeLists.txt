@@ -1,0 +1,34 @@
+find_package( PythonInterp 2.7 )
+
+if( PYTHONINTERP_FOUND )
+  set(LIB_ENV_VAR "")
+  if(APPLE AND UNIX)
+    set(LIB_ENV_VAR "DYLD_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}")
+  elseif(UNIX)
+    set(LIB_ENV_VAR "LD_LIBRARY_PATH=${SHIBOKEN_LIBRARY_PATH}")
+  endif()
+  set(SIBOKEN_SMTK_PYTHON "")
+  if(UNIX)
+    set(SIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
+  endif()
+  message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
+  message("${SHIBOKEN_LIBRARY_PATH}")
+   add_test(basicAttributeTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeTest.py)
+   add_test(basicAttributeDefinitionTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDefinitionTest.py)
+   add_test(basicAttributeDerivationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDerivationTest.py)
+   add_test(basicAttributeXMLWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeXMLWriterTest.py dummypy.sbi)
+   add_test(basicSectionWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicSectionWriterTest.py)
+   add_test(expressintTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest.py)
+   add_test(expressionTest2Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest2.py)
+   add_test(attributeAutoNamingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeAutoNamingTest.py)
+   add_test(attributeReferencingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeReferencingTest.py)
+   add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
+  set_tests_properties( basicAttributeTestPy basicAttributeDefinitionTestPy
+                        basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
+                        basicSectionWriterTestPy expressintTestPy expressionTest2Py
+                        attributeAutoNamingTestPy attributeAutoNamingTestPy
+                        attributeReferencingTestPy categoryTestPy
+                        PROPERTIES ENVIRONMENT "PYTHONPATH=${SIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )
+else()
+  message("could not find python interp")
+endif()
