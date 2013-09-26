@@ -104,7 +104,7 @@ if __name__ == '__main__':
     idef.addCategory("Time")
     gdef = addItemDefinition(timeParamDef, smtk.attribute.GroupItemDefinition, "EndTime")
     gdef.setCommonSubGroupLabel("End Time")
-    ddef = gdef.addItemDefinition(gdef, smtk.attribute.DoubleItemDefinition, "Value")
+    ddef = addItemDefinition(gdef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.addCategory("Time")
     ddef.setDefaultValue(162)
     ddef.setMinRange(0, True)
@@ -116,23 +116,23 @@ if __name__ == '__main__':
     idef.setDefaultDiscreteIndex(0)
     idef.addCategory("Time")
        
-    globalsDef.addItemDefinition(ddef, smtk.attribute.DoubleItemDefinition, "Gravity")
+    ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "Gravity")
     ddef.setDefaultValue(1.272024e08)
     ddef.setUnits("m/hr^2")
     ddef.setAdvanceLevel(1)
-    ddef.setMinRange(0, false)
+    ddef.setMinRange(0, False)
 
     ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "WaterSpecificHeat")
     ddef.setDefaultValue(0.00116)
     ddef.setUnits("W hr/g-K")
     ddef.setAdvanceLevel(1)
-    ddef.setMinRange(0, false)
+    ddef.setMinRange(0, False)
 
     ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "AirSpecificHeat")
     ddef.setDefaultValue(0.000278)
     ddef.setUnits("W hr/g-K")
     ddef.setAdvanceLevel(1)
-    ddef.setMinRange(0, false)
+    ddef.setMinRange(0, False)
 
     #Lets add some sections
   
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     attSec = root.addSubsection(smtk.attribute.AttributeSection, "Materials")
     attSec.addDefinition(materialDef)
     attSec.setModelEntityMask(0x40)
-    attSec.setOkToCreateModelEntities(true)
+    attSec.setOkToCreateModelEntities(True)
     modSec = addSubsection(smtk.attribute.ModelEntitySection, "Domains")
     modSec.setModelEntityMask(0x40) # Look at domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
