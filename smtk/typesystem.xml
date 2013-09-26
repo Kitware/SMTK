@@ -538,6 +538,9 @@
       <value-type name="ValueItemTemplate" generate="no" />
       <value-type name="ValueItemDefinitionTemplate" generate="no" />
 
+      <object-type name="XmlV1StringWriter">
+        <include file-name="smtk/attribute/XmlV1StringWriter.h" location="local" />
+      </object-type>
 
     </namespace-type>
   </namespace-type>

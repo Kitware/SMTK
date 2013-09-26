@@ -114,11 +114,11 @@ namespace smtk
       static std::string encodeModelEntityMask(unsigned long m);
       static std::string encodeColor(const double *color);
 
-      const smtk::attribute::Manager &m_manager;
       pugi::xml_document m_doc;
       pugi::xml_node m_root;
       std::stringstream m_errorStatus;
     private:
+      const smtk::attribute::Manager &m_manager;
 
     };
   }
