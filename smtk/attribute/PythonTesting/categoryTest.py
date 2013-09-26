@@ -1,5 +1,5 @@
 """
-Manual port of SMTK/smtk/attribute/Testing/attributeReferencingTest.cxx
+Manual port of SMTK/smtk/attribute/Testing/categoryTest.cxx
 For verifying python-shiboken wrappers
 
 Requires SMTKCorePython.so to be in module path
