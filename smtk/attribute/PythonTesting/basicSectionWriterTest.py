@@ -7,7 +7,7 @@ Requires SMTKCorePython.so to be in module path
 
 import smtk
 
-def addInstance( ato, data_type, name):
+def addItemDefinition( ato, data_type, name):
   def_ = data_type.New(name)
   if def_ is None:
     print "could not create"
@@ -39,6 +39,8 @@ if __name__ == '__main__':
       print "could not create materialDef"
       sys.exit( -1 )
     materialDef.setAssociationMask(0x40) #belongs on domains
+    boundaryConditionsDef = manager.createDefinition("BoundaryCondition")
+    boundaryConditionsDef.setAssociationMask(0x20); #belongs on boundaries
     specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition")
     if specifiedHeadDef is None:
       print "Could not create SpecifiedHead"
@@ -82,31 +84,31 @@ if __name__ == '__main__':
     del analysis[:]
     
     #Lets complete the definition for some boundary conditions
-    ddef = addInstance(specifiedHeadDef, smtk.attribute.DoubleItemDefinition, "Value")
+    ddef = addItemDefinition(specifiedHeadDef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.setExpressionDefinition(funcDef)
-    ddef = specifiedFluxDef.addItemDefinition(DoubleItemDefinition, "Value")
+    ddef = addItemDefinition(specifiedFluxDef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.setExpressionDefinition(funcDef)
     
-    gdef = timeParamDef.addItemDefinition(GroupItemDefinition, "StartTime")
+    gdef = addItemDefinition(timeParamDef, smtk.attribute.GroupItemDefinition, "StartTime")
     gdef.setCommonSubGroupLabel("Start Time")
-    ddef = gdef.addItemDefinition(DoubleItemDefinition, "Value")
+    ddef = addItemDefinition(gdef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.addCategory("Time")
     ddef.setDefaultValue(0)
     ddef.setMinRange(0, true)
-    idef = gdef.addItemDefinition(IntItemDefinition, "Units")
+    idef = addItemDefinition(gdef, smtk.attribute.IntItemDefinition, "Units")
     idef.addDiscreteValue(0, "Seconds")
     idef.addDiscreteValue(1, "Minutes")
     idef.addDiscreteValue(2, "Hours")
     idef.addDiscreteValue(3, "Days")
     idef.setDefaultDiscreteIndex(0)
     idef.addCategory("Time")
-    gdef = timeParamDef.addItemDefinition(GroupItemDefinition, "EndTime")
+    gdef = addItemDefinition(timeParamDef, smtk.attribute.GroupItemDefinition, "EndTime")
     gdef.setCommonSubGroupLabel("End Time")
-    ddef = gdef.addItemDefinition<DoubleItemDefinitionPtr>("Value")
+    ddef = gdef.addItemDefinition(gdef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.addCategory("Time")
     ddef.setDefaultValue(162)
     ddef.setMinRange(0, true)
-    idef = gdef.addItemDefinition<IntItemDefinitionPtr>("Units")
+    idef = addItemDefinition(gdef, smtk.attribute.IntItemDefinition, "Units")
     idef.addDiscreteValue(0, "Seconds")
     idef.addDiscreteValue(1, "Minutes")
     idef.addDiscreteValue(2, "Hours")
@@ -114,19 +116,19 @@ if __name__ == '__main__':
     idef.setDefaultDiscreteIndex(0)
     idef.addCategory("Time")
        
-    ddef = globalsDef.addItemDefinition(DoubleItemDefinitionPtr, "Gravity")
+    globalsDef.addItemDefinition(ddef, smtk.attribute.DoubleItemDefinition, "Gravity")
     ddef.setDefaultValue(1.272024e08)
     ddef.setUnits("m/hr^2")
     ddef.setAdvanceLevel(1)
     ddef.setMinRange(0, false)
 
-    ddef = globalsDef.addItemDefinition(DoubleItemDefinitionPtr, "WaterSpecificHeat")
+    ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "WaterSpecificHeat")
     ddef.setDefaultValue(0.00116)
     ddef.setUnits("W hr/g-K")
     ddef.setAdvanceLevel(1)
     ddef.setMinRange(0, false)
 
-    ddef = globalsDef.addItemDefinition(DoubleItemDefinitionPtr, "AirSpecificHeat")
+    ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "AirSpecificHeat")
     ddef.setDefaultValue(0.000278)
     ddef.setUnits("W hr/g-K")
     ddef.setAdvanceLevel(1)
@@ -136,26 +138,26 @@ if __name__ == '__main__':
   
     root = manager.rootSection()
     root.setTitle("SimBuilder")
-    expSec = root.addSubsection(SimpleExpressionSection,"Functions")
+    expSec = root.addSubsection(smtk.attribute.SimpleExpressionSection,"Functions")
     expSec.setDefinition(funcDef)
-    attSec = root.addSubsection(AttributeSection, "Materials")
+    attSec = root.addSubsection(smtk.attribute.AttributeSection, "Materials")
     attSec.addDefinition(materialDef)
     attSec.setModelEntityMask(0x40)
     attSec.setOkToCreateModelEntities(true)
-    modSec = addSubsection(ModelEntitySection, "Domains")
+    modSec = addSubsection(smtk.attribute.ModelEntitySection, "Domains")
     modSec.setModelEntityMask(0x40) # Look at domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
-    attSec = root.addSubsection(AttributeSection, "BoundaryConditions")
+    attSec = root.addSubsection(smtk.attribute.AttributeSection, "BoundaryConditions")
     attSec.addDefinition(boundaryConditionsDef)
-    modSec = root.addSubsection(ModelEntitySection, "Boundary View")
+    modSec = root.addSubsection(smtk.attribute.ModelEntitySection, "Boundary View")
     modSec.setModelEntityMask(0x20) # Look at boundary entities only
 
     manager.updateCategories()
     att = manager.createAttribute("TimeInfomation", timeParamDef)
-    iSec = root.addSubsection(InstancedSection, "Time Parameters")
+    iSec = root.addSubsection(smtk.attribute.InstancedSection, "Time Parameters")
     iSec.addInstance(att)
     att = manager.createAttribute("Globals", globalsDef)
-    iSec = root.addSubsection(InstancedSection, "Global Parameters")
+    iSec = root.addSubsection(smtk.attribute.InstancedSection, "Global Parameters")
     iSec.addInstance(att)
     writer = smtk.attribute.XmlV1StringWriter(manager)
     result = writer.convertToString()
