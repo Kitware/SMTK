@@ -94,7 +94,7 @@ if __name__ == '__main__':
     ditemdef.setMaxRange(125.0, False)
     ditemdef.addCategory('Constituent')
     vdef = addItemDefinition( def1, smtk.attribute.VoidItemDefinition, 'VoidItem')
-    vdef.setIsOptional(true)
+    vdef.setIsOptional(True)
     vdef.setLabel('Option 1')
 
     def2 = manager.createDefinition('Derived2', 'Derived1')
