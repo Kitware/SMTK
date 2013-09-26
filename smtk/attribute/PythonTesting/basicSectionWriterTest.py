@@ -177,8 +177,6 @@ if __name__ == '__main__':
     #result = writer1.convertToString()
     #print result
 
-    print
-    input = raw_input('Hit <Enter> to delete Managar and exit')
     del manager
     print 'Manager destroyed'
 

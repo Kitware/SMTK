@@ -92,9 +92,7 @@ if __name__ == '__main__':
     print "Number of Items referencing expAtt2: %d" % len(refs)
     for i in refs:
       print "\tAtt: %s Item: %s " % (i.attribute().name(), i.owningItem().name())
-     
-    print
-    input = raw_input('Hit <Enter> to delete Managar and exit')
+
     del manager
     print 'Manager destroyed'
 

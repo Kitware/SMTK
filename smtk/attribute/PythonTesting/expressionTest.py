@@ -105,8 +105,6 @@ if __name__ == '__main__':
                 elif t == smtk.attribute.Item.STRING:
                      print " String Val = %s" % vitem.valueAsString();
 
-    print
-    input = raw_input('Hit <Enter> to delete Managar and exit')
     del manager
     print 'Manager destroyed'
     

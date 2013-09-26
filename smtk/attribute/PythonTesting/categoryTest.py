@@ -117,8 +117,6 @@ if __name__ == '__main__':
     writer = smtk.attribute.XmlV1StringWriter(manager);
     print writer.convertToString();
 
-    print
-    input = raw_input('Hit <Enter> to delete Managar and exit')
     del manager
     print 'Manager destroyed'
 

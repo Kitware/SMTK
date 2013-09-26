@@ -40,8 +40,6 @@ if __name__ == '__main__':
         print 'ERROR: Duplicate Attribute testAtt  created'
         status = -1
 
-    print
-    input = raw_input('Hit <Enter> to delete Managar and exit')
     del manager
     print 'Manager destroyed'
 

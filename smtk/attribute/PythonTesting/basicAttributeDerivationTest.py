@@ -65,8 +65,6 @@ if __name__ == '__main__':
         elif vcomp.type() == smtk.attribute.Item.STRING:
           print 'String Val = %s' % vcomp.valueAsString()
 
-    print
-    input = raw_input('Hit <Enter> to delete Manager and exit')
     del manager
     print 'Manager destroyed'
 
