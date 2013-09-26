@@ -540,6 +540,7 @@
 
       <object-type name="XmlV1StringWriter">
         <include file-name="smtk/attribute/XmlV1StringWriter.h" location="local" />
+        <rejection field-name="m_manager" />
       </object-type>
 
     </namespace-type>
