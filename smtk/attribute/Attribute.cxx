@@ -44,7 +44,6 @@ Attribute::Attribute(const std::string &myName,
 Attribute::~Attribute()
 {
   this->m_aboutToBeDeleted = true;
-  std::cout << "Deleting Attribute " << this->name() << "\n";
   // Clear all references to the attribute
   std::map<smtk::attribute::AttributeRefItem *, std::set<int> >::iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
