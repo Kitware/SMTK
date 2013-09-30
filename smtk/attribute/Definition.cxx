@@ -56,7 +56,6 @@ Definition::Definition(const std::string &myType,
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
-  std::cout << "Deleting Definition " << this->m_type << std::endl;
 }
 //----------------------------------------------------------------------------
 bool Definition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
