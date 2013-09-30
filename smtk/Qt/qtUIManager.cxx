@@ -46,7 +46,7 @@
 #include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/AttributeRefItem.h"
 #include "smtk/attribute/AttributeRefItemDefinition.h"

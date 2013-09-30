@@ -203,7 +203,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Item" />
@@ -293,8 +293,8 @@
         <include file-name="smtk/attribute/AttributeWriter.h" location="local"/>
       </object-type>
 
-      <object-type name="Definition">
-        <include file-name="smtk/attribute/Definition.h" location="local"/>
+      <object-type name="AttributeDefinition">
+        <include file-name="smtk/attribute/AttributeDefinition.h" location="local"/>
       </object-type>
 
       <object-type name="DirectoryItem">

@@ -42,7 +42,6 @@ namespace smtk
     class Attribute;
     class AttributeRefItem;
     class AttributeRefItemDefinition;
-    class Definition;
     class Cluster;
     class ValueItem;
     class SMTKCORE_EXPORT ValueItemDefinition :

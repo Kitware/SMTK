@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/attribute/Section.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/Manager.h"
 
 #include <QPointer>

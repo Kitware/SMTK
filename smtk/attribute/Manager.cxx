@@ -24,7 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/RootSection.h"
 #include <iostream>
 #include <sstream>
@@ -71,8 +71,8 @@ Manager::~Manager()
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createDefinition(const std::string &typeName,
-                          const std::string &baseTypeName)
+Manager::createAttributeDefinition(const std::string &typeName,
+                                   const std::string &baseTypeName)
 {
   smtk::AttributeDefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist
@@ -90,7 +90,7 @@ Manager::createDefinition(const std::string &typeName,
       return smtk::AttributeDefinitionPtr();
       }
     }
-  smtk::AttributeDefinitionPtr newDef(new Definition(typeName, def, this));
+  smtk::AttributeDefinitionPtr newDef(new AttributeDefinition(typeName, def, this));
   this->m_definitions[typeName] = newDef;
   if (def != NULL)
     {
@@ -102,8 +102,8 @@ Manager::createDefinition(const std::string &typeName,
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createDefinition(const std::string &typeName,
-                          smtk::AttributeDefinitionPtr baseDef)
+Manager::createAttributeDefinition(const std::string &typeName,
+                                   smtk::AttributeDefinitionPtr baseDef)
 {
   smtk::AttributeDefinitionPtr  def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
@@ -113,7 +113,7 @@ Manager::createDefinition(const std::string &typeName,
     return smtk::AttributeDefinitionPtr();
     }
 
-  smtk::AttributeDefinitionPtr newDef(new Definition(typeName, baseDef, this));
+  smtk::AttributeDefinitionPtr newDef(new AttributeDefinition(typeName, baseDef, this));
   this->m_definitions[typeName] = newDef;
   if (baseDef != NULL)
     {

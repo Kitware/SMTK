@@ -20,12 +20,15 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Definition.h -
+// .NAME AttributeDefinition.h - stores the definition of an attribute.
 // .SECTION Description
+// Stores all of the necessary information for a definition of a
+// single attribute. Attributes should be created through
+// Manager::createAttribute().
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Definition_h
-#define __smtk_attribute_Definition_h
+#ifndef __smtk_attribute_AttributeDefinition_h
+#define __smtk_attribute_AttributeDefinition_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -47,15 +50,14 @@ namespace smtk
     class ItemDefinition;
     class Manager;
 
-    class SMTKCORE_EXPORT Definition
+    class SMTKCORE_EXPORT AttributeDefinition
     {
     public:
-      friend class smtk::attribute::Manager;
-      // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
-                 smtk::attribute::Manager *myManager);
-      virtual ~Definition();
+      virtual ~AttributeDefinition();
 
+      // Description:
+      // The type is the identifier that is used to access the
+      // attribute definition through the Manager. It should never change.
       const std::string &type() const
       { return this->m_type;}
 
@@ -86,6 +88,8 @@ namespace smtk
       void setIsAbstract(bool isAbstractValue)
       { this->m_isAbstract = isAbstractValue;}
 
+      // The categories that the attribute is associated with. Typically
+      // a category will be a simulation type like heat transfer, fluid flow, etc.
       std::size_t numberOfCategories() const
       {return this->m_categories.size();}
 
@@ -97,6 +101,8 @@ namespace smtk
       const std::set<std::string> & categories() const
       {return this->m_categories;}
 
+      // Description:
+      // The attributes advance level. 0 is the simplest.
       int advanceLevel() const
       {return this->m_advanceLevel;}
       void setAdvanceLevel(int level)
@@ -104,9 +110,11 @@ namespace smtk
 
       bool isUnique() const
       {return this->m_isUnique;}
-      // Becareful with setting isUnique to be false
+      // Be careful with setting isUnique to be false
       // in order to be consistant all definitions that this is
       // a descendant of should also have isUnique set to false!!
+      // isUnique can be set to true without requiring its parent
+      // class to also be true.
       void setIsUnique(bool isUniqueValue)
       {this->m_isUnique = isUniqueValue;}
 
@@ -144,6 +152,9 @@ namespace smtk
       bool isDefaultColorSet() const
       {return this->m_isDefaultColorSet;}
 
+      // Description:
+      // Mask is the ability to specify what type of model entities
+      // that the attribute can be associated with.
       unsigned long associationMask() const
       {return this->m_associationMask;}
       void setAssociationMask(unsigned long mask)
@@ -177,6 +188,10 @@ namespace smtk
              smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
+      // Description:
+      // Item definitions are the definitions of what data is stored
+      // in the attribute. For example, an IntItemDefinition would store
+      // an integer value.
       bool addItemDefinition(smtk::AttributeItemDefinitionPtr cdef);
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
@@ -208,9 +223,17 @@ namespace smtk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
+      // Description:
+      // Build an attribute corresponding to this definition. If the
+      // attribute already has items, clear them out.
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
     protected:
+      friend class smtk::attribute::Manager;
+      // AttributeDefinitions can only be created by an attribute manager
+      AttributeDefinition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
+                 smtk::attribute::Manager *myManager);
+
       void clearManager()
       { this->m_manager = NULL;}
 
@@ -252,7 +275,7 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline int Definition::findItemPosition(const std::string &name) const
+    inline int AttributeDefinition::findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
       it = this->m_itemDefPositions.find(name);
@@ -263,7 +286,7 @@ namespace smtk
       return it->second;
     }
 //----------------------------------------------------------------------------
-    inline const double * Definition::notApplicableColor() const
+    inline const double * AttributeDefinition::notApplicableColor() const
     {
       if (this->m_isNotApplicableColorSet)
         {
@@ -276,7 +299,8 @@ namespace smtk
       return s_notApplicableBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void Definition::setNotApplicableColor(double r, double g, double b, double a)
+    inline void AttributeDefinition::setNotApplicableColor(
+      double r, double g, double b, double a)
     {
       this->m_isNotApplicableColorSet = true;
       this->m_notApplicableColor[0]= r;
@@ -285,7 +309,7 @@ namespace smtk
       this->m_notApplicableColor[3]= a;
     }
 //----------------------------------------------------------------------------
-    inline const double * Definition::defaultColor() const
+    inline const double * AttributeDefinition::defaultColor() const
     {
       if (this->m_isDefaultColorSet)
         {
@@ -298,7 +322,8 @@ namespace smtk
       return s_defaultBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void Definition::setDefaultColor(double r, double g, double b, double a)
+    inline void AttributeDefinition::setDefaultColor(
+      double r, double g, double b, double a)
     {
       this->m_isDefaultColorSet = true;
       this->m_defaultColor[0]= r;

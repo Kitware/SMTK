@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -45,11 +45,11 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::AttributeDefinitionPtr expDef = manager.createAttributeDefinition("ExpDef");
   smtk::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
   expDef->addItemDefinition(eitemdef);
 
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::AttributeDefinitionPtr base = manager.createAttributeDefinition("BaseDef");
   // Lets add some item definitions
   smtk::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
   base->addItemDefinition(iitemdef);
@@ -57,7 +57,7 @@ int main()
   iitemdef2->setDefaultValue(10);
   base->addItemDefinition(iitemdef2);
 
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::AttributeDefinitionPtr def1 = manager.createAttributeDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   smtk::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
   // Allow this one to hold an expression
@@ -73,7 +73,7 @@ int main()
   ditemdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(ditemdef2);
 
-  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::AttributeDefinitionPtr def2 = manager.createAttributeDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   smtk::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
   def1->addItemDefinition(sitemdef);

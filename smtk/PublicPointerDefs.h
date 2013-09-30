@@ -53,7 +53,7 @@ namespace smtk
     class AttributeSection;
     class AttributeRefItem;
     class AttributeRefItemDefinition;
-    class Definition;
+    class AttributeDefinition;
     class DirectoryItem;
     class DirectoryItemDefinition;
     class DoubleItem;
@@ -92,9 +92,9 @@ namespace smtk
 
   typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
   typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
-  typedef smtk::shared_ptr< smtk::attribute::Definition >       AttributeDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstAttributeDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakAttributeDefinitionPtr;
+  typedef smtk::shared_ptr< smtk::attribute::AttributeDefinition >       AttributeDefinitionPtr;
+  typedef smtk::shared_ptr< const smtk::attribute::AttributeDefinition > ConstAttributeDefinitionPtr;
+  typedef smtk::weak_ptr< smtk::attribute::AttributeDefinition >         WeakAttributeDefinitionPtr;
 
   typedef smtk::shared_ptr< smtk::attribute::AttributeRefItem >           AttributeRefItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::AttributeRefItemDefinition > AttributeRefItemDefinitionPtr;

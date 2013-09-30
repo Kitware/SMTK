@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME InstancedSection.h -
+// .NAME InstancedSection.h - Groups individual/singleton attributes in the GUI
 // .SECTION Description
 // .SECTION See Also
 

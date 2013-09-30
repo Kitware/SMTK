@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/ValueItem.h"
@@ -343,7 +343,7 @@ void qtAssociationWidget::processAttUniqueness(
     Manager *attManager = attDef->manager();
     smtk::ConstAttributeDefinitionPtr baseDef =
       attManager->findIsUniqueBaseClass(attDef);
-    smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
+    smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<AttributeDefinition>(baseDef));
     std::vector<smtk::AttributeDefinitionPtr> newdefs;
     attManager->findAllDerivedDefinitions(bdef, true, newdefs);
     std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
@@ -397,7 +397,7 @@ void qtAssociationWidget::processDefUniqueness(
       Manager *attManager = attDef->manager();
       smtk::ConstAttributeDefinitionPtr baseDef =
         attManager->findIsUniqueBaseClass(attDef);
-      smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
+      smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<AttributeDefinition>(baseDef));
       std::vector<smtk::AttributeDefinitionPtr> newdefs;
       attManager->findAllDerivedDefinitions(bdef, true, newdefs);
       std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;

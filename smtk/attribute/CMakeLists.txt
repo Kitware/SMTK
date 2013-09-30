@@ -7,7 +7,7 @@ set(attributeHeaders
   AttributeSection.h
   AttributeReader.h
   AttributeWriter.h
-  Definition.h
+  AttributeDefinition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
   DoubleItem.h
@@ -47,7 +47,7 @@ set(attributeSrcs
   AttributeSection.cxx
   AttributeReader.cxx
   AttributeWriter.cxx
-  Definition.cxx
+  AttributeDefinition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
   DoubleItem.cxx
