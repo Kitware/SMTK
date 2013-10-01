@@ -31,7 +31,7 @@ def addSubsection( ato, data_type, name ):
   if isec is None:
     print "could not convert"
     return None
-  if not ato.addSubsection(idef):
+  if not ato.addSubsection(isec):
     print "could not add"
     return None
   return sec
