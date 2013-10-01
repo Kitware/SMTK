@@ -114,8 +114,8 @@ if __name__ == '__main__':
           print "\t\tusing Expression: %s"%vitem.expression(0).name();
         else:
           print "\t\tValue = %s"%vitem.valueAsString();
-    writer = smtk.attribute.XmlV1StringWriter(manager);
-    print writer.convertToString();
+#    writer = smtk.attribute.XmlV1StringWriter(manager);
+#    print writer.convertToString();
 
     del manager
     print 'Manager destroyed'

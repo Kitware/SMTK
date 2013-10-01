@@ -174,9 +174,9 @@ if __name__ == '__main__':
     att = manager.createAttribute("Globals", globalsDef)
     iSec = addSubsection(root, smtk.attribute.InstancedSection, "Global Parameters")
     iSec.addInstance(att)
-    writer = smtk.attribute.XmlV1StringWriter(manager)
-    result = writer.convertToString()
-    print result
+#    writer = smtk.attribute.XmlV1StringWriter(manager)
+#    result = writer.convertToString()
+#    print result
     #test(result)
     #doc = smtk.pugi.xml_document
     #doc.load(test)
