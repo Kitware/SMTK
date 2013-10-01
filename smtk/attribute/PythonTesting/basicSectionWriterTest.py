@@ -21,6 +21,21 @@ def addItemDefinition( ato, data_type, name):
     return None
   return def_
 
+def addSubsection( ato, data_type, name ):
+  sec = data_type.New(name)
+  if sec is None:
+    print "could not create subsecion"
+    return None
+  print "converting to section"
+  isec = data_type.ToSection(sec)
+  if isec is None:
+    print "could not convert"
+    return None
+  if not ato.addSubsection(idef):
+    print "could not add"
+    return None
+  return sec
+
 if __name__ == '__main__':
     import sys
     
@@ -138,26 +153,26 @@ if __name__ == '__main__':
   
     root = manager.rootSection()
     root.setTitle("SimBuilder")
-    expSec = root.addSubsection(smtk.attribute.SimpleExpressionSection,"Functions")
+    expSec = addSubsection(root, smtk.attribute.SimpleExpressionSection,"Functions")
     expSec.setDefinition(funcDef)
-    attSec = root.addSubsection(smtk.attribute.AttributeSection, "Materials")
+    attSec = addSubsection( root, smtk.attribute.AttributeSection, "Materials")
     attSec.addDefinition(materialDef)
     attSec.setModelEntityMask(0x40)
     attSec.setOkToCreateModelEntities(True)
-    modSec = addSubsection(smtk.attribute.ModelEntitySection, "Domains")
+    modSec = addSubsection(root, smtk.attribute.ModelEntitySection, "Domains")
     modSec.setModelEntityMask(0x40) # Look at domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
-    attSec = root.addSubsection(smtk.attribute.AttributeSection, "BoundaryConditions")
+    attSec = addSubsection(root, smtk.attribute.AttributeSection, "BoundaryConditions")
     attSec.addDefinition(boundaryConditionsDef)
-    modSec = root.addSubsection(smtk.attribute.ModelEntitySection, "Boundary View")
+    modSec = addSubsection(root, smtk.attribute.ModelEntitySection, "Boundary View")
     modSec.setModelEntityMask(0x20) # Look at boundary entities only
 
     manager.updateCategories()
     att = manager.createAttribute("TimeInfomation", timeParamDef)
-    iSec = root.addSubsection(smtk.attribute.InstancedSection, "Time Parameters")
+    iSec = addSubsection(root, smtk.attribute.InstancedSection, "Time Parameters")
     iSec.addInstance(att)
     att = manager.createAttribute("Globals", globalsDef)
-    iSec = root.addSubsection(smtk.attribute.InstancedSection, "Global Parameters")
+    iSec = addSubsection(root, smtk.attribute.InstancedSection, "Global Parameters")
     iSec.addInstance(att)
     writer = smtk.attribute.XmlV1StringWriter(manager)
     result = writer.convertToString()
