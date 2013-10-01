@@ -323,10 +323,6 @@
         </add-function>
       </object-type>
 
-      <object-type name="AttributeSection">
-        <include file-name="smtk/attribute/AttributeSection.h" location="local"/>
-      </object-type>
-
       <object-type name="AttributeWriter">
         <include file-name="smtk/attribute/AttributeWriter.h" location="local"/>
       </object-type>
@@ -400,12 +396,76 @@
          </add-function>
       </object-type>
 
+      <object-type name="AttributeSection">
+        <include file-name="smtk/attribute/AttributeSection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::AttributeSection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
       <object-type name="GroupSection">
         <include file-name="smtk/attribute/GroupSection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::GroupSection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="ModelEntitySection">
+        <include file-name="smtk/attribute/ModelEntitySection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::ModelEntitySection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="RootSection">
+        <include file-name="smtk/attribute/RootSection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::RootSection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="SimpleExpressionSection">
+        <include file-name="smtk/attribute/SimpleExpressionSection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::SimpleExpressionSection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="InstancedSection">
         <include file-name="smtk/attribute/InstancedSection.h" location="local"/>
+        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::InstancedSection &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="IntItem">
@@ -466,21 +526,9 @@
 
      </object-type>
 
-      <object-type name="ModelEntitySection">
-        <include file-name="smtk/attribute/ModelEntitySection.h" location="local" />
-      </object-type>
-
-      <object-type name="RootSection">
-        <include file-name="smtk/attribute/RootSection.h" location="local" />
-      </object-type>
-
       <object-type name="Section">
         <include file-name="smtk/attribute/Section.h" location="local" />
         <enum-type name="Type" />
-      </object-type>
-
-      <object-type name="SimpleExpressionSection">
-        <include file-name="smtk/attribute/SimpleExpressionSection.h" location="local" />
       </object-type>
 
       <object-type name="StringItem">
