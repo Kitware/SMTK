@@ -36,6 +36,9 @@ namespace smtk
     class SMTKCORE_EXPORT GroupSection : public Section
     {
     public:
+      static smtk::GroupSectionPtr New(const std::string &myName)
+      { return smtk::GroupSectionPtr(new GroupSection(myName)); }
+
       GroupSection(const std::string &myTitle);
       virtual ~GroupSection();
       virtual Section::Type type() const;
@@ -44,13 +47,19 @@ namespace smtk
       smtk::SectionPtr subsection(int ith) const
       {return this->m_subSections[ith];}
 
+      bool addSubsection( smtk::SectionPtr section )
+      {
+        this->m_subSections.push_back(section);
+        return true;
+      }
+
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
         addSubsection(const std::string &name)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
-        typename SharedTypes::SharedPointerType
-          section(new typename SharedTypes::RawPointerType(name));
+        typename SharedTypes::SharedPointerType section;
+        section = SharedTypes::RawPointerType::New(name);
         this->m_subSections.push_back(section);
         return section;
       }

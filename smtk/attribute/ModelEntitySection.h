@@ -38,6 +38,9 @@ namespace smtk
     class SMTKCORE_EXPORT ModelEntitySection : public Section
     {
     public:
+      static smtk::ModelEntitySectionPtr New(const std::string &myName)
+      { return smtk::ModelEntitySectionPtr(new ModelEntitySection(myName)); }
+
       ModelEntitySection(const std::string &myTitle);
 
       virtual ~ModelEntitySection();
