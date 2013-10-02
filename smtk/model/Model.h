@@ -72,6 +72,9 @@ namespace smtk
       const_iterator endItemIterator() const
         {return this->m_items.end();}
 
+      std::map<int, smtk::ModelItemPtr> itemMap() const
+      { return this->m_items; }
+
       enum ModelEntityNodalTypes
         {
         AllNodesType = 0,
