@@ -243,6 +243,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
     <modify-function signature="references(std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;&amp;)">
@@ -313,10 +314,14 @@
         <include file-name="smtk/model/ModelDomainItem.h" location="local"/>
       </object-type>
 
-    <object-type name="Model">
-      <include file-name="smtk/model/Model.h" location="local"/>
-      <enum-type name="ModelEntityNodalTypes"/>
-    </object-type>
+      <object-type name="Model">
+        <include file-name="smtk/model/Model.h" location="local"/>
+        <enum-type name="ModelEntityNodalTypes"/>
+      </object-type>
+
+      <object-type name="GridInfo">
+        <include file-name="smtk/model/GridInfo.h" location="local"/>
+      </object-type>
 
     </namespace-type>
 
