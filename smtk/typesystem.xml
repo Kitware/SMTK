@@ -192,11 +192,53 @@
   </container-type>
 
 
-  <!-- setup the shared pointer type outside the namesapces -->
+  <!-- setup the shared pointer type outside the namespaces -->
   <type-template name="smtk::shared_ptr">
     <include file-name="memory" location="global"/>
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
+
+  <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
+    <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
+    <modify-function signature="setAdvanceLevel(int)" remove="all"/>
+    <modify-function signature="setAssociationMask(unsigned long)" remove="all"/>
+    <modify-function signature="setDefaultColor(const double *)" remove="all"/>
+    <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>
+    <modify-function signature="unsetNotApplicableColor()" remove="all"/>
+    <modify-function signature="unsetDefaultColor()" remove="all"/>
+    <modify-function signature="setVersion(int)" remove="all"/>
+    <modify-function signature="setNotApplicableColor(const double *)" remove="all"/>
+    <modify-function signature="setNotApplicableColor(double, double, double, double)" remove="all"/>
+    <modify-function signature="setIsUnique(bool)" remove="all"/>
+    <modify-function signature="setIsNodal(bool)" remove="all"/>
+    <modify-function signature="setIsAbstract(bool)" remove="all"/>
+    <modify-function signature="setBriefDescription(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setDetailedDescription(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setLabel(const std::string &amp;)" remove="all"/>
+  </value-type>
+
+  <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
+    <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::attribute::UserData &gt; )"  remove="all"/>
+    <modify-function signature="reset()" remove="all"/>
+    <modify-function signature="detachOwningItem()" remove="all"/>
+    <modify-function signature="detachOwningAttribute()" remove="all"/>
+    <modify-function signature="clearUserData(const std::string &amp;)" remove="all"/>
+    <modify-function signature="clearAllUserData()" remove="all"/>
+    <modify-function signature="setIsEnabled(bool)" remove="all"/>
+  </value-type>
+
+  <value-type template="smtk::shared_ptr" args="const smtk::attribute::ItemDefinition" >
+    <modify-function signature="setAdvanceLevel(int)" remove="all"/>
+    <modify-function signature="setVersion(int)" remove="all"/>
+    <modify-function signature="setBriefDescription(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setDetailedDescription(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setLabel(const std::string &amp;)" remove="all"/>
+    <modify-function signature="setVersion(int)" remove="all"/>
+    <modify-function signature="setIsOptional(bool)" remove="all"/>
+    <modify-function signature="setIsEnabledByDefault(bool)" remove="all"/>
+    <modify-function signature="addCategory(const std::string &amp;)" remove="all"/>
+    <modify-function signature="removeCategory(const std::string &amp;)" remove="all"/>
+  </value-type>
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
@@ -253,13 +295,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
 
-
   <value-type template="smtk::shared_ptr" args="smtk::attribute::UserData" />
-
-<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition" /> -->
-<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item" /> -->
-<!-- <value-type template="smtk::shared_ptr" args="const smtk::attribute::ItemDefinition" /> -->
-
 
   <namespace-type name="smtk">
     <namespace-type name="model">
