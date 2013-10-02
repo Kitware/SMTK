@@ -342,6 +342,7 @@
             %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
           </inject-code>
         </modify-function>
+        <modify-function signature="setColor(const double *)" remove="all"/>
       </object-type>
 
      <object-type name="AttributeReader">
@@ -370,6 +371,8 @@
 
       <object-type name="Definition">
         <include file-name="smtk/attribute/Definition.h" location="local"/>
+        <modify-function signature="setDefaultColor(const double *)" remove="all"/>
+        <modify-function signature="setNotApplicableColor(const double *)" remove="all"/>
       </object-type>
 
       <object-type name="DirectoryItem">
@@ -483,6 +486,10 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+
+        <modify-function signature="setInvalidColor(const double *)" remove="all"/>
+
+        <modify-function signature="setDefaultColor(const double *)" remove="all"/>
       </object-type>
 
       <object-type name="SimpleExpressionSection">
