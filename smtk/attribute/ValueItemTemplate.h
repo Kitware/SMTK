@@ -47,8 +47,6 @@ namespace smtk
       typedef ValueItemDefinitionTemplate<DataType> DefType;
 
       virtual ~ValueItemTemplate() {}
-      std::size_t numberOfValues() const
-      {return this->m_values.size();}
       virtual bool setNumberOfValues(std::size_t newSize);
       DataT value(int element=0) const
       {return this->m_values[element];}
