@@ -47,7 +47,7 @@ namespace smtk
       {return smtk::dynamic_pointer_cast<ValueItem>(p);}
 
       virtual ~ValueItem();
-      std::size_t numberOfValues() const
+      virtual std::size_t numberOfValues() const
       {return this->m_isSet.size();}
       int numberOfRequiredValues() const;
 
