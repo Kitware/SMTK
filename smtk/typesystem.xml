@@ -2,7 +2,31 @@
 <typesystem package="@TYPESYSTEM_NAME@">
 
   <suppress-warning text="template baseclass 'std::shared_ptr&lt;*&gt;' of 'ptr' is not known"/>
+
+  <!-- Ignore some namespaces -->
   <suppress-warning text="namespace 'std' does not have a type entry"/>
+  <suppress-warning text="namespace 'pugi' does not have a type entry"/>
+	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+
+  <!-- Suppressed because they are memory varables-->
+  <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
+  <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::AttributeDefinitionPtr,smtk::WeakAttributeDefinitionPtrSet&gt;'"/>
+  <suppress-warning text="skipping field 'AttributeRefItem::m_values' with unmatched type 'std::vector&lt;WeakAttributePtr&gt;'"/>
+  <suppress-warning text="skipping field 'AttributeRefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
+
+  <!-- Suppressed because they are templated functions -->
+  <suppress-warning text="skipping function 'smtk::attribute::GroupSection::addSubsection', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+
+  <!-- Return a list.  For now we will ingore the iterators-->
+  <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::ModelItemPtr&gt;::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
+	<suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
 
   @EXTRA_TYPESYSTEMS@
 
