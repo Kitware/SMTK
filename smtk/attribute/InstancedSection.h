@@ -41,6 +41,9 @@ namespace smtk
     class SMTKCORE_EXPORT InstancedSection : public Section
     {
     public:
+      static smtk::InstancedSectionPtr New(const std::string &myName)
+      { return smtk::InstancedSectionPtr(new InstancedSection(myName)); }
+
       InstancedSection(const std::string &myTitle);
       virtual ~InstancedSection();
       virtual Section::Type type() const;

@@ -105,6 +105,8 @@ namespace smtk
       { return this->m_entities.size();}
       bool isEntityAssociated(smtk::ModelItemPtr entity) const
       { return (this->m_entities.find(entity) != this->m_entities.end());}
+      std::set<smtk::ModelItemPtr> associatedEntitiesSet() const
+      {return this->m_entities;}
       std::set<smtk::ModelItemPtr>::const_iterator associatedEntities() const
       {return this->m_entities.begin();}
       void associateEntity(smtk::ModelItemPtr entity);

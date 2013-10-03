@@ -39,6 +39,9 @@ namespace smtk
     class SMTKCORE_EXPORT SimpleExpressionSection : public Section
     {
     public:
+      static smtk::SimpleExpressionSectionPtr New(const std::string &myName)
+      { return smtk::SimpleExpressionSectionPtr(new SimpleExpressionSection(myName)); }
+
       SimpleExpressionSection(const std::string &myTitle);
       virtual ~SimpleExpressionSection();
       virtual Section::Type type() const;

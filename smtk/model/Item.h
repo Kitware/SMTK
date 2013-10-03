@@ -72,6 +72,9 @@ namespace smtk
 
       typedef std::set<smtk::AttributePtr>::const_iterator const_iterator;
 
+      std::set<smtk::AttributePtr> AssociatedAttributes() const
+      { return this->m_attributes;  }
+
       const_iterator beginAssociatedAttributes() const
         {return this->m_attributes.begin();}
 

@@ -35,6 +35,9 @@ namespace smtk
     class SMTKCORE_EXPORT RootSection : public GroupSection
     {
     public:
+      static smtk::RootSectionPtr New(const std::string &myName)
+      { return smtk::RootSectionPtr(new RootSection(myName)); }
+
       RootSection(const std::string &myTitle);
       virtual ~RootSection();
 

@@ -40,6 +40,9 @@ namespace smtk
     class SMTKCORE_EXPORT AttributeSection : public Section
     {
     public:
+      static smtk::AttributeSectionPtr New(const std::string &myTitle)
+      { return smtk::AttributeSectionPtr(new AttributeSection(myTitle)); }
+
       AttributeSection(const std::string &myTitle);
       virtual ~AttributeSection();
       virtual Section::Type type() const;
