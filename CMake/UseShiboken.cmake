@@ -256,7 +256,7 @@ function(sbk_wrap_library NAME)
   # Declare the wrapper library
   add_library(${_pyname} MODULE ${_sources})
   set_property(TARGET ${_pyname} PROPERTY PREFIX "")
-  target_compile_definitions(${_pyname} PRIVATE -DSBK_WRAPPED_CODE)
+  set_property(TARGET ${_pyname} PROPERTY COMPILE_DEFINITIONS "SBK_WRAPPED_CODE")
   target_include_directories(${_pyname} PRIVATE
     ${PYTHON_INCLUDE_DIRS}
     ${SHIBOKEN_INCLUDE_DIR}
