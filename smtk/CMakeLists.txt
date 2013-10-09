@@ -103,4 +103,5 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   #todo we need to install this file in such a way that it can resolve
   #the location of shiboken, which is going to mean running fixup bundle
   #on the mac, and than fixing up the smtk.py package script
+  install( FILES ${SMTK_BINARY_DIR}/smtk.py DESTINATION python )
 endif()
