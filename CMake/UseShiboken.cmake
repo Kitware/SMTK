@@ -270,6 +270,8 @@ function(sbk_wrap_library NAME)
     ${_extra_link_libraries}
   )
 
+  INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+
   foreach(_dep ${_DEPENDS})
     add_dependencies(${_pyname} ${_dep}Python)
   endforeach()
