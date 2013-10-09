@@ -256,12 +256,12 @@ function(sbk_wrap_library NAME)
   # Declare the wrapper library
   add_library(${_pyname} MODULE ${_sources})
   set_property(TARGET ${_pyname} PROPERTY PREFIX "")
-  set_property(TARGET ${_pyname} PROPERTY COMPILE_DEFINITIONS "SBK_WRAPPED_CODE")
-  target_include_directories(${_pyname} PRIVATE
-    ${PYTHON_INCLUDE_DIRS}
-    ${SHIBOKEN_INCLUDE_DIR}
-    ${_extra_include_dirs}
-  )
+  set_property(TARGET ${_pyname} APPEND PROPERTY COMPILE_DEFINITIONS "SBK_WRAPPED_CODE")
+  set_property(TARGET ${_pyname} APPEND PROPERTY INCLUDE_DIRECTORIES
+               ${PYTHON_INCLUDE_DIRS}
+               ${SHIBOKEN_INCLUDE_DIR}
+               ${_extra_include_dirs}
+              )
   target_link_libraries(${_pyname} LINK_PRIVATE
     ${NAME}
     ${_DEPENDS}
