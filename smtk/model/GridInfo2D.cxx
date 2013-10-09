@@ -20,33 +20,50 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME GridInfo.h - abstract class to get grid information.
+// .NAME GridInfo2D.h - class to get information for 2D grids
 // .SECTION Description
-// Abstract class to get grid information. Note that we don't assume that
-// the whole analysis grid is stored. CMB will implement a version
+// Class to get information for 2D grids. CMB will implement a version
 // of this to get the grid information into SMTK from CMB without
 // introducing a dependency on CMB.
+// Note that this should be an abstract class but due to limitations
+// with Python wrapping we need it to be a concrete implementation.
 // .SECTION See Also
 
-#ifndef __smtk_model_GridInfo_h
-#define __smtk_model_GridInfo_h
 
-#include "smtk/SMTKCoreExports.h"
-//#include "smtk/PublicPointerDefs.h"
+#include "smtk/model/GridInfo2D.h"
 
-namespace smtk
+namespace smtk::model
 {
-  namespace model
-  {
-    class SMTKCORE_EXPORT GridInfo
-    {
-    public:
-      virtual int dimension() = 0;
 
-      GridInfo() {}
-      virtual ~GridInfo() {}
-    };
-  }
+//----------------------------------------------------------------------------
+GridInfo2D::GridInfo2D()
+{
 }
 
-#endif /* __smtk_model_GridInfo_h */
+//----------------------------------------------------------------------------
+GridInfo2D::~GridInfo2D()
+{
+}
+
+//----------------------------------------------------------------------------
+void GridInfo2D::groupCellIds(int, std::vector<int>& cellIds)
+{
+  cellIds.reset();
+}
+
+//----------------------------------------------------------------------------
+double GridInfo2D::groupArea(int)
+{
+  return -1;
+}
+
+//----------------------------------------------------------------------------
+std::vector<int> GridInfo2D::cellPointIds(int);
+
+//----------------------------------------------------------------------------
+std::vector<double> GridInfo2D::pointLocation(int)
+{
+  std::vector<double> notUsed;
+  return notUsed;
+}
+}
