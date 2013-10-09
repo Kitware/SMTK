@@ -49,20 +49,28 @@ GridInfo2D::~GridInfo2D()
 void GridInfo2D::groupCellIds(int, std::vector<int>& cellIds)
 {
   cellIds.reset();
+  std::cerr << "GridInfo2D::groupCellIds() should be implemented by a derived class\n";
 }
 
 //----------------------------------------------------------------------------
 double GridInfo2D::groupArea(int)
 {
+  std::cerr << "GridInfo2D::groupArea() should be implemented by a derived class\n";
   return -1;
 }
 
 //----------------------------------------------------------------------------
-std::vector<int> GridInfo2D::cellPointIds(int);
+std::vector<int> GridInfo2D::cellPointIds(int)
+{
+  std::cerr << "GridInfo2D::cellPointIds() should be implemented by a derived class\n";
+  std::vector<int> notUsed;
+  return notUsed
+}
 
 //----------------------------------------------------------------------------
 std::vector<double> GridInfo2D::pointLocation(int)
 {
+  std::cerr << "GridInfo2D::pointLocation() should be implemented by a derived class\n";
   std::vector<double> notUsed;
   return notUsed;
 }

@@ -41,7 +41,8 @@ namespace smtk
     class SMTKCORE_EXPORT GridInfo
     {
     public:
-      virtual int dimension() = 0;
+      //virtual int dimension() = 0;
+      virtual int dimension() {return -1;};
 
       GridInfo() {}
       virtual ~GridInfo() {}

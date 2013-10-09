@@ -43,6 +43,7 @@ namespace smtk
     class Model;
     class Item;
     class GridInfo;
+    class GridInfo2D;
     class GroupItem;
     class ModelDomainItem;
   };
@@ -141,6 +142,7 @@ namespace smtk
 
   // class for making the analysis grid information available in SMTK
   typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
+  typedef smtk::shared_ptr< smtk::model::GridInfo2D >                   GridInfo2DPtr;
 
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less
