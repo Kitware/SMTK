@@ -7,6 +7,7 @@ set(utilSrcs
 
 set(utilHeaders
   Logger.h
+  UserData.h
   )
 
 #install the headers

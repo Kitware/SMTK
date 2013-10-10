@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_UserData_h
-#define __smtk_attribute_UserData_h
+#ifndef __smtk_util_UserData_h
+#define __smtk_util_UserData_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -33,14 +33,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
-  namespace attribute
+  namespace util
   {
     //derive from this class to create custom user data.
     class SMTKCORE_EXPORT UserData
     {
     public:
-      static smtk::UserDataPtr New()
-      { return smtk::UserDataPtr(new UserData()); }
+      static smtk::util::UserDataPtr New()
+      { return smtk::util::UserDataPtr(new UserData()); }
 
       virtual ~UserData(){};
     protected:

@@ -75,11 +75,15 @@ namespace smtk
     class SimpleExpressionSection;
     class StringItem;
     class StringItemDefinition;
-    class UserData;
     class ValueItem;
     class ValueItemDefinition;
     class VoidItem;
     class VoidItemDefinition;
+  };
+
+  namespace util
+  {
+    class UserData;
   };
 
   //Shiboken requires that we use fully qualified namespaces for all
@@ -135,9 +139,11 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::ModelEntitySection >       ModelEntitySectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::RootSection >              RootSectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::SimpleExpressionSection >  SimpleExpressionSectionPtr;
-
-  //custom user data classes
-  typedef smtk::shared_ptr< smtk::attribute::UserData >                 UserDataPtr;
+  namespace util
+  {
+    //custom user data classes
+    typedef shared_ptr<UserData > UserDataPtr;
+  };
 
   // class for making the analysis grid information available in SMTK
   typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;

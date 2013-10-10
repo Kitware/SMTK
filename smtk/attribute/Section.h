@@ -60,9 +60,9 @@ namespace smtk
       { return this->m_iconName;}
       void setIconName(const std::string &myIcon)
         {this->m_iconName = myIcon;}
-      void setUserData(const std::string &key, smtk::UserDataPtr value)
+      void setUserData(const std::string &key, smtk::util::UserDataPtr value)
       {this->m_userData[key] = value;}
-      smtk::UserDataPtr userData(const std::string &key) const;
+      smtk::util::UserDataPtr userData(const std::string &key) const;
       void clearUserData(const std::string &key)
       {this->m_userData.erase(key);}
       void clearAllUserData()
@@ -72,18 +72,18 @@ namespace smtk
       static Section::Type string2Type(const std::string &s);
 
     protected:
-      std::map<std::string, smtk::UserDataPtr > m_userData;
+      std::map<std::string, smtk::util::UserDataPtr > m_userData;
       std::string m_title;
       std::string m_iconName;
     private:
 
     };
 //----------------------------------------------------------------------------
-    inline smtk::UserDataPtr Section::userData(const std::string &key) const
+    inline smtk::util::UserDataPtr Section::userData(const std::string &key) const
     {
-      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
+      std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
+      return ((it == this->m_userData.end()) ? smtk::util::UserDataPtr() : it->second);
     }
 
   }

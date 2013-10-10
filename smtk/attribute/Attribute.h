@@ -126,9 +126,9 @@ namespace smtk
 
       smtk::attribute::Manager *manager() const;
 
-     void setUserData(const std::string &key, smtk::UserDataPtr value)
+      void setUserData(const std::string &key, smtk::util::UserDataPtr value)
        {this->m_userData[key] = value;}
-     smtk::UserDataPtr userData(const std::string &key) const;
+     smtk::util::UserDataPtr userData(const std::string &key) const;
      void clearUserData(const std::string &key)
      {this->m_userData.erase(key);}
      void clearAllUserData()
@@ -164,7 +164,7 @@ namespace smtk
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       bool m_isColorSet;
-      std::map<std::string, smtk::UserDataPtr > m_userData;
+      std::map<std::string, smtk::util::UserDataPtr > m_userData;
       // We need something to indicate that the attribute is in process of
       // being deleted - this is used skip certain clean up steps that
       // would need to be done otherwise
@@ -175,11 +175,11 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline smtk::UserDataPtr Attribute::userData(const std::string &key) const
+    inline smtk::util::UserDataPtr Attribute::userData(const std::string &key) const
     {
-      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
+      std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
+      return ((it == this->m_userData.end()) ? smtk::util::UserDataPtr() : it->second);
     }
 //----------------------------------------------------------------------------
     inline void Attribute::setColor(double r, double g, double b, double a)
