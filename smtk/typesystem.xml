@@ -247,7 +247,7 @@
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
-    <modify-function signature="setUserData(const std::string &amp;, smtk::util::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
+    <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
     <modify-function signature="reset()" remove="all"/>
     <modify-function signature="detachOwningItem()" remove="all"/>
     <modify-function signature="detachOwningAttribute()" remove="all"/>
@@ -325,7 +325,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
 
-  <value-type template="smtk::util::shared_ptr" args="smtk::util::UserData" />
+  <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
 
   <namespace-type name="smtk">
     <namespace-type name="model">

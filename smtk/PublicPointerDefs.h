@@ -45,7 +45,7 @@ namespace smtk
     class GridInfo;
     class GroupItem;
     class ModelDomainItem;
-  };
+  }
 
   namespace attribute
   {
@@ -79,12 +79,12 @@ namespace smtk
     class ValueItemDefinition;
     class VoidItem;
     class VoidItemDefinition;
-  };
+  }
 
   namespace util
   {
     class UserData;
-  };
+  }
 
   //Shiboken requires that we use fully qualified namespaces for all
   //types that these shared_ptr and weak_ptr are holding
@@ -139,11 +139,12 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::ModelEntitySection >       ModelEntitySectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::RootSection >              RootSectionPtr;
   typedef smtk::shared_ptr< smtk::attribute::SimpleExpressionSection >  SimpleExpressionSectionPtr;
+
   namespace util
   {
     //custom user data classes
-    typedef shared_ptr<UserData > UserDataPtr;
-  };
+    typedef smtk::shared_ptr<UserData > UserDataPtr;
+  }
 
   // class for making the analysis grid information available in SMTK
   typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
@@ -208,6 +209,6 @@ namespace smtk
       typedef typename T::element_type RawPointerType;
     };
 
-  };
-};
+  }
+}
 #endif /* __smtk_PublicPointerDefs_h */
