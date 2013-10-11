@@ -143,7 +143,7 @@ namespace smtk
   namespace util
   {
     //custom user data classes
-    typedef smtk::shared_ptr<UserData > UserDataPtr;
+    typedef smtk::shared_ptr< smtk::util::UserData > UserDataPtr;
   }
 
   // class for making the analysis grid information available in SMTK

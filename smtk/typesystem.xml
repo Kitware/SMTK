@@ -222,11 +222,6 @@
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
 
-  <type-template name="smtk::util::shared_ptr">
-    <include file-name="memory" location="global"/>
-    <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
-  </type-template>
-
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
