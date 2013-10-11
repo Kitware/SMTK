@@ -359,6 +359,12 @@
         <include file-name="smtk/util/AttributeWriter.h" location="local"/>
       </object-type>
 
+      <object-type name="Logger">
+        <include file-name="smtk/util/Logger.h" location="local"/>
+        <enum-type name="Severity"/>
+        <object-type name="Record" />
+      </object-type>
+
       <object-type name="UserData">
         <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>
