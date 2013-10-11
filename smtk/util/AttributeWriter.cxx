@@ -22,36 +22,40 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/AttributeWriter.h"
-#include "smtk/attribute/XmlV1StringWriter.h"
+#include "smtk/util/AttributeWriter.h"
+#include "smtk/util/XmlV1StringWriter.h"
+#include "smtk/util/Logger.h"
 #include <fstream>
 
-using namespace smtk::attribute; 
+using namespace smtk::util;
 
 //----------------------------------------------------------------------------
-bool AttributeWriter::write(const Manager &manager, const std::string &filename)
+bool AttributeWriter::write(const smtk::attribute::Manager &manager,
+                            const std::string &filename,
+                            Logger &logger)
 {
+  logger.reset();
   XmlV1StringWriter theWriter(manager);
-  std::string result = theWriter.convertToString();
-  this->m_errorMessages = theWriter.errorStatus();
-  if(this->m_errorMessages == "")
+  std::string result = theWriter.convertToString(logger);
+  if(!logger.hasErrors())
 	{
 	std::ofstream outfile;
 	outfile.open(filename.c_str());
 	outfile << result;
-	outfile.close(); 	
+	outfile.close();
 	}
-  return this->m_errorMessages != "";
+  return logger.hasErrors();
 }
 
 //----------------------------------------------------------------------------
-bool AttributeWriter::writeContents(const Manager &manager,
-  std::string &filecontents)
+bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
+                                    std::string &filecontents,
+                                    Logger &logger)
 {
+  logger.reset();
   XmlV1StringWriter theWriter(manager);
-  filecontents = theWriter.convertToString();
-  this->m_errorMessages = theWriter.errorStatus();
-  return this->m_errorMessages != "";
+  filecontents = theWriter.convertToString(logger);
+  return logger.hasErrors();
 }
 
 //----------------------------------------------------------------------------

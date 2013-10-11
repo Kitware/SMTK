@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/XmlDocV1Parser.h"
+#include "smtk/util/XmlDocV1Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
@@ -56,14 +56,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
 #include "smtk/model/Model.h"
-#include <sstream>
 #include <iostream>
 
 using namespace pugi;
-using namespace smtk::attribute; 
+using namespace smtk::util;
 using namespace smtk;
 //----------------------------------------------------------------------------
-XmlDocV1Parser::XmlDocV1Parser(Manager &myManager):
+XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::Manager &myManager):
 m_manager(myManager)
 {
 }
@@ -75,16 +74,18 @@ XmlDocV1Parser::~XmlDocV1Parser()
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::process(xml_document &doc)
 {
+  // Reset the message log
+  this->m_logger.reset();
   // Clear the vectors for dealing with attribute references
   this->m_itemExpressionDefInfo.clear();
   this->m_attRefDefInfo.clear();
   this->m_itemExpressionInfo.clear();
   this->m_attRefInfo.clear();
-  this->m_errorStatus.str("");
+  this->m_logger.reset();
   xml_node amnode, node, cnode;
   // Get the attribute manager node
   amnode = doc.child("SMTK_AttributeManager");
-  
+
   // Get the category information
   std::set<std::string> secCatagories;
   std::string s;
@@ -143,7 +144,8 @@ void XmlDocV1Parser::process(xml_document &doc)
     {
     if (secCatagories.find(*it) == secCatagories.end())
       {
-      this->m_errorStatus << "Error: Catagory: " << *it << " was not listed in Manger's Catagory Section\n";
+      smtkErrorMacro(this->m_logger, "Catagory: " << *it
+                     << " was not listed in Manger's Catagory Section");
       }
     }
 }
@@ -154,7 +156,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
   xml_node child, node = root.child("Definitions");
   if (!node)
     {
-    this->m_errorStatus << "ERROR:Definition Section is missing!\n";
+    smtkErrorMacro(this->m_logger, "Definition Section is missing!");
     return;
     }
   for (child = node.first_child(); child; child = child.next_sibling())
@@ -175,13 +177,14 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
       }
     else
       {
-      this->m_errorStatus << "ERROR:Referenced Attribute Definition: " 
-                          << this->m_itemExpressionDefInfo[i].second
-                          << " is missing and required by Item Definition: "
-                          << this->m_itemExpressionDefInfo[i].first->name() << "/n";
+      smtkErrorMacro(this->m_logger,
+                       "Referenced Attribute Definition: "
+                       << this->m_itemExpressionDefInfo[i].second
+                       << " is missing and required by Item Definition: "
+                       << this->m_itemExpressionDefInfo[i].first->name());
         }
     }
-      
+
   for (i = 0; i < this->m_attRefDefInfo.size(); i++)
     {
     def = this->m_manager.findDefinition(this->m_attRefDefInfo[i].second);
@@ -191,17 +194,18 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
       }
     else
       {
-      this->m_errorStatus << "ERROR:Referenced Attribute Definition: " 
-                          << this->m_attRefDefInfo[i].second
-                          << " is missing and required by Item Definition: "
-                          << this->m_attRefDefInfo[i].first->name() << "/n";
+      smtkErrorMacro(this->m_logger,
+                       "Referenced Attribute Definition: "
+                       << this->m_attRefDefInfo[i].second
+                       << " is missing and required by Item Definition: "
+                       << this->m_attRefDefInfo[i].first->name());
         }
     }
-      
+
   node = root.child("Attributes");
   if (!node)
     {
-    this->m_errorStatus << "ERROR:Attributes Section is missing!\n";
+    smtkErrorMacro(this->m_logger,"Attributes Section is missing!");
     return;
     }
 
@@ -226,13 +230,14 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
       }
     else
       {
-      this->m_errorStatus << "ERROR:Expression Attribute: " 
-                          << this->m_itemExpressionInfo[i].expName
-                          << " is missing and required by Item : "
-                          << this->m_itemExpressionInfo[i].item->name() << "/n";
-        }
+      smtkErrorMacro(this->m_logger,
+                     "Expression Attribute: "
+                     << this->m_itemExpressionInfo[i].expName
+                     << " is missing and required by Item : "
+                     << this->m_itemExpressionInfo[i].item->name());
+      }
     }
-      
+
   for (i = 0; i < this->m_attRefInfo.size(); i++)
     {
     att = this->m_manager.findAttribute(this->m_attRefInfo[i].attName);
@@ -242,13 +247,14 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
       }
     else
       {
-      this->m_errorStatus << "ERROR:Referenced Attribute: " 
-                          << this->m_attRefInfo[i].attName
-                          << " is missing and required by Item: "
-                          << this->m_attRefInfo[i].item->name() << "/n";
-        }
+      smtkErrorMacro(this->m_logger,
+                     "Referenced Attribute: "
+                     << this->m_attRefInfo[i].attName
+                     << " is missing and required by Item: "
+                     << this->m_attRefInfo[i].item->name());
+      }
     }
-      
+
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processDefinition(xml_node &defNode)
@@ -262,8 +268,9 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     baseDef = this->m_manager.findDefinition(baseType);
     if (!baseDef)
       {
-      this->m_errorStatus << "ERROR: Could not find Base Definition: " << baseType
-                          << " needed to create Definition: " << type << "\n";
+      smtkErrorMacro(this->m_logger, "Could not find Base Definition: "
+                     << baseType << " needed to create Definition: "
+                     << type);
       return;
       }
     def = this->m_manager.createDefinition(type, baseDef);
@@ -304,7 +311,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     def->setIsNodal(xatt.as_bool());
     }
 
-  unsigned int mask = 
+  unsigned int mask =
     this->decodeModelEntityMask(defNode.attribute("Associations").value());
   def->setAssociationMask(mask);
 
@@ -337,54 +344,55 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
   // Now lets process its items
   xml_node itemsNode = defNode.child("ItemDefinitions");
   std::string itemName;
-  Item::Type itype;
+  smtk::attribute::Item::Type itype;
   AttributeItemDefinitionPtr idef;
   for (node = itemsNode.first_child(); node; node = node.next_sibling())
     {
-    itype = Item::string2Type(node.name());
+    itype = smtk::attribute::Item::string2Type(node.name());
     itemName = node.attribute("Name").value();
     switch (itype)
       {
-      case Item::ATTRIBUTE_REF:
-        idef = def->addItemDefinition<AttributeRefItemDefinition>(itemName);
-        this->processAttributeRefDef(node, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
+      case smtk::attribute::Item::ATTRIBUTE_REF:
+        idef = def->addItemDefinition<smtk::attribute::AttributeRefItemDefinition>(itemName);
+        this->processAttributeRefDef(node, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItemDefinition>(idef));
         break;
-      case Item::DOUBLE:
-        idef = def->addItemDefinition<DoubleItemDefinition>(itemName);
-        this->processDoubleDef(node, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
+      case smtk::attribute::Item::DOUBLE:
+        idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
+        this->processDoubleDef(node, smtk::dynamicCastPointer<smtk::attribute::DoubleItemDefinition>(idef));
         break;
-      case Item::DIRECTORY:
-        idef = def->addItemDefinition<DirectoryItemDefinition>(itemName);
-        this->processDirectoryDef(node, smtk::dynamicCastPointer<DirectoryItemDefinition>(idef));
+      case smtk::attribute::Item::DIRECTORY:
+        idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
+        this->processDirectoryDef(node, smtk::dynamicCastPointer<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
-      case Item::FILE:
-        idef = def->addItemDefinition<FileItemDefinition>(itemName);
-        this->processFileDef(node, smtk::dynamicCastPointer<FileItemDefinition>(idef));
+      case smtk::attribute::Item::FILE:
+        idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
+        this->processFileDef(node, smtk::dynamicCastPointer<smtk::attribute::FileItemDefinition>(idef));
         break;
-      case Item::GROUP:
-        idef = def->addItemDefinition<GroupItemDefinition>(itemName);
-        this->processGroupDef(node, smtk::dynamicCastPointer<GroupItemDefinition>(idef));
+      case smtk::attribute::Item::GROUP:
+        idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
+        this->processGroupDef(node, smtk::dynamicCastPointer<smtk::attribute::GroupItemDefinition>(idef));
         break;
-      case Item::INT:
-        idef = def->addItemDefinition<IntItemDefinition>(itemName);
-        this->processIntDef(node, smtk::dynamicCastPointer<IntItemDefinition>(idef));
+      case smtk::attribute::Item::INT:
+        idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
+        this->processIntDef(node, smtk::dynamicCastPointer<smtk::attribute::IntItemDefinition>(idef));
         break;
-      case Item::STRING:
-        idef = def->addItemDefinition<StringItemDefinition>(itemName);
-        this->processStringDef(node, smtk::dynamicCastPointer<StringItemDefinition>(idef));
+      case smtk::attribute::Item::STRING:
+        idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
+        this->processStringDef(node, smtk::dynamicCastPointer<smtk::attribute::StringItemDefinition>(idef));
         break;
-      case Item::VOID:
-        idef = def->addItemDefinition<VoidItemDefinition>(itemName);
+      case smtk::attribute::Item::VOID:
+        idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
       break;
     default:
-      this->m_errorStatus << "ERROR: Unsupported Item definition Type: " << node.name()
-                          << " needed to create Definition: " << type << "\n";
+      smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
+                     << node.name()
+                     << " needed to create Definition: " << type);
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processItemDef(xml_node &node, 
+void XmlDocV1Parser::processItemDef(xml_node &node,
                                        AttributeItemDefinitionPtr idef)
 {
   xml_attribute xatt;
@@ -455,9 +463,9 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
         }
       else
         {
-      this->m_errorStatus 
-        << "ERROR: Missing XML Attribute Enum in DiscreteInfo section of Double Item Definition : " 
-        << idef->name() << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Attribute Enum in DiscreteInfo section of Double Item Definition : "
+                       << idef->name());
         }
       }
     xatt = node.attribute("DefaultIndex");
@@ -532,9 +540,9 @@ void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
         }
       else
         {
-      this->m_errorStatus 
-        << "ERROR: Missing XML Attribute Enum in DiscreteInfo section of Int Item Definition : " 
-        << idef->name() << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Attribute Enum in DiscreteInfo section of Int Item Definition : "
+                       << idef->name());
         }
       }
     xatt = dnode.attribute("DefaultIndex");
@@ -616,9 +624,9 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
         }
       else
         {
-      this->m_errorStatus 
-        << "ERROR: Missing XML Attribute Enum in DiscreteInfo section of String Item Definition : " 
-        << idef->name() << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Attribute Enum in DiscreteInfo section of String Item Definition : "
+                       << idef->name());
         }
       }
     xatt = node.attribute("DefaultIndex");
@@ -686,11 +694,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus 
-      << "ERROR: Missing XML Attribute NumberOfRequiredValues for Item Definition : " 
-      << idef->name() << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
     }
-   
+
   // Lets see if there are labels
   labels = node.child("Labels");
   if (labels)
@@ -765,9 +773,9 @@ void XmlDocV1Parser::processAttributeRefDef(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus 
-      << "ERROR: Missing XML Attribute NumberOfRequiredValues for Item Definition : " 
-      << idef->name() << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
     }
 
   // Lets see if there are labels
@@ -805,9 +813,9 @@ void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus 
-      << "ERROR: Missing XML Attribute NumberOfRequiredValues for Item Definition : " 
-      << idef->name() << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
     }
 
   xatt = node.attribute("ShouldExist");
@@ -857,9 +865,9 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus 
-      << "ERROR: Missing XML Attribute NumberOfRequiredValues for Item Definition : " 
-      << idef->name() << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
     }
 
   xatt = node.attribute("ShouldExist");
@@ -909,9 +917,9 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus 
-      << "ERROR: Missing XML Attribute NumberOfRequiredGroups for Item Definition : " 
-      << def->name() << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredGroups for Item Definition : "
+                   << def->name());
     }
 
   // Lets see if there are labels
@@ -934,49 +942,50 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     }
   xml_node itemsNode = node.child("ItemDefinitions");
   std::string itemName;
-  Item::Type itype;
+  smtk::attribute::Item::Type itype;
   AttributeItemDefinitionPtr idef;
   for (child = itemsNode.first_child(); child; child = child.next_sibling())
     {
-    itype = Item::string2Type(child.name());
+    itype = smtk::attribute::Item::string2Type(child.name());
     itemName = child.attribute("Name").value();
     switch (itype)
       {
-      case Item::ATTRIBUTE_REF:
-        idef = def->addItemDefinition<AttributeRefItemDefinition>(itemName);
-        this->processAttributeRefDef(child, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
+      case smtk::attribute::Item::ATTRIBUTE_REF:
+        idef = def->addItemDefinition<smtk::attribute::AttributeRefItemDefinition>(itemName);
+        this->processAttributeRefDef(child, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItemDefinition>(idef));
         break;
-      case Item::DOUBLE:
-        idef = def->addItemDefinition<DoubleItemDefinition>(itemName);
-        this->processDoubleDef(child, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
+      case smtk::attribute::Item::DOUBLE:
+        idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
+        this->processDoubleDef(child, smtk::dynamicCastPointer<smtk::attribute::DoubleItemDefinition>(idef));
         break;
-      case Item::DIRECTORY:
-        idef = def->addItemDefinition<DirectoryItemDefinition>(itemName);
-        this->processDirectoryDef(child, smtk::dynamicCastPointer<DirectoryItemDefinition>(idef));
+      case smtk::attribute::Item::DIRECTORY:
+        idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
+        this->processDirectoryDef(child, smtk::dynamicCastPointer<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
-      case Item::FILE:
-        idef = def->addItemDefinition<FileItemDefinition>(itemName);
-        this->processFileDef(child, smtk::dynamicCastPointer<FileItemDefinition>(idef));
+      case smtk::attribute::Item::FILE:
+        idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
+        this->processFileDef(child, smtk::dynamicCastPointer<smtk::attribute::FileItemDefinition>(idef));
         break;
-      case Item::GROUP:
-        idef = def->addItemDefinition<GroupItemDefinition>(itemName);
-        this->processGroupDef(child, smtk::dynamicCastPointer<GroupItemDefinition>(idef));
+      case smtk::attribute::Item::GROUP:
+        idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
+        this->processGroupDef(child, smtk::dynamicCastPointer<smtk::attribute::GroupItemDefinition>(idef));
         break;
-      case Item::INT:
-        idef = def->addItemDefinition<IntItemDefinition>(itemName);
-        this->processIntDef(child, smtk::dynamicCastPointer<IntItemDefinition>(idef));
+      case smtk::attribute::Item::INT:
+        idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
+        this->processIntDef(child, smtk::dynamicCastPointer<smtk::attribute::IntItemDefinition>(idef));
         break;
-      case Item::STRING:
-        idef = def->addItemDefinition<StringItemDefinition>(itemName);
-        this->processStringDef(child, smtk::dynamicCastPointer<StringItemDefinition>(idef));
+      case smtk::attribute::Item::STRING:
+        idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
+        this->processStringDef(child, smtk::dynamicCastPointer<smtk::attribute::StringItemDefinition>(idef));
         break;
-      case Item::VOID:
-        idef = def->addItemDefinition<VoidItemDefinition>(itemName);
+      case smtk::attribute::Item::VOID:
+        idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(child, idef);
-      break;
-    default:
-      this->m_errorStatus << "ERROR: Unsupported Item definition Type: " << child.name()
-                          << " needed to create Group Definition: " << def->name() << "\n";
+        break;
+      default:
+        smtkErrorMacro(this->m_logger,
+                       "Unsupported Item definition Type: " << child.name()
+                       << " needed to create Group Definition: " << def->name());
       }
     }
 }
@@ -994,49 +1003,55 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   xatt = attNode.attribute("Name");
   if (!xatt)
     {
-    this->m_errorStatus << "ERROR: Invalid Attribute! - Missing XML Attribute Name\n";
+    smtkErrorMacro(this->m_logger,
+                   "Invalid Attribute! - Missing XML Attribute Name");
     return;
     }
   name = xatt.value();
   xatt = attNode.attribute("Type");
   if (!xatt)
     {
-    this->m_errorStatus << "ERROR: Invalid Attribute: " << name
-                        << "  - Missing XML Attribute Type\n";
+    smtkErrorMacro(this->m_logger,
+                   "Invalid Attribute: " << name
+                   << "  - Missing XML Attribute Type");
     return;
     }
   type = xatt.value();
   xatt = attNode.attribute("ID");
   if (!xatt)
     {
-    this->m_errorStatus << "ERROR: Invalid Attribute: " << name
-                        << "  - Missing XML Attribute ID\n";
+    smtkErrorMacro(this->m_logger,
+                   "Invalid Attribute: " << name
+                   << "  - Missing XML Attribute ID");
     return;
     }
   id = xatt.as_uint();
-  
+
   def = this->m_manager.findDefinition(type);
   if (!def)
     {
-    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
-                        << "  - can not find attribute definition\n";
+    smtkErrorMacro(this->m_logger,
+                   "Attribute: " << name << " of Type: " << type
+                   << "  - can not find attribute definition");
     return;
     }
-  
+
   // Is the definition abstract?
   if (def->isAbstract())
     {
-    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
-                        << "  - is based on an abstract definition\n";
+    smtkErrorMacro(this->m_logger,
+                   "Attribute: " << name << " of Type: " << type
+                   << "  - is based on an abstract definition");
     return;
     }
-  
+
   att = this->m_manager.createAttribute(name, def, id);
-  
+
   if (att == NULL)
     {
-    this->m_errorStatus << "ERROR: Attribute: " << name << " of Type: " << type
-                        << "  - could not be created - is the name in use?\n";
+    smtkErrorMacro(this->m_logger,
+                   "Attribute: " << name << " of Type: " << type
+                   << "  - could not be created - is the name in use");
     return;
     }
   xatt = attNode.attribute("OnInteriorNodes");
@@ -1044,13 +1059,13 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
     {
     att->setAppliesToInteriorNodes(xatt.as_bool());
     }
-  
+
   xatt = attNode.attribute("OnBoundaryNodes");
   if (xatt)
     {
     att->setAppliesToBoundaryNodes(xatt.as_bool());
     }
-  
+
   double color[4];
 
   node = attNode.child("Color");
@@ -1069,15 +1084,16 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   // that for speed and if that fails we can try to search for the correct
   // xml node
   n = att->numberOfItems();
-  for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode; 
+  for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
        i++, iNode = iNode.next_sibling())
     {
     // See if the name of the item matches the name of node
     xatt = iNode.attribute("Name");
     if (!xatt)
       {
-      this->m_errorStatus << "ERROR: Bad Item for Attribute : " << name 
-                          << "- missing XML Attribute Name\n";
+      smtkErrorMacro(this->m_logger,
+                     "Bad Item for Attribute : " << name
+                     << "- missing XML Attribute Name");
       node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
       }
     else
@@ -1094,21 +1110,21 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
       }
     if (!node)
       {
-      this->m_errorStatus << "Error: Can not locate XML Item node :" << att->item(i)->name() 
-                          << " for Attribute : " << name 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Can not locate XML Item node :" << att->item(i)->name()
+                     << " for Attribute : " << name);
       continue;
       }
     this->processItem(node, att->item(i));
     }
   if (iNode || (i != n))
     {
-    this->m_errorStatus << "Error: Number of Items does not match XML for Attribute : " << name 
-                        << "\n";
+    smtkErrorMacro(this->m_logger,
+                   "Number of Items does not match XML for Attribute : " << name);
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processItem(xml_node &node, 
+void XmlDocV1Parser::processItem(xml_node &node,
                                     AttributeItemPtr item)
 {
   xml_attribute xatt;
@@ -1122,33 +1138,34 @@ void XmlDocV1Parser::processItem(xml_node &node,
     }
   switch (item->type())
     {
-    case Item::ATTRIBUTE_REF:
-      this->processAttributeRefItem(node, smtk::dynamicCastPointer<AttributeRefItem>(item));
+    case smtk::attribute::Item::ATTRIBUTE_REF:
+      this->processAttributeRefItem(node, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItem>(item));
       break;
-    case Item::DOUBLE:
-      this->processDoubleItem(node, smtk::dynamicCastPointer<DoubleItem>(item));
+    case smtk::attribute::Item::DOUBLE:
+      this->processDoubleItem(node, smtk::dynamicCastPointer<smtk::attribute::DoubleItem>(item));
       break;
-    case Item::DIRECTORY:
-      this->processDirectoryItem(node, smtk::dynamicCastPointer<DirectoryItem>(item));
+    case smtk::attribute::Item::DIRECTORY:
+      this->processDirectoryItem(node, smtk::dynamicCastPointer<smtk::attribute::DirectoryItem>(item));
       break;
-    case Item::FILE:
-      this->processFileItem(node, smtk::dynamicCastPointer<FileItem>(item));
+    case smtk::attribute::Item::FILE:
+      this->processFileItem(node, smtk::dynamicCastPointer<smtk::attribute::FileItem>(item));
       break;
-    case Item::GROUP:
-      this->processGroupItem(node, smtk::dynamicCastPointer<GroupItem>(item));
+    case smtk::attribute::Item::GROUP:
+      this->processGroupItem(node, smtk::dynamicCastPointer<smtk::attribute::GroupItem>(item));
       break;
-    case Item::INT:
-      this->processIntItem(node, smtk::dynamicCastPointer<IntItem>(item));
+    case smtk::attribute::Item::INT:
+      this->processIntItem(node, smtk::dynamicCastPointer<smtk::attribute::IntItem>(item));
       break;
-    case Item::STRING:
-      this->processStringItem(node, smtk::dynamicCastPointer<StringItem>(item));
+    case smtk::attribute::Item::STRING:
+      this->processStringItem(node, smtk::dynamicCastPointer<smtk::attribute::StringItem>(item));
       break;
-    case Item::VOID:
+    case smtk::attribute::Item::VOID:
       // Nothing to do!
       break;
     default:
-      this->m_errorStatus << "Error: Unsupported Item Type: " << Item::type2String(item->type())
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Unsupported Item Type: "
+                     << smtk::attribute::Item::type2String(item->type()));
     }
 }
 //----------------------------------------------------------------------------
@@ -1160,14 +1177,14 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
   xml_attribute xatt;
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1195,25 +1212,25 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_int();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith = " << i
+                       << " and is out of range for Item: " << item->name());
         continue;
         }
       index = val.text().as_int();
       if (!item->setDiscreteIndex(i, index))
         {
-        this->m_errorStatus << "Error: Discrete Index " << index
-                            << " for  ith value : " << i
-                            << " is not valid for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Discrete Index " << index
+                       << " for  ith value : " << i
+                       << " is not valid for Item: " << item->name());
         }
       }
     return;
@@ -1222,15 +1239,14 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     {
     if (!item->setDiscreteIndex(node.text().as_int()))
       {
-        this->m_errorStatus << "Error: Discrete Index " << index
-                            << " for  ith value : " << i
-                            << " is not valid for Item: " << item->name() 
-                            << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Discrete Index " << index
+                     << " for  ith value : " << i
+                     << " is not valid for Item: " << item->name());
       }
     return;
     }
-  this->m_errorStatus << "Error: Missing Discrete Values for Item: " << item->name() 
-                      << "\n";
+  smtkErrorMacro(this->m_logger, "Missing Discrete Values for Item: " << item->name());
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
@@ -1246,14 +1262,14 @@ void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
   AttRefInfo info;
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1272,16 +1288,15 @@ void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       attName = val.text().get();
@@ -1317,8 +1332,7 @@ void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1332,14 +1346,14 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1358,16 +1372,15 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       item->setValue(i, val.text().get());
@@ -1383,8 +1396,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 
@@ -1393,7 +1405,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
                                           DoubleItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1410,14 +1422,14 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
   ItemExpressionInfo info;
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1441,16 +1453,15 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       if (nodeName == "Val")
@@ -1473,9 +1484,8 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         }
       else
         {
-        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
-                            << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
+                       << item->name());
         }
       }
     }
@@ -1508,8 +1518,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1523,14 +1532,14 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1549,16 +1558,15 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       item->setValue(i, val.text().get());
@@ -1574,8 +1582,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1590,14 +1597,14 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   m = item->numberOfItemsPerGroup();
   if (!numRequiredGroups)
     {
-    // The node should have an attribute indicating how many groups are 
+    // The node should have an attribute indicating how many groups are
     // associated with the item
     xatt = node.attribute("NumberOfGroups");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfGroups is missing for Group Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfGroups is missing for Group Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1613,13 +1620,13 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   xml_node cluster, clusters = node.child("GroupClusters");
   if (clusters)
     {
-    for (cluster = clusters.first_child(), i = 0; cluster; 
+    for (cluster = clusters.first_child(), i = 0; cluster;
          cluster = cluster.next_sibling(), ++i)
       {
       if (i >= n)
         {
-        this->m_errorStatus << "Error: Too many sub-groups for Group Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Too many sub-groups for Group Item: " << item->name());
         continue;
         }
       for (itemNode = cluster.first_child(), j = 0; itemNode;
@@ -1627,9 +1634,9 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
         {
         if (j >= m)
           {
-          this->m_errorStatus << "Error: Too many item nodes for subGroup: " << i
-                              << " for Group Item: " << item->name() 
-                              << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Too many item nodes for subGroup: " << i
+                       << " for Group Item: " << item->name());
           continue;
           }
         this->processItem(itemNode, item->item(i,j));
@@ -1643,9 +1650,9 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
       {
       if (j >= m)
         {
-        this->m_errorStatus << "Error: Too many item nodes for subGroup:0"
-                              << " for Group Item: " << item->name() 
-                              << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "Too many item nodes for subGroup: 0"
+                       << " for Group Item: " << item->name());
           continue;
           }
         this->processItem(itemNode, item->item(j));
@@ -1653,8 +1660,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node GroupClusters is missing for Item: " << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger,"XML Node GroupClusters is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1662,7 +1668,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
                                        IntItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1679,14 +1685,14 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
   ItemExpressionInfo info;
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1710,16 +1716,15 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
-        continue;
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
+       continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       if (nodeName == "Val")
@@ -1742,9 +1747,8 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         }
       else
         {
-        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
-                            << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
+                       << item->name());
         }
       }
     }
@@ -1777,9 +1781,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " 
-                        << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1787,7 +1789,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
                                           StringItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1804,14 +1806,14 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
   ItemExpressionInfo info;
   if (!numRequiredVals)
     {
-    // The node should have an attribute indicating how many values are 
+    // The node should have an attribute indicating how many values are
     // associated with the item
     xatt = node.attribute("NumberOfValues");
     if (!xatt)
       {
-      this->m_errorStatus << "Error: XML Attribute NumberOfValues is missing for Item: " 
-                          << item->name() 
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
       return;
       }
     n = xatt.as_uint();
@@ -1835,16 +1837,15 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
       xatt = val.attribute("Ith");
       if (!xatt)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith is missing for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
         continue;
         }
       i = xatt.as_uint();
       if (i >= n)
         {
-        this->m_errorStatus << "Error: XML Attribute Ith = " << i
-                            << " and is out of range for Item: " << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
         continue;
         }
       if (nodeName == "Val")
@@ -1867,9 +1868,8 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         }
       else
         {
-        this->m_errorStatus << "Error: Unsupported Value Node Type  Item: " 
-                            << item->name() 
-                            << "\n";
+        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
+                       << item->name());
         }
       }
     }
@@ -1902,9 +1902,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
     }
   else
     {
-    this->m_errorStatus << "Error: XML Node Values is missing for Item: " 
-                        << item->name() 
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1915,10 +1913,9 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
   int i = this->decodeColorInfo(s, color);
   if (i)
     {
-    this->m_errorStatus << "Error: Color Format Probem - only found " << i 
-                        << "components for " 
-                        << colorName
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << i
+                   << "components for "
+                   << colorName);
     return false;
     }
   return true;
@@ -1947,14 +1944,14 @@ void XmlDocV1Parser::processSections(xml_node &root)
     rs->setInvalidColor(c);
     }
   this->processGroupSection(sections,
-                            smtk::dynamicCastPointer<GroupSection>(rs));
+                            smtk::dynamicCastPointer<smtk::attribute::GroupSection>(rs));
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttributeSection(xml_node &node,
                                             smtk::AttributeSectionPtr sec)
 {
   this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
+                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
   xml_attribute xatt;
   AttributeDefinitionPtr def;
   xml_node child, attTypes;
@@ -1986,9 +1983,9 @@ void XmlDocV1Parser::processAttributeSection(xml_node &node,
       }
     else
       {
-      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType 
-                          << " required for Attribute Section: " << sec->title()
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Cannot find attribute definition: " << defType
+                     << " required for Attribute Section: " << sec->title());
       }
     }
 }
@@ -1997,7 +1994,7 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
                                                   smtk::InstancedSectionPtr sec)
 {
   this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
+                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
   std::string attName, defName;
@@ -2023,10 +2020,10 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
         attDef = this->m_manager.findDefinition(defName);
         if (!attDef)
           {
-          this->m_errorStatus << "Error: Cannot find attribute definition: " << defName
-                              << " required to create attribute: " << attName 
-                              << " for Instanced Section: " << sec->title()
-                              << "\n";
+          smtkErrorMacro(this->m_logger,
+                         "Cannot find attribute definition: " << defName
+                         << " required to create attribute: " << attName
+                         << " for Instanced Section: " << sec->title());
           continue;
           }
         else
@@ -2036,10 +2033,10 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
         }
       else
         {
-        this->m_errorStatus << "Error: XML Attribute Type is missing"
-                            << "and is required to create attribute: " << attName 
-                            << " for Instanced Section: " << sec->title()
-                            << "\n";
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Type is missing"
+                       << "and is required to create attribute: " << attName
+                       << " for Instanced Section: " << sec->title());
         continue;
         }
       }
@@ -2051,7 +2048,7 @@ void XmlDocV1Parser::processModelEntitySection(xml_node &node,
                                                   smtk::ModelEntitySectionPtr sec)
 {
   this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
+                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
   xml_attribute xatt = node.attribute("ModelEnityFilter");
   xml_node child = node.child("Definition");
   if (xatt)
@@ -2066,9 +2063,9 @@ void XmlDocV1Parser::processModelEntitySection(xml_node &node,
     AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
     if (!def)
       {
-      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType
-                          << " for Model Entity Section: " << sec->title()
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Cannot find attribute definition: " << defType
+                     << " for Model Entity Section: " << sec->title());
       }
     }
 }
@@ -2077,7 +2074,7 @@ void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
                                                        smtk::SimpleExpressionSectionPtr sec)
 {
   this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
+                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
   xml_node child = node.child("Definition");
   if (child)
     {
@@ -2085,9 +2082,9 @@ void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
     AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
     if (!def)
       {
-      this->m_errorStatus << "Error: Cannot find attribute definition: " << defType
-                          << " for Simple Expression Section: " << sec->title()
-                          << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Cannot find attribute definition: " << defType
+                     << " for Simple Expression Section: " << sec->title());
       }
     else
       {
@@ -2100,7 +2097,7 @@ void XmlDocV1Parser::processGroupSection(xml_node &node,
                                             smtk::GroupSectionPtr group)
 {
   this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(group));
+                            smtk::dynamicCastPointer<smtk::attribute::Section>(group));
 
   xml_node child;
   std::string sectionType;
@@ -2109,49 +2106,48 @@ void XmlDocV1Parser::processGroupSection(xml_node &node,
     sectionType = child.name();
     if (sectionType == "AttributeSection")
       {
-      this->processAttributeSection(child, 
+      this->processAttributeSection(child,
                                     group->addSubsection<AttributeSectionPtr>(""));
       continue;
       }
-    
+
     if (sectionType == "GroupSection")
       {
-      this->processGroupSection(child, 
+      this->processGroupSection(child,
                                 group->addSubsection<GroupSectionPtr>(""));
       continue;
       }
-    
+
     if (sectionType == "InstancedSection")
       {
-      this->processInstancedSection(child, 
+      this->processInstancedSection(child,
                                     group->addSubsection<InstancedSectionPtr>(""));
       continue;
       }
-    
+
     if (sectionType == "ModelEntitySection")
       {
-      this->processModelEntitySection(child, 
+      this->processModelEntitySection(child,
                                       group->addSubsection<ModelEntitySectionPtr>(""));
       continue;
       }
-    
+
     if (sectionType == "SimpleExpressionSection")
       {
-      this->processSimpleExpressionSection(child, 
+      this->processSimpleExpressionSection(child,
                                            group->addSubsection<SimpleExpressionSectionPtr>(""));
       continue;
       }
-    
+
     // In case this was root section
-    if ((group->type() == Section::ROOT) && ((sectionType == "DefaultColor") ||
+    if ((group->type() == smtk::attribute::Section::ROOT) && ((sectionType == "DefaultColor") ||
                                              (sectionType == "InvalidColor")))
       {
       continue;
       }
 
-    this->m_errorStatus << "Error: Unsupported Section Type: " << sectionType
-                        << " for Group Section: " << group->title()
-                        << "\n";
+    smtkErrorMacro(this->m_logger, "Unsupported Section Type: " << sectionType
+                   << " for Group Section: " << group->title());
     }
 }
 //----------------------------------------------------------------------------
@@ -2162,7 +2158,7 @@ void XmlDocV1Parser::processBasicSection(xml_node &node,
   xatt = node.attribute("Title"); // Required
   if (!xatt)
     {
-    this->m_errorStatus << "Error: Section is missing XML Attribute Title\n";
+    smtkErrorMacro(this->m_logger, "Section is missing XML Attribute Title");
     }
   else
     {
@@ -2193,14 +2189,14 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
       xatt = gnode.attribute("Id");
       if(!xatt)
         {
-        this->m_errorStatus << "Error: Model Group is missing XML Attribute Id\n";
+        smtkErrorMacro(this->m_logger, "Model Group is missing XML Attribute Id");
         continue;
         }
       gid = xatt.as_int();
       xatt = gnode.attribute("Mask");
       if(!xatt)
         {
-        this->m_errorStatus << "Error: Model Group is missing XML Attribute Mask\n";
+        smtkErrorMacro(this->m_logger, "Model Group is missing XML Attribute Mask");
         continue;
         }
       mask = xatt.as_int();
@@ -2215,7 +2211,7 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
           xatt = anode.attribute("Name");
           if(!xatt)
             {
-            this->m_errorStatus << "Error: Model Group associated Attribute is missing XML Attribute Name\n";
+            smtkErrorMacro(this->m_logger, "Model Group associated Attribute is missing XML Attribute Name");
             continue;
             }
           name = xatt.value();
@@ -2225,7 +2221,7 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
             }
           else
             {
-            this->m_errorStatus << "Error: Can find Model Group associated Attribute with Name: " << name << "\n";  
+            smtkErrorMacro(this->m_logger, "Can find Model Group associated Attribute with Name: " << name);
             }
           }
         }
@@ -2284,8 +2280,9 @@ unsigned long  XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
         m |= 0x1;
         break;
       default:
-        this->m_errorStatus << "Error: Decoding Model Entity Mask - Option " 
-                            << s[i] << " is not supported\n";
+        smtkErrorMacro(this->m_logger,
+                       "Decoding Model Entity Mask - Option "
+                       << s[i] << " is not supported");
       }
     }
   return m;

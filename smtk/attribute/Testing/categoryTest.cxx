@@ -30,7 +30,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/XmlV1StringWriter.h"
+#include "smtk/util/Logger.h"
+#include "smtk/util/XmlV1StringWriter.h"
 
 #include <iostream>
 
@@ -170,8 +171,16 @@ int main()
         }
       }
     }
-  smtk::attribute::XmlV1StringWriter writer(manager);
-  std::cout << writer.convertToString() << std::endl;
+  smtk::util::Logger logger;
+  smtk::util::XmlV1StringWriter writer(manager);
+  std::cout << writer.convertToString(logger) << std::endl;
+  if (logger.hasErrors())
+    {
+    std::cerr <<  "Errors encountered creating Attribute String:\n";
+    std::cerr << logger.convertToString();
+    }
+
+
   std::cout << "Manager destroyed\n";
   }
   return status;

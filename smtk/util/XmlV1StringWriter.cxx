@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/XmlV1StringWriter.h"
+#include "smtk/util/XmlV1StringWriter.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
@@ -57,11 +57,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <sstream>
 
 using namespace pugi;
-using namespace smtk; 
-using namespace smtk::attribute; 
+using namespace smtk;
+using namespace smtk::util;
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-XmlV1StringWriter::XmlV1StringWriter(const Manager &myManager):
+XmlV1StringWriter::XmlV1StringWriter(const attribute::Manager &myManager):
 m_manager(myManager)
 {
   this->m_doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
@@ -74,10 +75,10 @@ XmlV1StringWriter::~XmlV1StringWriter()
 {
 }
 //----------------------------------------------------------------------------
-std::string XmlV1StringWriter::convertToString()
+std::string XmlV1StringWriter::convertToString(Logger &logger)
 {
-  // Reset the error status
-  this->m_errorStatus.str("");
+  // Reset the message log
+  this->m_logger.reset();
 
   this->m_root.append_child(node_comment).set_value("**********  Category and Analysis Infomation ***********");
   // Write out the category and analysis information
@@ -96,7 +97,7 @@ std::string XmlV1StringWriter::convertToString()
     {
     xml_node cnode, catNodes = this->m_root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
-    const std::map<std::string, std::set<std::string> > &analyses = 
+    const std::map<std::string, std::set<std::string> > &analyses =
       this->m_manager.analyses();
     for (it = analyses.begin(); it != analyses.end(); it++)
       {
@@ -115,6 +116,7 @@ std::string XmlV1StringWriter::convertToString()
   std::stringstream oss;
   this->m_doc.save(oss, "  ");
   std::string result = oss.str();
+  logger = this->m_logger;
   return result;
 }
 //----------------------------------------------------------------------------
@@ -137,7 +139,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
                                           xml_node &attributes,
                                           smtk::AttributeDefinitionPtr def)
 {
-  xml_node itemDefNode, itemDefNodes, 
+  xml_node itemDefNode, itemDefNodes,
     child, node = definitions.append_child();
   node.set_name("AttDef");
   node.append_attribute("Type").set_value(def->type().c_str());
@@ -204,7 +206,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
       {
       itemDefNode = itemDefNodes.append_child();
       itemDefNode.set_name(Item::type2String(def->itemDefinition(i)->type()).c_str());
-      this->processItemDefinition(itemDefNode, 
+      this->processItemDefinition(itemDefNode,
                                   def->itemDefinition(i));
       }
     }
@@ -226,7 +228,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processItemDefinition(xml_node &node, 
+void XmlV1StringWriter::processItemDefinition(xml_node &node,
                                               AttributeItemDefinitionPtr idef)
 {
   xml_node child;
@@ -290,8 +292,9 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
       // Nothing to do!
       break;
     default:
-      this->m_errorStatus << "Error: Unsupported Type: " << Item::type2String(idef->type())
-                          << " for Item Definition: " << idef->name() << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Unsupported Type: " << Item::type2String(idef->type())
+                     << " for Item Definition: " << idef->name());
     }
 }
 
@@ -300,7 +303,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
                                          DoubleItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
-  this->processValueDef(node, 
+  this->processValueDef(node,
                         dynamicCastPointer<ValueItemDefinition>(idef));
   if (idef->isDiscrete())
     {
@@ -355,7 +358,7 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
                                       IntItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
-  this->processValueDef(node, 
+  this->processValueDef(node,
                         smtk::dynamicCastPointer<ValueItemDefinition>(idef));
   if (idef->isDiscrete())
     {
@@ -410,7 +413,7 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
                                          StringItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
-  this->processValueDef(node, 
+  this->processValueDef(node,
                         smtk::dynamicCastPointer<ValueItemDefinition>(idef));
   if (idef->isMultiline())
     {
@@ -468,7 +471,7 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
 void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
                                         ValueItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = 
+  node.append_attribute("NumberOfRequiredValues") =
     idef->numberOfRequiredValues();
   if (idef->hasValueLabels())
     {
@@ -516,7 +519,7 @@ void XmlV1StringWriter::processAttributeRefDef(pugi::xml_node &node,
     anode = node.append_child("AttDef");
     anode.text().set(adp->type().c_str());
     }
-  node.append_attribute("NumberOfRequiredValues") = 
+  node.append_attribute("NumberOfRequiredValues") =
     idef->numberOfRequiredValues();
   if (idef->hasValueLabels())
     {
@@ -642,13 +645,13 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
       {
       itemDefNode = itemDefNodes.append_child();
       itemDefNode.set_name(Item::type2String(idef->itemDefinition(i)->type()).c_str());
-      this->processItemDefinition(itemDefNode, 
+      this->processItemDefinition(itemDefNode,
                                   idef->itemDefinition(i));
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processAttribute(xml_node &attributes, 
+void XmlV1StringWriter::processAttribute(xml_node &attributes,
                                          AttributePtr att)
 {
   xml_node node = attributes.append_child("Att");
@@ -683,7 +686,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processItem(xml_node &node, 
+void XmlV1StringWriter::processItem(xml_node &node,
                                     AttributeItemPtr item)
 {
   node.append_attribute("Name").set_value(item->name().c_str());
@@ -718,8 +721,9 @@ void XmlV1StringWriter::processItem(xml_node &node,
       // Nothing to do!
       break;
     default:
-      this->m_errorStatus << "Error: Unsupported Type: " << Item::type2String(item->type())
-                          << " for Item: " << item->name() << "\n";
+      smtkErrorMacro(this->m_logger,
+                     "Unsupported Type: " << Item::type2String(item->type())
+                     << " for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
@@ -1168,7 +1172,7 @@ void XmlV1StringWriter::processInstancedSection(xml_node &node,
       child.text().set(sec->instance(i)->name().c_str());
       }
     }
- 
+
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processModelEntitySection(xml_node &node,
@@ -1213,32 +1217,32 @@ void XmlV1StringWriter::processGroupSection(xml_node &node,
       {
       case Section::ATTRIBUTE:
         child = node.append_child("AttributeSection");
-        this->processAttributeSection(child, 
+        this->processAttributeSection(child,
                                       smtk::dynamicCastPointer<AttributeSection>(sec));
         break;
       case Section::GROUP:
         child = node.append_child("GroupSection");
-        this->processGroupSection(child, 
+        this->processGroupSection(child,
                                   smtk::dynamicCastPointer<GroupSection>(sec));
         break;
       case Section::INSTANCED:
         child = node.append_child("InstancedSection");
-        this->processInstancedSection(child, 
+        this->processInstancedSection(child,
                                       smtk::dynamicCastPointer<InstancedSection>(sec));
         break;
       case Section::MODEL_ENTITY:
         child = node.append_child("ModelEntitySection");
-        this->processModelEntitySection(child, 
+        this->processModelEntitySection(child,
                                         smtk::dynamicCastPointer<ModelEntitySection>(sec));
         break;
       case Section::SIMPLE_EXPRESSION:
         child = node.append_child("SimpleExpressionSection");
-        this->processSimpleExpressionSection(child, 
+        this->processSimpleExpressionSection(child,
                                              smtk::dynamicCastPointer<SimpleExpressionSection>(sec));
         break;
       default:
-        this->m_errorStatus << "Unsupport Section Type " 
-                            << Section::type2String(sec->type()) << "\n";
+        smtkErrorMacro(this->m_logger, "Unsupport Section Type "
+                       << Section::type2String(sec->type()));
       }
     }
 }

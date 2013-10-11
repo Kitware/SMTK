@@ -39,8 +39,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
-#include "smtk/attribute/XmlV1StringWriter.h"
-#include "smtk/attribute/XmlDocV1Parser.h"
+#include "smtk/util/Logger.h"
+#include "smtk/util/XmlV1StringWriter.h"
+#include "smtk/util/XmlDocV1Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.hpp"
 #include "pugixml-1.2/src/pugixml.cpp"
@@ -169,25 +170,38 @@ int main()
   att = manager.createAttribute("Globals", globalsDef);
   iSec = root->addSubsection<InstancedSectionPtr>("Global Parameters");
   iSec->addInstance(att);
-  attribute::XmlV1StringWriter writer(manager);
-  std::string result = writer.convertToString();
+  smtk::util::Logger logger;
+  smtk::util::XmlV1StringWriter writer(manager);
+  std::string result = writer.convertToString(logger);
   std::cout << result << std::endl;
+  if (logger.hasErrors())
+    {
+    std::cerr <<  "Errors encountered creating Attribute String:\n";
+    std::cerr << logger.convertToString();
+    }
+
   std::stringstream test(result);
   pugi::xml_document doc;
   doc.load(test);
   attribute::Manager manager1;  
-  smtk::attribute::XmlDocV1Parser reader(manager1);
+  smtk::util::XmlDocV1Parser reader(manager1);
   reader.process(doc);
-  std::string readErrors = reader.errorStatus();
-  if (readErrors != "")
+  if (reader.messageLog().hasErrors())
     {
-    std::cerr << "READ ERRORS ENCOUNTERED!!!\n";
-    std::cerr << readErrors << "\n";
+    std::cerr <<  "Errors encountered parsing Attribute String:\n";
+    std::cerr << reader.messageLog().convertToString();
     }
-  attribute::XmlV1StringWriter writer1(manager1);
+
+  smtk::util::XmlV1StringWriter writer1(manager1);
   std::cout << "Manager 1:\n";
-  result = writer1.convertToString();
+  result = writer1.convertToString(logger);
   std::cout << result << std::endl;
+
+  if (logger.hasErrors())
+    {
+    std::cerr <<  "Errors encountered creating Attribute String 2nd Pass:\n";
+    std::cerr << logger.convertToString();
+    }
 
   std::cout << "Manager destroyed\n";
   }

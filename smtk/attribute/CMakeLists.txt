@@ -5,8 +5,6 @@ set(attributeHeaders
   AttributeRefItem.h
   AttributeRefItemDefinition.h
   AttributeSection.h
-  AttributeReader.h
-  AttributeWriter.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -35,8 +33,6 @@ set(attributeHeaders
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-  XmlDocV1Parser.h
-  XmlV1StringWriter.h
   )
 
 set(attributeSrcs
@@ -44,8 +40,6 @@ set(attributeSrcs
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
   AttributeSection.cxx
-  AttributeReader.cxx
-  AttributeWriter.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -72,8 +66,6 @@ set(attributeSrcs
   ValueItemDefinition.cxx
   VoidItem.cxx
   VoidItemDefinition.cxx
-  XmlV1StringWriter.cxx
-  XmlDocV1Parser.cxx
 )
 
 #install the headers

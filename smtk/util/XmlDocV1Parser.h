@@ -20,46 +20,67 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME XmlV1StringWriter.h -
+// .NAME XmlDocV1Parser.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_XmlV1StringWriter_h
-#define __smtk_attribute_XmlV1StringWriter_h
+#ifndef __smtk_util_XmlDocV1Parser_h
+#define __smtk_util_XmlDocV1Parser_h
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Manager.h"
+#include "smtk/util/Logger.h"
+#include <utility>
 #include <string>
-#include <sstream>
 #include <vector>
 #include "pugixml-1.2/src/pugixml.hpp"
 
+
 namespace smtk
 {
-  namespace attribute
+  typedef std::pair<smtk::ValueItemDefinitionPtr, std::string> ItemExpressionDefInfo;
+  typedef std::pair<smtk::AttributeRefItemDefinitionPtr, std::string> AttRefDefInfo;
+  namespace util
   {
-    class SMTKCORE_EXPORT XmlV1StringWriter
+    // Class for recording problems
+    class Logger;
+
+    // Helper struct needed for dealing with attribute references
+    struct AttRefInfo
+    {
+      smtk::AttributeRefItemPtr item;
+      int pos;
+      std::string attName;
+    };
+
+    struct ItemExpressionInfo
+    {
+      smtk::ValueItemPtr item;
+      int pos;
+      std::string expName;
+    };
+
+    class SMTKCORE_EXPORT XmlDocV1Parser
     {
     public:
-      XmlV1StringWriter(const smtk::attribute::Manager &manager);
-      virtual ~XmlV1StringWriter();
-      std::string convertToString();
-      std::string errorStatus() const
-      {return this->m_errorStatus.str();}
-    protected:
-      void processAttributeInformation();
-      void processSections();
-      void processModelInfo();
+      XmlDocV1Parser(smtk::attribute::Manager &manager);
+      virtual ~XmlDocV1Parser();
+      void process(pugi::xml_document &doc);
+      static void convertStringToXML(std::string &str);
+      const smtk::util::Logger &messageLog() const
+      {return this->m_logger;}
 
-      void processDefinition(pugi::xml_node &definitions,
-                             pugi::xml_node &attributes,
-                             smtk::AttributeDefinitionPtr def);
-      void processAttribute(pugi::xml_node &attributes,
-                            smtk::AttributePtr att);
+    protected:
+      void processAttributeInformation(pugi::xml_node &root);
+      void processSections(pugi::xml_node &root);
+      void processModelInfo(pugi::xml_node &root);
+
+      void processDefinition(pugi::xml_node &defNode);
+      void processAttribute(pugi::xml_node &attNode);
       void processItem(pugi::xml_node &node,
                        smtk::AttributeItemPtr item);
-      void processItemDefinition(pugi::xml_node &node,
-                                 smtk::AttributeItemDefinitionPtr idef);
+      void processItemDef(pugi::xml_node &node,
+                          smtk::AttributeItemDefinitionPtr idef);
       void processAttributeRefItem(pugi::xml_node &node,
                                    smtk::AttributeRefItemPtr item);
       void processAttributeRefDef(pugi::xml_node &node,
@@ -111,13 +132,20 @@ namespace smtk
       void processBasicSection(pugi::xml_node &node,
                                smtk::SectionPtr sec);
 
-      static std::string encodeModelEntityMask(unsigned long m);
-      static std::string encodeColor(const double *color);
+      bool getColor(pugi::xml_node &node, double color[3],
+                    const std::string &colorName);
 
-      const smtk::attribute::Manager &m_manager;
-      pugi::xml_document m_doc;
-      pugi::xml_node m_root;
-      std::stringstream m_errorStatus;
+      unsigned long  decodeModelEntityMask(const std::string &s);
+      static int decodeColorInfo(const std::string &s, double *color);
+
+      smtk::attribute::Manager &m_manager;
+      std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
+      std::vector<AttRefDefInfo> m_attRefDefInfo;
+      std::vector<ItemExpressionInfo> m_itemExpressionInfo;
+      std::vector<AttRefInfo> m_attRefInfo;
+      std::string m_defaultCategory;
+      pugi::xml_node m_root; // Dummy for now!
+      smtk::util::Logger m_logger;
     private:
 
     };
@@ -125,4 +153,4 @@ namespace smtk
 }
 
 
-#endif /* __smtk_attribute_XmlV1StringWriter_h */
+#endif /* __smtk_util_XmlDocV1Parser_h */

@@ -222,6 +222,11 @@
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
 
+  <type-template name="smtk::util::shared_ptr">
+    <include file-name="memory" location="global"/>
+    <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
+  </type-template>
+
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
@@ -242,7 +247,7 @@
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
-    <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
+    <modify-function signature="setUserData(const std::string &amp;, smtk::util::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
     <modify-function signature="reset()" remove="all"/>
     <modify-function signature="detachOwningItem()" remove="all"/>
     <modify-function signature="detachOwningAttribute()" remove="all"/>
@@ -320,7 +325,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
 
-  <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
+  <value-type template="smtk::util::shared_ptr" args="smtk::util::UserData" />
 
   <namespace-type name="smtk">
     <namespace-type name="model">
@@ -349,6 +354,22 @@
 
     </namespace-type>
 
+    <namespace-type name="util">
+      <!-- setup the util classes -->
+     <object-type name="AttributeReader">
+        <include file-name="smtk/util/AttributeReader.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeWriter">
+        <include file-name="smtk/util/AttributeWriter.h" location="local"/>
+      </object-type>
+
+      <object-type name="UserData">
+        <include file-name="smtk/util/UserData.h" location="local" />
+      </object-type>
+
+    </namespace-type>
+
     <namespace-type name="attribute">
       <!-- setup the attribute classes -->
       <object-type name="Attribute">
@@ -369,10 +390,6 @@
         <modify-function signature="setColor(const double *)" remove="all"/>
       </object-type>
 
-     <object-type name="AttributeReader">
-        <include file-name="smtk/attribute/AttributeReader.h" location="local"/>
-      </object-type>
-
       <object-type name="AttributeRefItem">
         <include file-name="smtk/attribute/AttributeRefItem.h" location="local"/>
       </object-type>
@@ -387,10 +404,6 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-      </object-type>
-
-      <object-type name="AttributeWriter">
-        <include file-name="smtk/attribute/AttributeWriter.h" location="local"/>
       </object-type>
 
       <object-type name="Definition">
@@ -617,10 +630,6 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-      </object-type>
-
-      <object-type name="UserData">
-        <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>
 
       <object-type name="ValueItem">

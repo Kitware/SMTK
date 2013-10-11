@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeReader.h -
+// .NAME AttributeWriter.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_AttributeReader_h
-#define __smtk_attribute_AttributeReader_h
+#ifndef __smtk_util_AttributeWriter_h
+#define __smtk_util_AttributeWriter_h
 
 #include "smtk/SMTKCoreExports.h"
 #include <string>
@@ -35,21 +35,26 @@ namespace smtk
   namespace attribute
   {
     class Manager;
-    class SMTKCORE_EXPORT AttributeReader
+  };
+
+  namespace util
+  {
+    class Logger;
+    class SMTKCORE_EXPORT AttributeWriter
     {
     public:
-      // Returns true if there was a problem with reading the file
-      bool read(Manager &manager, const std::string &filename);
-      bool readContents(Manager &manager, const std::string &filecontents);
-      const std::string &errorMessages() const
-      {return this->m_errorMessages;}
-
+      // Returns true if there was a problem with writing the file
+      bool write(const smtk::attribute::Manager &manager,
+                 const std::string &filename,
+                 smtk::util::Logger &logger);
+      bool writeContents(const smtk::attribute::Manager &manager,
+                         std::string &filecontents,
+                         smtk::util::Logger &logger);
     protected:
-      std::string m_errorMessages;
     private:
     };
   }
 }
 
 
-#endif /* __smtk_attribute_AttributeReader_h */
+#endif /* __smtk_util_AttributeWriter_h */
