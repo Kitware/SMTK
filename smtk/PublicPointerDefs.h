@@ -45,7 +45,7 @@ namespace smtk
     class GridInfo;
     class GroupItem;
     class ModelDomainItem;
-  };
+  }
 
   namespace attribute
   {
@@ -72,12 +72,12 @@ namespace smtk
     class ValueItemDefinition;
     class VoidItem;
     class VoidItemDefinition;
-  };
+  }
 
   namespace util
   {
     class UserData;
-  };
+  }
 
   namespace view
   {
@@ -137,7 +137,7 @@ namespace smtk
   namespace util
   {
     //custom user data classes
-    typedef shared_ptr<smtk::util::UserData > UserDataPtr;
+    typedef smtk::shared_ptr< smtk::util::UserData > UserDataPtr;
   };
 
   namespace view
@@ -152,6 +152,7 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
     typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
   };
+
 
   // class for making the analysis grid information available in SMTK
   typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
@@ -216,6 +217,6 @@ namespace smtk
       typedef typename T::element_type RawPointerType;
     };
 
-  };
-};
+  }
+}
 #endif /* __smtk_PublicPointerDefs_h */
