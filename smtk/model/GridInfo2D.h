@@ -32,6 +32,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "GridInfo.h"
 
+#include <vector>
+
 namespace smtk
 {
   namespace model
@@ -39,8 +41,8 @@ namespace smtk
     class SMTKCORE_EXPORT GridInfo2D : public GridInfo
     {
     public:
-      virtual int dimension() {return 2;}
-      virtual void groupCellIds(int groupId, std::vector<int>& cellIds);
+      virtual int dimension() const;
+      virtual std::vector<int> groupCellIds(int groupId);
       virtual double groupArea(int groupId);
 
       virtual std::vector<int> cellPointIds(int cellId);

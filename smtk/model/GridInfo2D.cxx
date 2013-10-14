@@ -31,25 +31,24 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/model/GridInfo2D.h"
+#include <iostream>
 
-namespace smtk::model
+namespace smtk
 {
-
+namespace model
+{
 //----------------------------------------------------------------------------
-GridInfo2D::GridInfo2D()
+int GridInfo2D::dimension() const
 {
+  return 2;
 }
 
 //----------------------------------------------------------------------------
-GridInfo2D::~GridInfo2D()
+std::vector<int> GridInfo2D::groupCellIds(int)
 {
-}
-
-//----------------------------------------------------------------------------
-void GridInfo2D::groupCellIds(int, std::vector<int>& cellIds)
-{
-  cellIds.reset();
   std::cerr << "GridInfo2D::groupCellIds() should be implemented by a derived class\n";
+  std::vector<int> cellIds;
+  return cellIds;
 }
 
 //----------------------------------------------------------------------------
@@ -64,7 +63,7 @@ std::vector<int> GridInfo2D::cellPointIds(int)
 {
   std::cerr << "GridInfo2D::cellPointIds() should be implemented by a derived class\n";
   std::vector<int> notUsed;
-  return notUsed
+  return notUsed;
 }
 
 //----------------------------------------------------------------------------
@@ -73,5 +72,6 @@ std::vector<double> GridInfo2D::pointLocation(int)
   std::cerr << "GridInfo2D::pointLocation() should be implemented by a derived class\n";
   std::vector<double> notUsed;
   return notUsed;
+}
 }
 }
