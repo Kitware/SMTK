@@ -20,30 +20,42 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME SimpleExpression.h -
+// .SECTION Description
+// .SECTION See Also
 
+#ifndef __smtk_view_SimpleExpression_h
+#define __smtk_view_SimpleExpression_h
 
-#include "smtk/attribute/RootSection.h"
-using namespace smtk::attribute; 
+#include "smtk/view/Base.h"
+#include "smtk/SMTKCoreExports.h"
+#include "smtk/PublicPointerDefs.h"
+#include <string>
 
-//----------------------------------------------------------------------------
-RootSection::RootSection(const std::string &myTitle): GroupSection(myTitle)
+namespace smtk
 {
-  this->m_defaultColor[0] = 1.0;
-  this->m_defaultColor[1] = 1.0;
-  this->m_defaultColor[2] = 0.5;
-  this->m_defaultColor[3] = 1.0;
-  this->m_invalidColor[0] = 1.0;
-  this->m_invalidColor[1] = 0.5;
-  this->m_invalidColor[2] = 0.5;
-  this->m_invalidColor[3] = 1.0;
+  namespace view
+  {
+    class SMTKCORE_EXPORT SimpleExpression : public Base
+    {
+    public:
+      static smtk::SimpleExpressionPtr New(const std::string &myName)
+      { return smtk::SimpleExpressionPtr(new SimpleExpression(myName)); }
+
+      SimpleExpression(const std::string &myTitle);
+      virtual ~SimpleExpression();
+      virtual Base::Type type() const;
+      smtk::AttributeDefinitionPtr definition() const
+      {return this->m_definition;}
+      void setDefinition(smtk::AttributeDefinitionPtr def)
+      {this->m_definition = def;}
+
+    protected:
+      smtk::AttributeDefinitionPtr m_definition;
+    private:
+    };
+  }
 }
 
-//----------------------------------------------------------------------------
-RootSection::~RootSection()
-{
-}
-//----------------------------------------------------------------------------
-Section::Type RootSection::type() const
-{
-  return ROOT;
-}
+
+#endif /* __smtk_view_SimpleExpression_h */

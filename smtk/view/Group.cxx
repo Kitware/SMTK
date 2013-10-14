@@ -22,21 +22,20 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/SimpleExpressionSection.h"
-using namespace smtk::attribute; 
+#include "smtk/view/Group.h"
+using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-SimpleExpressionSection::SimpleExpressionSection(const std::string &myTitle):
-  Section(myTitle)
+Group::Group(const std::string &myTitle): Section(myTitle)
 {
 }
 
 //----------------------------------------------------------------------------
-SimpleExpressionSection::~SimpleExpressionSection()
+Group::~Group()
 {
 }
 //----------------------------------------------------------------------------
-Section::Type SimpleExpressionSection::type() const
+Base::Type Group::type() const
 {
-  return SIMPLE_EXPRESSION;
+  return GROUP;
 }

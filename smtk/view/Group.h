@@ -20,49 +20,56 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME InstancedSection.h -
+// .NAME GroupSection.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_InstancedSection_h
-#define __smtk_attribute_InstancedSection_h
+#ifndef __smtk_view_GroupSection_h
+#define __smtk_view_GroupSection_h
 
-#include "smtk/attribute/Section.h"
-#include "smtk/SMTKCoreExports.h"
-#include "smtk/PublicPointerDefs.h"
+#include "smtk/view/Base.h"
 #include <vector>
-
-//NOTE THAT WE ASSUME THAT THE READER Takes care of creating the instances if they are
-// not found!!
 namespace smtk
 {
   namespace attribute
   {
-    class SMTKCORE_EXPORT InstancedSection : public Section
+    class SMTKCORE_EXPORT GroupSection : public Base
     {
     public:
-      static smtk::InstancedSectionPtr New(const std::string &myName)
-      { return smtk::InstancedSectionPtr(new InstancedSection(myName)); }
+      static smtk::GroupSectionPtr New(const std::string &myName)
+      { return smtk::GroupSectionPtr(new GroupSection(myName)); }
 
-      InstancedSection(const std::string &myTitle);
-      virtual ~InstancedSection();
-      virtual Section::Type type() const;
-      void addInstance(smtk::AttributePtr att)
-        { if(att.get() != NULL)
-            {this->m_instances.push_back(att);}
-        }
-      std::size_t numberOfInstances() const
-      {return this->m_instances.size();}
-      smtk::AttributePtr instance(int ith) const
-      {return this->m_instances[ith];}
+      GroupSection(const std::string &myTitle);
+      virtual ~GroupSection();
+      virtual Base::Type type() const;
+      std::size_t numberOfSubsections() const
+      {return this->m_subSections.size();}
+      smtk::view::BasePtr subsection(int ith) const
+      {return this->m_subSections[ith];}
+
+      bool addSubView( smtk::view::BasePtr subview )
+      {
+        this->m_subViews.push_back(subview);
+        return true;
+      }
+
+      template<typename T>
+        typename smtk::internal::shared_ptr_type<T>::SharedPointerType
+        addSubView(const std::string &name)
+      {
+        typedef smtk::internal::shared_ptr_type<T> SharedTypes;
+        typename SharedTypes::SharedPointerType subview;
+        subview = SharedTypes::RawPointerType::New(name);
+        this->m_subViews.push_back(subview);
+        return subview;
+      }
 
     protected:
-      std::vector<smtk::AttributePtr> m_instances;
+      std::vector<smtk::SectionPtr> m_subViews;
     private:
 
     };
   }
 }
 
-
-#endif /* __smtk_attribute_InstancedSection_h */
+#endif /* __smtk_attribute_GroupSection_h */

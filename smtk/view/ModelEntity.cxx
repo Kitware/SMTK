@@ -22,21 +22,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/InstancedSection.h"
-using namespace smtk::attribute; 
+#include "smtk/view/ModelEntity.h"
+using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-InstancedSection::InstancedSection(const std::string &myTitle):
-  Section(myTitle)
+ModelEntity::ModelEntity(const std::string &myTitle):
+  Section(myTitle), m_modelEntityMask(0)
 {
 }
 
 //----------------------------------------------------------------------------
-InstancedSection::~InstancedSection()
+ModelEntity::~ModelEntity()
 {
 }
 //----------------------------------------------------------------------------
-Section::Type InstancedSection::type() const
+Base::Type ModelEntity::type() const
 {
-  return INSTANCED;
+  return MODEL_ENTITY;
 }

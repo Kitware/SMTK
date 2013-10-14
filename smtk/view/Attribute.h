@@ -20,54 +20,56 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ModelEntitySection.h -
+// .NAME Attribute.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_ModelEntitySection_h
-#define __smtk_attribute_ModelEntitySection_h
+#ifndef __smtk_view_Attribute_h
+#define __smtk_view_Attribute_h
 
-#include "smtk/attribute/Section.h"
+#include "smtk/view/Base.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include <string>
+#include <vector>
 
 namespace smtk
 {
-  namespace attribute
+  namespace view
   {
-    class SMTKCORE_EXPORT ModelEntitySection : public Section
+    class SMTKCORE_EXPORT Attribute : public Base
     {
     public:
-      static smtk::ModelEntitySectionPtr New(const std::string &myName)
-      { return smtk::ModelEntitySectionPtr(new ModelEntitySection(myName)); }
+      static smtk::view::AttributePtr New(const std::string &myTitle)
+      { return smtk::view::AttributePtr(new Attribute(myTitle)); }
 
-      ModelEntitySection(const std::string &myTitle);
-
-      virtual ~ModelEntitySection();
-      virtual Section::Type type() const;
-      // NEED TO CLARIFY - are groups of entities
-      // represented by this mask?  For example, a set of model faces??
-      // If not we need to add something to clarify this
+      Attribute(const std::string &myTitle);
+      virtual ~Attribute();
+      virtual Base::Type type() const;
+      void addDefinition(smtk::AttributeDefinitionPtr def)
+      {this->m_definitions.push_back(def);}
+      std::size_t numberOfDefinitions() const
+      { return this->m_definitions.size();}
+      smtk::AttributeDefinitionPtr definition(int ith) const
+      {return this->m_definitions[ith];}
       unsigned long modelEntityMask() const
       {return this->m_modelEntityMask;}
       void setModelEntityMask(unsigned long mask)
       {this->m_modelEntityMask = mask;}
-
-      // If this def is not null then the section should
-      // display all model entities of the requested mask along
-      // with the attribute of this type in a table view
-      smtk::AttributeDefinitionPtr definition() const
-      {return this->m_attributeDefinition;}
-      void setDefinition(smtk::AttributeDefinitionPtr def)
-      {this->m_attributeDefinition = def;}
+      bool okToCreateModelEntities() const
+      { return this->m_okToCreateModelEntities;}
+      void setOkToCreateModelEntities(bool val)
+      { this->m_okToCreateModelEntities = val;}
 
     protected:
+      std::vector<smtk::AttributeDefinitionPtr> m_definitions;
       unsigned long m_modelEntityMask;
-      smtk::AttributeDefinitionPtr m_attributeDefinition;
-    private:
+      bool m_okToCreateModelEntities;
 
+    private:
     };
   }
 }
 
-#endif /* __smtk_attribute_ModelEntitySection_h */
+
+#endif /* __smtk_view_Attribute_h */

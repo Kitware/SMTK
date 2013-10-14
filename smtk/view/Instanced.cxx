@@ -22,20 +22,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/GroupSection.h"
-using namespace smtk::attribute; 
+#include "smtk/view/Instanced.h"
+using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-GroupSection::GroupSection(const std::string &myTitle): Section(myTitle)
+Instanced::Instanced(const std::string &myTitle):
+  Section(myTitle)
 {
 }
 
 //----------------------------------------------------------------------------
-GroupSection::~GroupSection()
+Instanced::~Instanced()
 {
 }
 //----------------------------------------------------------------------------
-Section::Type GroupSection::type() const
+Base::Type Instanced::type() const
 {
-  return GROUP;
+  return INSTANCED;
 }

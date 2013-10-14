@@ -22,21 +22,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/ModelEntitySection.h"
-using namespace smtk::attribute; 
+#include "smtk/view/SimpleExpression.h"
+using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-ModelEntitySection::ModelEntitySection(const std::string &myTitle):
-  Section(myTitle), m_modelEntityMask(0)
+SimpleExpression::SimpleExpression(const std::string &myTitle):
+  Section(myTitle)
 {
 }
 
 //----------------------------------------------------------------------------
-ModelEntitySection::~ModelEntitySection()
+SimpleExpression::~SimpleExpression()
 {
 }
 //----------------------------------------------------------------------------
-Section::Type ModelEntitySection::type() const
+Base::Type SimpleExpression::type() const
 {
-  return MODEL_ENTITY;
+  return SIMPLE_EXPRESSION;
 }

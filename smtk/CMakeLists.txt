@@ -9,8 +9,11 @@ smtk_source_group(model)
 add_subdirectory(util)
 smtk_source_group(util)
 
-set(smtk_headers ${attributeHeaders} ${modelHeaders} ${utilHeaders})
-set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs})
+add_subdirectory(view)
+smtk_source_group(view)
+
+set(smtk_headers ${attributeHeaders} ${modelHeaders} ${utilHeaders} ${viewHeaders})
+set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs} ${viewSrcs})
 
 add_library(SMTKCore ${smtk_srcs})
 smtk_export_header(SMTKCore SMTKCoreExports.h)

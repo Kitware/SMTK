@@ -22,67 +22,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/Section.h"
-using namespace smtk::attribute; 
+#include "smtk/view/Attribute.h"
+using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-Section::Section(const std::string &myTitle): m_title(myTitle)
+Attribute::Attribute(const std::string &myTitle):
+  Section(myTitle), m_modelEntityMask(0), m_okToCreateModelEntities(false)
 {
 }
 
 //----------------------------------------------------------------------------
-Section::~Section()
+Attribute::~Attribute()
 {
 }
 //----------------------------------------------------------------------------
-std::string Section::type2String(Section::Type t)
+Base::Type Attribute::type() const
 {
-  switch (t)
-    {
-    case ATTRIBUTE:
-      return "Attribute";
-    case GROUP:
-      return "Group";
-    case INSTANCED:
-      return "Instanced";
-    case MODEL_ENTITY:
-      return "ModelEntity";
-    case ROOT:
-      return "Root";
-    case SIMPLE_EXPRESSION:
-      return "SimpleExpression";
-    default:
-      return "";
-    }
-  return "Error!";
+  return ATTRIBUTE;
 }
-//----------------------------------------------------------------------------
-Section::Type Section::string2Type(const std::string &s)
-{
-  if (s == "Attribute")
-    {
-    return ATTRIBUTE;
-    }
-  if (s == "Group")
-    {
-    return GROUP;
-    }
-  if (s == "Instanced")
-    {
-    return INSTANCED;
-    }
-  if (s == "ModelEntity")
-    {
-    return MODEL_ENTITY;
-    }
-  if (s == "Root")
-    {
-    return ROOT;
-    }
-  if (s == "SimpleExpression")
-    {
-    return SIMPLE_EXPRESSION;
-    }
-  return NUMBER_OF_TYPES;
-}
-//----------------------------------------------------------------------------

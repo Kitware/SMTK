@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Section.h -
+// .NAME Base.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_Section_h
-#define __smtk_attribute_Section_h
+#ifndef __smtk_view_Base_h
+#define __smtk_view_Base_h
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -33,9 +33,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <string>
 namespace smtk
 {
-  namespace attribute
+  namespace view
   {
-    class SMTKCORE_EXPORT Section
+    class SMTKCORE_EXPORT Base
     {
     public:
       enum Type
@@ -49,9 +49,9 @@ namespace smtk
         NUMBER_OF_TYPES
       };
 
-      Section(const std::string &myTitle);
-      virtual ~Section();
-      virtual Section::Type type() const = 0;
+      Base(const std::string &myTitle);
+      virtual ~Base();
+      virtual Base::Type type() const = 0;
       std::string title() const
       { return this->m_title;}
       void setTitle(const std::string &myTitle)
@@ -68,8 +68,8 @@ namespace smtk
       void clearAllUserData()
       {this->m_userData.clear();}
 
-      static std::string type2String(Section::Type t);
-      static Section::Type string2Type(const std::string &s);
+      static std::string type2String(Base::Type t);
+      static Base::Type string2Type(const std::string &s);
 
     protected:
       std::map<std::string, smtk::util::UserDataPtr > m_userData;
@@ -79,7 +79,7 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline smtk::util::UserDataPtr Section::userData(const std::string &key) const
+    inline smtk::util::UserDataPtr Base::userData(const std::string &key) const
     {
       std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
@@ -89,4 +89,4 @@ namespace smtk
   }
 }
 
-#endif /* __smtk_attribute_Section_h */
+#endif /* __smtk_view_Base_h */

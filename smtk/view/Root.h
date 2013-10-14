@@ -20,28 +20,28 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME RootSection.h -
+// .NAME Root.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_RootSection_h
-#define __smtk_attribute_RootSection_h
+#ifndef __smtk_view_Root_h
+#define __smtk_view_Root_h
 
-#include "smtk/attribute/GroupSection.h"
+#include "smtk/view/Group.h"
 namespace smtk
 {
-  namespace attribute
+  namespace view
   {
-    class SMTKCORE_EXPORT RootSection : public GroupSection
+    class SMTKCORE_EXPORT Root : public Group
     {
     public:
-      static smtk::RootSectionPtr New(const std::string &myName)
-      { return smtk::RootSectionPtr(new RootSection(myName)); }
+      static smtk::RootPtr New(const std::string &myName)
+      { return smtk::RootPtr(new Root(myName)); }
 
-      RootSection(const std::string &myTitle);
-      virtual ~RootSection();
+      Root(const std::string &myTitle);
+      virtual ~Root();
 
-      virtual Section::Type type() const;
+      virtual Base::Type type() const;
 
       const double *defaultColor() const
       {return this->m_defaultColor;}
@@ -63,7 +63,7 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline void RootSection::setDefaultColor(double r, double g, double b,
+    inline void Root::setDefaultColor(double r, double g, double b,
                                              double a)
     {
       this->m_defaultColor[0] = r;
@@ -72,7 +72,7 @@ namespace smtk
       this->m_defaultColor[3] = a;
     }
 //----------------------------------------------------------------------------
-    inline void RootSection::setInvalidColor(double r, double g, double b,
+    inline void Root::setInvalidColor(double r, double g, double b,
                                              double a)
     {
       this->m_invalidColor[0] = r;
@@ -85,4 +85,4 @@ namespace smtk
 }
 
 
-#endif /* __smtk_attribute_RootSection_h */
+#endif /* __smtk_view_Root_h */

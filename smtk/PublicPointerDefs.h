@@ -50,7 +50,6 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class AttributeSection;
     class AttributeRefItem;
     class AttributeRefItemDefinition;
     class Definition;
@@ -62,17 +61,11 @@ namespace smtk
     class FileItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
-    class GroupSection;
-    class InstancedSection;
     class IntItem;
     class IntItemDefinition;
     class Item;
     class ItemDefinition;
     class Manager;
-    class ModelEntitySection;
-    class RootSection;
-    class Section;
-    class SimpleExpressionSection;
     class StringItem;
     class StringItemDefinition;
     class ValueItem;
@@ -84,6 +77,17 @@ namespace smtk
   namespace util
   {
     class UserData;
+  };
+
+  namespace view
+  {
+    class Attribute;
+    class Base;
+    class Group;
+    class Instanced;
+    class ModelEntity;
+    class Root;
+    class SimpleExpression;
   };
 
   //Shiboken requires that we use fully qualified namespaces for all
@@ -130,19 +134,23 @@ namespace smtk
 
   typedef smtk::shared_ptr< smtk::attribute::Manager >                  AttributeManagerPtr;
 
-  // Section Related Pointer Classes
-  typedef smtk::shared_ptr< smtk::attribute::Section >                  SectionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Section >                    WeakSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::AttributeSection >         AttributeSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupSection >             GroupSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::InstancedSection >         InstancedSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ModelEntitySection >       ModelEntitySectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::RootSection >              RootSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::SimpleExpressionSection >  SimpleExpressionSectionPtr;
   namespace util
   {
     //custom user data classes
-    typedef shared_ptr<UserData > UserDataPtr;
+    typedef shared_ptr<smtk::util::UserData > UserDataPtr;
+  };
+
+  namespace view
+  {
+  // Section Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::view::Base >             BasePtr;
+    typedef smtk::weak_ptr< smtk::view::Base >               WeakBasePtr;
+    typedef smtk::shared_ptr< smtk::view::Attribute>         AttributePtr;
+    typedef smtk::shared_ptr< smtk::view::Group>             GroupPtr;
+    typedef smtk::shared_ptr< smtk::view::Instanced>         InstancedPtr;
+    typedef smtk::shared_ptr< smtk::view::ModelEntity>       ModelEntityPtr;
+    typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
+    typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
   };
 
   // class for making the analysis grid information available in SMTK
