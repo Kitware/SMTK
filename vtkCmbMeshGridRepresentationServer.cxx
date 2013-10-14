@@ -632,71 +632,42 @@ bool vtkCmbMeshGridRepresentationServer::GetGroupFacetsArea(
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbMeshGridRepresentationServer::GetRandomPointsInGroupDomain(
-    vtkDiscreteModel* model, int groupId, int numberOfAgents,
-    std::vector<std::pair<int, std::pair<double, double> > >& locations)
+bool vtkCmbMeshGridRepresentationServer::GetCellPointIds(
+  int cellId, std::vector<int>& pointIds)
 {
-  std::set<vtkIdType> faceIdList;
-  if(!this->CanProcessModelGroup(model, groupId, faceIdList))
+  vtkIdType cId = static_cast<vtkIdType>(cellId);
+  if(cId < 0 || cId >= this->Representation->GetNumberOfCells())
     {
+    pointIds.clear();
+    vtkWarningMacro("Bad cell id");
     return false;
     }
-  vtkIdTypeArray* maparray = vtkIdTypeArray::SafeDownCast(
-      this->Representation->GetCellData()->GetArray("ModelId"));
-
-  vtkIdType numCells = this->Representation->GetNumberOfCells();
-  int count = 0;
-  vtkIdType cellId, fid;
-  double p0[3], p1[3], p2[3];
-  double r, s, ab[3], ac[3];
-  locations.clear();
-
-  while(count < numberOfAgents)
+  vtkNew<vtkIdList> ids;
+  this->Representation->GetCellPoints(cId, ids.GetPointer());
+  pointIds.resize(ids->GetNumberOfIds());
+  for(vtkIdType i=0;i<ids->GetNumberOfIds();i++)
     {
-    cellId = (vtkIdType)vtkMath::Random(0, (double)(numCells-1));
-    fid = maparray->GetValue(cellId);
-    if(faceIdList.find(fid) != faceIdList.end())
-      {
-      vtkTriangle *t = vtkTriangle::SafeDownCast(
-        this->Representation->GetCell(cellId));
-      if(t)
-        {
-        // I am using triangle center for performance, but we can certainly
-        // do some random generation with the three points to get a point.
-        t->GetPoints()->GetPoint(0, p0);
-        t->GetPoints()->GetPoint(1, p1);
-        t->GetPoints()->GetPoint(2, p2);
-
-        vtkMath::Subtract(p1, p0, ab);
-        vtkMath::Subtract(p2, p0, ac);
-        r = vtkMath::Random(0.0, 1.0);       //  % along ab
-        s = vtkMath::Random(0.0, 1.0);       //  % along ac
-
-        if (r + s >= 1)
-          {
-          r = 1 - r;
-          s = 1 - s;
-          }
-
-        std::pair<double, double> posXY;
-        //  Now add the two weighted vectors to p0
-        posXY.first = p0[0] + ((ab[0] * r) + (ac[1] * s));
-        posXY.second = p0[1] + ((ab[1] * r) + (ac[1] * s));
-/*
-        vtkTriangle::TriangleCenter(p0, p1, p2, tcenter);
-        posXY.first = tcenter[0];
-        posXY.second = tcenter[1];
-*/
-
-        count++;
-        locations.push_back(
-          std::make_pair<int, std::pair<double, double> >(cellId, posXY));
-        }
-      }
+    pointIds[i] = static_cast<int>(ids->GetId(i));
     }
-
   return true;
 }
+
+//----------------------------------------------------------------------------
+bool vtkCmbMeshGridRepresentationServer::GetPointLocation(
+  int pointId, std::vector<double>& coords)
+{
+  vtkIdType pId = static_cast<vtkIdType>(pointId);
+  if(pId < 0 || pId >= this->Representation->GetNumberOfPoints())
+    {
+    coords.clear();
+    vtkWarningMacro("Bad point id");
+    return false;
+    }
+  coords.resize(3);
+  this->Representation->GetPoint(pId, &coords[0]);
+  return true;
+}
+
 //----------------------------------------------------------------------------
 void vtkCmbMeshGridRepresentationServer::PrintSelf(ostream& os, vtkIndent indent)
 {

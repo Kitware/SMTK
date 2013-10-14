@@ -110,13 +110,9 @@ public:
   virtual bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area);
 
   // Description:
-  // Get the locations of points and its containing cells given the group id
-  // of model enities. These points are randomly placed inside of the randomly
-  // located cell withint the model group.
-  // Meant for 2D models with triangle meshes.
-  virtual bool GetRandomPointsInGroupDomain(
-    vtkDiscreteModel* model, int groupId, int numberOfAgents,
-    std::vector<std::pair<int, std::pair<double, double> > >& locations);
+  // Get cell and point information from the analysis grid.
+  virtual bool GetCellPointIds(int cellId, std::vector<int>& pointIds);
+  virtual bool GetPointLocation(int pointId, std::vector<double>& coords);
 
   virtual void WriteMeshToFile( );
 protected:
