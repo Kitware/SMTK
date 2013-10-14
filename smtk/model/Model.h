@@ -84,14 +84,6 @@ namespace smtk
 
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
-      // callback methods to get analysis grid information in SMTK.
-      // note that for some reason shiboken segfaults when I have
-      // a method "void setObject(void*);" so I don't do it.
-      std::vector<int> getGroupCellIds(int groupId);
-      double getGroupArea(int groupId);
-      std::vector<std::pair<int, std::pair<double, double> > >
-        agentsInGroupDomain(int groupId, int numberOfAgents);
-
       void setGridInfo(smtk::GridInfoPtr gridInfo)
       {
         this->m_gridInfo = gridInfo;

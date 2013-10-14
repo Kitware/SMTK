@@ -106,39 +106,3 @@ std::string Model::convertNodalTypeToString(ModelEntityNodalTypes t)
     }
   return "Undefined";
 }
-
-//----------------------------------------------------------------------------
-std::vector<int> Model::getGroupCellIds(int groupId)
-{
-  std::vector<int> values;
-  if(this->m_gridInfo)
-    {
-    this->m_gridInfo->getGroupCellIds(groupId, values);
-    }
-
-  return values;
-}
-
-//----------------------------------------------------------------------------
-double Model::getGroupArea(int groupId)
-{
-  if(this->m_gridInfo)
-    {
-    return this->m_gridInfo->getGroupArea(groupId);
-    }
-
-  return -1;
-}
-
-//----------------------------------------------------------------------------
-std::vector<std::pair<int, std::pair<double, double> > >
-Model::agentsInGroupDomain(int groupId, int numberOfAgents)
-{
-  std::vector<std::pair<int, std::pair<double, double> > > values;
-  if(this->m_gridInfo)
-    {
-    this->m_gridInfo->getAgentsInGroupDomain(groupId, numberOfAgents, values);
-    }
-
-  return values;
-}
