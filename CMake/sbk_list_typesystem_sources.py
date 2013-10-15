@@ -7,15 +7,12 @@ import xml.sax
 
 prefix = None
 
-class_types = {
-  'object-type',
-  'value-type',
-  'interface-type'
-}
-
-scope_types = class_types | {
-  'namespace-type'
-}
+class_types = set([
+    'object-type',
+    'value-type',
+    'interface-type'
+])
+scope_types = class_types.union(['namespace-type'])
 
 #------------------------------------------------------------------------------
 def mangleQualifiedName(name):
