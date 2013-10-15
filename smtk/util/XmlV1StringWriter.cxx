@@ -41,12 +41,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeSection.h"
-#include "smtk/attribute/InstancedSection.h"
-#include "smtk/attribute/GroupSection.h"
-#include "smtk/attribute/ModelEntitySection.h"
-#include "smtk/attribute/RootSection.h"
-#include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -54,6 +48,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
 #include "smtk/model/Model.h"
+#include "smtk/view/Attribute.h"
+#include "smtk/view/Instanced.h"
+#include "smtk/view/Group.h"
+#include "smtk/view/ModelEntity.h"
+#include "smtk/view/Root.h"
+#include "smtk/view/SimpleExpression.h"
 #include <sstream>
 
 using namespace pugi;
@@ -111,7 +111,7 @@ std::string XmlV1StringWriter::convertToString(Logger &logger)
       }
     }
   this->processAttributeInformation();
-  this->processSections();
+  this->processViews();
   this->processModelInfo();
   std::stringstream oss;
   this->m_doc.save(oss, "  ");
@@ -1116,51 +1116,51 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processSections()
+void XmlV1StringWriter::processViews()
 {
-  this->m_root.append_child(node_comment).set_value("********** Workflow Sections ***********");
-  xml_node sections = this->m_root.append_child("RootSection");
-  smtk::RootSectionPtr rs = this->m_manager.rootSection();
+  this->m_root.append_child(node_comment).set_value("********** Workflow Views ***********");
+  xml_node views = this->m_root.append_child("RootView");
+  smtk::view::RootPtr rs = this->m_manager.rootView();
   std::string s;
   s = this->encodeColor(rs->defaultColor());
-  sections.append_child("DefaultColor").text().set(s.c_str());
+  views.append_child("DefaultColor").text().set(s.c_str());
   s = this->encodeColor(rs->invalidColor());
-  sections.append_child("InvalidColor").text().set(s.c_str());
-  this->processGroupSection(sections,
-                            smtk::dynamicCastPointer<GroupSection>(rs));
+  views.append_child("InvalidColor").text().set(s.c_str());
+  this->processGroupView(views,
+                         smtk::dynamicCastPointer<smtk::view::Group>(rs));
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processAttributeSection(xml_node &node,
-                                            smtk::AttributeSectionPtr sec)
+void XmlV1StringWriter::processAttributeView(xml_node &node,
+                                             smtk::view::AttributePtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
-  if (sec->modelEntityMask())
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+  if (v->modelEntityMask())
     {
-    std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
+    std::string s = this->encodeModelEntityMask(v->modelEntityMask());
     node.append_attribute("ModelEnityFilter").set_value(s.c_str());
-    if (sec->okToCreateModelEntities())
+    if (v->okToCreateModelEntities())
       {
       node.append_attribute("CreateEntities").set_value(true);
       }
     }
-  std::size_t i, n = sec->numberOfDefinitions();
+  std::size_t i, n = v->numberOfDefinitions();
   if (n)
     {
     xml_node atypes = node.append_child("AttributeTypes");
     for (i = 0; i < n; i++)
       {
-      atypes.append_child("Type").text().set(sec->definition(i)->type().c_str());
+      atypes.append_child("Type").text().set(v->definition(i)->type().c_str());
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processInstancedSection(xml_node &node,
-                                                  smtk::InstancedSectionPtr sec)
+void XmlV1StringWriter::processInstancedView(xml_node &node,
+                                             smtk::view::InstancedPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
-  std::size_t i, n = sec->numberOfInstances();
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+  std::size_t i, n = v->numberOfInstances();
   xml_node child;
    if (n)
     {
@@ -1168,92 +1168,92 @@ void XmlV1StringWriter::processInstancedSection(xml_node &node,
     for (i = 0; i < n; i++)
       {
       child = instances.append_child("Att");
-      child.append_attribute("Type").set_value(sec->instance(i)->type().c_str());
-      child.text().set(sec->instance(i)->name().c_str());
+      child.append_attribute("Type").set_value(v->instance(i)->type().c_str());
+      child.text().set(v->instance(i)->name().c_str());
       }
     }
 
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processModelEntitySection(xml_node &node,
-                                                  smtk::ModelEntitySectionPtr sec)
+void XmlV1StringWriter::processModelEntityView(xml_node &node,
+                                               smtk::view::ModelEntityPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
-  if (sec->modelEntityMask())
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+  if (v->modelEntityMask())
     {
-    std::string s = this->encodeModelEntityMask(sec->modelEntityMask());
+    std::string s = this->encodeModelEntityMask(v->modelEntityMask());
     node.append_attribute("ModelEnityFilter").set_value(s.c_str());
     }
-  if (sec->definition() != NULL)
+  if (v->definition() != NULL)
     {
-    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    node.append_child("Definition").text().set(v->definition()->type().c_str());
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processSimpleExpressionSection(xml_node &node,
-                                                       smtk::SimpleExpressionSectionPtr sec)
+void XmlV1StringWriter::processSimpleExpressionView(xml_node &node,
+                                                    smtk::view::SimpleExpressionPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(sec));
-  if (sec->definition() != NULL)
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+  if (v->definition() != NULL)
     {
-    node.append_child("Definition").text().set(sec->definition()->type().c_str());
+    node.append_child("Definition").text().set(v->definition()->type().c_str());
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processGroupSection(xml_node &node,
-                                            smtk::GroupSectionPtr group)
+void XmlV1StringWriter::processGroupView(xml_node &node,
+                                         view::GroupPtr group)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<Section>(group));
-  std::size_t i, n = group->numberOfSubsections();
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(group));
+  std::size_t i, n = group->numberOfSubViews();
   xml_node child;
-  smtk::SectionPtr sec;
+  view::BasePtr bview;
   for (i = 0; i < n; i++)
     {
-    sec = group->subsection(i);
-    switch(sec->type())
+    bview = group->subView(i);
+    switch(bview->type())
       {
-      case Section::ATTRIBUTE:
-        child = node.append_child("AttributeSection");
-        this->processAttributeSection(child,
-                                      smtk::dynamicCastPointer<AttributeSection>(sec));
+      case view::Base::ATTRIBUTE:
+        child = node.append_child("AttributeView");
+        this->processAttributeView(child,
+                                   smtk::dynamicCastPointer<view::Attribute>(bview));
         break;
-      case Section::GROUP:
-        child = node.append_child("GroupSection");
-        this->processGroupSection(child,
-                                  smtk::dynamicCastPointer<GroupSection>(sec));
+      case view::Base::GROUP:
+        child = node.append_child("GroupView");
+        this->processGroupView(child,
+                               smtk::dynamicCastPointer<view::Group>(bview));
         break;
-      case Section::INSTANCED:
-        child = node.append_child("InstancedSection");
-        this->processInstancedSection(child,
-                                      smtk::dynamicCastPointer<InstancedSection>(sec));
+      case view::Base::INSTANCED:
+        child = node.append_child("InstancedView");
+        this->processInstancedView(child,
+                                   smtk::dynamicCastPointer<view::Instanced>(bview));
         break;
-      case Section::MODEL_ENTITY:
-        child = node.append_child("ModelEntitySection");
-        this->processModelEntitySection(child,
-                                        smtk::dynamicCastPointer<ModelEntitySection>(sec));
+      case view::Base::MODEL_ENTITY:
+        child = node.append_child("ModelEntityView");
+        this->processModelEntityView(child,
+                                     smtk::dynamicCastPointer<view::ModelEntity>(bview));
         break;
-      case Section::SIMPLE_EXPRESSION:
-        child = node.append_child("SimpleExpressionSection");
-        this->processSimpleExpressionSection(child,
-                                             smtk::dynamicCastPointer<SimpleExpressionSection>(sec));
+      case view::Base::SIMPLE_EXPRESSION:
+        child = node.append_child("SimpleExpressionView");
+        this->processSimpleExpressionView(child,
+                                          smtk::dynamicCastPointer<view::SimpleExpression>(bview));
         break;
       default:
-        smtkErrorMacro(this->m_logger, "Unsupport Section Type "
-                       << Section::type2String(sec->type()));
+        smtkErrorMacro(this->m_logger, "Unsupport View Type "
+                       << view::Base::type2String(bview->type()));
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processBasicSection(xml_node &node,
-                                            smtk::SectionPtr sec)
+void XmlV1StringWriter::processBasicView(xml_node &node,
+                                         smtk::view::BasePtr bview)
 {
-  node.append_attribute("Title").set_value(sec->title().c_str());
-  if (sec->iconName() != "")
+  node.append_attribute("Title").set_value(bview->title().c_str());
+  if (bview->iconName() != "")
     {
-    node.append_attribute("Icon").set_value(sec->title().c_str());
+    node.append_attribute("Icon").set_value(bview->title().c_str());
     }
 }
 //----------------------------------------------------------------------------

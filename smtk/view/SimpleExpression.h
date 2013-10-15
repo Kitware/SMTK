@@ -39,8 +39,8 @@ namespace smtk
     class SMTKCORE_EXPORT SimpleExpression : public Base
     {
     public:
-      static smtk::SimpleExpressionPtr New(const std::string &myName)
-      { return smtk::SimpleExpressionPtr(new SimpleExpression(myName)); }
+      static smtk::view::SimpleExpressionPtr New(const std::string &myName)
+      { return smtk::view::SimpleExpressionPtr(new SimpleExpression(myName)); }
 
       SimpleExpression(const std::string &myTitle);
       virtual ~SimpleExpression();

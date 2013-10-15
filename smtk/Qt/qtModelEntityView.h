@@ -19,60 +19,55 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtSection - a class that encapsulates the UI of an Attribute 
+// .NAME qtModelEntityView - the ModelEntity View
 // .SECTION Description
+// .SECTION See Also
+// qtBaseView
 
-#ifndef __smtk_attribute_qtSection_h
-#define __smtk_attribute_qtSection_h
+#ifndef __smtk_attribute_qtModelEntityView_h
+#define __smtk_attribute_qtModelEntityView_h
 
-#include <QObject>
-#include "smtk/QtSMTKExports.h"
-#include "smtk/PublicPointerDefs.h"
-#include <QList>
+#include "smtk/Qt/qtBaseView.h"
 
-class qtSectionInternals;
+#include <vector>
+
+class qtModelEntityViewInternals;
+class QListWidgetItem;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtSection : public QObject
+    class QTSMTK_EXPORT qtModelEntityView : public qtBaseView
     {
       Q_OBJECT
 
-    public:         
-      qtSection(smtk::SectionPtr, QWidget* parent);
-      virtual ~qtSection();
+    public:
+      qtModelEntityView(smtk::view::BasePtr, QWidget* p);
+      virtual ~qtModelEntityView();
+      QListWidgetItem* getSelectedItem();
+      const std::vector<smtk::AttributeDefinitionPtr> &attDefinitions() const;
 
-      smtk::SectionPtr getObject();
-      QWidget* widget()
-      {return this->Widget;}
-      QWidget* parentWidget();
-     
     public slots:
-      virtual void updateUI()
-      {
-      this->updateAttributeData();
-      this->updateModelAssociation();
-      }
-      virtual void showAdvanced(int){;}
-      virtual void updateModelAssociation() {;}
+      void updateModelItems();
+      void onShowCategory();
+      void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
+      virtual void updateModelAssociation();
 
-    protected slots:
-      virtual void updateAttributeData() {;}
-      
     protected:
-      virtual void createWidget(){;}
-      virtual void getDefinitions(smtk::AttributeDefinitionPtr attDef,
-        QList<smtk::AttributeDefinitionPtr>& defs);
+      virtual void createWidget( );
+      smtk::ModelItemPtr getSelectedModelItem();
+      smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
+      QListWidgetItem* addModelItem(smtk::ModelItemPtr childData);
+      bool isRegionDomain();
 
-      QWidget* Widget;
     private:
 
-      qtSectionInternals *Internals;
-      
+      qtModelEntityViewInternals *Internals;
+
     }; // class
   }; // namespace attribute
 }; // namespace smtk
+
 
 #endif

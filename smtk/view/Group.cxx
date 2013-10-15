@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-Group::Group(const std::string &myTitle): Section(myTitle)
+Group::Group(const std::string &myTitle): Base(myTitle)
 {
 }
 

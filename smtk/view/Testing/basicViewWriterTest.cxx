@@ -24,8 +24,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeSection.h"
-#include "smtk/attribute/InstancedSection.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -33,15 +31,17 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
-#include "smtk/attribute/ModelEntitySection.h"
-#include "smtk/attribute/RootSection.h"
-#include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/util/Logger.h"
 #include "smtk/util/XmlV1StringWriter.h"
 #include "smtk/util/XmlDocV1Parser.h"
+#include "smtk/view/Attribute.h"
+#include "smtk/view/Instanced.h"
+#include "smtk/view/ModelEntity.h"
+#include "smtk/view/Root.h"
+#include "smtk/view/SimpleExpression.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.hpp"
 #include "pugixml-1.2/src/pugixml.cpp"
@@ -94,7 +94,7 @@ int main()
   ddef->setExpressionDefinition(funcDef);
   ddef = specifiedFluxDef->addItemDefinition<DoubleItemDefinitionPtr>("Value");
   ddef->setExpressionDefinition(funcDef);
-  
+
   IntItemDefinitionPtr idef;
   GroupItemDefinitionPtr gdef;
   gdef = timeParamDef->addItemDefinition<GroupItemDefinitionPtr>("StartTime");
@@ -142,33 +142,33 @@ int main()
   ddef->setAdvanceLevel(1);
   ddef->setMinRange(0, false);
 
-  // Lets add some sections
-  
-  RootSectionPtr root = manager.rootSection();
+  // Lets add some Views
+
+  view::RootPtr root = manager.rootView();
   root->setTitle("SimBuilder");
-  SimpleExpressionSectionPtr expSec = root->addSubsection<SimpleExpressionSectionPtr>("Functions");
+  view::SimpleExpressionPtr expSec = root->addSubView<view::SimpleExpressionPtr>("Functions");
   expSec->setDefinition(funcDef);
-  AttributeSectionPtr attSec;
-  attSec = root->addSubsection<AttributeSectionPtr>("Materials");
+  view::AttributePtr attSec;
+  attSec = root->addSubView<view::AttributePtr>("Materials");
   attSec->addDefinition(materialDef);
   attSec->setModelEntityMask(0x40);
   attSec->setOkToCreateModelEntities(true);
-  ModelEntitySectionPtr modSec;
-  modSec = root->addSubsection<ModelEntitySectionPtr>("Domains");
+  view::ModelEntityPtr modSec;
+  modSec = root->addSubView<view::ModelEntityPtr>("Domains");
   modSec->setModelEntityMask(0x40); // Look at domains only
   modSec->setDefinition(materialDef); // use tabled view focusing on Material Attributes
-  attSec = root->addSubsection<AttributeSectionPtr>("BoundaryConditions");
+  attSec = root->addSubView<view::AttributePtr>("BoundaryConditions");
   attSec->addDefinition(boundaryConditionsDef);
-  modSec = root->addSubsection<ModelEntitySectionPtr>("Boundary View");
+  modSec = root->addSubView<view::ModelEntityPtr>("Boundary View");
   modSec->setModelEntityMask(0x20); // Look at boundary entities only
 
   manager.updateCategories();
   AttributePtr att = manager.createAttribute("TimeInfomation", timeParamDef);
-  InstancedSectionPtr iSec;
-  iSec = root->addSubsection<InstancedSectionPtr>("Time Parameters");
+  view::InstancedPtr iSec;
+  iSec = root->addSubView<view::InstancedPtr>("Time Parameters");
   iSec->addInstance(att);
   att = manager.createAttribute("Globals", globalsDef);
-  iSec = root->addSubsection<InstancedSectionPtr>("Global Parameters");
+  iSec = root->addSubView<view::InstancedPtr>("Global Parameters");
   iSec->addInstance(att);
   smtk::util::Logger logger;
   smtk::util::XmlV1StringWriter writer(manager);
@@ -183,7 +183,7 @@ int main()
   std::stringstream test(result);
   pugi::xml_document doc;
   doc.load(test);
-  attribute::Manager manager1;  
+  attribute::Manager manager1;
   smtk::util::XmlDocV1Parser reader(manager1);
   reader.process(doc);
   if (reader.messageLog().hasErrors())

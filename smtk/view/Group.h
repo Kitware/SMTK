@@ -31,21 +31,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vector>
 namespace smtk
 {
-  namespace attribute
+  namespace view
   {
-    class SMTKCORE_EXPORT GroupSection : public Base
+    class SMTKCORE_EXPORT Group : public Base
     {
     public:
-      static smtk::GroupSectionPtr New(const std::string &myName)
-      { return smtk::GroupSectionPtr(new GroupSection(myName)); }
+      static smtk::view::GroupPtr New(const std::string &myName)
+      { return smtk::view::GroupPtr(new smtk::view::Group(myName)); }
 
-      GroupSection(const std::string &myTitle);
-      virtual ~GroupSection();
+      Group(const std::string &myTitle);
+      virtual ~Group();
       virtual Base::Type type() const;
-      std::size_t numberOfSubsections() const
-      {return this->m_subSections.size();}
-      smtk::view::BasePtr subsection(int ith) const
-      {return this->m_subSections[ith];}
+      std::size_t numberOfSubViews() const
+      {return this->m_subViews.size();}
+      smtk::view::BasePtr subView(int ith) const
+      {return this->m_subViews[ith];}
 
       bool addSubView( smtk::view::BasePtr subview )
       {
@@ -65,11 +65,11 @@ namespace smtk
       }
 
     protected:
-      std::vector<smtk::SectionPtr> m_subViews;
+      std::vector<smtk::view::BasePtr> m_subViews;
     private:
 
     };
   }
 }
 
-#endif /* __smtk_attribute_GroupSection_h */
+#endif /* __smtk_view_Group_h */

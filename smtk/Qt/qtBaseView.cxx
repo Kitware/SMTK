@@ -19,12 +19,13 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "smtk/Qt/qtSection.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/attribute/Section.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
+
+#include "smtk/view/Base.h"
 
 #include <QPointer>
 #include <QLayout>
@@ -33,33 +34,31 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtSectionInternals
+class qtBaseViewInternals
 {
 public:
-  qtSectionInternals(smtk::SectionPtr dataObject, QWidget* p)
+  qtBaseViewInternals(smtk::view::BasePtr dataObject, QWidget* p)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
   }
-  ~qtSectionInternals()
+  ~qtBaseViewInternals()
   {
   }
- smtk::WeakSectionPtr DataObject;
+  smtk::view::WeakBasePtr DataObject;
  QPointer<QWidget> ParentWidget;
 };
 
 
 //----------------------------------------------------------------------------
-qtSection::qtSection(smtk::SectionPtr dataObject, QWidget* p)
-{ 
-  this->Internals  = new qtSectionInternals(dataObject, p); 
+qtBaseView::qtBaseView(smtk::view::BasePtr dataObject, QWidget* p)
+{
+  this->Internals  = new qtBaseViewInternals(dataObject, p);
   this->Widget = NULL;
-  //this->Internals->DataConnect = NULL;
-  //this->createWidget();
 }
 
 //----------------------------------------------------------------------------
-qtSection::~qtSection()
+qtBaseView::~qtBaseView()
 {
   if (this->Internals)
     {
@@ -73,19 +72,19 @@ qtSection::~qtSection()
 }
 
 //----------------------------------------------------------------------------
-smtk::SectionPtr qtSection::getObject()
+smtk::view::BasePtr qtBaseView::getObject()
 {
   return this->Internals->DataObject.lock();
 }
 
 //----------------------------------------------------------------------------
-QWidget* qtSection::parentWidget()
+QWidget* qtBaseView::parentWidget()
 {
   return this->Internals->ParentWidget;
 }
 //----------------------------------------------------------------------------
-void qtSection::getDefinitions(
-  smtk::AttributeDefinitionPtr attDef, 
+void qtBaseView::getDefinitions(
+  smtk::AttributeDefinitionPtr attDef,
   QList<smtk::AttributeDefinitionPtr>& defs)
 {
   std::vector<smtk::AttributeDefinitionPtr> newdefs;

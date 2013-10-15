@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/RootSection.h"
+#include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
 #include <queue>
@@ -50,7 +50,7 @@ void Manager::setGlobalManager(Manager* m)
 }
 
 //----------------------------------------------------------------------------
-Manager::Manager(): m_nextAttributeId(0), m_rootSection(new RootSection(""))
+Manager::Manager(): m_nextAttributeId(0), m_rootView(new view::Root(""))
 {
 }
 

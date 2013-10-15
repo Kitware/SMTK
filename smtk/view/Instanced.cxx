@@ -27,7 +27,7 @@ using namespace smtk::view;
 
 //----------------------------------------------------------------------------
 Instanced::Instanced(const std::string &myTitle):
-  Section(myTitle)
+  Base(myTitle)
 {
 }
 

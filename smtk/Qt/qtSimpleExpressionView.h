@@ -19,19 +19,19 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtSimpleExpressionSection - an Expression Section
+// .NAME qtSimpleExpressionView - an Expression View
 // .SECTION Description
 // .SECTION See Also
-// qtSection
+// qtBaseView
 
-#ifndef __smtk_attribute_qtSimpleExpressionSection_h
-#define __smtk_attribute_qtSimpleExpressionSection_h
+#ifndef __smtk_attribute_qtSimpleExpressionView_h
+#define __smtk_attribute_qtSimpleExpressionView_h
 
-#include "smtk/Qt/qtSection.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include <vector>
 
-class qtSimpleExpressionSectionInternals;
+class qtSimpleExpressionViewInternals;
 class QListWidgetItem;
 class QTableWidgetItem;
 class QKeyEvent;
@@ -40,13 +40,13 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtSimpleExpressionSection : public qtSection
+    class QTSMTK_EXPORT qtSimpleExpressionView : public qtBaseView
     {
       Q_OBJECT
 
-    public:         
-      qtSimpleExpressionSection(smtk::SectionPtr, QWidget* parent);
-      virtual ~qtSimpleExpressionSection();  
+    public:
+      qtSimpleExpressionView(smtk::view::BasePtr, QWidget* parent);
+      virtual ~qtSimpleExpressionView();
 
       void buildSimpleExpression(
         QString& funcExpr, QString& funcVals, int numberOfComponents);
@@ -74,9 +74,9 @@ namespace smtk
         QString& expression, double initVal, double deltaVal, int numVals);
 
     protected slots:
-      virtual void updateAttributeData() 
+      virtual void updateAttributeData()
       {this->initFunctionList();}
-    
+
     protected:
       virtual void createWidget();
       void updateTableHeader();
@@ -99,7 +99,7 @@ namespace smtk
 
     private:
 
-      qtSimpleExpressionSectionInternals *Internals;
+      qtSimpleExpressionViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

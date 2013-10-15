@@ -27,7 +27,7 @@ using namespace smtk::view;
 
 //----------------------------------------------------------------------------
 ModelEntity::ModelEntity(const std::string &myTitle):
-  Section(myTitle), m_modelEntityMask(0)
+  Base(myTitle), m_modelEntityMask(0)
 {
 }
 

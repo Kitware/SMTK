@@ -49,7 +49,7 @@ namespace smtk
       {return this->m_logger;}
     protected:
       void processAttributeInformation();
-      void processSections();
+      void processViews();
       void processModelInfo();
 
       void processDefinition(pugi::xml_node &definitions,
@@ -94,23 +94,23 @@ namespace smtk
       void processValueDef(pugi::xml_node &node,
                            smtk::ValueItemDefinitionPtr idef);
 
-      void processAttributeSection(pugi::xml_node &node,
-                                   smtk::AttributeSectionPtr sec);
+      void processAttributeView(pugi::xml_node &node,
+                                smtk::view::AttributePtr v);
 
-      void processInstancedSection(pugi::xml_node &node,
-                                  smtk::InstancedSectionPtr sec);
+      void processInstancedView(pugi::xml_node &node,
+                                smtk::view::InstancedPtr v);
 
-      void processModelEntitySection(pugi::xml_node &node,
-                                     smtk::ModelEntitySectionPtr sec);
+      void processModelEntityView(pugi::xml_node &node,
+                                  smtk::view::ModelEntityPtr v);
 
-      void processSimpleExpressionSection(pugi::xml_node &node,
-                                          smtk::SimpleExpressionSectionPtr sec);
+      void processSimpleExpressionView(pugi::xml_node &node,
+                                       smtk::view::SimpleExpressionPtr v);
 
-      void processGroupSection(pugi::xml_node &node,
-                               smtk::GroupSectionPtr sec);
+      void processGroupView(pugi::xml_node &node,
+                            smtk::view::GroupPtr v);
 
-      void processBasicSection(pugi::xml_node &node,
-                               smtk::SectionPtr sec);
+      void processBasicView(pugi::xml_node &node,
+                            smtk::view::BasePtr v);
 
       static std::string encodeModelEntityMask(unsigned long m);
       static std::string encodeColor(const double *color);

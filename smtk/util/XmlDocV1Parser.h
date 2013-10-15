@@ -72,7 +72,7 @@ namespace smtk
 
     protected:
       void processAttributeInformation(pugi::xml_node &root);
-      void processSections(pugi::xml_node &root);
+      void processViews(pugi::xml_node &root);
       void processModelInfo(pugi::xml_node &root);
 
       void processDefinition(pugi::xml_node &defNode);
@@ -114,23 +114,23 @@ namespace smtk
       void processValueDef(pugi::xml_node &node,
                            smtk::ValueItemDefinitionPtr idef);
 
-      void processAttributeSection(pugi::xml_node &node,
-                                   smtk::AttributeSectionPtr sec);
+      void processAttributeView(pugi::xml_node &node,
+                                smtk::view::AttributePtr v);
 
-      void processInstancedSection(pugi::xml_node &node,
-                                  smtk::InstancedSectionPtr sec);
+      void processInstancedView(pugi::xml_node &node,
+                                smtk::view::InstancedPtr v);
 
-      void processModelEntitySection(pugi::xml_node &node,
-                                     smtk::ModelEntitySectionPtr sec);
+      void processModelEntityView(pugi::xml_node &node,
+                                  smtk::view::ModelEntityPtr v);
 
-      void processSimpleExpressionSection(pugi::xml_node &node,
-                                          smtk::SimpleExpressionSectionPtr sec);
+      void processSimpleExpressionView(pugi::xml_node &node,
+                                       smtk::view::SimpleExpressionPtr v);
 
-      void processGroupSection(pugi::xml_node &node,
-                               smtk::GroupSectionPtr sec);
+      void processGroupView(pugi::xml_node &node,
+                            smtk::view::GroupPtr v);
 
-      void processBasicSection(pugi::xml_node &node,
-                               smtk::SectionPtr sec);
+      void processBasicView(pugi::xml_node &node,
+                            smtk::view::BasePtr v);
 
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);

@@ -38,8 +38,8 @@ namespace smtk
     class SMTKCORE_EXPORT ModelEntity : public Base
     {
     public:
-      static smtk::ModelEntityPtr New(const std::string &myName)
-      { return smtk::ModelEntityPtr(new ModelEntity(myName)); }
+      static smtk::view::ModelEntityPtr New(const std::string &myName)
+      { return smtk::view::ModelEntityPtr(new ModelEntity(myName)); }
 
       ModelEntity(const std::string &myTitle);
 

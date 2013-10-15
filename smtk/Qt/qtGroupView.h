@@ -19,51 +19,49 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtModelEntitySection - the Attribute Section
+// .NAME qtGroupView - a Group View
 // .SECTION Description
 // .SECTION See Also
-// qtSection
+// qtBaseView
 
-#ifndef __smtk_attribute_qtModelEntitySection_h
-#define __smtk_attribute_qtModelEntitySection_h
+#ifndef __smtk_attribute_qtGroupView_h
+#define __smtk_attribute_qtGroupView_h
 
-#include "smtk/Qt/qtSection.h"
+#include "smtk/Qt/qtBaseView.h"
+#include "smtk/view/Base.h"
 
-#include <vector>
-
-class qtModelEntitySectionInternals;
-class QListWidgetItem;
+class qtGroupViewInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtModelEntitySection : public qtSection
+    class QTSMTK_EXPORT qtGroupView : public qtBaseView
     {
       Q_OBJECT
 
     public:
-      qtModelEntitySection(smtk::SectionPtr, QWidget* p);
-      virtual ~qtModelEntitySection();
-      QListWidgetItem* getSelectedItem();
-      const std::vector<smtk::AttributeDefinitionPtr> &attDefinitions() const;
+      qtGroupView(smtk::view::BasePtr, QWidget* p);
+      virtual ~qtGroupView();
+
+      void getChildView(smtk::view::Base::Type viewType,
+        QList<qtBaseView*>& views);
+      qtBaseView* getChildView(int pageIndex);
+
+      virtual void addChildView(qtBaseView*);
+      virtual void clearChildViews();
+      QList<qtBaseView*>& childViews() const;
 
     public slots:
-      void updateModelItems();
-      void onShowCategory();
-      void onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * );
-      virtual void updateModelAssociation();
+      virtual void showAdvanced(int show);
 
     protected:
       virtual void createWidget( );
-      smtk::ModelItemPtr getSelectedModelItem();
-      smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
-      QListWidgetItem* addModelItem(smtk::ModelItemPtr childData);
-      bool isRegionDomain();
+      virtual void addTabEntry(qtBaseView*);
 
     private:
 
-      qtModelEntitySectionInternals *Internals;
+      qtGroupViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

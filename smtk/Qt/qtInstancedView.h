@@ -19,30 +19,30 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtInstancedSection - the Attribute Section
+// .NAME qtInstancedView - the Attribute Instanced View
 // .SECTION Description
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_attribute_qtInstancedSection_h
-#define __smtk_attribute_qtInstancedSection_h
+#ifndef __smtk_attribute_qtInstancedView_h
+#define __smtk_attribute_qtInstancedView_h
 
-#include "smtk/Qt/qtSection.h"
+#include "smtk/Qt/qtBaseView.h"
 
-class qtInstancedSectionInternals;
+class qtInstancedViewInternals;
 class QScrollArea;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtInstancedSection : public qtSection
+    class QTSMTK_EXPORT qtInstancedView : public qtBaseView
     {
       Q_OBJECT
 
     public:
-      qtInstancedSection(smtk::SectionPtr, QWidget* p);
-      virtual ~qtInstancedSection();
+      qtInstancedView(smtk::view::BasePtr, QWidget* p);
+      virtual ~qtInstancedView();
 
     public slots:
       void showAdvanced(int show);
@@ -53,7 +53,7 @@ namespace smtk
 
     private:
 
-      qtInstancedSectionInternals *Internals;
+      qtInstancedViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

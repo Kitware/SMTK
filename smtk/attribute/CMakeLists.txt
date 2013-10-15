@@ -4,7 +4,6 @@ set(attributeHeaders
   Attribute.h
   AttributeRefItem.h
   AttributeRefItemDefinition.h
-  AttributeSection.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -14,17 +13,11 @@ set(attributeHeaders
   FileItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
-  GroupSection.h
-  InstancedSection.h
   IntItem.h
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
   Manager.h
-  ModelEntitySection.h
-  RootSection.h
-  Section.h
-  SimpleExpressionSection.h
   StringItem.h
   StringItemDefinition.h
   ValueItem.h
@@ -39,7 +32,6 @@ set(attributeSrcs
   Attribute.cxx
   AttributeRefItem.cxx
   AttributeRefItemDefinition.cxx
-  AttributeSection.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -49,17 +41,11 @@ set(attributeSrcs
   FileItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
-  GroupSection.cxx
-  InstancedSection.cxx
   IntItem.cxx
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
   Manager.cxx
-  ModelEntitySection.cxx
-  RootSection.cxx
-  Section.cxx
-  SimpleExpressionSection.cxx
   StringItem.cxx
   StringItemDefinition.cxx
   ValueItem.cxx

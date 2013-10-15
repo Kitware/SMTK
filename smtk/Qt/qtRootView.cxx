@@ -20,11 +20,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtRootSection.h"
+#include "smtk/Qt/qtRootView.h"
 
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtGroupSection.h"
-#include "smtk/attribute/RootSection.h"
+#include "smtk/Qt/qtGroupView.h"
+#include "smtk/view/Root.h"
 
 #include <QFrame>
 #include <QHBoxLayout>
@@ -38,26 +38,26 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtRootSectionInternals
+class qtRootViewInternals
 {
 public:
 
   QPointer<QCheckBox> AdvancedCheck;
-  QPointer<qtGroupSection> TabGroup;
+  QPointer<qtGroupView> TabGroup;
 };
 
 //----------------------------------------------------------------------------
-qtRootSection::qtRootSection(
-  smtk::RootSectionPtr dataObj, QWidget* p) :
-  qtSection(smtk::dynamicCastPointer<Section>(dataObj), p)
+qtRootView::qtRootView(
+  smtk::view::RootPtr dataObj, QWidget* p) :
+  qtBaseView(smtk::dynamicCastPointer<smtk::view::Base>(dataObj), p)
 {
-  this->Internals = new qtRootSectionInternals;
+  this->Internals = new qtRootViewInternals;
   this->ScrollArea = NULL;
   this->createWidget( );
 }
 
 //----------------------------------------------------------------------------
-qtRootSection::~qtRootSection()
+qtRootView::~qtRootView()
 {
   if(this->Internals->AdvancedCheck)
     {
@@ -74,7 +74,7 @@ qtRootSection::~qtRootSection()
     }
 }
 //----------------------------------------------------------------------------
-void qtRootSection::createWidget( )
+void qtRootView::createWidget( )
 {
   if(!this->getObject())
     {
@@ -105,7 +105,7 @@ void qtRootSection::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtRootSection::showAdvanced(int checked)
+void qtRootView::showAdvanced(int checked)
 {
   int currentTab = 0;
 
@@ -116,8 +116,8 @@ void qtRootSection::showAdvanced(int checked)
     if(selfW)
       {
       QObject::disconnect(selfW, SIGNAL(currentChanged(int)),
-        this, SLOT(updateSectionUI(int)));
-      if(this->Internals->TabGroup->childSections().count())
+        this, SLOT(updateViewUI(int)));
+      if(this->Internals->TabGroup->childViews().count())
         {
         currentTab = selfW->currentIndex();
         }
@@ -151,11 +151,11 @@ void qtRootSection::showAdvanced(int checked)
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
-  this->Internals->TabGroup = new qtGroupSection(this->getObject(), this->Widget);
-  qtUIManager::processGroupSection(this->Internals->TabGroup);
+  this->Internals->TabGroup = new qtGroupView(this->getObject(), this->Widget);
+  qtUIManager::processGroupView(this->Internals->TabGroup);
   this->initRootTabGroup();
 
-  if(this->Internals->TabGroup->childSections().count())
+  if(this->Internals->TabGroup->childViews().count())
     {
     QTabWidget* tabW = static_cast<QTabWidget*>(
       this->Internals->TabGroup->widget());
@@ -175,32 +175,32 @@ void qtRootSection::showAdvanced(int checked)
   if(selfW)
     {
     QObject::connect(selfW, SIGNAL(currentChanged(int)),
-      this, SLOT(updateSectionUI(int)));
+      this, SLOT(updateViewUI(int)));
     }
 }
 
 //----------------------------------------------------------------------------
-void qtRootSection::updateSectionUI(int currentTab)
+void qtRootView::updateViewUI(int currentTab)
 {
-  qtSection* curSec = this->Internals->TabGroup->getChildSection(currentTab);
+  qtBaseView* curSec = this->Internals->TabGroup->getChildView(currentTab);
   if(curSec)
     {
     curSec->updateUI();
     }
 }
 //----------------------------------------------------------------------------
-void qtRootSection::getChildSection(
-  smtk::attribute::Section::Type secType, QList<qtSection*>& sections)
+void qtRootView::getChildView(
+  smtk::view::Base::Type secType, QList<qtBaseView*>& views)
 {
-  return this->Internals->TabGroup->getChildSection(secType, sections);
+  return this->Internals->TabGroup->getChildView(secType, views);
 }
 //----------------------------------------------------------------------------
-qtGroupSection* qtRootSection::getRootGroup()
+qtGroupView* qtRootView::getRootGroup()
 {
   return this->Internals->TabGroup;
 }
 //----------------------------------------------------------------------------
-void qtRootSection::initRootTabGroup()
+void qtRootView::initRootTabGroup()
 {
   //if we are the root tab group we want to be display differently than the other tab groups
   QTabWidget *tab = dynamic_cast<QTabWidget*>(this->Internals->TabGroup->widget());

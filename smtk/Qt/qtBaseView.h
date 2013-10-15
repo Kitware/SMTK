@@ -19,53 +19,60 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtRootSection - a Root Section
+// .NAME qtBaseView - a class that encapsulates the UI of an Attribute
 // .SECTION Description
-// .SECTION See Also
-// qtSection
 
-#ifndef __smtk_attribute_qtRootSection_h
-#define __smtk_attribute_qtRootSection_h
+#ifndef __smtk_attribute_qtBaseView_h
+#define __smtk_attribute_qtBaseView_h
 
-#include "smtk/Qt/qtSection.h"
-#include "smtk/attribute/Section.h"
+#include <QObject>
+#include "smtk/QtSMTKExports.h"
+#include "smtk/PublicPointerDefs.h"
+#include <QList>
 
-class qtRootSectionInternals;
-class QScrollArea;
+class qtBaseViewInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class qtGroupSection;
-
-    class QTSMTK_EXPORT qtRootSection : public qtSection
+    class QTSMTK_EXPORT qtBaseView : public QObject
     {
       Q_OBJECT
 
     public:
-      qtRootSection(smtk::RootSectionPtr, QWidget* p);
-      virtual ~qtRootSection();
-      void getChildSection(smtk::attribute::Section::Type secType,
-        QList<qtSection*>& sections);
-      qtGroupSection* getRootGroup();
+      qtBaseView(smtk::view::BasePtr, QWidget* parent);
+      virtual ~qtBaseView();
+
+      smtk::view::BasePtr getObject();
+      QWidget* widget()
+      {return this->Widget;}
+      QWidget* parentWidget();
 
     public slots:
-      virtual void showAdvanced(int show);
-      virtual void updateSectionUI(int currentTab);
+      virtual void updateUI()
+      {
+      this->updateAttributeData();
+      this->updateModelAssociation();
+      }
+      virtual void showAdvanced(int){;}
+      virtual void updateModelAssociation() {;}
+
+    protected slots:
+      virtual void updateAttributeData() {;}
 
     protected:
-      virtual void createWidget( );
-      virtual void initRootTabGroup( );
-      QScrollArea *ScrollArea;
+      virtual void createWidget(){;}
+      virtual void getDefinitions(smtk::AttributeDefinitionPtr attDef,
+        QList<smtk::AttributeDefinitionPtr>& defs);
 
+      QWidget* Widget;
     private:
 
-      qtRootSectionInternals *Internals;
+      qtBaseViewInternals *Internals;
 
     }; // class
   }; // namespace attribute
 }; // namespace smtk
-
 
 #endif

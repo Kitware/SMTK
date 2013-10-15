@@ -20,7 +20,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtModelEntitySection.h"
+#include "smtk/Qt/qtModelEntityView.h"
 
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtTableWidget.h"
@@ -28,7 +28,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtItem.h"
 #include "smtk/Qt/qtAssociationWidget.h"
 
-#include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
@@ -38,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Model.h"
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
+#include "smtk/view/ModelEntity.h"
 
 #include <QGridLayout>
 #include <QComboBox>
@@ -58,7 +58,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtModelEntitySectionInternals
+class qtModelEntityViewInternals
 {
 public:
   QListWidget* ListBox;
@@ -71,42 +71,42 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtModelEntitySection::qtModelEntitySection(
-  smtk::SectionPtr dataObj, QWidget* p) : qtSection(dataObj, p)
+qtModelEntityView::
+qtModelEntityView(smtk::view::BasePtr dataObj, QWidget* p) :qtBaseView(dataObj, p)
 {
-  this->Internals = new qtModelEntitySectionInternals;
+  this->Internals = new qtModelEntityViewInternals;
   this->createWidget( );
 }
 
 //----------------------------------------------------------------------------
-qtModelEntitySection::~qtModelEntitySection()
+qtModelEntityView::~qtModelEntityView()
 {
   delete this->Internals;
 }
 
 //----------------------------------------------------------------------------
-const std::vector<smtk::AttributeDefinitionPtr> &qtModelEntitySection::attDefinitions() const
+const std::vector<smtk::AttributeDefinitionPtr> &qtModelEntityView::attDefinitions() const
 {
   return this->Internals->attDefs;
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntitySection::createWidget( )
+void qtModelEntityView::createWidget( )
 {
   if(!this->getObject())
     {
     return;
     }
-  smtk::ModelEntitySectionPtr sec =
-    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-  if(!sec)
+  smtk::view::ModelEntityPtr mview =
+    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+  if(!mview)
     {
     return;
     }
 
   Manager *attManager = qtUIManager::instance()->attManager();
-  unsigned long mask = sec->modelEntityMask();
-  if(mask != 0 && sec->definition()==NULL)
+  unsigned long mask = mview->modelEntityMask();
+  if(mask != 0 && mview->definition()==NULL)
     {
     attManager->findDefinitions(mask, this->Internals->attDefs);
     }
@@ -163,10 +163,10 @@ void qtModelEntitySection::createWidget( )
   frame->addWidget(topFrame);
   frame->addWidget(bottomFrame);
 
-  // if there is a definition, the section should
+  // if there is a definition, the view should
   // display all model entities of the requested mask along
   // with the attribute of this type in a table view
-  AttributeDefinitionPtr attDef = sec->definition();
+  AttributeDefinitionPtr attDef = mview->definition();
   if(attDef)
     {
     this->Internals->attDefs.push_back(attDef);
@@ -189,7 +189,7 @@ void qtModelEntitySection::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntitySection::updateModelAssociation()
+void qtModelEntityView::updateModelAssociation()
 {
   bool isRegion = this->isRegionDomain();
   this->Internals->topFrame->setVisible(!isRegion);
@@ -200,22 +200,22 @@ void qtModelEntitySection::updateModelAssociation()
   this->onShowCategory();
 }
 //----------------------------------------------------------------------------
-bool qtModelEntitySection::isRegionDomain()
+bool qtModelEntityView::isRegionDomain()
 {
-  smtk::ModelEntitySectionPtr sec =
-    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-  if(!sec)
+  smtk::view::ModelEntityPtr mview =
+    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+  if(!mview)
     {
     return false;
     }
 /*
   Manager *attManager = qtUIManager::instance()->attManager();
-  unsigned long mask = sec->modelEntityMask();
+  unsigned long mask = mview->modelEntityMask();
   if(mask & smtk::model::Item::REGION)
     {
     return true;
     }
-  AttributeDefinitionPtr attDef = sec->definition();
+  AttributeDefinitionPtr attDef = mview->definition();
   if(attDef && attDef->associatesWithRegion())
     {
     return true;
@@ -225,19 +225,19 @@ bool qtModelEntitySection::isRegionDomain()
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntitySection::updateModelItems()
+void qtModelEntityView::updateModelItems()
 {
   this->Internals->ListBox->blockSignals(true);
   this->Internals->ListBox->clear();
 
-  smtk::ModelEntitySectionPtr sec =
-    smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-  if(!sec)
+  smtk::view::ModelEntityPtr mview =
+    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+  if(!mview)
     {
     this->Internals->ListBox->blockSignals(false);
     return;
     }
-  if(unsigned int mask = sec->modelEntityMask())
+  if(unsigned int mask = mview->modelEntityMask())
     {
     smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::ModelGroupItemPtr> result=refModel->findGroupItems(mask);
@@ -255,13 +255,13 @@ void qtModelEntitySection::updateModelItems()
 }
 
 //----------------------------------------------------------------------------
-void qtModelEntitySection::onShowCategory()
+void qtModelEntityView::onShowCategory()
 {
   if(this->isRegionDomain())
     {
-    smtk::ModelEntitySectionPtr sec =
-      smtk::dynamicCastPointer<ModelEntitySection>(this->getObject());
-    unsigned int mask = sec->modelEntityMask() ? sec->modelEntityMask() :
+    smtk::view::ModelEntityPtr mview =
+      smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+    unsigned int mask = mview->modelEntityMask() ? mview->modelEntityMask() :
       smtk::model::Item::REGION;
     smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::ModelGroupItemPtr> result(refModel->findGroupItems(mask));
@@ -281,18 +281,18 @@ void qtModelEntitySection::onShowCategory()
     }
 }
 //----------------------------------------------------------------------------
-void qtModelEntitySection::onListBoxSelectionChanged(
+void qtModelEntityView::onListBoxSelectionChanged(
   QListWidgetItem * current, QListWidgetItem * previous)
 {
   this->onShowCategory();
 }
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtModelEntitySection::getSelectedModelItem()
+smtk::ModelItemPtr qtModelEntityView::getSelectedModelItem()
 {
   return this->getModelItem(this->getSelectedItem());
 }
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtModelEntitySection::getModelItem(
+smtk::ModelItemPtr qtModelEntityView::getModelItem(
   QListWidgetItem * item)
 {
   smtk::model::Item* rawPtr = item ?
@@ -300,12 +300,12 @@ smtk::ModelItemPtr qtModelEntitySection::getModelItem(
   return rawPtr ? rawPtr->pointer() : smtk::ModelItemPtr();
 }
 //-----------------------------------------------------------------------------
-QListWidgetItem *qtModelEntitySection::getSelectedItem()
+QListWidgetItem *qtModelEntityView::getSelectedItem()
 {
   return this->Internals->ListBox->currentItem();
 }
 //----------------------------------------------------------------------------
-QListWidgetItem* qtModelEntitySection::addModelItem(
+QListWidgetItem* qtModelEntityView::addModelItem(
   smtk::ModelItemPtr childData)
 {
   QListWidgetItem* item = new QListWidgetItem(

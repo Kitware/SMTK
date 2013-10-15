@@ -20,11 +20,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtGroupSection.h"
+#include "smtk/Qt/qtGroupView.h"
 
 #include "smtk/Qt/qtUIManager.h"
 
-#include "smtk/attribute/Section.h"
+#include "smtk/view/Base.h"
 
 #include <QScrollArea>
 #include <QHBoxLayout>
@@ -38,36 +38,36 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtGroupSectionInternals
+class qtGroupViewInternals
 {
 public:
-  QList<smtk::attribute::qtSection*> ChildSections;
+  QList<smtk::attribute::qtBaseView*> ChildViews;
 
 };
 
 //----------------------------------------------------------------------------
-qtGroupSection::qtGroupSection(
-  smtk::SectionPtr dataObj, QWidget* p) : qtSection(dataObj, p)
+qtGroupView::
+qtGroupView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
 {
-  this->Internals = new qtGroupSectionInternals;
+  this->Internals = new qtGroupViewInternals;
   this->createWidget( );
 
 }
 
 //----------------------------------------------------------------------------
-qtGroupSection::~qtGroupSection()
+qtGroupView::~qtGroupView()
 {
-  this->clearChildSections();
+  this->clearChildViews();
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
-void qtGroupSection::createWidget( )
+void qtGroupView::createWidget( )
 {
   if(!this->getObject())
     {
     return;
     }
-  this->clearChildSections();
+  this->clearChildViews();
   QTabWidget *tab = new QTabWidget(this->parentWidget());
   tab->setUsesScrollButtons( true );
   this->Widget = tab;
@@ -76,65 +76,65 @@ void qtGroupSection::createWidget( )
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
-  this->parentWidget()->layout()->addWidget(this->Widget);    
+  this->parentWidget()->layout()->addWidget(this->Widget);
 }
 //----------------------------------------------------------------------------
-void qtGroupSection::getChildSection(
-  smtk::attribute::Section::Type secType, QList<qtSection*>& sections)
+void qtGroupView::getChildView(
+  smtk::view::Base::Type viewType, QList<qtBaseView*>& views)
 {
-  foreach(qtSection* childSec, this->Internals->ChildSections)
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
     {
-    if(childSec->getObject()->type() == secType)
+    if(childView->getObject()->type() == viewType)
       {
-      sections.append(childSec);
+      views.append(childView);
       }
-    else if(childSec->getObject()->type() == Section::GROUP)
+    else if(childView->getObject()->type() == smtk::view::Base::GROUP)
       {
-      qobject_cast<qtGroupSection*>(childSec)->getChildSection(
-        secType, sections);
+      qobject_cast<qtGroupView*>(childView)->getChildView(
+        viewType, views);
       }
     }
 }
 //----------------------------------------------------------------------------
-qtSection* qtGroupSection::getChildSection(int pageIndex)
+qtBaseView* qtGroupView::getChildView(int pageIndex)
 {
   QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
-  if(pageIndex >= 0 && pageIndex < this->Internals->ChildSections.count())
+  if(pageIndex >= 0 && pageIndex < this->Internals->ChildViews.count())
     {
-    return this->Internals->ChildSections.value(pageIndex);
+    return this->Internals->ChildViews.value(pageIndex);
     }
   return NULL;
 }
 //----------------------------------------------------------------------------
-void qtGroupSection::addChildSection(qtSection* child)
+void qtGroupView::addChildView(qtBaseView* child)
 {
-  if(!this->Internals->ChildSections.contains(child))
+  if(!this->Internals->ChildViews.contains(child))
     {
-    this->Internals->ChildSections.append(child);
+    this->Internals->ChildViews.append(child);
     this->addTabEntry(child);
     }
 }
 //----------------------------------------------------------------------------
-QList<qtSection*>& qtGroupSection::childSections() const
+QList<qtBaseView*>& qtGroupView::childViews() const
 {
-  return this->Internals->ChildSections;
-} 
+  return this->Internals->ChildViews;
+}
 //----------------------------------------------------------------------------
-void qtGroupSection::clearChildSections()
+void qtGroupView::clearChildViews()
 {
-  foreach(qtSection* childSec, this->Internals->ChildSections)
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
     {
-    delete childSec;
+    delete childView;
     }
-  this->Internals->ChildSections.clear();
+  this->Internals->ChildViews.clear();
 }
 
 //----------------------------------------------------------------------------
-void qtGroupSection::showAdvanced(int checked)
+void qtGroupView::showAdvanced(int checked)
 {
   int currentTab = 0;
 
-  if(this->childSections().count())
+  if(this->childViews().count())
     {
     QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
     if(selfW)
@@ -143,12 +143,12 @@ void qtGroupSection::showAdvanced(int checked)
       }
     }
 
-  foreach(qtSection* childSec, this->Internals->ChildSections)
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
     {
-    childSec->showAdvanced(checked);
+    childView->showAdvanced(checked);
     }
 
-  if(this->childSections().count())
+  if(this->childViews().count())
     {
     QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
     if(selfW)
@@ -159,7 +159,7 @@ void qtGroupSection::showAdvanced(int checked)
 }
 
 //----------------------------------------------------------------------------
-void qtGroupSection::addTabEntry(qtSection* child)
+void qtGroupView::addTabEntry(qtBaseView* child)
 {
   QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
   if(!tabWidget || !child || !child->getObject())
@@ -190,14 +190,14 @@ void qtGroupSection::addTabEntry(qtSection* child)
   //QString resourceName = ":/SimBuilder/Icons/";
   resourceName.append(child->getObject()->iconName().c_str());
   resourceName.append(".png");
-  
+
   // If user specified icons are not found, use default ones
   if ( !QFile::exists( resourceName ) )
     {
     resourceName = QString(":/SimBuilder/Icons/").
       append(secTitle).append(".png");
     }
-  
+
   if ( QFile::exists( resourceName ) )
     {
     QPixmap image(resourceName);

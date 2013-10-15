@@ -20,12 +20,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtInstancedSection.h"
+#include "smtk/Qt/qtInstancedView.h"
 
+#include "smtk/attribute/Attribute.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtAttribute.h"
-#include "smtk/attribute/InstancedSection.h"
-#include "smtk/attribute/Attribute.h"
+#include "smtk/view/Instanced.h"
 
 #include <QFrame>
 #include <QHBoxLayout>
@@ -40,10 +40,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtInstancedSectionInternals
+class qtInstancedViewInternals
 {
 public:
-  qtInstancedSectionInternals()
+  qtInstancedViewInternals()
     {
 //    this->ScrollArea = NULL;
     }
@@ -52,21 +52,21 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtInstancedSection::qtInstancedSection(
-  smtk::SectionPtr dataObj, QWidget* p) : qtSection(dataObj, p)
+qtInstancedView::
+qtInstancedView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
 {
-  this->Internals = new qtInstancedSectionInternals;
+  this->Internals = new qtInstancedViewInternals;
   this->createWidget( );
 
 }
 
 //----------------------------------------------------------------------------
-qtInstancedSection::~qtInstancedSection()
+qtInstancedView::~qtInstancedView()
 {
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
-void qtInstancedSection::createWidget( )
+void qtInstancedView::createWidget( )
 {
   if(!this->getObject())
     {
@@ -110,11 +110,11 @@ void qtInstancedSection::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtInstancedSection::updateAttributeData()
+void qtInstancedView::updateAttributeData()
 {
-  smtk::InstancedSectionPtr sec =
-    smtk::dynamicCastPointer<InstancedSection>(this->getObject());
-  if(!sec || !sec->numberOfInstances())
+  smtk::view::InstancedPtr iview =
+    smtk::dynamicCastPointer<smtk::view::Instanced>(this->getObject());
+  if(!iview || !iview->numberOfInstances())
     {
     return;
     }
@@ -124,13 +124,13 @@ void qtInstancedSection::updateAttributeData()
     delete att->widget();
     }
   this->Internals->AttInstances.clear();
-  std::size_t i, n = sec->numberOfInstances();
+  std::size_t i, n = iview->numberOfInstances();
   for (i = 0; i < n; i++)
     {
-    smtk::AttributePtr attobj = sec->instance((int)i);
+    smtk::AttributePtr attobj = iview->instance((int)i);
     if(!attobj || attobj->numberOfItems()==0)
       {
-      QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute Section"),
+      QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute View"),
       tr("No attribute instance, or no items in the attribute instance!"));
       }
     else
@@ -149,7 +149,7 @@ void qtInstancedSection::updateAttributeData()
 }
 
 //----------------------------------------------------------------------------
-void qtInstancedSection::showAdvanced(int checked)
+void qtInstancedView::showAdvanced(int checked)
 {
 
 }

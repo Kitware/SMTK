@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::view;
 
 //----------------------------------------------------------------------------
-Root::Root(const std::string &myTitle): GroupSection(myTitle)
+Root::Root(const std::string &myTitle): Group(myTitle)
 {
   this->m_defaultColor[0] = 1.0;
   this->m_defaultColor[1] = 1.0;

@@ -17,13 +17,13 @@
 #include "smtk/Qt/qtItem.h"
 #include "smtk/Qt/qtComboItem.h"
 #include "smtk/Qt/qtFileItem.h"
-#include "smtk/Qt/qtGroupSection.h"
-#include "smtk/Qt/qtRootSection.h"
+#include "smtk/Qt/qtGroupView.h"
+#include "smtk/Qt/qtRootView.h"
 #include "smtk/Qt/qtInputsItem.h"
-#include "smtk/Qt/qtAttributeSection.h"
-#include "smtk/Qt/qtInstancedSection.h"
-#include "smtk/Qt/qtModelEntitySection.h"
-#include "smtk/Qt/qtSimpleExpressionSection.h"
+#include "smtk/Qt/qtAttributeView.h"
+#include "smtk/Qt/qtInstancedView.h"
+#include "smtk/Qt/qtModelEntityView.h"
+#include "smtk/Qt/qtSimpleExpressionView.h"
 
 #include <QTableWidget>
 #include <QLayout>
@@ -40,11 +40,6 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 
-#include "smtk/attribute/RootSection.h"
-#include "smtk/attribute/AttributeSection.h"
-#include "smtk/attribute/InstancedSection.h"
-#include "smtk/attribute/ModelEntitySection.h"
-#include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -60,6 +55,12 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+
+#include "smtk/view/Root.h"
+#include "smtk/view/Attribute.h"
+#include "smtk/view/Instanced.h"
+#include "smtk/view/ModelEntity.h"
+#include "smtk/view/SimpleExpression.h"
 
 using namespace smtk::attribute;
 
@@ -83,9 +84,9 @@ void qtDoubleValidator::fixup(QString &input) const
     return;
     }
 
-  QLineEdit* editBox = 
+  QLineEdit* editBox =
     static_cast<QLineEdit*>(this->property("MyWidget").value<void *>());
-  
+
   double v = input.toDouble();
   bool outofrange = false;
   if (v < this->bottom())
@@ -120,7 +121,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     {
     qtUIManager::Instance = this;
     }
-  this->RootSection = NULL;
+  this->RootView = NULL;
   this->ShowAdvanced =false;
   this->advFont.setBold(true);
   this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
@@ -130,9 +131,9 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
 //----------------------------------------------------------------------------
 qtUIManager::~qtUIManager()
 {
-  if(this->RootSection)
+  if(this->RootView)
     {
-    delete this->RootSection;
+    delete this->RootView;
     }
   if (qtUIManager::Instance == this)
     {
@@ -143,37 +144,37 @@ qtUIManager::~qtUIManager()
 //----------------------------------------------------------------------------
 void qtUIManager::initializeUI(QWidget* pWidget)
 {
-  if(!this->m_AttManager.rootSection())
+  if(!this->m_AttManager.rootView())
     {
     return;
     }
-  if(this->RootSection)
+  if(this->RootView)
     {
-    delete this->RootSection;
+    delete this->RootView;
     }
-  RootSectionPtr rs = this->m_AttManager.rootSection();
+  smtk::view::RootPtr rs = this->m_AttManager.rootView();
   const double *dcolor = rs->defaultColor();
   this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
   dcolor = rs->invalidColor();
   this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
 
-  this->RootSection = new qtRootSection(
-    this->m_AttManager.rootSection(), pWidget);
+  this->RootView = new qtRootView(
+    this->m_AttManager.rootView(), pWidget);
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::updateModelSections()
+void qtUIManager::updateModelViews()
 {
-  if(!this->RootSection)
+  if(!this->RootView)
     {
     return;
     }
-  foreach(qtSection* childSec, this->RootSection->getRootGroup()->childSections())
+  foreach(qtBaseView* childView, this->RootView->getRootGroup()->childViews())
     {
-    if(childSec->getObject()->type() == Section::ATTRIBUTE ||
-       childSec->getObject()->type() == Section::MODEL_ENTITY)
+    if(childView->getObject()->type() == smtk::view::Base::ATTRIBUTE ||
+       childView->getObject()->type() == smtk::view::Base::MODEL_ENTITY)
       {
-      childSec->updateModelAssociation();
+      childView->updateModelAssociation();
       }
     }
 }
@@ -190,90 +191,90 @@ bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::processAttributeSection(qtAttributeSection* qtSec)
+void qtUIManager::processAttributeView(qtAttributeView* qtView)
 {
-  smtk::AttributeSectionPtr sec = smtk::dynamicCastPointer<AttributeSection>(
-    qtSec->getObject());
+  smtk::view::AttributePtr v = smtk::dynamicCastPointer<smtk::view::Attribute>(
+    qtView->getObject());
 
-  qtUIManager::processBasicSection(qtSec);
+  qtUIManager::processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
-void qtUIManager::processInstancedSection(qtInstancedSection* qtSec)
+void qtUIManager::processInstancedView(qtInstancedView* qtView)
 {
-  smtk::InstancedSectionPtr sec = smtk::dynamicCastPointer<InstancedSection>(
-    qtSec->getObject());
+  smtk::view::InstancedPtr v = smtk::dynamicCastPointer<smtk::view::Instanced>(
+    qtView->getObject());
 
-  qtUIManager::processBasicSection(qtSec);
+  qtUIManager::processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
-void qtUIManager::processModelEntitySection(qtModelEntitySection* qtSec)
+void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
 {
-  smtk::ModelEntitySectionPtr sec = smtk::dynamicCastPointer<ModelEntitySection>(
-    qtSec->getObject());
+  smtk::view::ModelEntityPtr v = smtk::dynamicCastPointer<smtk::view::ModelEntity>(
+    qtView->getObject());
 
-  qtUIManager::processBasicSection(qtSec);
+  qtUIManager::processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
-void qtUIManager::processSimpleExpressionSection(qtSimpleExpressionSection* qtSec)
+void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
 {
-  smtk::SimpleExpressionSectionPtr sec = smtk::dynamicCastPointer<SimpleExpressionSection>(
-    qtSec->getObject());
+  smtk::view::SimpleExpressionPtr v = smtk::dynamicCastPointer<smtk::view::SimpleExpression>(
+    qtView->getObject());
 
-  qtUIManager::processBasicSection(qtSec);
+  qtUIManager::processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
-void qtUIManager::processGroupSection(qtGroupSection* pQtGroup)
+void qtUIManager::processGroupView(qtGroupView* pQtGroup)
 {
-  smtk::GroupSectionPtr group = smtk::dynamicCastPointer<GroupSection>(
+  smtk::view::GroupPtr group = smtk::dynamicCastPointer<smtk::view::Group>(
     pQtGroup->getObject());
-  qtUIManager::processBasicSection( pQtGroup);
-  std::size_t i, n = group->numberOfSubsections();
-  smtk::SectionPtr sec;
-  qtSection* qtSec = NULL;
+  qtUIManager::processBasicView( pQtGroup);
+  std::size_t i, n = group->numberOfSubViews();
+  smtk::view::BasePtr v;
+  qtBaseView* qtView = NULL;
   for (i = 0; i < n; i++)
     {
-    sec = group->subsection(i);
-    switch(sec->type())
+    v = group->subView(i);
+    switch(v->type())
       {
-      case Section::ATTRIBUTE:
-        qtSec = new qtAttributeSection(sec, pQtGroup->widget());
-        qtUIManager::processAttributeSection(qobject_cast<qtAttributeSection*>(qtSec));
+      case smtk::view::Base::ATTRIBUTE:
+        qtView = new qtAttributeView(v, pQtGroup->widget());
+        qtUIManager::processAttributeView(qobject_cast<qtAttributeView*>(qtView));
         break;
-      case Section::GROUP:
-        qtSec = new qtGroupSection(sec, pQtGroup->widget());
-        qtUIManager::processGroupSection(qobject_cast<qtGroupSection*>(qtSec));
+      case smtk::view::Base::GROUP:
+        qtView = new qtGroupView(v, pQtGroup->widget());
+        qtUIManager::processGroupView(qobject_cast<qtGroupView*>(qtView));
         break;
-      case Section::INSTANCED:
-        qtSec = new qtInstancedSection(sec, pQtGroup->widget());
-        qtUIManager::processInstancedSection(qobject_cast<qtInstancedSection*>(qtSec));
+      case smtk::view::Base::INSTANCED:
+        qtView = new qtInstancedView(v, pQtGroup->widget());
+        qtUIManager::processInstancedView(qobject_cast<qtInstancedView*>(qtView));
         break;
-      case Section::MODEL_ENTITY:
-        qtSec = new qtModelEntitySection(sec, pQtGroup->widget());
-        qtUIManager::processModelEntitySection(qobject_cast<qtModelEntitySection*>(qtSec));
+      case smtk::view::Base::MODEL_ENTITY:
+        qtView = new qtModelEntityView(v, pQtGroup->widget());
+        qtUIManager::processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
         break;
-      case Section::SIMPLE_EXPRESSION:
-        qtSec = new qtSimpleExpressionSection(sec, pQtGroup->widget());
-        qtUIManager::processSimpleExpressionSection(qobject_cast<qtSimpleExpressionSection*>(qtSec));
+      case smtk::view::Base::SIMPLE_EXPRESSION:
+        qtView = new qtSimpleExpressionView(v, pQtGroup->widget());
+        qtUIManager::processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
         break;
       default:
         break;
-        //this->m_errorStatus << "Unsupport Section Type " 
-        //                    << Section::type2String(sec->type()) << "\n";
+        //this->m_errorStatus << "Unsupport View Type "
+        //                    << View::type2String(sec->type()) << "\n";
       }
-    if(qtSec)
+    if(qtView)
       {
-      pQtGroup->addChildSection(qtSec);
+      pQtGroup->addChildView(qtView);
       }
     }
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::processBasicSection(qtSection* sec)
+void qtUIManager::processBasicView(qtBaseView* v)
 {
-  //node.append_attribute("Title").set_value(sec->title().c_str());
-  //if (sec->iconName() != "")
+  //node.append_attribute("Title").set_value(v->title().c_str());
+  //if (v->iconName() != "")
   //  {
-  //  node.append_attribute("Icon").set_value(sec->title().c_str());
+  //  node.append_attribute("Icon").set_value(v->title().c_str());
   //  }
 }
 
@@ -293,10 +294,10 @@ void qtUIManager::setClipBoardText(QString& text)
 //----------------------------------------------------------------------------
 void qtUIManager::clearRoot()
 {
-  if(this->RootSection)
+  if(this->RootView)
     {
-    delete this->RootSection;
-    this->RootSection = NULL;
+    delete this->RootView;
+    this->RootView = NULL;
     }
   this->setShowAdvanced(false);
 }
@@ -306,7 +307,7 @@ void qtUIManager::setInvalidValueColor(const QColor &color)
 {
   this->InvalidValueColor = color;
 }
- 
+
 //----------------------------------------------------------------------------
 void qtUIManager::setWidgetToDefaultValueColor(QWidget *widget,
                                                        bool setToDefault)
@@ -416,7 +417,7 @@ bool qtUIManager::getExpressionArrayString(
     {
     return false;
     }
-  int numberOfComponents = dataItem->numberOfItemsPerGroup();   
+  int numberOfComponents = dataItem->numberOfItemsPerGroup();
   int nVals = (int)(item->numberOfValues());
   QStringList strVals;
   smtk::ValueItemPtr valueitem;
@@ -516,7 +517,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
     return NULL;
     }
 
-  const AttributeRefItemDefinition *itemDef = 
+  const AttributeRefItemDefinition *itemDef =
     dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
   smtk::AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
   if(!attDef)
@@ -550,7 +551,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
 
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
-  
+
   return combo;
 }
 //----------------------------------------------------------------------------
@@ -578,7 +579,7 @@ void qtUIManager::onExpressionReferenceChanged()
 
   if(curIdx>=0)
     {
-    const AttributeRefItemDefinition *itemDef = 
+    const AttributeRefItemDefinition *itemDef =
       dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
     AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
@@ -607,7 +608,7 @@ QWidget* qtUIManager::createComboBox(
     {
     return NULL;
     }
-  const ValueItemDefinition *itemDef = 
+  const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
   QList<QString> discreteVals;
@@ -643,7 +644,7 @@ QWidget* qtUIManager::createComboBox(
 
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onComboIndexChanged()), Qt::QueuedConnection);
-  
+
   return combo;
 }
 
@@ -707,7 +708,7 @@ QWidget* qtUIManager::createEditBox(
     case smtk::attribute::Item::DOUBLE:
       {
       QLineEdit* editBox = new QLineEdit(pWidget);
-      const DoubleItemDefinition *dDef = 
+      const DoubleItemDefinition *dDef =
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
       qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
       editBox->setValidator(validator);
@@ -760,7 +761,7 @@ QWidget* qtUIManager::createEditBox(
     case smtk::attribute::Item::INT:
       {
       QLineEdit* editBox = new QLineEdit(pWidget);
-      const IntItemDefinition *iDef = 
+      const IntItemDefinition *iDef =
         dynamic_cast<const IntItemDefinition*>(item->definition().get());
       QIntValidator *validator = new QIntValidator(pWidget);
       editBox->setValidator(validator);
@@ -813,7 +814,7 @@ QWidget* qtUIManager::createEditBox(
       }
     case smtk::attribute::Item::STRING:
       {
-      const StringItemDefinition *sDef = 
+      const StringItemDefinition *sDef =
         dynamic_cast<const StringItemDefinition*>(item->definition().get());
       smtk::StringItemPtr sitem =dynamicCastPointer<StringItem>(item);
       QString valText;
@@ -938,7 +939,7 @@ void qtUIManager::onInputValueChanged()
 std::string qtUIManager::getValueItemCommonLabel(
   smtk::ValueItemPtr attItem) const
 {
-  const ValueItemDefinition *itemDef = 
+  const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
 
   if(itemDef && itemDef->usingCommonLabel() && itemDef->hasValueLabels() &&
@@ -952,7 +953,7 @@ std::string qtUIManager::getValueItemCommonLabel(
 std::string qtUIManager::getGroupItemCommonLabel(
   smtk::GroupItemPtr attItem) const
 {
-  const GroupItemDefinition *groupDef = 
+  const GroupItemDefinition *groupDef =
     dynamic_cast<const GroupItemDefinition*>(attItem->definition().get());
 
   if(groupDef && groupDef->usingCommonSubGroupLabel() &&

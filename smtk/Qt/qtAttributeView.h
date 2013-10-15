@@ -19,19 +19,19 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtAttributeSection - the Attribute Section
+// .NAME qtAttributeView - the Attribute Section
 // .SECTION Description
 // .SECTION See Also
 // qtSection
 
-#ifndef __smtk_attribute_qtAttributeSection_h
-#define __smtk_attribute_qtAttributeSection_h
+#ifndef __smtk_attribute_qtAttributeView_h
+#define __smtk_attribute_qtAttributeView_h
 
-#include "smtk/Qt/qtSection.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include <QMap>
 
-class qtAttributeSectionInternals;
+class qtAttributeViewInternals;
 class QTableWidgetItem;
 class QKeyEvent;
 
@@ -39,13 +39,13 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtAttributeSection : public qtSection
+    class QTSMTK_EXPORT qtAttributeView : public qtBaseView
     {
       Q_OBJECT
 
     public:
-      qtAttributeSection(smtk::SectionPtr, QWidget* p);
-      virtual ~qtAttributeSection();
+      qtAttributeView(smtk::view::BasePtr, QWidget* p);
+      virtual ~qtAttributeView();
       const QMap<QString, QList<smtk::AttributeDefinitionPtr> > &attDefinitionMap() const;
 
       QTableWidgetItem* getSelectedItem();
@@ -113,7 +113,7 @@ namespace smtk
 
     private:
 
-      qtAttributeSectionInternals *Internals;
+      qtAttributeViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

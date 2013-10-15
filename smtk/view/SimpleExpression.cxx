@@ -27,7 +27,7 @@ using namespace smtk::view;
 
 //----------------------------------------------------------------------------
 SimpleExpression::SimpleExpression(const std::string &myTitle):
-  Section(myTitle)
+  Base(myTitle)
 {
 }
 

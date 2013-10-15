@@ -27,7 +27,7 @@ using namespace smtk::view;
 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myTitle):
-  Section(myTitle), m_modelEntityMask(0), m_okToCreateModelEntities(false)
+  Base(myTitle), m_modelEntityMask(0), m_okToCreateModelEntities(false)
 {
 }
 

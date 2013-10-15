@@ -35,8 +35,8 @@ namespace smtk
     class SMTKCORE_EXPORT Root : public Group
     {
     public:
-      static smtk::RootPtr New(const std::string &myName)
-      { return smtk::RootPtr(new Root(myName)); }
+      static smtk::view::RootPtr New(const std::string &myName)
+      { return smtk::view::RootPtr(new Root(myName)); }
 
       Root(const std::string &myTitle);
       virtual ~Root();

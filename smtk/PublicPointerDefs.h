@@ -142,7 +142,7 @@ namespace smtk
 
   namespace view
   {
-  // Section Related Pointer Classes
+  // View Related Pointer Classes
     typedef smtk::shared_ptr< smtk::view::Base >             BasePtr;
     typedef smtk::weak_ptr< smtk::view::Base >               WeakBasePtr;
     typedef smtk::shared_ptr< smtk::view::Attribute>         AttributePtr;
@@ -176,8 +176,12 @@ namespace smtk
           std::owner_less<WeakModelItemPtr > >        WeakModelItemPtrSet;
   typedef std::set< WeakModelPtr,
           std::owner_less<WeakModelPtr > >            WeakModelPtrSet;
-  typedef std::set< WeakSectionPtr,
-          std::owner_less<WeakSectionPtr > >          WeakSectionPtrSet;
+  namespace view
+  {
+    typedef std::set< view::WeakBasePtr,
+      std::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
+  };
+
 #else
   //we can use less than operator
   typedef std::set< WeakAttributeDefinitionPtr  >     WeakAttributeDefinitionPtrSet;
@@ -186,7 +190,10 @@ namespace smtk
   typedef std::set< WeakAttributePtr  >               WeakAttributePtrSet;
   typedef std::set< WeakModelItemPtr  >               WeakModelItemPtrSet;
   typedef std::set< WeakModelPtr  >                   WeakModelPtrSet;
-  typedef std::set< WeakSectionPtr  >                 WeakSectionPtrSet;
+  namespace view
+  {
+    typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;
+  };
 #endif
 
   // These are used internally by SMTK

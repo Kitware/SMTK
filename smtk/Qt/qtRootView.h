@@ -19,49 +19,49 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtGroupSection - a Root Section
+// .NAME qtRootView - a Root View
 // .SECTION Description
 // .SECTION See Also
-// qtSection
+// qtBaseView
 
-#ifndef __smtk_attribute_qtGroupSection_h
-#define __smtk_attribute_qtGroupSection_h
+#ifndef __smtk_attribute_qtRootView_h
+#define __smtk_attribute_qtRootView_h
 
-#include "smtk/Qt/qtSection.h"
-#include "smtk/attribute/Section.h"
+#include "smtk/Qt/qtBaseView.h"
+#include "smtk/view/Base.h"
 
-class qtGroupSectionInternals;
+class qtRootViewInternals;
+class QScrollArea;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtGroupSection : public qtSection
+    class qtGroupView;
+
+    class QTSMTK_EXPORT qtRootView : public qtBaseView
     {
       Q_OBJECT
 
     public:
-      qtGroupSection(smtk::SectionPtr, QWidget* p);
-      virtual ~qtGroupSection();
-
-      void getChildSection(smtk::attribute::Section::Type secType,
-        QList<qtSection*>& sections);
-      qtSection* getChildSection(int pageIndex);
-
-      virtual void addChildSection(qtSection*);
-      virtual void clearChildSections();
-      QList<qtSection*>& childSections() const;
+      qtRootView(smtk::view::RootPtr, QWidget* p);
+      virtual ~qtRootView();
+      void getChildView(smtk::view::Base::Type viewType,
+        QList<qtBaseView*>& views);
+      qtGroupView* getRootGroup();
 
     public slots:
       virtual void showAdvanced(int show);
+      virtual void updateViewUI(int currentTab);
 
     protected:
       virtual void createWidget( );
-      virtual void addTabEntry(qtSection*);
+      virtual void initRootTabGroup( );
+      QScrollArea *ScrollArea;
 
     private:
 
-      qtGroupSectionInternals *Internals;
+      qtRootViewInternals *Internals;
 
     }; // class
   }; // namespace attribute

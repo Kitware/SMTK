@@ -38,11 +38,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
+  namespace view
+  {
+    class Root;
+  }
+
   namespace attribute
   {
     class Attribute;
     class Definition;
-    class RootSection;
     class SMTKCORE_EXPORT Manager
     {
     public:
@@ -113,12 +117,14 @@ namespace smtk
       const std::set<std::string> & categories() const
       {return this->m_categories;}
 
-      smtk::RootSectionPtr rootSection() const
-      {return this->m_rootSection;}
+      smtk::view::RootPtr rootView() const
+      {return this->m_rootView;}
+
       smtk::ModelPtr refModel() const
         {return this->m_refModel.lock();}
       void setRefModel(smtk::ModelPtr refmodel )
         {this->m_refModel = refmodel;}
+
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
 
@@ -136,7 +142,7 @@ namespace smtk
       std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
       unsigned long m_nextAttributeId;
-      smtk::RootSectionPtr m_rootSection;
+      smtk::view::RootPtr m_rootView;
 
       smtk::WeakModelPtr m_refModel;
     private:

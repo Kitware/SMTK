@@ -41,12 +41,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeSection.h"
-#include "smtk/attribute/InstancedSection.h"
-#include "smtk/attribute/GroupSection.h"
-#include "smtk/attribute/ModelEntitySection.h"
-#include "smtk/attribute/RootSection.h"
-#include "smtk/attribute/SimpleExpressionSection.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -56,6 +50,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
 #include "smtk/model/Model.h"
+#include "smtk/view/Attribute.h"
+#include "smtk/view/Instanced.h"
+#include "smtk/view/Group.h"
+#include "smtk/view/ModelEntity.h"
+#include "smtk/view/Root.h"
+#include "smtk/view/SimpleExpression.h"
 #include <iostream>
 
 using namespace pugi;
@@ -131,7 +131,7 @@ void XmlDocV1Parser::process(xml_document &doc)
       }
     }
   this->processAttributeInformation(amnode);
-  this->processSections(amnode);
+  this->processViews(amnode);
   this->processModelInfo(amnode);
 
   // Now we need to check to see if there are any catagories in the manager
@@ -1922,36 +1922,36 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
 }
 
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processSections(xml_node &root)
+void XmlDocV1Parser::processViews(xml_node &root)
 {
-  xml_node sections = root.child("RootSection");
-  if (!sections)
+  xml_node views = root.child("RootView");
+  if (!views)
     {
     return;
     }
-  smtk::RootSectionPtr rs = this->m_manager.rootSection();
+  smtk::view::RootPtr rs = this->m_manager.rootView();
   xml_node node;
   xml_attribute xatt;
   double c[4];
-  node = sections.child("DefaultColor");
+  node = views.child("DefaultColor");
   if (node && this->getColor(node, c, "DefaultColor"))
     {
     rs->setDefaultColor(c);
     }
-  node = sections.child("InvalidColor");
+  node = views.child("InvalidColor");
   if (node && this->getColor(node, c, "InvalidColor"))
     {
     rs->setInvalidColor(c);
     }
-  this->processGroupSection(sections,
-                            smtk::dynamicCastPointer<smtk::attribute::GroupSection>(rs));
+  this->processGroupView(views,
+                         smtk::dynamicCastPointer<smtk::view::Group>(rs));
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processAttributeSection(xml_node &node,
-                                            smtk::AttributeSectionPtr sec)
+void XmlDocV1Parser::processAttributeView(xml_node &node,
+                                          smtk::view::AttributePtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
+  this->processBasicView(node,
+                            smtk::dynamicCastPointer<smtk::view::Base>(v));
   xml_attribute xatt;
   AttributeDefinitionPtr def;
   xml_node child, attTypes;
@@ -1960,12 +1960,12 @@ void XmlDocV1Parser::processAttributeSection(xml_node &node,
   if (xatt)
     {
     unsigned long mask = this->decodeModelEntityMask(xatt.value());
-    sec->setModelEntityMask(mask);
+    v->setModelEntityMask(mask);
 
     xatt = node.attribute("CreateEntities");
     if (xatt)
       {
-      sec->setOkToCreateModelEntities(xatt.as_bool());
+      v->setOkToCreateModelEntities(xatt.as_bool());
       }
     }
   attTypes = node.child("AttributeTypes");
@@ -1979,22 +1979,22 @@ void XmlDocV1Parser::processAttributeSection(xml_node &node,
     def = this->m_manager.findDefinition(defType);
     if (def)
       {
-      sec->addDefinition(def);
+      v->addDefinition(def);
       }
     else
       {
       smtkErrorMacro(this->m_logger,
                      "Cannot find attribute definition: " << defType
-                     << " required for Attribute Section: " << sec->title());
+                     << " required for Attribute View: " << v->title());
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processInstancedSection(xml_node &node,
-                                                  smtk::InstancedSectionPtr sec)
+void XmlDocV1Parser::processInstancedView(xml_node &node,
+                                          smtk::view::InstancedPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
   std::string attName, defName;
@@ -2003,7 +2003,7 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
 
   if (!instances)
     {
-    return; // No instances are in the section
+    return; // No instances are in the view
     }
 
   for (child = instances.child("Att"); child; child = child.next_sibling("Att"))
@@ -2023,7 +2023,7 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
           smtkErrorMacro(this->m_logger,
                          "Cannot find attribute definition: " << defName
                          << " required to create attribute: " << attName
-                         << " for Instanced Section: " << sec->title());
+                         << " for Instanced View: " << v->title());
           continue;
           }
         else
@@ -2036,25 +2036,25 @@ void XmlDocV1Parser::processInstancedSection(xml_node &node,
         smtkErrorMacro(this->m_logger,
                        "XML Attribute Type is missing"
                        << "and is required to create attribute: " << attName
-                       << " for Instanced Section: " << sec->title());
+                       << " for Instanced View: " << v->title());
         continue;
         }
       }
-    sec->addInstance(att);
+    v->addInstance(att);
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processModelEntitySection(xml_node &node,
-                                                  smtk::ModelEntitySectionPtr sec)
+void XmlDocV1Parser::processModelEntityView(xml_node &node,
+                                            smtk::view::ModelEntityPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(v));
   xml_attribute xatt = node.attribute("ModelEnityFilter");
   xml_node child = node.child("Definition");
   if (xatt)
     {
     unsigned long mask = this->decodeModelEntityMask(xatt.value());
-    sec->setModelEntityMask(mask);
+    v->setModelEntityMask(mask);
     }
 
   if (child)
@@ -2065,16 +2065,16 @@ void XmlDocV1Parser::processModelEntitySection(xml_node &node,
       {
       smtkErrorMacro(this->m_logger,
                      "Cannot find attribute definition: " << defType
-                     << " for Model Entity Section: " << sec->title());
+                     << " for Model Entity View: " << v->title());
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
-                                                       smtk::SimpleExpressionSectionPtr sec)
+void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
+                                                 smtk::view::SimpleExpressionPtr v)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<smtk::attribute::Section>(sec));
+  this->processBasicView(node,
+                            smtk::dynamicCastPointer<smtk::view::Base>(v));
   xml_node child = node.child("Definition");
   if (child)
     {
@@ -2084,90 +2084,90 @@ void XmlDocV1Parser::processSimpleExpressionSection(xml_node &node,
       {
       smtkErrorMacro(this->m_logger,
                      "Cannot find attribute definition: " << defType
-                     << " for Simple Expression Section: " << sec->title());
+                     << " for Simple Expression View: " << v->title());
       }
     else
       {
-      sec->setDefinition(def);
+      v->setDefinition(def);
       }
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processGroupSection(xml_node &node,
-                                            smtk::GroupSectionPtr group)
+void XmlDocV1Parser::processGroupView(xml_node &node,
+                                      smtk::view::GroupPtr group)
 {
-  this->processBasicSection(node,
-                            smtk::dynamicCastPointer<smtk::attribute::Section>(group));
+  this->processBasicView(node,
+                         smtk::dynamicCastPointer<smtk::view::Base>(group));
 
   xml_node child;
-  std::string sectionType;
+  std::string childName;
   for (child = node.first_child(); child; child = child.next_sibling())
     {
-    sectionType = child.name();
-    if (sectionType == "AttributeSection")
+    childName = child.name();
+    if (childName == "AttributeView")
       {
-      this->processAttributeSection(child,
-                                    group->addSubsection<AttributeSectionPtr>(""));
+      this->processAttributeView(child,
+                                 group->addSubView<smtk::view::AttributePtr>(""));
       continue;
       }
 
-    if (sectionType == "GroupSection")
+    if (childName == "GroupView")
       {
-      this->processGroupSection(child,
-                                group->addSubsection<GroupSectionPtr>(""));
+      this->processGroupView(child,
+                             group->addSubView<smtk::view::GroupPtr>(""));
       continue;
       }
 
-    if (sectionType == "InstancedSection")
+    if (childName == "InstancedView")
       {
-      this->processInstancedSection(child,
-                                    group->addSubsection<InstancedSectionPtr>(""));
+      this->processInstancedView(child,
+                                 group->addSubView<smtk::view::InstancedPtr>(""));
       continue;
       }
 
-    if (sectionType == "ModelEntitySection")
+    if (childName == "ModelEntityView")
       {
-      this->processModelEntitySection(child,
-                                      group->addSubsection<ModelEntitySectionPtr>(""));
+      this->processModelEntityView(child,
+                                   group->addSubView<smtk::view::ModelEntityPtr>(""));
       continue;
       }
 
-    if (sectionType == "SimpleExpressionSection")
+    if (childName == "SimpleExpressionView")
       {
-      this->processSimpleExpressionSection(child,
-                                           group->addSubsection<SimpleExpressionSectionPtr>(""));
+      this->processSimpleExpressionView(child,
+                                        group->addSubView<smtk::view::SimpleExpressionPtr>(""));
       continue;
       }
 
     // In case this was root section
-    if ((group->type() == smtk::attribute::Section::ROOT) && ((sectionType == "DefaultColor") ||
-                                             (sectionType == "InvalidColor")))
+    if ((group->type() == smtk::view::Base::ROOT) && ((childName == "DefaultColor") ||
+                                                      (childName == "InvalidColor")))
       {
       continue;
       }
 
-    smtkErrorMacro(this->m_logger, "Unsupported Section Type: " << sectionType
-                   << " for Group Section: " << group->title());
+    smtkErrorMacro(this->m_logger, "Unsupported View Type: " << childName
+                   << " for Group View: " << group->title());
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processBasicSection(xml_node &node,
-                                            smtk::SectionPtr sec)
+void XmlDocV1Parser::processBasicView(xml_node &node,
+                                      smtk::view::BasePtr v)
 {
   xml_attribute xatt;
   xatt = node.attribute("Title"); // Required
   if (!xatt)
     {
-    smtkErrorMacro(this->m_logger, "Section is missing XML Attribute Title");
+    smtkErrorMacro(this->m_logger, "View is missing XML Attribute Title");
     }
   else
     {
-    sec->setTitle(xatt.value());
+    v->setTitle(xatt.value());
     }
   xatt = node.attribute("Icon"); // optional
   if (xatt)
     {
-    sec->setIconName(xatt.value());
+    v->setIconName(xatt.value());
     }
 }
 
