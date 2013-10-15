@@ -16,7 +16,7 @@
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
 
   <!-- Suppressed because they are templated functions -->
-  <suppress-warning text="skipping function 'smtk::attribute::GroupSection::addSubsection', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
@@ -312,7 +312,7 @@
 
   <value-type template="smtk::shared_ptr" args="smtk::view::Base" />
 
-  <value-type template="smtk::shared_ptr" args="smtk::view::AttributeSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::Attribute" />
 
   <value-type template="smtk::shared_ptr" args="smtk::view::Group" />
   <value-type template="smtk::shared_ptr" args="smtk::view::Instanced" />
@@ -345,28 +345,6 @@
 
       <object-type name="GridInfo">
         <include file-name="smtk/model/GridInfo.h" location="local"/>
-      </object-type>
-
-    </namespace-type>
-
-    <namespace-type name="util">
-      <!-- setup the util classes -->
-     <object-type name="AttributeReader">
-        <include file-name="smtk/util/AttributeReader.h" location="local"/>
-      </object-type>
-
-      <object-type name="AttributeWriter">
-        <include file-name="smtk/util/AttributeWriter.h" location="local"/>
-      </object-type>
-
-      <object-type name="Logger">
-        <include file-name="smtk/util/Logger.h" location="local"/>
-        <enum-type name="Severity"/>
-        <object-type name="Record" />
-      </object-type>
-
-      <object-type name="UserData">
-        <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>
 
     </namespace-type>
@@ -478,82 +456,6 @@
          </add-function>
       </object-type>
 
-      <object-type name="AttributeSection">
-        <include file-name="smtk/attribute/AttributeSection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::AttributeSection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
-      <object-type name="GroupSection">
-        <include file-name="smtk/attribute/GroupSection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::GroupSection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
-      <object-type name="ModelEntitySection">
-        <include file-name="smtk/attribute/ModelEntitySection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::ModelEntitySection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
-      <object-type name="RootSection">
-        <include file-name="smtk/attribute/RootSection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::RootSection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-
-        <modify-function signature="setInvalidColor(const double *)" remove="all"/>
-
-        <modify-function signature="setDefaultColor(const double *)" remove="all"/>
-      </object-type>
-
-      <object-type name="SimpleExpressionSection">
-        <include file-name="smtk/attribute/SimpleExpressionSection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::SimpleExpressionSection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
-      <object-type name="InstancedSection">
-        <include file-name="smtk/attribute/InstancedSection.h" location="local"/>
-        <add-function signature="ToSection(const smtk::shared_ptr&lt;smtk::attribute::InstancedSection &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::Section &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::Section &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
       <object-type name="IntItem">
         <include file-name="smtk/attribute/IntItem.h" location="local"/>
       </object-type>
@@ -612,11 +514,6 @@
 
      </object-type>
 
-      <object-type name="Section">
-        <include file-name="smtk/attribute/Section.h" location="local" />
-        <enum-type name="Type" />
-      </object-type>
-
       <object-type name="StringItem">
         <include file-name="smtk/attribute/StringItem.h" location="local" />
       </object-type>
@@ -669,6 +566,116 @@
       <value-type name="ValueItemDefinitionTemplate" generate="no" />
 
     </namespace-type>
+
+    <namespace-type name="util">
+      <!-- setup the util classes -->
+     <object-type name="AttributeReader">
+        <include file-name="smtk/util/AttributeReader.h" location="local"/>
+      </object-type>
+
+      <object-type name="AttributeWriter">
+        <include file-name="smtk/util/AttributeWriter.h" location="local"/>
+      </object-type>
+
+      <object-type name="Logger">
+        <include file-name="smtk/util/Logger.h" location="local"/>
+        <enum-type name="Severity"/>
+        <object-type name="Record" />
+      </object-type>
+
+      <object-type name="UserData">
+        <include file-name="smtk/util/UserData.h" location="local" />
+      </object-type>
+
+    </namespace-type>
+
+    <namespace-type name="view">
+      <!-- setup the view classes -->
+
+      <object-type name="Base">
+        <include file-name="smtk/view/Base.h" location="local" />
+        <enum-type name="Type" />
+      </object-type>
+
+      <object-type name="Attribute">
+        <include file-name="smtk/view/Attribute.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Attribute &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="Group">
+        <include file-name="smtk/view/Group.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Group &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="ModelEntity">
+        <include file-name="smtk/view/ModelEntity.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::ModelEntity &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="Root">
+        <include file-name="smtk/view/Root.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Root &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+
+        <modify-function signature="setInvalidColor(const double *)" remove="all"/>
+
+        <modify-function signature="setDefaultColor(const double *)" remove="all"/>
+      </object-type>
+
+      <object-type name="SimpleExpression">
+        <include file-name="smtk/view/SimpleExpression.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::SimpleExpression &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="Instanced">
+        <include file-name="smtk/view/Instanced.h" location="local"/>
+        <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Instanced &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+    </namespace-type>
+
+
   </namespace-type>
 
   @EXTRA_OBJECTS@

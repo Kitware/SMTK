@@ -1,5 +1,5 @@
 """
-Manual port of SMTK/smtk/attribute/Testing/basicSectionWriterTest.cxx
+Manual port of SMTK/smtk/attribute/Testing/basicViewWriterTest.cxx
 For verifying python-shiboken wrappers
 
 Requires SMTKCorePython.so to be in module path
@@ -21,29 +21,29 @@ def addItemDefinition( ato, data_type, name):
     return None
   return def_
 
-def addSubsection( ato, data_type, name ):
+def addSubView( ato, data_type, name ):
   sec = data_type.New(name)
   if sec is None:
-    print "could not create subsecion"
+    print "could not create subview"
     return None
-  print "converting to section"
-  isec = data_type.ToSection(sec)
+  print "converting to Base View"
+  isec = data_type.ToBase(sec)
   if isec is None:
     print "could not convert"
     return None
-  if not ato.addSubsection(isec):
+  if not ato.addSubView(isec):
     print "could not add"
     return None
   return sec
 
 if __name__ == '__main__':
     import sys
-    
+
     status = 0
-    
+
     manager = smtk.attribute.Manager()
     print "Manager Created"
-    
+
     #Lets create some attribute Definitions
     funcDef = manager.createDefinition("PolyLinearFunction")
     if funcDef is None:
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     if globalsDef is None:
       print "could not create globalsDef"
       sys.exit( -1 )
-    
+
     #Lets add some analyses
     analysis = list()
     analysis.append("Flow")
@@ -84,26 +84,26 @@ if __name__ == '__main__':
     analysis.append("Time")
     manager.defineAnalysis("CFD Flow", analysis)
     del analysis[:]
-    
+
     analysis.append("Flow")
     analysis.append("Heat")
     analysis.append("General")
     analysis.append("Time")
     manager.defineAnalysis("CFD Flow with Heat Transfer", analysis)
     del analysis[:]
-    
+
     analysis.append("Constituent")
     analysis.append("General")
     analysis.append("Time")
     manager.defineAnalysis("Constituent Transport", analysis)
     del analysis[:]
-    
+
     #Lets complete the definition for some boundary conditions
     ddef = addItemDefinition(specifiedHeadDef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.setExpressionDefinition(funcDef)
     ddef = addItemDefinition(specifiedFluxDef, smtk.attribute.DoubleItemDefinition, "Value")
     ddef.setExpressionDefinition(funcDef)
-    
+
     gdef = addItemDefinition(timeParamDef, smtk.attribute.GroupItemDefinition, "StartTime")
     gdef.setCommonSubGroupLabel("Start Time")
     ddef = addItemDefinition(gdef, smtk.attribute.DoubleItemDefinition, "Value")
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     idef.addDiscreteValue(3, "Days")
     idef.setDefaultDiscreteIndex(0)
     idef.addCategory("Time")
-       
+
     ddef = addItemDefinition(globalsDef, smtk.attribute.DoubleItemDefinition, "Gravity")
     ddef.setDefaultValue(1.272024e08)
     ddef.setUnits("m/hr^2")
@@ -149,30 +149,30 @@ if __name__ == '__main__':
     ddef.setAdvanceLevel(1)
     ddef.setMinRange(0, False)
 
-    #Lets add some sections
-  
-    root = manager.rootSection()
+    #Lets add some views
+
+    root = manager.rootView()
     root.setTitle("SimBuilder")
-    expSec = addSubsection(root, smtk.attribute.SimpleExpressionSection,"Functions")
+    expSec = addSubView(root, smtk.view.SimpleExpression,"Functions")
     expSec.setDefinition(funcDef)
-    attSec = addSubsection( root, smtk.attribute.AttributeSection, "Materials")
+    attSec = addSubView( root, smtk.view.Attribute, "Materials")
     attSec.addDefinition(materialDef)
     attSec.setModelEntityMask(0x40)
     attSec.setOkToCreateModelEntities(True)
-    modSec = addSubsection(root, smtk.attribute.ModelEntitySection, "Domains")
+    modSec = addSubView(root, smtk.view.ModelEntity, "Domains")
     modSec.setModelEntityMask(0x40) # Look at domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
-    attSec = addSubsection(root, smtk.attribute.AttributeSection, "BoundaryConditions")
+    attSec = addSubView(root, smtk.view.Attribute, "BoundaryConditions")
     attSec.addDefinition(boundaryConditionsDef)
-    modSec = addSubsection(root, smtk.attribute.ModelEntitySection, "Boundary View")
+    modSec = addSubView(root, smtk.view.ModelEntity, "Boundary View")
     modSec.setModelEntityMask(0x20) # Look at boundary entities only
 
     manager.updateCategories()
     att = manager.createAttribute("TimeInfomation", timeParamDef)
-    iSec = addSubsection(root, smtk.attribute.InstancedSection, "Time Parameters")
+    iSec = addSubView(root, smtk.view.Instanced, "Time Parameters")
     iSec.addInstance(att)
     att = manager.createAttribute("Globals", globalsDef)
-    iSec = addSubsection(root, smtk.attribute.InstancedSection, "Global Parameters")
+    iSec = addSubView(root, smtk.view.Instanced, "Global Parameters")
     iSec.addInstance(att)
 #    writer = smtk.attribute.XmlV1StringWriter(manager)
 #    result = writer.convertToString()

@@ -132,8 +132,6 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::Manager >                  AttributeManagerPtr;
-
   namespace util
   {
     //custom user data classes

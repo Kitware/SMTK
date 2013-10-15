@@ -62,3 +62,4 @@ __import_shared_ptrs__()
 model = _temp.smtk.model
 attribute = _temp.smtk.attribute
 util = _temp.smtk.util
+view = _temp.smtk.view

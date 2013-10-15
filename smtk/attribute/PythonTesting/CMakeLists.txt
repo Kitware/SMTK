@@ -17,7 +17,6 @@ if( PYTHONINTERP_FOUND )
    add_test(basicAttributeDefinitionTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDefinitionTest.py)
    add_test(basicAttributeDerivationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDerivationTest.py)
    add_test(basicAttributeXMLWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeXMLWriterTest.py dummypy.sbi)
-   add_test(basicSectionWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicSectionWriterTest.py)
    add_test(expressintTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest.py)
    add_test(expressionTest2Py ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/expressionTest2.py)
    add_test(attributeAutoNamingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeAutoNamingTest.py)
@@ -25,7 +24,7 @@ if( PYTHONINTERP_FOUND )
    add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
   set_tests_properties( basicAttributeTestPy basicAttributeDefinitionTestPy
                         basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
-                        basicSectionWriterTestPy expressintTestPy expressionTest2Py
+                        expressintTestPy expressionTest2Py
                         attributeAutoNamingTestPy attributeAutoNamingTestPy
                         attributeReferencingTestPy categoryTestPy
                         PROPERTIES ENVIRONMENT "PYTHONPATH=${SIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )

@@ -82,6 +82,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${CMAKE_CURRENT_SOURCE_DIR}/attribute
       ${CMAKE_CURRENT_SOURCE_DIR}/model
       ${CMAKE_CURRENT_SOURCE_DIR}/util
+      ${CMAKE_CURRENT_SOURCE_DIR}/view
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}
     TYPESYSTEM typesystem.xml
@@ -102,6 +103,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   if(SMTK_ENABLE_TESTING)
     get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
     add_subdirectory(attribute/PythonTesting)
+    add_subdirectory(view/PythonTesting)
   endif(SMTK_ENABLE_TESTING)
 
   #todo we need to install this file in such a way that it can resolve
