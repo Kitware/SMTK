@@ -20,8 +20,11 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ItemDefinition.h -
+// .NAME ItemDefinition.h - the definition of a value of an attribute definition.
 // .SECTION Description
+// ItemDefinition is meant to store definitions of values that can be
+// stored inside of an attribute. Derived classes give specific
+// types of items.
 // .SECTION See Also
 
 #ifndef __smtk_attribute_ItemDefinition_h
@@ -42,10 +45,9 @@ namespace smtk
     class Attribute;
     class Item;
     class GroupItemDefinition;
-    class Definition;
     class SMTKCORE_EXPORT ItemDefinition
     {
-      friend class smtk::attribute::Definition;
+      friend class smtk::attribute::AttributeDefinition;
       friend class smtk::attribute::GroupItemDefinition;
     public:
       virtual ~ItemDefinition();
@@ -115,19 +117,21 @@ namespace smtk
                                                 int position,
                                                 int subGroupPosition) const = 0;
     protected:
+      // The constructor must have the value for m_name passed
+      // in because that should never change.
       ItemDefinition(const std::string &myname);
       virtual void updateCategories();
       int m_version;
       bool m_isOptional;
       bool m_isEnabledByDefault;
-      std::string m_name;
       std::string m_label;
       std::set<std::string> m_categories;
       int m_advanceLevel;
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
-
+      // constant value that should never be changed
+      const std::string m_name;
     };
   }
 }

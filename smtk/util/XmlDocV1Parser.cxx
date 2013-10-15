@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -273,11 +273,11 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
                      << type);
       return;
       }
-    def = this->m_manager.createDefinition(type, baseDef);
+    def = this->m_manager.createAttributeDefinition(type, baseDef);
     }
   else
     {
-    def = this->m_manager.createDefinition(type);
+    def = this->m_manager.createAttributeDefinition(type);
     }
   xml_attribute xatt;
   xatt = defNode.attribute("Label");

@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Manager.h -
+// .NAME Manager.h - the main class for storing attribute information
 // .SECTION Description
 // .SECTION See Also
 
@@ -60,10 +60,10 @@ namespace smtk
       Manager();
       virtual ~Manager();
 
-      smtk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
-                                                     const std::string &baseTypeName = "");
-      smtk::AttributeDefinitionPtr createDefinition(const std::string &name,
-                                                     AttributeDefinitionPtr baseDefiniiton);
+      smtk::AttributeDefinitionPtr createAttributeDefinition(const std::string &typeName,
+                                                             const std::string &baseTypeName = "");
+      smtk::AttributeDefinitionPtr createAttributeDefinition(const std::string &name,
+                                                             AttributeDefinitionPtr baseDefiniiton);
       smtk::AttributePtr createAttribute(const std::string &name, const std::string &type);
       smtk::AttributePtr createAttribute(const std::string &type);
       smtk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def);

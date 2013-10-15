@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Root.h -
+// .NAME Root.h - the root view that other views are contained in
 // .SECTION Description
 // .SECTION See Also
 

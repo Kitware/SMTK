@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/AttributeRefItem.h"
 #include "smtk/attribute/Item.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/model/Item.h"
 #include <iostream>

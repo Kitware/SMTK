@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAssociationWidget.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/ValueItem.h"

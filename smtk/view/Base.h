@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Base.h -
+// .NAME Base.h - represents the base class for views
 // .SECTION Description
 // .SECTION See Also
 
