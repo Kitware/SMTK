@@ -50,8 +50,8 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class AttributeRefItem;
-    class AttributeRefItemDefinition;
+    class RefItem;
+    class RefItemDefinition;
     class Definition;
     class DirectoryItem;
     class DirectoryItemDefinition;
@@ -104,8 +104,8 @@ namespace smtk
   typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstAttributeDefinitionPtr;
   typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakAttributeDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::AttributeRefItem >           AttributeRefItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::AttributeRefItemDefinition > AttributeRefItemDefinitionPtr;
+  typedef smtk::shared_ptr< smtk::attribute::RefItem >           AttributeRefItemPtr;
+  typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > AttributeRefItemDefinitionPtr;
 
   typedef smtk::shared_ptr< smtk::attribute::Item >                 AttributeItemPtr;
   typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstAttributeItemPtr;

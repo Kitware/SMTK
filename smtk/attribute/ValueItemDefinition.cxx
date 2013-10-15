@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/RefItemDefinition.h"
 
 using namespace smtk::attribute; 
 
@@ -37,7 +37,7 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
   this->m_numberOfRequiredValues = 1;
-  this->m_expressionDefinition = AttributeRefItemDefinition::New("expression");
+  this->m_expressionDefinition = RefItemDefinition::New("expression");
   this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }
 
@@ -127,7 +127,7 @@ void
 ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
   smtk::AttributeRefItemPtr aref =
-    smtk::dynamicCastPointer<smtk::attribute::AttributeRefItem>
+    smtk::dynamicCastPointer<smtk::attribute::RefItem>
     (this->m_expressionDefinition->buildItem(vitem, position, -1));
   aref->setDefinition(this->m_expressionDefinition);
   vitem->m_expressions[position] = aref;

@@ -43,8 +43,8 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -517,8 +517,8 @@ QWidget* qtUIManager::createExpressionRefWidget(
     return NULL;
     }
 
-  const AttributeRefItemDefinition *itemDef =
-    dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
+  const RefItemDefinition *itemDef =
+    dynamic_cast<const RefItemDefinition*>(item->definition().get());
   smtk::AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
   if(!attDef)
     {
@@ -579,10 +579,7 @@ void qtUIManager::onExpressionReferenceChanged()
 
   if(curIdx>=0)
     {
-    const AttributeRefItemDefinition *itemDef =
-      dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
-    AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
-    Manager *attManager = attDef->manager();
+    Manager *attManager = item->attribute()->manager();
     AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
     if(attPtr)
       {

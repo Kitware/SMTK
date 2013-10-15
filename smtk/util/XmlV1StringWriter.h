@@ -61,10 +61,10 @@ namespace smtk
                        smtk::AttributeItemPtr item);
       void processItemDefinition(pugi::xml_node &node,
                                  smtk::AttributeItemDefinitionPtr idef);
-      void processAttributeRefItem(pugi::xml_node &node,
+      void processRefItem(pugi::xml_node &node,
                                    smtk::AttributeRefItemPtr item);
-      void processAttributeRefDef(pugi::xml_node &node,
-                                  smtk::AttributeRefItemDefinitionPtr idef);
+      void processRefDef(pugi::xml_node &node,
+                         smtk::AttributeRefItemDefinitionPtr idef);
       void processDoubleItem(pugi::xml_node &node,
                              smtk::DoubleItemPtr item);
       void processDoubleDef(pugi::xml_node &node,

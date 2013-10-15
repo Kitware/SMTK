@@ -42,7 +42,7 @@ namespace smtk
 
   namespace attribute
   {
-    class AttributeRefItem;
+    class RefItem;
     class Item;
     class Manager;
 
@@ -50,7 +50,7 @@ namespace smtk
     {
       friend class smtk::attribute::Definition;
       friend class smtk::attribute::Manager;
-      friend class smtk::attribute::AttributeRefItem;
+      friend class smtk::attribute::RefItem;
     public:
       static smtk::AttributePtr New(const std::string &myName,
                                     smtk::AttributeDefinitionPtr myDefinition,
@@ -146,20 +146,20 @@ namespace smtk
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
-      void addReference(smtk::attribute::AttributeRefItem *attRefItem, int pos)
+      void addReference(smtk::attribute::RefItem *attRefItem, int pos)
         {this->m_references[attRefItem].insert(pos);}
       // This removes a specific ref item
-      void removeReference(smtk::attribute::AttributeRefItem *attRefItem, int pos)
+      void removeReference(smtk::attribute::RefItem *attRefItem, int pos)
         {this->m_references[attRefItem].erase(pos);}
       // This removes all references to a specific Ref Item
-      void removeReference(smtk::attribute::AttributeRefItem *attRefItem)
+      void removeReference(smtk::attribute::RefItem *attRefItem)
         {this->m_references.erase(attRefItem);}
       std::string m_name;
       std::vector<smtk::AttributeItemPtr> m_items;
       unsigned long m_id;
       smtk::AttributeDefinitionPtr m_definition;
       std::set<smtk::ModelItemPtr> m_entities;
-      std::map<smtk::attribute::AttributeRefItem *, std::set<int> > m_references;
+      std::map<smtk::attribute::RefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       bool m_isColorSet;

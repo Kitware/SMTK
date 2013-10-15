@@ -22,15 +22,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItem.h"
+#include "smtk/attribute/RefItem.h"
 
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-AttributeRefItemDefinition::
-AttributeRefItemDefinition(const std::string &myName):
+RefItemDefinition::
+RefItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_definition()
 {
   this->m_useCommonLabel = false;
@@ -38,18 +38,18 @@ AttributeRefItemDefinition(const std::string &myName):
 }
 
 //----------------------------------------------------------------------------
-AttributeRefItemDefinition::~AttributeRefItemDefinition()
+RefItemDefinition::~RefItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-Item::Type AttributeRefItemDefinition::type() const
+Item::Type RefItemDefinition::type() const
 {
   return Item::ATTRIBUTE_REF;
 }
 
 //----------------------------------------------------------------------------
-bool 
-AttributeRefItemDefinition::isValueValid(smtk::AttributePtr att) const
+bool
+RefItemDefinition::isValueValid(smtk::AttributePtr att) const
 {
   if (att == NULL)
     {
@@ -62,25 +62,25 @@ AttributeRefItemDefinition::isValueValid(smtk::AttributePtr att) const
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
-AttributeRefItemDefinition::buildItem(Attribute *owningAttribute,
+smtk::AttributeItemPtr
+RefItemDefinition::buildItem(Attribute *owningAttribute,
                                       int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new AttributeRefItem(owningAttribute,
+  return smtk::AttributeItemPtr(new RefItem(owningAttribute,
                                                      itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
-AttributeRefItemDefinition::buildItem(Item *owningItem,
+smtk::AttributeItemPtr
+RefItemDefinition::buildItem(Item *owningItem,
                                       int itemPosition,
                                       int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new AttributeRefItem(owningItem,
+  return smtk::AttributeItemPtr(new RefItem(owningItem,
                                                       itemPosition,
                                                       subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void AttributeRefItemDefinition::setNumberOfRequiredValues(int esize)
+void RefItemDefinition::setNumberOfRequiredValues(int esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
@@ -93,7 +93,7 @@ void AttributeRefItemDefinition::setNumberOfRequiredValues(int esize)
     }
 }
 //----------------------------------------------------------------------------
-void AttributeRefItemDefinition::setValueLabel(int element, const std::string &elabel)
+void RefItemDefinition::setValueLabel(int element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
     {
@@ -107,7 +107,7 @@ void AttributeRefItemDefinition::setValueLabel(int element, const std::string &e
   this->m_valueLabels[element] = elabel;
 }
 //----------------------------------------------------------------------------
-void AttributeRefItemDefinition::setCommonValueLabel(const std::string &elabel)
+void RefItemDefinition::setCommonValueLabel(const std::string &elabel)
 {
   if (this->m_valueLabels.size() != 1)
     {
@@ -118,7 +118,7 @@ void AttributeRefItemDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string AttributeRefItemDefinition::valueLabel(int element) const
+std::string RefItemDefinition::valueLabel(int element) const
 {
   if (this->m_useCommonLabel)
     {

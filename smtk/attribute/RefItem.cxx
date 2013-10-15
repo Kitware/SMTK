@@ -22,38 +22,38 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
 #include <stdio.h>
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-AttributeRefItem::AttributeRefItem(Attribute *owningAttribute, 
-                                   int itemPosition): 
+RefItem::RefItem(Attribute *owningAttribute,
+                                   int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
 //----------------------------------------------------------------------------
-AttributeRefItem::AttributeRefItem(Item *owningItem,
+RefItem::RefItem(Item *owningItem,
                                    int itemPosition,
-                                   int mySubGroupPosition): 
+                                   int mySubGroupPosition):
   Item(owningItem, itemPosition, mySubGroupPosition)
 {
 }
 
 //----------------------------------------------------------------------------
-bool AttributeRefItem::
+bool RefItem::
 setDefinition(smtk::ConstAttributeItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const AttributeRefItemDefinition *def = 
-    dynamic_cast<const AttributeRefItemDefinition *>(adef.get());
-  
+  const RefItemDefinition *def =
+    dynamic_cast<const RefItemDefinition *>(adef.get());
+
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
   if ((def == NULL) || (!Item::setDefinition(adef)))
@@ -69,12 +69,12 @@ setDefinition(smtk::ConstAttributeItemDefinitionPtr adef)
 }
 
 //----------------------------------------------------------------------------
-AttributeRefItem::~AttributeRefItem()
+RefItem::~RefItem()
 {
   this->clearAllReferences();
 }
 //----------------------------------------------------------------------------
-void AttributeRefItem::clearAllReferences() 
+void RefItem::clearAllReferences()
 {
   std::size_t i, n = this->m_values.size();
   Attribute *att;
@@ -88,16 +88,16 @@ void AttributeRefItem::clearAllReferences()
     }
 }
 //----------------------------------------------------------------------------
-Item::Type AttributeRefItem::type() const
+Item::Type RefItem::type() const
 {
   return ATTRIBUTE_REF;
 }
 
 //----------------------------------------------------------------------------
-int AttributeRefItem::numberOfRequiredValues() const
+int RefItem::numberOfRequiredValues() const
 {
-  const AttributeRefItemDefinition *def = 
-    static_cast<const AttributeRefItemDefinition*>(this->m_definition.get());
+  const RefItemDefinition *def =
+    static_cast<const RefItemDefinition*>(this->m_definition.get());
   if (def == NULL)
     {
     return 0;
@@ -105,10 +105,10 @@ int AttributeRefItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
-bool AttributeRefItem::setValue(int element, smtk::AttributePtr att)
+bool RefItem::setValue(int element, smtk::AttributePtr att)
 {
-  const AttributeRefItemDefinition *def = 
-    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  const RefItemDefinition *def =
+    static_cast<const RefItemDefinition *>(this->definition().get());
   if (def->isValueValid(att))
     {
     Attribute *attPtr = this->m_values[element].lock().get();
@@ -124,7 +124,7 @@ bool AttributeRefItem::setValue(int element, smtk::AttributePtr att)
 }
 //----------------------------------------------------------------------------
 std::string
-AttributeRefItem::valueAsString(int element, 
+RefItem::valueAsString(int element,
                                       const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
@@ -141,17 +141,17 @@ AttributeRefItem::valueAsString(int element,
 }
 //----------------------------------------------------------------------------
 bool
-AttributeRefItem::appendValue(smtk::AttributePtr val)
+RefItem::appendValue(smtk::AttributePtr val)
 {
   //First - are we allowed to change the number of values?
-  const AttributeRefItemDefinition *def =
-    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  const RefItemDefinition *def =
+    static_cast<const RefItemDefinition *>(this->definition().get());
   int n = def->numberOfRequiredValues();
   if (n)
     {
     return false; // The number of values is fixed
     }
-  
+
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -162,11 +162,11 @@ AttributeRefItem::appendValue(smtk::AttributePtr val)
 }
 //----------------------------------------------------------------------------
 bool
-AttributeRefItem::removeValue(int element)
+RefItem::removeValue(int element)
 {
   //First - are we allowed to change the number of values?
-  const AttributeRefItemDefinition *def =
-    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  const RefItemDefinition *def =
+    static_cast<const RefItemDefinition *>(this->definition().get());
   int n = def->numberOfRequiredValues();
   if (n)
     {
@@ -183,17 +183,17 @@ AttributeRefItem::removeValue(int element)
 }
 //----------------------------------------------------------------------------
 bool
-AttributeRefItem::setNumberOfValues(std::size_t newSize)
+RefItem::setNumberOfValues(std::size_t newSize)
 {
   // If the current size is the same just return
   if (this->numberOfValues() == newSize)
     {
     return true;
     }
-  
+
   //Next - are we allowed to change the number of values?
-  const AttributeRefItemDefinition *def =
-    static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  const RefItemDefinition *def =
+    static_cast<const RefItemDefinition *>(this->definition().get());
   std::size_t n = def->numberOfRequiredValues();
   if (n)
     {
@@ -217,7 +217,7 @@ AttributeRefItem::setNumberOfValues(std::size_t newSize)
 }
 //----------------------------------------------------------------------------
 void
-AttributeRefItem::unset(int element)
+RefItem::unset(int element)
 {
   Attribute *att = this->m_values[element].lock().get();
   if (att == NULL)
@@ -233,10 +233,10 @@ AttributeRefItem::unset(int element)
 }
 //----------------------------------------------------------------------------
 void
-AttributeRefItem::reset()
+RefItem::reset()
 {
-  const AttributeRefItemDefinition *def
-    = static_cast<const AttributeRefItemDefinition *>(this->definition().get());
+  const RefItemDefinition *def
+    = static_cast<const RefItemDefinition *>(this->definition().get());
   // Was the initial size 0?
   int i, n = def->numberOfRequiredValues();
   if (!n)

@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItem.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -45,7 +45,7 @@ Attribute::~Attribute()
 {
   this->m_aboutToBeDeleted = true;
   // Clear all references to the attribute
-  std::map<smtk::attribute::AttributeRefItem *, std::set<int> >::iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<int> >::iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
     std::set<int>::iterator sit;
@@ -72,7 +72,7 @@ void Attribute::removeAllItems()
 void Attribute::references(std::vector<smtk::AttributeItemPtr> &list) const
 {
   list.clear();
-  std::map<smtk::attribute::AttributeRefItem *, std::set<int> >::const_iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<int> >::const_iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
     if (it->second.size())

@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/util/XmlDocV1Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -353,8 +353,8 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     switch (itype)
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
-        idef = def->addItemDefinition<smtk::attribute::AttributeRefItemDefinition>(itemName);
-        this->processAttributeRefDef(node, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItemDefinition>(idef));
+        idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
+        this->processRefDef(node, smtk::dynamicCastPointer<smtk::attribute::RefItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DOUBLE:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
@@ -740,8 +740,8 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processAttributeRefDef(pugi::xml_node &node,
-                                               AttributeRefItemDefinitionPtr idef)
+void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
+                                   AttributeRefItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -951,8 +951,8 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     switch (itype)
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
-        idef = def->addItemDefinition<smtk::attribute::AttributeRefItemDefinition>(itemName);
-        this->processAttributeRefDef(child, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItemDefinition>(idef));
+        idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
+        this->processRefDef(child, smtk::dynamicCastPointer<smtk::attribute::RefItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DOUBLE:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
@@ -1139,7 +1139,7 @@ void XmlDocV1Parser::processItem(xml_node &node,
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF:
-      this->processAttributeRefItem(node, smtk::dynamicCastPointer<smtk::attribute::AttributeRefItem>(item));
+      this->processRefItem(node, smtk::dynamicCastPointer<smtk::attribute::RefItem>(item));
       break;
     case smtk::attribute::Item::DOUBLE:
       this->processDoubleItem(node, smtk::dynamicCastPointer<smtk::attribute::DoubleItem>(item));
@@ -1249,7 +1249,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
   smtkErrorMacro(this->m_logger, "Missing Discrete Values for Item: " << item->name());
 }
 //----------------------------------------------------------------------------
-void XmlDocV1Parser::processAttributeRefItem(pugi::xml_node &node,
+void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
                                                AttributeRefItemPtr item)
 {
   xml_attribute xatt;

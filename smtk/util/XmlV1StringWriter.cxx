@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/util/XmlV1StringWriter.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -268,7 +268,7 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
   switch (idef->type())
     {
     case Item::ATTRIBUTE_REF:
-      this->processAttributeRefDef(node, smtk::dynamicCastPointer<AttributeRefItemDefinition>(idef));
+      this->processRefDef(node, smtk::dynamicCastPointer<RefItemDefinition>(idef));
       break;
     case Item::DOUBLE:
       this->processDoubleDef(node, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
@@ -509,8 +509,8 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processAttributeRefDef(pugi::xml_node &node,
-                                               AttributeRefItemDefinitionPtr idef)
+void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
+                                      AttributeRefItemDefinitionPtr idef)
 {
   AttributeDefinitionPtr  adp = idef->attributeDefinition();
   if (adp != NULL)
@@ -697,7 +697,7 @@ void XmlV1StringWriter::processItem(xml_node &node,
   switch (item->type())
     {
     case Item::ATTRIBUTE_REF:
-      this->processAttributeRefItem(node, smtk::dynamicCastPointer<AttributeRefItem>(item));
+      this->processRefItem(node, smtk::dynamicCastPointer<RefItem>(item));
       break;
     case Item::DOUBLE:
       this->processDoubleItem(node, smtk::dynamicCastPointer<DoubleItem>(item));
@@ -775,7 +775,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processAttributeRefItem(pugi::xml_node &node,
+void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
                                                AttributeRefItemPtr item)
 {
   std::size_t i=0, n = item->numberOfValues();

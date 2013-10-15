@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItem.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
@@ -789,7 +789,7 @@ void qtAttributeView::updateTableWithAttribute(
       else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
         {
         this->addTableAttRefItems(
-          dynamicCastPointer<AttributeRefItem>(attItem), numRows,
+          dynamicCastPointer<RefItem>(attItem), numRows,
           itemDef->name().c_str(), itemDef->advanceLevel());
         }
       else if(attItem->type() == smtk::attribute::Item::VOID)
@@ -861,7 +861,7 @@ void qtAttributeView::updateTableWithProperty(
         else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
           {
           this->addTableAttRefItems(
-            dynamicCastPointer<AttributeRefItem>(attItem), numRows,
+            dynamicCastPointer<RefItem>(attItem), numRows,
             (*it)->name().c_str(), itemDef->advanceLevel());
           }
         else if(attItem->type() == smtk::attribute::Item::VOID)
@@ -908,11 +908,11 @@ void qtAttributeView::addTableGroupItems(
       }
     else if(attItem->item(0)->type() == smtk::attribute::Item::ATTRIBUTE_REF)
       {
-      this->addTableAttRefItems(dynamicCastPointer<AttributeRefItem>(
+      this->addTableAttRefItems(dynamicCastPointer<RefItem>(
         attItem->item(0)), numRows, attLabel, advanced);
       for (int j = 1; j < numItems; j++) // expecting one item for each column
         {
-        this->addTableAttRefItems(dynamicCastPointer<AttributeRefItem>(
+        this->addTableAttRefItems(dynamicCastPointer<RefItem>(
           attItem->item(j)), numRows, NULL, 0);
         }
       }

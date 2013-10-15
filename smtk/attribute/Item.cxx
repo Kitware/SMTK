@@ -24,9 +24,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItem.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include <iostream>
 using namespace smtk::attribute;

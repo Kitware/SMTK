@@ -12,8 +12,8 @@
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::AttributeDefinitionPtr,smtk::WeakAttributeDefinitionPtrSet&gt;'"/>
-  <suppress-warning text="skipping field 'AttributeRefItem::m_values' with unmatched type 'std::vector&lt;WeakAttributePtr&gt;'"/>
-  <suppress-warning text="skipping field 'AttributeRefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
+  <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;WeakAttributePtr&gt;'"/>
+  <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
 
   <!-- Suppressed because they are templated functions -->
   <suppress-warning text="skipping function 'smtk::attribute::GroupSection::addSubsection', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
@@ -286,8 +286,8 @@
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItem" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeRefItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::RefItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::RefItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Item" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::ValueItem" />
@@ -310,15 +310,15 @@
     <modify-function signature="findAttributes(std::string)" remove="all"/>
   </value-type-->
 
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::Section" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::Base" />
 
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::AttributeSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::AttributeSection" />
 
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupSection" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::InstancedSection" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntitySection" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::RootSection" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::SimpleExpressionSection" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::Group" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::Instanced" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::ModelEntity" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::Root" />
+  <value-type template="smtk::shared_ptr" args="smtk::view::SimpleExpression" />
 
   <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
 
@@ -391,13 +391,13 @@
         <modify-function signature="setColor(const double *)" remove="all"/>
       </object-type>
 
-      <object-type name="AttributeRefItem">
-        <include file-name="smtk/attribute/AttributeRefItem.h" location="local"/>
+      <object-type name="RefItem">
+        <include file-name="smtk/attribute/RefItem.h" location="local"/>
       </object-type>
 
-      <object-type name="AttributeRefItemDefinition">
-        <include file-name="smtk/attribute/AttributeRefItemDefinition.h" location="local"/>
-        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::AttributeRefItemDefinition &gt;)"
+      <object-type name="RefItemDefinition">
+        <include file-name="smtk/attribute/RefItemDefinition.h" location="local"/>
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::RefItemDefinition &gt;)"
           static="yes"
           return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>

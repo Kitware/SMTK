@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_ValueItemTemplate_h
 #define __smtk_attribute_ValueItemTemplate_h
 
-#include "smtk/attribute/AttributeRefItem.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinitionTemplate.h"
 #include <vector>

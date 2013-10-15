@@ -36,7 +36,7 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class AttributeRefItem;
+    class RefItem;
     class ValueItemDefinition;
     class SMTKCORE_EXPORT ValueItem : public smtk::attribute::Item
     {

@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeRefItem.h -
+// .NAME RefItem.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_AttributeRefItem_h
-#define __smtk_attribute_AttributeRefItem_h
+#ifndef __smtk_attribute_RefItem_h
+#define __smtk_attribute_RefItem_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -37,18 +37,18 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class AttributeRefItemDefinition;
+    class RefItemDefinition;
     class ValueItemDefinition;
-    class SMTKCORE_EXPORT AttributeRefItem : public Item
+    class SMTKCORE_EXPORT RefItem : public Item
     {
-      friend class AttributeRefItemDefinition;
+      friend class RefItemDefinition;
       friend class ValueItemDefinition;
     public:
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
       static smtk::AttributeRefItemPtr CastTo(const smtk::AttributeItemPtr &p)
-      {return smtk::dynamic_pointer_cast<AttributeRefItem>(p);}
+      {return smtk::dynamic_pointer_cast<RefItem>(p);}
 
-      virtual ~AttributeRefItem();
+      virtual ~RefItem();
       virtual Item::Type type() const;
       std::size_t numberOfValues() const
       {return this->m_values.size();}
@@ -70,8 +70,8 @@ namespace smtk
       virtual void unset(int element=0);
 
     protected:
-      AttributeRefItem(Attribute *owningAttribute, int itemPosition);
-      AttributeRefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
+      RefItem(Attribute *owningAttribute, int itemPosition);
+      RefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
       void clearAllReferences();
       std::vector<WeakAttributePtr>m_values;
@@ -81,4 +81,4 @@ namespace smtk
 }
 
 
-#endif /* __smtk_attribute_AttributeRefItem_h */
+#endif /* __smtk_attribute_RefItem_h */

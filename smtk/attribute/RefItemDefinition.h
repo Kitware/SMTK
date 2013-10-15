@@ -20,12 +20,12 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeRefItemDefinition.h -
+// .NAME RefItemDefinition.h -
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_AttributeRefItemDefinition_h
-#define __smtk_attribute_AttributeRefItemDefinition_h
+#ifndef __smtk_attribute_RefItemDefinition_h
+#define __smtk_attribute_RefItemDefinition_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -37,19 +37,19 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    class SMTKCORE_EXPORT AttributeRefItemDefinition:
+    class SMTKCORE_EXPORT RefItemDefinition:
       public ItemDefinition
     {
     public:
       static smtk::AttributeRefItemDefinitionPtr New(const std::string &myName)
-      { return smtk::AttributeRefItemDefinitionPtr(new AttributeRefItemDefinition(myName));}
+      { return smtk::AttributeRefItemDefinitionPtr(new RefItemDefinition(myName));}
 
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::AttributeRefItemDefinitionPtr 
+      static smtk::AttributeRefItemDefinitionPtr
         CastTo(const smtk::AttributeItemDefinitionPtr &p)
-      {return smtk::dynamic_pointer_cast<AttributeRefItemDefinition>(p);}
+      {return smtk::dynamic_pointer_cast<RefItemDefinition>(p);}
 
-      virtual ~AttributeRefItemDefinition();
+      virtual ~RefItemDefinition();
 
       virtual Item::Type type() const;
       smtk::AttributeDefinitionPtr attributeDefinition() const
@@ -79,7 +79,7 @@ namespace smtk
 
       std::string valueLabel(int element) const;
     protected:
-      AttributeRefItemDefinition(const std::string &myName);
+      RefItemDefinition(const std::string &myName);
       smtk::WeakAttributeDefinitionPtr m_definition;
       bool m_useCommonLabel;
       std::vector<std::string> m_valueLabels;
@@ -90,4 +90,4 @@ namespace smtk
   }
 }
 
-#endif /* __smtk_attribute_AttributeRefItemDefinition_h */
+#endif /* __smtk_attribute_RefItemDefinition_h */

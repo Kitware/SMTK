@@ -2,8 +2,6 @@ project(SMTK_Attribute)
 
 set(attributeHeaders
   Attribute.h
-  AttributeRefItem.h
-  AttributeRefItemDefinition.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -18,6 +16,8 @@ set(attributeHeaders
   Item.h
   ItemDefinition.h
   Manager.h
+  RefItem.h
+  RefItemDefinition.h
   StringItem.h
   StringItemDefinition.h
   ValueItem.h
@@ -30,8 +30,6 @@ set(attributeHeaders
 
 set(attributeSrcs
   Attribute.cxx
-  AttributeRefItem.cxx
-  AttributeRefItemDefinition.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -46,6 +44,8 @@ set(attributeSrcs
   Item.cxx
   ItemDefinition.cxx
   Manager.cxx
+  RefItem.cxx
+  RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
   ValueItem.cxx
