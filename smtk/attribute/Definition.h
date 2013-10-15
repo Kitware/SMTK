@@ -20,15 +20,15 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeDefinition.h - stores the definition of an attribute.
+// .NAME Definition.h - stores the definition of an attribute.
 // .SECTION Description
 // Stores all of the necessary information for a definition of a
 // single attribute. Attributes should be created through
 // Manager::createAttribute().
 // .SECTION See Also
 
-#ifndef __smtk_attribute_AttributeDefinition_h
-#define __smtk_attribute_AttributeDefinition_h
+#ifndef __smtk_attribute_Definition_h
+#define __smtk_attribute_Definition_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -50,10 +50,10 @@ namespace smtk
     class ItemDefinition;
     class Manager;
 
-    class SMTKCORE_EXPORT AttributeDefinition
+    class SMTKCORE_EXPORT Definition
     {
     public:
-      virtual ~AttributeDefinition();
+      virtual ~Definition();
 
       // Description:
       // The type is the identifier that is used to access the
@@ -231,7 +231,7 @@ namespace smtk
     protected:
       friend class smtk::attribute::Manager;
       // AttributeDefinitions can only be created by an attribute manager
-      AttributeDefinition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
+      Definition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
                  smtk::attribute::Manager *myManager);
 
       void clearManager()
@@ -275,7 +275,7 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline int AttributeDefinition::findItemPosition(const std::string &name) const
+    inline int Definition::findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
       it = this->m_itemDefPositions.find(name);
@@ -286,7 +286,7 @@ namespace smtk
       return it->second;
     }
 //----------------------------------------------------------------------------
-    inline const double * AttributeDefinition::notApplicableColor() const
+    inline const double * Definition::notApplicableColor() const
     {
       if (this->m_isNotApplicableColorSet)
         {
@@ -299,7 +299,7 @@ namespace smtk
       return s_notApplicableBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void AttributeDefinition::setNotApplicableColor(
+    inline void Definition::setNotApplicableColor(
       double r, double g, double b, double a)
     {
       this->m_isNotApplicableColorSet = true;
@@ -309,7 +309,7 @@ namespace smtk
       this->m_notApplicableColor[3]= a;
     }
 //----------------------------------------------------------------------------
-    inline const double * AttributeDefinition::defaultColor() const
+    inline const double * Definition::defaultColor() const
     {
       if (this->m_isDefaultColorSet)
         {
@@ -322,7 +322,7 @@ namespace smtk
       return s_defaultBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void AttributeDefinition::setDefaultColor(
+    inline void Definition::setDefaultColor(
       double r, double g, double b, double a)
     {
       this->m_isDefaultColorSet = true;

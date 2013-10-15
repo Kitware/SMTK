@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -42,7 +42,7 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createAttributeDefinition("ExpDef");
+  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   smtk::StringItemDefinitionPtr eitemdef = 
@@ -51,7 +51,7 @@ int main()
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createAttributeDefinition("BaseDef");
+  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::IntItemDefinitionPtr iitemdef = 
     base->addItemDefinition<smtk::IntItemDefinitionPtr>("IntItem1");
@@ -61,7 +61,7 @@ int main()
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::AttributeDefinitionPtr def1 = manager.createAttributeDefinition("Derived1", "BaseDef");
+  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   smtk::DoubleItemDefinitionPtr ditemdef = 
     def1->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem1");
@@ -79,7 +79,7 @@ int main()
   ditemdef->setDefaultValue(-35.2);
   ditemdef->addCategory("Constituent");
 
-  smtk::AttributeDefinitionPtr def2 = manager.createAttributeDefinition("Derived2", "Derived1");
+  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   smtk::StringItemDefinitionPtr sitemdef = 
     def2->addItemDefinition<smtk::StringItemDefinitionPtr>("StringItem1");

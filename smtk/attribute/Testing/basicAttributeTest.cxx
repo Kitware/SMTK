@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
 
@@ -31,7 +31,7 @@ int main()
   int status = 0;
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
-  smtk::AttributeDefinitionPtr def = manager.createAttributeDefinition("testDef");
+  smtk::AttributeDefinitionPtr def = manager.createDefinition("testDef");
   if (def != NULL)
     {
     std::cout << "Definition testDef created\n";
@@ -41,7 +41,7 @@ int main()
     std::cout << "ERROR: Definition testDef not created\n";
     status++;
     }
-  smtk::AttributeDefinitionPtr def1 = manager.createAttributeDefinition("testDef");
+  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
   if (def1 == NULL)
     {
     std::cout << "Duplicated definition testDef not created\n";

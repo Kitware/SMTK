@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
@@ -31,11 +31,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 
 using namespace smtk::attribute;
-double AttributeDefinition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
-double AttributeDefinition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
+double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
+double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 
 //----------------------------------------------------------------------------
-AttributeDefinition::AttributeDefinition(const std::string &myType,
+Definition::Definition(const std::string &myType,
                                          smtk::AttributeDefinitionPtr myBaseDef,
                                          Manager *myManager)
 {
@@ -54,15 +54,15 @@ AttributeDefinition::AttributeDefinition(const std::string &myType,
 }
 
 //----------------------------------------------------------------------------
-AttributeDefinition::~AttributeDefinition()
+Definition::~Definition()
 {
 }
 //----------------------------------------------------------------------------
-bool AttributeDefinition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
+bool Definition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
-  const AttributeDefinition *def = this;
+  const Definition *def = this;
   for (def = this; def != NULL; def = def->m_baseDefinition.get())
     {
     if (def == targetDef.get())
@@ -73,7 +73,7 @@ bool AttributeDefinition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool AttributeDefinition::conflicts(smtk::AttributeDefinitionPtr def) const
+bool Definition::conflicts(smtk::AttributeDefinitionPtr def) const
 {
   // 2 definitions conflict if their inheritance tree intersects and isUnique is
   // is true within the intersection
@@ -99,7 +99,7 @@ bool AttributeDefinition::conflicts(smtk::AttributeDefinitionPtr def) const
 
 //----------------------------------------------------------------------------
 bool
-AttributeDefinition::canBeAssociated(smtk::ModelItemPtr entity,
+Definition::canBeAssociated(smtk::ModelItemPtr entity,
                             std::vector<Attribute *>*conflicts) const
 {
   // TO DO - Need to pull in Model Entity class to do this
@@ -113,10 +113,10 @@ AttributeDefinition::canBeAssociated(smtk::ModelItemPtr entity,
   return false;
 }
 //----------------------------------------------------------------------------
-void AttributeDefinition::buildAttribute(Attribute *att) const
+void Definition::buildAttribute(Attribute *att) const
 {
   // If there is a super definition have it prep the attribute and add its items
-  const AttributeDefinition *bdef = this->m_baseDefinition.get();
+  const Definition *bdef = this->m_baseDefinition.get();
   if (bdef)
     {
     bdef->buildAttribute(att);
@@ -141,7 +141,7 @@ void AttributeDefinition::buildAttribute(Attribute *att) const
     }
 }
 //----------------------------------------------------------------------------
-bool AttributeDefinition::isMemberOf(const std::vector<std::string> &categories) const
+bool Definition::isMemberOf(const std::vector<std::string> &categories) const
 {
   std::size_t i, n = categories.size();
   for (i = 0; i < n; i++)
@@ -152,7 +152,7 @@ bool AttributeDefinition::isMemberOf(const std::vector<std::string> &categories)
   return false;
 }
 //----------------------------------------------------------------------------
-bool AttributeDefinition::addItemDefinition(smtk::AttributeItemDefinitionPtr cdef)
+bool Definition::addItemDefinition(smtk::AttributeItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
   if (this->findItemPosition(cdef->name()) >= 0)
@@ -165,7 +165,7 @@ bool AttributeDefinition::addItemDefinition(smtk::AttributeItemDefinitionPtr cde
   return true;
 }
 //----------------------------------------------------------------------------
-void AttributeDefinition::setCategories()
+void Definition::setCategories()
 {
   if (this->m_baseDefinition != NULL)
     {

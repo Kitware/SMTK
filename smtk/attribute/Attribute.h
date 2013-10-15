@@ -48,7 +48,7 @@ namespace smtk
 
     class SMTKCORE_EXPORT Attribute
     {
-      friend class smtk::attribute::AttributeDefinition;
+      friend class smtk::attribute::Definition;
       friend class smtk::attribute::Manager;
       friend class smtk::attribute::AttributeRefItem;
     public:

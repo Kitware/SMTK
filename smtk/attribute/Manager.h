@@ -60,10 +60,10 @@ namespace smtk
       Manager();
       virtual ~Manager();
 
-      smtk::AttributeDefinitionPtr createAttributeDefinition(const std::string &typeName,
-                                                             const std::string &baseTypeName = "");
-      smtk::AttributeDefinitionPtr createAttributeDefinition(const std::string &name,
-                                                             AttributeDefinitionPtr baseDefiniiton);
+      smtk::AttributeDefinitionPtr createDefinition(const std::string &typeName,
+                                                    const std::string &baseTypeName = "");
+      smtk::AttributeDefinitionPtr createDefinition(const std::string &name,
+                                                    AttributeDefinitionPtr baseDefiniiton);
       smtk::AttributePtr createAttribute(const std::string &name, const std::string &type);
       smtk::AttributePtr createAttribute(const std::string &type);
       smtk::AttributePtr createAttribute(const std::string &name, AttributeDefinitionPtr def);

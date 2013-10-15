@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -44,7 +44,7 @@ int main()
 
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
-  smtk::AttributeDefinitionPtr base = manager.createAttributeDefinition("BaseDef");
+  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::IntItemDefinitionPtr icompdef = IntCompDef::New("IntComp1");
   base->addItemDefinition(icompdef);
@@ -52,7 +52,7 @@ int main()
   icompdef2->setDefaultValue(10);
   base->addItemDefinition(icompdef2);
 
-  smtk::AttributeDefinitionPtr def1 = manager.createAttributeDefinition("Derived1", "BaseDef");
+  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   smtk::DoubleItemDefinitionPtr dcompdef = DoubleCompDef::New("DoubleComp1");
   def1->addItemDefinition(dcompdef);
@@ -60,7 +60,7 @@ int main()
   dcompdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(dcompdef2);
 
-  smtk::AttributeDefinitionPtr def2 = manager.createAttributeDefinition("Derived2", "Derived1");
+  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   smtk::StringItemDefinitionPtr scompdef = StringCompDef::New("StringComp1");
   def1->addItemDefinition(scompdef);

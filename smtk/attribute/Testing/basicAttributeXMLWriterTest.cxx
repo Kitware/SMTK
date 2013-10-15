@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   analysis.clear();
 
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createAttributeDefinition("ExpDef");
+  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   smtk::StringItemDefinitionPtr eitemdef = 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createAttributeDefinition("BaseDef");
+  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::IntItemDefinitionPtr iitemdef = 
     base->addItemDefinition<smtk::IntItemDefinitionPtr>("TEMPORAL");
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::AttributeDefinitionPtr def1 = manager.createAttributeDefinition("Derived1", "BaseDef");
+  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
   def1->setAssociationMask(0x20); // belongs on domains
    // Lets add some item definitions
   smtk::DoubleItemDefinitionPtr ditemdef = 
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
   vdef->setLabel("Option 1");
  
 
-  smtk::AttributeDefinitionPtr def2 = manager.createAttributeDefinition("Derived2", "Derived1");
+  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
   def2->setAssociationMask(0x7);
    // Lets add some item definitions
   smtk::StringItemDefinitionPtr sitemdef = 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
   sitemdef->addCategory("Flow");
 
   // Add in a Attribute definition with a reference to another attribute
-  smtk::AttributeDefinitionPtr attrefdef = manager.createAttributeDefinition("AttributeReferenceDef");
+  smtk::AttributeDefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
   smtk::AttributeRefItemDefinitionPtr aritemdef =
     attrefdef->addItemDefinition<smtk::AttributeRefItemDefinitionPtr>("BaseDefItem");
   aritemdef->setCommonValueLabel("A reference to another attribute");

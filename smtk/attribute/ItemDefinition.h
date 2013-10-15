@@ -47,7 +47,7 @@ namespace smtk
     class GroupItemDefinition;
     class SMTKCORE_EXPORT ItemDefinition
     {
-      friend class smtk::attribute::AttributeDefinition;
+      friend class smtk::attribute::Definition;
       friend class smtk::attribute::GroupItemDefinition;
     public:
       virtual ~ItemDefinition();

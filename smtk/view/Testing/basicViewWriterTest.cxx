@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -57,16 +57,16 @@ int main()
   attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create some attribute Definitions
-  AttributeDefinitionPtr funcDef = manager.createAttributeDefinition("PolyLinearFunction");
-  AttributeDefinitionPtr materialDef = manager.createAttributeDefinition("Material");
+  AttributeDefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
+  AttributeDefinitionPtr materialDef = manager.createDefinition("Material");
   materialDef->setAssociationMask(0x40); // belongs on domains
-  AttributeDefinitionPtr boundaryConditionsDef = manager.createAttributeDefinition("BoundaryCondition");
+  AttributeDefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
   boundaryConditionsDef->setAssociationMask(0x20); // belongs on boundaries
-  AttributeDefinitionPtr specifiedHeadDef = manager.createAttributeDefinition("SpecifiedHead", "BoundaryCondition");
-  AttributeDefinitionPtr specifiedFluxDef = manager.createAttributeDefinition("SpecifiedFlux", "BoundaryCondition");
-  AttributeDefinitionPtr injectionWellDef = manager.createAttributeDefinition("InjectionWell", "BoundaryCondition");
-  AttributeDefinitionPtr timeParamDef = manager.createAttributeDefinition("TimeParameters");
-  AttributeDefinitionPtr globalsDef = manager.createAttributeDefinition("GlobalParameters");
+  AttributeDefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
+  AttributeDefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
+  AttributeDefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
+  AttributeDefinitionPtr timeParamDef = manager.createDefinition("TimeParameters");
+  AttributeDefinitionPtr globalsDef = manager.createDefinition("GlobalParameters");
   // Lets add some analyses
   std::set<std::string> analysis;
   analysis.insert("Flow");

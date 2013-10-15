@@ -45,7 +45,7 @@ namespace smtk
 
     class SMTKCORE_EXPORT Item
     {
-      friend class AttributeDefinition;
+      friend class Definition;
       friend class GroupItemDefinition;
     public:
       enum Type

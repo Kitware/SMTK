@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"

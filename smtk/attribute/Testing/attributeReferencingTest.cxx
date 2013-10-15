@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeDefinition.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
@@ -39,14 +39,14 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createAttributeDefinition("ExpDef");
+  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
   smtk::StringItemDefinitionPtr eitemdef = 
     expDef->addItemDefinition<smtk::StringItemDefinitionPtr>("Expression String");
   smtk::StringItemDefinitionPtr eitemdef2 =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createAttributeDefinition("BaseDef");
+  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::DoubleItemDefinitionPtr ditemdef = 
     base->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem1");

@@ -71,8 +71,8 @@ Manager::~Manager()
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createAttributeDefinition(const std::string &typeName,
-                                   const std::string &baseTypeName)
+Manager::createDefinition(const std::string &typeName,
+                          const std::string &baseTypeName)
 {
   smtk::AttributeDefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist
@@ -90,7 +90,7 @@ Manager::createAttributeDefinition(const std::string &typeName,
       return smtk::AttributeDefinitionPtr();
       }
     }
-  smtk::AttributeDefinitionPtr newDef(new AttributeDefinition(typeName, def, this));
+  smtk::AttributeDefinitionPtr newDef(new Definition(typeName, def, this));
   this->m_definitions[typeName] = newDef;
   if (def != NULL)
     {
@@ -102,8 +102,8 @@ Manager::createAttributeDefinition(const std::string &typeName,
 
 //----------------------------------------------------------------------------
 smtk::AttributeDefinitionPtr
-Manager::createAttributeDefinition(const std::string &typeName,
-                                   smtk::AttributeDefinitionPtr baseDef)
+Manager::createDefinition(const std::string &typeName,
+                          smtk::AttributeDefinitionPtr baseDef)
 {
   smtk::AttributeDefinitionPtr  def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
@@ -113,7 +113,7 @@ Manager::createAttributeDefinition(const std::string &typeName,
     return smtk::AttributeDefinitionPtr();
     }
 
-  smtk::AttributeDefinitionPtr newDef(new AttributeDefinition(typeName, baseDef, this));
+  smtk::AttributeDefinitionPtr newDef(new Definition(typeName, baseDef, this));
   this->m_definitions[typeName] = newDef;
   if (baseDef != NULL)
     {
