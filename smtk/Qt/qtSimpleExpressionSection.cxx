@@ -191,7 +191,7 @@ void qtSimpleExpressionSection::createWidget()
   editorLayout->addWidget(this->Internals->DeltaInput, 1, 1);
   editorLayout->addWidget(this->Internals->NumberBox, 1, 2);
   this->Internals->InitValueInput->setText("0.0");
-  this->Internals->DeltaInput->setText("0.0");
+  this->Internals->DeltaInput->setText("1.0");
 
   this->Internals->EditorGroup = new QGroupBox("Use Function Expression", frame);
   this->Internals->EditorGroup->setCheckable(1);
@@ -365,7 +365,7 @@ void qtSimpleExpressionSection::updateFunctionEditorUI(
 {
   this->Internals->ExpressionInput->setText("");
   this->Internals->NumberBox->setValue(10);
-  this->Internals->DeltaInput->setText("0.0");
+  this->Internals->DeltaInput->setText("1.0");
   this->Internals->InitValueInput->setText("0.0");
 
   if(!expressionItem)
