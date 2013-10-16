@@ -23,11 +23,12 @@ if( PYTHONINTERP_FOUND )
    add_test(attributeAutoNamingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeAutoNamingTest.py)
    add_test(attributeReferencingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeReferencingTest.py)
    add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
+   add_test(attributeFindItemTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeFindItemTest.py)
   set_tests_properties( basicAttributeTestPy basicAttributeDefinitionTestPy
                         basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
                         basicSectionWriterTestPy expressintTestPy expressionTest2Py
                         attributeAutoNamingTestPy attributeAutoNamingTestPy
-                        attributeReferencingTestPy categoryTestPy
+                        attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
                         PROPERTIES ENVIRONMENT "PYTHONPATH=${SIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )
 else()
   message("could not find python interp")
