@@ -89,6 +89,11 @@ namespace smtk
         this->m_gridInfo = gridInfo;
       }
 
+      smtk::GridInfoPtr gridInfo()
+        {
+        return this->m_gridInfo;
+        }
+
     protected:
       smtk::ModelItemPtr m_modelDomain;
       mutable std::map<int, smtk::ModelItemPtr> m_items;
