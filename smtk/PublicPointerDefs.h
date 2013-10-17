@@ -106,40 +106,43 @@ namespace smtk
 
   namespace attribute
   {
-  // Attribute Related Pointer Classes
-  typedef smtk::shared_ptr< smtk::attribute::Definition >       DefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
-  typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
+    // Attribute Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::attribute::Definition >       DefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstDefinitionPtr;
+    typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
+    typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::RefItem >           RefItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > RefItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::RefItem >           RefItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > RefItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::Item >                 ItemPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstItemPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       ItemDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstItemDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::Item >                 ItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstItemPtr;
+    typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       ItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstItemDefinitionPtr;
+    typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DoubleItem >               DoubleItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DoubleItemDefinition >     DoubleItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::FileItem >                 FileItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::FileItemDefinition >       FileItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupItem >                GroupItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupItemDefinition >      GroupItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::IntItem >                  IntItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DoubleItem >               DoubleItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DoubleItemDefinition >     DoubleItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileItem >                 FileItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileItemDefinition >       FileItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::GroupItem >                GroupItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::GroupItemDefinition >      GroupItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::IntItem >                  IntItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+
+    // Note used by SMTK but added for completeness
+    typedef smtk::shared_ptr< smtk::attribute::Manager >   ManagerPtr;
   };
 
 
