@@ -42,7 +42,7 @@ namespace smtk
       friend class IntItemDefinition;
     public:
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::IntItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      static smtk::attribute::IntItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<IntItem>(p);}
 
       virtual ~IntItem();

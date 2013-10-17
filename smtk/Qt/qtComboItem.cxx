@@ -43,7 +43,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtComboItem::qtComboItem(
-  smtk::AttributeItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
 {
   this->Internals = new qtComboItemInternals;
   this->IsLeafItem = true;
@@ -66,7 +66,7 @@ void qtComboItem::createWidget()
   this->Internals->comboBoxes.clear();
   this->Widget = new QFrame(this->parentWidget());
 
-  smtk::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
   if(!item || !item->isDiscrete())
     {
     return;
@@ -109,7 +109,7 @@ void qtComboItem::createWidget()
 //----------------------------------------------------------------------------
 void qtComboItem::updateItemData()
 {
-  smtk::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
   if(!item || !item->isDiscrete())
     {
     return;
@@ -161,7 +161,7 @@ void qtComboItem::onInputValueChanged()
     }
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
-  smtk::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
   if(curIdx>=0)
     {
     item->setDiscreteIndex(elementIdx, curIdx);

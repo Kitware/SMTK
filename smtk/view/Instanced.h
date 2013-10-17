@@ -47,17 +47,17 @@ namespace smtk
       Instanced(const std::string &myTitle);
       virtual ~Instanced();
       virtual Base::Type type() const;
-      void addInstance(smtk::AttributePtr att)
+      void addInstance(smtk::attribute::AttributePtr att)
         { if(att.get() != NULL)
             {this->m_instances.push_back(att);}
         }
       std::size_t numberOfInstances() const
       {return this->m_instances.size();}
-      smtk::AttributePtr instance(int ith) const
+      smtk::attribute::AttributePtr instance(int ith) const
       {return this->m_instances[ith];}
 
     protected:
-      std::vector<smtk::AttributePtr> m_instances;
+      std::vector<smtk::attribute::AttributePtr> m_instances;
     private:
 
     };

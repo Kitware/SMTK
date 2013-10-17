@@ -57,7 +57,7 @@ namespace smtk
       {return this->setValue(0, val);}
       bool setValue(int element, const DataT &val);
       bool appendValue(const DataT &val);
-      virtual bool appendExpression(smtk::AttributePtr exp);
+      virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       bool removeValue(int element);
       virtual void reset();
       bool setToDefault(int element=0);
@@ -65,7 +65,7 @@ namespace smtk
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
       ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       virtual void updateDiscreteValue(int element);
       std::vector<DataT> m_values;
     private:
@@ -90,7 +90,7 @@ namespace smtk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool ValueItemTemplate<DataT>::
-    setDefinition(smtk::ConstAttributeItemDefinitionPtr tdef)
+    setDefinition(smtk::attribute::ConstItemDefinitionPtr tdef)
     {
       // Note that we do a dynamic cast here since we don't
       // know if the proper definition is being passed
@@ -392,7 +392,7 @@ namespace smtk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueItemTemplate<DataT>::appendExpression(smtk::AttributePtr exp)
+    ValueItemTemplate<DataT>::appendExpression(smtk::attribute::AttributePtr exp)
     {
       // See if the parent class appended the expression
       if (ValueItem::appendExpression(exp))

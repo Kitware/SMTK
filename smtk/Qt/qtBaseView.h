@@ -63,8 +63,8 @@ namespace smtk
 
     protected:
       virtual void createWidget(){;}
-      virtual void getDefinitions(smtk::AttributeDefinitionPtr attDef,
-        QList<smtk::AttributeDefinitionPtr>& defs);
+      virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
+        QList<smtk::attribute::DefinitionPtr>& defs);
 
       QWidget* Widget;
     private:

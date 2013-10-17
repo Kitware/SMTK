@@ -49,7 +49,7 @@ Item::Type RefItemDefinition::type() const
 
 //----------------------------------------------------------------------------
 bool
-RefItemDefinition::isValueValid(smtk::AttributePtr att) const
+RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const
 {
   if (att == NULL)
     {
@@ -62,20 +62,20 @@ RefItemDefinition::isValueValid(smtk::AttributePtr att) const
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr
+smtk::attribute::ItemPtr
 RefItemDefinition::buildItem(Attribute *owningAttribute,
                                       int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new RefItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new RefItem(owningAttribute,
                                                      itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr
+smtk::attribute::ItemPtr
 RefItemDefinition::buildItem(Item *owningItem,
                                       int itemPosition,
                                       int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new RefItem(owningItem,
+  return smtk::attribute::ItemPtr(new RefItem(owningItem,
                                                       itemPosition,
                                                       subGroupPosition));
 }

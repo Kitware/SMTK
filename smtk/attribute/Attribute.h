@@ -52,10 +52,10 @@ namespace smtk
       friend class smtk::attribute::Manager;
       friend class smtk::attribute::RefItem;
     public:
-      static smtk::AttributePtr New(const std::string &myName,
-                                    smtk::AttributeDefinitionPtr myDefinition,
+      static smtk::attribute::AttributePtr New(const std::string &myName,
+                                    smtk::attribute::DefinitionPtr myDefinition,
                                     unsigned long myId)
-      { return smtk::AttributePtr(new Attribute(myName, myDefinition, myId)); }
+      { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
       // NOTE: To rename an attribute use the manager!
@@ -67,8 +67,8 @@ namespace smtk
 
       const std::string &type() const;
       std::vector<std::string> types() const;
-      bool isA(smtk::AttributeDefinitionPtr def) const;
-      smtk::AttributeDefinitionPtr definition() const
+      bool isA(smtk::attribute::DefinitionPtr def) const;
+      smtk::attribute::DefinitionPtr definition() const
       {return this->m_definition;}
 
       const double *color() const;
@@ -81,35 +81,35 @@ namespace smtk
       {this->m_isColorSet = false;}
 
       // Return the public pointer for this attribute.
-      smtk::AttributePtr pointer() const;
+      smtk::attribute::AttributePtr pointer() const;
 
       bool isMemberOf(const std::string &category) const;
       bool isMemberOf(const std::vector<std::string> &categories) const;
 
-      smtk::AttributeItemPtr item(int ith) const
+      smtk::attribute::ItemPtr item(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemPtr() :
+        return (ith < 0) ? smtk::attribute::ItemPtr() :
           (ith >= this->m_items.size() ?
-           smtk::AttributeItemPtr() : this->m_items[ith]);
+           smtk::attribute::ItemPtr() : this->m_items[ith]);
       }
 
-      smtk::AttributeItemPtr find(const std::string &name) ;
-      smtk::ConstAttributeItemPtr find(const std::string &name) const;
+      smtk::attribute::ItemPtr find(const std::string &name) ;
+      smtk::attribute::ConstItemPtr find(const std::string &name) const;
       std::size_t numberOfItems() const
       {return this->m_items.size();}
 
-      void references(std::vector<smtk::AttributeItemPtr> &list) const;
+      void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
       std::size_t numberOfAssociatedEntities() const
       { return this->m_entities.size();}
-      bool isEntityAssociated(smtk::ModelItemPtr entity) const
+      bool isEntityAssociated(smtk::model::ItemPtr entity) const
       { return (this->m_entities.find(entity) != this->m_entities.end());}
-      std::set<smtk::ModelItemPtr> associatedEntitiesSet() const
+      std::set<smtk::model::ItemPtr> associatedEntitiesSet() const
       {return this->m_entities;}
-      std::set<smtk::ModelItemPtr>::const_iterator associatedEntities() const
+      std::set<smtk::model::ItemPtr>::const_iterator associatedEntities() const
       {return this->m_entities.begin();}
-      void associateEntity(smtk::ModelItemPtr entity);
-      void disassociateEntity(smtk::ModelItemPtr entity, bool reverse=true);
+      void associateEntity(smtk::model::ItemPtr entity);
+      void disassociateEntity(smtk::model::ItemPtr entity, bool reverse=true);
       void removeAllAssociations();
 
       // These methods only applies to Attributes whose
@@ -138,10 +138,10 @@ namespace smtk
 
     protected:
       Attribute(const std::string &myName,
-                smtk::AttributeDefinitionPtr myDefinition, unsigned long myId);
+                smtk::attribute::DefinitionPtr myDefinition, unsigned long myId);
 
       void removeAllItems();
-      void addItem(smtk::AttributeItemPtr item)
+      void addItem(smtk::attribute::ItemPtr item)
       {this->m_items.push_back(item);}
       void setName(const std::string &newname)
       {this->m_name = newname;}
@@ -155,10 +155,10 @@ namespace smtk
       void removeReference(smtk::attribute::RefItem *attRefItem)
         {this->m_references.erase(attRefItem);}
       std::string m_name;
-      std::vector<smtk::AttributeItemPtr> m_items;
+      std::vector<smtk::attribute::ItemPtr> m_items;
       unsigned long m_id;
-      smtk::AttributeDefinitionPtr m_definition;
-      std::set<smtk::ModelItemPtr> m_entities;
+      smtk::attribute::DefinitionPtr m_definition;
+      std::set<smtk::model::ItemPtr> m_entities;
       std::map<smtk::attribute::RefItem *, std::set<int> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;

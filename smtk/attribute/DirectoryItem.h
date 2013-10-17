@@ -43,7 +43,7 @@ namespace smtk
     friend class DirectoryItemDefinition;
     public:
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::DirectoryItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      static smtk::attribute::DirectoryItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<DirectoryItem>(p);}
 
       virtual ~DirectoryItem();
@@ -73,7 +73,7 @@ namespace smtk
     protected:
       DirectoryItem(Attribute *owningAttribute, int itemPosition);
       DirectoryItem(Item *owningItem, int position, int subGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       std::vector<std::string>m_values;
       std::vector<bool> m_isSet;
     private:

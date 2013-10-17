@@ -127,7 +127,7 @@ void qtInstancedView::updateAttributeData()
   std::size_t i, n = iview->numberOfInstances();
   for (i = 0; i < n; i++)
     {
-    smtk::AttributePtr attobj = iview->instance((int)i);
+    smtk::attribute::AttributePtr attobj = iview->instance((int)i);
     if(!attobj || attobj->numberOfItems()==0)
       {
       QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute View"),

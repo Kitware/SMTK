@@ -167,7 +167,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
   // At this point we have all the definitions read in so lets
   // fix up all of the attribute definition references
   std::size_t i;
-  AttributeDefinitionPtr def;
+  attribute::DefinitionPtr def;
   for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
     {
     def = this->m_manager.findDefinition(this->m_itemExpressionDefInfo[i].second);
@@ -219,7 +219,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 
   // At this point we have all the attributes read in so lets
   // fix up all of the attribute  references
-  AttributePtr att;
+  attribute::AttributePtr att;
   for (i = 0; i < this->m_itemExpressionInfo.size(); i++)
     {
     att = this->m_manager.findAttribute(this->m_itemExpressionInfo[i].expName);
@@ -260,7 +260,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 void XmlDocV1Parser::processDefinition(xml_node &defNode)
 {
   xml_node node;
-  AttributeDefinitionPtr def, baseDef;
+  attribute::DefinitionPtr def, baseDef;
   std::string type = defNode.attribute("Type").value();
   std::string baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
@@ -345,7 +345,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
   xml_node itemsNode = defNode.child("ItemDefinitions");
   std::string itemName;
   smtk::attribute::Item::Type itype;
-  AttributeItemDefinitionPtr idef;
+  smtk::attribute::ItemDefinitionPtr idef;
   for (node = itemsNode.first_child(); node; node = node.next_sibling())
     {
     itype = smtk::attribute::Item::string2Type(node.name());
@@ -393,7 +393,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processItemDef(xml_node &node,
-                                       AttributeItemDefinitionPtr idef)
+                                    smtk::attribute::ItemDefinitionPtr idef)
 {
   xml_attribute xatt;
   xml_node catNodes, child;
@@ -442,7 +442,7 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
-                                         DoubleItemDefinitionPtr idef)
+                                         attribute::DoubleItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
   xml_attribute xatt;
@@ -519,7 +519,7 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
-                                      IntItemDefinitionPtr idef)
+                                      attribute::IntItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
   xml_attribute xatt;
@@ -596,7 +596,7 @@ void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
-                                         StringItemDefinitionPtr idef)
+                                         attribute::StringItemDefinitionPtr idef)
 {
   xml_node dnode, child, rnode;
   xml_attribute xatt;
@@ -680,7 +680,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
-                                        ValueItemDefinitionPtr idef)
+                                        attribute::ValueItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -722,7 +722,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     {
     // Is the attribute definition already in the manager?
     std::string etype = child.text().get();
-    AttributeDefinitionPtr adef = this->m_manager.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_manager.findDefinition(etype);
     if (adef)
       {
       idef->setExpressionDefinition(adef);
@@ -741,7 +741,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
-                                   AttributeRefItemDefinitionPtr idef)
+                                   attribute::RefItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -754,7 +754,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
     {
     // Is the attribute definition already in the manager?
     std::string etype = child.text().get();
-    AttributeDefinitionPtr adef = this->m_manager.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_manager.findDefinition(etype);
     if (adef)
       {
       idef->setAttributeDefinition(adef);
@@ -799,7 +799,7 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
-                                            DirectoryItemDefinitionPtr idef)
+                                            attribute::DirectoryItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -851,7 +851,7 @@ void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
-                                       FileItemDefinitionPtr idef)
+                                       attribute::FileItemDefinitionPtr idef)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -903,7 +903,7 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
-                                        GroupItemDefinitionPtr def)
+                                        attribute::GroupItemDefinitionPtr def)
 {
   xml_node labels, child;
   xml_attribute xatt;
@@ -943,7 +943,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
   xml_node itemsNode = node.child("ItemDefinitions");
   std::string itemName;
   smtk::attribute::Item::Type itype;
-  AttributeItemDefinitionPtr idef;
+  smtk::attribute::ItemDefinitionPtr idef;
   for (child = itemsNode.first_child(); child; child = child.next_sibling())
     {
     itype = smtk::attribute::Item::string2Type(child.name());
@@ -995,8 +995,8 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   xml_node itemsNode, iNode, node;
   std::string name, type;
   xml_attribute xatt;
-  AttributePtr att;
-  AttributeDefinitionPtr def;
+  attribute::AttributePtr att;
+  attribute::DefinitionPtr def;
   unsigned long id, maxId = 0;
   std::size_t i, n;
 
@@ -1125,7 +1125,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processItem(xml_node &node,
-                                    AttributeItemPtr item)
+                                 smtk::attribute::ItemPtr item)
 {
   xml_attribute xatt;
   if (item->isOptional())
@@ -1170,7 +1170,7 @@ void XmlDocV1Parser::processItem(xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
-                                         ValueItemPtr item)
+                                         attribute::ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::size_t i=0, n = item->numberOfValues();
@@ -1250,7 +1250,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
-                                               AttributeRefItemPtr item)
+                                               attribute::RefItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -1258,7 +1258,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
   xml_node val;
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
-  AttributePtr att;
+  attribute::AttributePtr att;
   AttRefInfo info;
   if (!numRequiredVals)
     {
@@ -1337,7 +1337,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
-                                             DirectoryItemPtr item)
+                                             attribute::DirectoryItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -1402,7 +1402,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
 
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
-                                          DoubleItemPtr item)
+                                          attribute::DoubleItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<smtk::attribute::ValueItem>(item));
@@ -1417,7 +1417,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
   xml_node val;
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string nodeName, expName;
-  AttributePtr expAtt;
+  attribute::AttributePtr expAtt;
   bool allowsExpressions = item->allowsExpressions();
   ItemExpressionInfo info;
   if (!numRequiredVals)
@@ -1523,7 +1523,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
-                                        FileItemPtr item)
+                                        attribute::FileItemPtr item)
 {
   xml_attribute xatt;
   xml_node valsNode;
@@ -1587,7 +1587,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
-                                         GroupItemPtr item)
+                                         attribute::GroupItemPtr item)
 {
   std::size_t i, j, m, n;
   std::size_t  numRequiredGroups = item->numberOfRequiredGroups();
@@ -1665,7 +1665,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
-                                       IntItemPtr item)
+                                       attribute::IntItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<smtk::attribute::ValueItem>(item));
@@ -1680,7 +1680,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
   xml_node val;
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string nodeName, expName;
-  AttributePtr expAtt;
+  attribute::AttributePtr expAtt;
   bool allowsExpressions = item->allowsExpressions();
   ItemExpressionInfo info;
   if (!numRequiredVals)
@@ -1786,7 +1786,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
-                                          StringItemPtr item)
+                                          attribute::StringItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<smtk::attribute::ValueItem>(item));
@@ -1801,7 +1801,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
   xml_node val;
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string nodeName, expName;
-  AttributePtr expAtt;
+  attribute::AttributePtr expAtt;
   bool allowsExpressions = item->allowsExpressions();
   ItemExpressionInfo info;
   if (!numRequiredVals)
@@ -1953,7 +1953,7 @@ void XmlDocV1Parser::processAttributeView(xml_node &node,
   this->processBasicView(node,
                             smtk::dynamicCastPointer<smtk::view::Base>(v));
   xml_attribute xatt;
-  AttributeDefinitionPtr def;
+  attribute::DefinitionPtr def;
   xml_node child, attTypes;
   std::string defType;
   xatt = node.attribute("ModelEnityFilter");
@@ -1998,8 +1998,8 @@ void XmlDocV1Parser::processInstancedView(xml_node &node,
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
   std::string attName, defName;
-  AttributePtr att;
-  AttributeDefinitionPtr attDef;
+  attribute::AttributePtr att;
+  attribute::DefinitionPtr attDef;
 
   if (!instances)
     {
@@ -2060,7 +2060,7 @@ void XmlDocV1Parser::processModelEntityView(xml_node &node,
   if (child)
     {
     std::string defType = child.text().get();
-    AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
+    attribute::DefinitionPtr def = this->m_manager.findDefinition(defType);
     if (!def)
       {
       smtkErrorMacro(this->m_logger,
@@ -2079,7 +2079,7 @@ void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
   if (child)
     {
     std::string defType = child.text().get();
-    AttributeDefinitionPtr def = this->m_manager.findDefinition(defType);
+    attribute::DefinitionPtr def = this->m_manager.findDefinition(defType);
     if (!def)
       {
       smtkErrorMacro(this->m_logger,
@@ -2175,13 +2175,13 @@ void XmlDocV1Parser::processBasicView(xml_node &node,
 void XmlDocV1Parser::processModelInfo(xml_node &root)
 {
   xml_node modelInfo = root.child("ModelInfo");
-  smtk::ModelPtr refModel = this->m_manager.refModel();
+  smtk::model::ModelPtr refModel = this->m_manager.refModel();
   if ( modelInfo && refModel)
     {
     std::string name;
     unsigned long mask;
     int gid;
-    smtk::ModelGroupItemPtr modelGroup;
+    smtk::model::GroupItemPtr modelGroup;
     xml_node gnode;
     for (gnode = modelInfo.child("GroupItem"); gnode; gnode = gnode.next_sibling("GroupItem"))
       {
@@ -2215,7 +2215,7 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
             continue;
             }
           name = xatt.value();
-          if(smtk::AttributePtr att = this->m_manager.findAttribute(name))
+          if(smtk::attribute::AttributePtr att = this->m_manager.findAttribute(name))
             {
             modelGroup->attachAttribute(att);
             }

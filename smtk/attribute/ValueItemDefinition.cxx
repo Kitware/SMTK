@@ -97,7 +97,7 @@ std::string ValueItemDefinition::valueLabel(int element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
-bool ValueItemDefinition::isValidExpression(smtk::AttributePtr exp) const
+bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) const
 {
   if ((this->m_expressionDefinition->attributeDefinition() != NULL) && 
       this->m_expressionDefinition->isValueValid(exp))
@@ -112,13 +112,13 @@ bool ValueItemDefinition::allowsExpressions() const
   return this->m_expressionDefinition->attributeDefinition() != NULL;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeDefinitionPtr ValueItemDefinition::expressionDefinition() const
+smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const
 {
   return this->m_expressionDefinition->attributeDefinition();
 }
 //----------------------------------------------------------------------------
 void
-ValueItemDefinition::setExpressionDefinition(smtk::AttributeDefinitionPtr exp)
+ValueItemDefinition::setExpressionDefinition(smtk::attribute::DefinitionPtr exp)
 {
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
@@ -126,7 +126,7 @@ ValueItemDefinition::setExpressionDefinition(smtk::AttributeDefinitionPtr exp)
 void 
 ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
-  smtk::AttributeRefItemPtr aref =
+  smtk::attribute::RefItemPtr aref =
     smtk::dynamicCastPointer<smtk::attribute::RefItem>
     (this->m_expressionDefinition->buildItem(vitem, position, -1));
   aref->setDefinition(this->m_expressionDefinition);

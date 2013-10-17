@@ -35,7 +35,7 @@ using namespace smtk::attribute;
 class qtItemInternals
 {
 public:
-  qtItemInternals(smtk::AttributeItemPtr dataObject, QWidget* p)
+  qtItemInternals(smtk::attribute::ItemPtr dataObject, QWidget* p)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
@@ -43,14 +43,14 @@ public:
   ~qtItemInternals()
   {
   }
- smtk::WeakAttributeItemPtr DataObject;
+ smtk::attribute::WeakItemPtr DataObject;
  QPointer<QWidget> ParentWidget;
  QList<smtk::attribute::qtItem*> ChildItems;
 };
 
 
 //----------------------------------------------------------------------------
-qtItem::qtItem(smtk::AttributeItemPtr dataObject, QWidget* p)
+qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p)
 { 
   this->Internals  = new qtItemInternals(dataObject, p); 
   this->Widget = NULL;
@@ -98,7 +98,7 @@ void qtItem::clearChildItems()
 }
 
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr qtItem::getObject()
+smtk::attribute::ItemPtr qtItem::getObject()
 {
   return this->Internals->DataObject.lock();
 }
@@ -112,7 +112,7 @@ QWidget* qtItem::parentWidget()
 //----------------------------------------------------------------------------
 bool qtItem::passAdvancedCheck()
 {
-  smtk::AttributeItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = this->getObject();
   return qtUIManager::instance()->passItemAdvancedCheck(
     dataObj->definition()->advanceLevel());
 }

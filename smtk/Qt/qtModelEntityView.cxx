@@ -67,7 +67,7 @@ public:
   QFrame* topFrame;
   QFrame* bottomFrame;
   QPointer<qtAssociationWidget> AssociationsWidget;
-  std::vector<smtk::AttributeDefinitionPtr> attDefs;
+  std::vector<smtk::attribute::DefinitionPtr> attDefs;
 };
 
 //----------------------------------------------------------------------------
@@ -85,7 +85,7 @@ qtModelEntityView::~qtModelEntityView()
 }
 
 //----------------------------------------------------------------------------
-const std::vector<smtk::AttributeDefinitionPtr> &qtModelEntityView::attDefinitions() const
+const std::vector<smtk::attribute::DefinitionPtr> &qtModelEntityView::attDefinitions() const
 {
   return this->Internals->attDefs;
 }
@@ -166,7 +166,7 @@ void qtModelEntityView::createWidget( )
   // if there is a definition, the view should
   // display all model entities of the requested mask along
   // with the attribute of this type in a table view
-  AttributeDefinitionPtr attDef = mview->definition();
+  attribute::DefinitionPtr attDef = mview->definition();
   if(attDef)
     {
     this->Internals->attDefs.push_back(attDef);
@@ -215,7 +215,7 @@ bool qtModelEntityView::isRegionDomain()
     {
     return true;
     }
-  AttributeDefinitionPtr attDef = mview->definition();
+  attribute::DefinitionPtr attDef = mview->definition();
   if(attDef && attDef->associatesWithRegion())
     {
     return true;
@@ -239,9 +239,9 @@ void qtModelEntityView::updateModelItems()
     }
   if(unsigned int mask = mview->modelEntityMask())
     {
-    smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
-    std::vector<smtk::ModelGroupItemPtr> result=refModel->findGroupItems(mask);
-    std::vector<smtk::ModelGroupItemPtr>::iterator it = result.begin();
+    smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+    std::vector<smtk::model::GroupItemPtr> result=refModel->findGroupItems(mask);
+    std::vector<smtk::model::GroupItemPtr>::iterator it = result.begin();
     for(; it!=result.end(); ++it)
       {
       this->addModelItem(*it);
@@ -263,15 +263,15 @@ void qtModelEntityView::onShowCategory()
       smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
     unsigned int mask = mview->modelEntityMask() ? mview->modelEntityMask() :
       smtk::model::Item::REGION;
-    smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
-    std::vector<smtk::ModelGroupItemPtr> result(refModel->findGroupItems(mask));
+    smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+    std::vector<smtk::model::GroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(
       result, this->Internals->ShowCategoryCombo->currentText(),
       this->Internals->attDefs);
     }
   else
     {
-    smtk::ModelItemPtr theItem = this->getSelectedModelItem();
+    smtk::model::ItemPtr theItem = this->getSelectedModelItem();
     if(theItem)
       {
       this->Internals->AssociationsWidget->showAttributeAssociation(
@@ -287,17 +287,17 @@ void qtModelEntityView::onListBoxSelectionChanged(
   this->onShowCategory();
 }
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtModelEntityView::getSelectedModelItem()
+smtk::model::ItemPtr qtModelEntityView::getSelectedModelItem()
 {
   return this->getModelItem(this->getSelectedItem());
 }
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtModelEntityView::getModelItem(
+smtk::model::ItemPtr qtModelEntityView::getModelItem(
   QListWidgetItem * item)
 {
   smtk::model::Item* rawPtr = item ?
     static_cast<smtk::model::Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::ModelItemPtr();
+  return rawPtr ? rawPtr->pointer() : smtk::model::ItemPtr();
 }
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtModelEntityView::getSelectedItem()
@@ -306,7 +306,7 @@ QListWidgetItem *qtModelEntityView::getSelectedItem()
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtModelEntityView::addModelItem(
-  smtk::ModelItemPtr childData)
+  smtk::model::ItemPtr childData)
 {
   QListWidgetItem* item = new QListWidgetItem(
       QString::fromUtf8(childData->name().c_str()),

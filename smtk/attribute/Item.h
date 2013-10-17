@@ -66,14 +66,14 @@ namespace smtk
      std::string name() const;
      std::string label() const;
      virtual Item::Type type() const = 0;
-     smtk::ConstAttributeItemDefinitionPtr definition() const
+     smtk::attribute::ConstItemDefinitionPtr definition() const
      {return this->m_definition;}
 
      // Return the attribute that owns this item
-     smtk::AttributePtr attribute() const;
-     smtk::AttributeItemPtr owningItem() const
+     smtk::attribute::AttributePtr attribute() const;
+     smtk::attribute::ItemPtr owningItem() const
      {return (this->m_owningItem ? this->m_owningItem->pointer() :
-              smtk::AttributeItemPtr());}
+              smtk::attribute::ItemPtr());}
      //Position is the item's location w/r to the owning item if not null
      // or the owning attribute. Currently the only items that can own other items are
      // GroupItem and ValueItem (for expressions)
@@ -86,7 +86,7 @@ namespace smtk
      // Returns the shared pointer of the item - if the item is no longer
      // owned by either an attribute or by another item it will return
      // an empty shared pointer
-     smtk::AttributeItemPtr pointer() const;
+     smtk::attribute::ItemPtr pointer() const;
      bool isOptional() const;
 
      // isEnabled only matters for optional items.  All non-optional
@@ -123,14 +123,14 @@ namespace smtk
     protected:
      Item(Attribute *owningAttribute, int itemPosition);
      Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
-     virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+     virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
      Attribute *m_attribute;
      Item *m_owningItem;
      int m_position;
      int m_subGroupPosition;
      bool m_isEnabled;
      mutable std::string m_tempString;
-     smtk::ConstAttributeItemDefinitionPtr m_definition;
+     smtk::attribute::ConstItemDefinitionPtr m_definition;
      std::map<std::string, smtk::util::UserDataPtr > m_userData;
     private:
      

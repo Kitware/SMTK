@@ -43,12 +43,12 @@ namespace smtk
     public:
       Model();
       virtual ~Model();
-      virtual smtk::ModelItemPtr getModelItem(int id);
-      virtual smtk::ModelGroupItemPtr createModelGroup(
+      virtual smtk::model::ItemPtr getModelItem(int id);
+      virtual smtk::model::GroupItemPtr createModelGroup(
         const std::string &name, int myid, unsigned long mask);
 
       virtual bool deleteModelGroup(int /*id*/) {return false;}
-      smtk::ModelItemPtr modelDomain() const
+      smtk::model::ItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
       virtual unsigned long convertGroupTypeToMask(
@@ -58,13 +58,13 @@ namespace smtk
         this->convertGroupTypeToMask(grouptype, entType));}
       virtual void removeGroupItemsByMask(unsigned int mask);
 
-      virtual std::vector<smtk::ModelGroupItemPtr> findGroupItems(
+      virtual std::vector<smtk::model::GroupItemPtr> findGroupItems(
                                               unsigned int mask) const;
 
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }
 
-      typedef std::map<int, smtk::ModelItemPtr>::const_iterator const_iterator;
+      typedef std::map<int, smtk::model::ItemPtr>::const_iterator const_iterator;
 
       const_iterator beginItemIterator() const
         {return this->m_items.begin();}
@@ -72,7 +72,7 @@ namespace smtk
       const_iterator endItemIterator() const
         {return this->m_items.end();}
 
-      std::map<int, smtk::ModelItemPtr> itemMap() const
+      std::map<int, smtk::model::ItemPtr> itemMap() const
       { return this->m_items; }
 
       enum ModelEntityNodalTypes
@@ -98,18 +98,18 @@ namespace smtk
       }
 
     protected:
-      smtk::ModelItemPtr m_modelDomain;
-      mutable std::map<int, smtk::ModelItemPtr> m_items;
+      smtk::model::ItemPtr m_modelDomain;
+      mutable std::map<int, smtk::model::ItemPtr> m_items;
     private:
       smtk::GridInfoPtr m_gridInfo;
     };
 
-    inline smtk::ModelItemPtr Model::getModelItem(int id)
+    inline smtk::model::ItemPtr Model::getModelItem(int id)
     {
-      std::map<int, smtk::ModelItemPtr>::iterator it = this->m_items.find(id);
+      std::map<int, smtk::model::ItemPtr>::iterator it = this->m_items.find(id);
       if (it == this->m_items.end())
         {
-        return smtk::ModelItemPtr();
+        return smtk::model::ItemPtr();
         }
       return it->second;
     }

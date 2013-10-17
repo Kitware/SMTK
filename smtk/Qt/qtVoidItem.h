@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtVoidItem(smtk::AttributeItemPtr, QWidget* parent);
+      qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent);
       virtual ~qtVoidItem();  
 
     public slots:

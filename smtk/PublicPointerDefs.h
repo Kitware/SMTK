@@ -92,27 +92,34 @@ namespace smtk
 
   //Shiboken requires that we use fully qualified namespaces for all
   //types that these shared_ptr and weak_ptr are holding
-  typedef smtk::shared_ptr< smtk::model::Model >      ModelPtr;
-  typedef smtk::weak_ptr< smtk::model::Model >        WeakModelPtr;
-  typedef smtk::shared_ptr< smtk::model::Item >       ModelItemPtr;
-  typedef smtk::weak_ptr< smtk::model::Item >         WeakModelItemPtr;
-  typedef smtk::shared_ptr< smtk::model::GroupItem >  ModelGroupItemPtr;
+  namespace model
+  {
+    // Model Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::model::Model >      ModelPtr;
+    typedef smtk::weak_ptr< smtk::model::Model >        WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Item >       ItemPtr;
+    typedef smtk::weak_ptr< smtk::model::Item >         WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::model::GroupItem >  GroupItemPtr;
+  };
 
+  namespace attribute
+  {
+  // Attribute Related Pointer Classes
+  typedef smtk::shared_ptr< smtk::attribute::Definition >       DefinitionPtr;
+  typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstDefinitionPtr;
+  typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakDefinitionPtr;
   typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
   typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
-  typedef smtk::shared_ptr< smtk::attribute::Definition >       AttributeDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstAttributeDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakAttributeDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::RefItem >           AttributeRefItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > AttributeRefItemDefinitionPtr;
+  typedef smtk::shared_ptr< smtk::attribute::RefItem >           RefItemPtr;
+  typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > RefItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::Item >                 AttributeItemPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstAttributeItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       AttributeItemDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstAttributeItemDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakAttributeItemPtr;
-  typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakAttributeItemDefinitionPtr;
+  typedef smtk::shared_ptr< smtk::attribute::Item >                 ItemPtr;
+  typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstItemPtr;
+  typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakItemPtr;
+  typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       ItemDefinitionPtr;
+  typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstItemDefinitionPtr;
+  typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakItemDefinitionPtr;
 
   typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
@@ -131,6 +138,9 @@ namespace smtk
   typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
   typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
   typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+  };
+
+
 
   namespace util
   {
@@ -158,22 +168,26 @@ namespace smtk
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less
   //than from weak pointer in 2010 and greater
-  typedef std::set< WeakAttributeDefinitionPtr,
-          std::owner_less< WeakAttributeDefinitionPtr > >
-                                                      WeakAttributeDefinitionPtrSet;
+  namespace attribute
+  {
+    typedef std::set< attribute::WeakAttributePtr,
+      std::owner_less<attribute::WeakAttributePtr > >        WeakAttributePtrSet;
+    typedef std::set< WeakAttributeDefinitionPtr,
+      std::owner_less< WeakAttributeDefinitionPtr > >        WeakDefinitionPtrSet;
+    typedef std::set< WeakItemDefinitionPtr,
+      std::owner_less< WeakItemDefinitionPtr > >             WeakItemDefinitionPtrSet;
+    typedef std::set< WeakItemPtr,
+      std::owner_less< WeakItemPtr > >   WeakItemPtrSet;
+  };
 
-  typedef std::set< WeakAttributeItemDefinitionPtr,
-          std::owner_less< WeakAttributeItemDefinitionPtr > >
-                                                      WeakAttributeItemDefinitionPtrSet;
+  namespace model
+  {
+    typedef std::set< WeakItemPtr,
+      std::owner_less<WeakItemPtr > >        WeakItemPtrSet;
+    typedef std::set< WeakModelPtr,
+      std::owner_less<WeakModelPtr > >       WeakModelPtrSet;
+  };
 
-  typedef std::set< WeakAttributeItemPtr,
-          std::owner_less< WeakAttributeItemPtr > >   WeakAttributeItemPtrSet;
-  typedef std::set< WeakAttributePtr,
-          std::owner_less<WeakAttributePtr > >        WeakAttributePtrSet;
-  typedef std::set< WeakModelItemPtr,
-          std::owner_less<WeakModelItemPtr > >        WeakModelItemPtrSet;
-  typedef std::set< WeakModelPtr,
-          std::owner_less<WeakModelPtr > >            WeakModelPtrSet;
   namespace view
   {
     typedef std::set< view::WeakBasePtr,
@@ -182,12 +196,20 @@ namespace smtk
 
 #else
   //we can use less than operator
-  typedef std::set< WeakAttributeDefinitionPtr  >     WeakAttributeDefinitionPtrSet;
-  typedef std::set< WeakAttributeItemDefinitionPtr  > WeakAttributeItemDefinitionPtrSet;
-  typedef std::set< WeakAttributeItemPtr  >           WeakAttributeItemPtrSet;
-  typedef std::set< WeakAttributePtr  >               WeakAttributePtrSet;
-  typedef std::set< WeakModelItemPtr  >               WeakModelItemPtrSet;
-  typedef std::set< WeakModelPtr  >                   WeakModelPtrSet;
+  namespace attribute
+  {
+    typedef std::set< attribute::WeakAttributePtr  >      WeakAttributePtrSet;
+    typedef std::set< attribute::WeakDefinitionPtr  >     WeakDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemDefinitionPtr >  WeakItemDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
+  };
+
+  namespace model
+  {
+    typedef std::set< model::WeakItemPtr  >               WeakItemPtrSet;
+    typedef std::set< model::WeakModelPtr  >              WeakModelPtrSet;
+  };
+
   namespace view
   {
     typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;

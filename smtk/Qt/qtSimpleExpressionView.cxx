@@ -276,35 +276,35 @@ void qtSimpleExpressionView::createWidget()
 }
 
 //-----------------------------------------------------------------------------
-smtk::GroupItemPtr qtSimpleExpressionView::getArrayDataFromItem(QListWidgetItem * item)
+smtk::attribute::GroupItemPtr qtSimpleExpressionView::getArrayDataFromItem(QListWidgetItem * item)
 {
   return this->getFunctionArrayData(this->getFunctionFromItem(item));
 }
 //-----------------------------------------------------------------------------
-smtk::ValueItemPtr qtSimpleExpressionView::getStringDataFromItem(QListWidgetItem * item)
+smtk::attribute::ValueItemPtr qtSimpleExpressionView::getStringDataFromItem(QListWidgetItem * item)
 {
   return this->getFunctionStringData(this->getFunctionFromItem(item));
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtSimpleExpressionView::getFunctionFromItem(
+smtk::attribute::AttributePtr qtSimpleExpressionView::getFunctionFromItem(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ?
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
+  return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
 }
 //-----------------------------------------------------------------------------
-smtk::GroupItemPtr qtSimpleExpressionView::getSelectedArrayData()
+smtk::attribute::GroupItemPtr qtSimpleExpressionView::getSelectedArrayData()
 {
   return this->getFunctionArrayData(this->getSelectedFunction());
 }
 //-----------------------------------------------------------------------------
-smtk::ValueItemPtr qtSimpleExpressionView::getSelectedStringData()
+smtk::attribute::ValueItemPtr qtSimpleExpressionView::getSelectedStringData()
 {
   return this->getFunctionStringData(this->getSelectedFunction());
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtSimpleExpressionView::getSelectedFunction()
+smtk::attribute::AttributePtr qtSimpleExpressionView::getSelectedFunction()
 {
   return this->getFunctionFromItem(this->getSelectedItem());
 }
@@ -315,29 +315,29 @@ QListWidgetItem *qtSimpleExpressionView::getSelectedItem()
 }
 
 //-----------------------------------------------------------------------------
-smtk::GroupItemPtr qtSimpleExpressionView::getFunctionArrayData(
-  smtk::AttributePtr func)
+smtk::attribute::GroupItemPtr qtSimpleExpressionView::getFunctionArrayData(
+  smtk::attribute::AttributePtr func)
 {
   return func ? dynamicCastPointer<GroupItem>(func->item(0)) :
-    smtk::GroupItemPtr();
+    smtk::attribute::GroupItemPtr();
 }
 
 //-----------------------------------------------------------------------------
-smtk::ValueItemPtr qtSimpleExpressionView::getFunctionStringData(
-  smtk::AttributePtr func)
+smtk::attribute::ValueItemPtr qtSimpleExpressionView::getFunctionStringData(
+  smtk::attribute::AttributePtr func)
 {
   if(func && func->numberOfItems()==2)// Kind of Hack
     {
     return dynamicCastPointer<ValueItem>(func->item(1));
     }
-  return smtk::ValueItemPtr();
+  return smtk::attribute::ValueItemPtr();
 }
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onFuncSelectionChanged(
   QListWidgetItem * current, QListWidgetItem * previous)
 {
-  smtk::GroupItemPtr dataItem = this->getArrayDataFromItem(current);
+  smtk::attribute::GroupItemPtr dataItem = this->getArrayDataFromItem(current);
   this->Internals->FuncTable->blockSignals(true);
   if(dataItem)
     {
@@ -356,13 +356,13 @@ void qtSimpleExpressionView::onFuncSelectionChanged(
 
   // Now set up the function editor UI
 
-  smtk::ValueItemPtr expressionItem = this->getStringDataFromItem(current);
+  smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(current);
   this->updateFunctionEditorUI(expressionItem, dataItem);
 }
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::updateFunctionEditorUI(
-  smtk::ValueItemPtr expressionItem, smtk::GroupItemPtr arrayItem)
+  smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem)
 {
   this->Internals->ExpressionInput->setText("");
   this->Internals->NumberBox->setValue(10);
@@ -383,9 +383,9 @@ void qtSimpleExpressionView::updateFunctionEditorUI(
       {
       return;
       }
-    smtk::ValueItemPtr valueItem =dynamicCastPointer<ValueItem>(arrayItem->item(0,0));
-    smtk::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(arrayItem->item(0,0));
-    smtk::IntItemPtr iItem =dynamicCastPointer<IntItem>(arrayItem->item(0,0));
+    smtk::attribute::ValueItemPtr valueItem =dynamicCastPointer<ValueItem>(arrayItem->item(0,0));
+    smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(arrayItem->item(0,0));
+    smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(arrayItem->item(0,0));
 
     if(valueItem && valueItem->numberOfValues())
       {
@@ -406,7 +406,7 @@ void qtSimpleExpressionView::updateFunctionEditorUI(
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
 {
-  smtk::AttributePtr func = this->getFunctionFromItem(item);
+  smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if(func)
     {
     Manager *attManager = func->definition()->manager();
@@ -414,7 +414,7 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
     //func->definition()->setLabel(item->text().toAscii().constData());
 
     // Lets see what attributes are being referenced
-    std::vector<smtk::AttributeItemPtr> refs;
+    std::vector<smtk::attribute::ItemPtr> refs;
     std::size_t i;
     func->references(refs);
     for (i = 0; i < refs.size(); i++)
@@ -428,7 +428,7 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onFuncValueChanged(QTableWidgetItem* item)
 {
-  smtk::GroupItemPtr dataItem = this->getSelectedArrayData();
+  smtk::attribute::GroupItemPtr dataItem = this->getSelectedArrayData();
   if(!dataItem)
     {
     return;
@@ -451,7 +451,7 @@ void qtSimpleExpressionView::onCreateNew()
       {
       return;
       }
-    AttributeDefinitionPtr attDef = sview->definition();
+    attribute::DefinitionPtr attDef = sview->definition();
     if(!attDef->numberOfItemDefinitions())
       {
       return;
@@ -475,7 +475,7 @@ void qtSimpleExpressionView::onCreateNew()
       strVals << "0.0" << LINE_BREAKER_STRING
       }
     QString valuesText = strVals.join(" ");
-    smtk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+    smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(
       this->Internals->FuncList->currentItem());
     QString funcExp = expressionItem ?
       expressionItem->valueAsString().c_str() : "";
@@ -513,7 +513,7 @@ void qtSimpleExpressionView::createFunctionWithExpression()
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::createNewFunction(
-  smtk::AttributeDefinitionPtr attDef)
+  smtk::attribute::DefinitionPtr attDef)
 {
   if(!attDef)
     {
@@ -522,7 +522,7 @@ void qtSimpleExpressionView::createNewFunction(
   this->Internals->FuncList->blockSignals(true);
   Manager *attManager = attDef->manager();
 
-  smtk::AttributePtr newFunc = attManager->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newFunc = attManager->createAttribute(attDef->type());
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
   if(item)
     {
@@ -542,11 +542,11 @@ void qtSimpleExpressionView::buildSimpleExpression(
     }
 
   this->createNewFunction(sview->definition());
-  smtk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+  smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(
     this->Internals->FuncList->currentItem());
   if(expressionItem && !funcExpr.isEmpty())
     {
-    smtk::StringItemPtr sItem =dynamicCastPointer<StringItem>(expressionItem);
+    smtk::attribute::StringItemPtr sItem =dynamicCastPointer<StringItem>(expressionItem);
     if(sItem)
       {
       sItem->setValue(funcExpr.toStdString());
@@ -575,14 +575,14 @@ void qtSimpleExpressionView::updateTableHeader()
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onCopySelected()
 {
-  smtk::AttributePtr dataItem = this->getSelectedFunction();
+  smtk::attribute::AttributePtr dataItem = this->getSelectedFunction();
   if(dataItem && dataItem->numberOfItems())
     {
-    smtk::GroupItemPtr groupItem = dynamicCastPointer<GroupItem>(dataItem->item(0));
+    smtk::attribute::GroupItemPtr groupItem = dynamicCastPointer<GroupItem>(dataItem->item(0));
     QString valuesText;
     if(groupItem && qtUIManager::instance()->getExpressionArrayString(groupItem, valuesText))
       {
-      smtk::ValueItemPtr expressionItem = this->getStringDataFromItem(
+      smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(
         this->Internals->FuncList->currentItem());
       QString funcExp = expressionItem ?
         expressionItem->valueAsString().c_str() : "";
@@ -605,7 +605,7 @@ void qtSimpleExpressionView::onDeleteSelected()
       return;
       }
 
-    AttributeDefinitionPtr attDef = sview->definition();
+    attribute::DefinitionPtr attDef = sview->definition();
     Manager *attManager = attDef->manager();
     attManager->removeAttribute(this->getFunctionFromItem(selItem));
 
@@ -614,7 +614,7 @@ void qtSimpleExpressionView::onDeleteSelected()
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
-  smtk::AttributePtr childData)
+  smtk::attribute::AttributePtr childData)
 {
   if(!qtUIManager::instance()->passAttributeAdvancedCheck(
     childData->definition()->advanceLevel()))
@@ -623,7 +623,7 @@ QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
     }
 
   QListWidgetItem* item = NULL;
-  smtk::GroupItemPtr dataItem = this->getFunctionArrayData(childData);
+  smtk::attribute::GroupItemPtr dataItem = this->getFunctionArrayData(childData);
   if(dataItem)
     {
     item = new QListWidgetItem(
@@ -747,7 +747,7 @@ void qtSimpleExpressionView::onAddValue()
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::addNewValue(double* vals, int numVals)
 {
-  smtk::GroupItemPtr dataItem = this->getSelectedArrayData();
+  smtk::attribute::GroupItemPtr dataItem = this->getSelectedArrayData();
   if(!dataItem)
     {
     return;
@@ -761,7 +761,7 @@ void qtSimpleExpressionView::addNewValue(double* vals, int numVals)
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onRemoveSelectedValues()
 {
-  smtk::GroupItemPtr dataItem = this->getSelectedArrayData();
+  smtk::attribute::GroupItemPtr dataItem = this->getSelectedArrayData();
   if(!dataItem)
     {
     return;
@@ -782,12 +782,12 @@ void qtSimpleExpressionView::initFunctionList()
     return;
     }
 
-  AttributeDefinitionPtr attDef = sview->definition();
+  attribute::DefinitionPtr attDef = sview->definition();
 
-  std::vector<smtk::AttributePtr> result;
+  std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
-  std::vector<smtk::AttributePtr>::iterator it;
+  std::vector<smtk::attribute::AttributePtr>::iterator it;
   this->Internals->FuncList->blockSignals(true);
   this->Internals->FuncList->clear();
   for (it=result.begin(); it!=result.end(); ++it)
@@ -804,7 +804,7 @@ void qtSimpleExpressionView::initFunctionList()
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::clearFuncExpression()
 {
-  smtk::ValueItemPtr strItem = this->getSelectedStringData();
+  smtk::attribute::ValueItemPtr strItem = this->getSelectedStringData();
   if(strItem)
     {
     strItem->unset();
@@ -819,7 +819,7 @@ void qtSimpleExpressionView::showAdvanced(int checked)
 }
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::getAllDefinitions(
-  QList<smtk::AttributeDefinitionPtr>& defs)
+  QList<smtk::attribute::DefinitionPtr>& defs)
 {
   smtk::view::SimpleExpressionPtr sview =
     smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
@@ -828,6 +828,6 @@ void qtSimpleExpressionView::getAllDefinitions(
     return;
     }
 
-  AttributeDefinitionPtr attDef = sview->definition();
+  attribute::DefinitionPtr attDef = sview->definition();
   this->qtBaseView::getDefinitions(attDef, defs);
 }

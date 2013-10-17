@@ -53,18 +53,18 @@ FileItemDefinition::isValueValid(const std::string &val) const
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr FileItemDefinition::buildItem(Attribute *owningAttribute,
+smtk::attribute::ItemPtr FileItemDefinition::buildItem(Attribute *owningAttribute,
                                       int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new FileItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new FileItem(owningAttribute,
                                               itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr FileItemDefinition::buildItem(Item *owningItem,
+smtk::attribute::ItemPtr FileItemDefinition::buildItem(Item *owningItem,
                                                       int itemPosition,
                                                       int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new FileItem(owningItem,
+  return smtk::attribute::ItemPtr(new FileItem(owningItem,
                                               itemPosition,
                                               subGroupPosition));
 }

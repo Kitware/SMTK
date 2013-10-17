@@ -84,17 +84,17 @@ QWidget* qtBaseView::parentWidget()
 }
 //----------------------------------------------------------------------------
 void qtBaseView::getDefinitions(
-  smtk::AttributeDefinitionPtr attDef,
-  QList<smtk::AttributeDefinitionPtr>& defs)
+  smtk::attribute::DefinitionPtr attDef,
+  QList<smtk::attribute::DefinitionPtr>& defs)
 {
-  std::vector<smtk::AttributeDefinitionPtr> newdefs;
+  std::vector<smtk::attribute::DefinitionPtr> newdefs;
   Manager *attManager = attDef->manager();
   attManager->findAllDerivedDefinitions(attDef, true, newdefs);
   if(!attDef->isAbstract() && !defs.contains(attDef))
     {
     defs.push_back(attDef);
     }
-  std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
   for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
     {
     if(!(*itDef)->isAbstract() && !defs.contains(*itDef))

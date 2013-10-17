@@ -42,7 +42,7 @@ namespace smtk
     friend class VoidItemDefinition;
     public:
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::VoidItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      static smtk::attribute::VoidItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<VoidItem>(p);}
 
       virtual ~VoidItem();
@@ -51,7 +51,7 @@ namespace smtk
     protected:
       VoidItem(Attribute *owningAttribute, int itemPosition);
       VoidItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
     private:
     };
   }

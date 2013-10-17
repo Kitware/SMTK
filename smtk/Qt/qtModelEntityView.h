@@ -46,7 +46,7 @@ namespace smtk
       qtModelEntityView(smtk::view::BasePtr, QWidget* p);
       virtual ~qtModelEntityView();
       QListWidgetItem* getSelectedItem();
-      const std::vector<smtk::AttributeDefinitionPtr> &attDefinitions() const;
+      const std::vector<smtk::attribute::DefinitionPtr> &attDefinitions() const;
 
     public slots:
       void updateModelItems();
@@ -56,9 +56,9 @@ namespace smtk
 
     protected:
       virtual void createWidget( );
-      smtk::ModelItemPtr getSelectedModelItem();
-      smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
-      QListWidgetItem* addModelItem(smtk::ModelItemPtr childData);
+      smtk::model::ItemPtr getSelectedModelItem();
+      smtk::model::ItemPtr getModelItem(QListWidgetItem * item);
+      QListWidgetItem* addModelItem(smtk::model::ItemPtr childData);
       bool isRegionDomain();
 
     private:

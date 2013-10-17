@@ -72,10 +72,10 @@ namespace smtk
       void setLabel(const std::string &newLabel)
       { this->m_label = newLabel;}
 
-      smtk::AttributeDefinitionPtr baseDefinition() const
+      smtk::attribute::DefinitionPtr baseDefinition() const
       { return this->m_baseDefinition;}
 
-      bool isA(smtk::ConstAttributeDefinitionPtr def) const;
+      bool isA(smtk::attribute::ConstDefinitionPtr def) const;
 
       int version() const
       {return this->m_version;}
@@ -176,23 +176,23 @@ namespace smtk
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
-      bool canBeAssociated(smtk::ModelItemPtr entity,
+      bool canBeAssociated(smtk::model::ItemPtr entity,
                            std::vector<smtk::attribute::Attribute *>*conflicts) const;
-      bool conflicts(smtk::AttributeDefinitionPtr definition) const;
+      bool conflicts(smtk::attribute::DefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const
       {return this->m_itemDefs.size();}
-      smtk::AttributeItemDefinitionPtr itemDefinition(int ith) const
+      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemDefinitionPtr()
+        return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
           : (ith >= this->m_itemDefs.size() ?
-             smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
+             smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
       // Description:
       // Item definitions are the definitions of what data is stored
       // in the attribute. For example, an IntItemDefinition would store
       // an integer value.
-      bool addItemDefinition(smtk::AttributeItemDefinitionPtr cdef);
+      bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
         addItemDefinition(const std::string &name)
@@ -231,7 +231,7 @@ namespace smtk
     protected:
       friend class smtk::attribute::Manager;
       // AttributeDefinitions can only be created by an attribute manager
-      Definition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
+      Definition(const std::string &myType, smtk::attribute::DefinitionPtr myBaseDef,
                  smtk::attribute::Manager *myManager);
 
       void clearManager()
@@ -242,13 +242,13 @@ namespace smtk
       smtk::attribute::Manager *m_manager;
       int m_version;
       bool m_isAbstract;
-      smtk::AttributeDefinitionPtr m_baseDefinition;
+      smtk::attribute::DefinitionPtr m_baseDefinition;
       std::string m_type;
       std::string m_label;
       bool m_isNodal;
       std::set<std::string> m_categories;
       int m_advanceLevel;
-      std::vector<smtk::AttributeItemDefinitionPtr> m_itemDefs;
+      std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
 //Is Unique indicates if more than one attribute of this type can be assigned to a
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition

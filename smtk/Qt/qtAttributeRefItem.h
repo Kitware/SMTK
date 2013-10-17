@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtAttributeRefItem(smtk::AttributeItemPtr,
+      qtAttributeRefItem(smtk::attribute::ItemPtr,
         QWidget* parent);
       virtual ~qtAttributeRefItem();
       QString labelText() const;

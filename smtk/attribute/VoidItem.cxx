@@ -46,7 +46,7 @@ VoidItem::VoidItem(Item *owningItem,
 
 //----------------------------------------------------------------------------
 bool VoidItem::
-setDefinition(smtk::ConstAttributeItemDefinitionPtr adef)
+setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed

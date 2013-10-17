@@ -50,10 +50,10 @@ namespace smtk
 
       void buildSimpleExpression(
         QString& funcExpr, QString& funcVals, int numberOfComponents);
-      virtual void createNewFunction(smtk::AttributeDefinitionPtr attDef);
+      virtual void createNewFunction(smtk::attribute::DefinitionPtr attDef);
       QListWidgetItem* getSelectedItem();
       void displayExpressionError(std::string& errorMsg, int errorPos);
-      smtk::AttributePtr getFunctionFromItem(QListWidgetItem * item);
+      smtk::attribute::AttributePtr getFunctionFromItem(QListWidgetItem * item);
 
     public slots:
       void onFuncSelectionChanged(QListWidgetItem * , QListWidgetItem * );
@@ -80,22 +80,22 @@ namespace smtk
     protected:
       virtual void createWidget();
       void updateTableHeader();
-      smtk::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
-      smtk::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
-      smtk::GroupItemPtr getSelectedArrayData();
-      smtk::ValueItemPtr getSelectedStringData();
-      smtk::AttributePtr getSelectedFunction();
-      smtk::GroupItemPtr getFunctionArrayData(smtk::AttributePtr func);
-      smtk::ValueItemPtr getFunctionStringData(smtk::AttributePtr func);
-      QListWidgetItem* addFunctionListItem(smtk::AttributePtr childData);
+      smtk::attribute::GroupItemPtr getArrayDataFromItem(QListWidgetItem * item);
+      smtk::attribute::ValueItemPtr getStringDataFromItem(QListWidgetItem * item);
+      smtk::attribute::GroupItemPtr getSelectedArrayData();
+      smtk::attribute::ValueItemPtr getSelectedStringData();
+      smtk::attribute::AttributePtr getSelectedFunction();
+      smtk::attribute::GroupItemPtr getFunctionArrayData(smtk::attribute::AttributePtr func);
+      smtk::attribute::ValueItemPtr getFunctionStringData(smtk::attribute::AttributePtr func);
+      QListWidgetItem* addFunctionListItem(smtk::attribute::AttributePtr childData);
       void addNewValue(double* vals, int numVals);
       void updateFunctionEditorUI(
-        smtk::ValueItemPtr expressionItem, smtk::GroupItemPtr arrayItem);
+        smtk::attribute::ValueItemPtr expressionItem, smtk::attribute::GroupItemPtr arrayItem);
       void pasteFunctionValues(QString& values, bool clearExp=true);
       virtual void initFunctionList();
       virtual void clearFuncExpression();
       virtual void getAllDefinitions(
-        QList<smtk::AttributeDefinitionPtr>& defs);
+        QList<smtk::attribute::DefinitionPtr>& defs);
 
     private:
 

@@ -41,11 +41,11 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      static smtk::FileItemDefinitionPtr New(const std::string &myName)
-      { return smtk::FileItemDefinitionPtr(new FileItemDefinition(myName));}
+      static smtk::attribute::FileItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::FileItemDefinitionPtr(new FileItemDefinition(myName));}
 
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::FileItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      static smtk::attribute::FileItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<FileItemDefinition>(p);}
 
       virtual ~FileItemDefinition();
@@ -53,9 +53,9 @@ namespace smtk
       virtual Item::Type type() const;
       bool isValueValid(const std::string &val) const;
 
-      virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
+      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       int numberOfRequiredValues() const

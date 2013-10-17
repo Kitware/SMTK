@@ -56,14 +56,14 @@ namespace smtk
       // If this def is not null then the section should
       // display all model entities of the requested mask along
       // with the attribute of this type in a table view
-      smtk::AttributeDefinitionPtr definition() const
+      smtk::attribute::DefinitionPtr definition() const
       {return this->m_attributeDefinition;}
-      void setDefinition(smtk::AttributeDefinitionPtr def)
+      void setDefinition(smtk::attribute::DefinitionPtr def)
       {this->m_attributeDefinition = def;}
 
     protected:
       unsigned long m_modelEntityMask;
-      smtk::AttributeDefinitionPtr m_attributeDefinition;
+      smtk::attribute::DefinitionPtr m_attributeDefinition;
     private:
 
     };

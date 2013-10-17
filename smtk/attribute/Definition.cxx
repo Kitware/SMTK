@@ -36,7 +36,7 @@ double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 
 //----------------------------------------------------------------------------
 Definition::Definition(const std::string &myType,
-                                         smtk::AttributeDefinitionPtr myBaseDef,
+                                         smtk::attribute::DefinitionPtr myBaseDef,
                                          Manager *myManager)
 {
   this->m_manager = myManager;
@@ -58,7 +58,7 @@ Definition::~Definition()
 {
 }
 //----------------------------------------------------------------------------
-bool Definition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
+bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
 {
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
@@ -73,7 +73,7 @@ bool Definition::isA(smtk::ConstAttributeDefinitionPtr targetDef) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool Definition::conflicts(smtk::AttributeDefinitionPtr def) const
+bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 {
   // 2 definitions conflict if their inheritance tree intersects and isUnique is
   // is true within the intersection
@@ -90,7 +90,7 @@ bool Definition::conflicts(smtk::AttributeDefinitionPtr def) const
     }
 
   // Get the most "basic" definition that is unique
-   smtk::ConstAttributeDefinitionPtr baseDef =
+   smtk::attribute::ConstDefinitionPtr baseDef =
      this->m_manager->findIsUniqueBaseClass(def);
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
@@ -99,7 +99,7 @@ bool Definition::conflicts(smtk::AttributeDefinitionPtr def) const
 
 //----------------------------------------------------------------------------
 bool
-Definition::canBeAssociated(smtk::ModelItemPtr entity,
+Definition::canBeAssociated(smtk::model::ItemPtr entity,
                             std::vector<Attribute *>*conflicts) const
 {
   // TO DO - Need to pull in Model Entity class to do this
@@ -130,7 +130,7 @@ void Definition::buildAttribute(Attribute *att) const
 
   // Next - for each item definition we have build and add the appropriate
   // item to the attribute
-  smtk::AttributeItemPtr comp;
+  smtk::attribute::ItemPtr comp;
   std::size_t i, j, n = this->m_itemDefs.size();
   j = att->numberOfItems();
   for (i = 0; i < n; i++, j++)
@@ -152,7 +152,7 @@ bool Definition::isMemberOf(const std::vector<std::string> &categories) const
   return false;
 }
 //----------------------------------------------------------------------------
-bool Definition::addItemDefinition(smtk::AttributeItemDefinitionPtr cdef)
+bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
   if (this->findItemPosition(cdef->name()) >= 0)

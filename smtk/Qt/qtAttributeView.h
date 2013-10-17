@@ -46,12 +46,12 @@ namespace smtk
     public:
       qtAttributeView(smtk::view::BasePtr, QWidget* p);
       virtual ~qtAttributeView();
-      const QMap<QString, QList<smtk::AttributeDefinitionPtr> > &attDefinitionMap() const;
+      const QMap<QString, QList<smtk::attribute::DefinitionPtr> > &attDefinitionMap() const;
 
       QTableWidgetItem* getSelectedItem();
       int currentViewBy();
       int currentCategory();
-      virtual void createNewAttribute(smtk::AttributeDefinitionPtr attDef);
+      virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
 
       enum enumViewBy
         {
@@ -61,7 +61,7 @@ namespace smtk
     public slots:
       void onViewBy(int);
       void onViewByWithDefinition(
-        int viewBy, smtk::AttributeDefinitionPtr attDef);
+        int viewBy, smtk::attribute::DefinitionPtr attDef);
       void onShowCategory();
       void onListBoxSelectionChanged();
       void onAttributeValueChanged(QTableWidgetItem*);
@@ -70,7 +70,7 @@ namespace smtk
       void onCopySelected();
       void onDeleteSelected();
       void onAttributeModified();
-      void updateAssociationEnableState(smtk::AttributePtr);
+      void updateAssociationEnableState(smtk::attribute::AttributePtr);
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
 
@@ -81,34 +81,34 @@ namespace smtk
 
     protected:
       virtual void createWidget( );
-      smtk::AttributePtr getAttributeFromItem(QTableWidgetItem * item);
-      smtk::AttributeItemPtr getAttributeItemFromItem(QTableWidgetItem * item);
+      smtk::attribute::AttributePtr getAttributeFromItem(QTableWidgetItem * item);
+      smtk::attribute::ItemPtr getAttributeItemFromItem(QTableWidgetItem * item);
 
-      smtk::AttributePtr getSelectedAttribute();
-      QTableWidgetItem* addAttributeListItem(smtk::AttributePtr childData);
+      smtk::attribute::AttributePtr getSelectedAttribute();
+      QTableWidgetItem* addAttributeListItem(smtk::attribute::AttributePtr childData);
       void addAttributePropertyItems(
-        smtk::AttributePtr childData, const QString& group);
-      void updateTableWithAttribute(smtk::AttributePtr dataItem, const QString& group);
+        smtk::attribute::AttributePtr childData, const QString& group);
+      void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem, const QString& group);
       void updateTableWithProperty(QString& propertyName,
-        smtk::AttributeDefinitionPtr attDef);
+        smtk::attribute::DefinitionPtr attDef);
       void addTableGroupItems(
-        smtk::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
+        smtk::attribute::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
       void addTableValueItems(
-        smtk::ValueItemPtr attItem, int& numRows);
+        smtk::attribute::ValueItemPtr attItem, int& numRows);
       void addTableValueItems(
-        smtk::ValueItemPtr attItem, int& numRows,
+        smtk::attribute::ValueItemPtr attItem, int& numRows,
         const char* attLabel, int advanced);
       void addTableAttRefItems(
-        smtk::AttributeRefItemPtr attItem, int& numRows,
+        smtk::attribute::RefItemPtr attItem, int& numRows,
         const char* attLabel, int advanced);
       void  addTableVoidItems(
-          smtk::VoidItemPtr attItem, int& numRows,
+          smtk::attribute::VoidItemPtr attItem, int& numRows,
           const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
-        smtk::AttributeItemPtr linkedData, QTableWidgetItem* item);
+        smtk::attribute::ItemPtr linkedData, QTableWidgetItem* item);
       void updateItemWidgetsEnableState(
-        smtk::AttributeItemPtr linkedData, int &startRow, bool enabled);
+        smtk::attribute::ItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
 
     private:

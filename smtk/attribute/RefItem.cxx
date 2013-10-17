@@ -47,7 +47,7 @@ RefItem::RefItem(Item *owningItem,
 
 //----------------------------------------------------------------------------
 bool RefItem::
-setDefinition(smtk::ConstAttributeItemDefinitionPtr adef)
+setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
@@ -105,7 +105,7 @@ int RefItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
-bool RefItem::setValue(int element, smtk::AttributePtr att)
+bool RefItem::setValue(int element, smtk::attribute::AttributePtr att)
 {
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
@@ -141,7 +141,7 @@ RefItem::valueAsString(int element,
 }
 //----------------------------------------------------------------------------
 bool
-RefItem::appendValue(smtk::AttributePtr val)
+RefItem::appendValue(smtk::attribute::AttributePtr val)
 {
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =

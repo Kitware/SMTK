@@ -41,28 +41,28 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      static smtk::AttributeRefItemDefinitionPtr New(const std::string &myName)
-      { return smtk::AttributeRefItemDefinitionPtr(new RefItemDefinition(myName));}
+      static smtk::attribute::RefItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::RefItemDefinitionPtr(new RefItemDefinition(myName));}
 
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::AttributeRefItemDefinitionPtr
-        CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      static smtk::attribute::RefItemDefinitionPtr
+        CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<RefItemDefinition>(p);}
 
       virtual ~RefItemDefinition();
 
       virtual Item::Type type() const;
-      smtk::AttributeDefinitionPtr attributeDefinition() const
+      smtk::attribute::DefinitionPtr attributeDefinition() const
       {return this->m_definition.lock();}
 
-      void setAttributeDefinition(smtk::AttributeDefinitionPtr def)
+      void setAttributeDefinition(smtk::attribute::DefinitionPtr def)
       {this->m_definition = def;}
 
-      bool isValueValid(smtk::AttributePtr att) const;
+      bool isValueValid(smtk::attribute::AttributePtr att) const;
 
-      virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
+      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       int numberOfRequiredValues() const
@@ -80,7 +80,7 @@ namespace smtk
       std::string valueLabel(int element) const;
     protected:
       RefItemDefinition(const std::string &myName);
-      smtk::WeakAttributeDefinitionPtr m_definition;
+      smtk::attribute::WeakDefinitionPtr m_definition;
       bool m_useCommonLabel;
       std::vector<std::string> m_valueLabels;
       int m_numberOfRequiredValues;

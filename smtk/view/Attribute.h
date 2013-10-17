@@ -46,11 +46,11 @@ namespace smtk
       Attribute(const std::string &myTitle);
       virtual ~Attribute();
       virtual Base::Type type() const;
-      void addDefinition(smtk::AttributeDefinitionPtr def)
+      void addDefinition(smtk::attribute::DefinitionPtr def)
       {this->m_definitions.push_back(def);}
       std::size_t numberOfDefinitions() const
       { return this->m_definitions.size();}
-      smtk::AttributeDefinitionPtr definition(int ith) const
+      smtk::attribute::DefinitionPtr definition(int ith) const
       {return this->m_definitions[ith];}
       unsigned long modelEntityMask() const
       {return this->m_modelEntityMask;}
@@ -62,7 +62,7 @@ namespace smtk
       { this->m_okToCreateModelEntities = val;}
 
     protected:
-      std::vector<smtk::AttributeDefinitionPtr> m_definitions;
+      std::vector<smtk::attribute::DefinitionPtr> m_definitions;
       unsigned long m_modelEntityMask;
       bool m_okToCreateModelEntities;
 

@@ -122,7 +122,7 @@ std::string XmlV1StringWriter::convertToString(Logger &logger)
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processAttributeInformation()
 {
-  std::vector<smtk::AttributeDefinitionPtr> baseDefs;
+  std::vector<smtk::attribute::DefinitionPtr> baseDefs;
   this->m_manager.findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   this->m_root.append_child(node_comment).set_value("**********  Attribute Definitions ***********");
@@ -137,7 +137,7 @@ void XmlV1StringWriter::processAttributeInformation()
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDefinition(xml_node &definitions,
                                           xml_node &attributes,
-                                          smtk::AttributeDefinitionPtr def)
+                                          smtk::attribute::DefinitionPtr def)
 {
   xml_node itemDefNode, itemDefNodes,
     child, node = definitions.append_child();
@@ -211,7 +211,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
       }
     }
   // Process all attributes based on this class
-  std::vector<smtk::AttributePtr> atts;
+  std::vector<smtk::attribute::AttributePtr> atts;
   this->m_manager.findDefinitionAttributes(def->type(), atts);
   n = atts.size();
   for (i = 0; i < n; i++)
@@ -219,7 +219,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     this->processAttribute(attributes, atts[i]);
     }
   // Now process all of its derived classes
-  std::vector<smtk::AttributeDefinitionPtr> defs;
+  std::vector<smtk::attribute::DefinitionPtr> defs;
   this->m_manager.derivedDefinitions(def, defs);
   n = defs.size();
   for (i = 0; i < n; i++)
@@ -228,8 +228,9 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     }
 }
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processItemDefinition(xml_node &node,
-                                              AttributeItemDefinitionPtr idef)
+void
+XmlV1StringWriter::processItemDefinition(xml_node &node,
+                                         smtk::attribute::ItemDefinitionPtr idef)
 {
   xml_node child;
   node.append_attribute("Name").set_value(idef->name().c_str());
@@ -300,7 +301,7 @@ void XmlV1StringWriter::processItemDefinition(xml_node &node,
 
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
-                                         DoubleItemDefinitionPtr idef)
+                                         attribute::DoubleItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
   this->processValueDef(node,
@@ -355,7 +356,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
-                                      IntItemDefinitionPtr idef)
+                                      attribute::IntItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
   this->processValueDef(node,
@@ -410,7 +411,7 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
-                                         StringItemDefinitionPtr idef)
+                                         attribute::StringItemDefinitionPtr idef)
 {
   // First process the common value item def stuff
   this->processValueDef(node,
@@ -469,7 +470,7 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
-                                        ValueItemDefinitionPtr idef)
+                                        attribute::ValueItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
     idef->numberOfRequiredValues();
@@ -495,7 +496,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
     }
   if (idef->allowsExpressions())
     {
-    AttributeDefinitionPtr  exp = idef->expressionDefinition();
+    attribute::DefinitionPtr  exp = idef->expressionDefinition();
     if (exp != NULL)
       {
       xml_node enode = node.append_child("ExpressionType");
@@ -510,9 +511,9 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
-                                      AttributeRefItemDefinitionPtr idef)
+                                      attribute::RefItemDefinitionPtr idef)
 {
-  AttributeDefinitionPtr  adp = idef->attributeDefinition();
+  attribute::DefinitionPtr  adp = idef->attributeDefinition();
   if (adp != NULL)
     {
     xml_node anode;
@@ -544,7 +545,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
-                                            DirectoryItemDefinitionPtr idef)
+                                            attribute::DirectoryItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
   if (idef->shouldExist())
@@ -578,7 +579,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
-                                       FileItemDefinitionPtr idef)
+                                       attribute::FileItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
   if (idef->shouldExist())
@@ -612,7 +613,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
-                                        GroupItemDefinitionPtr idef)
+                                        attribute::GroupItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredGroups") = idef->numberOfRequiredGroups();
   xml_node itemDefNode, itemDefNodes;
@@ -652,7 +653,7 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processAttribute(xml_node &attributes,
-                                         AttributePtr att)
+                                         attribute::AttributePtr att)
 {
   xml_node node = attributes.append_child("Att");
   node.append_attribute("Name").set_value(att->name().c_str());
@@ -687,7 +688,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processItem(xml_node &node,
-                                    AttributeItemPtr item)
+                                    smtk::attribute::ItemPtr item)
 {
   node.append_attribute("Name").set_value(item->name().c_str());
   if (item->isOptional())
@@ -728,7 +729,7 @@ void XmlV1StringWriter::processItem(xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
-                                         ValueItemPtr item)
+                                         attribute::ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::size_t i, n = item->numberOfValues();
@@ -776,7 +777,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
-                                               AttributeRefItemPtr item)
+                                               attribute::RefItemPtr item)
 {
   std::size_t i=0, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
@@ -819,7 +820,7 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
-                                             DirectoryItemPtr item)
+                                             attribute::DirectoryItemPtr item)
 {
   std::size_t i, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
@@ -862,7 +863,7 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
 
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
-                                          DoubleItemPtr item)
+                                          attribute::DoubleItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<ValueItem>(item));
@@ -918,7 +919,7 @@ void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
-                                        FileItemPtr item)
+                                        attribute::FileItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::size_t i, n = item->numberOfValues();
@@ -960,7 +961,7 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
-                                         GroupItemPtr item)
+                                         attribute::GroupItemPtr item)
 {
   std::size_t i, j, m, n;
   std::size_t  numRequiredGroups = item->numberOfRequiredGroups();
@@ -1005,7 +1006,7 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
-                                       IntItemPtr item)
+                                       attribute::IntItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<ValueItem>(item));
@@ -1061,7 +1062,7 @@ void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
-                                          StringItemPtr item)
+                                          attribute::StringItemPtr item)
 {
   this->processValueItem(node,
                          dynamicCastPointer<ValueItem>(item));
@@ -1260,7 +1261,7 @@ void XmlV1StringWriter::processBasicView(xml_node &node,
 void XmlV1StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_root.append_child("ModelInfo");
-  smtk::ModelPtr refModel = this->m_manager.refModel();
+  smtk::model::ModelPtr refModel = this->m_manager.refModel();
   if ( refModel && refModel->numberOfItems())
     {
     typedef smtk::model::Model::const_iterator c_iter;
@@ -1271,7 +1272,7 @@ void XmlV1StringWriter::processModelInfo()
       if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
         || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
         {
-        smtk::ModelGroupItemPtr itemGroup =
+        smtk::model::GroupItemPtr itemGroup =
           smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
         if(itemGroup)
           {

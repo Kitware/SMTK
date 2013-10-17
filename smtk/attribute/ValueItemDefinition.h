@@ -52,7 +52,7 @@ namespace smtk
       virtual ~ValueItemDefinition();
 
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::ValueItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      static smtk::attribute::ValueItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<ValueItemDefinition>(p);}
 
       const std::string &units() const
@@ -71,9 +71,9 @@ namespace smtk
       void setDefaultDiscreteIndex(int discreteIndex);
 
       bool allowsExpressions() const;
-      bool isValidExpression(smtk::AttributePtr exp) const;
-      smtk::AttributeDefinitionPtr expressionDefinition() const;
-      void setExpressionDefinition(smtk::AttributeDefinitionPtr exp);
+      bool isValidExpression(smtk::attribute::AttributePtr exp) const;
+      smtk::attribute::DefinitionPtr expressionDefinition() const;
+      void setExpressionDefinition(smtk::attribute::DefinitionPtr exp);
       // Should only be called internally by the ValueItem
       void buildExpressionItem(ValueItem *vitem, int position) const;
 
@@ -106,7 +106,7 @@ namespace smtk
       int m_defaultDiscreteIndex;
       int m_numberOfRequiredValues;
       std::string m_units;
-      smtk::AttributeRefItemDefinitionPtr m_expressionDefinition;
+      smtk::attribute::RefItemDefinitionPtr m_expressionDefinition;
     private:
 
     };

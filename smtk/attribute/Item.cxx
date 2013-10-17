@@ -65,7 +65,7 @@ AttributePtr Item::attribute() const
   return AttributePtr();
 }
 //----------------------------------------------------------------------------
-AttributeItemPtr Item::pointer() const
+ItemPtr Item::pointer() const
 {
   // We need to find the object that owns this item
   if (this->m_attribute)
@@ -85,7 +85,7 @@ AttributeItemPtr Item::pointer() const
       return vitem->expressionReference(this->m_position);
       }
     }
-  return AttributeItemPtr();
+  return ItemPtr();
 }
 //----------------------------------------------------------------------------
 std::string Item::name() const
@@ -106,7 +106,7 @@ std::string Item::label() const
   return this->m_definition->label();
 }
 //----------------------------------------------------------------------------
-bool Item::setDefinition(smtk::ConstAttributeItemDefinitionPtr def)
+bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
   if (this->m_definition != NULL)
     {

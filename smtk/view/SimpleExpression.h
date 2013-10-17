@@ -45,13 +45,13 @@ namespace smtk
       SimpleExpression(const std::string &myTitle);
       virtual ~SimpleExpression();
       virtual Base::Type type() const;
-      smtk::AttributeDefinitionPtr definition() const
+      smtk::attribute::DefinitionPtr definition() const
       {return this->m_definition;}
-      void setDefinition(smtk::AttributeDefinitionPtr def)
+      void setDefinition(smtk::attribute::DefinitionPtr def)
       {this->m_definition = def;}
 
     protected:
-      smtk::AttributeDefinitionPtr m_definition;
+      smtk::attribute::DefinitionPtr m_definition;
     private:
     };
   }

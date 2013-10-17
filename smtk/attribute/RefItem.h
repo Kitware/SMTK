@@ -45,7 +45,7 @@ namespace smtk
       friend class ValueItemDefinition;
     public:
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::AttributeRefItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      static smtk::attribute::RefItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<RefItem>(p);}
 
       virtual ~RefItem();
@@ -54,12 +54,12 @@ namespace smtk
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
       int numberOfRequiredValues() const;
-      smtk::AttributePtr value(int element=0) const
+      smtk::attribute::AttributePtr value(int element=0) const
       {return this->m_values[element].lock();}
-      bool setValue( smtk::AttributePtr val)
+      bool setValue( smtk::attribute::AttributePtr val)
       {return this->setValue(0, val);}
-      bool setValue(int element, smtk::AttributePtr val);
-      bool appendValue(smtk::AttributePtr val);
+      bool setValue(int element, smtk::attribute::AttributePtr val);
+      bool appendValue(smtk::attribute::AttributePtr val);
       bool removeValue(int element);
       virtual void reset();
       virtual std::string valueAsString(const std::string &format="") const
@@ -72,9 +72,9 @@ namespace smtk
     protected:
       RefItem(Attribute *owningAttribute, int itemPosition);
       RefItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
       void clearAllReferences();
-      std::vector<WeakAttributePtr>m_values;
+      std::vector<attribute::WeakAttributePtr>m_values;
     private:
     };
   }

@@ -43,7 +43,7 @@ namespace smtk
     public:
       friend class ValueItemDefinition;
       // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::ValueItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      static smtk::attribute::ValueItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<ValueItem>(p);}
 
       virtual ~ValueItem();
@@ -54,11 +54,11 @@ namespace smtk
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
       { return (this->expression(elementIndex) != NULL);}
-      smtk::AttributePtr expression(int elementIndex=0) const;
-      bool setExpression(smtk::AttributePtr exp)
+      smtk::attribute::AttributePtr expression(int elementIndex=0) const;
+      bool setExpression(smtk::attribute::AttributePtr exp)
       {return this->setExpression(0, exp);}
-      bool setExpression(int elementIndex, smtk::AttributePtr exp);
-      virtual bool appendExpression(smtk::AttributePtr exp);
+      bool setExpression(int elementIndex, smtk::attribute::AttributePtr exp);
+      virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       virtual bool setNumberOfValues(std::size_t newSize) = 0;
 
       int discreteIndex(int elementIndex=0) const
@@ -84,17 +84,17 @@ namespace smtk
       {return this->m_isSet[elementIndex];}
       virtual void unset(int elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
-      smtk::AttributeRefItemPtr expressionReference(int elementIndex=0) const
+      smtk::attribute::RefItemPtr expressionReference(int elementIndex=0) const
       {return this->m_expressions[elementIndex];}
 
     protected:
       ValueItem(Attribute *owningAttribute, int itemPosition);
       ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
       virtual void updateDiscreteValue(int elementIndex) = 0;
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
-      std::vector<smtk::AttributeRefItemPtr > m_expressions;
+      std::vector<smtk::attribute::RefItemPtr > m_expressions;
     private:
 
     };

@@ -92,7 +92,7 @@ public:
   QPointer<qtReferencesWidget> ReferencesWidget;
 
   // <category, AttDefinitions>
-  QMap<QString, QList<smtk::AttributeDefinitionPtr> > AttDefMap;
+  QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
 
 };
 
@@ -111,7 +111,7 @@ qtAttributeView::~qtAttributeView()
 }
 
 //----------------------------------------------------------------------------
-const QMap<QString, QList<smtk::AttributeDefinitionPtr> > &qtAttributeView::
+const QMap<QString, QList<smtk::attribute::DefinitionPtr> > &qtAttributeView::
  attDefinitionMap() const
  {
    return this->Internals->AttDefMap;
@@ -169,7 +169,7 @@ void qtAttributeView::createWidget( )
   for (it = cats.begin(); it != cats.end(); it++)
     {
     this->Internals->ShowCategoryCombo->addItem(it->c_str());
-    QList<smtk::AttributeDefinitionPtr> attdeflist;
+    QList<smtk::attribute::DefinitionPtr> attdeflist;
     this->Internals->AttDefMap[it->c_str()] = attdeflist;
     }
 
@@ -219,7 +219,7 @@ void qtAttributeView::createWidget( )
   // the association widget
   this->Internals->ReferencesWidget = new qtReferencesWidget(frame);
   this->Internals->AssociationsWidget = new qtAssociationWidget(frame);
-  this->updateAssociationEnableState(smtk::AttributePtr());
+  this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
   BottomLayout->addWidget(this->Internals->ReferencesWidget);
 
@@ -280,31 +280,31 @@ void qtAttributeView::updateModelAssociation()
   this->onShowCategory();
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAttributeView::getAttributeFromItem(
+smtk::attribute::AttributePtr qtAttributeView::getAttributeFromItem(
   QTableWidgetItem * item)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
     Attribute* rawPtr = item ?
       static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-    return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
+    return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
     }
-  return smtk::AttributePtr();
+  return smtk::attribute::AttributePtr();
 }
 //-----------------------------------------------------------------------------
-smtk::AttributeItemPtr qtAttributeView::getAttributeItemFromItem(
+smtk::attribute::ItemPtr qtAttributeView::getAttributeItemFromItem(
   QTableWidgetItem * item)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
     {
     Item* rawPtr = item ?
       static_cast<Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-    return rawPtr ? rawPtr->pointer() : smtk::AttributeItemPtr();
+    return rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
     }
-  return smtk::AttributeItemPtr();
+  return smtk::attribute::ItemPtr();
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAttributeView::getSelectedAttribute()
+smtk::attribute::AttributePtr qtAttributeView::getSelectedAttribute()
 {
   return this->getAttributeFromItem(this->getSelectedItem());
 }
@@ -318,7 +318,7 @@ QTableWidgetItem *qtAttributeView::getSelectedItem()
 
 //----------------------------------------------------------------------------
 void qtAttributeView::updateAssociationEnableState(
-  smtk::AttributePtr theAtt)
+  smtk::attribute::AttributePtr theAtt)
 {
   bool rvisible=false, avisible=false;
   if(theAtt)
@@ -347,7 +347,7 @@ void qtAttributeView::onListBoxSelectionChanged()
     this->Internals->ValuesTable->setColumnCount(0);
     if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
       {
-      smtk::AttributePtr dataItem = this->getAttributeFromItem(current);
+      smtk::attribute::AttributePtr dataItem = this->getAttributeFromItem(current);
       this->updateAssociationEnableState(dataItem);
       if(dataItem)
         {
@@ -357,9 +357,9 @@ void qtAttributeView::onListBoxSelectionChanged()
       }
     else if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
       {
-      this->updateAssociationEnableState(smtk::AttributePtr());
-      smtk::AttributeItemPtr attItem = this->getAttributeItemFromItem(current);
-      smtk::AttributePtr att = attItem->attribute();
+      this->updateAssociationEnableState(smtk::attribute::AttributePtr());
+      smtk::attribute::ItemPtr attItem = this->getAttributeItemFromItem(current);
+      smtk::attribute::AttributePtr att = attItem->attribute();
       QString temp = current->text();
       this->updateTableWithProperty(temp, att->definition());
       }
@@ -372,7 +372,7 @@ void qtAttributeView::onListBoxSelectionChanged()
 //----------------------------------------------------------------------------
 void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
 {
-  smtk::AttributePtr aAttribute = this->getAttributeFromItem(item);
+  smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
   if(aAttribute)
     {
     Manager *attManager = aAttribute->definition()->manager();
@@ -380,7 +380,7 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
 /*
     // Lets see what attributes are being referenced
-    std::vector<smtk::AttributeItemPtr> refs;
+    std::vector<smtk::attribute::ItemPtr> refs;
     std::size_t i;
     aAttribute->references(refs);
     for (i = 0; i < refs.size(); i++)
@@ -405,7 +405,7 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
      linkedData->pointer(), item);
     }
 /*
-  smtk::ValueItemPtr dataItem = this->getSelectedArrayData();
+  smtk::attribute::ValueItemPtr dataItem = this->getSelectedArrayData();
   if(!dataItem)
     {
     return;
@@ -415,7 +415,7 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::updateChildWidgetsEnableState(
-  smtk::AttributeItemPtr attItem, QTableWidgetItem* item)
+  smtk::attribute::ItemPtr attItem, QTableWidgetItem* item)
 {
   if(!item || !attItem || !attItem->isOptional())
     {
@@ -426,7 +426,7 @@ void qtAttributeView::updateChildWidgetsEnableState(
 
   if(attItem->type() == smtk::attribute::Item::GROUP)
     {
-    smtk::GroupItemPtr grpItem = dynamicCastPointer<GroupItem>(attItem);
+    smtk::attribute::GroupItemPtr grpItem = dynamicCastPointer<GroupItem>(attItem);
     if(grpItem)
       {
       int numItems = grpItem->numberOfItemsPerGroup();
@@ -445,7 +445,7 @@ void qtAttributeView::updateChildWidgetsEnableState(
 
 //----------------------------------------------------------------------------
 void qtAttributeView::updateItemWidgetsEnableState(
-  smtk::AttributeItemPtr inData, int& startRow, bool enabled)
+  smtk::attribute::ItemPtr inData, int& startRow, bool enabled)
 {
   QTableWidget* tableWidget = this->Internals->ValuesTable;
   if(inData->type() == smtk::attribute::Item::ATTRIBUTE_REF)
@@ -466,7 +466,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
     }
   else if(dynamicCastPointer<ValueItem>(inData))
     {
-    smtk::ValueItemPtr linkedData = dynamicCastPointer<ValueItem>(inData);
+    smtk::attribute::ValueItemPtr linkedData = dynamicCastPointer<ValueItem>(inData);
     for(int row=0; row<linkedData->numberOfValues(); row++, startRow++)
       {
       QWidget* cellWidget = tableWidget->cellWidget(startRow, 1);
@@ -487,11 +487,11 @@ void qtAttributeView::onCreateNew()
     {
     return;
     }
-  AttributeDefinitionPtr newAttDef = aview->definition(0);
+  attribute::DefinitionPtr newAttDef = aview->definition(0);
   QString strCategory = this->Internals->ShowCategoryCombo->currentText();
 
   QString strDef = this->Internals->DefsCombo->currentText();
-  foreach (AttributeDefinitionPtr attDef,
+  foreach (attribute::DefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
     {
     if(strDef == QString::fromUtf8(attDef->type().c_str()))
@@ -505,7 +505,7 @@ void qtAttributeView::onCreateNew()
 
 //----------------------------------------------------------------------------
 void qtAttributeView::createNewAttribute(
-  smtk::AttributeDefinitionPtr attDef)
+  smtk::attribute::DefinitionPtr attDef)
 {
   if(!attDef)
     {
@@ -514,7 +514,7 @@ void qtAttributeView::createNewAttribute(
 
   Manager *attManager = attDef->manager();
 
-  smtk::AttributePtr newAtt = attManager->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newAtt = attManager->createAttribute(attDef->type());
   QTableWidgetItem* item = this->addAttributeListItem(newAtt);
   if(item)
     {
@@ -536,7 +536,7 @@ void qtAttributeView::onAttributeModified()
 //----------------------------------------------------------------------------
 void qtAttributeView::onCopySelected()
 {
-  smtk::AttributePtr selObject = this->getSelectedAttribute();
+  smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
   if(selObject)
     {
     this->createNewAttribute(selObject->definition());
@@ -554,11 +554,11 @@ void qtAttributeView::onCopySelected()
 //----------------------------------------------------------------------------
 void qtAttributeView::onDeleteSelected()
 {
-  smtk::AttributePtr selObject = this->getSelectedAttribute();
+  smtk::attribute::AttributePtr selObject = this->getSelectedAttribute();
   if(selObject)
     {
 
-    AttributeDefinitionPtr attDef = selObject->definition();
+    attribute::DefinitionPtr attDef = selObject->definition();
     Manager *attManager = attDef->manager();
     attManager->removeAttribute(selObject);
 
@@ -569,7 +569,7 @@ void qtAttributeView::onDeleteSelected()
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addAttributePropertyItems(
-  smtk::AttributePtr childData, const QString& group)
+  smtk::attribute::AttributePtr childData, const QString& group)
 {
   if(!childData)
     {
@@ -582,7 +582,7 @@ void qtAttributeView::addAttributePropertyItems(
   std::size_t i, n = childData->numberOfItems();
   for (i = 0; i < n; i++)
     {
-    smtk::AttributeItemPtr attItem = childData->item(i);
+    smtk::attribute::ItemPtr attItem = childData->item(i);
     if(attItem->definition()->isMemberOf(group.toStdString()) &&
       qtUIManager::instance()->passItemAdvancedCheck(
       attItem->definition()->advanceLevel()))
@@ -624,7 +624,7 @@ void qtAttributeView::addAttributePropertyItems(
 
 //----------------------------------------------------------------------------
 QTableWidgetItem* qtAttributeView::addAttributeListItem(
-  smtk::AttributePtr childData)
+  smtk::attribute::AttributePtr childData)
 {
   QString strCategory = this->Internals->ShowCategoryCombo->currentText();
 
@@ -689,7 +689,7 @@ void qtAttributeView::onViewBy(int viewBy)
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     }
   this->Internals->DefsCombo->clear();
-  foreach (AttributeDefinitionPtr attDef,
+  foreach (attribute::DefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
     {
     if(!attDef->isAbstract())
@@ -701,7 +701,7 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->DefsCombo->setCurrentIndex(0);
   this->Internals->DefsCombo->setVisible(true);
 
-  foreach (AttributeDefinitionPtr attDef,
+  foreach (attribute::DefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
     {
     this->onViewByWithDefinition(viewBy, attDef);
@@ -719,9 +719,9 @@ void qtAttributeView::onViewBy(int viewBy)
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::onViewByWithDefinition(
-  int viewBy, smtk::AttributeDefinitionPtr attDef)
+  int viewBy, smtk::attribute::DefinitionPtr attDef)
 {
-  std::vector<smtk::AttributePtr> result;
+  std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
   if(result.size())
@@ -730,7 +730,7 @@ void qtAttributeView::onViewByWithDefinition(
       //this->Internals->ButtonsFrame->setEnabled(true);
     if(viewBy == VIEWBY_Attribute)
       {
-      std::vector<smtk::AttributePtr>::iterator it;
+      std::vector<smtk::attribute::AttributePtr>::iterator it;
       for (it=result.begin(); it!=result.end(); ++it)
         {
         QTableWidgetItem* item = this->addAttributeListItem(*it);
@@ -756,7 +756,7 @@ void qtAttributeView::onShowCategory()
 
 //----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithAttribute(
-  smtk::AttributePtr att, const QString& group)
+  smtk::attribute::AttributePtr att, const QString& group)
 {
   QTableWidget* widget = this->Internals->ValuesTable;
   widget->setColumnCount(3);
@@ -771,7 +771,7 @@ void qtAttributeView::updateTableWithAttribute(
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
-    smtk::AttributeItemPtr attItem = att->item(i);
+    smtk::attribute::ItemPtr attItem = att->item(i);
     const ItemDefinition* itemDef =
      dynamic_cast<const ItemDefinition*>(attItem->definition().get());
     if(!qtUIManager::instance()->passItemAdvancedCheck(
@@ -808,7 +808,7 @@ void qtAttributeView::updateTableWithAttribute(
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithProperty(
-  QString& propertyName, smtk::AttributeDefinitionPtr attDef)
+  QString& propertyName, smtk::attribute::DefinitionPtr attDef)
 {
   smtk::view::AttributePtr aview =
     smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
@@ -817,7 +817,7 @@ void qtAttributeView::updateTableWithProperty(
     return;
     }
 
-  std::vector<smtk::AttributePtr> result;
+  std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
 
@@ -829,13 +829,13 @@ void qtAttributeView::updateTableWithProperty(
   widget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
 
   int numRows = 0;
-  std::vector<smtk::AttributePtr>::iterator it;
+  std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
     std::size_t i, n = (*it)->numberOfItems();
     for (i = 0; i < n; i++)// for each property
       {
-      smtk::AttributeItemPtr attItem = (*it)->item(i);
+      smtk::attribute::ItemPtr attItem = (*it)->item(i);
       const ItemDefinition* itemDef =
       dynamic_cast<const ItemDefinition*>(attItem->definition().get());
       if(!qtUIManager::instance()->passItemAdvancedCheck(
@@ -883,7 +883,7 @@ void qtAttributeView::updateTableWithProperty(
 
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableGroupItems(
-  smtk::GroupItemPtr attItem, int& numRows, const char* strCommonLabel)
+  smtk::attribute::GroupItemPtr attItem, int& numRows, const char* strCommonLabel)
 {
   QTableWidget* widget = this->Internals->ValuesTable;
   const GroupItemDefinition *gItemDef =
@@ -931,7 +931,7 @@ void qtAttributeView::addTableGroupItems(
 
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableValueItems(
-  smtk::ValueItemPtr attItem, int& numRows)
+  smtk::attribute::ValueItemPtr attItem, int& numRows)
 {
   if(!attItem)
     {
@@ -947,7 +947,7 @@ void qtAttributeView::addTableValueItems(
 }
 
 //----------------------------------------------------------------------------
-void qtAttributeView::addTableValueItems(smtk::ValueItemPtr attItem,
+void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
   int& numRows, const char* attLabel, int advanced)
 {
   if(!attItem)
@@ -996,7 +996,7 @@ void qtAttributeView::addTableValueItems(smtk::ValueItemPtr attItem,
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableAttRefItems(
-  smtk::AttributeRefItemPtr attItem, int& numRows,
+  smtk::attribute::RefItemPtr attItem, int& numRows,
   const char* attLabel, int advanced)
 {
   if(!attItem)
@@ -1033,7 +1033,7 @@ void qtAttributeView::addTableAttRefItems(
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableVoidItems(
-  smtk::VoidItemPtr attItem, int& numRows,
+  smtk::attribute::VoidItemPtr attItem, int& numRows,
   const char* attLabel, int advanced)
 {
   if(!attItem)
@@ -1071,7 +1071,7 @@ int qtAttributeView::currentCategory()
 //----------------------------------------------------------------------------
 void qtAttributeView::getAllDefinitions()
 {
-  QList<smtk::AttributeDefinitionPtr> defs;
+  QList<smtk::attribute::DefinitionPtr> defs;
   smtk::view::AttributePtr aview =
     smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
@@ -1081,11 +1081,11 @@ void qtAttributeView::getAllDefinitions()
   std::size_t i, n = aview->numberOfDefinitions();
   for (i = 0; i < n; i++)
     {
-    AttributeDefinitionPtr attDef = aview->definition(i);
+    attribute::DefinitionPtr attDef = aview->definition(i);
     this->qtBaseView::getDefinitions(attDef, defs);
     }
 
-  foreach (smtk::AttributeDefinitionPtr adef, defs)
+  foreach (smtk::attribute::DefinitionPtr adef, defs)
     {
     foreach(QString category, this->Internals->AttDefMap.keys())
       {
@@ -1108,7 +1108,7 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
     if(isColor)
       {
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);
-      smtk::AttributePtr selAtt = this->getAttributeFromItem(selItem);
+      smtk::attribute::AttributePtr selAtt = this->getAttributeFromItem(selItem);
       QBrush bgBrush = item->background();
       QColor color = QColorDialog::getColor(bgBrush.color(), this->Widget);
       if(color.isValid() && color != bgBrush.color() && selAtt)

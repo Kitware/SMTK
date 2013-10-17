@@ -57,16 +57,16 @@ int main()
   attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create some attribute Definitions
-  AttributeDefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
-  AttributeDefinitionPtr materialDef = manager.createDefinition("Material");
+  attribute::DefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
+  attribute::DefinitionPtr materialDef = manager.createDefinition("Material");
   materialDef->setAssociationMask(0x40); // belongs on domains
-  AttributeDefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
+  attribute::DefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
   boundaryConditionsDef->setAssociationMask(0x20); // belongs on boundaries
-  AttributeDefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
-  AttributeDefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
-  AttributeDefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
-  AttributeDefinitionPtr timeParamDef = manager.createDefinition("TimeParameters");
-  AttributeDefinitionPtr globalsDef = manager.createDefinition("GlobalParameters");
+  attribute::DefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
+  attribute::DefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
+  attribute::DefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
+  attribute::DefinitionPtr timeParamDef = manager.createDefinition("TimeParameters");
+  attribute::DefinitionPtr globalsDef = manager.createDefinition("GlobalParameters");
   // Lets add some analyses
   std::set<std::string> analysis;
   analysis.insert("Flow");
@@ -89,34 +89,34 @@ int main()
   analysis.clear();
 
   // Lets complete the definition for some boundary conditions
-  DoubleItemDefinitionPtr ddef;
-  ddef = specifiedHeadDef->addItemDefinition<DoubleItemDefinitionPtr>("Value");
+  attribute::DoubleItemDefinitionPtr ddef;
+  ddef = specifiedHeadDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Value");
   ddef->setExpressionDefinition(funcDef);
-  ddef = specifiedFluxDef->addItemDefinition<DoubleItemDefinitionPtr>("Value");
+  ddef = specifiedFluxDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Value");
   ddef->setExpressionDefinition(funcDef);
 
-  IntItemDefinitionPtr idef;
-  GroupItemDefinitionPtr gdef;
-  gdef = timeParamDef->addItemDefinition<GroupItemDefinitionPtr>("StartTime");
+  attribute::IntItemDefinitionPtr idef;
+  attribute::GroupItemDefinitionPtr gdef;
+  gdef = timeParamDef->addItemDefinition<attribute::GroupItemDefinitionPtr>("StartTime");
   gdef->setCommonSubGroupLabel("Start Time");
-  ddef = gdef->addItemDefinition<DoubleItemDefinitionPtr>("Value");
+  ddef = gdef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Value");
   ddef->addCategory("Time");
   ddef->setDefaultValue(0);
   ddef->setMinRange(0, true);
-  idef = gdef->addItemDefinition<IntItemDefinitionPtr>("Units");
+  idef = gdef->addItemDefinition<attribute::IntItemDefinitionPtr>("Units");
   idef->addDiscreteValue(0, "Seconds");
   idef->addDiscreteValue(1, "Minutes");
   idef->addDiscreteValue(2, "Hours");
   idef->addDiscreteValue(3, "Days");
   idef->setDefaultDiscreteIndex(0);
   idef->addCategory("Time");
-  gdef = timeParamDef->addItemDefinition<GroupItemDefinitionPtr>("EndTime");
+  gdef = timeParamDef->addItemDefinition<attribute::GroupItemDefinitionPtr>("EndTime");
   gdef->setCommonSubGroupLabel("End Time");
-  ddef = gdef->addItemDefinition<DoubleItemDefinitionPtr>("Value");
+  ddef = gdef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Value");
   ddef->addCategory("Time");
   ddef->setDefaultValue(162);
   ddef->setMinRange(0, true);
-  idef = gdef->addItemDefinition<IntItemDefinitionPtr>("Units");
+  idef = gdef->addItemDefinition<attribute::IntItemDefinitionPtr>("Units");
   idef->addDiscreteValue(0, "Seconds");
   idef->addDiscreteValue(1, "Minutes");
   idef->addDiscreteValue(2, "Hours");
@@ -124,19 +124,19 @@ int main()
   idef->setDefaultDiscreteIndex(0);
   idef->addCategory("Time");
 
-  ddef = globalsDef->addItemDefinition<DoubleItemDefinitionPtr>("Gravity");
+  ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Gravity");
   ddef->setDefaultValue(1.272024e08);
   ddef->setUnits("m/hr^2");
   ddef->setAdvanceLevel(1);
   ddef->setMinRange(0, false);
 
-  ddef = globalsDef->addItemDefinition<DoubleItemDefinitionPtr>("WaterSpecificHeat");
+  ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("WaterSpecificHeat");
   ddef->setDefaultValue(0.00116);
   ddef->setUnits("W hr/g-K");
   ddef->setAdvanceLevel(1);
   ddef->setMinRange(0, false);
 
-  ddef = globalsDef->addItemDefinition<DoubleItemDefinitionPtr>("AirSpecificHeat");
+  ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("AirSpecificHeat");
   ddef->setDefaultValue(0.000278);
   ddef->setUnits("W hr/g-K");
   ddef->setAdvanceLevel(1);
@@ -163,7 +163,7 @@ int main()
   modSec->setModelEntityMask(0x20); // Look at boundary entities only
 
   manager.updateCategories();
-  AttributePtr att = manager.createAttribute("TimeInfomation", timeParamDef);
+  attribute::AttributePtr att = manager.createAttribute("TimeInfomation", timeParamDef);
   view::InstancedPtr iSec;
   iSec = root->addSubView<view::InstancedPtr>("Time Parameters");
   iSec->addInstance(att);
