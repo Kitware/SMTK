@@ -318,7 +318,7 @@ QListWidgetItem *qtSimpleExpressionView::getSelectedItem()
 smtk::attribute::GroupItemPtr qtSimpleExpressionView::getFunctionArrayData(
   smtk::attribute::AttributePtr func)
 {
-  return func ? dynamicCastPointer<GroupItem>(func->item(0)) :
+  return func ? dynamic_pointer_cast<GroupItem>(func->item(0)) :
     smtk::attribute::GroupItemPtr();
 }
 
@@ -328,7 +328,7 @@ smtk::attribute::ValueItemPtr qtSimpleExpressionView::getFunctionStringData(
 {
   if(func && func->numberOfItems()==2)// Kind of Hack
     {
-    return dynamicCastPointer<ValueItem>(func->item(1));
+    return dynamic_pointer_cast<ValueItem>(func->item(1));
     }
   return smtk::attribute::ValueItemPtr();
 }
@@ -383,9 +383,9 @@ void qtSimpleExpressionView::updateFunctionEditorUI(
       {
       return;
       }
-    smtk::attribute::ValueItemPtr valueItem =dynamicCastPointer<ValueItem>(arrayItem->item(0,0));
-    smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(arrayItem->item(0,0));
-    smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(arrayItem->item(0,0));
+    smtk::attribute::ValueItemPtr valueItem =dynamic_pointer_cast<ValueItem>(arrayItem->item(0,0));
+    smtk::attribute::DoubleItemPtr dItem =dynamic_pointer_cast<DoubleItem>(arrayItem->item(0,0));
+    smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(arrayItem->item(0,0));
 
     if(valueItem && valueItem->numberOfValues())
       {
@@ -446,7 +446,7 @@ void qtSimpleExpressionView::onCreateNew()
   else
     {
     smtk::view::SimpleExpressionPtr sview =
-      smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
+      smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
     if(!sview || !sview->definition())
       {
       return;
@@ -535,7 +535,7 @@ void qtSimpleExpressionView::buildSimpleExpression(
   QString& funcExpr, QString& funcVals, int numberOfComponents)
 {
   smtk::view::SimpleExpressionPtr sview =
-    smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
   if(!sview || !sview->definition())
     {
     return;
@@ -546,7 +546,7 @@ void qtSimpleExpressionView::buildSimpleExpression(
     this->Internals->FuncList->currentItem());
   if(expressionItem && !funcExpr.isEmpty())
     {
-    smtk::attribute::StringItemPtr sItem =dynamicCastPointer<StringItem>(expressionItem);
+    smtk::attribute::StringItemPtr sItem =dynamic_pointer_cast<StringItem>(expressionItem);
     if(sItem)
       {
       sItem->setValue(funcExpr.toStdString());
@@ -578,7 +578,7 @@ void qtSimpleExpressionView::onCopySelected()
   smtk::attribute::AttributePtr dataItem = this->getSelectedFunction();
   if(dataItem && dataItem->numberOfItems())
     {
-    smtk::attribute::GroupItemPtr groupItem = dynamicCastPointer<GroupItem>(dataItem->item(0));
+    smtk::attribute::GroupItemPtr groupItem = dynamic_pointer_cast<GroupItem>(dataItem->item(0));
     QString valuesText;
     if(groupItem && qtUIManager::instance()->getExpressionArrayString(groupItem, valuesText))
       {
@@ -599,7 +599,7 @@ void qtSimpleExpressionView::onDeleteSelected()
   if(selItem)
     {
     smtk::view::SimpleExpressionPtr sview =
-      smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
+      smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
     if(!sview || !sview->definition())
       {
       return;
@@ -776,7 +776,7 @@ void qtSimpleExpressionView::onRemoveSelectedValues()
 void qtSimpleExpressionView::initFunctionList()
 {
   smtk::view::SimpleExpressionPtr sview =
-    smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
   if(!sview || !sview->definition())
     {
     return;
@@ -822,7 +822,7 @@ void qtSimpleExpressionView::getAllDefinitions(
   QList<smtk::attribute::DefinitionPtr>& defs)
 {
   smtk::view::SimpleExpressionPtr sview =
-    smtk::dynamicCastPointer<smtk::view::SimpleExpression>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(this->getObject());
   if(!sview || !sview->definition())
     {
     return;

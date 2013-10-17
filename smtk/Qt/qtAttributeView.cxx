@@ -426,7 +426,7 @@ void qtAttributeView::updateChildWidgetsEnableState(
 
   if(attItem->type() == smtk::attribute::Item::GROUP)
     {
-    smtk::attribute::GroupItemPtr grpItem = dynamicCastPointer<GroupItem>(attItem);
+    smtk::attribute::GroupItemPtr grpItem = dynamic_pointer_cast<GroupItem>(attItem);
     if(grpItem)
       {
       int numItems = grpItem->numberOfItemsPerGroup();
@@ -464,9 +464,9 @@ void qtAttributeView::updateItemWidgetsEnableState(
       cellWidget->setEnabled(enabled);
       }
     }
-  else if(dynamicCastPointer<ValueItem>(inData))
+  else if(dynamic_pointer_cast<ValueItem>(inData))
     {
-    smtk::attribute::ValueItemPtr linkedData = dynamicCastPointer<ValueItem>(inData);
+    smtk::attribute::ValueItemPtr linkedData = dynamic_pointer_cast<ValueItem>(inData);
     for(int row=0; row<linkedData->numberOfValues(); row++, startRow++)
       {
       QWidget* cellWidget = tableWidget->cellWidget(startRow, 1);
@@ -482,7 +482,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
 void qtAttributeView::onCreateNew()
 {
   smtk::view::AttributePtr aview =
-    smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
     {
     return;
@@ -663,7 +663,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
 void qtAttributeView::onViewBy(int viewBy)
 {
   smtk::view::AttributePtr aview =
-    smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
     {
     return;
@@ -784,24 +784,24 @@ void qtAttributeView::updateTableWithAttribute(
       if(attItem->type() == smtk::attribute::Item::GROUP)
         {
         this->addTableGroupItems(
-          dynamicCastPointer<GroupItem>(attItem), numRows);
+          dynamic_pointer_cast<GroupItem>(attItem), numRows);
         }
       else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
         {
         this->addTableAttRefItems(
-          dynamicCastPointer<RefItem>(attItem), numRows,
+          dynamic_pointer_cast<RefItem>(attItem), numRows,
           itemDef->name().c_str(), itemDef->advanceLevel());
         }
       else if(attItem->type() == smtk::attribute::Item::VOID)
         {
         this->addTableVoidItems(
-          dynamicCastPointer<VoidItem>(attItem), numRows,
+          dynamic_pointer_cast<VoidItem>(attItem), numRows,
           itemDef->name().c_str(), itemDef->advanceLevel());
         }
-      else if(dynamicCastPointer<ValueItem>(attItem))
+      else if(dynamic_pointer_cast<ValueItem>(attItem))
         {
         this->addTableValueItems(
-          dynamicCastPointer<ValueItem>(attItem), numRows);
+          dynamic_pointer_cast<ValueItem>(attItem), numRows);
         }
       }
     }
@@ -811,7 +811,7 @@ void qtAttributeView::updateTableWithProperty(
   QString& propertyName, smtk::attribute::DefinitionPtr attDef)
 {
   smtk::view::AttributePtr aview =
-    smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
     {
     return;
@@ -855,25 +855,25 @@ void qtAttributeView::updateTableWithProperty(
         if(attItem->type() == smtk::attribute::Item::GROUP)
           {
           this->addTableGroupItems(
-            dynamicCastPointer<GroupItem>(attItem), numRows,
+            dynamic_pointer_cast<GroupItem>(attItem), numRows,
             (*it)->name().c_str());
           }
         else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
           {
           this->addTableAttRefItems(
-            dynamicCastPointer<RefItem>(attItem), numRows,
+            dynamic_pointer_cast<RefItem>(attItem), numRows,
             (*it)->name().c_str(), itemDef->advanceLevel());
           }
         else if(attItem->type() == smtk::attribute::Item::VOID)
           {
           this->addTableVoidItems(
-            dynamicCastPointer<VoidItem>(attItem), numRows,
+            dynamic_pointer_cast<VoidItem>(attItem), numRows,
             (*it)->name().c_str(), itemDef->advanceLevel());
           }
-        else if(dynamicCastPointer<ValueItem>(attItem))// value types
+        else if(dynamic_pointer_cast<ValueItem>(attItem))// value types
           {
           this->addTableValueItems(
-            dynamicCastPointer<ValueItem>(attItem), numRows,
+            dynamic_pointer_cast<ValueItem>(attItem), numRows,
             (*it)->name().c_str(), itemDef->advanceLevel());
           }
         }
@@ -896,33 +896,33 @@ void qtAttributeView::addTableGroupItems(
   int numItems = attItem->numberOfItemsPerGroup();
   if(numItems > 0)
     {
-    if(dynamicCastPointer<ValueItem>(attItem->item(0)))
+    if(dynamic_pointer_cast<ValueItem>(attItem->item(0)))
       {
-      this->addTableValueItems(dynamicCastPointer<ValueItem>(
+      this->addTableValueItems(dynamic_pointer_cast<ValueItem>(
         attItem->item(0)), numRows, attLabel, advanced);
       for (int j = 1; j < numItems; j++) // expecting one item for each column
         {
-        this->addTableValueItems(dynamicCastPointer<ValueItem>(
+        this->addTableValueItems(dynamic_pointer_cast<ValueItem>(
           attItem->item(j)), numRows, NULL, 0);
         }
       }
     else if(attItem->item(0)->type() == smtk::attribute::Item::ATTRIBUTE_REF)
       {
-      this->addTableAttRefItems(dynamicCastPointer<RefItem>(
+      this->addTableAttRefItems(dynamic_pointer_cast<RefItem>(
         attItem->item(0)), numRows, attLabel, advanced);
       for (int j = 1; j < numItems; j++) // expecting one item for each column
         {
-        this->addTableAttRefItems(dynamicCastPointer<RefItem>(
+        this->addTableAttRefItems(dynamic_pointer_cast<RefItem>(
           attItem->item(j)), numRows, NULL, 0);
         }
       }
     else if(attItem->item(0)->type() == smtk::attribute::Item::VOID)
       {
-      this->addTableVoidItems(dynamicCastPointer<VoidItem>(
+      this->addTableVoidItems(dynamic_pointer_cast<VoidItem>(
         attItem->item(0)), numRows, attLabel, advanced);
       for (int j = 1; j < numItems; j++) // expecting one item for each column
         {
-        this->addTableVoidItems(dynamicCastPointer<VoidItem>(
+        this->addTableVoidItems(dynamic_pointer_cast<VoidItem>(
           attItem->item(j)), numRows, NULL, 0);
         }
       }
@@ -970,7 +970,7 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
   labelitem->setFlags(nonEditableFlags);
   widget->setItem(numRows-1, 0, labelitem);
   bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
-    labelitem, dynamicCastPointer<Item>(attItem));
+    labelitem, dynamic_pointer_cast<Item>(attItem));
 
   QString unitText = vItemDef && !vItemDef->units().empty() ? vItemDef->units().c_str() : "";
   QTableWidgetItem* unitItem = new QTableWidgetItem(unitText);
@@ -1026,7 +1026,7 @@ void qtAttributeView::addTableAttRefItems(
   widget->setItem(numRows-1, 0, labelitem);
 
   bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
-    labelitem, dynamicCastPointer<Item>(attItem));
+    labelitem, dynamic_pointer_cast<Item>(attItem));
   refItem->widget()->setEnabled(bEnabled);
   widget->setCellWidget(numRows-1, 1, refItem->widget());
   widget->setItem(numRows-1, 1, new QTableWidgetItem());
@@ -1073,7 +1073,7 @@ void qtAttributeView::getAllDefinitions()
 {
   QList<smtk::attribute::DefinitionPtr> defs;
   smtk::view::AttributePtr aview =
-    smtk::dynamicCastPointer<smtk::view::Attribute>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
     {
     return;

@@ -314,7 +314,7 @@ void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr t
       || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
       {
       smtk::model::GroupItemPtr itemGroup =
-        smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
+        smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
       if(!assignedIds.contains(itemIt->second->id()))
         {
 //        if((itemGroup->entityMask() & attDef->associationMask()) != 0)

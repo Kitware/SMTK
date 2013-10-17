@@ -64,7 +64,7 @@ void qtGroupItem::createWidget()
     return;
     }
   this->clearChildItems();
-  smtk::attribute::GroupItemPtr item =dynamicCastPointer<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
   if(!item || !item->numberOfGroups())
     {
     return;
@@ -89,7 +89,7 @@ void qtGroupItem::createWidget()
 //----------------------------------------------------------------------------
 void qtGroupItem::updateItemData()
 {
-  smtk::attribute::GroupItemPtr item =dynamicCastPointer<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
   if(!item || !item->numberOfGroups())
     {
     return;

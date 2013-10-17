@@ -269,25 +269,25 @@ XmlV1StringWriter::processItemDefinition(xml_node &node,
   switch (idef->type())
     {
     case Item::ATTRIBUTE_REF:
-      this->processRefDef(node, smtk::dynamicCastPointer<RefItemDefinition>(idef));
+      this->processRefDef(node, smtk::dynamic_pointer_cast<RefItemDefinition>(idef));
       break;
     case Item::DOUBLE:
-      this->processDoubleDef(node, smtk::dynamicCastPointer<DoubleItemDefinition>(idef));
+      this->processDoubleDef(node, smtk::dynamic_pointer_cast<DoubleItemDefinition>(idef));
       break;
     case Item::DIRECTORY:
-      this->processDirectoryDef(node, smtk::dynamicCastPointer<DirectoryItemDefinition>(idef));
+      this->processDirectoryDef(node, smtk::dynamic_pointer_cast<DirectoryItemDefinition>(idef));
       break;
     case Item::FILE:
-      this->processFileDef(node, smtk::dynamicCastPointer<FileItemDefinition>(idef));
+      this->processFileDef(node, smtk::dynamic_pointer_cast<FileItemDefinition>(idef));
       break;
     case Item::GROUP:
-      this->processGroupDef(node, smtk::dynamicCastPointer<GroupItemDefinition>(idef));
+      this->processGroupDef(node, smtk::dynamic_pointer_cast<GroupItemDefinition>(idef));
       break;
     case Item::INT:
-      this->processIntDef(node, smtk::dynamicCastPointer<IntItemDefinition>(idef));
+      this->processIntDef(node, smtk::dynamic_pointer_cast<IntItemDefinition>(idef));
       break;
     case Item::STRING:
-      this->processStringDef(node, smtk::dynamicCastPointer<StringItemDefinition>(idef));
+      this->processStringDef(node, smtk::dynamic_pointer_cast<StringItemDefinition>(idef));
       break;
     case Item::VOID:
       // Nothing to do!
@@ -305,7 +305,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node,
-                        dynamicCastPointer<ValueItemDefinition>(idef));
+                        dynamic_pointer_cast<ValueItemDefinition>(idef));
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
@@ -360,7 +360,7 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node,
-                        smtk::dynamicCastPointer<ValueItemDefinition>(idef));
+                        smtk::dynamic_pointer_cast<ValueItemDefinition>(idef));
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
@@ -415,7 +415,7 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node,
-                        smtk::dynamicCastPointer<ValueItemDefinition>(idef));
+                        smtk::dynamic_pointer_cast<ValueItemDefinition>(idef));
   if (idef->isMultiline())
     {
     node.append_attribute("MultipleLines").set_value(true);
@@ -698,25 +698,25 @@ void XmlV1StringWriter::processItem(xml_node &node,
   switch (item->type())
     {
     case Item::ATTRIBUTE_REF:
-      this->processRefItem(node, smtk::dynamicCastPointer<RefItem>(item));
+      this->processRefItem(node, smtk::dynamic_pointer_cast<RefItem>(item));
       break;
     case Item::DOUBLE:
-      this->processDoubleItem(node, smtk::dynamicCastPointer<DoubleItem>(item));
+      this->processDoubleItem(node, smtk::dynamic_pointer_cast<DoubleItem>(item));
       break;
     case Item::DIRECTORY:
-      this->processDirectoryItem(node, smtk::dynamicCastPointer<DirectoryItem>(item));
+      this->processDirectoryItem(node, smtk::dynamic_pointer_cast<DirectoryItem>(item));
       break;
     case Item::FILE:
-      this->processFileItem(node, smtk::dynamicCastPointer<FileItem>(item));
+      this->processFileItem(node, smtk::dynamic_pointer_cast<FileItem>(item));
       break;
     case Item::GROUP:
-      this->processGroupItem(node, smtk::dynamicCastPointer<GroupItem>(item));
+      this->processGroupItem(node, smtk::dynamic_pointer_cast<GroupItem>(item));
       break;
     case Item::INT:
-      this->processIntItem(node, smtk::dynamicCastPointer<IntItem>(item));
+      this->processIntItem(node, smtk::dynamic_pointer_cast<IntItem>(item));
       break;
     case Item::STRING:
-      this->processStringItem(node, smtk::dynamicCastPointer<StringItem>(item));
+      this->processStringItem(node, smtk::dynamic_pointer_cast<StringItem>(item));
       break;
     case Item::VOID:
       // Nothing to do!
@@ -866,7 +866,7 @@ void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
                                           attribute::DoubleItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamic_pointer_cast<ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1009,7 +1009,7 @@ void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
                                        attribute::IntItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamic_pointer_cast<ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1065,7 +1065,7 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
                                           attribute::StringItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<ValueItem>(item));
+                         dynamic_pointer_cast<ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1128,14 +1128,14 @@ void XmlV1StringWriter::processViews()
   s = this->encodeColor(rs->invalidColor());
   views.append_child("InvalidColor").text().set(s.c_str());
   this->processGroupView(views,
-                         smtk::dynamicCastPointer<smtk::view::Group>(rs));
+                         smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processAttributeView(xml_node &node,
                                              smtk::view::AttributePtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
@@ -1160,7 +1160,7 @@ void XmlV1StringWriter::processInstancedView(xml_node &node,
                                              smtk::view::InstancedPtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   std::size_t i, n = v->numberOfInstances();
   xml_node child;
    if (n)
@@ -1180,7 +1180,7 @@ void XmlV1StringWriter::processModelEntityView(xml_node &node,
                                                smtk::view::ModelEntityPtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
@@ -1196,7 +1196,7 @@ void XmlV1StringWriter::processSimpleExpressionView(xml_node &node,
                                                     smtk::view::SimpleExpressionPtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   if (v->definition() != NULL)
     {
     node.append_child("Definition").text().set(v->definition()->type().c_str());
@@ -1207,7 +1207,7 @@ void XmlV1StringWriter::processGroupView(xml_node &node,
                                          view::GroupPtr group)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(group));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(group));
   std::size_t i, n = group->numberOfSubViews();
   xml_node child;
   view::BasePtr bview;
@@ -1219,27 +1219,27 @@ void XmlV1StringWriter::processGroupView(xml_node &node,
       case view::Base::ATTRIBUTE:
         child = node.append_child("AttributeView");
         this->processAttributeView(child,
-                                   smtk::dynamicCastPointer<view::Attribute>(bview));
+                                   smtk::dynamic_pointer_cast<view::Attribute>(bview));
         break;
       case view::Base::GROUP:
         child = node.append_child("GroupView");
         this->processGroupView(child,
-                               smtk::dynamicCastPointer<view::Group>(bview));
+                               smtk::dynamic_pointer_cast<view::Group>(bview));
         break;
       case view::Base::INSTANCED:
         child = node.append_child("InstancedView");
         this->processInstancedView(child,
-                                   smtk::dynamicCastPointer<view::Instanced>(bview));
+                                   smtk::dynamic_pointer_cast<view::Instanced>(bview));
         break;
       case view::Base::MODEL_ENTITY:
         child = node.append_child("ModelEntityView");
         this->processModelEntityView(child,
-                                     smtk::dynamicCastPointer<view::ModelEntity>(bview));
+                                     smtk::dynamic_pointer_cast<view::ModelEntity>(bview));
         break;
       case view::Base::SIMPLE_EXPRESSION:
         child = node.append_child("SimpleExpressionView");
         this->processSimpleExpressionView(child,
-                                          smtk::dynamicCastPointer<view::SimpleExpression>(bview));
+                                          smtk::dynamic_pointer_cast<view::SimpleExpression>(bview));
         break;
       default:
         smtkErrorMacro(this->m_logger, "Unsupport View Type "
@@ -1273,7 +1273,7 @@ void XmlV1StringWriter::processModelInfo()
         || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
         {
         smtk::model::GroupItemPtr itemGroup =
-          smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
+          smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
         if(itemGroup)
           {
           xml_node gnode = modelInfo.append_child("GroupItem");

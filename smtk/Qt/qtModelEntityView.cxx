@@ -98,7 +98,7 @@ void qtModelEntityView::createWidget( )
     return;
     }
   smtk::view::ModelEntityPtr mview =
-    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
   if(!mview)
     {
     return;
@@ -203,7 +203,7 @@ void qtModelEntityView::updateModelAssociation()
 bool qtModelEntityView::isRegionDomain()
 {
   smtk::view::ModelEntityPtr mview =
-    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
   if(!mview)
     {
     return false;
@@ -231,7 +231,7 @@ void qtModelEntityView::updateModelItems()
   this->Internals->ListBox->clear();
 
   smtk::view::ModelEntityPtr mview =
-    smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
   if(!mview)
     {
     this->Internals->ListBox->blockSignals(false);
@@ -260,7 +260,7 @@ void qtModelEntityView::onShowCategory()
   if(this->isRegionDomain())
     {
     smtk::view::ModelEntityPtr mview =
-      smtk::dynamicCastPointer<smtk::view::ModelEntity>(this->getObject());
+      smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
     unsigned int mask = mview->modelEntityMask() ? mview->modelEntityMask() :
       smtk::model::Item::REGION;
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();

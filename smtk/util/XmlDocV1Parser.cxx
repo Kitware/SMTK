@@ -354,31 +354,31 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
-        this->processRefDef(node, smtk::dynamicCastPointer<smtk::attribute::RefItemDefinition>(idef));
+        this->processRefDef(node, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DOUBLE:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
-        this->processDoubleDef(node, smtk::dynamicCastPointer<smtk::attribute::DoubleItemDefinition>(idef));
+        this->processDoubleDef(node, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DIRECTORY:
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
-        this->processDirectoryDef(node, smtk::dynamicCastPointer<smtk::attribute::DirectoryItemDefinition>(idef));
+        this->processDirectoryDef(node, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
       case smtk::attribute::Item::FILE:
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
-        this->processFileDef(node, smtk::dynamicCastPointer<smtk::attribute::FileItemDefinition>(idef));
+        this->processFileDef(node, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(idef));
         break;
       case smtk::attribute::Item::GROUP:
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
-        this->processGroupDef(node, smtk::dynamicCastPointer<smtk::attribute::GroupItemDefinition>(idef));
+        this->processGroupDef(node, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(idef));
         break;
       case smtk::attribute::Item::INT:
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
-        this->processIntDef(node, smtk::dynamicCastPointer<smtk::attribute::IntItemDefinition>(idef));
+        this->processIntDef(node, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(idef));
         break;
       case smtk::attribute::Item::STRING:
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
-        this->processStringDef(node, smtk::dynamicCastPointer<smtk::attribute::StringItemDefinition>(idef));
+        this->processStringDef(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -952,31 +952,31 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
-        this->processRefDef(child, smtk::dynamicCastPointer<smtk::attribute::RefItemDefinition>(idef));
+        this->processRefDef(child, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DOUBLE:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
-        this->processDoubleDef(child, smtk::dynamicCastPointer<smtk::attribute::DoubleItemDefinition>(idef));
+        this->processDoubleDef(child, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DIRECTORY:
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
-        this->processDirectoryDef(child, smtk::dynamicCastPointer<smtk::attribute::DirectoryItemDefinition>(idef));
+        this->processDirectoryDef(child, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
       case smtk::attribute::Item::FILE:
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
-        this->processFileDef(child, smtk::dynamicCastPointer<smtk::attribute::FileItemDefinition>(idef));
+        this->processFileDef(child, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(idef));
         break;
       case smtk::attribute::Item::GROUP:
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
-        this->processGroupDef(child, smtk::dynamicCastPointer<smtk::attribute::GroupItemDefinition>(idef));
+        this->processGroupDef(child, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(idef));
         break;
       case smtk::attribute::Item::INT:
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
-        this->processIntDef(child, smtk::dynamicCastPointer<smtk::attribute::IntItemDefinition>(idef));
+        this->processIntDef(child, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(idef));
         break;
       case smtk::attribute::Item::STRING:
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
-        this->processStringDef(child, smtk::dynamicCastPointer<smtk::attribute::StringItemDefinition>(idef));
+        this->processStringDef(child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
@@ -1139,25 +1139,25 @@ void XmlDocV1Parser::processItem(xml_node &node,
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF:
-      this->processRefItem(node, smtk::dynamicCastPointer<smtk::attribute::RefItem>(item));
+      this->processRefItem(node, smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(item));
       break;
     case smtk::attribute::Item::DOUBLE:
-      this->processDoubleItem(node, smtk::dynamicCastPointer<smtk::attribute::DoubleItem>(item));
+      this->processDoubleItem(node, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItem>(item));
       break;
     case smtk::attribute::Item::DIRECTORY:
-      this->processDirectoryItem(node, smtk::dynamicCastPointer<smtk::attribute::DirectoryItem>(item));
+      this->processDirectoryItem(node, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item));
       break;
     case smtk::attribute::Item::FILE:
-      this->processFileItem(node, smtk::dynamicCastPointer<smtk::attribute::FileItem>(item));
+      this->processFileItem(node, smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item));
       break;
     case smtk::attribute::Item::GROUP:
-      this->processGroupItem(node, smtk::dynamicCastPointer<smtk::attribute::GroupItem>(item));
+      this->processGroupItem(node, smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(item));
       break;
     case smtk::attribute::Item::INT:
-      this->processIntItem(node, smtk::dynamicCastPointer<smtk::attribute::IntItem>(item));
+      this->processIntItem(node, smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(item));
       break;
     case smtk::attribute::Item::STRING:
-      this->processStringItem(node, smtk::dynamicCastPointer<smtk::attribute::StringItem>(item));
+      this->processStringItem(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item));
       break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
@@ -1405,7 +1405,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
                                           attribute::DoubleItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1668,7 +1668,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
                                        attribute::IntItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1789,7 +1789,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
                                           attribute::StringItemPtr item)
 {
   this->processValueItem(node,
-                         dynamicCastPointer<smtk::attribute::ValueItem>(item));
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   if (item->isDiscrete())
     {
     return; // nothing left to do
@@ -1944,14 +1944,14 @@ void XmlDocV1Parser::processViews(xml_node &root)
     rs->setInvalidColor(c);
     }
   this->processGroupView(views,
-                         smtk::dynamicCastPointer<smtk::view::Group>(rs));
+                         smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttributeView(xml_node &node,
                                           smtk::view::AttributePtr v)
 {
   this->processBasicView(node,
-                            smtk::dynamicCastPointer<smtk::view::Base>(v));
+                            smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt;
   attribute::DefinitionPtr def;
   xml_node child, attTypes;
@@ -1994,7 +1994,7 @@ void XmlDocV1Parser::processInstancedView(xml_node &node,
                                           smtk::view::InstancedPtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt;
   xml_node child, instances = node.child("InstancedAttributes");
   std::string attName, defName;
@@ -2048,7 +2048,7 @@ void XmlDocV1Parser::processModelEntityView(xml_node &node,
                                             smtk::view::ModelEntityPtr v)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(v));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_attribute xatt = node.attribute("ModelEnityFilter");
   xml_node child = node.child("Definition");
   if (xatt)
@@ -2074,7 +2074,7 @@ void XmlDocV1Parser::processSimpleExpressionView(xml_node &node,
                                                  smtk::view::SimpleExpressionPtr v)
 {
   this->processBasicView(node,
-                            smtk::dynamicCastPointer<smtk::view::Base>(v));
+                            smtk::dynamic_pointer_cast<smtk::view::Base>(v));
   xml_node child = node.child("Definition");
   if (child)
     {
@@ -2097,7 +2097,7 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
                                       smtk::view::GroupPtr group)
 {
   this->processBasicView(node,
-                         smtk::dynamicCastPointer<smtk::view::Base>(group));
+                         smtk::dynamic_pointer_cast<smtk::view::Base>(group));
 
   xml_node child;
   std::string childName;

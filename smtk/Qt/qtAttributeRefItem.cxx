@@ -82,7 +82,7 @@ void qtAttributeRefItem::createWidget()
   this->Internals->comboBoxes.clear();
   this->Widget = new QFrame(this->parentWidget());
 
-  smtk::attribute::RefItemPtr item =dynamicCastPointer<RefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   if(!item)
     {
     return;
@@ -126,7 +126,7 @@ void qtAttributeRefItem::createWidget()
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::updateItemData()
 {
-  smtk::attribute::RefItemPtr item =dynamicCastPointer<RefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   if(!item)
     {
     return;
@@ -182,7 +182,7 @@ void qtAttributeRefItem::onInputValueChanged()
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
 
-  smtk::attribute::RefItemPtr item =dynamicCastPointer<RefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
 
   if(curIdx>=0)
     {

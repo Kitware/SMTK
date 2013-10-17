@@ -127,7 +127,7 @@ void
 ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
   smtk::attribute::RefItemPtr aref =
-    smtk::dynamicCastPointer<smtk::attribute::RefItem>
+    smtk::dynamic_pointer_cast<smtk::attribute::RefItem>
     (this->m_expressionDefinition->buildItem(vitem, position, -1));
   aref->setDefinition(this->m_expressionDefinition);
   vitem->m_expressions[position] = aref;

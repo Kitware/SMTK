@@ -69,7 +69,7 @@ std::vector<smtk::model::GroupItemPtr> Model::findGroupItems(
     {
     if(it->second->type() == Item::BOUNDARY_GROUP || it->second->type() == Item::DOMAIN_SET)
       {
-      smtk::model::GroupItemPtr itemgrp = dynamicCastPointer<GroupItem>(it->second);
+      smtk::model::GroupItemPtr itemgrp = dynamic_pointer_cast<GroupItem>(it->second);
       if(itemgrp && ((itemgrp->entityMask() & mask) == mask))
         {
         result.push_back(itemgrp);

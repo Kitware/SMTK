@@ -44,7 +44,7 @@ namespace smtk
       friend class RefItemDefinition;
       friend class ValueItemDefinition;
     public:
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
       static smtk::attribute::RefItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<RefItem>(p);}
 

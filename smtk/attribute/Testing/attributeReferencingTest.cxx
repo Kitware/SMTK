@@ -63,9 +63,9 @@ int main()
 
   smtk::attribute::ValueItemPtr vitem;
   smtk::attribute::ItemPtr item;
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att->item(0))->setExpression(expAtt1);
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att1->item(0))->setExpression(expAtt1);
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt2);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att1->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt2);
 
   // Lets see what attributes are being referenced
   std::vector<smtk::attribute::ItemPtr> refs;
@@ -105,7 +105,7 @@ int main()
               << "\n";
     }
 
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt1);
   std::cout << "testAtt3 now using Exp2\n";
 
   expAtt1->references(refs);

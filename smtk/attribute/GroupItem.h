@@ -39,7 +39,7 @@ namespace smtk
     {
       friend class GroupItemDefinition;
     public:
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
       static smtk::attribute::GroupItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<GroupItem>(p);}
 

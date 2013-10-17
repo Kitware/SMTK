@@ -89,7 +89,7 @@ void qtInputsItem::createWidget()
 void qtInputsItem::loadInputValues(
   QBoxLayout* labellayout, QBoxLayout* entrylayout)
 {
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
     {
     return;
@@ -180,7 +180,7 @@ void qtInputsItem::updateUI()
       dataObj->definition()->isEnabledByDefault());
     labelLayout->addWidget(optionalCheck);
     }
-  smtk::attribute::ValueItemPtr item = dynamicCastPointer<ValueItem>(dataObj);
+  smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
   const ValueItemDefinition *itemDef = 
     dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
 

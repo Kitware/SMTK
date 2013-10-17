@@ -49,7 +49,7 @@ public:
 //----------------------------------------------------------------------------
 qtRootView::qtRootView(
   smtk::view::RootPtr dataObj, QWidget* p) :
-  qtBaseView(smtk::dynamicCastPointer<smtk::view::Base>(dataObj), p)
+  qtBaseView(smtk::dynamic_pointer_cast<smtk::view::Base>(dataObj), p)
 {
   this->Internals = new qtRootViewInternals;
   this->ScrollArea = NULL;

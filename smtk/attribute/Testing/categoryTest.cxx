@@ -140,7 +140,7 @@ int main()
 
   // Find the expression enabled item
   item = att->item(2);
-  vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
+  vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
   if (vitem->allowsExpressions())
     {
     vitem->setExpression(expAtt);
@@ -158,7 +158,7 @@ int main()
     {
     item = att->item(i);
     std::cout << "\t" << item->name() << " Type = " << smtk::attribute::Item::type2String(item->type()) << ", ";
-    vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
+    vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     if (vitem != NULL)
       {
       if (vitem->isExpression())

@@ -84,8 +84,8 @@ bool qtFileItem::isDirectory()
 //----------------------------------------------------------------------------
 void qtFileItem::updateItemData()
 {
-  smtk::attribute::FileItemPtr fItem =dynamicCastPointer<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamicCastPointer<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
   if(!fItem && !dItem)
     {
     return;
@@ -119,8 +119,8 @@ void qtFileItem::updateItemData()
 //----------------------------------------------------------------------------
 QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 {
-  smtk::attribute::FileItemPtr fItem =dynamicCastPointer<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamicCastPointer<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
 
   QFrame *frame = new QFrame(this->parentWidget());
   QLineEdit* lineEdit = new QLineEdit(frame);
@@ -169,8 +169,8 @@ void qtFileItem::onInputValueChanged()
     return;
     }
 
-  smtk::attribute::FileItemPtr fItem =dynamicCastPointer<FileItem>(this->getObject());
-  smtk::attribute::DirectoryItemPtr dItem =dynamicCastPointer<DirectoryItem>(this->getObject());
+  smtk::attribute::FileItemPtr fItem =dynamic_pointer_cast<FileItem>(this->getObject());
+  smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
   int elementIdx = editBox->property("ElementIndex").toInt();
 
   if(!editBox->text().isEmpty())

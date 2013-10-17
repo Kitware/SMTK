@@ -193,7 +193,7 @@ bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
 //----------------------------------------------------------------------------
 void qtUIManager::processAttributeView(qtAttributeView* qtView)
 {
-  smtk::view::AttributePtr v = smtk::dynamicCastPointer<smtk::view::Attribute>(
+  smtk::view::AttributePtr v = smtk::dynamic_pointer_cast<smtk::view::Attribute>(
     qtView->getObject());
 
   qtUIManager::processBasicView(qtView);
@@ -201,7 +201,7 @@ void qtUIManager::processAttributeView(qtAttributeView* qtView)
 //----------------------------------------------------------------------------
 void qtUIManager::processInstancedView(qtInstancedView* qtView)
 {
-  smtk::view::InstancedPtr v = smtk::dynamicCastPointer<smtk::view::Instanced>(
+  smtk::view::InstancedPtr v = smtk::dynamic_pointer_cast<smtk::view::Instanced>(
     qtView->getObject());
 
   qtUIManager::processBasicView(qtView);
@@ -209,7 +209,7 @@ void qtUIManager::processInstancedView(qtInstancedView* qtView)
 //----------------------------------------------------------------------------
 void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
 {
-  smtk::view::ModelEntityPtr v = smtk::dynamicCastPointer<smtk::view::ModelEntity>(
+  smtk::view::ModelEntityPtr v = smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(
     qtView->getObject());
 
   qtUIManager::processBasicView(qtView);
@@ -217,7 +217,7 @@ void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
 //----------------------------------------------------------------------------
 void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
 {
-  smtk::view::SimpleExpressionPtr v = smtk::dynamicCastPointer<smtk::view::SimpleExpression>(
+  smtk::view::SimpleExpressionPtr v = smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(
     qtView->getObject());
 
   qtUIManager::processBasicView(qtView);
@@ -225,7 +225,7 @@ void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
 //----------------------------------------------------------------------------
 void qtUIManager::processGroupView(qtGroupView* pQtGroup)
 {
-  smtk::view::GroupPtr group = smtk::dynamicCastPointer<smtk::view::Group>(
+  smtk::view::GroupPtr group = smtk::dynamic_pointer_cast<smtk::view::Group>(
     pQtGroup->getObject());
   qtUIManager::processBasicView( pQtGroup);
   std::size_t i, n = group->numberOfSubViews();
@@ -343,7 +343,7 @@ void qtUIManager::updateArrayTableWidget(
     {
     return;
     }
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(dataItem->item(0));
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(dataItem->item(0));
   if(!item || item->isDiscrete() || item->isExpression())
     {
     return;
@@ -367,7 +367,7 @@ void qtUIManager::updateArrayTableWidget(
 void qtUIManager::updateTableColRows(smtk::attribute::ItemPtr dataItem,
     int col, QTableWidget* widget)
 {
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(dataItem);
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(dataItem);
   if(!item || item->isDiscrete() || item->isExpression())
     {
     return;
@@ -390,9 +390,9 @@ void qtUIManager::updateArrayDataValue(
     {
     return;
     }
-  smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(
+  smtk::attribute::DoubleItemPtr dItem =dynamic_pointer_cast<DoubleItem>(
     dataItem->item(item->column()));
-  smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(
+  smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(
     dataItem->item(item->column()));
   if(dItem)
     {
@@ -412,7 +412,7 @@ bool qtUIManager::getExpressionArrayString(
     {
     return false;
     }
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(dataItem->item(0));
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(dataItem->item(0));
   if(!item || item->isDiscrete() || item->isExpression())
     {
     return false;
@@ -425,10 +425,10 @@ bool qtUIManager::getExpressionArrayString(
     {
     for(int c=0; c<numberOfComponents-1; c++)
       {
-      valueitem =dynamicCastPointer<ValueItem>(dataItem->item(c));
+      valueitem =dynamic_pointer_cast<ValueItem>(dataItem->item(c));
       strVals << valueitem->valueAsString(i).c_str() <<"\t";
       }
-    valueitem =dynamicCastPointer<ValueItem>(dataItem->item(numberOfComponents-1));
+    valueitem =dynamic_pointer_cast<ValueItem>(dataItem->item(numberOfComponents-1));
     strVals << valueitem->valueAsString(i).c_str();
     strVals << LINE_BREAKER_STRING;
     }
@@ -452,8 +452,8 @@ void qtUIManager::removeSelectedTableValues(
       {
       for(int i = 0; i < numCols; i++)
         {
-        smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i));
-        smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i));
+        smtk::attribute::DoubleItemPtr dItem =dynamic_pointer_cast<DoubleItem>(dataItem->item(i));
+        smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(dataItem->item(i));
         if(dItem)
           {
           dItem->removeValue(r);
@@ -482,8 +482,8 @@ void qtUIManager::addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
 
   for(int i=0; i<numVals; i++)
     {
-    smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(dataItem->item(i));
-    smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(dataItem->item(i));
+    smtk::attribute::DoubleItemPtr dItem =dynamic_pointer_cast<DoubleItem>(dataItem->item(i));
+    smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(dataItem->item(i));
     if(dItem)
       {
       dItem->appendValue(vals[i]);
@@ -506,7 +506,7 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 QWidget* qtUIManager::createExpressionRefWidget(
   smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget)
 {
-  smtk::attribute::ValueItemPtr inputitem =dynamicCastPointer<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr inputitem =dynamic_pointer_cast<ValueItem>(attitem);
   if(!inputitem)
     {
     return NULL;
@@ -600,7 +600,7 @@ void qtUIManager::onExpressionReferenceChanged()
 QWidget* qtUIManager::createComboBox(
   smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget)
 {
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
     {
     return NULL;
@@ -675,7 +675,7 @@ void qtUIManager::onComboIndexChanged()
 QWidget* qtUIManager::createInputWidget(
   smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget)
 {
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
     {
     return NULL;
@@ -691,7 +691,7 @@ QWidget* qtUIManager::createInputWidget(
 QWidget* qtUIManager::createEditBox(
   smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget)
 {
-  smtk::attribute::ValueItemPtr item =dynamicCastPointer<ValueItem>(attitem);
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
     {
     return NULL;
@@ -732,7 +732,7 @@ QWidget* qtUIManager::createEditBox(
         tooltip.append("Max: ").append(QString::number(value));
         }
 
-      smtk::attribute::DoubleItemPtr ditem =dynamicCastPointer<DoubleItem>(item);
+      smtk::attribute::DoubleItemPtr ditem =dynamic_pointer_cast<DoubleItem>(item);
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
@@ -786,7 +786,7 @@ QWidget* qtUIManager::createEditBox(
         tooltip.append("Max: ").append(QString::number(value));
         }
 
-      smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(item);
+      smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(item);
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
@@ -813,7 +813,7 @@ QWidget* qtUIManager::createEditBox(
       {
       const StringItemDefinition *sDef =
         dynamic_cast<const StringItemDefinition*>(item->definition().get());
-      smtk::attribute::StringItemPtr sitem =dynamicCastPointer<StringItem>(item);
+      smtk::attribute::StringItemPtr sitem =dynamic_pointer_cast<StringItem>(item);
       QString valText;
       if(item->isSet(elementIdx))
         {
@@ -893,9 +893,9 @@ void qtUIManager::onInputValueChanged()
     return;
     }
   //smtk::attribute::ValueItemPtr item(rawitem);
-  //smtk::attribute::DoubleItemPtr dItem =dynamicCastPointer<DoubleItem>(item);
-  //smtk::attribute::IntItemPtr iItem =dynamicCastPointer<IntItem>(item);
-  //smtk::attribute::StringItemPtr sItem =dynamicCastPointer<StringItem>(item);
+  //smtk::attribute::DoubleItemPtr dItem =dynamic_pointer_cast<DoubleItem>(item);
+  //smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(item);
+  //smtk::attribute::StringItemPtr sItem =dynamic_pointer_cast<StringItem>(item);
   int elementIdx = editBox ? editBox->property("ElementIndex").toInt() :
     textBox->property("ElementIndex").toInt();
 
@@ -903,17 +903,17 @@ void qtUIManager::onInputValueChanged()
     {
     if(rawitem->type()==smtk::attribute::Item::DOUBLE)
       {
-      smtk::dynamicCastPointer<DoubleItem>(rawitem->pointer())
+      smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
         ->setValue(elementIdx, editBox->text().toDouble());
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
-      smtk::dynamicCastPointer<IntItem>(rawitem->pointer())
+      smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
         ->setValue(elementIdx, editBox->text().toInt());
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
-      smtk::dynamicCastPointer<StringItem>(rawitem->pointer())
+      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
         ->setValue(elementIdx, editBox->text().toStdString());
       }
     else
@@ -924,7 +924,7 @@ void qtUIManager::onInputValueChanged()
   else if(textBox && !textBox->toPlainText().isEmpty() &&
      rawitem->type()==smtk::attribute::Item::STRING)
     {
-    smtk::dynamicCastPointer<StringItem>(rawitem->pointer())
+    smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
       ->setValue(elementIdx, textBox->toPlainText().toStdString());
     }
   else
@@ -967,11 +967,11 @@ std::string qtUIManager::getItemCommonLabel(
 {
   if(attItem->type() == smtk::attribute::Item::GROUP)
     {
-    return this->getGroupItemCommonLabel(dynamicCastPointer<GroupItem>(attItem));
+    return this->getGroupItemCommonLabel(dynamic_pointer_cast<GroupItem>(attItem));
     }
- if(dynamicCastPointer<ValueItem>(attItem))
+ if(dynamic_pointer_cast<ValueItem>(attItem))
     {
-    return this->getValueItemCommonLabel(dynamicCastPointer<ValueItem>(attItem));
+    return this->getValueItemCommonLabel(dynamic_pointer_cast<ValueItem>(attItem));
     }
   return "";
 }

@@ -182,24 +182,24 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW)
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
-      aItem = qtAttribute::createAttributeRefItem(smtk::dynamicCastPointer<RefItem>(item), pW);
+      aItem = qtAttribute::createAttributeRefItem(smtk::dynamic_pointer_cast<RefItem>(item), pW);
       break;
     case smtk::attribute::Item::DOUBLE:
     case smtk::attribute::Item::INT:
     case smtk::attribute::Item::STRING:
-      aItem = qtAttribute::createValueItem(smtk::dynamicCastPointer<ValueItem>(item), pW);
+      aItem = qtAttribute::createValueItem(smtk::dynamic_pointer_cast<ValueItem>(item), pW);
       break;
     case smtk::attribute::Item::DIRECTORY:
-      aItem = qtAttribute::createDirectoryItem(smtk::dynamicCastPointer<DirectoryItem>(item), pW);
+      aItem = qtAttribute::createDirectoryItem(smtk::dynamic_pointer_cast<DirectoryItem>(item), pW);
       break;
     case smtk::attribute::Item::FILE:
-      aItem = qtAttribute::createFileItem(smtk::dynamicCastPointer<FileItem>(item), pW);
+      aItem = qtAttribute::createFileItem(smtk::dynamic_pointer_cast<FileItem>(item), pW);
       break;
     case smtk::attribute::Item::GROUP:
-      aItem = qtAttribute::createGroupItem(smtk::dynamicCastPointer<GroupItem>(item), pW);
+      aItem = qtAttribute::createGroupItem(smtk::dynamic_pointer_cast<GroupItem>(item), pW);
       break;
     case smtk::attribute::Item::VOID:
-      aItem = new qtVoidItem(smtk::dynamicCastPointer<VoidItem>(item), pW);
+      aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
@@ -213,14 +213,14 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW)
 qtItem* qtAttribute::createAttributeRefItem(
   smtk::attribute::RefItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = new qtAttributeRefItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtAttributeRefItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createDirectoryItem(
   smtk::attribute::DirectoryItemPtr item, QWidget* pW)
 {
-  qtFileItem* returnItem = new qtFileItem(dynamicCastPointer<Item>(item), pW, true);
+  qtFileItem* returnItem = new qtFileItem(dynamic_pointer_cast<Item>(item), pW, true);
   qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
@@ -229,14 +229,14 @@ qtItem* qtAttribute::createFileItem(
   smtk::attribute::FileItemPtr item, QWidget* pW, bool dirOnly)
 {
   qtFileItem* returnItem = new qtFileItem(
-    dynamicCastPointer<Item>(item), pW, dirOnly);
+    dynamic_pointer_cast<Item>(item), pW, dirOnly);
   qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = new qtGroupItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtGroupItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }
 
@@ -245,6 +245,6 @@ qtItem* qtAttribute::createValueItem(
   smtk::attribute::ValueItemPtr item, QWidget* pW)
 {
     // create the input item for editable type values
-  qtItem* returnItem = new qtInputsItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtInputsItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }

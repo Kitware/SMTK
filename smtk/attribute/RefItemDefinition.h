@@ -44,7 +44,7 @@ namespace smtk
       static smtk::attribute::RefItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::RefItemDefinitionPtr(new RefItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
       static smtk::attribute::RefItemDefinitionPtr
         CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<RefItemDefinition>(p);}

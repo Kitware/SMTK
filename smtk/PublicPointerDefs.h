@@ -32,12 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
-  template <typename T, typename U >
-  inline smtk::shared_ptr< T > dynamicCastPointer(const smtk::shared_ptr< U > &r)
-  {
-    return smtk::dynamic_pointer_cast< T >(r);
-  }
-
   namespace model
   {
     class Model;

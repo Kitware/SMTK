@@ -113,7 +113,7 @@ void qtInstancedView::createWidget( )
 void qtInstancedView::updateAttributeData()
 {
   smtk::view::InstancedPtr iview =
-    smtk::dynamicCastPointer<smtk::view::Instanced>(this->getObject());
+    smtk::dynamic_pointer_cast<smtk::view::Instanced>(this->getObject());
   if(!iview || !iview->numberOfInstances())
     {
     return;

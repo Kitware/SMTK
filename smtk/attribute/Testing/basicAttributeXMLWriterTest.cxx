@@ -175,7 +175,7 @@ int main(int argc, char *argv[])
 
   // Find the expression enabled item
   item = att->item(2);
-  vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
+  vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
   smtk::util::AttributeWriter writer;
   smtk::util::Logger logger;
   if (writer.write(manager, argv[1],logger))
