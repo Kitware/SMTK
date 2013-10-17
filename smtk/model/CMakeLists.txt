@@ -3,6 +3,8 @@ set(modelSrcs
   Model.cxx
   ModelDomainItem.cxx
   Item.cxx
+  GridInfo2D.cxx
+  GridInfo3D.cxx
   GroupItem.cxx
   )
 
@@ -11,6 +13,8 @@ set(modelHeaders
   ModelDomainItem.h
   Item.h
   GridInfo.h
+  GridInfo2D.h
+  GridInfo3D.h
   GroupItem.h
   )
 

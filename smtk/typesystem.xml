@@ -268,8 +268,19 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo2D"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo3D"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
+    <modify-function signature="find(const std::string &amp;)">
+      <modify-argument index="return">
+        <replace-type modified-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;" />
+      </modify-argument>
+      <inject-code class="target" position="beginning">
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1);
+        %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
+      </inject-code>
+    </modify-function>
     <modify-function signature="references(std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;&amp;)">
       <modify-argument index="1">
         <remove-argument />
@@ -298,7 +309,17 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::DoubleItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::FileItemDefinition" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItem">
+    <modify-function signature="find(const std::string &amp;)">
+      <modify-argument index="return">
+        <replace-type modified-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;" />
+      </modify-argument>
+      <inject-code class="target" position="beginning">
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1);
+        %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
+      </inject-code>
+    </modify-function>
+  </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::attribute::GroupItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItemDefinition" />
@@ -345,6 +366,14 @@
 
       <object-type name="GridInfo">
         <include file-name="smtk/model/GridInfo.h" location="local"/>
+      </object-type>
+
+      <object-type name="GridInfo2D">
+        <include file-name="smtk/model/GridInfo2D.h" location="local"/>
+      </object-type>
+
+      <object-type name="GridInfo3D">
+        <include file-name="smtk/model/GridInfo3D.h" location="local"/>
       </object-type>
 
     </namespace-type>

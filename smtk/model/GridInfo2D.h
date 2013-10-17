@@ -22,31 +22,36 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME GridInfo.h - abstract class to get grid information.
 // .SECTION Description
-// Abstract class to get grid information. Note that we don't assume that
-// the whole analysis grid is stored. CMB will implement a version
+// Abstract class to get grid information. CMB will implement a version
 // of this to get the grid information into SMTK from CMB without
 // introducing a dependency on CMB.
 // .SECTION See Also
 
-#ifndef __smtk_model_GridInfo_h
-#define __smtk_model_GridInfo_h
+#ifndef __smtk_model_GridInfo2D_h
+#define __smtk_model_GridInfo2D_h
 
-#include "smtk/SMTKCoreExports.h"
-//#include "smtk/PublicPointerDefs.h"
+#include "GridInfo.h"
+
+#include <vector>
 
 namespace smtk
 {
   namespace model
   {
-    class SMTKCORE_EXPORT GridInfo
+    class SMTKCORE_EXPORT GridInfo2D : public GridInfo
     {
     public:
-      virtual int dimension() const = 0;
+      virtual int dimension() const;
+      virtual std::vector<int> groupCellIds(int groupId);
+      virtual double groupArea(int groupId);
 
-      GridInfo() {}
-      virtual ~GridInfo() {}
+      virtual std::vector<int> cellPointIds(int cellId);
+      virtual std::vector<double> pointLocation(int pointId);
+
+      GridInfo2D()  {}
+      virtual ~GridInfo2D() {}
     };
   }
 }
 
-#endif /* __smtk_model_GridInfo_h */
+#endif /* __smtk_model_GridInfo2D_h */
