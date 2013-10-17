@@ -11,21 +11,33 @@ if __name__ == '__main__':
     status = 0
 
     try:
+        groupdef = smtk.attribute.GroupItemDefinition.New('groupdef')
         intdef = smtk.attribute.IntItemDefinition.New('intdef')
+        groupdef.addItemDefinition(intdef)
 
         manager = smtk.attribute.Manager()
         defn = manager.createDefinition('testdef')
-        defn.addItemDefinition(intdef)
+        defn.addItemDefinition(groupdef)
 
         att = manager.createAttribute('t1', 'testdef')
 
+        # Retrieve GroupItem from attribute
         item = att.item(0)
-        cast_item = smtk.attribute.ValueItem.CastTo(item)
-        print 'item:', cast_item.valueAsString()
+        group_item = smtk.attribute.GroupItem.CastTo(item)
+        print 'group_item:', group_item
 
-        find_item = att.find('intdef')
-        cast_item = smtk.attribute.ValueItem.CastTo(find_item)
-        print 'find_item:', cast_item.valueAsString()
+        find_item = att.find('groupdef')
+        find_group_item = smtk.attribute.GroupItem.CastTo(item)
+        print 'find_group_item:', find_group_item
+
+        # Retieve IntItem from GroupItem
+        subitem = group_item.item(0)
+        int_subitem = smtk.attribute.ValueItem.CastTo(subitem)
+        print 'subitem:', int_subitem.valueAsString()
+
+        find_subitem = find_group_item.find('intdef')
+        find_int_subitem = smtk.attribute.ValueItem.CastTo(find_subitem)
+        print 'find_int_subitem:', find_int_subitem.valueAsString()
     except Exception, ex:
         print 'Exception:'
 
