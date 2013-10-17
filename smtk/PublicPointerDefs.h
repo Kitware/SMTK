@@ -96,6 +96,12 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::Item >       ItemPtr;
     typedef smtk::weak_ptr< smtk::model::Item >         WeakItemPtr;
     typedef smtk::shared_ptr< smtk::model::GroupItem >  GroupItemPtr;
+
+    // class for making the analysis grid information available in SMTK
+    typedef smtk::shared_ptr< smtk::model::GridInfo >    GridInfoPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo2D >  GridInfo2DPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo3D >  GridInfo3DPtr;
+
   };
 
   namespace attribute
@@ -157,11 +163,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
   };
 
-
-  // class for making the analysis grid information available in SMTK
-  typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
-  typedef smtk::shared_ptr< smtk::model::GridInfo2D >                   GridInfo2DPtr;
-  typedef smtk::shared_ptr< smtk::model::GridInfo3D >                   GridInfo3DPtr;
 
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less

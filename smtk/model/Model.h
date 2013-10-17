@@ -84,12 +84,12 @@ namespace smtk
 
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
-      void setGridInfo(smtk::GridInfoPtr gridInfo)
+      void setGridInfo(smtk::model::GridInfoPtr gridInfo)
       {
         this->m_gridInfo = gridInfo;
       }
 
-      smtk::GridInfoPtr gridInfo()
+      smtk::model::GridInfoPtr gridInfo()
         {
         return this->m_gridInfo;
         }
@@ -98,7 +98,7 @@ namespace smtk
       smtk::model::ItemPtr m_modelDomain;
       mutable std::map<int, smtk::model::ItemPtr> m_items;
     private:
-      smtk::GridInfoPtr m_gridInfo;
+      smtk::model::GridInfoPtr m_gridInfo;
     };
 
     inline smtk::model::ItemPtr Model::getModelItem(int id)

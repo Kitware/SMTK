@@ -436,7 +436,7 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
       }
     }
   else if (this->m_defaultCategory != "" &&
-           smtk::dynamic_pointer_cast<GroupItemDefinition>(idef) == NULL)
+           smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef) == NULL)
     { // group item definitions don't get categories
     idef->addCategory(this->m_defaultCategory.c_str());
     }
