@@ -3,8 +3,6 @@ set(modelSrcs
   Model.cxx
   ModelDomainItem.cxx
   Item.cxx
-  GridInfo2D.cxx
-  GridInfo3D.cxx
   GroupItem.cxx
   )
 

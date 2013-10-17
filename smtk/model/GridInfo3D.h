@@ -39,8 +39,6 @@ namespace smtk
     class SMTKCORE_EXPORT GridInfo3D : public GridInfo
     {
     public:
-      virtual int dimension() const;
-
       GridInfo3D()  {}
       virtual ~GridInfo3D() {}
     };
