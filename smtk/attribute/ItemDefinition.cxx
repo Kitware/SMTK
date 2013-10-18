@@ -27,9 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute; 
 
 //----------------------------------------------------------------------------
-ItemDefinition::ItemDefinition(const std::string &myName)
+ItemDefinition::ItemDefinition(const std::string &myName) : m_name(myName)
 {
-  this->m_name = myName;
   this->m_version = 0;
   this->m_advanceLevel = 0;
   this->m_isOptional = false;

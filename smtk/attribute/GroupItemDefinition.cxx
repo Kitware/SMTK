@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/GroupItem.h"
 #include <iostream>
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
@@ -44,26 +44,26 @@ Item::Type GroupItemDefinition::type() const
   return Item::GROUP;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 GroupItemDefinition::buildItem(Attribute *owningAttribute,
                                int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new GroupItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new GroupItem(owningAttribute,
                                                itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 GroupItemDefinition::buildItem(Item *owningItem,
                                int itemPosition,
                                int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new GroupItem(owningItem,
+  return smtk::attribute::ItemPtr(new GroupItem(owningItem,
                                                itemPosition,
                                                subGroupPosition));
 }
 //----------------------------------------------------------------------------
 bool GroupItemDefinition::
-addItemDefinition(smtk::AttributeItemDefinitionPtr cdef)
+addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 {
   // First see if there is a item by the same name
   if (this->findItemPosition(cdef->name()) >= 0)
@@ -80,7 +80,7 @@ void GroupItemDefinition::
 buildGroup(GroupItem *groupItem, int subGroupPosition) const
 {
   std::size_t i, n = this->m_itemDefs.size();
-  std::vector<smtk::AttributeItemPtr> &items = groupItem->m_items[subGroupPosition];
+  std::vector<smtk::attribute::ItemPtr> &items = groupItem->m_items[subGroupPosition];
   items.resize(n);
   for (i = 0; i < n; i++)
     {

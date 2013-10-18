@@ -2,13 +2,13 @@
 set(QAttrLibSrcs
     qtUIManager.cxx
     qtAttribute.cxx
-    qtSection.cxx
-    qtGroupSection.cxx
-    qtRootSection.cxx
-    qtAttributeSection.cxx
-    qtInstancedSection.cxx
-    qtModelEntitySection.cxx
-    qtSimpleExpressionSection.cxx
+    qtBaseView.cxx
+    qtGroupView.cxx
+    qtRootView.cxx
+    qtAttributeView.cxx
+    qtInstancedView.cxx
+    qtModelEntityView.cxx
+    qtSimpleExpressionView.cxx
     qtFileItem.cxx
     qtAttributeRefItem.cxx
     qtTableWidget.cxx
@@ -31,13 +31,13 @@ set(QAttrLibSrcs
 set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
-    qtSection.h
-    qtGroupSection.h
-    qtRootSection.h
-    qtAttributeSection.h
-    qtInstancedSection.h
-    qtModelEntitySection.h
-    qtSimpleExpressionSection.h
+    qtBaseView.h
+    qtGroupView.h
+    qtRootView.h
+    qtAttributeView.h
+    qtInstancedView.h
+    qtModelEntityView.h
+    qtSimpleExpressionView.h
     qtFileItem.h
     qtAttributeRefItem.h
     qtTableWidget.h

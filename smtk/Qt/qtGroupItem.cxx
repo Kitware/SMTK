@@ -44,7 +44,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtGroupItem::qtGroupItem(
-  smtk::AttributeItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
 {
   this->Internals = new qtGroupItemInternals;
   this->IsLeafItem = true;
@@ -64,7 +64,7 @@ void qtGroupItem::createWidget()
     return;
     }
   this->clearChildItems();
-  smtk::GroupItemPtr item =dynamicCastPointer<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
   if(!item || !item->numberOfGroups())
     {
     return;
@@ -89,7 +89,7 @@ void qtGroupItem::createWidget()
 //----------------------------------------------------------------------------
 void qtGroupItem::updateItemData()
 {
-  smtk::GroupItemPtr item =dynamicCastPointer<GroupItem>(this->getObject());
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
   if(!item || !item->numberOfGroups())
     {
     return;

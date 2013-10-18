@@ -39,52 +39,52 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  smtk::StringItemDefinitionPtr eitemdef = 
-    expDef->addItemDefinition<smtk::StringItemDefinitionPtr>("Expression String");
-  smtk::StringItemDefinitionPtr eitemdef2 =
+  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::StringItemDefinitionPtr eitemdef =
+    expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
+  smtk::attribute::StringItemDefinitionPtr eitemdef2 =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr ditemdef = 
-    base->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem1");
+  smtk::attribute::DoubleItemDefinitionPtr ditemdef =
+    base->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
   ditemdef->setExpressionDefinition(expDef);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::AttributePtr expAtt1 = manager.createAttribute("Exp1", expDef);
-  smtk::AttributePtr expAtt2 = manager.createAttribute("Exp2", expDef);
-  smtk::AttributePtr att = manager.createAttribute("testAtt1", "BaseDef");
-  smtk::AttributePtr att1 = manager.createAttribute("testAtt2", "BaseDef");
-  smtk::AttributePtr att2 = manager.createAttribute("testAtt3", "BaseDef");
-  
-  
-  smtk::ValueItemPtr vitem;
-  smtk::AttributeItemPtr item;
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att->item(0))->setExpression(expAtt1);
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att1->item(0))->setExpression(expAtt1);
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt2);
+  smtk::attribute::AttributePtr expAtt1 = manager.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr expAtt2 = manager.createAttribute("Exp2", expDef);
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt1", "BaseDef");
+  smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt2", "BaseDef");
+  smtk::attribute::AttributePtr att2 = manager.createAttribute("testAtt3", "BaseDef");
+
+
+  smtk::attribute::ValueItemPtr vitem;
+  smtk::attribute::ItemPtr item;
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att1->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt2);
 
   // Lets see what attributes are being referenced
-  std::vector<smtk::AttributeItemPtr> refs;
+  std::vector<smtk::attribute::ItemPtr> refs;
   std::size_t i;
   expAtt1->references(refs);
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
   expAtt2->references(refs);
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
   manager.removeAttribute(att1);
   att1.reset(); // Should delete att1
@@ -93,36 +93,36 @@ int main()
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
   expAtt2->references(refs);
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
-  smtk::dynamicCastPointer<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt1);
+  smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att2->item(0))->setExpression(expAtt1);
   std::cout << "testAtt3 now using Exp2\n";
 
   expAtt1->references(refs);
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
   expAtt2->references(refs);
   std::cout << "Number of Items referencing expAtt1: " << refs.size() << "\n";
   for (i = 0; i < refs.size(); i++)
     {
-    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name() 
+    std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
               << "\n";
-    } 
+    }
 
 
   std::cout << "Manager destroyed\n";

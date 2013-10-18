@@ -27,7 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtItem.h"
 
-#include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
@@ -64,8 +63,8 @@ class qtAssociationWidgetInternals : public Ui::qtAttributeAssociation
 {
 public:
   QPointer<QComboBox> NodalDropDown;
-  smtk::WeakAttributePtr CurrentAtt;
-  smtk::WeakModelItemPtr CurrentModelGroup;
+  WeakAttributePtr CurrentAtt;
+  smtk::model::WeakItemPtr CurrentModelGroup;
 };
 
 //----------------------------------------------------------------------------
@@ -91,7 +90,7 @@ void qtAssociationWidget::initWidget( )
 {
   this->Internals->NodalDropDown = new QComboBox(this);
   this->Internals->NodalDropDown->setVisible(false);
-  smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+  smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
   QStringList nodalOptions;
   nodalOptions << smtk::model::Model::convertNodalTypeToString(
          smtk::model::Model::AllNodesType).c_str()
@@ -131,14 +130,14 @@ void qtAssociationWidget::showAdvanced(int checked)
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showDomainsAssociation(
-  std::vector<smtk::ModelGroupItemPtr>& theDomains, const QString& category,
-  std::vector<smtk::AttributeDefinitionPtr>& attDefs)
+  std::vector<smtk::model::GroupItemPtr>& theDomains, const QString& category,
+  std::vector<smtk::attribute::DefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(true);
   this->Internals->boundaryGroup->setVisible(false);
 
-  this->Internals->CurrentAtt = smtk::AttributePtr();
-  this->Internals->CurrentModelGroup = smtk::ModelItemPtr();
+  this->Internals->CurrentAtt = smtk::attribute::AttributePtr();
+  this->Internals->CurrentModelGroup = smtk::model::ItemPtr();
 
   this->Internals->DomainMaterialTable->blockSignals(true);
   this->Internals->DomainMaterialTable->setRowCount(0);
@@ -151,8 +150,8 @@ void qtAssociationWidget::showDomainsAssociation(
     }
 
   Manager *attManager = qtUIManager::instance()->attManager();
-  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
-  QList<smtk::AttributePtr> allAtts;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef;
+  QList<smtk::attribute::AttributePtr> allAtts;
   for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
     {
     if((*itAttDef)->isAbstract())
@@ -161,9 +160,9 @@ void qtAssociationWidget::showDomainsAssociation(
       }
     if((*itAttDef)->associatesWithRegion())
       {
-      std::vector<smtk::AttributePtr> result;
+      std::vector<smtk::attribute::AttributePtr> result;
       attManager->findAttributes(*itAttDef, result);
-      std::vector<smtk::AttributePtr>::iterator itAtt;
+      std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
       for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
         {
         if(!allAtts.contains(*itAtt))
@@ -174,7 +173,7 @@ void qtAssociationWidget::showDomainsAssociation(
       }
     }
 
-  std::vector<smtk::ModelGroupItemPtr>::iterator itDomain;
+  std::vector<smtk::model::GroupItemPtr>::iterator itDomain;
   for (itDomain=theDomains.begin(); itDomain!=theDomains.end(); ++itDomain)
     {
     this->addDomainListItem(*itDomain, allAtts);
@@ -185,13 +184,13 @@ void qtAssociationWidget::showDomainsAssociation(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
-  smtk::ModelItemPtr theEntiy, const QString& category,
-  std::vector<smtk::AttributeDefinitionPtr>& attDefs)
+  smtk::model::ItemPtr theEntiy, const QString& category,
+  std::vector<smtk::attribute::DefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(false);
   this->Internals->boundaryGroup->setVisible(true);
 
-  this->Internals->CurrentAtt = smtk::AttributePtr();
+  this->Internals->CurrentAtt = smtk::attribute::AttributePtr();
   this->Internals->CurrentModelGroup = theEntiy;
 
   this->Internals->CurrentList->blockSignals(true);
@@ -206,21 +205,21 @@ void qtAssociationWidget::showAttributeAssociation(
     return;
     }
   // figure out how many unique definitions this model item has
-  QList<smtk::AttributeDefinitionPtr> uniqueDefs;
+  QList<smtk::attribute::DefinitionPtr> uniqueDefs;
   this->processDefUniqueness(theEntiy, uniqueDefs);
 
   Manager *attManager = qtUIManager::instance()->attManager();
-  std::vector<smtk::AttributeDefinitionPtr>::iterator itAttDef;
-  std::set<smtk::AttributePtr> doneAtts;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef;
+  std::set<smtk::attribute::AttributePtr> doneAtts;
   for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
     {
     if((*itAttDef)->isAbstract())
       {
       continue;
       }
-    std::vector<smtk::AttributePtr> result;
+    std::vector<smtk::attribute::AttributePtr> result;
     attManager->findAttributes(*itAttDef, result);
-    std::vector<smtk::AttributePtr>::iterator itAtt;
+    std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
     for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
       {
       if(doneAtts.find(*itAtt) != doneAtts.end())
@@ -247,14 +246,14 @@ void qtAssociationWidget::showAttributeAssociation(
   this->Internals->AvailableList->blockSignals(false);
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
+void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr theAtt,
                                                  const QString& category)
 {
   this->Internals->domainGroup->setVisible(false);
   this->Internals->boundaryGroup->setVisible(true);
 
   this->Internals->CurrentAtt = theAtt;
-  this->Internals->CurrentModelGroup = smtk::ModelItemPtr();
+  this->Internals->CurrentModelGroup = smtk::model::ItemPtr();
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
   this->Internals->CurrentList->clear();
@@ -267,7 +266,7 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
     return;
     }
 
-  AttributeDefinitionPtr attDef = theAtt->definition();
+  attribute::DefinitionPtr attDef = theAtt->definition();
   bool isNodal = attDef->isNodal();
   this->Internals->NodalDropDown->setVisible(isNodal);
   if(isNodal)
@@ -286,10 +285,10 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
     this->Internals->NodalDropDown->blockSignals(false);
     }
 
-  smtk::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+  smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
   // add current-associated items
   int numAstItems = (int)theAtt->numberOfAssociatedEntities();
-  std::set<smtk::ModelItemPtr>::const_iterator it = theAtt->associatedEntities();
+  std::set<smtk::model::ItemPtr>::const_iterator it = theAtt->associatedEntities();
   QList<int> assignedIds;
   for(int i=0; i<numAstItems; ++it, ++i)
     {
@@ -314,8 +313,8 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
     else if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
       || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
       {
-      smtk::ModelGroupItemPtr itemGroup =
-        smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);
+      smtk::model::GroupItemPtr itemGroup =
+        smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
       if(!assignedIds.contains(itemIt->second->id()))
         {
 //        if((itemGroup->entityMask() & attDef->associationMask()) != 0)
@@ -334,30 +333,30 @@ void qtAssociationWidget::showEntityAssociation( smtk::AttributePtr theAtt,
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::processAttUniqueness(
-  smtk::AttributeDefinitionPtr attDef, QList<int> &assignedIds)
+  smtk::attribute::DefinitionPtr attDef, QList<int> &assignedIds)
 {
   if(attDef->isUnique())
     {
     // we need to exclude any entities that are already assigned another att
     // Get the most "basic" definition that is unique
     Manager *attManager = attDef->manager();
-    smtk::ConstAttributeDefinitionPtr baseDef =
+    smtk::attribute::ConstDefinitionPtr baseDef =
       attManager->findIsUniqueBaseClass(attDef);
-    smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
-    std::vector<smtk::AttributeDefinitionPtr> newdefs;
+    smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
+    std::vector<smtk::attribute::DefinitionPtr> newdefs;
     attManager->findAllDerivedDefinitions(bdef, true, newdefs);
-    std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
+    std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
     for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
       {
 //      if((*itDef) != attDef)
 //        {
-        std::vector<smtk::AttributePtr> result;
+        std::vector<smtk::attribute::AttributePtr> result;
         attManager->findAttributes(*itDef, result);
-        std::vector<smtk::AttributePtr>::iterator itAtt;
+        std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
         for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
           {
           int numAstItems = (int)(*itAtt)->numberOfAssociatedEntities();
-          std::set<smtk::ModelItemPtr>::const_iterator itIt = (*itAtt)->associatedEntities();
+          std::set<smtk::model::ItemPtr>::const_iterator itIt = (*itAtt)->associatedEntities();
           for(int i=0; i<numAstItems; ++itIt, ++i)
             {
             if(!assignedIds.contains((*itIt)->id()))
@@ -373,8 +372,8 @@ void qtAssociationWidget::processAttUniqueness(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::processDefUniqueness(
-  smtk::ModelItemPtr theEntiy,
-  QList<smtk::AttributeDefinitionPtr> &uniqueDefs)
+  smtk::model::ItemPtr theEntiy,
+  QList<smtk::attribute::DefinitionPtr> &uniqueDefs)
 {
   if(!theEntiy.get())
     {
@@ -391,16 +390,16 @@ void qtAssociationWidget::processDefUniqueness(
       i != theEntiy->endAssociatedAttributes();
       ++i)
     {
-    smtk::AttributeDefinitionPtr attDef = (*i)->definition();
+    smtk::attribute::DefinitionPtr attDef = (*i)->definition();
     if(attDef->isUnique())
       {
       Manager *attManager = attDef->manager();
-      smtk::ConstAttributeDefinitionPtr baseDef =
+      smtk::attribute::ConstDefinitionPtr baseDef =
         attManager->findIsUniqueBaseClass(attDef);
-      smtk::AttributeDefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
-      std::vector<smtk::AttributeDefinitionPtr> newdefs;
+      smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
+      std::vector<smtk::attribute::DefinitionPtr> newdefs;
       attManager->findAllDerivedDefinitions(bdef, true, newdefs);
-      std::vector<smtk::AttributeDefinitionPtr>::iterator itDef;
+      std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
       for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
         {
         uniqueDefs.append(*itDef);
@@ -423,7 +422,7 @@ void qtAssociationWidget::onAvailableListSelectionChanged(
 }
 
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getSelectedAttribute(
+smtk::attribute::AttributePtr qtAssociationWidget::getSelectedAttribute(
   QListWidget* theList)
 {
   return this->getAttribute(this->getSelectedItem(theList));
@@ -431,35 +430,35 @@ smtk::AttributePtr qtAssociationWidget::getSelectedAttribute(
 
 /*
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getAssociatedUniqueAttribute(
-  QListWidget* theLis, smtk::AttributeDefinitionPtr attDef)
+smtk::attribute::AttributePtr qtAssociationWidget::getAssociatedUniqueAttribute(
+  QListWidget* theLis, smtk::attribute::DefinitionPtr attDef)
 {
   
 }
 */
 
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtAssociationWidget::getAttribute(
+smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ?
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
+  return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
 }
 
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtAssociationWidget::getSelectedModelItem(
+smtk::model::ItemPtr qtAssociationWidget::getSelectedModelItem(
   QListWidget* theList)
 {
   return this->getModelItem(this->getSelectedItem(theList));
 }
 //-----------------------------------------------------------------------------
-smtk::ModelItemPtr qtAssociationWidget::getModelItem(
+smtk::model::ItemPtr qtAssociationWidget::getModelItem(
   QListWidgetItem * item)
 {
   smtk::model::Item* rawPtr = item ?
     static_cast<smtk::model::Item*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::ModelItemPtr();
+  return rawPtr ? rawPtr->pointer() : smtk::model::ItemPtr();
 }
 
 //-----------------------------------------------------------------------------
@@ -482,7 +481,7 @@ void qtAssociationWidget::removeSelectedItem(QListWidget* theList)
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
-  QListWidget* theList, smtk::ModelItemPtr modelItem)
+  QListWidget* theList, smtk::model::ItemPtr modelItem)
 {
   QString txtLabel(modelItem->name().c_str());
 
@@ -498,7 +497,7 @@ QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
 
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
-  QListWidget* theList, smtk::AttributePtr att)
+  QListWidget* theList, smtk::attribute::AttributePtr att)
 {
   QString txtLabel(att->name().c_str());
 
@@ -513,7 +512,7 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
 }
 //----------------------------------------------------------------------------
 void qtAssociationWidget::addDomainListItem(
-  smtk::ModelItemPtr domainEnt, QList<smtk::AttributePtr>& allAtts)
+  smtk::model::ItemPtr domainEnt, QList<smtk::attribute::AttributePtr>& allAtts)
 {
   QString domainName = domainEnt->name().c_str();
   QTableWidgetItem* domainItem = new QTableWidgetItem(domainName);
@@ -524,7 +523,7 @@ void qtAssociationWidget::addDomainListItem(
 
   QList<QString> attNames;
   QString attname;
-  foreach (smtk::AttributePtr att, allAtts)
+  foreach (smtk::attribute::AttributePtr att, allAtts)
     {
     attname = att->name().c_str();
     if(!attNames.contains(attname))
@@ -560,7 +559,7 @@ void qtAssociationWidget::onRemoveAssigned()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    smtk::model::ItemPtr currentItem = this->getSelectedModelItem(
       this->Internals->CurrentList);
     if(currentItem)
       {
@@ -573,7 +572,7 @@ void qtAssociationWidget::onRemoveAssigned()
     }
   else if(this->Internals->CurrentModelGroup.lock())
     {
-    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+    smtk::attribute::AttributePtr currentAtt = this->getSelectedAttribute(
       this->Internals->CurrentList);
     if(currentAtt)
       {
@@ -596,7 +595,7 @@ void qtAssociationWidget::onAddAvailable()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    smtk::model::ItemPtr currentItem = this->getSelectedModelItem(
       this->Internals->AvailableList);
     if(currentItem)
       {
@@ -615,7 +614,7 @@ void qtAssociationWidget::onAddAvailable()
     }
   else if(this->Internals->CurrentModelGroup.lock())
     {
-    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+    smtk::attribute::AttributePtr currentAtt = this->getSelectedAttribute(
       this->Internals->AvailableList);
     if(currentAtt)
       {
@@ -644,9 +643,9 @@ void qtAssociationWidget::onExchange()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::ModelItemPtr currentItem = this->getSelectedModelItem(
+    smtk::model::ItemPtr currentItem = this->getSelectedModelItem(
       this->Internals->CurrentList);
-    smtk::ModelItemPtr availableItem = this->getSelectedModelItem(
+    smtk::model::ItemPtr availableItem = this->getSelectedModelItem(
       this->Internals->AvailableList);
     if(currentItem && availableItem)
       {
@@ -664,9 +663,9 @@ void qtAssociationWidget::onExchange()
     }
   else if(this->Internals->CurrentModelGroup.lock())
     {
-    smtk::AttributePtr availAtt = this->getSelectedAttribute(
+    smtk::attribute::AttributePtr availAtt = this->getSelectedAttribute(
       this->Internals->AvailableList);
-    smtk::AttributePtr currentAtt = this->getSelectedAttribute(
+    smtk::attribute::AttributePtr currentAtt = this->getSelectedAttribute(
       this->Internals->CurrentList);
     if(currentAtt && availAtt)
       {
@@ -692,7 +691,7 @@ void qtAssociationWidget::onExchange()
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onNodalOptionChanged(int idx)
 {
-  smtk::AttributePtr currAtt = this->Internals->CurrentAtt.lock();
+  smtk::attribute::AttributePtr currAtt = this->Internals->CurrentAtt.lock();
   if(!currAtt)
     {
     return;

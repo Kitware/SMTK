@@ -27,7 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtItem.h"
 
-#include "smtk/attribute/ModelEntitySection.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
@@ -106,7 +105,7 @@ void qtReferencesWidget::showAdvanced(int checked)
 
 //----------------------------------------------------------------------------
 void qtReferencesWidget::showAttributeReferences(
-  smtk::AttributePtr att, QString& category)
+  smtk::attribute::AttributePtr att, QString& category)
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
@@ -116,7 +115,7 @@ void qtReferencesWidget::showAttributeReferences(
   if(att)
     {
     // Lets see what attributes are being referenced
-    std::vector<smtk::AttributeItemPtr> refs;
+    std::vector<smtk::attribute::ItemPtr> refs;
     std::size_t i;
     att->references(refs);
     for (i = 0; i < refs.size(); i++)
@@ -142,18 +141,18 @@ void qtReferencesWidget::onAvailableListSelectionChanged(
 }
 
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtReferencesWidget::getSelectedAttribute(
+smtk::attribute::AttributePtr qtReferencesWidget::getSelectedAttribute(
   QListWidget* theList)
 {
   return this->getAttributeFromItem(this->getSelectedItem(theList));
 }
 //-----------------------------------------------------------------------------
-smtk::AttributePtr qtReferencesWidget::getAttributeFromItem(
+smtk::attribute::AttributePtr qtReferencesWidget::getAttributeFromItem(
   QListWidgetItem * item)
 {
   Attribute* rawPtr = item ? 
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
-  return rawPtr ? rawPtr->pointer() : smtk::AttributePtr();
+  return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
 }
 //-----------------------------------------------------------------------------
 QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)
@@ -162,7 +161,7 @@ QListWidgetItem *qtReferencesWidget::getSelectedItem(QListWidget* theList)
 }
 //----------------------------------------------------------------------------
 QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(
-  QListWidget* theList, smtk::AttributeItemPtr refItem)
+  QListWidget* theList, smtk::attribute::ItemPtr refItem)
 {
   QString txtLabel(refItem->attribute()->name().c_str());
   txtLabel.append(" : ").append(refItem->owningItem()->name().c_str());

@@ -33,21 +33,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #define smtkErrorMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
-  s1 << x << std::endl;                                 \
+  s1 << x;                                              \
   logger.addRecord(smtk::util::Logger::ERROR,           \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
 #define smtkWarningMacro(logger, x) do {                \
   std::stringstream s1;                                 \
-  s1 << x << std::endl;                                 \
+  s1 << x;                                              \
   logger.addRecord(smtk::util::Logger::WARNING,         \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
 #define smtkDebugMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
-  s1 << x << std::endl;                                 \
+  s1 << x;                                              \
   logger.addRecord(smtk::util::Logger::DEBUG,           \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
@@ -89,6 +89,8 @@ namespace smtk
       const Record &record(int i) const
       {return this->m_records[i];}
 
+      // Convert all the messages into a single string
+      std::string convertToString() const;
       void reset();
 
       static std::string severityAsString(Severity s);

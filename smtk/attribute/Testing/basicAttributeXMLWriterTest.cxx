@@ -24,7 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -35,7 +35,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
-#include "smtk/attribute/AttributeWriter.h"
+#include "smtk/util/AttributeWriter.h"
+#include "smtk/util/Logger.h"
 
 #include <iostream>
 
@@ -72,19 +73,19 @@ int main(int argc, char *argv[])
   analysis.clear();
 
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
-  smtk::StringItemDefinitionPtr eitemdef = 
-    expDef->addItemDefinition<smtk::StringItemDefinitionPtr>("Expression String");
-  smtk::StringItemDefinitionPtr eitemdef2 =
+  smtk::attribute::StringItemDefinitionPtr eitemdef =
+    expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
+  smtk::attribute::StringItemDefinitionPtr eitemdef2 =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr iitemdef = 
-    base->addItemDefinition<smtk::IntItemDefinitionPtr>("TEMPORAL");
+  smtk::attribute::IntItemDefinitionPtr iitemdef =
+    base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
   iitemdef->setCommonValueLabel("Time");
   iitemdef->addDiscreteValue(0, "Seconds");
   iitemdef->addDiscreteValue(1, "Minutes");
@@ -92,16 +93,16 @@ int main(int argc, char *argv[])
   iitemdef->addDiscreteValue(3, "Days");
   iitemdef->setDefaultDiscreteIndex(0);
   iitemdef->addCategory("Time");
-  iitemdef = 
-    base->addItemDefinition<smtk::IntItemDefinitionPtr>("IntItem2");
+  iitemdef =
+    base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
   def1->setAssociationMask(0x20); // belongs on domains
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr ditemdef = 
-    def1->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem1");
+  smtk::attribute::DoubleItemDefinitionPtr ditemdef =
+    def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
   ditemdef->addCategory("Veg");
   ditemdef->setExpressionDefinition(expDef);
@@ -111,75 +112,77 @@ int main(int argc, char *argv[])
     std::cout << "ERROR - Item Def does not allow expressions\n";
     status = -1;
     }
-  ditemdef = 
-    def1->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem2");
+  ditemdef =
+    def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem2");
   ditemdef->setDefaultValue(-35.2);
   ditemdef->setMinRange(-100, true);
   ditemdef->setMaxRange(125.0, false);
   ditemdef->addCategory("Constituent");
-  smtk::VoidItemDefinitionPtr vdef = 
-    def1->addItemDefinition<smtk::VoidItemDefinitionPtr>("VoidItem");
+  smtk::attribute::VoidItemDefinitionPtr vdef =
+    def1->addItemDefinition<smtk::attribute::VoidItemDefinitionPtr>("VoidItem");
   vdef->setIsOptional(true);
   vdef->setLabel("Option 1");
- 
 
-  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+
+  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
   def2->setAssociationMask(0x7);
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr sitemdef = 
-    def2->addItemDefinition<smtk::StringItemDefinitionPtr>("StringItem1");
+  smtk::attribute::StringItemDefinitionPtr sitemdef =
+    def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
   sitemdef->setIsMultiline(true);
   sitemdef->addCategory("Flow");
-  sitemdef = 
-    def2->addItemDefinition<smtk::StringItemDefinitionPtr>("StringItem2");
+  sitemdef =
+    def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
   sitemdef->setDefaultValue("Default");
   sitemdef->addCategory("General");
-  smtk::DirectoryItemDefinitionPtr dirdef =
-    def2->addItemDefinition<smtk::DirectoryItemDefinitionPtr>("DirectoryItem");
+  smtk::attribute::DirectoryItemDefinitionPtr dirdef =
+    def2->addItemDefinition<smtk::attribute::DirectoryItemDefinitionPtr>("DirectoryItem");
   dirdef->setShouldExist(true);
   dirdef->setShouldBeRelative(true);
-  smtk::FileItemDefinitionPtr fdef =
-    def2->addItemDefinition<smtk::FileItemDefinitionPtr>("FileItem");
+  smtk::attribute::FileItemDefinitionPtr fdef =
+    def2->addItemDefinition<smtk::attribute::FileItemDefinitionPtr>("FileItem");
   fdef->setShouldBeRelative(true);
-  smtk::GroupItemDefinitionPtr gdef1, gdef =
-    def2->addItemDefinition<smtk::GroupItemDefinitionPtr>("GroupItem");
-  gdef->addItemDefinition<smtk::FileItemDefinitionPtr>("File1");
-  gdef1 = gdef->addItemDefinition<smtk::GroupItemDefinitionPtr>("SubGroup");
-  sitemdef = 
-    gdef1->addItemDefinition<smtk::StringItemDefinitionPtr>("GroupString");
+  smtk::attribute::GroupItemDefinitionPtr gdef1, gdef =
+    def2->addItemDefinition<smtk::attribute::GroupItemDefinitionPtr>("GroupItem");
+  gdef->addItemDefinition<smtk::attribute::FileItemDefinitionPtr>("File1");
+  gdef1 = gdef->addItemDefinition<smtk::attribute::GroupItemDefinitionPtr>("SubGroup");
+  sitemdef =
+    gdef1->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("GroupString");
   sitemdef->setDefaultValue("Something Cool");
   sitemdef->addCategory("General");
   sitemdef->addCategory("Flow");
 
   // Add in a Attribute definition with a reference to another attribute
-  smtk::AttributeDefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
-  smtk::AttributeRefItemDefinitionPtr aritemdef =
-    attrefdef->addItemDefinition<smtk::AttributeRefItemDefinitionPtr>("BaseDefItem");
+  smtk::attribute::DefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
+  smtk::attribute::RefItemDefinitionPtr aritemdef =
+    attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
   aritemdef->setCommonValueLabel("A reference to another attribute");
   aritemdef->setAttributeDefinition(base);
 
   // Process Categories
   manager.updateCategories();
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att == NULL)
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
     status = -1;
     }
 
-  smtk::ValueItemPtr vitem;
-  smtk::AttributeItemPtr item;
+  smtk::attribute::ValueItemPtr vitem;
+  smtk::attribute::ItemPtr item;
 
   // Find the expression enabled item
   item = att->item(2);
-  vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
-  smtk::attribute::AttributeWriter writer;
-  if (writer.write(manager, argv[1]))
+  vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
+  smtk::util::AttributeWriter writer;
+  smtk::util::Logger logger;
+  if (writer.write(manager, argv[1],logger))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";
-    std::cerr << writer.errorMessages();
+    std::cerr << logger.convertToString();
+    status = -1;
     }
   std::cout << "Manager destroyed\n";
   }

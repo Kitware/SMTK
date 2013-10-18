@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/AttributeRefItem.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, 
-  smtk::AttributeDefinitionPtr myDefinition, unsigned long myId):
+  smtk::attribute::DefinitionPtr myDefinition, unsigned long myId):
   m_name(myName), m_definition(myDefinition),
   m_id(myId), m_aboutToBeDeleted(false), m_isColorSet(false),
   m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false)
@@ -45,7 +45,7 @@ Attribute::~Attribute()
 {
   this->m_aboutToBeDeleted = true;
   // Clear all references to the attribute
-  std::map<smtk::attribute::AttributeRefItem *, std::set<int> >::iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<int> >::iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
     std::set<int>::iterator sit;
@@ -69,10 +69,10 @@ void Attribute::removeAllItems()
   this->m_items.clear();
 }
 //----------------------------------------------------------------------------
-void Attribute::references(std::vector<smtk::AttributeItemPtr> &list) const
+void Attribute::references(std::vector<smtk::attribute::ItemPtr> &list) const
 {
   list.clear();
-  std::map<smtk::attribute::AttributeRefItem *, std::set<int> >::const_iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<int> >::const_iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
     if (it->second.size())
@@ -99,7 +99,7 @@ const std::string &Attribute::type() const
 std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
-  smtk::AttributeDefinitionPtr def = this->m_definition;
+  smtk::attribute::DefinitionPtr def = this->m_definition;
   while (def != NULL)
     {
     tvec.push_back(def->type());
@@ -108,7 +108,7 @@ std::vector<std::string> Attribute::types() const
   return tvec;
 }
 //----------------------------------------------------------------------------
-bool Attribute::isA(smtk::AttributeDefinitionPtr def) const
+bool Attribute::isA(smtk::attribute::DefinitionPtr def) const
 {
   return this->m_definition->isA(def);
 }
@@ -128,17 +128,17 @@ Manager *Attribute::manager() const
   return this->m_definition->manager();
 }
 //----------------------------------------------------------------------------
-smtk::AttributePtr Attribute::pointer() const
+smtk::attribute::AttributePtr Attribute::pointer() const
 {
   Manager *m = this->manager();
   if (m)
     {
     return m->findAttribute(this->m_name);
     }
-  return smtk::AttributePtr();
+  return smtk::attribute::AttributePtr();
 }
 //----------------------------------------------------------------------------
-void Attribute::associateEntity(smtk::ModelItemPtr entity)
+void Attribute::associateEntity(smtk::model::ItemPtr entity)
 {
   if (this->isEntityAssociated(entity))
     {
@@ -149,7 +149,7 @@ void Attribute::associateEntity(smtk::ModelItemPtr entity)
   entity->attachAttribute(this->pointer());
 }
 //----------------------------------------------------------------------------
-void Attribute::disassociateEntity(smtk::ModelItemPtr entity, bool reverse)
+void Attribute::disassociateEntity(smtk::model::ItemPtr entity, bool reverse)
 {
   if (!this->isEntityAssociated(entity))
     {
@@ -168,7 +168,7 @@ void Attribute::disassociateEntity(smtk::ModelItemPtr entity, bool reverse)
 //----------------------------------------------------------------------------
 void Attribute::removeAllAssociations()
 {
-  std::set<smtk::ModelItemPtr>::const_iterator it =
+  std::set<smtk::model::ItemPtr>::const_iterator it =
     this->associatedEntities();
   for (; it != this->m_entities.end(); it++)
     {
@@ -176,20 +176,20 @@ void Attribute::removeAllAssociations()
     }
 }
 //----------------------------------------------------------------------------
-smtk::ConstAttributeItemPtr Attribute::find(const std::string &name) const
+smtk::attribute::ConstItemPtr Attribute::find(const std::string &name) const
 {
   int i = this->m_definition->findItemPosition(name);
   if (i < 0)
     {
-    return smtk::ConstAttributeItemPtr();
+    return smtk::attribute::ConstItemPtr();
     }
   return this->m_items[i];
 }
 
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr Attribute::find(const std::string &name)
+smtk::attribute::ItemPtr Attribute::find(const std::string &name)
 {
   int i = this->m_definition->findItemPosition(name);
-  return (i < 0) ? smtk::AttributeItemPtr() : this->m_items[i];
+  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[i];
 }
 //-----------------------------------------------------------------------------

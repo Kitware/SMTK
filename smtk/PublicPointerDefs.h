@@ -32,12 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
-  template <typename T, typename U >
-  inline smtk::shared_ptr< T > dynamicCastPointer(const smtk::shared_ptr< U > &r)
-  {
-    return smtk::dynamic_pointer_cast< T >(r);
-  }
-
   namespace model
   {
     class Model;
@@ -47,14 +41,13 @@ namespace smtk
     class GridInfo3D;
     class GroupItem;
     class ModelDomainItem;
-  };
+  }
 
   namespace attribute
   {
     class Attribute;
-    class AttributeSection;
-    class AttributeRefItem;
-    class AttributeRefItemDefinition;
+    class RefItem;
+    class RefItemDefinition;
     class Definition;
     class DirectoryItem;
     class DirectoryItemDefinition;
@@ -64,118 +57,165 @@ namespace smtk
     class FileItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
-    class GroupSection;
-    class InstancedSection;
     class IntItem;
     class IntItemDefinition;
     class Item;
     class ItemDefinition;
     class Manager;
-    class ModelEntitySection;
-    class RootSection;
-    class Section;
-    class SimpleExpressionSection;
     class StringItem;
     class StringItemDefinition;
-    class UserData;
     class ValueItem;
     class ValueItemDefinition;
     class VoidItem;
     class VoidItemDefinition;
+  }
+
+  namespace util
+  {
+    class UserData;
+  }
+
+  namespace view
+  {
+    class Attribute;
+    class Base;
+    class Group;
+    class Instanced;
+    class ModelEntity;
+    class Root;
+    class SimpleExpression;
   };
 
   //Shiboken requires that we use fully qualified namespaces for all
   //types that these shared_ptr and weak_ptr are holding
-  typedef smtk::shared_ptr< smtk::model::Model >      ModelPtr;
-  typedef smtk::weak_ptr< smtk::model::Model >        WeakModelPtr;
-  typedef smtk::shared_ptr< smtk::model::Item >       ModelItemPtr;
-  typedef smtk::weak_ptr< smtk::model::Item >         WeakModelItemPtr;
-  typedef smtk::shared_ptr< smtk::model::GroupItem >  ModelGroupItemPtr;
+  namespace model
+  {
+    // Model Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::model::Model >      ModelPtr;
+    typedef smtk::weak_ptr< smtk::model::Model >        WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Item >       ItemPtr;
+    typedef smtk::weak_ptr< smtk::model::Item >         WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::model::GroupItem >  GroupItemPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
-  typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
-  typedef smtk::shared_ptr< smtk::attribute::Definition >       AttributeDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstAttributeDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakAttributeDefinitionPtr;
+    // class for making the analysis grid information available in SMTK
+    typedef smtk::shared_ptr< smtk::model::GridInfo >    GridInfoPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo2D >  GridInfo2DPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo3D >  GridInfo3DPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::AttributeRefItem >           AttributeRefItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::AttributeRefItemDefinition > AttributeRefItemDefinitionPtr;
+  };
 
-  typedef smtk::shared_ptr< smtk::attribute::Item >                 AttributeItemPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstAttributeItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       AttributeItemDefinitionPtr;
-  typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstAttributeItemDefinitionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakAttributeItemPtr;
-  typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakAttributeItemDefinitionPtr;
+  namespace attribute
+  {
+    // Attribute Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::attribute::Definition >       DefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::Definition > ConstDefinitionPtr;
+    typedef smtk::weak_ptr< smtk::attribute::Definition >         WeakDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::Attribute >        AttributePtr;
+    typedef smtk::weak_ptr< smtk::attribute::Attribute >          WeakAttributePtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::RefItem >           RefItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::RefItemDefinition > RefItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DoubleItem >               DoubleItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::DoubleItemDefinition >     DoubleItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::FileItem >                 FileItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::FileItemDefinition >       FileItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupItem >                GroupItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupItemDefinition >      GroupItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::IntItem >                  IntItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
-  typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::Item >                 ItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::Item >           ConstItemPtr;
+    typedef smtk::weak_ptr< smtk::attribute::Item >                   WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ItemDefinition >       ItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::ItemDefinition > ConstItemDefinitionPtr;
+    typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakItemDefinitionPtr;
 
-  typedef smtk::shared_ptr< smtk::attribute::Manager >                  AttributeManagerPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
 
-  // Section Related Pointer Classes
-  typedef smtk::shared_ptr< smtk::attribute::Section >                  SectionPtr;
-  typedef smtk::weak_ptr< smtk::attribute::Section >                    WeakSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::AttributeSection >         AttributeSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::GroupSection >             GroupSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::InstancedSection >         InstancedSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::ModelEntitySection >       ModelEntitySectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::RootSection >              RootSectionPtr;
-  typedef smtk::shared_ptr< smtk::attribute::SimpleExpressionSection >  SimpleExpressionSectionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DirectoryItemDefinition >  DirectoryItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DoubleItem >               DoubleItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::DoubleItemDefinition >     DoubleItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileItem >                 FileItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::FileItemDefinition >       FileItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::GroupItem >                GroupItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::GroupItemDefinition >      GroupItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::IntItem >                  IntItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
 
-  //custom user data classes
-  typedef smtk::shared_ptr< smtk::attribute::UserData >                 UserDataPtr;
+    // Note used by SMTK but added for completeness
+    typedef smtk::shared_ptr< smtk::attribute::Manager >   ManagerPtr;
+  };
 
-  // class for making the analysis grid information available in SMTK
-  typedef smtk::shared_ptr< smtk::model::GridInfo >                     GridInfoPtr;
-  typedef smtk::shared_ptr< smtk::model::GridInfo2D >                   GridInfo2DPtr;
-  typedef smtk::shared_ptr< smtk::model::GridInfo3D >                   GridInfo3DPtr;
+
+
+  namespace util
+  {
+    //custom user data classes
+    typedef smtk::shared_ptr< smtk::util::UserData > UserDataPtr;
+  };
+
+  namespace view
+  {
+  // View Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::view::Base >             BasePtr;
+    typedef smtk::weak_ptr< smtk::view::Base >               WeakBasePtr;
+    typedef smtk::shared_ptr< smtk::view::Attribute>         AttributePtr;
+    typedef smtk::shared_ptr< smtk::view::Group>             GroupPtr;
+    typedef smtk::shared_ptr< smtk::view::Instanced>         InstancedPtr;
+    typedef smtk::shared_ptr< smtk::view::ModelEntity>       ModelEntityPtr;
+    typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
+    typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
+  };
+
 
 #if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
   //special map and set typedefs to work around VS removing less
   //than from weak pointer in 2010 and greater
-  typedef std::set< WeakAttributeDefinitionPtr,
-          std::owner_less< WeakAttributeDefinitionPtr > >
-                                                      WeakAttributeDefinitionPtrSet;
+  namespace attribute
+  {
+    typedef std::set< attribute::WeakAttributePtr,
+      std::owner_less<attribute::WeakAttributePtr > >        WeakAttributePtrSet;
+    typedef std::set< WeakAttributeDefinitionPtr,
+      std::owner_less< WeakAttributeDefinitionPtr > >        WeakDefinitionPtrSet;
+    typedef std::set< WeakItemDefinitionPtr,
+      std::owner_less< WeakItemDefinitionPtr > >             WeakItemDefinitionPtrSet;
+    typedef std::set< WeakItemPtr,
+      std::owner_less< WeakItemPtr > >   WeakItemPtrSet;
+  };
 
-  typedef std::set< WeakAttributeItemDefinitionPtr,
-          std::owner_less< WeakAttributeItemDefinitionPtr > >
-                                                      WeakAttributeItemDefinitionPtrSet;
+  namespace model
+  {
+    typedef std::set< WeakItemPtr,
+      std::owner_less<WeakItemPtr > >        WeakItemPtrSet;
+    typedef std::set< WeakModelPtr,
+      std::owner_less<WeakModelPtr > >       WeakModelPtrSet;
+  };
 
-  typedef std::set< WeakAttributeItemPtr,
-          std::owner_less< WeakAttributeItemPtr > >   WeakAttributeItemPtrSet;
-  typedef std::set< WeakAttributePtr,
-          std::owner_less<WeakAttributePtr > >        WeakAttributePtrSet;
-  typedef std::set< WeakModelItemPtr,
-          std::owner_less<WeakModelItemPtr > >        WeakModelItemPtrSet;
-  typedef std::set< WeakModelPtr,
-          std::owner_less<WeakModelPtr > >            WeakModelPtrSet;
-  typedef std::set< WeakSectionPtr,
-          std::owner_less<WeakSectionPtr > >          WeakSectionPtrSet;
+  namespace view
+  {
+    typedef std::set< view::WeakBasePtr,
+      std::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
+  };
+
 #else
   //we can use less than operator
-  typedef std::set< WeakAttributeDefinitionPtr  >     WeakAttributeDefinitionPtrSet;
-  typedef std::set< WeakAttributeItemDefinitionPtr  > WeakAttributeItemDefinitionPtrSet;
-  typedef std::set< WeakAttributeItemPtr  >           WeakAttributeItemPtrSet;
-  typedef std::set< WeakAttributePtr  >               WeakAttributePtrSet;
-  typedef std::set< WeakModelItemPtr  >               WeakModelItemPtrSet;
-  typedef std::set< WeakModelPtr  >                   WeakModelPtrSet;
-  typedef std::set< WeakSectionPtr  >                 WeakSectionPtrSet;
+  namespace attribute
+  {
+    typedef std::set< attribute::WeakAttributePtr  >      WeakAttributePtrSet;
+    typedef std::set< attribute::WeakDefinitionPtr  >     WeakDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemDefinitionPtr >  WeakItemDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
+  };
+
+  namespace model
+  {
+    typedef std::set< model::WeakItemPtr  >               WeakItemPtrSet;
+    typedef std::set< model::WeakModelPtr  >              WeakModelPtrSet;
+  };
+
+  namespace view
+  {
+    typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;
+  };
 #endif
 
   // These are used internally by SMTK
@@ -206,6 +246,6 @@ namespace smtk
       typedef typename T::element_type RawPointerType;
     };
 
-  };
-};
+  }
+}
 #endif /* __smtk_PublicPointerDefs_h */

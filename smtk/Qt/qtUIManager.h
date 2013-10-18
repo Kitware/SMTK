@@ -34,20 +34,20 @@ namespace smtk
   {
     class qtItem;
     class qtFileItem;
-    class qtRootSection;
-    class qtAttributeSection;
-    class qtInstancedSection;
-    class qtModelEntitySection;
-    class qtSimpleExpressionSection;
-    class qtGroupSection;
-    class qtSection;
+    class qtRootView;
+    class qtAttributeView;
+    class qtBaseView;
+    class qtInstancedView;
+    class qtModelEntityView;
+    class qtSimpleExpressionView;
+    class qtGroupView;
    
     class QTSMTK_EXPORT qtUIManager : public QObject
     {
 
     Q_OBJECT
 
-    friend class qtRootSection;
+    friend class qtRootView;
 
     public:
       // Get the global instace for the pqApplicationCore.
@@ -69,8 +69,8 @@ namespace smtk
       QColor invalidValueColor() const
       {return this->InvalidValueColor;}
 
-      qtRootSection* rootSection()
-        {return this->RootSection;}
+      qtRootView* rootView()
+        {return this->RootView;}
       static QString clipBoardText();
       static void setClipBoardText(QString& text);
 
@@ -85,28 +85,34 @@ namespace smtk
       void setWidgetToDefaultValueColor(QWidget *widget,
         bool setToDefault);
       bool getExpressionArrayString(
-        smtk::GroupItemPtr dataItem, QString& strValues);
+        smtk::attribute::GroupItemPtr dataItem, QString& strValues);
 
-    static void updateArrayTableWidget(smtk::GroupItemPtr dataItem, QTableWidget* widget);
-    static void updateTableColRows(smtk::AttributeItemPtr dataItem,
+    static void updateArrayTableWidget(smtk::attribute::GroupItemPtr dataItem,
+                                       QTableWidget* widget);
+    static void updateTableColRows(smtk::attribute::ItemPtr dataItem,
       int col, QTableWidget* widget);
     
-    static void updateArrayDataValue(smtk::GroupItemPtr dataItem, QTableWidgetItem* item);
-    static void addNewTableValues(smtk::GroupItemPtr dataItem, 
+    static void updateArrayDataValue(smtk::attribute::GroupItemPtr dataItem,
+                                     QTableWidgetItem* item);
+    static void addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
       QTableWidget* table, double* vals, int numVals);
     static void removeSelectedTableValues(
-      smtk::GroupItemPtr dataItem, QTableWidget* table);
+      smtk::attribute::GroupItemPtr dataItem, QTableWidget* table);
 
-    std::string getValueItemCommonLabel(smtk::ValueItemPtr vitem) const;
-    std::string getGroupItemCommonLabel(smtk::GroupItemPtr groupitem) const;
-    std::string getItemCommonLabel(smtk::AttributeItemPtr attItem);
+    std::string getValueItemCommonLabel(smtk::attribute::ValueItemPtr vitem) const;
+    std::string getGroupItemCommonLabel(smtk::attribute::GroupItemPtr groupitem) const;
+    std::string getItemCommonLabel(smtk::attribute::ItemPtr attItem);
     bool updateTableItemCheckState(
-      QTableWidgetItem* labelitem, smtk::AttributeItemPtr attItem);
+      QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 
-    virtual QWidget* createInputWidget(smtk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
-    virtual QWidget* createEditBox(smtk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
-    virtual QWidget* createComboBox(smtk::AttributeItemPtr,int elementIdx, QWidget* pWidget);
-    virtual QWidget* createExpressionRefWidget(smtk::AttributeItemPtr,int elementIdx,QWidget* pWidget);
+    virtual QWidget* createInputWidget(smtk::attribute::ItemPtr,
+                                       int elementIdx, QWidget* pWidget);
+    virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
+                                   int elementIdx, QWidget* pWidget);
+    virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
+                                    int elementIdx, QWidget* pWidget);
+    virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
+                                               int elementIdx,QWidget* pWidget);
 
 
 #ifdef WIN32
@@ -120,18 +126,18 @@ namespace smtk
       void onInputValueChanged();
       void onComboIndexChanged();
       void onExpressionReferenceChanged();
-      void updateModelSections();
+      void updateModelViews();
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
 
     protected:
-      static void processAttributeSection(qtAttributeSection* sec);
-      static void processInstancedSection(qtInstancedSection* sec);
-      static void processModelEntitySection(qtModelEntitySection* sec);
-      static void processSimpleExpressionSection(qtSimpleExpressionSection* sec);
-      static void processGroupSection(qtGroupSection* sec);
-      static void processBasicSection(qtSection* sec);
+      static void processAttributeView(qtAttributeView* v);
+      static void processInstancedView(qtInstancedView* v);
+      static void processModelEntityView(qtModelEntityView* v);
+      static void processSimpleExpressionView(qtSimpleExpressionView* v);
+      static void processGroupView(qtGroupView* v);
+      static void processBasicView(qtBaseView* v);
 
       void setShowAdvanced(bool val)
       {  this->ShowAdvanced = val;  }
@@ -139,7 +145,7 @@ namespace smtk
       
     private:
       static qtUIManager* Instance;
-      qtRootSection* RootSection;
+      qtRootView* RootView;
       QFont advFont;
       QColor DefaultValueColor;
       QColor InvalidValueColor;
