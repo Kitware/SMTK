@@ -53,20 +53,20 @@ DirectoryItemDefinition::isValueValid(const std::string &val) const
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr
+smtk::attribute::ItemPtr
 DirectoryItemDefinition::buildItem(Attribute *owningAttribute,
                                    int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new DirectoryItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new DirectoryItem(owningAttribute,
                                                    itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr
+smtk::attribute::ItemPtr
 DirectoryItemDefinition::buildItem(Item *owningItem,
                                    int itemPosition,
                                    int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new DirectoryItem(owningItem,
+  return smtk::attribute::ItemPtr(new DirectoryItem(owningItem,
                                                    itemPosition,
                                                    subGroupPosition));
 }

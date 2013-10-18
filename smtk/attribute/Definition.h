@@ -20,8 +20,11 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Definition.h -
+// .NAME Definition.h - stores the definition of an attribute.
 // .SECTION Description
+// Stores all of the necessary information for a definition of a
+// single attribute. Attributes should be created through
+// Manager::createAttribute().
 // .SECTION See Also
 
 #ifndef __smtk_attribute_Definition_h
@@ -50,12 +53,11 @@ namespace smtk
     class SMTKCORE_EXPORT Definition
     {
     public:
-      friend class smtk::attribute::Manager;
-      // Definitions can only be created by an attribute manager
-      Definition(const std::string &myType, smtk::AttributeDefinitionPtr myBaseDef,
-                 smtk::attribute::Manager *myManager);
       virtual ~Definition();
 
+      // Description:
+      // The type is the identifier that is used to access the
+      // attribute definition through the Manager. It should never change.
       const std::string &type() const
       { return this->m_type;}
 
@@ -70,10 +72,10 @@ namespace smtk
       void setLabel(const std::string &newLabel)
       { this->m_label = newLabel;}
 
-      smtk::AttributeDefinitionPtr baseDefinition() const
+      smtk::attribute::DefinitionPtr baseDefinition() const
       { return this->m_baseDefinition;}
 
-      bool isA(smtk::ConstAttributeDefinitionPtr def) const;
+      bool isA(smtk::attribute::ConstDefinitionPtr def) const;
 
       int version() const
       {return this->m_version;}
@@ -86,6 +88,8 @@ namespace smtk
       void setIsAbstract(bool isAbstractValue)
       { this->m_isAbstract = isAbstractValue;}
 
+      // The categories that the attribute is associated with. Typically
+      // a category will be a simulation type like heat transfer, fluid flow, etc.
       std::size_t numberOfCategories() const
       {return this->m_categories.size();}
 
@@ -97,6 +101,8 @@ namespace smtk
       const std::set<std::string> & categories() const
       {return this->m_categories;}
 
+      // Description:
+      // The attributes advance level. 0 is the simplest.
       int advanceLevel() const
       {return this->m_advanceLevel;}
       void setAdvanceLevel(int level)
@@ -104,9 +110,11 @@ namespace smtk
 
       bool isUnique() const
       {return this->m_isUnique;}
-      // Becareful with setting isUnique to be false
+      // Be careful with setting isUnique to be false
       // in order to be consistant all definitions that this is
       // a descendant of should also have isUnique set to false!!
+      // isUnique can be set to true without requiring its parent
+      // class to also be true.
       void setIsUnique(bool isUniqueValue)
       {this->m_isUnique = isUniqueValue;}
 
@@ -144,6 +152,9 @@ namespace smtk
       bool isDefaultColorSet() const
       {return this->m_isDefaultColorSet;}
 
+      // Description:
+      // Mask is the ability to specify what type of model entities
+      // that the attribute can be associated with.
       unsigned long associationMask() const
       {return this->m_associationMask;}
       void setAssociationMask(unsigned long mask)
@@ -165,19 +176,23 @@ namespace smtk
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
-      bool canBeAssociated(smtk::ModelItemPtr entity,
+      bool canBeAssociated(smtk::model::ItemPtr entity,
                            std::vector<smtk::attribute::Attribute *>*conflicts) const;
-      bool conflicts(smtk::AttributeDefinitionPtr definition) const;
+      bool conflicts(smtk::attribute::DefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const
       {return this->m_itemDefs.size();}
-      smtk::AttributeItemDefinitionPtr itemDefinition(int ith) const
+      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemDefinitionPtr()
+        return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
           : (ith >= this->m_itemDefs.size() ?
-             smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
+             smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
-      bool addItemDefinition(smtk::AttributeItemDefinitionPtr cdef);
+      // Description:
+      // Item definitions are the definitions of what data is stored
+      // in the attribute. For example, an IntItemDefinition would store
+      // an integer value.
+      bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
         addItemDefinition(const std::string &name)
@@ -208,9 +223,17 @@ namespace smtk
       void setBriefDescription(const std::string &text)
         {this->m_briefDescription = text;}
 
+      // Description:
+      // Build an attribute corresponding to this definition. If the
+      // attribute already has items, clear them out.
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
     protected:
+      friend class smtk::attribute::Manager;
+      // AttributeDefinitions can only be created by an attribute manager
+      Definition(const std::string &myType, smtk::attribute::DefinitionPtr myBaseDef,
+                 smtk::attribute::Manager *myManager);
+
       void clearManager()
       { this->m_manager = NULL;}
 
@@ -219,13 +242,13 @@ namespace smtk
       smtk::attribute::Manager *m_manager;
       int m_version;
       bool m_isAbstract;
-      smtk::AttributeDefinitionPtr m_baseDefinition;
+      smtk::attribute::DefinitionPtr m_baseDefinition;
       std::string m_type;
       std::string m_label;
       bool m_isNodal;
       std::set<std::string> m_categories;
       int m_advanceLevel;
-      std::vector<smtk::AttributeItemDefinitionPtr> m_itemDefs;
+      std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
 //Is Unique indicates if more than one attribute of this type can be assigned to a
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
@@ -276,7 +299,8 @@ namespace smtk
       return s_notApplicableBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void Definition::setNotApplicableColor(double r, double g, double b, double a)
+    inline void Definition::setNotApplicableColor(
+      double r, double g, double b, double a)
     {
       this->m_isNotApplicableColorSet = true;
       this->m_notApplicableColor[0]= r;
@@ -298,7 +322,8 @@ namespace smtk
       return s_defaultBaseColor;
     }
 //----------------------------------------------------------------------------
-    inline void Definition::setDefaultColor(double r, double g, double b, double a)
+    inline void Definition::setDefaultColor(
+      double r, double g, double b, double a)
     {
       this->m_isDefaultColorSet = true;
       this->m_defaultColor[0]= r;

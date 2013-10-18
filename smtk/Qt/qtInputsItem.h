@@ -41,7 +41,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtInputsItem(smtk::AttributeItemPtr, QWidget* p);
+      qtInputsItem(smtk::attribute::ItemPtr, QWidget* p);
       virtual ~qtInputsItem();  
 
     public slots:

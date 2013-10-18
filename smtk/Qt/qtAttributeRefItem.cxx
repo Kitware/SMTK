@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/RefItemDefinition.h"
 
 #include <QComboBox>
 #include <QVBoxLayout>
@@ -46,7 +46,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtAttributeRefItem::qtAttributeRefItem(
-  smtk::AttributeItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
 {
   this->Internals = new qtAttributeRefItemInternals;
   this->IsLeafItem = true;
@@ -82,7 +82,7 @@ void qtAttributeRefItem::createWidget()
   this->Internals->comboBoxes.clear();
   this->Widget = new QFrame(this->parentWidget());
 
-  smtk::AttributeRefItemPtr item =dynamicCastPointer<AttributeRefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   if(!item)
     {
     return;
@@ -126,7 +126,7 @@ void qtAttributeRefItem::createWidget()
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::updateItemData()
 {
-  smtk::AttributeRefItemPtr item =dynamicCastPointer<AttributeRefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   if(!item)
     {
     return;
@@ -138,18 +138,18 @@ void qtAttributeRefItem::updateItemData()
     return;
     }
 
-  const AttributeRefItemDefinition *itemDef =
-    dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
-  AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
+  const RefItemDefinition *itemDef =
+    dynamic_cast<const RefItemDefinition*>(item->definition().get());
+  attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
   if(!attDef)
     {
     return;
     }
   QList<QString> attNames;
-  std::vector<smtk::AttributePtr> result;
+  std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
-  std::vector<smtk::AttributePtr>::iterator it;
+  std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
     attNames.push_back((*it)->name().c_str());
@@ -182,13 +182,13 @@ void qtAttributeRefItem::onInputValueChanged()
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
 
-  smtk::AttributeRefItemPtr item =dynamicCastPointer<AttributeRefItem>(this->getObject());
+  smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
 
   if(curIdx>=0)
     {
-    const AttributeRefItemDefinition *itemDef =
-      dynamic_cast<const AttributeRefItemDefinition*>(item->definition().get());
-    AttributeDefinitionPtr attDef = itemDef->attributeDefinition();
+    const RefItemDefinition *itemDef =
+      dynamic_cast<const RefItemDefinition*>(item->definition().get());
+    attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
     AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
     if(attPtr)

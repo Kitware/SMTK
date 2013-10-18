@@ -37,18 +37,18 @@ namespace smtk
       public ValueItemDefinitionTemplate<std::string>
     {
     public:
-      static smtk::StringItemDefinitionPtr New(const std::string &myName)
-      { return smtk::StringItemDefinitionPtr(new StringItemDefinition(myName));}
+      static smtk::attribute::StringItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::StringItemDefinitionPtr(new StringItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::StringItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
+      static smtk::attribute::StringItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<StringItemDefinition>(p);}
 
       virtual ~StringItemDefinition();
       virtual Item::Type type() const;
-      virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
+      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       bool isMultiline() const

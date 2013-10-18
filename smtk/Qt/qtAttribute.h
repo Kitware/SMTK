@@ -42,10 +42,10 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtAttribute(smtk::AttributePtr, QWidget* parent);
+      qtAttribute(smtk::attribute::AttributePtr, QWidget* parent);
       virtual ~qtAttribute();  
 
-      smtk::AttributePtr getObject();
+      smtk::attribute::AttributePtr getObject();
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();
@@ -55,12 +55,12 @@ namespace smtk
       QList<qtItem*>& items() const;
 
       // create all the items
-      static qtItem* createItem(smtk::AttributeItemPtr item, QWidget* p);
-      static qtItem* createValueItem(smtk::ValueItemPtr item, QWidget* p);
-      static qtItem* createDirectoryItem(smtk::DirectoryItemPtr item, QWidget* p);
-      static qtItem* createAttributeRefItem(smtk::AttributeRefItemPtr item, QWidget* p);
-      static qtItem* createFileItem(smtk::FileItemPtr item, QWidget* p, bool dirOnly=false);
-      static qtItem* createGroupItem(smtk::GroupItemPtr item, QWidget* p);
+      static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p);
+      static qtItem* createValueItem(smtk::attribute::ValueItemPtr item, QWidget* p);
+      static qtItem* createDirectoryItem(smtk::attribute::DirectoryItemPtr item, QWidget* p);
+      static qtItem* createAttributeRefItem(smtk::attribute::RefItemPtr item, QWidget* p);
+      static qtItem* createFileItem(smtk::attribute::FileItemPtr item, QWidget* p, bool dirOnly=false);
+      static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p);
 
     protected slots:
       virtual void updateItemsData();

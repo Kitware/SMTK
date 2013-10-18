@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/RefItemDefinition.h"
 
 using namespace smtk::attribute; 
 
@@ -44,7 +44,7 @@ ValueItem::ValueItem(Item *owningItem,
 {
 }
 //----------------------------------------------------------------------------
-bool ValueItem::setDefinition(smtk::ConstAttributeItemDefinitionPtr vdef)
+bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
@@ -118,7 +118,7 @@ bool ValueItem::allowsExpressions() const
   return def->allowsExpressions();
 }
 //----------------------------------------------------------------------------
-smtk::AttributePtr ValueItem::expression(int element) const
+smtk::attribute::AttributePtr ValueItem::expression(int element) const
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -126,10 +126,10 @@ smtk::AttributePtr ValueItem::expression(int element) const
     {
     return this->m_expressions[element]->value();
     }
-  return smtk::AttributePtr();
+  return smtk::attribute::AttributePtr();
 }
 //----------------------------------------------------------------------------
-bool ValueItem::setExpression(int element, smtk::AttributePtr exp)
+bool ValueItem::setExpression(int element, smtk::attribute::AttributePtr exp)
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -154,7 +154,7 @@ bool ValueItem::setExpression(int element, smtk::AttributePtr exp)
   return false;
 }
 //----------------------------------------------------------------------------
-bool ValueItem::appendExpression(smtk::AttributePtr exp)
+bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());

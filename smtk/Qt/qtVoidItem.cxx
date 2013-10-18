@@ -40,7 +40,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtVoidItem::qtVoidItem(
-  smtk::AttributeItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
 {
   this->Internals = new qtVoidItemInternals;
   this->IsLeafItem = true;
@@ -55,7 +55,7 @@ qtVoidItem::~qtVoidItem()
 //----------------------------------------------------------------------------
 void qtVoidItem::createWidget()
 {
-  smtk::AttributeItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() || !dataObj->isOptional())
     {
     return;
@@ -81,7 +81,7 @@ void qtVoidItem::createWidget()
 //----------------------------------------------------------------------------
 void qtVoidItem::updateItemData()
 {
-  smtk::AttributeItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !dataObj->isOptional() || !this->Widget)
     {
     return;

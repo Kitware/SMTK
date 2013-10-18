@@ -68,10 +68,10 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtItem(smtk::AttributeItemPtr, QWidget* parent);
+      qtItem(smtk::attribute::ItemPtr, QWidget* parent);
       virtual ~qtItem();  
       
-      smtk::AttributeItemPtr getObject();
+      smtk::attribute::ItemPtr getObject();
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();

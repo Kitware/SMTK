@@ -28,10 +28,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 int main()
 {
-  {
+  int status = 0;
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
-  smtk::AttributeDefinitionPtr def = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
   if (def != NULL)
     {
     std::cout << "Definition testDef created\n";
@@ -39,8 +39,9 @@ int main()
   else
     {
     std::cout << "ERROR: Definition testDef not created\n";
+    status++;
     }
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("testDef");
   if (def1 == NULL)
     {
     std::cout << "Duplicated definition testDef not created\n";
@@ -48,8 +49,9 @@ int main()
   else
     {
     std::cout << "ERROR: Duplicated definition testDef created\n";
+    status++;
     }
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "testDef");
   if (att != NULL)
     {
     std::cout << "Attribute testAtt created\n";
@@ -57,9 +59,10 @@ int main()
   else
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
+    status++;
     }
 
-  smtk::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
   if (att1 == NULL)
     {
     std::cout << "Duplicate Attribute testAtt not created\n";
@@ -67,8 +70,9 @@ int main()
   else
     {
     std::cout << "ERROR: Duplicate Attribute testAtt  created\n";
+    status++;
     }
 
   std::cout << "Manager destroyed\n";
-  }
+  return status;
 }

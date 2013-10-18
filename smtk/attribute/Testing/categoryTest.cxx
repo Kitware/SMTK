@@ -30,7 +30,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/XmlV1StringWriter.h"
+#include "smtk/util/Logger.h"
+#include "smtk/util/XmlV1StringWriter.h"
 
 #include <iostream>
 
@@ -41,29 +42,29 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
-  smtk::StringItemDefinitionPtr eitemdef = 
-    expDef->addItemDefinition<smtk::StringItemDefinitionPtr>("Expression String");
-  smtk::StringItemDefinitionPtr eitemdef2 =
+  smtk::attribute::StringItemDefinitionPtr eitemdef =
+    expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
+  smtk::attribute::StringItemDefinitionPtr eitemdef2 =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr iitemdef = 
-    base->addItemDefinition<smtk::IntItemDefinitionPtr>("IntItem1");
+  smtk::attribute::IntItemDefinitionPtr iitemdef =
+    base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem1");
   iitemdef->addCategory("Flow");
-  iitemdef = 
-    base->addItemDefinition<smtk::IntItemDefinitionPtr>("IntItem2");
+  iitemdef =
+    base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("IntItem2");
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr ditemdef = 
-    def1->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem1");
+  smtk::attribute::DoubleItemDefinitionPtr ditemdef =
+    def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
   // Allow this one to hold an expression
   ditemdef->addCategory("Veg");
   ditemdef->setExpressionDefinition(expDef);
@@ -73,18 +74,18 @@ int main()
     std::cout << "ERROR - Item Def does not allow expressions\n";
     status = -1;
     }
-  ditemdef = 
-    def1->addItemDefinition<smtk::DoubleItemDefinitionPtr>("DoubleItem2");
+  ditemdef =
+    def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem2");
   ditemdef->setDefaultValue(-35.2);
   ditemdef->addCategory("Constituent");
 
-  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr sitemdef = 
-    def2->addItemDefinition<smtk::StringItemDefinitionPtr>("StringItem1");
+  smtk::attribute::StringItemDefinitionPtr sitemdef =
+    def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");
   sitemdef->addCategory("Flow");
-  sitemdef = 
-    def2->addItemDefinition<smtk::StringItemDefinitionPtr>("StringItem2");
+  sitemdef =
+    def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem2");
   sitemdef->setDefaultValue("Default");
   sitemdef->addCategory("General");
 
@@ -122,8 +123,8 @@ int main()
     std::cout << "ERROR: Def2 has no categories!\n";
     }
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att != NULL)
     {
     std::cout << "Attribute testAtt created\n";
@@ -134,12 +135,12 @@ int main()
     status = -1;
     }
 
-  smtk::ValueItemPtr vitem;
-  smtk::AttributeItemPtr item;
+  smtk::attribute::ValueItemPtr vitem;
+  smtk::attribute::ItemPtr item;
 
   // Find the expression enabled item
   item = att->item(2);
-  vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
+  vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
   if (vitem->allowsExpressions())
     {
     vitem->setExpression(expAtt);
@@ -150,14 +151,14 @@ int main()
     std::cout << "ERROR: Can not set expression on " << vitem->name() << "\n";
     status = -1;
     }
-  
+
   int i, n = att->numberOfItems();
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
     {
     item = att->item(i);
     std::cout << "\t" << item->name() << " Type = " << smtk::attribute::Item::type2String(item->type()) << ", ";
-    vitem = smtk::dynamicCastPointer<smtk::attribute::ValueItem>(item);
+    vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
     if (vitem != NULL)
       {
       if (vitem->isExpression())
@@ -170,8 +171,16 @@ int main()
         }
       }
     }
-  smtk::attribute::XmlV1StringWriter writer(manager);
-  std::cout << writer.convertToString() << std::endl;
+  smtk::util::Logger logger;
+  smtk::util::XmlV1StringWriter writer(manager);
+  std::cout << writer.convertToString(logger) << std::endl;
+  if (logger.hasErrors())
+    {
+    std::cerr <<  "Errors encountered creating Attribute String:\n";
+    std::cerr << logger.convertToString();
+    }
+
+
   std::cout << "Manager destroyed\n";
   }
   return status;

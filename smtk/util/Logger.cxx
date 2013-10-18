@@ -62,3 +62,20 @@ std::string Logger::severityAsString(Severity s)
     }
   return "UNKNOWN";
 }
+//----------------------------------------------------------------------------
+std::string Logger::convertToString() const
+{
+  int i, n = this->m_records.size();
+  std::stringstream ss;
+  for (i = 0; i < n; i++)
+    {
+    ss << severityAsString(this->m_records[i].severity) << ": ";
+    if (this->m_records[i].fileName != "")
+      {
+      ss << "In " << this->m_records[i].fileName << ", line "
+         << this->m_records[i].lineNumber << ": ";
+      }
+    ss << this->m_records[i].message << std::endl;
+    }
+  return ss.str();
+}

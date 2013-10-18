@@ -42,22 +42,22 @@ Item::~Item()
   this->detachAllAttributes();
 }
 //----------------------------------------------------------------------------
-smtk::ModelItemPtr Item::pointer() const
+smtk::model::ItemPtr Item::pointer() const
 {
   if (this->m_model)
     {
     return this->m_model->getModelItem(this->m_id);
     }
-  return smtk::ModelItemPtr();
+  return smtk::model::ItemPtr();
 }
 //----------------------------------------------------------------------------
-bool Item::isAttributeAssociated(smtk::AttributePtr anAtt) const
+bool Item::isAttributeAssociated(smtk::attribute::AttributePtr anAtt) const
 {
   return (this->m_attributes.find(anAtt) != this->m_attributes.end());
 }
 
 //----------------------------------------------------------------------------
-void Item::attachAttribute(smtk::AttributePtr anAtt)
+void Item::attachAttribute(smtk::attribute::AttributePtr anAtt)
 {
   if (this->isAttributeAssociated(anAtt))
     {
@@ -68,7 +68,7 @@ void Item::attachAttribute(smtk::AttributePtr anAtt)
   anAtt->associateEntity(this->pointer());
 }
 //----------------------------------------------------------------------------
-void Item::detachAttribute(smtk::AttributePtr anAtt, bool reverse)
+void Item::detachAttribute(smtk::attribute::AttributePtr anAtt, bool reverse)
 {
   if (this->isAttributeAssociated(anAtt))
     {

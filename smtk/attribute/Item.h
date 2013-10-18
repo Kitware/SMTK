@@ -42,8 +42,7 @@ namespace smtk
     class GroupItem;
     class GroupItemDefinition;
     class Attribute;
-    class Definition;
-    
+
     class SMTKCORE_EXPORT Item
     {
       friend class Definition;
@@ -67,14 +66,14 @@ namespace smtk
      std::string name() const;
      std::string label() const;
      virtual Item::Type type() const = 0;
-     smtk::ConstAttributeItemDefinitionPtr definition() const
+     smtk::attribute::ConstItemDefinitionPtr definition() const
      {return this->m_definition;}
 
      // Return the attribute that owns this item
-     smtk::AttributePtr attribute() const;
-     smtk::AttributeItemPtr owningItem() const
+     smtk::attribute::AttributePtr attribute() const;
+     smtk::attribute::ItemPtr owningItem() const
      {return (this->m_owningItem ? this->m_owningItem->pointer() :
-              smtk::AttributeItemPtr());}
+              smtk::attribute::ItemPtr());}
      //Position is the item's location w/r to the owning item if not null
      // or the owning attribute. Currently the only items that can own other items are
      // GroupItem and ValueItem (for expressions)
@@ -87,7 +86,7 @@ namespace smtk
      // Returns the shared pointer of the item - if the item is no longer
      // owned by either an attribute or by another item it will return
      // an empty shared pointer
-     smtk::AttributeItemPtr pointer() const;
+     smtk::attribute::ItemPtr pointer() const;
      bool isOptional() const;
 
      // isEnabled only matters for optional items.  All non-optional
@@ -100,9 +99,9 @@ namespace smtk
      bool isMemberOf(const std::string &category) const;
      bool isMemberOf(const std::vector<std::string> &categories) const;
 
-     void setUserData(const std::string &key, smtk::UserDataPtr value)
+     void setUserData(const std::string &key, smtk::util::UserDataPtr value)
        {this->m_userData[key] = value;}
-     smtk::UserDataPtr userData(const std::string &key) const;
+     smtk::util::UserDataPtr userData(const std::string &key) const;
      void clearUserData(const std::string &key)
      {this->m_userData.erase(key);}
      void clearAllUserData()
@@ -124,24 +123,24 @@ namespace smtk
     protected:
      Item(Attribute *owningAttribute, int itemPosition);
      Item(Item *owningItem, int myPosition, int mySubGroupPOsition);
-     virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+     virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
      Attribute *m_attribute;
      Item *m_owningItem;
      int m_position;
      int m_subGroupPosition;
      bool m_isEnabled;
      mutable std::string m_tempString;
-     smtk::ConstAttributeItemDefinitionPtr m_definition;
-     std::map<std::string, smtk::UserDataPtr > m_userData;
+     smtk::attribute::ConstItemDefinitionPtr m_definition;
+     std::map<std::string, smtk::util::UserDataPtr > m_userData;
     private:
      
     };
 //----------------------------------------------------------------------------
-    inline smtk::UserDataPtr Item::userData(const std::string &key) const
+    inline smtk::util::UserDataPtr Item::userData(const std::string &key) const
     {
-      std::map<std::string, smtk::UserDataPtr >::const_iterator it =
+      std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? smtk::UserDataPtr() : it->second);
+      return ((it == this->m_userData.end()) ? smtk::util::UserDataPtr() : it->second);
     }
   }
 }

@@ -40,20 +40,20 @@ VoidItemDefinition::~VoidItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 VoidItemDefinition::buildItem(Attribute *owningAttribute,
                               int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new VoidItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new VoidItem(owningAttribute,
                                               itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 VoidItemDefinition::buildItem(Item *owningItem,
                               int itemPosition,
                               int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new VoidItem(owningItem,
+  return smtk::attribute::ItemPtr(new VoidItem(owningItem,
                                               itemPosition,
                                               subGroupPosition));
 }
