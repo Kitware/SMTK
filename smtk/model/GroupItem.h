@@ -56,8 +56,11 @@ namespace smtk
       virtual bool insert(smtk::ModelItemPtr ptr) {return false;}
       virtual bool remove(smtk::ModelItemPtr ptr) {return false;}
 
-    protected:
+      unsigned long entityMask() const
+      { return this->m_entityMask;}
 
+    protected:
+      unsigned long m_entityMask;
     private:
     };
   };

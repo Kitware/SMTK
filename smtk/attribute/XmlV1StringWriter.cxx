@@ -1264,8 +1264,7 @@ void XmlV1StringWriter::processModelInfo()
         itemIt != refModel->endItemIterator();
         ++itemIt)
       {
-      if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
-        || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
+      if(itemIt->second->type() == smtk::model::Item::GROUP)
         {
         smtk::ModelGroupItemPtr itemGroup =
           smtk::dynamicCastPointer<smtk::model::GroupItem>(itemIt->second);

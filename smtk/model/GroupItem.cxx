@@ -27,7 +27,7 @@ using namespace smtk::model;
 
 //----------------------------------------------------------------------------
 GroupItem::GroupItem(Model *model, int myid, unsigned long mask): 
-  Item(model, myid, mask)
+  Item(model, myid), m_entityMask(mask)
 {
 }
 
@@ -38,6 +38,6 @@ GroupItem::~GroupItem()
 //----------------------------------------------------------------------------
 Item::Type GroupItem::type() const
 {
-  return BOUNDARY_GROUP;
+  return GROUP;
 }
 //----------------------------------------------------------------------------

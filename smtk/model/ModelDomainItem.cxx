@@ -26,9 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::model; 
 
 //----------------------------------------------------------------------------
-ModelDomainItem::ModelDomainItem(Model *model, unsigned long myid,
-	unsigned long mask): 
-  Item(model, myid, mask)
+ModelDomainItem::ModelDomainItem(Model *model, unsigned long myid):
+  Item(model, myid)
 {
 }
 
@@ -44,6 +43,6 @@ Item::Type ModelDomainItem::type() const
 //----------------------------------------------------------------------------
 std::string ModelDomainItem::name() const
 {
-  return "Model";
+  return "Model Domain";
 }
 //----------------------------------------------------------------------------

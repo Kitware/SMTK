@@ -22,6 +22,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME Model.h -
 // .SECTION Description
+// Everything model entity related here should be stored in a GroupItem
+// with the mask set to exclude the non-desired entities.
 // .SECTION See Also
 
 #ifndef __smtk_model_Model_h
@@ -51,12 +53,17 @@ namespace smtk
       smtk::ModelItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
+      // Description:
       virtual unsigned long convertGroupTypeToMask(
         int /*grouptype*/, int /*entType*/) {return 0;}
       virtual void removeGroupItems(int grouptype, int entType)
       { return this->removeGroupItemsByMask(
         this->convertGroupTypeToMask(grouptype, entType));}
       virtual void removeGroupItemsByMask(unsigned int mask);
+
+
+
+
 
       virtual std::vector<smtk::ModelGroupItemPtr> findGroupItems(
                                               unsigned int mask) const;
