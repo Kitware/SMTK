@@ -56,10 +56,16 @@ class vtkModelVertexUse;
 
 //BTX
 #include <string>
+
+// Description:
+// Enumeration for the types of groupings we would like to do.
+// This doesn't work well for mixed type domains where a 2D
+// and a 3D model entity are both considered domains, resulting
+// in boundary entities of dimension 1 and 2.
 enum vtkDiscreteModelEntityTypes
 {
-  vtkDiscreteModelEntityGroupType = 100,
-  vtkModelMaterialType,
+  vtkDiscreteModelEntityGroupType = 100, // intended for boundaries
+  vtkModelMaterialType                   // intended for domains
 };
 
 // Description:
