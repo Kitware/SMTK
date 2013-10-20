@@ -61,14 +61,16 @@ namespace smtk
       virtual void setName(const std::string & strname)
       { this->m_UserName = strname; }
 
-      virtual void attachAttribute(smtk::AttributePtr);
-      virtual void detachAttribute(smtk::AttributePtr, bool reverse=true);
+
+      virtual void attachAttribute(smtk::attribute::AttributePtr);
+      virtual void detachAttribute(smtk::attribute::AttributePtr, bool reverse=true);
+
       virtual void detachAllAttributes();
-      virtual bool isAttributeAssociated(smtk::AttributePtr) const;
+      virtual bool isAttributeAssociated(smtk::attribute::AttributePtr) const;
 
-      typedef std::set<smtk::AttributePtr>::const_iterator const_iterator;
+      typedef std::set<smtk::attribute::AttributePtr>::const_iterator const_iterator;
 
-      std::set<smtk::AttributePtr> AssociatedAttributes() const
+      std::set<smtk::attribute::AttributePtr> AssociatedAttributes() const
       { return this->m_attributes;  }
 
       const_iterator beginAssociatedAttributes() const
@@ -77,7 +79,7 @@ namespace smtk
       const_iterator endAssociatedAttributes() const
         {return this->m_attributes.end();}
 
-      std::set<smtk::AttributePtr> attributes() const
+      std::set<smtk::attribute::AttributePtr> attributes() const
         {return this->m_attributes;}
 
       std::size_t numberOfAssociatedAttributes() const
@@ -86,7 +88,7 @@ namespace smtk
       Model *model() const
       {return this->m_model;}
       // Return the public pointer for this model item.
-      smtk::ModelItemPtr pointer() const;
+      smtk::model::ItemPtr pointer() const;
 
     protected:
       void clearModel()
@@ -95,7 +97,7 @@ namespace smtk
       Model *m_model;
       int m_id;
       std::string m_UserName;
-      std::set<smtk::AttributePtr> m_attributes;
+      std::set<smtk::attribute::AttributePtr> m_attributes;
 
     private:
     };

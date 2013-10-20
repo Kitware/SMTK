@@ -30,7 +30,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtVoidItem.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -57,7 +56,7 @@ using namespace smtk::attribute;
 class qtAttributeInternals
 {
 public:
-  qtAttributeInternals(smtk::AttributePtr dataObject, QWidget* p)
+  qtAttributeInternals(smtk::attribute::AttributePtr dataObject, QWidget* p)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
@@ -65,13 +64,13 @@ public:
   ~qtAttributeInternals()
   {
   }
- smtk::WeakAttributePtr DataObject;
+ smtk::attribute::WeakAttributePtr DataObject;
  QPointer<QWidget> ParentWidget;
  QList<smtk::attribute::qtItem*> Items;
 };
 
 //----------------------------------------------------------------------------
-qtAttribute::qtAttribute(smtk::AttributePtr dataObject, QWidget* p)
+qtAttribute::qtAttribute(smtk::attribute::AttributePtr dataObject, QWidget* p)
 { 
   this->Internals  = new qtAttributeInternals(dataObject, p); 
   this->Widget = NULL;
@@ -145,7 +144,7 @@ void qtAttribute::updateItemsData()
   this->clearItems();
   QLayout* layout = this->Widget->layout();
   qtItem* qItem = NULL;
-  smtk::AttributePtr att = this->getObject();
+  smtk::attribute::AttributePtr att = this->getObject();
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
@@ -159,7 +158,7 @@ void qtAttribute::updateItemsData()
 }
 
 //----------------------------------------------------------------------------
-smtk::AttributePtr qtAttribute::getObject()
+smtk::attribute::AttributePtr qtAttribute::getObject()
 {
   return this->Internals->DataObject.lock();
 }
@@ -171,7 +170,7 @@ QWidget* qtAttribute::parentWidget()
 }
 
 //----------------------------------------------------------------------------
-qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
+qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW)
 {
   if(!qtUIManager::instance()->passItemAdvancedCheck(
     item->definition()->advanceLevel()))
@@ -183,24 +182,24 @@ qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
-      aItem = qtAttribute::createAttributeRefItem(smtk::dynamicCastPointer<AttributeRefItem>(item), pW);
+      aItem = qtAttribute::createAttributeRefItem(smtk::dynamic_pointer_cast<RefItem>(item), pW);
       break;
     case smtk::attribute::Item::DOUBLE:
     case smtk::attribute::Item::INT:
     case smtk::attribute::Item::STRING:
-      aItem = qtAttribute::createValueItem(smtk::dynamicCastPointer<ValueItem>(item), pW);
+      aItem = qtAttribute::createValueItem(smtk::dynamic_pointer_cast<ValueItem>(item), pW);
       break;
     case smtk::attribute::Item::DIRECTORY:
-      aItem = qtAttribute::createDirectoryItem(smtk::dynamicCastPointer<DirectoryItem>(item), pW);
+      aItem = qtAttribute::createDirectoryItem(smtk::dynamic_pointer_cast<DirectoryItem>(item), pW);
       break;
     case smtk::attribute::Item::FILE:
-      aItem = qtAttribute::createFileItem(smtk::dynamicCastPointer<FileItem>(item), pW);
+      aItem = qtAttribute::createFileItem(smtk::dynamic_pointer_cast<FileItem>(item), pW);
       break;
     case smtk::attribute::Item::GROUP:
-      aItem = qtAttribute::createGroupItem(smtk::dynamicCastPointer<GroupItem>(item), pW);
+      aItem = qtAttribute::createGroupItem(smtk::dynamic_pointer_cast<GroupItem>(item), pW);
       break;
     case smtk::attribute::Item::VOID:
-      aItem = new qtVoidItem(smtk::dynamicCastPointer<VoidItem>(item), pW);
+      aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
@@ -212,40 +211,40 @@ qtItem* qtAttribute::createItem(smtk::AttributeItemPtr item, QWidget* pW)
 
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createAttributeRefItem(
-  smtk::AttributeRefItemPtr item, QWidget* pW)
+  smtk::attribute::RefItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = new qtAttributeRefItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtAttributeRefItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createDirectoryItem(
-  smtk::DirectoryItemPtr item, QWidget* pW)
+  smtk::attribute::DirectoryItemPtr item, QWidget* pW)
 {
-  qtFileItem* returnItem = new qtFileItem(dynamicCastPointer<Item>(item), pW, true);
+  qtFileItem* returnItem = new qtFileItem(dynamic_pointer_cast<Item>(item), pW, true);
   qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createFileItem(
-  smtk::FileItemPtr item, QWidget* pW, bool dirOnly)
+  smtk::attribute::FileItemPtr item, QWidget* pW, bool dirOnly)
 {
   qtFileItem* returnItem = new qtFileItem(
-    dynamicCastPointer<Item>(item), pW, dirOnly);
+    dynamic_pointer_cast<Item>(item), pW, dirOnly);
   qtUIManager::instance()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------
-qtItem* qtAttribute::createGroupItem(smtk::GroupItemPtr item, QWidget* pW)
+qtItem* qtAttribute::createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* pW)
 {
-  qtItem* returnItem = new qtGroupItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtGroupItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }
 
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createValueItem(
-  smtk::ValueItemPtr item, QWidget* pW)
+  smtk::attribute::ValueItemPtr item, QWidget* pW)
 {
     // create the input item for editable type values
-  qtItem* returnItem = new qtInputsItem(dynamicCastPointer<Item>(item), pW);
+  qtItem* returnItem = new qtInputsItem(dynamic_pointer_cast<Item>(item), pW);
   return returnItem;
 }

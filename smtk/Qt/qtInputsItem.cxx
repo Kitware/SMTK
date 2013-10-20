@@ -38,10 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QComboBox>
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/attribute/AttributeRefItem.h"
-#include "smtk/attribute/AttributeRefItemDefinition.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
@@ -63,7 +60,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtInputsItem::qtInputsItem(
-  smtk::AttributeItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
 {
   this->Internals = new qtInputsItemInternals;
   this->IsLeafItem = true;
@@ -78,7 +75,7 @@ qtInputsItem::~qtInputsItem()
 //----------------------------------------------------------------------------
 void qtInputsItem::createWidget()
 {
-  smtk::AttributeItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck())
     {
     return;
@@ -92,7 +89,7 @@ void qtInputsItem::createWidget()
 void qtInputsItem::loadInputValues(
   QBoxLayout* labellayout, QBoxLayout* entrylayout)
 {
-  smtk::ValueItemPtr item =dynamicCastPointer<ValueItem>(this->getObject());
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
     {
     return;
@@ -146,7 +143,7 @@ void qtInputsItem::loadInputValues(
 //----------------------------------------------------------------------------
 void qtInputsItem::updateUI()
 {
-  smtk::AttributeItemPtr dataObj = this->getObject();
+  smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck())
     {
     return;
@@ -183,7 +180,7 @@ void qtInputsItem::updateUI()
       dataObj->definition()->isEnabledByDefault());
     labelLayout->addWidget(optionalCheck);
     }
-  smtk::ValueItemPtr item = dynamicCastPointer<ValueItem>(dataObj);
+  smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
   const ValueItemDefinition *itemDef = 
     dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
 

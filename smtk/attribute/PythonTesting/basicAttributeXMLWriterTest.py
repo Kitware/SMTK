@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     # Add in a Attribute definition with a reference to another attribute
     attrefdef = manager.createDefinition('AttributeReferenceDef')
-    aritemdef = addItemDefinition( attrefdef, smtk.attribute.AttributeRefItemDefinition, 'BaseDefItem' )
+    aritemdef = addItemDefinition( attrefdef, smtk.attribute.RefItemDefinition, 'BaseDefItem' )
     aritemdef.setCommonValueLabel('A reference to another attribute')
     aritemdef.setAttributeDefinition(base)
   
@@ -137,11 +137,13 @@ if __name__ == '__main__':
     #Find the expression enabled item
     item = att.item(2)
     vitem = smtk.attribute.ValueItem.CastTo(item)
-    writer = smtk.attribute.AttributeWriter()
-    if writer.write(manager, sys.argv[1]):
+    writer = smtk.util.AttributeWriter()
+    logger = smtk.util.Logger()
+    if writer.write(manager, sys.argv[1], logger):
         sys.stderr.write('Errors encountered creating Attribute File:\n')
-        sys.stderr.write(writer.errorMessages())
+        sys.stderr.write(logger.convertToString())
         sys.stderr.write('\n')
+        status = -1
 
     del manager
     print 'Manager destroyed'

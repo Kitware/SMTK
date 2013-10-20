@@ -50,13 +50,13 @@ namespace smtk
 
     public slots:
       virtual void showAdvanced(int show);
-      virtual void showEntityAssociation(smtk::AttributePtr theAtt, const QString& category);
-      virtual void showAttributeAssociation(smtk::ModelItemPtr theEntiy,
+      virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt, const QString& category);
+      virtual void showAttributeAssociation(smtk::model::ItemPtr theEntiy,
                                             const QString& category,
-                                            std::vector<smtk::AttributeDefinitionPtr>& attDefs);
+                                            std::vector<smtk::attribute::DefinitionPtr>& attDefs);
       virtual void showDomainsAssociation(
-        std::vector<smtk::ModelGroupItemPtr>& theDomains, const QString& category,
-        std::vector<smtk::AttributeDefinitionPtr>& attDefs);
+        std::vector<smtk::model::GroupItemPtr>& theDomains, const QString& category,
+        std::vector<smtk::attribute::DefinitionPtr>& attDefs);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
@@ -74,24 +74,24 @@ namespace smtk
       virtual void initWidget( );
       QListWidgetItem* getSelectedItem(QListWidget* theLis);
       virtual void removeSelectedItem(QListWidget* theLis);
-      smtk::AttributePtr getAttribute(QListWidgetItem * item);
-      smtk::AttributePtr getSelectedAttribute(QListWidget* theLis);
+      smtk::attribute::AttributePtr getAttribute(QListWidgetItem * item);
+      smtk::attribute::AttributePtr getSelectedAttribute(QListWidget* theLis);
 
-      smtk::ModelItemPtr getModelItem(QListWidgetItem * item);
-      smtk::ModelItemPtr getSelectedModelItem(QListWidget* theLis);
+      smtk::model::ItemPtr getModelItem(QListWidgetItem * item);
+      smtk::model::ItemPtr getSelectedModelItem(QListWidget* theLis);
 
       virtual QListWidgetItem* addModelAssociationListItem(
-        QListWidget* theList, smtk::ModelItemPtr refItem);
+        QListWidget* theList, smtk::model::ItemPtr refItem);
       virtual QListWidgetItem* addAttributeAssociationItem(
-        QListWidget* theList, smtk::AttributePtr att);
+        QListWidget* theList, smtk::attribute::AttributePtr att);
       virtual void addDomainListItem(
-        smtk::ModelItemPtr domainItem, QList<smtk::AttributePtr>& allAtts);
+        smtk::model::ItemPtr domainItem, QList<smtk::attribute::AttributePtr>& allAtts);
 
       void processAttUniqueness(
-        smtk::AttributeDefinitionPtr attDef, QList<int> &assignedIds);
+        smtk::attribute::DefinitionPtr attDef, QList<int> &assignedIds);
       void processDefUniqueness(
-        smtk::ModelItemPtr theEntiy,
-        QList<smtk::AttributeDefinitionPtr> &uniqueDefs);
+        smtk::model::ItemPtr theEntiy,
+        QList<smtk::attribute::DefinitionPtr> &uniqueDefs);
 
     private:
       qtAssociationWidgetInternals *Internals;

@@ -2,14 +2,23 @@ project(SMTK_Util)
 
 # set up sources to build
 set(utilSrcs
+  AttributeReader.cxx
+  AttributeWriter.cxx
   Logger.cxx
+  XmlDocV1Parser.cxx
+  XmlV1StringWriter.cxx
   )
 
 set(utilHeaders
+  AttributeReader.h
+  AttributeWriter.h
   Logger.h
+  UserData.h
+  XmlDocV1Parser.h
+  XmlV1StringWriter.h
   )
 
-#install the headers
+#Install headers
 smtk_public_headers(${utilHeaders})
 
 if(SMTK_ENABLE_TESTING)

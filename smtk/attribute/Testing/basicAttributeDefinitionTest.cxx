@@ -38,7 +38,7 @@ int main()
   {
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
-  smtk::AttributeDefinitionPtr def = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
   if (def != NULL)
     {
     std::cout << "Definition testDef created\n";
@@ -49,12 +49,12 @@ int main()
     status = -1;
     }
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr icompdef = smtk::attribute::IntItemDefinition::New("IntComp1");
+  smtk::attribute::IntItemDefinitionPtr icompdef = smtk::attribute::IntItemDefinition::New("IntComp1");
   def->addItemDefinition(icompdef);
-  smtk::IntItemDefinitionPtr icompdef2 = smtk::attribute::IntItemDefinition::New("IntComp2");
+  smtk::attribute::IntItemDefinitionPtr icompdef2 = smtk::attribute::IntItemDefinition::New("IntComp2");
   icompdef2->setDefaultValue(10);
   def->addItemDefinition(icompdef2);
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("testDef");
   if (def1 == NULL)
     {
     std::cout << "Duplicated definition testDef not created\n";
@@ -64,7 +64,7 @@ int main()
     std::cout << "ERROR: Duplicated definition testDef created\n";
     status = -1;
     }
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "testDef");
   if (att != NULL)
     {
     std::cout << "Attribute testAtt created\n";
@@ -94,14 +94,14 @@ int main()
     }
   else
     {
-    smtk::IntItemPtr icptr;
-    icptr = smtk::dynamicCastPointer<smtk::attribute::IntItem>(att->item(0));
+    smtk::attribute::IntItemPtr icptr;
+    icptr = smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(att->item(0));
     std::cout << "Found IntComp1 - value = " << icptr->valueAsString() << std::endl;
-    icptr = smtk::dynamicCastPointer<smtk::attribute::IntItem>(att->item(1));
+    icptr = smtk::dynamic_pointer_cast<smtk::attribute::IntItem>(att->item(1));
     std::cout << "Found IntComp2 - value = " << icptr->valueAsString() << std::endl;
     }
 
-  smtk::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
   if (att1 == NULL)
     {
     std::cout << "Duplicate Attribute testAtt not created\n";

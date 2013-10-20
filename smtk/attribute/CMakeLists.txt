@@ -2,11 +2,6 @@ project(SMTK_Attribute)
 
 set(attributeHeaders
   Attribute.h
-  AttributeRefItem.h
-  AttributeRefItemDefinition.h
-  AttributeSection.h
-  AttributeReader.h
-  AttributeWriter.h
   Definition.h
   DirectoryItem.h
   DirectoryItemDefinition.h
@@ -16,37 +11,25 @@ set(attributeHeaders
   FileItemDefinition.h
   GroupItem.h
   GroupItemDefinition.h
-  GroupSection.h
-  InstancedSection.h
   IntItem.h
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
   Manager.h
-  ModelEntitySection.h
-  RootSection.h
-  Section.h
-  SimpleExpressionSection.h
+  RefItem.h
+  RefItemDefinition.h
   StringItem.h
   StringItemDefinition.h
-  UserData.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
   ValueItemTemplate.h
   VoidItem.h
   VoidItemDefinition.h
-  XmlDocV1Parser.h
-  XmlV1StringWriter.h
   )
 
 set(attributeSrcs
   Attribute.cxx
-  AttributeRefItem.cxx
-  AttributeRefItemDefinition.cxx
-  AttributeSection.cxx
-  AttributeReader.cxx
-  AttributeWriter.cxx
   Definition.cxx
   DirectoryItem.cxx
   DirectoryItemDefinition.cxx
@@ -56,25 +39,19 @@ set(attributeSrcs
   FileItemDefinition.cxx
   GroupItem.cxx
   GroupItemDefinition.cxx
-  GroupSection.cxx
-  InstancedSection.cxx
   IntItem.cxx
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
   Manager.cxx
-  ModelEntitySection.cxx
-  RootSection.cxx
-  Section.cxx
-  SimpleExpressionSection.cxx
+  RefItem.cxx
+  RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx
   VoidItemDefinition.cxx
-  XmlV1StringWriter.cxx
-  XmlDocV1Parser.cxx
 )
 
 #install the headers

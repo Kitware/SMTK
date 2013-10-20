@@ -41,8 +41,8 @@ namespace smtk
     {
       friend class StringItemDefinition;
     public:
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::StringItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
+      static smtk::attribute::StringItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<StringItem>(p);}
 
       virtual ~StringItem();

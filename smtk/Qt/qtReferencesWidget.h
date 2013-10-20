@@ -50,7 +50,7 @@ namespace smtk
 
     public slots:
       virtual void showAdvanced(int show);
-      virtual void showAttributeReferences(smtk::AttributePtr att, QString& category);
+      virtual void showAttributeReferences(smtk::attribute::AttributePtr att, QString& category);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
 
@@ -62,10 +62,10 @@ namespace smtk
     protected:
       virtual void initWidget( );
       QListWidgetItem* getSelectedItem(QListWidget* theLis);
-      smtk::AttributePtr getSelectedAttribute(QListWidget* theLis);
-      smtk::AttributePtr getAttributeFromItem(QListWidgetItem * item);
+      smtk::attribute::AttributePtr getSelectedAttribute(QListWidget* theLis);
+      smtk::attribute::AttributePtr getAttributeFromItem(QListWidgetItem * item);
       virtual QListWidgetItem* addAttributeRefListItem(QListWidget* theList,
-        smtk::AttributeItemPtr refItem);
+        smtk::attribute::ItemPtr refItem);
 
     private:
 

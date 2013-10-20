@@ -42,20 +42,20 @@ Item::Type IntItemDefinition::type() const
   return Item::INT;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 IntItemDefinition::buildItem(Attribute *owningAttribute,
                              int itemPosition) const
 {
-  return smtk::AttributeItemPtr(new IntItem(owningAttribute,
+  return smtk::attribute::ItemPtr(new IntItem(owningAttribute,
                                              itemPosition));
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr 
+smtk::attribute::ItemPtr
 IntItemDefinition::buildItem(Item *owningItem,
                              int itemPosition,
                              int subGroupPosition) const
 {
-  return smtk::AttributeItemPtr(new IntItem(owningItem,
+  return smtk::attribute::ItemPtr(new IntItem(owningItem,
                                              itemPosition,
                                              subGroupPosition));
 }

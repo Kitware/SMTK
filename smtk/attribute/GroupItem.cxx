@@ -56,7 +56,7 @@ void GroupItem::detachAllItems()
   n = this->m_items.size();
   for (i = 0; i < n; i++)
     {
-    std::vector<smtk::AttributeItemPtr> &items = this->m_items[i];
+    std::vector<smtk::attribute::ItemPtr> &items = this->m_items[i];
     m = items.size();
     for (j = 0; j < m; j++)
       {
@@ -71,7 +71,7 @@ Item::Type GroupItem::type() const
 }
 //----------------------------------------------------------------------------
 bool
-GroupItem::setDefinition(smtk::ConstAttributeItemDefinitionPtr gdef) 
+GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
@@ -160,7 +160,7 @@ bool GroupItem::removeGroup(int element)
     // Can not change the number of items
     return false;
     }
-  std::vector<smtk::AttributeItemPtr> &items = this->m_items[element];
+  std::vector<smtk::attribute::ItemPtr> &items = this->m_items[element];
   std::size_t j, m = items.size();
   for(j = 0; j < m; j++)
     {
@@ -192,7 +192,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     std::size_t j, m;
     for (i = newSize; i < n; i++)
       {
-      std::vector<smtk::AttributeItemPtr> &items = this->m_items[i];
+      std::vector<smtk::attribute::ItemPtr> &items = this->m_items[i];
       m = items.size();
       for (j = 0; j < m; j++)
         {
@@ -211,22 +211,22 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::AttributeItemPtr GroupItem::find(int element, const std::string &name)
+smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &name)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(name);
-  return (i < 0) ? smtk::AttributeItemPtr() : this->m_items[element][i];
+  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][i];
 }
 //----------------------------------------------------------------------------
-smtk::ConstAttributeItemPtr GroupItem::find(int element, const std::string &name) const
+smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &name) const
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(name);
   if (i < 0)
     {
-    return smtk::ConstAttributeItemPtr();
+    return smtk::attribute::ConstItemPtr();
     }
   return this->m_items[element][i];
 }

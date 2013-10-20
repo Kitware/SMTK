@@ -39,8 +39,8 @@ namespace smtk
     {
       friend class GroupItemDefinition;
     public:
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::GroupItemPtr CastTo(const smtk::AttributeItemPtr &p)
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
+      static smtk::attribute::GroupItemPtr CastTo(const smtk::attribute::ItemPtr &p)
       {return smtk::dynamic_pointer_cast<GroupItem>(p);}
 
       virtual ~GroupItem();
@@ -53,27 +53,27 @@ namespace smtk
       bool appendGroup();
       bool removeGroup(int element);
 
-      smtk::AttributeItemPtr item(int ith) const
+      smtk::attribute::ItemPtr item(int ith) const
       {return this->item(0, ith);}
-      smtk::AttributeItemPtr item(int element, int ith) const
+      smtk::attribute::ItemPtr item(int element, int ith) const
         {return this->m_items[element][ith];}
 
-      smtk::AttributeItemPtr find(const std::string &name)
+      smtk::attribute::ItemPtr find(const std::string &name)
         {return this->find(0, name);}
-      smtk::AttributeItemPtr find(int element, const std::string &name) ;
-      smtk::ConstAttributeItemPtr find(const std::string &name) const
+      smtk::attribute::ItemPtr find(int element, const std::string &name) ;
+      smtk::attribute::ConstItemPtr find(const std::string &name) const
         {return this->find(0, name);}
-      smtk::ConstAttributeItemPtr find(int element, const std::string &name) const;
+      smtk::attribute::ConstItemPtr find(int element, const std::string &name) const;
 
       virtual void reset();
     protected:
       GroupItem(Attribute *owningAttribute, int itemPosition);
       GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
-      virtual bool setDefinition(smtk::ConstAttributeItemDefinitionPtr def);
+      virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
       // This method will detach all of the items directly owned by
       // this group
       void detachAllItems();
-      std::vector<std::vector<smtk::AttributeItemPtr> >m_items;
+      std::vector<std::vector<smtk::attribute::ItemPtr> >m_items;
 
     private:
     };

@@ -41,24 +41,24 @@ namespace smtk
       public ItemDefinition
     {
     public:
-      static smtk::GroupItemDefinitionPtr New(const std::string &myName)
-      { return smtk::GroupItemDefinitionPtr(new GroupItemDefinition(myName));}
+      static smtk::attribute::GroupItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::GroupItemDefinitionPtr(new GroupItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::GroupItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
+      static smtk::attribute::GroupItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<GroupItemDefinition>(p);}
 
       virtual ~GroupItemDefinition();
       virtual Item::Type type() const;
       std::size_t numberOfItemDefinitions() const
       {return this->m_itemDefs.size();}
-      smtk::AttributeItemDefinitionPtr itemDefinition(int ith) const
+      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
-        return (ith < 0) ? smtk::AttributeItemDefinitionPtr() :
+        return (ith < 0) ? smtk::attribute::ItemDefinitionPtr() :
           (ith >= this->m_itemDefs.size() ?
-           smtk::AttributeItemDefinitionPtr() : this->m_itemDefs[ith]);
+           smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
-      bool addItemDefinition(smtk::AttributeItemDefinitionPtr cdef);
+      bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
         addItemDefinition(const std::string &name)
@@ -92,9 +92,9 @@ namespace smtk
       {return this->m_useCommonLabel;}
       std::string subGroupLabel(int element) const;
 
-      virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
+      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
       void buildGroup(smtk::attribute::GroupItem *group, int subGroupPosition) const;
@@ -104,7 +104,7 @@ namespace smtk
     protected:
       GroupItemDefinition(const std::string &myname);
       virtual void updateCategories();
-      std::vector<smtk::AttributeItemDefinitionPtr> m_itemDefs;
+      std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       std::vector<std::string> m_labels;
       int m_numberOfRequiredGroups;

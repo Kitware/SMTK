@@ -47,14 +47,14 @@ namespace smtk
       virtual ~GroupItem();
       virtual Item::Type type() const;
 
-      bool canContain(const smtk::ModelItemPtr ptr) const
+      bool canContain(const smtk::model::ItemPtr ptr) const
       {return this->canContain(ptr->type());}
       bool canContain(smtk::model::Item::Type enType) const
       {return ((this->m_entityMask & enType) != 0);}
       virtual std::size_t numberOfItems() const {return 0;}
-      virtual smtk::ModelItemPtr item(int i) const {return smtk::ModelItemPtr();}
-      virtual bool insert(smtk::ModelItemPtr ptr) {return false;}
-      virtual bool remove(smtk::ModelItemPtr ptr) {return false;}
+      virtual smtk::model::ItemPtr item(int i) const {return smtk::model::ItemPtr();}
+      virtual bool insert(smtk::model::ItemPtr ptr) {return false;}
+      virtual bool remove(smtk::model::ItemPtr ptr) {return false;}
 
       unsigned long entityMask() const
       { return this->m_entityMask;}

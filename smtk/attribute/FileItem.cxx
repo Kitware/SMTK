@@ -47,7 +47,7 @@ FileItem::FileItem(Item *owningItem,
 
 //----------------------------------------------------------------------------
 bool FileItem::
-setDefinition(smtk::ConstAttributeItemDefinitionPtr adef)
+setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed

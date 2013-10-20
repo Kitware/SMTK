@@ -45,21 +45,21 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   // Lets create an attribute to represent an expression
-  smtk::AttributeDefinitionPtr expDef = manager.createDefinition("ExpDef");
-  smtk::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
+  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
   expDef->addItemDefinition(eitemdef);
 
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
+  smtk::attribute::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
   base->addItemDefinition(iitemdef);
-  smtk::IntItemDefinitionPtr iitemdef2 = IntItemDef::New("IntItem2");
+  smtk::attribute::IntItemDefinitionPtr iitemdef2 = IntItemDef::New("IntItem2");
   iitemdef2->setDefaultValue(10);
   base->addItemDefinition(iitemdef2);
 
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
+  smtk::attribute::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
   // Allow this one to hold an expression
   ditemdef->setExpressionDefinition(expDef);
   // Check to make sure we can use expressions
@@ -69,21 +69,21 @@ int main()
     status = -1;
     }
   def1->addItemDefinition(ditemdef);
-  smtk::DoubleItemDefinitionPtr ditemdef2 = DoubleItemDef::New("DoubleItem2");
+  smtk::attribute::DoubleItemDefinitionPtr ditemdef2 = DoubleItemDef::New("DoubleItem2");
   ditemdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(ditemdef2);
 
-  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
+  smtk::attribute::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
   def1->addItemDefinition(sitemdef);
-  smtk::StringItemDefinitionPtr sitemdef2 = StringItemDef::New("StringItem2");
+  smtk::attribute::StringItemDefinitionPtr sitemdef2 = StringItemDef::New("StringItem2");
   sitemdef2->setDefaultValue("Default");
   def1->addItemDefinition(sitemdef2);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att != NULL)
     {
     std::cout << "Attribute testAtt created\n";
@@ -94,12 +94,12 @@ int main()
     status = -1;
     }
 
-  smtk::ValueItemPtr vitem;
-  smtk::AttributeItemPtr item;
+  smtk::attribute::ValueItemPtr vitem;
+  smtk::attribute::ItemPtr item;
 
   // Find the expression enabled item
   item = att->item(2);
-  vitem = smtk::dynamicCastPointer<ValueItem>(item);
+  vitem = smtk::dynamic_pointer_cast<ValueItem>(item);
   if (vitem->allowsExpressions())
     {
     vitem->setExpression(expAtt);
@@ -117,7 +117,7 @@ int main()
     {
     item = att->item(i);
     std::cout << "\t" << item->name() << " Type = " << AttItem::type2String(item->type()) << ", ";
-    vitem = smtk::dynamicCastPointer<ValueItem>(item);
+    vitem = smtk::dynamic_pointer_cast<ValueItem>(item);
     if (vitem != NULL)
       {
       if (vitem->isExpression())

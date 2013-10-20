@@ -44,31 +44,31 @@ int main()
 
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
-  smtk::AttributeDefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::IntItemDefinitionPtr icompdef = IntCompDef::New("IntComp1");
+  smtk::attribute::IntItemDefinitionPtr icompdef = IntCompDef::New("IntComp1");
   base->addItemDefinition(icompdef);
-  smtk::IntItemDefinitionPtr icompdef2 = IntCompDef::New("IntComp2");
+  smtk::attribute::IntItemDefinitionPtr icompdef2 = IntCompDef::New("IntComp2");
   icompdef2->setDefaultValue(10);
   base->addItemDefinition(icompdef2);
 
-  smtk::AttributeDefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::DoubleItemDefinitionPtr dcompdef = DoubleCompDef::New("DoubleComp1");
+  smtk::attribute::DoubleItemDefinitionPtr dcompdef = DoubleCompDef::New("DoubleComp1");
   def1->addItemDefinition(dcompdef);
-  smtk::DoubleItemDefinitionPtr dcompdef2 = DoubleCompDef::New("DoubleComp2");
+  smtk::attribute::DoubleItemDefinitionPtr dcompdef2 = DoubleCompDef::New("DoubleComp2");
   dcompdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(dcompdef2);
 
-  smtk::AttributeDefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::StringItemDefinitionPtr scompdef = StringCompDef::New("StringComp1");
+  smtk::attribute::StringItemDefinitionPtr scompdef = StringCompDef::New("StringComp1");
   def1->addItemDefinition(scompdef);
-  smtk::StringItemDefinitionPtr scompdef2 = StringCompDef::New("StringComp2");
+  smtk::attribute::StringItemDefinitionPtr scompdef2 = StringCompDef::New("StringComp2");
   scompdef2->setDefaultValue("Default");
   def1->addItemDefinition(scompdef2);
 
-  smtk::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att != NULL)
     {
     std::cout << "Attribute testAtt created\n";
@@ -79,8 +79,8 @@ int main()
     status = -1;
     }
 
-  smtk::ValueItemPtr vcomp;
-  smtk::AttributeItemPtr comp;
+  smtk::attribute::ValueItemPtr vcomp;
+  smtk::attribute::ItemPtr comp;
 
   int i, n = att->numberOfItems();
   std::cout << "Items of testAtt:\n";
@@ -88,7 +88,7 @@ int main()
     {
     comp = att->item(i);
     std::cout << "\t" << comp->name() << " Type = " << AttComp::type2String(comp->type()) << ", ";
-    vcomp = smtk::dynamicCastPointer<ValueComp>(comp);
+    vcomp = smtk::dynamic_pointer_cast<ValueComp>(comp);
     if (vcomp != NULL)
       {
       switch (vcomp->type())

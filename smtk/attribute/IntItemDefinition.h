@@ -37,18 +37,18 @@ namespace smtk
       public ValueItemDefinitionTemplate<int>
     {
     public:
-      static smtk::IntItemDefinitionPtr New(const std::string &myName)
-      { return smtk::IntItemDefinitionPtr(new IntItemDefinition(myName));}
+      static smtk::attribute::IntItemDefinitionPtr New(const std::string &myName)
+      { return smtk::attribute::IntItemDefinitionPtr(new IntItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamicCastPointer
-      static smtk::IntItemDefinitionPtr CastTo(const smtk::AttributeItemDefinitionPtr &p)
+      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
+      static smtk::attribute::IntItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
       {return smtk::dynamic_pointer_cast<IntItemDefinition>(p);}
 
       virtual ~IntItemDefinition();
       virtual Item::Type type() const;
-      virtual smtk::AttributeItemPtr buildItem(Attribute *owningAttribute,
+      virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
-      virtual smtk::AttributeItemPtr buildItem(Item *owningItem,
+      virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
 
