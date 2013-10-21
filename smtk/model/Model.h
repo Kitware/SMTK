@@ -53,12 +53,6 @@ namespace smtk
       smtk::model::ItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
-      // Description:
-      virtual unsigned long convertGroupTypeToMask(
-        int /*grouptype*/, int /*entType*/) {return 0;}
-      virtual void removeGroupItems(int grouptype, int entType)
-      { return this->removeGroupItemsByMask(
-        this->convertGroupTypeToMask(grouptype, entType));}
       virtual void removeGroupItemsByMask(unsigned int mask);
 
       virtual std::vector<smtk::model::GroupItemPtr> findGroupItems(
