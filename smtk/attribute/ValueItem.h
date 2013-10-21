@@ -42,9 +42,6 @@ namespace smtk
     {
     public:
       friend class ValueItemDefinition;
-      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
-      static smtk::attribute::ValueItemPtr CastTo(const smtk::attribute::ItemPtr &p)
-      {return smtk::dynamic_pointer_cast<ValueItem>(p);}
 
       virtual ~ValueItem();
       virtual std::size_t numberOfValues() const

@@ -44,10 +44,6 @@ namespace smtk
       static smtk::attribute::GroupItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::GroupItemDefinitionPtr(new GroupItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
-      static smtk::attribute::GroupItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
-      {return smtk::dynamic_pointer_cast<GroupItemDefinition>(p);}
-
       virtual ~GroupItemDefinition();
       virtual Item::Type type() const;
       std::size_t numberOfItemDefinitions() const
