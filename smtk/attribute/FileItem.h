@@ -42,10 +42,6 @@ namespace smtk
     {
     friend class FileItemDefinition;
     public:
-      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
-      static smtk::attribute::FileItemPtr CastTo(const smtk::attribute::ItemPtr &p)
-      {return smtk::dynamic_pointer_cast<FileItem>(p);}
-
       virtual ~FileItem();
       virtual Item::Type type() const;
       bool shouldBeRelative() const;

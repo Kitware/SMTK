@@ -40,10 +40,6 @@ namespace smtk
       static smtk::attribute::StringItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::StringItemDefinitionPtr(new StringItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
-      static smtk::attribute::StringItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
-      {return smtk::dynamic_pointer_cast<StringItemDefinition>(p);}
-
       virtual ~StringItemDefinition();
       virtual Item::Type type() const;
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
