@@ -53,10 +53,10 @@ namespace smtk
       smtk::model::ItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
-      virtual void removeGroupItemsByMask(unsigned int mask);
+      virtual void removeGroupItemsByMask(unsigned long mask);
 
       virtual std::vector<smtk::model::GroupItemPtr> findGroupItems(
-                                              unsigned int mask) const;
+                                              unsigned long mask) const;
 
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }

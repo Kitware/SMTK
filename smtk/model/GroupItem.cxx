@@ -23,10 +23,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.s
 
 
 #include "smtk/model/GroupItem.h"
-using namespace smtk::model; 
+using namespace smtk::model;
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Model *model, int myid, unsigned long mask): 
+GroupItem::GroupItem(Model *model, int myid, unsigned long mask):
   Item(model, myid), m_entityMask(mask)
 {
 }
@@ -40,4 +40,45 @@ Item::Type GroupItem::type() const
 {
   return GROUP;
 }
+
 //----------------------------------------------------------------------------
+smtk::model::ItemPtr GroupItem::item(int id) const
+{
+  std::map<int, smtk::model::ItemPtr>::const_iterator it = this->m_items.find(id);
+  if (it == this->m_items.end())
+    {
+    return smtk::model::ItemPtr();
+    }
+  return it->second;
+}
+
+//----------------------------------------------------------------------------
+bool GroupItem::insert(smtk::model::ItemPtr ptr)
+{
+  if(!ptr)
+    {
+    return false;
+    }
+  if(this->canContain(ptr))
+    {
+    this->m_items[ptr->id()] = ptr;
+    return true;
+    }
+  return false;
+}
+//----------------------------------------------------------------------------
+bool GroupItem::remove(smtk::model::ItemPtr ptr)
+{
+  if(!ptr)
+    {
+    return false;
+    }
+  int mid = ptr->id();
+  std::map<int, smtk::model::ItemPtr>::iterator it = this->m_items.find(mid);
+  if(it != m_items.end() && ptr == it->second)
+    {
+    this->m_items.erase(it);
+    return true;
+    }
+  return false;
+}

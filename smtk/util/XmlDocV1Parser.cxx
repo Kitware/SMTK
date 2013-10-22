@@ -2259,26 +2259,23 @@ unsigned long  XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
     {
     switch (s[i])
       {
-      case 'd':
-        m |= 0x40;
-        break;
-      case 'b':
-        m |= 0x20;
+      case 'g':
+        m |= smtk::model::Item::GROUP;
         break;
       case 'm':
-        m |= 0x10;
+        m |= smtk::model::Item::MODEL_DOMAIN;
         break;
       case 'r':
-        m |= 0x8;
+        m |= smtk::model::Item::REGION;
         break;
       case 'f':
-        m |= 0x4;
+        m |= smtk::model::Item::FACE;
         break;
       case 'e':
-        m |= 0x2;
+        m |= smtk::model::Item::EDGE;
         break;
       case 'v':
-        m |= 0x1;
+        m |= smtk::model::Item::VERTEX;
         break;
       default:
         smtkErrorMacro(this->m_logger,

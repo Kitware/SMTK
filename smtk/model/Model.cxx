@@ -60,7 +60,7 @@ smtk::model::GroupItemPtr Model::createModelGroup(
 
 //----------------------------------------------------------------------------
 std::vector<smtk::model::GroupItemPtr> Model::findGroupItems(
-                                                    unsigned int mask) const
+                                                    unsigned long mask) const
 {
   std::vector<smtk::model::GroupItemPtr> result;
   result.reserve(this->m_items.size()/2); //guess half the items
@@ -80,7 +80,7 @@ std::vector<smtk::model::GroupItemPtr> Model::findGroupItems(
   return result;
 }
 //----------------------------------------------------------------------------
-void Model::removeGroupItemsByMask(unsigned int mask)
+void Model::removeGroupItemsByMask(unsigned long mask)
 {
   std::vector<smtk::model::GroupItemPtr> result = this->findGroupItems(mask);
   typedef std::vector<smtk::model::GroupItemPtr>::iterator iter;

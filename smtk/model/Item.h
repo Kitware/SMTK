@@ -57,7 +57,7 @@ namespace smtk
       virtual Item::Type type() const = 0;
 
       virtual std::string name() const
-      { return this->m_UserName; }
+      {return this->m_UserName;}
       virtual void setName(const std::string & strname)
       { this->m_UserName = strname; }
 

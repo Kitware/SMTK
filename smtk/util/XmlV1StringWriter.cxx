@@ -1307,31 +1307,27 @@ std::string XmlV1StringWriter::encodeColor(const double *c)
 std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)
 {
   std::string s;
-  if (m & 0x40)
+  if (m & smtk::model::Item::GROUP)
     {
-    s.append("d");
+    s.append("g");
     }
-  if (m & 0x20)
-    {
-    s.append("b");
-    }
-  if (m & 0x10)
+  if (m & smtk::model::Item::MODEL_DOMAIN)
     {
     s.append("m");
     }
-  if (m & 0x8)
+  if (m & smtk::model::Item::REGION)
     {
     s.append("r");
     }
-  if (m & 0x4)
+  if (m & smtk::model::Item::FACE)
     {
     s.append("f");
     }
-  if (m & 0x2)
+  if (m & smtk::model::Item::EDGE)
     {
     s.append("e");
     }
-  if (m & 0x1)
+  if (m & smtk::model::Item::VERTEX)
     {
     s.append("v");
     }
