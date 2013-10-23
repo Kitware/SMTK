@@ -11,8 +11,8 @@
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
-  <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::AttributeDefinitionPtr,smtk::WeakAttributeDefinitionPtrSet&gt;'"/>
-  <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;WeakAttributePtr&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
+  <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
 
   <!-- Suppressed because they are templated functions -->
@@ -24,9 +24,9 @@
   <!-- Return a list.  For now we will ingore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::ModelItemPtr&gt;::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
-	<suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
 
   @EXTRA_TYPESYSTEMS@
 
