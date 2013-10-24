@@ -44,7 +44,7 @@ namespace smtk
     class SMTKCORE_EXPORT GroupItem : public Item
     {
     public:
-      GroupItem(Model *model, int myid, unsigned long mask);
+      GroupItem(Model *model, int myid, MaskType mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
 
@@ -57,11 +57,11 @@ namespace smtk
       virtual bool insert(smtk::model::ItemPtr ptr);
       virtual bool remove(smtk::model::ItemPtr ptr);
 
-      unsigned long entityMask() const
+      MaskType entityMask() const
       { return this->m_entityMask;}
 
     protected:
-      unsigned long m_entityMask;
+      MaskType m_entityMask;
       mutable std::map<int, smtk::model::ItemPtr> m_items;
 
     private:

@@ -53,9 +53,9 @@ if __name__ == '__main__':
     if materialDef is None:
       print "could not create materialDef"
       sys.exit( -1 )
-    materialDef.setAssociationMask(0x40) #belongs on domains
+    materialDef.setAssociationMask(smtk.model.Item.REGION) #belongs on 3D domains
     boundaryConditionsDef = manager.createDefinition("BoundaryCondition")
-    boundaryConditionsDef.setAssociationMask(0x20); #belongs on boundaries
+    boundaryConditionsDef.setAssociationMask(smtk.model.Item.FACE); #belongs on 3D boundaries
     specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition")
     if specifiedHeadDef is None:
       print "Could not create SpecifiedHead"
@@ -157,15 +157,15 @@ if __name__ == '__main__':
     expSec.setDefinition(funcDef)
     attSec = addSubView( root, smtk.view.Attribute, "Materials")
     attSec.addDefinition(materialDef)
-    attSec.setModelEntityMask(0x40)
+    attSec.setModelEntityMask(smtk.model.Item.REGION)
     attSec.setOkToCreateModelEntities(True)
     modSec = addSubView(root, smtk.view.ModelEntity, "Domains")
-    modSec.setModelEntityMask(0x40) # Look at domains only
+    modSec.setModelEntityMask(smtk.model.Item.REGION) # Look at 3D domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
     attSec = addSubView(root, smtk.view.Attribute, "BoundaryConditions")
     attSec.addDefinition(boundaryConditionsDef)
     modSec = addSubView(root, smtk.view.ModelEntity, "Boundary View")
-    modSec.setModelEntityMask(0x20) # Look at boundary entities only
+    modSec.setModelEntityMask(smtk.model.Item.FACE) # Look at 3d boundary entities only
 
     manager.updateCategories()
     att = manager.createAttribute("TimeInfomation", timeParamDef)

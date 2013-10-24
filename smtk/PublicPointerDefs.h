@@ -102,6 +102,9 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::GridInfo2D >  GridInfo2DPtr;
     typedef smtk::shared_ptr< smtk::model::GridInfo3D >  GridInfo3DPtr;
 
+    // definition of the mask type for model entities. enum is in smtk/model/Item.h
+    typedef unsigned long                                MaskType;
+
   };
 
   namespace attribute

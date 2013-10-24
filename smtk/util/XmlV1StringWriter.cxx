@@ -1139,7 +1139,7 @@ void XmlV1StringWriter::processAttributeView(xml_node &node,
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
     if (v->okToCreateModelEntities())
       {
       node.append_attribute("CreateEntities").set_value(true);
@@ -1184,7 +1184,7 @@ void XmlV1StringWriter::processModelEntityView(xml_node &node,
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
     }
   if (v->definition() != NULL)
     {
@@ -1304,7 +1304,7 @@ std::string XmlV1StringWriter::encodeColor(const double *c)
   return result;
 }
 //----------------------------------------------------------------------------
-std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)
+std::string XmlV1StringWriter::encodeModelEntityMask(smtk::model::MaskType m)
 {
   std::string s;
   if (m & smtk::model::Item::GROUP)

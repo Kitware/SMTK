@@ -47,16 +47,16 @@ namespace smtk
       virtual ~Model();
       virtual smtk::model::ItemPtr getModelItem(int id);
       virtual smtk::model::GroupItemPtr createModelGroup(
-        const std::string &name, int myid, unsigned long mask);
+        const std::string &name, int myid, MaskType mask);
 
       virtual bool deleteModelGroup(int /*id*/) {return false;}
       smtk::model::ItemPtr modelDomain() const
       {return this->m_modelDomain;}
 
-      virtual void removeGroupItemsByMask(unsigned long mask);
+      virtual void removeGroupItemsByMask(MaskType mask);
 
       virtual std::vector<smtk::model::GroupItemPtr> findGroupItems(
-                                              unsigned long mask) const;
+                                              MaskType mask) const;
 
       virtual std::size_t numberOfItems()
       { return this->m_items.size(); }

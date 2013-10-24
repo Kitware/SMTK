@@ -105,7 +105,7 @@ void qtModelEntityView::createWidget( )
     }
 
   Manager *attManager = qtUIManager::instance()->attManager();
-  unsigned long mask = mview->modelEntityMask();
+  smtk::model::MaskType mask = mview->modelEntityMask();
   if(mask != 0 && mview->definition()==NULL)
     {
     attManager->findDefinitions(mask, this->Internals->attDefs);
@@ -210,7 +210,7 @@ bool qtModelEntityView::isRegionDomain()
     }
 /*
   Manager *attManager = qtUIManager::instance()->attManager();
-  unsigned long mask = mview->modelEntityMask();
+  smtk::model::MaskType mask = mview->modelEntityMask();
   if(mask & smtk::model::Item::REGION)
     {
     return true;
@@ -237,7 +237,7 @@ void qtModelEntityView::updateModelItems()
     this->Internals->ListBox->blockSignals(false);
     return;
     }
-  if(unsigned int mask = mview->modelEntityMask())
+  if(smtk::model::MaskType mask = mview->modelEntityMask())
     {
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::model::GroupItemPtr> result=refModel->findGroupItems(mask);
@@ -261,8 +261,8 @@ void qtModelEntityView::onShowCategory()
     {
     smtk::view::ModelEntityPtr mview =
       smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
-    unsigned int mask = mview->modelEntityMask() ? mview->modelEntityMask() :
-      smtk::model::Item::REGION;
+    smtk::model::MaskType mask = mview->modelEntityMask() ?
+      mview->modelEntityMask() : smtk::model::Item::REGION;
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::model::GroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(

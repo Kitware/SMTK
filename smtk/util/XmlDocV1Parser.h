@@ -135,7 +135,7 @@ namespace smtk
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);
 
-      unsigned long  decodeModelEntityMask(const std::string &s);
+      smtk::model::MaskType decodeModelEntityMask(const std::string &s);
       static int decodeColorInfo(const std::string &s, double *color);
 
       smtk::attribute::Manager &m_manager;

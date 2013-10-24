@@ -155,21 +155,17 @@ namespace smtk
       // Description:
       // Mask is the ability to specify what type of model entities
       // that the attribute can be associated with.
-      unsigned long associationMask() const
+      smtk::model::MaskType associationMask() const
       {return this->m_associationMask;}
-      void setAssociationMask(unsigned long mask)
+      void setAssociationMask(smtk::model::MaskType mask)
       {this->m_associationMask = mask;}
-      bool associatesWithVertex() const
-      { return ((this->m_associationMask & 0x1) != 0); }
-      bool associatesWithEdge() const
-      { return ((this->m_associationMask & 0x2) != 0); }
-      bool associatesWithFace() const
-      { return ((this->m_associationMask & 0x4) != 0); }
-      bool associatesWithRegion() const
-      { return ((this->m_associationMask & 0x8) != 0); }
-      bool associatesWithModel() const
-      { return ((this->m_associationMask & 0x10) != 0); }
-      bool canBeAssociated(unsigned long type) const
+      bool associatesWithVertex() const;
+      bool associatesWithEdge() const;
+      bool associatesWithFace() const;
+      bool associatesWithRegion() const;
+      bool associatesWithModel() const;
+      bool associatesWithGroup() const;
+      bool canBeAssociated(smtk::model::MaskType type) const
       { return (type == (type & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return
@@ -258,7 +254,7 @@ namespace smtk
       bool m_isRequired;
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;
-      unsigned long m_associationMask;
+      smtk::model::MaskType m_associationMask;
 
       std::string m_detailedDescription;
       std::string m_briefDescription;
