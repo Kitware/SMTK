@@ -51,6 +51,11 @@ public:
   iter_type SetCellOfDimension(const UUID& uid, int dim);
   iter_type SetCell(const UUID& uid, Cell& cell);
 
+  UUID AddCellOfDimension(int dim);
+  UUID AddCell(Cell& cell);
+  UUID AddCellOfDimensionWithUUID(const UUID& uid, int dim);
+  UUID AddCellWithUUID(const UUID& uid, Cell& cell);
+
   /// Inherited methods
   //@{
   virtual Item::Type type() const
