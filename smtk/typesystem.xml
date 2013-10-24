@@ -49,6 +49,40 @@
   <primitive-type name="std::size_t"/>
   <primitive-type name="std::string"/>
 
+  <primitive-type name="smtk::model::UUID" target-lang-api-name="PyObject">
+    <include file-name="smtk/model/UUID.h" location="global"/>
+
+    <conversion-rule>
+      <native-to-target>
+        // Get the uuid module object
+        PyObject* module = PyImport_ImportModule("uuid");
+        // Call the class inside the module to create an instance
+        unsigned char* data = %in.Begin();
+        PyObject* byteStr =
+          Py_BuildValue("s#", data, %in.Size());
+        PyObject* none = Py_None;
+        PyObject* %out = PyObject_CallMethod(module, "UUID", "OO", none, byteStr);
+        // FIXME: This hardly seems wise, but http://docs.python.org/2/c-api/none.html
+        //        says Py_None is reference-counted:
+        Py_DECREF(none);
+        Py_DECREF(byteStr);
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <!-- The 'check' attribute can be derived from the 'type' attribute,
+             it is defined here to test the CHECKTYPE type system variable. -->
+        <add-conversion type="PyObject" check="%CHECKTYPE[smtk::model::UUID](%in)">
+          PyObject* uuidBytes = PyObject_GetAttrString(%in, "bytes");
+          char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
+          if (ustr) {
+            for (int i = 0; i &lt; 16; ++i)
+              *((%out).Begin() + i) = ustr[i];
+          }
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </primitive-type>
+
   <container-type name="std::pair" type="pair">
     <include file-name="utility" location="global"/>
     <conversion-rule>
@@ -266,6 +300,7 @@
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::ModelBody"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo2D"/>
@@ -346,6 +381,28 @@
   <namespace-type name="smtk">
     <namespace-type name="model">
       <!-- setup the model classes -->
+      <!-- <value-type name="BRepModel" generate="no" /> -->
+
+      <object-type name="Cell">
+        <include file-name="smtk/model/Cell.h" location="local"/>
+      </object-type>
+
+      <object-type name="Arrangement">
+        <include file-name="smtk/model/Arrangement.h" location="local"/>
+      </object-type>
+
+      <object-type name="Tessellation">
+        <include file-name="smtk/model/Tessellation.h" location="local"/>
+      </object-type>
+
+      <object-type name="ImportJSON">
+        <include file-name="smtk/model/ImportJSON.h" location="local"/>
+      </object-type>
+
+      <object-type name="ExportJSON">
+        <include file-name="smtk/model/ExportJSON.h" location="local"/>
+      </object-type>
+
       <object-type name="Item">
         <include file-name="smtk/model/Item.h" location="local"/>
         <enum-type name="Type"/>
@@ -362,6 +419,10 @@
       <object-type name="Model">
         <include file-name="smtk/model/Model.h" location="local"/>
         <enum-type name="ModelEntityNodalTypes"/>
+      </object-type>
+
+      <object-type name="ModelBody">
+        <include file-name="smtk/model/ModelBody.h" location="local"/>
       </object-type>
 
       <object-type name="GridInfo">
