@@ -76,7 +76,7 @@ function(smtk_install_library target)
     ARCHIVE DESTINATION lib
   )
   export(PACKAGE ${target})
-  export(TARGETS ${target} ${target_DEPENDS} FILE ${target}-exports.cmake)
+  export(TARGETS ${target} ${target_DEPENDS} APPEND FILE ${target}-exports.cmake)
 endfunction(smtk_install_library)
 
 #generate an export header and create an install target for it

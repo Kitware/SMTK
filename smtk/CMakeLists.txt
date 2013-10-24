@@ -16,10 +16,11 @@ set(smtk_headers ${attributeHeaders} ${modelHeaders} ${utilHeaders} ${viewHeader
 set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs} ${viewSrcs})
 
 add_library(SMTKCore ${smtk_srcs})
+target_link_libraries(SMTKCore LINK_PRIVATE cJSON)
 smtk_export_header(SMTKCore SMTKCoreExports.h)
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(SMTKCore)
+smtk_install_library(SMTKCore DEPENDS cJSON)
 
 #add the Qt GUI code
 if(SMTK_BUILD_QT)
