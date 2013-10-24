@@ -11,8 +11,8 @@
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
-  <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::AttributeDefinitionPtr,smtk::WeakAttributeDefinitionPtrSet&gt;'"/>
-  <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;WeakAttributePtr&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
+  <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
 
   <!-- Suppressed because they are templated functions -->
@@ -24,9 +24,9 @@
   <!-- Return a list.  For now we will ingore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::ModelItemPtr&gt;::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
-	<suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -370,6 +370,14 @@
 
       <object-type name="GridInfo2D">
         <include file-name="smtk/model/GridInfo2D.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::model::GridInfo &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::model::GridInfo2D &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::model::GridInfo2D &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="GridInfo3D">
@@ -400,15 +408,31 @@
 
       <object-type name="RefItem">
         <include file-name="smtk/attribute/RefItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::RefItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::RefItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="RefItemDefinition">
         <include file-name="smtk/attribute/RefItemDefinition.h" location="local"/>
         <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::RefItemDefinition &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::RefItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::RefItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -422,15 +446,31 @@
 
       <object-type name="DirectoryItem">
         <include file-name="smtk/attribute/DirectoryItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::DirectoryItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::DirectoryItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="DirectoryItemDefinition">
         <include file-name="smtk/attribute/DirectoryItemDefinition.h" location="local"/>
         <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::DirectoryItemDefinition &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::DirectoryItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::DirectoryItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -438,6 +478,14 @@
 
       <object-type name="DoubleItem">
         <include file-name="smtk/attribute/DoubleItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::DoubleItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::DoubleItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="DoubleItemDefinition">
@@ -450,19 +498,43 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::DoubleItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::DoubleItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="FileItem">
         <include file-name="smtk/attribute/FileItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::FileItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::FileItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="FileItemDefinition">
         <include file-name="smtk/attribute/FileItemDefinition.h" location="local"/>
         <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::FileItemDefinition &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::FileItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::FileItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -470,7 +542,14 @@
 
       <object-type name="GroupItem">
         <include file-name="smtk/attribute/GroupItem.h" location="local"/>
-
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::GroupItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::GroupItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="GroupItemDefinition">
@@ -483,10 +562,26 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
          </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::GroupItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::GroupItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="IntItem">
         <include file-name="smtk/attribute/IntItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::IntItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::IntItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="IntItemDefinition">
@@ -496,6 +591,14 @@
                       return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::IntItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::IntItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -545,6 +648,14 @@
 
       <object-type name="StringItem">
         <include file-name="smtk/attribute/StringItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::StringItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::StringItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="StringItemDefinition">
@@ -557,19 +668,43 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::StringItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::StringItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="ValueItem">
         <include file-name="smtk/attribute/ValueItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ValueItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ValueItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="ValueItemDefinition">
         <include file-name="smtk/attribute/ValueItemDefinition.h" location="local" />
         <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::ValueItemDefinition &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::ValueItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ValueItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -577,15 +712,31 @@
 
       <object-type name="VoidItem">
         <include file-name="smtk/attribute/VoidItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::VoidItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::VoidItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="VoidItemDefinition">
         <include file-name="smtk/attribute/VoidItemDefinition.h" location="local" />
         <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::VoidItemDefinition &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::attribute::VoidItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::VoidItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -629,8 +780,8 @@
       <object-type name="Attribute">
         <include file-name="smtk/view/Attribute.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Attribute &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -653,8 +804,8 @@
       <object-type name="ModelEntity">
         <include file-name="smtk/view/ModelEntity.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::ModelEntity &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -665,8 +816,8 @@
       <object-type name="Root">
         <include file-name="smtk/view/Root.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Root &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -681,8 +832,8 @@
       <object-type name="SimpleExpression">
         <include file-name="smtk/view/SimpleExpression.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::SimpleExpression &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -693,8 +844,8 @@
       <object-type name="Instanced">
         <include file-name="smtk/view/Instanced.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Instanced &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Base &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Base &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);

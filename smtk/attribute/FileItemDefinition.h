@@ -44,10 +44,6 @@ namespace smtk
       static smtk::attribute::FileItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::FileItemDefinitionPtr(new FileItemDefinition(myName));}
 
-      // This method is for wrapping code.  C++ developers should use smtk::dynamic_pointer_cast
-      static smtk::attribute::FileItemDefinitionPtr CastTo(const smtk::attribute::ItemDefinitionPtr &p)
-      {return smtk::dynamic_pointer_cast<FileItemDefinition>(p);}
-
       virtual ~FileItemDefinition();
 
       virtual Item::Type type() const;

@@ -1,3 +1,4 @@
+#BEGIN REMOVE ME FROM PACKAGE
 
 def __bootstrap_smtk__():
   import sys, os
@@ -14,6 +15,10 @@ def __bootstrap_smtk__():
     if len(x) > 0:
       extra_paths = extra_paths + x
   sys.path = sys.path + extra_paths
+
+__bootstrap_smtk__()
+
+#END REMOVE ME FROM PACKAGE
 
 def __import_shared_ptrs__():
   import re
@@ -47,8 +52,6 @@ def __import_shared_ptrs__():
         globals()[name]  = _temp.__dict__[i]
       except:
         pass
-
-__bootstrap_smtk__()
 
 #import the modules information we need.
 #We are using _import__ since shiboken doesn't create proper python modules
