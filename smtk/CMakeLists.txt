@@ -18,6 +18,10 @@ set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs} ${viewSrcs})
 add_library(SMTKCore ${smtk_srcs})
 target_link_libraries(SMTKCore LINK_PRIVATE cJSON)
 smtk_export_header(SMTKCore SMTKCoreExports.h)
+if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
+  # Set position-independent flag when other project libs are shared.
+  set_target_properties(SMTKCore PROPERTIES POSITION_INDEPENDENT_CODE True)
+endif()
 
 #install the library and exports the library when used from a build tree
 smtk_install_library(SMTKCore DEPENDS cJSON)
