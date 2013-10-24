@@ -134,6 +134,28 @@ public:
     this->InsertCellReferences(it);
     return it;
     }
+
+  /// A wrappable version of InsertCellOfDimension
+  UUID AddCellOfDimension(int dim)
+    {
+    return this->InsertCellOfDimension(dim)->first;
+    }
+
+  /// A wrappable version of InsertCell
+  UUID AddCell(Cell& cell)
+    {
+    return this->InsertCell(cell)->first;
+    }
+  /// A wrappable version of SetCellOfDimension
+  UUID AddCellOfDimensionWithUUID(const UUID& uid, int dim)
+    {
+    return this->SetCellOfDimension(uid, dim)->first;
+    }
+  /// A wrappable version of SetCell
+  UUID AddCellWithUUID(const UUID& uid, Cell& cell)
+    {
+    return this->SetCell(uid, cell)->first;
+    }
   //@}
 
   /// Queries on entities belonging to the solid.
