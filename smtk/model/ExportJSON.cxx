@@ -9,7 +9,7 @@
 
 // Some cJSON helpers
 namespace {
-  cJSON* cJSON_CreateUUIDArray(smtk::model::UUID* uids, unsigned count)
+  cJSON* cJSON_CreateUUIDArray(smtk::util::UUID* uids, unsigned count)
     {
     cJSON* a = cJSON_CreateArray();
     for (unsigned i = 0; i < count; ++i)
@@ -22,6 +22,8 @@ namespace {
 
 namespace smtk {
   namespace model {
+
+using smtk::util::UUID;
 
 cJSON* ExportJSON::FromUUIDs(const UUIDs& uids)
 {

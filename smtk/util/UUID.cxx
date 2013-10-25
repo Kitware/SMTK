@@ -1,10 +1,10 @@
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 namespace smtk {
-  namespace model {
+  namespace util {
 
 /// Default constructor creates a nil UUID (IsNull() == true).
 UUID::UUID()
@@ -131,5 +131,5 @@ std::istream& operator >> (std::istream& stream, UUID& uid)
   return stream;
 }
 
-  } // namespace model
+  } // namespace util
 } // namespace smtk

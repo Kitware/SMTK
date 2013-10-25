@@ -2,7 +2,7 @@
 #define __smtk_model_Arrangement_h
 
 #include "smtk/model/BRepModel.h"
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 #include <map>
 #include <string>
@@ -11,7 +11,7 @@
 namespace smtk {
   namespace model {
 
-using smtk::model::UUID;
+using smtk::util::UUID;
 
 // === WARNING === If you change this enum, also update string names in Arrangement.cxx!
 /// Specification of how a cell's relations are arranged.

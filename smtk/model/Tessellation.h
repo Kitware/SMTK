@@ -1,7 +1,7 @@
 #ifndef __smtk_model_Tessellation_h
 #define __smtk_model_Tessellation_h
 
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 #include <map>
 #include <vector>
@@ -9,7 +9,7 @@
 namespace smtk {
   namespace model {
 
-using smtk::model::UUID;
+using smtk::util::UUID;
 
 /**\brief Store geometric information related to model entities.
   *

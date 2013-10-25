@@ -1,7 +1,7 @@
 #ifndef __smtk_model_BRepModel_h
 #define __smtk_model_BRepModel_h
 
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/model/Item.h"
@@ -11,6 +11,8 @@
 
 namespace smtk {
   namespace model {
+
+using smtk::util::UUID;
 
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *

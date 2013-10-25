@@ -1,5 +1,5 @@
-#ifndef __smtk_model_UUID_h
-#define __smtk_model_UUID_h
+#ifndef __smtk_util_UUID_h
+#define __smtk_util_UUID_h
 
 #include "smtk/SMTKCoreExports.h"
 
@@ -9,11 +9,11 @@
 #include <iostream>
 
 namespace smtk {
-  namespace model {
+  namespace util {
 
 //.NAME UUID - An RFC4122-compliant Universally Unique IDentifier (UUID)
 //.SECTION Description
-// This class uses Boost's UUID class to implement smtk::model::UUID.
+// This class uses Boost's UUID class to implement smtk::util::UUID.
 // Unlike the Boost version, there is some shorthand to invoke the
 // various generators.
 class SMTKCORE_EXPORT UUID
@@ -57,7 +57,7 @@ protected:
 std::ostream& operator << (std::ostream& stream, const UUID& uid);
 std::istream& operator >> (std::istream& stream, UUID& uid);
 
-  } // namespace model
+  } // namespace util
 } // namespace smtk
 
-#endif // __smtk_model_UUID_h
+#endif // __smtk_util_UUID_h

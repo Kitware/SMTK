@@ -1,6 +1,7 @@
 namespace smtk {
   namespace model {
 
+using smtk::util::UUID;
 typedef std::map<UUID,Cell> UUIDsToCells;
 typedef UUIDsToCells::iterator UUIDWithCell;
 

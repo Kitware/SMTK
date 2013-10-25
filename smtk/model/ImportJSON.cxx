@@ -44,13 +44,13 @@ namespace {
       }
     return 0;
     }
-  int cJSON_GetUUIDArray(cJSON* uidRec, std::vector<smtk::model::UUID>& uids)
+  int cJSON_GetUUIDArray(cJSON* uidRec, std::vector<smtk::util::UUID>& uids)
     {
     for (; uidRec; uidRec = uidRec->next)
       {
       if (uidRec->type == cJSON_String && uidRec->valuestring && uidRec->valuestring[0])
         {
-        uids.push_back(smtk::model::UUID(uidRec->valuestring));
+        uids.push_back(smtk::util::UUID(uidRec->valuestring));
         }
       else
         {
@@ -62,7 +62,7 @@ namespace {
       }
     return 1;
     }
-  int cJSON_GetObjectUUIDArray(cJSON* node, const char* name, std::vector<smtk::model::UUID>& uids)
+  int cJSON_GetObjectUUIDArray(cJSON* node, const char* name, std::vector<smtk::util::UUID>& uids)
     {
     cJSON* valItem = cJSON_GetObjectItem(node, name);
     if (valItem && valItem->type == cJSON_Array)
@@ -93,6 +93,8 @@ namespace {
 
 namespace smtk {
   namespace model {
+
+using smtk::util::UUID;
 
 int ImportJSON::IntoModel(
   const char* json, ModelBody* model)
