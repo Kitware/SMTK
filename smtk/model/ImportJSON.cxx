@@ -7,6 +7,8 @@
 
 #include "cJSON.h"
 
+#include <string.h>
+
 // Some cJSON helpers
 namespace {
   int cJSON_GetIntegerValue(cJSON* valItem, int& val)
