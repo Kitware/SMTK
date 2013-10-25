@@ -11,7 +11,7 @@ class SMTKCORE_EXPORT BRepModel<UUID,UUIDs,Cell>
 public:
   typedef BRepModel<UUID,UUIDs,Cell> self_type;
   typedef UUIDsToCells storage_type;
-  typedef typename storage_type::iterator iter_type;
+  typedef storage_type::iterator iter_type;
 
   /**\brief Construction requires a container for storage.
     *
