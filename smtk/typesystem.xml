@@ -48,7 +48,6 @@
 
   <primitive-type name="std::size_t"/>
   <primitive-type name="std::string"/>
-
   <primitive-type name="smtk::model::UUID" target-lang-api-name="PyObject">
     <include file-name="smtk/model/UUID.h" location="global"/>
 
@@ -61,7 +60,9 @@
         PyObject* byteStr =
           Py_BuildValue("s#", data, %in.Size());
         PyObject* none = Py_None;
-        PyObject* %out = PyObject_CallMethod(module, "UUID", "OO", none, byteStr);
+        char v_uuid[]="UUID";
+        char v_00[]="OO";
+        PyObject* %out = PyObject_CallMethod(module, v_uuid, v_00, none, byteStr);
         // FIXME: This hardly seems wise, but http://docs.python.org/2/c-api/none.html
         //        says Py_None is reference-counted:
         Py_DECREF(none);
@@ -300,7 +301,14 @@
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::ModelBody"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::ModelBody">
+    <modify-function signature="ArrangeCell(smtk::model::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE result = %CPPSELF->get()->ArrangeCell(%1,%2,*%3,%4);
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
+      </inject-code>
+    </modify-function>
+  </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo2D"/>
@@ -382,6 +390,10 @@
     <namespace-type name="model">
       <!-- setup the model classes -->
       <!-- <value-type name="BRepModel" generate="no" /> -->
+
+      <enum-type name="ArrangementKind">
+        <include file-name="smtk/model/Arrangement.h" location="local"/>
+      </enum-type>
 
       <object-type name="Cell">
         <include file-name="smtk/model/Cell.h" location="local"/>
