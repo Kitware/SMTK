@@ -5,6 +5,7 @@ set(utilSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
   Logger.cxx
+  UUID.cxx
   XmlDocV1Parser.cxx
   XmlV1StringWriter.cxx
   )
@@ -14,6 +15,7 @@ set(utilHeaders
   AttributeWriter.h
   Logger.h
   UserData.h
+  UUID.h
   XmlDocV1Parser.h
   XmlV1StringWriter.h
   )

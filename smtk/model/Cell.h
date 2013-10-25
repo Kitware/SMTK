@@ -9,11 +9,12 @@
 #include <sstream>
 #include <vector>
 
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 namespace smtk {
   namespace model {
 
+using smtk::util::UUID;
 typedef std::set<UUID> UUIDs;
 typedef std::vector<UUID> UUIDArray;
 typedef std::vector<UUIDArray> UUIDArrays;

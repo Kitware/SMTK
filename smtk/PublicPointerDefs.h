@@ -47,7 +47,6 @@ namespace smtk
     class ModelBody;
     class ModelDomainItem;
     struct Tessellation;
-    class UUID;
   }
 
   namespace attribute
@@ -80,6 +79,7 @@ namespace smtk
   namespace util
   {
     class UserData;
+    class UUID;
   }
 
   namespace view

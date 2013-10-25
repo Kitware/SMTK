@@ -48,8 +48,8 @@
 
   <primitive-type name="std::size_t"/>
   <primitive-type name="std::string"/>
-  <primitive-type name="smtk::model::UUID" target-lang-api-name="PyObject">
-    <include file-name="smtk/model/UUID.h" location="global"/>
+  <primitive-type name="smtk::util::UUID" target-lang-api-name="PyObject">
+    <include file-name="smtk/util/UUID.h" location="global"/>
 
     <conversion-rule>
       <native-to-target>
@@ -72,7 +72,7 @@
       <target-to-native>
         <!-- The 'check' attribute can be derived from the 'type' attribute,
              it is defined here to test the CHECKTYPE type system variable. -->
-        <add-conversion type="PyObject" check="%CHECKTYPE[smtk::model::UUID](%in)">
+        <add-conversion type="PyObject" check="%CHECKTYPE[smtk::util::UUID](%in)">
           PyObject* uuidBytes = PyObject_GetAttrString(%in, "bytes");
           char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
           if (ustr) {
@@ -302,7 +302,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::ModelBody">
-    <modify-function signature="ArrangeCell(smtk::model::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
+    <modify-function signature="ArrangeCell(smtk::util::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE result = %CPPSELF->get()->ArrangeCell(%1,%2,*%3,%4);
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);

@@ -4,13 +4,14 @@
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/model/ModelBody.h"
 
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 struct cJSON;
 
 namespace smtk {
   namespace model {
 
+using smtk::util::UUID;
 class ModelBody;
 
 class SMTKCORE_EXPORT ExportJSON

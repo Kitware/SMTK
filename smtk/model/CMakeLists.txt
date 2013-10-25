@@ -10,7 +10,6 @@ set(modelSrcs
   ModelBody.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
-  UUID.cxx
   )
 
 set(modelHeaders
@@ -28,7 +27,6 @@ set(modelHeaders
   ModelBody.h
   ModelDomainItem.h
   Tessellation.h
-  UUID.h
   )
 
 #install the headers

@@ -1,11 +1,11 @@
-#include "smtk/model/UUID.h"
+#include "smtk/util/UUID.h"
 
 #include <iostream>
 #include <sstream>
 
 #include <assert.h>
 
-using smtk::model::UUID;
+using smtk::util::UUID;
 
 int main(int argc, char* argv[])
 {
