@@ -6,9 +6,13 @@
 
 function(determineSharedPtrType type incType)
 
-  set(BOOST_TYPE 3)
-  set(RESULT 0)
+  set(RESULT)
   set(SHARED_PTR_TYPE_FOUND FALSE)
+
+  #for support of owner_less we mark
+  #boost as supporting it, and also
+  #we mark c++11
+  set(HAS_OWNER_LESS 0 PARENT_SCOPE)
 
   if(NOT ${SHARED_PTR_TYPE_FOUND})
     try_compile(SHARED_PTR_TYPE_FOUND
@@ -18,6 +22,7 @@ function(determineSharedPtrType type incType)
     if(${SHARED_PTR_TYPE_FOUND})
       set(RESULT "std")
       set(INCLUDE_RESULT "#include <memory>")
+      set(HAS_OWNER_LESS 1 PARENT_SCOPE)
     endif()
   endif()
 
@@ -35,8 +40,10 @@ function(determineSharedPtrType type incType)
   if(NOT ${SHARED_PTR_TYPE_FOUND})
     set(RESULT "boost")
     set(INCLUDE_RESULT "#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>")
+#include <boost/weak_ptr.hpp>
+#include <boost/smart_ptr/owner_less.hpp>")
     set(${type}_BOOST_TRUE TRUE PARENT_SCOPE)
+    set(HAS_OWNER_LESS 1 PARENT_SCOPE)
   endif()
 
 

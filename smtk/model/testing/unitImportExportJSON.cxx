@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include <assert.h>
+#include <string.h>
 
 using namespace smtk::model;
 

@@ -182,33 +182,33 @@ namespace smtk
   };
 
 
-#if defined(_WIN32) && defined(_MSC_VER) && _MSC_VER  >= 1600
-  //special map and set typedefs to work around VS removing less
-  //than from weak pointer in 2010 and greater
+#ifdef smtk_has_owner_less
+  //special map and set typedefs for better safety with sets of weak pointers
+  //since sets of weak pointers can be dangerous.
   namespace attribute
   {
     typedef std::set< attribute::WeakAttributePtr,
-      std::owner_less<attribute::WeakAttributePtr > >        WeakAttributePtrSet;
-    typedef std::set< WeakAttributeDefinitionPtr,
-      std::owner_less< WeakAttributeDefinitionPtr > >        WeakDefinitionPtrSet;
-    typedef std::set< WeakItemDefinitionPtr,
-      std::owner_less< WeakItemDefinitionPtr > >             WeakItemDefinitionPtrSet;
-    typedef std::set< WeakItemPtr,
-      std::owner_less< WeakItemPtr > >   WeakItemPtrSet;
+      smtk::owner_less<attribute::WeakAttributePtr > >        WeakAttributePtrSet;
+    typedef std::set< attribute::WeakDefinitionPtr,
+      smtk::owner_less< attribute::WeakDefinitionPtr > >      WeakDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemDefinitionPtr,
+      smtk::owner_less< attribute::WeakItemDefinitionPtr > >  WeakItemDefinitionPtrSet;
+    typedef std::set< attribute::WeakItemPtr,
+      smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
   };
 
   namespace model
   {
     typedef std::set< WeakItemPtr,
-      std::owner_less<WeakItemPtr > >        WeakItemPtrSet;
+      smtk::owner_less<WeakItemPtr > >        WeakItemPtrSet;
     typedef std::set< WeakModelPtr,
-      std::owner_less<WeakModelPtr > >       WeakModelPtrSet;
+      smtk::owner_less<WeakModelPtr > >       WeakModelPtrSet;
   };
 
   namespace view
   {
     typedef std::set< view::WeakBasePtr,
-      std::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
+      smtk::owner_less<view::WeakBasePtr > >            WeakViewPtrSet;
   };
 
 #else
