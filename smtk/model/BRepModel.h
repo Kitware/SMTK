@@ -21,7 +21,7 @@ namespace smtk {
   * is unable/unwilling to work with UUIDs.
   */
 template<typename UUID, typename UUIDs, typename Cell>
-class SMTKCORE_EXPORT BRepModel : public Item
+class SMTKCORE_EXPORT BRepModel
 {
 public:
   typedef BRepModel<UUID,UUIDs,Cell> self_type;
@@ -55,12 +55,6 @@ public:
   UUID AddCell(Cell& cell);
   UUID AddCellOfDimensionWithUUID(const UUID& uid, int dim);
   UUID AddCellWithUUID(const UUID& uid, Cell& cell);
-
-  /// Inherited methods
-  //@{
-  virtual Item::Type type() const
-    { return Item::REGION; }
-  //@}
 };
 
   } // model namespace
