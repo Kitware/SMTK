@@ -34,7 +34,7 @@ namespace smtk
 {
   namespace model
   {
-    class Arrangement;
+    struct Arrangement;
     class Cell;
     class ExportJSON;
     class GridInfo;
@@ -46,7 +46,7 @@ namespace smtk
     class Model;
     class ModelBody;
     class ModelDomainItem;
-    class Tessellation;
+    struct Tessellation;
     class UUID;
   }
 
