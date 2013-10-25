@@ -8,6 +8,7 @@ namespace smtk {
 
 /// Default constructor creates a nil UUID (IsNull() == true).
 UUID::UUID()
+ : Data()
 {
 }
 
