@@ -1957,10 +1957,10 @@ void XmlDocV1Parser::processAttributeView(xml_node &node,
   attribute::DefinitionPtr def;
   xml_node child, attTypes;
   std::string defType;
-  xatt = node.attribute("ModelEnityFilter");
+  xatt = node.attribute("ModelEntityFilter");
   if (xatt)
     {
-    unsigned long mask = this->decodeModelEntityMask(xatt.value());
+    smtk::model::MaskType mask = this->decodeModelEntityMask(xatt.value());
     v->setModelEntityMask(mask);
 
     xatt = node.attribute("CreateEntities");
@@ -2050,11 +2050,11 @@ void XmlDocV1Parser::processModelEntityView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  xml_attribute xatt = node.attribute("ModelEnityFilter");
+  xml_attribute xatt = node.attribute("ModelEntityFilter");
   xml_node child = node.child("Definition");
   if (xatt)
     {
-    unsigned long mask = this->decodeModelEntityMask(xatt.value());
+    smtk::model::MaskType mask = this->decodeModelEntityMask(xatt.value());
     v->setModelEntityMask(mask);
     }
 
@@ -2180,7 +2180,7 @@ void XmlDocV1Parser::processModelInfo(xml_node &root)
   if ( modelInfo && refModel)
     {
     std::string name;
-    unsigned long mask;
+    smtk::model::MaskType mask;
     int gid;
     smtk::model::GroupItemPtr modelGroup;
     xml_node gnode;
@@ -2251,34 +2251,32 @@ int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
   return 4 - i; // If we processed all the components this would be 0
 }
 //----------------------------------------------------------------------------
-unsigned long  XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
+smtk::model::MaskType
+XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
 {
-  unsigned long m = 0;
+  smtk::model::MaskType m = 0;
   std::size_t i, n = s.length();
   for (i = 0; i < n; i++)
     {
     switch (s[i])
       {
-      case 'd':
-        m |= 0x40;
-        break;
-      case 'b':
-        m |= 0x20;
+      case 'g':
+        m |= smtk::model::Item::GROUP;
         break;
       case 'm':
-        m |= 0x10;
+        m |= smtk::model::Item::MODEL_DOMAIN;
         break;
       case 'r':
-        m |= 0x8;
+        m |= smtk::model::Item::REGION;
         break;
       case 'f':
-        m |= 0x4;
+        m |= smtk::model::Item::FACE;
         break;
       case 'e':
-        m |= 0x2;
+        m |= smtk::model::Item::EDGE;
         break;
       case 'v':
-        m |= 0x1;
+        m |= smtk::model::Item::VERTEX;
         break;
       default:
         smtkErrorMacro(this->m_logger,

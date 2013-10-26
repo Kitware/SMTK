@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/model/Item.h" // just needed for enum
 #include "smtk/util/AttributeWriter.h"
 #include "smtk/util/Logger.h"
 
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
   iitemdef->addCategory("Heat");
 
   smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
-  def1->setAssociationMask(0x20); // belongs on domains
+  def1->setAssociationMask(smtk::model::Item::MODEL_DOMAIN); // belongs on model
    // Lets add some item definitions
   smtk::attribute::DoubleItemDefinitionPtr ditemdef =
     def1->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
@@ -125,7 +126,7 @@ int main(int argc, char *argv[])
 
 
   smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
-  def2->setAssociationMask(0x7);
+  def2->setAssociationMask(smtk::model::Item::REGION);
    // Lets add some item definitions
   smtk::attribute::StringItemDefinitionPtr sitemdef =
     def2->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("StringItem1");

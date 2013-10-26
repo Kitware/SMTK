@@ -48,9 +48,9 @@ namespace smtk
       // NEED TO CLARIFY - are groups of entities
       // represented by this mask?  For example, a set of model faces??
       // If not we need to add something to clarify this
-      unsigned long modelEntityMask() const
+      smtk::model::MaskType modelEntityMask() const
       {return this->m_modelEntityMask;}
-      void setModelEntityMask(unsigned long mask)
+      void setModelEntityMask(smtk::model::MaskType mask)
       {this->m_modelEntityMask = mask;}
 
       // If this def is not null then the section should
@@ -62,7 +62,7 @@ namespace smtk
       {this->m_attributeDefinition = def;}
 
     protected:
-      unsigned long m_modelEntityMask;
+      smtk::model::MaskType m_modelEntityMask;
       smtk::attribute::DefinitionPtr m_attributeDefinition;
     private:
 

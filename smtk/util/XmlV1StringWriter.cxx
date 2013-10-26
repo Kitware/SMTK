@@ -1139,7 +1139,7 @@ void XmlV1StringWriter::processAttributeView(xml_node &node,
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
     if (v->okToCreateModelEntities())
       {
       node.append_attribute("CreateEntities").set_value(true);
@@ -1184,7 +1184,7 @@ void XmlV1StringWriter::processModelEntityView(xml_node &node,
   if (v->modelEntityMask())
     {
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
-    node.append_attribute("ModelEnityFilter").set_value(s.c_str());
+    node.append_attribute("ModelEntityFilter").set_value(s.c_str());
     }
   if (v->definition() != NULL)
     {
@@ -1269,8 +1269,7 @@ void XmlV1StringWriter::processModelInfo()
         itemIt != refModel->endItemIterator();
         ++itemIt)
       {
-      if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
-        || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
+      if(itemIt->second->type() == smtk::model::Item::GROUP)
         {
         smtk::model::GroupItemPtr itemGroup =
           smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
@@ -1305,34 +1304,30 @@ std::string XmlV1StringWriter::encodeColor(const double *c)
   return result;
 }
 //----------------------------------------------------------------------------
-std::string XmlV1StringWriter::encodeModelEntityMask(unsigned long m)
+std::string XmlV1StringWriter::encodeModelEntityMask(smtk::model::MaskType m)
 {
   std::string s;
-  if (m & 0x40)
+  if (m & smtk::model::Item::GROUP)
     {
-    s.append("d");
+    s.append("g");
     }
-  if (m & 0x20)
-    {
-    s.append("b");
-    }
-  if (m & 0x10)
+  if (m & smtk::model::Item::MODEL_DOMAIN)
     {
     s.append("m");
     }
-  if (m & 0x8)
+  if (m & smtk::model::Item::REGION)
     {
     s.append("r");
     }
-  if (m & 0x4)
+  if (m & smtk::model::Item::FACE)
     {
     s.append("f");
     }
-  if (m & 0x2)
+  if (m & smtk::model::Item::EDGE)
     {
     s.append("e");
     }
-  if (m & 0x1)
+  if (m & smtk::model::Item::VERTEX)
     {
     s.append("v");
     }

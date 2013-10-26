@@ -112,7 +112,7 @@ namespace smtk
       void processBasicView(pugi::xml_node &node,
                             smtk::view::BasePtr v);
 
-      static std::string encodeModelEntityMask(unsigned long m);
+      static std::string encodeModelEntityMask(smtk::model::MaskType m);
       static std::string encodeColor(const double *color);
 
       const smtk::attribute::Manager &m_manager;

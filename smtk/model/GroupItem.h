@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Item.h"
+#include <map>
 #include <string>
 
 namespace smtk
@@ -43,7 +44,7 @@ namespace smtk
     class SMTKCORE_EXPORT GroupItem : public Item
     {
     public:
-      GroupItem(Model *model, int myid, unsigned long mask);
+      GroupItem(Model *model, int myid, MaskType mask);
       virtual ~GroupItem();
       virtual Item::Type type() const;
 
@@ -51,12 +52,17 @@ namespace smtk
       {return this->canContain(ptr->type());}
       bool canContain(smtk::model::Item::Type enType) const
       {return ((this->m_entityMask & enType) != 0);}
-      virtual std::size_t numberOfItems() const {return 0;}
-      virtual smtk::model::ItemPtr item(int i) const {return smtk::model::ItemPtr();}
-      virtual bool insert(smtk::model::ItemPtr ptr) {return false;}
-      virtual bool remove(smtk::model::ItemPtr ptr) {return false;}
+      virtual std::size_t numberOfItems() const {return this->m_items.size();}
+      virtual smtk::model::ItemPtr item(int i) const;
+      virtual bool insert(smtk::model::ItemPtr ptr);
+      virtual bool remove(smtk::model::ItemPtr ptr);
+
+      MaskType entityMask() const
+      { return this->m_entityMask;}
 
     protected:
+      MaskType m_entityMask;
+      mutable std::map<int, smtk::model::ItemPtr> m_items;
 
     private:
     };

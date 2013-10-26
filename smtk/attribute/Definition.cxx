@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
+#include "smtk/model/Item.h" // for model entity enum
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -95,6 +96,37 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
+}
+
+//----------------------------------------------------------------------------
+bool Definition::associatesWithVertex() const
+{
+  return ((this->m_associationMask & smtk::model::Item::VERTEX) != 0);
+}
+//----------------------------------------------------------------------------
+bool Definition::associatesWithEdge() const
+{
+  return ((this->m_associationMask & smtk::model::Item::EDGE) != 0);
+}
+//----------------------------------------------------------------------------
+bool Definition::associatesWithFace() const
+{
+  return ((this->m_associationMask & smtk::model::Item::FACE) != 0);
+}
+//----------------------------------------------------------------------------
+bool Definition::associatesWithRegion() const
+{
+  return ((this->m_associationMask & smtk::model::Item::REGION) != 0);
+}
+//----------------------------------------------------------------------------
+bool Definition::associatesWithModel() const
+{
+  return ((this->m_associationMask & smtk::model::Item::MODEL_DOMAIN) != 0);
+}
+//----------------------------------------------------------------------------
+bool Definition::associatesWithGroup() const
+{
+  return ((this->m_associationMask & smtk::model::Item::GROUP) != 0);
 }
 
 //----------------------------------------------------------------------------

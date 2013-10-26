@@ -52,9 +52,9 @@ namespace smtk
       { return this->m_definitions.size();}
       smtk::attribute::DefinitionPtr definition(int ith) const
       {return this->m_definitions[ith];}
-      unsigned long modelEntityMask() const
+      smtk::model::MaskType modelEntityMask() const
       {return this->m_modelEntityMask;}
-      void setModelEntityMask(unsigned long mask)
+      void setModelEntityMask(smtk::model::MaskType mask)
       {this->m_modelEntityMask = mask;}
       bool okToCreateModelEntities() const
       { return this->m_okToCreateModelEntities;}
@@ -63,7 +63,7 @@ namespace smtk
 
     protected:
       std::vector<smtk::attribute::DefinitionPtr> m_definitions;
-      unsigned long m_modelEntityMask;
+      smtk::model::MaskType m_modelEntityMask;
       bool m_okToCreateModelEntities;
 
     private:

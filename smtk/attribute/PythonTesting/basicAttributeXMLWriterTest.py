@@ -78,7 +78,7 @@ if __name__ == '__main__':
     iitemdef.addCategory('Heat');
 
     def1 = manager.createDefinition('Derived1', 'BaseDef')
-    def1.setAssociationMask(0x20) # belongs on domains
+    def1.setAssociationMask(smtk.model.Item.MODEL_DOMAIN) # belongs on model
     # Lets add some item definitions
     ditemdef = addItemDefinition(def1, smtk.attribute.DoubleItemDefinition, 'DoubleItem1')
     # Allow this one to hold an expression
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     vdef.setLabel('Option 1')
 
     def2 = manager.createDefinition('Derived2', 'Derived1')
-    def2.setAssociationMask(0x7)
+    def2.setAssociationMask(smtk.model.Item.REGION)
     # Lets add some item definitions
     sitemdef = addItemDefinition( def2, smtk.attribute.StringItemDefinition, 'StringItem1' )
     sitemdef.setIsMultiline(True)

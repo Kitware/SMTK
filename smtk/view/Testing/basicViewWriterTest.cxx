@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/model/Item.h" // needed for Item enum
 #include "smtk/util/Logger.h"
 #include "smtk/util/XmlV1StringWriter.h"
 #include "smtk/util/XmlDocV1Parser.h"
@@ -59,9 +60,9 @@ int main()
   // Lets create some attribute Definitions
   attribute::DefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
   attribute::DefinitionPtr materialDef = manager.createDefinition("Material");
-  materialDef->setAssociationMask(0x40); // belongs on domains
+  materialDef->setAssociationMask(smtk::model::Item::REGION); // belongs on regions for 3D problem
   attribute::DefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
-  boundaryConditionsDef->setAssociationMask(0x20); // belongs on boundaries
+  boundaryConditionsDef->setAssociationMask(smtk::model::Item::FACE); // belongs on boundaries for 3D problem
   attribute::DefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
   attribute::DefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
   attribute::DefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
@@ -151,16 +152,16 @@ int main()
   view::AttributePtr attSec;
   attSec = root->addSubView<view::AttributePtr>("Materials");
   attSec->addDefinition(materialDef);
-  attSec->setModelEntityMask(0x40);
+  attSec->setModelEntityMask(smtk::model::Item::REGION);
   attSec->setOkToCreateModelEntities(true);
   view::ModelEntityPtr modSec;
   modSec = root->addSubView<view::ModelEntityPtr>("Domains");
-  modSec->setModelEntityMask(0x40); // Look at domains only
+  modSec->setModelEntityMask(smtk::model::Item::REGION); // Look at domains only for 3D
   modSec->setDefinition(materialDef); // use tabled view focusing on Material Attributes
   attSec = root->addSubView<view::AttributePtr>("BoundaryConditions");
   attSec->addDefinition(boundaryConditionsDef);
   modSec = root->addSubView<view::ModelEntityPtr>("Boundary View");
-  modSec->setModelEntityMask(0x20); // Look at boundary entities only
+  modSec->setModelEntityMask(smtk::model::Item::FACE); // Look at 3D boundary entities only
 
   manager.updateCategories();
   attribute::AttributePtr att = manager.createAttribute("TimeInfomation", timeParamDef);

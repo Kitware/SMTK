@@ -48,25 +48,23 @@ namespace smtk
         FACE=4,
         REGION=8,
         MODEL_DOMAIN=16,
-        BOUNDARY_GROUP=32,
-        DOMAIN_SET=64
+        GROUP=32
       };
-      Item(Model *model, int myid, unsigned long mask=0);
+      Item(Model *model, int myid);
       virtual ~Item();
       int id() const
       {return this->m_id;}
       virtual Item::Type type() const = 0;
 
       virtual std::string name() const
-      { return this->m_UserName; }
+      {return this->m_UserName;}
       virtual void setName(const std::string & strname)
       { this->m_UserName = strname; }
 
-      unsigned long entityMask() const
-      { return this->m_entityMask;}
 
       virtual void attachAttribute(smtk::attribute::AttributePtr);
       virtual void detachAttribute(smtk::attribute::AttributePtr, bool reverse=true);
+
       virtual void detachAllAttributes();
       virtual bool isAttributeAssociated(smtk::attribute::AttributePtr) const;
 
@@ -100,7 +98,6 @@ namespace smtk
       int m_id;
       std::string m_UserName;
       std::set<smtk::attribute::AttributePtr> m_attributes;
-      unsigned long m_entityMask;
 
     private:
     };

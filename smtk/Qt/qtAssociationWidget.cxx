@@ -310,8 +310,7 @@ void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr t
       {
       // item for the whole model
       }
-    else if(itemIt->second->type() == smtk::model::Item::BOUNDARY_GROUP
-      || itemIt->second->type() == smtk::model::Item::DOMAIN_SET)
+    else if(itemIt->second->type() == smtk::model::Item::GROUP)
       {
       smtk::model::GroupItemPtr itemGroup =
         smtk::dynamic_pointer_cast<smtk::model::GroupItem>(itemIt->second);
