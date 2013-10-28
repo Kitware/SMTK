@@ -10,6 +10,7 @@
 //#include <boost/variant.hpp>
 
 using namespace std;
+using namespace smtk::util;
 
 namespace smtk {
   namespace model {

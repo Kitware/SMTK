@@ -17,7 +17,7 @@
 namespace smtk {
   namespace model {
 
-class SMTKCORE_EXPORT ModelBody : public BRepModel<UUID,UUIDs,Link>
+class SMTKCORE_EXPORT ModelBody : public BRepModel<smtk::util::UUID,UUIDs,Link>
 {
 public:
   typedef UUIDsToTessellations::iterator geom_iter_type;
@@ -32,11 +32,11 @@ public:
   UUIDsToTessellations& tessellations();
   const UUIDsToTessellations& tessellations() const;
 
-  geom_iter_type SetTessellation(const UUID& cellId, const Tessellation& geom);
+  geom_iter_type SetTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
-  int ArrangeLink(const UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
-  const Arrangement* GetArrangement(const UUID& cellId, ArrangementKind kind, int index) const;
-  Arrangement* GetArrangement(const UUID& cellId, ArrangementKind kind, int index);
+  int ArrangeLink(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
+  const Arrangement* GetArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
+  Arrangement* GetArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
 
 protected:
   UUIDsToArrangements* Relationships;

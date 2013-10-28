@@ -11,7 +11,6 @@ struct cJSON;
 namespace smtk {
   namespace model {
 
-using smtk::util::UUID;
 class ModelBody;
 
 class SMTKCORE_EXPORT ExportJSON
@@ -22,7 +21,7 @@ public:
   static int ForModelBody(cJSON* body, ModelBody* model);
   static int ForModelBodyLink(UUIDWithLink& entry, cJSON*, ModelBody* model);
   static int ForModelBodyArrangement(const UUIDWithArrangementDictionary& entry, cJSON*, ModelBody* model);
-  static int ForModelBodyTessellation(const UUID& uid, cJSON*, ModelBody* model);
+  static int ForModelBodyTessellation(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
 };
 
   } // namespace model

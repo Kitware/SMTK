@@ -14,9 +14,8 @@
 namespace smtk {
   namespace model {
 
-using smtk::util::UUID;
-typedef std::set<UUID> UUIDs;
-typedef std::vector<UUID> UUIDArray;
+typedef std::set<smtk::util::UUID> UUIDs;
+typedef std::vector<smtk::util::UUID> UUIDArray;
 typedef std::vector<UUIDArray> UUIDArrays;
 
 /// Different types of entities the model can hold
@@ -75,8 +74,8 @@ public:
   UUIDArray& relations();
   const UUIDArray& relations() const;
 
-  Link& appendRelation(const UUID& b);
-  Link& removeRelation(const UUID& b);
+  Link& appendRelation(const smtk::util::UUID& b);
+  Link& removeRelation(const smtk::util::UUID& b);
 
 protected:
   int EntityFlags;
@@ -85,7 +84,7 @@ protected:
 private:
 };
 
-typedef std::pair<UUID,Link> UUIDLinkPair;
+typedef std::pair<smtk::util::UUID,Link> UUIDLinkPair;
 
   } // namespace model
 } // namespace smtk

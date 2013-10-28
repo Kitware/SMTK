@@ -9,8 +9,6 @@
 namespace smtk {
   namespace model {
 
-using smtk::util::UUID;
-
 /**\brief Store geometric information related to model entities.
   *
   * This is currently used to store coordinates and connectivity of
@@ -41,7 +39,7 @@ struct Tessellation
   Tessellation& Reset();
 };
 
-typedef std::map<UUID,Tessellation> UUIDsToTessellations;
+typedef std::map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
 
   } // model namespace
 } // smtk namespace

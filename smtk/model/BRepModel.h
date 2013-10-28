@@ -12,8 +12,6 @@
 namespace smtk {
   namespace model {
 
-using smtk::util::UUID;
-
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *
   * Entities are stored as instances of C, regardless of their dimension.
