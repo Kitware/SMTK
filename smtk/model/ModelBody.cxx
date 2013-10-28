@@ -15,18 +15,18 @@ namespace smtk {
   namespace model {
 
 ModelBody::ModelBody() :
-  BRepModel<UUID,UUIDs,Cell>(new UUIDsToCells, true),
+  BRepModel<UUID,UUIDs,Link>(new UUIDsToLinks, true),
   Relationships(new UUIDsToArrangements),
   Geometry(new UUIDsToTessellations)
 {
 }
 
 ModelBody::ModelBody(
-  UUIDsToCells* topology,
+  UUIDsToLinks* topology,
   UUIDsToArrangements* arrangements,
   UUIDsToTessellations* geometry,
   bool shouldDelete)
-  : BRepModel<UUID,UUIDs,Cell>(topology, shouldDelete), Relationships(arrangements), Geometry(geometry)
+  : BRepModel<UUID,UUIDs,Link>(topology, shouldDelete), Relationships(arrangements), Geometry(geometry)
 {
 }
 
@@ -86,7 +86,7 @@ ModelBody::geom_iter_type ModelBody::SetTessellation(const UUID& cellId, const T
   * Otherwise, it should be positive and refer to a pre-existing arrangement to be replaced.
   * The actual \a index location used is returned.
   */
-int ModelBody::ArrangeCell(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
+int ModelBody::ArrangeLink(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
 {
   UUIDsToArrangements::iterator cit = this->Relationships->find(cellId);
   if (cit == this->Relationships->end())

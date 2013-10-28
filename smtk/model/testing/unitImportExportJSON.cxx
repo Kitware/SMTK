@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  UUIDsToCells smTopology;
+  UUIDsToLinks smTopology;
   UUIDsToArrangements smArrangements;
   UUIDsToTessellations smTessellation;
   ModelBody sm(&smTopology, &smArrangements, &smTessellation);
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  UUIDsToCells smTopology2;
+  UUIDsToLinks smTopology2;
   UUIDsToArrangements smArrangements2;
   UUIDsToTessellations smTessellation2;
   ModelBody sm2(&smTopology2, &smArrangements2, &smTessellation2);

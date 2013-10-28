@@ -1,7 +1,7 @@
 #include "smtk/model/ExportJSON.h"
 
 #include "smtk/model/ModelBody.h"
-#include "smtk/model/Cell.h"
+#include "smtk/model/Link.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
 
@@ -77,7 +77,7 @@ int ExportJSON::ForModelBody(
     return 0;
     }
   int status = 1;
-  UUIDWithCell it;
+  UUIDWithLink it;
   for (it = model->topology().begin(); it != model->topology().end(); ++it)
     {
     cJSON* curChild = cJSON_CreateObject();
@@ -85,7 +85,7 @@ int ExportJSON::ForModelBody(
       std::string suid = it->first.ToString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::ForModelBodyCell(it, curChild, model);
+    status &= ExportJSON::ForModelBodyLink(it, curChild, model);
     status &= ExportJSON::ForModelBodyArrangement(
       model->arrangements().find(it->first), curChild, model);
     status &= ExportJSON::ForModelBodyTessellation(it->first, curChild, model);
@@ -93,11 +93,13 @@ int ExportJSON::ForModelBody(
   return status;
 }
 
-int ExportJSON::ForModelBodyCell(
-  UUIDWithCell& entry, cJSON* cellRec, ModelBody* model)
+int ExportJSON::ForModelBodyLink(
+  UUIDWithLink& entry, cJSON* cellRec, ModelBody* model)
 {
   (void)model;
+  cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
   cJSON* dim = cJSON_CreateNumber(entry->second.dimension());
+  cJSON_AddItemToObject(cellRec, "e", ent);
   cJSON_AddItemToObject(cellRec, "d", dim);
   cJSON_AddItemToObject(cellRec, "r",
     cJSON_CreateUUIDArray(

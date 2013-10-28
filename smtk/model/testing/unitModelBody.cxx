@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  UUIDsToCells smTopology;
+  UUIDsToLinks smTopology;
   UUIDsToArrangements smArrangements;
   UUIDsToTessellations smTessellation;
   ModelBody sm(&smTopology, &smArrangements, &smTessellation);
@@ -22,18 +22,18 @@ int main(int argc, char* argv[])
   UUID uc05 = sm.InsertCellOfDimension(0)->first;
   UUID uc06 = sm.InsertCellOfDimension(0)->first;
 
-  UUID uc07 = sm.InsertCell(Cell(1).appendRelation(uc00).appendRelation(uc01))->first;
-  UUID uc08 = sm.InsertCell(Cell(1).appendRelation(uc01).appendRelation(uc02))->first;
-  UUID uc09 = sm.InsertCell(Cell(1).appendRelation(uc02).appendRelation(uc00))->first;
-  UUID uc10 = sm.InsertCell(Cell(1).appendRelation(uc03).appendRelation(uc04))->first;
-  UUID uc11 = sm.InsertCell(Cell(1).appendRelation(uc04).appendRelation(uc05))->first;
-  UUID uc12 = sm.InsertCell(Cell(1).appendRelation(uc05).appendRelation(uc03))->first;
-  UUID uc13 = sm.InsertCell(Cell(1).appendRelation(uc00).appendRelation(uc06))->first;
-  UUID uc14 = sm.InsertCell(Cell(1).appendRelation(uc01).appendRelation(uc06))->first;
-  UUID uc15 = sm.InsertCell(Cell(1).appendRelation(uc02).appendRelation(uc06))->first;
+  UUID uc07 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
+  UUID uc08 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
+  UUID uc09 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
+  UUID uc10 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
+  UUID uc11 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
+  UUID uc12 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
+  UUID uc13 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
+  UUID uc14 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
+  UUID uc15 = sm.InsertLink(Link(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
 
-  UUID uc16 = sm.InsertCell(
-    Cell(2)
+  UUID uc16 = sm.InsertLink(
+    Link(CELL_ENTITY, 2)
     .appendRelation(uc07)
     .appendRelation(uc08)
     .appendRelation(uc09)
@@ -41,13 +41,13 @@ int main(int argc, char* argv[])
     .appendRelation(uc11)
     .appendRelation(uc12)
     )->first;
-  UUID uc17 = sm.InsertCell(Cell(2).appendRelation(uc10).appendRelation(uc11).appendRelation(uc12))->first;
-  UUID uc18 = sm.InsertCell(Cell(2).appendRelation(uc07).appendRelation(uc13).appendRelation(uc14))->first;
-  UUID uc19 = sm.InsertCell(Cell(2).appendRelation(uc08).appendRelation(uc14).appendRelation(uc15))->first;
-  UUID uc20 = sm.InsertCell(Cell(2).appendRelation(uc09).appendRelation(uc15).appendRelation(uc13))->first;
+  UUID uc17 = sm.InsertLink(Link(CELL_ENTITY, 2).appendRelation(uc10).appendRelation(uc11).appendRelation(uc12))->first;
+  UUID uc18 = sm.InsertLink(Link(CELL_ENTITY, 2).appendRelation(uc07).appendRelation(uc13).appendRelation(uc14))->first;
+  UUID uc19 = sm.InsertLink(Link(CELL_ENTITY, 2).appendRelation(uc08).appendRelation(uc14).appendRelation(uc15))->first;
+  UUID uc20 = sm.InsertLink(Link(CELL_ENTITY, 2).appendRelation(uc09).appendRelation(uc15).appendRelation(uc13))->first;
 
-  UUID uc21 = sm.InsertCell(
-    Cell(3)
+  UUID uc21 = sm.InsertLink(
+    Link(CELL_ENTITY, 3)
     .appendRelation(uc16)
     .appendRelation(uc17)
     .appendRelation(uc18)

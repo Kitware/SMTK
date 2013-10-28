@@ -2,16 +2,16 @@ namespace smtk {
   namespace model {
 
 using smtk::util::UUID;
-typedef std::map<UUID,Cell> UUIDsToCells;
-typedef UUIDsToCells::iterator UUIDWithCell;
+typedef std::map<UUID,Link> UUIDsToLinks;
+typedef UUIDsToLinks::iterator UUIDWithLink;
 
-/// A specialized implementation of BRepModel for UUIDs and the Cell class.
+/// A specialized implementation of BRepModel for UUIDs and the Link class.
 template<>
-class SMTKCORE_EXPORT BRepModel<UUID,UUIDs,Cell>
+class SMTKCORE_EXPORT BRepModel<UUID,UUIDs,Link>
 {
 public:
-  typedef BRepModel<UUID,UUIDs,Cell> self_type;
-  typedef UUIDsToCells storage_type;
+  typedef BRepModel<UUID,UUIDs,Link> self_type;
+  typedef UUIDsToLinks storage_type;
   typedef storage_type::iterator iter_type;
 
   /**\brief Construction requires a container for storage.
@@ -19,14 +19,14 @@ public:
     * Storage is kept separate so that it can easily be serialized and deserialized.
     */
   BRepModel()
-    : Topology(new UUIDsToCells), DeleteStorage(true)
+    : Topology(new UUIDsToLinks), DeleteStorage(true)
     { } // TODO: throw() when topology == NULL?
 
   /**\brief Construction requires a container for storage.
     *
     * Storage is kept separate so that it can easily be serialized and deserialized.
     */
-  BRepModel(UUIDsToCells* topology, bool shouldDelete)
+  BRepModel(UUIDsToLinks* topology, bool shouldDelete)
     : Topology(topology), DeleteStorage(shouldDelete)
     { } // TODO: throw() when topology == NULL?
 
@@ -45,12 +45,12 @@ public:
     this->DeleteStorage = d;
     }
 
-  UUIDsToCells& topology()
+  UUIDsToLinks& topology()
     {
     return *this->Topology;
     }
 
-  const UUIDsToCells& topology() const
+  const UUIDsToLinks& topology() const
     {
     return *this->Topology;
     }
@@ -58,7 +58,7 @@ public:
   /// Entity construction
   //@{
   /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-  BRepModel::iter_type InsertCellOfDimension(int dimension)
+  BRepModel::iter_type InsertLinkOfTypeAndDimension(int entityFlags, int dimension)
     {
     UUID actual;
     do
@@ -66,11 +66,11 @@ public:
       actual = UUID::Random();
       }
     while (this->Topology->find(actual) != this->Topology->end());
-    return this->SetCellOfDimension(actual, dimension);
+    return this->SetLinkOfTypeAndDimension(actual, entityFlags, dimension);
     }
 
   /// Insert the specified cell, returning an iterator with a new, unique UUID.
-  BRepModel::iter_type InsertCell(Cell& c)
+  BRepModel::iter_type InsertLink(Link& c)
     {
     UUID actual;
     do
@@ -78,16 +78,16 @@ public:
       actual = UUID::Random();
       }
     while (this->Topology->find(actual) != this->Topology->end());
-    return this->SetCell(actual, c);
+    return this->SetLink(actual, c);
     }
 
   /**\brief Map a new cell of the given \a dimension to the \a uid.
     *
     * Passing a non-unique \a uid is an error here and will throw an exception.
     */
-  BRepModel::iter_type SetCellOfDimension(const UUID& uid, int dimension)
+  BRepModel::iter_type SetLinkOfTypeAndDimension(const UUID& uid, int entityFlags, int dimension)
     {
-    UUIDsToCells::iterator it;
+    UUIDsToLinks::iterator it;
     if (uid.IsNull())
       {
       std::ostringstream msg;
@@ -100,7 +100,7 @@ public:
       msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dimension;
       throw msg.str();
       }
-    std::pair<UUID,Cell> entry(uid,Cell(dimension));
+    std::pair<UUID,Link> entry(uid,Link(entityFlags, dimension));
     return this->Topology->insert(entry).first;
     }
 
@@ -108,9 +108,9 @@ public:
     *
     * Passing a nil or non-unique \a uid is an error here and will throw an exception.
     */
-  BRepModel::iter_type SetCell(const UUID& uid, Cell& c)
+  BRepModel::iter_type SetLink(const UUID& uid, Link& c)
     {
-    UUIDsToCells::iterator it;
+    UUIDsToLinks::iterator it;
     if (uid.IsNull())
       {
       std::ostringstream msg;
@@ -125,37 +125,60 @@ public:
         msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << c.dimension();
         throw msg.str();
         }
-      this->RemoveCellReferences(it);
+      this->RemoveLinkReferences(it);
       it->second = c;
-      this->InsertCellReferences(it);
+      this->InsertLinkReferences(it);
       return it;
       }
-    std::pair<UUID,Cell> entry(uid,c);
+    std::pair<UUID,Link> entry(uid,c);
     it = this->Topology->insert(entry).first;
-    this->InsertCellReferences(it);
+    this->InsertLinkReferences(it);
     return it;
     }
 
-  /// A wrappable version of InsertCellOfDimension
-  UUID AddCellOfDimension(int dim)
+  /// A wrappable version of InsertLinkOfTypeAndDimension
+  UUID AddLinkOfTypeAndDimension(int entityFlags, int dim)
     {
-    return this->InsertCellOfDimension(dim)->first;
+    return this->InsertLinkOfTypeAndDimension(entityFlags, dim)->first;
     }
 
-  /// A wrappable version of InsertCell
-  UUID AddCell(Cell& cell)
+  /// A wrappable version of InsertLink
+  UUID AddLink(Link& cell)
     {
-    return this->InsertCell(cell)->first;
+    return this->InsertLink(cell)->first;
     }
-  /// A wrappable version of SetCellOfDimension
+  /// A wrappable version of SetLinkOfTypeAndDimension
+  UUID AddLinkOfTypeAndDimensionWithUUID(const UUID& uid, int entityFlags, int dim)
+    {
+    return this->SetLinkOfTypeAndDimension(uid, entityFlags, dim)->first;
+    }
+  /// A wrappable version of SetLink
+  UUID AddLinkWithUUID(const UUID& uid, Link& cell)
+    {
+    return this->SetLink(uid, cell)->first;
+    }
+  //@}
+
+  /// Shortcuts for inserting cells with default entity flags.
+  //@{
+  iter_type InsertCellOfDimension(int dim)
+    {
+    return this->InsertLinkOfTypeAndDimension(CELL_ENTITY, dim);
+    }
+
+  iter_type SetCellOfDimension(const UUID& uid, int dim)
+    {
+    return this->SetLinkOfTypeAndDimension(uid, CELL_ENTITY, dim);
+    }
+
+  UUID AddCellOfDimension(int dim)
+    {
+    return this->AddLinkOfTypeAndDimension(CELL_ENTITY, dim);
+    }
+
   UUID AddCellOfDimensionWithUUID(const UUID& uid, int dim)
     {
-    return this->SetCellOfDimension(uid, dim)->first;
-    }
-  /// A wrappable version of SetCell
-  UUID AddCellWithUUID(const UUID& uid, Cell& cell)
-    {
-    return this->SetCell(uid, cell)->first;
+    return this->AddLinkOfTypeAndDimensionWithUUID(uid, CELL_ENTITY, dim);
     }
   //@}
 
@@ -164,7 +187,7 @@ public:
   /// Return the dimension of the manifold that the passed entity represents.
   int Dimension(const UUID& ofEntity)
     {
-    UUIDsToCells::iterator it = this->Topology->find(ofEntity);
+    UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
     return (it == this->Topology->end() ? -1 : it->second.dimension());
     }
 
@@ -175,7 +198,7 @@ public:
   UUIDs BordantEntities(const UUID& ofEntity, int ofDimension)
     {
     UUIDs result;
-    UUIDsToCells::iterator it = this->Topology->find(ofEntity);
+    UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
     if (it == this->Topology->end())
       {
       return result;
@@ -185,7 +208,7 @@ public:
       // can't ask for "higher" dimensional boundaries that are lower than the dimension of this cell.
       return result;
       }
-    UUIDsToCells::iterator other;
+    UUIDsToLinks::iterator other;
     for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
       {
       other = this->Topology->find(*ai);
@@ -226,7 +249,7 @@ public:
   UUIDs BoundaryEntities(const UUID& ofEntity, int ofDimension = -2)
     {
     UUIDs result;
-    UUIDsToCells::iterator it = this->Topology->find(ofEntity);
+    UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
     if (it == this->Topology->end())
       {
       return result;
@@ -236,7 +259,7 @@ public:
       // can't ask for "lower" dimensional boundaries that are higher than the dimension of this cell.
       return result;
       }
-    UUIDsToCells::iterator other;
+    UUIDsToLinks::iterator other;
     for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
       {
       other = this->Topology->find(*ai);
@@ -288,7 +311,7 @@ public:
   UUIDs LowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
     {
     UUIDs result;
-    UUIDsToCells::iterator it = this->Topology->find(ofEntity);
+    UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
     if (it == this->Topology->end())
       {
       return result;
@@ -332,7 +355,7 @@ public:
   UUIDs HigherDimensionalBordants(const UUID& ofEntity, int higherDimension)
     {
     UUIDs result;
-    UUIDsToCells::iterator it = this->Topology->find(ofEntity);
+    UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
     if (it == this->Topology->end())
       {
       return result;
@@ -368,7 +391,7 @@ public:
   UUIDs Entities(int ofDimension)
     {
     UUIDs result;
-    for (UUIDWithCell it = this->Topology->begin(); it != this->Topology->end(); ++it)
+    for (UUIDWithLink it = this->Topology->begin(); it != this->Topology->end(); ++it)
       {
       if (it->second.dimension() == ofDimension)
         {
@@ -379,9 +402,9 @@ public:
     }
   //@}
 
-  const Cell* FindCell(const UUID& uid) const
+  const Link* FindLink(const UUID& uid) const
     {
-    UUIDWithCell it = this->Topology->find(uid);
+    UUIDWithLink it = this->Topology->find(uid);
     if (it == this->Topology->end())
       {
       return NULL;
@@ -389,9 +412,9 @@ public:
     return &it->second;
     }
 
-  Cell* FindCell(const UUID& uid)
+  Link* FindLink(const UUID& uid)
     {
-    UUIDWithCell it = this->Topology->find(uid);
+    UUIDWithLink it = this->Topology->find(uid);
     if (it == this->Topology->end())
       {
       return NULL;
@@ -400,29 +423,29 @@ public:
     }
 
 protected:
-  UUIDsToCells* Topology;
+  UUIDsToLinks* Topology;
   bool DeleteStorage;
 
-  void RemoveCellReferences(const UUIDWithCell& c)
+  void RemoveLinkReferences(const UUIDWithLink& c)
     {
     UUIDArray::const_iterator bit;
-    Cell* ref;
+    Link* ref;
     for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
       {
-      ref = this->FindCell(*bit);
+      ref = this->FindLink(*bit);
       if (ref)
         {
         ref->removeRelation(c->first);
         }
       }
     }
-  void InsertCellReferences(const UUIDWithCell& c)
+  void InsertLinkReferences(const UUIDWithLink& c)
     {
     UUIDArray::const_iterator bit;
-    Cell* ref;
+    Link* ref;
     for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
       {
-      ref = this->FindCell(*bit);
+      ref = this->FindLink(*bit);
       if (ref)
         {
         ref->appendRelation(c->first);

@@ -18,7 +18,7 @@ class SMTKCORE_EXPORT ImportJSON
 public:
   static int IntoModel(const char* json, ModelBody* model);
   static int OfModelBody(cJSON* body, ModelBody* model);
-  static int OfModelBodyCell(const UUID& uid, cJSON*, ModelBody* model);
+  static int OfModelBodyLink(const UUID& uid, cJSON*, ModelBody* model);
   static int OfModelBodyArrangement(const UUID& uid, cJSON*, ModelBody* model);
   static int OfModelBodyTessellation(const UUID& uid, cJSON*, ModelBody* model);
 };
