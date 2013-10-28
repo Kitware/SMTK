@@ -1,7 +1,7 @@
 # set up sources to build
 set(modelSrcs
   Arrangement.cxx
-  Cell.cxx
+  Link.cxx
   ExportJSON.cxx
   GroupItem.cxx
   ImportJSON.cxx
@@ -15,7 +15,7 @@ set(modelSrcs
 set(modelHeaders
   Arrangement.h
   BRepModel.h
-  Cell.h
+  Link.h
   ExportJSON.h
   ImportJSON.h
   Item.h

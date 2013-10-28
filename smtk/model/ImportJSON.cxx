@@ -1,7 +1,7 @@
 #include "smtk/model/ImportJSON.h"
 
 #include "smtk/model/ModelBody.h"
-#include "smtk/model/Cell.h"
+#include "smtk/model/Link.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
 
@@ -17,7 +17,7 @@ namespace {
       {
     case cJSON_Number:
       val = valItem->valueint;
-      return 1;
+      return 0;
     case cJSON_String:
       if (valItem->valuestring)
         {
@@ -27,13 +27,37 @@ namespace {
         if (valItem->valuestring[0] && !*strEnd)
           {
           val = static_cast<int>(tmp);
-          return 1;
+          return 0;
           }
         }
     default:
       break;
       }
-    return 0;
+    return 1;
+    }
+  int cJSON_GetRealValue(cJSON* valItem, double& val)
+    {
+    switch (valItem->type)
+      {
+    case cJSON_Number:
+      val = valItem->valuedouble;
+      return 0;
+    case cJSON_String:
+      if (valItem->valuestring)
+        {
+        char* strEnd;
+        double tmp = strtod(valItem->valuestring, &strEnd);
+        // Only accept the conversion if the entire string is consumed:
+        if (valItem->valuestring[0] && !*strEnd)
+          {
+          val = tmp;
+          return 0;
+          }
+        }
+    default:
+      break;
+      }
+    return 1;
     }
   int cJSON_GetObjectIntegerValue(cJSON* node, const char* name, int& val)
     {
@@ -42,7 +66,7 @@ namespace {
       {
       return cJSON_GetIntegerValue(valItem, val);
       }
-    return 0;
+    return 1;
     }
   int cJSON_GetUUIDArray(cJSON* uidRec, std::vector<smtk::util::UUID>& uids)
     {
@@ -57,10 +81,10 @@ namespace {
         char* summary = cJSON_Print(uidRec);
         std::cerr << "Encountered non-UUID node: " << summary << ". Stopping.\n";
         free(summary);
-        return 0;
+        return 1;
         }
       }
-    return 1;
+    return 0;
     }
   int cJSON_GetObjectUUIDArray(cJSON* node, const char* name, std::vector<smtk::util::UUID>& uids)
     {
@@ -69,7 +93,7 @@ namespace {
       {
       return cJSON_GetUUIDArray(valItem->child, uids);
       }
-    return 0;
+    return 1;
     }
   int cJSON_GetArrangement(cJSON* node, smtk::model::Arrangement& arr)
     {
@@ -80,9 +104,50 @@ namespace {
       for (entry = node->child; entry; entry = entry->next)
         {
         int eger;
-        if (cJSON_GetIntegerValue(entry, eger))
+        if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
           arr.Details.push_back(eger);
+          ++count;
+          }
+        }
+      }
+    return count;
+    }
+  int cJSON_GetTessellationCoords(cJSON* node, smtk::model::Tessellation& tess)
+    {
+    int count = 0;
+    tess.Coords.clear();
+    if (node->type == cJSON_Array)
+      {
+      int numEntries = cJSON_GetArraySize(node);
+      tess.Coords.reserve(numEntries);
+      cJSON* entry;
+      for (entry = node->child; entry; entry = entry->next)
+        {
+        double coord;
+        if (cJSON_GetRealValue(entry, coord) == 0)
+          {
+          tess.Coords.push_back(coord);
+          ++count;
+          }
+        }
+      count = (count + 1) / 3; // point coordinates are 3-tuples.
+      }
+    return count;
+    }
+  int cJSON_GetTessellationConn(cJSON* node, smtk::model::Tessellation& tess)
+    {
+    int count = 0;
+    tess.Conn.clear();
+    if (node->type == cJSON_Array)
+      {
+      cJSON* entry;
+      for (entry = node->child; entry; entry = entry->next)
+        {
+        int eger;
+        if (cJSON_GetIntegerValue(entry, eger) == 0)
+          {
+          tess.Conn.push_back(eger);
           ++count;
           }
         }
@@ -162,25 +227,28 @@ int ImportJSON::OfModelBody(
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
       }
-    status &= ImportJSON::OfModelBodyCell(uid, curChild, model);
+    status &= ImportJSON::OfModelBodyLink(uid, curChild, model);
     status &= ImportJSON::OfModelBodyArrangement(uid, curChild, model);
     status &= ImportJSON::OfModelBodyTessellation(uid, curChild, model);
     }
   return status;
 }
 
-int ImportJSON::OfModelBodyCell(
+int ImportJSON::OfModelBodyLink(
   const UUID& uid, cJSON* cellRec, ModelBody* model)
 {
   int dim;
-  int status = cJSON_GetObjectIntegerValue(cellRec, "d", dim);
-  if (status)
+  int entityFlags;
+  int status = 0;
+  status |= cJSON_GetObjectIntegerValue(cellRec, "d", dim);
+  status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
+  if (status == 0)
     {
-    UUIDWithCell iter = model->SetCellOfDimension(uid, dim);
+    UUIDWithLink iter = model->SetLinkOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
     cJSON_GetObjectUUIDArray(cellRec, "r", iter->second.relations());
     }
-  return status;
+  return status ? 0 : 1;
 }
 
 int ImportJSON::OfModelBodyArrangement(
@@ -210,7 +278,7 @@ int ImportJSON::OfModelBodyArrangement(
           Arrangement a;
           if (cJSON_GetArrangement(arr, a) > 0)
             {
-            model->ArrangeCell(uid, k, a);
+            model->ArrangeLink(uid, k, a);
             }
           }
         }
@@ -222,9 +290,33 @@ int ImportJSON::OfModelBodyArrangement(
 int ImportJSON::OfModelBodyTessellation(
   const UUID& uid, cJSON* dict, ModelBody* model)
 {
-  (void)uid;
-  (void)dict;
-  (void)model;
+  cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
+  if (!tessNode)
+    { // Missing tessellation is not an error.
+    return 1;
+    }
+  if (tessNode->type != cJSON_Object)
+    { // An improper tessellation is an error.
+    return 0;
+    }
+  // Now extract graphics primitives from the JSON data.
+  // We should fetch the metadata->formatVersion and verify it,
+  // but I don't think it makes any difference to the fields
+  // we rely on... yet.
+  UUIDsToTessellations::iterator tessIt = model->tessellations().find(uid);
+  if (tessIt == model->tessellations().end())
+    {
+    Tessellation blank;
+    tessIt = model->tessellations().insert(
+      std::pair<UUID,Tessellation>(uid, blank)).first;
+    }
+  int numVerts = cJSON_GetTessellationCoords(
+    cJSON_GetObjectItem(tessNode, "vertices"), tessIt->second);
+  int numPrims = cJSON_GetTessellationConn(
+    cJSON_GetObjectItem(tessNode, "faces"), tessIt->second);
+  (void)numVerts;
+  (void)numPrims;
+  std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
   return 1;
 }
 

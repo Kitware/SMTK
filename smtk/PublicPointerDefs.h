@@ -35,7 +35,6 @@ namespace smtk
   namespace model
   {
     struct Arrangement;
-    class Cell;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -43,6 +42,7 @@ namespace smtk
     class GroupItem;
     class Item;
     class ImportJSON;
+    class Link;
     class Model;
     class ModelBody;
     class ModelDomainItem;
@@ -98,17 +98,17 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::model::Model >      ModelPtr;
-    typedef smtk::weak_ptr< smtk::model::Model >        WeakModelPtr;
-    typedef smtk::shared_ptr< smtk::model::ModelBody >  ModelBodyPtr;
-    typedef smtk::weak_ptr< smtk::model::ModelBody >    WeakModelBodyPtr;
-    typedef smtk::shared_ptr< smtk::model::Item >       ItemPtr;
-    typedef smtk::weak_ptr< smtk::model::Item >         WeakItemPtr;
-    typedef smtk::shared_ptr< smtk::model::GroupItem >  GroupItemPtr;
-    typedef smtk::shared_ptr< smtk::model::Cell >  CellPtr;
-    typedef smtk::weak_ptr< smtk::model::Cell >    WeakCellPtr;
-    typedef smtk::shared_ptr< smtk::model::Arrangement >  ArrangementPtr;
-    typedef smtk::weak_ptr< smtk::model::Arrangement >    WeakArrangementPtr;
+    typedef smtk::shared_ptr< smtk::model::Model >         ModelPtr;
+    typedef smtk::weak_ptr< smtk::model::Model >           WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::ModelBody >     ModelBodyPtr;
+    typedef smtk::weak_ptr< smtk::model::ModelBody >       WeakModelBodyPtr;
+    typedef smtk::shared_ptr< smtk::model::Item >          ItemPtr;
+    typedef smtk::weak_ptr< smtk::model::Item >            WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::model::GroupItem >     GroupItemPtr;
+    typedef smtk::shared_ptr< smtk::model::Link >          LinkPtr;
+    typedef smtk::weak_ptr< smtk::model::Link >            WeakLinkPtr;
+    typedef smtk::shared_ptr< smtk::model::Arrangement >   ArrangementPtr;
+    typedef smtk::weak_ptr< smtk::model::Arrangement >     WeakArrangementPtr;
     typedef smtk::shared_ptr< smtk::model::Tessellation >  TessellationPtr;
     typedef smtk::weak_ptr< smtk::model::Tessellation >    WeakTessellationPtr;
 
