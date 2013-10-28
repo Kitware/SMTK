@@ -137,7 +137,7 @@ int ExportJSON::ForModelBodyArrangement(
 }
 
 int ExportJSON::ForModelBodyTessellation(
-  const UUID& uid, cJSON* dict, ModelBody* model)
+  const smtk::util::UUID& uid, cJSON* dict, ModelBody* model)
 {
   (void)uid;
   (void)dict;

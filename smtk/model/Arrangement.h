@@ -11,8 +11,6 @@
 namespace smtk {
   namespace model {
 
-using smtk::util::UUID;
-
 // === WARNING === If you change this enum, also update string names in Arrangement.cxx!
 /// Specification of how a cell's relations are arranged.
 enum ArrangementKind {
@@ -54,9 +52,9 @@ typedef std::vector<Arrangement> Arrangements;
 /// A map holding Arrangements of different ArrangementKinds.
 typedef std::map<ArrangementKind,Arrangements> KindsToArrangements;
 /// Each ModelBody entity's UUID is mapped to a vector of Arrangment instances.
-typedef std::map<UUID,KindsToArrangements> UUIDsToArrangements;
+typedef std::map<smtk::util::UUID,KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
-typedef std::map<UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
+typedef std::map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
 /// An iterator referencing an (ArrangementKind,Arrangements)-tuple.
 typedef std::map<ArrangementKind,Arrangements>::iterator ArrangementKindWithArrangements;
 
