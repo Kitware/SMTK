@@ -34,7 +34,7 @@ public:
   std::map<UUID,Link>& topology();
   const std::map<UUID,Link>& topology() const;
 
-  int Type(const UUID& ofEntity);
+  /**int Type(const UUID& ofEntity); NOT YET IN INITIALIZETION**/
   int Dimension(const UUID& ofEntity);
   UUIDs BordantEntities(const UUID& ofEntity, int ofDimension = -2);
   UUIDs BordantEntities(const UUIDs& ofEntities, int ofDimension = -2);

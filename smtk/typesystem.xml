@@ -7,6 +7,8 @@
   <suppress-warning text="namespace 'std' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
+  <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
+  <suppress-warning text="namespace 'boost' does not have a type entry"/>
 
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
@@ -27,6 +29,28 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelBody::SetTessellation', unmatched return type 'smtk::model::ModelBody::geom_iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::InsertLink', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::InsertLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::SetLink', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::SetLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::SetCellOfDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::InsertCellOfDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::InsertLink', unmatched return type 'BRepModel::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::BRepModel::InsertLinkOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::BRepModel::SetLink', unmatched return type 'BRepModel::iter_type'"/>
+	<suppress-warning text="skipping function 'smtk::model::BRepModel::SetLinkOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
+
+  <!-- Ignore warnings from protected functions -->
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::InsertLinkReferences', unmatched parameter type 'smtk::model::UUIDWithLink const&amp;'"/>
+	<suppress-warning text="skipping function 'smtk::model::BRepModel::RemoveLinkReferences', unmatched parameter type 'smtk::model::UUIDWithLink const&amp;'"/>
+
+  <!-- do not support input or output streams-->
+  <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::util::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
+
+  <!-- Constructor given raw pointers -->
+  <suppress-warning text="skipping function 'smtk::model::ModelBody::ModelBody', unmatched parameter type 'smtk::model::UUIDsToLinks*'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -257,6 +281,8 @@
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
 
+  <type-template name="smtk::model::BRepModel"/>
+
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
@@ -308,6 +334,70 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
       </inject-code>
     </modify-function>
+    <add-function signature="SetTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
+      <inject-code>
+        smtk::model::ModelBody::geom_iter_type i = %CPPSELF-&gt;get()-&gt;SetTessellation(%1, %2);
+        %RETURN_TYPE %0 = *i;
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="Topology()"
+      return-type="std::map&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = %CPPSELF-&gt;get()-&gt;topology();
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="InsertLinkOfTypeAndDimension(int, int)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;InsertLinkOfTypeAndDimension(%1,%2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="InsertLink(smtk::model::Link&amp;)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;InsertLink(%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="SetLinkOfTypeAndDimension(const smtk::util::UUID&amp;, int, int)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;SetLinkOfTypeAndDimension(%1,%2,%3));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="SetLink(const smtk::util::UUID&amp;, smtk::model::Link&amp;)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;SetLink(%1,%2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="InsertCellOfDimension(int)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;InsertCellOfDimension(%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
+    <add-function signature="SetCellOfDimension(const smtk::util::UUID&amp;, int)"
+      static="NO"
+      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;SetCellOfDimension(%1,%2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+      </inject-code>
+    </add-function>
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
@@ -358,7 +448,7 @@
         <replace-type modified-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;" />
       </modify-argument>
       <inject-code class="target" position="beginning">
-        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1);
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF-&gt;get()->find(%1);
         %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
       </inject-code>
     </modify-function>
@@ -384,15 +474,21 @@
   <value-type template="smtk::shared_ptr" args="smtk::view::Root" />
   <value-type template="smtk::shared_ptr" args="smtk::view::SimpleExpression" />
 
+  <!-- <value-type template="smtk::model::BRepModel" args="smtk::util::UUID,smtk::model::UUIDs,smtk::model::Cell" generate="no" /> -->
+
   <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
 
   <namespace-type name="smtk">
     <namespace-type name="model">
       <!-- setup the model classes -->
-      <!-- <value-type name="BRepModel" generate="no" /> -->
+      <value-type name="BRepModel" generate="no" />
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/Arrangement.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="EntityTypeBits">
+        <include file-name="smtk/model/Link.h" location="local"/>
       </enum-type>
 
       <object-type name="Link">
@@ -405,14 +501,10 @@
 
       <object-type name="Tessellation">
         <include file-name="smtk/model/Tessellation.h" location="local"/>
-      </object-type>
-
-      <object-type name="ImportJSON">
-        <include file-name="smtk/model/ImportJSON.h" location="local"/>
-      </object-type>
-
-      <object-type name="ExportJSON">
-        <include file-name="smtk/model/ExportJSON.h" location="local"/>
+        <modify-function signature="AddCoords(double*)" remove="all"/>
+        <modify-function signature="AddPoint(double*)" remove="all"/>
+        <modify-function signature="AddLine(double *, double *)" remove="all"/>
+        <modify-function signature="AddTriangle(double*, double*, double*)" remove="all"/>
       </object-type>
 
       <object-type name="Item">
@@ -435,6 +527,72 @@
 
       <object-type name="ModelBody">
         <include file-name="smtk/model/ModelBody.h" location="local"/>
+        <add-function signature="SetTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
+          <inject-code>
+            smtk::model::ModelBody::geom_iter_type i = %CPPSELF-&gt;SetTessellation(%1, %2);
+            %RETURN_TYPE %0 = *i;
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <modify-function signature="topology() const" remove="all"/>
+        <modify-function signature="topology()" remove="all"/>
+        <add-function signature="Topology()"
+          return-type="std::map&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = %CPPSELF-&gt;topology();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="InsertLinkOfTypeAndDimension(int, int)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;InsertLinkOfTypeAndDimension(%1,%2));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="InsertLink(smtk::model::Link&amp;)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;InsertLink(%1));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="SetLinkOfTypeAndDimension(const smtk::util::UUID&amp;, int, int)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;SetLinkOfTypeAndDimension(%1,%2,%3));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="SetLink(const smtk::util::UUID&amp;, smtk::model::Link&amp;)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;SetLink(%1,%2));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="InsertCellOfDimension(int)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;InsertCellOfDimension(%1));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="SetCellOfDimension(const smtk::util::UUID&amp;, int)"
+          static="NO"
+          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE %0 = *(%CPPSELF-&gt;SetCellOfDimension(%1,%2));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="GridInfo">
