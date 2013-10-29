@@ -10,7 +10,7 @@ using smtk::util::UUID;
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel()
-  : Topology(new UUIDsToLinks), DeleteStorage(true)
+  : m_topology(new UUIDsToLinks), m_deleteStorage(true)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -20,65 +20,65 @@ BRepModel::BRepModel()
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel(UUIDsToLinks* topology, bool shouldDelete)
-    : Topology(topology), DeleteStorage(shouldDelete)
+    : m_topology(topology), m_deleteStorage(shouldDelete)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
 {
-  if (this->DeleteStorage)
+  if (this->m_deleteStorage)
     {
-    delete this->Topology;
-    this->Topology = NULL;
+    delete this->m_topology;
+    this->m_topology = NULL;
     }
 }
 
 /// Change whether or not we should delete storage upon our own destruction.
-void BRepModel::SetDeleteStorage(bool d)
+void BRepModel::setDeleteStorage(bool d)
 {
-  this->DeleteStorage = d;
+  this->m_deleteStorage = d;
 }
 
 UUIDsToLinks& BRepModel::topology()
 {
-  return *this->Topology;
+  return *this->m_topology;
 }
 
 const UUIDsToLinks& BRepModel::topology() const
 {
-  return *this->Topology;
+  return *this->m_topology;
 }
 
 /// Entity construction
 //@{
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::InsertLinkOfTypeAndDimension(int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::insertLinkOfTypeAndDimension(int entityFlags, int dimension)
 {
   UUID actual;
   do
     {
     actual = UUID::Random();
     }
-  while (this->Topology->find(actual) != this->Topology->end());
-  return this->SetLinkOfTypeAndDimension(actual, entityFlags, dimension);
+  while (this->m_topology->find(actual) != this->m_topology->end());
+  return this->setLinkOfTypeAndDimension(actual, entityFlags, dimension);
 }
 
 /// Insert the specified cell, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::InsertLink(Link& c)
+BRepModel::iter_type BRepModel::insertLink(Link& c)
 {
   UUID actual;
   do
     {
     actual = UUID::Random();
     }
-  while (this->Topology->find(actual) != this->Topology->end());
-  return this->SetLink(actual, c);
+  while (this->m_topology->find(actual) != this->m_topology->end());
+  return this->setLink(actual, c);
 }
 
 /**\brief Map a new cell of the given \a dimension to the \a uid.
   *
   * Passing a non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::SetLinkOfTypeAndDimension(const UUID& uid, int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::setLinkOfTypeAndDimension(const UUID& uid, int entityFlags, int dimension)
 {
   UUIDsToLinks::iterator it;
   if (uid.IsNull())
@@ -87,21 +87,21 @@ BRepModel::iter_type BRepModel::SetLinkOfTypeAndDimension(const UUID& uid, int e
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->Topology->find(uid)) != this->Topology->end() && it->second.dimension() != dimension)
+  if ((it = this->m_topology->find(uid)) != this->m_topology->end() && it->second.dimension() != dimension)
     {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dimension;
     throw msg.str();
     }
   std::pair<UUID,Link> entry(uid,Link(entityFlags, dimension));
-  return this->Topology->insert(entry).first;
+  return this->m_topology->insert(entry).first;
 }
 
 /**\brief Map the specified cell \a c to the given \a uid.
   *
   * Passing a nil or non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::SetLink(const UUID& uid, Link& c)
+BRepModel::iter_type BRepModel::setLink(const UUID& uid, Link& c)
 {
   UUIDsToLinks::iterator it;
   if (uid.IsNull())
@@ -110,7 +110,7 @@ BRepModel::iter_type BRepModel::SetLink(const UUID& uid, Link& c)
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->Topology->find(uid)) != this->Topology->end())
+  if ((it = this->m_topology->find(uid)) != this->m_topology->end())
     {
     if (it->second.dimension() != c.dimension())
       {
@@ -118,90 +118,90 @@ BRepModel::iter_type BRepModel::SetLink(const UUID& uid, Link& c)
       msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << c.dimension();
       throw msg.str();
       }
-    this->RemoveLinkReferences(it);
+    this->removeLinkReferences(it);
     it->second = c;
-    this->InsertLinkReferences(it);
+    this->insertLinkReferences(it);
     return it;
     }
   std::pair<UUID,Link> entry(uid,c);
-  it = this->Topology->insert(entry).first;
-  this->InsertLinkReferences(it);
+  it = this->m_topology->insert(entry).first;
+  this->insertLinkReferences(it);
   return it;
 }
 
 /// A wrappable version of InsertLinkOfTypeAndDimension
-UUID BRepModel::AddLinkOfTypeAndDimension(int entityFlags, int dim)
+UUID BRepModel::addLinkOfTypeAndDimension(int entityFlags, int dim)
 {
-  return this->InsertLinkOfTypeAndDimension(entityFlags, dim)->first;
+  return this->insertLinkOfTypeAndDimension(entityFlags, dim)->first;
 }
 
 /// A wrappable version of InsertLink
-UUID BRepModel::AddLink(Link& cell)
+UUID BRepModel::addLink(Link& cell)
 {
-  return this->InsertLink(cell)->first;
+  return this->insertLink(cell)->first;
 }
 
 /// A wrappable version of SetLinkOfTypeAndDimension
-UUID BRepModel::AddLinkOfTypeAndDimensionWithUUID(const UUID& uid, int entityFlags, int dim)
+UUID BRepModel::addLinkOfTypeAndDimensionWithUUID(const UUID& uid, int entityFlags, int dim)
 {
-  return this->SetLinkOfTypeAndDimension(uid, entityFlags, dim)->first;
+  return this->setLinkOfTypeAndDimension(uid, entityFlags, dim)->first;
 }
 
 /// A wrappable version of SetLink
-UUID BRepModel::AddLinkWithUUID(const UUID& uid, Link& cell)
+UUID BRepModel::addLinkWithUUID(const UUID& uid, Link& cell)
 {
-  return this->SetLink(uid, cell)->first;
+  return this->setLink(uid, cell)->first;
 }
 //@}
 
 /// Shortcuts for inserting cells with default entity flags.
 //@{
-BRepModel::iter_type BRepModel::InsertCellOfDimension(int dim)
+BRepModel::iter_type BRepModel::insertCellOfDimension(int dim)
 {
-  return this->InsertLinkOfTypeAndDimension(CELL_ENTITY, dim);
+  return this->insertLinkOfTypeAndDimension(CELL_ENTITY, dim);
 }
 
-BRepModel::iter_type BRepModel::SetCellOfDimension(const UUID& uid, int dim)
+BRepModel::iter_type BRepModel::setCellOfDimension(const UUID& uid, int dim)
 {
-  return this->SetLinkOfTypeAndDimension(uid, CELL_ENTITY, dim);
+  return this->setLinkOfTypeAndDimension(uid, CELL_ENTITY, dim);
 }
 
-UUID BRepModel::AddCellOfDimension(int dim)
+UUID BRepModel::addCellOfDimension(int dim)
 {
-  return this->AddLinkOfTypeAndDimension(CELL_ENTITY, dim);
+  return this->addLinkOfTypeAndDimension(CELL_ENTITY, dim);
 }
 
-UUID BRepModel::AddCellOfDimensionWithUUID(const UUID& uid, int dim)
+UUID BRepModel::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 {
-  return this->AddLinkOfTypeAndDimensionWithUUID(uid, CELL_ENTITY, dim);
+  return this->addLinkOfTypeAndDimensionWithUUID(uid, CELL_ENTITY, dim);
 }
 //@}
 
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-int BRepModel::Type(const smtk::util::UUID& ofEntity)
+int BRepModel::type(const smtk::util::UUID& ofEntity)
 {
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  return (it == this->Topology->end() ? INVALID : it->second.entityFlags());
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
-int BRepModel::Dimension(const UUID& ofEntity)
+int BRepModel::dimension(const UUID& ofEntity)
 {
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  return (it == this->Topology->end() ? -1 : it->second.dimension());
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  return (it == this->m_topology->end() ? -1 : it->second.dimension());
 }
 
 /**\brief Return the (Dimension+1 or higher)-entities that are the immediate bordants of the passed entity.
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::BordantEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  if (it == this->Topology->end())
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
     {
     return result;
     }
@@ -213,8 +213,8 @@ UUIDs BRepModel::BordantEntities(const UUID& ofEntity, int ofDimension)
   UUIDsToLinks::iterator other;
   for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
     {
-    other = this->Topology->find(*ai);
-    if (other == this->Topology->end())
+    other = this->m_topology->find(*ai);
+    if (other == this->m_topology->end())
       { // TODO: silently skip bad relations or complain?
       continue;
       }
@@ -232,13 +232,13 @@ UUIDs BRepModel::BordantEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::BordantEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
   for (UUIDs::iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
     {
-    UUIDs bdy = this->BordantEntities(*it, ofDimension);
+    UUIDs bdy = this->bordantEntities(*it, ofDimension);
     std::copy(bdy.begin(), bdy.end(), inserter);
     }
   return result;
@@ -248,11 +248,11 @@ UUIDs BRepModel::BordantEntities(const UUIDs& ofEntities, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::BoundaryEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  if (it == this->Topology->end())
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
     {
     return result;
     }
@@ -264,8 +264,8 @@ UUIDs BRepModel::BoundaryEntities(const UUID& ofEntity, int ofDimension)
   UUIDsToLinks::iterator other;
   for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
     {
-    other = this->Topology->find(*ai);
-    if (other == this->Topology->end())
+    other = this->m_topology->find(*ai);
+    if (other == this->m_topology->end())
       { // TODO: silently skip bad relations or complain?
       continue;
       }
@@ -283,13 +283,13 @@ UUIDs BRepModel::BoundaryEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::BoundaryEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
   for (UUIDs::iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
     {
-    UUIDs bdy = this->BoundaryEntities(*it, ofDimension);
+    UUIDs bdy = this->boundaryEntities(*it, ofDimension);
     std::copy(bdy.begin(), bdy.end(), inserter);
     }
   return result;
@@ -298,7 +298,7 @@ UUIDs BRepModel::BoundaryEntities(const UUIDs& ofEntities, int ofDimension)
 /**\brief Return lower-dimensional boundaries of the passed d-dimensional entity.
   *
   * \a lowerDimension may be any dimension < d.
-  * Unlike BRepModel::BoundaryEntities(), this method will search the boundaries
+  * Unlike BRepModel::boundaryEntities(), this method will search the boundaries
   * of the entity's boundaries.
   * For example, a 2-dimensional face normally stores 1-dimensional edges
   * as its immediate boundaries, so if BoundaryEntities() is asked for 0-dimensional
@@ -310,11 +310,11 @@ UUIDs BRepModel::BoundaryEntities(const UUIDs& ofEntities, int ofDimension)
   * Passing -1 will return all boundary entities of the specified entity,
   * regardless of their dimension.
   */
-UUIDs BRepModel::LowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
+UUIDs BRepModel::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimension)
 {
   UUIDs result;
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  if (it == this->Topology->end())
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
     {
     return result;
     }
@@ -330,10 +330,10 @@ UUIDs BRepModel::LowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimen
     //        relations that match lowerDimension as we go.
     int currentDim = it->second.dimension() - 1;
     int delta = currentDim - lowerDimension;
-    result = this->BoundaryEntities(ofEntity, currentDim--);
+    result = this->boundaryEntities(ofEntity, currentDim--);
     for (int i = delta; i > 0; --i, --currentDim)
       {
-      result = this->BoundaryEntities(result, currentDim);
+      result = this->boundaryEntities(result, currentDim);
       }
     }
   return result;
@@ -342,7 +342,7 @@ UUIDs BRepModel::LowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimen
 /**\brief Return higher-dimensional bordants of the passed d-dimensional entity.
   *
   * \a higherDimension may be any dimension > d.
-  * Unlike BRepModel::BordantEntities(), this method will search the bordants
+  * Unlike BRepModel::bordantEntities(), this method will search the bordants
   * of the entity's immediate bordants.
   * For example, a 1-dimensional edge normally stores 2-dimensional faces
   * as its immediate bordants, so if BoundaryEntities() is asked for 3-dimensional
@@ -354,11 +354,11 @@ UUIDs BRepModel::LowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimen
   * Passing -1 will return all bordant entities of the specified entity,
   * regardless of their dimension.
   */
-UUIDs BRepModel::HigherDimensionalBordants(const UUID& ofEntity, int higherDimension)
+UUIDs BRepModel::higherDimensionalBordants(const UUID& ofEntity, int higherDimension)
 {
   UUIDs result;
-  UUIDsToLinks::iterator it = this->Topology->find(ofEntity);
-  if (it == this->Topology->end())
+  UUIDsToLinks::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
     {
     return result;
     }
@@ -370,17 +370,17 @@ UUIDs BRepModel::HigherDimensionalBordants(const UUID& ofEntity, int higherDimen
     {
     int currentDim = it->second.dimension() + 1;
     int delta = higherDimension - currentDim;
-    result = this->BordantEntities(ofEntity, currentDim++);
+    result = this->bordantEntities(ofEntity, currentDim++);
     for (int i = delta; i > 0; --i, ++currentDim)
       {
-      result = this->BordantEntities(result, currentDim);
+      result = this->bordantEntities(result, currentDim);
       }
     }
   return result;
 }
 
 /// Return entities of the requested dimension that share a boundary relationship with the passed entity.
-UUIDs BRepModel::AdjacentEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::adjacentEntities(const UUID& ofEntity, int ofDimension)
 {
   // FIXME: Implement adjacency
   (void)ofEntity;
@@ -390,10 +390,10 @@ UUIDs BRepModel::AdjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs BRepModel::Entities(int ofDimension)
+UUIDs BRepModel::entities(int ofDimension)
 {
   UUIDs result;
-  for (UUIDWithLink it = this->Topology->begin(); it != this->Topology->end(); ++it)
+  for (UUIDWithLink it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
     if (it->second.dimension() == ofDimension)
       {
@@ -404,33 +404,33 @@ UUIDs BRepModel::Entities(int ofDimension)
 }
 //@}
 
-const Link* BRepModel::FindLink(const UUID& uid) const
+const Link* BRepModel::findLink(const UUID& uid) const
 {
-  UUIDWithLink it = this->Topology->find(uid);
-  if (it == this->Topology->end())
+  UUIDWithLink it = this->m_topology->find(uid);
+  if (it == this->m_topology->end())
     {
     return NULL;
     }
   return &it->second;
 }
 
-Link* BRepModel::FindLink(const UUID& uid)
+Link* BRepModel::findLink(const UUID& uid)
 {
-  UUIDWithLink it = this->Topology->find(uid);
-  if (it == this->Topology->end())
+  UUIDWithLink it = this->m_topology->find(uid);
+  if (it == this->m_topology->end())
     {
     return NULL;
     }
   return &it->second;
 }
 
-void BRepModel::RemoveLinkReferences(const UUIDWithLink& c)
+void BRepModel::removeLinkReferences(const UUIDWithLink& c)
 {
   UUIDArray::const_iterator bit;
   Link* ref;
   for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
     {
-    ref = this->FindLink(*bit);
+    ref = this->findLink(*bit);
     if (ref)
       {
       ref->removeRelation(c->first);
@@ -438,13 +438,13 @@ void BRepModel::RemoveLinkReferences(const UUIDWithLink& c)
     }
 }
 
-void BRepModel::InsertLinkReferences(const UUIDWithLink& c)
+void BRepModel::insertLinkReferences(const UUIDWithLink& c)
 {
   UUIDArray::const_iterator bit;
   Link* ref;
   for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
     {
-    ref = this->FindLink(*bit);
+    ref = this->findLink(*bit);
     if (ref)
       {
       ref->appendRelation(c->first);

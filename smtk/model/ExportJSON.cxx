@@ -25,7 +25,7 @@ namespace smtk {
 
 using smtk::util::UUID;
 
-cJSON* ExportJSON::FromUUIDs(const UUIDs& uids)
+cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
 {
   cJSON* a = cJSON_CreateArray();
   for (UUIDs::iterator it = uids.begin(); it != uids.end(); ++it)
@@ -35,7 +35,7 @@ cJSON* ExportJSON::FromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::FromModel(cJSON* json, ModelBody* model)
+int ExportJSON::fromModel(cJSON* json, ModelBody* model)
 {
   int status = 0;
   if (!json || !model)
@@ -64,12 +64,12 @@ int ExportJSON::FromModel(cJSON* json, ModelBody* model)
 
   cJSON* mtyp = cJSON_CreateString("ModelBody");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::ForModelBody(body, model);
+  status = ExportJSON::forModelBody(body, model);
 
   return status;
 }
 
-int ExportJSON::ForModelBody(
+int ExportJSON::forModelBody(
   cJSON* dict, ModelBody* model)
 {
   if (!dict || !model)
@@ -85,15 +85,15 @@ int ExportJSON::ForModelBody(
       std::string suid = it->first.ToString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::ForModelBodyLink(it, curChild, model);
-    status &= ExportJSON::ForModelBodyArrangement(
+    status &= ExportJSON::forModelBodyLink(it, curChild, model);
+    status &= ExportJSON::forModelBodyArrangement(
       model->arrangements().find(it->first), curChild, model);
-    status &= ExportJSON::ForModelBodyTessellation(it->first, curChild, model);
+    status &= ExportJSON::forModelBodyTessellation(it->first, curChild, model);
     }
   return status;
 }
 
-int ExportJSON::ForModelBodyLink(
+int ExportJSON::forModelBodyLink(
   UUIDWithLink& entry, cJSON* cellRec, ModelBody* model)
 {
   (void)model;
@@ -108,7 +108,7 @@ int ExportJSON::ForModelBodyLink(
   return 1;
 }
 
-int ExportJSON::ForModelBodyArrangement(
+int ExportJSON::forModelBodyArrangement(
   const UUIDWithArrangementDictionary& entry, cJSON* dict, ModelBody* model)
 {
   if (entry == model->arrangements().end())
@@ -129,14 +129,14 @@ int ExportJSON::ForModelBodyArrangement(
       for (ait = arr.begin(); ait != arr.end(); ++ait)
         {
         cJSON_AddItemToArray(kindNode,
-          cJSON_CreateIntArray(&(ait->Details[0]), ait->Details.size()));
+          cJSON_CreateIntArray(&(ait->details[0]), ait->details.size()));
         }
       }
     }
   return 1;
 }
 
-int ExportJSON::ForModelBodyTessellation(
+int ExportJSON::forModelBodyTessellation(
   const smtk::util::UUID& uid, cJSON* dict, ModelBody* model)
 {
   (void)uid;
@@ -157,11 +157,11 @@ int ExportJSON::ForModelBodyTessellation(
   //cJSON_AddItemToObject(tess, "3js", meta);
   cJSON_AddItemToObject(tess, "metadata", fmt);
   cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(
-      &model->tessellations()[uid].Coords[0],
-      model->tessellations()[uid].Coords.size()));
+      &model->tessellations()[uid].coords[0],
+      model->tessellations()[uid].coords.size()));
   cJSON_AddItemToObject(tess, "faces", cJSON_CreateIntArray(
-      &model->tessellations()[uid].Conn[0],
-      model->tessellations()[uid].Conn.size()));
+      &model->tessellations()[uid].conn[0],
+      model->tessellations()[uid].conn.size()));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }

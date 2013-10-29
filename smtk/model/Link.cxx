@@ -20,13 +20,13 @@ namespace smtk {
 
 /// The default constructor creates an invalid link.
 Link::Link()
-  : EntityFlags(INVALID), Dimension(-1)
+  : m_entityFlags(INVALID), m_dimension(-1)
 {
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
 Link::Link(int entityFlags, int dimension)
-  : EntityFlags(entityFlags), Dimension(dimension)
+  : m_entityFlags(entityFlags), m_dimension(dimension)
 {
 }
 
@@ -36,7 +36,7 @@ Link::Link(int entityFlags, int dimension)
   */
 int Link::entityFlags() const
 {
-  return this->EntityFlags;
+  return this->m_entityFlags;
 }
 
 /**\brief Return the dimension of the associated entity.
@@ -51,27 +51,27 @@ int Link::entityFlags() const
   */
 int Link::dimension() const
 {
-  return this->Dimension;
+  return this->m_dimension;
 }
 
 UUIDArray& Link::relations()
 {
-  return this->Relations;
+  return this->m_relations;
 }
 const UUIDArray& Link::relations() const
 {
-  return this->Relations;
+  return this->m_relations;
 }
 
 Link& Link::appendRelation(const UUID& b)
 {
-  this->Relations.push_back(b);
+  this->m_relations.push_back(b);
   return *this;
 }
 
 Link& Link::removeRelation(const UUID& b)
 {
-  UUIDArray& arr(this->Relations);
+  UUIDArray& arr(this->m_relations);
   unsigned size = arr.size();
   unsigned curr;
   for (curr = 0; curr < size; ++curr)

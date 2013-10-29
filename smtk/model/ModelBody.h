@@ -19,7 +19,7 @@ namespace smtk {
 class SMTKCORE_EXPORT ModelBody : public BRepModel
 {
 public:
-  typedef UUIDsToTessellations::iterator geom_iter_type;
+  typedef UUIDsToTessellations::iterator tess_iter_type;
 
   ModelBody();
   ModelBody(UUIDsToLinks* topology, UUIDsToArrangements* arrangements, UUIDsToTessellations* geometry, bool shouldDelete = false);
@@ -31,15 +31,15 @@ public:
   UUIDsToTessellations& tessellations();
   const UUIDsToTessellations& tessellations() const;
 
-  geom_iter_type SetTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
+  tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
-  int ArrangeLink(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
-  const Arrangement* GetArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
-  Arrangement* GetArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
+  int arrangeLink(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
+  const Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
+  Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
 
 protected:
-  UUIDsToArrangements* Relationships;
-  UUIDsToTessellations* Geometry;
+  UUIDsToArrangements* m_relationships;
+  UUIDsToTessellations* m_geometry;
 };
 
   } // model namespace
