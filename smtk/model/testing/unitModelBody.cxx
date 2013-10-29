@@ -3,6 +3,7 @@
 
 #include "cJSON.h"
 
+using namespace smtk::util;
 using namespace smtk::model;
 
 int main(int argc, char* argv[])

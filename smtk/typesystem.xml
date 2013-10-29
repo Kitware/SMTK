@@ -281,8 +281,6 @@
     <arg wraps-pointer-as="%CPPSELF-&gt;get()"/>
   </type-template>
 
-  <type-template name="smtk::model::BRepModel"/>
-
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
@@ -474,14 +472,14 @@
   <value-type template="smtk::shared_ptr" args="smtk::view::Root" />
   <value-type template="smtk::shared_ptr" args="smtk::view::SimpleExpression" />
 
-  <!-- <value-type template="smtk::model::BRepModel" args="smtk::util::UUID,smtk::model::UUIDs,smtk::model::Cell" generate="no" /> -->
-
   <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
 
   <namespace-type name="smtk">
     <namespace-type name="model">
       <!-- setup the model classes -->
-      <value-type name="BRepModel" generate="no" />
+      <object-type name="BRepModel">
+        <include file-name="smtk/model/BRepModel.h" location="local"/>
+      </object-type>
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/Arrangement.h" location="local"/>
