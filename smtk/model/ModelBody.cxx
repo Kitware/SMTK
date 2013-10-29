@@ -16,7 +16,7 @@ namespace smtk {
   namespace model {
 
 ModelBody::ModelBody() :
-  BRepModel<UUID,UUIDs,Link>(new UUIDsToLinks, true),
+  BRepModel(new UUIDsToLinks, true),
   Relationships(new UUIDsToArrangements),
   Geometry(new UUIDsToTessellations)
 {
@@ -27,7 +27,7 @@ ModelBody::ModelBody(
   UUIDsToArrangements* arrangements,
   UUIDsToTessellations* geometry,
   bool shouldDelete)
-  : BRepModel<UUID,UUIDs,Link>(topology, shouldDelete), Relationships(arrangements), Geometry(geometry)
+  : BRepModel(topology, shouldDelete), Relationships(arrangements), Geometry(geometry)
 {
 }
 

@@ -1,6 +1,7 @@
 # set up sources to build
 set(modelSrcs
   Arrangement.cxx
+  BRepModel.cxx
   Link.cxx
   ExportJSON.cxx
   GroupItem.cxx

@@ -1,5 +1,11 @@
 #ifndef __smtk_model_ModelBody_h
 #define __smtk_model_ModelBody_h
+
+#include "smtk/model/Arrangement.h"
+#include "smtk/model/BRepModel.h"
+#include "smtk/model/Link.h"
+#include "smtk/model/Tessellation.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
@@ -7,17 +13,10 @@
 
 #include <sstream>
 
-#include "smtk/model/Item.h"
-
-#include "smtk/model/Arrangement.h"
-#include "smtk/model/BRepModel.h"
-#include "smtk/model/Link.h"
-#include "smtk/model/Tessellation.h"
-
 namespace smtk {
   namespace model {
 
-class SMTKCORE_EXPORT ModelBody : public BRepModel<smtk::util::UUID,UUIDs,Link>
+class SMTKCORE_EXPORT ModelBody : public BRepModel
 {
 public:
   typedef UUIDsToTessellations::iterator geom_iter_type;
