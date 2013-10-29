@@ -15,11 +15,11 @@ class ModelBody;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int IntoModel(const char* json, ModelBody* model);
-  static int OfModelBody(cJSON* body, ModelBody* model);
-  static int OfModelBodyLink(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
-  static int OfModelBodyArrangement(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
-  static int OfModelBodyTessellation(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
+  static int intoModel(const char* json, ModelBody* model);
+  static int ofModelBody(cJSON* body, ModelBody* model);
+  static int ofModelBodyLink(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
+  static int ofModelBodyArrangement(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
+  static int ofModelBodyTessellation(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
 };
 
   } // namespace model

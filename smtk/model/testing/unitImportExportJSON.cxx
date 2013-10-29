@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
   ModelBody sm(&smTopology, &smArrangements, &smTessellation);
 
   int status = 0;
-  status |= ImportJSON::IntoModel(data.c_str(), &sm);
-  status |= ExportJSON::FromModel(json, &sm);
+  status |= ImportJSON::intoModel(data.c_str(), &sm);
+  status |= ExportJSON::fromModel(json, &sm);
 
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
@@ -39,8 +39,8 @@ int main(int argc, char* argv[])
   UUIDsToTessellations smTessellation2;
   ModelBody sm2(&smTopology2, &smArrangements2, &smTessellation2);
 
-  status |= ImportJSON::IntoModel(exported, &sm2);
-  status |= ExportJSON::FromModel(json, &sm2);
+  status |= ImportJSON::intoModel(exported, &sm2);
+  status |= ExportJSON::fromModel(json, &sm2);
   char* exported2 = cJSON_Print(json);
 
   if (debug || strcmp(exported, exported2))

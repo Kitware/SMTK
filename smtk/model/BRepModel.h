@@ -35,47 +35,45 @@ public:
   std::map<smtk::util::UUID,Link>& topology();
   const std::map<smtk::util::UUID,Link>& topology() const;
 
-  int Type(const smtk::util::UUID& ofEntity);
-  int Dimension(const smtk::util::UUID& ofEntity);
+  int type(const smtk::util::UUID& ofEntity);
+  int dimension(const smtk::util::UUID& ofEntity);
 
-  const Link* FindLink(const smtk::util::UUID& uid) const;
-  Link* FindLink(const smtk::util::UUID& uid);
+  const Link* findLink(const smtk::util::UUID& uid) const;
+  Link* findLink(const smtk::util::UUID& uid);
 
-  UUIDs BordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  UUIDs BordantEntities(const UUIDs& ofEntities, int ofDimension = -2);
-  UUIDs BoundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  UUIDs BoundaryEntities(const UUIDs& ofEntities, int ofDimension = -2);
+  UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
+  UUIDs bordantEntities(const UUIDs& ofEntities, int ofDimension = -2);
+  UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
+  UUIDs boundaryEntities(const UUIDs& ofEntities, int ofDimension = -2);
 
-  UUIDs LowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
-  UUIDs HigherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
-  UUIDs AdjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
+  UUIDs lowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
+  UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
+  UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
 
-  UUIDs Entities(int ofDimension);
+  UUIDs entities(int ofDimension);
 
-  iter_type InsertLinkOfTypeAndDimension(int entityFlags, int dim);
-  iter_type InsertLink(Link& cell);
-  iter_type SetLinkOfTypeAndDimension(const smtk::util::UUID& uid, int entityFlags, int dim);
-  iter_type SetLink(const smtk::util::UUID& uid, Link& cell);
+  iter_type insertLinkOfTypeAndDimension(int entityFlags, int dim);
+  iter_type insertLink(Link& cell);
+  iter_type setLinkOfTypeAndDimension(const smtk::util::UUID& uid, int entityFlags, int dim);
+  iter_type setLink(const smtk::util::UUID& uid, Link& cell);
 
-  smtk::util::UUID AddLinkOfTypeAndDimension(int entityFlags, int dim);
-  smtk::util::UUID AddLink(Link& cell);
-  smtk::util::UUID AddLinkOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, int entityFlags, int dim);
-  smtk::util::UUID AddLinkWithUUID(const smtk::util::UUID& uid, Link& cell);
+  smtk::util::UUID addLinkOfTypeAndDimension(int entityFlags, int dim);
+  smtk::util::UUID addLink(Link& cell);
+  smtk::util::UUID addLinkOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, int entityFlags, int dim);
+  smtk::util::UUID addLinkWithUUID(const smtk::util::UUID& uid, Link& cell);
 
-  /// Shortcuts for inserting cells with default entity flags.
-  //@{
-  iter_type InsertCellOfDimension(int dim);
-  iter_type SetCellOfDimension(const smtk::util::UUID& uid, int dim);
-  smtk::util::UUID AddCellOfDimension(int dim);
-  smtk::util::UUID AddCellOfDimensionWithUUID(const smtk::util::UUID& uid, int dim);
-  //@}
+  iter_type insertCellOfDimension(int dim);
+  iter_type setCellOfDimension(const smtk::util::UUID& uid, int dim);
+  smtk::util::UUID addCellOfDimension(int dim);
+  smtk::util::UUID addCellOfDimensionWithUUID(const smtk::util::UUID& uid, int dim);
 
-  void InsertLinkReferences(const UUIDWithLink& c);
-  void RemoveLinkReferences(const UUIDWithLink& c);
-  void SetDeleteStorage(bool d);
+  void insertLinkReferences(const UUIDWithLink& c);
+  void removeLinkReferences(const UUIDWithLink& c);
+  void setDeleteStorage(bool d);
+
 protected:
-  UUIDsToLinks* Topology;
-  bool DeleteStorage;
+  UUIDsToLinks* m_topology;
+  bool m_deleteStorage;
 };
 
   } // model namespace

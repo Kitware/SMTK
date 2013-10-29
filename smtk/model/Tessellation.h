@@ -18,25 +18,25 @@ namespace smtk {
   */
 struct Tessellation
 {
-  std::vector<double> Coords;
-  std::vector<int> Conn;
+  std::vector<double> coords;
+  std::vector<int> conn;
   // We may eventually want geometry to include a reference
   // to a: boost::variant<point,curve,face,volume> Definition;
 
   Tessellation();
 
-  int AddCoords(double* a);
-  Tessellation& AddCoords(double x, double y, double z);
+  int addCoords(double* a);
+  Tessellation& addCoords(double x, double y, double z);
 
-  Tessellation& AddPoint(double* a);
-  Tessellation& AddLine(double* a, double* b);
-  Tessellation& AddTriangle(double* a, double* b, double* c);
+  Tessellation& addPoint(double* a);
+  Tessellation& addLine(double* a, double* b);
+  Tessellation& addTriangle(double* a, double* b, double* c);
 
-  Tessellation& AddPoint(int ai);
-  Tessellation& AddLine(int ai, int bi);
-  Tessellation& AddTriangle(int ai, int bi, int ci);
+  Tessellation& addPoint(int ai);
+  Tessellation& addLine(int ai, int bi);
+  Tessellation& addTriangle(int ai, int bi, int ci);
 
-  Tessellation& Reset();
+  Tessellation& reset();
 };
 
 typedef std::map<smtk::util::UUID,Tessellation> UUIDsToTessellations;

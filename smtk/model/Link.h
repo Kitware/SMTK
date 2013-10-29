@@ -78,9 +78,9 @@ public:
   Link& removeRelation(const smtk::util::UUID& b);
 
 protected:
-  int EntityFlags;
-  int Dimension;
-  UUIDArray Relations;
+  int m_entityFlags;
+  int m_dimension;
+  UUIDArray m_relations;
 private:
 };
 

@@ -44,7 +44,7 @@ std::string AbbreviationForArrangementKind(ArrangementKind k);
   */
 struct SMTKCORE_EXPORT Arrangement
 {
-  std::vector<int> Details; // Kind-dependent specification of the arrangement.
+  std::vector<int> details; // Kind-dependent specification of the arrangement.
 };
 
 /// A vector of Arrangements is associated to each ModelBody entity.
