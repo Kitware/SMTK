@@ -28,7 +28,7 @@ using smtk::util::UUID;
 cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
 {
   cJSON* a = cJSON_CreateArray();
-  for (UUIDs::iterator it = uids.begin(); it != uids.end(); ++it)
+  for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
     {
     cJSON_AddItemToArray(a, cJSON_CreateString(it->ToString().c_str()));
     }

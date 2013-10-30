@@ -236,7 +236,7 @@ UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
-  for (UUIDs::iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
+  for (UUIDs::const_iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
     {
     UUIDs bdy = this->bordantEntities(*it, ofDimension);
     std::copy(bdy.begin(), bdy.end(), inserter);
@@ -287,7 +287,7 @@ UUIDs BRepModel::boundaryEntities(const UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
-  for (UUIDs::iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
+  for (UUIDs::const_iterator it = ofEntities.begin(); it != ofEntities.end(); ++it)
     {
     UUIDs bdy = this->boundaryEntities(*it, ofDimension);
     std::copy(bdy.begin(), bdy.end(), inserter);

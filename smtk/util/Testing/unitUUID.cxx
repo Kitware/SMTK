@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   assert(a.ToString() == "00000000-0000-0000-0000-000000000000" && "ToString(NULL)");
 
   // Raw data constructor
-  uint8_t data[] = "\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff";
+  UUID::value_type data[] = "\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff";
   UUID fromRaw(data, data + 16);
 
   // String constructor
