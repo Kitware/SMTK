@@ -19,9 +19,15 @@ namespace smtk {
 class SMTKCORE_EXPORT UUID
 {
 public:
+#if defined(WIN32)
+  typedef unsigned __int8   value_type;
+  typedef unsigned __int8*  iterator;
+  typedef unsigned __int8 const* const_iterator;
+#else
   typedef uint8_t value_type;
   typedef uint8_t* iterator;
   typedef uint8_t const* const_iterator;
+#endif
   typedef std::size_t size_type;
 
   UUID();
@@ -54,8 +60,8 @@ protected:
   boost::uuids::uuid Data;
 };
 
-std::ostream& operator << (std::ostream& stream, const UUID& uid);
-std::istream& operator >> (std::istream& stream, UUID& uid);
+SMTKCORE_EXPORT std::ostream& operator << (std::ostream& stream, const UUID& uid);
+SMTKCORE_EXPORT std::istream& operator >> (std::istream& stream, UUID& uid);
 
   } // namespace util
 } // namespace smtk

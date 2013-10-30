@@ -16,7 +16,7 @@ namespace smtk {
   * However, it may also evolve to store information about the
   * underlying geometric construct being approximated.
   */
-struct Tessellation
+struct SMTKCORE_EXPORT Tessellation
 {
   std::vector<double> coords;
   std::vector<int> conn;

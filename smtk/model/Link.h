@@ -62,7 +62,7 @@ enum EntityTypeBits
   INVALID              = 0xffff  //!< The entity is invalid
   };
 
-class Link
+class SMTKCORE_EXPORT Link
 {
 public:
   Link();
