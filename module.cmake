@@ -7,7 +7,9 @@ vtk_module(vtkDiscreteModel
     vtkFiltersCore
     vtkRenderingCore
   PRIVATE_DEPENDS
+    vtkFiltersSources
     vtkInteractionStyle
+    vtkIOXMLParser
     vtkRenderingFreeTypeOpenGL
     vtkRenderingOpenGL
     vtksys
