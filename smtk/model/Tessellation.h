@@ -47,6 +47,7 @@ struct SMTKCORE_EXPORT Tessellation
 };
 
 typedef std::map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
+typedef std::map<smtk::util::UUID,Tessellation>::iterator UUIDWithTessellation;
 
   } // model namespace
 } // smtk namespace

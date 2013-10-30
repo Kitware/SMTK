@@ -115,6 +115,10 @@ namespace {
     }
   int cJSON_GetTessellationCoords(cJSON* node, smtk::model::Tessellation& tess)
     {
+    if (!node)
+      {
+      return 0;
+      }
     int count = 0;
     tess.coords.clear();
     if (node->type == cJSON_Array)
@@ -137,6 +141,10 @@ namespace {
     }
   int cJSON_GetTessellationConn(cJSON* node, smtk::model::Tessellation& tess)
     {
+    if (!node)
+      {
+      return 0;
+      }
     int count = 0;
     tess.conn.clear();
     if (node->type == cJSON_Array)

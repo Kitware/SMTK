@@ -73,6 +73,40 @@ if(SMTK_BUILD_QT)
 
 endif()
 
+#add the VTK code
+if(SMTK_BUILD_VTK)
+
+  add_subdirectory(vtk)
+
+  get_directory_property(VTKLibSrcs DIRECTORY vtk DEFINITION VTKLibSrcs)
+  smtk_prepend_string("vtk" VTKLibSrcs ${VTKLibSrcs})
+  get_directory_property(VTKLibHeaders DIRECTORY vtk DEFINITION VTKLibHeaders)
+  smtk_prepend_string("vtk" VTKLibHeaders ${VTKLibHeaders})
+
+  source_group("vtk_Source" FILES ${VTKLibSrcs} ${VTKLibUIs})
+  source_group("vtk_Header" FILES ${VTKLibHeaders})
+
+  set(vtksmtk_headers ${VTKLibHeaders})
+  set(vtksmtk_srcs ${VTKLibSrcs})
+
+  add_library(vtkSMTK ${vtksmtk_srcs})
+
+  #set vtkSMTK to publicly link to SMTKCore and VTK
+  target_link_libraries(vtkSMTK
+    LINK_PUBLIC
+      SMTKCore
+    LINK_PRIVATE
+      ${VTK_MODULES}
+    )
+  smtk_export_header(vtkSMTK vtkSMTKExports.h)
+
+  # Add compile definitions to force linking to implementation modules
+  set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
+
+  #install the library and exports the library when used from a build tree
+  smtk_install_library(vtkSMTK DEPENDS SMTKCore)
+endif()
+
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location

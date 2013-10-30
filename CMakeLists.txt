@@ -23,6 +23,7 @@ include(CMake/SharedPtr.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
+option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 
@@ -52,6 +53,30 @@ if(SMTK_BUILD_QT)
   set(QT_USE_IMPORTED_TARGETS TRUE)
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
+endif()
+
+################################################################################
+# VTK Related Settings
+################################################################################
+
+if(SMTK_BUILD_VTK)
+  set(VTK_MODULES
+    vtkCommonCore
+    vtkCommonDataModel
+    vtkCommonExecutionModel
+    vtkRenderingCore
+    vtkRenderingOpenGL
+    vtkRenderingFreeType
+    vtkInteractionStyle
+    vtkViewsCore
+    vtkViewsInfovis
+    vtkIOXML
+  )
+  find_package(VTK 6.1
+    COMPONENTS ${VTK_MODULES}
+    NO_MODULE
+  )
+  include(${VTK_USE_FILE})
 endif()
 
 
@@ -120,6 +145,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON
+  ${VTK_INCLUDE_DIRS}
   )
 
 ################################################################################
