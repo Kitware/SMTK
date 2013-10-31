@@ -30,12 +30,12 @@
   <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelBody::setTessellation', unmatched return type 'smtk::model::ModelBody::tess_iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertLink', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setLink', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::setCellOfDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
-  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertCellOfDimension', unmatched return type 'smtk::model::BRepModel&lt;UUID,UUIDs,Link&gt;::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertLink', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::setLink', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::setLinkOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::setCellOfDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::insertCellOfDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertLink', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::insertLinkOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setLink', unmatched return type 'BRepModel::iter_type'"/>
@@ -325,6 +325,7 @@
 
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::ModelBody">
     <modify-function signature="arrangeLink(smtk::util::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
@@ -534,15 +535,15 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <modify-function signature="topology() const" remove="all"/>
-        <modify-function signature="topology()" remove="all"/>
-        <add-function signature="topology()"
+        <!--<modify-function signature="topology()const" remove="all"/>-->
+        <!--<modify-function signature="topology()" remove="all"/>-->
+        <!--<add-function signature="topology()"
           return-type="std::map&lt;smtk::util::UUID,smtk::model::Link&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = %CPPSELF-&gt;topology();
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
-        </add-function>
+        </add-function>-->
         <add-function signature="insertLinkOfTypeAndDimension(int, int)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Link&gt;">
