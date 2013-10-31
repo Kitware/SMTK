@@ -26,11 +26,11 @@ enum ArrangementKind {
 //extern const char* ArrangementKindAbbr[KINDS_OF_ARRANGEMENTS + 1];
 // === WARNING === If you change this enum, also update string names in Arrangement.cxx!
 
-ArrangementKind ArrangementKindFromName(const std::string& name);
-std::string NameForArrangementKind(ArrangementKind k);
+SMTKCORE_EXPORT ArrangementKind ArrangementKindFromName(const std::string& name);
+SMTKCORE_EXPORT std::string NameForArrangementKind(ArrangementKind k);
 
-ArrangementKind ArrangementKindFromAbbreviation(const std::string& abbr);
-std::string AbbreviationForArrangementKind(ArrangementKind k);
+SMTKCORE_EXPORT ArrangementKind ArrangementKindFromAbbreviation(const std::string& abbr);
+SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
 
 /**\brief Store an arrangement of solid model entities.
   *
