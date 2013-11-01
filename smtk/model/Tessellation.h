@@ -6,6 +6,13 @@
 #include <map>
 #include <vector>
 
+#if defined(WIN32)
+template class SMTKCORE_EXPORT std::allocator<double>;
+template class SMTKCORE_EXPORT std::allocator<int>;
+template class SMTKCORE_EXPORT std::vector<double>;
+template class SMTKCORE_EXPORT std::vector<int>;
+#endif
+
 namespace smtk {
   namespace model {
 

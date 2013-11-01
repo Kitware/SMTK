@@ -43,8 +43,8 @@ namespace smtk
     public:
       virtual int dimension() const = 0;
 
-      GridInfo() {}
-      virtual ~GridInfo() {}
+      GridInfo();
+      virtual ~GridInfo();
     };
   }
 }

@@ -5,6 +5,7 @@ set(utilSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
   Logger.cxx
+  UserData.cxx
   UUID.cxx
   XmlDocV1Parser.cxx
   XmlV1StringWriter.cxx
