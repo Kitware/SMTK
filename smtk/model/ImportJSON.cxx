@@ -324,7 +324,7 @@ int ImportJSON::ofModelBodyTessellation(
     cJSON_GetObjectItem(tessNode, "faces"), tessIt->second);
   (void)numVerts;
   (void)numPrims;
-  std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
+  //std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
   return 1;
 }
 
