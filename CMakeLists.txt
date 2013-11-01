@@ -71,6 +71,7 @@ if(SMTK_BUILD_VTK)
     vtkViewsCore
     vtkViewsInfovis
     vtkIOXML
+    vtkIOLegacy
   )
   find_package(VTK 6.1
     COMPONENTS ${VTK_MODULES}

@@ -5,9 +5,11 @@
 
 #include "vtkInteractorStyleSwitch.h"
 #include "vtkNew.h"
+#include "vtkPolyData.h"
+#include "vtkPolyDataMapper.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
-#include "vtkXMLPolyDataWriter.h"
+#include "vtkPolyDataWriter.h"
 
 using namespace smtk::model;
 using namespace smtk::util;
@@ -31,14 +33,6 @@ int main(int argc, char* argv[])
   vtkNew<vtkSMTKModelRepresentation> rep;
   rep->SetModel(sm);
 
-#if 0
-  vtkNew<vtkXMLPolyDataWriter> wri;
-  wri->SetFileName("/tmp/smtkModel.vtp");
-  wri->SetInputConnection(rep->GetOutputPort());
-  wri->SetDataModeToAscii();
-  wri->Write();
-#endif // 0
-
   view->AddRepresentation(rep.GetPointer());
   view->ResetCamera();
   view->ResetCameraClippingRange();
@@ -50,6 +44,15 @@ int main(int argc, char* argv[])
   view->Render();
   view->ResetCamera();
   view->ResetCameraClippingRange();
+
+#if 1
+  // Using legacy writer... XML format doesn't deal well with string arrays (UUIDs).
+  vtkNew<vtkPolyDataWriter> wri;
+  wri->SetFileName("/tmp/smtkModel.vtk");
+  wri->SetInputDataObject(rep->GetMapper()->GetInput());
+  //wri->SetDataModeToAscii();
+  wri->Write();
+#endif // 0
 
   if (debug)
     {

@@ -29,6 +29,10 @@ public:
 
   virtual void ApplyViewTheme(vtkViewTheme* theme);
 
+  vtkGetObjectMacro(CachedOutput,vtkPolyData);
+  vtkGetObjectMacro(Transform,vtkTransformFilter);
+  vtkGetObjectMacro(Mapper,vtkPolyDataMapper);
+
 protected:
   vtkSMTKModelRepresentation();
   virtual ~vtkSMTKModelRepresentation();
@@ -49,13 +53,8 @@ protected:
   virtual vtkSelection* ConvertSelection(vtkView* view, vtkSelection* selection);
 
   void SetCachedOutput(vtkPolyData*);
-  vtkGetObjectMacro(CachedOutput,vtkPolyData);
-
   void SetTransform(vtkTransformFilter*);
-  vtkGetObjectMacro(Transform,vtkTransformFilter);
-
   void SetMapper(vtkPolyDataMapper*);
-  vtkGetObjectMacro(Mapper,vtkPolyDataMapper);
 
   void SetActor(vtkActor*);
   vtkGetObjectMacro(Actor,vtkActor);

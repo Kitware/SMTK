@@ -106,8 +106,11 @@ void vtkSMTKModelRepresentation::GenerateRepresentationFromModel(
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkCellArray> polys;
+  vtkNew<vtkStringArray> pedigree;
+  pedigree->SetName("UUID");
   pd->SetPoints(pts.GetPointer());
   pd->SetPolys(polys.GetPointer());
+  pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
   vtkIdType i;
   smtk::model::UUIDWithTessellation it;
   vtkIdType npts = 0;
@@ -122,6 +125,7 @@ void vtkSMTKModelRepresentation::GenerateRepresentationFromModel(
   std::vector<vtkIdType> conn;
   for (it = model->tessellations().begin(); it != model->tessellations().end(); ++it)
     {
+    std::string uuidStr = it->first.toString();
     // Each tessellation has connectivity relative to its local points.
     vtkIdType connOffset = curPt;
 
@@ -163,6 +167,7 @@ void vtkSMTKModelRepresentation::GenerateRepresentationFromModel(
         conn[k] = it->second.conn[i + k + 1] + connOffset;
         }
       pd->InsertNextCell(primType, ptsPerPrim, &conn[0]);
+      pedigree->InsertNextValue(uuidStr);
       }
     }
 }
