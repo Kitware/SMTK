@@ -248,6 +248,15 @@ function(sbk_wrap_library NAME)
     COMMENT "Generating Python bindings for ${NAME}"
   )
 
+  if(WIN32)
+    set(_clean)
+    FOREACH (i ${_sources})
+      string(REGEX REPLACE "\\\\" "/" i ${i})
+      set(_clean ${_clean} ${i})
+    ENDFOREACH()
+    set(_sources ${_clean})
+  endif()
+
   # Remove "special" dependencies
   if(_DEPENDS)
     list(REMOVE_ITEM _DEPENDS ${SHIBOKEN_VIRTUAL_DEPENDENCIES})
