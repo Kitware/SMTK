@@ -1,11 +1,13 @@
 set(VTKLibSrcs
-  vtkSMTKModelView.cxx
   vtkSMTKModelRepresentation.cxx
+  vtkSMTKModelSource.cxx
+  vtkSMTKModelView.cxx
 )
 
 set(VTKLibHeaders
-  vtkSMTKModelView.h
   vtkSMTKModelRepresentation.h
+  vtkSMTKModelSource.h
+  vtkSMTKModelView.h
 )
 
 #install the headers

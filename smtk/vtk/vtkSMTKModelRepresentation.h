@@ -2,11 +2,11 @@
 #define __smtk_vtk_ModelRepresentation_h
 
 #include "smtk/vtkSMTKExports.h"
-#include "smtk/PublicPointerDefs.h"
 
 #include "vtkRenderedRepresentation.h"
 
 class vtkActor;
+class vtkApplyColors;
 class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkTransformFilter;
@@ -22,25 +22,19 @@ public:
   virtual void PrintSelf(ostream& os, vtkIndent indent);
   vtkTypeMacro(vtkSMTKModelRepresentation,vtkRenderedRepresentation);
 
-  virtual void SetModel(smtk::model::ModelBodyPtr model);
-  smtk::model::ModelBodyPtr GetModel();
-
-  virtual void Dirty();
-
   virtual void ApplyViewTheme(vtkViewTheme* theme);
 
-  vtkGetObjectMacro(CachedOutput,vtkPolyData);
   vtkGetObjectMacro(Transform,vtkTransformFilter);
+  vtkGetObjectMacro(ApplyColors,vtkApplyColors);
   vtkGetObjectMacro(Mapper,vtkPolyDataMapper);
+  vtkGetObjectMacro(Actor,vtkActor);
 
 protected:
   vtkSMTKModelRepresentation();
   virtual ~vtkSMTKModelRepresentation();
 
-  void GenerateRepresentationFromModel(
-    vtkPolyData* poly, smtk::model::ModelBodyPtr model);
-
-  virtual int FillOutputPortInformation(int port, vtkInformation* request);
+  //virtual int FillInputPortInformation(int port, vtkInformation* request);
+  //virtual int FillOutputPortInformation(int port, vtkInformation* request);
 
   virtual int RequestData(
     vtkInformation* request,
@@ -52,17 +46,14 @@ protected:
   virtual bool RemoveFromView(vtkView* view);
   virtual vtkSelection* ConvertSelection(vtkView* view, vtkSelection* selection);
 
-  void SetCachedOutput(vtkPolyData*);
   void SetTransform(vtkTransformFilter*);
+  void SetApplyColors(vtkApplyColors*);
   void SetMapper(vtkPolyDataMapper*);
-
   void SetActor(vtkActor*);
-  vtkGetObjectMacro(Actor,vtkActor);
 
   // Instance storage:
-  smtk::model::ModelBodyPtr Model;
-  vtkPolyData* CachedOutput;
   vtkTransformFilter* Transform;
+  vtkApplyColors* ApplyColors;
   vtkPolyDataMapper* Mapper;
   vtkActor* Actor;
 
