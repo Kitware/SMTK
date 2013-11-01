@@ -4,6 +4,9 @@ set(modelSrcs
   BRepModel.cxx
   Link.cxx
   GroupItem.cxx
+  GridInfo.cxx
+  GridInfo2D.cxx
+  GridInfo3D.cxx
   Item.cxx
   Model.cxx
   ModelBody.cxx

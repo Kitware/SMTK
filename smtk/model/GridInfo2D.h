@@ -41,16 +41,15 @@ namespace smtk
     class SMTKCORE_EXPORT GridInfo2D : public GridInfo
     {
     public:
-      virtual int dimension() const
-      { return 2; }
+      virtual int dimension() const;
       virtual std::vector<int> groupCellIds(int groupId) = 0;
       virtual double groupArea(int groupId) = 0;
 
       virtual std::vector<int> cellPointIds(int cellId) = 0;
       virtual std::vector<double> pointLocation(int pointId) = 0;
 
-      GridInfo2D()  {}
-      virtual ~GridInfo2D() {}
+      GridInfo2D();
+      virtual ~GridInfo2D();
     };
   }
 }

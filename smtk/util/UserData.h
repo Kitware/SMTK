@@ -42,9 +42,9 @@ namespace smtk
       static smtk::util::UserDataPtr New()
       { return smtk::util::UserDataPtr(new UserData()); }
 
-      virtual ~UserData(){};
+      virtual ~UserData();
     protected:
-      UserData(){}
+      UserData();
     };
   }
 }
