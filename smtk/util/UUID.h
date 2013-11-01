@@ -36,18 +36,18 @@ public:
   UUID(const std::string& txt);
   UUID(const boost::uuids::uuid& data);
 
-  static UUID Random();
-  static UUID Null();
+  static UUID random();
+  static UUID null();
 
-  static size_type Size() { return 16; }
-  bool IsNull() const;
+  static size_type size() { return 16; }
+  bool isNull() const;
 
-  iterator Begin();
-  const_iterator Begin() const;
-  iterator End();
-  const_iterator End() const;
+  iterator begin();
+  const_iterator begin() const;
+  iterator end();
+  const_iterator end() const;
 
-  std::string ToString() const;
+  std::string toString() const;
 
   bool operator != (UUID const& other) const;
   bool operator == (UUID const& other) const;
@@ -57,7 +57,7 @@ public:
 
 protected:
   // Implemented using Boost's UUID library.
-  boost::uuids::uuid Data;
+  boost::uuids::uuid m_data;
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& stream, const UUID& uid);

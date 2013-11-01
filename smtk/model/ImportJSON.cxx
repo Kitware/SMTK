@@ -230,7 +230,7 @@ int ImportJSON::ofModelBody(
       continue;
       }
     UUID uid(curChild->string);
-    if (uid.IsNull())
+    if (uid.isNull())
       {
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;

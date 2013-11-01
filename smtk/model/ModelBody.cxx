@@ -65,7 +65,7 @@ const UUIDsToTessellations& ModelBody::tessellations() const
 
 ModelBody::tess_iter_type ModelBody::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
-  if (cellId.IsNull())
+  if (cellId.isNull())
     {
     throw std::string("Nil cell ID");
     }
@@ -132,7 +132,7 @@ int ModelBody::arrangeLink(const UUID& cellId, ArrangementKind kind, const Arran
   */
 const Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKind kind, int index) const
 {
-  if (cellId.IsNull() || index < 0)
+  if (cellId.isNull() || index < 0)
     {
     return NULL;
     }
@@ -162,7 +162,7 @@ const Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKin
   */
 Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
 {
-  if (cellId.IsNull() || index < 0)
+  if (cellId.isNull() || index < 0)
     {
     return NULL;
     }

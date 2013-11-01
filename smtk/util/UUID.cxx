@@ -8,20 +8,20 @@ namespace smtk {
 
 /// Default constructor creates a nil UUID (IsNull() == true).
 UUID::UUID()
- : Data()
+ : m_data()
 {
 }
 
 /// Copy constructor.
 UUID::UUID(const UUID& other)
 {
-  this->Data = other.Data;
+  this->m_data = other.m_data;
 }
 
 /// Construct a UUID from raw bytes (more than twice as efficient as string conversion).
 UUID::UUID(const_iterator begin, const_iterator end)
 {
-  for (iterator it = this->Data.begin(); begin != end; ++it, ++begin)
+  for (iterator it = this->m_data.begin(); begin != end; ++it, ++begin)
     {
     *it = *begin;
     }
@@ -31,94 +31,94 @@ UUID::UUID(const_iterator begin, const_iterator end)
 UUID::UUID(const std::string& txt)
 {
   boost::uuids::string_generator sgen;
-  this->Data = sgen(txt);
+  this->m_data = sgen(txt);
 }
 
 /// Construct a UUID from a boost UUID object.
 UUID::UUID(const boost::uuids::uuid& data)
 {
-  this->Data = data;
+  this->m_data = data;
 }
 
 /// Generate a random UUID (RFC4122, version 4)
-UUID UUID::Random()
+UUID UUID::random()
 {
   boost::uuids::basic_random_generator<boost::mt19937> gen;
   return UUID(gen());
 }
 
 /// Generate a nil UUID.
-UUID UUID::Null()
+UUID UUID::null()
 {
   boost::uuids::nil_generator ngen;
   return UUID(ngen());
 }
 
 /// Test whether a UUID is nil (i.e., all zeros) or not. The nil UUID usually indicates an invalid UUID.
-bool UUID::IsNull() const
+bool UUID::isNull() const
 {
-  return this->Data.is_nil();
+  return this->m_data.is_nil();
 }
 
 /// Return an iterator to the start of a UUID's raw data.
-UUID::iterator UUID::Begin()
+UUID::iterator UUID::begin()
 {
-  return this->Data.begin();
+  return this->m_data.begin();
 }
 
 /// Return a constant iterator to the start of a UUID's raw data.
-UUID::const_iterator UUID::Begin() const
+UUID::const_iterator UUID::begin() const
 {
-  return this->Data.begin();
+  return this->m_data.begin();
 }
 
 /// Return an iterator to the end of a UUID's raw data.
-UUID::iterator UUID::End()
+UUID::iterator UUID::end()
 {
-  return this->Data.end();
+  return this->m_data.end();
 }
 
 /// Return a constant iterator to the end of a UUID's raw data.
-UUID::const_iterator UUID::End() const
+UUID::const_iterator UUID::end() const
 {
-  return this->Data.end();
+  return this->m_data.end();
 }
 
 /// Convert the UUID to a string.
-std::string UUID::ToString() const
+std::string UUID::toString() const
 {
-  return boost::uuids::to_string(this->Data);
+  return boost::uuids::to_string(this->m_data);
 }
 
 /// Compare two UUIDs for inequality.
 bool UUID::operator != (const UUID& other) const
 {
-  return this->Data != other.Data;
+  return this->m_data != other.m_data;
 }
 
 /// Compare two UUIDs for equality.
 bool UUID::operator == (const UUID& other) const
 {
-  return this->Data == other.Data;
+  return this->m_data == other.m_data;
 }
 
 /// Compare two UUIDs for ordering.
 bool UUID::operator < (const UUID& other) const
 {
-  return this->Data < other.Data;
+  return this->m_data < other.m_data;
 }
 
 /// Assignment operator.
 UUID& UUID::operator = (const UUID& other)
 {
-  this->Data = other.Data;
+  this->m_data = other.m_data;
   return *this;
 }
 
 /// Write a UUID to a stream (as a string).
 std::ostream& operator << (std::ostream& stream, const UUID& uid)
 {
-  stream << uid.ToString().c_str();
+  stream << uid.toString().c_str();
   return stream;
 }
 

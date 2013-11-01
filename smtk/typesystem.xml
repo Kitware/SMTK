@@ -80,9 +80,9 @@
         // Get the uuid module object
         PyObject* module = PyImport_ImportModule("uuid");
         // Call the class inside the module to create an instance
-        unsigned char* data = %in.Begin();
+        unsigned char* data = %in.begin();
         PyObject* byteStr =
-          Py_BuildValue("s#", data, %in.Size());
+          Py_BuildValue("s#", data, %in.size());
         PyObject* none = Py_None;
         char v_uuid[]="UUID";
         char v_00[]="OO";
@@ -101,7 +101,7 @@
           char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
           if (ustr) {
             for (int i = 0; i &lt; 16; ++i)
-              *((%out).Begin() + i) = ustr[i];
+              *((%out).begin() + i) = ustr[i];
           }
         </add-conversion>
       </target-to-native>
