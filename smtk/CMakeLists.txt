@@ -23,6 +23,10 @@ if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
   set_target_properties(SMTKCore PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()
 
+if (BUILD_SHARED_LIBS)
+  set_target_properties(SMTKCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
+
 #install the library and exports the library when used from a build tree
 smtk_install_library(SMTKCore DEPENDS cJSON)
 
@@ -54,7 +58,8 @@ if(SMTK_BUILD_QT)
   add_library(QtSMTK ${qtsmtk_srcs})
 
   #let cmake do what qt4_wrap_cpp used to do automatically
-  set_target_properties(QtSMTK PROPERTIES AUTOMOC TRUE)
+  set_target_properties(QtSMTK PROPERTIES AUTOMOC TRUE
+                        INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
   #we need to add the location of the moc files to the include dir for
   #qtsmtk
