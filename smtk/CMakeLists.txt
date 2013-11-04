@@ -62,7 +62,7 @@ if(SMTK_BUILD_QT)
                APPEND PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
 
   #set QtSMTK to link to qtGUI and include dirs
-  qt4_use_modules(QtSMTK LINK_PUBLIC Gui)
+  qt4_use_modules(QtSMTK LINK_PUBLIC Core Gui)
 
   #set QtSMTK to publicly link to SMTKCore
   target_link_libraries(QtSMTK LINK_PUBLIC SMTKCore)
