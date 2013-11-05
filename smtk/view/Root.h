@@ -55,12 +55,23 @@ namespace smtk
       {this->setInvalidColor(c[0], c[1], c[2], c[3]);}
       void setInvalidColor(double r, double g, double b, double a);
 
+      const bool advancedBold() const
+      {return this->m_advancedBold;}
+      void setAdvancedBold(const bool b)
+      {this->m_advancedBold = b;}
+
+      const bool advancedItalic() const
+      {return this->m_advancedItalic;}
+      void setAdvancedItalic(const bool i)
+      {this->m_advancedItalic = i;}
+
     private:
       //needs to be private for shiboken wrapping to work properly
       double m_defaultColor[4];
       double m_invalidColor[4];
-
-
+      // advanced options are bold and not italic by default
+      bool m_advancedBold;
+      bool m_advancedItalic;
     };
 //----------------------------------------------------------------------------
     inline void Root::setDefaultColor(double r, double g, double b,

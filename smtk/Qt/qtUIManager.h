@@ -69,6 +69,17 @@ namespace smtk
       QColor invalidValueColor() const
       {return this->InvalidValueColor;}
 
+      // Description:
+      // Set the advanced values font to be bold and/or italic
+      void setAdvancedBold(bool b)
+      {this->AdvancedBold = b;}
+      bool advancedBold()
+      {return this->AdvancedBold;}
+      void setAdvancedItalic(bool i)
+      {this->AdvancedItalic = i;}
+      bool advancedItalic()
+      {return this->AdvancedItalic;}
+
       qtRootView* rootView()
         {return this->RootView;}
       static QString clipBoardText();
@@ -149,6 +160,8 @@ namespace smtk
       QFont advFont;
       QColor DefaultValueColor;
       QColor InvalidValueColor;
+      bool AdvancedBold; // true by default
+      bool AdvancedItalic; // false by default
 
       smtk::attribute::Manager &m_AttManager;
 
