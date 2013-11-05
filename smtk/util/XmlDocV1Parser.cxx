@@ -469,7 +469,7 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
                        << idef->name());
         }
       }
-    xatt = node.attribute("DefaultIndex");
+    xatt = dnode.attribute("DefaultIndex");
     if (xatt)
       {
       idef->setDefaultDiscreteIndex(xatt.as_int());
@@ -630,7 +630,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
                        << idef->name());
         }
       }
-    xatt = node.attribute("DefaultIndex");
+    xatt = dnode.attribute("DefaultIndex");
     if (xatt)
       {
       idef->setDefaultDiscreteIndex(xatt.as_int());
@@ -1944,6 +1944,19 @@ void XmlDocV1Parser::processViews(xml_node &root)
     {
     rs->setInvalidColor(c);
     }
+  node = views.child("AdvancedFontEffects");
+  if (node)
+    {
+    if(xml_attribute xatt = node.attribute("Bold"))
+      {
+      rs->setAdvancedBold(strcmp(xatt.value(), "1"));
+      }
+    if(xml_attribute xatt = node.attribute("Italic"))
+      {
+      rs->setAdvancedItalic(strcmp(xatt.value(), "1"));
+      }
+    }
+
   this->processGroupView(views,
                          smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
 }
@@ -2142,7 +2155,8 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
 
     // In case this was root section
     if ((group->type() == smtk::view::Base::ROOT) && ((childName == "DefaultColor") ||
-                                                      (childName == "InvalidColor")))
+                                                      (childName == "InvalidColor") ||
+                                                      (childName == "AdvancedFontEffects")))
       {
       continue;
       }

@@ -21,6 +21,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
 #include "smtk/Qt/qtVoidItem.h"
+#include "smtk/Qt/qtUIManager.h"
 
 #include <QCheckBox>
 #include <QSizePolicy>
@@ -69,6 +70,16 @@ void qtVoidItem::createWidget()
   optionalCheck->setSizePolicy(sizeFixedPolicy);
   QString txtLabel = dataObj->definition()->label().empty() ?
     dataObj->definition()->name().c_str() : dataObj->definition()->label().c_str();
+
+  if(dataObj->definition()->advanceLevel() >0)
+    {
+    optionalCheck->setFont(qtUIManager::instance()->advancedFont());
+    }
+  if(dataObj->definition()->briefDescription().length())
+    {
+    optionalCheck->setToolTip(dataObj->definition()->briefDescription().c_str());
+    }
+
   optionalCheck->setText(txtLabel);
   QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
     this, SLOT(setOutputOptional(int)));

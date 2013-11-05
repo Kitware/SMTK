@@ -41,7 +41,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
-#include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/view/Attribute.h"
 

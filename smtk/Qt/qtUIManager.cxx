@@ -62,6 +62,8 @@
 #include "smtk/view/ModelEntity.h"
 #include "smtk/view/SimpleExpression.h"
 
+#include <math.h>
+
 using namespace smtk::attribute;
 
 #define SB_DOUBLE_CONSTRAINT_PRECISION 0.000001
@@ -123,9 +125,22 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     }
   this->RootView = NULL;
   this->ShowAdvanced =false;
-  this->advFont.setBold(true);
-  this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
-  this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
+  if(manager.rootView())
+    {
+    this->advFont.setBold(manager.rootView()->advancedBold());
+    this->advFont.setItalic(manager.rootView()->advancedItalic());
+    const double* rgba = manager.rootView()->defaultColor();
+    this->DefaultValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
+    rgba = manager.rootView()->invalidColor();
+    this->InvalidValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
+    }
+  else
+    { // default settings
+    this->advFont.setBold(true);
+    this->advFont.setItalic(false);
+    this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
+    this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -609,18 +624,23 @@ QWidget* qtUIManager::createComboBox(
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
   QList<QString> discreteVals;
+  QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
     {
     std::string enumText = itemDef->discreteEnum(i);
     if(itemDef->hasDefault() &&
       itemDef->defaultDiscreteIndex() == i)
       {
-      enumText.append(" (Default)");
+      tooltip = "Default: " + QString(enumText.c_str());
       }
     discreteVals.push_back(enumText.c_str());
     }
 
   QComboBox* combo = new QComboBox(pWidget);
+  if(!tooltip.isEmpty())
+    {
+    combo->setToolTip(tooltip);
+    }
   QVariant vdata(elementIdx);
   combo->setProperty("ElementIndex", vdata);
   QVariant vobject;
@@ -714,14 +734,27 @@ QWidget* qtUIManager::createEditBox(
       double value=smtk_DOUBLE_MIN;
       if(dDef->hasMinRange())
         {
-        value = dDef->minRangeInclusive() ?
-          dDef->minRange() : dDef->minRange() + smtk_DOUBLE_CONSTRAINT_PRECISION;
+        value = dDef->minRange();
+        if(dDef->minRangeInclusive())
+          {
+          double multiplier = value >= 0 ? 1. : -1.;
+          double to = multiplier*value*1.001+1;
+          value = nextafter(value, to);
+          }
         validator->setBottom(value);
-        tooltip.append("Min: ").append(QString::number(value));
+        QString inclusive = dDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+        tooltip.append("Min(").append(inclusive).append("): ").append(QString::number(dDef->minRange()));
         }
       value=smtk_DOUBLE_MAX;
       if(dDef->hasMaxRange())
         {
+        value = dDef->maxRange();
+        if(dDef->maxRangeInclusive())
+          {
+          double multiplier = value >= 0 ? -1. : 1.;
+          double to = multiplier*value*1.001-1;
+          value = nextafter(value, to);
+          }
         value = dDef->maxRangeInclusive() ?
           dDef->maxRange() : dDef->maxRange() - smtk_DOUBLE_CONSTRAINT_PRECISION;
         validator->setTop(value);
@@ -729,7 +762,17 @@ QWidget* qtUIManager::createEditBox(
           {
           tooltip.append("; ");
           }
-        tooltip.append("Max: ").append(QString::number(value));
+        QString inclusive = dDef->maxRangeInclusive() ? "Inclusive" : "Not Inclusive";
+        tooltip.append("Max(").append(inclusive).append("): ").append(QString::number(dDef->maxRange()));
+        }
+      if(dDef->hasDefault())
+        {
+        value = dDef->defaultValue();
+        if(!tooltip.isEmpty())
+          {
+          tooltip.append("; ");
+          }
+        tooltip.append("Default: ").append(QString::number(value));
         }
 
       smtk::attribute::DoubleItemPtr ditem =dynamic_pointer_cast<DoubleItem>(item);
@@ -771,7 +814,8 @@ QWidget* qtUIManager::createEditBox(
         value = iDef->minRangeInclusive() ?
           iDef->minRange() : iDef->minRange() + 1;
         validator->setBottom(value);
-        tooltip.append("Min: ").append(QString::number(value));
+        QString inclusive = iDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+        tooltip.append("Min(").append(inclusive).append("): ").append(QString::number(iDef->minRange()));
         }
       value=smtk_INT_MAX;
       if(iDef->hasMaxRange())
@@ -783,7 +827,17 @@ QWidget* qtUIManager::createEditBox(
           {
           tooltip.append("; ");
           }
-        tooltip.append("Max: ").append(QString::number(value));
+        QString inclusive = iDef->minRangeInclusive() ? "Inclusive" : "Not Inclusive";
+        tooltip.append("Max(").append(inclusive).append("): ").append(QString::number(iDef->maxRange()));
+        }
+      if(iDef->hasDefault())
+        {
+        value = iDef->defaultValue();
+        if(!tooltip.isEmpty())
+          {
+          tooltip.append("; ");
+          }
+        tooltip.append("Default: ").append(QString::number(value));
         }
 
       smtk::attribute::IntItemPtr iItem =dynamic_pointer_cast<IntItem>(item);
@@ -842,7 +896,13 @@ QWidget* qtUIManager::createEditBox(
         inputWidget = lineEdit;
         }
       inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-      break;
+      if(sDef->hasDefault())
+        {
+        QString tooltip;
+        tooltip.append("Default: ").append(sDef->defaultValue().c_str());
+        inputWidget->setToolTip(tooltip);
+       }
+     break;
       }
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<

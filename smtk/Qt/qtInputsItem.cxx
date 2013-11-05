@@ -203,8 +203,14 @@ void qtInputsItem::updateUI()
       label->setFont(qtUIManager::instance()->advancedFont());
       }
     labelLayout->addWidget(label);
+    // add in BriefDescription as tooltip if available
+    const std::string strBriefDescription = dataObj->definition()->briefDescription();
+    if(strBriefDescription.length())
+      {
+      label->setToolTip(strBriefDescription.c_str());
+      }
     }
- 
+
   this->loadInputValues(labelLayout, entryLayout);
 
   entryLayout->setAlignment(Qt::AlignLeft);

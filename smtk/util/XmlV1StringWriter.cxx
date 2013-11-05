@@ -1127,6 +1127,12 @@ void XmlV1StringWriter::processViews()
   views.append_child("DefaultColor").text().set(s.c_str());
   s = this->encodeColor(rs->invalidColor());
   views.append_child("InvalidColor").text().set(s.c_str());
+  // advanced font settings
+  std::string boldValue = rs->advancedBold() ? "1" : "0";
+  std::string italicValue = rs->advancedItalic() ? "1" : "0";
+  s = "Bold=\"" + boldValue + "\" Italic=\"" + italicValue + "\"";
+  views.append_child("AdvancedFontEffects").text().set(s.c_str());
+
   this->processGroupView(views,
                          smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
 }

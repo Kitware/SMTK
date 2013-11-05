@@ -36,6 +36,8 @@ Root::Root(const std::string &myTitle): Group(myTitle)
   this->m_invalidColor[1] = 0.5;
   this->m_invalidColor[2] = 0.5;
   this->m_invalidColor[3] = 1.0;
+  this->m_advancedBold = true;
+  this->m_advancedItalic = false;
 }
 
 //----------------------------------------------------------------------------
