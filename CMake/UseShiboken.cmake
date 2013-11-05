@@ -271,6 +271,9 @@ function(sbk_wrap_library NAME)
                ${SHIBOKEN_INCLUDE_DIR}
                ${_extra_include_dirs}
               )
+  if(WIN32)
+    set_property(TARGET ${_pyname} PROPERTY SUFFIX ".pyd")
+  endif()
   target_link_libraries(${_pyname} LINK_PRIVATE
     ${NAME}
     ${_DEPENDS}
