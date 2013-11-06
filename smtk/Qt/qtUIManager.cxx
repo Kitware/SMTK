@@ -64,6 +64,14 @@
 
 #include <math.h>
 
+#if defined(WIN32) //VS2008 is not c99 complient.
+#include <float.h>
+double nextafter(double x, double y)
+{
+  return _nextafter(x,y);
+}
+#endif
+
 using namespace smtk::attribute;
 
 #define SB_DOUBLE_CONSTRAINT_PRECISION 0.000001
