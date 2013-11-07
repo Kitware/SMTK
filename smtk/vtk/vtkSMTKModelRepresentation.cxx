@@ -56,6 +56,8 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   // Apply default theme
   vtkNew<vtkViewTheme> theme;
   theme->SetCellOpacity(1.0);
+  theme->SetLineWidth(3);
+  theme->SetPointSize(4);
   this->ApplyViewTheme(theme.GetPointer());
 }
 
