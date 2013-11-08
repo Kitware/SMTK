@@ -56,7 +56,7 @@ BRepModel::iter_type BRepModel::insertLinkOfTypeAndDimension(int entityFlags, in
   UUID actual;
   do
     {
-    actual = UUID::Random();
+    actual = UUID::random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setLinkOfTypeAndDimension(actual, entityFlags, dimension);
@@ -68,7 +68,7 @@ BRepModel::iter_type BRepModel::insertLink(Link& c)
   UUID actual;
   do
     {
-    actual = UUID::Random();
+    actual = UUID::random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setLink(actual, c);
@@ -81,7 +81,7 @@ BRepModel::iter_type BRepModel::insertLink(Link& c)
 BRepModel::iter_type BRepModel::setLinkOfTypeAndDimension(const UUID& uid, int entityFlags, int dimension)
 {
   UUIDsToLinks::iterator it;
-  if (uid.IsNull())
+  if (uid.isNull())
     {
     std::ostringstream msg;
     msg << "Nil UUID";
@@ -104,7 +104,7 @@ BRepModel::iter_type BRepModel::setLinkOfTypeAndDimension(const UUID& uid, int e
 BRepModel::iter_type BRepModel::setLink(const UUID& uid, Link& c)
 {
   UUIDsToLinks::iterator it;
-  if (uid.IsNull())
+  if (uid.isNull())
     {
     std::ostringstream msg;
     msg << "Nil UUID";

@@ -115,6 +115,10 @@ namespace {
     }
   int cJSON_GetTessellationCoords(cJSON* node, smtk::model::Tessellation& tess)
     {
+    if (!node)
+      {
+      return 0;
+      }
     int count = 0;
     tess.coords.clear();
     if (node->type == cJSON_Array)
@@ -137,6 +141,10 @@ namespace {
     }
   int cJSON_GetTessellationConn(cJSON* node, smtk::model::Tessellation& tess)
     {
+    if (!node)
+      {
+      return 0;
+      }
     int count = 0;
     tess.conn.clear();
     if (node->type == cJSON_Array)
@@ -222,7 +230,7 @@ int ImportJSON::ofModelBody(
       continue;
       }
     UUID uid(curChild->string);
-    if (uid.IsNull())
+    if (uid.isNull())
       {
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
@@ -316,7 +324,7 @@ int ImportJSON::ofModelBodyTessellation(
     cJSON_GetObjectItem(tessNode, "faces"), tessIt->second);
   (void)numVerts;
   (void)numPrims;
-  std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
+  //std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
   return 1;
 }
 

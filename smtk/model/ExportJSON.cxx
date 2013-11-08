@@ -14,7 +14,7 @@ namespace {
     cJSON* a = cJSON_CreateArray();
     for (unsigned i = 0; i < count; ++i)
       {
-      cJSON_AddItemToArray(a, cJSON_CreateString(uids[i].ToString().c_str()));
+      cJSON_AddItemToArray(a, cJSON_CreateString(uids[i].toString().c_str()));
       }
     return a;
     }
@@ -30,7 +30,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   cJSON* a = cJSON_CreateArray();
   for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
     {
-    cJSON_AddItemToArray(a, cJSON_CreateString(it->ToString().c_str()));
+    cJSON_AddItemToArray(a, cJSON_CreateString(it->toString().c_str()));
     }
   return a;
 }
@@ -82,7 +82,7 @@ int ExportJSON::forModelBody(
     {
     cJSON* curChild = cJSON_CreateObject();
       {
-      std::string suid = it->first.ToString();
+      std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
     status &= ExportJSON::forModelBodyLink(it, curChild, model);

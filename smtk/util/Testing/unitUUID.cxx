@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
 
   // Default constructor.
   UUID a;
-  assert(a.IsNull() && "Empty constructor must create NULL UUID");
-  assert(a.ToString() == "00000000-0000-0000-0000-000000000000" && "ToString(NULL)");
+  assert(a.isNull() && "Empty constructor must create NULL UUID");
+  assert(a.toString() == "00000000-0000-0000-0000-000000000000" && "ToString(NULL)");
 
   // Raw data constructor
   UUID::value_type data[] = "\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\xff\xff";
@@ -27,10 +27,10 @@ int main(int argc, char* argv[])
   // Try the << operator
   std::ostringstream os;
   os << fromRaw;
-  assert(fromRaw.ToString() == os.str() && "operator << failed");
+  assert(fromRaw.toString() == os.str() && "operator << failed");
 
   // Try the >> operator:
-  std::istringstream is(fromStr.ToString());
+  std::istringstream is(fromStr.toString());
   is >> fromRaw;
   assert(fromRaw == fromStr && "operator >> failed");
 
@@ -46,10 +46,10 @@ int main(int argc, char* argv[])
   assert(!(b == c) && "Equality operator failed (FALSE)");
 
   // Generators:
-  UUID e = UUID::Random();
-  UUID f = UUID::Null();
-  assert(!e.IsNull() && "Random() constructor must not create NULL UUID");
-  assert(f.IsNull() && "Null() constructor must create NULL UUID");
+  UUID e = UUID::random();
+  UUID f = UUID::null();
+  assert(!e.isNull() && "random() constructor must not create NULL UUID");
+  assert(f.isNull() && "null() constructor must create NULL UUID");
 
   return 0;
 }
