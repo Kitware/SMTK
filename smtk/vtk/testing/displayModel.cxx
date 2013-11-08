@@ -37,6 +37,15 @@ public:
   ~vtkSMTKModelSelectionHelper()
     {
     }
+  void PrintSelectionMask(int mask)
+    {
+    cout << "Selecting:"
+      << (mask & smtk::model::DIMENSION_0 ? " Vertices" : "")
+      << (mask & smtk::model::DIMENSION_1 ? " Edges" : "")
+      << (mask & smtk::model::DIMENSION_2 ? " Faces" : "")
+      << (mask & smtk::model::DIMENSION_3 ? " Volumes" : "")
+      << "\n";
+    }
   virtual void Execute(vtkObject* caller, unsigned long eventId, void* callData)
     {
     /*
@@ -54,6 +63,20 @@ public:
         if (key == 'm')
           {
           this->SwitchInteractors();
+          this->PrintSelectionMask(this->Representation->GetSelectionMask());
+          }
+        else if (key == 'd' || key == 'D')
+          {
+          int mask = this->Representation->GetSelectionMask();
+          mask = (mask + 1) % (
+            smtk::model::DIMENSION_0 +
+            smtk::model::DIMENSION_1 +
+            smtk::model::DIMENSION_2 +
+            smtk::model::DIMENSION_3 +
+            1);
+          if (mask == 0) ++mask; // Don't allow "select nothing"
+          this->Representation->SetSelectionMask(mask);
+          this->PrintSelectionMask(mask);
           }
         else if (key == 'q' || key == 'e')
           {
@@ -211,6 +234,8 @@ int main(int argc, char* argv[])
     vtkNew<vtkSMTKModelRepresentation> rep;
     vtkSMTKModelSelectionHelper* hlp = vtkSMTKModelSelectionHelper::New();
     src->SetModel(sm);
+    rep->SetModel(sm);
+    rep->SetSelectionMask(smtk::model::DIMENSION_1);
     rep->SetInputConnection(src->GetOutputPort());
     rep->SetSelectionType(vtkSelectionNode::PEDIGREEIDS);
     rep->AddObserver(vtkCommand::SelectionChangedEvent, hlp);

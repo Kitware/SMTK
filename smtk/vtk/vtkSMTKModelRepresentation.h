@@ -2,6 +2,7 @@
 #define __smtk_vtk_ModelRepresentation_h
 
 #include "smtk/vtkSMTKExports.h"
+#include "smtk/PublicPointerDefs.h"
 
 #include "vtkRenderedRepresentation.h"
 
@@ -21,6 +22,32 @@ public:
   static vtkSMTKModelRepresentation* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
   vtkTypeMacro(vtkSMTKModelRepresentation,vtkRenderedRepresentation);
+
+  /**\brief Get/set the selection mask.
+    *
+    * The selection mask is bit-wise ANDed with each selected entity's flags
+    * before that entity is added to the pedigree ID selection output by
+    * ConvertSelection().
+    *
+    * This can be used to force only edges, faces, or vertices to be selected.
+    */
+  //@{
+  vtkGetMacro(SelectionMask,int);
+  vtkSetMacro(SelectionMask,int);
+  //@}
+
+  /// Set/get the model (used for selection masking). This is really a hack.
+  //@{
+  virtual void SetModel(smtk::model::ModelBodyPtr model)
+    {
+    if (this->Model == model)
+      return;
+    this->Model = model;
+    this->Modified();
+    }
+  smtk::model::ModelBodyPtr GetModel()
+    { return this->Model; }
+  //@}
 
   virtual void ApplyViewTheme(vtkViewTheme* theme);
 
@@ -56,6 +83,8 @@ protected:
   vtkApplyColors* ApplyColors;
   vtkPolyDataMapper* Mapper;
   vtkActor* Actor;
+  int SelectionMask;
+  smtk::model::ModelBodyPtr Model;
 
 private:
   vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&); // Not implemented.

@@ -1,5 +1,8 @@
 #include "smtk/vtk/vtkSMTKModelRepresentation.h"
 
+#include "smtk/model/ModelBody.h"
+#include "smtk/model/Link.h"
+
 #include "vtkActor.h"
 #include "vtkApplyColors.h"
 #include "vtkCellArray.h"
@@ -34,6 +37,7 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   this->ApplyColors = NULL;
   this->Mapper = NULL;
   this->Actor = NULL;
+  this->SelectionMask = 0xffffff;
 
   vtkNew<vtkActor> act;
   vtkNew<vtkPolyDataMapper> map;
@@ -193,7 +197,6 @@ vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSel
   vtkSmartPointer<vtkIdTypeArray> empty =
     vtkSmartPointer<vtkIdTypeArray>::New();
   node->SetSelectionList(empty);
-  converted->AddNode(node);
   // Convert to the correct type of selection
   if (this->GetInput())
     {
@@ -203,8 +206,45 @@ vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSel
       vtkSelection* index = vtkConvertSelection::ToSelectionType(
         propSelection, obj, this->SelectionType,
         this->SelectionArrayNames);
-      converted->ShallowCopy(index);
-      index->Delete();
+
+      // If we have a model and pedigree Ids (UUIDs), then
+      // subset the selected UUIDs using our SelectionMask:
+      bool emptyResult = false;
+      vtkSelectionNode* snode = index->GetNode(0);
+      if (this->Model && snode && snode->GetContentType() == vtkSelectionNode::PEDIGREEIDS)
+        {
+        vtkStringArray* uuids = vtkStringArray::SafeDownCast(
+          snode->GetSelectionData()->GetAbstractArray(0));
+        if (uuids)
+          {
+          vtkIdType jj = 0;
+          for (vtkIdType ii = 0; ii < uuids->GetNumberOfValues(); ++ii)
+            {
+            smtk::util::UUID uid(uuids->GetValue(ii));
+            smtk::model::Link* entity = this->Model->findLink(uid);
+            bool keepId = true;
+            if (entity && (entity->entityFlags() & this->SelectionMask) == 0)
+              {
+              keepId = false;
+              }
+            if (keepId && jj < ii)
+              {
+              uuids->SetValue(jj, uid.toString());
+              ++jj;
+              }
+            }
+          uuids->SetNumberOfValues(jj);
+          emptyResult = (jj == 0);
+          }
+        }
+
+      // If anything ends up being selected, update our output:
+      if (!emptyResult)
+        {
+        converted->AddNode(node);
+        converted->ShallowCopy(index);
+        index->Delete();
+        }
       }
     }
 
