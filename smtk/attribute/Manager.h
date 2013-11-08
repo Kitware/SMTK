@@ -189,7 +189,7 @@ namespace smtk
     {
       result.clear();
       smtk::attribute::DefinitionPtr def = this->findDefinition(type);
-      if (def != NULL)
+      if (def)
         {
         this->internalFindAttributes(def, result);
         }

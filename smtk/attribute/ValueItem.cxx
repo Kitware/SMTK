@@ -52,7 +52,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
     dynamic_cast<const ValueItemDefinition *>(vdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
-  if ((def == NULL) || (!Item::setDefinition(vdef)))
+  if (!def || (!Item::setDefinition(vdef)))
     {
     return false;
     }
@@ -100,7 +100,7 @@ int ValueItem::numberOfRequiredValues() const
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
-  if (def == NULL)
+  if (!def)
     {
     return 0;
     }
@@ -111,7 +111,7 @@ bool ValueItem::allowsExpressions() const
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
-  if (def == NULL)
+  if (!def)
     {
     return false;
     }
@@ -135,9 +135,9 @@ bool ValueItem::setExpression(int element, smtk::attribute::AttributePtr exp)
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->allowsExpressions())
     {
-    if (exp == NULL)
+    if (!exp)
       {
-      if (this->m_expressions[element]->value() != NULL)
+      if (this->m_expressions[element]->value())
         {
         this->m_isSet[element] = false;
         this->m_expressions[element]->unset();

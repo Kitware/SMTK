@@ -69,7 +69,7 @@ int main()
   def1->addItemDefinition(scompdef2);
 
   smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
-  if (att != NULL)
+  if (att)
     {
     std::cout << "Attribute testAtt created\n";
     }
@@ -89,7 +89,7 @@ int main()
     comp = att->item(i);
     std::cout << "\t" << comp->name() << " Type = " << AttComp::type2String(comp->type()) << ", ";
     vcomp = smtk::dynamic_pointer_cast<ValueComp>(comp);
-    if (vcomp != NULL)
+    if (vcomp)
       {
       switch (vcomp->type())
         {

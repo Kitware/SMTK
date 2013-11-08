@@ -436,7 +436,7 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
       }
     }
   else if (this->m_defaultCategory != "" &&
-           smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef) == NULL)
+           !smtk::dynamic_pointer_cast<attribute::GroupItemDefinition>(idef))
     { // group item definitions don't get categories
     idef->addCategory(this->m_defaultCategory.c_str());
     }
@@ -1048,7 +1048,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
 
   att = this->m_manager.createAttribute(name, def, id);
 
-  if (att == NULL)
+  if (!att)
     {
     smtkErrorMacro(this->m_logger,
                    "Attribute: " << name << " of Type: " << type
@@ -1302,7 +1302,7 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
         }
       attName = val.text().get();
       att = this->m_manager.findAttribute(attName);
-      if (att == NULL)
+      if (!att)
         {
         info.item = item; info.pos = i; info.attName = attName;
         this->m_attRefInfo.push_back(info);
@@ -1316,11 +1316,11 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
   else if (numRequiredVals == 1)
     {
     val = node.child("Val");
-    if (val != NULL)
+    if (val)
       {
       attName = val.text().get();
       att = this->m_manager.findAttribute(attName);
-      if (att == NULL)
+      if (!att)
         {
         info.item = item; info.pos = 0; info.attName = attName;
         this->m_attRefInfo.push_back(info);
@@ -1390,7 +1390,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
   else if (numRequiredVals == 1)
     {
     val = node.child("Val");
-    if (val != NULL)
+    if (val)
       {
       item->setValue(val.text().get());
       }
@@ -1473,7 +1473,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         {
         expName = val.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = i; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
@@ -1501,7 +1501,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         {
         expName = node.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = 0; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
@@ -1576,7 +1576,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
   else if (numRequiredVals == 1)
     {
     val = node.child("Val");
-    if (val != NULL)
+    if (val)
       {
       item->setValue(val.text().get());
       }
@@ -1736,7 +1736,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         {
         expName = val.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = i; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
@@ -1764,7 +1764,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         {
         expName = node.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = 0; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
@@ -1857,7 +1857,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         {
         expName = val.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = i; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
@@ -1885,7 +1885,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         {
         expName = node.text().get();
         expAtt = this->m_manager.findAttribute(expName);
-        if (expAtt == NULL)
+        if (!expAtt)
           {
           info.item = item; info.pos = 0; info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);

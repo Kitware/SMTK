@@ -147,7 +147,7 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     {
     node.append_attribute("Label").set_value(def->label().c_str());
     }
-  if (def->baseDefinition() != NULL)
+  if (def->baseDefinition())
     {
     node.append_attribute("BaseType").set_value(def->baseDefinition()->type().c_str());
     }
@@ -497,7 +497,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
   if (idef->allowsExpressions())
     {
     attribute::DefinitionPtr  exp = idef->expressionDefinition();
-    if (exp != NULL)
+    if (exp)
       {
       xml_node enode = node.append_child("ExpressionType");
       enode.text().set(exp->type().c_str());
@@ -514,7 +514,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
                                       attribute::RefItemDefinitionPtr idef)
 {
   attribute::DefinitionPtr  adp = idef->attributeDefinition();
-  if (adp != NULL)
+  if (adp)
     {
     xml_node anode;
     anode = node.append_child("AttDef");
@@ -657,7 +657,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
 {
   xml_node node = attributes.append_child("Att");
   node.append_attribute("Name").set_value(att->name().c_str());
-  if (att->definition() != NULL)
+  if (att->definition())
     {
     node.append_attribute("Type").set_value(att->definition()->type().c_str());
     if (att->definition()->isNodal())
@@ -1192,7 +1192,7 @@ void XmlV1StringWriter::processModelEntityView(xml_node &node,
     std::string s = this->encodeModelEntityMask(v->modelEntityMask());
     node.append_attribute("ModelEntityFilter").set_value(s.c_str());
     }
-  if (v->definition() != NULL)
+  if (v->definition())
     {
     node.append_child("Definition").text().set(v->definition()->type().c_str());
     }
@@ -1203,7 +1203,7 @@ void XmlV1StringWriter::processSimpleExpressionView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  if (v->definition() != NULL)
+  if (v->definition())
     {
     node.append_child("Definition").text().set(v->definition()->type().c_str());
     }

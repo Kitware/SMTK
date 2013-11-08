@@ -64,7 +64,7 @@ bool Definition::isA(smtk::attribute::ConstDefinitionPtr targetDef) const
   // Walk up the inheritence tree until we either hit the root or
   // encounter this definition
   const Definition *def = this;
-  for (def = this; def != NULL; def = def->m_baseDefinition.get())
+  for (def = this; def; def = def->m_baseDefinition.get())
     {
     if (def == targetDef.get())
       {
@@ -199,7 +199,7 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
 //----------------------------------------------------------------------------
 void Definition::setCategories()
 {
-  if (this->m_baseDefinition != NULL)
+  if (this->m_baseDefinition)
     {
     this->m_categories = this->m_baseDefinition->m_categories;
     }

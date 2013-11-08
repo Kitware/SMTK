@@ -51,11 +51,11 @@ Item::Type RefItemDefinition::type() const
 bool
 RefItemDefinition::isValueValid(smtk::attribute::AttributePtr att) const
 {
-  if (att == NULL)
+  if (!att)
     {
     return true;
     }
-  if (this->m_definition.lock() != NULL)
+  if (this->m_definition.lock())
     {
     return att->isA(this->m_definition.lock());
     }

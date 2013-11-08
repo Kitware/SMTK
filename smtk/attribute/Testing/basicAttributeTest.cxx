@@ -32,7 +32,7 @@ int main()
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
   smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
-  if (def != NULL)
+  if (def)
     {
     std::cout << "Definition testDef created\n";
     }
@@ -42,7 +42,7 @@ int main()
     status++;
     }
   smtk::attribute::DefinitionPtr def1 = manager.createDefinition("testDef");
-  if (def1 == NULL)
+  if (!def1)
     {
     std::cout << "Duplicated definition testDef not created\n";
     }
@@ -52,7 +52,7 @@ int main()
     status++;
     }
   smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "testDef");
-  if (att != NULL)
+  if (att)
     {
     std::cout << "Attribute testAtt created\n";
     }
@@ -63,7 +63,7 @@ int main()
     }
 
   smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
-  if (att1 == NULL)
+  if (!att1)
     {
     std::cout << "Duplicate Attribute testAtt not created\n";
     }
