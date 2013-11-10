@@ -50,7 +50,7 @@ public:
   UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
   UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
 
-  UUIDs entities(int ofDimension);
+  UUIDs entitiesOfDimension(int dim);
 
   iter_type insertEntityOfTypeAndDimension(int entityFlags, int dim);
   iter_type insertEntity(Entity& cell);

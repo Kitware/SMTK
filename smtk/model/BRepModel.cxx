@@ -390,12 +390,12 @@ UUIDs BRepModel::adjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs BRepModel::entities(int ofDimension)
+UUIDs BRepModel::entitiesOfDimension(int dim)
 {
   UUIDs result;
   for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
-    if (it->second.dimension() == ofDimension)
+    if (it->second.dimension() == dim)
       {
       result.insert(it->first);
       }
@@ -404,6 +404,8 @@ UUIDs BRepModel::entities(int ofDimension)
 }
 //@}
 
+/// Return the smtk::model::Entity associated with \a uid (or NULL).
+//@{
 const Entity* BRepModel::findEntity(const UUID& uid) const
 {
   UUIDWithEntity it = this->m_topology->find(uid);
@@ -423,7 +425,9 @@ Entity* BRepModel::findEntity(const UUID& uid)
     }
   return &it->second;
 }
+//@}
 
+/// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
 void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
 {
   UUIDArray::const_iterator bit;
@@ -438,6 +442,7 @@ void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
     }
 }
 
+/// Given an entity \a c, ensure that all of its references contain a reference to it.
 void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
 {
   UUIDArray::const_iterator bit;

@@ -74,10 +74,10 @@ int main(int argc, char* argv[])
     .addTriangle(1, 6, 2)
     .addTriangle(2, 6, 0));
 
-  UUIDs nodes = sm.entities(0);
-  UUIDs edges = sm.entities(1);
-  UUIDs faces = sm.entities(2);
-  UUIDs zones = sm.entities(3);
+  UUIDs nodes = sm.entitiesOfDimension(0);
+  UUIDs edges = sm.entitiesOfDimension(1);
+  UUIDs faces = sm.entitiesOfDimension(2);
+  UUIDs zones = sm.entitiesOfDimension(3);
 
   cJSON* root = cJSON_CreateObject();
   ExportJSON::fromModel(root, &sm);
