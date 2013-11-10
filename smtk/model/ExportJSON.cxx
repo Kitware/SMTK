@@ -1,7 +1,7 @@
 #include "smtk/model/ExportJSON.h"
 
-#include "smtk/model/ModelBody.h"
-#include "smtk/model/Link.h"
+#include "smtk/model/Storage.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
 
@@ -35,7 +35,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, ModelBody* model)
+int ExportJSON::fromModel(cJSON* json, Storage* model)
 {
   int status = 0;
   if (!json || !model)
@@ -62,22 +62,22 @@ int ExportJSON::fromModel(cJSON* json, ModelBody* model)
     break;
     }
 
-  cJSON* mtyp = cJSON_CreateString("ModelBody");
+  cJSON* mtyp = cJSON_CreateString("Storage");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forModelBody(body, model);
+  status = ExportJSON::forStorage(body, model);
 
   return status;
 }
 
-int ExportJSON::forModelBody(
-  cJSON* dict, ModelBody* model)
+int ExportJSON::forStorage(
+  cJSON* dict, Storage* model)
 {
   if (!dict || !model)
     {
     return 0;
     }
   int status = 1;
-  UUIDWithLink it;
+  UUIDWithEntity it;
   for (it = model->topology().begin(); it != model->topology().end(); ++it)
     {
     cJSON* curChild = cJSON_CreateObject();
@@ -85,16 +85,16 @@ int ExportJSON::forModelBody(
       std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::forModelBodyLink(it, curChild, model);
-    status &= ExportJSON::forModelBodyArrangement(
+    status &= ExportJSON::forStorageEntity(it, curChild, model);
+    status &= ExportJSON::forStorageArrangement(
       model->arrangements().find(it->first), curChild, model);
-    status &= ExportJSON::forModelBodyTessellation(it->first, curChild, model);
+    status &= ExportJSON::forStorageTessellation(it->first, curChild, model);
     }
   return status;
 }
 
-int ExportJSON::forModelBodyLink(
-  UUIDWithLink& entry, cJSON* cellRec, ModelBody* model)
+int ExportJSON::forStorageEntity(
+  UUIDWithEntity& entry, cJSON* cellRec, Storage* model)
 {
   (void)model;
   cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
@@ -108,8 +108,8 @@ int ExportJSON::forModelBodyLink(
   return 1;
 }
 
-int ExportJSON::forModelBodyArrangement(
-  const UUIDWithArrangementDictionary& entry, cJSON* dict, ModelBody* model)
+int ExportJSON::forStorageArrangement(
+  const UUIDWithArrangementDictionary& entry, cJSON* dict, Storage* model)
 {
   if (entry == model->arrangements().end())
     {
@@ -136,8 +136,8 @@ int ExportJSON::forModelBodyArrangement(
   return 1;
 }
 
-int ExportJSON::forModelBodyTessellation(
-  const smtk::util::UUID& uid, cJSON* dict, ModelBody* model)
+int ExportJSON::forStorageTessellation(
+  const smtk::util::UUID& uid, cJSON* dict, Storage* model)
 {
   (void)uid;
   (void)dict;

@@ -1,6 +1,6 @@
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/ModelBody.h"
+#include "smtk/model/Storage.h"
 
 #include "cJSON.h"
 
@@ -22,10 +22,10 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  UUIDsToLinks smTopology;
+  UUIDsToEntities smTopology;
   UUIDsToArrangements smArrangements;
   UUIDsToTessellations smTessellation;
-  ModelBody sm(&smTopology, &smArrangements, &smTessellation);
+  Storage sm(&smTopology, &smArrangements, &smTessellation);
 
   int status = 0;
   status |= ImportJSON::intoModel(data.c_str(), &sm);
@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  UUIDsToLinks smTopology2;
+  UUIDsToEntities smTopology2;
   UUIDsToArrangements smArrangements2;
   UUIDsToTessellations smTessellation2;
-  ModelBody sm2(&smTopology2, &smArrangements2, &smTessellation2);
+  Storage sm2(&smTopology2, &smArrangements2, &smTessellation2);
 
   status |= ImportJSON::intoModel(exported, &sm2);
   status |= ExportJSON::fromModel(json, &sm2);

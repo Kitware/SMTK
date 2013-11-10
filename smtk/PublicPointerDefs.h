@@ -42,9 +42,9 @@ namespace smtk
     class GroupItem;
     class Item;
     class ImportJSON;
-    class Link;
+    class Entity;
     class Model;
-    class ModelBody;
+    class Storage;
     class ModelDomainItem;
     struct Tessellation;
   }
@@ -100,13 +100,13 @@ namespace smtk
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::Model >         ModelPtr;
     typedef smtk::weak_ptr< smtk::model::Model >           WeakModelPtr;
-    typedef smtk::shared_ptr< smtk::model::ModelBody >     ModelBodyPtr;
-    typedef smtk::weak_ptr< smtk::model::ModelBody >       WeakModelBodyPtr;
+    typedef smtk::shared_ptr< smtk::model::Storage >       StoragePtr;
+    typedef smtk::weak_ptr< smtk::model::Storage >         WeakStoragePtr;
     typedef smtk::shared_ptr< smtk::model::Item >          ItemPtr;
     typedef smtk::weak_ptr< smtk::model::Item >            WeakItemPtr;
     typedef smtk::shared_ptr< smtk::model::GroupItem >     GroupItemPtr;
-    typedef smtk::shared_ptr< smtk::model::Link >          LinkPtr;
-    typedef smtk::weak_ptr< smtk::model::Link >            WeakLinkPtr;
+    typedef smtk::shared_ptr< smtk::model::Entity >        EntityPtr;
+    typedef smtk::weak_ptr< smtk::model::Entity >          WeakEntityPtr;
     typedef smtk::shared_ptr< smtk::model::Arrangement >   ArrangementPtr;
     typedef smtk::weak_ptr< smtk::model::Arrangement >     WeakArrangementPtr;
     typedef smtk::shared_ptr< smtk::model::Tessellation >  TessellationPtr;

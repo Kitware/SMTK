@@ -1,5 +1,5 @@
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/ModelBody.h"
+#include "smtk/model/Storage.h"
 #include "smtk/vtk/vtkSMTKModelRepresentation.h"
 #include "smtk/vtk/vtkSMTKModelSource.h"
 #include "smtk/vtk/vtkSMTKModelView.h"
@@ -221,10 +221,10 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  UUIDsToLinks smTopology;
+  UUIDsToEntities smTopology;
   UUIDsToArrangements smArrangements;
   UUIDsToTessellations smTessellation;
-  ModelBodyPtr sm = ModelBodyPtr(new ModelBody(&smTopology, &smArrangements, &smTessellation));
+  StoragePtr sm = StoragePtr(new Storage(&smTopology, &smArrangements, &smTessellation));
 
   int status = ! ImportJSON::intoModel(data.c_str(), sm.get());
   if (! status)

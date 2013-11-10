@@ -14,8 +14,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkPolyData);
 
-  smtk::model::ModelBodyPtr GetModel();
-  void SetModel(smtk::model::ModelBodyPtr);
+  smtk::model::StoragePtr GetModel();
+  void SetModel(smtk::model::StoragePtr);
 
   void Dirty();
 
@@ -24,7 +24,7 @@ protected:
   virtual ~vtkSMTKModelSource();
 
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly, smtk::model::ModelBodyPtr model);
+    vtkPolyData* poly, smtk::model::StoragePtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -37,7 +37,7 @@ protected:
   void SetCachedOutput(vtkPolyData*);
 
   // Instance storage:
-  smtk::model::ModelBodyPtr Model;
+  smtk::model::StoragePtr Model;
   vtkPolyData* CachedOutput;
 
 private:

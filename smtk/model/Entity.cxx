@@ -1,4 +1,4 @@
-#include "smtk/model/Link.h"
+#include "smtk/model/Entity.h"
 
 #include <algorithm>
 #include <set>
@@ -15,17 +15,17 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
-/**\class smtk::model::Link - Store links between named entities.
+/**\class smtk::model::Entity - Store links between named entities.
   */
 
 /// The default constructor creates an invalid link.
-Link::Link()
+Entity::Entity()
   : m_entityFlags(INVALID), m_dimension(-1)
 {
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
-Link::Link(int entityFlags, int dimension)
+Entity::Entity(int entityFlags, int dimension)
   : m_entityFlags(entityFlags), m_dimension(dimension)
 {
   if (this->m_dimension >= 0 && this->m_dimension <= 3)
@@ -41,7 +41,7 @@ Link::Link(int entityFlags, int dimension)
   *
   * \sa smtk::model::EntityTypeBits
   */
-int Link::entityFlags() const
+int Entity::entityFlags() const
 {
   return this->m_entityFlags;
 }
@@ -56,27 +56,27 @@ int Link::entityFlags() const
   * For the GROUP bit, the integer returned should be treated as a bit
   * vector. Valid values include [0,15].
   */
-int Link::dimension() const
+int Entity::dimension() const
 {
   return this->m_dimension;
 }
 
-UUIDArray& Link::relations()
+UUIDArray& Entity::relations()
 {
   return this->m_relations;
 }
-const UUIDArray& Link::relations() const
+const UUIDArray& Entity::relations() const
 {
   return this->m_relations;
 }
 
-Link& Link::appendRelation(const UUID& b)
+Entity& Entity::appendRelation(const UUID& b)
 {
   this->m_relations.push_back(b);
   return *this;
 }
 
-Link& Link::removeRelation(const UUID& b)
+Entity& Entity::removeRelation(const UUID& b)
 {
   UUIDArray& arr(this->m_relations);
   unsigned size = arr.size();

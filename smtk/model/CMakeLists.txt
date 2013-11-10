@@ -2,14 +2,14 @@
 set(modelSrcs
   Arrangement.cxx
   BRepModel.cxx
-  Link.cxx
+  Entity.cxx
   GroupItem.cxx
   GridInfo.cxx
   GridInfo2D.cxx
   GridInfo3D.cxx
   Item.cxx
   Model.cxx
-  ModelBody.cxx
+  Storage.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
   )
@@ -21,14 +21,14 @@ endif()
 set(modelHeaders
   Arrangement.h
   BRepModel.h
-  Link.h
+  Entity.h
   Item.h
   GridInfo.h
   GridInfo2D.h
   GridInfo3D.h
   GroupItem.h
   Model.h
-  ModelBody.h
+  Storage.h
   ModelDomainItem.h
   Tessellation.h
   )

@@ -1,5 +1,5 @@
-#ifndef __smtk_model_Link_h
-#define __smtk_model_Link_h
+#ifndef __smtk_model_Entity_h
+#define __smtk_model_Entity_h
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
 
@@ -62,11 +62,11 @@ enum EntityTypeBits
   INVALID              = 0xffff  //!< The entity is invalid
   };
 
-class SMTKCORE_EXPORT Link
+class SMTKCORE_EXPORT Entity
 {
 public:
-  Link();
-  Link(int dimension, int entityFlags);
+  Entity();
+  Entity(int dimension, int entityFlags);
 
   int dimension() const;
   int entityFlags() const;
@@ -74,8 +74,8 @@ public:
   UUIDArray& relations();
   const UUIDArray& relations() const;
 
-  Link& appendRelation(const smtk::util::UUID& b);
-  Link& removeRelation(const smtk::util::UUID& b);
+  Entity& appendRelation(const smtk::util::UUID& b);
+  Entity& removeRelation(const smtk::util::UUID& b);
 
 protected:
   int m_entityFlags;
@@ -84,9 +84,9 @@ protected:
 private:
 };
 
-typedef std::pair<smtk::util::UUID,Link> UUIDLinkPair;
+typedef std::pair<smtk::util::UUID,Entity> UUIDEntityPair;
 
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Link_h
+#endif // __smtk_model_Entity_h
