@@ -22,6 +22,7 @@ set(modelHeaders
   Arrangement.h
   BRepModel.h
   Entity.h
+  EntityTypeBits.h
   Item.h
   GridInfo.h
   GridInfo2D.h

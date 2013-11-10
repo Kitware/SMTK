@@ -31,7 +31,8 @@ Entity::Entity(int entityFlags, int dimension)
   if (this->m_dimension >= 0 && this->m_dimension <= 3)
     {
     // Clear the dimension bits:
-    this->m_entityFlags &= ~(DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3);
+    this->m_entityFlags &= ~(
+      DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3 | DIMENSION_4);
     // Now add in the *proper* dimension bit to match m_dimension:
     this->m_entityFlags |= (1 << this->m_dimension);
     }
