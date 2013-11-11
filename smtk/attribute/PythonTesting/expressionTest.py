@@ -7,21 +7,6 @@
 
 import smtk
 
-def addItemDefinition( ato, data_type, name):
-    def_ = data_type.New(name)
-    if def_ is None:
-        print "could not create"
-        return None
-    idef = data_type.ToItemDefinition(def_)
-    if idef is None:
-        print "could not convert"
-        return None
-    if not ato.addItemDefinition(idef):
-        print "could not add"
-        return None
-    return def_
-
-
 if __name__ == '__main__':
     import sys
     
@@ -31,45 +16,31 @@ if __name__ == '__main__':
     print 'Manager created'
     # Lets create an attribute to represent an expression
     expDef = manager.createDefinition("ExpDef")
-    eitemdef = smtk.attribute.StringItemDefinition.New("Expression String")
-    idef = smtk.attribute.StringItemDefinition.ToItemDefinition(eitemdef)
-    expDef.addItemDefinition(idef)
+    eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
     
     base = manager.createDefinition("BaseDef");
     # Lets add some item definitions
-    iitemdef = smtk.attribute.IntItemDefinition.New("IntItem1")
-    idef = smtk.attribute.IntItemDefinition.ToItemDefinition(iitemdef)
-    base.addItemDefinition(idef);
-    iitemdef2 = smtk.attribute.IntItemDefinition.New("IntItem2")
+    iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem1")
+    iitemdef2 = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem2")
     iitemdef2.setDefaultValue(10)
-    idef = smtk.attribute.IntItemDefinition.ToItemDefinition(iitemdef2)
-    base.addItemDefinition(idef);
   
     def1 = manager.createDefinition("Derived1", "BaseDef");
     # Lets add some item definitions
-    ditemdef = smtk.attribute.DoubleItemDefinition.New("DoubleItem1");
+    ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1");
     # Allow this one to hold an expression
     ditemdef.setExpressionDefinition(expDef);
     # Check to make sure we can use expressions
     if not ditemdef.allowsExpressions():
         print "ERROR - Item Def does not allow expressions"
         status = -1;
-    idef = smtk.attribute.DoubleItemDefinition.ToItemDefinition(ditemdef)
-    def1.addItemDefinition(idef);
-    ditemdef2 = smtk.attribute.DoubleItemDefinition.New("DoubleItem2");
+    ditemdef2 = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem2");
     ditemdef2.setDefaultValue(-35.2);
-    idef = smtk.attribute.DoubleItemDefinition.ToItemDefinition(ditemdef2)
-    def1.addItemDefinition(idef);
 
     def2 = manager.createDefinition("Derived2", "Derived1");
     # Lets add some item definitions
-    sitemdef = smtk.attribute.StringItemDefinition.New("StringItem1")
-    idef = smtk.attribute.StringItemDefinition.ToItemDefinition(sitemdef)
-    def1.addItemDefinition(idef);
-    sitemdef2 = smtk.attribute.StringItemDefinition.New("StringItem2");
+    sitemdef = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem1")
+    sitemdef2 = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem2");
     sitemdef2.setDefaultValue("Default");
-    idef = smtk.attribute.StringItemDefinition.ToItemDefinition(sitemdef2)
-    def1.addItemDefinition(idef);
 
     #Lets test creating an attribute by passing in the expression definition explicitly
     expAtt = manager.createAttribute("Exp1", expDef);

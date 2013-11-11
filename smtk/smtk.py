@@ -66,3 +66,35 @@ model = _temp.smtk.model
 attribute = _temp.smtk.attribute
 util = _temp.smtk.util
 view = _temp.smtk.view
+
+def addItemDefinition( self, data_type, name):
+  def_ = data_type.New(name)
+  if def_ is None:
+    print "could not create"
+    return None
+  idef = data_type.ToItemDefinition(def_)
+  if idef is None:
+    print "could not convert"
+    return None
+  if not self.addItemDefinition(idef):
+    print "could not add"
+    return None
+  return def_
+
+#print dir(attribute)
+#print dir(_temp.smtk)
+#print dir(_temp.`shared_ptr< const smtk::attribute::Definition >`)
+#print dir(util)
+#print dir(view)
+
+DefinitionPtr.addItemDefinitionStr = addItemDefinition
+DirectoryItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+DoubleItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+FileItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+GroupItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+IntItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+ItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+RefItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+StringItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+ValueItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+VoidItemDefinitionPtr.addItemDefinitionStr = addItemDefinition

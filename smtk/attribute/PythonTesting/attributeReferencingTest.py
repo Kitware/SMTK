@@ -7,21 +7,6 @@ Requires SMTKCorePython.so to be in module path
 
 import smtk
 
-def addItemDefinition( ato, data_type, name):
-  def_ = data_type.New(name)
-  if def_ is None:
-    print "could not create"
-    return None
-  idef = data_type.ToItemDefinition(def_)
-  if idef is None:
-    print "could not convert"
-    return None
-  if not ato.addItemDefinition(idef):
-    print "could not add"
-    return None
-  return def_
-
-
 if __name__ == '__main__':
     import sys
 
@@ -32,8 +17,8 @@ if __name__ == '__main__':
     
     #Lets create an attribute to represent an expression
     expDef = manager.createDefinition("ExpDef")
-    eitemdef =  addItemDefinition( expDef, smtk.attribute.StringItemDefinition,"Expression String")
-    eitemdef2 = addItemDefinition( expDef, smtk.attribute.StringItemDefinition,"Aux String")
+    eitemdef =  expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition,"Expression String")
+    eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition,"Aux String")
     eitemdef.setDefaultValue("sample");
     print eitemdef.name()
     print eitemdef2.name()
@@ -41,7 +26,7 @@ if __name__ == '__main__':
     base = manager.createDefinition("BaseDef");
 
     #Lets add some item definitions
-    ditemdef = addItemDefinition( base, smtk.attribute.DoubleItemDefinition, "DoubleItem1");
+    ditemdef = base.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1");
     # Allow this one to hold an expression
     ditemdef.setExpressionDefinition(expDef);
     
