@@ -99,7 +99,7 @@ std::string ValueItemDefinition::valueLabel(int element) const
 //----------------------------------------------------------------------------
 bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) const
 {
-  if ((this->m_expressionDefinition->attributeDefinition() != NULL) && 
+  if (this->m_expressionDefinition->attributeDefinition() &&
       this->m_expressionDefinition->isValueValid(exp))
     {
     return true;
@@ -109,7 +109,7 @@ bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) c
 //----------------------------------------------------------------------------
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return this->m_expressionDefinition->attributeDefinition() != NULL;
+  return this->m_expressionDefinition->attributeDefinition();
 }
 //----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const

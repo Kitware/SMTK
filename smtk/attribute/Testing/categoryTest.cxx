@@ -125,7 +125,7 @@ int main()
   // Lets test creating an attribute by passing in the expression definition explicitly
   smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
-  if (att != NULL)
+  if (att)
     {
     std::cout << "Attribute testAtt created\n";
     }
@@ -159,7 +159,7 @@ int main()
     item = att->item(i);
     std::cout << "\t" << item->name() << " Type = " << smtk::attribute::Item::type2String(item->type()) << ", ";
     vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
-    if (vitem != NULL)
+    if (vitem)
       {
       if (vitem->isExpression())
         {

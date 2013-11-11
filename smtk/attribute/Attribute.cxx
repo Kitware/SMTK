@@ -100,7 +100,7 @@ std::vector<std::string> Attribute::types() const
 {
   std::vector<std::string> tvec;
   smtk::attribute::DefinitionPtr def = this->m_definition;
-  while (def != NULL)
+  while (def)
     {
     tvec.push_back(def->type());
     def = def->baseDefinition();

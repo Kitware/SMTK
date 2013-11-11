@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
   // Lets test creating an attribute by passing in the expression definition explicitly
   smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
   smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
-  if (att == NULL)
+  if (!att)
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
     status = -1;

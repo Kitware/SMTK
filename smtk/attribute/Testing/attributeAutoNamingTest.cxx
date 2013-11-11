@@ -33,7 +33,7 @@ int main()
     smtk::attribute::Manager manager;
     std::cout << "Manager Created\n";
     smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
-    if (def != NULL)
+    if (def)
       {
       std::cout << "Definition testDef created\n";
       }
@@ -44,7 +44,7 @@ int main()
       }
     
     smtk::attribute::AttributePtr att = manager.createAttribute("testDef");
-    if (att != NULL)
+    if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
       }
@@ -55,7 +55,7 @@ int main()
       }
     
     att = manager.createAttribute("testDef");
-    if (att != NULL)
+    if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
       }
@@ -66,7 +66,7 @@ int main()
       }
     
     att = manager.createAttribute("testDef");
-    if (att != NULL)
+    if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
       }

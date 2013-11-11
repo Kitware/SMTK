@@ -90,7 +90,7 @@ ItemPtr Item::pointer() const
 //----------------------------------------------------------------------------
 std::string Item::name() const
 {
-  if (this->m_definition == NULL)
+  if (!this->m_definition)
     {
     return "";
     }
@@ -99,7 +99,7 @@ std::string Item::name() const
 //----------------------------------------------------------------------------
 std::string Item::label() const
 {
-  if (this->m_definition == NULL)
+  if (!this->m_definition)
     {
     return "";
     }
@@ -108,12 +108,12 @@ std::string Item::label() const
 //----------------------------------------------------------------------------
 bool Item::setDefinition(smtk::attribute::ConstItemDefinitionPtr def)
 {
-  if (this->m_definition != NULL)
+  if (this->m_definition)
     {
     return false;
     }
   this->m_definition = def;
-  if ((def != NULL) && def->isOptional())
+  if (def && def->isOptional())
     {
     this->m_isEnabled = def->isEnabledByDefault();
     }
@@ -142,7 +142,7 @@ bool Item::isMemberOf(const std::vector<std::string> &categories) const
 //----------------------------------------------------------------------------
 void Item::reset() 
 {
-  if ((this->m_definition != NULL) && this->m_definition->isOptional())
+  if (this->m_definition && this->m_definition->isOptional())
     {
     this->m_isEnabled = this->m_definition->isEnabledByDefault();
     }

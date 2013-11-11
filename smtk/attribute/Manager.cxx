@@ -76,7 +76,7 @@ Manager::createDefinition(const std::string &typeName,
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
   // Does this definition already exist
-  if (def != NULL)
+  if (def)
     {
     return smtk::attribute::DefinitionPtr();
     }
@@ -85,14 +85,14 @@ Manager::createDefinition(const std::string &typeName,
   if (baseTypeName != "")
     {
     def = this->findDefinition(baseTypeName);
-    if (def == NULL)
+    if (!def)
       {
       return smtk::attribute::DefinitionPtr();
       }
     }
   smtk::attribute::DefinitionPtr newDef(new Definition(typeName, def, this));
   this->m_definitions[typeName] = newDef;
-  if (def != NULL)
+  if (def)
     {
     // Need to add this new definition to the list of derived defs
     this->m_derivedDefInfo[def].insert(newDef);
@@ -108,14 +108,14 @@ Manager::createDefinition(const std::string &typeName,
   smtk::attribute::DefinitionPtr  def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
   // of this manger
-  if (!((def == NULL) && ((baseDef == NULL) || ((baseDef->manager() == this)))))
+  if (!(!def && (!baseDef || ((baseDef->manager() == this)))))
     {
     return smtk::attribute::DefinitionPtr();
     }
 
   smtk::attribute::DefinitionPtr newDef(new Definition(typeName, baseDef, this));
   this->m_definitions[typeName] = newDef;
-  if (baseDef != NULL)
+  if (baseDef)
     {
     // Need to add this new definition to the list of derived defs
     this->m_derivedDefInfo[baseDef].insert(newDef);
@@ -135,7 +135,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
     }
   // Next we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
-  if (a != NULL)
+  if (a)
     {
     return smtk::attribute::AttributePtr();
     }
@@ -152,7 +152,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &typeNa
   smtk::attribute::AttributePtr att =
     this->createAttribute(this->createUniqueName(typeName), typeName,
                           this->m_nextAttributeId);
-  if (att != NULL)
+  if (att)
     {
     this->m_nextAttributeId++;
     }
@@ -165,7 +165,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
 {
   smtk::attribute::AttributePtr att = this->createAttribute(name, typeName,
                                                   this->m_nextAttributeId);
-  if (att != NULL)
+  if (att)
     {
     this->m_nextAttributeId++;
     }
@@ -193,7 +193,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
-  if (a != NULL)
+  if (a)
     {
     return smtk::attribute::AttributePtr();
     }
@@ -211,7 +211,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
-  if (a != NULL)
+  if (a)
     {
     return smtk::attribute::AttributePtr();
     }
@@ -219,7 +219,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
   // Second we need to find the definition that corresponds to the type and make sure it
   // is not abstract
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
-  if ((def == NULL) || def->isAbstract())
+  if (!def || def->isAbstract())
     {
     return smtk::attribute::AttributePtr();
     }
@@ -266,7 +266,7 @@ findAttributes(smtk::attribute::DefinitionPtr def,
                std::vector<smtk::attribute::AttributePtr> &result) const
 {
   result.clear();
-  if ((def != NULL) && (def->manager() == this))
+  if (def && (def->manager() == this))
     {
     this->internalFindAttributes(def, result);
     }
@@ -306,7 +306,7 @@ findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
                           std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   result.clear();
-  if ((def != NULL) && (def->manager() == this))
+  if (def && (def->manager() == this))
     {
     this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
     }
@@ -345,7 +345,7 @@ bool Manager::rename(smtk::attribute::AttributePtr att, const std::string &newNa
     }
   // Make sure that the new name doesn't exists
   smtk::attribute::AttributePtr a = this->findAttribute(newName);
-  if (a != NULL)
+  if (a)
     {
     return false;
     }
@@ -367,7 +367,7 @@ std::string Manager::createUniqueName(const std::string &type) const
     newName = base + n.str();
     // Make sure that the new name doesn't exists
     smtk::attribute::AttributePtr a = this->findAttribute(newName);
-    if (a == NULL)
+    if (!a)
       {
       return newName;
       }
@@ -383,7 +383,7 @@ findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
   std::map<std::string,  smtk::attribute::DefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
-    if (it->second->baseDefinition() == NULL)
+    if (!it->second->baseDefinition())
       {
       result.push_back(it->second);
       }
@@ -397,7 +397,7 @@ void Manager::updateCategories()
   std::map<std::string,  smtk::attribute::DefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
-    if (it->second->baseDefinition() == NULL)
+    if (!it->second->baseDefinition())
       {
       toBeProcessed.push(it->second);
       }
@@ -466,7 +466,7 @@ smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
   while (1 && uDef.get())
     {
     def = uDef->baseDefinition();
-    if ((def.get() == NULL) || (!def->isUnique()))
+    if (!def.get() || (!def->isUnique()))
       {
       return uDef;
       }

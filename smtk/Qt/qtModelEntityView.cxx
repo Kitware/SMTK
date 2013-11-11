@@ -106,7 +106,7 @@ void qtModelEntityView::createWidget( )
 
   Manager *attManager = qtUIManager::instance()->attManager();
   smtk::model::MaskType mask = mview->modelEntityMask();
-  if(mask != 0 && mview->definition()==NULL)
+  if(mask != 0 && !mview->definition())
     {
     attManager->findDefinitions(mask, this->Internals->attDefs);
     }
