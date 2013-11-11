@@ -23,10 +23,11 @@ class SMTKCORE_EXPORT Entity
 {
 public:
   Entity();
-  Entity(int dimension, int entityFlags);
+  Entity(unsigned int entityFlags, int dimension);
 
   int dimension() const;
-  int entityFlags() const;
+  unsigned int dimensionBits() const;
+  unsigned int entityFlags() const;
 
   UUIDArray& relations();
   const UUIDArray& relations() const;
@@ -35,8 +36,7 @@ public:
   Entity& removeRelation(const smtk::util::UUID& b);
 
 protected:
-  int m_entityFlags;
-  int m_dimension;
+  unsigned int m_entityFlags;
   UUIDArray m_relations;
 private:
 };
