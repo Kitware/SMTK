@@ -1,7 +1,7 @@
 #include "smtk/model/ImportJSON.h"
 
-#include "smtk/model/ModelBody.h"
-#include "smtk/model/Link.h"
+#include "smtk/model/Storage.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
 
@@ -170,7 +170,7 @@ namespace smtk {
 using smtk::util::UUID;
 
 int ImportJSON::intoModel(
-  const char* json, ModelBody* model)
+  const char* json, Storage* model)
 {
   int status = 0;
   if (!json || !json[0] || !model)
@@ -204,18 +204,18 @@ int ImportJSON::intoModel(
     }
 
   cJSON* mtyp = cJSON_GetObjectItem(root, "type");
-  if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"ModelBody"))
+  if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"Storage"))
     {
     cJSON* body = cJSON_GetObjectItem(root, "topo");
-    status = ImportJSON::ofModelBody(body, model);
+    status = ImportJSON::ofStorage(body, model);
     }
 
   cJSON_Delete(root);
   return status;
 }
 
-int ImportJSON::ofModelBody(
-  cJSON* dict, ModelBody* model)
+int ImportJSON::ofStorage(
+  cJSON* dict, Storage* model)
 {
   if (!dict || !model)
     {
@@ -235,15 +235,15 @@ int ImportJSON::ofModelBody(
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
       }
-    status &= ImportJSON::ofModelBodyLink(uid, curChild, model);
-    status &= ImportJSON::ofModelBodyArrangement(uid, curChild, model);
-    status &= ImportJSON::ofModelBodyTessellation(uid, curChild, model);
+    status &= ImportJSON::ofStorageEntity(uid, curChild, model);
+    status &= ImportJSON::ofStorageArrangement(uid, curChild, model);
+    status &= ImportJSON::ofStorageTessellation(uid, curChild, model);
     }
   return status;
 }
 
-int ImportJSON::ofModelBodyLink(
-  const UUID& uid, cJSON* cellRec, ModelBody* model)
+int ImportJSON::ofStorageEntity(
+  const UUID& uid, cJSON* cellRec, Storage* model)
 {
   int dim;
   int entityFlags;
@@ -252,15 +252,15 @@ int ImportJSON::ofModelBodyLink(
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
   if (status == 0)
     {
-    UUIDWithLink iter = model->setLinkOfTypeAndDimension(uid, entityFlags, dim);
+    UUIDWithEntity iter = model->setEntityOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
     cJSON_GetObjectUUIDArray(cellRec, "r", iter->second.relations());
     }
   return status ? 0 : 1;
 }
 
-int ImportJSON::ofModelBodyArrangement(
-  const UUID& uid, cJSON* dict, ModelBody* model)
+int ImportJSON::ofStorageArrangement(
+  const UUID& uid, cJSON* dict, Storage* model)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
   if (!arrNode)
@@ -286,7 +286,7 @@ int ImportJSON::ofModelBodyArrangement(
           Arrangement a;
           if (cJSON_GetArrangement(arr, a) > 0)
             {
-            model->arrangeLink(uid, k, a);
+            model->arrangeEntity(uid, k, a);
             }
           }
         }
@@ -295,8 +295,8 @@ int ImportJSON::ofModelBodyArrangement(
   return 1;
 }
 
-int ImportJSON::ofModelBodyTessellation(
-  const UUID& uid, cJSON* dict, ModelBody* model)
+int ImportJSON::ofStorageTessellation(
+  const UUID& uid, cJSON* dict, Storage* model)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
   if (!tessNode)

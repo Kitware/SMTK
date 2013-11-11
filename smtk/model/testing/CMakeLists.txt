@@ -1,7 +1,7 @@
 if(NOT WIN32)
-  add_executable(unitModelBody unitModelBody.cxx)
-  target_link_libraries(unitModelBody SMTKCore)
-  add_test(unitModelBody ${EXECUTABLE_OUTPUT_PATH}/unitModelBody)
+  add_executable(unitStorage unitStorage.cxx)
+  target_link_libraries(unitStorage SMTKCore)
+  add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
 
   add_executable(unitImportExportJSON unitImportExportJSON.cxx)

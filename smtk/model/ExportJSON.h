@@ -2,7 +2,7 @@
 #define __smtk_model_ExportJSON_h
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
-#include "smtk/model/ModelBody.h"
+#include "smtk/model/Storage.h"
 
 #include "smtk/util/UUID.h"
 
@@ -11,17 +11,17 @@ struct cJSON;
 namespace smtk {
   namespace model {
 
-class ModelBody;
+class Storage;
 
 class SMTKCORE_EXPORT ExportJSON
 {
 public:
   static cJSON* fromUUIDs(const UUIDs& uids);
-  static int fromModel(cJSON* json, ModelBody* model);
-  static int forModelBody(cJSON* body, ModelBody* model);
-  static int forModelBodyLink(UUIDWithLink& entry, cJSON*, ModelBody* model);
-  static int forModelBodyArrangement(const UUIDWithArrangementDictionary& entry, cJSON*, ModelBody* model);
-  static int forModelBodyTessellation(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
+  static int fromModel(cJSON* json, Storage* model);
+  static int forStorage(cJSON* body, Storage* model);
+  static int forStorageEntity(UUIDWithEntity& entry, cJSON*, Storage* model);
+  static int forStorageArrangement(const UUIDWithArrangementDictionary& entry, cJSON*, Storage* model);
+  static int forStorageTessellation(const smtk::util::UUID& uid, cJSON*, Storage* model);
 };
 
   } // namespace model

@@ -1,6 +1,6 @@
 #include "smtk/vtk/vtkSMTKModelSource.h"
 
-#include "smtk/model/ModelBody.h"
+#include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/util/UUID.h"
@@ -42,7 +42,7 @@ void vtkSMTKModelSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkSMTKModelSource::SetModel(smtk::model::ModelBodyPtr model)
+void vtkSMTKModelSource::SetModel(smtk::model::StoragePtr model)
 {
   if (this->Model == model)
     {
@@ -53,7 +53,7 @@ void vtkSMTKModelSource::SetModel(smtk::model::ModelBodyPtr model)
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::ModelBodyPtr vtkSMTKModelSource::GetModel()
+smtk::model::StoragePtr vtkSMTKModelSource::GetModel()
 {
   return this->Model;
 }
@@ -69,7 +69,7 @@ void vtkSMTKModelSource::Dirty()
 
 template<int Dim>
 void AddEntityTessToPolyData(
-  smtk::model::ModelBodyPtr model, const smtk::util::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
+  smtk::model::StoragePtr model, const smtk::util::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
 {
   smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
   if (it == model->tessellations().end())
@@ -140,7 +140,7 @@ void AddEntityTessToPolyData(
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkSMTKModelSource::GenerateRepresentationFromModel(
-  vtkPolyData* pd, smtk::model::ModelBodyPtr model)
+  vtkPolyData* pd, smtk::model::StoragePtr model)
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkStringArray> pedigree;
@@ -156,7 +156,7 @@ void vtkSMTKModelSource::GenerateRepresentationFromModel(
   for (it = model->tessellations().begin(); it != model->tessellations().end(); ++it)
     {
     npts += it->second.coords.size() / 3;
-    smtk::model::Link* entity = model->findLink(it->first);
+    smtk::model::Entity* entity = model->findEntity(it->first);
     if (entity)
       {
       switch(entity->dimension())

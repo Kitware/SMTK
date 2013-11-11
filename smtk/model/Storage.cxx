@@ -1,4 +1,4 @@
-#include "ModelBody.h"
+#include "smtk/model/Storage.h"
 
 #include <algorithm>
 #include <set>
@@ -15,15 +15,15 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
-ModelBody::ModelBody() :
-  BRepModel(new UUIDsToLinks, true),
+Storage::Storage() :
+  BRepModel(new UUIDsToEntities, true),
   m_relationships(new UUIDsToArrangements),
   m_geometry(new UUIDsToTessellations)
 {
 }
 
-ModelBody::ModelBody(
-  UUIDsToLinks* topology,
+Storage::Storage(
+  UUIDsToEntities* topology,
   UUIDsToArrangements* arrangements,
   UUIDsToTessellations* geometry,
   bool shouldDelete)
@@ -31,7 +31,7 @@ ModelBody::ModelBody(
 {
 }
 
-ModelBody::~ModelBody()
+Storage::~Storage()
 {
   if (this->m_deleteStorage)
     {
@@ -42,28 +42,28 @@ ModelBody::~ModelBody()
     }
 }
 
-UUIDsToArrangements& ModelBody::arrangements()
+UUIDsToArrangements& Storage::arrangements()
 {
   return *this->m_relationships;
 }
 
-const UUIDsToArrangements& ModelBody::arrangements() const
+const UUIDsToArrangements& Storage::arrangements() const
 {
   return *this->m_relationships;
 }
 
-UUIDsToTessellations& ModelBody::tessellations()
+UUIDsToTessellations& Storage::tessellations()
 {
   return *this->m_geometry;
 }
 
-const UUIDsToTessellations& ModelBody::tessellations() const
+const UUIDsToTessellations& Storage::tessellations() const
 {
   return *this->m_geometry;
 }
 
 
-ModelBody::tess_iter_type ModelBody::setTessellation(const UUID& cellId, const Tessellation& geom)
+Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
   if (cellId.isNull())
     {
@@ -87,7 +87,7 @@ ModelBody::tess_iter_type ModelBody::setTessellation(const UUID& cellId, const T
   * Otherwise, it should be positive and refer to a pre-existing arrangement to be replaced.
   * The actual \a index location used is returned.
   */
-int ModelBody::arrangeLink(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
+int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
 {
   UUIDsToArrangements::iterator cit = this->m_relationships->find(cellId);
   if (cit == this->m_relationships->end())
@@ -130,7 +130,7 @@ int ModelBody::arrangeLink(const UUID& cellId, ArrangementKind kind, const Arran
   *
   * This version does not allow the arrangement to be altered.
   */
-const Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKind kind, int index) const
+const Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, int index) const
 {
   if (cellId.isNull() || index < 0)
     {
@@ -160,7 +160,7 @@ const Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKin
   *
   * This version allows the arrangement to be altered.
   */
-Arrangement* ModelBody::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
+Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
 {
   if (cellId.isNull() || index < 0)
     {

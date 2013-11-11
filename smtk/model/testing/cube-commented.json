@@ -49,5 +49,5 @@
     //                                                                                c  r  r  r  r  r  r          S      o  s  s  s  s  s  s                                                                                                                                                                                                          //
     "u26": {"e":16, "d":3, "r":["u20", "u21", "u22", "u23", "u24", "u25"], "a":{"s":[[-1, 0, 1, 2, 3, 4, 5]], "u":[[0, -1, 0, 0, 0, 0, 0, 0, 0]]},                                                                                                               "t":{"metadata": {"formatVersion": 3}, "vertices":[0, 0, 0, 4, 0, 0], "faces":[0, 0, 1]}}
   },
-  "type":  "ModelBody"
+  "type":  "Storage"
 }

@@ -1,9 +1,9 @@
-#ifndef __smtk_model_ModelBody_h
-#define __smtk_model_ModelBody_h
+#ifndef __smtk_model_Storage_h
+#define __smtk_model_Storage_h
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/BRepModel.h"
-#include "smtk/model/Link.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 
 #include <algorithm>
@@ -16,14 +16,14 @@
 namespace smtk {
   namespace model {
 
-class SMTKCORE_EXPORT ModelBody : public BRepModel
+class SMTKCORE_EXPORT Storage : public BRepModel
 {
 public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  ModelBody();
-  ModelBody(UUIDsToLinks* topology, UUIDsToArrangements* arrangements, UUIDsToTessellations* geometry, bool shouldDelete = false);
-  ~ModelBody();
+  Storage();
+  Storage(UUIDsToEntities* topology, UUIDsToArrangements* arrangements, UUIDsToTessellations* geometry, bool shouldDelete = false);
+  ~Storage();
 
   UUIDsToArrangements& arrangements();
   const UUIDsToArrangements& arrangements() const;
@@ -33,7 +33,7 @@ public:
 
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
-  int arrangeLink(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
+  int arrangeEntity(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
   const Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
   Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
 
@@ -45,4 +45,4 @@ protected:
   } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_ModelBody_h
+#endif // __smtk_model_Storage_h

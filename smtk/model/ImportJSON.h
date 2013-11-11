@@ -10,16 +10,16 @@ struct cJSON;
 namespace smtk {
   namespace model {
 
-class ModelBody;
+class Storage;
 
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int intoModel(const char* json, ModelBody* model);
-  static int ofModelBody(cJSON* body, ModelBody* model);
-  static int ofModelBodyLink(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
-  static int ofModelBodyArrangement(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
-  static int ofModelBodyTessellation(const smtk::util::UUID& uid, cJSON*, ModelBody* model);
+  static int intoModel(const char* json, Storage* model);
+  static int ofStorage(cJSON* body, Storage* model);
+  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, Storage* model);
 };
 
   } // namespace model

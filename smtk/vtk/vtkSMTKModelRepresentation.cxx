@@ -1,7 +1,7 @@
 #include "smtk/vtk/vtkSMTKModelRepresentation.h"
 
-#include "smtk/model/ModelBody.h"
-#include "smtk/model/Link.h"
+#include "smtk/model/Storage.h"
+#include "smtk/model/Entity.h"
 
 #include "vtkActor.h"
 #include "vtkApplyColors.h"
@@ -221,7 +221,7 @@ vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSel
           for (vtkIdType ii = 0; ii < uuids->GetNumberOfValues(); ++ii)
             {
             smtk::util::UUID uid(uuids->GetValue(ii));
-            smtk::model::Link* entity = this->Model->findLink(uid);
+            smtk::model::Entity* entity = this->Model->findEntity(uid);
             bool keepId = true;
             if (entity && (entity->entityFlags() & this->SelectionMask) == 0)
               {
