@@ -20,21 +20,22 @@ namespace smtk {
 
 /// The default constructor creates an invalid link.
 Entity::Entity()
-  : m_entityFlags(INVALID), m_dimension(-1)
+  : m_entityFlags(INVALID)
 {
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
-Entity::Entity(int entityFlags, int dimension)
-  : m_entityFlags(entityFlags), m_dimension(dimension)
+Entity::Entity(unsigned int entityFlags, int dimension)
+  : m_entityFlags(entityFlags)
 {
-  if (this->m_dimension >= 0 && this->m_dimension <= 3)
+  // Override the dimension bits if the dimension is specified
+  if (dimension >= 0 && dimension <= 4)
     {
     // Clear the dimension bits:
     this->m_entityFlags &= ~(
       DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3 | DIMENSION_4);
     // Now add in the *proper* dimension bit to match m_dimension:
-    this->m_entityFlags |= (1 << this->m_dimension);
+    this->m_entityFlags |= (1 << dimension);
     }
 }
 
@@ -42,7 +43,7 @@ Entity::Entity(int entityFlags, int dimension)
   *
   * \sa smtk::model::EntityTypeBits
   */
-int Entity::entityFlags() const
+unsigned int Entity::entityFlags() const
 {
   return this->m_entityFlags;
 }
@@ -59,7 +60,26 @@ int Entity::entityFlags() const
   */
 int Entity::dimension() const
 {
-  return this->m_dimension;
+  unsigned int dimBits = this->m_entityFlags & ANY_DIMENSION;
+  if ((dimBits != 0) & ((dimBits & (dimBits - 1)) == 0))
+    { // dimBits is exactly a power of two:
+    switch (dimBits)
+      {
+    case DIMENSION_0: return 0;
+    case DIMENSION_1: return 1;
+    case DIMENSION_2: return 2;
+    case DIMENSION_3: return 3;
+    case DIMENSION_4: return 4;
+    default: return -2; // A power of two, but not one we know
+      }
+    }
+  // dimBits is NOT a power of two:
+  return -1;
+}
+
+unsigned int Entity::dimensionBits() const
+{
+  return this->m_entityFlags & ANY_DIMENSION;
 }
 
 UUIDArray& Entity::relations()
@@ -80,8 +100,8 @@ Entity& Entity::appendRelation(const UUID& b)
 Entity& Entity::removeRelation(const UUID& b)
 {
   UUIDArray& arr(this->m_relations);
-  unsigned size = arr.size();
-  unsigned curr;
+  unsigned int size = arr.size();
+  unsigned int curr;
   for (curr = 0; curr < size; ++curr)
     {
     if (arr[curr] == b)
