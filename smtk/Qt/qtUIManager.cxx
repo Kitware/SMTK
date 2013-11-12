@@ -606,16 +606,18 @@ void qtUIManager::onExpressionReferenceChanged()
     AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
     if(attPtr)
       {
-      item->setValue(elementIdx, attPtr);
+      inputitem->setExpression(elementIdx, attPtr);
       }
     else
       {
       item->unset(elementIdx);
+      inputitem->unset(elementIdx);
       }
     }
   else
     {
     item->unset(elementIdx);
+    inputitem->unset(elementIdx);
     }
 }
 
