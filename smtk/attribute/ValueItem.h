@@ -50,7 +50,7 @@ namespace smtk
 
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
-      { return !static_cast<bool>(this->expression(elementIndex));}
+      { return static_cast<bool>(this->expression(elementIndex));}
       smtk::attribute::AttributePtr expression(int elementIndex=0) const;
       bool setExpression(smtk::attribute::AttributePtr exp)
       {return this->setExpression(0, exp);}
