@@ -6,3 +6,12 @@ add_test(
     $<TARGET_FILE:displayModel>
     "${SMTK_SOURCE_DIR}/smtk/model/testing/cube.json"
 )
+
+add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
+target_link_libraries(displayMultiBlockModel SMTKCore vtkSMTK ${VTK_MODULES})
+add_test(
+  NAME displayMultiBlockModel
+  COMMAND
+    $<TARGET_FILE:displayMultiBlockModel>
+    "${SMTK_SOURCE_DIR}/smtk/model/testing/cube.json"
+)
