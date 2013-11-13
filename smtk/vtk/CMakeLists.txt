@@ -1,10 +1,12 @@
 set(VTKLibSrcs
+  vtkSMTKModelMultiBlockSource.cxx
   vtkSMTKModelRepresentation.cxx
   vtkSMTKModelSource.cxx
   vtkSMTKModelView.cxx
 )
 
 set(VTKLibHeaders
+  vtkSMTKModelMultiBlockSource.h
   vtkSMTKModelRepresentation.h
   vtkSMTKModelSource.h
   vtkSMTKModelView.h
