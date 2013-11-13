@@ -67,4 +67,19 @@ SMTKCORE_EXPORT std::istream& operator >> (std::istream& stream, UUID& uid);
   } // namespace util
 } // namespace smtk
 
+// Specialize std::hash<UUID>
+namespace std {
+
+template <>
+struct hash<smtk::util::UUID>
+{
+  size_t operator()(const smtk::util::UUID& uid) const
+    {
+    return *reinterpret_cast<const size_t*>(uid.begin());
+    /* your code here, e.g. "return hash<int>()(x.value);" */
+    }
+};
+
+} // namespace std
+
 #endif // __smtk_util_UUID_h

@@ -31,6 +31,7 @@ set(modelHeaders
   Model.h
   Storage.h
   ModelDomainItem.h
+  StringData.h
   Tessellation.h
   )
 

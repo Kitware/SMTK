@@ -10,7 +10,7 @@ using smtk::util::UUID;
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel()
-  : m_topology(new UUIDsToEntities), m_deleteStorage(true)
+  : m_topology(new UUIDsToEntities), m_stringData(new UUIDsToStringData), m_deleteStorage(true)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -20,7 +20,7 @@ BRepModel::BRepModel()
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete)
-    : m_topology(topology), m_deleteStorage(shouldDelete)
+    : m_topology(topology), m_stringData(new UUIDsToStringData), m_deleteStorage(shouldDelete)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
@@ -30,6 +30,8 @@ BRepModel::~BRepModel()
     delete this->m_topology;
     this->m_topology = NULL;
     }
+  // Always delete stringData (for now)
+  delete this->m_stringData;
 }
 
 /// Change whether or not we should delete storage upon our own destruction.
@@ -390,6 +392,23 @@ UUIDs BRepModel::adjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
+UUIDs BRepModel::entitiesMatchingFlags(unsigned int mask, bool exactMatch)
+{
+  UUIDs result;
+  for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+    {
+    unsigned int masked = it->second.entityFlags() & mask;
+    if (
+      (!exactMatch && masked) ||
+      (exactMatch && masked == mask))
+      {
+      result.insert(it->first);
+      }
+    }
+  return result;
+}
+
+/// Return all entities of the requested dimension that are present in the solid.
 UUIDs BRepModel::entitiesOfDimension(int dim)
 {
   UUIDs result;
@@ -455,6 +474,21 @@ void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
       ref->appendRelation(c->first);
       }
     }
+}
+
+void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
+{
+  UUIDWithEntity result = this->m_topology->find(groupId);
+  if (result == this->m_topology->end())
+    {
+    return;
+    }
+
+  for (UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
+    {
+    result->second.appendRelation(*it);
+    }
+  this->insertEntityReferences(result);
 }
 
   } // model namespace

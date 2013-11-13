@@ -9,6 +9,7 @@
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'boost' does not have a type entry"/>
+  <suppress-warning text="namespace 'google' does not have a type entry"/>
 
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
@@ -213,6 +214,37 @@
 
   <container-type name="std::map" type="map">
     <include file-name="map" location="global"/>
+    <conversion-rule>
+      <native-to-target>
+        PyObject* %out = PyDict_New();
+        %INTYPE::const_iterator it = %in.begin();
+        for (; it != %in.end(); ++it) {
+        %INTYPE_0 key = it->first;
+        %INTYPE_1 value = it->second;
+        PyDict_SetItem(%out,
+        %CONVERTTOPYTHON[%INTYPE_0](key),
+        %CONVERTTOPYTHON[%INTYPE_1](value));
+        }
+        return %out;
+      </native-to-target>
+      <target-to-native>
+        <add-conversion type="PyDict">
+          PyObject* key;
+          PyObject* value;
+          Py_ssize_t pos = 0;
+          while (PyDict_Next(%in, &amp;pos, &amp;key, &amp;value)) {
+          %OUTTYPE_0 cppKey = %CONVERTTOCPP[%OUTTYPE_0](key);
+          %OUTTYPE_1 cppValue = %CONVERTTOCPP[%OUTTYPE_1](value);
+          %out.insert(%OUTTYPE::value_type(cppKey, cppValue));
+          }
+        </add-conversion>
+      </target-to-native>
+    </conversion-rule>
+  </container-type>
+
+  <!-- Code to allow us to wrap google::sparse_hash_maps -->
+  <container-type name="google::sparse_hash_map" type="hash">
+    <include file-name="sparsehash/sparse_hash_map" location="global"/>
     <conversion-rule>
       <native-to-target>
         PyObject* %out = PyDict_New();

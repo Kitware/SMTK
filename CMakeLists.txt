@@ -80,6 +80,13 @@ if(SMTK_BUILD_VTK)
   include(${VTK_USE_FILE})
 endif()
 
+################################################################################
+# Sparsehash Related Settings
+################################################################################
+
+# Currently we require sparsehash to be provided externally:
+include(FindPkgConfig)
+pkg_check_modules(SPARSEHASH REQUIRED libsparsehash)
 
 ################################################################################
 # Wrapping Related Settings
@@ -145,6 +152,7 @@ add_subdirectory(ThirdParty)
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${SPARSEHASH_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON
   ${VTK_INCLUDE_DIRS}
   )
