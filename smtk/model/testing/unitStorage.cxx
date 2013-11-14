@@ -3,6 +3,8 @@
 
 #include "cJSON.h"
 
+#include <assert.h>
+
 using namespace smtk::util;
 using namespace smtk::model;
 
@@ -73,6 +75,18 @@ int main(int argc, char* argv[])
     .addTriangle(0, 6, 1)
     .addTriangle(1, 6, 2)
     .addTriangle(2, 6, 0));
+
+  unsigned int uc00Flags = sm.findEntity(uc00)->entityFlags();
+  assert( smtk::model::isVertex(uc00Flags)    && "isVertex(vertexFlags) incorrect");
+  assert(!smtk::model::isEdge(uc00Flags)      && "isEdge(vertexFlags) incorrect");
+  assert(!smtk::model::isFace(uc00Flags)      && "isFace(vertexFlags) incorrect");
+  assert(!smtk::model::isRegion(uc00Flags)    && "isRegion(vertexFlags) incorrect");
+  assert(!smtk::model::isChain(uc00Flags)     && "isChain(vertexFlags) incorrect");
+  assert(!smtk::model::isLoop(uc00Flags)      && "isLoop(vertexFlags) incorrect");
+  assert(!smtk::model::isShell(uc00Flags)     && "isShell(vertexFlags) incorrect");
+  assert(!smtk::model::isVertexUse(uc00Flags) && "isVertexUse(vertexFlags) incorrect");
+  assert(!smtk::model::isEdgeUse(uc00Flags)   && "isEdgeUse(vertexFlags) incorrect");
+  assert(!smtk::model::isFaceUse(uc00Flags)   && "isFaceUse(vertexFlags) incorrect");
 
   UUIDs nodes = sm.entitiesOfDimension(0);
   UUIDs edges = sm.entitiesOfDimension(1);

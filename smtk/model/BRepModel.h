@@ -52,14 +52,14 @@ public:
 
   UUIDs entitiesOfDimension(int dim);
 
-  iter_type insertEntityOfTypeAndDimension(int entityFlags, int dim);
+  iter_type insertEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
   iter_type insertEntity(Entity& cell);
-  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, int entityFlags, int dim);
+  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
   iter_type setEntity(const smtk::util::UUID& uid, Entity& cell);
 
-  smtk::util::UUID addEntityOfTypeAndDimension(int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
   smtk::util::UUID addEntity(Entity& cell);
-  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
   smtk::util::UUID addEntityWithUUID(const smtk::util::UUID& uid, Entity& cell);
 
   iter_type insertCellOfDimension(int dim);
