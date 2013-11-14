@@ -64,7 +64,7 @@
 
 #include <math.h>
 
-#if defined(WIN32) //VS2008 is not c99 complient.
+#if defined(_WIN32) //VS2008 is not c99 complient.
 #include <float.h>
 double nextafter(double x, double y)
 {
