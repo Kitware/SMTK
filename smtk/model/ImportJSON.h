@@ -2,6 +2,7 @@
 #define __smtk_model_ImportJSON_h
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/PublicPointerDefs.h" // For StoragePtr
 
 #include "smtk/util/UUID.h"
 
@@ -15,6 +16,7 @@ class Storage;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
+  static int intoModel(const char* json, StoragePtr model);
   static int intoModel(const char* json, Storage* model);
   static int ofStorage(cJSON* body, Storage* model);
   static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, Storage* model);

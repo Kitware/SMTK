@@ -170,6 +170,12 @@ namespace smtk {
 using smtk::util::UUID;
 
 int ImportJSON::intoModel(
+  const char* json, StoragePtr model)
+{
+  return ImportJSON::intoModel(json, model.get());
+}
+
+int ImportJSON::intoModel(
   const char* json, Storage* model)
 {
   int status = 0;

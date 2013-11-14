@@ -41,6 +41,18 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 
+  <!-- Use cJSON objects. For now we will ignore these-->
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageEntity', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageArrangement', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorage', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorage', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+
   <!-- Ignore warnings from protected functions -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -492,6 +504,14 @@
 
       <object-type name="Entity">
         <include file-name="smtk/model/Entity.h" location="local"/>
+      </object-type>
+
+      <object-type name="ExportJSON">
+        <include file-name="smtk/model/ExportJSON.h" location="local"/>
+      </object-type>
+
+      <object-type name="ImportJSON">
+        <include file-name="smtk/model/ImportJSON.h" location="local"/>
       </object-type>
 
       <object-type name="Arrangement">

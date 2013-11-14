@@ -93,6 +93,15 @@ int ExportJSON::forStorage(
   return status;
 }
 
+std::string ExportJSON::fromModel(StoragePtr model)
+{
+  cJSON* top = cJSON_CreateObject();
+  ExportJSON::fromModel(top, model.get());
+  std::string result(cJSON_Print(top));
+  cJSON_Delete(top);
+  return result;
+}
+
 int ExportJSON::forStorageEntity(
   UUIDWithEntity& entry, cJSON* cellRec, Storage* model)
 {
