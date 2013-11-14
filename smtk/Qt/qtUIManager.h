@@ -41,7 +41,7 @@ namespace smtk
     class qtModelEntityView;
     class qtSimpleExpressionView;
     class qtGroupView;
-   
+
     class QTSMTK_EXPORT qtUIManager : public QObject
     {
 
@@ -52,9 +52,9 @@ namespace smtk
     public:
       // Get the global instace for the pqApplicationCore.
       static qtUIManager* instance();
-      
+
       qtUIManager(smtk::attribute::Manager &manager);
-      virtual ~qtUIManager();  
+      virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget);
       smtk::attribute::Manager* attManager() const
@@ -102,7 +102,7 @@ namespace smtk
                                        QTableWidget* widget);
     static void updateTableColRows(smtk::attribute::ItemPtr dataItem,
       int col, QTableWidget* widget);
-    
+
     static void updateArrayDataValue(smtk::attribute::GroupItemPtr dataItem,
                                      QTableWidgetItem* item);
     static void addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
@@ -126,7 +126,7 @@ namespace smtk
                                                int elementIdx,QWidget* pWidget);
 
 
-#ifdef WIN32
+#ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
     #define LINE_BREAKER_STRING "\r";
@@ -153,7 +153,7 @@ namespace smtk
       void setShowAdvanced(bool val)
       {  this->ShowAdvanced = val;  }
       bool ShowAdvanced;
-      
+
     private:
       static qtUIManager* Instance;
       qtRootView* RootView;

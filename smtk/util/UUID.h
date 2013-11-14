@@ -19,7 +19,7 @@ namespace smtk {
 class SMTKCORE_EXPORT UUID
 {
 public:
-#if defined(WIN32)
+#if defined(_WIN32)
   typedef unsigned __int8   value_type;
   typedef unsigned __int8*  iterator;
   typedef unsigned __int8 const* const_iterator;
