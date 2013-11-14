@@ -81,12 +81,6 @@ def addItemDefinition( self, data_type, name):
     return None
   return def_
 
-#print dir(attribute)
-#print dir(_temp.smtk)
-#print dir(_temp.`shared_ptr< const smtk::attribute::Definition >`)
-#print dir(util)
-#print dir(view)
-
 DefinitionPtr.addItemDefinitionStr = addItemDefinition
 DirectoryItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 DoubleItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
@@ -98,3 +92,34 @@ RefItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 StringItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 ValueItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 VoidItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+
+import inspect
+
+def _Debug( self, message ):
+  cs = inspect.stack()
+  at = 1
+  if len(cs) < 1:
+    at = 0
+  self.addRecord(util.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
+
+def _Error( self, message ):
+  cs = inspect.stack()
+  at = 1
+  if len(cs) < 1:
+    at = 0
+  self.addRecord(util.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
+
+def _Warn( self, message ):
+  cs = inspect.stack()
+  at = 1
+  if len(cs) < 1:
+    at = 0
+  self.addRecord(util.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
+
+util.Logger.addDebug = _Debug
+util.Logger.addWarning = _Warn
+util.Logger.addError = _Error
+
+del _Debug
+del _Warn
+del _Error
