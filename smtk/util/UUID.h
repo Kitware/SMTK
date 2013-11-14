@@ -33,6 +33,16 @@ public:
   UUID(const std::string& txt);
   UUID(const boost::uuids::uuid& data);
 
+  /* Nice, but shiboken cannot handle:
+  template<typename... Params>
+  static std::vector<UUID> Array(Params... parameters)
+    {
+    std::vector<UUID> result;
+    UUID::ConstructArray(result, parameters...);
+    return result;
+    }
+    */
+
   static UUID random();
   static UUID null();
 
@@ -55,6 +65,22 @@ public:
 protected:
   // Implemented using Boost's UUID library.
   boost::uuids::uuid m_data;
+
+  /* Nice, but shiboken cannot handle:
+  template<typename T, typename... Params>
+  static T& ConstructArray(T& array)
+    {
+    return array;
+    }
+
+  template<typename T, typename... Params>
+  static T& Array(T& array, const UUID& uid, Params... parameters)
+    {
+    array.push_back(uid);
+    UUID::ConstructArray(array, parameters...);
+    return array;
+    }
+    */
 };
 
 typedef std::set<UUID> UUIDs;
