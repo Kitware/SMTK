@@ -7,12 +7,12 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/StringData.h"
 
-#include <map>
+#include "sparsehash/sparse_hash_map"
 
 namespace smtk {
   namespace model {
 
-typedef std::map<smtk::util::UUID,Entity> UUIDsToEntities;
+typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
 typedef UUIDsToEntities::iterator UUIDWithEntity;
 
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
@@ -26,15 +26,15 @@ typedef UUIDsToEntities::iterator UUIDWithEntity;
 class SMTKCORE_EXPORT BRepModel
 {
 public:
-  typedef std::map<smtk::util::UUID,Entity> storage_type;
+  typedef google::sparse_hash_map<smtk::util::UUID,Entity> storage_type;
   typedef storage_type::iterator iter_type;
 
   BRepModel();
   BRepModel(storage_type* topology, bool shouldDelete);
   ~BRepModel();
 
-  std::map<smtk::util::UUID,Entity>& topology();
-  const std::map<smtk::util::UUID,Entity>& topology() const;
+  google::sparse_hash_map<smtk::util::UUID,Entity>& topology();
+  const google::sparse_hash_map<smtk::util::UUID,Entity>& topology() const;
 
   int type(const smtk::util::UUID& ofEntity);
   int dimension(const smtk::util::UUID& ofEntity);

@@ -101,8 +101,12 @@ struct hash<smtk::util::UUID>
 {
   size_t operator()(const smtk::util::UUID& uid) const
     {
-    return *reinterpret_cast<const size_t*>(uid.begin());
-    /* your code here, e.g. "return hash<int>()(x.value);" */
+    // Use the last sizeof(size_t) bytes as the hash since UUIDs
+    // put their version number in the 4 LSBs of the 8th byte, which
+    // causes collisions when sizeof(size_t) == 8.
+    // This will need to be revisited if we switch to node-based
+    // UUIDs, but for random UUIDs it works well.
+    return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
     }
 };
 

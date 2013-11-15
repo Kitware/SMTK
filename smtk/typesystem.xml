@@ -212,6 +212,7 @@
     </conversion-rule>
   </container-type>
 
+  <!-- Code to allow us to wrap std::maps -->
   <container-type name="std::map" type="map">
     <include file-name="map" location="global"/>
     <conversion-rule>
@@ -386,13 +387,15 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+    <!--
     <add-function signature="topology()"
-      return-type="std::map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="google::sparse_hash_map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = %CPPSELF-&gt;get()-&gt;topology();
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+    -->
     <add-function signature="insertEntityOfTypeAndDimension(int, int)"
       static="NO"
       return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
