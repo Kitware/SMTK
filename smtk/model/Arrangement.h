@@ -15,8 +15,8 @@ namespace smtk {
 /// Specification of how a cell's relations are arranged.
 enum ArrangementKind {
   INCLUSION,   //!< How another cell is contained in the interior of this cell.
-  SHELL,       //!< How this cell is bounded by cells of lower dimension
-  USE,         //!< How this cell's shells are combined into a single orientation for use by bordant cells.
+  HAS_SHELL,   //!< How this cell is bounded by cells of lower dimension
+  HAS_USE,     //!< How this cell's shells are combined into a single orientation for use by bordant cells.
   SENSE,       //!< How this cell participates in the boundary of a higher-dimensional cell.
   EMBEDDING,   //!< How this cell is embedded in the interior of a cell of higher dimension
   KINDS_OF_ARRANGEMENTS //!< The number of different kinds of arrangement relationships enumerated here.

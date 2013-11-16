@@ -51,7 +51,7 @@ const UUIDsToEntities& BRepModel::topology() const
 /// Entity construction
 //@{
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(unsigned int entityFlags, int dimension)
 {
   UUID actual;
   do
@@ -78,7 +78,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   *
   * Passing a non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, unsigned int entityFlags, int dimension)
 {
   UUIDsToEntities::iterator it;
   if (uid.isNull())
@@ -130,7 +130,7 @@ BRepModel::iter_type BRepModel::setEntity(const UUID& uid, Entity& c)
 }
 
 /// A wrappable version of InsertEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimension(int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimension(unsigned int entityFlags, int dim)
 {
   return this->insertEntityOfTypeAndDimension(entityFlags, dim)->first;
 }
@@ -142,7 +142,7 @@ UUID BRepModel::addEntity(Entity& cell)
 }
 
 /// A wrappable version of SetEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, unsigned int entityFlags, int dim)
 {
   return this->setEntityOfTypeAndDimension(uid, entityFlags, dim)->first;
 }

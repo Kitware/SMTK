@@ -5,8 +5,10 @@
 
 #include <boost/uuid/uuid.hpp>
 
-#include <string>
 #include <iostream>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace smtk {
   namespace util {
@@ -54,6 +56,10 @@ protected:
   // Implemented using Boost's UUID library.
   boost::uuids::uuid m_data;
 };
+
+typedef std::set<UUID> UUIDs;
+typedef std::vector<UUID> UUIDArray;
+typedef std::vector<UUIDArray> UUIDArrays;
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& stream, const UUID& uid);
 SMTKCORE_EXPORT std::istream& operator >> (std::istream& stream, UUID& uid);

@@ -1,6 +1,7 @@
 #ifndef __smtk_model_Storage_h
 #define __smtk_model_Storage_h
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/BRepModel.h"
 #include "smtk/model/Entity.h"
@@ -24,6 +25,9 @@ public:
   Storage();
   Storage(UUIDsToEntities* topology, UUIDsToArrangements* arrangements, UUIDsToTessellations* geometry, bool shouldDelete = false);
   ~Storage();
+
+  static smtk::model::StoragePtr New()
+    { return smtk::model::StoragePtr(new Storage); }
 
   UUIDsToArrangements& arrangements();
   const UUIDsToArrangements& arrangements() const;

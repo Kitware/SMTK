@@ -10,7 +10,7 @@
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkPolyDataWriter.h"
+#include "vtkXMLMultiBlockDataWriter.h"
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
@@ -69,6 +69,13 @@ int main(int argc, char* argv[])
     vtkRenderWindowInteractor* iac = win->MakeRenderWindowInteractor();
     vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
     win->SetInteractor(iac);
+
+#if 0
+    vtkNew<vtkXMLMultiBlockDataWriter> wri;
+    wri->SetInputConnection(src->GetOutputPort());
+    wri->SetFileName("/tmp/foo.vtm");
+    wri->Write();
+#endif // 0
 
     win->Render();
     ren->ResetCamera();
