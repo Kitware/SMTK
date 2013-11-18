@@ -16,6 +16,8 @@ include(CMake/SMTKMacros.cmake)
 # Include mechanism for determining shared and weak pointer support
 include(CMake/SharedPtr.cmake)
 
+# Include mechanism for determining how to specialize hash<X>()
+include(CMake/HashFunction.cmake)
 
 ################################################################################
 # Options that the user controls
@@ -26,6 +28,7 @@ option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
+option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
 
 ################################################################################
 # Testing Related Settings
@@ -84,19 +87,12 @@ endif()
 # Sparsehash Related Settings
 ################################################################################
 
-# Currently we require sparsehash to be provided externally:
-include(FindPkgConfig)
 if (SMTK_USE_SYSTEM_SPARSEHASH)
+  # A system sparsehash implementation must be detected with pkgconfig:
   set(SYSTEM_SPARSEHASH_REQUIRED "REQUIRED")
-endif()
-pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
-if (SPARSEHASH_FOUND)
-  set(SMTK_DEFAULT_SPARSEHASH "ON")
+  include(FindPkgConfig)
+  pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
 else()
-  set(SMTK_DEFAULT_SPARSEHASH "OFF")
-endif()
-option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" ${SMTK_DEFAULT_SPARSEHASH})
-if (NOT SMTK_USE_SYSTEM_SPARSEHASH)
   set(SPARSEHASH_INCLUDE_DIRS
     "${SMTK_SOURCE_DIR}/ThirdParty"
     "${SMTK_BINARY_DIR}/ThirdParty")
@@ -127,6 +123,18 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
+  DESTINATION include/smtk)
+
+#
+# Determine hash<X> specialization
+#
+check_hash_fun(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/Hash.h.in
+  ${PROJECT_BINARY_DIR}/smtk/Hash.h
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/smtk/Hash.h
   DESTINATION include/smtk)
 
 

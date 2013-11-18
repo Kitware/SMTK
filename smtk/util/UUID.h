@@ -2,6 +2,7 @@
 #define __smtk_util_UUID_h
 
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/Hash.h"
 
 #include <boost/uuid/uuid.hpp>
 
@@ -93,9 +94,10 @@ SMTKCORE_EXPORT std::istream& operator >> (std::istream& stream, UUID& uid);
   } // namespace util
 } // namespace smtk
 
-// Specialize std::hash<UUID>
-namespace std {
+SMTK_HASH_NS_BEGIN
 
+#if SMTK_HASH_SPECIALIZATION == 1
+// Specialize hash<UUID> functor
 template <>
 struct hash<smtk::util::UUID>
 {
@@ -109,7 +111,33 @@ struct hash<smtk::util::UUID>
     return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
     }
 };
+#else
+// Specialize hash typecast operators
+template <>
+inline size_t
+hash<const smtk::util::UUID&>::operator()(const smtk::util::UUID& uid) const
+{
+  // Use the last sizeof(size_t) bytes as the hash since UUIDs
+  // put their version number in the 4 LSBs of the 8th byte, which
+  // causes collisions when sizeof(size_t) == 8.
+  // This will need to be revisited if we switch to node-based
+  // UUIDs, but for random UUIDs it works well.
+  return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
+}
 
-} // namespace std
+template <>
+inline size_t
+hash<smtk::util::UUID>::operator()(smtk::util::UUID uid) const
+{
+  // Use the last sizeof(size_t) bytes as the hash since UUIDs
+  // put their version number in the 4 LSBs of the 8th byte, which
+  // causes collisions when sizeof(size_t) == 8.
+  // This will need to be revisited if we switch to node-based
+  // UUIDs, but for random UUIDs it works well.
+  return *reinterpret_cast<const size_t*>(uid.begin() + uid.size() - sizeof(size_t));
+}
+#endif // SMTK_HASH_SPECIALIZATION
+
+SMTK_HASH_NS_END
 
 #endif // __smtk_util_UUID_h
