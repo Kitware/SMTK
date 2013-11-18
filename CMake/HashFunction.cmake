@@ -88,7 +88,7 @@ ${${END_HASH_NS}}
 int main()
 {
   foo f;
-  size_t fooHash = ${${HASH_FUN_NAMESPACE}}::hash<foo>()(f);
+  (void) ${${HASH_FUN_NAMESPACE}}::hash<foo>()(f);
   return 0;
 }")
   try_compile(HASH_SPECIALIZATION_IS_STRUCT
@@ -107,18 +107,18 @@ class foo {
 
 ${${BEGIN_HASH_NS}}
   template<>
-  inline size_t hash<foo>::operator() (foo f)
+  inline size_t hash<foo>::operator() (foo f) const
     { return 0; }
 
   template<>
-  inline size_t hash<const foo&>::operator() (const foo& f)
+  inline size_t hash<const foo&>::operator() (const foo& f) const
     { return 0; }
 ${${END_HASH_NS}}
 
 int main()
 {
   foo f;
-  size_t fooHash = ${${HASH_FUN_NAMESPACE}}::hash<foo>()(f);
+  (void) ${${HASH_FUN_NAMESPACE}}::hash<foo>()(f);
   return 0;
 }")
     try_compile(HASH_SPECIALIZATION_IS_CAST
