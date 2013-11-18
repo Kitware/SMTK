@@ -1,5 +1,5 @@
-#ifndef __smtk_Hash_h
-#define __smtk_Hash_h
+#ifndef __smtk_HashFunctor_h
+#define __smtk_HashFunctor_h
 
 #include @SMTK_HASH_H@
 #define SMTK_HASH_NS @SMTK_HASH_NS@
@@ -7,4 +7,4 @@
 #define SMTK_HASH_NS_END @SMTK_HASH_END_NS@
 #define SMTK_HASH_SPECIALIZATION @SMTK_HASH_SPECIALIZATION@
 
-#endif // __smtk_Hash_h
+#endif // __smtk_HashFunctor_h

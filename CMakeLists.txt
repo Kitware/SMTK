@@ -17,7 +17,7 @@ include(CMake/SMTKMacros.cmake)
 include(CMake/SharedPtr.cmake)
 
 # Include mechanism for determining how to specialize hash<X>()
-include(CMake/HashFunction.cmake)
+include(CMake/FindHashFunctor.cmake)
 
 ################################################################################
 # Options that the user controls
@@ -29,6 +29,7 @@ option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
+mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH)
 
 ################################################################################
 # Testing Related Settings
@@ -125,13 +126,13 @@ configure_file(
 install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
   DESTINATION include/smtk)
 
-#
+################################################################################
 # Determine hash<X> specialization
-#
-check_hash_fun(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
+################################################################################
+find_hash_functor(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
 configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/Hash.h.in
-  ${PROJECT_BINARY_DIR}/smtk/Hash.h
+  ${PROJECT_SOURCE_DIR}/CMake/HashFunctor.h.in
+  ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/Hash.h

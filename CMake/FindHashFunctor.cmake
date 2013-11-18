@@ -40,7 +40,7 @@
 #
 # Note that in case 2 (CAST), you must provide both <foo> and
 # <const foo&> specializations.
-function(check_hash_fun HASH_FUN_H HASH_FUN_NAMESPACE BEGIN_HASH_NS END_HASH_NS HASH_SPECIALIZATION)
+function(find_hash_functor HASH_FUN_H HASH_FUN_NAMESPACE BEGIN_HASH_NS END_HASH_NS HASH_SPECIALIZATION)
 
   if (DEFINED ${HASH_SPECIALIZATION})
     return()
@@ -136,5 +136,6 @@ int main()
   set(${BEGIN_HASH_NS} "${${BEGIN_HASH_NS}}" PARENT_SCOPE)
   set(${END_HASH_NS} "${${END_HASH_NS}}" PARENT_SCOPE)
   set(${HASH_SPECIALIZATION} "${${HASH_SPECIALIZATION}}" PARENT_SCOPE)
+  mark_as_advanced(${HASH_FUN_H} ${HASH_FUN_NAMESPACE} ${BEGIN_HASH_NS} ${END_HASH_NS} ${HASH_SPECIALIZATION})
 
 endfunction()
