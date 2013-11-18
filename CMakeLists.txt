@@ -86,7 +86,19 @@ endif()
 
 # Currently we require sparsehash to be provided externally:
 include(FindPkgConfig)
-pkg_check_modules(SPARSEHASH REQUIRED libsparsehash)
+if (SMTK_USE_SYSTEM_SPARSEHASH)
+  set(SYSTEM_SPARSEHASH_REQUIRED "REQUIRED")
+endif()
+pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
+if (SPARSEHASH_FOUND)
+  set(SMTK_DEFAULT_SPARSEHASH "ON")
+else()
+  set(SMTK_DEFAULT_SPARSEHASH "OFF")
+endif()
+option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" ${SMTK_DEFAULT_SPARSEHASH})
+if (NOT SMTK_USE_SYSTEM_SPARSEHASH)
+  set(SPARSEHASH_INCLUDE_DIRS "/tmp/sparsehashinst/include")
+endif()
 
 ################################################################################
 # Wrapping Related Settings
