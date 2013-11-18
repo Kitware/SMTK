@@ -39,14 +39,14 @@
 #        "stl_hash_fun.h"
 #        "stl/_hash_fun.h"
 #      NAMESPACES
-#        "::"
-#        "std::"
-#        "stdext::"
-#        "__gnu_cxx::"
+#        ""
+#        "std"
+#        "stdext"
+#        "__gnu_cxx"
 #      SUMMARY "hash")
 # This example will set CACHE variables HASH_FUN_H and HASH_FUN_NAMESPACE
-# to "ext/hash_fun.h" and "__gnu_cxx::" (respectively) on OS X 10.8;
-# to "functional" and "std::" (respectively) on OS X 10.9;
+# to "ext/hash_fun.h" and "__gnu_cxx" (respectively) on OS X 10.8;
+# to "functional" and "std" (respectively) on OS X 10.9;
 # and so on for each platform where "hash" is provided by one of the HEADERS
 # in one of the listed NAMESPACES.
 
@@ -76,7 +76,7 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
         foreach(_ns ${_FSIH_NAMESPACES})
           string(RANDOM LENGTH 10 _tmpf)
           file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/_cmFindSymbol${_tmpf}.cxx
-            "#include \"${_inc}\"\n#define NAMESPACE ${_ns}\nint main() {\n  ${_FSIH_CODE};\n  return 0;\n}")
+            "#include \"${_inc}\"\n#define NAMESPACE ::${_ns}\nint main() {\n  ${_FSIH_CODE};\n  return 0;\n}")
           try_compile(_found_symbol_ns
             ${CMAKE_CURRENT_BINARY_DIR}
             SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmFindSymbol${_tmpf}.cxx
@@ -84,11 +84,12 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
             OUTPUT_VARIABLE _result
             )
           file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/_cmFindSymbol${_tmpf}.cxx)
+          #message("Tried ${_inc} with ${_ns} result ${_found_symbol_ns} ")
           #message("Tried ${_inc} with ${_ns} result ${_found_symbol_ns}   \"${_result}\"")
           if (_found_symbol_ns)
             set(${HEADER_OUT} "\"${_inc}\"" CACHE STRING "Name of header file containing ${_ns}${_FSIH_SUMMARY}" FORCE)
             set(${NAMESPACE_OUT} ${_ns} CACHE STRING "Namespace containing symbol ${_FSIH_SUMMARY}" FORCE)
-            message("    Header <${_inc}> contains ${_ns}${_FSIH_SUMMARY}")
+            message("    Header <${_inc}> contains ${_ns}::${_FSIH_SUMMARY}")
             break()
           endif()
         endforeach()

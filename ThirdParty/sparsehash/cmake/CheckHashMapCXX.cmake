@@ -4,7 +4,7 @@
 # The template may reside in several namespaces, so this macro
 # returns two values:
 #   HASH_MAP_H           - The name of the header file containing the hash<X> template.
-#   HASH_MAP_NAMESPACE   - The namespace (including "::") in which the template resides.
+#   HASH_MAP_NAMESPACE   - The namespace (not including "::") in which the template resides.
 #
 macro(check_hash_map HASH_MAP_H HASH_MAP_NAMESPACE)
 
@@ -15,13 +15,13 @@ macro(check_hash_map HASH_MAP_H HASH_MAP_NAMESPACE)
     ${HASH_MAP_H}
     ${HASH_MAP_NAMESPACE}
     CODE
-      "NAMESPACE unordered_map<int,int> foo;"
+      "NAMESPACE ::unordered_map<int,int> foo;"
     HEADERS
       "unordered_map"
       "tr1/unordered_map"
     NAMESPACES
-      "std::"
-      "std::tr1::"
+      "std"
+      "std::tr1"
     SUMMARY
       "unordered_map"
   )
@@ -31,15 +31,15 @@ macro(check_hash_map HASH_MAP_H HASH_MAP_NAMESPACE)
       ${HASH_MAP_H}
       ${HASH_MAP_NAMESPACE}
       CODE
-        "NAMESPACE hash_map<int,int> foo;"
+        "NAMESPACE ::hash_map<int,int> foo;"
       HEADERS
         "hash_map"
         "ext/hash_map"
       NAMESPACES
-        "__gnu_cxx::"
-        "::"
-        "std::"
-        "stdext::"
+        "__gnu_cxx"
+        ""
+        "std"
+        "stdext"
       SUMMARY
         "hash_map"
     )
