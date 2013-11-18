@@ -97,7 +97,9 @@ else()
 endif()
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" ${SMTK_DEFAULT_SPARSEHASH})
 if (NOT SMTK_USE_SYSTEM_SPARSEHASH)
-  set(SPARSEHASH_INCLUDE_DIRS "/tmp/sparsehashinst/include")
+  set(SPARSEHASH_INCLUDE_DIRS
+    "${SMTK_SOURCE_DIR}/ThirdParty"
+    "${SMTK_BINARY_DIR}/ThirdParty")
 endif()
 
 ################################################################################
