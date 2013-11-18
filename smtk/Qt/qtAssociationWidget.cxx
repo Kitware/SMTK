@@ -598,12 +598,6 @@ void qtAssociationWidget::onAddAvailable()
       this->Internals->AvailableList);
     if(currentItem)
       {
-      if(this->Internals->CurrentAtt.lock()->definition()->isUnique() &&
-        this->Internals->CurrentList->count())
-        {
-        this->onExchange();
-        return;
-        }
       this->Internals->CurrentAtt.lock()->associateEntity(currentItem);
       this->removeSelectedItem(this->Internals->AvailableList);
       this->addModelAssociationListItem(
