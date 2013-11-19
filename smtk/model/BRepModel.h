@@ -5,7 +5,9 @@
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/model/Entity.h"
+#include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
+#include "smtk/model/IntegerData.h"
 
 #include "sparsehash/sparse_hash_map"
 
@@ -32,6 +34,8 @@ public:
   BRepModel();
   BRepModel(storage_type* topology, bool shouldDelete);
   ~BRepModel();
+
+  void setDeleteStorage(bool d);
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
@@ -71,43 +75,26 @@ public:
 
   void insertEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
-  void setDeleteStorage(bool d);
 
+  virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const std::string& propValue)
-    {
-    smtk::model::StringList tmp;
-    tmp.push_back(propValue);
-    this->setStringProperty(entity, propName, tmp);
-    }
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string propName, smtk::model::Float propValue);
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::FloatList& propValue);
+  smtk::model::FloatList const& floatProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string propName);
+  bool hasFloatProperty(const smtk::util::UUID& entity, const std::string propName) const;
 
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::StringList& propValue)
-    {
-    (*this->m_stringData)[entity][propName] = propValue;
-    }
+  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::String& propValue);
+  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::StringList& propValue);
+  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string propName);
+  bool hasStringProperty(const smtk::util::UUID& entity, const std::string propName) const;
 
-  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string propName) const
-    {
-    StringData& strings((*this->m_stringData)[entity]);
-    return strings[propName];
-    }
-
-  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string propName)
-    {
-    StringData& strings((*this->m_stringData)[entity]);
-    return strings[propName];
-    }
-
-  bool hasStringProperty(const smtk::util::UUID& entity, const std::string propName) const
-    {
-    UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
-    if (uit == this->m_stringData->end())
-      {
-      return false;
-      }
-    StringData::const_iterator sit = uit->second.find(propName);
-    return sit == uit->second.end() ? false : true;
-    }
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string propName, smtk::model::Integer propValue);
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::IntegerList& propValue);
+  smtk::model::IntegerList const& integerProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string propName);
+  bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string propName) const;
 
   smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
   smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }
@@ -120,11 +107,11 @@ public:
     return uid;
     }
 
-  void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
-
 protected:
   UUIDsToEntities* m_topology;
+  UUIDsToFloatData* m_floatData;
   UUIDsToStringData* m_stringData;
+  UUIDsToIntegerData* m_integerData;
   bool m_deleteStorage;
 };
 

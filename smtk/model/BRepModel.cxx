@@ -11,8 +11,12 @@ using smtk::util::UUIDArray;
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel()
-  : m_topology(new UUIDsToEntities), m_stringData(new UUIDsToStringData), m_deleteStorage(true)
+BRepModel::BRepModel() :
+  m_topology(new UUIDsToEntities),
+  m_floatData(new UUIDsToFloatData),
+  m_stringData(new UUIDsToStringData),
+  m_integerData(new UUIDsToIntegerData),
+  m_deleteStorage(true)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -21,8 +25,12 @@ BRepModel::BRepModel()
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete)
-    : m_topology(topology), m_stringData(new UUIDsToStringData), m_deleteStorage(shouldDelete)
+BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete) :
+  m_topology(topology),
+  m_floatData(new UUIDsToFloatData),
+  m_stringData(new UUIDsToStringData),
+  m_integerData(new UUIDsToIntegerData),
+  m_deleteStorage(shouldDelete)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
@@ -33,7 +41,9 @@ BRepModel::~BRepModel()
     this->m_topology = NULL;
     }
   // Always delete stringData (for now)
+  delete this->m_floatData;
   delete this->m_stringData;
+  delete this->m_integerData;
 }
 
 /// Change whether or not we should delete storage upon our own destruction.
@@ -448,21 +458,6 @@ Entity* BRepModel::findEntity(const UUID& uid)
 }
 //@}
 
-/// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
-void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
-{
-  UUIDArray::const_iterator bit;
-  Entity* ref;
-  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
-    {
-    ref = this->findEntity(*bit);
-    if (ref)
-      {
-      ref->removeRelation(c->first);
-      }
-    }
-}
-
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
 void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
 {
@@ -478,6 +473,25 @@ void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
     }
 }
 
+/// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
+void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
+{
+  UUIDArray::const_iterator bit;
+  Entity* ref;
+  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+    {
+    ref = this->findEntity(*bit);
+    if (ref)
+      {
+      ref->removeRelation(c->first);
+      }
+    }
+}
+
+/**\brief Add entities (specified by their \a uids) to the given group (\a groupId).
+  *
+  * This will append \a groupId to each entity in \a uids.
+  */
 void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
 {
   UUIDWithEntity result = this->m_topology->find(groupId);
@@ -491,6 +505,138 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
     result->second.appendRelation(*it);
     }
   this->insertEntityReferences(result);
+}
+
+void BRepModel::setFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  smtk::model::Float propValue)
+{
+  smtk::model::FloatList tmp;
+  tmp.push_back(propValue);
+  this->setFloatProperty(entity, propName, tmp);
+}
+
+void BRepModel::setFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  const smtk::model::FloatList& propValue)
+{
+  (*this->m_floatData)[entity][propName] = propValue;
+}
+
+smtk::model::FloatList const& BRepModel::floatProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  FloatData& floats((*this->m_floatData)[entity]);
+  return floats[propName];
+}
+
+smtk::model::FloatList& BRepModel::floatProperty(
+  const smtk::util::UUID& entity, const std::string propName)
+{
+  FloatData& floats((*this->m_floatData)[entity]);
+  return floats[propName];
+}
+
+bool BRepModel::hasFloatProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  UUIDsToFloatData::const_iterator uit = this->m_floatData->find(entity);
+  if (uit == this->m_floatData->end())
+    {
+    return false;
+    }
+  FloatData::const_iterator sit = uit->second.find(propName);
+  return sit == uit->second.end() ? false : true;
+}
+
+void BRepModel::setStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  const smtk::model::String& propValue)
+{
+  smtk::model::StringList tmp;
+  tmp.push_back(propValue);
+  this->setStringProperty(entity, propName, tmp);
+}
+
+void BRepModel::setStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  const smtk::model::StringList& propValue)
+{
+  (*this->m_stringData)[entity][propName] = propValue;
+}
+
+smtk::model::StringList const& BRepModel::stringProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  StringData& strings((*this->m_stringData)[entity]);
+  return strings[propName];
+}
+
+smtk::model::StringList& BRepModel::stringProperty(
+  const smtk::util::UUID& entity, const std::string propName)
+{
+  StringData& strings((*this->m_stringData)[entity]);
+  return strings[propName];
+}
+
+bool BRepModel::hasStringProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
+  if (uit == this->m_stringData->end())
+    {
+    return false;
+    }
+  StringData::const_iterator sit = uit->second.find(propName);
+  return sit == uit->second.end() ? false : true;
+}
+
+void BRepModel::setIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  smtk::model::Integer propValue)
+{
+  smtk::model::IntegerList tmp;
+  tmp.push_back(propValue);
+  this->setIntegerProperty(entity, propName, tmp);
+}
+
+void BRepModel::setIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string propName,
+  const smtk::model::IntegerList& propValue)
+{
+  (*this->m_integerData)[entity][propName] = propValue;
+}
+
+smtk::model::IntegerList const& BRepModel::integerProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  IntegerData& integers((*this->m_integerData)[entity]);
+  return integers[propName];
+}
+
+smtk::model::IntegerList& BRepModel::integerProperty(
+  const smtk::util::UUID& entity, const std::string propName)
+{
+  IntegerData& integers((*this->m_integerData)[entity]);
+  return integers[propName];
+}
+
+bool BRepModel::hasIntegerProperty(
+  const smtk::util::UUID& entity, const std::string propName) const
+{
+  UUIDsToIntegerData::const_iterator uit = this->m_integerData->find(entity);
+  if (uit == this->m_integerData->end())
+    {
+    return false;
+    }
+  IntegerData::const_iterator sit = uit->second.find(propName);
+  return sit == uit->second.end() ? false : true;
 }
 
   } // model namespace

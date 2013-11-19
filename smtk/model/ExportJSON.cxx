@@ -91,6 +91,9 @@ int ExportJSON::forStorage(
     status &= ExportJSON::forStorageArrangement(
       model->arrangements().find(it->first), curChild, model);
     status &= ExportJSON::forStorageTessellation(it->first, curChild, model);
+    status &= ExportJSON::forStorageFloatProperties(it->first, curChild, model);
+    status &= ExportJSON::forStorageStringProperties(it->first, curChild, model);
+    status &= ExportJSON::forStorageIntegerProperties(it->first, curChild, model);
     }
   return status;
 }
@@ -180,6 +183,24 @@ int ExportJSON::forStorageTessellation(
       tessIt->second.conn.size()));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
+}
+
+int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
+}
+
+int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
+}
+
+int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
 }
 
   }

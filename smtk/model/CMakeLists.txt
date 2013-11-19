@@ -22,7 +22,9 @@ set(modelHeaders
   Entity.h
   EntityTypeBits.h
   ExportJSON.h
+  FloatData.h
   ImportJSON.h
+  IntegerData.h
   Item.h
   GridInfo.h
   GridInfo2D.h

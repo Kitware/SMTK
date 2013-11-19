@@ -246,6 +246,9 @@ int ImportJSON::ofStorage(
     status &= ImportJSON::ofStorageEntity(uid, curChild, model);
     status &= ImportJSON::ofStorageArrangement(uid, curChild, model);
     status &= ImportJSON::ofStorageTessellation(uid, curChild, model);
+    status &= ImportJSON::ofStorageFloatProperties(uid, curChild, model);
+    status &= ImportJSON::ofStorageStringProperties(uid, curChild, model);
+    status &= ImportJSON::ofStorageIntegerProperties(uid, curChild, model);
     }
   return status;
 }
@@ -334,6 +337,24 @@ int ImportJSON::ofStorageTessellation(
   (void)numPrims;
   //std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
   return 1;
+}
+
+int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
+}
+
+int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
+}
+
+int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+{
+  int status = 0;
+  return status ? 0 : 1;
 }
 
   }
