@@ -92,7 +92,7 @@ int main()
   return 0;
 }")
   try_compile(HASH_SPECIALIZATION_IS_STRUCT
-    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
     SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
     OUTPUT_VARIABLE _result
     )
@@ -122,7 +122,7 @@ int main()
   return 0;
 }")
     try_compile(HASH_SPECIALIZATION_IS_CAST
-      ${CMAKE_CURRENT_BINARY_DIR}
+      ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
       SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
       OUTPUT_VARIABLE _result
     )
