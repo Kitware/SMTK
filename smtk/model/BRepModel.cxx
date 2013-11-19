@@ -4,6 +4,8 @@ namespace smtk {
   namespace model {
 
 using smtk::util::UUID;
+using smtk::util::UUIDs;
+using smtk::util::UUIDArray;
 
 /**\brief Construction requires a container for storage.
   *

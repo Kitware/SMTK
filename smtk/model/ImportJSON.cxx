@@ -9,6 +9,8 @@
 
 #include <string.h>
 
+using namespace smtk::util;
+
 // Some cJSON helpers
 namespace {
   int cJSON_GetIntegerValue(cJSON* valItem, int& val)

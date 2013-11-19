@@ -7,6 +7,8 @@
 
 #include "cJSON.h"
 
+using namespace smtk::util;
+
 // Some cJSON helpers
 namespace {
   cJSON* cJSON_CreateUUIDArray(smtk::util::UUID* uids, unsigned count)
@@ -148,9 +150,14 @@ int ExportJSON::forStorageArrangement(
 int ExportJSON::forStorageTessellation(
   const smtk::util::UUID& uid, cJSON* dict, Storage* model)
 {
-  (void)uid;
-  (void)dict;
-  (void)model;
+  UUIDWithTessellation tessIt = model->tessellations().find(uid);
+  if (
+    tessIt == model->tessellations().end() ||
+    tessIt->second.coords.empty()
+    )
+    { // No tessellation? Not a problem.
+    return 1;
+    }
   //  "metadata": { "formatVersion" : 3 },
   //  "vertices": [ 0,0,0, 0,0,1, 1,0,1, 1,0,0, ... ],
   //  "normals":  [ 0,1,0, ... ],
@@ -166,11 +173,11 @@ int ExportJSON::forStorageTessellation(
   //cJSON_AddItemToObject(tess, "3js", meta);
   cJSON_AddItemToObject(tess, "metadata", fmt);
   cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(
-      &model->tessellations()[uid].coords[0],
-      model->tessellations()[uid].coords.size()));
+      &tessIt->second.coords[0],
+      tessIt->second.coords.size()));
   cJSON_AddItemToObject(tess, "faces", cJSON_CreateIntArray(
-      &model->tessellations()[uid].conn[0],
-      model->tessellations()[uid].conn.size()));
+      tessIt->second.conn.empty() ? NULL : &tessIt->second.conn[0],
+      tessIt->second.conn.size()));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }

@@ -42,17 +42,17 @@ public:
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);
 
-  UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  UUIDs bordantEntities(const UUIDs& ofEntities, int ofDimension = -2);
-  UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  UUIDs boundaryEntities(const UUIDs& ofEntities, int ofDimension = -2);
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
 
-  UUIDs lowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
-  UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
-  UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
+  smtk::util::UUIDs lowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
+  smtk::util::UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
+  smtk::util::UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
 
-  UUIDs entitiesMatchingFlags(unsigned int mask, bool exactMatch = true);
-  UUIDs entitiesOfDimension(int dim);
+  smtk::util::UUIDs entitiesMatchingFlags(unsigned int mask, bool exactMatch = true);
+  smtk::util::UUIDs entitiesOfDimension(int dim);
 
   iter_type insertEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
   iter_type insertEntity(Entity& cell);
@@ -120,7 +120,7 @@ public:
     return uid;
     }
 
-  void addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids);
+  void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
 protected:
   UUIDsToEntities* m_topology;
