@@ -123,7 +123,7 @@ int main()
 }")
     try_compile(HASH_SPECIALIZATION_IS_CAST
       ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
-      SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
+      ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
       OUTPUT_VARIABLE _result
     )
     if (HASH_SPECIALIZATION_IS_CAST)
