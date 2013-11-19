@@ -93,7 +93,7 @@ int main()
 }")
   try_compile(HASH_SPECIALIZATION_IS_STRUCT
     ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
-    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
+    ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
     OUTPUT_VARIABLE _result
     )
   #message("Tried ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx got ${HASH_SPECIALIZATION_IS_STRUCT} ${_result}")
