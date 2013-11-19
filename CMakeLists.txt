@@ -135,7 +135,7 @@ configure_file(
   ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
   @ONLY)
 
-install (FILES ${PROJECT_BINARY_DIR}/smtk/Hash.h
+install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
   DESTINATION include/smtk)
 
 
