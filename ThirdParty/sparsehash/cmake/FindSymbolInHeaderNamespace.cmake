@@ -80,7 +80,7 @@ function(find_symbol_in_header_namespace HEADER_OUT NAMESPACE_OUT)
             "#include \"${_inc}\"\n#define NAMESPACE ::${_ns}\nint main() {\n  ${_FSIH_CODE};\n  return 0;\n}")
           try_compile(_found_symbol_ns
             ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
-            SOURCES ${CMAKE_CURRENT_BINARY_DIR}/_cmFindSymbol${_tmpf}.cxx
+            ${CMAKE_CURRENT_BINARY_DIR}/_cmFindSymbol${_tmpf}.cxx
             COMPILE_DEFINITIONS "-DHEADER=\"${_inc}\"" "-DNAMESPACE=${_ns}"
             OUTPUT_VARIABLE _result
             )
