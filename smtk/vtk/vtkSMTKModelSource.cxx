@@ -150,9 +150,9 @@ void vtkSMTKModelSource::GenerateRepresentationFromModel(
   vtkIdType i;
   smtk::model::UUIDWithTessellation it;
   vtkIdType npts = 0;
-  smtk::model::UUIDs modelVerts;
-  smtk::model::UUIDs modelLines;
-  smtk::model::UUIDs modelPolys;
+  smtk::util::UUIDs modelVerts;
+  smtk::util::UUIDs modelLines;
+  smtk::util::UUIDs modelPolys;
   for (it = model->tessellations().begin(); it != model->tessellations().end(); ++it)
     {
     npts += it->second.coords.size() / 3;
@@ -188,7 +188,7 @@ void vtkSMTKModelSource::GenerateRepresentationFromModel(
       }
     }
   pts->Allocate(npts);
-  smtk::model::UUIDs::iterator uit;
+  smtk::util::UUIDs::iterator uit;
   if (!modelVerts.empty())
     {
     vtkNew<vtkCellArray> verts;
