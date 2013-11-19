@@ -16,6 +16,8 @@ include(CMake/SMTKMacros.cmake)
 # Include mechanism for determining shared and weak pointer support
 include(CMake/SharedPtr.cmake)
 
+# Include mechanism for determining how to specialize hash<X>()
+include(CMake/FindHashFunctor.cmake)
 
 ################################################################################
 # Options that the user controls
@@ -26,6 +28,8 @@ option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
+option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
+mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH)
 
 ################################################################################
 # Testing Related Settings
@@ -80,6 +84,20 @@ if(SMTK_BUILD_VTK)
   include(${VTK_USE_FILE})
 endif()
 
+################################################################################
+# Sparsehash Related Settings
+################################################################################
+
+if (SMTK_USE_SYSTEM_SPARSEHASH)
+  # A system sparsehash implementation must be detected with pkgconfig:
+  set(SYSTEM_SPARSEHASH_REQUIRED "REQUIRED")
+  include(FindPkgConfig)
+  pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
+else()
+  set(SPARSEHASH_INCLUDE_DIRS
+    "${SMTK_SOURCE_DIR}/ThirdParty"
+    "${SMTK_BINARY_DIR}/ThirdParty")
+endif()
 
 ################################################################################
 # Wrapping Related Settings
@@ -106,6 +124,18 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/SharedPtr.h
+  DESTINATION include/smtk)
+
+################################################################################
+# Determine hash<X> specialization
+################################################################################
+find_hash_functor(SMTK_HASH_H SMTK_HASH_NS SMTK_HASH_BEGIN_NS SMTK_HASH_END_NS SMTK_HASH_SPECIALIZATION)
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/HashFunctor.h.in
+  ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/smtk/Hash.h
   DESTINATION include/smtk)
 
 
@@ -145,6 +175,7 @@ add_subdirectory(ThirdParty)
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${SPARSEHASH_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON
   ${VTK_INCLUDE_DIRS}
   )

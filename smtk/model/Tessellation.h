@@ -3,7 +3,8 @@
 
 #include "smtk/util/UUID.h"
 
-#include <map>
+#include "sparsehash/sparse_hash_map"
+
 #include <vector>
 
 #if defined(WIN32)
@@ -46,8 +47,8 @@ struct SMTKCORE_EXPORT Tessellation
   Tessellation& reset();
 };
 
-typedef std::map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
-typedef std::map<smtk::util::UUID,Tessellation>::iterator UUIDWithTessellation;
+typedef google::sparse_hash_map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
+typedef google::sparse_hash_map<smtk::util::UUID,Tessellation>::iterator UUIDWithTessellation;
 
   } // model namespace
 } // smtk namespace

@@ -187,6 +187,16 @@ public:
       }
     }
 
+  vtkSmartPointer<vtkRenderWindowInteractor> GetSelectionInteractor()
+    {
+	    return this->SelectionInteractor;
+    }
+
+  vtkSmartPointer<vtkRenderWindowInteractor> GetCameraInteractor()
+    {
+	    return this->CameraInteractor;
+    }
+
 protected:
   vtkSmartPointer<vtkRenderWindowInteractor> CameraInteractor;
   vtkSmartPointer<vtkRenderWindowInteractor> SelectionInteractor;
@@ -232,25 +242,32 @@ int main(int argc, char* argv[])
     vtkNew<vtkSMTKModelView> view;
     vtkNew<vtkSMTKModelSource> src;
     vtkNew<vtkSMTKModelRepresentation> rep;
-    vtkSMTKModelSelectionHelper* hlp = vtkSMTKModelSelectionHelper::New();
+    vtkSMTKModelSelectionHelper* hlp = NULL;
+    if (debug)
+      {
+      hlp = vtkSMTKModelSelectionHelper::New();
+      }
     src->SetModel(sm);
     rep->SetModel(sm);
     rep->SetSelectionMask(smtk::model::DIMENSION_1);
     rep->SetInputConnection(src->GetOutputPort());
     rep->SetSelectionType(vtkSelectionNode::PEDIGREEIDS);
-    rep->AddObserver(vtkCommand::SelectionChangedEvent, hlp);
 
     view->AddRepresentation(rep.GetPointer());
     view->ResetCamera();
     view->ResetCameraClippingRange();
 
-    hlp->SetSelectionInteractor(view->GetRenderWindow()->GetInteractor());
-    vtkRenderWindowInteractor* iac = view->GetRenderWindow()->MakeRenderWindowInteractor();
-    vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
-    view->GetRenderWindow()->SetInteractor(iac);
-    hlp->SetCameraInteractor(iac);
-    hlp->SetRenderWindow(view->GetRenderWindow());
-    hlp->SetRepresentation(rep.GetPointer());
+    if (hlp)
+      {
+      rep->AddObserver(vtkCommand::SelectionChangedEvent, hlp);
+      hlp->SetSelectionInteractor(view->GetRenderWindow()->GetInteractor());
+      vtkRenderWindowInteractor* iac = view->GetRenderWindow()->MakeRenderWindowInteractor();
+      vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
+      view->GetRenderWindow()->SetInteractor(iac);
+      hlp->SetCameraInteractor(iac);
+      hlp->SetRenderWindow(view->GetRenderWindow());
+      hlp->SetRepresentation(rep.GetPointer());
+      }
 
     view->Render();
     view->ResetCamera();
@@ -267,7 +284,15 @@ int main(int argc, char* argv[])
     if (debug)
       {
       view->GetInteractor()->Start();
+      hlp->GetSelectionInteractor()->RemoveAllObservers();
+      hlp->GetCameraInteractor()->RemoveAllObservers();
+      hlp->SetCameraInteractor(NULL);
+      hlp->SetRenderWindow(NULL);
+      hlp->SetRepresentation(NULL);
+      hlp->SetSelectionInteractor(NULL);
+      hlp->Delete();
       }
+    view->RemoveAllRepresentations();
     }
 
   return status;

@@ -93,6 +93,23 @@ int main(int argc, char* argv[])
   UUIDs faces = sm.entitiesOfDimension(2);
   UUIDs zones = sm.entitiesOfDimension(3);
 
+  // Test the methods used to set/get string properties
+  sm.setStringProperty(uc21, "name", "Tetrahedron");
+  smtk::model::StringList components;
+  components.push_back("vx");
+  components.push_back("vy");
+  components.push_back("vz");
+  sm.setStringProperty(uc00, "velocity", components);
+  sm.stringProperty(uc21, "name")[0] = "Ignatius";
+  sm.stringProperty(uc21, "name").push_back("J");
+  sm.stringProperty(uc21, "name").push_back("Fumblemumbler");
+  sm.setStringProperty(uc21, "name", "Tetrahedron"); // Resets name to length 1.
+  assert(sm.stringProperty(uc00, "velocity")[0] == "vx");
+  assert(sm.stringProperty(uc00, "velocity")[1] == "vy");
+  assert(sm.stringProperty(uc00, "velocity").size() == 3); // Test multi-entry length.
+  assert(sm.stringProperty(uc21, "velocity").size() == 0); // Test missing entry length.
+  assert(sm.stringProperty(uc21, "name").size() == 1); // Test length of reset property.
+
   cJSON* root = cJSON_CreateObject();
   ExportJSON::fromModel(root, &sm);
   cJSON_AddItemToObject(root, "nodes", ExportJSON::fromUUIDs(nodes));

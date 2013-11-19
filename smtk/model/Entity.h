@@ -15,10 +15,6 @@
 namespace smtk {
   namespace model {
 
-typedef std::set<smtk::util::UUID> UUIDs;
-typedef std::vector<smtk::util::UUID> UUIDArray;
-typedef std::vector<UUIDArray> UUIDArrays;
-
 class SMTKCORE_EXPORT Entity
 {
 public:
@@ -29,15 +25,15 @@ public:
   unsigned int dimensionBits() const;
   unsigned int entityFlags() const;
 
-  UUIDArray& relations();
-  const UUIDArray& relations() const;
+  smtk::util::UUIDArray& relations();
+  const smtk::util::UUIDArray& relations() const;
 
   Entity& appendRelation(const smtk::util::UUID& b);
   Entity& removeRelation(const smtk::util::UUID& b);
 
 protected:
   unsigned int m_entityFlags;
-  UUIDArray m_relations;
+  smtk::util::UUIDArray m_relations;
 private:
 };
 
