@@ -1,14 +1,12 @@
-if(NOT WIN32)
-  add_executable(unitStorage unitStorage.cxx)
-  target_link_libraries(unitStorage SMTKCore)
-  add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
+add_executable(unitStorage unitStorage.cxx)
+target_link_libraries(unitStorage SMTKCore)
+add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
 
-  add_executable(unitImportExportJSON unitImportExportJSON.cxx)
-  target_link_libraries(unitImportExportJSON SMTKCore)
-  add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON
-    "${CMAKE_CURRENT_SOURCE_DIR}/cube.json")
-endif()
+add_executable(unitImportExportJSON unitImportExportJSON.cxx)
+target_link_libraries(unitImportExportJSON SMTKCore)
+add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON
+  "${CMAKE_CURRENT_SOURCE_DIR}/cube.json")
 
 add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement SMTKCore)

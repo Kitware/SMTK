@@ -3,10 +3,12 @@ set(modelSrcs
   Arrangement.cxx
   BRepModel.cxx
   Entity.cxx
+  ExportJSON.cxx
   GroupItem.cxx
   GridInfo.cxx
   GridInfo2D.cxx
   GridInfo3D.cxx
+  ImportJSON.cxx
   Item.cxx
   Model.cxx
   Storage.cxx
@@ -14,15 +16,13 @@ set(modelSrcs
   Tessellation.cxx
   )
 
-if(NOT WIN32)
-  set(modelSrcs ${modelSrcs} ExportJSON.cxx ImportJSON.cxx)
-endif()
-
 set(modelHeaders
   Arrangement.h
   BRepModel.h
   Entity.h
   EntityTypeBits.h
+  ExportJSON.h
+  ImportJSON.h
   Item.h
   GridInfo.h
   GridInfo2D.h
@@ -33,10 +33,6 @@ set(modelHeaders
   ModelDomainItem.h
   Tessellation.h
   )
-
-if(NOT WIN32)
-  set(modelHeaders ${modelHeaders} ExportJSON.h ImportJSON.h)
-endif()
 
 #install the headers
 smtk_public_headers(${modelHeaders})
