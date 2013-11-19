@@ -30,22 +30,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 
 using namespace smtk::util;
-using namespace pugi;
 
 //----------------------------------------------------------------------------
 inline void Internal_parseXmlDoc(smtk::attribute::Manager &manager,
-                                 xml_document& doc,
+                                 pugi::xml_document& doc,
                                  Logger &logger)
 {
   // Lets get the version of the Attribute File Format
-  xml_node root = doc.child("SMTK_AttributeManager");
+  pugi::xml_node root = doc.child("SMTK_AttributeManager");
   if (!root)
     {
     smtkErrorMacro(logger, "Can not find root node: SMTK_AttributeManager");
     return;
     }
 
-  xml_attribute xatt = root.attribute("Version");
+  pugi::xml_attribute xatt = root.attribute("Version");
   if (!xatt)
     {
     smtkErrorMacro(logger, "Can not find XML Attribute Version in node: SMTK_AttributeManager");
@@ -70,9 +69,9 @@ bool AttributeReader::read(smtk::attribute::Manager &manager,
 {
   logger.reset();
   // First load in the xml document
-  xml_document doc;
-  xml_parse_result presult = doc.load_file(filename.c_str());
-  if (presult.status != status_ok)
+  pugi::xml_document doc;
+  pugi::xml_parse_result presult = doc.load_file(filename.c_str());
+  if (presult.status != pugi::status_ok)
     {
     smtkErrorMacro(logger, presult.description());
     return true;
@@ -88,9 +87,9 @@ bool AttributeReader::readContents(smtk::attribute::Manager &manager,
 {
   logger.reset();
   // First load in the xml document
-  xml_document doc;
-  xml_parse_result presult = doc.load(filecontents.c_str());
-  if (presult.status != status_ok)
+  pugi::xml_document doc;
+  pugi::xml_parse_result presult = doc.load(filecontents.c_str());
+  if (presult.status != pugi::status_ok)
     {
     smtkErrorMacro(logger, presult.description());
     return true;

@@ -144,8 +144,8 @@ void XmlDocV1Parser::process(xml_document &doc)
     {
     if (secCatagories.find(*it) == secCatagories.end())
       {
-      smtkErrorMacro(this->m_logger, "Catagory: " << *it
-                     << " was not listed in Manger's Catagory Section");
+      smtkErrorMacro(this->m_logger, "Category: " << *it
+                     << " was not listed in Manager's Category Section");
       }
     }
 }
