@@ -263,23 +263,38 @@ smtk::util::UUID Storage::findOrCreateCellUseOfSense(
     }
   smtk::model::Arrangements& arr(
     this->arrangementsOfKindForEntity(cell, HAS_USE));
+
   // See if any of this cell's uses match our sense...
-  for (smtk::model::Arrangements::const_iterator ait = arr.begin(); ait != arr.end(); ++ait)
+  smtk::model::Arrangements::const_iterator ait;
+  for (ait = arr.begin(); ait != arr.end(); ++ait)
     {
     if (ait->details()[1] == sense)
       {
       return entity->relations()[ait->details()[0]];
       }
     }
-  // ...nope, we need to create a new use with the specified sense relative to the cell.
+
+  // ...nope, we need to create a new use with
+  // the specified sense relative to the cell.
   UUIDWithEntity use = this->insertEntityOfTypeAndDimension(
     USE_ENTITY | entity->dimensionBits(), entity->dimension());
+  // We must re-fetch entity since inserting the use
+  // may have invalidated our reference to it.
+  entity = this->findEntity(cell);
+
+  // Now add the use to the cell and the cell to the use:
   smtk::util::UUIDArray::size_type useIdx = entity->relations().size();
   entity->appendRelation(use->first);
   smtk::util::UUIDArray::size_type cellIdx = use->second.relations().size();
   use->second.appendRelation(cell);
-  this->arrangeEntity(cell, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(useIdx, sense));
-  this->arrangeEntity(use->first, HAS_CELL, Arrangement::UseHasCellWithIndexAndSense(cellIdx, sense));
+
+  this->arrangeEntity(
+    cell, HAS_USE,
+    Arrangement::CellHasUseWithIndexAndSense(useIdx, sense));
+  this->arrangeEntity(
+    use->first, HAS_CELL,
+    Arrangement::UseHasCellWithIndexAndSense(cellIdx, sense));
+
   return use->first;
 }
 
