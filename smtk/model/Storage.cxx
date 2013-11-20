@@ -230,7 +230,11 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
   return &kit->second[index];
 }
 
-smtk::util::UUID Storage::cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const
+/**\brief Return the UUID of a use record for the
+  * given \a cell and \a sense, or NULL if it does not exist.
+  */
+smtk::util::UUID Storage::cellHasUseOfSense(
+  const smtk::util::UUID& cell, int sense) const
 {
   const smtk::model::Arrangements* arr;
   if ((arr = this->hasArrangementsOfKindForEntity(cell, HAS_USE)) && !arr->empty())
@@ -246,7 +250,11 @@ smtk::util::UUID Storage::cellHasUseOfSense(const smtk::util::UUID& cell, int se
   return smtk::util::UUID::null();
 }
 
-smtk::util::UUID Storage::findOrCreateCellUseOfSense(const smtk::util::UUID& cell, int sense)
+/**\brief Find a use record for the given \a cell and \a sense,
+  * creating one if it does not exist.
+  */
+smtk::util::UUID Storage::findOrCreateCellUseOfSense(
+  const smtk::util::UUID& cell, int sense)
 {
   Entity* entity = this->findEntity(cell);
   if (!entity)
