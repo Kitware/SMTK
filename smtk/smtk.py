@@ -67,6 +67,43 @@ attribute = _temp.smtk.attribute
 util = _temp.smtk.util
 view = _temp.smtk.view
 
+attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: attribute.RefItem,
+                        attribute.Item.DOUBLE: attribute.DoubleItem,
+                        attribute.Item.GROUP: attribute.GroupItem,
+                        attribute.Item.INT: attribute.IntItem,
+                        attribute.Item.STRING: attribute.StringItem,
+                        attribute.Item.VOID: attribute.VoidItem,
+                        attribute.Item.FILE: attribute.FileItem,
+                        attribute.Item.DIRECTORY: attribute.DirectoryItem,
+                        attribute.Item.COLOR: None
+                      }
+
+@staticmethod
+def __to_concrete__(item):
+  '''
+    Returns concrete (leaf) object for input, which is smtk.attribute.Item
+  '''
+  def fun(i):
+    concrete_item = None
+    for item_type,klass in attribute.type_dict.items():
+      if i.type() == item_type:
+        concrete_item = klass.CastTo(i)
+        break
+    if concrete_item is None:
+      print 'WARNING - unsupported type %s, item %s' % \
+        (i.type(), i.name())
+    return concrete_item
+  if isinstance(item, list):
+      return [ fun(x) for x in item ]
+  elif isinstance(item, tuple):
+      return tuple([ fun(x) for x in item ])
+  elif isinstance(item, set):
+      return set([fun(x) for x in item])
+  return fun(item)
+
+attribute.to_concrete = __to_concrete__
+del __to_concrete__
+
 def addItemDefinition( self, data_type, name):
   def_ = data_type.New(name)
   if def_ is None:
