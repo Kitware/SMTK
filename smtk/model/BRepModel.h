@@ -33,8 +33,8 @@ public:
   BRepModel(storage_type* topology, bool shouldDelete);
   ~BRepModel();
 
-  google::sparse_hash_map<smtk::util::UUID,Entity>& topology();
-  const google::sparse_hash_map<smtk::util::UUID,Entity>& topology() const;
+  UUIDsToEntities& topology();
+  const UUIDsToEntities& topology() const;
 
   int type(const smtk::util::UUID& ofEntity);
   int dimension(const smtk::util::UUID& ofEntity);
