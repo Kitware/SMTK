@@ -92,7 +92,9 @@ int main(int argc, char* argv[])
   cJSON_AddItemToObject(root, "brd(uc20,3)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
   cJSON_AddItemToObject(root, "lower(uc21,1)", ExportJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
   cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm->higherDimensionalBordants(uids[00],3)));
-  std::cout << cJSON_Print(root) << "\n";
+  char* json = cJSON_Print(root);
+  std::cout << json << "\n";
+  free(json);
   cJSON_Delete(root);
 
   return 0;
