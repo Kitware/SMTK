@@ -14,7 +14,7 @@ UseEntities CellEntity::uses() const
     {
     Arrangements* arr = NULL;
     if (
-      this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, HAS_CELL, &arr) &&
+      (arr = this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, HAS_CELL)) &&
       !arr->empty())
       {
       smtk::util::UUIDArray const& relations(entRec->relations());

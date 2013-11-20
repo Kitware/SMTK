@@ -392,16 +392,6 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
       </inject-code>
     </modify-function>
-    <add-function signature="hasArrangementsOfKindForEntity(const smtk::util::UUID&amp;,smtk::model::ArrangementKind,smtk::model::Arrangements** arr)"
-      static="NO"
-      return-type="bool">
-      <!-- Ignore the third argument (never return a reference to the arrangement vector should it exist) -->
-      <inject-code>
-        (void)%3;
-        %RETURN_TYPE result = %CPPSELF->get()->hasArrangementsOfKindForEntity(%1,%2,NULL);
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
-      </inject-code>
-    </add-function>
     <add-function signature="setTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
       static="NO"
       return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
@@ -554,6 +544,10 @@
       </object-type>
 
       <enum-type name="ArrangementKind">
+        <include file-name="smtk/model/Arrangement.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="CellUseSenses">
         <include file-name="smtk/model/Arrangement.h" location="local"/>
       </enum-type>
 

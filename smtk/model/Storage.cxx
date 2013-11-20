@@ -124,8 +124,8 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
   * Since this actually requires a lookup, you may pass in a pointer \a arr to an array of arrangements;
   * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
   */
-bool Storage::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements** arr)
+Arrangements* Storage::hasArrangementsOfKindForEntity(
+  const smtk::util::UUID& entity, ArrangementKind kind)
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -133,20 +133,16 @@ bool Storage::hasArrangementsOfKindForEntity(
     ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
     if (useIt != cellEntry->second.end())
       {
-      if (arr)
-        {
-        *arr = &useIt->second;
-        }
-      return true;
+      return &useIt->second;
       }
     }
-  return false;
+  return NULL;
 }
 
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
-bool Storage::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements** arr) const
+const Arrangements* Storage::hasArrangementsOfKindForEntity(
+  const smtk::util::UUID& entity, ArrangementKind kind) const
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -154,14 +150,10 @@ bool Storage::hasArrangementsOfKindForEntity(
     ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
     if (useIt != cellEntry->second.end())
       {
-      if (arr)
-        {
-        *arr = &useIt->second;
-        }
-      return true;
+      return &useIt->second;
       }
     }
-  return false;
+  return NULL;
 }
 
 /**\brief Return an array of arrangements of the given \a kind for the given \a entity.
@@ -240,10 +232,10 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
 
 smtk::util::UUID Storage::cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const
 {
-  smtk::model::Arrangements* arr;
-  if (this->hasArrangementsOfKindForEntity(cell, HAS_USE, &arr) && !arr->empty())
+  const smtk::model::Arrangements* arr;
+  if ((arr = this->hasArrangementsOfKindForEntity(cell, HAS_USE)) && !arr->empty())
     { // See if any of this cell's uses match our sense.
-    for (smtk::model::Arrangements::iterator ait = arr->begin(); ait != arr->end(); ++ait)
+    for (smtk::model::Arrangements::const_iterator ait = arr->begin(); ait != arr->end(); ++ait)
       {
       if (ait->details()[1] == sense)
         {

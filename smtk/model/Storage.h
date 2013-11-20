@@ -43,14 +43,12 @@ public:
 
   int arrangeEntity(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
 
-  bool hasArrangementsOfKindForEntity(
+  const Arrangements* hasArrangementsOfKindForEntity(
     const smtk::util::UUID& cellId,
-    ArrangementKind,
-    Arrangements** arr = NULL) const;
-  bool hasArrangementsOfKindForEntity(
+    ArrangementKind) const;
+  Arrangements* hasArrangementsOfKindForEntity(
     const smtk::util::UUID& cellId,
-    ArrangementKind,
-    Arrangements** arr = NULL);
+    ArrangementKind);
 
   Arrangements& arrangementsOfKindForEntity(const smtk::util::UUID& cellId, ArrangementKind);
 
