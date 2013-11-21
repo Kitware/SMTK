@@ -4,11 +4,22 @@
 #include "smtk/util/UUID.h"
 #include "smtk/model/Storage.h"
 
+#include <ostream>
+
 namespace smtk {
   namespace model {
     namespace testing {
 
 smtk::util::UUIDArray createTet(smtk::model::Storage& sm);
+
+class hexconst
+{
+public:
+  hexconst(long long c) { m_val = c; }
+  long long m_val;
+};
+
+std::ostream& operator << (std::ostream& os, const hexconst& x);
 
 /// A timer for benchmarking.
 class Timer

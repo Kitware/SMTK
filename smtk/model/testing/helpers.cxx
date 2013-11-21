@@ -2,6 +2,8 @@
 #include "smtk/model/Storage.h"
 #include "smtk/model/testing/helpers.h"
 
+#include <iomanip>
+
 #include <sys/time.h>
 
 using namespace smtk::util;
@@ -96,6 +98,12 @@ UUIDArray createTet(smtk::model::Storage& sm)
   uids.push_back(uc20);
   uids.push_back(uc21);
   return uids;
+}
+
+std::ostream& operator << (std::ostream& os, const hexconst& x)
+{
+  os << std::setbase(16) << std::fixed << std::setw(8) << std::setfill('0') << x.m_val;
+  return os;
 }
 
 class Timer::Internal

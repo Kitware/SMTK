@@ -21,6 +21,10 @@ add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement SMTKCore)
 add_test(unitArrangement ${EXECUTABLE_OUTPUT_PATH}/unitArrangement)
 
+add_executable(unitEntity unitEntity.cxx)
+target_link_libraries(unitEntity SMTKCore SMTKCoreModelTesting)
+add_test(unitEntity ${EXECUTABLE_OUTPUT_PATH}/unitEntity)
+
 add_executable(benchmarkModel benchmarkModel.cxx)
 target_link_libraries(benchmarkModel SMTKCore SMTKCoreModelTesting)
 add_test(benchmarkModel ${EXECUTABLE_OUTPUT_PATH}/benchmarkModel)
