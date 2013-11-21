@@ -22,6 +22,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME ValueItemDefinition.h -
 // .SECTION Description
+// The base class for attribute items that have an input value.
+// It can have a specified number of values (m_numberOfRequiredValues > 0)
+// or an unbounded number of values (m_numberOfRequredValues == 0).
+// m_valueLabels is used to store labels for individual component values
+// but can hold a common label that should be used for all components.
+// m_valueLabels should only be used if m_numberOfRequiredValues is not 1.
 // .SECTION See Also
 
 #ifndef __smtk_attribute_ValueItemDefinition_h
@@ -52,7 +58,11 @@ namespace smtk
       virtual ~ValueItemDefinition();
 
       const std::string &units() const
-      { return this->m_units;}
+      {
+        if(this->m_units.length())
+          int i = 0;
+        return this->m_units;
+      }
       void setUnits(const std::string &newUnits)
       { this->m_units = newUnits;}
 
@@ -82,13 +92,24 @@ namespace smtk
       {return this->m_numberOfRequiredValues;}
       void setNumberOfRequiredValues(int esize);
 
+      // Description:
+      // Return whether or not there are labels for components.
+      // There should only be labels if there is more than a single
+      // component (i.e. m_numberOfRequiredValues != 1).
       bool hasValueLabels() const
       {return this->m_valueLabels.size();}
 
+      // Description:
+      // Specify whether the components label is coming from a common
+      // label that is repeated.
       bool usingCommonLabel() const
       {return this->m_useCommonLabel;}
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
+      // Description:
+      // Get the component label for specified element component. This
+      // takes into account whether to use the common label or specific
+      // component label.
       std::string valueLabel(int element) const;
       bool isDiscreteIndexValid(int index) const
       {return ((index > -1) && (index < this->m_discreteValueEnums.size()));}

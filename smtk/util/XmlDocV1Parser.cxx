@@ -144,8 +144,8 @@ void XmlDocV1Parser::process(xml_document &doc)
     {
     if (secCatagories.find(*it) == secCatagories.end())
       {
-      smtkErrorMacro(this->m_logger, "Catagory: " << *it
-                     << " was not listed in Manger's Catagory Section");
+      smtkErrorMacro(this->m_logger, "Category: " << *it
+                     << " was not listed in Manager's Category Section");
       }
     }
 }
@@ -689,9 +689,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
+  int numberOfComponents = -1;
   if (xatt)
     {
-    idef->setNumberOfRequiredValues(xatt.as_int());
+    numberOfComponents = xatt.as_int();
+    idef->setNumberOfRequiredValues(numberOfComponents);
     }
   else
     {
@@ -701,20 +703,48 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
+    if(numberOfComponents == 1)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "Should not use Labels when NumberOfRequiredValues=1 : "
+                     << idef->name());
+      }
+
     // Are we using a common label?
     xatt = labels.attribute("CommonLabel");
     if (xatt)
       {
       idef->setCommonValueLabel(xatt.value());
+      if(labels.first_child())
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Cannot combine CommonLabel with Label child nodes : "
+                       << idef->name());
+        }
       }
     else
       {
       for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
         {
-        idef->setValueLabel(i, child.value());
+        if(i<numberOfComponents)
+          {
+          idef->setValueLabel(i, child.text().get());
+          }
+        }
+      if(i!=numberOfComponents)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Wrong number of component values for : "
+                       << idef->name());
         }
       }
     }
@@ -780,7 +810,13 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?
@@ -884,7 +920,13 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?
@@ -924,7 +966,13 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << def->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?

@@ -68,8 +68,7 @@ void qtVoidItem::createWidget()
   optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   optionalCheck->setSizePolicy(sizeFixedPolicy);
-  QString txtLabel = dataObj->definition()->label().empty() ?
-    dataObj->definition()->name().c_str() : dataObj->definition()->label().c_str();
+  QString txtLabel = dataObj->definition()->label().c_str();
 
   if(dataObj->definition()->advanceLevel() >0)
     {

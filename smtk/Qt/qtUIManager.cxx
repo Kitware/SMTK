@@ -1003,49 +1003,6 @@ void qtUIManager::onInputValueChanged()
     }
 }
 //----------------------------------------------------------------------------
-std::string qtUIManager::getValueItemCommonLabel(
-  smtk::attribute::ValueItemPtr attItem) const
-{
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
-
-  if(itemDef && itemDef->usingCommonLabel() && itemDef->hasValueLabels() &&
-    !itemDef->valueLabel(0).empty())
-    {
-    return itemDef->valueLabel(0);
-    }
-  return "";
-}
-//----------------------------------------------------------------------------
-std::string qtUIManager::getGroupItemCommonLabel(
-  smtk::attribute::GroupItemPtr attItem) const
-{
-  const GroupItemDefinition *groupDef =
-    dynamic_cast<const GroupItemDefinition*>(attItem->definition().get());
-
-  if(groupDef && groupDef->usingCommonSubGroupLabel() &&
-    groupDef->hasSubGroupLabels() && !groupDef->subGroupLabel(0).empty())
-    {
-    return groupDef->subGroupLabel(0);
-    }
-  return "";
-}
-
-//----------------------------------------------------------------------------
-std::string qtUIManager::getItemCommonLabel(
-  smtk::attribute::ItemPtr attItem)
-{
-  if(attItem->type() == smtk::attribute::Item::GROUP)
-    {
-    return this->getGroupItemCommonLabel(dynamic_pointer_cast<GroupItem>(attItem));
-    }
- if(dynamic_pointer_cast<ValueItem>(attItem))
-    {
-    return this->getValueItemCommonLabel(dynamic_pointer_cast<ValueItem>(attItem));
-    }
-  return "";
-}
-//----------------------------------------------------------------------------
 bool qtUIManager::updateTableItemCheckState(
   QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem)
 {
