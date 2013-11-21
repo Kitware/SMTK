@@ -703,7 +703,13 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     if(numberOfComponents == 1)
@@ -718,6 +724,12 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     if (xatt)
       {
       idef->setCommonValueLabel(xatt.value());
+      if(labels.first_child())
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Cannot combine CommonLabel with Label child nodes : "
+                       << idef->name());
+        }
       }
     else
       {
@@ -798,7 +810,13 @@ void XmlDocV1Parser::processRefDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?
@@ -902,7 +920,13 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?
@@ -942,7 +966,13 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
     }
 
   // Lets see if there are labels
-  labels = node.child("Labels");
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << def->name());
+    }
+  labels = node.child("ComponentLabels");
   if (labels)
     {
     // Are we using a common label?

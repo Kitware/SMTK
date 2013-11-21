@@ -482,7 +482,7 @@ void qtAttributeView::onCreateNew()
   foreach (attribute::DefinitionPtr attDef,
     this->Internals->AttDefMap[strCategory])
     {
-    if(strDef == QString::fromUtf8(attDef->type().c_str()))
+    if(strDef == QString::fromUtf8(attDef->label().c_str()))
       {
       newAttDef = attDef;
       break;
@@ -592,7 +592,7 @@ void qtAttributeView::addAttributePropertyItems(
 
       // add the type column too.
       QTableWidgetItem* defitem = new QTableWidgetItem(
-        QString::fromUtf8(childData->definition()->type().c_str()),
+        QString::fromUtf8(childData->definition()->label().c_str()),
         smtk_USER_DATA_TYPE);
       defitem->setFlags(nonEditableFlags);
       this->Internals->ListTable->setItem(numRows-1, 1, defitem);
@@ -628,7 +628,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
 
   // add the type column too.
   QTableWidgetItem* defitem = new QTableWidgetItem(
-    QString::fromUtf8(childData->definition()->type().c_str()),
+    QString::fromUtf8(childData->definition()->label().c_str()),
     smtk_USER_DATA_TYPE);
   defitem->setFlags(nonEditableFlags);
   this->Internals->ListTable->setItem(numRows-1, 1, defitem);
@@ -678,7 +678,7 @@ void qtAttributeView::onViewBy(int viewBy)
     if(!attDef->isAbstract())
       {
       this->Internals->DefsCombo->addItem(
-        QString::fromUtf8(attDef->type().c_str()));
+        QString::fromUtf8(attDef->label().c_str()));
       }
     }
   this->Internals->DefsCombo->setCurrentIndex(0);

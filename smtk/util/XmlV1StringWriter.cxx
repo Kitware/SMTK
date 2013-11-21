@@ -477,7 +477,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
-    lnode.set_name("Labels");
+    lnode.set_name("ComponentLabels");
     if (idef->usingCommonLabel())
       {
       lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
@@ -525,7 +525,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
-    lnode.set_name("Labels");
+    lnode.set_name("ComponentLabels");
     if (idef->usingCommonLabel())
       {
       lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
@@ -559,7 +559,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
-    lnode.set_name("Labels");
+    lnode.set_name("ComponentLabels");
     if (idef->usingCommonLabel())
       {
       lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
@@ -593,7 +593,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
-    lnode.set_name("Labels");
+    lnode.set_name("ComponentLabels");
     if (idef->usingCommonLabel())
       {
       lnode.append_attribute("CommonLabel") = idef->valueLabel(0).c_str();
@@ -620,7 +620,7 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
   if (idef->hasSubGroupLabels())
     {
     xml_node lnode = node.append_child();
-    lnode.set_name("Labels");
+    lnode.set_name("ComponentLabels");
     if (idef->usingCommonSubGroupLabel())
       {
       lnode.append_attribute("CommonLabel") = idef->subGroupLabel(0).c_str();
