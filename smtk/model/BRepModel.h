@@ -76,6 +76,8 @@ public:
   void insertEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
 
+  bool removeEntity(const smtk::util::UUID& uid);
+
   virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
   void setFloatProperty(const smtk::util::UUID& entity, const std::string propName, smtk::model::Float propValue);

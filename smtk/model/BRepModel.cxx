@@ -488,6 +488,18 @@ void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
     }
 }
 
+/// Remove an entity \a uid from storage and ensure that all of its references contain <b>no</b> reference to it.
+bool BRepModel::removeEntity(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    this->removeEntityReferences(it);
+    return true;
+    }
+  return false;
+}
+
 /**\brief Add entities (specified by their \a uids) to the given group (\a groupId).
   *
   * This will append \a groupId to each entity in \a uids.
