@@ -689,9 +689,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
+  int numberOfComponents = -1;
   if (xatt)
     {
-    idef->setNumberOfRequiredValues(xatt.as_int());
+    numberOfComponents = xatt.as_int();
+    idef->setNumberOfRequiredValues(numberOfComponents);
     }
   else
     {
@@ -704,6 +706,13 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   labels = node.child("Labels");
   if (labels)
     {
+    if(numberOfComponents == 1)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "Should not use Labels when NumberOfRequiredValues=1 : "
+                     << idef->name());
+      }
+
     // Are we using a common label?
     xatt = labels.attribute("CommonLabel");
     if (xatt)
@@ -714,7 +723,16 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
       {
       for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
         {
-        idef->setValueLabel(i, child.value());
+        if(i<numberOfComponents)
+          {
+          idef->setValueLabel(i, child.text().get());
+          }
+        }
+      if(i!=numberOfComponents)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Wrong number of component values for : "
+                       << idef->name());
         }
       }
     }

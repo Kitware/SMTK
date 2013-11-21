@@ -411,17 +411,6 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
     {
     Manager *attManager = func->definition()->manager();
     attManager->rename(func, item->text().toAscii().constData());
-    //func->definition()->setLabel(item->text().toAscii().constData());
-
-    // Lets see what attributes are being referenced
-    std::vector<smtk::attribute::ItemPtr> refs;
-    std::size_t i;
-    func->references(refs);
-    for (i = 0; i < refs.size(); i++)
-      {
-      std::cout << "\tAtt:" << refs[i]->attribute()->name() << " Item:" << refs[i]->owningItem()->name()
-        << "\n";
-      }
     }
 }
 

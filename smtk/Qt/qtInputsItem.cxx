@@ -95,7 +95,7 @@ void qtInputsItem::loadInputValues(
     return;
     }
 
-  std::size_t i, n = item->numberOfValues();
+  int n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -104,42 +104,32 @@ void qtInputsItem::loadInputValues(
   const ValueItemDefinition *itemDef = 
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
-  bool hasCommonLabel = (!qtUIManager::instance()->
-    getValueItemCommonLabel(item).empty());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  for(i = 0; i < n; i++)
+  for(int i = 0; i < n; i++)
     {
     QWidget* editBox = qtUIManager::instance()->createInputWidget(
-      item, (int)i, this->Widget);
+      item, i, this->Widget);
     if(!editBox)
       {
       continue;
       }
 
-    if(!hasCommonLabel)
+    if(n!=1)
       {
-      QString labelText =
-        (itemDef->hasValueLabels() && !itemDef->valueLabel(i).empty()) ?
-        itemDef->valueLabel(i).c_str() : item->name().c_str();
-        
-      QLabel* label = new QLabel(labelText, this->Widget);
-      label->setSizePolicy(sizeFixedPolicy);
-
-      if(!itemDef->units().empty())
+      std::string componentLabel = itemDef->valueLabel(i);
+      if(!componentLabel.empty())
         {
-        QString unitText=label->text();
-        unitText.append(" (").append(itemDef->units().c_str()).append(")");
-        label->setText(unitText);
+        // acbauer -- this should probably be improved
+        QString labelText = componentLabel.c_str();
+        QLabel* label = new QLabel(labelText, editBox);
+        label->setSizePolicy(sizeFixedPolicy);
+        entrylayout->addWidget(label);
         }
-      if(itemDef->advanceLevel())
-        {
-        label->setFont(qtUIManager::instance()->advancedFont());
-        }
-      labellayout->addWidget(label);
       }
     entrylayout->addWidget(editBox);
     }
 }
+
 //----------------------------------------------------------------------------
 void qtInputsItem::updateUI()
 {
@@ -184,32 +174,32 @@ void qtInputsItem::updateUI()
   const ValueItemDefinition *itemDef = 
     dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
 
-  // Use common label ?
-  std::string strCommLabel = qtUIManager::instance()->
-    getValueItemCommonLabel(item);
-  if(!strCommLabel.empty())
+  QString labelText;
+  if(!item->label().empty())
     {
-    QLabel* label = new QLabel(strCommLabel.c_str(), this->Widget);
-    label->setSizePolicy(sizeFixedPolicy);
-
-    if(!itemDef->units().empty())
-      {
-      QString unitText=label->text();
-      unitText.append(" (").append(itemDef->units().c_str()).append(")");
-      label->setText(unitText);
-      }
-    if(dataObj->definition()->advanceLevel())
-      {
-      label->setFont(qtUIManager::instance()->advancedFont());
-      }
-    labelLayout->addWidget(label);
-    // add in BriefDescription as tooltip if available
-    const std::string strBriefDescription = dataObj->definition()->briefDescription();
-    if(strBriefDescription.length())
-      {
-      label->setToolTip(strBriefDescription.c_str());
-      }
+    labelText = item->label().c_str();
     }
+  QLabel* label = new QLabel(labelText, this->Widget);
+  label->setSizePolicy(sizeFixedPolicy);
+
+  // add in BriefDescription as tooltip if available
+  const std::string strBriefDescription = itemDef->briefDescription();
+  if(!strBriefDescription.empty())
+    {
+    label->setToolTip(strBriefDescription.c_str());
+    }
+
+  if(!itemDef->units().empty())
+    {
+    QString unitText=label->text();
+    unitText.append(" (").append(itemDef->units().c_str()).append(")");
+    label->setText(unitText);
+    }
+  if(itemDef->advanceLevel())
+    {
+    label->setFont(qtUIManager::instance()->advancedFont());
+    }
+  labelLayout->addWidget(label);
 
   this->loadInputValues(labelLayout, entryLayout);
 

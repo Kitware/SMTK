@@ -110,9 +110,6 @@ namespace smtk
     static void removeSelectedTableValues(
       smtk::attribute::GroupItemPtr dataItem, QTableWidget* table);
 
-    std::string getValueItemCommonLabel(smtk::attribute::ValueItemPtr vitem) const;
-    std::string getGroupItemCommonLabel(smtk::attribute::GroupItemPtr groupitem) const;
-    std::string getItemCommonLabel(smtk::attribute::ItemPtr attItem);
     bool updateTableItemCheckState(
       QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 

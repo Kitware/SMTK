@@ -52,7 +52,13 @@ namespace smtk
     public:
       virtual ~ItemDefinition();
       const std::string &name() const
-      { return this->m_name;}
+      {
+        if(this->m_name == "nsteps")
+          {
+          int i = 0;
+          }
+        return this->m_name;
+      }
 
       virtual Item::Type type() const = 0;
       // The label is what can be displayed in an application.  Unlike the type
