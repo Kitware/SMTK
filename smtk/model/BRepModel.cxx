@@ -522,21 +522,34 @@ void BRepModel::setFloatProperty(
   const std::string propName,
   const smtk::model::FloatList& propValue)
 {
-  (*this->m_floatData)[entity][propName] = propValue;
+  if (!entity.isNull())
+    {
+    (*this->m_floatData)[entity][propName] = propValue;
+    }
 }
 
 smtk::model::FloatList const& BRepModel::floatProperty(
   const smtk::util::UUID& entity, const std::string propName) const
 {
-  FloatData& floats((*this->m_floatData)[entity]);
-  return floats[propName];
+  if (!entity.isNull())
+    {
+    FloatData& floats((*this->m_floatData)[entity]);
+    return floats[propName];
+    }
+  static FloatList dummy;
+  return dummy;
 }
 
 smtk::model::FloatList& BRepModel::floatProperty(
   const smtk::util::UUID& entity, const std::string propName)
 {
-  FloatData& floats((*this->m_floatData)[entity]);
-  return floats[propName];
+  if (!entity.isNull())
+    {
+    FloatData& floats((*this->m_floatData)[entity]);
+    return floats[propName];
+    }
+  static FloatList dummy;
+  return dummy;
 }
 
 bool BRepModel::hasFloatProperty(
@@ -566,21 +579,34 @@ void BRepModel::setStringProperty(
   const std::string propName,
   const smtk::model::StringList& propValue)
 {
-  (*this->m_stringData)[entity][propName] = propValue;
+  if (!entity.isNull())
+    {
+    (*this->m_stringData)[entity][propName] = propValue;
+    }
 }
 
 smtk::model::StringList const& BRepModel::stringProperty(
   const smtk::util::UUID& entity, const std::string propName) const
 {
-  StringData& strings((*this->m_stringData)[entity]);
-  return strings[propName];
+  if (!entity.isNull())
+    {
+    StringData& strings((*this->m_stringData)[entity]);
+    return strings[propName];
+    }
+  static StringList dummy;
+  return dummy;
 }
 
 smtk::model::StringList& BRepModel::stringProperty(
   const smtk::util::UUID& entity, const std::string propName)
 {
-  StringData& strings((*this->m_stringData)[entity]);
-  return strings[propName];
+  if (!entity.isNull())
+    {
+    StringData& strings((*this->m_stringData)[entity]);
+    return strings[propName];
+    }
+  static StringList dummy;
+  return dummy;
 }
 
 bool BRepModel::hasStringProperty(
@@ -610,21 +636,34 @@ void BRepModel::setIntegerProperty(
   const std::string propName,
   const smtk::model::IntegerList& propValue)
 {
-  (*this->m_integerData)[entity][propName] = propValue;
+  if (!entity.isNull())
+    {
+    (*this->m_integerData)[entity][propName] = propValue;
+    }
 }
 
 smtk::model::IntegerList const& BRepModel::integerProperty(
   const smtk::util::UUID& entity, const std::string propName) const
 {
-  IntegerData& integers((*this->m_integerData)[entity]);
-  return integers[propName];
+  if (!entity.isNull())
+    {
+    IntegerData& integers((*this->m_integerData)[entity]);
+    return integers[propName];
+    }
+  static IntegerList dummy;
+  return dummy;
 }
 
 smtk::model::IntegerList& BRepModel::integerProperty(
   const smtk::util::UUID& entity, const std::string propName)
 {
-  IntegerData& integers((*this->m_integerData)[entity]);
-  return integers[propName];
+  if (!entity.isNull())
+    {
+    IntegerData& integers((*this->m_integerData)[entity]);
+    return integers[propName];
+    }
+  static IntegerList dummy;
+  return dummy;
 }
 
 bool BRepModel::hasIntegerProperty(
