@@ -949,6 +949,12 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
     {
     labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
     }
+  // add in BriefDescription as tooltip if available
+  const std::string strBriefDescription = vItemDef->briefDescription();
+  if(!strBriefDescription.empty())
+    {
+    labelitem->setToolTip(strBriefDescription.c_str());
+    }
 
   labelitem->setFlags(nonEditableFlags);
   widget->setItem(numRows-1, 0, labelitem);
@@ -986,6 +992,12 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
           componentlabelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
           }
         componentlabelitem->setFlags(nonEditableFlags);
+        // add in BriefDescription as tooltip if available
+        const std::string strBriefDescription = vItemDef->briefDescription();
+        if(!strBriefDescription.empty())
+          {
+          componentlabelitem->setToolTip(strBriefDescription.c_str());
+          }
         widget->setItem(numRows-1, 0, componentlabelitem);
         }
       numAdded++;
