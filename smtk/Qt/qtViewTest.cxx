@@ -14,6 +14,7 @@
 // .SECTION See Also
 
 #include "smtk/attribute/Manager.h"
+#include "smtk/model/Model.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/util/AttributeReader.h"
 #include "smtk/util/Logger.h"
@@ -48,20 +49,24 @@ int main(int argc, char *argv[])
     return -2;
     }
 
+  // Instantiate (empty) model
+  smtk::model::ModelPtr model =
+    smtk::model::ModelPtr(new smtk::model::Model());
+  manager.setRefModel(model);
+
   // Instantiate Qt application
   QApplication *qapp = new QApplication(argc, argv);
 
-  // Instantiate smtk view classes
+  // Instantiate smtk's qtUIManager
   smtk::attribute::qtUIManager *uiManager =
     new smtk::attribute::qtUIManager(manager);
 
-  // Instantiate Widget
+  // Instantiate empty widget as containter for qtUIManager
   QWidget *widget = new QWidget();
   QVBoxLayout *layout = new QVBoxLayout();
   widget->setLayout(layout);
 
   uiManager->initializeUI(widget);
-
   widget->show();
   int retcode = qApp->exec();
 
