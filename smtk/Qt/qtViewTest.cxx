@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Model.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/util/AttributeReader.h"
+#include "smtk/util/AttributeWriter.h"
 #include "smtk/util/Logger.h"
 
 #include <QApplication>
@@ -41,21 +42,22 @@ int main(int argc, char *argv[])
     {
     std::cout << "\n"
               << "Simple program to load attribute manager and display corresponding editor panel" << "\n"
-              << "Usage: qtViewTest attribute_filename" << "\n"
+              << "Usage: qtViewTest attribute_filename  [output_filename]" << "\n"
               << std::endl;
     return -1;
     }
 
   // Instantiate and load attribute manager
   smtk::attribute::Manager manager;
-  char *sbi_path = argv[1];
-  std::cout << "Loading simulation file: " << sbi_path << std::endl;
+  char *inputPath = argv[1];
+  std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::util::AttributeReader reader;
-  smtk::util::Logger logger;
-  bool  err = reader.read(manager, sbi_path, logger);
+  smtk::util::Logger inputLogger;
+  bool  err = reader.read(manager, inputPath, inputLogger);
   if (err)
     {
-    std::cout << "Error loading simulation file -- exiting" << std::endl;
+    std::cout << "Error loading simulation file -- exiting" << "\n";
+    std::cout << inputLogger.convertToString() << std::endl;
     return -2;
     }
 
@@ -79,6 +81,21 @@ int main(int argc, char *argv[])
   uiManager->initializeUI(widget);
   widget->show();
   int retcode = app->exec();
+
+  if (argc > 2)
+    {
+    char *outputPath = argv[2];
+    std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
+    smtk::util::AttributeWriter writer;
+    smtk::util::Logger outputLogger;
+    bool  outputErr = writer.write(manager, outputPath, outputLogger);
+    if (outputErr)
+      {
+      std::cout << "Error writing simulation file -- exiting" << "\n"
+                << outputLogger.convertToString() << std::endl;
+      return -3;
+      }
+    }
 
   // Done
   return retcode;
