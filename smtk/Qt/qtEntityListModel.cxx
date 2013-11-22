@@ -20,7 +20,7 @@ QEntityListModel::~QEntityListModel()
 
 int QEntityListModel::rowCount(const QModelIndex& parent) const
 {
-  return this->m_storage->topology().size();
+  return this->m_subset.size();
 }
 
 QVariant QEntityListModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -36,6 +36,8 @@ QVariant QEntityListModel::headerData(int section, Qt::Orientation orientation, 
     case 0:
       return "Type";
     case 1:
+      return "Dimension";
+    case 2:
       return "Name";
       }
     }
@@ -62,6 +64,15 @@ QVariant QEntityListModel::data(const QModelIndex& index, int role) const
         }
       break;
     case 1:
+        {
+        smtk::model::Entity* link = this->m_storage->findEntity(uid);
+        if (link)
+          {
+          return QVariant(link->dimension());
+          }
+        }
+      break;
+    case 2:
         {
         smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
         return QVariant(names.empty() ? "" : names[0].c_str());
@@ -129,6 +140,9 @@ bool QEntityListModel::setData(const QModelIndex& index, const QVariant& value, 
         }
       break;
     case 1:
+      // FIXME: No way to change dimension yet.
+      break;
+    case 2:
       this->m_storage->setStringProperty(
         this->m_subset[row], "name",
         value.value<QString>().toStdString());
