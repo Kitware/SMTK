@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtEntityListModel.h"
+#include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   smtk::model::StoragePtr model = smtk::model::Storage::New();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
 
-  QEntityListModel* qmodel = new QEntityListModel(model);
+  QEntityItemModel* qmodel = new QEntityItemModel(model);
   QTreeView* view = new QTreeView;
   view->setModel(qmodel);
   qmodel->setSubset(model->entitiesMatchingFlags(mask, false));

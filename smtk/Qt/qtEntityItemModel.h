@@ -1,17 +1,21 @@
-#ifndef __smtk_qt_qtEntityListModel_h
-#define __smtk_qt_qtEntityListModel_h
+#ifndef __smtk_qt_qtEntityItemModel_h
+#define __smtk_qt_qtEntityItemModel_h
 
-#include "QAbstractListModel"
+#include "QAbstractItemModel"
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/util/UUID.h"
 
-class QEntityListModel : public QAbstractListModel
+class QEntityItemModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
-  QEntityListModel(smtk::model::StoragePtr model, QObject* parent = 0);
-  virtual ~QEntityListModel();
+  QEntityItemModel(smtk::model::StoragePtr model, QObject* parent = 0);
+  virtual ~QEntityItemModel();
+
+  virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;
+  virtual QModelIndex parent(const QModelIndex& child) const;
+  virtual bool hasChildren(const QModelIndex& parent) const;
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const;
   int columnCount(const QModelIndex& parent = QModelIndex()) const { return 3; }
@@ -52,4 +56,4 @@ protected:
 private:
 };
 
-#endif // __smtk_qt_qtEntityListModel_h
+#endif // __smtk_qt_qtEntityItemModel_h

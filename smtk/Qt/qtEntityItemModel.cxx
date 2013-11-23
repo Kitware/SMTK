@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtEntityListModel.h"
+#include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
@@ -8,22 +8,37 @@
 
 #include <QtCore/QVariant>
 
-QEntityListModel::QEntityListModel(smtk::model::StoragePtr model, QObject* parent)
-  : m_storage(model), QAbstractListModel(parent)
+QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* parent)
+  : m_storage(model), QAbstractItemModel(parent)
 {
   this->m_deleteOnRemoval = true;
 }
 
-QEntityListModel::~QEntityListModel()
+QEntityItemModel::~QEntityItemModel()
 {
 }
 
-int QEntityListModel::rowCount(const QModelIndex& parent) const
+QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& parent) const
+{
+  return hasIndex(row, column, parent) ? createIndex(row, column, 0) : QModelIndex();
+}
+
+QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
+{
+  return QModelIndex();
+}
+
+bool QEntityItemModel::hasChildren(const QModelIndex& parent) const
+{
+      return parent.isValid() ? false : (rowCount() > 0);
+}
+
+int QEntityItemModel::rowCount(const QModelIndex& parent) const
 {
   return this->m_subset.size();
 }
 
-QVariant QEntityListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
   if (role != Qt::DisplayRole)
     {
@@ -45,7 +60,7 @@ QVariant QEntityListModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
-QVariant QEntityListModel::data(const QModelIndex& index, int role) const
+QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
 {
   if (index.isValid() && role == Qt::DisplayRole)
     {
@@ -83,7 +98,7 @@ QVariant QEntityListModel::data(const QModelIndex& index, int role) const
   return QVariant();
 }
 
-bool QEntityListModel::insertRows(int position, int rows, const QModelIndex& parent)
+bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& parent)
 {
   beginInsertRows(QModelIndex(), position, position + rows - 1);
 
@@ -99,7 +114,7 @@ bool QEntityListModel::insertRows(int position, int rows, const QModelIndex& par
   return true;
 }
 
-bool QEntityListModel::removeRows(int position, int rows, const QModelIndex& parent)
+bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
   beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
@@ -122,7 +137,7 @@ bool QEntityListModel::removeRows(int position, int rows, const QModelIndex& par
   return true;
 }
 
-bool QEntityListModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
   bool didChange = false;
   if(index.isValid() && role == Qt::EditRole)
@@ -157,12 +172,12 @@ bool QEntityListModel::setData(const QModelIndex& index, const QVariant& value, 
   return didChange;
 }
 
-Qt::ItemFlags QEntityListModel::flags(const QModelIndex& index) const
+Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
 {
   if(!index.isValid())
     return Qt::ItemIsEnabled;
 
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
-  return QAbstractListModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+  return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
