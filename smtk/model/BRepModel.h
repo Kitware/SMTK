@@ -85,18 +85,21 @@ public:
   smtk::model::FloatList const& floatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasFloatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeFloatProperty(const smtk::util::UUID& entity, const std::string& propName);
 
   void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::String& propValue);
   void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::StringList& propValue);
   smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasStringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeStringProperty(const smtk::util::UUID& entity, const std::string& propName);
 
   void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
   void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue);
   smtk::model::IntegerList const& integerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeIntegerProperty(const smtk::util::UUID& entity, const std::string& propName);
 
   smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
   smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }

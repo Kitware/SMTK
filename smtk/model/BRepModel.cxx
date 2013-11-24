@@ -573,7 +573,26 @@ bool BRepModel::hasFloatProperty(
     return false;
     }
   FloatData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
   return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToFloatData::iterator uit = this->m_floatData->find(entity);
+  if (uit == this->m_floatData->end())
+    {
+    return false;
+    }
+  FloatData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
 }
 
 void BRepModel::setStringProperty(
@@ -630,7 +649,26 @@ bool BRepModel::hasStringProperty(
     return false;
     }
   StringData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
   return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToStringData::iterator uit = this->m_stringData->find(entity);
+  if (uit == this->m_stringData->end())
+    {
+    return false;
+    }
+  StringData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
 }
 
 void BRepModel::setIntegerProperty(
@@ -687,7 +725,26 @@ bool BRepModel::hasIntegerProperty(
     return false;
     }
   IntegerData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
   return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToIntegerData::iterator uit = this->m_integerData->find(entity);
+  if (uit == this->m_integerData->end())
+    {
+    return false;
+    }
+  IntegerData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
 }
 
   } // model namespace
