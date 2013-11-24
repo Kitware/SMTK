@@ -80,23 +80,23 @@ public:
 
   virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
-  void setFloatProperty(const smtk::util::UUID& entity, const std::string propName, smtk::model::Float propValue);
-  void setFloatProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::FloatList& propValue);
-  smtk::model::FloatList const& floatProperty(const smtk::util::UUID& entity, const std::string propName) const;
-  smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string propName);
-  bool hasFloatProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Float propValue);
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::FloatList& propValue);
+  smtk::model::FloatList const& floatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasFloatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
 
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::String& propValue);
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::StringList& propValue);
-  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string propName) const;
-  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string propName);
-  bool hasStringProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::String& propValue);
+  void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::StringList& propValue);
+  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasStringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
 
-  void setIntegerProperty(const smtk::util::UUID& entity, const std::string propName, smtk::model::Integer propValue);
-  void setIntegerProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::IntegerList& propValue);
-  smtk::model::IntegerList const& integerProperty(const smtk::util::UUID& entity, const std::string propName) const;
-  smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string propName);
-  bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string propName) const;
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue);
+  smtk::model::IntegerList const& integerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
 
   smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
   smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }

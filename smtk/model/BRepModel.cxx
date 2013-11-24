@@ -521,7 +521,7 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
 
 void BRepModel::setFloatProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   smtk::model::Float propValue)
 {
   smtk::model::FloatList tmp;
@@ -531,7 +531,7 @@ void BRepModel::setFloatProperty(
 
 void BRepModel::setFloatProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   const smtk::model::FloatList& propValue)
 {
   if (!entity.isNull())
@@ -541,7 +541,7 @@ void BRepModel::setFloatProperty(
 }
 
 smtk::model::FloatList const& BRepModel::floatProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -553,7 +553,7 @@ smtk::model::FloatList const& BRepModel::floatProperty(
 }
 
 smtk::model::FloatList& BRepModel::floatProperty(
-  const smtk::util::UUID& entity, const std::string propName)
+  const smtk::util::UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -565,7 +565,7 @@ smtk::model::FloatList& BRepModel::floatProperty(
 }
 
 bool BRepModel::hasFloatProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   UUIDsToFloatData::const_iterator uit = this->m_floatData->find(entity);
   if (uit == this->m_floatData->end())
@@ -578,7 +578,7 @@ bool BRepModel::hasFloatProperty(
 
 void BRepModel::setStringProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   const smtk::model::String& propValue)
 {
   smtk::model::StringList tmp;
@@ -588,7 +588,7 @@ void BRepModel::setStringProperty(
 
 void BRepModel::setStringProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   const smtk::model::StringList& propValue)
 {
   if (!entity.isNull())
@@ -598,7 +598,7 @@ void BRepModel::setStringProperty(
 }
 
 smtk::model::StringList const& BRepModel::stringProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -610,7 +610,7 @@ smtk::model::StringList const& BRepModel::stringProperty(
 }
 
 smtk::model::StringList& BRepModel::stringProperty(
-  const smtk::util::UUID& entity, const std::string propName)
+  const smtk::util::UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -622,7 +622,7 @@ smtk::model::StringList& BRepModel::stringProperty(
 }
 
 bool BRepModel::hasStringProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
   if (uit == this->m_stringData->end())
@@ -635,7 +635,7 @@ bool BRepModel::hasStringProperty(
 
 void BRepModel::setIntegerProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   smtk::model::Integer propValue)
 {
   smtk::model::IntegerList tmp;
@@ -645,7 +645,7 @@ void BRepModel::setIntegerProperty(
 
 void BRepModel::setIntegerProperty(
   const smtk::util::UUID& entity,
-  const std::string propName,
+  const std::string& propName,
   const smtk::model::IntegerList& propValue)
 {
   if (!entity.isNull())
@@ -655,7 +655,7 @@ void BRepModel::setIntegerProperty(
 }
 
 smtk::model::IntegerList const& BRepModel::integerProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -667,7 +667,7 @@ smtk::model::IntegerList const& BRepModel::integerProperty(
 }
 
 smtk::model::IntegerList& BRepModel::integerProperty(
-  const smtk::util::UUID& entity, const std::string propName)
+  const smtk::util::UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -679,7 +679,7 @@ smtk::model::IntegerList& BRepModel::integerProperty(
 }
 
 bool BRepModel::hasIntegerProperty(
-  const smtk::util::UUID& entity, const std::string propName) const
+  const smtk::util::UUID& entity, const std::string& propName) const
 {
   UUIDsToIntegerData::const_iterator uit = this->m_integerData->find(entity);
   if (uit == this->m_integerData->end())
