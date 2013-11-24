@@ -27,6 +27,8 @@ public:
   bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
+  virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+
   Qt::ItemFlags flags(const QModelIndex& index) const;
 
   template<typename T>
@@ -53,6 +55,8 @@ protected:
   std::map<smtk::util::UUID,int> m_reverse; // lookup from UUID into m_subset
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
 
+  template<typename T>
+  void sortDataWithContainer(T& sorter, Qt::SortOrder order);
 private:
 };
 

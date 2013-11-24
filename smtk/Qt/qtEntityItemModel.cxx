@@ -8,6 +8,97 @@
 
 #include <QtCore/QVariant>
 
+namespace smtk {
+  namespace model {
+
+/// A functor for sorting entity UUIDs by their entity-type bit flags.
+struct SortByEntityFlags
+{
+  SortByEntityFlags(smtk::model::StoragePtr storage)
+    : m_storage(storage)
+    {
+    }
+  bool operator () (const smtk::util::UUID& a, const smtk::util::UUID& b) const
+    {
+    smtk::model::Entity* ea = this->m_storage->findEntity(a);
+    smtk::model::Entity* eb = this->m_storage->findEntity(b);
+    if (!ea)
+      {
+      return true;
+      }
+    if (!eb)
+      {
+      return false;
+      }
+    return ea->entityFlags() < eb->entityFlags();
+    }
+  smtk::model::StoragePtr m_storage;
+};
+
+/**\brief A functor for sorting entity UUIDs by a given, named property.
+  *
+  * The property may be a string, double, or integer according to the
+  * template parameters.
+  *
+  * Properties which have shorter vectors are always "less than" those
+  * with longer vectors. This may change in the future. You have been
+  * warned.
+  */
+template<
+  class T,
+  typename U,
+  U&(T::*GetProperty)(const smtk::util::UUID&, const std::string&) = &T::stringProperty,
+  bool (T::*HasProperty)(const smtk::util::UUID&, const std::string&) const = &T::hasStringProperty
+  >
+struct SortByEntityProperty
+{
+  SortByEntityProperty(smtk::model::StoragePtr storage, std::string propName)
+    : m_storage(storage), m_propName(propName)
+    {
+    }
+  bool operator () (const smtk::util::UUID& a, const smtk::util::UUID& b) const
+    {
+    if (a == b)
+      {
+      return false;
+      }
+    bool aHas = (this->m_storage.get()->*HasProperty)(a, this->m_propName);
+    bool bHas = (this->m_storage.get()->*HasProperty)(b, this->m_propName);
+    if (!aHas && !bHas)
+      {
+      return a < b;
+      }
+    if (!aHas)
+      {
+      return false;
+      }
+    if (!bHas)
+      {
+      return true;
+      }
+    U& sa((this->m_storage.get()->*GetProperty)(a, this->m_propName));
+    U& sb((this->m_storage.get()->*GetProperty)(b, this->m_propName));
+    typename U::size_type nCommon =
+      sa.size() > sb.size() ?
+      sb.size() : sa.size();
+    for (typename U::size_type n = 0; n < nCommon; ++n)
+      {
+      if (sa[n] < sb[n])
+        return true;
+      if (sb[n] < sa[n])
+        return false;
+      }
+    if (sb.size() > sa.size())
+      return true;
+    return a < b;
+    }
+  smtk::model::StoragePtr m_storage;
+  std::string m_propName;
+};
+
+  } // namespace model
+} // namespace smtk
+
 QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* parent)
   : m_storage(model), QAbstractItemModel(parent)
 {
@@ -89,8 +180,12 @@ QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
       break;
     case 2:
         {
-        smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
-        return QVariant(names.empty() ? "" : names[0].c_str());
+        if (this->m_storage->hasStringProperty(uid, "name"))
+          {
+          smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
+          return QVariant(names.empty() ? "" : names[0].c_str());
+          }
+        return QVariant("");
         }
       break;
       }
@@ -158,10 +253,20 @@ bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, 
       // FIXME: No way to change dimension yet.
       break;
     case 2:
-      this->m_storage->setStringProperty(
-        this->m_subset[row], "name",
-        value.value<QString>().toStdString());
-      didChange = true;
+        {
+        std::string sval = value.value<QString>().toStdString();
+        if (sval.size())
+          {
+          this->m_storage->setStringProperty(
+            this->m_subset[row], "name", sval);
+          didChange = true;
+          }
+        else
+          {
+          didChange = this->m_storage->removeStringProperty(
+            this->m_subset[row], "name");
+          }
+        }
       break;
       }
     if (didChange)
@@ -172,6 +277,53 @@ bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, 
   return didChange;
 }
 
+void QEntityItemModel::sort(int column, Qt::SortOrder order)
+{
+  switch (column)
+    {
+  case -1:
+      { // Sort by UUID.
+      std::multiset<smtk::util::UUID> sorter;
+      this->sortDataWithContainer(sorter, order);
+      }
+    break;
+  case 0:
+  case 1:
+      {
+      smtk::model::SortByEntityFlags comparator(this->m_storage);
+      std::multiset<smtk::util::UUID,smtk::model::SortByEntityFlags>
+        sorter(comparator);
+      this->sortDataWithContainer(sorter, order);
+      }
+    break;
+  case 2:
+      {
+      smtk::model::SortByEntityProperty<
+        smtk::model::BRepModel,
+        smtk::model::StringList,
+        &smtk::model::BRepModel::stringProperty,
+        &smtk::model::BRepModel::hasStringProperty> comparator(
+          this->m_storage, "name");
+      std::multiset<
+        smtk::util::UUID,
+        smtk::model::SortByEntityProperty<
+          smtk::model::BRepModel,
+          smtk::model::StringList,
+          &smtk::model::BRepModel::stringProperty,
+          &smtk::model::BRepModel::hasStringProperty> >
+        sorter(comparator);
+      this->sortDataWithContainer(sorter, order);
+      }
+    break;
+  default:
+    std::cerr << "Bad column " << column << " for sorting\n";
+    break;
+    }
+  emit dataChanged(
+    this->index(0, 0, QModelIndex()),
+    this->index(this->m_subset.size(), this->columnCount(), QModelIndex()));
+}
+
 Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
 {
   if(!index.isValid())
@@ -180,4 +332,53 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
   return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+}
+
+/**\brief Sort the UUIDs being displayed using the given ordered container.
+  *
+  * The ordered container's comparator is used to insertion-sort the UUIDs
+  * displayed. Then, the \a order is used to either forward- or reverse-iterator
+  * over the container to obtain a new ordering for the UUIDs.
+  */
+template<typename T>
+void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
+{
+  smtk::util::UUIDArray::iterator ai;
+  // Insertion into the set sorts the UUIDs.
+  for (ai = this->m_subset.begin(); ai != this->m_subset.end(); ++ai)
+    {
+    sorter.insert(*ai);
+    }
+  // Now we reset m_subset and m_reverse and recreate based on the sorter's order.
+  this->m_subset.clear();
+  this->m_reverse.clear();
+  int i;
+  if (order == Qt::AscendingOrder)
+    {
+    typename T::iterator si;
+    for (i = 0, si = sorter.begin(); si != sorter.end(); ++si, ++i)
+      {
+      this->m_subset.push_back(*si);
+      this->m_reverse[*si] = i;
+      /*
+      std::cout << i << "  " << *si << "  " <<
+        (this->m_storage->hasStringProperty(*si, "name") ?
+         this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+         */
+      }
+    }
+  else
+    {
+    typename T::reverse_iterator si;
+    for (i = 0, si = sorter.rbegin(); si != sorter.rend(); ++si, ++i)
+      {
+      this->m_subset.push_back(*si);
+      this->m_reverse[*si] = i;
+      /*
+      std::cout << i << "  " << *si << "  " <<
+        (this->m_storage->hasStringProperty(*si, "name") ?
+         this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+         */
+      }
+    }
 }

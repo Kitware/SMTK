@@ -5,6 +5,7 @@
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
+#include <QtGui/QHeaderView>
 
 #include <iostream>
 #include <fstream>
@@ -46,6 +47,10 @@ int main(int argc, char* argv[])
   QTreeView* view = new QTreeView;
   view->setModel(qmodel);
   qmodel->setSubset(model->entitiesMatchingFlags(mask, false));
+
+  // Enable user sorting.
+  view->setSortingEnabled(true);
+
   view->show();
 
   // FIXME: Actually test something when not in debug mode.
