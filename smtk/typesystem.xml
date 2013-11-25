@@ -68,6 +68,11 @@
   <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
   <suppress-warning text="skipping function 'smtk::util::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
 
+  <!-- do not support model property data (yet)-->
+  <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
+
   <!-- Constructor given raw pointers -->
   <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'smtk::model::UUIDsToEntities*'"/>
 

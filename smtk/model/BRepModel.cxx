@@ -40,10 +40,6 @@ BRepModel::~BRepModel()
     delete this->m_topology;
     this->m_topology = NULL;
     }
-  // Always delete stringData (for now)
-  delete this->m_floatData;
-  delete this->m_stringData;
-  delete this->m_integerData;
 }
 
 /// Change whether or not we should delete storage upon our own destruction.

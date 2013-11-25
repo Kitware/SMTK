@@ -4,6 +4,7 @@
 #include "smtk/util/UUID.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/SharedPtr.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -120,9 +121,9 @@ public:
 
 protected:
   UUIDsToEntities* m_topology;
-  UUIDsToFloatData* m_floatData;
-  UUIDsToStringData* m_stringData;
-  UUIDsToIntegerData* m_integerData;
+  smtk::shared_ptr<UUIDsToFloatData> m_floatData;
+  smtk::shared_ptr<UUIDsToStringData> m_stringData;
+  smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   bool m_deleteStorage;
 };
 
