@@ -4,7 +4,12 @@
 
 #include <iomanip>
 
-#include <sys/time.h>
+#if defined(_WIN32) && !defined(__CYGWIN__)
+#  include <windows.h> // for GetTickCount()
+#else
+#  include <sys/time.h> // for gettimeofday()
+#  define SMTK_HAVE_GETTIMEOFDAY
+#endif
 
 using namespace smtk::util;
 using namespace smtk::model;
@@ -15,25 +20,25 @@ namespace smtk {
 
 UUIDArray createTet(smtk::model::Storage& sm)
 {
-  UUID uc00 = sm.insertCellOfDimension(0)->first; // keep just the UUID around.
-  UUID uc01 = sm.insertCellOfDimension(0)->first;
-  UUID uc02 = sm.insertCellOfDimension(0)->first;
-  UUID uc03 = sm.insertCellOfDimension(0)->first;
-  UUID uc04 = sm.insertCellOfDimension(0)->first;
-  UUID uc05 = sm.insertCellOfDimension(0)->first;
-  UUID uc06 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc00 = sm.insertCellOfDimension(0)->first; // keep just the UUID around.
+  smtk::util::UUID uc01 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc02 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc03 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc04 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc05 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc06 = sm.insertCellOfDimension(0)->first;
 
-  UUID uc07 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
-  UUID uc08 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
-  UUID uc09 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
-  UUID uc10 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
-  UUID uc11 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
-  UUID uc12 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
-  UUID uc13 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
-  UUID uc14 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
-  UUID uc15 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
+  smtk::util::UUID uc07 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
+  smtk::util::UUID uc08 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
+  smtk::util::UUID uc09 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
+  smtk::util::UUID uc10 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
+  smtk::util::UUID uc11 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
+  smtk::util::UUID uc12 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
+  smtk::util::UUID uc13 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
+  smtk::util::UUID uc14 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
+  smtk::util::UUID uc15 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
 
-  UUID uc16 = sm.insertEntity(
+  smtk::util::UUID uc16 = sm.insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc07)
     .appendRelation(uc08)
@@ -42,12 +47,12 @@ UUIDArray createTet(smtk::model::Storage& sm)
     .appendRelation(uc11)
     .appendRelation(uc12)
     )->first;
-  UUID uc17 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc10).appendRelation(uc11).appendRelation(uc12))->first;
-  UUID uc18 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc07).appendRelation(uc13).appendRelation(uc14))->first;
-  UUID uc19 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc08).appendRelation(uc14).appendRelation(uc15))->first;
-  UUID uc20 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc09).appendRelation(uc15).appendRelation(uc13))->first;
+  smtk::util::UUID uc17 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc10).appendRelation(uc11).appendRelation(uc12))->first;
+  smtk::util::UUID uc18 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc07).appendRelation(uc13).appendRelation(uc14))->first;
+  smtk::util::UUID uc19 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc08).appendRelation(uc14).appendRelation(uc15))->first;
+  smtk::util::UUID uc20 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc09).appendRelation(uc15).appendRelation(uc13))->first;
 
-  UUID uc21 = sm.insertEntity(
+  smtk::util::UUID uc21 = sm.insertEntity(
     Entity(CELL_ENTITY, 3)
     .appendRelation(uc16)
     .appendRelation(uc17)
@@ -106,6 +111,7 @@ std::ostream& operator << (std::ostream& os, const hexconst& x)
   return os;
 }
 
+#ifdef SMTK_HAVE_GETTIMEOFDAY
 class Timer::Internal
 {
 public:
@@ -119,6 +125,21 @@ public:
     gettimeofday(&this->m_mark, NULL);
     }
 };
+#else
+class Timer::Internal
+{
+public:
+  unsigned long long m_mark;
+  Internal()
+    {
+    this->fetch();
+    }
+  void fetch()
+    {
+    m_mark = GetTickCount64();
+    }
+};
+#endif
 
 Timer::Timer()
 {
@@ -138,8 +159,12 @@ void Timer::mark()
 double Timer::elapsed()
 {
   Internal other;
+#ifdef SMTK_HAVE_GETTIMEOFDAY
   double result = other.m_mark.tv_sec - this->P->m_mark.tv_sec;
   result += 1e-6 * (other.m_mark.tv_usec - this->P->m_mark.tv_usec);
+#else
+  double result = 1e-3 * (other.m_mark - this->P->m_mark);
+#endif
   return result;
 }
 

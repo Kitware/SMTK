@@ -221,6 +221,10 @@ int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* di
   PropertyNameWithFloats entry;
   for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
     {
+    if (entry->second.empty())
+      {
+      continue;
+      }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateDoubleArray(
         &entry->second[0], entry->second.size()));
@@ -241,6 +245,10 @@ int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* d
   PropertyNameWithStrings entry;
   for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
     {
+    if (entry->second.empty())
+      {
+      continue;
+      }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateStringArray(
         &entry->second[0], entry->second.size()));
@@ -261,6 +269,10 @@ int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* 
   PropertyNameWithIntegers entry;
   for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
     {
+    if (entry->second.empty())
+      {
+      continue;
+      }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateLongArray(
         &entry->second[0], entry->second.size()));
