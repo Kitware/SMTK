@@ -1,6 +1,7 @@
 #include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/ImportJSON.h"
+#include "smtk/model/ExportJSON.h"
 #include "smtk/model/Storage.h"
 
 #include <QtGui/QApplication>
@@ -54,5 +55,7 @@ int main(int argc, char* argv[])
   view->show();
 
   // FIXME: Actually test something when not in debug mode.
-  return debug ? app.exec() : 0;
+  int status = debug ? app.exec() : 0;
+  std::cout << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+  return status;
 }

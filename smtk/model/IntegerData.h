@@ -16,6 +16,9 @@ namespace smtk {
     typedef google::sparse_hash_map<std::string,IntegerList> IntegerData;
     typedef google::sparse_hash_map<smtk::util::UUID,IntegerData> UUIDsToIntegerData;
 
+    typedef UUIDsToIntegerData::iterator UUIDWithIntegerProperties;
+    typedef IntegerData::iterator PropertyNameWithIntegers;
+
   } // namespace model
 } // namespace smtk
 

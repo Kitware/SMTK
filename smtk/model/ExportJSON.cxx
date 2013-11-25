@@ -20,6 +20,29 @@ namespace {
       }
     return a;
     }
+
+  cJSON* cJSON_CreateStringArray(std::string* strings, unsigned count)
+    {
+    cJSON* a = cJSON_CreateArray();
+    for (unsigned i = 0; i < count; ++i)
+      {
+      cJSON_AddItemToArray(a, cJSON_CreateString(strings[i].c_str()));
+      }
+    return a;
+    }
+  cJSON* cJSON_CreateLongArray(long* ints, unsigned count)
+    {
+    cJSON* a = cJSON_CreateArray();
+    for (unsigned i = 0; i < count; ++i)
+      {
+      if (ints[i] > 9007199254740991.0) //== 2^53 - 1, max integer-accurate double
+        {
+        std::cerr << "Error exporting array: integer value " << i << " (" << ints[i] << ") out of range for cJSON\n";
+        }
+      cJSON_AddItemToArray(a, cJSON_CreateNumber(ints[i]));
+      }
+    return a;
+    }
 }
 
 namespace smtk {
@@ -185,22 +208,64 @@ int ExportJSON::forStorageTessellation(
   return 1;
 }
 
-int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
 {
-  int status = 0;
-  return status ? 0 : 1;
+  int status = 1;
+  UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
+  if (entIt == model->floatProperties().end() || entIt->second.empty())
+    { // No properties is not an error
+    return status;
+    }
+  cJSON* pdict = cJSON_CreateObject();
+  cJSON_AddItemToObject(dict, "f", pdict);
+  PropertyNameWithFloats entry;
+  for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
+    {
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateDoubleArray(
+        &entry->second[0], entry->second.size()));
+    }
+  return status;
 }
 
-int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
 {
-  int status = 0;
-  return status ? 0 : 1;
+  int status = 1;
+  UUIDWithStringProperties entIt = model->stringProperties().find(uid);
+  if (entIt == model->stringProperties().end() || entIt->second.empty())
+    { // No properties is not an error
+    return status;
+    }
+  cJSON* pdict = cJSON_CreateObject();
+  cJSON_AddItemToObject(dict, "s", pdict);
+  PropertyNameWithStrings entry;
+  for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
+    {
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateStringArray(
+        &entry->second[0], entry->second.size()));
+    }
+  return status;
 }
 
-int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, Storage* model)
+int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
 {
-  int status = 0;
-  return status ? 0 : 1;
+  int status = 1;
+  UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);
+  if (entIt == model->integerProperties().end() || entIt->second.empty())
+    { // No properties is not an error
+    return status;
+    }
+  cJSON* pdict = cJSON_CreateObject();
+  cJSON_AddItemToObject(dict, "i", pdict);
+  PropertyNameWithIntegers entry;
+  for (entry = entIt->second.begin(); entry != entIt->second.end(); ++entry)
+    {
+    cJSON_AddItemToObject(pdict, entry->first.c_str(),
+      cJSON_CreateLongArray(
+        &entry->second[0], entry->second.size()));
+    }
+  return status;
 }
 
   }

@@ -86,6 +86,8 @@ public:
   smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasFloatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeFloatProperty(const smtk::util::UUID& entity, const std::string& propName);
+  UUIDsToFloatData& floatProperties() { return *this->m_floatData; }
+  UUIDsToFloatData const& floatProperties() const { return *this->m_floatData; }
 
   void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::String& propValue);
   void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::StringList& propValue);
@@ -93,6 +95,8 @@ public:
   smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasStringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeStringProperty(const smtk::util::UUID& entity, const std::string& propName);
+  UUIDsToStringData& stringProperties() { return *this->m_stringData; }
+  UUIDsToStringData const& stringProperties() const { return *this->m_stringData; }
 
   void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
   void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue);
@@ -100,6 +104,8 @@ public:
   smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::util::UUID& entity, const std::string& propName);
+  UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
+  UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
   smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
   smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }
