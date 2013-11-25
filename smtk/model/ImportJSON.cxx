@@ -9,11 +9,37 @@
 
 #include <string.h>
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# define snprintf _snprintf
+#endif
+
 using namespace smtk::util;
 
 // Some cJSON helpers
 namespace {
-  int cJSON_GetIntegerValue(cJSON* valItem, int& val)
+  int cJSON_GetStringValue(cJSON* valItem, std::string& val)
+    {
+    switch (valItem->type)
+      {
+    case cJSON_Number:
+        {
+        char valtext[64];
+        snprintf(valtext, 64, "%.17g", valItem->valuedouble);
+        val = valtext;
+        }
+      return 0;
+    case cJSON_String:
+      if (valItem->valuestring && valItem->valuestring[0])
+        {
+        val = valItem->valuestring;
+        return 0;
+        }
+    default:
+      break;
+      }
+    return 1;
+    }
+  int cJSON_GetIntegerValue(cJSON* valItem, long& val)
     {
     switch (valItem->type)
       {
@@ -28,7 +54,7 @@ namespace {
         // Only accept the conversion if the entire string is consumed:
         if (valItem->valuestring[0] && !*strEnd)
           {
-          val = static_cast<int>(tmp);
+          val = tmp;
           return 0;
           }
         }
@@ -61,7 +87,7 @@ namespace {
       }
     return 1;
     }
-  int cJSON_GetObjectIntegerValue(cJSON* node, const char* name, int& val)
+  int cJSON_GetObjectIntegerValue(cJSON* node, const char* name, long& val)
     {
     cJSON* valItem = cJSON_GetObjectItem(node, name);
     if (valItem)
@@ -105,7 +131,7 @@ namespace {
       cJSON* entry;
       for (entry = node->child; entry; entry = entry->next)
         {
-        int eger;
+        long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
           arr.details.push_back(eger);
@@ -154,13 +180,100 @@ namespace {
       cJSON* entry;
       for (entry = node->child; entry; entry = entry->next)
         {
-        int eger;
+        long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
           tess.conn.push_back(eger);
           ++count;
           }
         }
+      }
+    return count;
+    }
+
+  int cJSON_GetStringArray(cJSON* arrayNode, std::vector<std::string>& text)
+    {
+    int count = 0;
+    std::string val;
+    if (arrayNode->type == cJSON_Array && arrayNode->child)
+      { // We expect to be passed a node of type cJSON_Array...
+      for (cJSON* entry = arrayNode->child; entry; entry = entry->next)
+        {
+        if (cJSON_GetStringValue(entry, val) == 0)
+          {
+          text.push_back(val);
+          ++count;
+          }
+        else
+          {
+          std::cerr
+            << "Skipping node (type " << entry->type
+            << ") supposedly in string array\n";
+          }
+        }
+      }
+    else if (cJSON_GetStringValue(arrayNode, val) == 0)
+      { // ... however, we should also tolerate a single value.
+      text.push_back(val);
+      ++count;
+      }
+    return count;
+    }
+
+  int cJSON_GetIntegerArray(cJSON* arrayNode, std::vector<long>& values)
+    {
+    int count = 0;
+    long val;
+    if (arrayNode->type == cJSON_Array && arrayNode->child)
+      { // We expect to be passed a node of type cJSON_Array...
+      for (cJSON* entry = arrayNode->child; entry; entry = entry->next)
+        {
+        if (cJSON_GetIntegerValue(entry, val) == 0)
+          {
+          values.push_back(val);
+          ++count;
+          }
+        else
+          {
+          std::cerr
+            << "Skipping node (type " << entry->type
+            << ") supposedly in integer array\n";
+          }
+        }
+      }
+    else if (cJSON_GetIntegerValue(arrayNode, val) == 0)
+      { // ... however, we should also tolerate a single value.
+      values.push_back(val);
+      ++count;
+      }
+    return count;
+    }
+
+  int cJSON_GetRealArray(cJSON* arrayNode, std::vector<double>& values)
+    {
+    int count = 0;
+    double val;
+    if (arrayNode->type == cJSON_Array && arrayNode->child)
+      { // We expect to be passed a node of type cJSON_Array...
+      for (cJSON* entry = arrayNode->child; entry; entry = entry->next)
+        {
+        if (cJSON_GetRealValue(entry, val) == 0)
+          {
+          values.push_back(val);
+          ++count;
+          }
+        else
+          {
+          std::cerr
+            << "Skipping node (type " << entry->type
+            << ") supposedly in double array\n";
+          }
+        }
+      }
+    else if (cJSON_GetRealValue(arrayNode, val) == 0)
+      { // ... however, we should also tolerate a single value.
+      values.push_back(val);
+      ++count;
       }
     return count;
     }
@@ -246,6 +359,9 @@ int ImportJSON::ofStorage(
     status &= ImportJSON::ofStorageEntity(uid, curChild, model);
     status &= ImportJSON::ofStorageArrangement(uid, curChild, model);
     status &= ImportJSON::ofStorageTessellation(uid, curChild, model);
+    status &= ImportJSON::ofStorageFloatProperties(uid, curChild, model);
+    status &= ImportJSON::ofStorageStringProperties(uid, curChild, model);
+    status &= ImportJSON::ofStorageIntegerProperties(uid, curChild, model);
     }
   return status;
 }
@@ -253,8 +369,8 @@ int ImportJSON::ofStorage(
 int ImportJSON::ofStorageEntity(
   const UUID& uid, cJSON* cellRec, Storage* model)
 {
-  int dim;
-  int entityFlags;
+  long dim;
+  long entityFlags;
   int status = 0;
   status |= cJSON_GetObjectIntegerValue(cellRec, "d", dim);
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
@@ -334,6 +450,69 @@ int ImportJSON::ofStorageTessellation(
   (void)numPrims;
   //std::cout << uid << " has " << numVerts << " verts " << numPrims << " prims\n";
   return 1;
+}
+
+int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+{
+  int status = 0;
+  cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
+  if (!floatNode)
+    { // Missing floating-point property map is not an error.
+    return 1;
+    }
+  for (cJSON* floatProp = floatNode->child; floatProp; floatProp = floatProp->next)
+    {
+    if (!floatProp->string || !floatProp->string[0])
+      { // skip un-named property arrays.
+      continue;
+      }
+    FloatList propVal;
+    cJSON_GetRealArray(floatProp, propVal);
+    model->setFloatProperty(uid, floatProp->string, propVal);
+    }
+  return status ? 0 : 1;
+}
+
+int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+{
+  int status = 0;
+  cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
+  if (!stringNode)
+    { // Missing floating-point property map is not an error.
+    return 1;
+    }
+  for (cJSON* stringProp = stringNode->child; stringProp; stringProp = stringProp->next)
+    {
+    if (!stringProp->string || !stringProp->string[0])
+      { // skip un-named property arrays.
+      continue;
+      }
+    StringList propVal;
+    cJSON_GetStringArray(stringProp, propVal);
+    model->setStringProperty(uid, stringProp->string, propVal);
+    }
+  return status ? 0 : 1;
+}
+
+int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+{
+  int status = 0;
+  cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
+  if (!integerNode)
+    { // Missing floating-point property map is not an error.
+    return 1;
+    }
+  for (cJSON* integerProp = integerNode->child; integerProp; integerProp = integerProp->next)
+    {
+    if (!integerProp->string || !integerProp->string[0])
+      { // skip un-named property arrays.
+      continue;
+      }
+    IntegerList propVal;
+    cJSON_GetIntegerArray(integerProp, propVal);
+    model->setIntegerProperty(uid, integerProp->string, propVal);
+    }
+  return status ? 0 : 1;
 }
 
   }

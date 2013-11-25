@@ -11,9 +11,13 @@
 namespace smtk {
   namespace model {
 
-    typedef std::vector<std::string> StringList;
+    typedef std::string String;
+    typedef std::vector<String> StringList;
     typedef google::sparse_hash_map<std::string,StringList> StringData;
     typedef google::sparse_hash_map<smtk::util::UUID,StringData> UUIDsToStringData;
+
+    typedef UUIDsToStringData::iterator UUIDWithStringProperties;
+    typedef StringData::iterator PropertyNameWithStrings;
 
   } // namespace model
 } // namespace smtk

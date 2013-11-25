@@ -22,6 +22,9 @@ public:
   static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, Storage* model);
   static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, Storage* model);
   static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
 };
 
   } // namespace model

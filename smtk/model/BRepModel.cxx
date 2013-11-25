@@ -11,8 +11,12 @@ using smtk::util::UUIDArray;
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel()
-  : m_topology(new UUIDsToEntities), m_stringData(new UUIDsToStringData), m_deleteStorage(true)
+BRepModel::BRepModel() :
+  m_topology(new UUIDsToEntities),
+  m_floatData(new UUIDsToFloatData),
+  m_stringData(new UUIDsToStringData),
+  m_integerData(new UUIDsToIntegerData),
+  m_deleteStorage(true)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -21,8 +25,12 @@ BRepModel::BRepModel()
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete)
-    : m_topology(topology), m_stringData(new UUIDsToStringData), m_deleteStorage(shouldDelete)
+BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete) :
+  m_topology(topology),
+  m_floatData(new UUIDsToFloatData),
+  m_stringData(new UUIDsToStringData),
+  m_integerData(new UUIDsToIntegerData),
+  m_deleteStorage(shouldDelete)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
@@ -32,8 +40,6 @@ BRepModel::~BRepModel()
     delete this->m_topology;
     this->m_topology = NULL;
     }
-  // Always delete stringData (for now)
-  delete this->m_stringData;
 }
 
 /// Change whether or not we should delete storage upon our own destruction.
@@ -448,21 +454,6 @@ Entity* BRepModel::findEntity(const UUID& uid)
 }
 //@}
 
-/// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
-void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
-{
-  UUIDArray::const_iterator bit;
-  Entity* ref;
-  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
-    {
-    ref = this->findEntity(*bit);
-    if (ref)
-      {
-      ref->removeRelation(c->first);
-      }
-    }
-}
-
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
 void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
 {
@@ -478,6 +469,37 @@ void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
     }
 }
 
+/// Given an entity \a c, ensure that all of its references contain <b>no</b> reference to it.
+void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
+{
+  UUIDArray::const_iterator bit;
+  Entity* ref;
+  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+    {
+    ref = this->findEntity(*bit);
+    if (ref)
+      {
+      ref->removeRelation(c->first);
+      }
+    }
+}
+
+/// Remove an entity \a uid from storage and ensure that all of its references contain <b>no</b> reference to it.
+bool BRepModel::removeEntity(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    this->removeEntityReferences(it);
+    return true;
+    }
+  return false;
+}
+
+/**\brief Add entities (specified by their \a uids) to the given group (\a groupId).
+  *
+  * This will append \a groupId to each entity in \a uids.
+  */
 void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
 {
   UUIDWithEntity result = this->m_topology->find(groupId);
@@ -491,6 +513,234 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
     result->second.appendRelation(*it);
     }
   this->insertEntityReferences(result);
+}
+
+void BRepModel::setFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  smtk::model::Float propValue)
+{
+  smtk::model::FloatList tmp;
+  tmp.push_back(propValue);
+  this->setFloatProperty(entity, propName, tmp);
+}
+
+void BRepModel::setFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  const smtk::model::FloatList& propValue)
+{
+  if (!entity.isNull())
+    {
+    (*this->m_floatData)[entity][propName] = propValue;
+    }
+}
+
+smtk::model::FloatList const& BRepModel::floatProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  if (!entity.isNull())
+    {
+    FloatData& floats((*this->m_floatData)[entity]);
+    return floats[propName];
+    }
+  static FloatList dummy;
+  return dummy;
+}
+
+smtk::model::FloatList& BRepModel::floatProperty(
+  const smtk::util::UUID& entity, const std::string& propName)
+{
+  if (!entity.isNull())
+    {
+    FloatData& floats((*this->m_floatData)[entity]);
+    return floats[propName];
+    }
+  static FloatList dummy;
+  return dummy;
+}
+
+bool BRepModel::hasFloatProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  UUIDsToFloatData::const_iterator uit = this->m_floatData->find(entity);
+  if (uit == this->m_floatData->end())
+    {
+    return false;
+    }
+  FloatData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
+  return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeFloatProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToFloatData::iterator uit = this->m_floatData->find(entity);
+  if (uit == this->m_floatData->end())
+    {
+    return false;
+    }
+  FloatData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
+}
+
+void BRepModel::setStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  const smtk::model::String& propValue)
+{
+  smtk::model::StringList tmp;
+  tmp.push_back(propValue);
+  this->setStringProperty(entity, propName, tmp);
+}
+
+void BRepModel::setStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  const smtk::model::StringList& propValue)
+{
+  if (!entity.isNull())
+    {
+    (*this->m_stringData)[entity][propName] = propValue;
+    }
+}
+
+smtk::model::StringList const& BRepModel::stringProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  if (!entity.isNull())
+    {
+    StringData& strings((*this->m_stringData)[entity]);
+    return strings[propName];
+    }
+  static StringList dummy;
+  return dummy;
+}
+
+smtk::model::StringList& BRepModel::stringProperty(
+  const smtk::util::UUID& entity, const std::string& propName)
+{
+  if (!entity.isNull())
+    {
+    StringData& strings((*this->m_stringData)[entity]);
+    return strings[propName];
+    }
+  static StringList dummy;
+  return dummy;
+}
+
+bool BRepModel::hasStringProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
+  if (uit == this->m_stringData->end())
+    {
+    return false;
+    }
+  StringData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
+  return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeStringProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToStringData::iterator uit = this->m_stringData->find(entity);
+  if (uit == this->m_stringData->end())
+    {
+    return false;
+    }
+  StringData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
+}
+
+void BRepModel::setIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  smtk::model::Integer propValue)
+{
+  smtk::model::IntegerList tmp;
+  tmp.push_back(propValue);
+  this->setIntegerProperty(entity, propName, tmp);
+}
+
+void BRepModel::setIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName,
+  const smtk::model::IntegerList& propValue)
+{
+  if (!entity.isNull())
+    {
+    (*this->m_integerData)[entity][propName] = propValue;
+    }
+}
+
+smtk::model::IntegerList const& BRepModel::integerProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  if (!entity.isNull())
+    {
+    IntegerData& integers((*this->m_integerData)[entity]);
+    return integers[propName];
+    }
+  static IntegerList dummy;
+  return dummy;
+}
+
+smtk::model::IntegerList& BRepModel::integerProperty(
+  const smtk::util::UUID& entity, const std::string& propName)
+{
+  if (!entity.isNull())
+    {
+    IntegerData& integers((*this->m_integerData)[entity]);
+    return integers[propName];
+    }
+  static IntegerList dummy;
+  return dummy;
+}
+
+bool BRepModel::hasIntegerProperty(
+  const smtk::util::UUID& entity, const std::string& propName) const
+{
+  UUIDsToIntegerData::const_iterator uit = this->m_integerData->find(entity);
+  if (uit == this->m_integerData->end())
+    {
+    return false;
+    }
+  IntegerData::const_iterator sit = uit->second.find(propName);
+  // FIXME: Should we return true even when the array (*sit) is empty?
+  return sit == uit->second.end() ? false : true;
+}
+
+bool BRepModel::removeIntegerProperty(
+  const smtk::util::UUID& entity,
+  const std::string& propName)
+{
+  UUIDsToIntegerData::iterator uit = this->m_integerData->find(entity);
+  if (uit == this->m_integerData->end())
+    {
+    return false;
+    }
+  IntegerData::iterator sit = uit->second.find(propName);
+  if (sit == uit->second.end())
+    {
+    return false;
+    }
+  uit->second.erase(sit);
+  return true;
 }
 
   } // model namespace

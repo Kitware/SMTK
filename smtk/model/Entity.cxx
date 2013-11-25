@@ -15,6 +15,15 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
+static const char* cellNamesByDimension[] = {
+  "vertex",
+  "edge",
+  "face",
+  "volume",
+  "spacetime",
+  "mixed-dimension cell"
+};
+
 /**\class smtk::model::Entity - Store links between named entities.
   */
 
@@ -46,6 +55,28 @@ Entity::Entity(unsigned int entityFlags, int dimension)
 unsigned int Entity::entityFlags() const
 {
   return this->m_entityFlags;
+}
+
+bool Entity::setEntityFlags(unsigned int flags)
+{
+  bool allowed = false;
+  if (this->m_entityFlags == INVALID)
+    {
+    this->m_entityFlags = flags;
+    allowed = true;
+    }
+  else
+    {
+    // Only allow changes to properties, not the entity type
+    // after it has been set to something valid.
+    // Otherwise, craziness may ensue.
+    if ((flags & ANY_ENTITY) == (this->m_entityFlags & ANY_ENTITY))
+      {
+      this->m_entityFlags = flags;
+      allowed = true;
+      }
+    }
+  return allowed;
 }
 
 /**\brief Return the dimension of the associated entity.
@@ -112,6 +143,132 @@ Entity& Entity::removeRelation(const UUID& b)
       }
     }
   return *this;
+}
+
+std::string Entity::flagSummary(unsigned int flags)
+{
+  std::string result;
+  switch (flags & ENTITY_MASK)
+    {
+  case CELL_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0:
+      result = cellNamesByDimension[0];
+      break;
+    case DIMENSION_1:
+      result = cellNamesByDimension[1];
+      break;
+    case DIMENSION_2:
+      result = cellNamesByDimension[2];
+      break;
+    case DIMENSION_3:
+      result = cellNamesByDimension[3];
+      break;
+    case DIMENSION_4:
+      result = cellNamesByDimension[4];
+      break;
+    default:
+      result = cellNamesByDimension[5];
+      }
+    break;
+  case USE_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0:
+      result = "vertex use";
+      break;
+    case DIMENSION_1:
+      result = "edge use";
+      break;
+    case DIMENSION_2:
+      result = "face use";
+      break;
+    case DIMENSION_3:
+      result = "region use";
+      break;
+    case DIMENSION_4:
+      result = "spacetime region use";
+      break;
+    default:
+      result = "mixed-dimension cell use";
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0 | DIMENSION_1:
+      result = "chain";
+      break;
+    case DIMENSION_1 | DIMENSION_2:
+      result = "loop";
+      break;
+    case DIMENSION_2 | DIMENSION_3:
+      result = "shell";
+      break;
+    case 0:
+      result = "dimensionless shell";
+      break;
+    default:
+      result = "unknown-dimensionality shell";
+      }
+    break;
+  case GROUP_ENTITY:
+    if (flags & MODEL_BOUNDARY) result += "boundary ";
+    if (flags & MODEL_DOMAIN) result += "domain ";
+    result += "group";
+    if (flags & ANY_DIMENSION)
+      {
+      result += " (";
+      bool comma = false;
+      for (int i = 0; i <= 4; ++i)
+        {
+        int dim = 1 << i;
+        if (flags & dim)
+          {
+          if (comma)
+            {
+            result += ",";
+            }
+          result += cellNamesByDimension[i];
+          comma = true;
+          }
+        }
+      switch (flags & ENTITY_MASK)
+        {
+      case CELL_ENTITY:
+        result += " cells)";
+        break;
+      case USE_ENTITY:
+        result += " uses)";
+        break;
+      case SHELL_ENTITY:
+        result += " shells)";
+        break;
+      default:
+        result += " entities)";
+        break;
+        }
+      }
+    if (flags & COVER) result += " cover";
+    if (flags & PARTITION) result += " partition";
+    break;
+  case MODEL_ENTITY:
+    result = "model";
+    break;
+  case INSTANCE_ENTITY:
+    result = "instance";
+    break;
+  default:
+    result = "invalid";
+    break;
+    }
+  return result;
+}
+
+std::string Entity::flagDescription(unsigned int flags)
+{
+  return Entity::flagSummary(flags);
 }
 
   } // namespace model
