@@ -1,6 +1,6 @@
 add_executable(browseModel MACOSX_BUNDLE browseModel.cxx)
 qt4_use_modules(browseModel Core Gui)
-target_link_libraries(browseModel SMTKCore QtSMTK)
+target_link_libraries(browseModel SMTKCore SMTKCoreModelTesting QtSMTK)
 add_test(
   NAME browseModel
   COMMAND

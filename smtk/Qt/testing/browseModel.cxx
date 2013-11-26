@@ -4,17 +4,20 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/Storage.h"
+#include "smtk/model/testing/helpers.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
 #include <QtGui/QHeaderView>
 
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 
 #include <stdlib.h>
 
 using namespace std;
+using smtk::model::testing::hexconst;
 
 int main(int argc, char* argv[])
 {
@@ -50,6 +53,7 @@ int main(int argc, char* argv[])
   QTreeView* view = new QTreeView;
   view->setModel(qmodel);
   view->setItemDelegate(qdelegate);
+  cout << "mask " << hexconst(mask) << "\n";
   qmodel->setSubset(model->entitiesMatchingFlags(mask, false));
 
   // Enable user sorting.
