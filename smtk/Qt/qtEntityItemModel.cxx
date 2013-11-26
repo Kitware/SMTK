@@ -6,11 +6,46 @@
 #include "smtk/model/Storage.h"
 #include "smtk/model/StringData.h"
 
+#include <QtCore/QDir>
+#include <QtCore/QDirIterator>
+#include <QtCore/QFile>
 #include <QtCore/QVariant>
+
+#include <iomanip>
+#include <sstream>
+
+// -----------------------------------------------------------------------------
+// The following is used to ensure that the QRC file
+// containing the entity-type icons is registered.
+// This is required when building SMTK with static libraries.
+// Note that the inlined functions may *NOT* be placed inside a namespace
+// according to the Qt docs here:
+//   http://qt-project.org/doc/qt-5.0/qtcore/qdir.html#Q_INIT_RESOURCE
+static int resourceCounter = 0;
+
+inline void initIconResource()
+{
+  if (resourceCounter <= 0)
+    {
+    Q_INIT_RESOURCE(qtEntityItemModelIcons);
+    }
+  ++resourceCounter;
+}
+
+inline void cleanupIconResource()
+{
+  if (--resourceCounter == 0)
+    {
+    Q_CLEANUP_RESOURCE(qtEntityItemModelIcons);
+    }
+}
+
+// -----------------------------------------------------------------------------
 
 namespace smtk {
   namespace model {
 
+// -----------------------------------------------------------------------------
 /// A functor for sorting entity UUIDs by their entity-type bit flags.
 struct SortByEntityFlags
 {
@@ -35,6 +70,7 @@ struct SortByEntityFlags
   smtk::model::StoragePtr m_storage;
 };
 
+// -----------------------------------------------------------------------------
 /**\brief A functor for sorting entity UUIDs by a given, named property.
   *
   * The property may be a string, double, or integer according to the
@@ -96,17 +132,17 @@ struct SortByEntityProperty
   std::string m_propName;
 };
 
-  } // namespace model
-} // namespace smtk
-
+// -----------------------------------------------------------------------------
 QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* parent)
   : m_storage(model), QAbstractItemModel(parent)
 {
   this->m_deleteOnRemoval = true;
+  initIconResource();
 }
 
 QEntityItemModel::~QEntityItemModel()
 {
+  cleanupIconResource();
 }
 
 QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& parent) const
@@ -153,41 +189,73 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
 
 QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
 {
-  if (index.isValid() && role == Qt::DisplayRole)
+  if (index.isValid())
     {
     int row = index.row();
     int col = index.column();
     smtk::util::UUID uid = this->m_subset[row];
-    switch (col)
+    if (role == TitleTextRole)
       {
-    case 0:
+      if (this->m_storage->hasStringProperty(uid, "name"))
         {
-        smtk::model::Entity* link = this->m_storage->findEntity(uid);
-        if (link)
-          {
-          return QVariant(smtk::model::Entity::flagSummary(link->entityFlags()).c_str());
-          }
+        smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
+        return QVariant(names.empty() ? "" : names[0].c_str());
         }
-      break;
-    case 1:
+      return QVariant("Unnamed");
+      }
+    else if (role == SubtitleTextRole)
+      {
+      smtk::model::Entity* link = this->m_storage->findEntity(uid);
+      if (link)
         {
-        smtk::model::Entity* link = this->m_storage->findEntity(uid);
-        if (link)
-          {
-          return QVariant(link->dimension());
-          }
+        return QVariant(smtk::model::Entity::flagSummary(link->entityFlags()).c_str());
         }
-      break;
-    case 2:
+      return QVariant("missing UUID");
+      }
+    else if (role == EntityIconRole)
+      {
+      smtk::model::Entity* link = this->m_storage->findEntity(uid);
+      if (link)
         {
-        if (this->m_storage->hasStringProperty(uid, "name"))
-          {
-          smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
-          return QVariant(names.empty() ? "" : names[0].c_str());
-          }
-        return QVariant("");
+        return QVariant(
+          this->lookupIconForEntityFlags(
+            link->entityFlags()));
         }
-      break;
+      }
+    else if (role == Qt::DisplayRole)
+      {
+      switch (col)
+        {
+      case 0:
+          {
+          smtk::model::Entity* link = this->m_storage->findEntity(uid);
+          if (link)
+            {
+            return QVariant(""); // FIXME: Why is this being rendered when I set the itemdelegate on the view?
+            //return QVariant(smtk::model::Entity::flagSummary(link->entityFlags()).c_str());
+            }
+          }
+        break;
+      case 1:
+          {
+          smtk::model::Entity* link = this->m_storage->findEntity(uid);
+          if (link)
+            {
+            return QVariant(link->dimension());
+            }
+          }
+        break;
+      case 2:
+          {
+          if (this->m_storage->hasStringProperty(uid, "name"))
+            {
+            smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
+            return QVariant(names.empty() ? "" : names[0].c_str());
+            }
+          return QVariant("");
+          }
+        break;
+        }
       }
     }
   return QVariant();
@@ -334,6 +402,53 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
   return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
+QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
+{
+  std::ostringstream resourceName;
+  resourceName << ":/icons/entityTypes/";
+  bool dimBits = true;
+  switch (flags & ENTITY_MASK)
+    {
+  case CELL_ENTITY:
+    resourceName << "cell";
+    break;
+  case USE_ENTITY:
+    resourceName << "use";
+    break;
+  case SHELL_ENTITY:
+    resourceName << "shell";
+    break;
+  case GROUP_ENTITY:
+    resourceName << "group";
+    break;
+  case MODEL_ENTITY:
+    resourceName << "model";
+    break;
+  case INSTANCE_ENTITY:
+    resourceName << "instance";
+    break;
+  default:
+    resourceName << "invalid";
+    dimBits = false;
+    break;
+    }
+  if (dimBits)
+    {
+    resourceName
+      << "_"
+      << std::setbase(16) << std::fixed << std::setw(2) << std::setfill('0')
+      << (flags & ANY_DIMENSION)
+      ;
+    }
+  resourceName << ".svg";
+  QFile rsrc(resourceName.str().c_str());
+  if (!rsrc.exists())
+    { // FIXME: Replace with the path of a "generic entity" or "invalid" icon.
+    return QIcon(":/icons/entityTypes/cell_08.svg");
+    }
+  return QIcon(resourceName.str().c_str());
+}
+
 /**\brief Sort the UUIDs being displayed using the given ordered container.
   *
   * The ordered container's comparator is used to insertion-sort the UUIDs
@@ -382,3 +497,6 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
       }
     }
 }
+
+  } // namespace model
+} // namespace smtk

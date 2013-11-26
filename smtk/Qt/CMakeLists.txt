@@ -3,6 +3,7 @@ set(QAttrLibSrcs
     qtUIManager.cxx
     qtAttribute.cxx
     qtBaseView.cxx
+    qtEntityItemDelegate.cxx
     qtEntityItemModel.cxx
     qtGroupView.cxx
     qtRootView.cxx
@@ -33,6 +34,7 @@ set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
     qtBaseView.h
+    qtEntityItemDelegate.h
     qtEntityItemModel.h
     qtGroupView.h
     qtRootView.h

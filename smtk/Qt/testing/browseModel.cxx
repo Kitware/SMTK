@@ -1,3 +1,4 @@
+#include "smtk/Qt/qtEntityItemDelegate.h"
 #include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/ImportJSON.h"
@@ -44,9 +45,11 @@ int main(int argc, char* argv[])
   smtk::model::StoragePtr model = smtk::model::Storage::New();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
 
-  QEntityItemModel* qmodel = new QEntityItemModel(model);
+  smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel(model);
+  smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
   QTreeView* view = new QTreeView;
   view->setModel(qmodel);
+  view->setItemDelegate(qdelegate);
   qmodel->setSubset(model->entitiesMatchingFlags(mask, false));
 
   // Enable user sorting.
@@ -57,5 +60,10 @@ int main(int argc, char* argv[])
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
   std::cout << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+
+  delete view;
+  delete qmodel;
+  delete qdelegate;
+
   return status;
 }

@@ -2,10 +2,15 @@
 #define __smtk_qt_qtEntityItemModel_h
 
 #include "QAbstractItemModel"
+#include "QIcon"
 
+#include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/QtSMTKExports.h" // For EXPORT macro.
 #include "smtk/util/UUID.h"
+
+namespace smtk {
+  namespace model {
 
 class QTSMTK_EXPORT QEntityItemModel : public QAbstractItemModel
 {
@@ -14,12 +19,19 @@ public:
   QEntityItemModel(smtk::model::StoragePtr model, QObject* parent = 0);
   virtual ~QEntityItemModel();
 
+  /// Enumeration of model-specific data roles.
+  enum DataRoles {
+    TitleTextRole       = Qt::UserRole + 100, //!< Entity name (user-editable)
+    SubtitleTextRole    = Qt::UserRole + 101, //!< Entity type description
+    EntityIconRole      = Qt::UserRole + 102  //!< Entity type icon
+  };
+
   virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;
   virtual QModelIndex parent(const QModelIndex& child) const;
   virtual bool hasChildren(const QModelIndex& parent) const;
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const;
-  int columnCount(const QModelIndex& parent = QModelIndex()) const { return 3; }
+  int columnCount(const QModelIndex& parent = QModelIndex()) const { return 1; }
 
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
@@ -50,6 +62,8 @@ public:
     this->m_deleteOnRemoval = del;
     }
 
+  static QIcon lookupIconForEntityFlags(unsigned long flags);
+
 protected:
   smtk::model::StoragePtr m_storage;
   smtk::util::UUIDArray m_subset; // *ordered* subset of m_storage being presented
@@ -60,5 +74,8 @@ protected:
   void sortDataWithContainer(T& sorter, Qt::SortOrder order);
 private:
 };
+
+  } // namespace model
+} // namespace smtk
 
 #endif // __smtk_qt_qtEntityItemModel_h
