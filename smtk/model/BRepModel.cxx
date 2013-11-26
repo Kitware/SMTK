@@ -16,7 +16,8 @@ BRepModel::BRepModel() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(true)
+  m_deleteStorage(true),
+  m_modelCount(1)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -30,7 +31,8 @@ BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete) :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(shouldDelete)
+  m_deleteStorage(shouldDelete),
+  m_modelCount(1)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
@@ -741,6 +743,158 @@ bool BRepModel::removeIntegerProperty(
     }
   uit->second.erase(sit);
   return true;
+}
+
+smtk::util::UUID BRepModel::addModel(
+  int parametricDim, int embeddingDim, const std::string& name)
+{
+  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
+  if (embeddingDim > 0)
+    {
+    this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
+    }
+  std::string tmpName(name);
+  if (tmpName.empty())
+    {
+    std::ostringstream defaultName;
+    defaultName << "Model ";
+    int count = this->m_modelCount++;
+    char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
+    int i;
+    for (i = 0; count > 0 && i < 7; ++i)
+      {
+      --count;
+      hexavigesimal[i] = 'A' + count % 26;
+      count /= 26;
+      }
+    for (--i; i >= 0; --i)
+      {
+      defaultName << hexavigesimal[i];
+      }
+    tmpName = defaultName.str();
+    }
+  this->setStringProperty(uid, "name", tmpName);
+  // New models keep counters indicating their local entity counters
+  Integer topoCountsData[] = {0, 0, 0, 0, 0, 0};
+  Integer groupCountsData[] = {0, 0, 0};
+  Integer otherCountsData[] = {0};
+  IntegerList topoCounts(
+    topoCountsData,
+    topoCountsData + sizeof(topoCountsData)/sizeof(topoCountsData[0]));
+  IntegerList groupCounts(
+    groupCountsData,
+    groupCountsData + sizeof(groupCountsData)/sizeof(groupCountsData[0]));
+  IntegerList otherCounts(
+    otherCountsData,
+    otherCountsData + sizeof(otherCountsData)/sizeof(otherCountsData[0]));
+  this->setIntegerProperty(uid, "cell_counters", topoCounts);
+  this->setIntegerProperty(uid, "use_counters", topoCounts);
+  this->setIntegerProperty(uid, "shell_counters", topoCounts);
+  this->setIntegerProperty(uid, "group_counters", groupCounts);
+  this->setIntegerProperty(uid, "model_counters", otherCounts);
+  this->setIntegerProperty(uid, "instance_counters", otherCounts);
+  this->setIntegerProperty(uid, "invalid_counters", otherCounts);
+  return uid;
+}
+
+/// Attempt to find a model owning the given entity.
+smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    unsigned int entityFlags = it->second.entityFlags();
+    int dim;
+    smtk::util::UUIDs uids;
+    uids.insert(uid);
+    for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
+      {
+      for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
+        {
+        Entity* bordEnt = this->findEntity(*uit);
+        if (!bordEnt) continue;
+        for (smtk::util::UUIDArray::iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
+          {
+          Entity* relEnt = this->findEntity(*rit);
+          if (relEnt && (relEnt->entityFlags() & MODEL_ENTITY))
+            {
+            return *rit;
+            }
+          }
+        }
+      // FIXME: This is slow. Avoid calling bordantEntities().
+      uids = this->bordantEntities(uids, dim + 1);
+      }
+    }
+  return smtk::util::UUID::null();
+}
+
+void BRepModel::assignDefaultNames()
+{
+  UUIDWithEntity it;
+  for (it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+    {
+    if (!this->hasStringProperty(it->first, "name"))
+      {
+      this->assignDefaultName(it->first, it->second.entityFlags());
+      }
+    }
+}
+
+std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    return this->assignDefaultName(it->first, it->second.entityFlags());
+    }
+  return std::string();
+}
+
+std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, unsigned int entityFlags)
+{
+  IntegerList& counts(
+    this->entityCounts(
+      this->modelOwningEntity(uid),
+      entityFlags));
+  std::string defaultName =
+    counts.empty() ?
+    this->shortUUIDName(uid, entityFlags) :
+    Entity::defaultNameFromCounters(entityFlags, counts);
+  this->setStringProperty(uid, "name", defaultName);
+  return defaultName;
+}
+
+std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, unsigned int entityFlags)
+{
+  std::string name = Entity::flagSummaryHelper(entityFlags);
+  name += "..";
+  std::string uidStr = uid.toString();
+  name += uidStr.substr(uidStr.size() - 4);
+  return name;
+}
+
+IntegerList& BRepModel::entityCounts(
+  const smtk::util::UUID& modelId, unsigned int entityFlags)
+{
+  switch (entityFlags & ENTITY_MASK)
+    {
+  case CELL_ENTITY:
+    return this->integerProperty(modelId, "cell_counters");
+  case USE_ENTITY:
+    return this->integerProperty(modelId, "use_counters");
+  case SHELL_ENTITY:
+    return this->integerProperty(modelId, "shell_counters");
+  case GROUP_ENTITY:
+    return this->integerProperty(modelId, "group_counters");
+  case MODEL_ENTITY:
+    return this->integerProperty(modelId, "model_counters");
+  case INSTANCE_ENTITY:
+    return this->integerProperty(modelId, "instance_counters");
+  default:
+    break;
+    }
+  return this->integerProperty(modelId, "invalid_counters");
 }
 
   } // model namespace

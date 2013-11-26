@@ -145,7 +145,8 @@ Entity& Entity::removeRelation(const UUID& b)
   return *this;
 }
 
-std::string Entity::flagSummary(unsigned int flags)
+// If you change this, you may need to change flagSummmary/flagDescription/defaultNameFromCounters
+std::string Entity::flagSummaryHelper(unsigned int flags)
 {
   std::string result;
   switch (flags & ENTITY_MASK)
@@ -206,6 +207,10 @@ std::string Entity::flagSummary(unsigned int flags)
     case DIMENSION_2 | DIMENSION_3:
       result = "shell";
       break;
+    case DIMENSION_3 | DIMENSION_4:
+      // a spacetime region with no volumetric boundary
+      result = "timeloop";
+      break;
     case 0:
       result = "dimensionless shell";
       break;
@@ -217,6 +222,27 @@ std::string Entity::flagSummary(unsigned int flags)
     if (flags & MODEL_BOUNDARY) result += "boundary ";
     if (flags & MODEL_DOMAIN) result += "domain ";
     result += "group";
+    break;
+  case MODEL_ENTITY:
+    result = "model";
+    break;
+  case INSTANCE_ENTITY:
+    result = "instance";
+    break;
+  default:
+    result = "invalid";
+    break;
+    }
+  return result;
+}
+
+// If you change this, you may also need to change flagDescription/defaultNameForCount below.
+std::string Entity::flagSummary(unsigned int flags)
+{
+  std::string result = flagSummaryHelper(flags);
+  // Add some extra information about groups.
+  if ((flags & ENTITY_MASK) == GROUP_ENTITY)
+    {
     if (flags & ANY_DIMENSION)
       {
       result += " (";
@@ -252,23 +278,102 @@ std::string Entity::flagSummary(unsigned int flags)
       }
     if (flags & COVER) result += " cover";
     if (flags & PARTITION) result += " partition";
-    break;
-  case MODEL_ENTITY:
-    result = "model";
-    break;
-  case INSTANCE_ENTITY:
-    result = "instance";
-    break;
-  default:
-    result = "invalid";
-    break;
     }
   return result;
 }
 
 std::string Entity::flagDescription(unsigned int flags)
 {
+  // TODO: Eventually this should return a markdown-formatted
+  // description documenting the entity type.
+  // Example (for CELL_ENTITY | DIMENSION_0):
+  //
+  // A **vertex** is a cell of dimension 0 that corresponds to
+  // a single point in space in the embedding dimension of its
+  // containing model. It has no parametric coordinates.
+  // Vertices are used as boundary endpoints of vertex chains
+  // which define edges.
   return Entity::flagSummary(flags);
+}
+
+// If you change this, you may need to change flagSummmary/flagDescription above
+std::string Entity::defaultNameFromCounters(unsigned int flags, IntegerList& counters)
+{
+  std::ostringstream name;
+  name << Entity::flagSummaryHelper(flags) << " ";
+  switch (flags & ENTITY_MASK)
+    {
+  case CELL_ENTITY:
+  case USE_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0:
+      name << counters[0]++;
+      break;
+    case DIMENSION_1:
+      name << counters[1]++;
+      break;
+    case DIMENSION_2:
+      name << counters[2]++;
+      break;
+    case DIMENSION_3:
+      name << counters[3]++;
+      break;
+    case DIMENSION_4:
+      name << counters[4]++;
+      break;
+    default:
+      name << counters[5]++;
+      break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0 | DIMENSION_1:
+      name << counters[0]++;
+      break;
+    case DIMENSION_1 | DIMENSION_2:
+      name << counters[1]++;
+      break;
+    case DIMENSION_2 | DIMENSION_3:
+      name << counters[2]++;
+      break;
+    case DIMENSION_3 | DIMENSION_4:
+      name << counters[3]++;
+      break;
+    case 0:
+      name << counters[4]++;
+      break;
+    default:
+      name << counters[5]++;
+      }
+    break;
+  case GROUP_ENTITY:
+    if (
+      (((flags & MODEL_BOUNDARY) != 0) xor
+       ((flags & MODEL_DOMAIN) != 0)) == 0)
+      {
+      name << counters[0]++;
+      }
+    else if (flags & MODEL_DOMAIN)
+      {
+      name << counters[1]++;
+      }
+    else // if (flags & MODEL_BOUNDARY)
+      {
+      name << counters[2]++;
+      }
+    break;
+  case MODEL_ENTITY:
+    name << counters[0]++;
+    break;
+  case INSTANCE_ENTITY:
+  default:
+    name << counters[0]++;
+    break;
+    }
+  return name.str();
 }
 
   } // namespace model

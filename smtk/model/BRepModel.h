@@ -119,6 +119,14 @@ public:
     this->setStringProperty(uid, "name", name);
     return uid;
     }
+  smtk::util::UUID addModel(
+    int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
+
+  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
+
+  void assignDefaultNames();
+  std::string assignDefaultName(const smtk::util::UUID& uid);
+  static std::string shortUUIDName(const smtk::util::UUID& uid, unsigned int entityFlags);
 
 protected:
   UUIDsToEntities* m_topology;
@@ -126,6 +134,10 @@ protected:
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   bool m_deleteStorage;
+  int m_modelCount;
+
+  std::string assignDefaultName(const smtk::util::UUID& uid, unsigned int entityFlags);
+  IntegerList& entityCounts(const smtk::util::UUID& modelId, unsigned int entityFlags);
 };
 
   } // model namespace

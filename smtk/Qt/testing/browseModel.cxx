@@ -47,6 +47,7 @@ int main(int argc, char* argv[])
 
   smtk::model::StoragePtr model = smtk::model::Storage::New();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
+  model->assignDefaultNames();
 
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel(model);
   smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;

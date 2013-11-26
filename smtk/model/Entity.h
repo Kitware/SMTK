@@ -3,6 +3,7 @@
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
+#include "smtk/model/IntegerData.h" // for IntegerList
 #include "smtk/util/SystemConfig.h"
 
 #include <map>
@@ -33,8 +34,10 @@ public:
   Entity& appendRelation(const smtk::util::UUID& b);
   Entity& removeRelation(const smtk::util::UUID& b);
 
+  static std::string flagSummaryHelper(unsigned int entityFlags);
   static std::string flagSummary(unsigned int entityFlags);
   static std::string flagDescription(unsigned int entityFlags);
+  static std::string defaultNameFromCounters(unsigned int entityFlags, IntegerList& counters);
 
 protected:
   unsigned int m_entityFlags;

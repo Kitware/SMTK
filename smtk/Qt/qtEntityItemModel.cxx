@@ -39,7 +39,6 @@ inline void cleanupIconResource()
     Q_CLEANUP_RESOURCE(qtEntityItemModelIcons);
     }
 }
-
 // -----------------------------------------------------------------------------
 
 namespace smtk {
@@ -201,7 +200,9 @@ QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
         smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
         return QVariant(names.empty() ? "" : names[0].c_str());
         }
-      return QVariant("Unnamed");
+      // Materialize a name from the UUID
+      return QVariant(
+        this->m_storage->assignDefaultName(uid).c_str());
       }
     else if (role == SubtitleTextRole)
       {

@@ -55,6 +55,25 @@ int main(int argc, char* argv[])
   assert(sm.stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
   assert(sm.stringProperty(uids[21], "name").size() == 1); // Test length of reset property.
 
+  // Test addModel
+  for (int i = 0; i < 53; ++i)
+    {
+    uids.push_back(sm.addModel());
+    assert(sm.hasIntegerProperty(uids.back(), "cell_counters"));
+    assert(sm.hasStringProperty(uids.back(), "name"));
+    }
+  sm.findEntity(uids[21])->relations().push_back(uids[22]);
+  // Correct computation of hexavigesimal name strings:
+  assert(sm.stringProperty(uids[22], "name")[0] == "Model A");
+  assert(sm.stringProperty(uids[48], "name")[0] == "Model AA");
+  assert(sm.stringProperty(uids[74], "name")[0] == "Model BA");
+
+  sm.assignDefaultNames();
+  // Verify we don't overwrite existing names
+  assert(sm.stringProperty(uids[21], "name")[0] == "Tetrahedron");
+  // Verify we do give everything a name
+  assert(sm.hasStringProperty(uids[11], "name"));
+
   cJSON* root = cJSON_CreateObject();
   ExportJSON::fromModel(root, &sm);
   cJSON_AddItemToObject(root, "nodes", ExportJSON::fromUUIDs(nodes));
