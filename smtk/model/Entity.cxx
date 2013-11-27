@@ -131,8 +131,8 @@ Entity& Entity::appendRelation(const UUID& b)
 Entity& Entity::removeRelation(const UUID& b)
 {
   UUIDArray& arr(this->m_relations);
-  unsigned int size = arr.size();
-  unsigned int curr;
+  UUIDArray::size_type size = arr.size();
+  UUIDArray::size_type curr;
   for (curr = 0; curr < size; ++curr)
     {
     if (arr[curr] == b)
