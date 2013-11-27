@@ -1,7 +1,7 @@
 ################################################################################
 # Make a library of some utility functions for tests to use:
 ################################################################################
-add_library(SMTKCoreModelTesting helpers.cxx)
+add_library(SMTKCoreModelTesting STATIC helpers.cxx)
 smtk_public_headers(helpers.h)
 target_link_libraries(SMTKCoreModelTesting LINK_PRIVATE SMTKCore)
 smtk_install_library(SMTKCoreModelTesting)
