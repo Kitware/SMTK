@@ -4,9 +4,10 @@
 #include "QAbstractItemModel"
 
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/QtSMTKExports.h" // For EXPORT macro.
 #include "smtk/util/UUID.h"
 
-class QEntityItemModel : public QAbstractItemModel
+class QTSMTK_EXPORT QEntityItemModel : public QAbstractItemModel
 {
   Q_OBJECT
 public:
