@@ -4,6 +4,7 @@
 add_library(SMTKCoreModelTesting helpers.cxx)
 smtk_public_headers(helpers.h)
 target_link_libraries(SMTKCoreModelTesting LINK_PRIVATE SMTKCore)
+smtk_install_library(SMTKCoreModelTesting)
 
 ################################################################################
 # Tests
