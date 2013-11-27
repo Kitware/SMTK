@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
   for (int i = 0; i < numHits; ++i)
     {
     Entity* ent = sm->findEntity(it->second.relations().front());
+    (void)ent;
     do
       ++it;
     while (it != sm->topology().end() && it->second.relations().empty());

@@ -803,7 +803,6 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
-    unsigned int entityFlags = it->second.entityFlags();
     int dim;
     smtk::util::UUIDs uids;
     uids.insert(uid);
