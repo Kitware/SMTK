@@ -304,43 +304,61 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
 bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
   bool didChange = false;
-  if(index.isValid() && role == Qt::EditRole)
+  if(index.isValid())
     {
     smtk::model::Entity* entity;
     int row = index.row();
     int col = index.column();
-    switch (col)
+    if (role == TitleTextRole)
       {
-    case 0:
-      entity = this->m_storage->findEntity(this->m_subset[row]);
-      if (entity)
+      std::string sval = value.value<QString>().toStdString();
+      if (sval.size())
         {
-        didChange = entity->setEntityFlags(value.value<int>());
+        this->m_storage->setStringProperty(
+          this->m_subset[row], "name", sval);
+        didChange = true;
         }
-      break;
-    case 1:
-      // FIXME: No way to change dimension yet.
-      break;
-    case 2:
+      else
         {
-        std::string sval = value.value<QString>().toStdString();
-        if (sval.size())
-          {
-          this->m_storage->setStringProperty(
-            this->m_subset[row], "name", sval);
-          didChange = true;
-          }
-        else
-          {
-          didChange = this->m_storage->removeStringProperty(
-            this->m_subset[row], "name");
-          }
+        didChange = this->m_storage->removeStringProperty(
+          this->m_subset[row], "name");
         }
-      break;
       }
-    if (didChange)
+    else if (role == Qt::EditRole)
       {
-      emit(dataChanged(index, index));
+      switch (col)
+        {
+      case 0:
+        entity = this->m_storage->findEntity(this->m_subset[row]);
+        if (entity)
+          {
+          didChange = entity->setEntityFlags(value.value<int>());
+          }
+        break;
+      case 1:
+        // FIXME: No way to change dimension yet.
+        break;
+      case 2:
+          {
+          std::string sval = value.value<QString>().toStdString();
+          if (sval.size())
+            {
+            this->m_storage->setStringProperty(
+              this->m_subset[row], "name", sval);
+            didChange = true;
+            }
+          else
+            {
+            didChange = this->m_storage->removeStringProperty(
+              this->m_subset[row], "name");
+            }
+          }
+        break;
+        }
+      if (didChange)
+        {
+        emit(dataChanged(index, index));
+        }
       }
     }
   return didChange;
@@ -356,7 +374,6 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
       this->sortDataWithContainer(sorter, order);
       }
     break;
-  case 0:
   case 1:
       {
       smtk::model::SortByEntityFlags comparator(this->m_storage);
@@ -365,6 +382,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
       this->sortDataWithContainer(sorter, order);
       }
     break;
+  case 0:
   case 2:
       {
       smtk::model::SortByEntityProperty<

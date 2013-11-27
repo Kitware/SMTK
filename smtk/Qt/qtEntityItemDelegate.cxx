@@ -1,6 +1,7 @@
 #include "smtk/Qt/qtEntityItemDelegate.h"
 
 #include "smtk/Qt/qtEntityItemModel.h"
+#include "smtk/Qt/qtEntityItemEditor.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -94,13 +95,24 @@ QWidget* QEntityItemDelegate::createEditor(
   const QStyleOptionViewItem& option,
   const QModelIndex &index) const
 {
-  return NULL;
+  smtk::model::QEntityItemEditor* editor = new QEntityItemEditor(parent);
+  QObject::connect(
+    editor, SIGNAL(editingFinished()),
+    this, SLOT(commitAndCloseEditor()));
+  return editor;
 }
 
 void QEntityItemDelegate::setEditorData(
   QWidget* editor,
   const QModelIndex& index) const
 {
+  smtk::model::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::model::QEntityItemEditor*>(editor);
+  if (entityEditor)
+    {
+    entityEditor->setTitle(index.data(QEntityItemModel::TitleTextRole).toString());
+    // TODO: editor should also allow adjusting entity type?
+    }
 }
 
 void QEntityItemDelegate::setModelData(
@@ -108,10 +120,22 @@ void QEntityItemDelegate::setModelData(
   QAbstractItemModel* model,
   const QModelIndex &index) const
 {
+  smtk::model::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::model::QEntityItemEditor*>(editor);
+  if (entityEditor)
+    {
+    // TODO: editor should also allow adjusting entity type?
+    model->setData(
+      index, entityEditor->title(), QEntityItemModel::TitleTextRole);
+    }
 }
 
 void QEntityItemDelegate::commitAndCloseEditor()
 {
+  smtk::model::QEntityItemEditor* entityEditor =
+    qobject_cast<smtk::model::QEntityItemEditor*>(sender());
+  emit commitData(entityEditor);
+  emit closeEditor(entityEditor);
 }
 
   } // namespace model
