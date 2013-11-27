@@ -59,7 +59,7 @@ namespace smtk
       void setNumberOfRequiredValues(int esize);
 
       bool hasValueLabels() const
-      {return this->m_valueLabels.size();}
+      {return !this->m_valueLabels.empty();}
 
       void setValueLabel(int element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
