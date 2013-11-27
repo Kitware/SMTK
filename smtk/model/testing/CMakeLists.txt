@@ -13,6 +13,10 @@ add_executable(unitStorage unitStorage.cxx)
 target_link_libraries(unitStorage SMTKCore SMTKCoreModelTesting)
 add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
+add_executable(unitCursor unitCursor.cxx)
+target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)
+add_test(unitCursor ${EXECUTABLE_OUTPUT_PATH}/unitCursor)
+
 add_executable(unitImportExportJSON unitImportExportJSON.cxx)
 target_link_libraries(unitImportExportJSON SMTKCore)
 add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON

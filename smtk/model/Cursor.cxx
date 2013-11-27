@@ -45,7 +45,7 @@ smtk::util::UUID Cursor::entity()
   return this->m_entity;
 }
 
-int Cursor::dimension()
+int Cursor::dimension() const
 {
   if (this->m_storage && !this->m_entity.isNull())
     {
@@ -58,7 +58,7 @@ int Cursor::dimension()
   return -1;
 }
 
-int Cursor::dimensionBits()
+int Cursor::dimensionBits() const
 {
   if (this->m_storage && !this->m_entity.isNull())
     {
@@ -71,7 +71,7 @@ int Cursor::dimensionBits()
   return 0;
 }
 
-BitFlags Cursor::entityFlags()
+BitFlags Cursor::entityFlags() const
 {
   if (this->m_storage && !this->m_entity.isNull())
     {
@@ -82,6 +82,252 @@ BitFlags Cursor::entityFlags()
       }
     }
   return 0;
+}
+
+void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::util::UUIDs& uids)
+{
+  for (smtk::util::UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
+    {
+    result.insert(Cursor(storage, *it));
+    }
+}
+
+Cursors Cursor::bordantEntities(int ofDimension)
+{
+  Cursors result;
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    smtk::util::UUIDs uids = this->m_storage->bordantEntities(
+      this->m_entity, ofDimension);
+    CursorsFromUUIDs(result, this->m_storage, uids);
+    }
+  return result;
+}
+
+Cursors Cursor::boundaryEntities(int ofDimension)
+{
+  Cursors result;
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    smtk::util::UUIDs uids = this->m_storage->boundaryEntities(
+      this->m_entity, ofDimension);
+    CursorsFromUUIDs(result, this->m_storage, uids);
+    }
+  return result;
+}
+
+Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
+{
+  Cursors result;
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    smtk::util::UUIDs uids = this->m_storage->lowerDimensionalBoundaries(
+      this->m_entity, lowerDimension);
+    CursorsFromUUIDs(result, this->m_storage, uids);
+    }
+  return result;
+}
+
+Cursors Cursor::higherDimensionalBordants(int higherDimension)
+{
+  Cursors result;
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    smtk::util::UUIDs uids = this->m_storage->higherDimensionalBordants(
+      this->m_entity, higherDimension);
+    CursorsFromUUIDs(result, this->m_storage, uids);
+    }
+  return result;
+}
+
+Cursors Cursor::adjacentEntities(int ofDimension)
+{
+  Cursors result;
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    smtk::util::UUIDs uids = this->m_storage->adjacentEntities(
+      this->m_entity, ofDimension);
+    CursorsFromUUIDs(result, this->m_storage, uids);
+    }
+  return result;
+}
+
+void Cursor::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setFloatProperty(this->m_entity, propName, propValue);
+    }
+}
+
+void Cursor::setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setFloatProperty(this->m_entity, propName, propValue);
+    }
+}
+
+smtk::model::FloatList const& Cursor::floatProperty(const std::string& propName) const
+{
+  return this->m_storage->floatProperty(this->m_entity, propName);
+}
+
+smtk::model::FloatList& Cursor::floatProperty(const std::string& propName)
+{
+  return this->m_storage->floatProperty(this->m_entity, propName);
+}
+
+bool Cursor::hasFloatProperty(const std::string& propName) const
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->hasFloatProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+bool Cursor::removeFloatProperty(const std::string& propName)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->removeFloatProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+FloatData& Cursor::floatProperties()
+{
+  return this->m_storage->floatProperties().find(this->m_entity)->second;
+}
+
+FloatData const& Cursor::floatProperties() const
+{
+  return this->m_storage->floatProperties().find(this->m_entity)->second;
+}
+
+
+void Cursor::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setStringProperty(this->m_entity, propName, propValue);
+    }
+}
+
+void Cursor::setStringProperty(const std::string& propName, const smtk::model::StringList& propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setStringProperty(this->m_entity, propName, propValue);
+    }
+}
+
+smtk::model::StringList const& Cursor::stringProperty(const std::string& propName) const
+{
+  return this->m_storage->stringProperty(this->m_entity, propName);
+}
+
+smtk::model::StringList& Cursor::stringProperty(const std::string& propName)
+{
+  return this->m_storage->stringProperty(this->m_entity, propName);
+}
+
+bool Cursor::hasStringProperty(const std::string& propName) const
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->hasStringProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+bool Cursor::removeStringProperty(const std::string& propName)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->removeStringProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+StringData& Cursor::stringProperties()
+{
+  return this->m_storage->stringProperties().find(this->m_entity)->second;
+}
+
+StringData const& Cursor::stringProperties() const
+{
+  return this->m_storage->stringProperties().find(this->m_entity)->second;
+}
+
+
+void Cursor::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setIntegerProperty(this->m_entity, propName, propValue);
+    }
+}
+
+void Cursor::setIntegerProperty(const std::string& propName, const smtk::model::IntegerList& propValue)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    this->m_storage->setIntegerProperty(this->m_entity, propName, propValue);
+    }
+}
+
+smtk::model::IntegerList const& Cursor::integerProperty(const std::string& propName) const
+{
+  return this->m_storage->integerProperty(this->m_entity, propName);
+}
+
+smtk::model::IntegerList& Cursor::integerProperty(const std::string& propName)
+{
+  return this->m_storage->integerProperty(this->m_entity, propName);
+}
+
+bool Cursor::hasIntegerProperty(const std::string& propName) const
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->hasIntegerProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+bool Cursor::removeIntegerProperty(const std::string& propName)
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    return this->m_storage->removeIntegerProperty(this->m_entity, propName);
+    }
+  return false;
+}
+
+IntegerData& Cursor::integerProperties()
+{
+  return this->m_storage->integerProperties().find(this->m_entity)->second;
+}
+
+IntegerData const& Cursor::integerProperties() const
+{
+  return this->m_storage->integerProperties().find(this->m_entity)->second;
+}
+
+
+bool Cursor::operator < (const Cursor& other) const
+{
+  if (this->m_storage < other.m_storage)
+    {
+    return true;
+    }
+  else if (other.m_storage < this->m_storage)
+    {
+    return false;
+    }
+  return this->m_entity < other.m_entity;
 }
 
   } // namespace model
