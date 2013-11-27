@@ -27,6 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_util_Logger_h
 #define __smtk_util_Logger_h
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/util/SystemConfig.h"
 #include <string>
 #include <sstream>
 #include <vector>

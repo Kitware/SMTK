@@ -2,6 +2,7 @@
 #define __smtk_util_UUID_h
 
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/util/SystemConfig.h"
 #include "smtk/HashFunctor.h"
 
 #include <boost/uuid/uuid.hpp>
