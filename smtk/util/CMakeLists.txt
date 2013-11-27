@@ -19,6 +19,7 @@ set(utilHeaders
   UUID.h
   XmlDocV1Parser.h
   XmlV1StringWriter.h
+  SystemConfig.h
   )
 
 #Install headers
