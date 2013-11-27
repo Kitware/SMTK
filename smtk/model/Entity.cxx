@@ -351,7 +351,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     break;
   case GROUP_ENTITY:
     if (
-      (((flags & MODEL_BOUNDARY) != 0) xor
+      (((flags & MODEL_BOUNDARY) != 0) ^
        ((flags & MODEL_DOMAIN) != 0)) == 0)
       {
       name << counters[0]++;
