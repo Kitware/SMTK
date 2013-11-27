@@ -89,7 +89,7 @@ namespace smtk
       smtk::attribute::ItemPtr item(int ith) const
       {
         return (ith < 0) ? smtk::attribute::ItemPtr() :
-          (ith >= this->m_items.size() ?
+          (static_cast<unsigned int>(ith) >= this->m_items.size() ?
            smtk::attribute::ItemPtr() : this->m_items[ith]);
       }
 
