@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_model_GridInfo2D_h
 
 #include "GridInfo.h"
+#include "smtk/util/SystemConfig.h"
 
 #include <vector>
 

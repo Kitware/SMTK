@@ -2,6 +2,7 @@
 #define __smtk_model_Tessellation_h
 
 #include "smtk/util/UUID.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "sparsehash/sparse_hash_map"
 
