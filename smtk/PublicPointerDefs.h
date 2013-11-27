@@ -35,7 +35,7 @@ namespace smtk
 {
   namespace model
   {
-    struct Arrangement;
+    class Arrangement;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -47,7 +47,7 @@ namespace smtk
     class Model;
     class Storage;
     class ModelDomainItem;
-    struct Tessellation;
+    class Tessellation;
   }
 
   namespace attribute

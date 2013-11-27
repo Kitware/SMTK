@@ -44,9 +44,16 @@ SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
   *
   * See the documentation of ArrangementKind for specifics.
   */
-struct SMTKCORE_EXPORT Arrangement
+class SMTKCORE_EXPORT Arrangement
 {
-  std::vector<int> details; // Kind-dependent specification of the arrangement.
+public:
+  std::vector<int>& details()
+    { return this->m_details; }
+  std::vector<int> const& details() const
+    { return this->m_details; }
+
+protected:
+  std::vector<int> m_details; // Kind-dependent specification of the arrangement.
 };
 
 /// A vector of Arrangements is associated to each Storage entity.

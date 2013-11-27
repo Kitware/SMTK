@@ -134,7 +134,7 @@ namespace {
         long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
-          arr.details.push_back(eger);
+          arr.details().push_back(eger);
           ++count;
           }
         }
@@ -148,18 +148,18 @@ namespace {
       return 0;
       }
     int count = 0;
-    tess.coords.clear();
+    tess.coords().clear();
     if (node->type == cJSON_Array)
       {
       int numEntries = cJSON_GetArraySize(node);
-      tess.coords.reserve(numEntries);
+      tess.coords().reserve(numEntries);
       cJSON* entry;
       for (entry = node->child; entry; entry = entry->next)
         {
         double coord;
         if (cJSON_GetRealValue(entry, coord) == 0)
           {
-          tess.coords.push_back(coord);
+          tess.coords().push_back(coord);
           ++count;
           }
         }
@@ -174,7 +174,7 @@ namespace {
       return 0;
       }
     int count = 0;
-    tess.conn.clear();
+    tess.conn().clear();
     if (node->type == cJSON_Array)
       {
       cJSON* entry;
@@ -183,7 +183,7 @@ namespace {
         long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
-          tess.conn.push_back(eger);
+          tess.conn().push_back(eger);
           ++count;
           }
         }

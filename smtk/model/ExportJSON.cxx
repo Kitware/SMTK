@@ -165,8 +165,11 @@ int ExportJSON::forStorageArrangement(
       Arrangements::iterator ait;
       for (ait = arr.begin(); ait != arr.end(); ++ait)
         {
-        cJSON_AddItemToArray(kindNode,
-          cJSON_CreateIntArray(&(ait->details[0]), ait->details.size()));
+        if (!ait->details().empty())
+          {
+          cJSON_AddItemToArray(kindNode,
+            cJSON_CreateIntArray(&(ait->details()[0]), ait->details().size()));
+          }
         }
       }
     }
@@ -179,7 +182,7 @@ int ExportJSON::forStorageTessellation(
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
   if (
     tessIt == model->tessellations().end() ||
-    tessIt->second.coords.empty()
+    tessIt->second.coords().empty()
     )
     { // No tessellation? Not a problem.
     return 1;
@@ -199,11 +202,11 @@ int ExportJSON::forStorageTessellation(
   //cJSON_AddItemToObject(tess, "3js", meta);
   cJSON_AddItemToObject(tess, "metadata", fmt);
   cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(
-      &tessIt->second.coords[0],
-      tessIt->second.coords.size()));
+      &tessIt->second.coords()[0],
+      tessIt->second.coords().size()));
   cJSON_AddItemToObject(tess, "faces", cJSON_CreateIntArray(
-      tessIt->second.conn.empty() ? NULL : &tessIt->second.conn[0],
-      tessIt->second.conn.size()));
+      tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
+      tessIt->second.conn().size()));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }
