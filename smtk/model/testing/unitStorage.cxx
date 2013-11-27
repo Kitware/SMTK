@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
   UUIDArray uids = createTet(sm);
 
-  unsigned int uc00Flags = sm.findEntity(uids[00])->entityFlags();
+  BitFlags uc00Flags = sm.findEntity(uids[00])->entityFlags();
   assert( smtk::model::isVertex(uc00Flags)    && "isVertex(vertexFlags) incorrect");
   assert(!smtk::model::isEdge(uc00Flags)      && "isEdge(vertexFlags) incorrect");
   assert(!smtk::model::isFace(uc00Flags)      && "isFace(vertexFlags) incorrect");

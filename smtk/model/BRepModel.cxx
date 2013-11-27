@@ -63,7 +63,7 @@ const UUIDsToEntities& BRepModel::topology() const
 /// Entity construction
 //@{
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(unsigned int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dimension)
 {
   UUID actual;
   do
@@ -90,7 +90,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   *
   * Passing a non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, unsigned int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dimension)
 {
   UUIDsToEntities::iterator it;
   if (uid.isNull())
@@ -142,7 +142,7 @@ BRepModel::iter_type BRepModel::setEntity(const UUID& uid, Entity& c)
 }
 
 /// A wrappable version of InsertEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimension(unsigned int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 {
   return this->insertEntityOfTypeAndDimension(entityFlags, dim)->first;
 }
@@ -154,7 +154,7 @@ UUID BRepModel::addEntity(Entity& cell)
 }
 
 /// A wrappable version of SetEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, unsigned int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, BitFlags entityFlags, int dim)
 {
   return this->setEntityOfTypeAndDimension(uid, entityFlags, dim)->first;
 }
@@ -402,12 +402,12 @@ UUIDs BRepModel::adjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs BRepModel::entitiesMatchingFlags(unsigned int mask, bool exactMatch)
+UUIDs BRepModel::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 {
   UUIDs result;
   for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
-    unsigned int masked = it->second.entityFlags() & mask;
+    BitFlags masked = it->second.entityFlags() & mask;
     if (
       (!exactMatch && masked) ||
       (exactMatch && masked == mask))
@@ -850,7 +850,7 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
   return std::string();
 }
 
-std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, unsigned int entityFlags)
+std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags)
 {
   IntegerList& counts(
     this->entityCounts(
@@ -864,7 +864,7 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, unsigned i
   return defaultName;
 }
 
-std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, unsigned int entityFlags)
+std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags)
 {
   std::string name = Entity::flagSummaryHelper(entityFlags);
   name += "..";
@@ -874,7 +874,7 @@ std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, unsigned int e
 }
 
 IntegerList& BRepModel::entityCounts(
-  const smtk::util::UUID& modelId, unsigned int entityFlags)
+  const smtk::util::UUID& modelId, BitFlags entityFlags)
 {
   switch (entityFlags & ENTITY_MASK)
     {

@@ -57,17 +57,17 @@ public:
   smtk::util::UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
   smtk::util::UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
 
-  smtk::util::UUIDs entitiesMatchingFlags(unsigned int mask, bool exactMatch = true);
+  smtk::util::UUIDs entitiesMatchingFlags(BitFlags mask, bool exactMatch = true);
   smtk::util::UUIDs entitiesOfDimension(int dim);
 
-  iter_type insertEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
+  iter_type insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   iter_type insertEntity(Entity& cell);
-  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
+  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, BitFlags entityFlags, int dim);
   iter_type setEntity(const smtk::util::UUID& uid, Entity& cell);
 
-  smtk::util::UUID addEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   smtk::util::UUID addEntity(Entity& cell);
-  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, BitFlags entityFlags, int dim);
   smtk::util::UUID addEntityWithUUID(const smtk::util::UUID& uid, Entity& cell);
 
   iter_type insertCellOfDimension(int dim);
@@ -126,7 +126,7 @@ public:
 
   void assignDefaultNames();
   std::string assignDefaultName(const smtk::util::UUID& uid);
-  static std::string shortUUIDName(const smtk::util::UUID& uid, unsigned int entityFlags);
+  static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
 protected:
   UUIDsToEntities* m_topology;
@@ -136,8 +136,8 @@ protected:
   bool m_deleteStorage;
   int m_modelCount;
 
-  std::string assignDefaultName(const smtk::util::UUID& uid, unsigned int entityFlags);
-  IntegerList& entityCounts(const smtk::util::UUID& modelId, unsigned int entityFlags);
+  std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
+  IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
 };
 
   } // model namespace

@@ -7,6 +7,9 @@
 namespace smtk {
   namespace model {
 
+/// The integer type used to hold bit values describing an entity's type.
+typedef unsigned int BitFlags;
+
 /// Different types of entities the model can hold and their inherent properties.
 enum EntityTypeBits
 {
@@ -69,18 +72,18 @@ enum EntityTypeBits
   INVALID              = 0xffffffff  //!< The entity is invalid
 };
 
-inline bool isVertex(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
-inline bool isEdge(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
-inline bool isFace(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
-inline bool isRegion(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
+inline bool isVertex(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
+inline bool isEdge(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
+inline bool isFace(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
+inline bool isRegion(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
 
-inline bool isVertexUse(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
-inline bool isEdgeUse(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
-inline bool isFaceUse(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
+inline bool isVertexUse(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
+inline bool isEdgeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
+inline bool isFaceUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
 
-inline bool isChain(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }
-inline bool isLoop(unsigned int entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
-inline bool isShell(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
+inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }
+inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
+inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
 
   } // namespace model
 } // namespace smtk

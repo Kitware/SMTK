@@ -34,7 +34,7 @@ Entity::Entity()
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
-Entity::Entity(unsigned int entityFlags, int dimension)
+Entity::Entity(BitFlags entityFlags, int dimension)
   : m_entityFlags(entityFlags)
 {
   // Override the dimension bits if the dimension is specified
@@ -52,12 +52,12 @@ Entity::Entity(unsigned int entityFlags, int dimension)
   *
   * \sa smtk::model::EntityTypeBits
   */
-unsigned int Entity::entityFlags() const
+BitFlags Entity::entityFlags() const
 {
   return this->m_entityFlags;
 }
 
-bool Entity::setEntityFlags(unsigned int flags)
+bool Entity::setEntityFlags(BitFlags flags)
 {
   bool allowed = false;
   if (this->m_entityFlags == INVALID)
@@ -91,7 +91,7 @@ bool Entity::setEntityFlags(unsigned int flags)
   */
 int Entity::dimension() const
 {
-  unsigned int dimBits = this->m_entityFlags & ANY_DIMENSION;
+  BitFlags dimBits = this->m_entityFlags & ANY_DIMENSION;
   if ((dimBits != 0) & ((dimBits & (dimBits - 1)) == 0))
     { // dimBits is exactly a power of two:
     switch (dimBits)
@@ -108,7 +108,7 @@ int Entity::dimension() const
   return -1;
 }
 
-unsigned int Entity::dimensionBits() const
+BitFlags Entity::dimensionBits() const
 {
   return this->m_entityFlags & ANY_DIMENSION;
 }
@@ -146,7 +146,7 @@ Entity& Entity::removeRelation(const UUID& b)
 }
 
 // If you change this, you may need to change flagSummmary/flagDescription/defaultNameFromCounters
-std::string Entity::flagSummaryHelper(unsigned int flags)
+std::string Entity::flagSummaryHelper(BitFlags flags)
 {
   std::string result;
   switch (flags & ENTITY_MASK)
@@ -237,7 +237,7 @@ std::string Entity::flagSummaryHelper(unsigned int flags)
 }
 
 // If you change this, you may also need to change flagDescription/defaultNameForCount below.
-std::string Entity::flagSummary(unsigned int flags)
+std::string Entity::flagSummary(BitFlags flags)
 {
   std::string result = flagSummaryHelper(flags);
   // Add some extra information about groups.
@@ -282,7 +282,7 @@ std::string Entity::flagSummary(unsigned int flags)
   return result;
 }
 
-std::string Entity::flagDescription(unsigned int flags)
+std::string Entity::flagDescription(BitFlags flags)
 {
   // TODO: Eventually this should return a markdown-formatted
   // description documenting the entity type.
@@ -297,7 +297,7 @@ std::string Entity::flagDescription(unsigned int flags)
 }
 
 // If you change this, you may need to change flagSummmary/flagDescription above
-std::string Entity::defaultNameFromCounters(unsigned int flags, IntegerList& counters)
+std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counters)
 {
   std::ostringstream name;
   name << Entity::flagSummaryHelper(flags) << " ";
