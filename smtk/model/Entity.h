@@ -3,6 +3,7 @@
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
+#include "smtk/util/SystemConfig.h"
 
 #include <map>
 #include <set>

@@ -4,6 +4,7 @@
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
 #include "smtk/model/Storage.h" // For UUIDWithEntity
+#include "smtk/util/SystemConfig.h"
 
 #include "smtk/util/UUID.h"
 

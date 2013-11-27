@@ -2,6 +2,7 @@
 #define __smtk_model_EntityTypeBits_h
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
+#include "smtk/util/SystemConfig.h"
 
 namespace smtk {
   namespace model {

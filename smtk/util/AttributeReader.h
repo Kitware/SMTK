@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_util_AttributeReader_h
 
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/util/SystemConfig.h"
 #include <string>
 
 namespace smtk

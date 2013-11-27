@@ -97,7 +97,7 @@ namespace smtk
       // There should only be labels if there is more than a single
       // component (i.e. m_numberOfRequiredValues != 1).
       bool hasValueLabels() const
-      {return this->m_valueLabels.size();}
+      {return !this->m_valueLabels.empty();}
 
       // Description:
       // Specify whether the components label is coming from a common
@@ -112,7 +112,8 @@ namespace smtk
       // component label.
       std::string valueLabel(int element) const;
       bool isDiscreteIndexValid(int index) const
-      {return ((index > -1) && (index < this->m_discreteValueEnums.size()));}
+      {return ((index > -1) &&
+               (static_cast<unsigned int>(index) < this->m_discreteValueEnums.size()));}
 
     protected:
 

@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 //#include "smtk/PublicPointerDefs.h"
+#include "smtk/util/SystemConfig.h"
 
 namespace smtk
 {

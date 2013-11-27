@@ -180,7 +180,7 @@ namespace smtk
       smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
         return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
-          : (ith >= this->m_itemDefs.size() ?
+          : (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
              smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
@@ -250,7 +250,7 @@ namespace smtk
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
 // has isUnique = true it will also prevent an attribute from this definition being assigned if the
 // targeted model entity has an attribute derived from the Super Definition
-      int m_isUnique;
+      bool m_isUnique;
       bool m_isRequired;
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;

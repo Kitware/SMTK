@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_PublicPointerDefs_h
 
 #include "smtk/SharedPtr.h"
+#include "smtk/util/SystemConfig.h"
 #include <set>
 
 namespace smtk

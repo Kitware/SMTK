@@ -2,6 +2,7 @@
 #define __smtk_model_BRepModel_h
 
 #include "smtk/util/UUID.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"

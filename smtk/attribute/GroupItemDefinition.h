@@ -51,7 +51,7 @@ namespace smtk
       smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
         return (ith < 0) ? smtk::attribute::ItemDefinitionPtr() :
-          (ith >= this->m_itemDefs.size() ?
+          (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
            smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
       bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
@@ -80,7 +80,7 @@ namespace smtk
       void setNumberOfRequiredGroups(int gsize)
       {this->m_numberOfRequiredGroups = gsize;}
       bool hasSubGroupLabels() const
-      {return this->m_labels.size();}
+      {return !this->m_labels.empty();}
 
       void setSubGroupLabel(int element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
