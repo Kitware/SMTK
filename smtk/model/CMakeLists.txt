@@ -2,6 +2,7 @@
 set(modelSrcs
   Arrangement.cxx
   BRepModel.cxx
+  Cursor.cxx
   Entity.cxx
   ExportJSON.cxx
   GroupItem.cxx
@@ -19,6 +20,7 @@ set(modelSrcs
 set(modelHeaders
   Arrangement.h
   BRepModel.h
+  Cursor.h
   Entity.h
   EntityTypeBits.h
   ExportJSON.h
