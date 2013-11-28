@@ -6,15 +6,18 @@
 namespace smtk {
   namespace model {
 
+/// Construct an invalid cursor.
 Cursor::Cursor()
 {
 }
 
+/// Construct a cursor referencing a given \a entity residing in the given \a storage.
 Cursor::Cursor(StoragePtr storage, const smtk::util::UUID& entity)
   : m_storage(storage), m_entity(entity)
 {
 }
 
+/// Change the underlying storage the cursor references.
 bool Cursor::setStorage(StoragePtr storage)
 {
   if (storage == this->m_storage)
@@ -25,11 +28,13 @@ bool Cursor::setStorage(StoragePtr storage)
   return true;
 }
 
+/// Return the underlying storage the cursor references.
 StoragePtr Cursor::storage()
 {
   return this->m_storage;
 }
 
+/// Change the UUID of the entity the cursor references.
 bool Cursor::setEntity(const smtk::util::UUID& entity)
 {
   if (entity == this->m_entity)
@@ -40,11 +45,18 @@ bool Cursor::setEntity(const smtk::util::UUID& entity)
   return true;
 }
 
+/// Return the UUID of the entity the cursor references.
 smtk::util::UUID Cursor::entity()
 {
   return this->m_entity;
 }
 
+/**\brief Return the nominal parametric dimension of the entity (or -1).
+  *
+  * A value of -1 is returned when the cursor is invalid, or the entity
+  * does not have any specified dimension, or the entity may have components
+  * with multiple distinct dimensionalities.
+  */
 int Cursor::dimension() const
 {
   if (this->m_storage && !this->m_entity.isNull())
@@ -58,6 +70,12 @@ int Cursor::dimension() const
   return -1;
 }
 
+/**\brief Return the nominal parametric dimension(s) of the entity as a bit vector.
+  *
+  * A value of 0 is returned when the cursor is invalid.
+  * Multiple bits will be set if the entity may have components with
+  * multiple distinct dimensionalities.
+  */
 int Cursor::dimensionBits() const
 {
   if (this->m_storage && !this->m_entity.isNull())
@@ -71,6 +89,7 @@ int Cursor::dimensionBits() const
   return 0;
 }
 
+/// Return the bit vector describing the entity's type. \sa isVector, isEdge, ...
 BitFlags Cursor::entityFlags() const
 {
   if (this->m_storage && !this->m_entity.isNull())
@@ -84,6 +103,7 @@ BitFlags Cursor::entityFlags() const
   return 0;
 }
 
+/// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
 void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::util::UUIDs& uids)
 {
   for (smtk::util::UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)

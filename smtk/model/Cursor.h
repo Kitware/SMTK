@@ -46,7 +46,24 @@ public:
   int dimensionBits() const;
   BitFlags entityFlags() const;
 
-  virtual bool isValid() const { return this->m_storage && !this->m_entity.isNull(); }
+  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+    *
+    * Subclasses override this and additionally return whether the entity is of
+    * a type that matches the Cursor subclass. For example, it is possible to
+    * create a Vertex cursor from a UUID referring to an EdgeUse. While
+    * Cursor::isValid() will return true, Vertex::isValid() will return false.
+    */
+  virtual bool isValid() const
+    {
+    return this->m_storage && !this->m_entity.isNull();
+    }
+
+  bool isCellEntity()     const { return smtk::model::isCellEntity(this->entityFlags()); }
+  bool isUseEntity()      const { return smtk::model::isUseEntity(this->entityFlags()); }
+  bool isShellEntity()    const { return smtk::model::isShellEntity(this->entityFlags()); }
+  bool isGroupEntity()    const { return smtk::model::isGroupEntity(this->entityFlags()); }
+  bool isModelEntity()    const { return smtk::model::isModelEntity(this->entityFlags()); }
+  bool isInstanceEntity() const { return smtk::model::isInstanceEntity(this->entityFlags()); }
 
   bool isVertex()    const { return smtk::model::isVertex(this->entityFlags()); }
   bool isEdge()      const { return smtk::model::isEdge(this->entityFlags()); }
@@ -58,6 +75,12 @@ public:
   bool isVertexUse() const { return smtk::model::isVertexUse(this->entityFlags()); }
   bool isEdgeUse()   const { return smtk::model::isEdgeUse(this->entityFlags()); }
   bool isFaceUse()   const { return smtk::model::isFaceUse(this->entityFlags()); }
+
+  template<typename T>
+  T as()
+    {
+    return T(*this);
+    }
 
   static void CursorsFromUUIDs(
     Cursors& result, StoragePtr, const smtk::util::UUIDs& uids);

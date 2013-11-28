@@ -5,6 +5,7 @@ namespace smtk {
 
 const char* ArrangementKindName[KINDS_OF_ARRANGEMENTS + 1] = {
   "inclusion",   // INCLUSION
+  "cell",        // CELL
   "shell",       // SHELL
   "use",         // USE
   "sense",       // SENSE
@@ -14,6 +15,7 @@ const char* ArrangementKindName[KINDS_OF_ARRANGEMENTS + 1] = {
 
 const char* ArrangementKindAbbr[KINDS_OF_ARRANGEMENTS + 1] = {
   "i", // INCLUSION
+  "c", // CELL
   "s", // SHELL
   "u", // ORIENTATION
   "n", // SENSE

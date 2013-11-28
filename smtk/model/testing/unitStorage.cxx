@@ -33,6 +33,13 @@ int main(int argc, char* argv[])
   assert(!smtk::model::isEdgeUse(uc00Flags)   && "isEdgeUse(vertexFlags) incorrect");
   assert(!smtk::model::isFaceUse(uc00Flags)   && "isFaceUse(vertexFlags) incorrect");
 
+  assert( smtk::model::isCellEntity(uc00Flags)     && "isCellEntity(vertexFlags) incorrect");
+  assert(!smtk::model::isUseEntity(uc00Flags)      && "isUseEntity(vertexFlags) incorrect");
+  assert(!smtk::model::isShellEntity(uc00Flags)    && "isShellEntity(vertexFlags) incorrect");
+  assert(!smtk::model::isGroupEntity(uc00Flags)    && "isGroupEntity(vertexFlags) incorrect");
+  assert(!smtk::model::isModelEntity(uc00Flags)    && "isModelEntity(vertexFlags) incorrect");
+  assert(!smtk::model::isInstanceEntity(uc00Flags) && "isInstanceEntity(vertexFlags) incorrect");
+
   UUIDs nodes = sm.entitiesOfDimension(0);
   UUIDs edges = sm.entitiesOfDimension(1);
   UUIDs faces = sm.entitiesOfDimension(2);

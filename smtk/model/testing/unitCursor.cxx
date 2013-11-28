@@ -2,6 +2,8 @@
 
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/Storage.h"
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/UseEntity.h"
 
 #include "smtk/model/testing/helpers.h"
 
@@ -38,6 +40,13 @@ int main(int argc, char* argv[])
     assert(entities.size() == sm->higherDimensionalBordants(uids[0], dim).size());
     }
 
+  assert( entity.isCellEntity()     && "isCellEntity() incorrect");
+  assert(!entity.isUseEntity()      && "isUseEntity() incorrect");
+  assert(!entity.isShellEntity()    && "isShellEntity() incorrect");
+  assert(!entity.isGroupEntity()    && "isGroupEntity() incorrect");
+  assert(!entity.isModelEntity()    && "isModelEntity() incorrect");
+  assert(!entity.isInstanceEntity() && "isInstanceEntity() incorrect");
+
   assert( entity.isVertex()    && "isVertex() incorrect");
   assert(!entity.isEdge()      && "isEdge() incorrect");
   assert(!entity.isFace()      && "isFace() incorrect");
@@ -48,6 +57,16 @@ int main(int argc, char* argv[])
   assert(!entity.isVertexUse() && "isVertexUse() incorrect");
   assert(!entity.isEdgeUse()   && "isEdgeUse() incorrect");
   assert(!entity.isFaceUse()   && "isFaceUse() incorrect");
+
+  // Test that "cast"ing to Cursor subclasses works
+  // and that they are valid or invalid as appropriate.
+  CellEntity cell = entity.as<CellEntity>();
+  UseEntity use = entity.as<UseEntity>();
+  assert(cell.isValid() && "CellEntity::isValid() incorrect");
+  assert(!use.isValid() && "UseEntity::isValid() incorrect");
+  // Test obtaining uses from cells. Currently returns an empty set
+  // because we are not properly constructing/arranging the solid.
+  UseEntities vertexUses = cell.uses();
 
   entity = Cursor(sm, uids[21]);
   assert(entity.isValid() == true);

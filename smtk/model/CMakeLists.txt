@@ -2,6 +2,7 @@
 set(modelSrcs
   Arrangement.cxx
   BRepModel.cxx
+  CellEntity.cxx
   Cursor.cxx
   Entity.cxx
   ExportJSON.cxx
@@ -15,11 +16,13 @@ set(modelSrcs
   Storage.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
+  UseEntity.cxx
   )
 
 set(modelHeaders
   Arrangement.h
   BRepModel.h
+  CellEntity.h
   Cursor.h
   Entity.h
   EntityTypeBits.h
@@ -37,6 +40,7 @@ set(modelHeaders
   ModelDomainItem.h
   StringData.h
   Tessellation.h
+  UseEntity.h
   )
 
 #install the headers
