@@ -34,4 +34,11 @@
 #  endif //!defined(SMTK_DISPLAY_INGORED_WIN_WARNINGS)
 #endif //Windows specific stuff
 
+#define SMTK_BASE_TYPE(thisclass) \
+  virtual const char* classname() const { return #thisclass; }
+
+#define SMTK_DERIVED_TYPE(thisclass,superclass) \
+  typedef superclass Superclass;\
+  SMTK_BASE_TYPE(thisclass)
+
 #endif //__smtk_util_SystemConfig_h
