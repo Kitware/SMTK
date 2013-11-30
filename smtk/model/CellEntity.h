@@ -10,12 +10,7 @@ namespace smtk {
 class SMTKCORE_EXPORT CellEntity : public Cursor
 {
 public:
-  CellEntity();
-  CellEntity(const Cursor&);
-  CellEntity(StoragePtr storage, const smtk::util::UUID& uid);
-
-  virtual bool isValid() const
-    { return this->Cursor::isValid() && this->isCellEntity(); }
+  SMTK_CURSOR_CLASS(CellEntity,Cursor,isCellEntity);
 
   UseEntities uses() const;
 };

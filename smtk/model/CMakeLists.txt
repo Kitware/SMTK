@@ -13,10 +13,12 @@ set(modelSrcs
   ImportJSON.cxx
   Item.cxx
   Model.cxx
+  ShellEntity.h
   Storage.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
   UseEntity.cxx
+  Vertex.cxx
   )
 
 set(modelHeaders
@@ -38,9 +40,11 @@ set(modelHeaders
   Model.h
   Storage.h
   ModelDomainItem.h
+  ShellEntity.h
   StringData.h
   Tessellation.h
   UseEntity.h
+  Vertex.h
   )
 
 #install the headers

@@ -2,16 +2,40 @@
 #define __smtk_model_Cursor_h
 
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
+#include "smtk/util/SystemConfig.h" // For type macros.
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/model/FloatData.h" // for Float, FloatData, ...
 #include "smtk/model/StringData.h" // for String, StringData, ...
 #include "smtk/model/IntegerData.h" // for Integer, IntegerData, ...
+#include "smtk/model/Storage.h"
 
 #include "smtk/util/UUID.h"
 
 #include <set>
 #include <vector>
+
+/// A macro to implement mandatory Cursor-subclass constructors.
+#define SMTK_CURSOR_CLASS(thisclass,superclass,typecheck) \
+  SMTK_DERIVED_TYPE(thisclass,superclass); \
+  thisclass () {} \
+  thisclass (const Cursor& other) \
+    : superclass(other) {} \
+  thisclass (StoragePtr storage, const smtk::util::UUID& entity) \
+    : superclass(storage, entity) {} \
+  bool isValid() const { return this->Cursor::isValid(); } \
+  virtual bool isValid(Entity** entRec) const \
+    { \
+      Entity* er; \
+      if ( \
+        this->Cursor::isValid(&er) && \
+        smtk::model:: typecheck (er->entityFlags())) \
+        { \
+        if (entRec) *entRec = er; \
+        return true; \
+        } \
+      return false; \
+    }
 
 namespace smtk {
   namespace model {
@@ -33,6 +57,7 @@ typedef std::vector<Cursor> CursorArray;
 class SMTKCORE_EXPORT Cursor
 {
 public:
+  SMTK_BASE_TYPE(Cursor);
   Cursor();
   Cursor(StoragePtr storage, const smtk::util::UUID& entity);
 
@@ -48,14 +73,32 @@ public:
 
   /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
     *
+    * Subclasses should not override this method. It is a convenience
+    * which makes the shiboken wrapper more functional.
+    */
+  bool isValid() const
+    {
+    return this->isValid(NULL);
+    }
+
+  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+    *
     * Subclasses override this and additionally return whether the entity is of
     * a type that matches the Cursor subclass. For example, it is possible to
     * create a Vertex cursor from a UUID referring to an EdgeUse. While
     * Cursor::isValid() will return true, Vertex::isValid() will return false.
+    *
+    * The optional \a entityRecord will be set when a non-NULL value is passed
+    * and the entity is valid.
     */
-  virtual bool isValid() const
+  virtual bool isValid(Entity** entityRecord) const
     {
-    return this->m_storage && !this->m_entity.isNull();
+    bool status = this->m_storage && !this->m_entity.isNull();
+    if (status && entityRecord)
+      {
+      *entityRecord = this->m_storage->findEntity(this->m_entity);
+      }
+    return status;
     }
 
   bool isCellEntity()     const { return smtk::model::isCellEntity(this->entityFlags()); }

@@ -4,6 +4,7 @@
 #include "smtk/model/Storage.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
+#include "smtk/model/Vertex.h"
 
 #include "smtk/model/testing/helpers.h"
 
@@ -62,6 +63,8 @@ int main(int argc, char* argv[])
   // and that they are valid or invalid as appropriate.
   CellEntity cell = entity.as<CellEntity>();
   UseEntity use = entity.as<UseEntity>();
+  Vertex vert = entity.as<Vertex>();
+  //std::cout << vert.coordinates().transpose() << "\n";
   assert(cell.isValid() && "CellEntity::isValid() incorrect");
   assert(!use.isValid() && "UseEntity::isValid() incorrect");
   // Test obtaining uses from cells. Currently returns an empty set

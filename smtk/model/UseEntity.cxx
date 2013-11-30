@@ -7,20 +7,6 @@
 namespace smtk {
   namespace model {
 
-UseEntity::UseEntity()
-{
-}
-
-UseEntity::UseEntity(const Cursor& other)
-  : Cursor(other)
-{
-}
-
-UseEntity::UseEntity(StoragePtr storage, const smtk::util::UUID& uid)
-  : Cursor(storage, uid)
-{
-}
-
 CellEntity UseEntity::cell() const
 {
   if (this->isValid())

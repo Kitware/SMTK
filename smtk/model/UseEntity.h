@@ -11,17 +11,12 @@ class CellEntity;
 class SMTKCORE_EXPORT UseEntity : public Cursor
 {
 public:
-  UseEntity();
-  UseEntity(const Cursor&);
-  UseEntity(StoragePtr storage, const smtk::util::UUID& uid);
-
-  virtual bool isValid() const
-    { return this->Cursor::isValid() && this->isUseEntity(); }
+  SMTK_CURSOR_CLASS(UseEntity,Cursor,isUseEntity);
 
   CellEntity cell() const;
 };
 
-typedef std::set<UseEntity> UseEntities;
+typedef std::vector<UseEntity> UseEntities;
 
   } // namespace model
 } // namespace smtk
