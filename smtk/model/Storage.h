@@ -38,6 +38,18 @@ public:
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
   int arrangeEntity(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
+
+  bool hasArrangementsOfKindForEntity(
+    const smtk::util::UUID& cellId,
+    ArrangementKind,
+    Arrangements const* arr = NULL) const;
+  bool hasArrangementsOfKindForEntity(
+    const smtk::util::UUID& cellId,
+    ArrangementKind,
+    Arrangements* arr = NULL);
+
+  Arrangements& arrangementsOfKindForEntity(const smtk::util::UUID& cellId, ArrangementKind);
+
   const Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
   Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
 

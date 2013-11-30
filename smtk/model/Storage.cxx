@@ -126,6 +126,66 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
   return index;
 }
 
+/**\brief Returns true when the given \a entity has any arrangements of the given \a kind (otherwise false).
+  *
+  * Use this to avoid accidentally inserting a new array of arrangements with arrangementsOfKindForEntity().
+  * Since this actually requires a lookup, you may pass in a pointer \a arr to an array of arrangements;
+  * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
+  */
+bool Storage::hasArrangementsOfKindForEntity(
+  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements* arr)
+{
+  UUIDWithArrangementDictionary cellEntry = this->m_relationships->find(entity);
+  if (cellEntry != this->m_relationships->end())
+    {
+    ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
+    if (useIt != cellEntry->second.end())
+      {
+      if (arr)
+        {
+        arr = &useIt->second;
+        }
+      return true;
+      }
+    }
+  return false;
+}
+
+/**\brief This is a const version of hasArrangementsOfKindForEntity().
+  */
+bool Storage::hasArrangementsOfKindForEntity(
+  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements const* arr) const
+{
+  UUIDWithArrangementDictionary cellEntry = this->m_relationships->find(entity);
+  if (cellEntry != this->m_relationships->end())
+    {
+    ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
+    if (useIt != cellEntry->second.end())
+      {
+      if (arr)
+        {
+        arr = &useIt->second;
+        }
+      return true;
+      }
+    }
+  return false;
+}
+
+/**\brief Return an array of arrangements of the given \a kind for the given \a entity.
+  *
+  * NOTE: This method will create an empty array and attach it to the entity
+  * if none exists, thus increasing storage costs. Unless you intend to append
+  * new relationships, you should not use this method without first calling
+  * hasArrangementsOfKindForEntity() to determine whether the array already exists.
+  */
+Arrangements& Storage::arrangementsOfKindForEntity(
+  const smtk::util::UUID& entity,
+  ArrangementKind kind)
+{
+  return (*this->m_relationships)[entity][kind];
+}
+
 /**\brief Retrieve arrangement information for a cell.
   *
   * This version does not allow the arrangement to be altered.
