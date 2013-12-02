@@ -2161,6 +2161,17 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(group));
 
+  // Group style (Optional), Tabbed (default) or Tiled
+  xml_attribute xatt;
+  xatt = node.attribute("Style");
+  if (xatt)
+    {
+    std::string style = xatt.value();
+    std::transform(style.begin(), style.end(), style.begin(), ::tolower);
+    group->setStyle(style == "tiled" ? smtk::view::Group::TILED :
+      smtk::view::Group::TABBED);
+    }
+
   xml_node child;
   std::string childName;
   for (child = node.first_child(); child; child = child.next_sibling())

@@ -36,6 +36,12 @@ namespace smtk
     class SMTKCORE_EXPORT Group : public Base
     {
     public:
+       enum Style
+      {
+        TABBED,
+        TILED
+      };
+
       static smtk::view::GroupPtr New(const std::string &myName)
       { return smtk::view::GroupPtr(new smtk::view::Group(myName)); }
 
@@ -53,6 +59,11 @@ namespace smtk
         return true;
       }
 
+      virtual Group::Style style() const
+      { return this->m_style; }
+      virtual void setStyle(Group::Style aStyle)
+      { this->m_style = aStyle; }
+
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
         addSubView(const std::string &name)
@@ -66,6 +77,8 @@ namespace smtk
 
     protected:
       std::vector<smtk::view::BasePtr> m_subViews;
+      Group::Style m_style;
+
     private:
 
     };
