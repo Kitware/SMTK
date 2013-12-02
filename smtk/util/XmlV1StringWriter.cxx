@@ -1214,6 +1214,11 @@ void XmlV1StringWriter::processGroupView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(group));
+  if(group->style() == smtk::view::Group::TILED)
+    {
+    node.append_attribute("Style").set_value("Tiled");
+    }
+
   std::size_t i, n = group->numberOfSubViews();
   xml_node child;
   view::BasePtr bview;

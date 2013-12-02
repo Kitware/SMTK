@@ -58,6 +58,7 @@ namespace smtk
     protected:
       virtual void createWidget( );
       virtual void addTabEntry(qtBaseView*);
+      virtual void addTileEntry(qtBaseView*);
 
     private:
 
