@@ -108,16 +108,21 @@ public:
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
-  smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
-  smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }
-  smtk::util::UUID addFace() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2); }
-  smtk::util::UUID addVolume() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3); }
-  smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string())
-    {
-    smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
-    this->setStringProperty(uid, "name", name);
-    return uid;
-    }
+  smtk::util::UUID addVertex();
+  smtk::util::UUID addEdge();
+  smtk::util::UUID addFace();
+  smtk::util::UUID addVolume();
+
+  smtk::util::UUID addVertexUse();
+  smtk::util::UUID addEdgeUse();
+  smtk::util::UUID addFaceUse();
+
+  smtk::util::UUID addChain();
+  smtk::util::UUID addLoop();
+  smtk::util::UUID addShell();
+
+  smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string());
+
   smtk::util::UUID addModel(
     int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 
