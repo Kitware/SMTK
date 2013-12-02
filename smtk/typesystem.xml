@@ -60,9 +60,15 @@
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageIntegerProperties', unmatched parameter type 'cJSON*'"/>
 
-  <!-- Ignore warnings from protected functions -->
+  <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-	<suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping field 'Storage::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
+  <suppress-warning text="skipping field 'Storage::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
+  <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
@@ -72,9 +78,6 @@
   <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
-
-  <!-- Constructor given raw pointers -->
-  <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'smtk::model::UUIDsToEntities*'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1077,6 +1080,9 @@
         <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>
 
+      <object-type name="UUIDGenerator">
+        <include file-name="smtk/util/UUIDGenerator.h" location="local"/>
+      </object-type>
     </namespace-type>
 
     <namespace-type name="view">

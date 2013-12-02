@@ -81,6 +81,7 @@ namespace smtk
   {
     class UserData;
     class UUID;
+    class UUIDGenerator;
   }
 
   namespace view

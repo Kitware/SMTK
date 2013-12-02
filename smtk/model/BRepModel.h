@@ -2,6 +2,7 @@
 #define __smtk_model_BRepModel_h
 
 #include "smtk/util/UUID.h"
+#include "smtk/util/UUIDGenerator.h"
 #include "smtk/util/SystemConfig.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
@@ -131,6 +132,7 @@ protected:
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
+  smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);

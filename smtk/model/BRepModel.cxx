@@ -55,7 +55,7 @@ BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFl
   UUID actual;
   do
     {
-    actual = UUID::random();
+    actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setEntityOfTypeAndDimension(actual, entityFlags, dimension);
@@ -67,7 +67,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   UUID actual;
   do
     {
-    actual = UUID::random();
+    actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setEntity(actual, c);

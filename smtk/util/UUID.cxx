@@ -40,7 +40,11 @@ UUID::UUID(const boost::uuids::uuid& data)
   this->m_data = data;
 }
 
-/// Generate a random UUID (RFC4122, version 4)
+/**\brief Generate a random UUID (RFC4122, version 4)
+  *
+  * WARNING: This method will create a new basic_random_generator
+  * instance, which is very slow to construct.
+  */
 UUID UUID::random()
 {
   boost::uuids::basic_random_generator<boost::mt19937> gen;
