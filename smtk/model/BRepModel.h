@@ -34,10 +34,8 @@ public:
   typedef storage_type::iterator iter_type;
 
   BRepModel();
-  BRepModel(storage_type* topology, bool shouldDelete);
+  BRepModel(shared_ptr<storage_type> topology);
   ~BRepModel();
-
-  void setDeleteStorage(bool d);
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
@@ -129,11 +127,10 @@ public:
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
 protected:
-  UUIDsToEntities* m_topology;
+  shared_ptr<UUIDsToEntities> m_topology;
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
-  bool m_deleteStorage;
   int m_modelCount;
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);

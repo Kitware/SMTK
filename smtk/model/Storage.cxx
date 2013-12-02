@@ -16,50 +16,42 @@ namespace smtk {
   namespace model {
 
 Storage::Storage() :
-  BRepModel(new UUIDsToEntities, true),
-  m_relationships(new UUIDsToArrangements),
-  m_geometry(new UUIDsToTessellations)
+  BRepModel(shared_ptr<UUIDsToEntities>(new UUIDsToEntities)),
+  m_arrangements(new UUIDsToArrangements),
+  m_tessellations(new UUIDsToTessellations)
 {
 }
 
 Storage::Storage(
-  UUIDsToEntities* topology,
-  UUIDsToArrangements* arrangements,
-  UUIDsToTessellations* geometry,
-  bool shouldDelete)
-  : BRepModel(topology, shouldDelete), m_relationships(arrangements), m_geometry(geometry)
+  shared_ptr<UUIDsToEntities> topology,
+  shared_ptr<UUIDsToArrangements> arrangements,
+  shared_ptr<UUIDsToTessellations> tess)
+  : BRepModel(topology), m_arrangements(arrangements), m_tessellations(tess)
 {
 }
 
 Storage::~Storage()
 {
-  if (this->m_deleteStorage)
-    {
-    delete this->m_relationships;
-    this->m_relationships = NULL;
-    delete this->m_geometry;
-    this->m_geometry = NULL;
-    }
 }
 
 UUIDsToArrangements& Storage::arrangements()
 {
-  return *this->m_relationships;
+  return *this->m_arrangements.get();
 }
 
 const UUIDsToArrangements& Storage::arrangements() const
 {
-  return *this->m_relationships;
+  return *this->m_arrangements.get();
 }
 
 UUIDsToTessellations& Storage::tessellations()
 {
-  return *this->m_geometry;
+  return *this->m_tessellations.get();
 }
 
 const UUIDsToTessellations& Storage::tessellations() const
 {
-  return *this->m_geometry;
+  return *this->m_tessellations.get();
 }
 
 
@@ -69,12 +61,12 @@ Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tesse
     {
     throw std::string("Nil cell ID");
     }
-  tess_iter_type result = this->m_geometry->find(cellId);
-  if (result == this->m_geometry->end())
+  tess_iter_type result = this->m_tessellations->find(cellId);
+  if (result == this->m_tessellations->end())
     {
     std::pair<UUID,Tessellation> blank;
     blank.first = cellId;
-    result = this->m_geometry->insert(blank).first;
+    result = this->m_tessellations->insert(blank).first;
     }
   result->second = geom;
   return result;
@@ -89,15 +81,15 @@ Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tesse
   */
 int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
 {
-  UUIDsToArrangements::iterator cit = this->m_relationships->find(cellId);
-  if (cit == this->m_relationships->end())
+  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
+  if (cit == this->m_arrangements->end())
     {
     if (index >= 0)
       { // failure: can't replace information that doesn't exist.
       return -1;
       }
     KindsToArrangements blank;
-    cit = this->m_relationships->insert(std::pair<UUID,KindsToArrangements>(cellId, blank)).first;
+    cit = this->m_arrangements->insert(std::pair<UUID,KindsToArrangements>(cellId, blank)).first;
     }
   KindsToArrangements::iterator kit = cit->second.find(kind);
   if (kit == cit->second.end())
@@ -135,8 +127,8 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
 bool Storage::hasArrangementsOfKindForEntity(
   const smtk::util::UUID& entity, ArrangementKind kind, Arrangements* arr)
 {
-  UUIDWithArrangementDictionary cellEntry = this->m_relationships->find(entity);
-  if (cellEntry != this->m_relationships->end())
+  UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
+  if (cellEntry != this->m_arrangements->end())
     {
     ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
     if (useIt != cellEntry->second.end())
@@ -156,8 +148,8 @@ bool Storage::hasArrangementsOfKindForEntity(
 bool Storage::hasArrangementsOfKindForEntity(
   const smtk::util::UUID& entity, ArrangementKind kind, Arrangements const* arr) const
 {
-  UUIDWithArrangementDictionary cellEntry = this->m_relationships->find(entity);
-  if (cellEntry != this->m_relationships->end())
+  UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
+  if (cellEntry != this->m_arrangements->end())
     {
     ArrangementKindWithArrangements useIt = cellEntry->second.find(kind);
     if (useIt != cellEntry->second.end())
@@ -183,7 +175,7 @@ Arrangements& Storage::arrangementsOfKindForEntity(
   const smtk::util::UUID& entity,
   ArrangementKind kind)
 {
-  return (*this->m_relationships)[entity][kind];
+  return (*this->m_arrangements)[entity][kind];
 }
 
 /**\brief Retrieve arrangement information for a cell.
@@ -197,8 +189,8 @@ const Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind 
     return NULL;
     }
 
-  UUIDsToArrangements::iterator cit = this->m_relationships->find(cellId);
-  if (cit == this->m_relationships->end())
+  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
+  if (cit == this->m_arrangements->end())
     {
     return NULL;
     }
@@ -227,8 +219,8 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
     return NULL;
     }
 
-  UUIDsToArrangements::iterator cit = this->m_relationships->find(cellId);
-  if (cit == this->m_relationships->end())
+  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
+  if (cit == this->m_arrangements->end())
     {
     return NULL;
     }

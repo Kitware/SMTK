@@ -3,7 +3,7 @@
 
 #include "smtk/model/CellEntity.h"
 
-#include "smtk/util/Eigen.h" // For Vector3d
+//#include "smtk/util/Eigen.h" // For Vector3d
 
 namespace smtk {
   namespace model {

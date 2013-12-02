@@ -1,9 +1,10 @@
 #ifndef __smtk_model_Storage_h
 #define __smtk_model_Storage_h
 
+#include "smtk/model/BRepModel.h"
+
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Arrangement.h"
-#include "smtk/model/BRepModel.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 
@@ -23,7 +24,10 @@ public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
   Storage();
-  Storage(UUIDsToEntities* topology, UUIDsToArrangements* arrangements, UUIDsToTessellations* geometry, bool shouldDelete = false);
+  Storage(
+    shared_ptr<UUIDsToEntities> topology,
+    shared_ptr<UUIDsToArrangements> arrangements,
+    shared_ptr<UUIDsToTessellations> tess);
   ~Storage();
 
   static smtk::model::StoragePtr New()
@@ -54,8 +58,8 @@ public:
   Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
 
 protected:
-  UUIDsToArrangements* m_relationships;
-  UUIDsToTessellations* m_geometry;
+  shared_ptr<UUIDsToArrangements> m_arrangements;
+  shared_ptr<UUIDsToTessellations> m_tessellations;
 };
 
   } // model namespace

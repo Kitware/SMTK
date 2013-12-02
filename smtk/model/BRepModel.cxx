@@ -16,7 +16,6 @@ BRepModel::BRepModel() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(true),
   m_modelCount(1)
 {
   // TODO: throw() when topology == NULL?
@@ -26,38 +25,26 @@ BRepModel::BRepModel() :
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete) :
+BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topology) :
   m_topology(topology),
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(shouldDelete),
   m_modelCount(1)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
 {
-  if (this->m_deleteStorage)
-    {
-    delete this->m_topology;
-    this->m_topology = NULL;
-    }
-}
-
-/// Change whether or not we should delete storage upon our own destruction.
-void BRepModel::setDeleteStorage(bool d)
-{
-  this->m_deleteStorage = d;
 }
 
 UUIDsToEntities& BRepModel::topology()
 {
-  return *this->m_topology;
+  return *this->m_topology.get();
 }
 
 const UUIDsToEntities& BRepModel::topology() const
 {
-  return *this->m_topology;
+  return *this->m_topology.get();
 }
 
 /// Entity construction

@@ -60,7 +60,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, Storage* model)
+int ExportJSON::fromModel(cJSON* json, StoragePtr model)
 {
   int status = 0;
   if (!json || !model)
@@ -95,7 +95,7 @@ int ExportJSON::fromModel(cJSON* json, Storage* model)
 }
 
 int ExportJSON::forStorage(
-  cJSON* dict, Storage* model)
+  cJSON* dict, StoragePtr model)
 {
   if (!dict || !model)
     {
@@ -124,14 +124,14 @@ int ExportJSON::forStorage(
 std::string ExportJSON::fromModel(StoragePtr model)
 {
   cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModel(top, model.get());
+  ExportJSON::fromModel(top, model);
   std::string result(cJSON_Print(top));
   cJSON_Delete(top);
   return result;
 }
 
 int ExportJSON::forStorageEntity(
-  UUIDWithEntity& entry, cJSON* cellRec, Storage* model)
+  UUIDWithEntity& entry, cJSON* cellRec, StoragePtr model)
 {
   (void)model;
   cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
@@ -146,7 +146,7 @@ int ExportJSON::forStorageEntity(
 }
 
 int ExportJSON::forStorageArrangement(
-  const UUIDWithArrangementDictionary& entry, cJSON* dict, Storage* model)
+  const UUIDWithArrangementDictionary& entry, cJSON* dict, StoragePtr model)
 {
   if (entry == model->arrangements().end())
     {
@@ -177,7 +177,7 @@ int ExportJSON::forStorageArrangement(
 }
 
 int ExportJSON::forStorageTessellation(
-  const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+  const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
   if (
@@ -211,7 +211,7 @@ int ExportJSON::forStorageTessellation(
   return 1;
 }
 
-int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 1;
   UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
@@ -235,7 +235,7 @@ int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* di
   return status;
 }
 
-int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 1;
   UUIDWithStringProperties entIt = model->stringProperties().find(uid);
@@ -259,7 +259,7 @@ int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* d
   return status;
 }
 
-int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 1;
   UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);

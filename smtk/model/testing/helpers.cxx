@@ -18,7 +18,7 @@ namespace smtk {
   namespace model {
     namespace testing {
 
-UUIDArray createTet(smtk::model::Storage& sm)
+UUIDArray createTet(smtk::model::StoragePtr sm)
 {
   static const double x[][3] = {
       { 0., 0., 0. },
@@ -30,25 +30,25 @@ UUIDArray createTet(smtk::model::Storage& sm)
       { 2., 0.,-4. },
   };
 
-  smtk::util::UUID uc00 = sm.insertCellOfDimension(0)->first; // keep just the UUID around.
-  smtk::util::UUID uc01 = sm.insertCellOfDimension(0)->first;
-  smtk::util::UUID uc02 = sm.insertCellOfDimension(0)->first;
-  smtk::util::UUID uc03 = sm.insertCellOfDimension(0)->first;
-  smtk::util::UUID uc04 = sm.insertCellOfDimension(0)->first;
-  smtk::util::UUID uc05 = sm.insertCellOfDimension(0)->first;
-  smtk::util::UUID uc06 = sm.insertCellOfDimension(0)->first;
+  smtk::util::UUID uc00 = sm->insertCellOfDimension(0)->first; // keep just the UUID around.
+  smtk::util::UUID uc01 = sm->insertCellOfDimension(0)->first;
+  smtk::util::UUID uc02 = sm->insertCellOfDimension(0)->first;
+  smtk::util::UUID uc03 = sm->insertCellOfDimension(0)->first;
+  smtk::util::UUID uc04 = sm->insertCellOfDimension(0)->first;
+  smtk::util::UUID uc05 = sm->insertCellOfDimension(0)->first;
+  smtk::util::UUID uc06 = sm->insertCellOfDimension(0)->first;
 
-  smtk::util::UUID uc07 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
-  smtk::util::UUID uc08 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
-  smtk::util::UUID uc09 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
-  smtk::util::UUID uc10 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
-  smtk::util::UUID uc11 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
-  smtk::util::UUID uc12 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
-  smtk::util::UUID uc13 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
-  smtk::util::UUID uc14 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
-  smtk::util::UUID uc15 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
+  smtk::util::UUID uc07 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
+  smtk::util::UUID uc08 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
+  smtk::util::UUID uc09 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
+  smtk::util::UUID uc10 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
+  smtk::util::UUID uc11 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
+  smtk::util::UUID uc12 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
+  smtk::util::UUID uc13 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
+  smtk::util::UUID uc14 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
+  smtk::util::UUID uc15 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
 
-  smtk::util::UUID uc16 = sm.insertEntity(
+  smtk::util::UUID uc16 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc07)
     .appendRelation(uc08)
@@ -57,32 +57,32 @@ UUIDArray createTet(smtk::model::Storage& sm)
     .appendRelation(uc11)
     .appendRelation(uc12)
     )->first;
-  smtk::util::UUID uc17 = sm.insertEntity(
+  smtk::util::UUID uc17 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc10)
     .appendRelation(uc11)
     .appendRelation(uc12)
     )->first;
-  smtk::util::UUID uc18 = sm.insertEntity(
+  smtk::util::UUID uc18 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc07)
     .appendRelation(uc13)
     .appendRelation(uc14)
     )->first;
-  smtk::util::UUID uc19 = sm.insertEntity(
+  smtk::util::UUID uc19 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc08)
     .appendRelation(uc14)
     .appendRelation(uc15)
     )->first;
-  smtk::util::UUID uc20 = sm.insertEntity(
+  smtk::util::UUID uc20 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc09)
     .appendRelation(uc15)
     .appendRelation(uc13)
     )->first;
 
-  smtk::util::UUID uc21 = sm.insertEntity(
+  smtk::util::UUID uc21 = sm->insertEntity(
     Entity(CELL_ENTITY, 3)
     .appendRelation(uc16)
     .appendRelation(uc17)
@@ -90,7 +90,7 @@ UUIDArray createTet(smtk::model::Storage& sm)
     .appendRelation(uc19)
     .appendRelation(uc20))->first;
 
-  sm.setTessellation(uc21, Tessellation()
+  sm->setTessellation(uc21, Tessellation()
     .addCoords(x[0][0], x[0][1], x[0][2])
     .addCoords(x[1][0], x[1][1], x[1][2])
     .addCoords(x[2][0], x[2][1], x[2][2])
@@ -136,7 +136,7 @@ UUIDArray createTet(smtk::model::Storage& sm)
   // Add point coordinates
   for (int i = 0; i < 7; ++i)
     {
-    sm.setTessellation(uids[i],Tessellation().addCoords(x[i][0], x[i][1], x[i][2]));
+    sm->setTessellation(uids[i],Tessellation().addCoords(x[i][0], x[i][1], x[i][2]));
     }
 
   return uids;

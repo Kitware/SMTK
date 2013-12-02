@@ -148,7 +148,6 @@ void vtkSMTKModelMultiBlockSource::GenerateRepresentationFromModelEntity(
   pedigree->SetName("UUID");
   pd->SetPoints(pts.GetPointer());
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
-  vtkIdType i;
   smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
   if (it == model->tessellations().end())
     { // Oops.

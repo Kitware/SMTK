@@ -13,18 +13,15 @@
 using namespace smtk::util;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using smtk::shared_ptr;
 
 int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
 
-  UUIDsToEntities smTopology;
-  UUIDsToArrangements smArrangements;
-  UUIDsToTessellations smTessellation;
-  StoragePtr sm = StoragePtr(new Storage(&smTopology, &smArrangements, &smTessellation));
-
-  UUIDArray uids = createTet(*sm.get());
+  StoragePtr sm = Storage::New();
+  UUIDArray uids = createTet(sm);
 
   Cursors entities;
 

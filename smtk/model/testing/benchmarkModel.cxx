@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
   t.mark();
   for (int i = 0; i < numObj; ++i)
     {
-    createTet(*sm.get());
+    createTet(sm);
     }
   deltaT = t.elapsed();
   std::cout
