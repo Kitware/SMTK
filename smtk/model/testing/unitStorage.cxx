@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
   assert( smtk::model::isVertex(uc00Flags)    && "isVertex(vertexFlags) incorrect");
   assert(!smtk::model::isEdge(uc00Flags)      && "isEdge(vertexFlags) incorrect");
   assert(!smtk::model::isFace(uc00Flags)      && "isFace(vertexFlags) incorrect");
-  assert(!smtk::model::isRegion(uc00Flags)    && "isRegion(vertexFlags) incorrect");
+  assert(!smtk::model::isVolume(uc00Flags)    && "isVolume(vertexFlags) incorrect");
   assert(!smtk::model::isChain(uc00Flags)     && "isChain(vertexFlags) incorrect");
   assert(!smtk::model::isLoop(uc00Flags)      && "isLoop(vertexFlags) incorrect");
   assert(!smtk::model::isShell(uc00Flags)     && "isShell(vertexFlags) incorrect");

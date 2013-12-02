@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
   assert( entity.isVertex()    && "isVertex() incorrect");
   assert(!entity.isEdge()      && "isEdge() incorrect");
   assert(!entity.isFace()      && "isFace() incorrect");
-  assert(!entity.isRegion()    && "isRegion() incorrect");
+  assert(!entity.isVolume()    && "isVolume() incorrect");
   assert(!entity.isChain()     && "isChain() incorrect");
   assert(!entity.isLoop()      && "isLoop() incorrect");
   assert(!entity.isShell()     && "isShell() incorrect");

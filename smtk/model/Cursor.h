@@ -111,7 +111,7 @@ public:
   bool isVertex()    const { return smtk::model::isVertex(this->entityFlags()); }
   bool isEdge()      const { return smtk::model::isEdge(this->entityFlags()); }
   bool isFace()      const { return smtk::model::isFace(this->entityFlags()); }
-  bool isRegion()    const { return smtk::model::isRegion(this->entityFlags()); }
+  bool isVolume()    const { return smtk::model::isVolume(this->entityFlags()); }
   bool isChain()     const { return smtk::model::isChain(this->entityFlags()); }
   bool isLoop()      const { return smtk::model::isLoop(this->entityFlags()); }
   bool isShell()     const { return smtk::model::isShell(this->entityFlags()); }

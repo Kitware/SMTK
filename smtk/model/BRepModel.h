@@ -111,7 +111,7 @@ public:
   smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
   smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }
   smtk::util::UUID addFace() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2); }
-  smtk::util::UUID addRegion() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3); }
+  smtk::util::UUID addVolume() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3); }
   smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string())
     {
     smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);

@@ -40,11 +40,11 @@ enum EntityTypeBits
   VERTEX               = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   EDGE                 = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   FACE                 = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
-  REGION               = 0x00000108, //!< A cell of dimension 3 (i.e., a region)
+  VOLUME               = 0x00000108, //!< A cell of dimension 3 (i.e., a volume)
   CELL_0D              = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   CELL_1D              = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   CELL_2D              = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
-  CELL_3D              = 0x00000108, //!< A cell of dimension 3 (i.e., a region)
+  CELL_3D              = 0x00000108, //!< A cell of dimension 3 (i.e., a volume)
   ANY_CELL             = 0x000001ff, //!< A cell of any dimension
   VERTEX_USE           = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   EDGE_USE             = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
@@ -76,7 +76,7 @@ inline bool isCellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MA
 inline bool isVertex(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
 inline bool isEdge(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
 inline bool isFace(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
-inline bool isRegion(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
+inline bool isVolume(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
 
 inline bool isUseEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == USE_ENTITY; }
 inline bool isVertexUse(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }

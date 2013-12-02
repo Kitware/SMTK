@@ -186,10 +186,10 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
       result = "face use";
       break;
     case DIMENSION_3:
-      result = "region use";
+      result = "volume use";
       break;
     case DIMENSION_4:
-      result = "spacetime region use";
+      result = "spacetime volume use";
       break;
     default:
       result = "mixed-dimension cell use";
@@ -208,7 +208,7 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
       result = "shell";
       break;
     case DIMENSION_3 | DIMENSION_4:
-      // a spacetime region with no volumetric boundary
+      // a spacetime volume with no volumetric boundary
       result = "timeloop";
       break;
     case 0:
