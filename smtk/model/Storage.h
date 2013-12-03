@@ -46,16 +46,19 @@ public:
   bool hasArrangementsOfKindForEntity(
     const smtk::util::UUID& cellId,
     ArrangementKind,
-    Arrangements const* arr = NULL) const;
+    Arrangements** arr = NULL) const;
   bool hasArrangementsOfKindForEntity(
     const smtk::util::UUID& cellId,
     ArrangementKind,
-    Arrangements* arr = NULL);
+    Arrangements** arr = NULL);
 
   Arrangements& arrangementsOfKindForEntity(const smtk::util::UUID& cellId, ArrangementKind);
 
   const Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
   Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
+
+  smtk::util::UUID cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const;
+  smtk::util::UUID findOrCreateCellUseOfSense(const smtk::util::UUID& cell, int sense);
 
 protected:
   shared_ptr<UUIDsToArrangements> m_arrangements;

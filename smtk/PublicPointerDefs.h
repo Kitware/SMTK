@@ -30,12 +30,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SharedPtr.h"
 #include "smtk/util/SystemConfig.h"
 #include <set>
+#include <vector>
 
 namespace smtk
 {
   namespace model
   {
     class Arrangement;
+    typedef std::vector<Arrangement> Arrangements;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;

@@ -14,7 +14,7 @@ CellEntity ShellEntity::parentCell() const
     {
     Arrangements* arr = NULL;
     if (
-      this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, HAS_CELL, arr) &&
+      this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, HAS_CELL, &arr) &&
       !arr->empty())
       {
       Entity* entRec = this->m_storage->findEntity(this->m_entity);

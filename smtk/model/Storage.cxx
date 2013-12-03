@@ -125,7 +125,7 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
   * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
   */
 bool Storage::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements* arr)
+  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements** arr)
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -135,7 +135,7 @@ bool Storage::hasArrangementsOfKindForEntity(
       {
       if (arr)
         {
-        arr = &useIt->second;
+        *arr = &useIt->second;
         }
       return true;
       }
@@ -146,7 +146,7 @@ bool Storage::hasArrangementsOfKindForEntity(
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
 bool Storage::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements const* arr) const
+  const smtk::util::UUID& entity, ArrangementKind kind, Arrangements** arr) const
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -156,7 +156,7 @@ bool Storage::hasArrangementsOfKindForEntity(
       {
       if (arr)
         {
-        arr = &useIt->second;
+        *arr = &useIt->second;
         }
       return true;
       }
@@ -236,6 +236,51 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
     return NULL;
     }
   return &kit->second[index];
+}
+
+smtk::util::UUID Storage::cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const
+{
+  smtk::model::Arrangements* arr;
+  if (this->hasArrangementsOfKindForEntity(cell, HAS_USE, &arr) && !arr->empty())
+    { // See if any of this cell's uses match our sense.
+    for (smtk::model::Arrangements::iterator ait = arr->begin(); ait != arr->end(); ++ait)
+      {
+      if (ait->details()[1] == sense)
+        {
+        return this->findEntity(cell)->relations()[ait->details()[0]];
+        }
+      }
+    }
+  return smtk::util::UUID::null();
+}
+
+smtk::util::UUID Storage::findOrCreateCellUseOfSense(const smtk::util::UUID& cell, int sense)
+{
+  Entity* entity = this->findEntity(cell);
+  if (!entity)
+    {
+    return smtk::util::UUID::null();
+    }
+  smtk::model::Arrangements& arr(
+    this->arrangementsOfKindForEntity(cell, HAS_USE));
+  // See if any of this cell's uses match our sense...
+  for (smtk::model::Arrangements::const_iterator ait = arr.begin(); ait != arr.end(); ++ait)
+    {
+    if (ait->details()[1] == sense)
+      {
+      return entity->relations()[ait->details()[0]];
+      }
+    }
+  // ...nope, we need to create a new use with the specified sense relative to the cell.
+  UUIDWithEntity use = this->insertEntityOfTypeAndDimension(
+    USE_ENTITY | entity->dimensionBits(), entity->dimension());
+  smtk::util::UUIDArray::size_type useIdx = entity->relations().size();
+  entity->appendRelation(use->first);
+  smtk::util::UUIDArray::size_type cellIdx = use->second.relations().size();
+  use->second.appendRelation(cell);
+  this->arrangeEntity(cell, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(useIdx, sense));
+  this->arrangeEntity(use->first, HAS_CELL, Arrangement::UseHasCellWithIndexAndSense(cellIdx, sense));
+  return use->first;
 }
 
   } // namespace model
