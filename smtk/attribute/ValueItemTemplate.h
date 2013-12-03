@@ -243,7 +243,7 @@ namespace smtk
         {
         if (def->allowsExpressions())
           {
-          int i;
+          std::size_t i;
           for (i = newSize; i < n; i++)
             {
             this->m_expressions[i]->detachOwningItem();
@@ -274,7 +274,7 @@ namespace smtk
         }
       if (def->allowsExpressions())
         {
-        int i;
+        std::size_t i;
         this->m_expressions.resize(newSize);
         for (i = n; i < newSize; i++)
           {
