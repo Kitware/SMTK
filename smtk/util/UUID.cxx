@@ -119,6 +119,12 @@ UUID& UUID::operator = (const UUID& other)
   return *this;
 }
 
+/// Cast-to-boolean operator
+UUID::operator bool () const
+{
+  return this->isNull() ? false : true;
+}
+
 /// Write a UUID to a stream (as a string).
 std::ostream& operator << (std::ostream& stream, const UUID& uid)
 {

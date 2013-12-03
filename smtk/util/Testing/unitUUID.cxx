@@ -51,5 +51,9 @@ int main(int argc, char* argv[])
   assert(!e.isNull() && "random() constructor must not create NULL UUID");
   assert(f.isNull() && "null() constructor must create NULL UUID");
 
+  // Test casting to a boolean.
+  assert(!f && "Cast of null UUID to boolean should be false");
+  assert( b && "Cast of non-null UUID to boolean should be true");
+
   return 0;
 }
