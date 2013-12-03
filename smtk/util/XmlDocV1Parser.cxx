@@ -57,6 +57,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace pugi;
 using namespace smtk::util;
