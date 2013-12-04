@@ -138,10 +138,13 @@ int ExportJSON::forStorageEntity(
   cJSON* dim = cJSON_CreateNumber(entry->second.dimension());
   cJSON_AddItemToObject(cellRec, "e", ent);
   cJSON_AddItemToObject(cellRec, "d", dim);
-  cJSON_AddItemToObject(cellRec, "r",
-    cJSON_CreateUUIDArray(
-      &entry->second.relations()[0],
-      entry->second.relations().size()));
+  if (!entry->second.relations().empty())
+    {
+    cJSON_AddItemToObject(cellRec, "r",
+      cJSON_CreateUUIDArray(
+        &entry->second.relations()[0],
+        entry->second.relations().size()));
+    }
   return 1;
 }
 
