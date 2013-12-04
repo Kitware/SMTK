@@ -361,7 +361,7 @@ void qtUIManager::updateArrayTableWidget(
     }
 
   std::size_t n = dataItem->numberOfGroups();
-  std::size_t j, m = dataItem->numberOfItemsPerGroup();
+  std::size_t m = dataItem->numberOfItemsPerGroup();
   if(!m  || !n)
     {
     return;
@@ -380,7 +380,7 @@ void qtUIManager::updateArrayTableWidget(
     QTableWidgetItem *qtablewidgetitem = new QTableWidgetItem();
     widget->setHorizontalHeaderItem(h, qtablewidgetitem);
     }
-  for (j = 0; j < numCols; j++) // expecting one item for each column
+  for (int j = 0; j < numCols; j++) // expecting one item for each column
     {
     qtUIManager::updateTableColRows(dataItem->item(j), j, widget);
     }

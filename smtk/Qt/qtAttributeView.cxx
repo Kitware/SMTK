@@ -455,7 +455,7 @@ void qtAttributeView::updateItemWidgetsEnableState(
   else if(dynamic_pointer_cast<ValueItem>(inData))
     {
     smtk::attribute::ValueItemPtr linkedData = dynamic_pointer_cast<ValueItem>(inData);
-    for(int row=0; row<linkedData->numberOfValues(); row++, startRow++)
+    for(std::size_t row=0; row<linkedData->numberOfValues(); row++, startRow++)
       {
       QWidget* cellWidget = tableWidget->cellWidget(startRow, 1);
       if(cellWidget)
