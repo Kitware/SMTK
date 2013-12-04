@@ -20,6 +20,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 
+using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
 
@@ -46,7 +47,7 @@ public:
       << (mask & smtk::model::DIMENSION_3 ? " Volumes" : "")
       << "\n";
     }
-  virtual void Execute(vtkObject* caller, unsigned long eventId, void* callData)
+  virtual void Execute(vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData))
     {
     /*
     cout
@@ -231,12 +232,9 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  UUIDsToEntities smTopology;
-  UUIDsToArrangements smArrangements;
-  UUIDsToTessellations smTessellation;
-  StoragePtr sm = StoragePtr(new Storage(&smTopology, &smArrangements, &smTessellation));
+  StoragePtr sm = smtk::model::Storage::New();
 
-  int status = ! ImportJSON::intoModel(data.c_str(), sm.get());
+  int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (! status)
     {
     vtkNew<vtkSMTKModelView> view;

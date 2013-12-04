@@ -20,16 +20,16 @@ class SMTKCORE_EXPORT ExportJSON
 public:
   static cJSON* fromUUIDs(const smtk::util::UUIDs& uids);
 
-  static int fromModel(cJSON* json, Storage* model);
+  static int fromModel(cJSON* json, StoragePtr model);
   static std::string fromModel(StoragePtr model);
 
-  static int forStorage(cJSON* body, Storage* model);
-  static int forStorageEntity(UUIDWithEntity& entry, cJSON*, Storage* model);
-  static int forStorageArrangement(const UUIDWithArrangementDictionary& entry, cJSON*, Storage* model);
-  static int forStorageTessellation(const smtk::util::UUID& uid, cJSON*, Storage* model);
-  static int forStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
-  static int forStorageStringProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
-  static int forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int forStorage(cJSON* body, StoragePtr model);
+  static int forStorageEntity(UUIDWithEntity& entry, cJSON*, StoragePtr model);
+  static int forStorageArrangement(const UUIDWithArrangementDictionary& entry, cJSON*, StoragePtr model);
+  static int forStorageTessellation(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int forStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int forStorageStringProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
 };
 
   } // namespace model

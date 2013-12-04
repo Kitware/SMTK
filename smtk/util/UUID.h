@@ -64,6 +64,8 @@ public:
 
   UUID& operator = (UUID const& other);
 
+  operator bool() const;
+
 protected:
   // Implemented using Boost's UUID library.
   boost::uuids::uuid m_data;

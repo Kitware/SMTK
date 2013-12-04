@@ -12,6 +12,7 @@
 #include <string.h>
 
 using namespace smtk::model;
+using smtk::shared_ptr;
 
 int main(int argc, char* argv[])
 {
@@ -22,25 +23,19 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  UUIDsToEntities smTopology;
-  UUIDsToArrangements smArrangements;
-  UUIDsToTessellations smTessellation;
-  Storage sm(&smTopology, &smArrangements, &smTessellation);
+  StoragePtr sm = Storage::New();
 
   int status = 0;
-  status |= ImportJSON::intoModel(data.c_str(), &sm);
-  status |= ExportJSON::fromModel(json, &sm);
+  status |= ImportJSON::intoModel(data.c_str(), sm);
+  status |= ExportJSON::fromModel(json, sm);
 
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  UUIDsToEntities smTopology2;
-  UUIDsToArrangements smArrangements2;
-  UUIDsToTessellations smTessellation2;
-  Storage sm2(&smTopology2, &smArrangements2, &smTessellation2);
+  StoragePtr sm2 = Storage::New();
 
-  status |= ImportJSON::intoModel(exported, &sm2);
-  status |= ExportJSON::fromModel(json, &sm2);
+  status |= ImportJSON::intoModel(exported, sm2);
+  status |= ExportJSON::fromModel(json, sm2);
   char* exported2 = cJSON_Print(json);
 
   if (debug || strcmp(exported, exported2))

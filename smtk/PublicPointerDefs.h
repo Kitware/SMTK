@@ -30,12 +30,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SharedPtr.h"
 #include "smtk/util/SystemConfig.h"
 #include <set>
+#include <vector>
 
 namespace smtk
 {
   namespace model
   {
-    struct Arrangement;
+    class Arrangement;
+    typedef std::vector<Arrangement> Arrangements;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -47,7 +49,7 @@ namespace smtk
     class Model;
     class Storage;
     class ModelDomainItem;
-    struct Tessellation;
+    class Tessellation;
   }
 
   namespace attribute
@@ -81,6 +83,7 @@ namespace smtk
   {
     class UserData;
     class UUID;
+    class UUIDGenerator;
   }
 
   namespace view

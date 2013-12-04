@@ -10,7 +10,7 @@ namespace smtk {
   namespace model {
     namespace testing {
 
-smtk::util::UUIDArray createTet(smtk::model::Storage& sm);
+smtk::util::UUIDArray createTet(smtk::model::StoragePtr sm);
 
 class hexconst
 {

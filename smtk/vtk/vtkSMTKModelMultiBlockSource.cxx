@@ -81,12 +81,12 @@ void AddEntityTessToPolyData(
   vtkIdType connOffset = pts->GetNumberOfPoints();
   std::vector<vtkIdType> conn;
   std::string uuidStr = uid.toString();
-  vtkIdType npts = it->second.coords.size() / 3;
+  vtkIdType npts = it->second.coords().size() / 3;
   for (i = 0; i < npts; ++i)
     {
-    pts->InsertNextPoint(&it->second.coords[3*i]);
+    pts->InsertNextPoint(&it->second.coords()[3*i]);
     }
-  vtkIdType nconn = it->second.conn.size();
+  vtkIdType nconn = it->second.conn().size();
   int ptsPerPrim = 0;
   if (nconn == 0 && Dim == 0)
     { // every point is a vertex cell.
@@ -103,12 +103,12 @@ void AddEntityTessToPolyData(
       {
       if (Dim < 2)
         {
-        ptsPerPrim = it->second.conn[i];
+        ptsPerPrim = it->second.conn()[i];
         }
       else
         {
         // TODO: Handle "extended" format that allows lines and verts.
-        switch (it->second.conn[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
+        switch (it->second.conn()[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
           {
         case 0:
           ptsPerPrim = 3; //primType = VTK_TRIANGLE;
@@ -118,7 +118,7 @@ void AddEntityTessToPolyData(
           break;
         default:
             {
-            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << it->second.conn[i]);
+            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << it->second.conn()[i]);
             return;
             }
           }
@@ -131,7 +131,7 @@ void AddEntityTessToPolyData(
       // Rewrite connectivity for polydata:
       for (int k = 0; k < ptsPerPrim; ++k)
         {
-        conn[k] = it->second.conn[i + k + 1] + connOffset;
+        conn[k] = it->second.conn()[i + k + 1] + connOffset;
         }
       cells->InsertNextCell(ptsPerPrim, &conn[0]);
       pedigree->InsertNextValue(uuidStr);
@@ -148,13 +148,12 @@ void vtkSMTKModelMultiBlockSource::GenerateRepresentationFromModelEntity(
   pedigree->SetName("UUID");
   pd->SetPoints(pts.GetPointer());
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
-  vtkIdType i;
   smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
   if (it == model->tessellations().end())
     { // Oops.
     return;
     }
-  vtkIdType npts = it->second.coords.size() / 3;
+  vtkIdType npts = it->second.coords().size() / 3;
   pts->Allocate(npts);
   smtk::model::Entity* entity = model->findEntity(it->first);
   if (entity)
@@ -195,7 +194,6 @@ void vtkSMTKModelMultiBlockSource::GenerateRepresentationFromModel(
   mbds->SetNumberOfBlocks(model->tessellations().size());
   vtkIdType i;
   smtk::model::UUIDWithTessellation it;
-  vtkIdType npts = 0;
   for (i = 0, it = model->tessellations().begin(); it != model->tessellations().end(); ++it, ++i)
     {
     vtkNew<vtkPolyData> poly;

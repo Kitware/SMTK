@@ -16,7 +16,7 @@ BRepModel::BRepModel() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(true)
+  m_modelCount(1)
 {
   // TODO: throw() when topology == NULL?
 }
@@ -25,48 +25,37 @@ BRepModel::BRepModel() :
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel(UUIDsToEntities* topology, bool shouldDelete) :
+BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topology) :
   m_topology(topology),
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_deleteStorage(shouldDelete)
+  m_modelCount(1)
     { } // TODO: throw() when topology == NULL?
 
 BRepModel::~BRepModel()
 {
-  if (this->m_deleteStorage)
-    {
-    delete this->m_topology;
-    this->m_topology = NULL;
-    }
-}
-
-/// Change whether or not we should delete storage upon our own destruction.
-void BRepModel::setDeleteStorage(bool d)
-{
-  this->m_deleteStorage = d;
 }
 
 UUIDsToEntities& BRepModel::topology()
 {
-  return *this->m_topology;
+  return *this->m_topology.get();
 }
 
 const UUIDsToEntities& BRepModel::topology() const
 {
-  return *this->m_topology;
+  return *this->m_topology.get();
 }
 
 /// Entity construction
 //@{
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(unsigned int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dimension)
 {
   UUID actual;
   do
     {
-    actual = UUID::random();
+    actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setEntityOfTypeAndDimension(actual, entityFlags, dimension);
@@ -78,7 +67,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   UUID actual;
   do
     {
-    actual = UUID::random();
+    actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
   return this->setEntity(actual, c);
@@ -88,7 +77,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   *
   * Passing a non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, unsigned int entityFlags, int dimension)
+BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dimension)
 {
   UUIDsToEntities::iterator it;
   if (uid.isNull())
@@ -97,7 +86,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, uns
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->m_topology->find(uid)) != this->m_topology->end() && it->second.dimension() != dimension)
+  if ((it = this->m_topology->find(uid)) != this->m_topology->end())
     {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dimension;
@@ -140,7 +129,7 @@ BRepModel::iter_type BRepModel::setEntity(const UUID& uid, Entity& c)
 }
 
 /// A wrappable version of InsertEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimension(unsigned int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 {
   return this->insertEntityOfTypeAndDimension(entityFlags, dim)->first;
 }
@@ -152,7 +141,7 @@ UUID BRepModel::addEntity(Entity& cell)
 }
 
 /// A wrappable version of SetEntityOfTypeAndDimension
-UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, unsigned int entityFlags, int dim)
+UUID BRepModel::addEntityOfTypeAndDimensionWithUUID(const UUID& uid, BitFlags entityFlags, int dim)
 {
   return this->setEntityOfTypeAndDimension(uid, entityFlags, dim)->first;
 }
@@ -400,12 +389,12 @@ UUIDs BRepModel::adjacentEntities(const UUID& ofEntity, int ofDimension)
 }
 
 /// Return all entities of the requested dimension that are present in the solid.
-UUIDs BRepModel::entitiesMatchingFlags(unsigned int mask, bool exactMatch)
+UUIDs BRepModel::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
 {
   UUIDs result;
   for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
-    unsigned int masked = it->second.entityFlags() & mask;
+    BitFlags masked = it->second.entityFlags() & mask;
     if (
       (!exactMatch && masked) ||
       (exactMatch && masked == mask))
@@ -741,6 +730,251 @@ bool BRepModel::removeIntegerProperty(
     }
   uit->second.erase(sit);
   return true;
+}
+
+/// Add a vertex to storage (without any relationships)
+smtk::util::UUID BRepModel::addVertex()
+{
+  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0);
+}
+
+/// Add a vertex to storage (without any relationships)
+smtk::util::UUID BRepModel::addEdge()
+{
+  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1);
+}
+
+/// Add a vertex to storage (without any relationships)
+smtk::util::UUID BRepModel::addFace()
+{
+  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2);
+}
+
+/// Add a vertex to storage (without any relationships)
+smtk::util::UUID BRepModel::addVolume()
+{
+  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3);
+}
+
+/// Add a vertex use to storage (without any relationships)
+smtk::util::UUID BRepModel::addVertexUse()
+{
+  return this->addEntityOfTypeAndDimension(USE_ENTITY, 0);
+}
+
+/// Add a vertex use to storage (without any relationships)
+smtk::util::UUID BRepModel::addEdgeUse()
+{
+  return this->addEntityOfTypeAndDimension(USE_ENTITY, 1);
+}
+
+/// Add a vertex use to storage (without any relationships)
+smtk::util::UUID BRepModel::addFaceUse()
+{
+  return this->addEntityOfTypeAndDimension(USE_ENTITY, 2);
+}
+
+/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+smtk::util::UUID BRepModel::addChain()
+{
+  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1);
+}
+
+/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+smtk::util::UUID BRepModel::addLoop()
+{
+  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
+}
+
+/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+smtk::util::UUID BRepModel::addShell()
+{
+  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1);
+}
+
+/**\brief Add an entity group to storage (without any relationships).
+  *
+  * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
+  * This is an easy way to constrain the dimension of entities allowed to be members
+  * of the group.
+  *
+  * You may also specify a \a name for the group. If \a name is empty, then no
+  * name is assigned.
+  */
+smtk::util::UUID BRepModel::addGroup(int extraFlags, const std::string& name)
+{
+  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
+  this->setStringProperty(uid, "name", name);
+  return uid;
+}
+
+/**\brief Add a model to storage.
+  *
+  * The model will have the specified \a embeddingDim set as an integer property
+  * named "embedding dimension." This is the dimension of the space in which
+  * vertex coordinates live.
+  *
+  * A model may also be given a parametric dimension
+  * which is the maximum parametric dimension of any cell inserted into the model.
+  * The parametric dimension is the rank of the space spanned by the shape functions
+  * (for "parametric" meshes) or (for "discrete" meshes) barycentric coordinates of cells.
+  *
+  * You may also specify a \a name for the model. If \a name is empty, then no
+  * name is assigned.
+  *
+  * A model maintains counters used to number model entities by type (uniquely within the
+  * model). Any entities related to the model (directly or indirectly via topological
+  * relationships) may have these numbers assigned as names by calling assignDefaultNames().
+  */
+smtk::util::UUID BRepModel::addModel(
+  int parametricDim, int embeddingDim, const std::string& name)
+{
+  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
+  if (embeddingDim > 0)
+    {
+    this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
+    }
+  std::string tmpName(name);
+  if (tmpName.empty())
+    {
+    std::ostringstream defaultName;
+    defaultName << "Model ";
+    int count = this->m_modelCount++;
+    char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
+    int i;
+    for (i = 0; count > 0 && i < 7; ++i)
+      {
+      --count;
+      hexavigesimal[i] = 'A' + count % 26;
+      count /= 26;
+      }
+    for (--i; i >= 0; --i)
+      {
+      defaultName << hexavigesimal[i];
+      }
+    tmpName = defaultName.str();
+    }
+  this->setStringProperty(uid, "name", tmpName);
+  // New models keep counters indicating their local entity counters
+  Integer topoCountsData[] = {0, 0, 0, 0, 0, 0};
+  Integer groupCountsData[] = {0, 0, 0};
+  Integer otherCountsData[] = {0};
+  IntegerList topoCounts(
+    topoCountsData,
+    topoCountsData + sizeof(topoCountsData)/sizeof(topoCountsData[0]));
+  IntegerList groupCounts(
+    groupCountsData,
+    groupCountsData + sizeof(groupCountsData)/sizeof(groupCountsData[0]));
+  IntegerList otherCounts(
+    otherCountsData,
+    otherCountsData + sizeof(otherCountsData)/sizeof(otherCountsData[0]));
+  this->setIntegerProperty(uid, "cell_counters", topoCounts);
+  this->setIntegerProperty(uid, "use_counters", topoCounts);
+  this->setIntegerProperty(uid, "shell_counters", topoCounts);
+  this->setIntegerProperty(uid, "group_counters", groupCounts);
+  this->setIntegerProperty(uid, "model_counters", otherCounts);
+  this->setIntegerProperty(uid, "instance_counters", otherCounts);
+  this->setIntegerProperty(uid, "invalid_counters", otherCounts);
+  return uid;
+}
+
+/// Attempt to find a model owning the given entity.
+smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    int dim;
+    smtk::util::UUIDs uids;
+    uids.insert(uid);
+    for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
+      {
+      for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
+        {
+        Entity* bordEnt = this->findEntity(*uit);
+        if (!bordEnt) continue;
+        for (smtk::util::UUIDArray::iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
+          {
+          Entity* relEnt = this->findEntity(*rit);
+          if (relEnt && (relEnt->entityFlags() & MODEL_ENTITY))
+            {
+            return *rit;
+            }
+          }
+        }
+      // FIXME: This is slow. Avoid calling bordantEntities().
+      uids = this->bordantEntities(uids, dim + 1);
+      }
+    }
+  return smtk::util::UUID::null();
+}
+
+void BRepModel::assignDefaultNames()
+{
+  UUIDWithEntity it;
+  for (it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
+    {
+    if (!this->hasStringProperty(it->first, "name"))
+      {
+      this->assignDefaultName(it->first, it->second.entityFlags());
+      }
+    }
+}
+
+std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity it = this->m_topology->find(uid);
+  if (it != this->m_topology->end())
+    {
+    return this->assignDefaultName(it->first, it->second.entityFlags());
+    }
+  return std::string();
+}
+
+std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags)
+{
+  IntegerList& counts(
+    this->entityCounts(
+      this->modelOwningEntity(uid),
+      entityFlags));
+  std::string defaultName =
+    counts.empty() ?
+    this->shortUUIDName(uid, entityFlags) :
+    Entity::defaultNameFromCounters(entityFlags, counts);
+  this->setStringProperty(uid, "name", defaultName);
+  return defaultName;
+}
+
+std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags)
+{
+  std::string name = Entity::flagSummaryHelper(entityFlags);
+  name += "..";
+  std::string uidStr = uid.toString();
+  name += uidStr.substr(uidStr.size() - 4);
+  return name;
+}
+
+IntegerList& BRepModel::entityCounts(
+  const smtk::util::UUID& modelId, BitFlags entityFlags)
+{
+  switch (entityFlags & ENTITY_MASK)
+    {
+  case CELL_ENTITY:
+    return this->integerProperty(modelId, "cell_counters");
+  case USE_ENTITY:
+    return this->integerProperty(modelId, "use_counters");
+  case SHELL_ENTITY:
+    return this->integerProperty(modelId, "shell_counters");
+  case GROUP_ENTITY:
+    return this->integerProperty(modelId, "group_counters");
+  case MODEL_ENTITY:
+    return this->integerProperty(modelId, "model_counters");
+  case INSTANCE_ENTITY:
+    return this->integerProperty(modelId, "instance_counters");
+  default:
+    break;
+    }
+  return this->integerProperty(modelId, "invalid_counters");
 }
 
   } // model namespace

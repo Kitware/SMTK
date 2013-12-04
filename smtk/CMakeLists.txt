@@ -44,15 +44,17 @@ if(SMTK_BUILD_QT)
   smtk_prepend_string("Qt" QAttrLibUIs ${QAttrLibUIs})
 
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
+  qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc)
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES})
+  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
 
   set(qtsmtk_headers ${QAttrLibHeaders})
   set(qtsmtk_srcs
    ${QAttrLibSrcs}
    ${UI_BUILT_SOURCES}
+   ${RCS_RESOURCES}
    )
 
   add_library(QtSMTK ${qtsmtk_srcs})

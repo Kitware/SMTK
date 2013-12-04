@@ -9,7 +9,7 @@ if __name__ == '__main__':
   import sys
   status = 0
   try:
-    region = smtk.model.Entity(smtk.model.CELL_ENTITY, 3)
+    volume = smtk.model.Entity(smtk.model.CELL_ENTITY, 3)
     f1 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
     f2 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
     f3 = smtk.model.Entity(smtk.model.CELL_ENTITY, 2)
@@ -19,8 +19,8 @@ if __name__ == '__main__':
     u02 = mb.addEntity(f2)
     u03 = mb.addEntity(f3)
     u04 = mb.addEntity(f4)
-    region.appendRelation(u01).appendRelation(u02).appendRelation(u03).appendRelation(u04)
-    u00 = mb.addEntity(region)
+    volume.appendRelation(u01).appendRelation(u02).appendRelation(u03).appendRelation(u04)
+    u00 = mb.addEntity(volume)
     # Now verify that the faces refer back to the volume:
     status = 0 if mb.findEntity(u01).relations()[0] == u00 else 1
   except Exception, ex:

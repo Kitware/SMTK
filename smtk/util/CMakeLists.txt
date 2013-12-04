@@ -7,6 +7,7 @@ set(utilSrcs
   Logger.cxx
   UserData.cxx
   UUID.cxx
+  UUIDGenerator.cxx
   XmlDocV1Parser.cxx
   XmlV1StringWriter.cxx
   )
@@ -17,6 +18,7 @@ set(utilHeaders
   Logger.h
   UserData.h
   UUID.h
+  UUIDGenerator.h
   XmlDocV1Parser.h
   XmlV1StringWriter.h
   SystemConfig.h

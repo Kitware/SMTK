@@ -1,19 +1,23 @@
+#include "smtk/Qt/qtEntityItemDelegate.h"
 #include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/Storage.h"
+#include "smtk/model/testing/helpers.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
 #include <QtGui/QHeaderView>
 
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 
 #include <stdlib.h>
 
 using namespace std;
+using smtk::model::testing::hexconst;
 
 int main(int argc, char* argv[])
 {
@@ -43,10 +47,14 @@ int main(int argc, char* argv[])
 
   smtk::model::StoragePtr model = smtk::model::Storage::New();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
+  model->assignDefaultNames();
 
-  QEntityItemModel* qmodel = new QEntityItemModel(model);
+  smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel(model);
+  smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
   QTreeView* view = new QTreeView;
   view->setModel(qmodel);
+  view->setItemDelegate(qdelegate);
+  cout << "mask " << hexconst(mask) << "\n";
   qmodel->setSubset(model->entitiesMatchingFlags(mask, false));
 
   // Enable user sorting.
@@ -57,5 +65,10 @@ int main(int argc, char* argv[])
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
   std::cout << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+
+  delete view;
+  delete qmodel;
+  delete qdelegate;
+
   return status;
 }

@@ -67,6 +67,7 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
 
 vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation()
 {
+  this->SetApplyColors(NULL);
   this->SetTransform(NULL);
   this->SetMapper(NULL);
   this->SetActor(NULL);

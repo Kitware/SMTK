@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/icons/entityTypes">
+    <file>cell_08.svg</file>
+    <file>cell_04.svg</file>
+  </qresource>
+</RCC>

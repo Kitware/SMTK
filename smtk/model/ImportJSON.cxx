@@ -134,7 +134,7 @@ namespace {
         long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
-          arr.details.push_back(eger);
+          arr.details().push_back(eger);
           ++count;
           }
         }
@@ -148,18 +148,18 @@ namespace {
       return 0;
       }
     int count = 0;
-    tess.coords.clear();
+    tess.coords().clear();
     if (node->type == cJSON_Array)
       {
       int numEntries = cJSON_GetArraySize(node);
-      tess.coords.reserve(numEntries);
+      tess.coords().reserve(numEntries);
       cJSON* entry;
       for (entry = node->child; entry; entry = entry->next)
         {
         double coord;
         if (cJSON_GetRealValue(entry, coord) == 0)
           {
-          tess.coords.push_back(coord);
+          tess.coords().push_back(coord);
           ++count;
           }
         }
@@ -174,7 +174,7 @@ namespace {
       return 0;
       }
     int count = 0;
-    tess.conn.clear();
+    tess.conn().clear();
     if (node->type == cJSON_Array)
       {
       cJSON* entry;
@@ -183,7 +183,7 @@ namespace {
         long eger;
         if (cJSON_GetIntegerValue(entry, eger) == 0)
           {
-          tess.conn.push_back(eger);
+          tess.conn().push_back(eger);
           ++count;
           }
         }
@@ -287,12 +287,6 @@ using smtk::util::UUID;
 int ImportJSON::intoModel(
   const char* json, StoragePtr model)
 {
-  return ImportJSON::intoModel(json, model.get());
-}
-
-int ImportJSON::intoModel(
-  const char* json, Storage* model)
-{
   int status = 0;
   if (!json || !json[0] || !model)
     {
@@ -336,7 +330,7 @@ int ImportJSON::intoModel(
 }
 
 int ImportJSON::ofStorage(
-  cJSON* dict, Storage* model)
+  cJSON* dict, StoragePtr model)
 {
   if (!dict || !model)
     {
@@ -367,7 +361,7 @@ int ImportJSON::ofStorage(
 }
 
 int ImportJSON::ofStorageEntity(
-  const UUID& uid, cJSON* cellRec, Storage* model)
+  const UUID& uid, cJSON* cellRec, StoragePtr model)
 {
   long dim;
   long entityFlags;
@@ -384,7 +378,7 @@ int ImportJSON::ofStorageEntity(
 }
 
 int ImportJSON::ofStorageArrangement(
-  const UUID& uid, cJSON* dict, Storage* model)
+  const UUID& uid, cJSON* dict, StoragePtr model)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
   if (!arrNode)
@@ -420,7 +414,7 @@ int ImportJSON::ofStorageArrangement(
 }
 
 int ImportJSON::ofStorageTessellation(
-  const UUID& uid, cJSON* dict, Storage* model)
+  const UUID& uid, cJSON* dict, StoragePtr model)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
   if (!tessNode)
@@ -452,7 +446,7 @@ int ImportJSON::ofStorageTessellation(
   return 1;
 }
 
-int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 0;
   cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
@@ -473,7 +467,7 @@ int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dic
   return status ? 0 : 1;
 }
 
-int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 0;
   cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
@@ -494,7 +488,7 @@ int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* di
   return status ? 0 : 1;
 }
 
-int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, Storage* model)
+int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
 {
   int status = 0;
   cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
