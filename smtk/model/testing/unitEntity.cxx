@@ -91,43 +91,43 @@ int main()
     << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_3D | MODEL_BOUNDARY) << "\n"
     << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_DOMAIN  ) << "\n"
     << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY) << "\n"
+    ;
 
     // --- now test defaultNameFromCounters
 
-    << "0x" << hexconst(CELL_0D) << "  " << Entity::defaultNameFromCounters(CELL_0D, counters) << "\n"
-    << "0x" << hexconst(CELL_1D) << "  " << Entity::defaultNameFromCounters(CELL_1D, counters) << "\n"
-    << "0x" << hexconst(CELL_2D) << "  " << Entity::defaultNameFromCounters(CELL_2D, counters) << "\n"
-    << "0x" << hexconst(CELL_3D) << "  " << Entity::defaultNameFromCounters(CELL_3D, counters) << "\n"
+  summaries << "0x" << hexconst(CELL_0D) << "  " << Entity::defaultNameFromCounters(CELL_0D, counters) << "\n";
+  summaries << "0x" << hexconst(CELL_1D) << "  " << Entity::defaultNameFromCounters(CELL_1D, counters) << "\n";
+  summaries << "0x" << hexconst(CELL_2D) << "  " << Entity::defaultNameFromCounters(CELL_2D, counters) << "\n";
+  summaries << "0x" << hexconst(CELL_3D) << "  " << Entity::defaultNameFromCounters(CELL_3D, counters) << "\n";
 
-    << "0x" << hexconst(USE_0D) << "  " << Entity::defaultNameFromCounters(USE_0D, counters) << "\n"
-    << "0x" << hexconst(USE_1D) << "  " << Entity::defaultNameFromCounters(USE_1D, counters) << "\n"
-    << "0x" << hexconst(USE_2D) << "  " << Entity::defaultNameFromCounters(USE_2D, counters) << "\n"
+  summaries << "0x" << hexconst(USE_0D) << "  " << Entity::defaultNameFromCounters(USE_0D, counters) << "\n";
+  summaries << "0x" << hexconst(USE_1D) << "  " << Entity::defaultNameFromCounters(USE_1D, counters) << "\n";
+  summaries << "0x" << hexconst(USE_2D) << "  " << Entity::defaultNameFromCounters(USE_2D, counters) << "\n";
 
-    << "0x" << hexconst(SHELL_0D) << "  " << Entity::defaultNameFromCounters(SHELL_0D, counters) << "\n"
-    << "0x" << hexconst(SHELL_1D) << "  " << Entity::defaultNameFromCounters(SHELL_1D, counters) << "\n"
-    << "0x" << hexconst(SHELL_2D) << "  " << Entity::defaultNameFromCounters(SHELL_2D, counters) << "\n"
+  summaries << "0x" << hexconst(SHELL_0D) << "  " << Entity::defaultNameFromCounters(SHELL_0D, counters) << "\n";
+  summaries << "0x" << hexconst(SHELL_1D) << "  " << Entity::defaultNameFromCounters(SHELL_1D, counters) << "\n";
+  summaries << "0x" << hexconst(SHELL_2D) << "  " << Entity::defaultNameFromCounters(SHELL_2D, counters) << "\n";
 
-    << "0x" << hexconst(GROUP_0D) << "  " << Entity::defaultNameFromCounters(GROUP_0D, counters) << "\n"
-    << "0x" << hexconst(GROUP_1D) << "  " << Entity::defaultNameFromCounters(GROUP_1D, counters) << "\n"
-    << "0x" << hexconst(GROUP_2D) << "  " << Entity::defaultNameFromCounters(GROUP_2D, counters) << "\n"
-    << "0x" << hexconst(GROUP_3D) << "  " << Entity::defaultNameFromCounters(GROUP_3D, counters) << "\n"
+  summaries << "0x" << hexconst(GROUP_0D) << "  " << Entity::defaultNameFromCounters(GROUP_0D, counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_1D) << "  " << Entity::defaultNameFromCounters(GROUP_1D, counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_2D) << "  " << Entity::defaultNameFromCounters(GROUP_2D, counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_3D) << "  " << Entity::defaultNameFromCounters(GROUP_3D, counters) << "\n";
 
-    << "0x" << hexconst(GROUP_0D | GROUP_3D)
-    << "  " << Entity::defaultNameFromCounters(GROUP_0D | GROUP_3D, counters) << "\n"
+  summaries << "0x" << hexconst(GROUP_0D | GROUP_3D)
+    << "  " << Entity::defaultNameFromCounters(GROUP_0D | GROUP_3D, counters) << "\n";
 
-    << "0x" << hexconst(GROUP_2D | MODEL_DOMAIN  )
-    << "  " << Entity::defaultNameFromCounters(GROUP_2D | MODEL_DOMAIN  , counters) << "\n"
-    << "0x" << hexconst(GROUP_3D | MODEL_DOMAIN  )
-    << "  " << Entity::defaultNameFromCounters(GROUP_3D | MODEL_DOMAIN  , counters) << "\n"
-    << "0x" << hexconst(GROUP_2D | MODEL_BOUNDARY)
-    << "  " << Entity::defaultNameFromCounters(GROUP_2D | MODEL_BOUNDARY, counters) << "\n"
-    << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY)
-    << "  " << Entity::defaultNameFromCounters(GROUP_3D | MODEL_BOUNDARY, counters) << "\n"
-    << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  )
-    << "  " << Entity::defaultNameFromCounters(GROUP_ENTITY | MODEL_DOMAIN  , counters) << "\n"
-    << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY)
-    << "  " << Entity::defaultNameFromCounters(GROUP_ENTITY | MODEL_BOUNDARY, counters) << "\n"
-    ;
+  summaries << "0x" << hexconst(GROUP_2D | MODEL_DOMAIN  )
+    << "  " << Entity::defaultNameFromCounters(GROUP_2D | MODEL_DOMAIN  , counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_3D | MODEL_DOMAIN  )
+    << "  " << Entity::defaultNameFromCounters(GROUP_3D | MODEL_DOMAIN  , counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_2D | MODEL_BOUNDARY)
+    << "  " << Entity::defaultNameFromCounters(GROUP_2D | MODEL_BOUNDARY, counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY)
+    << "  " << Entity::defaultNameFromCounters(GROUP_3D | MODEL_BOUNDARY, counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  )
+    << "  " << Entity::defaultNameFromCounters(GROUP_ENTITY | MODEL_DOMAIN  , counters) << "\n";
+  summaries << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY)
+    << "  " << Entity::defaultNameFromCounters(GROUP_ENTITY | MODEL_BOUNDARY, counters) << "\n";
 
   bool ok = summaries.str() == correct;
   if (!ok)
