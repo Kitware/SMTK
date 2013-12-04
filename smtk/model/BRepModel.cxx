@@ -86,7 +86,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     msg << "Nil UUID";
     throw msg.str();
     }
-  if ((it = this->m_topology->find(uid)) != this->m_topology->end() && it->second.dimension() != dimension)
+  if ((it = this->m_topology->find(uid)) != this->m_topology->end())
     {
     std::ostringstream msg;
     msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dimension;
