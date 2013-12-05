@@ -24,7 +24,9 @@ static const char* cellNamesByDimension[] = {
   "mixed-dimension cell"
 };
 
-/**\class smtk::model::Entity - Store links between named entities.
+/**\class smtk::model::Entity
+  *
+  * Store links between named entities.
   */
 
 /// The default constructor creates an invalid link.
