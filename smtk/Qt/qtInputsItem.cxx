@@ -76,7 +76,9 @@ qtInputsItem::~qtInputsItem()
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck())
+  if(!dataObj || !this->passAdvancedCheck() ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      dataObj->definition()))
     {
     return;
     }
@@ -134,7 +136,9 @@ void qtInputsItem::loadInputValues(
 void qtInputsItem::updateUI()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck())
+  if(!dataObj || !this->passAdvancedCheck() ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      dataObj->definition()))
     {
     return;
     }

@@ -172,8 +172,10 @@ QWidget* qtAttribute::parentWidget()
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW)
 {
-  if(!qtUIManager::instance()->passItemAdvancedCheck(
-    item->definition()->advanceLevel()))
+  if(!qtUIManager::instance()->passAdvancedCheck(
+      item->definition()->advanceLevel()) ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      item->definition()))
     {
     return NULL;
     }

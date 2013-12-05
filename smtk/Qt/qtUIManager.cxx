@@ -203,16 +203,39 @@ void qtUIManager::updateModelViews()
 }
 
 //----------------------------------------------------------------------------
-bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
+std::string qtUIManager::currentCategory()
 {
-  return (!advancedItem || advancedItem==this->RootView->showAdvanced());
+  return this->RootView->currentCategory();
 }
 //----------------------------------------------------------------------------
-bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
+bool qtUIManager::categoryEnabled()
 {
-  return (!advancedAtt || advancedAtt==this->RootView->showAdvanced());
+  return this->RootView->categoryEnabled();
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAdvancedCheck(bool advanced)
+{
+  return (!advanced || advanced == this->RootView->showAdvanced());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAttributeCategoryCheck(
+  smtk::attribute::ConstDefinitionPtr AttDef)
+{
+  return this->passCategoryCheck(AttDef->categories());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passItemCategoryCheck(
+  smtk::attribute::ConstItemDefinitionPtr ItemDef)
+{
+  return this->passCategoryCheck(ItemDef->categories());
 }
 
+//----------------------------------------------------------------------------
+bool qtUIManager::passCategoryCheck(const std::set<std::string> & categories)
+{
+  return !this->RootView->categoryEnabled() ||
+    categories.find(this->RootView->currentCategory()) != categories.end();
+}
 //----------------------------------------------------------------------------
 void qtUIManager::processAttributeView(qtAttributeView* qtView)
 {

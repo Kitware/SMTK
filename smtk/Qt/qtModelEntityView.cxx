@@ -62,7 +62,6 @@ class qtModelEntityViewInternals
 {
 public:
   QListWidget* ListBox;
-  QComboBox* ShowCategoryCombo;
   QFrame* FiltersFrame;
   QFrame* topFrame;
   QFrame* bottomFrame;
@@ -132,23 +131,6 @@ void qtModelEntityView::createWidget( )
   QVBoxLayout* rightLayout = new QVBoxLayout(bottomFrame);
   rightLayout->setMargin(0);
 
-  this->Internals->FiltersFrame = new QFrame(bottomFrame);
-  QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
-  filterLayout->setMargin(0);
-  this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
-
-  const Manager* attMan = qtUIManager::instance()->attManager();
-  std::set<std::string>::const_iterator it;
-  const std::set<std::string> &cats = attMan->categories();
-  for (it = cats.begin(); it != cats.end(); it++)
-    {
-    this->Internals->ShowCategoryCombo->addItem(it->c_str());
-    }
-
-  QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
-  filterLayout->addWidget(labelShow);
-  filterLayout->addWidget(this->Internals->ShowCategoryCombo);
-
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   // create a list box for all the entries
   this->Internals->ListBox = new QListWidget(topFrame);
@@ -173,9 +155,6 @@ void qtModelEntityView::createWidget( )
     }
 
   // signals/slots
-  QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
-
   QObject::connect(this->Internals->ListBox,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
     this, SLOT(onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
@@ -266,8 +245,7 @@ void qtModelEntityView::onShowCategory()
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::model::GroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(
-      result, this->Internals->ShowCategoryCombo->currentText(),
-      this->Internals->attDefs);
+      result, this->Internals->attDefs);
     }
   else
     {
@@ -275,8 +253,7 @@ void qtModelEntityView::onShowCategory()
     if(theItem)
       {
       this->Internals->AssociationsWidget->showAttributeAssociation(
-        theItem, this->Internals->ShowCategoryCombo->currentText(),
-        this->Internals->attDefs);
+        theItem, this->Internals->attDefs);
       }
     }
 }

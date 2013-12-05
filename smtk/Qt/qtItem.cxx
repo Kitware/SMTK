@@ -113,6 +113,6 @@ QWidget* qtItem::parentWidget()
 bool qtItem::passAdvancedCheck()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  return qtUIManager::instance()->passItemAdvancedCheck(
+  return qtUIManager::instance()->passAdvancedCheck(
     dataObj->definition()->advanceLevel());
 }

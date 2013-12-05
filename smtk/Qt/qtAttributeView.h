@@ -50,7 +50,6 @@ namespace smtk
 
       QTableWidgetItem* getSelectedItem();
       int currentViewBy();
-      int currentCategory();
       virtual void createNewAttribute(smtk::attribute::DefinitionPtr attDef);
 
       enum enumViewBy
@@ -87,8 +86,8 @@ namespace smtk
       smtk::attribute::AttributePtr getSelectedAttribute();
       QTableWidgetItem* addAttributeListItem(smtk::attribute::AttributePtr childData);
       void addAttributePropertyItems(
-        smtk::attribute::AttributePtr childData, const QString& group);
-      void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem, const QString& group);
+        smtk::attribute::AttributePtr childData);
+      void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);
       void updateTableWithProperty(QString& propertyName,
         smtk::attribute::DefinitionPtr attDef);
       void addTableGroupItems(
