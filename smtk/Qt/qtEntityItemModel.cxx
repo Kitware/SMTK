@@ -177,7 +177,7 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
     switch (section)
       {
     case 0:
-      return "Type";
+      return "Entity"; // "Type";
     case 1:
       return "Dimension";
     case 2:
@@ -192,6 +192,13 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
     {
+    // A valid index may have a parent in any of 4 states:
+    // + invalid (in which case we use m_subset, m_reverse)
+    // + valid but with an invalid cursor (presentation same as above)
+    // + valid, with valid cursor, invalid kind (in which case we show arrangement types)
+    // + valid, with valid cursor and kind, invalid index (in which case we show arrangements of the right kind)
+    // + valid, with valid cursor, kind, and index (in which case we show all relations associated with the arrangement)
+
     int row = idx.row();
     int col = idx.column();
     smtk::util::UUID uid = this->m_subset[row];
