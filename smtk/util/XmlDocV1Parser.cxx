@@ -1998,11 +1998,11 @@ void XmlDocV1Parser::processViews(xml_node &root)
     {
     if(xml_attribute xatt = node.attribute("Bold"))
       {
-      rs->setAdvancedBold(strcmp(xatt.value(), "1"));
+      rs->setAdvancedBold(strcmp(xatt.value(), "1")==0);
       }
     if(xml_attribute xatt = node.attribute("Italic"))
       {
-      rs->setAdvancedItalic(strcmp(xatt.value(), "1"));
+      rs->setAdvancedItalic(strcmp(xatt.value(), "1")==0);
       }
     }
 
