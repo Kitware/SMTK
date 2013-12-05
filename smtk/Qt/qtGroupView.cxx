@@ -186,7 +186,14 @@ void qtGroupView::showAdvanced(int checked)
       }
     }
 }
-
+//----------------------------------------------------------------------------
+void qtGroupView::updateUI()
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->updateUI();
+    }
+}
 //----------------------------------------------------------------------------
 void qtGroupView::addTabEntry(qtBaseView* child)
 {

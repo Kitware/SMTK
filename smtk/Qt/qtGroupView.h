@@ -54,6 +54,7 @@ namespace smtk
 
     public slots:
       virtual void showAdvanced(int show);
+      virtual void updateUI();
 
     protected:
       virtual void createWidget( );
