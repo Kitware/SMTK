@@ -598,15 +598,6 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <!--<modify-function signature="topology()const" remove="all"/>-->
-        <!--<modify-function signature="topology()" remove="all"/>-->
-        <!--<add-function signature="topology()"
-          return-type="std::map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
-          <inject-code class="target" position="beginning">
-            %RETURN_TYPE %0 = %CPPSELF-&gt;topology();
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>-->
         <add-function signature="insertEntityOfTypeAndDimension(int, int)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
@@ -919,7 +910,7 @@
 
       <object-type name="Manager">
         <include file-name="smtk/attribute/Manager.h" location="local" />
-        <add-function signature="GetFromAddress(std::string const &amp;)"
+        <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
           static="yes"
           return-type="smtk::attribute::Manager *">
           <inject-code>
