@@ -85,14 +85,13 @@ public:
   QFrame* BottomFrame; // bottom
 
   QComboBox* ViewByCombo;
-  QComboBox* ShowCategoryCombo;
 
   QPointer<qtAssociationWidget> AssociationsWidget;
   QPointer<qtReferencesWidget> ReferencesWidget;
 
   // <category, AttDefinitions>
   QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
-
+QPointer<QComboBox> ShowCategoryCombo;
 };
 
 //----------------------------------------------------------------------------
@@ -159,22 +158,15 @@ void qtAttributeView::createWidget( )
   filterLayout->addWidget(labelViewBy, 0, 0);
   filterLayout->addWidget(this->Internals->ViewByCombo, 0, 1);
 
-  this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
-
   const Manager* attMan = qtUIManager::instance()->attManager();
   std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = attMan->categories();
   this->Internals->AttDefMap.clear();
   for (it = cats.begin(); it != cats.end(); it++)
     {
-    this->Internals->ShowCategoryCombo->addItem(it->c_str());
     QList<smtk::attribute::DefinitionPtr> attdeflist;
     this->Internals->AttDefMap[it->c_str()] = attdeflist;
     }
-
-  QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
-  filterLayout->addWidget(labelShow, 1, 0);
-  filterLayout->addWidget(this->Internals->ShowCategoryCombo, 1, 1);
 
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
   // create a list box for all the entries
@@ -233,8 +225,6 @@ void qtAttributeView::createWidget( )
 
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
-  QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
 
   QObject::connect(this->Internals->ListTable,
     SIGNAL(itemClicked (QTableWidgetItem*)),
@@ -609,8 +599,6 @@ void qtAttributeView::addAttributePropertyItems(
 QTableWidgetItem* qtAttributeView::addAttributeListItem(
   smtk::attribute::AttributePtr childData)
 {
-  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-
   QTableWidgetItem* item = new QTableWidgetItem(
       QString::fromUtf8(childData->name().c_str()),
       smtk_USER_DATA_TYPE);
@@ -1113,8 +1101,7 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
-    QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-    bool isColor = item->column() == 2;
+     bool isColor = item->column() == 2;
     if(isColor)
       {
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);

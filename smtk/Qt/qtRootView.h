@@ -49,14 +49,21 @@ namespace smtk
       void getChildView(smtk::view::Base::Type viewType,
         QList<qtBaseView*>& views);
       qtGroupView* getRootGroup();
+      bool showAdvanced();
+      bool categoryEnabled();
+      std::string currentCategory();
 
     public slots:
-      virtual void showAdvanced(int show);
+      virtual void onShowAdvanced(int show);
       virtual void updateViewUI(int currentTab);
+      virtual void enableShowBy(int enable);
+      virtual void onShowCategory();
 
     protected:
       virtual void createWidget( );
       virtual void initRootTabGroup( );
+      virtual void filterByCategory();
+
       QScrollArea *ScrollArea;
 
     private:

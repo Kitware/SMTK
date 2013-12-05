@@ -132,7 +132,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     qtUIManager::Instance = this;
     }
   this->RootView = NULL;
-  this->ShowAdvanced =false;
+
   if(manager.rootView())
     {
     this->advFont.setBold(manager.rootView()->advancedBold());
@@ -205,12 +205,12 @@ void qtUIManager::updateModelViews()
 //----------------------------------------------------------------------------
 bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
 {
-  return (!advancedItem || advancedItem==this->showAdvanced());
+  return (!advancedItem || advancedItem==this->RootView->showAdvanced());
 }
 //----------------------------------------------------------------------------
 bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
 {
-  return (!advancedAtt || advancedAtt==this->showAdvanced());
+  return (!advancedAtt || advancedAtt==this->RootView->showAdvanced());
 }
 
 //----------------------------------------------------------------------------
@@ -322,7 +322,6 @@ void qtUIManager::clearRoot()
     delete this->RootView;
     this->RootView = NULL;
     }
-  this->setShowAdvanced(false);
 }
 
 //----------------------------------------------------------------------------

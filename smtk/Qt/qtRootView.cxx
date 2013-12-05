@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QLabel>
 #include <QTableWidget>
 #include <QScrollArea>
+#include <QComboBox>
 
 using namespace smtk::attribute;
 
@@ -44,6 +45,8 @@ public:
 
   QPointer<QCheckBox> AdvancedCheck;
   QPointer<qtGroupView> TabGroup;
+  QPointer<QCheckBox> FilterByCheck;
+  QPointer<QComboBox> ShowCategoryCombo;
 };
 
 //----------------------------------------------------------------------------
@@ -93,19 +96,42 @@ void qtRootView::createWidget( )
   this->Internals->AdvancedCheck->setText("Show Advanced");
   this->Internals->AdvancedCheck->setFont(
     qtUIManager::instance()->advancedFont());
+
+  this->Internals->FilterByCheck = new QCheckBox(this->Widget);
+  this->Internals->FilterByCheck->setText("Show by Category: ");
+  this->Internals->ShowCategoryCombo = new QComboBox(this->Widget);
+  const Manager* attMan = qtUIManager::instance()->attManager();
+  std::set<std::string>::const_iterator it;
+  const std::set<std::string> &cats = attMan->categories();
+  for (it = cats.begin(); it != cats.end(); it++)
+    {
+    this->Internals->ShowCategoryCombo->addItem(it->c_str());
+    }
+  this->Internals->ShowCategoryCombo->setEnabled(false);
+  QHBoxLayout* layout = new QHBoxLayout(this->Widget);
+  layout->addWidget(this->Internals->AdvancedCheck);
+  layout->addWidget(this->Internals->FilterByCheck);
+  layout->addWidget(this->Internals->ShowCategoryCombo);
+
+  QObject::connect(this->Internals->FilterByCheck,
+    SIGNAL(stateChanged(int)), this, SLOT(enableShowBy(int)));
+  QObject::connect(this->Internals->ShowCategoryCombo,
+    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
+  
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
     this->parentWidget()->layout());
   parentlayout->setAlignment(Qt::AlignTop);
-  parentlayout->addWidget(this->Internals->AdvancedCheck);
+  parentlayout->addLayout(layout);
 
-  this->showAdvanced(0);
+  this->onShowAdvanced(0);
 
   QObject::connect(this->Internals->AdvancedCheck,
-    SIGNAL(stateChanged(int)), this, SLOT(showAdvanced(int)));
+    SIGNAL(stateChanged(int)), this, SLOT(onShowAdvanced(int)));
+
 }
 
 //----------------------------------------------------------------------------
-void qtRootView::showAdvanced(int checked)
+void qtRootView::onShowAdvanced(int checked)
 {
   int currentTab = 0;
 
@@ -131,7 +157,6 @@ void qtRootView::showAdvanced(int checked)
     delete this->Widget;
     delete this->ScrollArea;
     }
-  qtUIManager::instance()->setShowAdvanced(checked ? true : false);
 
   this->Widget = new QFrame(this->parentWidget());
 
@@ -217,3 +242,46 @@ void qtRootView::initRootTabGroup()
       }
     }
 }
+//----------------------------------------------------------------------------
+void qtRootView::enableShowBy(int enable)
+{
+  this->Internals->ShowCategoryCombo->setEnabled(enable);
+  this->filterByCategory();
+}
+//----------------------------------------------------------------------------
+void qtRootView::onShowCategory()
+{
+  this->filterByCategory();
+}
+//----------------------------------------------------------------------------
+void qtRootView::filterByCategory()
+{
+  QTabWidget* selfW = static_cast<QTabWidget*>(
+    this->Internals->TabGroup->widget());
+  if(selfW)
+    {
+    if(this->Internals->TabGroup->childViews().count())
+      {
+      int currentTab = selfW->currentIndex();
+      this->updateViewUI(currentTab);
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+bool qtRootView::showAdvanced()
+{
+  return this->Internals->AdvancedCheck->isChecked();
+}
+//----------------------------------------------------------------------------
+bool qtRootView::categoryEnabled()
+{
+  return this->Internals->FilterByCheck->isChecked();
+}
+//----------------------------------------------------------------------------
+std::string qtRootView::currentCategory()
+{
+  return this->categoryEnabled() ?
+    this->Internals->ShowCategoryCombo->currentText().toStdString() : "";
+}
+

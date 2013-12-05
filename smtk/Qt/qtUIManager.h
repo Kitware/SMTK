@@ -91,8 +91,10 @@ namespace smtk
       bool passAttributeAdvancedCheck(bool advancedAtt);
       const QFont& advancedFont()
         {return this->advFont;}
-      bool showAdvanced()
-      {  return this->ShowAdvanced;  }
+
+      bool passItemCategoryCheck(){ return true;}
+      bool passAttributeCategoryCheck() {return true;}
+
       void setWidgetToDefaultValueColor(QWidget *widget,
         bool setToDefault);
       bool getExpressionArrayString(
@@ -146,10 +148,6 @@ namespace smtk
       static void processSimpleExpressionView(qtSimpleExpressionView* v);
       static void processGroupView(qtGroupView* v);
       static void processBasicView(qtBaseView* v);
-
-      void setShowAdvanced(bool val)
-      {  this->ShowAdvanced = val;  }
-      bool ShowAdvanced;
 
     private:
       static qtUIManager* Instance;
