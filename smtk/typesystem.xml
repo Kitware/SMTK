@@ -520,9 +520,6 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
-  <!--value-type template="smtk::shared_ptr" args="smtk::attribute::Manager" >
-    <modify-function signature="findAttributes(std::string)" remove="all"/>
-  </value-type-->
 
   <value-type template="smtk::shared_ptr" args="smtk::view::Base" />
 
@@ -608,15 +605,6 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <!--<modify-function signature="topology()const" remove="all"/>-->
-        <!--<modify-function signature="topology()" remove="all"/>-->
-        <!--<add-function signature="topology()"
-          return-type="std::map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
-          <inject-code class="target" position="beginning">
-            %RETURN_TYPE %0 = %CPPSELF-&gt;topology();
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>-->
         <add-function signature="insertEntityOfTypeAndDimension(int, int)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
@@ -929,7 +917,18 @@
 
       <object-type name="Manager">
         <include file-name="smtk/attribute/Manager.h" location="local" />
-
+        <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
+          static="yes"
+          return-type="smtk::attribute::Manager *">
+          <inject-code>
+            unsigned long tadd;
+            std::stringstream ss;
+            ss &lt;&lt; std::hex &lt;&lt; %1;
+            ss &gt;&gt; tadd;
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::attribute::Manager * &gt;(tadd);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
         <modify-function signature="findAttributes(std::string, std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt;&amp;) const">
           <modify-argument index="2">
             <remove-argument />

@@ -50,12 +50,6 @@ namespace smtk
     class SMTKCORE_EXPORT Manager
     {
     public:
-      // static set and get methods for setting a Manager that can be accessed
-      // through the shiboken wrapping. we probably want to do something better
-      // in the future but I think that may require wrapping parts of CMB with
-      // shiboken.
-      static Manager* getGlobalManager();
-      static void setGlobalManager(Manager* m);
 
       Manager();
       virtual ~Manager();
