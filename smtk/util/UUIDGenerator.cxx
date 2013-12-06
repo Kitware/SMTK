@@ -17,7 +17,7 @@ public:
       {
       // This is a poor technique for seeding or
       // we would initialize this way all the time.
-        this->m_mtseed.seed(static_cast<boost::uin32_t>(time(NULL)));
+        this->m_mtseed.seed(time(NULL));
       this->m_randomGenerator =
         new boost::uuids::basic_random_generator<boost::mt19937>(&this->m_mtseed);
       }
