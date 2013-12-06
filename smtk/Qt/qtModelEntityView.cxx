@@ -61,10 +61,9 @@ using namespace smtk::attribute;
 class qtModelEntityViewInternals
 {
 public:
-  QListWidget* ListBox;
-  QFrame* FiltersFrame;
-  QFrame* topFrame;
-  QFrame* bottomFrame;
+  QPointer<QListWidget> ListBox;
+  QPointer<QFrame> topFrame;
+  QPointer<QFrame> bottomFrame;
   QPointer<qtAssociationWidget> AssociationsWidget;
   std::vector<smtk::attribute::DefinitionPtr> attDefs;
 };
@@ -137,7 +136,6 @@ void qtModelEntityView::createWidget( )
   this->Internals->ListBox->setSelectionMode(QAbstractItemView::SingleSelection);
 
   this->Internals->AssociationsWidget = new qtAssociationWidget(bottomFrame);
-  rightLayout->addWidget(this->Internals->FiltersFrame);
   rightLayout->addWidget(this->Internals->AssociationsWidget);
 
   leftLayout->addWidget(this->Internals->ListBox);

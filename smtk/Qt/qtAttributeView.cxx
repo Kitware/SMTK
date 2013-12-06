@@ -72,12 +72,15 @@ class qtAttributeViewInternals
 {
 public:
 
-  const QList<smtk::attribute::DefinitionPtr>& getCurrentDefs(
-    const QString &strCategory) const
+  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    const QString strCategory) const
   {
-    return this->AttDefMap.keys().contains(strCategory) ?
-           this->AttDefMap[strCategory] :
-           this->AllDefs;
+
+    if(this->AttDefMap.keys().contains(strCategory))
+      {
+      return this->AttDefMap[strCategory];
+      }
+    return this->AllDefs;
   }
   qtTableWidget* ListTable;
   qtTableWidget* ValuesTable;
