@@ -71,6 +71,17 @@ using namespace smtk::attribute;
 class qtAttributeViewInternals
 {
 public:
+
+  const QList<smtk::attribute::DefinitionPtr> getCurrentDefs(
+    const QString strCategory) const
+  {
+
+    if(this->AttDefMap.keys().contains(strCategory))
+      {
+      return this->AttDefMap[strCategory];
+      }
+    return this->AllDefs;
+  }
   qtTableWidget* ListTable;
   qtTableWidget* ValuesTable;
 
@@ -85,7 +96,6 @@ public:
   QFrame* BottomFrame; // bottom
 
   QComboBox* ViewByCombo;
-  QComboBox* ShowCategoryCombo;
 
   QPointer<qtAssociationWidget> AssociationsWidget;
   QPointer<qtReferencesWidget> ReferencesWidget;
@@ -93,6 +103,8 @@ public:
   // <category, AttDefinitions>
   QMap<QString, QList<smtk::attribute::DefinitionPtr> > AttDefMap;
 
+  // All definitions list
+  QList<smtk::attribute::DefinitionPtr> AllDefs;
 };
 
 //----------------------------------------------------------------------------
@@ -159,22 +171,15 @@ void qtAttributeView::createWidget( )
   filterLayout->addWidget(labelViewBy, 0, 0);
   filterLayout->addWidget(this->Internals->ViewByCombo, 0, 1);
 
-  this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
-
   const Manager* attMan = qtUIManager::instance()->attManager();
   std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = attMan->categories();
   this->Internals->AttDefMap.clear();
   for (it = cats.begin(); it != cats.end(); it++)
     {
-    this->Internals->ShowCategoryCombo->addItem(it->c_str());
     QList<smtk::attribute::DefinitionPtr> attdeflist;
     this->Internals->AttDefMap[it->c_str()] = attdeflist;
     }
-
-  QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
-  filterLayout->addWidget(labelShow, 1, 0);
-  filterLayout->addWidget(this->Internals->ShowCategoryCombo, 1, 1);
 
   QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
   // create a list box for all the entries
@@ -233,8 +238,6 @@ void qtAttributeView::createWidget( )
 
   QObject::connect(this->Internals->ViewByCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onViewBy(int)));
-  QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
 
   QObject::connect(this->Internals->ListTable,
     SIGNAL(itemClicked (QTableWidgetItem*)),
@@ -325,8 +328,7 @@ void qtAttributeView::updateAssociationEnableState(
     if(theAtt->definition()->associationMask())
       {
       avisible = true;
-      this->Internals->AssociationsWidget->showEntityAssociation(
-        theAtt, this->Internals->ShowCategoryCombo->currentText());
+      this->Internals->AssociationsWidget->showEntityAssociation(theAtt);
       }
     }
   this->Internals->AssociationsWidget->setVisible(avisible);
@@ -350,8 +352,7 @@ void qtAttributeView::onListBoxSelectionChanged()
       this->updateAssociationEnableState(dataItem);
       if(dataItem)
         {
-        QString strMaterail = this->Internals->ShowCategoryCombo->currentText();
-        this->updateTableWithAttribute(dataItem,strMaterail);
+        this->updateTableWithAttribute(dataItem);
         }
       }
     else if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_PROPERTY)
@@ -476,11 +477,11 @@ void qtAttributeView::onCreateNew()
     return;
     }
   attribute::DefinitionPtr newAttDef = aview->definition(0);
-  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
 
   QString strDef = this->Internals->DefsCombo->currentText();
   foreach (attribute::DefinitionPtr attDef,
-    this->Internals->AttDefMap[strCategory])
+    this->Internals->getCurrentDefs(
+      qtUIManager::instance()->currentCategory().c_str()))
     {
     if(strDef == QString::fromUtf8(attDef->label().c_str()))
       {
@@ -557,7 +558,7 @@ void qtAttributeView::onDeleteSelected()
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addAttributePropertyItems(
-  smtk::attribute::AttributePtr childData, const QString& group)
+  smtk::attribute::AttributePtr childData)
 {
   if(!childData)
     {
@@ -571,8 +572,9 @@ void qtAttributeView::addAttributePropertyItems(
   for (i = 0; i < n; i++)
     {
     smtk::attribute::ItemPtr attItem = childData->item(i);
-    if(attItem->definition()->isMemberOf(group.toStdString()) &&
-      qtUIManager::instance()->passItemAdvancedCheck(
+    if(qtUIManager::instance()->passItemCategoryCheck(
+        attItem->definition()) &&
+      qtUIManager::instance()->passAdvancedCheck(
       attItem->definition()->advanceLevel()))
       {
       // No User data, not editable
@@ -609,8 +611,6 @@ void qtAttributeView::addAttributePropertyItems(
 QTableWidgetItem* qtAttributeView::addAttributeListItem(
   smtk::attribute::AttributePtr childData)
 {
-  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-
   QTableWidgetItem* item = new QTableWidgetItem(
       QString::fromUtf8(childData->name().c_str()),
       smtk_USER_DATA_TYPE);
@@ -651,9 +651,11 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     return;
     }
-  QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-  this->Internals->AddButton->setEnabled(
-    this->Internals->AttDefMap[strCategory].count()>0);
+
+  QList<smtk::attribute::DefinitionPtr> currentDefs =
+    this->Internals->getCurrentDefs(
+    qtUIManager::instance()->currentCategory().c_str());
+  this->Internals->AddButton->setEnabled(currentDefs.count()>0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
   this->Internals->ButtonsFrame->setEnabled(viewAtt);
@@ -672,8 +674,7 @@ void qtAttributeView::onViewBy(int viewBy)
     this->Internals->ListTable->setHorizontalHeaderItem(2, new QTableWidgetItem("Color"));
     }
   this->Internals->DefsCombo->clear();
-  foreach (attribute::DefinitionPtr attDef,
-    this->Internals->AttDefMap[strCategory])
+  foreach (attribute::DefinitionPtr attDef, currentDefs)
     {
     if(!attDef->isAbstract())
       {
@@ -684,8 +685,7 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->DefsCombo->setCurrentIndex(0);
   this->Internals->DefsCombo->setVisible(true);
 
-  foreach (attribute::DefinitionPtr attDef,
-    this->Internals->AttDefMap[strCategory])
+  foreach (attribute::DefinitionPtr attDef, currentDefs)
     {
     this->onViewByWithDefinition(viewBy, attDef);
     }
@@ -709,7 +709,6 @@ void qtAttributeView::onViewByWithDefinition(
   attManager->findAttributes(attDef, result);
   if(result.size())
     {
-    QString strCategory = this->Internals->ShowCategoryCombo->currentText();
       //this->Internals->ButtonsFrame->setEnabled(true);
     if(viewBy == VIEWBY_Attribute)
       {
@@ -726,7 +725,7 @@ void qtAttributeView::onViewByWithDefinition(
     else if(viewBy == VIEWBY_PROPERTY)
       {
       //this->Internals->ButtonsFrame->setEnabled(false);
-      this->addAttributePropertyItems(result[0],strCategory);
+      this->addAttributePropertyItems(result[0]);
       }
     }
 }
@@ -739,7 +738,7 @@ void qtAttributeView::onShowCategory()
 
 //----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithAttribute(
-  smtk::attribute::AttributePtr att, const QString& group)
+  smtk::attribute::AttributePtr att)
 {
   QTableWidget* widget = this->Internals->ValuesTable;
   widget->setColumnCount(3);
@@ -757,35 +756,34 @@ void qtAttributeView::updateTableWithAttribute(
     smtk::attribute::ItemPtr attItem = att->item(i);
     const ItemDefinition* itemDef =
      dynamic_cast<const ItemDefinition*>(attItem->definition().get());
-    if(!qtUIManager::instance()->passItemAdvancedCheck(
-      itemDef->advanceLevel()))
+    if(!qtUIManager::instance()->passAdvancedCheck(
+      itemDef->advanceLevel()) ||
+      !qtUIManager::instance()->passItemCategoryCheck(
+        attItem->definition()))
       {
       continue;
       }
-    if(itemDef->isMemberOf(group.toStdString()))
+    if(attItem->type() == smtk::attribute::Item::GROUP)
       {
-      if(attItem->type() == smtk::attribute::Item::GROUP)
-        {
-        this->addTableGroupItems(
-          dynamic_pointer_cast<GroupItem>(attItem), numRows);
-        }
-      else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
-        {
-        this->addTableAttRefItems(
-          dynamic_pointer_cast<RefItem>(attItem), numRows,
-          itemDef->label().c_str(), itemDef->advanceLevel());
-        }
-      else if(attItem->type() == smtk::attribute::Item::VOID)
-        {
-        this->addTableVoidItems(
-          dynamic_pointer_cast<VoidItem>(attItem), numRows,
-          itemDef->label().c_str(), itemDef->advanceLevel());
-        }
-      else if(dynamic_pointer_cast<ValueItem>(attItem))
-        {
-        this->addTableValueItems(
-          dynamic_pointer_cast<ValueItem>(attItem), numRows);
-        }
+      this->addTableGroupItems(
+        dynamic_pointer_cast<GroupItem>(attItem), numRows);
+      }
+    else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
+      {
+      this->addTableAttRefItems(
+        dynamic_pointer_cast<RefItem>(attItem), numRows,
+        itemDef->label().c_str(), itemDef->advanceLevel());
+      }
+    else if(attItem->type() == smtk::attribute::Item::VOID)
+      {
+      this->addTableVoidItems(
+        dynamic_pointer_cast<VoidItem>(attItem), numRows,
+        itemDef->label().c_str(), itemDef->advanceLevel());
+      }
+    else if(dynamic_pointer_cast<ValueItem>(attItem))
+      {
+      this->addTableValueItems(
+        dynamic_pointer_cast<ValueItem>(attItem), numRows);
       }
     }
 }
@@ -821,8 +819,10 @@ void qtAttributeView::updateTableWithProperty(
       smtk::attribute::ItemPtr attItem = (*it)->item(i);
       const ItemDefinition* itemDef =
       dynamic_cast<const ItemDefinition*>(attItem->definition().get());
-      if(!qtUIManager::instance()->passItemAdvancedCheck(
-        itemDef->advanceLevel()))
+      if(!qtUIManager::instance()->passAdvancedCheck(
+          itemDef->advanceLevel()) ||
+        !qtUIManager::instance()->passItemCategoryCheck(
+          attItem->definition()))
         {
         continue;
         }
@@ -1073,15 +1073,10 @@ int qtAttributeView::currentViewBy()
 {
   return this->Internals->ViewByCombo->currentIndex();
 }
-//----------------------------------------------------------------------------
-int qtAttributeView::currentCategory()
-{
-  return this->Internals->ShowCategoryCombo->currentIndex();
-}
+
 //----------------------------------------------------------------------------
 void qtAttributeView::getAllDefinitions()
 {
-  QList<smtk::attribute::DefinitionPtr> defs;
   smtk::view::AttributePtr aview =
     smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
   if(!aview || !aview->numberOfDefinitions())
@@ -1092,10 +1087,10 @@ void qtAttributeView::getAllDefinitions()
   for (i = 0; i < n; i++)
     {
     attribute::DefinitionPtr attDef = aview->definition(i);
-    this->qtBaseView::getDefinitions(attDef, defs);
+    this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     }
 
-  foreach (smtk::attribute::DefinitionPtr adef, defs)
+  foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
     {
     foreach(QString category, this->Internals->AttDefMap.keys())
       {
@@ -1113,8 +1108,7 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
 {
   if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
-    QString strCategory = this->Internals->ShowCategoryCombo->currentText();
-    bool isColor = item->column() == 2;
+     bool isColor = item->column() == 2;
     if(isColor)
       {
       QTableWidgetItem* selItem = this->Internals->ListTable->item(item->row(), 0);

@@ -605,8 +605,10 @@ void qtSimpleExpressionView::onDeleteSelected()
 QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
   smtk::attribute::AttributePtr childData)
 {
-  if(!qtUIManager::instance()->passAttributeAdvancedCheck(
-    childData->definition()->advanceLevel()))
+  if(!qtUIManager::instance()->passAdvancedCheck(
+    childData->definition()->advanceLevel()) ||
+    !qtUIManager::instance()->passAttributeCategoryCheck(
+      childData->definition()))
     {
     return NULL;
     }

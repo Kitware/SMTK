@@ -132,7 +132,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     qtUIManager::Instance = this;
     }
   this->RootView = NULL;
-  this->ShowAdvanced =false;
+
   if(manager.rootView())
     {
     this->advFont.setBold(manager.rootView()->advancedBold());
@@ -203,16 +203,40 @@ void qtUIManager::updateModelViews()
 }
 
 //----------------------------------------------------------------------------
-bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
+std::string qtUIManager::currentCategory()
 {
-  return (!advancedItem || advancedItem==this->showAdvanced());
+  return this->RootView ? this->RootView->currentCategory() : "";
 }
 //----------------------------------------------------------------------------
-bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
+bool qtUIManager::categoryEnabled()
 {
-  return (!advancedAtt || advancedAtt==this->showAdvanced());
+  return this->RootView ? this->RootView->categoryEnabled() : false;
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAdvancedCheck(bool advanced)
+{
+  return (!advanced || this->RootView == NULL ||
+    advanced == this->RootView->showAdvanced());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAttributeCategoryCheck(
+  smtk::attribute::ConstDefinitionPtr AttDef)
+{
+  return this->passCategoryCheck(AttDef->categories());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passItemCategoryCheck(
+  smtk::attribute::ConstItemDefinitionPtr ItemDef)
+{
+  return this->passCategoryCheck(ItemDef->categories());
 }
 
+//----------------------------------------------------------------------------
+bool qtUIManager::passCategoryCheck(const std::set<std::string> & categories)
+{
+  return !this->categoryEnabled() ||
+    categories.find(this->currentCategory()) != categories.end();
+}
 //----------------------------------------------------------------------------
 void qtUIManager::processAttributeView(qtAttributeView* qtView)
 {
@@ -322,7 +346,6 @@ void qtUIManager::clearRoot()
     delete this->RootView;
     this->RootView = NULL;
     }
-  this->setShowAdvanced(false);
 }
 
 //----------------------------------------------------------------------------

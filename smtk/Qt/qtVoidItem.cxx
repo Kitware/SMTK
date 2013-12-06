@@ -57,7 +57,9 @@ qtVoidItem::~qtVoidItem()
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck() || !dataObj->isOptional())
+  if(!dataObj || !this->passAdvancedCheck() || !dataObj->isOptional() ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      dataObj->definition()))
     {
     return;
     }
