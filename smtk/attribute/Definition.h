@@ -165,8 +165,8 @@ namespace smtk
       bool associatesWithRegion() const;
       bool associatesWithModel() const;
       bool associatesWithGroup() const;
-      bool canBeAssociated(smtk::model::MaskType type) const
-      { return (type == (type & this->m_associationMask));}
+      bool canBeAssociated(smtk::model::MaskType maskType) const
+      { return (maskType == (maskType & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return
       // the appropriate associatesWith method
