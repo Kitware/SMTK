@@ -73,8 +73,8 @@ namespace smtk
 
       const double *color() const;
       void setColor(double r, double g, double b, double alpha);
-      void setColor(const double *color)
-      {this->setColor(color[0], color[1], color[2], color[3]);}
+      void setColor(const double *l_color)
+      {this->setColor(l_color[0], l_color[1], l_color[2], l_color[3]);}
       bool isColorSet() const
       {return this->m_isColorSet;}
       void unsetColor()
@@ -141,8 +141,8 @@ namespace smtk
                 smtk::attribute::DefinitionPtr myDefinition, unsigned long myId);
 
       void removeAllItems();
-      void addItem(smtk::attribute::ItemPtr item)
-      {this->m_items.push_back(item);}
+      void addItem(smtk::attribute::ItemPtr iPtr)
+      {this->m_items.push_back(iPtr);}
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
