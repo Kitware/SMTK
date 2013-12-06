@@ -290,10 +290,10 @@ smtk::util::UUID Storage::findOrCreateCellUseOfSense(
 
   this->arrangeEntity(
     cell, HAS_USE,
-    Arrangement::CellHasUseWithIndexAndSense(useIdx, sense));
+    Arrangement::CellHasUseWithIndexAndSense(static_cast<int>(useIdx), sense));
   this->arrangeEntity(
     use->first, HAS_CELL,
-    Arrangement::UseHasCellWithIndexAndSense(cellIdx, sense));
+    Arrangement::UseHasCellWithIndexAndSense(static_cast<int>(cellIdx), sense));
 
   return use->first;
 }

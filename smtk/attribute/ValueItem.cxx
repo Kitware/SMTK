@@ -171,7 +171,7 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
     {
     return false; // Attribute is of the proper type
     }
-  n = m_expressions.size();
+  n = static_cast<int>(m_expressions.size());
   this->m_expressions.resize(n+1);
   def->buildExpressionItem(this, n);
   this->m_expressions[n]->setValue(exp);

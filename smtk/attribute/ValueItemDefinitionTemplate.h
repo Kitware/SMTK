@@ -167,7 +167,7 @@ namespace smtk
         {
         return -1;
         }
-      int i, n = this->m_discreteValues.size();
+      int i, n = static_cast<int>(this->m_discreteValues.size());
       for (i = 0; i < n; i++)
         {
         if (this->m_discreteValues[i] == val)

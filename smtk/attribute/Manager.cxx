@@ -425,7 +425,7 @@ derivedDefinitions(smtk::attribute::DefinitionPtr def,
     {
     return;
     }
-  int i, n = it->second.size();
+  std::size_t i, n = it->second.size();
   result.resize(n);
   smtk::attribute::WeakDefinitionPtrSet::const_iterator dit;
   for (i = 0, dit = it->second.begin(); i < n; dit++, i++)

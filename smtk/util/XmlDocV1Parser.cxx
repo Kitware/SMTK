@@ -1048,7 +1048,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   attribute::AttributePtr att;
   attribute::DefinitionPtr def;
   unsigned long id, maxId = 0;
-  std::size_t i, n;
+  int i, n;
 
   xatt = attNode.attribute("Name");
   if (!xatt)
@@ -1133,7 +1133,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   // NOTE That the writer processes the items in order - lets assume
   // that for speed and if that fails we can try to search for the correct
   // xml node
-  n = att->numberOfItems();
+  n = static_cast<int>(att->numberOfItems());
   for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
        i++, iNode = iNode.next_sibling())
     {
@@ -1275,7 +1275,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
         continue;
         }
       index = val.text().as_int();
-      if (!item->setDiscreteIndex(i, index))
+      if (!item->setDiscreteIndex(static_cast<int>(i), index))
         {
         smtkErrorMacro(this->m_logger,
                        "Discrete Index " << index
@@ -1353,12 +1353,12 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
       att = this->m_manager.findAttribute(attName);
       if (!att)
         {
-        info.item = item; info.pos = i; info.attName = attName;
+        info.item = item; info.pos = static_cast<int>(i); info.attName = attName;
         this->m_attRefInfo.push_back(info);
         }
       else
         {
-        item->setValue(i, att);
+        item->setValue(static_cast<int>(i), att);
         }
       }
     }
@@ -1433,7 +1433,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         continue;
         }
-      item->setValue(i, val.text().get());
+      item->setValue(static_cast<int>(i), val.text().get());
       }
     }
   else if (numRequiredVals == 1)
@@ -1516,7 +1516,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().as_double());
+        item->setValue(static_cast<int>(i), val.text().as_double());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -1524,12 +1524,12 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else
@@ -1619,7 +1619,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         continue;
         }
-      item->setValue(i, val.text().get());
+      item->setValue(static_cast<int>(i), val.text().get());
       }
     }
   else if (numRequiredVals == 1)
@@ -1689,7 +1689,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                        << " for Group Item: " << item->name());
           continue;
           }
-        this->processItem(itemNode, item->item(i,j));
+        this->processItem(itemNode, item->item(static_cast<int>(i),static_cast<int>(j)));
         }
       }
     }
@@ -1705,7 +1705,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                        << " for Group Item: " << item->name());
           continue;
           }
-        this->processItem(itemNode, item->item(j));
+        this->processItem(itemNode, item->item(static_cast<int>(j)));
         }
     }
   else
@@ -1779,7 +1779,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().as_int());
+        item->setValue(static_cast<int>(i), val.text().as_int());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -1787,12 +1787,12 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else
@@ -1900,7 +1900,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().get());
+        item->setValue(static_cast<int>(i), val.text().get());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -1908,12 +1908,12 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else

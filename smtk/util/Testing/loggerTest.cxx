@@ -34,7 +34,7 @@ int main()
   smtkWarningMacro(logger, "this is a warning no = " << 10.1234 << " WARNING!");
   smtkDebugMacro(logger, "this is a Debug no = " << 1 << " DEBUG!");
   logger.addRecord(smtk::util::Logger::INFO, "Sample Info String\n");
-  int i, n = logger.numberOfRecords();
+  std::size_t i, n = logger.numberOfRecords();
   if (n != 4)
     {
     std::cerr << "Wrong number of records!  Got " << n << " Should be 4!\n";

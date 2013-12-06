@@ -68,7 +68,7 @@ namespace smtk
           std::size_t n = this->m_itemDefs.size();
           item = SharedTypes::RawPointerType::New(name);
           this->m_itemDefs.push_back(item);
-          this->m_itemDefPositions[name] = n;
+          this->m_itemDefPositions[name] = static_cast<int>(n);
           }
         return item;
       }
