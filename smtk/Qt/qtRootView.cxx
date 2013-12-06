@@ -47,6 +47,20 @@ public:
   QPointer<qtGroupView> TabGroup;
   QPointer<QCheckBox> FilterByCheck;
   QPointer<QComboBox> ShowCategoryCombo;
+
+  void deleteWidget(QWidget* w)
+  {
+    if(w)
+      {
+      delete w;
+      }
+  }
+  void clearWidgets()
+  {
+    this->deleteWidget(this->AdvancedCheck);
+    this->deleteWidget(this->ShowCategoryCombo);
+    this->deleteWidget(this->FilterByCheck);
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -62,10 +76,7 @@ qtRootView::qtRootView(
 //----------------------------------------------------------------------------
 qtRootView::~qtRootView()
 {
-  if(this->Internals->AdvancedCheck)
-    {
-    delete this->Internals->AdvancedCheck;
-    }
+  this->Internals->clearWidgets();
   if(this->Internals->TabGroup)
     {
     delete this->Internals->TabGroup;
@@ -84,10 +95,7 @@ void qtRootView::createWidget( )
     return;
     }
 
-  if(this->Internals->AdvancedCheck)
-    {
-    delete this->Internals->AdvancedCheck;
-    }
+  this->Internals->clearWidgets();
 
   //first setup the advanced check box layout form
   //QHBoxLayout* advancedLayout = new QHBoxLayout();
