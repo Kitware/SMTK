@@ -90,7 +90,7 @@ GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
     this->m_items.resize(n);
     for (i = 0; i < n; i++)
       {
-      def->buildGroup(this, i);
+      def->buildGroup(this, static_cast<int>(i));
       }
     }
   return true;
@@ -146,7 +146,7 @@ bool GroupItem::appendGroup()
     }
   n = this->m_items.size();
   this->m_items.resize(n+1);
-  def->buildGroup(this, n);
+  def->buildGroup(this, static_cast<int>(n));
   return true;
 }
 //----------------------------------------------------------------------------
@@ -205,7 +205,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     this->m_items.resize(newSize);
     for (i = n; i < newSize; i++)
       {
-      def->buildGroup(this, i);
+      def->buildGroup(this, static_cast<int>(i));
       }
     }
   return true;

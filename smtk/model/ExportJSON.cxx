@@ -143,7 +143,7 @@ int ExportJSON::forStorageEntity(
     cJSON_AddItemToObject(cellRec, "r",
       cJSON_CreateUUIDArray(
         &entry->second.relations()[0],
-        entry->second.relations().size()));
+        static_cast<int>(entry->second.relations().size())));
     }
   return 1;
 }
@@ -171,7 +171,7 @@ int ExportJSON::forStorageArrangement(
         if (!ait->details().empty())
           {
           cJSON_AddItemToArray(kindNode,
-            cJSON_CreateIntArray(&(ait->details()[0]), ait->details().size()));
+            cJSON_CreateIntArray(&(ait->details()[0]), static_cast<int>(ait->details().size())));
           }
         }
       }
@@ -206,10 +206,10 @@ int ExportJSON::forStorageTessellation(
   cJSON_AddItemToObject(tess, "metadata", fmt);
   cJSON_AddItemToObject(tess, "vertices", cJSON_CreateDoubleArray(
       &tessIt->second.coords()[0],
-      tessIt->second.coords().size()));
+      static_cast<int>(tessIt->second.coords().size())));
   cJSON_AddItemToObject(tess, "faces", cJSON_CreateIntArray(
       tessIt->second.conn().empty() ? NULL : &tessIt->second.conn()[0],
-      tessIt->second.conn().size()));
+      static_cast<int>(tessIt->second.conn().size())));
   cJSON_AddItemToObject(dict, "t", tess);
   return 1;
 }
@@ -233,7 +233,7 @@ int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* di
       }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateDoubleArray(
-        &entry->second[0], entry->second.size()));
+        &entry->second[0], static_cast<int>(entry->second.size())));
     }
   return status;
 }
@@ -257,7 +257,7 @@ int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* d
       }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateStringArray(
-        &entry->second[0], entry->second.size()));
+        &entry->second[0], static_cast<int>(entry->second.size())));
     }
   return status;
 }
@@ -281,7 +281,7 @@ int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* 
       }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateLongArray(
-        &entry->second[0], entry->second.size()));
+        &entry->second[0], static_cast<int>(entry->second.size())));
     }
   return status;
 }

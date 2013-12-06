@@ -198,9 +198,9 @@ namespace smtk
           this->m_isSet.push_back(true);
           if (def->allowsExpressions())
             {
-            int nextPos = this->m_expressions.size();
+            std::size_t nextPos = this->m_expressions.size();
             this->m_expressions.resize(nextPos+1);
-            def->buildExpressionItem(this, nextPos);
+            def->buildExpressionItem(this, static_cast<int>(nextPos));
             }
           return true;
           }
@@ -210,9 +210,9 @@ namespace smtk
         {
         if (def->allowsExpressions())
           {
-          int nextPos = this->m_expressions.size();
+          std::size_t nextPos = this->m_expressions.size();
           this->m_expressions.resize(nextPos+1);
-          def->buildExpressionItem(this, nextPos);
+          def->buildExpressionItem(this, static_cast<int>(nextPos));
           }
         this->m_values.push_back(val);
         this->m_isSet.push_back(true);
@@ -278,7 +278,7 @@ namespace smtk
         this->m_expressions.resize(newSize);
         for (i = n; i < newSize; i++)
           {
-          def->buildExpressionItem(this, i);
+          def->buildExpressionItem(this, static_cast<int>(i));
           }
         }
       return true;
@@ -344,7 +344,7 @@ namespace smtk
         this->m_discreteIndices.clear();
         if (def->allowsExpressions())
           {
-          int j, m = this->m_expressions.size();
+          std::size_t j, m = this->m_expressions.size();
           for (j = 0; j < m; j++)
             {
             this->m_expressions[j]->detachOwningItem();

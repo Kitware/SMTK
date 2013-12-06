@@ -65,7 +65,7 @@ std::string Logger::severityAsString(Severity s)
 //----------------------------------------------------------------------------
 std::string Logger::convertToString() const
 {
-  int i, n = this->m_records.size();
+  std::size_t i, n = this->m_records.size();
   std::stringstream ss;
   for (i = 0; i < n; i++)
     {

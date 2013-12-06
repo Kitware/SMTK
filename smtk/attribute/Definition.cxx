@@ -167,7 +167,7 @@ void Definition::buildAttribute(Attribute *att) const
   j = att->numberOfItems();
   for (i = 0; i < n; i++, j++)
     {
-    comp = this->m_itemDefs[i]->buildItem(att, j);
+    comp = this->m_itemDefs[i]->buildItem(att, static_cast<int>(j));
     comp->setDefinition(this->m_itemDefs[i]);
     att->addItem(comp);
     }
@@ -193,7 +193,7 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
     }
   std::size_t n = this->m_itemDefs.size();
   this->m_itemDefs.push_back(cdef);
-  this->m_itemDefPositions[cdef->name()] = n;
+  this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
   return true;
 }
 //----------------------------------------------------------------------------
@@ -207,7 +207,7 @@ void Definition::setCategories()
     {
     this->m_categories.clear();
     }
-  int i, n = this->m_itemDefs.size();
+  std::size_t i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
     this->m_itemDefs[i]->updateCategories();

@@ -155,7 +155,7 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
-    val->addReference(this, this->m_values.size() - 1);
+    val->addReference(this, static_cast<int>(this->m_values.size() - 1));
     return true;
     }
   return false;
@@ -208,7 +208,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
       att = this->m_values[i].lock().get();
       if (att != NULL)
         {
-        att->removeReference(this, i);
+        att->removeReference(this, static_cast<int>(i));
         }
       }
     }
