@@ -147,7 +147,6 @@ void vtkSMTKModelSource::GenerateRepresentationFromModel(
   pedigree->SetName("UUID");
   pd->SetPoints(pts.GetPointer());
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
-  vtkIdType i;
   smtk::model::UUIDWithTessellation it;
   vtkIdType npts = 0;
   smtk::util::UUIDs modelVerts;
