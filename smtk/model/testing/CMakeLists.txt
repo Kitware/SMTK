@@ -7,6 +7,13 @@ target_link_libraries(SMTKCoreModelTesting LINK_PRIVATE SMTKCore)
 smtk_install_library(SMTKCoreModelTesting)
 
 ################################################################################
+# Tools and demos
+################################################################################
+
+add_executable(demoReportArrangements demoReportArrangements.cxx)
+target_link_libraries(demoReportArrangements SMTKCore SMTKCoreModelTesting)
+
+################################################################################
 # Tests
 ################################################################################
 add_executable(unitStorage unitStorage.cxx)

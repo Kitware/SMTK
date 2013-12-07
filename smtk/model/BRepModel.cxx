@@ -580,6 +580,16 @@ bool BRepModel::removeFloatProperty(
   return true;
 }
 
+const UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const smtk::util::UUID& entity) const
+{
+  return this->m_floatData->find(entity);
+}
+
+UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const smtk::util::UUID& entity)
+{
+  return this->m_floatData->find(entity);
+}
+
 void BRepModel::setStringProperty(
   const smtk::util::UUID& entity,
   const std::string& propName,
@@ -656,6 +666,16 @@ bool BRepModel::removeStringProperty(
   return true;
 }
 
+const UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const smtk::util::UUID& entity) const
+{
+  return this->m_stringData->find(entity);
+}
+
+UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const smtk::util::UUID& entity)
+{
+  return this->m_stringData->find(entity);
+}
+
 void BRepModel::setIntegerProperty(
   const smtk::util::UUID& entity,
   const std::string& propName,
@@ -730,6 +750,16 @@ bool BRepModel::removeIntegerProperty(
     }
   uit->second.erase(sit);
   return true;
+}
+
+const UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util::UUID& entity) const
+{
+  return this->m_integerData->find(entity);
+}
+
+UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util::UUID& entity)
+{
+  return this->m_integerData->find(entity);
 }
 
 /// Add a vertex to storage (without any relationships)

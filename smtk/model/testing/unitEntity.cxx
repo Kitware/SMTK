@@ -36,6 +36,27 @@ static const char* correct =
 "0x01000808  boundary group (volume entities)\n"
 "0x02000800  domain group\n"
 "0x01000800  boundary group\n"
+"0x00000101  vertices\n"
+"0x00000102  edges\n"
+"0x00000104  faces\n"
+"0x00000108  volumes\n"
+"0x00000201  vertex uses\n"
+"0x00000202  edge uses\n"
+"0x00000204  face uses\n"
+"0x00000403  chains\n"
+"0x00000406  loops\n"
+"0x0000040c  shells\n"
+"0x00000801  groups (vertex entities)\n"
+"0x00000802  groups (edge entities)\n"
+"0x00000804  groups (face entities)\n"
+"0x00000808  groups (volume entities)\n"
+"0x00000809  groups (vertex,volume entities)\n"
+"0x02000804  domain groups (face entities)\n"
+"0x02000808  domain groups (volume entities)\n"
+"0x01000804  boundary groups (face entities)\n"
+"0x01000808  boundary groups (volume entities)\n"
+"0x02000800  domain groups\n"
+"0x01000800  boundary groups\n"
 "0x00000101  vertex 0\n"
 "0x00000102  edge 0\n"
 "0x00000104  face 0\n"
@@ -59,41 +80,48 @@ static const char* correct =
 "0x01000800  boundary group 5\n"
 ;
 
+void EntityNamesForForm(std::ostringstream& summaries, int form)
+{
+  summaries
+    << "0x" << hexconst(CELL_0D) << "  " << Entity::flagSummary(CELL_0D, form) << "\n"
+    << "0x" << hexconst(CELL_1D) << "  " << Entity::flagSummary(CELL_1D, form) << "\n"
+    << "0x" << hexconst(CELL_2D) << "  " << Entity::flagSummary(CELL_2D, form) << "\n"
+    << "0x" << hexconst(CELL_3D) << "  " << Entity::flagSummary(CELL_3D, form) << "\n"
+
+    << "0x" << hexconst(USE_0D) << "  " << Entity::flagSummary(USE_0D, form) << "\n"
+    << "0x" << hexconst(USE_1D) << "  " << Entity::flagSummary(USE_1D, form) << "\n"
+    << "0x" << hexconst(USE_2D) << "  " << Entity::flagSummary(USE_2D, form) << "\n"
+
+    << "0x" << hexconst(SHELL_0D) << "  " << Entity::flagSummary(SHELL_0D, form) << "\n"
+    << "0x" << hexconst(SHELL_1D) << "  " << Entity::flagSummary(SHELL_1D, form) << "\n"
+    << "0x" << hexconst(SHELL_2D) << "  " << Entity::flagSummary(SHELL_2D, form) << "\n"
+
+    << "0x" << hexconst(GROUP_0D) << "  " << Entity::flagSummary(GROUP_0D, form) << "\n"
+    << "0x" << hexconst(GROUP_1D) << "  " << Entity::flagSummary(GROUP_1D, form) << "\n"
+    << "0x" << hexconst(GROUP_2D) << "  " << Entity::flagSummary(GROUP_2D, form) << "\n"
+    << "0x" << hexconst(GROUP_3D) << "  " << Entity::flagSummary(GROUP_3D, form) << "\n"
+
+    << "0x" << hexconst(GROUP_0D | GROUP_3D) << "  " << Entity::flagSummary(GROUP_0D | GROUP_3D, form) << "\n"
+
+    << "0x" << hexconst(GROUP_2D | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_2D | MODEL_DOMAIN, form) << "\n"
+    << "0x" << hexconst(GROUP_3D | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_3D | MODEL_DOMAIN, form) << "\n"
+    << "0x" << hexconst(GROUP_2D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_2D | MODEL_BOUNDARY, form) << "\n"
+    << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_3D | MODEL_BOUNDARY, form) << "\n"
+    << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_DOMAIN, form) << "\n"
+    << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY, form) << "\n"
+    ;
+}
+
 int main()
 {
   smtk::model::Integer cdata[] = {0, 0, 0, 0, 0, 0};
   smtk::model::IntegerList counters(cdata, cdata + sizeof(cdata)/sizeof(cdata[0]));
   std::ostringstream summaries;
-  summaries
-    << "0x" << hexconst(CELL_0D) << "  " << Entity::flagSummary(CELL_0D) << "\n"
-    << "0x" << hexconst(CELL_1D) << "  " << Entity::flagSummary(CELL_1D) << "\n"
-    << "0x" << hexconst(CELL_2D) << "  " << Entity::flagSummary(CELL_2D) << "\n"
-    << "0x" << hexconst(CELL_3D) << "  " << Entity::flagSummary(CELL_3D) << "\n"
 
-    << "0x" << hexconst(USE_0D) << "  " << Entity::flagSummary(USE_0D) << "\n"
-    << "0x" << hexconst(USE_1D) << "  " << Entity::flagSummary(USE_1D) << "\n"
-    << "0x" << hexconst(USE_2D) << "  " << Entity::flagSummary(USE_2D) << "\n"
+  EntityNamesForForm(summaries, /*singular*/ 0);
+  EntityNamesForForm(summaries, /*plural*/ 1);
 
-    << "0x" << hexconst(SHELL_0D) << "  " << Entity::flagSummary(SHELL_0D) << "\n"
-    << "0x" << hexconst(SHELL_1D) << "  " << Entity::flagSummary(SHELL_1D) << "\n"
-    << "0x" << hexconst(SHELL_2D) << "  " << Entity::flagSummary(SHELL_2D) << "\n"
-
-    << "0x" << hexconst(GROUP_0D) << "  " << Entity::flagSummary(GROUP_0D) << "\n"
-    << "0x" << hexconst(GROUP_1D) << "  " << Entity::flagSummary(GROUP_1D) << "\n"
-    << "0x" << hexconst(GROUP_2D) << "  " << Entity::flagSummary(GROUP_2D) << "\n"
-    << "0x" << hexconst(GROUP_3D) << "  " << Entity::flagSummary(GROUP_3D) << "\n"
-
-    << "0x" << hexconst(GROUP_0D | GROUP_3D) << "  " << Entity::flagSummary(GROUP_0D | GROUP_3D) << "\n"
-
-    << "0x" << hexconst(GROUP_2D | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_2D | MODEL_DOMAIN  ) << "\n"
-    << "0x" << hexconst(GROUP_3D | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_3D | MODEL_DOMAIN  ) << "\n"
-    << "0x" << hexconst(GROUP_2D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_2D | MODEL_BOUNDARY) << "\n"
-    << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_3D | MODEL_BOUNDARY) << "\n"
-    << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_DOMAIN  ) << "\n"
-    << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY) << "\n"
-    ;
-
-    // --- now test defaultNameFromCounters
+  // --- now test defaultNameFromCounters
 
   summaries << "0x" << hexconst(CELL_0D) << "  " << Entity::defaultNameFromCounters(CELL_0D, counters) << "\n";
   summaries << "0x" << hexconst(CELL_1D) << "  " << Entity::defaultNameFromCounters(CELL_1D, counters) << "\n";
