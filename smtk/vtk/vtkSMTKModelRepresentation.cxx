@@ -156,8 +156,8 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
 
 vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSelection* selection)
 {
-  /*
   (void)view;
+  /*
   cout << "Convert selection called\n";
   vtkIndent indent;
   selection->PrintSelf(cout, indent);

@@ -95,6 +95,8 @@ QWidget* QEntityItemDelegate::createEditor(
   const QStyleOptionViewItem& option,
   const QModelIndex &index) const
 {
+  (void)option;
+  (void)index;
   smtk::model::QEntityItemEditor* editor = new QEntityItemEditor(parent);
   QObject::connect(
     editor, SIGNAL(editingFinished()),

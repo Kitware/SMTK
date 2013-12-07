@@ -133,7 +133,7 @@ struct SortByEntityProperty
 
 // -----------------------------------------------------------------------------
 QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* parent)
-  : m_storage(model), QAbstractItemModel(parent)
+  : QAbstractItemModel(parent), m_storage(model)
 {
   this->m_deleteOnRemoval = true;
   initIconResource();
@@ -151,6 +151,7 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& pare
 
 QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
 {
+  (void)child;
   return QModelIndex();
 }
 
@@ -161,7 +162,8 @@ bool QEntityItemModel::hasChildren(const QModelIndex& parent) const
 
 int QEntityItemModel::rowCount(const QModelIndex& parent) const
 {
-  return this->m_subset.size();
+  (void)parent;
+  return static_cast<int>(this->m_subset.size());
 }
 
 QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -264,6 +266,7 @@ QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
 
 bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& parent)
 {
+  (void)parent;
   beginInsertRows(QModelIndex(), position, position + rows - 1);
 
   int maxPos = position + rows;
@@ -280,11 +283,11 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& par
 
 bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& parent)
 {
+  (void)parent;
   beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
   smtk::util::UUIDArray uids(this->m_subset.begin() + position, this->m_subset.begin() + position + rows);
   this->m_subset.erase(this->m_subset.begin() + position, this->m_subset.begin() + position + rows);
-  int maxPos = position + rows;
   for (smtk::util::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
     {
     this->m_reverse.erase(this->m_reverse.find(*it));
@@ -408,7 +411,10 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
     }
   emit dataChanged(
     this->index(0, 0, QModelIndex()),
-    this->index(this->m_subset.size(), this->columnCount(), QModelIndex()));
+    this->index(
+      static_cast<int>(this->m_subset.size()),
+      this->columnCount(),
+      QModelIndex()));
 }
 
 Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
