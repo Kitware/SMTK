@@ -40,9 +40,9 @@ Item::Item(Attribute *owningAttribute, int itemPosition):
 }
 
 //----------------------------------------------------------------------------
-Item::Item(Item *owningItem, int itemPosition, int subGroupPosition):
-  m_attribute(NULL), m_owningItem(owningItem),
-  m_position(itemPosition), m_subGroupPosition(subGroupPosition),
+Item::Item(Item *inOwningItem, int itemPosition, int inSubGroupPosition):
+  m_attribute(NULL), m_owningItem(inOwningItem),
+  m_position(itemPosition), m_subGroupPosition(inSubGroupPosition),
   m_isEnabled(true), m_definition()
 {
 }
