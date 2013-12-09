@@ -101,6 +101,13 @@ Arrangement Arrangement::UseHasCellWithIndexAndSense(int relationIdx, int sense)
   result.details().push_back(sense);
   return result;
 }
+
+Arrangement Arrangement::CellEmbeddedInEntityWithIndex(int relationIdx)
+{
+  Arrangement result;
+  result.details().push_back(relationIdx);
+  return result;
+}
 //@}
 
   } //namespace model

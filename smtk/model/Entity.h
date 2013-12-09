@@ -46,9 +46,16 @@ public:
   Entity& appendRelation(const smtk::util::UUID& b);
   Entity& removeRelation(const smtk::util::UUID& b);
 
-  static std::string flagSummaryHelper(BitFlags entityFlags);
-  static std::string flagSummary(BitFlags entityFlags);
-  static std::string flagDescription(BitFlags entityFlags);
+  int findOrAppendRelation(const smtk::util::UUID& r);
+
+  std::string flagSummary() const
+    { return Entity::flagSummary(this->entityFlags()); }
+  std::string flagDescription() const
+    { return Entity::flagDescription(this->entityFlags()); }
+
+  static std::string flagSummaryHelper(BitFlags entityFlags, int form = 0);
+  static std::string flagSummary(BitFlags entityFlags, int form = 0);
+  static std::string flagDescription(BitFlags entityFlags, int form = 0);
   static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters);
 
 protected:

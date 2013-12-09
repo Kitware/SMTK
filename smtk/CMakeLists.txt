@@ -118,6 +118,13 @@ if(SMTK_BUILD_VTK)
   smtk_install_library(vtkSMTK DEPENDS SMTKCore)
 endif()
 
+if (SMTK_BUILD_CGM)
+
+  add_subdirectory(cgm)
+  smtk_source_group(cgm)
+
+endif(SMTK_BUILD_CGM)
+
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location

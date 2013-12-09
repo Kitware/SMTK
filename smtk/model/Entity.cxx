@@ -15,13 +15,22 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
-static const char* cellNamesByDimension[] = {
+static const char* cellNamesByDimensionSingular[] = {
   "vertex",
   "edge",
   "face",
   "volume",
   "spacetime",
   "mixed-dimension cell"
+};
+
+static const char* cellNamesByDimensionPlural[] = {
+  "vertices",
+  "edges",
+  "faces",
+  "volumes",
+  "spacetimes",
+  "mixed-dimension cells"
 };
 
 /**\class smtk::model::Entity
@@ -147,8 +156,24 @@ Entity& Entity::removeRelation(const UUID& b)
   return *this;
 }
 
+/**\brief Find the given relation \a r and return its index, inserting it if not present.
+  */
+int Entity::findOrAppendRelation(const smtk::util::UUID& r)
+{
+  for (smtk::util::UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
+    {
+    if (this->m_relations[i] == r)
+      {
+      return i;
+      }
+    }
+  int idx = static_cast<int>(this->m_relations.size());
+  this->m_relations.push_back(r);
+  return idx;
+}
+
 // If you change this, you may need to change flagSummmary/flagDescription/defaultNameFromCounters
-std::string Entity::flagSummaryHelper(BitFlags flags)
+std::string Entity::flagSummaryHelper(BitFlags flags, int form)
 {
   std::string result;
   switch (flags & ENTITY_MASK)
@@ -157,22 +182,22 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
     switch (flags & ANY_DIMENSION)
       {
     case DIMENSION_0:
-      result = cellNamesByDimension[0];
+      result = form ? cellNamesByDimensionPlural[0] : cellNamesByDimensionSingular[0];
       break;
     case DIMENSION_1:
-      result = cellNamesByDimension[1];
+      result = form ? cellNamesByDimensionPlural[1] : cellNamesByDimensionSingular[1];
       break;
     case DIMENSION_2:
-      result = cellNamesByDimension[2];
+      result = form ? cellNamesByDimensionPlural[2] : cellNamesByDimensionSingular[2];
       break;
     case DIMENSION_3:
-      result = cellNamesByDimension[3];
+      result = form ? cellNamesByDimensionPlural[3] : cellNamesByDimensionSingular[3];
       break;
     case DIMENSION_4:
-      result = cellNamesByDimension[4];
+      result = form ? cellNamesByDimensionPlural[4] : cellNamesByDimensionSingular[4];
       break;
     default:
-      result = cellNamesByDimension[5];
+      result = form ? cellNamesByDimensionPlural[5] : cellNamesByDimensionSingular[5];
       }
     break;
   case USE_ENTITY:
@@ -195,6 +220,10 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
       break;
     default:
       result = "mixed-dimension cell use";
+      }
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
       }
     break;
   case SHELL_ENTITY:
@@ -219,17 +248,33 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
     default:
       result = "unknown-dimensionality shell";
       }
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
+      }
     break;
   case GROUP_ENTITY:
     if (flags & MODEL_BOUNDARY) result += "boundary ";
     if (flags & MODEL_DOMAIN) result += "domain ";
     result += "group";
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
+      }
     break;
   case MODEL_ENTITY:
     result = "model";
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
+      }
     break;
   case INSTANCE_ENTITY:
     result = "instance";
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
+      }
     break;
   default:
     result = "invalid";
@@ -239,9 +284,11 @@ std::string Entity::flagSummaryHelper(BitFlags flags)
 }
 
 // If you change this, you may also need to change flagDescription/defaultNameForCount below.
-std::string Entity::flagSummary(BitFlags flags)
+/**\brief Return a string summarizing the type of the entity given its bit-vector \a flags.
+  */
+std::string Entity::flagSummary(BitFlags flags, int form)
 {
-  std::string result = flagSummaryHelper(flags);
+  std::string result = flagSummaryHelper(flags, form);
   // Add some extra information about groups.
   if ((flags & ENTITY_MASK) == GROUP_ENTITY)
     {
@@ -258,7 +305,7 @@ std::string Entity::flagSummary(BitFlags flags)
             {
             result += ",";
             }
-          result += cellNamesByDimension[i];
+          result += cellNamesByDimensionSingular[i];
           comma = true;
           }
         }
@@ -284,7 +331,7 @@ std::string Entity::flagSummary(BitFlags flags)
   return result;
 }
 
-std::string Entity::flagDescription(BitFlags flags)
+std::string Entity::flagDescription(BitFlags flags, int form)
 {
   // TODO: Eventually this should return a markdown-formatted
   // description documenting the entity type.
@@ -295,14 +342,14 @@ std::string Entity::flagDescription(BitFlags flags)
   // containing model. It has no parametric coordinates.
   // Vertices are used as boundary endpoints of vertex chains
   // which define edges.
-  return Entity::flagSummary(flags);
+  return Entity::flagSummary(flags, form);
 }
 
 // If you change this, you may need to change flagSummmary/flagDescription above
 std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counters)
 {
   std::ostringstream name;
-  name << Entity::flagSummaryHelper(flags) << " ";
+  name << Entity::flagSummaryHelper(flags, /*singular*/ 0) << " ";
   switch (flags & ENTITY_MASK)
     {
   case CELL_ENTITY:

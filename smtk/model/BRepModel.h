@@ -87,6 +87,8 @@ public:
   smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasFloatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeFloatProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithFloatProperties floatPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithFloatProperties floatPropertiesForEntity(const smtk::util::UUID& entity);
   UUIDsToFloatData& floatProperties() { return *this->m_floatData; }
   UUIDsToFloatData const& floatProperties() const { return *this->m_floatData; }
 
@@ -96,6 +98,8 @@ public:
   smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasStringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeStringProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithStringProperties stringPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithStringProperties stringPropertiesForEntity(const smtk::util::UUID& entity);
   UUIDsToStringData& stringProperties() { return *this->m_stringData; }
   UUIDsToStringData const& stringProperties() const { return *this->m_stringData; }
 
@@ -105,6 +109,8 @@ public:
   smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string& propName);
   bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
   bool removeIntegerProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::util::UUID& entity);
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 

@@ -66,6 +66,7 @@ public:
 
   static Arrangement CellHasUseWithIndexAndSense(int relationIdx, int sense);
   static Arrangement UseHasCellWithIndexAndSense(int relationIdx, int sense);
+  static Arrangement CellEmbeddedInEntityWithIndex(int relationIdx);
 
 protected:
   std::vector<int> m_details; // Kind-dependent specification of the arrangement.
