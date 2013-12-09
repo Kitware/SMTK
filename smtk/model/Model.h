@@ -81,9 +81,9 @@ namespace smtk
 
       static std::string convertNodalTypeToString(ModelEntityNodalTypes t);
 
-      void setGridInfo(smtk::model::GridInfoPtr gridInfo)
+      void setGridInfo(smtk::model::GridInfoPtr giPtr)
       {
-        this->m_gridInfo = gridInfo;
+        this->m_gridInfo = giPtr;
       }
 
       smtk::model::GridInfoPtr gridInfo()

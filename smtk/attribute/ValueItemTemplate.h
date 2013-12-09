@@ -81,10 +81,10 @@ namespace smtk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueItemTemplate<DataT>::ValueItemTemplate(Item *owningItem,
+    ValueItemTemplate<DataT>::ValueItemTemplate(Item *inOwningItem,
                                                 int itemPosition,
                                                 int mySubGroupPosition):
-      ValueItem(owningItem, itemPosition, mySubGroupPosition)
+      ValueItem(inOwningItem, itemPosition, mySubGroupPosition)
     {
     }
 //----------------------------------------------------------------------------
