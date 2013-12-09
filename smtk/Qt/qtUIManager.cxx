@@ -83,7 +83,6 @@ qtUIManager* qtUIManager::Instance = 0;
 qtDoubleValidator::qtDoubleValidator(QObject * parent)
   :QDoubleValidator(parent)
 {
-  this->setNotation( QDoubleValidator::StandardNotation );
 }
 
 //-----------------------------------------------------------------------------
