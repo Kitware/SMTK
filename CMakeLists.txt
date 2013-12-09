@@ -26,6 +26,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
+option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
@@ -83,6 +84,15 @@ if(SMTK_BUILD_VTK)
   )
   include(${VTK_USE_FILE})
 endif()
+
+
+################################################################################
+# CGM Related Settings
+################################################################################
+
+if(SMTK_BUILD_CGM)
+  find_package(CGM REQUIRED)
+endif(SMTK_BUILD_CGM)
 
 ################################################################################
 # Sparsehash Related Settings
