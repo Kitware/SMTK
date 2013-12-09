@@ -34,16 +34,16 @@ using namespace smtk;
 
 //----------------------------------------------------------------------------
 Item::Item(Attribute *owningAttribute, int itemPosition):
-  m_isEnabled(true), m_definition(), m_attribute(owningAttribute),
-  m_position(itemPosition), m_owningItem(NULL)
+  m_attribute(owningAttribute), m_owningItem(NULL),
+  m_position(itemPosition), m_isEnabled(true), m_definition()
 {
 }
 
 //----------------------------------------------------------------------------
 Item::Item(Item *owningItem, int itemPosition, int subGroupPosition):
-  m_isEnabled(true), m_definition(), m_owningItem(owningItem),
-  m_position(itemPosition), m_attribute(NULL),
-  m_subGroupPosition(subGroupPosition)
+  m_attribute(NULL), m_owningItem(owningItem),
+  m_position(itemPosition), m_subGroupPosition(subGroupPosition),
+  m_isEnabled(true), m_definition()
 {
 }
 
