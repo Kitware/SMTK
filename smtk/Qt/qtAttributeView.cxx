@@ -1061,10 +1061,10 @@ void qtAttributeView::addTableVoidItems(
   widget->setRowCount(++numRows);
   widget->setCellWidget(numRows-1, 0, voidItem->widget());
   widget->setItem(numRows-1, 0, new QTableWidgetItem());
-  if(advanced)
+  if(advanced && voidItem->widget())
     {
     voidItem->widget()->setFont(
-      qtUIManager::instance()->instance()->advancedFont());
+      qtUIManager::instance()->advancedFont());
     }
 }
 
