@@ -78,6 +78,12 @@
   <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
 
   @EXTRA_TYPESYSTEMS@
 
