@@ -59,8 +59,6 @@ namespace smtk
 
       const std::string &units() const
       {
-        if(this->m_units.length())
-          int i = 0;
         return this->m_units;
       }
       void setUnits(const std::string &newUnits)
