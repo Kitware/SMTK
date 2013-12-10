@@ -21,8 +21,8 @@
   thisclass () {} \
   thisclass (const Cursor& other) \
     : superclass(other) {} \
-  thisclass (StoragePtr storage, const smtk::util::UUID& entity) \
-    : superclass(storage, entity) {} \
+  thisclass (StoragePtr storage, const smtk::util::UUID& entityId) \
+    : superclass(storage, entityId) {} \
   bool isValid() const { return this->Cursor::isValid(); } \
   virtual bool isValid(Entity** entRec) const \
     { \
@@ -59,12 +59,12 @@ class SMTKCORE_EXPORT Cursor
 public:
   SMTK_BASE_TYPE(Cursor);
   Cursor();
-  Cursor(StoragePtr storage, const smtk::util::UUID& entity);
+  Cursor(StoragePtr storage, const smtk::util::UUID& entityId);
 
   bool setStorage(StoragePtr storage);
   StoragePtr storage();
 
-  bool setEntity(const smtk::util::UUID& entity);
+  bool setEntity(const smtk::util::UUID& entityId);
   smtk::util::UUID entity();
 
   int dimension() const;
