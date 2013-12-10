@@ -113,7 +113,7 @@ void AddEntitiesToBody(
       bodyInclusions[0].details().push_back(
         storage->findEntity(owningBodyId)->findOrAppendRelation(
           cell->first));
-      cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
+      //cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
       }
     //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
@@ -179,7 +179,7 @@ void AddArrangementsToBody(
     shell->get_sense_entity_list(cofaces);
     // FIXME: The above should be shell->ordered_co_edges() when E == Loop.
     int ns = cofaces.size();
-    std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
+    //std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
     smtk::util::UUIDArray shellRelations;
     smtk::model::Arrangement shellArrOfUses; // the face-uses that compose the shell
     shellRelations.resize(ns + 1);
@@ -195,7 +195,7 @@ void AddArrangementsToBody(
       // ID of the corresponding basic_topological_entity (BTE) and translate
       // that into a UUID:
       SenseEntity* se = cofaces.get_and_step();
-      std::cout << "   " << j << "  " << (int)se->get_sense() << "\n";
+      //std::cout << "   " << j << "  " << (int)se->get_sense() << "\n";
       int faceId = TDUniqueId::get_unique_id(se->get_basic_topology_entity_ptr());
       smtk::util::UUID smtkFaceId = translation[faceId];
       // Now we know a face on the shell. Back up and see if
@@ -204,7 +204,6 @@ void AddArrangementsToBody(
       smtk::util::UUID smtkFaceUseId =
         storage->findOrCreateCellUseOfSense(smtkFaceId, se->get_sense());
       shellRelations[j] = smtkFaceUseId;
-      cout << "Use " << smtkFaceUseId << "\n";
       /*
       cout
         << "          " << j << "  " << faceId
