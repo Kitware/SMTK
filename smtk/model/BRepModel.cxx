@@ -179,17 +179,41 @@ UUID BRepModel::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-int BRepModel::type(const smtk::util::UUID& ofEntity)
+int BRepModel::type(const smtk::util::UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
-int BRepModel::dimension(const UUID& ofEntity)
+int BRepModel::dimension(const UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? -1 : it->second.dimension());
+}
+
+/**\brief Return a name for the given entity ID.
+  *
+  * This will either return a user-specified name or the "short UUID" name
+  * of the entity. It will not assign a name to the entity using the model
+  * counters because the method is const.
+  */
+std::string BRepModel::name(const UUID& ofEntity) const
+{
+  if (this->hasStringProperty(ofEntity, "name"))
+    {
+    smtk::model::StringList const& nprop(this->stringProperty(ofEntity, "name"));
+    if (!nprop.empty())
+      {
+      return nprop[0];
+      }
+    }
+  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
+    {
+    return "invalid id " + ofEntity.toString();
+    }
+  return BRepModel::shortUUIDName(it->first, it->second.entityFlags());
 }
 
 /**\brief Return the (Dimension+1 or higher)-entities that are the immediate bordants of the passed entity.

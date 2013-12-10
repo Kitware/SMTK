@@ -102,10 +102,46 @@ Arrangement Arrangement::UseHasCellWithIndexAndSense(int relationIdx, int sense)
   return result;
 }
 
+/**\brief Construct an arrangement record to add to a cell, indicating its parent entity.
+  *
+  * The \a relationIdx is the offset in the Entity::relations() array of the CELL_ENTITY.
+  *
+  * When the parent entity is a topological entity and the cell is dimension d,
+  * the parent entity must be of dimension **greater** than d and the cell must
+  * be completely interior to its parent.
+  * (Example: you may embed a point or edge in a face, but not a face within a face.)
+  */
 Arrangement Arrangement::CellEmbeddedInEntityWithIndex(int relationIdx)
 {
   Arrangement result;
   result.details().push_back(relationIdx);
+  return result;
+}
+
+/**\brief Construct an arrangement to add to a shell, indicating its parent cell.
+  *
+  * This relationship indicates that the shell forms part of the boundary of its parent cell.
+  * The \a relationIdx is the offset in the Entity::relations() array of the SHELL_ENTITY.
+  */
+Arrangement Arrangement::ShellHasCellWithIndex(int relationIdx)
+{
+  Arrangement result;
+  result.details().push_back(relationIdx);
+  return result;
+}
+/**\brief Construct an arrangement to add to a shell, indicating the uses that compose it.
+  *
+  * The \a relationStart and \a relationEnd specify a range of offsets in the Entity::relations()
+  * array of the SHELL_ENTITY.
+  * The range is half-open: \a relationBegin is included but \a relationEnd is not.
+  */
+Arrangement Arrangement::ShellHasUseWithIndexRange(int relationBegin, int relationEnd)
+{
+  Arrangement result;
+  for (int i = relationBegin; i < relationEnd; ++i)
+    {
+    result.details().push_back(i);
+    }
   return result;
 }
 //@}

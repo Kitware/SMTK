@@ -41,8 +41,9 @@ public:
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
 
-  int type(const smtk::util::UUID& ofEntity);
-  int dimension(const smtk::util::UUID& ofEntity);
+  int type(const smtk::util::UUID& ofEntity) const;
+  int dimension(const smtk::util::UUID& ofEntity) const;
+  std::string name(const smtk::util::UUID& ofEntity) const;
 
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);

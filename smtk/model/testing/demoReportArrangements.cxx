@@ -21,6 +21,10 @@ using smtk::shared_ptr;
 int main(int argc, char* argv[])
 {
   std::ifstream file(argc > 1 ? argv[1] : "smtkModel.json");
+  char* endMask;
+  smtk::model::BitFlags mask =
+    static_cast<smtk::model::BitFlags>(
+      strtol(argc > 2 ? argv[2] : "0xffffffff", &endMask, 16));
   std::string data(
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
@@ -31,6 +35,10 @@ int main(int argc, char* argv[])
   status |= ImportJSON::intoModel(data.c_str(), sm);
   if (status)
     {
+    if (argc > 3)
+      {
+      sm->assignDefaultNames();
+      }
     UUIDWithArrangementDictionary ait;
     UUIDWithEntity eit;
     UUIDWithFloatProperties fpit;
@@ -38,20 +46,34 @@ int main(int argc, char* argv[])
     UUIDWithIntegerProperties ipit;
     for (eit = sm->topology().begin(); eit != sm->topology().end(); ++eit)
       {
+      if (!(eit->second.entityFlags() & mask))
+        { // Skip entities that don't overlap our mask
+        continue;
+        }
       ait = sm->arrangements().find(eit->first);
       if (ait != sm->arrangements().end())
         {
-        std::cout
-          << eit->second.flagSummary()
-          << " "
-          << ait->first
-          << "\n";
+        std::cout << sm->name(eit->first) << " (" << eit->second.flagSummary();
+        if (eit->second.dimension() >= 0)
+          {
+          std::cout << ", dim " << eit->second.dimension();
+          }
+        std::cout << ")\n";
         ArrangementKindWithArrangements kit;
         for (kit = ait->second.begin(); kit != ait->second.end(); ++kit)
           {
           if (!kit->second.empty())
             {
-            std::cout << "        " << kit->second.size() << " " << NameForArrangementKind(kit->first) << "s\n";
+            if (kit->second.size() == 1)
+              {
+              std::cout
+                << "        1 " << NameForArrangementKind(kit->first)
+                << "s (" << kit->second.begin()->details().size() << " entries)\n";
+              }
+            else
+              {
+              std::cout << "        " << kit->second.size() << " " << NameForArrangementKind(kit->first) << "s\n";
+              }
             }
           }
         }

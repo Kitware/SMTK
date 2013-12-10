@@ -144,8 +144,15 @@ void AddArrangementsToBody(
   cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
-    // First, find the SMTK cell bounded by the current shell:
     E* shell = entities.get_and_step();
+    // First, create a new entity representing the shell.
+    smtk::util::UUID shellSMTKId =
+      storage->addEntityOfTypeAndDimension(
+        smtk::model::SHELL_ENTITY |
+        (1 << shell->dag_type().dimension()) |
+        (1 << (shell->dag_type().dimension() + 1)),
+        -1);
+    // Now, find the SMTK cell bounded by the current shell:
     RefEntity* vol = shell->get_basic_topology_entity_ptr();
     int cgmId = TDUniqueId::get_unique_id(vol);
     smtk::util::UUID smtkId = translation[cgmId];
@@ -173,6 +180,12 @@ void AddArrangementsToBody(
     // FIXME: The above should be shell->ordered_co_edges() when E == Loop.
     int ns = cofaces.size();
     std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
+    smtk::util::UUIDArray shellRelations;
+    smtk::model::Arrangement shellArrOfUses; // the face-uses that compose the shell
+    shellRelations.resize(ns + 1);
+    shellRelations[ns] = smtkId;
+    storage->arrangeEntity(shellSMTKId, smtk::model::HAS_CELL,
+      smtk::model::Arrangement::ShellHasCellWithIndex(ns));
     smtk::model::Arrangement a;
     a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
     for (int j = 0; j < ns; ++j)
@@ -190,6 +203,7 @@ void AddArrangementsToBody(
       // If not, then we need to create a new SMTK use entity.
       smtk::util::UUID smtkFaceUseId =
         storage->findOrCreateCellUseOfSense(smtkFaceId, se->get_sense());
+      shellRelations[j] = smtkFaceUseId;
       cout << "Use " << smtkFaceUseId << "\n";
       /*
       cout
@@ -210,6 +224,9 @@ void AddArrangementsToBody(
       }
     // Now add the arrangement to the cell's list of arrangements:
     int aid = storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL, a);
+    storage->findEntity(shellSMTKId)->relations() = shellRelations;
+    aid = storage->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
+      smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
     (void)aid; // keep aid around for debugging
     //cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
     }
