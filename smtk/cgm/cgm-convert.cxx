@@ -258,7 +258,7 @@ void AddTessellationsToBody(
     // First, copy point coordinates:
     it->second.coords().reserve(3 * npts);
     GPoint* inPts = primitives.point_list();
-    for (int i = 0; i < npts; ++i, ++inPts)
+    for (int j = 0; j < npts; ++j, ++inPts)
       {
       it->second.addCoords(inPts->x, inPts->y, inPts->z);
       }
@@ -268,7 +268,7 @@ void AddTessellationsToBody(
       it->second.conn().reserve(connCount);
       int* inConn = primitives.facet_list();
       int ptsPerPrim = 0;
-      for (int i = 0; i < connCount; i += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
+      for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
         {
         ptsPerPrim = *inConn;
         int* pConn = inConn + 1;
@@ -294,9 +294,9 @@ void AddTessellationsToBody(
       {
       it->second.conn().reserve(npts + 1);
       it->second.conn().push_back(npts);
-      for (int i = 0; i < npts; ++i)
+      for (int k = 0; k < npts; ++k)
         {
-        it->second.conn().push_back(i);
+        it->second.conn().push_back(k);
         }
       }
     }
