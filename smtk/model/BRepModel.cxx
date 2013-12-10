@@ -938,9 +938,41 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
+    // If we have a use or a shell, get the associated cell, if any
+    smtk::model::BitFlags etype = it->second.entityFlags();
+    switch (etype & ENTITY_MASK)
+      {
+    case SHELL_ENTITY:
+    case USE_ENTITY:
+      // Look for a relationship to a cell
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (
+          subentity != this->topology().end() &&
+          smtk::model::isCellEntity(subentity->second.entityFlags()))
+          {
+          it = subentity;
+          break;
+          }
+        }
+      break;
+    // Remaining types should all have a direct relationship with a model if they are free:
+    default:
+    case MODEL_ENTITY:
+    case INSTANCE_ENTITY:
+    case CELL_ENTITY:
+      break;
+      }
+    // Now look for a direct relationship with a model.
+    // If none exists, look for relationships with higher-dimensional entities
+    // and check *them* for models.
     int dim;
     smtk::util::UUIDs uids;
-    uids.insert(uid);
+    uids.insert(it->first);
     for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
       {
       for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
@@ -987,14 +1019,32 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
 
 std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags)
 {
+  // First, get the name of the entity's owner:
+  smtk::util::UUID owner(
+    this->modelOwningEntity(uid));
+  std::string ownerName;
+  if (owner)
+    {
+    if (this->hasStringProperty(owner, "name"))
+      {
+      ownerName = this->stringProperty(owner, "name")[0];
+      }
+    else
+      {
+      ownerName = this->assignDefaultName(
+        owner, this->findEntity(owner)->entityFlags());
+      }
+    ownerName += ", ";
+    }
+  // Now get the owner's list of per-type counters:
   IntegerList& counts(
     this->entityCounts(
-      this->modelOwningEntity(uid),
-      entityFlags));
+      owner, entityFlags));
+  // Compose a name from the owner and counters:
   std::string defaultName =
     counts.empty() ?
     this->shortUUIDName(uid, entityFlags) :
-    Entity::defaultNameFromCounters(entityFlags, counts);
+    ownerName + Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;
 }
