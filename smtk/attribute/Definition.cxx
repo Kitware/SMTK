@@ -131,8 +131,8 @@ bool Definition::associatesWithGroup() const
 
 //----------------------------------------------------------------------------
 bool
-Definition::canBeAssociated(smtk::model::ItemPtr entity,
-                            std::vector<Attribute *>*conflicts) const
+Definition::canBeAssociated(smtk::model::ItemPtr /*entity*/,
+                            std::vector<Attribute *>* /*inConflicts*/) const
 {
   // TO DO - Need to pull in Model Entity class to do this
   // Procedure:
@@ -173,12 +173,12 @@ void Definition::buildAttribute(Attribute *att) const
     }
 }
 //----------------------------------------------------------------------------
-bool Definition::isMemberOf(const std::vector<std::string> &categories) const
+bool Definition::isMemberOf(const std::vector<std::string> &inCategories) const
 {
-  std::size_t i, n = categories.size();
+  std::size_t i, n = inCategories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(categories[i]))
+    if (this->isMemberOf(inCategories[i]))
       return true;
     }
   return false;
