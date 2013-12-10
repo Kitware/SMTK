@@ -45,17 +45,17 @@ Entity::Entity()
 }
 
 /// Construct a link with the given \a dimension with a type specified by \a entityFlags.
-Entity::Entity(BitFlags entityFlags, int dimension)
-  : m_entityFlags(entityFlags)
+Entity::Entity(BitFlags entFlags, int dim)
+  : m_entityFlags(entFlags)
 {
   // Override the dimension bits if the dimension is specified
-  if (dimension >= 0 && dimension <= 4)
+  if (dim >= 0 && dim <= 4)
     {
     // Clear the dimension bits:
     this->m_entityFlags &= ~(
       DIMENSION_0 | DIMENSION_1 | DIMENSION_2 | DIMENSION_3 | DIMENSION_4);
     // Now add in the *proper* dimension bit to match m_dimension:
-    this->m_entityFlags |= (1 << dimension);
+    this->m_entityFlags |= (1 << dim);
     }
 }
 

@@ -25,8 +25,8 @@ BRepModel::BRepModel() :
   *
   * Storage is kept separate so that it can easily be serialized and deserialized.
   */
-BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topology) :
-  m_topology(topology),
+BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
+  m_topology(topo),
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
@@ -50,7 +50,7 @@ const UUIDsToEntities& BRepModel::topology() const
 /// Entity construction
 //@{
 /// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dimension)
+BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
 {
   UUID actual;
   do
@@ -58,7 +58,7 @@ BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFl
     actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
-  return this->setEntityOfTypeAndDimension(actual, entityFlags, dimension);
+  return this->setEntityOfTypeAndDimension(actual, entityFlags, dim);
 }
 
 /// Insert the specified cell, returning an iterator with a new, unique UUID.
@@ -77,7 +77,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   *
   * Passing a non-unique \a uid is an error here and will throw an exception.
   */
-BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dimension)
+BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dim)
 {
   UUIDsToEntities::iterator it;
   if (uid.isNull())
@@ -89,10 +89,10 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
   if ((it = this->m_topology->find(uid)) != this->m_topology->end())
     {
     std::ostringstream msg;
-    msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dimension;
+    msg << "Duplicate UUID '" << uid << "' of different dimension " << it->second.dimension() << " != " << dim;
     throw msg.str();
     }
-  std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dimension));
+  std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dim));
   return this->m_topology->insert(entry).first;
 }
 
