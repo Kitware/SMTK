@@ -35,10 +35,10 @@ DoubleItem::DoubleItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-DoubleItem::DoubleItem(Item *owningItem,
+DoubleItem::DoubleItem(Item *inOwningItem,
                        int itemPosition,
                        int mySubGroupPosition): 
-  ValueItemTemplate<double>(owningItem, itemPosition, mySubGroupPosition)
+  ValueItemTemplate<double>(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 

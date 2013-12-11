@@ -103,13 +103,13 @@ void GroupItemDefinition::updateCategories()
     }
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::addCategory(const std::string &category)
+void GroupItemDefinition::addCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot add categories to a group item definition. "
             << "The name is " << this->name() << std::endl;
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::removeCategory(const std::string &category)
+void GroupItemDefinition::removeCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot remove categories to a group item definition. "
             << "The name is " << this->name() << std::endl;

@@ -666,7 +666,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
       node.append_attribute("OnBoundaryNodes").set_value(att->appliesToBoundaryNodes());
       }
     }
-  node.append_attribute("ID").set_value((unsigned int)att->id());
+  node.append_attribute("ID").set_value(static_cast<unsigned int>(att->id()));
   // Save Color Information
   if (att->isColorSet())
     {
@@ -742,7 +742,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (!item->isDiscrete())
@@ -765,13 +765,13 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Index");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->discreteIndex(i));
       }
     else
       {
       val = values.append_child("UnsetDiscreteVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -790,7 +790,7 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
 
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1)
@@ -808,13 +808,13 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i)->name().c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -833,7 +833,7 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1)
@@ -850,13 +850,13 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i).c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -900,20 +900,20 @@ void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->value(static_cast<int>(i)));
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -932,7 +932,7 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1) // Special Common Case
@@ -949,13 +949,13 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i).c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -977,7 +977,7 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
   //  it has
   if (!numRequiredGroups)
     {
-    node.append_attribute("NumberOfGroups").set_value((unsigned int) n);
+    node.append_attribute("NumberOfGroups").set_value(static_cast<unsigned int>(n));
     }
 
   // Optimize for number of required groups = 1
@@ -995,7 +995,7 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
   for(i = 0; i < n; i++)
     {
     cluster = clusters.append_child("Cluster");
-    cluster.append_attribute("Ith").set_value((unsigned int) i);
+    cluster.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
     for (j = 0; j < m; j++)
       {
       itemNode = cluster.append_child();
@@ -1043,20 +1043,20 @@ void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->value(i));
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -1099,20 +1099,20 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->value(i).c_str());
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -1287,9 +1287,9 @@ void XmlV1StringWriter::processModelInfo()
         if(itemGroup)
           {
           xml_node gnode = modelInfo.append_child("GroupItem");
-          gnode.append_attribute("Id").set_value((unsigned int)itemGroup->id());
+          gnode.append_attribute("Id").set_value(static_cast<unsigned int>(itemGroup->id()));
           gnode.append_attribute("Name").set_value(itemGroup->name().c_str());
-          gnode.append_attribute("Mask").set_value((unsigned int)itemGroup->entityMask());
+          gnode.append_attribute("Mask").set_value(static_cast<unsigned int>(itemGroup->entityMask()));
 
           // associated attributes
           typedef smtk::model::Item::const_iterator a_iter;

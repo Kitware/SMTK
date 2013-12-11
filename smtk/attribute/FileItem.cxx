@@ -38,10 +38,10 @@ FileItem::FileItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-FileItem::FileItem(Item *owningItem,
+FileItem::FileItem(Item *inOwningItem,
                    int itemPosition,
-                   int subGroupPosition): 
-  Item(owningItem, itemPosition, subGroupPosition)
+                   int inSubGroupPosition):
+  Item(inOwningItem, itemPosition, inSubGroupPosition)
 {
 }
 

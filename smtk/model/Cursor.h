@@ -21,8 +21,8 @@
   thisclass () {} \
   thisclass (const Cursor& other) \
     : superclass(other) {} \
-  thisclass (StoragePtr storage, const smtk::util::UUID& entityId) \
-    : superclass(storage, entityId) {} \
+  thisclass (StoragePtr inStorage, const smtk::util::UUID& entityId) \
+    : superclass(inStorage, entityId) {} \
   bool isValid() const { return this->Cursor::isValid(); } \
   virtual bool isValid(Entity** entRec) const \
     { \

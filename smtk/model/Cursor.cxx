@@ -11,19 +11,19 @@ Cursor::Cursor()
 }
 
 /// Construct a cursor referencing a given \a entity residing in the given \a storage.
-Cursor::Cursor(StoragePtr storage, const smtk::util::UUID& entity)
-  : m_storage(storage), m_entity(entity)
+Cursor::Cursor(StoragePtr inStorage, const smtk::util::UUID& inEntity)
+  : m_storage(inStorage), m_entity(inEntity)
 {
 }
 
 /// Change the underlying storage the cursor references.
-bool Cursor::setStorage(StoragePtr storage)
+bool Cursor::setStorage(StoragePtr inStorage)
 {
-  if (storage == this->m_storage)
+  if (inStorage == this->m_storage)
     {
     return false;
     }
-  this->m_storage = storage;
+  this->m_storage = inStorage;
   return true;
 }
 
@@ -34,13 +34,13 @@ StoragePtr Cursor::storage()
 }
 
 /// Change the UUID of the entity the cursor references.
-bool Cursor::setEntity(const smtk::util::UUID& entity)
+bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 {
-  if (entity == this->m_entity)
+  if (inEntity == this->m_entity)
     {
     return false;
     }
-  this->m_entity = entity;
+  this->m_entity = inEntity;
   return true;
 }
 

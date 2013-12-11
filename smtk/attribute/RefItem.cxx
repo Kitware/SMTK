@@ -32,16 +32,16 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 RefItem::RefItem(Attribute *owningAttribute,
-                                   int itemPosition):
+                 int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
 //----------------------------------------------------------------------------
-RefItem::RefItem(Item *owningItem,
-                                   int itemPosition,
-                                   int mySubGroupPosition):
-  Item(owningItem, itemPosition, mySubGroupPosition)
+RefItem::RefItem(Item *inOwningItem,
+                 int itemPosition,
+                 int mySubGroupPosition):
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 

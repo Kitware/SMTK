@@ -1047,7 +1047,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   xml_attribute xatt;
   attribute::AttributePtr att;
   attribute::DefinitionPtr def;
-  unsigned long id, maxId = 0;
+  unsigned long id;
   int i, n;
 
   xatt = attNode.attribute("Name");
@@ -1996,13 +1996,13 @@ void XmlDocV1Parser::processViews(xml_node &root)
   node = views.child("AdvancedFontEffects");
   if (node)
     {
-    if(xml_attribute xatt = node.attribute("Bold"))
+    if(xml_attribute txtatt = node.attribute("Bold"))
       {
-      rs->setAdvancedBold(strcmp(xatt.value(), "1")==0);
+      rs->setAdvancedBold(strcmp(txtatt.value(), "1")==0);
       }
-    if(xml_attribute xatt = node.attribute("Italic"))
+    if(xml_attribute txtatt = node.attribute("Italic"))
       {
-      rs->setAdvancedItalic(strcmp(xatt.value(), "1")==0);
+      rs->setAdvancedItalic(strcmp(txtatt.value(), "1")==0);
       }
     }
 

@@ -37,10 +37,10 @@ VoidItem::VoidItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-VoidItem::VoidItem(Item *owningItem,
+VoidItem::VoidItem(Item *inOwningItem,
                    int itemPosition,
                    int mySubGroupPosition): 
-  Item(owningItem, itemPosition, mySubGroupPosition)
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 

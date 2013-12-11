@@ -34,10 +34,10 @@ GroupItem::GroupItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Item *owningItem,
+GroupItem::GroupItem(Item *inOwningItem,
                      int itemPosition,
                      int mySubGroupPosition): 
-  Item(owningItem, itemPosition, mySubGroupPosition)
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -211,19 +211,19 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &name)
+smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &inName)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  int i = def->findItemPosition(name);
+  int i = def->findItemPosition(inName);
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][i];
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &name) const
+smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &inName) const
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  int i = def->findItemPosition(name);
+  int i = def->findItemPosition(inName);
   if (i < 0)
     {
     return smtk::attribute::ConstItemPtr();
