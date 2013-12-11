@@ -70,6 +70,8 @@ public:
   int dimension() const;
   int dimensionBits() const;
   BitFlags entityFlags() const;
+  std::string flagSummary(int form = 0) const;
+  std::string name() const;
 
   /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
     *
@@ -161,6 +163,12 @@ public:
   bool removeIntegerProperty(const std::string& propName);
   IntegerData& integerProperties();
   IntegerData const& integerProperties() const;
+
+  int numberOfArrangementsOfKind(ArrangementKind k) const;
+  Arrangement* findArrangement(ArrangementKind k, int index);
+  const Arrangement* findArrangement(ArrangementKind k, int index) const;
+
+  Cursor relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 
   bool operator < (const Cursor& other) const;
 

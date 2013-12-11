@@ -102,6 +102,26 @@ BitFlags Cursor::entityFlags() const
   return 0;
 }
 
+/**\brief A string summary of the type of entity represented by this cursor.
+  *
+  * If \a form is non-zero, the plural form of the summary is returned.
+  */
+std::string Cursor::flagSummary(int form) const
+{
+  Entity* ent = this->m_storage->findEntity(this->m_entity);
+  if (ent)
+    {
+    return ent->flagSummary(form);
+    }
+  return Entity::flagSummary(INVALID, form);
+}
+
+/// Report the name associated with this entity.
+std::string Cursor::name() const
+{
+  return this->m_storage->name(this->m_entity);
+}
+
 /// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
 void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::util::UUIDs& uids)
 {
@@ -335,7 +355,48 @@ IntegerData const& Cursor::integerProperties() const
   return this->m_storage->integerProperties().find(this->m_entity)->second;
 }
 
+/// Return the number of arrangements of the given kind \a k.
+int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
+{
+  const Arrangements* arr =
+    this->m_storage->hasArrangementsOfKindForEntity(
+      this->m_entity, k);
+  return arr ? static_cast<int>(arr->size()) : 0;
+}
 
+/// Return the \a i-th arrangement of kind \a k (or NULL).
+Arrangement* Cursor::findArrangement(ArrangementKind k, int i)
+{
+  return this->m_storage->findArrangement(this->m_entity, k, i);
+}
+
+/// Return the \a i-th arrangement of kind \a k (or NULL).
+const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
+{
+  return this->m_storage->findArrangement(this->m_entity, k, i);
+}
+
+/**\brief Return the relation specified by the \a offset into the specified arrangement.
+  *
+  */
+Cursor Cursor::relationFromArrangement(
+  ArrangementKind k, int arrangementIndex, int offset) const
+{
+  const Entity* ent = this->m_storage->findEntity(this->m_entity);
+  if (ent)
+    {
+    const Arrangement* arr = this->findArrangement(k, arrangementIndex);
+    if (arr && static_cast<int>(arr->details().size()) > offset)
+      {
+      return Cursor(
+        this->m_storage,
+        ent->relations()[arr->details()[offset]]);
+      }
+    }
+  return Cursor();
+}
+
+/// A comparator provided so that cursors may be included in ordered sets.
 bool Cursor::operator < (const Cursor& other) const
 {
   if (this->m_storage < other.m_storage)
