@@ -19,11 +19,11 @@ UUID::UUID(const UUID& other)
 }
 
 /// Construct a UUID from raw bytes (more than twice as efficient as string conversion).
-UUID::UUID(const_iterator begin, const_iterator end)
+UUID::UUID(const_iterator inBegin, const_iterator inEnd)
 {
-  for (iterator it = this->m_data.begin(); begin != end; ++it, ++begin)
+  for (iterator it = this->m_data.begin(); inBegin != inEnd; ++it, ++inBegin)
     {
-    *it = *begin;
+    *it = *inBegin;
     }
 }
 

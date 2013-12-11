@@ -40,12 +40,12 @@ ItemDefinition::~ItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-bool ItemDefinition::isMemberOf(const std::vector<std::string> &categories) const
+bool ItemDefinition::isMemberOf(const std::vector<std::string> &inCategories) const
 {
-  std::size_t i, n = categories.size();
+  std::size_t i, n = inCategories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(categories[i]))
+    if (this->isMemberOf(inCategories[i]))
       {
       return true;
       }

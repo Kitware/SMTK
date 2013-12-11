@@ -23,10 +23,10 @@ Storage::Storage() :
 }
 
 Storage::Storage(
-  shared_ptr<UUIDsToEntities> topology,
-  shared_ptr<UUIDsToArrangements> arrangements,
+  shared_ptr<UUIDsToEntities> inTopology,
+  shared_ptr<UUIDsToArrangements> inArrangements,
   shared_ptr<UUIDsToTessellations> tess)
-  : BRepModel(topology), m_arrangements(arrangements), m_tessellations(tess)
+  : BRepModel(inTopology), m_arrangements(inArrangements), m_tessellations(tess)
 {
 }
 

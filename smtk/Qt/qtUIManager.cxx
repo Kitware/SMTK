@@ -80,8 +80,8 @@ using namespace smtk::attribute;
 qtUIManager* qtUIManager::Instance = 0;
 
 //-----------------------------------------------------------------------------
-qtDoubleValidator::qtDoubleValidator(QObject * parent)
-  :QDoubleValidator(parent)
+qtDoubleValidator::qtDoubleValidator(QObject * inParent)
+  :QDoubleValidator(inParent)
 {
 }
 
@@ -315,7 +315,7 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::processBasicView(qtBaseView* v)
+void qtUIManager::processBasicView(qtBaseView* /*v*/)
 {
   //node.append_attribute("Title").set_value(v->title().c_str());
   //if (v->iconName() != "")
@@ -394,7 +394,7 @@ void qtUIManager::updateArrayTableWidget(
     return;
     }
 
-  int numCols = (int)(n*m), numRows = (int)(item->numberOfValues());
+  int numCols = static_cast<int>(n*m), numRows = static_cast<int>(item->numberOfValues());
   widget->setColumnCount(numCols);
   widget->setRowCount(numRows);
   for(int h=0; h<numCols; h++)
@@ -417,7 +417,7 @@ void qtUIManager::updateTableColRows(smtk::attribute::ItemPtr dataItem,
     {
     return;
     }
-  int numRows = (int)(item->numberOfValues());
+  int numRows = static_cast<int>(item->numberOfValues());
   widget->setRowCount(numRows);
   QString strValue;
   for(int row=0; row < numRows; row++)
@@ -463,7 +463,7 @@ bool qtUIManager::getExpressionArrayString(
     return false;
     }
   int numberOfComponents = dataItem->numberOfItemsPerGroup();
-  int nVals = (int)(item->numberOfValues());
+  int nVals = static_cast<int>(item->numberOfValues());
   QStringList strVals;
   smtk::attribute::ValueItemPtr valueitem;
   for(int i=0; i < nVals; i++)
@@ -571,8 +571,8 @@ QWidget* qtUIManager::createExpressionRefWidget(
     }
   QList<QString> attNames;
   std::vector<smtk::attribute::AttributePtr> result;
-  Manager *attManager = attDef->manager();
-  attManager->findAttributes(attDef, result);
+  Manager *lAttManager = attDef->manager();
+  lAttManager->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
@@ -583,7 +583,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
   QVariant vdata(elementIdx);
   combo->setProperty("ElementIndex", vdata);
   QVariant vobject;
-  vobject.setValue((void*)(attitem.get()));
+  vobject.setValue(static_cast<void*>(attitem.get()));
   combo->setProperty("AttItemObj", vobject);
   combo->addItems(attNames);
 
@@ -624,8 +624,8 @@ void qtUIManager::onExpressionReferenceChanged()
 
   if(curIdx>=0)
     {
-    Manager *attManager = item->attribute()->manager();
-    AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+    Manager *lAttManager = item->attribute()->manager();
+    AttributePtr attPtr = lAttManager->findAttribute(comboBox->currentText().toStdString());
     if(attPtr)
       {
       inputitem->setExpression(elementIdx, attPtr);
@@ -676,7 +676,7 @@ QWidget* qtUIManager::createComboBox(
   QVariant vdata(elementIdx);
   combo->setProperty("ElementIndex", vdata);
   QVariant vobject;
-  vobject.setValue((void*)(attitem.get()));
+  vobject.setValue(static_cast<void*>(attitem.get()));
   combo->setProperty("AttItemObj", vobject);
   combo->addItems(discreteVals);
   int setIndex = -1;
@@ -824,9 +824,9 @@ QWidget* qtUIManager::createEditBox(
         {
         editBox->setToolTip(tooltip);
         }
-      QVariant vdata;
-      vdata.setValue((void*)editBox);
-      validator->setProperty("MyWidget", vdata);
+      QVariant tvdata;
+      tvdata.setValue(static_cast<void*>(editBox));
+      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -889,9 +889,9 @@ QWidget* qtUIManager::createEditBox(
         {
         editBox->setToolTip(tooltip);
         }
-      QVariant vdata;
-      vdata.setValue((void*)editBox);
-      validator->setProperty("MyWidget", vdata);
+      QVariant tvdata;
+      tvdata.setValue(static_cast<void*>(editBox));
+      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -945,7 +945,7 @@ QWidget* qtUIManager::createEditBox(
     {
     inputWidget->setProperty("ElementIndex", vdata);
     QVariant vobject;
-    vobject.setValue((void*)(attitem.get()));
+    vobject.setValue(static_cast<void*>(attitem.get()));
     inputWidget->setProperty("AttItemObj", vobject);
 
     qtUIManager::instance()->setWidgetToDefaultValueColor(inputWidget,isDefault);
@@ -1035,7 +1035,7 @@ bool qtUIManager::updateTableItemCheckState(
      (attItem->definition()->isEnabledByDefault() ? Qt::Checked : Qt::Unchecked);
     labelitem->setCheckState(checkState);
     QVariant vdata;
-    vdata.setValue((void*)attItem.get());
+    vdata.setValue(static_cast<void*>(attItem.get()));
     labelitem->setData(Qt::UserRole, vdata);
     labelitem->setFlags(labelitem->flags() | Qt::ItemIsUserCheckable);
     bEnabled = (checkState==Qt::Checked);

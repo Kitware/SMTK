@@ -38,10 +38,10 @@ DirectoryItem::DirectoryItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-DirectoryItem::DirectoryItem(Item *owningItem,
+DirectoryItem::DirectoryItem(Item *inOwningItem,
                              int itemPosition,
-                             int subGroupPosition): 
-  Item(owningItem, itemPosition, subGroupPosition)
+                             int inSubGroupPosition):
+  Item(inOwningItem, itemPosition, inSubGroupPosition)
 {
 }
 

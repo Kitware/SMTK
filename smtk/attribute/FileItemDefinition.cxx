@@ -48,7 +48,7 @@ Item::Type FileItemDefinition::type() const
 
 //----------------------------------------------------------------------------
 bool 
-FileItemDefinition::isValueValid(const std::string &val) const
+FileItemDefinition::isValueValid(const std::string &/*val*/) const
 {
   return true;
 }

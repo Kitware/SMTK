@@ -37,10 +37,10 @@ ValueItem::ValueItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-ValueItem::ValueItem(Item *owningItem,
+ValueItem::ValueItem(Item *inOwningItem,
                      int itemPosition,
                      int mySubGroupPosition): 
-  Item(owningItem, itemPosition, mySubGroupPosition)
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 //----------------------------------------------------------------------------

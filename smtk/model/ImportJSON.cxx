@@ -363,8 +363,8 @@ int ImportJSON::ofStorage(
 int ImportJSON::ofStorageEntity(
   const UUID& uid, cJSON* cellRec, StoragePtr model)
 {
-  long dim;
-  long entityFlags;
+  long dim = 0;
+  long entityFlags = 0;
   int status = 0;
   status |= cJSON_GetObjectIntegerValue(cellRec, "d", dim);
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);

@@ -48,7 +48,7 @@ Item::Type DirectoryItemDefinition::type() const
 
 //----------------------------------------------------------------------------
 bool 
-DirectoryItemDefinition::isValueValid(const std::string &val) const
+DirectoryItemDefinition::isValueValid(const std::string &/*val*/) const
 {
   return true;
 }

@@ -35,10 +35,10 @@ StringItem::StringItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-StringItem::StringItem(Item *owningItem,
+StringItem::StringItem(Item *inOwningItem,
                        int itemPosition,
                        int mySubGroupPosition): 
-  ValueItemTemplate<std::string>(owningItem, itemPosition, mySubGroupPosition)
+  ValueItemTemplate<std::string>(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 //----------------------------------------------------------------------------
