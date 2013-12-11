@@ -555,6 +555,14 @@
         <include file-name="smtk/model/Arrangement.h" location="local"/>
       </enum-type>
 
+      <enum-type name="DescriptivePhraseType">
+        <include file-name="smtk/model/DescriptivePhraseIterator.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="PropertyType">
+        <include file-name="smtk/model/BRepModel.h" location="local"/>
+      </enum-type>
+
       <enum-type name="EntityTypeBits">
         <include file-name="smtk/model/EntityTypeBits.h" location="local"/>
       </enum-type>

@@ -20,6 +20,15 @@ namespace smtk {
 typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
 typedef UUIDsToEntities::iterator UUIDWithEntity;
 
+/// Primitive storage types for model properties
+enum PropertyType
+{
+  FLOAT_PROPERTY,    //!< Property is an array of floating-point numbers
+  STRING_PROPERTY,   //!< Property is an array of strings
+  INTEGER_PROPERTY,  //!< Property is an array of integers
+  INVALID_PROPERTY   //!< Property has no storage.
+};
+
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *
   * Entities are stored as instances of C, regardless of their dimension.

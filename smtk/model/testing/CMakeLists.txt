@@ -20,6 +20,10 @@ add_executable(unitStorage unitStorage.cxx)
 target_link_libraries(unitStorage SMTKCore SMTKCoreModelTesting)
 add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
+add_executable(unitDescriptivePhraseIterator unitDescriptivePhraseIterator.cxx)
+target_link_libraries(unitDescriptivePhraseIterator SMTKCore SMTKCoreModelTesting)
+add_test(unitDescriptivePhraseIterator ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhraseIterator)
+
 add_executable(unitCursor unitCursor.cxx)
 target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)
 add_test(unitCursor ${EXECUTABLE_OUTPUT_PATH}/unitCursor)

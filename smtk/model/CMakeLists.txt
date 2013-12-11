@@ -4,6 +4,7 @@ set(modelSrcs
   BRepModel.cxx
   CellEntity.cxx
   Cursor.cxx
+  DescriptivePhraseIterator.cxx
   Entity.cxx
   ExportJSON.cxx
   GroupItem.cxx
@@ -26,6 +27,7 @@ set(modelHeaders
   BRepModel.h
   CellEntity.h
   Cursor.h
+  DescriptivePhraseIterator.h
   Entity.h
   EntityTypeBits.h
   ExportJSON.h
