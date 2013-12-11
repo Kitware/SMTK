@@ -10,7 +10,7 @@
 #include <string.h>
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
-# define snprintf _snprintf
+# define snprintf(buf, cnt, fmt, ...) _snprintf_s(buf, cnt, cnt, fmt, __VA_ARGS__)
 #endif
 
 using namespace smtk::util;
