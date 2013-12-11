@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 2.8.10)
+cmake_policy(SET CMP0020 NEW)
 project(SMTK)
 
 #Add our Cmake directory to the module search path
