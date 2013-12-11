@@ -48,10 +48,10 @@ public:
 
   int findOrAppendRelation(const smtk::util::UUID& r);
 
-  std::string flagSummary() const
-    { return Entity::flagSummary(this->entityFlags()); }
-  std::string flagDescription() const
-    { return Entity::flagDescription(this->entityFlags()); }
+  std::string flagSummary(int form = 0) const
+    { return Entity::flagSummary(this->entityFlags(), form); }
+  std::string flagDescription(int form = 0) const
+    { return Entity::flagDescription(this->entityFlags(), form); }
 
   static std::string flagSummaryHelper(BitFlags entityFlags, int form = 0);
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
