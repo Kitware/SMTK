@@ -164,7 +164,7 @@ int Entity::findOrAppendRelation(const smtk::util::UUID& r)
     {
     if (this->m_relations[i] == r)
       {
-      return i;
+      return static_cast<int>(i);
       }
     }
   int idx = static_cast<int>(this->m_relations.size());
