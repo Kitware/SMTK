@@ -51,6 +51,12 @@ namespace smtk
   //bring in the correct shared_ptr const_pointer_cast
   using @POINTER_NAMESPACE@::const_pointer_cast;
 
+  //bring in the correct shared_ptr static_pointer_cast
+  using @POINTER_NAMESPACE@::static_pointer_cast;
+
+  //bring in the correct enable_shared_from_this
+  using @POINTER_NAMESPACE@::enable_shared_from_this;
+
 #ifdef smtk_has_owner_less
   //bring in the correct owner_less so that
   //we store weak ptr in sets/maps even more safely

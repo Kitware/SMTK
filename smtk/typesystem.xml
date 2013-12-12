@@ -556,7 +556,7 @@
       </enum-type>
 
       <enum-type name="DescriptivePhraseType">
-        <include file-name="smtk/model/DescriptivePhraseIterator.h" location="local"/>
+        <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
       </enum-type>
 
       <enum-type name="PropertyType">

@@ -45,7 +45,7 @@ public:
 
   BRepModel();
   BRepModel(shared_ptr<storage_type> topology);
-  ~BRepModel();
+  virtual ~BRepModel();
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;

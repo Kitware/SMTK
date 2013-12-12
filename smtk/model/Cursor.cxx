@@ -45,7 +45,7 @@ bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 }
 
 /// Return the UUID of the entity the cursor references.
-smtk::util::UUID Cursor::entity()
+const smtk::util::UUID& Cursor::entity() const
 {
   return this->m_entity;
 }
@@ -235,6 +235,19 @@ bool Cursor::removeFloatProperty(const std::string& propName)
   return false;
 }
 
+/**\brief Does this entity have *any* float-valued properties?
+  *
+  * If not, you should call Cursor::setFloatProperty() before
+  * calling Cursor::floatProperties().
+  */
+bool Cursor::hasFloatProperties() const
+{
+  return
+    this->m_storage->floatProperties().find(this->m_entity)
+    == this->m_storage->floatProperties().end() ?
+    false : true;
+}
+
 FloatData& Cursor::floatProperties()
 {
   return this->m_storage->floatProperties().find(this->m_entity)->second;
@@ -290,6 +303,19 @@ bool Cursor::removeStringProperty(const std::string& propName)
   return false;
 }
 
+/**\brief Does this entity have *any* string-valued properties?
+  *
+  * If not, you should call Cursor::setStringProperty() before
+  * calling Cursor::stringProperties().
+  */
+bool Cursor::hasStringProperties() const
+{
+  return
+    this->m_storage->stringProperties().find(this->m_entity)
+    == this->m_storage->stringProperties().end() ?
+    false : true;
+}
+
 StringData& Cursor::stringProperties()
 {
   return this->m_storage->stringProperties().find(this->m_entity)->second;
@@ -343,6 +369,19 @@ bool Cursor::removeIntegerProperty(const std::string& propName)
     return this->m_storage->removeIntegerProperty(this->m_entity, propName);
     }
   return false;
+}
+
+/**\brief Does this entity have *any* integer-valued properties?
+  *
+  * If not, you should call Cursor::setIntegerProperty() before
+  * calling Cursor::integerProperties().
+  */
+bool Cursor::hasIntegerProperties() const
+{
+  return
+    this->m_storage->integerProperties().find(this->m_entity)
+    == this->m_storage->integerProperties().end() ?
+    false : true;
 }
 
 IntegerData& Cursor::integerProperties()

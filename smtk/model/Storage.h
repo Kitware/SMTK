@@ -28,7 +28,7 @@ public:
     shared_ptr<UUIDsToEntities> topology,
     shared_ptr<UUIDsToArrangements> arrangements,
     shared_ptr<UUIDsToTessellations> tess);
-  ~Storage();
+  virtual ~Storage();
 
   static smtk::model::StoragePtr New()
     { return smtk::model::StoragePtr(new Storage); }

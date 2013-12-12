@@ -1,9 +1,11 @@
-#ifndef __smtk_model_DescriptivePhraseIterator_h
-#define __smtk_model_DescriptivePhraseIterator_h
+#ifndef __smtk_model_DescriptivePhrase_h
+#define __smtk_model_DescriptivePhrase_h
 
+#include "smtk/util/SharedFromThis.h"
 #include "smtk/model/Cursor.h"
 
 #include <string>
+#include <vector>
 
 namespace smtk {
   namespace model {
@@ -37,42 +39,42 @@ enum DescriptivePhraseType {
   INVALID_DESCRIPTION           //!< This is used to indicate an invalid or empty descriptive phrase.
 };
 
-class SMTKCORE_EXPORT DescriptivePhraseIterator
+class DescriptivePhrase;
+typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
+
+class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
-  DescriptivePhraseIterator(const Cursor& entity);
-  DescriptivePhraseIterator(const DescriptivePhraseIterator& other);
-  DescriptivePhraseIterator(DescriptivePhraseIterator* parent, DescriptivePhraseType phraseType, int phraseNum);
+  smtkTypeMacro(DescriptivePhrase);
+  Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());
 
-  void init();
-  bool advance();
-  bool done();
+  virtual std::string title()                                  { return std::string(); }
+  virtual std::string subtitle()                               { return std::string(); }
+  virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
 
-  std::string phrase() const;
-  DescriptivePhraseType phraseType() const;
-  int numberOfSubphrases() const;
-  smtk::util::UUID relatedEntityId() const;
-  Cursor relatedEntity() const;
-  int relatedAttributeId() const;
-  std::string relatedPropertyName() const;
-  PropertyType relatedPropertyType() const;
+  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
+  virtual DescriptivePhrases subphrases();
 
-  DescriptivePhraseIterator& operator ++ ()
-    { this->advance(); return *this; }
+  virtual smtk::util::UUID relatedEntityId() const             { return smtk::util::UUID::null(); }
+  virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
+  virtual Cursor relatedEntity() const                         { return Cursor(); }
+  virtual int relatedAttributeId() const                       { return -1; }
+  virtual std::string relatedPropertyName() const              { return std::string(); }
+  virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
 
 protected:
-  DescriptivePhraseIterator* m_parent; // If we are a subphrase, the parent phrase. Or NULL.
-  Cursor m_context; // The entity we are describing
-  DescriptivePhraseType m_currentPhraseType; // The current type of phrase we are iterating
-  int m_currentPhrase; // The index of the phrase of the current type we are iterating
-  int m_numberOfPhrasesOfCurrentType; // An upper bound for m_currentPhrase.
-  shared_ptr<DescriptivePhraseIterator> m_currentChild; // If we are at a subphrase, a pointer to it. Or NULL.
-  PropertyNameWithConstFloats m_currentFloatProperty;
-  PropertyNameWithConstStrings m_currentStringProperty;
-  PropertyNameWithConstIntegers m_currentIntegerProperty;
+  DescriptivePhrase();
+
+  void buildSubphrases();
+  virtual bool buildSubphrasesInternal() { return true; }
+
+  DescriptivePhrasePtr m_parent;
+  DescriptivePhraseType m_type;
+  mutable DescriptivePhrases m_subphrases;
+  mutable bool m_subphrasesBuilt;
 };
 
   } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_DescriptivePhraseIterator_h
+#endif // __smtk_model_DescriptivePhrase_h

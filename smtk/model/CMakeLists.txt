@@ -4,7 +4,7 @@ set(modelSrcs
   BRepModel.cxx
   CellEntity.cxx
   Cursor.cxx
-  DescriptivePhraseIterator.cxx
+  DescriptivePhrase.cxx
   Entity.cxx
   ExportJSON.cxx
   GroupItem.cxx
@@ -14,6 +14,8 @@ set(modelSrcs
   ImportJSON.cxx
   Item.cxx
   Model.cxx
+  PropertyListPhrase.cxx
+  PropertyValuePhrase.cxx
   ShellEntity.h
   Storage.cxx
   ModelDomainItem.cxx
@@ -27,7 +29,7 @@ set(modelHeaders
   BRepModel.h
   CellEntity.h
   Cursor.h
-  DescriptivePhraseIterator.h
+  DescriptivePhrase.h
   Entity.h
   EntityTypeBits.h
   ExportJSON.h
@@ -40,6 +42,8 @@ set(modelHeaders
   GridInfo3D.h
   GroupItem.h
   Model.h
+  PropertyListPhrase.h
+  PropertyValuePhrase.h
   Storage.h
   ModelDomainItem.h
   ShellEntity.h

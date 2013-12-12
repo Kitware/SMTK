@@ -65,7 +65,7 @@ public:
   StoragePtr storage();
 
   bool setEntity(const smtk::util::UUID& entityId);
-  smtk::util::UUID entity();
+  const smtk::util::UUID& entity() const;
 
   int dimension() const;
   int dimensionBits() const;
@@ -143,6 +143,7 @@ public:
   smtk::model::FloatList& floatProperty(const std::string& propName);
   bool hasFloatProperty(const std::string& propName) const;
   bool removeFloatProperty(const std::string& propName);
+  bool hasFloatProperties() const;
   FloatData& floatProperties();
   FloatData const& floatProperties() const;
 
@@ -152,6 +153,7 @@ public:
   smtk::model::StringList& stringProperty(const std::string& propName);
   bool hasStringProperty(const std::string& propName) const;
   bool removeStringProperty(const std::string& propName);
+  bool hasStringProperties() const;
   StringData& stringProperties();
   StringData const& stringProperties() const;
 
@@ -161,6 +163,7 @@ public:
   smtk::model::IntegerList& integerProperty(const std::string& propName);
   bool hasIntegerProperty(const std::string& propName) const;
   bool removeIntegerProperty(const std::string& propName);
+  bool hasIntegerProperties() const;
   IntegerData& integerProperties();
   IntegerData const& integerProperties() const;
 
