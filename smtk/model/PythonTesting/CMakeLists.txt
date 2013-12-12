@@ -14,6 +14,8 @@ if( PYTHONINTERP_FOUND )
   set(SHIBOKEN_SMTK_PYTHON "")
   if(UNIX)
     set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
+  else() #windows
+    set(SIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
   endif()
 
   foreach (test ${smtkModelPythonTests})
