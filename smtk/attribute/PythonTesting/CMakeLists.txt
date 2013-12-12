@@ -9,9 +9,9 @@ if( PYTHONINTERP_FOUND )
   endif()
   set(SIBOKEN_SMTK_PYTHON "")
   if(UNIX)
-    set(SIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
+    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR}:${SHIBOKEN_LIBRARY_PATH}")
   else() #windows
-    set(SIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
+    set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
   endif()
   message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
   message("${SHIBOKEN_LIBRARY_PATH}")
@@ -30,7 +30,7 @@ if( PYTHONINTERP_FOUND )
                         expressintTestPy expressionTest2Py
                         attributeAutoNamingTestPy attributeAutoNamingTestPy
                         attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
-                        PROPERTIES ENVIRONMENT "PYTHONPATH=${SIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )
+                        PROPERTIES ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )
 else()
   message("could not find python interp")
 endif()
