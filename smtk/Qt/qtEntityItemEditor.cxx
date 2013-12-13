@@ -6,8 +6,8 @@
 namespace smtk {
   namespace model {
 
-QEntityItemEditor::QEntityItemEditor(QWidget* parent)
-  : QWidget(parent)
+QEntityItemEditor::QEntityItemEditor(QWidget* super)
+  : QWidget(super)
 {
   this->m_title = new QLineEdit(this);
   new QHBoxLayout(this);

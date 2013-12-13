@@ -9,16 +9,16 @@
 namespace smtk {
   namespace model {
 
-QEntityItemDelegate::QEntityItemDelegate(QWidget* parent)
-  : QStyledItemDelegate(parent)
+QEntityItemDelegate::QEntityItemDelegate(QWidget* owner)
+  : QStyledItemDelegate(owner)
 {
 }
 
 QSize QEntityItemDelegate::sizeHint(
   const QStyleOptionViewItem& option,
-  const QModelIndex& index) const
+  const QModelIndex& idx) const
 {
-  QIcon icon = qvariant_cast<QIcon>(index.data(QEntityItemModel::EntityIconRole));
+  QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(24);
@@ -41,13 +41,13 @@ QSize QEntityItemDelegate::sizeHint(
 void QEntityItemDelegate::paint(
   QPainter* painter,
   const QStyleOptionViewItem& option,
-  const QModelIndex& index) const
+  const QModelIndex& idx) const
 {
-  QStyledItemDelegate::paint(painter,option,index);
+  QStyledItemDelegate::paint(painter,option,idx);
 
   painter->save();
 
-  QIcon icon = qvariant_cast<QIcon>(index.data(QEntityItemModel::EntityIconRole));
+  QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   QFont subtitleFont = titleFont;
@@ -58,8 +58,8 @@ void QEntityItemDelegate::paint(
   QFontMetrics titleFM(titleFont);
   QFontMetrics subtitleFM(subtitleFont);
 
-  QString titleText = qvariant_cast<QString>(index.data(QEntityItemModel::TitleTextRole));
-  QString subtitleText = qvariant_cast<QString>(index.data(QEntityItemModel::SubtitleTextRole));
+  QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
+  QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
 
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
@@ -91,13 +91,13 @@ void QEntityItemDelegate::paint(
 }
 
 QWidget* QEntityItemDelegate::createEditor(
-  QWidget* parent,
+  QWidget* owner,
   const QStyleOptionViewItem& option,
-  const QModelIndex &index) const
+  const QModelIndex &idx) const
 {
   (void)option;
-  (void)index;
-  smtk::model::QEntityItemEditor* editor = new QEntityItemEditor(parent);
+  (void)idx;
+  smtk::model::QEntityItemEditor* editor = new QEntityItemEditor(owner);
   QObject::connect(
     editor, SIGNAL(editingFinished()),
     this, SLOT(commitAndCloseEditor()));
@@ -106,13 +106,13 @@ QWidget* QEntityItemDelegate::createEditor(
 
 void QEntityItemDelegate::setEditorData(
   QWidget* editor,
-  const QModelIndex& index) const
+  const QModelIndex& idx) const
 {
   smtk::model::QEntityItemEditor* entityEditor =
     qobject_cast<smtk::model::QEntityItemEditor*>(editor);
   if (entityEditor)
     {
-    entityEditor->setTitle(index.data(QEntityItemModel::TitleTextRole).toString());
+    entityEditor->setTitle(idx.data(QEntityItemModel::TitleTextRole).toString());
     // TODO: editor should also allow adjusting entity type?
     }
 }
@@ -120,7 +120,7 @@ void QEntityItemDelegate::setEditorData(
 void QEntityItemDelegate::setModelData(
   QWidget* editor,
   QAbstractItemModel* model,
-  const QModelIndex &index) const
+  const QModelIndex &idx) const
 {
   smtk::model::QEntityItemEditor* entityEditor =
     qobject_cast<smtk::model::QEntityItemEditor*>(editor);
@@ -128,7 +128,7 @@ void QEntityItemDelegate::setModelData(
     {
     // TODO: editor should also allow adjusting entity type?
     model->setData(
-      index, entityEditor->title(), QEntityItemModel::TitleTextRole);
+      idx, entityEditor->title(), QEntityItemModel::TitleTextRole);
     }
 }
 

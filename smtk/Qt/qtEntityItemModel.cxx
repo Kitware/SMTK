@@ -132,8 +132,8 @@ struct SortByEntityProperty
 };
 
 // -----------------------------------------------------------------------------
-QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* parent)
-  : QAbstractItemModel(parent), m_storage(model)
+QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* owner)
+  : QAbstractItemModel(owner), m_storage(model)
 {
   this->m_deleteOnRemoval = true;
   initIconResource();
@@ -144,9 +144,9 @@ QEntityItemModel::~QEntityItemModel()
   cleanupIconResource();
 }
 
-QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& parent) const
+QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owner) const
 {
-  return hasIndex(row, column, parent) ? createIndex(row, column, 0) : QModelIndex();
+  return hasIndex(row, column, owner) ? createIndex(row, column, 0) : QModelIndex();
 }
 
 QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
@@ -155,14 +155,14 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
   return QModelIndex();
 }
 
-bool QEntityItemModel::hasChildren(const QModelIndex& parent) const
+bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 {
-      return parent.isValid() ? false : (rowCount() > 0);
+      return owner.isValid() ? false : (rowCount() > 0);
 }
 
-int QEntityItemModel::rowCount(const QModelIndex& parent) const
+int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
-  (void)parent;
+  (void)owner;
   return static_cast<int>(this->m_subset.size());
 }
 
@@ -188,12 +188,12 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
-QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
+QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
-  if (index.isValid())
+  if (idx.isValid())
     {
-    int row = index.row();
-    int col = index.column();
+    int row = idx.row();
+    int col = idx.column();
     smtk::util::UUID uid = this->m_subset[row];
     if (role == TitleTextRole)
       {
@@ -264,9 +264,9 @@ QVariant QEntityItemModel::data(const QModelIndex& index, int role) const
   return QVariant();
 }
 
-bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& parent)
+bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& owner)
 {
-  (void)parent;
+  (void)owner;
   beginInsertRows(QModelIndex(), position, position + rows - 1);
 
   int maxPos = position + rows;
@@ -281,9 +281,9 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& par
   return true;
 }
 
-bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& parent)
+bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& owner)
 {
-  (void)parent;
+  (void)owner;
   beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
   smtk::util::UUIDArray uids(this->m_subset.begin() + position, this->m_subset.begin() + position + rows);
@@ -304,14 +304,14 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
   return true;
 }
 
-bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
-  if(index.isValid())
+  if(idx.isValid())
     {
     smtk::model::Entity* entity;
-    int row = index.row();
-    int col = index.column();
+    int row = idx.row();
+    int col = idx.column();
     if (role == TitleTextRole)
       {
       std::string sval = value.value<QString>().toStdString();
@@ -360,7 +360,7 @@ bool QEntityItemModel::setData(const QModelIndex& index, const QVariant& value, 
         }
       if (didChange)
         {
-        emit(dataChanged(index, index));
+        emit(dataChanged(idx, idx));
         }
       }
     }
@@ -417,14 +417,14 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
       QModelIndex()));
 }
 
-Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& index) const
+Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 {
-  if(!index.isValid())
+  if(!idx.isValid())
     return Qt::ItemIsEnabled;
 
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
-  return QAbstractItemModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+  return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
