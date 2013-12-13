@@ -172,6 +172,35 @@ int Entity::findOrAppendRelation(const smtk::util::UUID& r)
   return idx;
 }
 
+/**\brief Return a list the dimension bits set in \a entityFlags.
+  *
+  * The \a plural reference is set to true if \a flags has
+  * more than 1 dimension bit set. Otherwise, it returns false.
+  */
+std::string Entity::flagDimensionList(BitFlags flags, bool& plural)
+{
+  std::ostringstream result;
+  bool needSeparator = false;
+  plural = false;
+  for (int i = 0; i <= 4; ++i)
+    {
+    if (flags & (1<<i))
+      {
+      if (needSeparator)
+        {
+        result << ", ";
+        plural = true;
+        }
+      else
+        {
+        needSeparator = true;
+        }
+      result << i;
+      }
+    }
+  return result.str();
+}
+
 // If you change this, you may need to change flagSummmary/flagDescription/defaultNameFromCounters
 std::string Entity::flagSummaryHelper(BitFlags flags, int form)
 {

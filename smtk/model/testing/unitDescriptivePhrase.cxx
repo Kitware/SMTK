@@ -1,4 +1,5 @@
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
 #include "smtk/model/ImportJSON.h"
@@ -32,15 +33,16 @@ int main(int argc, char* argv[])
   StoragePtr sm = Storage::New();
 
   UUIDArray uids = createTet(sm);
-  Cursor vert(sm, uids[0]);
+  CursorArray ents;
+  int i = 16;
+  for (UUIDArray::iterator it = uids.begin() + 16; i < 21; ++it, ++i)
+    {
+    ents.push_back(Cursor(sm, *it));
+    }
   sm->assignDefaultNames();
 
   DescriptivePhrase::Ptr dit;
-  PropertyListPhrase::Ptr ppf = PropertyListPhrase::create()->setup(vert, FLOAT_PROPERTY, dit);
-  PropertyListPhrase::Ptr pps = PropertyListPhrase::create()->setup(vert, STRING_PROPERTY, dit);
-  PropertyListPhrase::Ptr ppi = PropertyListPhrase::create()->setup(vert, INTEGER_PROPERTY, dit);
-  prindent(std::cout, 0, ppf);
-  prindent(std::cout, 0, pps);
-  prindent(std::cout, 0, ppi);
+  EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);
+  prindent(std::cout, 0, elist);
   return 0;
 }

@@ -6,6 +6,8 @@ set(modelSrcs
   Cursor.cxx
   DescriptivePhrase.cxx
   Entity.cxx
+  EntityListPhrase.cxx
+  EntityPhrase.cxx
   ExportJSON.cxx
   GroupItem.cxx
   GridInfo.cxx
@@ -31,6 +33,8 @@ set(modelHeaders
   Cursor.h
   DescriptivePhrase.h
   Entity.h
+  EntityListPhrase.h
+  EntityPhrase.h
   EntityTypeBits.h
   ExportJSON.h
   FloatData.h

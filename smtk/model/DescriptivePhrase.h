@@ -42,6 +42,29 @@ enum DescriptivePhraseType {
 class DescriptivePhrase;
 typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
 
+/**\brief A base class for phrases describing an SMTK model.
+  *
+  * Instances of subclasses serve as the basis for user interfaces
+  * to display information about the model in a hierarchical fashion.
+  * Each phrase may have zero-to-many subphrases of any type and
+  * zero-or-one parent phrases.
+  *
+  * The title(), subtitle(), and phraseType() report information
+  * for the user interface to present. In the Qt layer, these are
+  * to be used for list item text (title and subtitle) and icon
+  * (phraseType).
+  *
+  * Subphrases are built on demand (and subclasses must implement
+  * buildSubphrasesInternal() to do so) so that portions of the model
+  * may be presented without loading the full model.
+  *
+  * An external (yet-to-be-designed) filter is given the chance to
+  * modify each phrase's list of subphrases prior to its presentation.
+  * This can be used to limit presentation; inject additional information
+  * or functional components; or even modify the phrases (e.g., to
+  * eliminate vacuous phrases like "0 attributes associated" or to
+  * compact verbose phrases).
+  */
 class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
@@ -55,9 +78,9 @@ public:
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
   virtual DescriptivePhrases subphrases();
 
-  virtual smtk::util::UUID relatedEntityId() const             { return smtk::util::UUID::null(); }
-  virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
   virtual Cursor relatedEntity() const                         { return Cursor(); }
+  virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
+  virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
   virtual int relatedAttributeId() const                       { return -1; }
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }

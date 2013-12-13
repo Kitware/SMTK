@@ -53,6 +53,7 @@ public:
   std::string flagDescription(int form = 0) const
     { return Entity::flagDescription(this->entityFlags(), form); }
 
+  static std::string flagDimensionList(BitFlags entityFlags, bool& plural);
   static std::string flagSummaryHelper(BitFlags entityFlags, int form = 0);
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
   static std::string flagDescription(BitFlags entityFlags, int form = 0);
