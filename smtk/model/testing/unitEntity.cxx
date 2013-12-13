@@ -5,10 +5,10 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/IntegerData.h"
 
+#include "smtk/util/Testing/helpers.h"
+
 #include <iostream>
 #include <sstream>
-
-#include <assert.h>
 
 using namespace smtk::util;
 using namespace smtk::model;

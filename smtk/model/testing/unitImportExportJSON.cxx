@@ -1,6 +1,7 @@
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
+#include "smtk/util/Testing/helpers.h"
 
 #include "cJSON.h"
 
@@ -8,7 +9,6 @@
 #include <string>
 #include <iostream>
 
-#include <assert.h>
 #include <string.h>
 
 using namespace smtk::model;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     std::cout << "====== snip =======\n";
     std::cout << exported2 << "\n";
     std::cout << "====== snip =======\n";
-    assert(strcmp(exported, exported2) == 0 && "double import/export pass not exact");
+    test(strcmp(exported, exported2) == 0, "double import/export pass not exact");
     }
   cJSON_Delete(json);
   free(exported);
