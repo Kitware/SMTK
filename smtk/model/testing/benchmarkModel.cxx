@@ -8,8 +8,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <assert.h>
-
 using namespace smtk::util;
 using namespace smtk::model;
 using namespace smtk::model::testing;
