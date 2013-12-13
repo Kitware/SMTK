@@ -18,6 +18,11 @@
 namespace smtk {
   namespace model {
 
+/**\brief Store information about solid models.
+  *
+  * This adds information about arrangements and tessellations
+  * of entities to its BRepModel base class.
+  */
 class SMTKCORE_EXPORT Storage : public BRepModel
 {
 public:

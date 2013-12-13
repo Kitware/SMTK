@@ -12,6 +12,9 @@
 namespace smtk {
   namespace model {
 
+/**\brief Adapt an smtk::model::Storage instance into a hierarchical Qt model.
+  *
+  */
 class QTSMTK_EXPORT QEntityItemModel : public QAbstractItemModel
 {
   Q_OBJECT

@@ -57,7 +57,7 @@ std::string AbbreviationForArrangementKind(ArrangementKind k)
   return ArrangementKindAbbr[k];
 }
 
-/**\brief Methods to construct arrangement records.
+/** @name Methods to construct arrangement records.
   *
   * These should be preferred to manual construction of arrangements so that
   * conventions can be changed in the future.
@@ -73,7 +73,7 @@ std::string AbbreviationForArrangementKind(ArrangementKind k)
   * index and sense in the function call -- this does not necessarily reflect
   * their order in the arrangement).
   */
-//@{
+///@{
 /**\brief Construct an arrangement record to add to a cell, indicating a use of that cell.
   *
   * The \a relationIdx is the offset in the Entity::relations() array of the USE_ENTITY.
@@ -144,7 +144,68 @@ Arrangement Arrangement::ShellHasUseWithIndexRange(int relationBegin, int relati
     }
   return result;
 }
-//@}
+///@}
+
+/** @name Methods to interpret arrangements.
+  *
+  * Use these methods to obtain integers assocated with a semantic meaning
+  * from the arrangement vector.
+  * If a vector is not sized properly, these methods will return false.
+  */
+///@{
+bool Arrangement::IndexAndSenseFromCellHasUse(int& relationIdx, int& sense)
+{
+  if (this->m_details.size() != 2)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  sense = this->m_details[1];
+  return true;
+}
+
+bool Arrangement::IndexAndSenseFromUseHasCell(int& relationIdx, int& sense)
+{
+  if (this->m_details.size() != 2)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  sense = this->m_details[1];
+  return true;
+}
+
+bool Arrangement::IndexFromCellEmbeddedInEntity(int& relationIdx)
+{
+  if (this->m_details.size() != 1)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  return true;
+}
+
+bool Arrangement::IndexFromShellHasCell(int& relationIdx)
+{
+  if (this->m_details.size() != 1)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  return true;
+}
+
+bool Arrangement::IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd)
+{
+  if (this->m_details.size() != 2)
+    {
+    return false;
+    }
+  relationBegin = this->m_details[0];
+  relationEnd = this->m_details[1];
+  return true;
+}
+///@}
 
   } //namespace model
 } // namespace smtk

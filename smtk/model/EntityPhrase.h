@@ -6,6 +6,8 @@
 namespace smtk {
   namespace model {
 
+/**\brief Describe an entity for user presentation.
+  */
 class EntityPhrase : public DescriptivePhrase
 {
 public:

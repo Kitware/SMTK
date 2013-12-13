@@ -10,6 +10,13 @@
 namespace smtk {
   namespace model {
 
+/**\brief Describe a list of property (name,value) pairs
+  * associated with an entity for user presentation.
+  *
+  * This enumerates properties of a single primitive storage
+  * type (e.g. only string properties or only integer properties),
+  * not all of an entity's properties at once.
+  */
 class SMTKCORE_EXPORT PropertyListPhrase : public DescriptivePhrase
 {
 public:

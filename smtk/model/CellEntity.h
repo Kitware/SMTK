@@ -7,6 +7,9 @@
 namespace smtk {
   namespace model {
 
+/**\brief A cursor subclass with methods specific to cell entities.
+  *
+  */
 class SMTKCORE_EXPORT CellEntity : public Cursor
 {
 public:

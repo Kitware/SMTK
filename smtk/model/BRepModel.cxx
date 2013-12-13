@@ -220,7 +220,7 @@ std::string BRepModel::name(const UUID& ofEntity) const
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
@@ -255,7 +255,7 @@ UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -271,7 +271,7 @@ UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
@@ -306,7 +306,7 @@ UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -528,6 +528,10 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
   this->insertEntityReferences(result);
 }
 
+/** @name Model property accessors.
+  *
+  */
+///@{
 void BRepModel::setFloatProperty(
   const smtk::util::UUID& entity,
   const std::string& propName,
@@ -785,6 +789,7 @@ UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util
 {
   return this->m_integerData->find(entity);
 }
+///@}
 
 /// Add a vertex to storage (without any relationships)
 smtk::util::UUID BRepModel::addVertex()

@@ -10,6 +10,9 @@
 namespace smtk {
   namespace model {
 
+/**\brief Describe the value of a named property for user presentation.
+  *
+  */
 class SMTKCORE_EXPORT PropertyValuePhrase : public DescriptivePhrase
 {
 public:

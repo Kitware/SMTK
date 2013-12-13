@@ -39,6 +39,29 @@ Cursor EntityPhrase::relatedEntity() const
 
 bool EntityPhrase::buildSubphrasesInternal()
 {
+  // I. Add arrangement information
+
+  ArrangementKind kind;
+  for (int ikind = 0; ikind < KINDS_OF_ARRANGEMENTS; ++ikind)
+    {
+    kind = static_cast<ArrangementKind>(ikind);
+    int na = this->m_entity.numberOfArrangementsOfKind(kind);
+    for (int a = 0; a < na; ++a)
+      {
+      const Arrangement* arr = this->m_entity.findArrangement(kind, a);
+      if (!arr->details().empty())
+        {
+        CursorArray relations;
+        arr->relatedEntities(relations);
+        this->m_subphrases.push_back(
+          EntityListPhrase::create()->setup(
+            relations, shared_from_this()));
+        }
+      }
+    }
+  // II. Add attribute information
+  // TODO.
+  // III. Add property information
   if (this->m_entity.hasStringProperties())
     { // TODO: If m_entity.stringProperties().size() < N, add PropValuePhrases instead of a list.
     this->m_subphrases.push_back(

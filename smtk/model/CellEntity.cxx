@@ -6,6 +6,12 @@
 namespace smtk {
   namespace model {
 
+/**\brief Report all of the "use" records associated with the cell.
+  *
+  * The uses can be used to discover higher-dimensional cells that
+  * this cell borders.
+  * Each sense of a cell has its own use.
+  */
 UseEntities CellEntity::uses() const
 {
   UseEntities result;

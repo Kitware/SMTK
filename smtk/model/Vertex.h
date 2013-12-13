@@ -8,6 +8,9 @@
 namespace smtk {
   namespace model {
 
+/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+  *
+  */
 class SMTKCORE_EXPORT Vertex : public CellEntity
 {
 public:

@@ -8,6 +8,9 @@ namespace smtk {
 
 class CellEntity;
 
+/**\brief A cursor subclass that provides methods specific to entity use records.
+  *
+  */
 class SMTKCORE_EXPORT UseEntity : public Cursor
 {
 public:

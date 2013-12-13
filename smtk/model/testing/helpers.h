@@ -12,6 +12,7 @@ namespace smtk {
 
 smtk::util::UUIDArray createTet(smtk::model::StoragePtr sm);
 
+/// Report an integer as a hexadecimal value.
 class hexconst
 {
 public:

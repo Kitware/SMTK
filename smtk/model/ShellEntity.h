@@ -12,6 +12,12 @@ typedef std::set<ShellEntity> ShellEntities;
 class UseEntity;
 typedef std::vector<UseEntity> UseEntities;
 
+/**\brief A cursor subclass with methods specific to shell entities.
+  *
+  * A shell is a collection of oriented cell uses that form a
+  * subset of the boundary of a higher-dimensional parent cell.
+  * A shell may contain other shells.
+  */
 class SMTKCORE_EXPORT ShellEntity : public Cursor
 {
 public:

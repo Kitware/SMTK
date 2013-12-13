@@ -59,16 +59,26 @@ SMTKCORE_EXPORT std::string AbbreviationForArrangementKind(ArrangementKind k);
 class SMTKCORE_EXPORT Arrangement
 {
 public:
+  ///@{
+  /**\brief Access to the integer vector defining an arrangement.
+    */
   std::vector<int>& details()
     { return this->m_details; }
   std::vector<int> const& details() const
     { return this->m_details; }
+  ///@}
 
   static Arrangement CellHasUseWithIndexAndSense(int relationIdx, int sense);
   static Arrangement UseHasCellWithIndexAndSense(int relationIdx, int sense);
   static Arrangement CellEmbeddedInEntityWithIndex(int relationIdx);
   static Arrangement ShellHasCellWithIndex(int relationIdx);
   static Arrangement ShellHasUseWithIndexRange(int relationBegin, int relationEnd);
+
+  bool IndexAndSenseFromCellHasUse(int& relationIdx, int& sense);
+  bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense);
+  bool IndexFromCellEmbeddedInEntity(int& relationIdx);
+  bool IndexFromShellHasCell(int& relationIdx);
+  bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd);
 
 protected:
   std::vector<int> m_details; // Kind-dependent specification of the arrangement.
