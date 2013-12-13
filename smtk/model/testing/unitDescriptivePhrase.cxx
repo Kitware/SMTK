@@ -6,7 +6,9 @@
 
 #include "smtk/model/testing/helpers.h"
 
+#include <fstream>
 #include <iostream>
+#include <string>
 
 #include <assert.h>
 
@@ -28,18 +30,27 @@ void prindent(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
 
 int main(int argc, char* argv[])
 {
-  (void)argc;
-  (void)argv;
   StoragePtr sm = Storage::New();
 
-  UUIDArray uids = createTet(sm);
-  CursorArray ents;
-  int i = 16;
-  for (UUIDArray::iterator it = uids.begin() + 16; i < 21; ++it, ++i)
+  // Block to ensure timely destruction of JSON data.
     {
-    ents.push_back(Cursor(sm, *it));
+    std::string fname(argc > 1 ? argv[1] : "smtkModel.json");
+    std::ifstream file(fname);
+    std::string data(
+      (std::istreambuf_iterator<char>(file)),
+      (std::istreambuf_iterator<char>()));
+
+    if (data.empty() || !ImportJSON::intoModel(data.c_str(), sm))
+      {
+      std::cerr << "Error importing model from file \"" << fname << "\"\n";
+      return 1;
+      }
     }
   sm->assignDefaultNames();
+
+  Cursors ents;
+  Cursor::CursorsFromUUIDs(
+    ents, sm, sm->entitiesMatchingFlags(MODEL_ENTITY, false));
 
   DescriptivePhrase::Ptr dit;
   EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);

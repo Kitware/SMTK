@@ -10,12 +10,15 @@ set(modelSrcs
   EntityPhrase.cxx
   ExportJSON.cxx
   GroupItem.cxx
+  GroupEntity.cxx
   GridInfo.cxx
   GridInfo2D.cxx
   GridInfo3D.cxx
   ImportJSON.cxx
   Item.cxx
+  InstanceEntity.cxx
   Model.cxx
+  ModelEntity.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
   ShellEntity.h
@@ -38,7 +41,9 @@ set(modelHeaders
   EntityTypeBits.h
   ExportJSON.h
   FloatData.h
+  GroupEntity.h
   ImportJSON.h
+  InstanceEntity.h
   IntegerData.h
   Item.h
   GridInfo.h
@@ -46,6 +51,7 @@ set(modelHeaders
   GridInfo3D.h
   GroupItem.h
   Model.h
+  ModelEntity.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
   Storage.h

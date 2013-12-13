@@ -1,6 +1,13 @@
 #include "smtk/model/EntityPhrase.h"
 
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/GroupEntity.h"
+#include "smtk/model/InstanceEntity.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/PropertyListPhrase.h"
+#include "smtk/model/ShellEntity.h"
+#include "smtk/model/UseEntity.h"
 
 namespace smtk {
   namespace model {
@@ -40,25 +47,51 @@ Cursor EntityPhrase::relatedEntity() const
 bool EntityPhrase::buildSubphrasesInternal()
 {
   // I. Add arrangement information
-
-  ArrangementKind kind;
-  for (int ikind = 0; ikind < KINDS_OF_ARRANGEMENTS; ++ikind)
-    {
-    kind = static_cast<ArrangementKind>(ikind);
-    int na = this->m_entity.numberOfArrangementsOfKind(kind);
-    for (int a = 0; a < na; ++a)
-      {
-      const Arrangement* arr = this->m_entity.findArrangement(kind, a);
-      if (!arr->details().empty())
-        {
-        CursorArray relations;
-        arr->relatedEntities(relations);
-        this->m_subphrases.push_back(
-          EntityListPhrase::create()->setup(
-            relations, shared_from_this()));
-        }
-      }
-    }
+  // This is dependent on both the entity type and the ArrangementKind
+  // so we cast to different cursor types and use their accessors to
+  // obtain lists of related entities.
+   {
+   UseEntity uent = this->m_entity.as<UseEntity>();
+   CellEntity cent = this->m_entity.as<CellEntity>();
+   ShellEntity sent = this->m_entity.as<ShellEntity>();
+   GroupEntity gent = this->m_entity.as<GroupEntity>();
+   ModelEntity ment = this->m_entity.as<ModelEntity>();
+   InstanceEntity ient = this->m_entity.as<InstanceEntity>();
+   if (uent.isValid())
+     {
+     }
+   else if (cent.isValid())
+     {
+     UseEntities relations = cent.uses();
+     if (!relations.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           relations, shared_from_this()));
+       }
+     }
+   else if (sent.isValid())
+     {
+     }
+   else if (gent.isValid())
+     {
+     }
+   else if (ment.isValid())
+     {
+     // TODO: Groups in model
+     // TODO: Submodels in model
+     CellEntities freeCellsInModel = ment.cells();
+     if (!freeCellsInModel.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           freeCellsInModel, shared_from_this()));
+       }
+     }
+   else if (ient.isValid())
+     {
+     }
+   }
   // II. Add attribute information
   // TODO.
   // III. Add property information
