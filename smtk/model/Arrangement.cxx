@@ -34,20 +34,6 @@ Arrangement Arrangement::CellHasUseWithIndexAndSense(int relationIdx, int sense)
   return result;
 }
 
-/**\brief Construct an arrangement record to add to a cell-use, indicating its parent cell.
-  *
-  * The \a relationIdx is the offset in the Entity::relations() array of the CELL_ENTITY.
-  * The \a sense is an arbitrary integer, but for edges and faces (not vertices),
-  * the values of the CellUseSenses enum should be used.
-  */
-Arrangement Arrangement::UseHasCellWithIndexAndSense(int relationIdx, int sense)
-{
-  Arrangement result;
-  result.details().push_back(relationIdx);
-  result.details().push_back(sense);
-  return result;
-}
-
 /**\brief Construct an arrangement record to add to a cell, indicating its parent entity.
   *
   * The \a relationIdx is the offset in the Entity::relations() array of the CELL_ENTITY.
@@ -61,6 +47,35 @@ Arrangement Arrangement::CellEmbeddedInEntityWithIndex(int relationIdx)
 {
   Arrangement result;
   result.details().push_back(relationIdx);
+  return result;
+}
+
+/**\brief Construct an arrangement record to add to a cell, indicating a boundary shell.
+  *
+  * The \a relationIdx is the offset in the Entity::relations() array of the CELL_ENTITY.
+  * Only toplevel shells (not contained inside other shells of this cell) should be added
+  * directly to the cell. Other shells should be added to the *shell* entities which
+  * contain them.
+  * In this way, the shells form a tree.
+  */
+Arrangement Arrangement::CellHasShellWithIndex(int relationIdx)
+{
+  Arrangement result;
+  result.details().push_back(relationIdx);
+  return result;
+}
+
+/**\brief Construct an arrangement record to add to a cell-use, indicating its parent cell.
+  *
+  * The \a relationIdx is the offset in the Entity::relations() array of the CELL_ENTITY.
+  * The \a sense is an arbitrary integer, but for edges and faces (not vertices),
+  * the values of the CellUseSenses enum should be used.
+  */
+Arrangement Arrangement::UseHasCellWithIndexAndSense(int relationIdx, int sense)
+{
+  Arrangement result;
+  result.details().push_back(relationIdx);
+  result.details().push_back(sense);
   return result;
 }
 
@@ -110,6 +125,26 @@ bool Arrangement::IndexAndSenseFromCellHasUse(int& relationIdx, int& sense)
   return true;
 }
 
+bool Arrangement::IndexFromCellEmbeddedInEntity(int& relationIdx)
+{
+  if (this->m_details.size() != 1)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  return true;
+}
+
+bool Arrangement::IndexFromCellHasShell(int& relationIdx)
+{
+  if (this->m_details.size() != 1)
+    {
+    return false;
+    }
+  relationIdx = this->m_details[0];
+  return true;
+}
+
 bool Arrangement::IndexAndSenseFromUseHasCell(int& relationIdx, int& sense)
 {
   if (this->m_details.size() != 2)
@@ -118,16 +153,6 @@ bool Arrangement::IndexAndSenseFromUseHasCell(int& relationIdx, int& sense)
     }
   relationIdx = this->m_details[0];
   sense = this->m_details[1];
-  return true;
-}
-
-bool Arrangement::IndexFromCellEmbeddedInEntity(int& relationIdx)
-{
-  if (this->m_details.size() != 1)
-    {
-    return false;
-    }
-  relationIdx = this->m_details[0];
   return true;
 }
 

@@ -36,14 +36,16 @@ public:
   ///@}
 
   static Arrangement CellHasUseWithIndexAndSense(int relationIdx, int sense);
-  static Arrangement UseHasCellWithIndexAndSense(int relationIdx, int sense);
   static Arrangement CellEmbeddedInEntityWithIndex(int relationIdx);
+  static Arrangement CellHasShellWithIndex(int relationIdx);
+  static Arrangement UseHasCellWithIndexAndSense(int relationIdx, int sense);
   static Arrangement ShellHasCellWithIndex(int relationIdx);
   static Arrangement ShellHasUseWithIndexRange(int relationBegin, int relationEnd);
 
   bool IndexAndSenseFromCellHasUse(int& relationIdx, int& sense);
-  bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense);
   bool IndexFromCellEmbeddedInEntity(int& relationIdx);
+  bool IndexFromCellHasShell(int& relationIdx);
+  bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense);
   bool IndexFromShellHasCell(int& relationIdx);
   bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd);
 

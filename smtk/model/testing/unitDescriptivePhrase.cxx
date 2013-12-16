@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   // Block to ensure timely destruction of JSON data.
     {
     std::string fname(argc > 1 ? argv[1] : "smtkModel.json");
-    std::ifstream file(fname);
+    std::ifstream file(fname.c_str());
     std::string data(
       (std::istreambuf_iterator<char>(file)),
       (std::istreambuf_iterator<char>()));

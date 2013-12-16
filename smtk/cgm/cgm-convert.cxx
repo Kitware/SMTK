@@ -171,6 +171,14 @@ void AddArrangementsToBody(
       {
       offsets[*it] = offset;
       }
+    if (offsets.find(shellSMTKId) == offsets.end())
+      {
+      int shellOffset = static_cast<int>(vcell->relations().size());
+      offsets[shellSMTKId] = shellOffset;
+      vcell->relations().push_back(shellSMTKId);
+      storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
+        smtk::model::Arrangement::CellHasShellWithIndex(shellOffset));
+      }
 
     // Finally, we can create an arrangement, a, of offsets and signs that
     // describe the shell by enumerating each bounding-cell and its sense
@@ -186,8 +194,8 @@ void AddArrangementsToBody(
     shellRelations[ns] = smtkId;
     storage->arrangeEntity(shellSMTKId, smtk::model::HAS_CELL,
       smtk::model::Arrangement::ShellHasCellWithIndex(ns));
-    smtk::model::Arrangement a;
-    a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
+    //smtk::model::Arrangement a;
+    //a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
     for (int j = 0; j < ns; ++j)
       {
       // Obtain the SenseEntity. Since SenseEntity instances cannot have a
@@ -218,11 +226,12 @@ void AddArrangementsToBody(
         oit = offsets.insert(std::pair<smtk::util::UUID,int>(smtkFaceId,offset++)).first;
         }
       // Add [offset into relations, sense(neg/pos = 0/1)] to arrangement:
-      a.details().push_back(oit->second);
-      a.details().push_back(se->get_sense() == CUBIT_FORWARD ? +1 : 0);
+      //a.details().push_back(oit->second);
+      //a.details().push_back(se->get_sense() == CUBIT_FORWARD ? +1 : 0);
       }
     // Now add the arrangement to the cell's list of arrangements:
-    int aid = storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL, a);
+    int aid = storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
+      smtk::model::Arrangement::CellHasShellWithIndex(0));
     storage->findEntity(shellSMTKId)->relations() = shellRelations;
     aid = storage->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
       smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
@@ -616,6 +625,8 @@ int main (int argc, char **argv)
     cerr << "Errors found during session.\n";
   else
     ret_val = 0;
+
+  GeometryQueryTool::delete_instance();
 
   return ret_val;
 }
