@@ -28,7 +28,8 @@
     { \
       Entity* er; \
       if ( \
-        this->Cursor::isValid(&er) && \
+        /* NB: Cursor::isValid() may return true even when er == NULL */ \
+        this->Cursor::isValid(&er) && er && \
         smtk::model:: typecheck (er->entityFlags())) \
         { \
         if (entRec) *entRec = er; \
@@ -63,6 +64,7 @@ public:
 
   bool setStorage(StoragePtr storage);
   StoragePtr storage();
+  const StoragePtr storage() const;
 
   bool setEntity(const smtk::util::UUID& entityId);
   const smtk::util::UUID& entity() const;
@@ -73,35 +75,9 @@ public:
   std::string flagSummary(int form = 0) const;
   std::string name() const;
 
-  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
-    *
-    * Subclasses should not override this method. It is a convenience
-    * which makes the shiboken wrapper more functional.
-    */
-  bool isValid() const
-    {
-    return this->isValid(NULL);
-    }
-
-  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
-    *
-    * Subclasses override this and additionally return whether the entity is of
-    * a type that matches the Cursor subclass. For example, it is possible to
-    * create a Vertex cursor from a UUID referring to an EdgeUse. While
-    * Cursor::isValid() will return true, Vertex::isValid() will return false.
-    *
-    * The optional \a entityRecord will be set when a non-NULL value is passed
-    * and the entity is valid.
-    */
-  virtual bool isValid(Entity** entityRecord) const
-    {
-    bool status = this->m_storage && !this->m_entity.isNull();
-    if (status && entityRecord)
-      {
-      *entityRecord = this->m_storage->findEntity(this->m_entity);
-      }
-    return status;
-    }
+  bool isValid() const;
+  virtual bool isValid(Entity** entityRecord) const;
+  virtual bool checkForArrangements(ArrangementKind k, Entity*& entry, Arrangements*& arr) const;
 
   bool isCellEntity()     const { return smtk::model::isCellEntity(this->entityFlags()); }
   bool isUseEntity()      const { return smtk::model::isUseEntity(this->entityFlags()); }
@@ -121,6 +97,12 @@ public:
   bool isEdgeUse()   const { return smtk::model::isEdgeUse(this->entityFlags()); }
   bool isFaceUse()   const { return smtk::model::isFaceUse(this->entityFlags()); }
 
+  /**\brief Reinterpret a cursor as a subclass.
+    *
+    * Note that you should call isValid() on the resulting
+    * cursor subclass to perform sanity checks; this method
+    * will happily return an invalid object.
+    */
   template<typename T>
   T as()
     {

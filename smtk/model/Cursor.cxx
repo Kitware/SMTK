@@ -33,6 +33,12 @@ StoragePtr Cursor::storage()
   return this->m_storage;
 }
 
+/// Return the underlying storage the cursor references.
+const StoragePtr Cursor::storage() const
+{
+  return this->m_storage;
+}
+
 /// Change the UUID of the entity the cursor references.
 bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 {
@@ -120,6 +126,59 @@ std::string Cursor::flagSummary(int form) const
 std::string Cursor::name() const
 {
   return this->m_storage->name(this->m_entity);
+}
+
+/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+  *
+  * Subclasses should not override this method. It is a convenience
+  * which makes the shiboken wrapper more functional.
+  */
+bool Cursor::isValid() const
+{
+  return this->isValid(NULL);
+}
+
+/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+  *
+  * Subclasses override this and additionally return whether the entity is of
+  * a type that matches the Cursor subclass. For example, it is possible to
+  * create a Vertex cursor from a UUID referring to an EdgeUse. While
+  * Cursor::isValid() will return true, Vertex::isValid() will return false.
+  *
+  * The optional \a entityRecord will be set when a non-NULL value is passed
+  * and the entity is valid.
+  */
+bool Cursor::isValid(Entity** entityRecord) const
+{
+  bool status = this->m_storage && !this->m_entity.isNull();
+  if (status)
+    {
+    Entity* rec = this->m_storage->findEntity(this->m_entity);
+    status = rec ? true : false;
+    if (status && entityRecord)
+      {
+      *entityRecord = rec;
+      }
+    }
+  return status;
+}
+
+/**\brief A wrapper around Cursor::isValid() which also verifies an arrangement exists.
+  *
+  */
+bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangements*& arr) const
+{
+  if (this->isValid(&entRec))
+    {
+    arr = NULL;
+    if (
+      (arr = this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
+      !arr->empty())
+      {
+      return true;
+      }
+    }
+  return false;
 }
 
 /// Convert a set of UUIDs into a set of cursors referencing the same \a storage.

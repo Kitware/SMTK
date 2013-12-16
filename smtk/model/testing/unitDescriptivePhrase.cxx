@@ -52,8 +52,15 @@ int main(int argc, char* argv[])
   Cursor::CursorsFromUUIDs(
     ents, sm, sm->entitiesMatchingFlags(MODEL_ENTITY, false));
 
-  DescriptivePhrase::Ptr dit;
-  EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);
-  prindent(std::cout, 0, elist);
+  if (!ents.empty())
+    {
+    DescriptivePhrase::Ptr dit;
+    EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);
+    prindent(std::cout, 0, elist);
+    }
+  else
+    {
+    std::cerr << "No model entities in storage\n";
+    }
   return 0;
 }

@@ -62,12 +62,19 @@ bool EntityPhrase::buildSubphrasesInternal()
      }
    else if (cent.isValid())
      {
-     UseEntities relations = cent.uses();
-     if (!relations.empty())
+     ShellEntities toplevelShells = cent.shells();
+     if (!toplevelShells.empty())
        {
        this->m_subphrases.push_back(
          EntityListPhrase::create()->setup(
-           relations, shared_from_this()));
+           toplevelShells, shared_from_this()));
+       }
+     UseEntities cellUses = cent.uses();
+     if (!cellUses.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           cellUses, shared_from_this()));
        }
      }
    else if (sent.isValid())

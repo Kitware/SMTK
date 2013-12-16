@@ -22,7 +22,8 @@ add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
 add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
 target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)
-add_test(unitDescriptivePhrase ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhrase)
+add_test(unitDescriptivePhrase ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhrase
+  "${CMAKE_CURRENT_SOURCE_DIR}/cube.json")
 
 add_executable(unitCursor unitCursor.cxx)
 target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)

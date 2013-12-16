@@ -8,7 +8,7 @@ namespace smtk {
 
 class CellEntity;
 class ShellEntity;
-typedef std::set<ShellEntity> ShellEntities;
+typedef std::vector<ShellEntity> ShellEntities;
 class UseEntity;
 typedef std::vector<UseEntity> UseEntities;
 

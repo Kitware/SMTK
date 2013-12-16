@@ -3,6 +3,7 @@
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/UseEntity.h" // For UseEntities
+#include "smtk/model/ShellEntity.h" // For ShellEntities
 
 namespace smtk {
   namespace model {
@@ -16,6 +17,7 @@ public:
   SMTK_CURSOR_CLASS(CellEntity,Cursor,isCellEntity);
 
   UseEntities uses() const;
+  ShellEntities shells() const;
 };
 
   } // namespace model

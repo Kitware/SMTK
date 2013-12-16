@@ -8,31 +8,12 @@
 namespace smtk {
   namespace model {
 
+/**\brief Return the high-dimensional cell whose interior is bounded by this shell.
+  *
+  */
 CellEntity ShellEntity::parentCell() const
 {
-  if (this->isValid())
-    {
-    Arrangements* arr = NULL;
-    if (
-      (arr = this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, HAS_CELL)) &&
-      !arr->empty())
-      {
-      Entity* entRec = this->m_storage->findEntity(this->m_entity);
-      if (entRec)
-        {
-        smtk::util::UUIDArray const& relations(entRec->relations());
-        for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
-          {
-          // Return the first cell referenced in the first non-empty HAS_CELL arrangement:
-          if (!arrIt->details().empty())
-            {
-            return CellEntity(this->m_storage, relations[arrIt->details().front()]);
-            }
-          }
-        }
-      }
-    }
-  return CellEntity();
+  return CursorArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
 }
 
 /**\brief Return the uses (cells with an orientation, or sense) composing this shell.
@@ -46,7 +27,16 @@ CellEntity ShellEntity::parentCell() const
   */
 UseEntities ShellEntity::uses() const
 {
-  return UseEntities();
+  UseEntities result;
+  CursorArrangementOps::appendAllRelations(*this, HAS_USE, result);
+  return result;
+}
+
+ShellEntities ShellEntity::containedShells() const
+{
+  ShellEntities result;
+  CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, result);
+  return result;
 }
 
   } // namespace model
