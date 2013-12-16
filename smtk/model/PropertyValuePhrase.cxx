@@ -51,6 +51,7 @@ std::string PropertyValuePhrase::subtitle()
             message << ", ";
             }
           message << *it;
+          first = false;
           }
         }
       break;
@@ -69,6 +70,7 @@ std::string PropertyValuePhrase::subtitle()
             message << ", ";
             }
           message << *it;
+          first = false;
           }
         }
       break;
@@ -87,6 +89,7 @@ std::string PropertyValuePhrase::subtitle()
             message << ", ";
             }
           message << *it;
+          first = false;
           }
         }
       break;

@@ -20,6 +20,8 @@ public:
 
   virtual Cursor relatedEntity() const;
 
+  static DescriptivePhrases PhrasesFromUUIDs(smtk::model::StoragePtr, const smtk::util::UUIDs&);
+
 protected:
   EntityPhrase();
 

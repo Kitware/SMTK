@@ -45,95 +45,8 @@ namespace smtk {
   namespace model {
 
 // -----------------------------------------------------------------------------
-/// A functor for sorting entity UUIDs by their entity-type bit flags.
-struct SortByEntityFlags
-{
-  SortByEntityFlags(smtk::model::StoragePtr storage)
-    : m_storage(storage)
-    {
-    }
-  bool operator () (const smtk::util::UUID& a, const smtk::util::UUID& b) const
-    {
-    smtk::model::Entity* ea = this->m_storage->findEntity(a);
-    smtk::model::Entity* eb = this->m_storage->findEntity(b);
-    if (!ea)
-      {
-      return true;
-      }
-    if (!eb)
-      {
-      return false;
-      }
-    return ea->entityFlags() < eb->entityFlags();
-    }
-  smtk::model::StoragePtr m_storage;
-};
-
-// -----------------------------------------------------------------------------
-/**\brief A functor for sorting entity UUIDs by a given, named property.
-  *
-  * The property may be a string, double, or integer according to the
-  * template parameters.
-  *
-  * Properties which have shorter vectors are always "less than" those
-  * with longer vectors. This may change in the future. You have been
-  * warned.
-  */
-template<
-  class T,
-  typename U,
-  U&(T::*GetProperty)(const smtk::util::UUID&, const std::string&) = &T::stringProperty,
-  bool (T::*HasProperty)(const smtk::util::UUID&, const std::string&) const = &T::hasStringProperty
-  >
-struct SortByEntityProperty
-{
-  SortByEntityProperty(smtk::model::StoragePtr storage, std::string propName)
-    : m_storage(storage), m_propName(propName)
-    {
-    }
-  bool operator () (const smtk::util::UUID& a, const smtk::util::UUID& b) const
-    {
-    if (a == b)
-      {
-      return false;
-      }
-    bool aHas = (this->m_storage.get()->*HasProperty)(a, this->m_propName);
-    bool bHas = (this->m_storage.get()->*HasProperty)(b, this->m_propName);
-    if (!aHas && !bHas)
-      {
-      return a < b;
-      }
-    if (!aHas)
-      {
-      return false;
-      }
-    if (!bHas)
-      {
-      return true;
-      }
-    U& sa((this->m_storage.get()->*GetProperty)(a, this->m_propName));
-    U& sb((this->m_storage.get()->*GetProperty)(b, this->m_propName));
-    typename U::size_type nCommon =
-      sa.size() > sb.size() ?
-      sb.size() : sa.size();
-    for (typename U::size_type n = 0; n < nCommon; ++n)
-      {
-      if (sa[n] < sb[n])
-        return true;
-      if (sb[n] < sa[n])
-        return false;
-      }
-    if (sb.size() > sa.size())
-      return true;
-    return a < b;
-    }
-  smtk::model::StoragePtr m_storage;
-  std::string m_propName;
-};
-
-// -----------------------------------------------------------------------------
-QEntityItemModel::QEntityItemModel(smtk::model::StoragePtr model, QObject* owner)
-  : QAbstractItemModel(owner), m_storage(model)
+QEntityItemModel::QEntityItemModel(QObject* owner)
+  : QAbstractItemModel(owner)
 {
   this->m_deleteOnRemoval = true;
   initIconResource();
@@ -146,24 +59,72 @@ QEntityItemModel::~QEntityItemModel()
 
 QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owner) const
 {
-  return hasIndex(row, column, owner) ? createIndex(row, column, 0) : QModelIndex();
+  if (owner.isValid() && owner.column() != 0)
+    return QModelIndex();
+
+  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  DescriptivePhrases& subphrases(ownerPhrase->subphrases());
+  if (row >= 0 && row < static_cast<int>(subphrases.size()))
+    {
+    //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
+    return this->createIndex(row, column, subphrases[row].get());
+    }
+  std::cerr << "index(): Bad row " << row << " for owner " << ownerPhrase->title() << "\n";
+  return QModelIndex();
 }
 
 QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
 {
-  (void)child;
-  return QModelIndex();
+  if (!child.isValid())
+    {
+    return QModelIndex();
+    }
+
+  DescriptivePhrase* childPhrase = this->getItem(child);
+  DescriptivePhrasePtr parentPhrase = childPhrase->parent();
+  if (parentPhrase == this->m_root)
+    {
+    return QModelIndex();
+    }
+
+  int childRow = parentPhrase ? parentPhrase->argFindChild(childPhrase) : -1;
+  if (childRow < 0)
+    {
+    std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
+    return QModelIndex();
+    }
+  return this->createIndex(childRow, 0, parentPhrase.get());
 }
 
+/*
 bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 {
-      return owner.isValid() ? false : (rowCount() > 0);
+  if (owner.isValid())
+    {
+    DescriptivePhrase* parnt =
+      static_cast<DescriptivePhrase*>(owner.internalPointer());
+    if (parnt)
+      { // Return whether the parent has subphrases.
+      return parnt->subphrases().empty() ? false : true;
+      }
+    else
+      { // Return whether the toplevel m_phrases list entry has subphrases.
+      int np = static_cast<int>(this->m_phrases.size());
+      if (owner.row() >= 0 && owner.row() < np)
+        {
+        return this->m_phrases[owner.row()]->subphrases().empty() ? false : true;
+        }
+      }
+    }
+  // Return whether the toplevel m_phrases list is empty.
+  return (rowCount() > 0);
 }
+*/
 
 int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
-  (void)owner;
-  return static_cast<int>(this->m_subset.size());
+  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
 QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -192,85 +153,34 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
     {
-    // A valid index may have a parent in any of 4 states:
-    // + invalid (in which case we use m_subset, m_reverse)
-    // + valid but with an invalid cursor (presentation same as above)
-    // + valid, with valid cursor, invalid kind (in which case we show arrangement types)
-    // + valid, with valid cursor and kind, invalid index (in which case we show arrangements of the right kind)
-    // + valid, with valid cursor, kind, and index (in which case we show all relations associated with the arrangement)
+    // A valid index may have a *parent* that is:
+    // + invalid (in which case we use row() as an offset into m_phrases to obtain data)
+    // + valid (in which case it points to a DescriptivePhrase instance and row() is an offset into the subphrases)
 
-    int row = idx.row();
-    int col = idx.column();
-    smtk::util::UUID uid = this->m_subset[row];
-    if (role == TitleTextRole)
+    DescriptivePhrase* item =
+      static_cast<DescriptivePhrase*>(idx.internalPointer());
+    if (item)
       {
-      if (this->m_storage->hasStringProperty(uid, "name"))
+      if (role == TitleTextRole)
         {
-        smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
-        return QVariant(names.empty() ? "" : names[0].c_str());
+        return QVariant(item->title().c_str());
         }
-      // Materialize a name from the UUID
-      return QVariant(
-        this->m_storage->assignDefaultName(uid).c_str());
-      }
-    else if (role == SubtitleTextRole)
-      {
-      smtk::model::Entity* link = this->m_storage->findEntity(uid);
-      if (link)
+      else if (role == SubtitleTextRole)
         {
-        return QVariant(smtk::model::Entity::flagSummary(link->entityFlags()).c_str());
+        return QVariant(item->subtitle().c_str());
         }
-      return QVariant("missing UUID");
-      }
-    else if (role == EntityIconRole)
-      {
-      smtk::model::Entity* link = this->m_storage->findEntity(uid);
-      if (link)
+      else if (role == EntityIconRole)
         {
         return QVariant(
           this->lookupIconForEntityFlags(
-            link->entityFlags()));
-        }
-      }
-    else if (role == Qt::DisplayRole)
-      {
-      switch (col)
-        {
-      case 0:
-          {
-          smtk::model::Entity* link = this->m_storage->findEntity(uid);
-          if (link)
-            {
-            return QVariant(""); // FIXME: Why is this being rendered when I set the itemdelegate on the view?
-            //return QVariant(smtk::model::Entity::flagSummary(link->entityFlags()).c_str());
-            }
-          }
-        break;
-      case 1:
-          {
-          smtk::model::Entity* link = this->m_storage->findEntity(uid);
-          if (link)
-            {
-            return QVariant(link->dimension());
-            }
-          }
-        break;
-      case 2:
-          {
-          if (this->m_storage->hasStringProperty(uid, "name"))
-            {
-            smtk::model::StringList& names(this->m_storage->stringProperty(uid, "name"));
-            return QVariant(names.empty() ? "" : names[0].c_str());
-            }
-          return QVariant("");
-          }
-        break;
+            item->phraseType()));
         }
       }
     }
   return QVariant();
 }
 
+/*
 bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& owner)
 {
   (void)owner;
@@ -280,7 +190,7 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& own
   for (int row = position; row < maxPos; ++row)
     {
     smtk::util::UUID uid = this->m_storage->addEntityOfTypeAndDimension(smtk::model::INVALID, -1);
-    this->m_subset.insert(this->m_subset.begin() + row, uid);
+    this->m_phrases.insert(this->m_phrases.begin() + row, uid);
     this->m_reverse[uid] = row;
     }
 
@@ -293,8 +203,8 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& own
   (void)owner;
   beginRemoveRows(QModelIndex(), position, position + rows - 1);
 
-  smtk::util::UUIDArray uids(this->m_subset.begin() + position, this->m_subset.begin() + position + rows);
-  this->m_subset.erase(this->m_subset.begin() + position, this->m_subset.begin() + position + rows);
+  smtk::util::UUIDArray uids(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
+  this->m_phrases.erase(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
   for (smtk::util::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
     {
     this->m_reverse.erase(this->m_reverse.find(*it));
@@ -325,13 +235,13 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       if (sval.size())
         {
         this->m_storage->setStringProperty(
-          this->m_subset[row], "name", sval);
+          this->m_phrases[row], "name", sval);
         didChange = true;
         }
       else
         {
         didChange = this->m_storage->removeStringProperty(
-          this->m_subset[row], "name");
+          this->m_phrases[row], "name");
         }
       }
     else if (role == Qt::EditRole)
@@ -339,7 +249,7 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       switch (col)
         {
       case 0:
-        entity = this->m_storage->findEntity(this->m_subset[row]);
+        entity = this->m_storage->findEntity(this->m_phrases[row]);
         if (entity)
           {
           didChange = entity->setEntityFlags(value.value<int>());
@@ -354,13 +264,13 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
           if (sval.size())
             {
             this->m_storage->setStringProperty(
-              this->m_subset[row], "name", sval);
+              this->m_phrases[row], "name", sval);
             didChange = true;
             }
           else
             {
             didChange = this->m_storage->removeStringProperty(
-              this->m_subset[row], "name");
+              this->m_phrases[row], "name");
             }
           }
         break;
@@ -373,7 +283,9 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
     }
   return didChange;
 }
+*/
 
+/*
 void QEntityItemModel::sort(int column, Qt::SortOrder order)
 {
   switch (column)
@@ -419,10 +331,11 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
   emit dataChanged(
     this->index(0, 0, QModelIndex()),
     this->index(
-      static_cast<int>(this->m_subset.size()),
+      static_cast<int>(this->m_phrases.size()),
       this->columnCount(),
       QModelIndex()));
 }
+*/
 
 Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 {
@@ -486,18 +399,17 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
   * The ordered container's comparator is used to insertion-sort the UUIDs
   * displayed. Then, the \a order is used to either forward- or reverse-iterator
   * over the container to obtain a new ordering for the UUIDs.
-  */
 template<typename T>
 void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 {
   smtk::util::UUIDArray::iterator ai;
   // Insertion into the set sorts the UUIDs.
-  for (ai = this->m_subset.begin(); ai != this->m_subset.end(); ++ai)
+  for (ai = this->m_phrases.begin(); ai != this->m_phrases.end(); ++ai)
     {
     sorter.insert(*ai);
     }
-  // Now we reset m_subset and m_reverse and recreate based on the sorter's order.
-  this->m_subset.clear();
+  // Now we reset m_phrases and m_reverse and recreate based on the sorter's order.
+  this->m_phrases.clear();
   this->m_reverse.clear();
   int i;
   if (order == Qt::AscendingOrder)
@@ -505,13 +417,13 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
     typename T::iterator si;
     for (i = 0, si = sorter.begin(); si != sorter.end(); ++si, ++i)
       {
-      this->m_subset.push_back(*si);
+      this->m_phrases.push_back(*si);
       this->m_reverse[*si] = i;
-      /*
+      / *
       std::cout << i << "  " << *si << "  " <<
         (this->m_storage->hasStringProperty(*si, "name") ?
          this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
-         */
+         * /
       }
     }
   else
@@ -519,15 +431,30 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
     typename T::reverse_iterator si;
     for (i = 0, si = sorter.rbegin(); si != sorter.rend(); ++si, ++i)
       {
-      this->m_subset.push_back(*si);
+      this->m_phrases.push_back(*si);
       this->m_reverse[*si] = i;
-      /*
+      / *
       std::cout << i << "  " << *si << "  " <<
         (this->m_storage->hasStringProperty(*si, "name") ?
          this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
-         */
+         * /
       }
     }
+}
+  */
+
+/// A utility function to retrieve the DescriptivePhrase associated with a model index.
+DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
+{
+  if (idx.isValid())
+    {
+    DescriptivePhrase* phrase = static_cast<DescriptivePhrase*>(idx.internalPointer());
+    if (phrase)
+      {
+      return phrase;
+      }
+    }
+  return this->m_root.get();
 }
 
   } // namespace model

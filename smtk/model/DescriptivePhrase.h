@@ -76,7 +76,8 @@ public:
   virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
 
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
-  virtual DescriptivePhrases subphrases();
+  virtual DescriptivePhrases& subphrases();
+  virtual int argFindChild(DescriptivePhrase* child) const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }

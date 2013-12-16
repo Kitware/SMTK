@@ -43,10 +43,39 @@ Cursor EntityPhrase::relatedEntity() const
   return this->m_entity;
 }
 
+DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
+  smtk::model::StoragePtr storage, const smtk::util::UUIDs& uids)
+{
+  DescriptivePhrases result;
+  smtk::util::UUIDs::const_iterator it;
+  for (it = uids.begin(); it != uids.end(); ++it)
+    {
+    result.push_back(
+      EntityPhrase::create()->setup(Cursor(storage, *it)));
+    }
+  return result;
+}
 
 bool EntityPhrase::buildSubphrasesInternal()
 {
-  // I. Add arrangement information
+  // I. Determine dimension of parent.
+  //    We will avoid reporting sub-entities if this entity has a
+  //    dimension higher than its parent.
+  int dimBits = 0;
+  for (DescriptivePhrasePtr phr = this->parent(); phr; phr = phr->parent())
+    {
+    Cursor c(phr->relatedEntity());
+    if (c.isValid() && c.dimensionBits() > 0)
+      {
+      dimBits = c.dimensionBits();
+      break;
+      }
+    }
+  if (dimBits > 0 && (dimBits > this->relatedEntity().dimensionBits() || this->relatedEntity().isModelEntity()))
+    {
+    return true;
+    }
+  // II. Add arrangement information
   // This is dependent on both the entity type and the ArrangementKind
   // so we cast to different cursor types and use their accessors to
   // obtain lists of related entities.
@@ -99,14 +128,18 @@ bool EntityPhrase::buildSubphrasesInternal()
      {
      }
    }
-  // II. Add attribute information
+  // III. Add attribute information
   // TODO.
-  // III. Add property information
+  // IV. Add property information
   if (this->m_entity.hasStringProperties())
     { // TODO: If m_entity.stringProperties().size() < N, add PropValuePhrases instead of a list.
-    this->m_subphrases.push_back(
+    PropertyListPhrase::Ptr plist =
       PropertyListPhrase::create()->setup(
-        this->m_entity, STRING_PROPERTY, shared_from_this()));
+        this->m_entity, STRING_PROPERTY, shared_from_this());
+    if (!plist->subphrases().empty())
+      {
+      this->m_subphrases.push_back(plist);
+      }
     }
   if (this->m_entity.hasFloatProperties())
     { // TODO: If m_entity.floatProperties().size() < N, add PropValuePhrases instead of a list.

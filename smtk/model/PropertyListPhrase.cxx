@@ -103,8 +103,11 @@ bool PropertyListPhrase::buildSubphrasesInternal()
         it != this->m_entity.stringProperties().end();
         ++it)
         {
-        this->m_subphrases.push_back(
-          PropertyValuePhrase::create()->setup(it->first, shared_from_this()));
+        if (it->first != "name")
+          {
+          this->m_subphrases.push_back(
+            PropertyValuePhrase::create()->setup(it->first, shared_from_this()));
+          }
         }
       }
     break;

@@ -60,12 +60,13 @@ void QEntityItemDelegate::paint(
 
   QString titleText = qvariant_cast<QString>(idx.data(QEntityItemModel::TitleTextRole));
   QString subtitleText = qvariant_cast<QString>(idx.data(QEntityItemModel::SubtitleTextRole));
+  //std::cout << "Paint " << idx.internalPointer() << " " << idx.row() << " " << titleText.toStdString().c_str() << "\n";
 
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
 
-  iconRect.setRight(iconsize.width() + 30);
+  iconRect.setRight(iconRect.left() + iconsize.width() + 30);
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
