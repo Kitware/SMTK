@@ -1079,6 +1079,15 @@
         <include file-name="smtk/util/AttributeWriter.h" location="local"/>
       </object-type>
 
+      <object-type name="ExportSpec">
+        <include file-name="smtk/util/ExportSpec.h" location="local"/>
+        <modify-function signature="clear()" access="private" />
+        <modify-function signature="setManager(smtk::attribute::Manager*)" access="private" />
+        <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
+        <modify-function signature="setOutputPath(const std::string&amp;)" access="private" />
+        <modify-function signature="appendAnalysisName(const std::string&amp;)" access="private" />
+      </object-type>
+
       <object-type name="Logger">
         <include file-name="smtk/util/Logger.h" location="local"/>
         <enum-type name="Severity"/>
