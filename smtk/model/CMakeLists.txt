@@ -36,6 +36,7 @@ set(modelHeaders
   BRepModel.h
   CellEntity.h
   Cursor.h
+  CursorArrangementOps.h
   DescriptivePhrase.h
   Entity.h
   EntityListPhrase.h
