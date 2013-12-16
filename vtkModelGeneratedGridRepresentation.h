@@ -48,16 +48,17 @@ public:
   // Description:
   // Get cellIds or area given a group id of model entities.
   // Meant for 2D models with triangle meshes.
-  virtual bool GetGroupFacetIds(vtkDiscreteModel* model,int groupId,
-    std::vector<int>& cellIds){return false;}
-  virtual bool GetGroupFacetsArea(vtkDiscreteModel* model,int groupId, double& area)
+  virtual bool GetGroupFacetIds(vtkDiscreteModel* vtkNotUsed(model),int vtkNotUsed(groupId),
+                                std::vector<int>& vtkNotUsed(cellIds)){return false;}
+  virtual bool GetGroupFacetsArea(vtkDiscreteModel* vtkNotUsed(model),int vtkNotUsed(groupId),
+                                  double& vtkNotUsed(area))
   {return false;}
 
   // Description:
   // Get cell and point information from the analysis grid.
-  virtual bool GetCellPointIds(int cellId, std::vector<int>& pointIds)
+  virtual bool GetCellPointIds(int vtkNotUsed(cellId), std::vector<int>& vtkNotUsed(pointIds))
   {return false;}
-  virtual bool GetPointLocation(int pointId, std::vector<double>& coords)
+  virtual bool GetPointLocation(int vtkNotUsed(pointId), std::vector<double>& vtkNotUsed(coords))
   {return false;}
 
 protected:
