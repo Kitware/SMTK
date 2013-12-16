@@ -490,7 +490,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
         {
         ln = lnode.append_child();
         ln.set_name("Label");
-        ln.set_value(idef->valueLabel(i).c_str());
+        ln.text().set(idef->valueLabel(i).c_str());
         }
       }
     }
