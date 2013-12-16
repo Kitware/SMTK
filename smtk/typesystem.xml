@@ -548,11 +548,11 @@
       </object-type>
 
       <enum-type name="ArrangementKind">
-        <include file-name="smtk/model/Arrangement.h" location="local"/>
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
       <enum-type name="CellUseSenses">
-        <include file-name="smtk/model/Arrangement.h" location="local"/>
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
       <enum-type name="DescriptivePhraseType">

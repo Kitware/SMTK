@@ -1,6 +1,7 @@
 # set up sources to build
 set(modelSrcs
   Arrangement.cxx
+  ArrangementKind.cxx
   BRepModel.cxx
   CellEntity.cxx
   Cursor.cxx
@@ -31,6 +32,7 @@ set(modelSrcs
 
 set(modelHeaders
   Arrangement.h
+  ArrangementKind.h
   BRepModel.h
   CellEntity.h
   Cursor.h
