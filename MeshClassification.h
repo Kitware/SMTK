@@ -3,6 +3,7 @@
 
 #include "vtkType.h"
 #include <vector> //needed for vector
+#include "cmbSystemConfig.h"
 
 template<class EntityType>
 class MeshClassification

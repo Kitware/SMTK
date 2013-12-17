@@ -37,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSmartPointer.h" //needed for vtkSmartPointer
 #include <vector> //needed for Face and FaceIds;
 #include <map> //needed for the edge storage
+#include "cmbSystemConfig.h"
 
 class vtkCell;
 class vtkCellLocator;

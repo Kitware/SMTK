@@ -42,6 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 #include "vtkSmartPointer.h"
+#include "cmbSystemConfig.h"
 #include <map>
 #include <set>
 

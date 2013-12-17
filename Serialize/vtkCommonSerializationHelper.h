@@ -33,6 +33,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
+#include "cmbSystemConfig.h"
 
 class vtkDataArray;
 class vtkSerializer;

@@ -36,6 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"
+#include "cmbSystemConfig.h"
 
 class vtkCharArray;
 class vtkModelGridRepresentation;

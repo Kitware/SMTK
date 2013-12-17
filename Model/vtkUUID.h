@@ -43,6 +43,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 class VTKDISCRETEMODEL_EXPORT vtkUUID : public vtkObject
 {

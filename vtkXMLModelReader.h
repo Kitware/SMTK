@@ -35,6 +35,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
+#include "cmbSystemConfig.h"
 
 //BTX
 class vtkDiscreteModel;

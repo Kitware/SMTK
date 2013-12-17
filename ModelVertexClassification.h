@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType
 #include <map> //need to store the set of point ids
+#include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;

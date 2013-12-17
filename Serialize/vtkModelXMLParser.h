@@ -27,6 +27,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"
+#include "cmbSystemConfig.h"
 
 class vtkXMLElement;
 

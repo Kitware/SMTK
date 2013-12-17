@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkIdTypeArray.h"
 #include "vtkSmartPointer.h"
+#include "cmbSystemConfig.h"
 
 #include <algorithm>
 #include <map>

@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "../Serialize/vtkSerializableObject.h"
+#include "cmbSystemConfig.h"
 
 struct vtkModelItemInternals;
 class vtkIdList;

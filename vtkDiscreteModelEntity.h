@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelEntityGroup;
 class vtkModelEntity;

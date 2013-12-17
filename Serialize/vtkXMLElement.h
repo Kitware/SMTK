@@ -28,6 +28,7 @@
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" // needed for vtkStdString.
+#include "cmbSystemConfig.h"
 
 class vtkCollection;
 class vtkModelXMLParser;

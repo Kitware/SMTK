@@ -90,6 +90,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 class vtkSerializer;
 

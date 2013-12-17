@@ -63,6 +63,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
+#include "cmbSystemConfig.h"
 
 #include <vector> // Vector of smart pointers
 #include "vtkSmartPointer.h" // Vector of smart pointers

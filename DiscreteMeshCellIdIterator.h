@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <iterator> //needed for custom iterator
 #include <vtkType.h> //needed for vtkIdType
+#include "cmbSystemConfig.h"
 
 namespace detail
 {

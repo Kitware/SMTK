@@ -36,6 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkSplitEventData_h
 
 #include "vtkDiscreteModelModule.h" // For export macro
+#include "cmbSystemConfig.h"
 #include "vtkObject.h"
 
 class vtkIdList;

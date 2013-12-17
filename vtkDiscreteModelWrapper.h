@@ -44,6 +44,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDataObjectTree.h"
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
+#include "cmbSystemConfig.h"
 #include <map>
 #include <vector>
 #include <set>

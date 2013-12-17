@@ -40,6 +40,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 #include "vtkSmartPointer.h" // For collections
 #include <vector> // For vectors

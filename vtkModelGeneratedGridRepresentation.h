@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
+#include "cmbSystemConfig.h"
 #include <vector>
 
 class VTKDISCRETEMODEL_EXPORT vtkModelGeneratedGridRepresentation : public vtkModelGridRepresentation

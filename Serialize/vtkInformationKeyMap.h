@@ -34,6 +34,7 @@
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 #include <string>
 

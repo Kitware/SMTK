@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkModelMaterial_h
 
 #include "vtkDiscreteModelModule.h" // For export macro
+#include "cmbSystemConfig.h"
 #include "vtkModelEntity.h"
 
 class vtkInformationStringKey;

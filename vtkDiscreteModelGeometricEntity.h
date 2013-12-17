@@ -37,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelEntity.h"
+#include "cmbSystemConfig.h"
 
 #include <vector>
 #include "vtkType.h"

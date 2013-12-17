@@ -42,6 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
+#include "cmbSystemConfig.h"
 
 //BTX
 class vtkModelItem;

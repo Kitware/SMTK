@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkModelUserName_h
 
 #include "vtkDiscreteModelModule.h" // For export macro
+#include "cmbSystemConfig.h"
 #include "vtkObject.h"
 
 class vtkInformationStringKey;

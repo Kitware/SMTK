@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
+#include "cmbSystemConfig.h"
 
 class vtkInformationDoubleVectorKey;
 class vtkInformationIdTypeKey;

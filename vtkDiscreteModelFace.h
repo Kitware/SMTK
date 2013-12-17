@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "ModelEdgeHelper.h"
+#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelEdge;
 class vtkDiscreteModelFaceUse;

@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
+#include "cmbSystemConfig.h"
 
 class vtkModelItemIterator;
 class vtkModelVertexUse;
