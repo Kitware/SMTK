@@ -740,12 +740,12 @@ void qtAttributeView::onShowCategory()
 void qtAttributeView::updateTableWithAttribute(
   smtk::attribute::AttributePtr att)
 {
-  QTableWidget* widget = this->Internals->ValuesTable;
-  widget->setColumnCount(3);
+  QTableWidget* vtWidget = this->Internals->ValuesTable;
+  vtWidget->setColumnCount(3);
 
-  widget->setHorizontalHeaderItem(0, new QTableWidgetItem("Property"));
-  widget->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
-  widget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
+  vtWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Property"));
+  vtWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
+  vtWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
   QString strValue;
   int numRows = 0;
   Qt::ItemFlags nonEditableFlags(
