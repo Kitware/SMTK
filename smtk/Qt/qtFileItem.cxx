@@ -109,7 +109,7 @@ void qtFileItem::updateItemData()
 
   for(i = 0; i < n; i++)
     {
-    QWidget* fileframe = this->createFileBrowseWidget((int)i);
+    QWidget* fileframe = this->createFileBrowseWidget(static_cast<int>(i));
     entryLayout->addWidget(fileframe);
     }
 

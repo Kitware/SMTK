@@ -335,7 +335,7 @@ smtk::attribute::ValueItemPtr qtSimpleExpressionView::getFunctionStringData(
 
 //----------------------------------------------------------------------------
 void qtSimpleExpressionView::onFuncSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * current, QListWidgetItem * /*previous*/)
 {
   smtk::attribute::GroupItemPtr dataItem = this->getArrayDataFromItem(current);
   this->Internals->FuncTable->blockSignals(true);
@@ -377,8 +377,8 @@ void qtSimpleExpressionView::updateFunctionEditorUI(
     expressionItem->valueAsString().c_str());
   if(arrayItem)
     {
-    int n = (int)(arrayItem->numberOfGroups());
-    int m = (int)(arrayItem->numberOfItemsPerGroup());
+    int n = static_cast<int>(arrayItem->numberOfGroups());
+    int m = static_cast<int>(arrayItem->numberOfItemsPerGroup());
     if(!m  || !n)
       {
       return;
@@ -389,7 +389,7 @@ void qtSimpleExpressionView::updateFunctionEditorUI(
 
     if(valueItem && valueItem->numberOfValues())
       {
-      int numValues = (int)(valueItem->numberOfValues());
+      int numValues = static_cast<int>(valueItem->numberOfValues());
       this->Internals->InitValueInput->setText(valueItem->valueAsString(0).c_str());
       this->Internals->DeltaInput->setText(valueItem->valueAsString(0).c_str());
       this->Internals->NumberBox->setValue(numValues);
@@ -621,7 +621,7 @@ QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
       QString::fromUtf8(childData->name().c_str()),
       this->Internals->FuncList, smtk_USER_DATA_TYPE);
     QVariant vdata;
-    vdata.setValue((void*)(childData.get()));
+    vdata.setValue(static_cast<void*>(childData.get()));
     item->setData(Qt::UserRole, vdata);
     if(childData->definition()->advanceLevel())
       {
@@ -648,7 +648,6 @@ void qtSimpleExpressionView::onFuncTableKeyPress(QKeyEvent* e)
   if(e->key() == Qt::Key_C && e->modifiers() == Qt::ControlModifier)
     {
     QStringList list ;
-    int numSelRows = this->Internals->FuncTable->getSelectedIndexes().count()/this->Internals->FuncTable->columnCount();
     for(int r=0; r<this->Internals->FuncTable->rowCount(); r++)
       {
       if(this->Internals->FuncTable->item(r, 0)->isSelected())
@@ -804,7 +803,7 @@ void qtSimpleExpressionView::clearFuncExpression()
 }
 
 //----------------------------------------------------------------------------
-void qtSimpleExpressionView::showAdvanced(int checked)
+void qtSimpleExpressionView::showAdvanced(int /*checked*/)
 {
 
 }

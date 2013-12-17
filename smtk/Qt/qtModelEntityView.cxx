@@ -239,7 +239,7 @@ void qtModelEntityView::onShowCategory()
     smtk::view::ModelEntityPtr mview =
       smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
     smtk::model::MaskType mask = mview->modelEntityMask() ?
-      mview->modelEntityMask() : smtk::model::Item::REGION;
+      mview->modelEntityMask() : static_cast<smtk::model::MaskType>(smtk::model::Item::REGION);
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::model::GroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(
@@ -257,7 +257,7 @@ void qtModelEntityView::onShowCategory()
 }
 //----------------------------------------------------------------------------
 void qtModelEntityView::onListBoxSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
   this->onShowCategory();
 }
@@ -287,7 +287,7 @@ QListWidgetItem* qtModelEntityView::addModelItem(
       QString::fromUtf8(childData->name().c_str()),
       this->Internals->ListBox, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(childData.get()));
+  vdata.setValue(static_cast<void*>(childData.get()));
   item->setData(Qt::UserRole, vdata);
 //  item->setFlags(item->flags() | Qt::ItemIsEditable);
   this->Internals->ListBox->addItem(item);

@@ -139,7 +139,7 @@ void qtRootView::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtRootView::onShowAdvanced(int checked)
+void qtRootView::onShowAdvanced(int /*checked*/)
 {
   int currentTab = 0;
 

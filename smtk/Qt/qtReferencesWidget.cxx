@@ -99,13 +99,13 @@ void qtReferencesWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtReferencesWidget::showAdvanced(int checked)
+void qtReferencesWidget::showAdvanced(int /*checked*/)
 {
 }
 
 //----------------------------------------------------------------------------
 void qtReferencesWidget::showAttributeReferences(
-  smtk::attribute::AttributePtr att, QString& category)
+  smtk::attribute::AttributePtr att, QString& /*category*/)
 {
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
@@ -130,13 +130,13 @@ void qtReferencesWidget::showAttributeReferences(
 
 //----------------------------------------------------------------------------
 void qtReferencesWidget::onCurrentListSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
 //----------------------------------------------------------------------------
 void qtReferencesWidget::onAvailableListSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
@@ -169,7 +169,7 @@ QListWidgetItem* qtReferencesWidget::addAttributeRefListItem(
   QListWidgetItem* item = new QListWidgetItem(txtLabel,
       theList, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(refItem.get()));
+  vdata.setValue(static_cast<void*>(refItem.get()));
   item->setData(Qt::UserRole, vdata);
   item->setFlags(item->flags() | Qt::ItemIsEditable);
   theList->addItem(item);

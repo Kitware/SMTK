@@ -584,7 +584,7 @@ void qtAttributeView::addAttributePropertyItems(
         smtk_USER_DATA_TYPE);
 
       QVariant vdata;
-      vdata.setValue((void*)(attItem.get()));
+      vdata.setValue(static_cast<void*>(attItem.get()));
       item->setData(Qt::UserRole, vdata);
       item->setFlags(nonEditableFlags);
 
@@ -618,7 +618,7 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
     Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
   QVariant vdata;
-  vdata.setValue((void*)(childData.get()));
+  vdata.setValue(static_cast<void*>(childData.get()));
   item->setData(Qt::UserRole, vdata);
   item->setFlags(nonEditableFlags | Qt::ItemIsEditable);
 
@@ -802,12 +802,12 @@ void qtAttributeView::updateTableWithProperty(
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
 
-  QTableWidget* widget = this->Internals->ValuesTable;
-  widget->setColumnCount(3);
+  QTableWidget* vtWidget = this->Internals->ValuesTable;
+  vtWidget->setColumnCount(3);
 
-  widget->setHorizontalHeaderItem(0, new QTableWidgetItem("Attribute"));
-  widget->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
-  widget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
+  vtWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Attribute"));
+  vtWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
+  vtWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
 
   int numRows = 0;
   std::vector<smtk::attribute::AttributePtr>::iterator it;
@@ -861,9 +861,8 @@ void qtAttributeView::updateTableWithProperty(
 
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableGroupItems(
-  smtk::attribute::GroupItemPtr attItem, int& numRows, const char* strCommonLabel)
+  smtk::attribute::GroupItemPtr attItem, int& numRows, const char* /*strCommonLabel*/)
 {
-  QTableWidget* widget = this->Internals->ValuesTable;
   const GroupItemDefinition *gItemDef =
     dynamic_cast<const GroupItemDefinition*>(attItem->definition().get());
   std::string strAttLabel = attItem->label();
@@ -929,12 +928,12 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
     {
     return;
     }
-  QTableWidget* widget = this->Internals->ValuesTable;
+  QTableWidget* vtWidget = this->Internals->ValuesTable;
   const ValueItemDefinition *vItemDef =
     dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
 
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  widget->setRowCount(++numRows);
+  vtWidget->setRowCount(++numRows);
   QString labelText = attLabel ? attLabel : "";
   if(attItem->numberOfValues() > 1 && !vItemDef->valueLabel(0).empty())
     {
@@ -957,28 +956,28 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
     }
 
   labelitem->setFlags(nonEditableFlags);
-  widget->setItem(numRows-1, 0, labelitem);
+  vtWidget->setItem(numRows-1, 0, labelitem);
   bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
     labelitem, dynamic_pointer_cast<Item>(attItem));
 
   QString unitText = vItemDef && !vItemDef->units().empty() ? vItemDef->units().c_str() : "";
   QTableWidgetItem* unitItem = new QTableWidgetItem(unitText);
   unitItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  widget->setItem(numRows-1, 2, unitItem);
+  vtWidget->setItem(numRows-1, 2, unitItem);
 
   int numAdded = 0;
   std::size_t i, n = attItem->numberOfValues();
   for(i = 0; i < n; i++)
     {
     QWidget* inputWidget = qtUIManager::instance()->createInputWidget(
-      attItem, (int)i, this->Widget);
+      attItem, static_cast<int>(i), this->Widget);
     if(inputWidget)
       {
       numRows = numAdded>0 ? numRows+1 : numRows;
-      widget->setRowCount(numRows);
+      vtWidget->setRowCount(numRows);
       inputWidget->setEnabled(bEnabled);
-      widget->setCellWidget(numRows-1, 1, inputWidget);
-      widget->setItem(numRows-1, 1, new QTableWidgetItem());
+      vtWidget->setCellWidget(numRows-1, 1, inputWidget);
+      vtWidget->setItem(numRows-1, 1, new QTableWidgetItem());
 
       // component labels
       std::string componentLabel = vItemDef->valueLabel(i);
@@ -993,12 +992,12 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
           }
         componentlabelitem->setFlags(nonEditableFlags);
         // add in BriefDescription as tooltip if available
-        const std::string strBriefDescription = vItemDef->briefDescription();
-        if(!strBriefDescription.empty())
+        const std::string bdStrBriefDescription = vItemDef->briefDescription();
+        if(!bdStrBriefDescription.empty())
           {
-          componentlabelitem->setToolTip(strBriefDescription.c_str());
+          componentlabelitem->setToolTip(bdStrBriefDescription.c_str());
           }
-        widget->setItem(numRows-1, 0, componentlabelitem);
+        vtWidget->setItem(numRows-1, 0, componentlabelitem);
         }
       numAdded++;
       }
@@ -1013,9 +1012,9 @@ void qtAttributeView::addTableAttRefItems(
     {
     return;
     }
-  QTableWidget* widget = this->Internals->ValuesTable;
+  QTableWidget* vtWidget = this->Internals->ValuesTable;
   qtAttributeRefItem* refItem = qobject_cast<qtAttributeRefItem*>(
-    qtAttribute::createAttributeRefItem(attItem, widget));
+    qtAttribute::createAttributeRefItem(attItem, vtWidget));
   if(!refItem)
     {
     return;
@@ -1025,7 +1024,7 @@ void qtAttributeView::addTableAttRefItems(
   labelText = labelText.isEmpty() ? attLabel : labelText;
 
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  widget->setRowCount(++numRows);
+  vtWidget->setRowCount(++numRows);
   QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
   if(advanced)
     {
@@ -1033,34 +1032,34 @@ void qtAttributeView::addTableAttRefItems(
     }
 
   labelitem->setFlags(nonEditableFlags);
-  widget->setItem(numRows-1, 0, labelitem);
+  vtWidget->setItem(numRows-1, 0, labelitem);
 
   bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
     labelitem, dynamic_pointer_cast<Item>(attItem));
   refItem->widget()->setEnabled(bEnabled);
-  widget->setCellWidget(numRows-1, 1, refItem->widget());
-  widget->setItem(numRows-1, 1, new QTableWidgetItem());
+  vtWidget->setCellWidget(numRows-1, 1, refItem->widget());
+  vtWidget->setItem(numRows-1, 1, new QTableWidgetItem());
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableVoidItems(
   smtk::attribute::VoidItemPtr attItem, int& numRows,
-  const char* attLabel, int advanced)
+  const char* /*attLabel*/, int advanced)
 {
   if(!attItem)
     {
     return;
     }
-  QTableWidget* widget = this->Internals->ValuesTable;
+  QTableWidget* vtWidget = this->Internals->ValuesTable;
   qtVoidItem* voidItem = qobject_cast<qtVoidItem*>(
-    qtAttribute::createItem(attItem, widget));
+    qtAttribute::createItem(attItem, vtWidget));
   if(!voidItem)
     {
     return;
     }
 
-  widget->setRowCount(++numRows);
-  widget->setCellWidget(numRows-1, 0, voidItem->widget());
-  widget->setItem(numRows-1, 0, new QTableWidgetItem());
+  vtWidget->setRowCount(++numRows);
+  vtWidget->setCellWidget(numRows-1, 0, voidItem->widget());
+  vtWidget->setItem(numRows-1, 0, new QTableWidgetItem());
   if(advanced && voidItem->widget())
     {
     voidItem->widget()->setFont(
