@@ -65,7 +65,7 @@ void vtkCmbModelEdgeMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
   if(this->BuildModelEntityMesh)
     {
     this->OperateSucceeded =
-      edgeMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+      edgeMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities != 0);
     }
   return;
 }

@@ -77,7 +77,7 @@ void vtkCmbModelFaceMeshOperator::Operate(vtkCmbMeshWrapper* meshWrapper)
   if(this->BuildModelEntityMesh)
     {
     this->OperateSucceeded =
-      faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities);
+      faceMesh->BuildModelEntityMesh(this->MeshHigherDimensionalEntities != 0);
     this->FaceMesherFailed = faceMesh->GetFaceMesherFailed();
     }
   return;
