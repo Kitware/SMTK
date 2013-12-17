@@ -15,6 +15,7 @@ set(utilSrcs
 set(utilHeaders
   AttributeReader.h
   AttributeWriter.h
+  ExportSpec.h
   Logger.h
   UserData.h
   UUID.h
