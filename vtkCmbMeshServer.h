@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbMesh.h"
 #include <vtkSmartPointer.h> // for callback
+#include "cmbSystemConfig.h"
 
 class vtkCallbackCommand;
 class vtkCmbMeshServerInternals;

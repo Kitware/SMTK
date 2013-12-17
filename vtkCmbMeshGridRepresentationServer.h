@@ -41,6 +41,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkModelGeneratedGridRepresentation.h"
 #include "vtkWeakPointer.h"
+#include "cmbSystemConfig.h"
 #include <vector>
 #include <map>
 #include <set>

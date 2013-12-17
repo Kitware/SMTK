@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkObject.h"
 #include "vtkWeakPointer.h"
+#include "cmbSystemConfig.h"
 
 class vtkCmbMeshWrapper;
 class vtkAlgorithm;

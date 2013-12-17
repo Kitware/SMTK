@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelVertexMesh_h
 
 #include "vtkCmbModelEntityMesh.h"
+#include "cmbSystemConfig.h"
 
 class vtkModelVertex;
 

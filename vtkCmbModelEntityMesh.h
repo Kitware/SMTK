@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelEntityMesh_h
 
 #include <vtkObject.h>
+#include "cmbSystemConfig.h"
 
 #include <vtkModelGeometricEntity.h>
 #include <vtkWeakPointer.h>

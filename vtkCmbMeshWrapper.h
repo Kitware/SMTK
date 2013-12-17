@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshWrapper_h
 
 #include "vtkObject.h"
+#include "cmbSystemConfig.h"
 
 class vtkCmbMeshServer;
 class vtkDiscreteModelWrapper;

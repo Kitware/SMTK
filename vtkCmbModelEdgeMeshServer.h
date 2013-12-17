@@ -34,6 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelEdgeMeshServer_h
 
 #include "vtkCmbModelEdgeMesh.h"
+#include "cmbSystemConfig.h"
 
 class VTK_EXPORT vtkCmbModelEdgeMeshServer : public vtkCmbModelEdgeMesh
 {

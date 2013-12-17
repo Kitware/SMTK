@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshToModelReader_h
 
 #include "vtkXMLDataReader.h"
+#include "cmbSystemConfig.h"
 
 class vtkXMLDataElement;
 class vtkFieldData;

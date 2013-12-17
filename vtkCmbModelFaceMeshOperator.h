@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbModelFaceMeshOperator_h
 
 #include <vtkObject.h>
+#include "cmbSystemConfig.h"
 
 class vtkCmbMeshWrapper;
 

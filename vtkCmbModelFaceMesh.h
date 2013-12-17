@@ -33,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "vtkCmbModelEntityMesh.h"
 #include "CmbFaceMeshHelper.h"
+#include "cmbSystemConfig.h"
 
 class vtkModelFace;
 class vtkCmbModelVertexMesh;

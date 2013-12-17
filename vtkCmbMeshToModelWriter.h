@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshToModelWriter_h
 
 #include "vtkXMLWriter.h"
+#include "cmbSystemConfig.h"
 
 class vtkDiscreteModelWrapper;
 

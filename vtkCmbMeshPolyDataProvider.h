@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __vtkCmbMeshPolyDataProvider_h
 
 #include "vtkPolyDataAlgorithm.h"
+#include "cmbSystemConfig.h"
 
 class vtkCmbMeshWrapper;
 class vtkDataSet;
