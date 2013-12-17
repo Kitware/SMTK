@@ -1086,6 +1086,18 @@
         <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
         <modify-function signature="setOutputPath(const std::string&amp;)" access="private" />
         <modify-function signature="appendAnalysisName(const std::string&amp;)" access="private" />
+        <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
+          static="yes"
+          return-type="smtk::util::ExportSpec *">
+          <inject-code>
+            unsigned long tadd;
+            std::stringstream ss;
+            ss &lt;&lt; std::hex &lt;&lt; %1;
+            ss &gt;&gt; tadd;
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::util::ExportSpec * &gt;(tadd);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="Logger">
