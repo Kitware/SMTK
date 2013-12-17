@@ -89,7 +89,7 @@ void qtInputsItem::createWidget()
 
 //----------------------------------------------------------------------------
 void qtInputsItem::loadInputValues(
-  QBoxLayout* labellayout, QBoxLayout* entrylayout)
+  QBoxLayout* /*labellayout*/, QBoxLayout* entrylayout)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
