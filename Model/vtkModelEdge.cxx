@@ -186,9 +186,6 @@ void vtkModelEdge::SplitModelEdge(
     }
   edgeUses->Delete();
 
-  vtkModelVertex* originalVertex0 = this->GetAdjacentModelVertex(0);
-  vtkModelVertex* originalVertex1 = this->GetAdjacentModelVertex(1);
-
   // we already have an existing edge use pair for the first pass
   std::set<vtkModelEdgeUse*>::iterator it=edgeUsePairs.begin();
   vtkModelEdgeUse* newEdgeUse = newEdge->GetModelEdgeUse(1);

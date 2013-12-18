@@ -130,7 +130,7 @@ vtkModelEdge* vtkDiscreteModel::BuildModelEdge(
 }
 
 vtkModelEdge* vtkDiscreteModel::BuildFloatingRegionEdge(vtkIdType edgeId,
-  double point1[3], double point2[3], int resolution, vtkIdType regionId)
+  double point1[3], double point2[3], int /*resolution*/, vtkIdType regionId)
 {
   if(this->HasValidMesh())
     {

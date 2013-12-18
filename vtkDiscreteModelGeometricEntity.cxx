@@ -249,9 +249,9 @@ bool vtkDiscreteModelGeometricEntity::Merge(
         }
       vtkModelEdgeUse* targetEdgeUse = loopUse->GetModelEdgeUse(tempIndex);
       int actualTargetVertexUseNumber = (1+targetEdgeUse->GetDirection() - targetSharedVertexNumber)%2;
-      vtkModelVertexUse* targetVertexUse = targetEdgeUse->GetModelVertexUse(
+      /*vtkModelVertexUse* targetVertexUse =*/ targetEdgeUse->GetModelVertexUse(
         actualTargetVertexUseNumber);
-      vtkModelVertexUse* sourceVertexUse = sourceEdgeUse->GetModelVertexUse(
+      /*vtkModelVertexUse* sourceVertexUse =*/ sourceEdgeUse->GetModelVertexUse(
         actualSourceVertexUseNumber);
       if(actualTargetVertexUseNumber == 0)
         {
@@ -302,9 +302,9 @@ bool vtkDiscreteModelGeometricEntity::Merge(
     vtkModelItemIterator* faces = sourceEdge->NewAdjacentModelFaceIterator();
     for(faces->Begin();!faces->IsAtEnd();faces->Next())
       {
-      vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-      face->GetModel()->InvokeModelGeometricEntityEvent(
-        ModelGeometricEntityBoundaryModified, face);
+      vtkModelFace* faceTmp = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+      faceTmp->GetModel()->InvokeModelGeometricEntityEvent(
+        ModelGeometricEntityBoundaryModified, faceTmp);
       }
     faces->Delete();
     }

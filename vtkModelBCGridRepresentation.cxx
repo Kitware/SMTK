@@ -56,14 +56,14 @@ vtkModelBCGridRepresentation::~vtkModelBCGridRepresentation()
 }
 
 //----------------------------------------------------------------------------
-void inline AddPointIds(vtkIdType entId,vtkIdList* inPtsList,
+void inline AddPointIds(vtkIdType /*entId*/,vtkIdList* inPtsList,
   vtkIdList* outPtsList)
 {
   if(!inPtsList || inPtsList->GetNumberOfIds()==0)
     {
     return;
     }
-  vtkIdType startIdx = outPtsList->GetNumberOfIds();
+
   vtkIdType newNumIds = inPtsList->GetNumberOfIds();
   for(vtkIdType i=0; i<newNumIds; i++)
     {
@@ -155,7 +155,7 @@ bool vtkModelBCGridRepresentation::GetFloatingEdgeAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::GetModelEdgeAnalysisPoints(
-  vtkDiscreteModel* model, vtkIdType boundaryGroupId, vtkIdTypeArray* edgePoints)
+  vtkDiscreteModel* /*model*/, vtkIdType /*boundaryGroupId*/, vtkIdTypeArray* /*edgePoints*/)
 {
   vtkErrorMacro("2D models not supported.");
   return false;
@@ -314,8 +314,7 @@ bool vtkModelBCGridRepresentation::Initialize(
       {
       vtkIdType pointId = atoi(values[1].c_str()) -1; // analysis grid point Id in C++ ordering
       vtkIdType entityId = atoi(values[2].c_str());
-      if(vtkDiscreteModelEntityGroup* nodalGroup =
-         vtkDiscreteModelEntityGroup::SafeDownCast(model->GetModelEntity(
+      if(vtkDiscreteModelEntityGroup::SafeDownCast(model->GetModelEntity(
          vtkDiscreteModelEntityGroupType, entityId)))
         {
         // We should not have NDS from .bc file any more, since the nodal group is now
@@ -475,7 +474,7 @@ bool vtkModelBCGridRepresentation::IsFloatingEdgeConsistent(
 
 //----------------------------------------------------------------------------
 bool vtkModelBCGridRepresentation::IsModelFaceConsistent(
-  vtkDiscreteModel* model, vtkIdType modelFaceId)
+  vtkDiscreteModel* /*model*/, vtkIdType /*modelFaceId*/)
 {
   return true;
 }

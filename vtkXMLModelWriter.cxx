@@ -94,7 +94,7 @@ vtkSmartPointer<vtkXMLElement> BaseSerialize(const char* name,
 }
 
 void vtkXMLModelWriter::Serialize(const char* name,vtkObject*& obj,
-                                  bool weakPtr)
+                                  bool /*weakPtr*/)
 {
 
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
@@ -271,7 +271,7 @@ void vtkXMLModelWriter::Serialize(const char* name, vtkInformation* info)
 void vtkXMLModelWriter::Serialize(
   const char* name,
   std::vector<vtkSmartPointer<vtkObject> >& objs,
-  bool weakPtr)
+  bool /*weakPtr*/)
 {
   vtkSmartPointer<vtkXMLElement> elem = BaseSerialize(name, this->Internal);
   if (!elem.GetPointer())

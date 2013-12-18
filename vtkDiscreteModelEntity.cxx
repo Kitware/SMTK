@@ -106,7 +106,7 @@ void vtkDiscreteModelEntity::RemoveAllModelEntityGroups()
   iter->Delete();
 }
 
-void vtkDiscreteModelEntity::PrintSelf(ostream& os, vtkIndent indent)
+void vtkDiscreteModelEntity::PrintSelf(ostream& /*os*/, vtkIndent /*indent*/)
 {
 
 }

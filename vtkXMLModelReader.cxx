@@ -332,7 +332,7 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
     }
 }
 
-vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int id)
+vtkModelLoopUse* vtkXMLModelReader::ConstructModelLoopUse(int /*id*/)
 {
   std::vector<vtkIdType> associatedModelFaceUse;
   this->GetAssociations(this->CurrentElement->FindNestedElementByName("Associations"),
@@ -986,7 +986,7 @@ void vtkXMLModelReader::Serialize(const char* name, std::string& str)
 
 void vtkXMLModelReader::Serialize(
   const char* name, std::vector<vtkSmartPointer<vtkObject> >& objs,
-  bool weakPtr)
+  bool /*weakPtr*/)
 {
   objs.clear();
   vtkXMLElement* elem = this->CurrentElement->FindNestedElementByName(name);//BaseSerialize(this->Internal, name);
@@ -1081,7 +1081,7 @@ void vtkXMLModelReader::GetAssociations(
     }
 }
 
-vtkObject* vtkXMLModelReader::ReadObject(vtkIdType id, bool weakPtr)
+vtkObject* vtkXMLModelReader::ReadObject(vtkIdType /*id*/, bool /*weakPtr*/)
 {
   return 0;
 }

@@ -523,7 +523,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
 {
   vtkIdType currentEdge = startingEdge;
   vtkNew<vtkIdList>cellIds, pointIds;
-  vtkIdType currentPoint, firstPoint, nextPoint;
+  vtkIdType currentPoint, nextPoint;
   vtkIdType gedge;
   std::string currentFaceInfo;
   vtkDiscreteModel* thisModel = vtkDiscreteModel::SafeDownCast(
@@ -614,7 +614,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
       {
       std::cout << "Found non-manifold edge!\n";
       // Is there only one edge left to visit?
-      vtkIdType  numEdgesToVisit = 0, lastEdgeToBeVisited, j;
+      vtkIdType  numEdgesToVisit = 0, j;
       vtkIdType testMEdge, testEdge;
       for (j = 0;  j < cellIds->GetNumberOfIds(); j++)
         {
