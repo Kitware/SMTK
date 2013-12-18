@@ -80,7 +80,7 @@ RefItemDefinition::buildItem(Item *owningItem,
                                                       subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void RefItemDefinition::setNumberOfRequiredValues(size_t esize)
+void RefItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
@@ -93,7 +93,7 @@ void RefItemDefinition::setNumberOfRequiredValues(size_t esize)
     }
 }
 //----------------------------------------------------------------------------
-void RefItemDefinition::setValueLabel(size_t element, const std::string &elabel)
+void RefItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
     {
@@ -118,7 +118,7 @@ void RefItemDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string RefItemDefinition::valueLabel(size_t element) const
+std::string RefItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {

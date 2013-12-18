@@ -1136,6 +1136,8 @@
       </object-type>
 
       <object-type name="Group">
+        <enum-type name="Style">
+        </enum-type>
         <include file-name="smtk/view/Group.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Group &gt;)"
           static="yes"

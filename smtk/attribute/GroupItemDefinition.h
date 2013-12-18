@@ -75,18 +75,18 @@ namespace smtk
 
       int findItemPosition(const std::string &name) const;
 
-      size_t numberOfRequiredGroups() const
+      std::size_t numberOfRequiredGroups() const
       {return this->m_numberOfRequiredGroups;}
-      void setNumberOfRequiredGroups(size_t gsize)
+      void setNumberOfRequiredGroups(std::size_t gsize)
       {this->m_numberOfRequiredGroups = gsize;}
       bool hasSubGroupLabels() const
       {return !this->m_labels.empty();}
 
-      void setSubGroupLabel(size_t element, const std::string &elabel);
+      void setSubGroupLabel(std::size_t element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
       bool usingCommonSubGroupLabel() const
       {return this->m_useCommonLabel;}
-      std::string subGroupLabel(size_t element) const;
+      std::string subGroupLabel(std::size_t element) const;
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
@@ -103,7 +103,7 @@ namespace smtk
       std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       std::vector<std::string> m_labels;
-      size_t m_numberOfRequiredGroups;
+      std::size_t m_numberOfRequiredGroups;
       bool m_useCommonLabel;
     private:
     };
