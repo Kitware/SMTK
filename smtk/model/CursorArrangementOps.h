@@ -32,7 +32,11 @@ public:
     return T();
     }
 
-  /// Append all the relations of kind \a k to \a result.
+  /**\brief Append all the relations of kind \a k to \a result.
+    *
+    * This will verify that each relation is valid before
+    * inserting it into \a result.
+    */
   template<typename T>
   static void appendAllRelations(const Cursor& c, ArrangementKind k, T& result)
     {
@@ -49,14 +53,18 @@ public:
           // not arrays of offset values.
           for (int i = arrIt->details()[0]; i < arrIt->details()[1]; ++i)
             {
-            result.push_back(typename T::value_type(c.storage(), relations[i]));
+            typename T::value_type entry(c.storage(), relations[i]);
+            if (entry.isValid())
+              result.insert(result.end(), entry);
             }
           }
         else
           {
           for (std::vector<int>::iterator it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
             {
-            result.push_back(typename T::value_type(c.storage(), relations[*it]));
+            typename T::value_type entry(c.storage(), relations[*it]);
+            if (entry.isValid())
+              result.insert(result.end(), entry);
             }
           }
         }
