@@ -2,6 +2,7 @@
 set(modelSrcs
   Arrangement.cxx
   ArrangementKind.cxx
+  AttributeAssignments.cxx
   BRepModel.cxx
   CellEntity.cxx
   Cursor.cxx
@@ -36,6 +37,7 @@ set(modelSrcs
 set(modelHeaders
   Arrangement.h
   ArrangementKind.h
+  AttributeAssignments.h
   BRepModel.h
   CellEntity.h
   Cursor.h

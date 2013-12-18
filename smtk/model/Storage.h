@@ -5,6 +5,7 @@
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 
@@ -32,7 +33,8 @@ public:
   Storage(
     shared_ptr<UUIDsToEntities> topology,
     shared_ptr<UUIDsToArrangements> arrangements,
-    shared_ptr<UUIDsToTessellations> tess);
+    shared_ptr<UUIDsToTessellations> tess,
+    shared_ptr<UUIDsToAttributeAssignments> attribs);
   virtual ~Storage();
 
   static smtk::model::StoragePtr New()
@@ -43,6 +45,9 @@ public:
 
   UUIDsToTessellations& tessellations();
   const UUIDsToTessellations& tessellations() const;
+
+  UUIDsToAttributeAssignments& attributeAssignments();
+  const UUIDsToAttributeAssignments& attributeAssignments() const;
 
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
@@ -63,9 +68,14 @@ public:
   smtk::util::UUID cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const;
   smtk::util::UUID findOrCreateCellUseOfSense(const smtk::util::UUID& cell, int sense);
 
+  bool hasAttribute(int attribId, const smtk::util::UUID& toEntity);
+  bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
+  bool detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse = true);
+
 protected:
   shared_ptr<UUIDsToArrangements> m_arrangements;
   shared_ptr<UUIDsToTessellations> m_tessellations;
+  shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
 };
 
   } // model namespace

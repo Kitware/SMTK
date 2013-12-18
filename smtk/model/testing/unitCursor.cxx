@@ -107,5 +107,13 @@ int main(int argc, char* argv[])
   test(entity.hasStringProperty("name") == false);
   test(entity.hasIntegerProperty("deadbeef") == false);
 
+  // Verify that attribute assignment works (with some
+  // made-up attribute IDs)
+  test(!entity.hasAttributes(), "Detecting an un-associated attribute");
+  test( entity.attachAttribute(1), "Attaching an attribute");
+  test(!entity.attachAttribute(1), "Re-attaching a repeated attribute");
+  test( entity.detachAttribute(1), "Detaching an associated attribute");
+  test(!entity.detachAttribute(2), "Detaching an un-associated attribute");
+
   return 0;
 }

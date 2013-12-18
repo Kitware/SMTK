@@ -4,6 +4,7 @@
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
 #include "smtk/util/SystemConfig.h" // For type macros.
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/model/FloatData.h" // for Float, FloatData, ...
 #include "smtk/model/StringData.h" // for String, StringData, ...
@@ -118,6 +119,13 @@ public:
   Cursors lowerDimensionalBoundaries(int lowerDimension);
   Cursors higherDimensionalBordants(int higherDimension);
   Cursors adjacentEntities(int ofDimension);
+
+  bool hasAttributes() const;
+  bool hasAttribute(int attribId) const;
+  bool attachAttribute(int attribId);
+  bool detachAttribute(int attribId, bool reverse = true);
+  AttributeAssignments& attributes();
+  AttributeAssignments::AttributeSet attributes() const;
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);

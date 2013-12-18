@@ -1,5 +1,7 @@
 #include "smtk/model/Storage.h"
 
+#include "smtk/model/AttributeAssignments.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
@@ -18,15 +20,19 @@ namespace smtk {
 Storage::Storage() :
   BRepModel(shared_ptr<UUIDsToEntities>(new UUIDsToEntities)),
   m_arrangements(new UUIDsToArrangements),
-  m_tessellations(new UUIDsToTessellations)
+  m_tessellations(new UUIDsToTessellations),
+  m_attributeAssignments(new UUIDsToAttributeAssignments)
 {
 }
 
 Storage::Storage(
   shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements,
-  shared_ptr<UUIDsToTessellations> tess)
-  : BRepModel(inTopology), m_arrangements(inArrangements), m_tessellations(tess)
+  shared_ptr<UUIDsToTessellations> tess,
+  shared_ptr<UUIDsToAttributeAssignments> attribs)
+  :
+    BRepModel(inTopology), m_arrangements(inArrangements),
+    m_tessellations(tess), m_attributeAssignments(attribs)
 {
 }
 
@@ -54,6 +60,15 @@ const UUIDsToTessellations& Storage::tessellations() const
   return *this->m_tessellations.get();
 }
 
+UUIDsToAttributeAssignments& Storage::attributeAssignments()
+{
+  return *this->m_attributeAssignments;
+}
+
+const UUIDsToAttributeAssignments& Storage::attributeAssignments() const
+{
+  return *this->m_attributeAssignments;
+}
 
 Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
@@ -296,6 +311,60 @@ smtk::util::UUID Storage::findOrCreateCellUseOfSense(
     Arrangement::UseHasCellWithIndexAndSense(static_cast<int>(cellIdx), sense));
 
   return use->first;
+}
+
+/**\brief Report whether an entity has been assigned an attribute.
+  *
+  */
+bool Storage::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
+{
+  UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
+  if (it == this->m_attributeAssignments->end())
+    {
+    return false;
+    }
+  return it->second.isAssociated(attribId);
+}
+
+/**\brief Assign an attribute to an entity.
+  *
+  */
+bool Storage::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
+{
+  return this->attributeAssignments()[toEntity].attachAttribute(attribId);
+}
+
+/**\brief Unassign an attribute from an entity.
+  *
+  */
+bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse)
+{
+  bool didRemove = false;
+  UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
+  if (ref == this->m_attributeAssignments->end())
+    {
+    return didRemove;
+    }
+  if ((didRemove = ref->second.detachAttribute(attribId)) && reverse)
+    {
+    /* FIXME: Let manager know.
+    smtk::attribute::Manager* mgr = smtk::attribute::Manager::getGlobalManager();
+    if (mgr)
+      {
+      smtk::attribute::AttributePtr attrib = mgr->findAttribute(attribId);
+      if (attrib)
+        {
+        // We don't need a shared pointer to ourselves since we are
+        // passing reverse=false here. Thus we can get by without
+        // inheriting shared_from_this(), which is a rat's nest
+        // should anyone ever derive a class from Storage.
+        smtk::model::StoragePtr model; // a NULL shared pointer.
+        attrib->disassociateEntity(model, fromEntity, false);
+        }
+      }
+      */
+    }
+  return didRemove;
 }
 
   } // namespace model

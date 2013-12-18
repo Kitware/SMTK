@@ -85,6 +85,8 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
 
+  <suppress-warning text="skipping field 'Storage::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
+
   <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
   <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
@@ -574,6 +576,10 @@
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
+
+      <object-type name="AttributeAssignments">
+        <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
+      </object-type>
 
       <enum-type name="CellUseSenses">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>

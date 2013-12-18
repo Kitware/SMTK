@@ -250,6 +250,54 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   return result;
 }
 
+/** @name Attribute associations
+  *
+  */
+///@{
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::hasAttributes() const
+{
+  return this->m_storage->attributeAssignments().find(this->m_entity) ==
+    this->m_storage->attributeAssignments().end() ?
+    false : true;
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::hasAttribute(int attribId) const
+{
+  return this->m_storage->hasAttribute(attribId, this->m_entity);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::attachAttribute(int attribId)
+{
+  return this->m_storage->attachAttribute(attribId, this->m_entity);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::detachAttribute(int attribId, bool reverse)
+{
+  return this->m_storage->detachAttribute(attribId, this->m_entity, reverse);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+AttributeAssignments& Cursor::attributes()
+{
+  return this->m_storage->attributeAssignments()[this->m_entity];
+}
+/**\brief Does the cursor have any attributes associated with it?
+  */
+AttributeAssignments::AttributeSet Cursor::attributes() const
+{
+  return this->m_storage->attributeAssignments()[this->m_entity].attributes();
+}
+///@}
+
 void Cursor::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
   if (this->m_storage && !this->m_entity.isNull())

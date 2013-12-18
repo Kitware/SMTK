@@ -96,5 +96,14 @@ int main(int argc, char* argv[])
   free(json);
   cJSON_Delete(root);
 
+  // Test attribute assignment (model-side only; no attributes are
+  // created, but we can make up attribute IDs and assign them to
+  // entities).
+  test( sm->attachAttribute(/*attribId*/0, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->attachAttribute(/*attribId*/1, uids[0]), "Inserting a new attribute should succeed");
+  test(!sm->attachAttribute(/*attribId*/0, uids[0]), "Removing an existing attribute should succeed");
+  test( sm->detachAttribute(/*attribId*/0, uids[0]), "Removing a non-existent attribute should fail");
+  test(!sm->detachAttribute(/*attribId*/0, uids[1]), "Removing a non-existent attribute should fail");
+
   return 0;
 }
