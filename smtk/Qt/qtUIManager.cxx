@@ -661,7 +661,7 @@ QWidget* qtUIManager::createComboBox(
     {
     std::string enumText = itemDef->discreteEnum(i);
     if(itemDef->hasDefault() &&
-      itemDef->defaultDiscreteIndex() == i)
+      static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
       {
       tooltip = "Default: " + QString(enumText.c_str());
       }
