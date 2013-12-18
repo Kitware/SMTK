@@ -75,7 +75,6 @@ void qtGroupItem::createWidget()
   //   groupBox->setCheckable(true);
   //   groupBox->setChecked(true);
   this->Widget = groupBox;
-  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   if(this->parentWidget())
     {
     this->parentWidget()->layout()->setAlignment(Qt::AlignTop);

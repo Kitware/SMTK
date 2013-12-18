@@ -86,9 +86,9 @@ namespace smtk
 
       virtual bool hasRange() const = 0;
 
-      int numberOfRequiredValues() const
+      size_t numberOfRequiredValues() const
       {return this->m_numberOfRequiredValues;}
-      void setNumberOfRequiredValues(int esize);
+      void setNumberOfRequiredValues(size_t esize);
 
       // Description:
       // Return whether or not there are labels for components.
@@ -102,13 +102,13 @@ namespace smtk
       // label that is repeated.
       bool usingCommonLabel() const
       {return this->m_useCommonLabel;}
-      void setValueLabel(int element, const std::string &elabel);
+      void setValueLabel(size_t element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
       // Description:
       // Get the component label for specified element component. This
       // takes into account whether to use the common label or specific
       // component label.
-      std::string valueLabel(int element) const;
+      std::string valueLabel(size_t element) const;
       bool isDiscreteIndexValid(int index) const
       {return ((index > -1) &&
                (static_cast<unsigned int>(index) < this->m_discreteValueEnums.size()));}
@@ -120,7 +120,7 @@ namespace smtk
       std::vector<std::string> m_valueLabels;
       std::vector<std::string> m_discreteValueEnums;
       int m_defaultDiscreteIndex;
-      int m_numberOfRequiredValues;
+      size_t m_numberOfRequiredValues;
       std::string m_units;
       smtk::attribute::RefItemDefinitionPtr m_expressionDefinition;
     private:

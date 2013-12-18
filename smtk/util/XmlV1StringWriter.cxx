@@ -473,7 +473,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
-    idef->numberOfRequiredValues();
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
@@ -521,7 +521,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
     anode.text().set(adp->type().c_str());
     }
   node.append_attribute("NumberOfRequiredValues") =
-    idef->numberOfRequiredValues();
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
@@ -547,7 +547,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
 void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
                                             attribute::DirectoryItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
+  node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);
@@ -581,7 +581,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
 void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
+  node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);
@@ -615,7 +615,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
 void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
                                         attribute::GroupItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredGroups") = idef->numberOfRequiredGroups();
+  node.append_attribute("NumberOfRequiredGroups") = static_cast<unsigned int>(idef->numberOfRequiredGroups());
   xml_node itemDefNode, itemDefNodes;
   if (idef->hasSubGroupLabels())
     {
