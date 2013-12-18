@@ -115,7 +115,7 @@ void GroupItemDefinition::removeCategory(const std::string &/*category*/)
             << "The name is " << this->name() << std::endl;
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::setSubGroupLabel(size_t element, const std::string &elabel)
+void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredGroups == 0)
     {
@@ -140,7 +140,7 @@ void GroupItemDefinition::setCommonSubGroupLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string GroupItemDefinition::subGroupLabel(size_t element) const
+std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {

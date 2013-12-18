@@ -60,25 +60,25 @@ namespace smtk
       virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
-      size_t numberOfRequiredValues() const
+      std::size_t numberOfRequiredValues() const
       {return this->m_numberOfRequiredValues;}
-      void setNumberOfRequiredValues(size_t esize);
+      void setNumberOfRequiredValues(std::size_t esize);
 
       bool hasValueLabels() const
       {return !this->m_valueLabels.empty();}
 
-      void setValueLabel(size_t element, const std::string &elabel);
+      void setValueLabel(std::size_t element, const std::string &elabel);
       void setCommonValueLabel(const std::string &elabel);
       bool usingCommonLabel() const
       {return this->m_useCommonLabel;}
 
-      std::string valueLabel(size_t element) const;
+      std::string valueLabel(std::size_t element) const;
     protected:
       RefItemDefinition(const std::string &myName);
       smtk::attribute::WeakDefinitionPtr m_definition;
       bool m_useCommonLabel;
       std::vector<std::string> m_valueLabels;
-      size_t m_numberOfRequiredValues;
+      std::size_t m_numberOfRequiredValues;
     private:
 
     };

@@ -69,7 +69,7 @@ smtk::attribute::ItemPtr FileItemDefinition::buildItem(Item *owningItem,
                                               subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void FileItemDefinition::setNumberOfRequiredValues(size_t esize)
+void FileItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
@@ -82,7 +82,7 @@ void FileItemDefinition::setNumberOfRequiredValues(size_t esize)
     }
 }
 //----------------------------------------------------------------------------
-void FileItemDefinition::setValueLabel(size_t element, const std::string &elabel)
+void FileItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
     {
@@ -107,7 +107,7 @@ void FileItemDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string FileItemDefinition::valueLabel(size_t element) const
+std::string FileItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {
