@@ -112,8 +112,8 @@ public:
   static void CursorsFromUUIDs(
     Cursors& result, StoragePtr, const smtk::util::UUIDs& uids);
 
-  Cursors bordantEntities(int ofDimension = -2);
-  Cursors boundaryEntities(int ofDimension = -2);
+  Cursors bordantEntities(int ofDimension = -2) const;
+  Cursors boundaryEntities(int ofDimension = -2) const;
 
   Cursors lowerDimensionalBoundaries(int lowerDimension);
   Cursors higherDimensionalBordants(int higherDimension);

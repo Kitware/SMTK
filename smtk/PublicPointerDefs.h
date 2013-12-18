@@ -38,7 +38,13 @@ namespace smtk
   {
     class Arrangement;
     typedef std::vector<Arrangement> Arrangements;
+    class CellEntity;
+    class Cursor;
     class DescriptivePhrase;
+    class Edge;
+    typedef std::vector<Edge> Edges;
+    class Face;
+    typedef std::vector<Face> Faces;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -48,9 +54,17 @@ namespace smtk
     class ImportJSON;
     class Entity;
     class Model;
+    class ShellEntity;
+    typedef std::vector<ShellEntity> ShellEntities;
     class Storage;
     class ModelDomainItem;
     class Tessellation;
+    class UseEntity;
+    typedef std::vector<UseEntity> UseEntities;
+    class Vertex;
+    typedef std::vector<Vertex> Vertices;
+    class Volume;
+    typedef std::vector<Volume> Volumes;
   }
 
   namespace attribute

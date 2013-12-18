@@ -1,26 +1,26 @@
-#include "smtk/model/Vertex.h"
-
 #include "smtk/model/Edge.h"
+
+#include "smtk/model/Vertex.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
   namespace model {
 
-smtk::model::Edges Vertex::edges() const
+smtk::model::Vertices Edge::vertices() const
 {
-  Edges result;
-  Cursors all = this->bordantEntities(/*dim = */ 1);
+  Vertices result;
+  Cursors all = this->boundaryEntities(/*dim = */ 0);
   for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
     {
-    if (it->isEdge())
+    if (it->isVertex())
       result.push_back(*it);
     }
   return result;
 }
 
 /*
-smtk::util::Vector3d Vertex::coordinates() const
+smtk::util::Vector3d Edge::coordinates() const
 {
   if (this->isValid())
     {

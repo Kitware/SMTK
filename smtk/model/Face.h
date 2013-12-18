@@ -1,5 +1,5 @@
-#ifndef __smtk_model_Vertex_h
-#define __smtk_model_Vertex_h
+#ifndef __smtk_model_Face_h
+#define __smtk_model_Face_h
 
 #include "smtk/model/CellEntity.h"
 
@@ -11,24 +11,23 @@ namespace smtk {
   namespace model {
 
 class Edge;
+class Volume;
 typedef std::vector<Edge> Edges;
+typedef std::vector<Volume> Volumes;
 
 /**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
   *
   */
-class SMTKCORE_EXPORT Vertex : public CellEntity
+class SMTKCORE_EXPORT Face : public CellEntity
 {
 public:
-  SMTK_CURSOR_CLASS(Vertex,CellEntity,isVertex);
+  SMTK_CURSOR_CLASS(Face,CellEntity,isFace);
 
   Edges edges() const;
-
-  //smtk::util::Vector3d coordinates() const;
+  Volumes volumes() const;
 };
-
-typedef std::vector<Vertex> Vertices;
 
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_Vertex_h
+#endif // __smtk_model_Face_h

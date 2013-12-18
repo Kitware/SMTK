@@ -1,6 +1,8 @@
 #include "smtk/model/ShellEntity.h"
 
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/UseEntity.h"
@@ -13,6 +15,7 @@ namespace smtk {
   */
 CellEntity ShellEntity::parentCell() const
 {
+  (void)this;
   return CursorArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
 }
 

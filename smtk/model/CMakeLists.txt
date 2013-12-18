@@ -6,10 +6,12 @@ set(modelSrcs
   CellEntity.cxx
   Cursor.cxx
   DescriptivePhrase.cxx
+  Edge.cxx
   Entity.cxx
   EntityListPhrase.cxx
   EntityPhrase.cxx
   ExportJSON.cxx
+  Face.cxx
   GroupItem.cxx
   GroupEntity.cxx
   GridInfo.cxx
@@ -22,12 +24,13 @@ set(modelSrcs
   ModelEntity.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
-  ShellEntity.h
+  ShellEntity.cxx
   Storage.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
   UseEntity.cxx
   Vertex.cxx
+  Volume.cxx
   )
 
 set(modelHeaders
@@ -38,11 +41,13 @@ set(modelHeaders
   Cursor.h
   CursorArrangementOps.h
   DescriptivePhrase.h
+  Edge.h
   Entity.h
   EntityListPhrase.h
   EntityPhrase.h
   EntityTypeBits.h
   ExportJSON.h
+  Face.h
   FloatData.h
   GroupEntity.h
   ImportJSON.h
@@ -64,6 +69,7 @@ set(modelHeaders
   Tessellation.h
   UseEntity.h
   Vertex.h
+  Volume.h
   )
 
 #install the headers

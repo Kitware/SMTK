@@ -1,16 +1,17 @@
-#include "smtk/model/Vertex.h"
+#include "smtk/model/Face.h"
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
+#include "smtk/model/Volume.h"
 
 namespace smtk {
   namespace model {
 
-smtk::model::Edges Vertex::edges() const
+smtk::model::Edges Face::edges() const
 {
   Edges result;
-  Cursors all = this->bordantEntities(/*dim = */ 1);
+  Cursors all = this->boundaryEntities(/*dim = */ 1);
   for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isEdge())
@@ -19,8 +20,20 @@ smtk::model::Edges Vertex::edges() const
   return result;
 }
 
+smtk::model::Volumes Face::volumes() const
+{
+  Volumes result;
+  Cursors all = this->bordantEntities(/*dim = */ 3);
+  for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
+    {
+    if (it->isVolume())
+      result.push_back(*it);
+    }
+  return result;
+}
+
 /*
-smtk::util::Vector3d Vertex::coordinates() const
+smtk::util::Vector3d Face::coordinates() const
 {
   if (this->isValid())
     {

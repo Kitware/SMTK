@@ -190,7 +190,7 @@ void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::u
     }
 }
 
-Cursors Cursor::bordantEntities(int ofDimension)
+Cursors Cursor::bordantEntities(int ofDimension) const
 {
   Cursors result;
   if (this->m_storage && !this->m_entity.isNull())
@@ -202,7 +202,7 @@ Cursors Cursor::bordantEntities(int ofDimension)
   return result;
 }
 
-Cursors Cursor::boundaryEntities(int ofDimension)
+Cursors Cursor::boundaryEntities(int ofDimension) const
 {
   Cursors result;
   if (this->m_storage && !this->m_entity.isNull())
