@@ -170,8 +170,7 @@ void qtInputsItem::updateUI()
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
-    this->Internals->EntryFrame->setEnabled(
-      dataObj->definition()->isEnabledByDefault());
+    this->Internals->EntryFrame->setEnabled(dataObj->isEnabled());
     labelLayout->addWidget(optionalCheck);
     }
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
