@@ -54,7 +54,7 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::util::UUID& uid)
 
 TDUUID::~TDUUID()
 {
-  UUIDToCGMRef::const_iterator it = TDUUID::s_reverseLookup.find(this->m_entityId);
+  UUIDToCGMRef::iterator it = TDUUID::s_reverseLookup.find(this->m_entityId);
   if (it != TDUUID::s_reverseLookup.end())
     {
     // TODO: Signal SMTK that an entity is disappearing.
