@@ -24,12 +24,13 @@ except ImportError:
     sys.exit(-1)
 
 
-def generate_model(model_description):
+def generate_model_items(manager, model_description):
     '''
     Constructs model based on input description
     '''
     #print 'Generating model'
-    model = smtk.model.Model()
+    #model = smtk.model.Model.New()
+    model = manager.refModel()
     for item_description in model_description:
         group = item_description.get('group')
         name = item_description.get('name')
@@ -63,12 +64,13 @@ def set_item(item, item_description):
 
 
 
-def generate_atts(manager, attributes_description, model):
+def generate_atts(manager, attributes_description):
     '''
     Constructs attributes based on input description
     Returns number of attributes that got created
     '''
     count = 0
+    model = manager.refModel()
     for att_description in attributes_description:
         att_type = att_description.get('att')
         name = att_description.get('name')
@@ -122,7 +124,6 @@ def generate_atts(manager, attributes_description, model):
             concrete_item = smtk.attribute.to_concrete(item)
             set_item(concrete_item, item_description)
 
-
     return count
 
 
@@ -135,14 +136,14 @@ def generate_sim(manager, description):
     model = None
     model_description = description.get('model')
     if model_description is not None:
-        model = generate_model(model_description)
-        manager.setRefModel(model)
+        generate_model_items(manager, model_description)
 
     att_description = description.get('attributes')
     if att_description is None:
         print 'Warning: no attributes found in input description'
     else:
-        count = generate_atts(manager, att_description, model)
+        count = generate_atts(manager, att_description)
+
     return count
 
 
@@ -177,6 +178,8 @@ if __name__ == '__main__':
     if err:
         print 'Abort: Could not load attribute file'
         sys.exit(-3)
+    model = smtk.model.Model.New()
+    manager.setRefModel(model)
 
     # Load json input
     sim_description = None
