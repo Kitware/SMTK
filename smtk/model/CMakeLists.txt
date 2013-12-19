@@ -8,8 +8,6 @@ set(modelSrcs
   ExportJSON.cxx
   GroupItem.cxx
   GridInfo.cxx
-  GridInfo2D.cxx
-  GridInfo3D.cxx
   ImportJSON.cxx
   Item.cxx
   Model.cxx
@@ -34,8 +32,6 @@ set(modelHeaders
   IntegerData.h
   Item.h
   GridInfo.h
-  GridInfo2D.h
-  GridInfo3D.h
   GroupItem.h
   Model.h
   Storage.h
