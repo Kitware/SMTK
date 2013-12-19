@@ -8,7 +8,7 @@ namespace smtk {
 
 /**\brief Describe an entity for user presentation.
   */
-class EntityPhrase : public DescriptivePhrase
+class SMTKCORE_EXPORT EntityPhrase : public DescriptivePhrase
 {
 public:
   smtkTypeMacro(EntityPhrase);

@@ -9,7 +9,7 @@ namespace smtk {
 /**\brief Describe a list of entities for user presentation.
   *
   */
-class EntityListPhrase : public DescriptivePhrase
+class SMTKCORE_EXPORT EntityListPhrase : public DescriptivePhrase
 {
 public:
   smtkTypeMacro(EntityListPhrase);
