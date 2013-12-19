@@ -58,10 +58,11 @@ def set_item(item, item_description):
 
     value = item_description.get('value')
     if value is not None:
-        # TODO Handle multiple values
-        item.setValue(0, value)
-
-
+        if isinstance(value, (list, tuple)):
+            for i in range(len(value)):
+                item.setValue(i, value[i])
+        else:
+            item.setValue(0, value)
 
 
 def generate_atts(manager, attributes_description):
