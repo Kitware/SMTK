@@ -19,27 +19,12 @@ CellEntity ShellEntity::parentCell() const
   return CursorArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
 }
 
-/**\brief Return the uses (cells with an orientation, or sense) composing this shell.
+/**\brief Return the shell-entity containing this one (or an invalid shell-entity if unbounded).
   *
-  * When the shell is 1-dimensional, these uses will be ordered curve segments
-  * that match head-to-tail and describe a closed loop.
-  *
-  * TODO: Decide how to handle multiple closed loops: should an "empty" shell (that
-  * returns uses().empty()) be created with multiple containedShells()? Or should
-  * shells be allowed to have siblings?
   */
-UseEntities ShellEntity::uses() const
+ShellEntity ShellEntity::containingShellEntity() const
 {
-  UseEntities result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_USE, result);
-  return result;
-}
-
-ShellEntities ShellEntity::containedShells() const
-{
-  ShellEntities result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, result);
-  return result;
+  return CursorArrangementOps::firstRelation<ShellEntity>(*this, EMBEDDED_IN);
 }
 
   } // namespace model

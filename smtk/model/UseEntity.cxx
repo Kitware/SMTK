@@ -13,5 +13,17 @@ CellEntity UseEntity::cell() const
   return CursorArrangementOps::firstRelation<CellEntity>(*this, HAS_CELL);
 }
 
+/*! \fn UseEntity::shellsAs() const
+ * \brief Return the shells that contain this entity-use in a container of the specified type.
+ *
+ * For example:<pre>
+ *   UseEntity u;
+ *   Loops uloops = u.shellsAs<Loops>();
+ *   // or alternatively:
+ *   typedef std::set<Loop> LoopSet;
+ *   LoopSet uloops = u.shellsAs<LoopSet>();
+ * </pre>
+ */
+
   } // namespace model
 } // namespace smtk

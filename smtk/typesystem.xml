@@ -110,6 +110,9 @@
 
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::Cursor::as', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::ShellEntity::uses', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::ShellEntity::containedShellEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::UseEntity::shellsAs', unmatched return type 'T'"/>
 
   @EXTRA_TYPESYSTEMS@
 
