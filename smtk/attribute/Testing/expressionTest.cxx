@@ -112,6 +112,30 @@ int main()
     }
 
   int i, n = static_cast<int>(att->numberOfItems());
+
+  // Checking Default checks
+  vitem = smtk::dynamic_pointer_cast<ValueItem>(att->item(0));
+  if (vitem->isUsingDefault(0) || vitem->isUsingDefault())
+    {
+    std::cout << "Failed first Default Test!\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << "Passed First Default Test\n";
+    }
+
+  vitem = smtk::dynamic_pointer_cast<ValueItem>(att->item(1));
+  if (!(vitem->isUsingDefault(0) && vitem->isUsingDefault()))
+    {
+    std::cout << "Failed second Default Test!\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << "Passed Second Default Test\n";
+    }
+
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
     {

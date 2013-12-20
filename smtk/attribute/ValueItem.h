@@ -73,6 +73,11 @@ namespace smtk
       // having no values
       virtual void reset();
       virtual bool setToDefault(int elementIndex=0) = 0;
+      // Returns true if there is a default defined and the item is curently set to it
+      virtual bool isUsingDefault(int elementIndex) const = 0;
+      // This method tests all of the values of the items w/r the default value
+      virtual bool isUsingDefault() const = 0;
+
       virtual std::string valueAsString() const
       { return this->valueAsString(0);}
 
