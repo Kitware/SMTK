@@ -82,6 +82,19 @@ int main()
   smtk::attribute::ValueItemPtr vcomp;
   smtk::attribute::ItemPtr comp;
 
+  //test the find of base def
+  comp = att->find("DoubleComp1");
+  if (comp)
+    {
+    vcomp = smtk::dynamic_pointer_cast<ValueComp>(comp);
+    std::cout << " Value = "  << vcomp->valueAsString() << std::endl;
+    }
+  else
+    {
+    std::cout << "ERROR: could not find the base's item" << std::endl;
+    status = -1;
+    }
+
   int i, n = static_cast<int>(att->numberOfItems());
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
