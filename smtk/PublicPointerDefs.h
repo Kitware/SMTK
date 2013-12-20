@@ -43,8 +43,12 @@ namespace smtk
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<Edge> Edges;
+    class EdgeUse;
+    typedef std::vector<EdgeUse> EdgeUses;
     class Face;
     typedef std::vector<Face> Faces;
+    class FaceUse;
+    typedef std::vector<FaceUse> FaceUses;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -63,6 +67,8 @@ namespace smtk
     typedef std::vector<UseEntity> UseEntities;
     class Vertex;
     typedef std::vector<Vertex> Vertices;
+    class VertexUse;
+    typedef std::vector<VertexUse> VertexUses;
     class Volume;
     typedef std::vector<Volume> Volumes;
   }

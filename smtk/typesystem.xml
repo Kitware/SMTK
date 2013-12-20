@@ -89,30 +89,51 @@
 
   <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
   <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Chain'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Edge'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'EdgeUse'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'FaceUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Face'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Loop'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Shell'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'ShellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'UseEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Vertex'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'VertexUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Volume'"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and CellEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Chain::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Edge::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and EdgeUse::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Face::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Shell::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and ShellEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and UseEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Vertex::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Volume::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Chain::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Shell::isValid() const"/>
   <suppress-warning text="Shadowing: CellEntity::isValid() const and Edge::isValid() const"/>
   <suppress-warning text="Shadowing: CellEntity::isValid() const and Face::isValid() const"/>
   <suppress-warning text="Shadowing: CellEntity::isValid() const and Vertex::isValid() const"/>
   <suppress-warning text="Shadowing: CellEntity::isValid() const and Volume::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and EdgeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
 
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::Cursor::as', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::uses', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::containedShellEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::UseEntity::shellsAs', unmatched return type 'T'"/>
+
+  <!-- we are not going to wrap std::[io]stream, so ignore -->
+  <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -598,8 +619,17 @@
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
+      <enum-type name="DescriptivePhraseType">
+        <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
+      </enum-type>
+
       <object-type name="Edge">
         <include file-name="smtk/model/Edge.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="EdgeUse">
+        <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
@@ -608,9 +638,15 @@
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
-      <enum-type name="DescriptivePhraseType">
-        <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
-      </enum-type>
+      <object-type name="FaceUse">
+        <include file-name="smtk/model/FaceUse.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Loop">
+        <include file-name="smtk/model/Loop.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
 
       <enum-type name="PropertyType">
         <include file-name="smtk/model/BRepModel.h" location="local"/>
@@ -723,6 +759,11 @@
         </add-function>
       </object-type>
 
+      <object-type name="Shell">
+        <include file-name="smtk/model/Shell.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
       <object-type name="ShellEntity">
         <include file-name="smtk/model/ShellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
@@ -735,6 +776,11 @@
 
       <object-type name="Vertex">
         <include file-name="smtk/model/Vertex.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="VertexUse">
+        <include file-name="smtk/model/VertexUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
