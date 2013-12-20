@@ -811,9 +811,7 @@ QWidget* qtUIManager::createEditBox(
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
-
-        isDefault = dDef->hasDefault() &&
-          dDef->defaultValue()==ditem->value(elementIdx);
+        isDefault = item->isUsingDefault(elementIdx);
         }
       else if(dDef->hasDefault())
         {

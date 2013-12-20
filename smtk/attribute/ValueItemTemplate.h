@@ -60,7 +60,9 @@ namespace smtk
       virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       bool removeValue(int element);
       virtual void reset();
-      bool setToDefault(int element=0);
+      virtual bool setToDefault(int element=0);
+      virtual bool isUsingDefault(int element) const;
+      virtual bool isUsingDefault() const;
 
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
@@ -328,6 +330,41 @@ namespace smtk
         this->setValue(element, def->defaultValue());
         }
       return true;
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    bool
+    ValueItemTemplate<DataT>::isUsingDefault() const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!def->hasDefault())
+        {
+        return false; // Doesn't have a default value
+        }
+
+      std::size_t i, n = this->numberOfValues();
+      DataT dval = def->defaultValue();
+      for (i = 0; i < n; i++)
+        {
+        if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+          {
+          return false;
+          }
+        }
+      return true;
+    }
+///----------------------------------------------------------------------------
+    template<typename DataT>
+    bool
+    ValueItemTemplate<DataT>::isUsingDefault(int element) const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!(def->hasDefault() && this->m_isSet[element]))
+        {
+        return false; // Doesn't have a default value
+        }
+
+      return (this->m_values[element] == def->defaultValue());
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
