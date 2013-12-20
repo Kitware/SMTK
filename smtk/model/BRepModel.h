@@ -158,6 +158,7 @@ protected:
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
+  void prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry);
 };
 
   } // model namespace

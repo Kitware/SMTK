@@ -122,7 +122,13 @@ std::string Cursor::flagSummary(int form) const
   return Entity::flagSummary(INVALID, form);
 }
 
-/// Report the name associated with this entity.
+/** Report the name associated with this entity.
+  *
+  * This will not assign a default name to the entity (that would
+  * violate the const-ness of the method), but will report a
+  * UUID-based name for the entity if it does not have a
+  * user-assigned name.
+  */
 std::string Cursor::name() const
 {
   return this->m_storage->name(this->m_entity);
@@ -554,6 +560,12 @@ bool Cursor::operator < (const Cursor& other) const
     return false;
     }
   return this->m_entity < other.m_entity;
+}
+
+std::ostream& operator << (std::ostream& os, const Cursor& c)
+{
+  os << c.name();
+  return os;
 }
 
   } // namespace model

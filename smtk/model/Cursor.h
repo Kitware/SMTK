@@ -13,6 +13,7 @@
 
 #include "smtk/util/UUID.h"
 
+#include <iostream>
 #include <set>
 #include <vector>
 
@@ -169,6 +170,8 @@ protected:
   StoragePtr m_storage;
   smtk::util::UUID m_entity;
 };
+
+SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
 
   } // namespace model
 } // namespace smtk

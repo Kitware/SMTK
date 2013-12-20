@@ -1,10 +1,13 @@
 #include "smtk/model/Cursor.h"
 
 #include "smtk/model/ExportJSON.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/FaceUse.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
+#include "smtk/model/Volume.h"
 
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
@@ -60,6 +63,7 @@ int main(int argc, char* argv[])
   CellEntity cell = entity.as<CellEntity>();
   UseEntity use = entity.as<UseEntity>();
   Vertex vert = entity.as<Vertex>();
+  std::cout << vert << "\n";
   //std::cout << vert.coordinates().transpose() << "\n";
   test(cell.isValid() && "CellEntity::isValid() incorrect");
   test(!use.isValid() && "UseEntity::isValid() incorrect");
@@ -94,6 +98,8 @@ int main(int argc, char* argv[])
     entity.integerProperty("deadbeef").size() == 1 &&
     entity.integerProperty("deadbeef")[0] == 3735928559);
 
+  std::cout << entity << "\n";
+
   entity = Cursor(sm, UUID::null());
   test(entity.dimension() == -1);
   test(entity.isValid() == false);
@@ -114,6 +120,12 @@ int main(int argc, char* argv[])
   test(!entity.attachAttribute(1), "Re-attaching a repeated attribute");
   test( entity.detachAttribute(1), "Detaching an associated attribute");
   test(!entity.detachAttribute(2), "Detaching an un-associated attribute");
+
+  // Test that face entity was created with invalid (but present) face uses.
+  Face f(sm, uids[20]);
+  test(f.volumes().size() == 1 && f.volumes()[0].isVolume());
+  test(!f.positiveUse().isValid());
+  test(!f.negativeUse().isValid());
 
   return 0;
 }

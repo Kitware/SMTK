@@ -1,6 +1,7 @@
 #include "smtk/model/Face.h"
 
 #include "smtk/model/Edge.h"
+#include "smtk/model/FaceUse.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
@@ -32,25 +33,23 @@ smtk::model::Volumes Face::volumes() const
   return result;
 }
 
-/*
-smtk::util::Vector3d Face::coordinates() const
+/**\brief Return the face-use with its sense opposite the natural normal.
+  *
+  * This may return an invalid entry if no such use exists.
+  */
+FaceUse Face::negativeUse() const
 {
-  if (this->isValid())
-    {
-    UUIDWithTessellation tessRec =
-      this->m_storage->tessellations().find(this->m_entity);
-    if (tessRec != this->m_storage->tessellations().end())
-      {
-      if (!tessRec->second.coords().empty())
-        {
-        double* coords = &tessRec->second.coords()[0];
-        return smtk::util::Vector3d(coords[0], coords[1], coords[2]);
-        }
-      }
-    }
-  return smtk::util::Vector3d().setConstant(std::numeric_limits<double>::quiet_NaN());
+  return relationFromArrangement(HAS_USE, 0, 0).as<FaceUse>();
 }
-*/
+
+/**\brief Return the face-use with its sense codirectional with the natural normal.
+  *
+  * This may return an invalid entry if no such use exists.
+  */
+FaceUse Face::positiveUse() const
+{
+  return relationFromArrangement(HAS_USE, 0, 0).as<FaceUse>();
+}
 
   } // namespace model
 } // namespace smtk

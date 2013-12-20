@@ -1,5 +1,7 @@
 #include "smtk/model/BRepModel.h"
 
+#include "smtk/model/Storage.h"
+
 namespace smtk {
   namespace model {
 
@@ -73,9 +75,19 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   return this->setEntity(actual, c);
 }
 
-/**\brief Map a new cell of the given \a dimension to the \a uid.
+/**\brief Create and map a new cell of the given \a dimension to the given \a uid.
   *
-  * Passing a non-unique \a uid is an error here and will throw an exception.
+  * Passing a null or non-unique \a uid is an error here and will throw an exception.
+  *
+  * Some checking and initialization is performed based on \a entityFlags and \a dim,
+  * as described below.
+  *
+  * If the BRepModel may be cast to a Storage instance and an entity
+  * is expected to have a known, fixed number of arrangements of some sort,
+  * those are created here so that cursors may always rely on their existence
+  * even in the absence of the related UUIDs appearing in the entity's relations.
+  * For face cells (CELL_2D) entites, two HAS_USE Arrangements are created to
+  * reference FaceUse instances.
   */
 BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dim)
 {
@@ -93,6 +105,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     throw msg.str();
     }
   std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dim));
+  this->prepareForEntity(entry);
   return this->m_topology->insert(entry).first;
 }
 
@@ -123,6 +136,7 @@ BRepModel::iter_type BRepModel::setEntity(const UUID& uid, Entity& c)
     return it;
     }
   std::pair<UUID,Entity> entry(uid,c);
+  this->prepareForEntity(entry);
   it = this->m_topology->insert(entry).first;
   this->insertEntityReferences(it);
   return it;
@@ -797,37 +811,43 @@ smtk::util::UUID BRepModel::addVertex()
   return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0);
 }
 
-/// Add a vertex to storage (without any relationships)
+/// Add an edge to storage (without any relationships)
 smtk::util::UUID BRepModel::addEdge()
 {
   return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1);
 }
 
-/// Add a vertex to storage (without any relationships)
+/**\brief Add a face to storage (without any relationships)
+  *
+  * While this method does not add any relations, it
+  * does create two HAS_USE arrangements to hold
+  * FaceUse instances (assuming the BRepModel may be
+  * downcast to a Storage instance).
+  */
 smtk::util::UUID BRepModel::addFace()
 {
   return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2);
 }
 
-/// Add a vertex to storage (without any relationships)
+/// Add a volume to storage (without any relationships)
 smtk::util::UUID BRepModel::addVolume()
 {
   return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3);
 }
 
-/// Add a vertex use to storage (without any relationships)
+/// Add a vertex-use to storage (without any relationships)
 smtk::util::UUID BRepModel::addVertexUse()
 {
   return this->addEntityOfTypeAndDimension(USE_ENTITY, 0);
 }
 
-/// Add a vertex use to storage (without any relationships)
+/// Add an edge-use to storage (without any relationships)
 smtk::util::UUID BRepModel::addEdgeUse()
 {
   return this->addEntityOfTypeAndDimension(USE_ENTITY, 1);
 }
 
-/// Add a vertex use to storage (without any relationships)
+/// Add a face-use to storage (without any relationships)
 smtk::util::UUID BRepModel::addFaceUse()
 {
   return this->addEntityOfTypeAndDimension(USE_ENTITY, 2);
@@ -839,13 +859,13 @@ smtk::util::UUID BRepModel::addChain()
   return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1);
 }
 
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+/// Add a 1/2-d shell (an edge loop) to storage (without any relationships)
 smtk::util::UUID BRepModel::addLoop()
 {
   return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
 }
 
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+/// Add a 2/3-d shell (a face-shell) to storage (without any relationships)
 smtk::util::UUID BRepModel::addShell()
 {
   return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1);
@@ -862,8 +882,10 @@ smtk::util::UUID BRepModel::addShell()
   */
 smtk::util::UUID BRepModel::addGroup(int extraFlags, const std::string& name)
 {
-  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
-  this->setStringProperty(uid, "name", name);
+  smtk::util::UUID uid =
+    this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
+  if (!name.empty())
+    this->setStringProperty(uid, "name", name);
   return uid;
 }
 
@@ -1084,6 +1106,24 @@ IntegerList& BRepModel::entityCounts(
     break;
     }
   return this->integerProperty(modelId, "invalid_counters");
+}
+
+/**\brief Initialize storage outside of the topology() table for a new entity.
+  *
+  * This is an internal method invoked by setEntity and SetEntityOfTypeAndDimension.
+  */
+void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
+{
+  if ((entry.second.entityFlags() & CELL_2D) == CELL_2D)
+    {
+    Storage* store = dynamic_cast<Storage*>(this);
+    if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
+      {
+      // Create arrangements to hold face-uses:
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, -1)); // Negative
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, +1)); // Positive
+      }
+    }
 }
 
   } // model namespace

@@ -11,8 +11,10 @@ namespace smtk {
   namespace model {
 
 class Edge;
+class FaceUse;
 class Volume;
 typedef std::vector<Edge> Edges;
+typedef std::vector<FaceUse> FaceUses;
 typedef std::vector<Volume> Volumes;
 
 /**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
@@ -25,6 +27,8 @@ public:
 
   Edges edges() const;
   Volumes volumes() const;
+  FaceUse negativeUse() const;
+  FaceUse positiveUse() const;
 };
 
   } // namespace model
