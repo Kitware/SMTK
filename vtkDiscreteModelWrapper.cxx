@@ -65,7 +65,7 @@ vtkDiscreteModelWrapper::vtkDiscreteModelWrapper()
 {
   this->ModelCBC = vtkCallbackCommand::New();
   this->ModelCBC->SetCallback(vtkDiscreteModelWrapper::ModelEntitySetGeometryCallback);
-  this->ModelCBC->SetClientData((void *)this);
+  this->ModelCBC->SetClientData(static_cast<void *>(this));
 
   this->Model = vtkDiscreteModel::New();
 //  this->Model->AddObserver(ModelEntityGeometrySet, this->ModelCBC);
