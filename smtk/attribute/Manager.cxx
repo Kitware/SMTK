@@ -454,3 +454,21 @@ smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
   return smtk::attribute::ConstDefinitionPtr();
 }
 //----------------------------------------------------------------------------
+void
+Manager::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
+{
+  WeakDefinitionPtrSet ddefs = m_derivedDefInfo[def];
+  WeakDefinitionPtrSet::iterator iter;
+  smtk::attribute::DefinitionPtr d;
+  for (iter = ddefs.begin(); iter != ddefs.end(); ++iter)
+    {
+    d = iter->lock();
+    if (!d)
+      {
+      continue;
+      }
+    d->resetItemOffset();
+    this->updateDerivedDefinitionIndexOffsets(d);
+    }
+}
+//----------------------------------------------------------------------------

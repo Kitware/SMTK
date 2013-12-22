@@ -354,6 +354,7 @@
     <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>
     <modify-function signature="unsetNotApplicableColor()" remove="all"/>
     <modify-function signature="unsetDefaultColor()" remove="all"/>
+    <modify-function signature="resetItemOffset()" remove="all"/>
     <modify-function signature="setVersion(int)" remove="all"/>
     <modify-function signature="setNotApplicableColor(const double *)" remove="all"/>
     <modify-function signature="setNotApplicableColor(double, double, double, double)" remove="all"/>
