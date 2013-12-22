@@ -52,8 +52,16 @@ Definition::Definition(const std::string &myType,
   this->m_associationMask = 0;
   this->m_isNotApplicableColorSet = false;
   this->m_isDefaultColorSet = false;
+  if (myBaseDef)
+    {
+    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions() +
+      myBaseDef->m_baseItemOffset;
+    }
+  else
+    {
+    this->m_baseItemOffset = 0;
+    }
 }
-
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
@@ -194,7 +202,17 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
   std::size_t n = this->m_itemDefs.size();
   this->m_itemDefs.push_back(cdef);
   this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  this->updateDerivedDefinitions();
   return true;
+}
+//----------------------------------------------------------------------------
+void Definition::updateDerivedDefinitions()
+{
+  DefinitionPtr def = this->pointer();
+  if (def)
+    {
+    this->m_manager->updateDerivedDefinitionIndexOffsets(def);
+    }
 }
 //----------------------------------------------------------------------------
 void Definition::setCategories()
@@ -214,5 +232,15 @@ void Definition::setCategories()
     const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
     this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
+}
+//----------------------------------------------------------------------------
+smtk::attribute::DefinitionPtr Definition::pointer() const
+{
+  Manager *m = this->manager();
+  if (m)
+    {
+    return m->findDefinition(this->m_type);
+    }
+  return smtk::attribute::DefinitionPtr();
 }
 //----------------------------------------------------------------------------

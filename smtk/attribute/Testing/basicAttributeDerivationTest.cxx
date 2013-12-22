@@ -32,6 +32,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
 
+std::string itemNames[] = {
+  "IntComp1",
+  "IntComp2",
+  "DoubleComp1",
+  "DoubleComp2",
+  "StringComp1",
+  "StringComp2"
+};
+
 int main()
 {
   int status = 0;
@@ -46,27 +55,66 @@ int main()
   std::cout << "Manager Created\n";
   smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
   // Lets add some item definitions
-  smtk::attribute::IntItemDefinitionPtr icompdef = IntCompDef::New("IntComp1");
-  base->addItemDefinition(icompdef);
-  smtk::attribute::IntItemDefinitionPtr icompdef2 = IntCompDef::New("IntComp2");
+  base->addItemDefinition<IntCompDef>(itemNames[0]);
+  smtk::attribute::IntItemDefinitionPtr icompdef2 = base->addItemDefinition<IntCompDef>(itemNames[1]);
   icompdef2->setDefaultValue(10);
-  base->addItemDefinition(icompdef2);
 
   smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
-  smtk::attribute::DoubleItemDefinitionPtr dcompdef = DoubleCompDef::New("DoubleComp1");
-  def1->addItemDefinition(dcompdef);
-  smtk::attribute::DoubleItemDefinitionPtr dcompdef2 = DoubleCompDef::New("DoubleComp2");
+  def1->addItemDefinition<DoubleCompDef>(itemNames[2]);
+  smtk::attribute::DoubleItemDefinitionPtr dcompdef2 = def1->addItemDefinition<DoubleCompDef>(itemNames[3]);
   dcompdef2->setDefaultValue(-35.2);
-  def1->addItemDefinition(dcompdef2);
 
   smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
-  smtk::attribute::StringItemDefinitionPtr scompdef = StringCompDef::New("StringComp1");
-  def1->addItemDefinition(scompdef);
-  smtk::attribute::StringItemDefinitionPtr scompdef2 = StringCompDef::New("StringComp2");
+  def2->addItemDefinition<StringCompDef>(itemNames[4]);
+  smtk::attribute::StringItemDefinitionPtr scompdef2 = def2->addItemDefinition<StringCompDef>(itemNames[5]);
   scompdef2->setDefaultValue("Default");
-  def1->addItemDefinition(scompdef2);
+
+  // Lets test out the find item position method
+  int j, pstatus = 0;
+  for (j =0; j < 6; j++)
+    {
+    if (def2->findItemPosition(itemNames[j]) != j)
+      {
+      std::cerr << "Incorrect Position Returned for " << itemNames[j]
+                << ", position returned is " << def2->findItemPosition(itemNames[j])
+                << ", but it should be " << j << "\n";
+      pstatus = status = -1;
+      }
+    }
+  if (!pstatus)
+    {
+    std::cout << "Initial Position Test Passed!\n";
+    }
+  else
+    {
+    std::cout << "Initial Position Test Failed!\n";
+    }
+
+  // Lets add a  component to the base def and verify that positions are reordered
+  base->addItemDefinition<StringCompDef>("InsertStringItem");
+  pstatus = 0;
+  for (j =2; j < 6; j++)
+    {
+    if (def2->findItemPosition(itemNames[j]) != (j+1))
+      {
+      std::cerr << "Incorrect Position Returned for " << itemNames[j]
+                << ", position returned is " << def2->findItemPosition(itemNames[j])
+                << ", but it should be " << j+1 << "\n";
+      pstatus = status = -1;
+      }
+    }
+
+  if (!pstatus)
+    {
+    std::cout << "Insertion Position Test Passed!\n";
+    }
+  else
+    {
+    std::cout << "Insertion Position Test Failed!\n";
+    }
+
 
   smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
   if (att)

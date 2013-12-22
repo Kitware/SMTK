@@ -122,6 +122,9 @@ namespace smtk
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
 
+      // When a definition's items has changed use this method to update derived def
+      // item offsets which is used by the find item method
+      void updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;
