@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
 
 
-  smtk::model::StoragePtr model = smtk::model::Storage::New();
+  smtk::model::StoragePtr model = smtk::model::Storage::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
   model->assignDefaultNames();
 

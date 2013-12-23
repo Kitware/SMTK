@@ -30,7 +30,7 @@ void prindent(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
 
 int main(int argc, char* argv[])
 {
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
 
   // Block to ensure timely destruction of JSON data.
     {

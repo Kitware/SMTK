@@ -1,4 +1,5 @@
 #include "smtk/model/Storage.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/testing/helpers.h"
 #include <smtk/util/Testing/helpers.h>
@@ -14,7 +15,7 @@ int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
 
   UUIDArray uids = createTet(sm);
 
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
   // Test addModel
   for (int i = 0; i < 53; ++i)
     {
-    uids.push_back(sm->addModel());
+    uids.push_back(sm->addModel().entity());
     test(sm->hasIntegerProperty(uids.back(), "cell_counters"));
     test(sm->hasStringProperty(uids.back(), "name"));
     }

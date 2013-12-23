@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
   UUIDArray uids = createTet(sm);
 
   Cursors entities;
@@ -126,6 +126,10 @@ int main(int argc, char* argv[])
   test(f.volumes().size() == 1 && f.volumes()[0].isVolume());
   test(!f.positiveUse().isValid());
   test(!f.negativeUse().isValid());
+
+  Vertex v = sm->addVertex();
+  v.setStringProperty("name", "Loopy");
+  std::cout << v << "\n";
 
   return 0;
 }

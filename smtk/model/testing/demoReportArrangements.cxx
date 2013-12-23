@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
 
   int status = 0;
   status |= ImportJSON::intoModel(data.c_str(), sm);

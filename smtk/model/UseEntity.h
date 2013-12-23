@@ -43,6 +43,7 @@ template<typename T> T UseEntity::shellsAs() const
 {
   T container;
   CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, container);
+  return container;
 }
 
   } // namespace model

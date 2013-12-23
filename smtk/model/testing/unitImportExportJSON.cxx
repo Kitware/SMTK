@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
 
   int status = 0;
   status |= ImportJSON::intoModel(data.c_str(), sm);
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  StoragePtr sm2 = Storage::New();
+  StoragePtr sm2 = Storage::create();
 
   status |= ImportJSON::intoModel(exported, sm2);
   status |= ExportJSON::fromModel(json, sm2);

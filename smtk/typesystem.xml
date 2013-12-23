@@ -93,9 +93,12 @@
   <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Edge'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'EdgeUse'"/>
-  <suppress-warning text="hiding of function 'isValid' in class 'FaceUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Face'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'FaceUse'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'GroupEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'InstanceEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Loop'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'ModelEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Shell'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'ShellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'UseEntity'"/>
@@ -108,7 +111,10 @@
   <suppress-warning text="Shadowing: Cursor::isValid() const and EdgeUse::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Face::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and GroupEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and InstanceEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and ModelEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Shell::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and ShellEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and UseEntity::isValid() const"/>
@@ -134,6 +140,9 @@
 
   <!-- we are not going to wrap std::[io]stream, so ignore -->
   <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
+
+  <!-- -->
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -614,6 +623,11 @@
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
+      <object-type name="Chain">
+        <include file-name="smtk/model/Chain.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
       <object-type name="Cursor">
         <include file-name="smtk/model/Cursor.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
@@ -643,8 +657,23 @@
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
+      <object-type name="GroupEntity">
+        <include file-name="smtk/model/GroupEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="InstanceEntity">
+        <include file-name="smtk/model/InstanceEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
       <object-type name="Loop">
         <include file-name="smtk/model/Loop.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="ModelEntity">
+        <include file-name="smtk/model/ModelEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 

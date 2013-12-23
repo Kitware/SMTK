@@ -19,6 +19,19 @@
 namespace smtk {
   namespace model {
 
+class Chain;
+class Edge;
+class EdgeUse;
+class Face;
+class FaceUse;
+class GroupEntity;
+class Loop;
+class ModelEntity;
+class Shell;
+class Vertex;
+class VertexUse;
+class Volume;
+
 /**\brief Store information about solid models.
   *
   * This adds information about arrangements and tessellations
@@ -29,6 +42,9 @@ class SMTKCORE_EXPORT Storage : public BRepModel
 public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
+  smtkTypeMacro(Storage);
+  smtkCreateMacro(Storage);
+  smtkSharedFromThisMacro(BRepModel);
   Storage();
   Storage(
     shared_ptr<UUIDsToEntities> topology,
@@ -36,9 +52,6 @@ public:
     shared_ptr<UUIDsToTessellations> tess,
     shared_ptr<UUIDsToAttributeAssignments> attribs);
   virtual ~Storage();
-
-  static smtk::model::StoragePtr New()
-    { return smtk::model::StoragePtr(new Storage); }
 
   UUIDsToArrangements& arrangements();
   const UUIDsToArrangements& arrangements() const;
@@ -71,6 +84,24 @@ public:
   bool hasAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse = true);
+
+  Vertex addVertex();
+  Edge addEdge();
+  Face addFace();
+  Volume addVolume();
+
+  VertexUse addVertexUse();
+  EdgeUse addEdgeUse();
+  FaceUse addFaceUse();
+
+  Chain addChain();
+  Loop addLoop();
+  Shell addShell();
+
+  GroupEntity addGroup(int extraFlags = 0, const std::string& name = std::string());
+
+  ModelEntity addModel(
+    int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 
 protected:
   shared_ptr<UUIDsToArrangements> m_arrangements;

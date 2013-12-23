@@ -37,6 +37,7 @@
 #include "Chain.hpp"
 
 #include "smtk/model/Storage.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
 #include "cJSON.h"
@@ -499,13 +500,13 @@ CubitStatus ConvertModel(
         (singleModel && i == 0) ||
         (!singleModel))
         {
-        smtk::model::StoragePtr blank = smtk::model::Storage::New();
+        smtk::model::StoragePtr blank = smtk::model::Storage::create();
         bodies.push_back(blank);
         }
       // Add an entity corresponding to the Body:
       int cgmBodyId = TDUniqueId::get_unique_id(ent);
-      smtk::util::UUID bodyId = (*bodies.rbegin())->addModel();
-      translation[cgmBodyId] = bodyId;
+      smtk::model::ModelEntity smtkBody = (*bodies.rbegin())->addModel();
+      translation[cgmBodyId] = smtkBody.entity();
       //cout << "  Body " << ent << "\n";
       ImportBody(dynamic_cast<Body*>(ent), *bodies.rbegin(), translation);
       }

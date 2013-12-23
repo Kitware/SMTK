@@ -29,8 +29,6 @@ public:
 
   Volume volume() const; // The volume bounded by this face use (if any)
   Edges edges() const; // ordered list of vertices in the sense of this edge use
-  EdgeUse ccwUse() const; // the next edge use around the edge
-  EdgeUse cwUse() const; // the previous edge use around the edge
   Face face() const; // the (parent) underlying face of this use
   Loops loops() const; // The toplevel boundary loops for this face (hole-loops not included)
 };

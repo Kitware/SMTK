@@ -2,6 +2,19 @@
 
 #include "smtk/model/AttributeAssignments.h"
 
+#include "smtk/model/Chain.h"
+#include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/FaceUse.h"
+#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Loop.h"
+#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Shell.h"
+#include "smtk/model/Vertex.h"
+#include "smtk/model/VertexUse.h"
+#include "smtk/model/Volume.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
@@ -366,6 +379,144 @@ bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
     }
   return didRemove;
 }
+
+/// Add an edge to storage (without any relationships)
+Vertex Storage::addVertex()
+{
+  return Vertex(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(CELL_ENTITY, 0));
+}
+
+/// Add an edge to storage (without any relationships)
+Edge Storage::addEdge()
+{
+  return Edge(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(CELL_ENTITY, 1));
+}
+
+/**\brief Add a face to storage (without any relationships)
+  *
+  * While this method does not add any relations, it
+  * does create two HAS_USE arrangements to hold
+  * FaceUse instances (assuming the BRepModel may be
+  * downcast to a Storage instance).
+  */
+Face Storage::addFace()
+{
+  return Face(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(CELL_ENTITY, 2));
+}
+
+/// Add a volume to storage (without any relationships)
+Volume Storage::addVolume()
+{
+  return Volume(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(CELL_ENTITY, 3));
+}
+
+/// Add a vertex-use to storage (without any relationships)
+VertexUse Storage::addVertexUse()
+{
+  return VertexUse(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(USE_ENTITY, 0));
+}
+
+/// Add an edge-use to storage (without any relationships)
+EdgeUse Storage::addEdgeUse()
+{
+  return EdgeUse(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(USE_ENTITY, 1));
+}
+
+/// Add a face-use to storage (without any relationships)
+FaceUse Storage::addFaceUse()
+{
+  return FaceUse(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(USE_ENTITY, 2));
+}
+
+/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
+Chain Storage::addChain()
+{
+  return Chain(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1));
+}
+
+/// Add a 1/2-d shell (an edge loop) to storage (without any relationships)
+Loop Storage::addLoop()
+{
+  return Loop(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1));
+}
+
+/// Add a 2/3-d shell (a face-shell) to storage (without any relationships)
+Shell Storage::addShell()
+{
+  return Shell(
+    shared_from_this(),
+    this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1));
+}
+
+/**\brief Add an entity group to storage (without any relationships).
+  *
+  * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
+  * This is an easy way to constrain the dimension of entities allowed to be members
+  * of the group.
+  *
+  * You may also specify a \a name for the group. If \a name is empty, then no
+  * name is assigned.
+  */
+GroupEntity Storage::addGroup(int extraFlags, const std::string& name)
+{
+  smtk::util::UUID uid =
+    this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
+  if (!name.empty())
+    this->setStringProperty(uid, "name", name);
+  return GroupEntity(shared_from_this(), uid);
+}
+
+/**\brief Add a model to storage.
+  *
+  * The model will have the specified \a embeddingDim set as an integer property
+  * named "embedding dimension." This is the dimension of the space in which
+  * vertex coordinates live.
+  *
+  * A model may also be given a parametric dimension
+  * which is the maximum parametric dimension of any cell inserted into the model.
+  * The parametric dimension is the rank of the space spanned by the shape functions
+  * (for "parametric" meshes) or (for "discrete" meshes) barycentric coordinates of cells.
+  *
+  * You may also specify a \a name for the model. If \a name is empty, then no
+  * name is assigned.
+  *
+  * A model maintains counters used to number model entities by type (uniquely within the
+  * model). Any entities related to the model (directly or indirectly via topological
+  * relationships) may have these numbers assigned as names by calling assignDefaultNames().
+  */
+ModelEntity Storage::addModel(
+  int parametricDim, int embeddingDim, const std::string& name)
+{
+  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
+  if (embeddingDim > 0)
+    {
+    this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
+    }
+  if (!name.empty())
+    this->setStringProperty(uid, "name", name);
+  else
+    this->assignDefaultName(uid, this->type(uid));
+  return ModelEntity(shared_from_this(), uid);
+}
+
 
   } // namespace model
 } //namespace smtk

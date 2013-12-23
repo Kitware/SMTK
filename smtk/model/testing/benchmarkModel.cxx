@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
   Timer t;
   double deltaT;
 
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
   // ### Benchmark JSON import ###
     {
-    StoragePtr sm2 = Storage::New();
+    StoragePtr sm2 = Storage::create();
     t.mark();
     ImportJSON::intoModel(json.c_str(), sm2);
     deltaT = t.elapsed();

@@ -38,7 +38,9 @@ namespace smtk
   {
     class Arrangement;
     typedef std::vector<Arrangement> Arrangements;
+    class BRepModel;
     class CellEntity;
+    class Chain;
     class Cursor;
     class DescriptivePhrase;
     class Edge;
@@ -53,11 +55,14 @@ namespace smtk
     class GridInfo;
     class GridInfo2D;
     class GridInfo3D;
+    class GroupEntity;
     class GroupItem;
+    class InstanceEntity;
     class Item;
     class ImportJSON;
     class Entity;
     class Model;
+    class ModelEntity;
     class ShellEntity;
     typedef std::vector<ShellEntity> ShellEntities;
     class Storage;

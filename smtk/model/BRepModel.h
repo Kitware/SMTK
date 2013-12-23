@@ -3,6 +3,7 @@
 
 #include "smtk/util/UUID.h"
 #include "smtk/util/UUIDGenerator.h"
+#include "smtk/util/SharedFromThis.h"
 #include "smtk/util/SystemConfig.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
@@ -37,12 +38,14 @@ enum PropertyType
   * This is templated so we can switch to uint32 values if CGM
   * is unable/unwilling to work with UUIDs.
   */
-class SMTKCORE_EXPORT BRepModel
+class SMTKCORE_EXPORT BRepModel : smtkEnableSharedPtr(BRepModel)
 {
 public:
   typedef google::sparse_hash_map<smtk::util::UUID,Entity> storage_type;
   typedef storage_type::iterator iter_type;
 
+  smtkTypeMacro(BRepModel);
+  smtkCreateMacro(BRepModel);
   BRepModel();
   BRepModel(shared_ptr<storage_type> topology);
   virtual ~BRepModel();
@@ -123,24 +126,6 @@ public:
   UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::util::UUID& entity);
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
-
-  smtk::util::UUID addVertex();
-  smtk::util::UUID addEdge();
-  smtk::util::UUID addFace();
-  smtk::util::UUID addVolume();
-
-  smtk::util::UUID addVertexUse();
-  smtk::util::UUID addEdgeUse();
-  smtk::util::UUID addFaceUse();
-
-  smtk::util::UUID addChain();
-  smtk::util::UUID addLoop();
-  smtk::util::UUID addShell();
-
-  smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string());
-
-  smtk::util::UUID addModel(
-    int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 
   smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
 
