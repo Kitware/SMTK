@@ -540,9 +540,10 @@ Cursor Cursor::relationFromArrangement(
     const Arrangement* arr = this->findArrangement(k, arrangementIndex);
     if (arr && static_cast<int>(arr->details().size()) > offset)
       {
-      return Cursor(
-        this->m_storage,
-        ent->relations()[arr->details()[offset]]);
+      int idx = arr->details()[offset];
+      return idx < 0 ?
+        Cursor() :
+        Cursor(this->m_storage, ent->relations()[idx]);
       }
     }
   return Cursor();

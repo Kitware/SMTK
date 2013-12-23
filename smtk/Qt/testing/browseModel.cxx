@@ -54,8 +54,6 @@ int main(int argc, char* argv[])
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
   smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
   QTreeView* view = new QTreeView;
-  view->setModel(qmodel);
-  view->setItemDelegate(qdelegate);
   cout << "mask " << hexconst(mask) << "\n";
   /*
   smtk::model::DescriptivePhrases plist =
@@ -70,6 +68,8 @@ int main(int argc, char* argv[])
   std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
   qmodel->setRoot(
     smtk::model::EntityListPhrase::create()->setup(cursors));
+  view->setModel(qmodel); // must come after qmodel->setRoot()
+  view->setItemDelegate(qdelegate);
 
   // Enable user sorting.
   view->setSortingEnabled(true);
