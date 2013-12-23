@@ -37,6 +37,7 @@
 #include "Chain.hpp"
 
 #include "smtk/model/Storage.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
 #include "cJSON.h"
@@ -113,7 +114,7 @@ void AddEntitiesToBody(
       bodyInclusions[0].details().push_back(
         storage->findEntity(owningBodyId)->findOrAppendRelation(
           cell->first));
-      cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
+      //cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
       }
     //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
@@ -144,8 +145,15 @@ void AddArrangementsToBody(
   cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
-    // First, find the SMTK cell bounded by the current shell:
     E* shell = entities.get_and_step();
+    // First, create a new entity representing the shell.
+    smtk::util::UUID shellSMTKId =
+      storage->addEntityOfTypeAndDimension(
+        smtk::model::SHELL_ENTITY |
+        (1 << shell->dag_type().dimension()) |
+        (1 << (shell->dag_type().dimension() + 1)),
+        -1);
+    // Now, find the SMTK cell bounded by the current shell:
     RefEntity* vol = shell->get_basic_topology_entity_ptr();
     int cgmId = TDUniqueId::get_unique_id(vol);
     smtk::util::UUID smtkId = translation[cgmId];
@@ -164,6 +172,14 @@ void AddArrangementsToBody(
       {
       offsets[*it] = offset;
       }
+    if (offsets.find(shellSMTKId) == offsets.end())
+      {
+      int shellOffset = static_cast<int>(vcell->relations().size());
+      offsets[shellSMTKId] = shellOffset;
+      vcell->relations().push_back(shellSMTKId);
+      storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
+        smtk::model::Arrangement::CellHasShellWithIndex(shellOffset));
+      }
 
     // Finally, we can create an arrangement, a, of offsets and signs that
     // describe the shell by enumerating each bounding-cell and its sense
@@ -172,9 +188,15 @@ void AddArrangementsToBody(
     shell->get_sense_entity_list(cofaces);
     // FIXME: The above should be shell->ordered_co_edges() when E == Loop.
     int ns = cofaces.size();
-    std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
-    smtk::model::Arrangement a;
-    a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
+    //std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
+    smtk::util::UUIDArray shellRelations;
+    smtk::model::Arrangement shellArrOfUses; // the face-uses that compose the shell
+    shellRelations.resize(ns + 1);
+    shellRelations[ns] = smtkId;
+    storage->arrangeEntity(shellSMTKId, smtk::model::HAS_CELL,
+      smtk::model::Arrangement::ShellHasCellWithIndex(ns));
+    //smtk::model::Arrangement a;
+    //a.details().push_back(-1); // FIXME: Does not deal with multiple shells at the moment.
     for (int j = 0; j < ns; ++j)
       {
       // Obtain the SenseEntity. Since SenseEntity instances cannot have a
@@ -182,7 +204,7 @@ void AddArrangementsToBody(
       // ID of the corresponding basic_topological_entity (BTE) and translate
       // that into a UUID:
       SenseEntity* se = cofaces.get_and_step();
-      std::cout << "   " << j << "  " << (int)se->get_sense() << "\n";
+      //std::cout << "   " << j << "  " << (int)se->get_sense() << "\n";
       int faceId = TDUniqueId::get_unique_id(se->get_basic_topology_entity_ptr());
       smtk::util::UUID smtkFaceId = translation[faceId];
       // Now we know a face on the shell. Back up and see if
@@ -190,7 +212,7 @@ void AddArrangementsToBody(
       // If not, then we need to create a new SMTK use entity.
       smtk::util::UUID smtkFaceUseId =
         storage->findOrCreateCellUseOfSense(smtkFaceId, se->get_sense());
-      cout << "Use " << smtkFaceUseId << "\n";
+      shellRelations[j] = smtkFaceUseId;
       /*
       cout
         << "          " << j << "  " << faceId
@@ -205,11 +227,15 @@ void AddArrangementsToBody(
         oit = offsets.insert(std::pair<smtk::util::UUID,int>(smtkFaceId,offset++)).first;
         }
       // Add [offset into relations, sense(neg/pos = 0/1)] to arrangement:
-      a.details().push_back(oit->second);
-      a.details().push_back(se->get_sense() == CUBIT_FORWARD ? +1 : 0);
+      //a.details().push_back(oit->second);
+      //a.details().push_back(se->get_sense() == CUBIT_FORWARD ? +1 : 0);
       }
     // Now add the arrangement to the cell's list of arrangements:
-    int aid = storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL, a);
+    int aid = storage->arrangeEntity(smtkId, smtk::model::HAS_SHELL,
+      smtk::model::Arrangement::CellHasShellWithIndex(0));
+    storage->findEntity(shellSMTKId)->relations() = shellRelations;
+    aid = storage->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
+      smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
     (void)aid; // keep aid around for debugging
     //cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
     }
@@ -474,13 +500,13 @@ CubitStatus ConvertModel(
         (singleModel && i == 0) ||
         (!singleModel))
         {
-        smtk::model::StoragePtr blank = smtk::model::Storage::New();
+        smtk::model::StoragePtr blank = smtk::model::Storage::create();
         bodies.push_back(blank);
         }
       // Add an entity corresponding to the Body:
       int cgmBodyId = TDUniqueId::get_unique_id(ent);
-      smtk::util::UUID bodyId = (*bodies.rbegin())->addModel();
-      translation[cgmBodyId] = bodyId;
+      smtk::model::ModelEntity smtkBody = (*bodies.rbegin())->addModel();
+      translation[cgmBodyId] = smtkBody.entity();
       //cout << "  Body " << ent << "\n";
       ImportBody(dynamic_cast<Body*>(ent), *bodies.rbegin(), translation);
       }
@@ -600,6 +626,8 @@ int main (int argc, char **argv)
     cerr << "Errors found during session.\n";
   else
     ret_val = 0;
+
+  GeometryQueryTool::delete_instance();
 
   return ret_val;
 }

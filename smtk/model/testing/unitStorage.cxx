@@ -1,4 +1,5 @@
 #include "smtk/model/Storage.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/testing/helpers.h"
 #include <smtk/util/Testing/helpers.h>
@@ -14,7 +15,7 @@ int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  StoragePtr sm = Storage::New();
+  StoragePtr sm = Storage::create();
 
   UUIDArray uids = createTet(sm);
 
@@ -62,7 +63,7 @@ int main(int argc, char* argv[])
   // Test addModel
   for (int i = 0; i < 53; ++i)
     {
-    uids.push_back(sm->addModel());
+    uids.push_back(sm->addModel().entity());
     test(sm->hasIntegerProperty(uids.back(), "cell_counters"));
     test(sm->hasStringProperty(uids.back(), "name"));
     }
@@ -95,6 +96,15 @@ int main(int argc, char* argv[])
   std::cout << json << "\n";
   free(json);
   cJSON_Delete(root);
+
+  // Test attribute assignment (model-side only; no attributes are
+  // created, but we can make up attribute IDs and assign them to
+  // entities).
+  test( sm->attachAttribute(/*attribId*/0, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->attachAttribute(/*attribId*/1, uids[0]), "Inserting a new attribute should succeed");
+  test(!sm->attachAttribute(/*attribId*/0, uids[0]), "Removing an existing attribute should succeed");
+  test( sm->detachAttribute(/*attribId*/0, uids[0]), "Removing a non-existent attribute should fail");
+  test(!sm->detachAttribute(/*attribId*/0, uids[1]), "Removing a non-existent attribute should fail");
 
   return 0;
 }

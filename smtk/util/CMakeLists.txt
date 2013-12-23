@@ -18,6 +18,7 @@ set(utilHeaders
   AttributeWriter.h
   ExportSpec.h
   Logger.h
+  SharedFromThis.h
   UserData.h
   UUID.h
   UUIDGenerator.h

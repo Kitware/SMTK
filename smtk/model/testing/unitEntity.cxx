@@ -19,6 +19,8 @@ static const char* correct =
 "0x00000102  edge\n"
 "0x00000104  face\n"
 "0x00000108  volume\n"
+"0x00000110  spacetime\n"
+"0x00000100  mixed-dimension cell\n"
 "0x00000201  vertex use\n"
 "0x00000202  edge use\n"
 "0x00000204  face use\n"
@@ -40,6 +42,8 @@ static const char* correct =
 "0x00000102  edges\n"
 "0x00000104  faces\n"
 "0x00000108  volumes\n"
+"0x00000110  spacetimes\n"
+"0x00000100  mixed-dimension cells\n"
 "0x00000201  vertex uses\n"
 "0x00000202  edge uses\n"
 "0x00000204  face uses\n"
@@ -87,6 +91,8 @@ void EntityNamesForForm(std::ostringstream& summaries, int form)
     << "0x" << hexconst(CELL_1D) << "  " << Entity::flagSummary(CELL_1D, form) << "\n"
     << "0x" << hexconst(CELL_2D) << "  " << Entity::flagSummary(CELL_2D, form) << "\n"
     << "0x" << hexconst(CELL_3D) << "  " << Entity::flagSummary(CELL_3D, form) << "\n"
+    << "0x" << hexconst(CELL_ENTITY | DIMENSION_4) << "  " << Entity::flagSummary(CELL_ENTITY | DIMENSION_4, form) << "\n"
+    << "0x" << hexconst(CELL_ENTITY) << "  " << Entity::flagSummary(CELL_ENTITY, form) << "\n"
 
     << "0x" << hexconst(USE_0D) << "  " << Entity::flagSummary(USE_0D, form) << "\n"
     << "0x" << hexconst(USE_1D) << "  " << Entity::flagSummary(USE_1D, form) << "\n"
@@ -118,6 +124,30 @@ int main()
   smtk::model::IntegerList counters(cdata, cdata + sizeof(cdata)/sizeof(cdata[0]));
   std::ostringstream summaries;
 
+  // test default constructor
+  Entity blank;
+
+  // Test setting flags on invalid entity
+  blank.setEntityFlags(GROUP_ENTITY | PARTITION);
+  assert((blank.entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
+
+  // Test setting flags on valid entity (disallowed, so no effect)
+  blank.setEntityFlags(CELL_2D);
+  assert((blank.entityFlags() & (GROUP_ENTITY | PARTITION)) == (GROUP_ENTITY | PARTITION));
+
+  // Test changing only property bits on valid entity (should succeed)
+  blank.setEntityFlags(GROUP_ENTITY);
+  assert(!(blank.entityFlags() & PARTITION));
+
+  // Test Entity::dimensionBits()
+  Entity shellEnt(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
+  assert(shellEnt.dimensionBits() == 6);
+
+  // Test Entity::flagDescription() and model/instance bit flags
+  assert(Entity::flagDescription(MODEL_ENTITY, 1) == "models");
+  assert(Entity::flagDescription(INSTANCE_ENTITY, 0) == "instance");
+
+  // --- now test singular and plural forms pretty exhaustively
   EntityNamesForForm(summaries, /*singular*/ 0);
   EntityNamesForForm(summaries, /*plural*/ 1);
 

@@ -3,6 +3,7 @@
 
 #include "smtk/util/UUID.h"
 #include "smtk/util/UUIDGenerator.h"
+#include "smtk/util/SharedFromThis.h"
 #include "smtk/util/SystemConfig.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
@@ -20,6 +21,15 @@ namespace smtk {
 typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
 typedef UUIDsToEntities::iterator UUIDWithEntity;
 
+/// Primitive storage types for model properties
+enum PropertyType
+{
+  FLOAT_PROPERTY,    //!< Property is an array of floating-point numbers
+  STRING_PROPERTY,   //!< Property is an array of strings
+  INTEGER_PROPERTY,  //!< Property is an array of integers
+  INVALID_PROPERTY   //!< Property has no storage.
+};
+
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *
   * Entities are stored as instances of C, regardless of their dimension.
@@ -28,21 +38,24 @@ typedef UUIDsToEntities::iterator UUIDWithEntity;
   * This is templated so we can switch to uint32 values if CGM
   * is unable/unwilling to work with UUIDs.
   */
-class SMTKCORE_EXPORT BRepModel
+class SMTKCORE_EXPORT BRepModel : smtkEnableSharedPtr(BRepModel)
 {
 public:
   typedef google::sparse_hash_map<smtk::util::UUID,Entity> storage_type;
   typedef storage_type::iterator iter_type;
 
+  smtkTypeMacro(BRepModel);
+  smtkCreateMacro(BRepModel);
   BRepModel();
   BRepModel(shared_ptr<storage_type> topology);
-  ~BRepModel();
+  virtual ~BRepModel();
 
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
 
-  int type(const smtk::util::UUID& ofEntity);
-  int dimension(const smtk::util::UUID& ofEntity);
+  int type(const smtk::util::UUID& ofEntity) const;
+  int dimension(const smtk::util::UUID& ofEntity) const;
+  std::string name(const smtk::util::UUID& ofEntity) const;
 
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);
@@ -114,24 +127,6 @@ public:
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
-  smtk::util::UUID addVertex();
-  smtk::util::UUID addEdge();
-  smtk::util::UUID addFace();
-  smtk::util::UUID addVolume();
-
-  smtk::util::UUID addVertexUse();
-  smtk::util::UUID addEdgeUse();
-  smtk::util::UUID addFaceUse();
-
-  smtk::util::UUID addChain();
-  smtk::util::UUID addLoop();
-  smtk::util::UUID addShell();
-
-  smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string());
-
-  smtk::util::UUID addModel(
-    int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
-
   smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
 
   void assignDefaultNames();
@@ -148,6 +143,7 @@ protected:
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
+  void prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry);
 };
 
   } // model namespace

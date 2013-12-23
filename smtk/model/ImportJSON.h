@@ -13,6 +13,13 @@ namespace smtk {
 
 class Storage;
 
+/**\brief Import an SMTK model from JSON data.
+  *
+  * Methods are also provided for importing individual records
+  * and groups of records directly from cJSON nodes.
+  * These may be used to update relevant entities without
+  * storing or transmitting a potentially-large string.
+  */
 class SMTKCORE_EXPORT ImportJSON
 {
 public:

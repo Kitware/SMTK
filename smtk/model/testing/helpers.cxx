@@ -142,12 +142,17 @@ UUIDArray createTet(smtk::model::StoragePtr sm)
   return uids;
 }
 
+/** Report an integer as a hexadecimal value.
+  *
+  * The constant will be zero-padded to a width of 8.
+  */
 std::ostream& operator << (std::ostream& os, const hexconst& x)
 {
   os << std::setbase(16) << std::fixed << std::setw(8) << std::setfill('0') << x.m_val;
   return os;
 }
 
+/// Platform-specific data for measuring elapsed time.
 #ifdef SMTK_HAVE_GETTIMEOFDAY
 class Timer::Internal
 {
@@ -188,11 +193,17 @@ Timer::~Timer()
   delete this->P;
 }
 
+/// Mark a time as the start time for reporting elapsed time.
 void Timer::mark()
 {
   this->P->fetch();
 }
 
+/** Report the number of seconds since Timer::mark() was last called.
+  *
+  * On sane platforms, this will have microsecond precision.
+  * On Windows, this will have millisecond precision at best.
+  */
 double Timer::elapsed()
 {
   Internal other;

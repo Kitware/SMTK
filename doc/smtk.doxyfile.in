@@ -293,7 +293,7 @@ IDL_PROPERTY_SUPPORT   = YES
 # member in the group (if any) for the other members of the group. By default
 # all members of a group must be documented explicitly.
 
-DISTRIBUTE_GROUP_DOC   = NO
+DISTRIBUTE_GROUP_DOC   = YES
 
 # Set the SUBGROUPING tag to YES (the default) to allow class member groups of
 # the same type (for instance a group of public functions) to be put as a
@@ -675,6 +675,7 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/model/testing" \
   "@SMTK_SOURCE_DIR@/smtk/Qt" \
   "@SMTK_SOURCE_DIR@/smtk/util" \
+  "@SMTK_SOURCE_DIR@/smtk/util/Testing" \
   "@SMTK_SOURCE_DIR@/smtk/view" \
   "@SMTK_SOURCE_DIR@/smtk/vtk" \
   "@SMTK_BINARY_DIR@/smtk" \
@@ -730,7 +731,7 @@ EXCLUDE_SYMLINKS       = NO
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = "*Wrapper*"
+EXCLUDE_PATTERNS       = "*Wrapper*" "moc_*"
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the

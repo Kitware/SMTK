@@ -19,6 +19,7 @@ namespace smtk {
 
     typedef UUIDsToIntegerData::iterator UUIDWithIntegerProperties;
     typedef IntegerData::iterator PropertyNameWithIntegers;
+    typedef IntegerData::const_iterator PropertyNameWithConstIntegers;
 
   } // namespace model
 } // namespace smtk
