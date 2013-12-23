@@ -141,8 +141,12 @@
   <!-- we are not going to wrap std::[io]stream, so ignore -->
   <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
 
-  <!-- -->
+  <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
+
 
   @EXTRA_TYPESYSTEMS@
 
@@ -604,6 +608,14 @@
       <!-- setup the model classes -->
       <object-type name="BRepModel">
         <include file-name="smtk/model/BRepModel.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::BRepModel&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::BRepModel::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <enum-type name="ArrangementKind">
@@ -729,6 +741,15 @@
 
       <object-type name="Storage">
         <include file-name="smtk/model/Storage.h" location="local"/>
+
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::Storage&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::Storage::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
         <add-function signature="setTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
