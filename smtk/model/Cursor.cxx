@@ -1,5 +1,6 @@
 #include "smtk/model/Cursor.h"
 
+#include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
 
 namespace smtk {
@@ -185,15 +186,6 @@ bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangemen
       }
     }
   return false;
-}
-
-/// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
-void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::util::UUIDs& uids)
-{
-  for (smtk::util::UUIDs::const_iterator it = uids.begin(); it != uids.end(); ++it)
-    {
-    result.insert(Cursor(storage, *it));
-    }
 }
 
 Cursors Cursor::bordantEntities(int ofDimension) const
@@ -547,6 +539,45 @@ Cursor Cursor::relationFromArrangement(
       }
     }
   return Cursor();
+}
+
+/**\brief Embed the specified \a thingToEmbed as an inclusion into this cursor's entity.
+  *
+  * This adds an INCLUDES relation (if necessary) to this entity and
+  * an EMBEDDED_IN relation (if necessary) to the \a thingToEmbed.
+  */
+Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
+{
+  CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
+  CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+  return *this;
+}
+
+/**\brief Return whether the specified \a entity is a direct inclusion in this cursor's entity.
+  *
+  */
+bool Cursor::isEmbedded(Cursor& entity) const
+{
+  return CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, entity) >= 0;
+}
+
+/**\brief Report the entity into which this entity is directly embedded.
+  *
+  * If the entity is not embedded into another, the result will be an invalid cursor.
+  */
+Cursor Cursor::embeddedIn() const
+{
+  return CursorArrangementOps::firstRelation<Cursor>(*this, EMBEDDED_IN);
+}
+
+/// A comparator provided so that cursors may be included in ordered sets.
+bool Cursor::operator == (const Cursor& other) const
+{
+  return (
+    (this->m_storage == other.m_storage) &&
+    (this->m_entity == other.m_entity)) ?
+    true :
+    false;
 }
 
 /// A comparator provided so that cursors may be included in ordered sets.

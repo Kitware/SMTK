@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 
   UUIDArray uids = createTet(sm);
 
-  BitFlags uc00Flags = sm->findEntity(uids[00])->entityFlags();
+  BitFlags uc00Flags = sm->findEntity(uids[0])->entityFlags();
   test( smtk::model::isVertex(uc00Flags),          "isVertex(vertexFlags) incorrect");
   test(!smtk::model::isEdge(uc00Flags),            "isEdge(vertexFlags) incorrect");
   test(!smtk::model::isFace(uc00Flags),            "isFace(vertexFlags) incorrect");
@@ -49,29 +49,30 @@ int main(int argc, char* argv[])
   components.push_back("vx");
   components.push_back("vy");
   components.push_back("vz");
-  sm->setStringProperty(uids[00], "velocity", components);
+  sm->setStringProperty(uids[0], "velocity", components);
   sm->stringProperty(uids[21], "name")[0] = "Ignatius";
   sm->stringProperty(uids[21], "name").push_back("J");
   sm->stringProperty(uids[21], "name").push_back("Fumblemumbler");
   sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
-  test(sm->stringProperty(uids[00], "velocity")[0] == "vx");
-  test(sm->stringProperty(uids[00], "velocity")[1] == "vy");
-  test(sm->stringProperty(uids[00], "velocity").size() == 3); // Test multi-entry length.
+  test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
+  test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
+  test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
   test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
   test(sm->stringProperty(uids[21], "name").size() == 1); // Test length of reset property.
 
   // Test addModel
+  UUIDArray::size_type modelStart = uids.size();
   for (int i = 0; i < 53; ++i)
     {
     uids.push_back(sm->addModel().entity());
     test(sm->hasIntegerProperty(uids.back(), "cell_counters"));
     test(sm->hasStringProperty(uids.back(), "name"));
     }
-  sm->findEntity(uids[21])->relations().push_back(uids[22]);
+  sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
   // Correct computation of hexavigesimal name strings:
-  test(sm->stringProperty(uids[22], "name")[0] == "Model A");
-  test(sm->stringProperty(uids[48], "name")[0] == "Model AA");
-  test(sm->stringProperty(uids[74], "name")[0] == "Model BA");
+  test(sm->stringProperty(uids[modelStart + 0], "name")[0] == "Model A");
+  test(sm->stringProperty(uids[modelStart + 26], "name")[0] == "Model AA");
+  test(sm->stringProperty(uids[modelStart + 52], "name")[0] == "Model BA");
 
   sm->assignDefaultNames();
   // Verify we don't overwrite existing names
@@ -91,7 +92,7 @@ int main(int argc, char* argv[])
   cJSON_AddItemToObject(root, "bdy(uc20,1)", ExportJSON::fromUUIDs(sm->boundaryEntities(uids[20],1)));
   cJSON_AddItemToObject(root, "brd(uc20,3)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
   cJSON_AddItemToObject(root, "lower(uc21,1)", ExportJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
-  cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm->higherDimensionalBordants(uids[00],3)));
+  cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0],3)));
   char* json = cJSON_Print(root);
   std::cout << json << "\n";
   free(json);

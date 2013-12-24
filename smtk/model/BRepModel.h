@@ -13,12 +13,21 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/IntegerData.h"
 
-#include "sparsehash/sparse_hash_map"
+#include "smtk/options.h" // for SMTK_HASH_STORAGE
+#ifdef SMTK_HASH_STORAGE
+#  include "sparsehash/sparse_hash_map"
+#else
+#  include <map>
+#endif
 
 namespace smtk {
   namespace model {
 
+#ifdef SMTK_HASH_STORAGE
 typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
+#else
+typedef std::map<smtk::util::UUID,Entity> UUIDsToEntities;
+#endif
 typedef UUIDsToEntities::iterator UUIDWithEntity;
 
 /// Primitive storage types for model properties
@@ -41,7 +50,7 @@ enum PropertyType
 class SMTKCORE_EXPORT BRepModel : smtkEnableSharedPtr(BRepModel)
 {
 public:
-  typedef google::sparse_hash_map<smtk::util::UUID,Entity> storage_type;
+  typedef UUIDsToEntities storage_type;
   typedef storage_type::iterator iter_type;
 
   smtkTypeMacro(BRepModel);

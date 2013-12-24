@@ -12,6 +12,9 @@ namespace smtk {
 class SMTKCORE_EXPORT CursorArrangementOps
 {
 public:
+  static int findSimpleRelationship(const Cursor& a, ArrangementKind k, const Cursor& b);
+  static int findOrAddSimpleRelationship(const Cursor& a, ArrangementKind k, const Cursor& b);
+
   /// Return the first relation of kind \a k as the specified cursor type \a T.
   template<typename T>
   static T firstRelation(const Cursor& c, ArrangementKind k)
@@ -23,7 +26,8 @@ public:
       smtk::util::UUIDArray const& relations(entRec->relations());
       for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
         {
-        for (std::vector<int>::iterator it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
+        std::vector<int>::iterator it;
+        for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
           {
           return T(c.storage(), relations[*it]);
           }
@@ -44,28 +48,109 @@ public:
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
       {
-      smtk::util::UUIDArray const& relations(entRec->relations());
-      for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      switch (k)
         {
-        if (c.isShell() && arrIt->details().size() == 2)
+      case HAS_USE:
+        if (isCellEntity(entRec->entityFlags()))
           {
-          // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
-          // not arrays of offset values.
-          for (int i = arrIt->details()[0]; i < arrIt->details()[1]; ++i)
-            {
-            typename T::value_type entry(c.storage(), relations[i]);
-            if (entry.isValid())
-              result.insert(result.end(), entry);
-            }
+          appendAllCellHasUseRelations(c.storage(), entRec, arr, result);
+          return;
           }
-        else
+        else if (isShellEntity(entRec->entityFlags()))
           {
-          for (std::vector<int>::iterator it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
-            {
-            typename T::value_type entry(c.storage(), relations[*it]);
-            if (entry.isValid())
-              result.insert(result.end(), entry);
-            }
+          appendAllShellHasUseRelations(c.storage(), entRec, arr, result);
+          return;
+          }
+        break;
+      case HAS_CELL:
+        if (isUseEntity(entRec->entityFlags()))
+          {
+          appendAllUseHasCellRelations(c.storage(), entRec, arr, result);
+          return;
+          }
+        break;
+      default:
+        break;
+        }
+      appendAllSimpleRelations(c.storage(), entRec, arr, result);
+      }
+    }
+
+  /**\brief Helper methods used by appendAllRelations.
+    */
+  template<typename T>
+  static void appendAllUseHasCellRelations(
+    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    {
+    smtk::util::UUIDArray const& relations(entRec->relations());
+    for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      {
+      // Use HAS_CELL arrangements are specified as [relIdx, sense] tuples.
+      int relIdx, relSense;
+      if (
+        arrIt->IndexAndSenseFromUseHasCell(relIdx, relSense) &&
+        relIdx >= 0)
+        {
+        typename T::value_type entry(storage, relations[relIdx]);
+        if (entry.isValid())
+          result.insert(result.end(), entry);
+        }
+      }
+    }
+  template<typename T>
+  static void appendAllCellHasUseRelations(
+    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    {
+    smtk::util::UUIDArray const& relations(entRec->relations());
+    for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      {
+      // Cell HAS_USE arrangements are specified as [relIdx, sense, orientation] tuples.
+      int relIdx, relSense;
+      Orientation relOrient;
+      if (
+        arrIt->IndexSenseAndOrientationFromCellHasUse(relIdx, relSense, relOrient) &&
+        relIdx >= 0)
+        {
+        typename T::value_type entry(storage, relations[relIdx]);
+        if (entry.isValid())
+          result.insert(result.end(), entry);
+        }
+      }
+    }
+  template<typename T>
+  static void appendAllShellHasUseRelations(
+    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    {
+    smtk::util::UUIDArray const& relations(entRec->relations());
+    for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      {
+      // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
+      // not arrays of offset values.
+      int i0, i1;
+      arrIt->IndexRangeFromShellHasUse(i0, i1);
+      for (int i = i0; i < i1; ++i)
+        {
+        typename T::value_type entry(storage, relations[i]);
+        if (entry.isValid())
+          result.insert(result.end(), entry);
+        }
+      }
+    }
+  template<typename T>
+  static void appendAllSimpleRelations(
+    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    {
+    smtk::util::UUIDArray const& relations(entRec->relations());
+    for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
+      {
+      std::vector<int>::iterator it;
+      for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
+        {
+        if (*it < 0) continue; // Ignore invalid indices
+        typename T::value_type entry(storage, relations[*it]);
+        if (entry.isValid())
+          {
+          result.insert(result.end(), entry);
           }
         }
       }

@@ -1,5 +1,16 @@
 #include "smtk/util/UUID.h"
+#include "smtk/model/Vertex.h"
+#include "smtk/model/Edge.h"
+#include "smtk/model/Face.h"
+#include "smtk/model/Volume.h"
+#include "smtk/model/VertexUse.h"
+#include "smtk/model/EdgeUse.h"
+#include "smtk/model/FaceUse.h"
+#include "smtk/model/Chain.h"
+#include "smtk/model/Loop.h"
+#include "smtk/model/Shell.h"
 #include "smtk/model/Storage.h"
+
 #include "smtk/model/testing/helpers.h"
 
 #include <iomanip>
@@ -60,8 +71,8 @@ UUIDArray createTet(smtk::model::StoragePtr sm)
   smtk::util::UUID uc17 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
     .appendRelation(uc10)
-    .appendRelation(uc11)
     .appendRelation(uc12)
+    .appendRelation(uc11)
     )->first;
   smtk::util::UUID uc18 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
@@ -137,6 +148,104 @@ UUIDArray createTet(smtk::model::StoragePtr sm)
   for (int i = 0; i < 7; ++i)
     {
     sm->setTessellation(uids[i],Tessellation().addCoords(x[i][0], x[i][1], x[i][2]));
+    }
+
+  // Create vertex-uses
+  // Because we have a single volume, each vertex should have a single use.
+  VertexUses vu(7);
+  for (int i = 0; i < 7; ++i)
+    {
+    vu[i] = sm->addVertexUse(
+      /*vert*/ Vertex(sm, uids[i]),
+      /*sense*/ 0);
+    uids.push_back(vu[i].entity());
+    }
+
+  // Create 5 face-uses and shell for 1 volume.
+  FaceUses su;
+  for (int i = 0; i < 5; ++i)
+    {
+    su.push_back(
+      sm->addFaceUse(
+        /*face*/ Face(sm, uids[16 + i]),
+        /*sense*/ 0,
+        /*orientation*/ NEGATIVE));
+    uids.push_back(su.back().entity());
+    }
+  Shell sh = sm->addShell(Volume(sm, uc21)).addUses(su);
+  uids.push_back(sh.entity());
+
+  // Create edge-uses and loops (6 of them) for 5 faces.
+  EdgeUses lu[6];
+  Loop lp[6];
+  Chains chains;
+
+  int ee[9][2] = { // Edge endpoints
+      {0, 1},
+      {1, 2},
+      {2, 0},
+      {3, 4},
+      {4, 5},
+      {5, 3},
+      {0, 6},
+      {1, 6},
+      {2, 6},
+  };
+  int eul[6][3] = { // edge-use-to-loop uid offsets
+      { 9,  8,  7},
+      {10, 11, 12},
+      {12, 11, 10},
+      { 7, 14, 13},
+      { 8, 15, 14},
+      { 9, 13, 15}
+  };
+  int eus[6][3] = { // edge-use sense
+      {0, 0, 0},
+      {0, 0, 0},
+      {1, 1, 1},
+      {1, 1, 0},
+      {1, 1, 0},
+      {1, 1, 0}
+  };
+  Orientation euo[6][3] = { // edge-use orientations
+      {NEGATIVE, NEGATIVE, NEGATIVE},
+      {NEGATIVE, NEGATIVE, NEGATIVE},
+      {POSITIVE, POSITIVE, POSITIVE},
+      {POSITIVE, POSITIVE, NEGATIVE},
+      {POSITIVE, POSITIVE, NEGATIVE},
+      {POSITIVE, POSITIVE, NEGATIVE}
+  };
+  for (int i = 0; i < 6; ++i)
+    {
+    for (int j = 0; j < 3; ++j)
+      {
+      lu[i].push_back(
+        sm->addEdgeUse(
+          /*edge*/ Edge(sm, uids[eul[i][j]]),
+          /*sense*/ eus[i][j],
+          /*orientation*/ euo[i][j]));
+      chains.push_back(
+        sm->addChain(lu[i].back())
+          .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 0 : 1]])
+          .addUse(vu[ee[eul[i][j] - 7][euo[i][j] == POSITIVE ? 1 : 0]]));
+      uids.push_back(lu[i][j].entity());
+      uids.push_back(chains.back().entity());
+      }
+    // Add the loops, remembering that the second
+    // loop is a hole and is thus a child of another loop:
+    if (i == 0)
+      {
+      lp[i] = sm->addLoop(su[0]).addUses(lu[i]).as<Loop>();
+      }
+    else if (i == 1)
+      {
+      lp[i] = sm->addLoop(lp[0]).addUses(lu[i]).as<Loop>();
+      }
+    else
+      { // note special index uids[15+i] b/c the hole-loop is repeated:
+      lp[i] = sm->addLoop(su[i - 1]).addUses(lu[i]).as<Loop>();
+      }
+    uids.push_back(lp[i].entity());
     }
 
   return uids;

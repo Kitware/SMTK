@@ -7,6 +7,7 @@ namespace smtk {
   namespace model {
 
 class Face;
+class FaceUse;
 class Loop;
 class EdgeUse;
 typedef std::vector<Loop> Loops;
@@ -24,6 +25,7 @@ public:
   SMTK_CURSOR_CLASS(Loop,ShellEntity,isLoop);
 
   Face face() const;
+  FaceUse faceUse() const;
   EdgeUses edgeUses() const;
   Loop containingLoop() const;
   Loops containedLoops() const;

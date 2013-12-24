@@ -39,7 +39,11 @@ smtk::model::Volumes Face::volumes() const
   */
 FaceUse Face::negativeUse() const
 {
-  return relationFromArrangement(HAS_USE, 0, 0).as<FaceUse>();
+  std::set<int> arr = this->m_storage->findCellHasUsesWithOrientation(
+    this->m_entity, NEGATIVE);
+  return arr.empty() ?
+    FaceUse() :
+    relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
 /**\brief Return the face-use with its sense codirectional with the natural normal.
@@ -48,7 +52,11 @@ FaceUse Face::negativeUse() const
   */
 FaceUse Face::positiveUse() const
 {
-  return relationFromArrangement(HAS_USE, 0, 0).as<FaceUse>();
+  std::set<int> arr = this->m_storage->findCellHasUsesWithOrientation(
+    this->m_entity, POSITIVE);
+  return arr.empty() ?
+    FaceUse() :
+    relationFromArrangement(HAS_USE, *arr.begin(), 0).as<FaceUse>();
 }
 
   } // namespace model

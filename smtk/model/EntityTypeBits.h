@@ -52,6 +52,7 @@ enum EntityTypeBits
   USE_0D               = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   USE_1D               = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
   USE_2D               = 0x00000204, //!< A cell-use of dimension 2 (i.e., a face use)
+  USE_3D               = 0x00000208, //!< A cell-use of dimension 3 (i.e., a volume use)
   ANY_USE              = 0x000002ff, //!< A cell-use of any dimension
   CHAIN                = 0x00000403, //!< A shell of dimension 0+1 (i.e., a vertex chain)
   LOOP                 = 0x00000406, //!< A shell of dimension 1+2 (i.e., an edge loop)
@@ -82,6 +83,7 @@ inline bool isUseEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MAS
 inline bool isVertexUse(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
 inline bool isEdgeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
 inline bool isFaceUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
+inline bool isVolumeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_3D; }
 
 inline bool isShellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SHELL_ENTITY; }
 inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }

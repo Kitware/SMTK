@@ -111,8 +111,9 @@ public:
     return T(*this);
     }
 
+  template<typename S, typename T>
   static void CursorsFromUUIDs(
-    Cursors& result, StoragePtr, const smtk::util::UUIDs& uids);
+    S& result, StoragePtr, const T& uids);
 
   Cursors bordantEntities(int ofDimension = -2) const;
   Cursors boundaryEntities(int ofDimension = -2) const;
@@ -164,6 +165,12 @@ public:
 
   Cursor relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 
+  Cursor& embedEntity(const Cursor& thingToEmbed);
+  template<typename T> Cursor& embedEntities(const T& container);
+  bool isEmbedded(Cursor& entity) const;
+  Cursor embeddedIn() const;
+
+  bool operator == (const Cursor& other) const;
   bool operator < (const Cursor& other) const;
 
 protected:
@@ -172,6 +179,31 @@ protected:
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
+
+/// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
+template<typename S, typename T>
+void Cursor::CursorsFromUUIDs(
+  S& result, StoragePtr storage, const T& uids)
+{
+  typename S::size_type expected = 1;
+  for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it, ++expected)
+    {
+    typename S::value_type entry(storage, *it);
+    if (entry.isValid())
+      {
+      result.insert(result.end(), entry);
+      }
+    }
+}
+
+template<typename T> Cursor& Cursor::embedEntities(const T& container)
+{
+  for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    {
+    this->embedEntity(*it);
+    }
+  return *this;
+}
 
   } // namespace model
 } // namespace smtk

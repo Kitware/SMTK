@@ -1,0 +1,18 @@
+#ifndef __smtk_options_h
+#define __smtk_options_h
+
+// Compile-time options chosen for this build of SMTK.
+
+// Was SMTK built with Qt? If true, QtSMTK library will exist.
+#cmakedefine SMTK_BUILD_QT
+
+// Was SMTK built with VTK? If true, vtkSMTK library will exist.
+#cmakedefine SMTK_BUILD_VTK
+
+// Was SMTK built with CGM? If true, cgm-convert will exist.
+#cmakedefine SMTK_BUILD_CGM
+
+// Should sparse_hash_map be used (instead of std::map) for primary storage?
+#cmakedefine SMTK_HASH_STORAGE
+
+#endif // __smtk_options_h

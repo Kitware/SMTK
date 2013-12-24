@@ -998,8 +998,17 @@ void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
     if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
       {
       // Create arrangements to hold face-uses:
-      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, -1)); // Negative
-      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, +1)); // Positive
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, NEGATIVE));
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 1, POSITIVE));
+      }
+    }
+  else if (entry.second.entityFlags() & USE_ENTITY)
+    {
+    Storage* store = dynamic_cast<Storage*>(this);
+    if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_SHELL))
+      {
+      // Create arrangement to hold parent shell (or, for 3-uses, a parent volume cell):
+      store->arrangeEntity(entry.first, HAS_SHELL, Arrangement::UseHasShellWithIndex(-1));
       }
     }
   else if ((entry.second.entityFlags() & MODEL_ENTITY) == MODEL_ENTITY)
