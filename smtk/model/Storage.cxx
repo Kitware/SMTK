@@ -475,12 +475,12 @@ Shell Storage::addShell()
   * You may also specify a \a name for the group. If \a name is empty, then no
   * name is assigned.
   */
-GroupEntity Storage::addGroup(int extraFlags, const std::string& name)
+GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
 {
   smtk::util::UUID uid =
     this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
-  if (!name.empty())
-    this->setStringProperty(uid, "name", name);
+  if (!groupName.empty())
+    this->setStringProperty(uid, "name", groupName);
   return GroupEntity(shared_from_this(), uid);
 }
 
@@ -503,15 +503,15 @@ GroupEntity Storage::addGroup(int extraFlags, const std::string& name)
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
 ModelEntity Storage::addModel(
-  int parametricDim, int embeddingDim, const std::string& name)
+  int parametricDim, int embeddingDim, const std::string& modelName)
 {
   smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
   if (embeddingDim > 0)
     {
     this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
     }
-  if (!name.empty())
-    this->setStringProperty(uid, "name", name);
+  if (!modelName.empty())
+    this->setStringProperty(uid, "name", modelName);
   else
     this->assignDefaultName(uid, this->type(uid));
   return ModelEntity(shared_from_this(), uid);
