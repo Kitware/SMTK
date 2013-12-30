@@ -40,18 +40,33 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
+  namespace util
+  {
+    class Logger;
+  }
+
   namespace model
   {
     class SMTKCORE_EXPORT GridInfo
     {
     public:
-      /// Return value for all public methods
-      enum ReturnValue
+      /// Return type for all public methods
+      enum ApiReturnType
       {
         OK = 0,
-        MODEL_ENTITY_NOT_FOUND,  // invalid input
+        MODEL_ENTITY_NOT_FOUND,  // specified model entity id not found
+        GRID_ENTITY_NOT_FOUND,   // specified grid entity id not found
         IDENTIFIER_NOT_FOUND,    // for methods specific to MOAB grids
         NOT_AVAILABLE            // requested data not available/found
+      };
+
+
+      /// Return structure for all public methods
+      struct ApiStatus
+      {
+        ApiReturnType       returnType;
+        std::string         errorMessage;
+        smtk::util::Logger *logger;
       };
 
       /// Point closure enum, for point accessor methods
@@ -63,23 +78,22 @@ namespace smtk
       };
 
       /// Returns highest dimension elements/cells in the grid
-      virtual ReturnValue dimension(int& dim) const = 0;
+      virtual int dimension(ApiStatus& status) const = 0;
 
 
       /// Returns analysis grid cells for specified model entity.
       //  Only returns native/canonical ids specified in the analysis grid
       //  i.e., does *not* return internal CMB grid entities.
-      virtual ReturnValue
-      analysisGridCells(int modelEntityId, std::vector<int >& cellIds) = 0;
+      virtual std::vector<int>
+      analysisGridCells(int modelEntityId, ApiStatus& status) = 0;
 
 
       /// Returns "grid items" for the geometry on the boundary of a model entity.
       //  Each grid item is a pair of integer values; the first integer is the id
       //  of a cell in the analysis grid, and the second integer is the index
       //  of a particular side of the cell, using the VTK numbering convention.
-      virtual ReturnValue
-      boundaryItemsOf(int modelEntityId,
-                      std::vector<std::pair<int, int > >& gridItems) = 0;
+      virtual std::vector<std::pair<int, int> >
+      boundaryItemsOf(int modelEntityId, ApiStatus& status) = 0;
 
 
       /// Returns "grid items" for the geometry of a model entity that is on
@@ -94,51 +108,47 @@ namespace smtk
       //  then the grid items will be returned specifically for that model
       //  entity (that is, the analysis grid cells will be from that model
       //  entity).
-      virtual ReturnValue
-      asBoundaryItems(int modelEntityId,
-                      std::vector<std::pair<int, int > >& gridItems,
-                      int boundedModelEntityId=-1) = 0;
+      virtual std::vector<std::pair<int, int> >
+      asBoundaryItems(int modelEntityId, int boundedModelEntityId,
+                      ApiStatus& status) = 0;
 
 
       /// Returns the type of cell for the specified analysis grid cell id.
       //  The integer value is defined by the VTKCellType enum in vtkCellType.h
-      virtual ReturnValue
-      cellType(int gridCellId, int& vtkCellType) = 0;
+      virtual int  cellType(int gridCellId, ApiStatus& status) = 0;
 
 
       /// Returns the grid point ids for a specified model entity id.
       //  The list can be filtered by the point closure enumeration.
-      virtual ReturnValue
-      pointIds(int modelEntityId,
-               std::vector<int >& pointIds,
-               PointClosure closure = ALL_POINTS) = 0;
+      virtual std::vector<int >
+      pointIds(int modelEntityId, PointClosure closure, ApiStatus& status) = 0;
 
 
       /// Returns the grid point ids for a specified grid cell id.
       //  The points are ordered using the VTK convention.
-      virtual ReturnValue
-      cellPointIds(int gridCellId, std::vector<int >& pointIds) = 0;
+      virtual std::vector<int>
+      cellPointIds(int gridCellId, ApiStatus& status) = 0;
 
 
       /// Returns the dimensional coordinates of a specified grid point id.
-      virtual ReturnValue
-      pointLocation(int gridPointId, std::vector<double >& coordinates) = 0;
+      virtual std::vector<double>
+      pointLocation(int gridPointId, ApiStatus& status) = 0;
 
 
       /// Returns the classification id for the node or element set for a
       //  specified model entity. The function applies to MOAB-style grids.
       //  Note that, although MOAB uses integer ids, this method returns a
       //  std::string for generality.
-      virtual ReturnValue
-      nodeElemSetClassification(int modelEntityId, std::string& identifier) = 0;
+      virtual std::string
+      nodeElemSetClassification(int modelEntityId, ApiStatus& status) = 0;
 
 
       /// Returns the classification id for the mesh side set for a specified
       //  model entity. The function applies to MOAB-style grids.
       //  Note that, although MOAB uses integer ids, this method returns a
       //  std::string for generality.
-      virtual ReturnValue
-      sideSetClassification(int modelEntityId, std::string& identifier) = 0;
+      virtual std::string
+      sideSetClassification(int modelEntityId, ApiStatus& status) = 0;
 
 
       GridInfo();
