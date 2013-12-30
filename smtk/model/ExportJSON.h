@@ -15,6 +15,13 @@ namespace smtk {
 
 class Storage;
 
+/**\brief Export an SMTK model into a JSON-formatted string.
+  *
+  * Methods are also provided for creating cJSON nodes representing
+  * individual records and groups of records from SMTK storage.
+  * These may be used to provide concise answers to specific queries
+  * and avoid storing or transmitting a potentially-large string.
+  */
 class SMTKCORE_EXPORT ExportJSON
 {
 public:

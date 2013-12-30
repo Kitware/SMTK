@@ -203,6 +203,7 @@ namespace smtk
           item = SharedTypes::RawPointerType::New(name);
           this->m_itemDefs.push_back(item);
           this->m_itemDefPositions[name] = static_cast<int>(n);
+          this->updateDerivedDefinitions();
           }
         return item;
       }
@@ -224,6 +225,14 @@ namespace smtk
       // attribute already has items, clear them out.
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
+      //This method resets the definition item offset - this is used by the
+      // manager when a definition is modified
+      void resetItemOffset();
+      int itemOffset() const
+      {return this->m_baseItemOffset;}
+
+      // Return the public pointer for this definition.
+      smtk::attribute::DefinitionPtr pointer() const;
     protected:
       friend class smtk::attribute::Manager;
       // AttributeDefinitions can only be created by an attribute manager
@@ -234,6 +243,10 @@ namespace smtk
       { this->m_manager = NULL;}
 
       void setCategories();
+
+      // This method updates derived definitions when this
+      // definition's items have been changed
+      void updateDerivedDefinitions();
 
       smtk::attribute::Manager *m_manager;
       int m_version;
@@ -258,6 +271,8 @@ namespace smtk
 
       std::string m_detailedDescription;
       std::string m_briefDescription;
+      // Used by the find method to calculate an item's position
+      int m_baseItemOffset;
     private:
 
       // These colors are returned for base definitions w/o set colors
@@ -271,15 +286,32 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
+    inline void Definition::resetItemOffset()
+    {
+      if (this->m_baseDefinition)
+        {
+        this->m_baseItemOffset = this->m_baseDefinition->m_baseItemOffset +
+          this->m_baseDefinition->numberOfItemDefinitions();
+        }
+    }
+ //----------------------------------------------------------------------------
     inline int Definition::findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
       it = this->m_itemDefPositions.find(name);
       if (it == this->m_itemDefPositions.end())
         {
-        return -1; // named item doesn't exist
+        // Check the base definition if there is one
+        if (this->m_baseDefinition)
+          {
+          return this->m_baseDefinition->findItemPosition(name);
+          }
+        else
+          {
+          return -1; // named item doesn't exist
+          }
         }
-      return it->second;
+      return it->second + this->m_baseItemOffset;
     }
 //----------------------------------------------------------------------------
     inline const double * Definition::notApplicableColor() const

@@ -4,6 +4,7 @@
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
 #include "smtk/util/SystemConfig.h" // For type macros.
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/model/FloatData.h" // for Float, FloatData, ...
 #include "smtk/model/StringData.h" // for String, StringData, ...
@@ -12,6 +13,7 @@
 
 #include "smtk/util/UUID.h"
 
+#include <iostream>
 #include <set>
 #include <vector>
 
@@ -28,7 +30,8 @@
     { \
       Entity* er; \
       if ( \
-        this->Cursor::isValid(&er) && \
+        /* NB: Cursor::isValid() may return true even when er == NULL */ \
+        this->Cursor::isValid(&er) && er && \
         smtk::model:: typecheck (er->entityFlags())) \
         { \
         if (entRec) *entRec = er; \
@@ -63,43 +66,20 @@ public:
 
   bool setStorage(StoragePtr storage);
   StoragePtr storage();
+  const StoragePtr storage() const;
 
   bool setEntity(const smtk::util::UUID& entityId);
-  smtk::util::UUID entity();
+  const smtk::util::UUID& entity() const;
 
   int dimension() const;
   int dimensionBits() const;
   BitFlags entityFlags() const;
+  std::string flagSummary(int form = 0) const;
+  std::string name() const;
 
-  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
-    *
-    * Subclasses should not override this method. It is a convenience
-    * which makes the shiboken wrapper more functional.
-    */
-  bool isValid() const
-    {
-    return this->isValid(NULL);
-    }
-
-  /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
-    *
-    * Subclasses override this and additionally return whether the entity is of
-    * a type that matches the Cursor subclass. For example, it is possible to
-    * create a Vertex cursor from a UUID referring to an EdgeUse. While
-    * Cursor::isValid() will return true, Vertex::isValid() will return false.
-    *
-    * The optional \a entityRecord will be set when a non-NULL value is passed
-    * and the entity is valid.
-    */
-  virtual bool isValid(Entity** entityRecord) const
-    {
-    bool status = this->m_storage && !this->m_entity.isNull();
-    if (status && entityRecord)
-      {
-      *entityRecord = this->m_storage->findEntity(this->m_entity);
-      }
-    return status;
-    }
+  bool isValid() const;
+  virtual bool isValid(Entity** entityRecord) const;
+  virtual bool checkForArrangements(ArrangementKind k, Entity*& entry, Arrangements*& arr) const;
 
   bool isCellEntity()     const { return smtk::model::isCellEntity(this->entityFlags()); }
   bool isUseEntity()      const { return smtk::model::isUseEntity(this->entityFlags()); }
@@ -119,6 +99,12 @@ public:
   bool isEdgeUse()   const { return smtk::model::isEdgeUse(this->entityFlags()); }
   bool isFaceUse()   const { return smtk::model::isFaceUse(this->entityFlags()); }
 
+  /**\brief Reinterpret a cursor as a subclass.
+    *
+    * Note that you should call isValid() on the resulting
+    * cursor subclass to perform sanity checks; this method
+    * will happily return an invalid object.
+    */
   template<typename T>
   T as()
     {
@@ -128,12 +114,19 @@ public:
   static void CursorsFromUUIDs(
     Cursors& result, StoragePtr, const smtk::util::UUIDs& uids);
 
-  Cursors bordantEntities(int ofDimension = -2);
-  Cursors boundaryEntities(int ofDimension = -2);
+  Cursors bordantEntities(int ofDimension = -2) const;
+  Cursors boundaryEntities(int ofDimension = -2) const;
 
   Cursors lowerDimensionalBoundaries(int lowerDimension);
   Cursors higherDimensionalBordants(int higherDimension);
   Cursors adjacentEntities(int ofDimension);
+
+  bool hasAttributes() const;
+  bool hasAttribute(int attribId) const;
+  bool attachAttribute(int attribId);
+  bool detachAttribute(int attribId, bool reverse = true);
+  AttributeAssignments& attributes();
+  AttributeAssignments::AttributeSet attributes() const;
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);
@@ -141,6 +134,7 @@ public:
   smtk::model::FloatList& floatProperty(const std::string& propName);
   bool hasFloatProperty(const std::string& propName) const;
   bool removeFloatProperty(const std::string& propName);
+  bool hasFloatProperties() const;
   FloatData& floatProperties();
   FloatData const& floatProperties() const;
 
@@ -150,6 +144,7 @@ public:
   smtk::model::StringList& stringProperty(const std::string& propName);
   bool hasStringProperty(const std::string& propName) const;
   bool removeStringProperty(const std::string& propName);
+  bool hasStringProperties() const;
   StringData& stringProperties();
   StringData const& stringProperties() const;
 
@@ -159,8 +154,15 @@ public:
   smtk::model::IntegerList& integerProperty(const std::string& propName);
   bool hasIntegerProperty(const std::string& propName) const;
   bool removeIntegerProperty(const std::string& propName);
+  bool hasIntegerProperties() const;
   IntegerData& integerProperties();
   IntegerData const& integerProperties() const;
+
+  int numberOfArrangementsOfKind(ArrangementKind k) const;
+  Arrangement* findArrangement(ArrangementKind k, int index);
+  const Arrangement* findArrangement(ArrangementKind k, int index) const;
+
+  Cursor relationFromArrangement(ArrangementKind k, int arrangementIndex, int offset) const;
 
   bool operator < (const Cursor& other) const;
 
@@ -168,6 +170,8 @@ protected:
   StoragePtr m_storage;
   smtk::util::UUID m_entity;
 };
+
+SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
 
   } // namespace model
 } // namespace smtk

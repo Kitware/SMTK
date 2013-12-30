@@ -38,18 +38,44 @@ namespace smtk
   {
     class Arrangement;
     typedef std::vector<Arrangement> Arrangements;
+    class BRepModel;
+    class CellEntity;
+    class Chain;
+    class Cursor;
+    class DescriptivePhrase;
+    class Edge;
+    typedef std::vector<Edge> Edges;
+    class EdgeUse;
+    typedef std::vector<EdgeUse> EdgeUses;
+    class Face;
+    typedef std::vector<Face> Faces;
+    class FaceUse;
+    typedef std::vector<FaceUse> FaceUses;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
     class GridInfo3D;
+    class GroupEntity;
     class GroupItem;
+    class InstanceEntity;
     class Item;
     class ImportJSON;
     class Entity;
     class Model;
+    class ModelEntity;
+    class ShellEntity;
+    typedef std::vector<ShellEntity> ShellEntities;
     class Storage;
     class ModelDomainItem;
     class Tessellation;
+    class UseEntity;
+    typedef std::vector<UseEntity> UseEntities;
+    class Vertex;
+    typedef std::vector<Vertex> Vertices;
+    class VertexUse;
+    typedef std::vector<VertexUse> VertexUses;
+    class Volume;
+    typedef std::vector<Volume> Volumes;
   }
 
   namespace attribute
@@ -102,28 +128,28 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::model::Model >         ModelPtr;
-    typedef smtk::weak_ptr< smtk::model::Model >           WeakModelPtr;
-    typedef smtk::shared_ptr< smtk::model::Storage >       StoragePtr;
-    typedef smtk::weak_ptr< smtk::model::Storage >         WeakStoragePtr;
-    typedef smtk::shared_ptr< smtk::model::Item >          ItemPtr;
-    typedef smtk::weak_ptr< smtk::model::Item >            WeakItemPtr;
-    typedef smtk::shared_ptr< smtk::model::GroupItem >     GroupItemPtr;
-    typedef smtk::shared_ptr< smtk::model::Entity >        EntityPtr;
-    typedef smtk::weak_ptr< smtk::model::Entity >          WeakEntityPtr;
-    typedef smtk::shared_ptr< smtk::model::Arrangement >   ArrangementPtr;
-    typedef smtk::weak_ptr< smtk::model::Arrangement >     WeakArrangementPtr;
-    typedef smtk::shared_ptr< smtk::model::Tessellation >  TessellationPtr;
-    typedef smtk::weak_ptr< smtk::model::Tessellation >    WeakTessellationPtr;
+    typedef smtk::shared_ptr< smtk::model::DescriptivePhrase > DescriptivePhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::Model >             ModelPtr;
+    typedef smtk::weak_ptr< smtk::model::Model >               WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Storage >           StoragePtr;
+    typedef smtk::weak_ptr< smtk::model::Storage >             WeakStoragePtr;
+    typedef smtk::shared_ptr< smtk::model::Item >              ItemPtr;
+    typedef smtk::weak_ptr< smtk::model::Item >                WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::model::GroupItem >         GroupItemPtr;
+    typedef smtk::shared_ptr< smtk::model::Entity >            EntityPtr;
+    typedef smtk::weak_ptr< smtk::model::Entity >              WeakEntityPtr;
+    typedef smtk::shared_ptr< smtk::model::Arrangement >       ArrangementPtr;
+    typedef smtk::weak_ptr< smtk::model::Arrangement >         WeakArrangementPtr;
+    typedef smtk::shared_ptr< smtk::model::Tessellation >      TessellationPtr;
+    typedef smtk::weak_ptr< smtk::model::Tessellation >        WeakTessellationPtr;
 
     // class for making the analysis grid information available in SMTK
-    typedef smtk::shared_ptr< smtk::model::GridInfo >    GridInfoPtr;
-    typedef smtk::shared_ptr< smtk::model::GridInfo2D >  GridInfo2DPtr;
-    typedef smtk::shared_ptr< smtk::model::GridInfo3D >  GridInfo3DPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo >          GridInfoPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo2D >        GridInfo2DPtr;
+    typedef smtk::shared_ptr< smtk::model::GridInfo3D >        GridInfo3DPtr;
 
     // definition of the mask type for model entities. enum is in smtk/model/Item.h
-    typedef unsigned long                                MaskType;
-
+    typedef unsigned long                                      MaskType;
   };
 
   namespace attribute

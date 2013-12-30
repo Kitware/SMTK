@@ -51,6 +51,13 @@ if __name__ == '__main__':
     else:
         print 'ERROR: Attribute testAtt not created'
         status = -1
+    comp = att.find("DoubleComp1")
+    if not comp is None:
+       vvcomp = smtk.attribute.ValueItem.CastTo(comp)
+       print " Value = %s"%vcomp.valueAsString()
+    else:
+       print "ERROR: could not find the base's item"
+       status = -1;
 
     n = att.numberOfItems()
     for i in range(n):

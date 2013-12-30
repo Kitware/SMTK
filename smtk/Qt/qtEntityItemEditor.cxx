@@ -10,6 +10,7 @@ QEntityItemEditor::QEntityItemEditor(QWidget* super)
   : QWidget(super)
 {
   this->m_title = new QLineEdit(this);
+  this->setFocusProxy(this->m_title);
   new QHBoxLayout(this);
   QObject::connect(
     this->m_title, SIGNAL(editingFinished()),

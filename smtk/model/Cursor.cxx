@@ -33,6 +33,12 @@ StoragePtr Cursor::storage()
   return this->m_storage;
 }
 
+/// Return the underlying storage the cursor references.
+const StoragePtr Cursor::storage() const
+{
+  return this->m_storage;
+}
+
 /// Change the UUID of the entity the cursor references.
 bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 {
@@ -45,7 +51,7 @@ bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 }
 
 /// Return the UUID of the entity the cursor references.
-smtk::util::UUID Cursor::entity()
+const smtk::util::UUID& Cursor::entity() const
 {
   return this->m_entity;
 }
@@ -102,6 +108,85 @@ BitFlags Cursor::entityFlags() const
   return 0;
 }
 
+/**\brief A string summary of the type of entity represented by this cursor.
+  *
+  * If \a form is non-zero, the plural form of the summary is returned.
+  */
+std::string Cursor::flagSummary(int form) const
+{
+  Entity* ent = this->m_storage->findEntity(this->m_entity);
+  if (ent)
+    {
+    return ent->flagSummary(form);
+    }
+  return Entity::flagSummary(INVALID, form);
+}
+
+/** Report the name associated with this entity.
+  *
+  * This will not assign a default name to the entity (that would
+  * violate the const-ness of the method), but will report a
+  * UUID-based name for the entity if it does not have a
+  * user-assigned name.
+  */
+std::string Cursor::name() const
+{
+  return this->m_storage->name(this->m_entity);
+}
+
+/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+  *
+  * Subclasses should not override this method. It is a convenience
+  * which makes the shiboken wrapper more functional.
+  */
+bool Cursor::isValid() const
+{
+  return this->isValid(NULL);
+}
+
+/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+  *
+  * Subclasses override this and additionally return whether the entity is of
+  * a type that matches the Cursor subclass. For example, it is possible to
+  * create a Vertex cursor from a UUID referring to an EdgeUse. While
+  * Cursor::isValid() will return true, Vertex::isValid() will return false.
+  *
+  * The optional \a entityRecord will be set when a non-NULL value is passed
+  * and the entity is valid.
+  */
+bool Cursor::isValid(Entity** entityRecord) const
+{
+  bool status = this->m_storage && !this->m_entity.isNull();
+  if (status)
+    {
+    Entity* rec = this->m_storage->findEntity(this->m_entity);
+    status = rec ? true : false;
+    if (status && entityRecord)
+      {
+      *entityRecord = rec;
+      }
+    }
+  return status;
+}
+
+/**\brief A wrapper around Cursor::isValid() which also verifies an arrangement exists.
+  *
+  */
+bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangements*& arr) const
+{
+  if (this->isValid(&entRec))
+    {
+    arr = NULL;
+    if (
+      (arr = this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
+      !arr->empty())
+      {
+      return true;
+      }
+    }
+  return false;
+}
+
 /// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
 void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::util::UUIDs& uids)
 {
@@ -111,7 +196,7 @@ void Cursor::CursorsFromUUIDs(Cursors& result, StoragePtr storage, const smtk::u
     }
 }
 
-Cursors Cursor::bordantEntities(int ofDimension)
+Cursors Cursor::bordantEntities(int ofDimension) const
 {
   Cursors result;
   if (this->m_storage && !this->m_entity.isNull())
@@ -123,7 +208,7 @@ Cursors Cursor::bordantEntities(int ofDimension)
   return result;
 }
 
-Cursors Cursor::boundaryEntities(int ofDimension)
+Cursors Cursor::boundaryEntities(int ofDimension) const
 {
   Cursors result;
   if (this->m_storage && !this->m_entity.isNull())
@@ -171,6 +256,54 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   return result;
 }
 
+/** @name Attribute associations
+  *
+  */
+///@{
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::hasAttributes() const
+{
+  return this->m_storage->attributeAssignments().find(this->m_entity) ==
+    this->m_storage->attributeAssignments().end() ?
+    false : true;
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::hasAttribute(int attribId) const
+{
+  return this->m_storage->hasAttribute(attribId, this->m_entity);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::attachAttribute(int attribId)
+{
+  return this->m_storage->attachAttribute(attribId, this->m_entity);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+bool Cursor::detachAttribute(int attribId, bool reverse)
+{
+  return this->m_storage->detachAttribute(attribId, this->m_entity, reverse);
+}
+
+/**\brief Does the cursor have any attributes associated with it?
+  */
+AttributeAssignments& Cursor::attributes()
+{
+  return this->m_storage->attributeAssignments()[this->m_entity];
+}
+/**\brief Does the cursor have any attributes associated with it?
+  */
+AttributeAssignments::AttributeSet Cursor::attributes() const
+{
+  return this->m_storage->attributeAssignments()[this->m_entity].attributes();
+}
+///@}
+
 void Cursor::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
   if (this->m_storage && !this->m_entity.isNull())
@@ -213,6 +346,19 @@ bool Cursor::removeFloatProperty(const std::string& propName)
     return this->m_storage->removeFloatProperty(this->m_entity, propName);
     }
   return false;
+}
+
+/**\brief Does this entity have *any* float-valued properties?
+  *
+  * If not, you should call Cursor::setFloatProperty() before
+  * calling Cursor::floatProperties().
+  */
+bool Cursor::hasFloatProperties() const
+{
+  return
+    this->m_storage->floatProperties().find(this->m_entity)
+    == this->m_storage->floatProperties().end() ?
+    false : true;
 }
 
 FloatData& Cursor::floatProperties()
@@ -270,6 +416,19 @@ bool Cursor::removeStringProperty(const std::string& propName)
   return false;
 }
 
+/**\brief Does this entity have *any* string-valued properties?
+  *
+  * If not, you should call Cursor::setStringProperty() before
+  * calling Cursor::stringProperties().
+  */
+bool Cursor::hasStringProperties() const
+{
+  return
+    this->m_storage->stringProperties().find(this->m_entity)
+    == this->m_storage->stringProperties().end() ?
+    false : true;
+}
+
 StringData& Cursor::stringProperties()
 {
   return this->m_storage->stringProperties().find(this->m_entity)->second;
@@ -325,6 +484,19 @@ bool Cursor::removeIntegerProperty(const std::string& propName)
   return false;
 }
 
+/**\brief Does this entity have *any* integer-valued properties?
+  *
+  * If not, you should call Cursor::setIntegerProperty() before
+  * calling Cursor::integerProperties().
+  */
+bool Cursor::hasIntegerProperties() const
+{
+  return
+    this->m_storage->integerProperties().find(this->m_entity)
+    == this->m_storage->integerProperties().end() ?
+    false : true;
+}
+
 IntegerData& Cursor::integerProperties()
 {
   return this->m_storage->integerProperties().find(this->m_entity)->second;
@@ -335,7 +507,49 @@ IntegerData const& Cursor::integerProperties() const
   return this->m_storage->integerProperties().find(this->m_entity)->second;
 }
 
+/// Return the number of arrangements of the given kind \a k.
+int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
+{
+  const Arrangements* arr =
+    this->m_storage->hasArrangementsOfKindForEntity(
+      this->m_entity, k);
+  return arr ? static_cast<int>(arr->size()) : 0;
+}
 
+/// Return the \a i-th arrangement of kind \a k (or NULL).
+Arrangement* Cursor::findArrangement(ArrangementKind k, int i)
+{
+  return this->m_storage->findArrangement(this->m_entity, k, i);
+}
+
+/// Return the \a i-th arrangement of kind \a k (or NULL).
+const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
+{
+  return this->m_storage->findArrangement(this->m_entity, k, i);
+}
+
+/**\brief Return the relation specified by the \a offset into the specified arrangement.
+  *
+  */
+Cursor Cursor::relationFromArrangement(
+  ArrangementKind k, int arrangementIndex, int offset) const
+{
+  const Entity* ent = this->m_storage->findEntity(this->m_entity);
+  if (ent)
+    {
+    const Arrangement* arr = this->findArrangement(k, arrangementIndex);
+    if (arr && static_cast<int>(arr->details().size()) > offset)
+      {
+      int idx = arr->details()[offset];
+      return idx < 0 ?
+        Cursor() :
+        Cursor(this->m_storage, ent->relations()[idx]);
+      }
+    }
+  return Cursor();
+}
+
+/// A comparator provided so that cursors may be included in ordered sets.
 bool Cursor::operator < (const Cursor& other) const
 {
   if (this->m_storage < other.m_storage)
@@ -347,6 +561,12 @@ bool Cursor::operator < (const Cursor& other) const
     return false;
     }
   return this->m_entity < other.m_entity;
+}
+
+std::ostream& operator << (std::ostream& os, const Cursor& c)
+{
+  os << c.name();
+  return os;
 }
 
   } // namespace model

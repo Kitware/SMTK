@@ -1,5 +1,7 @@
 #include "smtk/model/BRepModel.h"
 
+#include "smtk/model/Storage.h"
+
 namespace smtk {
   namespace model {
 
@@ -73,9 +75,19 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   return this->setEntity(actual, c);
 }
 
-/**\brief Map a new cell of the given \a dimension to the \a uid.
+/**\brief Create and map a new cell of the given \a dimension to the given \a uid.
   *
-  * Passing a non-unique \a uid is an error here and will throw an exception.
+  * Passing a null or non-unique \a uid is an error here and will throw an exception.
+  *
+  * Some checking and initialization is performed based on \a entityFlags and \a dim,
+  * as described below.
+  *
+  * If the BRepModel may be cast to a Storage instance and an entity
+  * is expected to have a known, fixed number of arrangements of some sort,
+  * those are created here so that cursors may always rely on their existence
+  * even in the absence of the related UUIDs appearing in the entity's relations.
+  * For face cells (CELL_2D) entites, two HAS_USE Arrangements are created to
+  * reference FaceUse instances.
   */
 BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, BitFlags entityFlags, int dim)
 {
@@ -93,6 +105,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     throw msg.str();
     }
   std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dim));
+  this->prepareForEntity(entry);
   return this->m_topology->insert(entry).first;
 }
 
@@ -123,6 +136,7 @@ BRepModel::iter_type BRepModel::setEntity(const UUID& uid, Entity& c)
     return it;
     }
   std::pair<UUID,Entity> entry(uid,c);
+  this->prepareForEntity(entry);
   it = this->m_topology->insert(entry).first;
   this->insertEntityReferences(it);
   return it;
@@ -179,24 +193,48 @@ UUID BRepModel::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-int BRepModel::type(const smtk::util::UUID& ofEntity)
+int BRepModel::type(const smtk::util::UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());
 }
 
 /// Return the dimension of the manifold that the passed entity represents.
-int BRepModel::dimension(const UUID& ofEntity)
+int BRepModel::dimension(const UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? -1 : it->second.dimension());
+}
+
+/**\brief Return a name for the given entity ID.
+  *
+  * This will either return a user-specified name or the "short UUID" name
+  * of the entity. It will not assign a name to the entity using the model
+  * counters because the method is const.
+  */
+std::string BRepModel::name(const UUID& ofEntity) const
+{
+  if (this->hasStringProperty(ofEntity, "name"))
+    {
+    smtk::model::StringList const& nprop(this->stringProperty(ofEntity, "name"));
+    if (!nprop.empty())
+      {
+      return nprop[0];
+      }
+    }
+  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  if (it == this->m_topology->end())
+    {
+    return "invalid id " + ofEntity.toString();
+    }
+  return BRepModel::shortUUIDName(it->first, it->second.entityFlags());
 }
 
 /**\brief Return the (Dimension+1 or higher)-entities that are the immediate bordants of the passed entity.
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
@@ -231,7 +269,7 @@ UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -247,7 +285,7 @@ UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension)
 {
   UUIDs result;
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
@@ -282,7 +320,7 @@ UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension)
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -504,6 +542,10 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
   this->insertEntityReferences(result);
 }
 
+/** @name Model property accessors.
+  *
+  */
+///@{
 void BRepModel::setFloatProperty(
   const smtk::util::UUID& entity,
   const std::string& propName,
@@ -761,152 +803,7 @@ UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util
 {
   return this->m_integerData->find(entity);
 }
-
-/// Add a vertex to storage (without any relationships)
-smtk::util::UUID BRepModel::addVertex()
-{
-  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0);
-}
-
-/// Add a vertex to storage (without any relationships)
-smtk::util::UUID BRepModel::addEdge()
-{
-  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1);
-}
-
-/// Add a vertex to storage (without any relationships)
-smtk::util::UUID BRepModel::addFace()
-{
-  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2);
-}
-
-/// Add a vertex to storage (without any relationships)
-smtk::util::UUID BRepModel::addVolume()
-{
-  return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3);
-}
-
-/// Add a vertex use to storage (without any relationships)
-smtk::util::UUID BRepModel::addVertexUse()
-{
-  return this->addEntityOfTypeAndDimension(USE_ENTITY, 0);
-}
-
-/// Add a vertex use to storage (without any relationships)
-smtk::util::UUID BRepModel::addEdgeUse()
-{
-  return this->addEntityOfTypeAndDimension(USE_ENTITY, 1);
-}
-
-/// Add a vertex use to storage (without any relationships)
-smtk::util::UUID BRepModel::addFaceUse()
-{
-  return this->addEntityOfTypeAndDimension(USE_ENTITY, 2);
-}
-
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
-smtk::util::UUID BRepModel::addChain()
-{
-  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1);
-}
-
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
-smtk::util::UUID BRepModel::addLoop()
-{
-  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1);
-}
-
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
-smtk::util::UUID BRepModel::addShell()
-{
-  return this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1);
-}
-
-/**\brief Add an entity group to storage (without any relationships).
-  *
-  * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
-  * This is an easy way to constrain the dimension of entities allowed to be members
-  * of the group.
-  *
-  * You may also specify a \a name for the group. If \a name is empty, then no
-  * name is assigned.
-  */
-smtk::util::UUID BRepModel::addGroup(int extraFlags, const std::string& name)
-{
-  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
-  this->setStringProperty(uid, "name", name);
-  return uid;
-}
-
-/**\brief Add a model to storage.
-  *
-  * The model will have the specified \a embeddingDim set as an integer property
-  * named "embedding dimension." This is the dimension of the space in which
-  * vertex coordinates live.
-  *
-  * A model may also be given a parametric dimension
-  * which is the maximum parametric dimension of any cell inserted into the model.
-  * The parametric dimension is the rank of the space spanned by the shape functions
-  * (for "parametric" meshes) or (for "discrete" meshes) barycentric coordinates of cells.
-  *
-  * You may also specify a \a name for the model. If \a name is empty, then no
-  * name is assigned.
-  *
-  * A model maintains counters used to number model entities by type (uniquely within the
-  * model). Any entities related to the model (directly or indirectly via topological
-  * relationships) may have these numbers assigned as names by calling assignDefaultNames().
-  */
-smtk::util::UUID BRepModel::addModel(
-  int parametricDim, int embeddingDim, const std::string& name)
-{
-  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
-  if (embeddingDim > 0)
-    {
-    this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
-    }
-  std::string tmpName(name);
-  if (tmpName.empty())
-    {
-    std::ostringstream defaultName;
-    defaultName << "Model ";
-    int count = this->m_modelCount++;
-    char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
-    int i;
-    for (i = 0; count > 0 && i < 7; ++i)
-      {
-      --count;
-      hexavigesimal[i] = 'A' + count % 26;
-      count /= 26;
-      }
-    for (--i; i >= 0; --i)
-      {
-      defaultName << hexavigesimal[i];
-      }
-    tmpName = defaultName.str();
-    }
-  this->setStringProperty(uid, "name", tmpName);
-  // New models keep counters indicating their local entity counters
-  Integer topoCountsData[] = {0, 0, 0, 0, 0, 0};
-  Integer groupCountsData[] = {0, 0, 0};
-  Integer otherCountsData[] = {0};
-  IntegerList topoCounts(
-    topoCountsData,
-    topoCountsData + sizeof(topoCountsData)/sizeof(topoCountsData[0]));
-  IntegerList groupCounts(
-    groupCountsData,
-    groupCountsData + sizeof(groupCountsData)/sizeof(groupCountsData[0]));
-  IntegerList otherCounts(
-    otherCountsData,
-    otherCountsData + sizeof(otherCountsData)/sizeof(otherCountsData[0]));
-  this->setIntegerProperty(uid, "cell_counters", topoCounts);
-  this->setIntegerProperty(uid, "use_counters", topoCounts);
-  this->setIntegerProperty(uid, "shell_counters", topoCounts);
-  this->setIntegerProperty(uid, "group_counters", groupCounts);
-  this->setIntegerProperty(uid, "model_counters", otherCounts);
-  this->setIntegerProperty(uid, "instance_counters", otherCounts);
-  this->setIntegerProperty(uid, "invalid_counters", otherCounts);
-  return uid;
-}
+///@}
 
 /// Attempt to find a model owning the given entity.
 smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
@@ -914,9 +811,41 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
+    // If we have a use or a shell, get the associated cell, if any
+    smtk::model::BitFlags etype = it->second.entityFlags();
+    switch (etype & ENTITY_MASK)
+      {
+    case SHELL_ENTITY:
+    case USE_ENTITY:
+      // Look for a relationship to a cell
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (
+          subentity != this->topology().end() &&
+          smtk::model::isCellEntity(subentity->second.entityFlags()))
+          {
+          it = subentity;
+          break;
+          }
+        }
+      break;
+    // Remaining types should all have a direct relationship with a model if they are free:
+    default:
+    case MODEL_ENTITY:
+    case INSTANCE_ENTITY:
+    case CELL_ENTITY:
+      break;
+      }
+    // Now look for a direct relationship with a model.
+    // If none exists, look for relationships with higher-dimensional entities
+    // and check *them* for models.
     int dim;
     smtk::util::UUIDs uids;
-    uids.insert(uid);
+    uids.insert(it->first);
     for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
       {
       for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
@@ -963,14 +892,64 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
 
 std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags)
 {
+  // If this entity is a model, give it a top-level name
+  // (even if it is a submodel of some other model -- for brevity).
+  if (entityFlags & MODEL_ENTITY)
+    {
+    std::string tmpName;
+    if (!this->hasStringProperty(uid,"name"))
+      {
+      std::ostringstream defaultName;
+      defaultName << "Model ";
+      int count = this->m_modelCount++;
+      char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
+      int i;
+      for (i = 0; count > 0 && i < 7; ++i)
+        {
+        --count;
+        hexavigesimal[i] = 'A' + count % 26;
+        count /= 26;
+        }
+      for (--i; i >= 0; --i)
+        {
+        defaultName << hexavigesimal[i];
+        }
+      tmpName = defaultName.str();
+      this->setStringProperty(uid, "name", tmpName);
+      }
+    else
+      {
+      tmpName = this->stringProperty(uid, "name")[0];
+      }
+    return tmpName;
+    }
+  // Otherwise, use the "owning" model as part of the default name
+  // for the entity. First, get the name of the entity's owner:
+  smtk::util::UUID owner(
+    this->modelOwningEntity(uid));
+  std::string ownerName;
+  if (owner)
+    {
+    if (this->hasStringProperty(owner, "name"))
+      {
+      ownerName = this->stringProperty(owner, "name")[0];
+      }
+    else
+      {
+      ownerName = this->assignDefaultName(
+        owner, this->findEntity(owner)->entityFlags());
+      }
+    ownerName += ", ";
+    }
+  // Now get the owner's list of per-type counters:
   IntegerList& counts(
     this->entityCounts(
-      this->modelOwningEntity(uid),
-      entityFlags));
+      owner, entityFlags));
+  // Compose a name from the owner and counters:
   std::string defaultName =
     counts.empty() ?
     this->shortUUIDName(uid, entityFlags) :
-    Entity::defaultNameFromCounters(entityFlags, counts);
+    ownerName + Entity::defaultNameFromCounters(entityFlags, counts);
   this->setStringProperty(uid, "name", defaultName);
   return defaultName;
 }
@@ -1005,6 +984,47 @@ IntegerList& BRepModel::entityCounts(
     break;
     }
   return this->integerProperty(modelId, "invalid_counters");
+}
+
+/**\brief Initialize storage outside of the topology() table for a new entity.
+  *
+  * This is an internal method invoked by setEntity and SetEntityOfTypeAndDimension.
+  */
+void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
+{
+  if ((entry.second.entityFlags() & CELL_2D) == CELL_2D)
+    {
+    Storage* store = dynamic_cast<Storage*>(this);
+    if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
+      {
+      // Create arrangements to hold face-uses:
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, -1)); // Negative
+      store->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexAndSense(-1, +1)); // Positive
+      }
+    }
+  else if ((entry.second.entityFlags() & MODEL_ENTITY) == MODEL_ENTITY)
+    {
+    // New models keep counters indicating their local entity counters
+    Integer topoCountsData[] = {0, 0, 0, 0, 0, 0};
+    Integer groupCountsData[] = {0, 0, 0};
+    Integer otherCountsData[] = {0};
+    IntegerList topoCounts(
+      topoCountsData,
+      topoCountsData + sizeof(topoCountsData)/sizeof(topoCountsData[0]));
+    IntegerList groupCounts(
+      groupCountsData,
+      groupCountsData + sizeof(groupCountsData)/sizeof(groupCountsData[0]));
+    IntegerList otherCounts(
+      otherCountsData,
+      otherCountsData + sizeof(otherCountsData)/sizeof(otherCountsData[0]));
+    this->setIntegerProperty(entry.first, "cell_counters", topoCounts);
+    this->setIntegerProperty(entry.first, "use_counters", topoCounts);
+    this->setIntegerProperty(entry.first, "shell_counters", topoCounts);
+    this->setIntegerProperty(entry.first, "group_counters", groupCounts);
+    this->setIntegerProperty(entry.first, "model_counters", otherCounts);
+    this->setIntegerProperty(entry.first, "instance_counters", otherCounts);
+    this->setIntegerProperty(entry.first, "invalid_counters", otherCounts);
+    }
 }
 
   } // model namespace

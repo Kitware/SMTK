@@ -78,21 +78,6 @@ namespace smtk
       std::vector<std::string>  m_analysisNames;
       smtk::util::Logger        m_logger;
     };
-
-
-    inline ExportSpec::ExportSpec()
-    {
-      this->clear();
-    }
-
-    inline void ExportSpec::clear()
-    {
-      m_manager = 0;
-      m_analysisGridInfo = smtk::model::GridInfoPtr();
-      m_outputPath = "";
-      m_analysisNames.clear();
-      m_logger.reset();
-    }
   }
 }
 

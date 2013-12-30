@@ -8,6 +8,9 @@
 namespace smtk {
   namespace model {
 
+/**\brief Present the contents of an smtk::model::Storage instance via QEntityItemModel.
+  *
+  */
 class QTSMTK_EXPORT QEntityItemDelegate : public QStyledItemDelegate
 {
   Q_OBJECT

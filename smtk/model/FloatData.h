@@ -19,6 +19,7 @@ namespace smtk {
 
     typedef UUIDsToFloatData::iterator UUIDWithFloatProperties;
     typedef FloatData::iterator PropertyNameWithFloats;
+    typedef FloatData::const_iterator PropertyNameWithConstFloats;
 
   } // namespace model
 } // namespace smtk

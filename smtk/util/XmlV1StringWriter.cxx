@@ -165,8 +165,12 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     node.append_attribute("AdvanceLevel") = def->advanceLevel();
     }
   if (def->isUnique())
-    {
+    { // true is the default
     node.append_attribute("Unique").set_value("true");
+    }
+  else
+    {
+    node.append_attribute("Unique").set_value("false");
     }
   if (def->isNodal())
     {
