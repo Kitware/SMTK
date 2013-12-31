@@ -115,12 +115,12 @@ namespace smtk
 
       /// Returns the type of cell for the specified analysis grid cell id.
       //  The integer value is defined by the VTKCellType enum in vtkCellType.h
-      virtual int  cellType(int gridCellId, ApiStatus& status) = 0;
+      virtual int cellType(int gridCellId, ApiStatus& status) = 0;
 
 
       /// Returns the grid point ids for a specified model entity id.
       //  The list can be filtered by the point closure enumeration.
-      virtual std::vector<int >
+      virtual std::vector<int>
       pointIds(int modelEntityId, PointClosure closure, ApiStatus& status) = 0;
 
 
