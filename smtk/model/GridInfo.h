@@ -54,22 +54,24 @@ namespace smtk
       enum ApiReturnType
       {
         OK = 0,
-        MODEL_ENTITY_NOT_FOUND,  // specified model entity id not found
-        GRID_ENTITY_NOT_FOUND,   // specified grid entity id not found
-        IDENTIFIER_NOT_FOUND,    // for methods specific to MOAB grids
-        NOT_AVAILABLE            // requested data not available/found
+        ENTITY_NOT_FOUND,     // model or grid entity not found for specified id
+        IDENTIFIER_NOT_FOUND, // for methods specific to MOAB grids
+        NOT_AVAILABLE         // requested data not available/found
       };
 
 
-      /// Return structure for all public methods
+      /// Structure passed in as the last argument to each API method, for reporting
+      // back status information.
       struct ApiStatus
       {
         ApiReturnType       returnType;
         std::string         errorMessage;
         smtk::util::Logger *logger;
+
+        ApiStatus() : logger(0) {}
       };
 
-      /// Point closure enum, for point accessor methods
+      /// Enum for specifying point set closure.
       enum PointClosure
       {
         ALL_POINTS = 0,
@@ -77,7 +79,9 @@ namespace smtk
         BOUNDARY_POINTS
       };
 
-      /// Returns highest dimension elements/cells in the grid
+      /// Returns the dimension of the grid, more specifically, the
+      // highest-dimension elements in the grid.
+      // If status returnType is not OK, method returns -1.
       virtual int dimension(ApiStatus& status) const = 0;
 
 
@@ -104,10 +108,9 @@ namespace smtk
       //  If the specified model entity is on the boundary of multiple model
       //  entities (for example, a model face can be on the boundary of two model
       //  regions), the grid items are returned for only one bounded model
-      //  entity. If the last argument (boundedModelEntity) is specified,
-      //  then the grid items will be returned specifically for that model
-      //  entity (that is, the analysis grid cells will be from that model
-      //  entity).
+      //  entity. The boundedModelEntity argument is used to disambiguate
+      //  these cases. A value of -1 can be passed in for that entity, in which
+      //  case the bounded model entity will be selected internally.
       virtual std::vector<std::pair<int, int> >
       asBoundaryItems(int modelEntityId, int boundedModelEntityId,
                       ApiStatus& status) = 0;
