@@ -54,7 +54,7 @@ if __name__ == '__main__':
     comp = att.find("DoubleComp1")
     if not comp is None:
        vvcomp = smtk.attribute.ValueItem.CastTo(comp)
-       print " Value = %s"%vcomp.valueAsString()
+       print " Value = %s"%vvcomp.valueAsString()
     else:
        print "ERROR: could not find the base's item"
        status = -1;
