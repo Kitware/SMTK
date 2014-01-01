@@ -77,7 +77,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
       {
       int i;
       this->m_expressions.resize(n);
-      for (i = 0; i < n; i++)
+      for (i = 0; i < static_cast<int>(n); i++)
         {
         def->buildExpressionItem(this, i);
         }
