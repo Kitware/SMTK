@@ -376,8 +376,7 @@ void qtAssociationWidget::processDefUniqueness(
     {
     return;
     }
-  int numAtts = theEntiy->numberOfAssociatedAttributes();
-  if( numAtts == 0)
+  if( theEntiy->numberOfAssociatedAttributes() == 0)
     {
     return;
     }
