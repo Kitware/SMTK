@@ -279,7 +279,7 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
   qtBaseView* qtView = NULL;
   for (i = 0; i < n; i++)
     {
-    v = group->subView(i);
+    v = group->subView(static_cast<int>(i));
     switch(v->type())
       {
       case smtk::view::Base::ATTRIBUTE:
@@ -462,7 +462,7 @@ bool qtUIManager::getExpressionArrayString(
     {
     return false;
     }
-  int numberOfComponents = dataItem->numberOfItemsPerGroup();
+  int numberOfComponents = static_cast<int>(dataItem->numberOfItemsPerGroup());
   int nVals = static_cast<int>(item->numberOfValues());
   QStringList strVals;
   smtk::attribute::ValueItemPtr valueitem;
@@ -659,7 +659,7 @@ QWidget* qtUIManager::createComboBox(
   QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
     {
-    std::string enumText = itemDef->discreteEnum(i);
+    std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
     if(itemDef->hasDefault() &&
       static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
       {

@@ -454,7 +454,7 @@ void qtSimpleExpressionView::onCreateNew()
 
     QStringList strVals;
     int numRows = this->Internals->NumberBox->value();
-    int numberOfComponents = itemDefinition->numberOfItemDefinitions();
+    int numberOfComponents = static_cast<int>(itemDefinition->numberOfItemDefinitions());
     for(int i=0; i < numRows; i++)
       {
       for(int c=0; c<numberOfComponents-1; c++)
@@ -576,7 +576,7 @@ void qtSimpleExpressionView::onCopySelected()
       QString funcExp = expressionItem ?
         expressionItem->valueAsString().c_str() : "";
       this->buildSimpleExpression(funcExp, valuesText,
-        groupItem->numberOfItemsPerGroup());
+        static_cast<int>(groupItem->numberOfItemsPerGroup()));
       }
     }
 }

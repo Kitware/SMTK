@@ -62,7 +62,7 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfRequiredValues();
+  size_t n = def->numberOfRequiredValues();
   if (n)
     {
     this->m_isSet.resize(n, false);
@@ -82,7 +82,7 @@ Item::Type DirectoryItem::type() const
 }
 
 //----------------------------------------------------------------------------
-int DirectoryItem::numberOfRequiredValues() const
+std::size_t DirectoryItem::numberOfRequiredValues() const
 {
   const DirectoryItemDefinition *def = 
     static_cast<const DirectoryItemDefinition*>(this->m_definition.get());
@@ -151,8 +151,7 @@ DirectoryItem::appendValue(const std::string &val)
   //First - are we allowed to change the number of values?
   const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -172,8 +171,7 @@ DirectoryItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -193,8 +191,7 @@ bool DirectoryItem::setNumberOfValues(std::size_t newSize)
   //Next - are we allowed to change the number of values?
   const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -209,7 +206,7 @@ DirectoryItem::reset()
   const DirectoryItemDefinition *def
     = static_cast<const DirectoryItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfRequiredValues();
+  std::size_t i, n = def->numberOfRequiredValues();
   if (!n)
     {
     this->m_values.clear();

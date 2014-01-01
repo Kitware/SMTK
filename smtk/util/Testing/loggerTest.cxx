@@ -44,7 +44,7 @@ int main()
   smtk::util::Logger::Record r;
   for (i = 0; i < n; i++)
     {
-    r = logger.record(i);
+    r = logger.record(static_cast<int>(i));
     std::cerr << " Record " << i << ": \n\tSeverity = "
               << smtk::util::Logger::severityAsString(r.severity)
               << "\n\tMessage = " << r.message

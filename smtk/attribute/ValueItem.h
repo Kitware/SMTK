@@ -46,7 +46,7 @@ namespace smtk
       virtual ~ValueItem();
       virtual std::size_t numberOfValues() const
       {return this->m_isSet.size();}
-      int numberOfRequiredValues() const;
+      std::size_t numberOfRequiredValues() const;
 
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
@@ -82,9 +82,9 @@ namespace smtk
       { return this->valueAsString(0);}
 
       virtual std::string valueAsString(int elementIndex) const = 0;
-      virtual bool isSet(int elementIndex = 0) const
+      virtual bool isSet(std::size_t elementIndex = 0) const
       {return this->m_isSet[elementIndex];}
-      virtual void unset(int elementIndex=0)
+      virtual void unset(std::size_t elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
       smtk::attribute::RefItemPtr expressionReference(int elementIndex=0) const
       {return this->m_expressions[elementIndex];}

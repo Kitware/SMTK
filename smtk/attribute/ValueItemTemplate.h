@@ -104,7 +104,7 @@ namespace smtk
         {
         return false;
         }
-      int n = def->numberOfRequiredValues();
+      size_t n = def->numberOfRequiredValues();
       if (n)
         {
         if (def->hasDefault())
@@ -184,8 +184,7 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      int n = def->numberOfRequiredValues();
-      if (n)
+      if (def->numberOfRequiredValues() != 0)
         {
         return false; // The number of values is fixed
         }
@@ -292,8 +291,7 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      int n = def->numberOfRequiredValues();
-      if (n)
+      if (def->numberOfRequiredValues() != 0)
         {
         return false; // The number of values is fixed
         }
@@ -373,7 +371,7 @@ namespace smtk
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
-      int i, n = def->numberOfRequiredValues();
+      std::size_t i, n = def->numberOfRequiredValues();
       if (!n)
         {
         this->m_values.clear();
