@@ -411,7 +411,7 @@ namespace smtk
         int index = def->defaultDiscreteIndex();
         for(i = 0; i < n; i++)
           {
-          this->setDiscreteIndex(i, index);
+          this->setDiscreteIndex(static_cast<int>(i), index);
           }
         }
       else
@@ -419,7 +419,7 @@ namespace smtk
         DataT val = def->defaultValue();
         for(i = 0; i < n; i++)
           {
-          this->setValue(i, val);
+          this->setValue(static_cast<int>(i), val);
           }
         }
       ValueItem::reset();

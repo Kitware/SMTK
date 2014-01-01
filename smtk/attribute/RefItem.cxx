@@ -215,7 +215,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
 }
 //----------------------------------------------------------------------------
 void
-RefItem::unset(int element)
+RefItem::unset(std::size_t element)
 {
   Attribute *att = this->m_values[element].lock().get();
   if (att == NULL)
