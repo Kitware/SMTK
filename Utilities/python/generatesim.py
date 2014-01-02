@@ -121,9 +121,20 @@ def fetch_attribute(manager, att_type, name, att_id):
     '''
     Retrieves or creates attribute as needed
     '''
-    att = manager.findAttribute(name)
+    att = None   # return value
+
+    # First check that Definition exists
+    defn = manager.findDefinition(att_type)
+    if defn is None:
+        print 'Warning: no attribute definition for %s type' % \
+            att_type + ' - skipping'
+        return None
+
+    if name is not None:
+        att = manager.findAttribute(name)
+
     if att is None:
-        print 'Creating attribute %s' % name
+        print 'Creating %s attribute' % att_type
         if att_id is not None:
             # First check that id not already in use
             test_id_att = manager.findAttribute(att_id)
@@ -131,11 +142,14 @@ def fetch_attribute(manager, att_type, name, att_id):
                 print 'Cannot generate attribute %s with id %d' % \
                     (name, att_id) + \
                     ' because id is already in use.'
-                att = manager.createAttribute(name, att_type)
-                print 'Created attribute %s with id %d' % (att.name(), att.id())
+                if name is None:
+                    att = manager.createAttribute(att_type)
+                else:
+                    att = manager.createAttribute(name, att_type)
             else:
                 att = manager.createAttribute(name, att_type, att_id)
-
+        elif name is None:
+            att = manager.createAttribute(att_type)
         else:
             att = manager.createAttribute(name, att_type)
 
@@ -163,16 +177,13 @@ def generate_atts(manager, attributes_description):
         name = att_description.get('name')
         att_id = att_description.get('id')
 
+        """
         if (att_type is None) or (name is None):
             print 'Warning: attribute description incomplete' + \
                 ' - type %s, name %s, id %s ' % (att_type, name, att_id) + \
                 ' - skipping'
             continue
-        defn = manager.findDefinition(att_type)
-        if defn is None:
-            print 'Warning: no attribute definition for %s type' % \
-                att_type + ' - skipping'
-            continue
+        """
 
         # Attribute may have been automatically instanced
         att = fetch_attribute(manager, att_type, name, att_id)
@@ -188,7 +199,7 @@ def generate_atts(manager, attributes_description):
                     print 'Warning: Did not find model item %d for attribute type %s - skipping' % \
                         (model_item_id, name)
                 else:
-                    print 'Associate model item %d to att %s' % (model_item_id, name)
+                    print 'Associate model item %d to att %s' % (model_item_id, att.name())
                     att.associateEntity(model_item)
 
         count += 1
