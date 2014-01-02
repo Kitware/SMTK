@@ -28,8 +28,7 @@ def generate_model_items(manager, model_description):
     '''
     Constructs model based on input description
     '''
-    #print 'Generating model'
-    #model = smtk.model.Model.New()
+    print 'Generating model items'
     model = manager.refModel()
     for item_description in model_description:
         group = item_description.get('group')
@@ -47,22 +46,108 @@ def generate_model_items(manager, model_description):
 
 def set_item(item, item_description):
     '''
+    Recursive method to set contents of Item instances
+    Returns boolean indicating success
     '''
     enabled = item_description.get('enabled')
     if enabled is not None:
         item.setIsEnabled(enabled)
 
+    if item.type() == smtk.attribute.Item.GROUP:
+        success = process_items(item, item_description)
+        return success
+
+    expression = item_description.get('expression')
+    if expression is not None:
+        exp = manager.findAttribute(expression)
+        if exp is None:
+            print 'Could not find expression named %s' % expression
+            return False
+
+        print 'Setting expression to %s' % expression
+        success = item.setExpression(exp)
+        return success
+
     discrete_index = item_description.get('discrete_index')
     if discrete_index is not None:
-        item.setDiscreteIndex(discrete_index)
+        print 'Setting discrete index to %d' % discrete_index
+        success = item.setDiscreteIndex(discrete_index)
+        return success
 
     value = item_description.get('value')
     if value is not None:
+        num_values = 1
         if isinstance(value, (list, tuple)):
-            for i in range(len(value)):
+            num_values = len(value)
+            print 'num_values', num_values
+            item.setNumberOfValues(num_values)
+            for i in range(num_values):
+                print 'Setting value to', value[i], type(value[i])
                 item.setValue(i, value[i])
         else:
+            print 'Setting value to', value, type(value)
+            item.setNumberOfValues(num_values)
             item.setValue(0, value)
+
+
+def process_items(parent, parent_description):
+    '''
+    Traverses all items contained by parent
+    Note that parent may be either Attribute or GroupItem
+    Returns boolean indicating success
+    '''
+    success = True
+
+    item_list = parent_description.get('items', list())
+    for item_description in item_list:
+        item_name = item_description.get('name')
+        item = parent.find(item_name)
+        if item is None:
+            print 'Warning: no item %s for parent %s - skipping' % \
+                (parent.name(), name)
+            if isinstance(parent, smtk.attribute.Attribute):
+                manager.removeAttribute(name)
+                count -= 1
+                success = False
+            break
+
+        print 'Set item %s' % item.name()
+        concrete_item = smtk.attribute.to_concrete(item)
+        set_item(concrete_item, item_description)
+    return success
+
+
+def fetch_attribute(manager, att_type, name, att_id):
+    '''
+    Retrieves or creates attribute as needed
+    '''
+    att = manager.findAttribute(name)
+    if att is None:
+        print 'Creating attribute %s' % name
+        if att_id is not None:
+            # First check that id not already in use
+            test_id_att = manager.findAttribute(att_id)
+            if test_id_att is not None:
+                print 'Cannot generate attribute %s with id %d' % \
+                    (name, att_id) + \
+                    ' because id is already in use.'
+                att = manager.createAttribute(name, att_type)
+                print 'Created attribute %s with id %d' % (att.name(), att.id())
+            else:
+                att = manager.createAttribute(name, att_type, att_id)
+
+        else:
+            att = manager.createAttribute(name, att_type)
+
+        if att is None:
+            print 'Warning: Manager did not create attribute of type %s -skipping' % \
+                att_type
+    else:
+        print 'Found attribute %s' % name
+        if att_id is not None and att_id != att.id():
+            print 'Warning: attribute id (%d) does not match input %d' % \
+                (att.id(), att_id)
+    return att
 
 
 def generate_atts(manager, attributes_description):
@@ -70,6 +155,7 @@ def generate_atts(manager, attributes_description):
     Constructs attributes based on input description
     Returns number of attributes that got created
     '''
+    print 'Generating attributes'
     count = 0
     model = manager.refModel()
     for att_description in attributes_description:
@@ -77,9 +163,9 @@ def generate_atts(manager, attributes_description):
         name = att_description.get('name')
         att_id = att_description.get('id')
 
-        if (att_type is None) or (name is None) or (att_id is None):
+        if (att_type is None) or (name is None):
             print 'Warning: attribute description incomplete' + \
-                ' - type %s, name %s, id %s ' % (att_type, name, id) + \
+                ' - type %s, name %s, id %s ' % (att_type, name, att_id) + \
                 ' - skipping'
             continue
         defn = manager.findDefinition(att_type)
@@ -89,12 +175,8 @@ def generate_atts(manager, attributes_description):
             continue
 
         # Attribute may have been automatically instanced
-        att = manager.findAttribute(name)
+        att = fetch_attribute(manager, att_type, name, att_id)
         if att is None:
-            att = manager.createAttribute(name, att_type, att_id)
-        if att is None:
-            print 'Warning: Manager did not create attribute of type %s -skipping' % \
-                att_type
             continue
 
         # Only support 1 associated model entity
@@ -110,20 +192,7 @@ def generate_atts(manager, attributes_description):
                     att.associateEntity(model_item)
 
         count += 1
-
-        item_list = att_description.get('items', list())
-        for item_description in item_list:
-            item_name = item_description.get('name')
-            item = att.find(item_name)
-            if item is None:
-                print 'Warning: no item %s for attribute %s - skipping' % \
-                    (item_name, name)
-                manager.removeAttribute(name)
-                count -= 1
-                break
-
-            concrete_item = smtk.attribute.to_concrete(item)
-            set_item(concrete_item, item_description)
+        process_items(att, att_description)
 
     return count
 
