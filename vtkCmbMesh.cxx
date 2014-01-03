@@ -80,11 +80,11 @@ vtkModel* vtkCmbMesh::GetModel()
 void vtkCmbMesh::ModelGeometricEntityChanged(
   vtkObject *caller, unsigned long event, void *cData, void *callData)
 {
-  vtkCmbMesh* cmbMesh = (vtkCmbMesh*) cData;
+  vtkCmbMesh* cmbMesh = static_cast<vtkCmbMesh*>(cData);
   vtkModel* model = cmbMesh->Model;
   if(event == ModelGeometricEntitySplit)
     {
-    vtkSplitEventData* splitEventData = (vtkSplitEventData*) callData;
+    vtkSplitEventData* splitEventData = static_cast<vtkSplitEventData*>(callData);
     if(model->GetModelDimension() == 2)
       {
       cmbMesh->ModelEdgeSplit(splitEventData);
@@ -96,7 +96,7 @@ void vtkCmbMesh::ModelGeometricEntityChanged(
     }
   else if(event == ModelGeometricEntitiesAboutToMerge)
     {
-    vtkMergeEventData* mergeEventData = (vtkMergeEventData*) callData;
+    vtkMergeEventData* mergeEventData = static_cast<vtkMergeEventData*>(callData);
     if(model->GetModelDimension() == 2)
       {
       cmbMesh->ModelEdgeMerge(mergeEventData);
@@ -108,7 +108,7 @@ void vtkCmbMesh::ModelGeometricEntityChanged(
     }
   else if(event == ModelGeometricEntityBoundaryModified)
     {
-    cmbMesh->ModelEntityBoundaryModified((vtkModelGeometricEntity*)callData);
+    cmbMesh->ModelEntityBoundaryModified(static_cast<vtkModelGeometricEntity*>(callData));
     }
 }
 //----------------------------------------------------------------------------

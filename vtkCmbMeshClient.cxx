@@ -133,7 +133,7 @@ void vtkCmbMeshClient::Initialize(vtkModel* model, vtkSMProxy* smModelProxy)
   this->CallbackCommand =
     vtkSmartPointer<vtkCallbackCommand>::New();
   this->CallbackCommand->SetCallback(vtkCmbMeshClient::ModelGeometricEntityChanged);
-  this->CallbackCommand->SetClientData((void*) this);
+  this->CallbackCommand->SetClientData(static_cast<void*>(this));
   model->AddObserver(ModelGeometricEntityBoundaryModified, this->CallbackCommand);
   model->AddObserver(ModelGeometricEntitiesAboutToMerge, this->CallbackCommand);
   model->AddObserver(ModelGeometricEntitySplit, this->CallbackCommand);

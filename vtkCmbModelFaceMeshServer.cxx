@@ -217,7 +217,7 @@ bool vtkCmbModelFaceMeshServer::Triangulate(vtkPolyData *mesh,
   this->FaceInfo->fillTriangleInterface(&ti);
   vtkModelFace* modelFace =
     vtkModelFace::SafeDownCast(this->GetModelGeometricEntity());
-  bool valid = ti.buildFaceMesh((long)modelFace->GetUniquePersistentId(), this->ZValue);
+  bool valid = ti.buildFaceMesh(static_cast<long>(modelFace->GetUniquePersistentId()), this->ZValue);
   if ( valid )
     {
     valid = this->FaceInfo->RelateMeshToModel(mesh,modelFace->GetUniquePersistentId());
