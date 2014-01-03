@@ -248,7 +248,9 @@ if __name__ == '__main__':
     if args.yaml_filename is not None and not YAML_ENABLED:
         print
         print 'Sorry, cannot run because python yaml module was not found.'
-        print 'Either install PyYaml or swith to json input file.'
+        print 'Either install PyYaml or set PYTHONPATH to include PyYaml.'
+        print 'Note that PyYaml is available in the SMTK ThirdParty folder.'
+        print 'e.g. \"export PYTHONPATH=/path-to-SMTK/ThirdParty/PyYaml\"'
         print
         sys.exit(-2)
 
@@ -295,7 +297,7 @@ if __name__ == '__main__':
             print 'Abort: Unable to load yaml description file'
             sys.exit(-4)
         try:
-            sim_description = yaml.load(contents)
+            sim_description = yaml.safe_load(contents)
         except:
             print 'Abort: Unable to parse yaml description file'
             sys.exit(-4)
