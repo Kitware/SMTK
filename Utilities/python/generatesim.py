@@ -2,6 +2,10 @@
 Python script to generate simulation attributes from input (text) description
 """
 
+app_description = 'Python script to generate simulation attributes' + \
+    ' from input (text) descriptions'
+
+
 import argparse
 import json
 import sys
@@ -17,6 +21,7 @@ try:
     import smtk
 except ImportError:
     print
+    print app_description
     print 'Not able to import smtk library. You might need to:'
     print '  - Use the PYTHONPATH variable to point to the smtk python lib'
     print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
@@ -229,10 +234,8 @@ def generate_sim(manager, description):
 
 
 if __name__ == '__main__':
-    description = 'Python script to generate simulation attributes' + \
-        ' from input (text) descriptions'
     epilog = 'Note: you must specify EITHER --yaml_filename OR --json_filename'
-    parser = argparse.ArgumentParser(description=description, epilog=epilog)
+    parser = argparse.ArgumentParser(description=app_description, epilog=epilog)
     parser.add_argument('-t', '--template_filename', required=True)
     parser.add_argument('-s', '--sim_filename')
 
