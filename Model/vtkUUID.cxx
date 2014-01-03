@@ -281,14 +281,14 @@ int vtkUUID::GetMacAddrSys(unsigned char *addr)
 
   // Load the SNMP dll and get the addresses of the functions necessary
   HINSTANCE m_hInst = LoadLibrary("inetmib1.dll");
-  if (m_hInst < static_cast<HINSTANCE>( HINSTANCE_ERROR ))
+  if (m_hInst < reinterpret_cast<HINSTANCE>( HINSTANCE_ERROR ))
     {
     return -1;
     }
   pSnmpExtensionInit m_Init =
-    static_cast<pSnmpExtensionInit>( GetProcAddress(m_hInst, "SnmpExtensionInit") );
+    reinterpret_cast<pSnmpExtensionInit>( GetProcAddress(m_hInst, "SnmpExtensionInit") );
   pSnmpExtensionQuery m_Query =
-    static_cast<pSnmpExtensionQuery>( GetProcAddress(m_hInst, "SnmpExtensionQuery") );
+    reinterpret_cast<pSnmpExtensionQuery>( GetProcAddress(m_hInst, "SnmpExtensionQuery") );
   m_Init(GetTickCount(), &PollForTrapEvent, &SupportedView);
 
   /* Initialize the variable list to be retrieved by m_Query */
