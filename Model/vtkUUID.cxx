@@ -160,7 +160,7 @@ void vtkUUID::ConvertBinaryUUIDToString(unsigned char *uuid,
 int vtkUUID::GenerateUUID(unsigned char uuid[16])
 {
 #ifdef HAVE_UUIDCREATE
-  if (FAILED(UuidCreate((GUID *)uuid)))
+  if (FAILED(UuidCreate(reinterpret_cast<GUID *>(uuid))))
     {
     return -1;
     }
@@ -281,14 +281,14 @@ int vtkUUID::GetMacAddrSys(unsigned char *addr)
 
   // Load the SNMP dll and get the addresses of the functions necessary
   HINSTANCE m_hInst = LoadLibrary("inetmib1.dll");
-  if (m_hInst < (HINSTANCE) HINSTANCE_ERROR)
+  if (m_hInst < static_cast<HINSTANCE>( HINSTANCE_ERROR ))
     {
     return -1;
     }
   pSnmpExtensionInit m_Init =
-    (pSnmpExtensionInit) GetProcAddress(m_hInst, "SnmpExtensionInit");
+    static_cast<pSnmpExtensionInit>( GetProcAddress(m_hInst, "SnmpExtensionInit") );
   pSnmpExtensionQuery m_Query =
-    (pSnmpExtensionQuery) GetProcAddress(m_hInst, "SnmpExtensionQuery");
+    static_cast<pSnmpExtensionQuery>( GetProcAddress(m_hInst, "SnmpExtensionQuery") );
   m_Init(GetTickCount(), &PollForTrapEvent, &SupportedView);
 
   /* Initialize the variable list to be retrieved by m_Query */
