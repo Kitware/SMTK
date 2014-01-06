@@ -228,7 +228,7 @@ namespace smtk
       //This method resets the definition item offset - this is used by the
       // manager when a definition is modified
       void resetItemOffset();
-      int itemOffset() const
+      std::size_t itemOffset() const
       {return this->m_baseItemOffset;}
 
       // Return the public pointer for this definition.
@@ -272,7 +272,7 @@ namespace smtk
       std::string m_detailedDescription;
       std::string m_briefDescription;
       // Used by the find method to calculate an item's position
-      int m_baseItemOffset;
+      std::size_t m_baseItemOffset;
     private:
 
       // These colors are returned for base definitions w/o set colors
@@ -311,7 +311,7 @@ namespace smtk
           return -1; // named item doesn't exist
           }
         }
-      return it->second + this->m_baseItemOffset;
+      return it->second + static_cast<int>(this->m_baseItemOffset);
     }
 //----------------------------------------------------------------------------
     inline const double * Definition::notApplicableColor() const

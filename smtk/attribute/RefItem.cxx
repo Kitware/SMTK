@@ -60,8 +60,8 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     {
     return false;
     }
-  int n = def->numberOfRequiredValues();
-  if (n)
+  std::size_t n = def->numberOfRequiredValues();
+  if (n != 0)
     {
     this->m_values.resize(n);
     }
@@ -94,7 +94,7 @@ Item::Type RefItem::type() const
 }
 
 //----------------------------------------------------------------------------
-int RefItem::numberOfRequiredValues() const
+std::size_t RefItem::numberOfRequiredValues() const
 {
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition*>(this->m_definition.get());
@@ -146,8 +146,7 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -167,8 +166,7 @@ RefItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -217,7 +215,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
 }
 //----------------------------------------------------------------------------
 void
-RefItem::unset(int element)
+RefItem::unset(std::size_t element)
 {
   Attribute *att = this->m_values[element].lock().get();
   if (att == NULL)
@@ -238,7 +236,7 @@ RefItem::reset()
   const RefItemDefinition *def
     = static_cast<const RefItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfRequiredValues();
+  size_t i, n = def->numberOfRequiredValues();
   if (!n)
     {
     this->clearAllReferences();

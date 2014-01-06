@@ -418,7 +418,7 @@ void qtAttributeView::updateChildWidgetsEnableState(
     smtk::attribute::GroupItemPtr grpItem = dynamic_pointer_cast<GroupItem>(attItem);
     if(grpItem)
       {
-      int numItems = grpItem->numberOfItemsPerGroup();
+      int numItems = static_cast<int>(grpItem->numberOfItemsPerGroup());
       for (int j = 0; j < numItems; j++) // expecting one item for each column
         {
         this->updateItemWidgetsEnableState(
@@ -571,7 +571,7 @@ void qtAttributeView::addAttributePropertyItems(
   std::size_t i, n = childData->numberOfItems();
   for (i = 0; i < n; i++)
     {
-    smtk::attribute::ItemPtr attItem = childData->item(i);
+    smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
     if(qtUIManager::instance()->passItemCategoryCheck(
         attItem->definition()) &&
       qtUIManager::instance()->passAdvancedCheck(
@@ -753,7 +753,7 @@ void qtAttributeView::updateTableWithAttribute(
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
-    smtk::attribute::ItemPtr attItem = att->item(i);
+    smtk::attribute::ItemPtr attItem = att->item(static_cast<int>(i));
     const ItemDefinition* itemDef =
      dynamic_cast<const ItemDefinition*>(attItem->definition().get());
     if(!qtUIManager::instance()->passAdvancedCheck(
@@ -816,7 +816,7 @@ void qtAttributeView::updateTableWithProperty(
     std::size_t i, n = (*it)->numberOfItems();
     for (i = 0; i < n; i++)// for each property
       {
-      smtk::attribute::ItemPtr attItem = (*it)->item(i);
+      smtk::attribute::ItemPtr attItem = (*it)->item(static_cast<int>(i));
       const ItemDefinition* itemDef =
       dynamic_cast<const ItemDefinition*>(attItem->definition().get());
       if(!qtUIManager::instance()->passAdvancedCheck(
@@ -869,7 +869,7 @@ void qtAttributeView::addTableGroupItems(
   const char* attLabel = strAttLabel.empty() ? NULL : strAttLabel.c_str();
   int advanced = gItemDef->advanceLevel();
   // expecting one subgroup
-  int numItems = attItem->numberOfItemsPerGroup();
+  int numItems = static_cast<int>(attItem->numberOfItemsPerGroup());
   if(numItems > 0)
     {
     if(dynamic_pointer_cast<ValueItem>(attItem->item(0)))
@@ -1085,7 +1085,7 @@ void qtAttributeView::getAllDefinitions()
   std::size_t i, n = aview->numberOfDefinitions();
   for (i = 0; i < n; i++)
     {
-    attribute::DefinitionPtr attDef = aview->definition(i);
+    attribute::DefinitionPtr attDef = aview->definition(static_cast<int>(i));
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     }
 

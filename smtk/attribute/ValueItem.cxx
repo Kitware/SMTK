@@ -58,7 +58,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfRequiredValues();
+  std::size_t n = def->numberOfRequiredValues();
   if (n)
     {
     if (def->hasDefault())
@@ -77,7 +77,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
       {
       int i;
       this->m_expressions.resize(n);
-      for (i = 0; i < n; i++)
+      for (i = 0; i < static_cast<int>(n); i++)
         {
         def->buildExpressionItem(this, i);
         }
@@ -96,7 +96,7 @@ ValueItem::~ValueItem()
     }
 }
 //----------------------------------------------------------------------------
-int ValueItem::numberOfRequiredValues() const
+std::size_t ValueItem::numberOfRequiredValues() const
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -162,8 +162,7 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
     {
     return false;
     }
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -171,7 +170,7 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
     {
     return false; // Attribute is of the proper type
     }
-  n = static_cast<int>(m_expressions.size());
+  int n = static_cast<int>(m_expressions.size());
   this->m_expressions.resize(n+1);
   def->buildExpressionItem(this, n);
   this->m_expressions[n]->setValue(exp);

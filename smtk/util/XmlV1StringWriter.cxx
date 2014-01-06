@@ -488,7 +488,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -536,7 +536,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -570,7 +570,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -604,7 +604,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -631,7 +631,7 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredGroups();
+      size_t i, n = idef->numberOfRequiredGroups();
       xml_node ln;
       for (i = 0; i < n; i++)
         {

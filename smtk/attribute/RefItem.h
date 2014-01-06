@@ -49,7 +49,7 @@ namespace smtk
       std::size_t numberOfValues() const
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
-      int numberOfRequiredValues() const;
+      std::size_t numberOfRequiredValues() const;
       smtk::attribute::AttributePtr value(int element=0) const
       {return this->m_values[element].lock();}
       bool setValue( smtk::attribute::AttributePtr val)
@@ -61,9 +61,9 @@ namespace smtk
       virtual std::string valueAsString(const std::string &format="") const
       {return this->valueAsString(0, format);}
       virtual std::string valueAsString(int element, const std::string &format="") const;
-      virtual bool isSet(int element=0) const
+      virtual bool isSet(std::size_t element=0) const
       {return this->m_values[element].lock().get() != NULL;}
-      virtual void unset(int element=0);
+      virtual void unset(std::size_t element=0);
 
     protected:
       RefItem(Attribute *owningAttribute, int itemPosition);
