@@ -12,7 +12,7 @@ namespace smtk {
   */
 Volume Shell::volume() const
 {
-  return this->ShellEntity::parentCell().as<Volume>();
+  return this->ShellEntity::boundingCell().as<Volume>();
 }
 
 /**\brief Return the face-uses composing this shell.

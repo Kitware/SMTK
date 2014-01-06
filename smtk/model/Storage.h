@@ -31,6 +31,7 @@ class Shell;
 class Vertex;
 class VertexUse;
 class Volume;
+class VolumeUse;
 
 /**\brief Store information about solid models.
   *
@@ -77,9 +78,20 @@ public:
 
   const Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index) const;
   Arrangement* findArrangement(const smtk::util::UUID& cellId, ArrangementKind kind, int index);
+  int findCellHasUseWithSense(const smtk::util::UUID& cellId, int sense) const;
+  std::set<int> findCellHasUsesWithOrientation(const smtk::util::UUID& cellId, Orientation orient) const;
 
-  smtk::util::UUID cellHasUseOfSense(const smtk::util::UUID& cell, int sense) const;
-  smtk::util::UUID findOrCreateCellUseOfSense(const smtk::util::UUID& cell, int sense);
+  smtk::util::UUID cellHasUseOfSenseAndOrientation(const smtk::util::UUID& cell, int sense, Orientation o) const;
+  smtk::util::UUID findOrCreateCellUseOfSenseAndOrientation(const smtk::util::UUID& cell, int sense, Orientation o);
+
+  smtk::util::UUIDs useOrShellIncludesShells(const smtk::util::UUID& cellUseOrShell) const;
+  smtk::util::UUID createIncludedShell(const smtk::util::UUID& cellUseOrShell);
+
+  //bool shellHasUse(const smtk::util::UUID& shell, const smtk::util::UUID& use) const;
+  //smtk::util::UUIDs shellHasUses(const smtk::util::UUID& shell) const;
+  bool findOrAddUseToShell(const smtk::util::UUID& shell, const smtk::util::UUID& use);
+
+  bool findOrAddInclusionToCell(const smtk::util::UUID& cell, const smtk::util::UUID& inclusion);
 
   bool hasAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
@@ -91,12 +103,23 @@ public:
   Volume addVolume();
 
   VertexUse addVertexUse();
+  VertexUse addVertexUse(const Vertex& src, int sense);
   EdgeUse addEdgeUse();
+  EdgeUse addEdgeUse(const Edge& src, int sense, Orientation o);
   FaceUse addFaceUse();
+  FaceUse addFaceUse(const Face& src, int sense, Orientation o);
+  VolumeUse addVolumeUse();
+  VolumeUse addVolumeUse(const Volume& src);
 
   Chain addChain();
+  Chain addChain(const EdgeUse&);
+  Chain addChain(const Chain&);
   Loop addLoop();
+  Loop addLoop(const FaceUse&);
+  Loop addLoop(const Loop&);
   Shell addShell();
+  Shell addShell(const Volume& src);
+  Shell addShell(const VolumeUse& src);
 
   GroupEntity addGroup(int extraFlags = 0, const std::string& name = std::string());
 

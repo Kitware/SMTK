@@ -8,9 +8,10 @@
 namespace smtk {
   namespace model {
 
+class Chain;
 class Edge;
-class EdgeUse;
 class Vertex;
+typedef std::vector<Chain> Chains;
 typedef std::vector<Edge> Edges;
 typedef std::vector<EdgeUse> EdgeUses;
 
@@ -24,7 +25,7 @@ public:
 
   Vertex vertex() const;
   Edges edges() const;
-  EdgeUses edgeUses() const;
+  Chains chains() const;
 };
 
 typedef std::vector<VertexUse> VertexUses;

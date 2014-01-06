@@ -8,12 +8,14 @@
 namespace smtk {
   namespace model {
 
-class Vertex;
-class VertexUse;
+class Chain;
 class Edge;
 class EdgeUse;
 class Face;
 class Loop;
+class Vertex;
+class VertexUse;
+typedef std::vector<Chain> Chains;
 typedef std::vector<EdgeUse> EdgeUses;
 typedef std::vector<Vertex> Vertices;
 typedef std::vector<VertexUse> VertexUses;
@@ -26,12 +28,15 @@ class SMTKCORE_EXPORT EdgeUse : public UseEntity
 public:
   SMTK_CURSOR_CLASS(EdgeUse,UseEntity,isEdgeUse);
 
-  VertexUses vertexUses() const; // ordered list of vertex uses for this edge use
-  Vertices vertices() const; // ordered list of vertices in the sense of this edge use
-  EdgeUse ccwUse() const; // the next edge use around the edge
-  EdgeUse cwUse() const; // the previous edge use around the edge
-  Edge edge() const; // the (parent) underlying edge of this use
+  FaceUse faceUse() const;
   Loop loop() const;
+  Edge edge() const;
+  Chains chains() const;
+  VertexUses vertexUses() const;
+  Vertices vertices() const;
+
+  EdgeUse ccwUse() const;
+  EdgeUse cwUse() const;
 };
 
   } // namespace model

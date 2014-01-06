@@ -2,22 +2,22 @@
 
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Storage.h"
 
 namespace smtk {
   namespace model {
 
-/**\brief Report all of the "use" records associated with the cell.
+
+/**\brief Return the model owning this cell (or an invalid cursor if the cell is free).
   *
-  * The uses can be used to discover higher-dimensional cells that
-  * this cell borders.
-  * Each sense of a cell has its own use.
   */
-UseEntities CellEntity::uses() const
+ModelEntity CellEntity::model() const
 {
-  UseEntities result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_USE, result);
-  return result;
+  StoragePtr storage = this->storage();
+  return ModelEntity(
+    storage,
+    storage->modelOwningEntity(this->entity()));
 }
 
 /**\brief Report the toplevel shell records associated with the cell.
@@ -25,12 +25,27 @@ UseEntities CellEntity::uses() const
   * The uses can be used to discover lower-dimensional cells that
   * form the boundary of this cell.
   */
-ShellEntities CellEntity::shells() const
+ShellEntities CellEntity::shellEntities() const
 {
   ShellEntities result;
   CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, result);
   return result;
 }
+
+/*! \fn CellEntity::inclusions() const
+ * \brief Return the list of all entities embedded in this cell.
+ *
+ * Note that the inverse of this relation is provided by
+ * Cursor::embeddedIn().
+ */
+
+/*! \fn CellEntity::uses() const
+ * \brief Report all of the "use" records associated with the cell.
+ *
+ * The uses can be used to discover higher-dimensional cells that
+ * this cell borders.
+ * Each sense of a cell has its own use.
+ */
 
   } // namespace model
 } // namespace smtk

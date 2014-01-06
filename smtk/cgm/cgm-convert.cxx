@@ -211,7 +211,11 @@ void AddArrangementsToBody(
       // one of its uses has the same sense as our SenseEntity.
       // If not, then we need to create a new SMTK use entity.
       smtk::util::UUID smtkFaceUseId =
-        storage->findOrCreateCellUseOfSense(smtkFaceId, se->get_sense());
+        storage->findOrCreateCellUseOfSenseAndOrientation(
+          smtkFaceId, se->get_sense(),
+          se->get_sense() == CUBIT_REVERSED ?
+          smtk::model::NEGATIVE :
+          smtk::model::POSITIVE);
       shellRelations[j] = smtkFaceUseId;
       /*
       cout

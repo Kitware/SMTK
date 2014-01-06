@@ -3,6 +3,7 @@
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
+#include "smtk/model/FaceUse.h"
 
 namespace smtk {
   namespace model {
@@ -12,11 +13,21 @@ namespace smtk {
   */
 Face Loop::face() const
 {
-  return this->ShellEntity::parentCell().as<Face>();
+  return this->ShellEntity::boundingCell().as<Face>();
 }
 
-/**\brief Return the face-uses composing this shell.
+/**\brief Return the face-use bounded by this loop.
   *
+  */
+FaceUse Loop::faceUse() const
+{
+  return this->ShellEntity::boundingUseEntity().as<FaceUse>();
+}
+
+/**\brief Return the edge-uses composing this loop.
+  *
+  * The edge uses are properly ordered and co-directional
+  * with the sense of the loop.
   */
 EdgeUses Loop::edgeUses() const
 {

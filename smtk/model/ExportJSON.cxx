@@ -7,6 +7,8 @@
 
 #include "cJSON.h"
 
+#include <stdlib.h> // for free()
+
 using namespace smtk::util;
 
 // Some cJSON helpers
@@ -125,7 +127,9 @@ std::string ExportJSON::fromModel(StoragePtr model)
 {
   cJSON* top = cJSON_CreateObject();
   ExportJSON::fromModel(top, model);
-  std::string result(cJSON_Print(top));
+  char* json = cJSON_Print(top);
+  std::string result(json);
+  free(json);
   cJSON_Delete(top);
   return result;
 }

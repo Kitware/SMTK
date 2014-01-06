@@ -88,26 +88,54 @@ bool EntityPhrase::buildSubphrasesInternal()
    InstanceEntity ient = this->m_entity.as<InstanceEntity>();
    if (uent.isValid())
      {
-     }
-   else if (cent.isValid())
-     {
-     ShellEntities toplevelShells = cent.shells();
+     ShellEntities boundingShells = uent.boundingShellEntities<ShellEntities>();
+     if (!boundingShells.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           boundingShells, shared_from_this()));
+       }
+     ShellEntities toplevelShells = uent.shellEntities<ShellEntities>();
      if (!toplevelShells.empty())
        {
        this->m_subphrases.push_back(
          EntityListPhrase::create()->setup(
            toplevelShells, shared_from_this()));
        }
-     UseEntities cellUses = cent.uses();
+     }
+   else if (cent.isValid())
+     {
+     ShellEntities toplevelShells = cent.shellEntities();
+     if (!toplevelShells.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           toplevelShells, shared_from_this()));
+       }
+     UseEntities cellUses = cent.uses<UseEntities>();
      if (!cellUses.empty())
        {
        this->m_subphrases.push_back(
          EntityListPhrase::create()->setup(
            cellUses, shared_from_this()));
        }
+     Cursors inclusions = cent.inclusions<Cursors>();
+     if (!inclusions.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           inclusions, shared_from_this()));
+       }
      }
    else if (sent.isValid())
      {
+     UseEntities shellUses = sent.uses<UseEntities>();
+     if (!shellUses.empty())
+       {
+       this->m_subphrases.push_back(
+         EntityListPhrase::create()->setup(
+           shellUses, shared_from_this()));
+       }
      }
    else if (gent.isValid())
      {

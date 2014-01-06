@@ -2,12 +2,13 @@
 #define __smtk_model_UseEntity_h
 
 #include "smtk/model/Cursor.h"
-#include "smtk/model/CursorArrangementOps.h" // For shellsAs<T>().
+#include "smtk/model/CursorArrangementOps.h" // For shellEntities<T>().
 
 namespace smtk {
   namespace model {
 
 class CellEntity;
+class ShellEntity;
 class UseEntity;
 typedef std::vector<UseEntity> UseEntities;
 
@@ -36,13 +37,24 @@ public:
   SMTK_CURSOR_CLASS(UseEntity,Cursor,isUseEntity);
 
   CellEntity cell() const;
-  template<typename T> T shellsAs() const;
+  ShellEntity boundingShellEntity() const;
+  template<typename T> T boundingShellEntities() const;
+  template<typename T> T shellEntities() const;
+  Orientation orientation() const;
+  int sense() const;
 };
 
-template<typename T> T UseEntity::shellsAs() const
+template<typename T> T UseEntity::boundingShellEntities() const
 {
   T container;
   CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, container);
+  return container;
+}
+
+template<typename T> T UseEntity::shellEntities() const
+{
+  T container;
+  CursorArrangementOps::appendAllRelations(*this, INCLUDES, container);
   return container;
 }
 

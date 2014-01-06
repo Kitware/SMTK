@@ -2,6 +2,7 @@
 #define __smtk_model_FaceUse_h
 
 #include "smtk/model/UseEntity.h"
+#include "smtk/model/ArrangementKind.h" // for Orientation
 
 #include <vector>
 
@@ -27,10 +28,10 @@ class SMTKCORE_EXPORT FaceUse : public UseEntity
 public:
   SMTK_CURSOR_CLASS(FaceUse,UseEntity,isFaceUse);
 
-  Volume volume() const; // The volume bounded by this face use (if any)
-  Edges edges() const; // ordered list of vertices in the sense of this edge use
-  Face face() const; // the (parent) underlying face of this use
-  Loops loops() const; // The toplevel boundary loops for this face (hole-loops not included)
+  Volume volume() const;
+  Shell boundingShell() const;
+  Face face() const;
+  Loops loops() const;
 };
 
   } // namespace model

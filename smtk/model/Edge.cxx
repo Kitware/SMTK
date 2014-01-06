@@ -1,4 +1,5 @@
 #include "smtk/model/Edge.h"
+#include "smtk/model/EdgeUse.h"
 
 #include "smtk/model/Vertex.h"
 #include "smtk/model/Storage.h"
@@ -7,6 +8,33 @@
 namespace smtk {
   namespace model {
 
+/**\brief Return all the uses of this edge.
+  *
+  * Note that while creating an edge in a Storage instance will
+  * create 2 "empty" arrangements to reference EdgeUse relations,
+  * those arrangements will not by default point to valid
+  * edge uses (i.e., creating an edge does not create a pair
+  * of edge-uses for that edge).
+  * Because Edge::edgeUses() returns only valid uses, you may
+  * not obtain any uses -- or you may obtain an odd number of
+  * uses even though edge-uses usually come in pairs.
+  */
+smtk::model::EdgeUses Edge::edgeUses() const
+{
+  return this->uses<EdgeUses>();
+}
+
+/**\brief Return the vertices which bound this edge.
+  *
+  * This method is provided for convenience.
+  * The *proper* way to obtain vertices along an edge
+  * is to fetch the chains of an edge-use and
+  * add vertices from the respective vertex-use
+  * records along each chain.
+  * This allows "interrupted edges" (i.e., edges with
+  * holes in their interior) just as edge-loops and
+  * face-shells can have voids in their interior.
+  */
 smtk::model::Vertices Edge::vertices() const
 {
   Vertices result;

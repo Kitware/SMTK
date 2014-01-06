@@ -7,6 +7,7 @@ set(modelSrcs
   CellEntity.cxx
   Chain.cxx
   Cursor.cxx
+  CursorArrangementOps.cxx
   DescriptivePhrase.cxx
   Edge.cxx
   EdgeUse.cxx
@@ -36,6 +37,7 @@ set(modelSrcs
   Vertex.cxx
   VertexUse.cxx
   Volume.cxx
+  VolumeUse.cxx
   )
 
 set(modelHeaders
@@ -80,6 +82,7 @@ set(modelHeaders
   Vertex.h
   VertexUse.h
   Volume.h
+  VolumeUse.h
   )
 
 #install the headers

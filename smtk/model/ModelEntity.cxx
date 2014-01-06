@@ -25,16 +25,36 @@ CellEntities ModelEntity::cells() const
 GroupEntities ModelEntity::groups() const
 {
   GroupEntities result;
-  CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  CursorArrangementOps::appendAllRelations(*this, SUPERSET_OF, result);
   return result;
 }
 
 /// Return the models directly owned by this model.
-ModelEntities ModelEntity::models() const
+ModelEntities ModelEntity::submodels() const
 {
   ModelEntities result;
-  CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  CursorArrangementOps::appendAllRelations(*this, SUPERSET_OF, result);
   return result;
+}
+
+ModelEntity& ModelEntity::addCell(const CellEntity& c)
+{
+  this->embedEntity(c);
+  return *this;
+}
+
+ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
+{
+  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
+  CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
+  return *this;
+}
+
+ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
+{
+  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
+  CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
+  return *this;
 }
 
   } // namespace model

@@ -7,34 +7,28 @@
 namespace smtk {
   namespace model {
 
-CellEntity GroupEntity::cell() const
+/**\brief Return the parent of this group.
+  *
+  * The group may be embedded in multiple containers but its first
+  * SUBSET_OF arrangement is the one which determines its direct
+  * parent.
+  */
+Cursor GroupEntity::parent() const
 {
-  if (this->isValid())
-    {
-    UUIDsToArrangements& all(this->m_storage->arrangements());
-    UUIDWithArrangementDictionary cellEntry = all.find(this->m_entity);
-    if (cellEntry != all.end())
-      {
-      ArrangementKindWithArrangements useIt = cellEntry->second.find(HAS_CELL);
-      if (useIt != cellEntry->second.end())
-        {
-        Entity* entRec = this->m_storage->findEntity(this->m_entity);
-        if (entRec)
-          {
-          smtk::util::UUIDArray const& relations(entRec->relations());
-          for (Arrangements::iterator arrIt = useIt->second.begin(); arrIt != useIt->second.end(); ++arrIt)
-            {
-            // Return the first cell referenced in the first non-empty HAS_CELL arrangement:
-            if (!arrIt->details().empty())
-              {
-              return CellEntity(this->m_storage, relations[arrIt->details().front()]);
-              }
-            }
-          }
-        }
-      }
-    }
-  return CellEntity();
+  return CursorArrangementOps::firstRelation<Cursor>(*this, SUBSET_OF);
+}
+
+/**\brief Add an entity to this group.
+  *
+  * TODO: Implement constraint-checking and related changes (i.e., if
+  * this group is part of a partition, move \a thing out of
+  * other groups in the partition so that we maintain "partition-ness."
+  */
+GroupEntity& GroupEntity::addEntity(const Cursor& thing)
+{
+  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, thing);
+  CursorArrangementOps::findOrAddSimpleRelationship(thing, SUBSET_OF, *this);
+  return *this;
 }
 
   } // namespace model

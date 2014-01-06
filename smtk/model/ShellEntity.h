@@ -24,11 +24,16 @@ class SMTKCORE_EXPORT ShellEntity : public Cursor
 public:
   SMTK_CURSOR_CLASS(ShellEntity,Cursor,isShellEntity);
 
-  CellEntity parentCell() const;
+  CellEntity boundingCell() const;
+  UseEntity boundingUseEntity() const;
+
   template<typename T> T uses() const;
 
   ShellEntity containingShellEntity() const;
   template<typename T> T containedShellEntities() const;
+
+  ShellEntity& addUse(const UseEntity& use);
+  template<typename T> ShellEntity& addUses(const T& useContainer);
 };
 
 /**\brief Return the uses (cells with an orientation, or sense) composing this shell.
@@ -57,6 +62,16 @@ T ShellEntity::containedShellEntities() const
   T result;
   CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
   return result;
+}
+
+template<typename T>
+ShellEntity& ShellEntity::addUses(const T& useContainer)
+{
+  for (typename T::const_iterator it = useContainer.begin(); it != useContainer.end(); ++it)
+    {
+    this->addUse(*it);
+    }
+  return *this;
 }
 
   } // namespace model

@@ -12,7 +12,7 @@ namespace smtk {
   */
 Edge Chain::edge() const
 {
-  return this->ShellEntity::parentCell().as<Edge>();
+  return this->ShellEntity::boundingCell().as<Edge>();
 }
 
 /**\brief Return the face-uses composing this shell.

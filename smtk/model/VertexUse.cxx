@@ -1,5 +1,6 @@
 #include "smtk/model/VertexUse.h"
 
+#include "smtk/model/Chain.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Storage.h"
@@ -26,9 +27,11 @@ smtk::model::Edges VertexUse::edges() const
   return result;
 }
 
-EdgeUses VertexUse::edgeUses() const
+Chains VertexUse::chains() const
 {
-  return EdgeUses();
+  Chains result;
+  CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, result);
+  return result;
 }
 
   } // namespace model

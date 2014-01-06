@@ -31,7 +31,8 @@ option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
-mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH)
+option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
+mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
 ################################################################################
 # Testing Related Settings
@@ -147,6 +148,18 @@ configure_file(
   @ONLY)
 
 install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
+  DESTINATION include/smtk)
+
+
+################################################################################
+# Save compile-time options for use by other packages
+################################################################################
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/options.h.in
+  ${PROJECT_BINARY_DIR}/smtk/options.h
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/smtk/options.h
   DESTINATION include/smtk)
 
 
