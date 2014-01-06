@@ -19,8 +19,6 @@ set(modelSrcs
   GroupItem.cxx
   GroupEntity.cxx
   GridInfo.cxx
-  GridInfo2D.cxx
-  GridInfo3D.cxx
   ImportJSON.cxx
   Item.cxx
   InstanceEntity.cxx
@@ -61,8 +59,6 @@ set(modelHeaders
   FaceUse.h
   FloatData.h
   GridInfo.h
-  GridInfo2D.h
-  GridInfo3D.h
   GroupEntity.h
   GroupItem.h
   ImportJSON.h

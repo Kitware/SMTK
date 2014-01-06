@@ -531,8 +531,6 @@
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo2D"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo3D"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
     <modify-function signature="find(const std::string &amp;)">
@@ -849,9 +847,13 @@
       </object-type>
 
       <object-type name="GridInfo">
-        <include file-name="smtk/model/GridInfo.h" location="local"/>
+        <include file-name="smtk/model/GridInfo.h" location="local" />
+        <value-type name="ApiStatus" />
+        <enum-type name="ApiReturnType" />
+        <enum-type name="PointClosure" />
       </object-type>
 
+      <!--
       <object-type name="GridInfo2D">
         <include file-name="smtk/model/GridInfo2D.h" location="local"/>
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::model::GridInfo &gt;)"
@@ -867,6 +869,7 @@
       <object-type name="GridInfo3D">
         <include file-name="smtk/model/GridInfo3D.h" location="local"/>
       </object-type>
+      -->
 
     </namespace-type>
 
