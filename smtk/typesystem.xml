@@ -737,6 +737,15 @@
       <object-type name="Model">
         <include file-name="smtk/model/Model.h" location="local"/>
         <enum-type name="ModelEntityNodalTypes"/>
+        <!-- Add static New() method, for internal use only -->
+        <add-function signature="New()"
+            static="yes"
+            return-type = "smtk::shared_ptr&lt;smtk::model::Model&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = %RETURN_TYPE(new smtk::model::Model());
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="Storage">
