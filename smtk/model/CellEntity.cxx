@@ -14,10 +14,10 @@ namespace smtk {
   */
 ModelEntity CellEntity::model() const
 {
-  StoragePtr storage = this->storage();
+  StoragePtr store = this->storage();
   return ModelEntity(
-    storage,
-    storage->modelOwningEntity(this->entity()));
+    store,
+    store->modelOwningEntity(this->entity()));
 }
 
 /**\brief Report the toplevel shell records associated with the cell.

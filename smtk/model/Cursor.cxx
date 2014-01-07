@@ -556,9 +556,9 @@ Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 /**\brief Return whether the specified \a entity is a direct inclusion in this cursor's entity.
   *
   */
-bool Cursor::isEmbedded(Cursor& entity) const
+bool Cursor::isEmbedded(Cursor& ent) const
 {
-  return CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, entity) >= 0;
+  return CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, ent) >= 0;
 }
 
 /**\brief Report the entity into which this entity is directly embedded.
@@ -599,6 +599,18 @@ std::ostream& operator << (std::ostream& os, const Cursor& c)
   os << c.name();
   return os;
 }
+
+/*! \fn template<typename S, typename T> void Cursor::CursorsFromUUIDs(S& result, StoragePtr storage, const T& uids)
+ *\brief Convert a set of UUIDs into a set of cursors referencing the same \a storage.
+ */
+
+/*! \fn template<typename T> Cursor::embedEntities(const T& container)
+ * \brief Embed each of the entities in the container inside this entity.
+ */
+
+/*! \fn Cursor::instances() const
+ * \brief Return all the instances this object serves as a prototype for.
+ */
 
   } // namespace model
 } // namespace smtk

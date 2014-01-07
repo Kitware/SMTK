@@ -34,17 +34,17 @@ Orientation UseEntity::orientation() const
     this->m_entity, HAS_CELL, 0);
   if (ent && arr)
     {
-    int idx, sense;
-    arr->IndexAndSenseFromUseHasCell(idx, sense);
+    int idx, esense;
+    arr->IndexAndSenseFromUseHasCell(idx, esense);
     smtk::util::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
-    int arrIdx = this->m_storage->findCellHasUseWithSense(cellId, sense);
+    int arrIdx = this->m_storage->findCellHasUseWithSense(cellId, esense);
     if (arrIdx >= 0)
       {
       // Now find the orientation of that use of the cell:
       Orientation orient;
       this->m_storage->findArrangement(cellId, HAS_USE, arrIdx)
-        ->IndexSenseAndOrientationFromCellHasUse(idx, sense, orient);
+        ->IndexSenseAndOrientationFromCellHasUse(idx, esense, orient);
       return orient;
       }
     }
@@ -60,9 +60,9 @@ int UseEntity::sense() const
     this->m_entity, HAS_CELL, 0);
   if (ent && arr)
     {
-    int idx, sense;
-    arr->IndexAndSenseFromUseHasCell(idx, sense);
-    return sense;
+    int idx, esense;
+    arr->IndexAndSenseFromUseHasCell(idx, esense);
+    return esense;
     }
   return -1;
 }
