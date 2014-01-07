@@ -13,15 +13,10 @@ static bool checkenv(const char* vname)
 #if !defined(_WIN32) || defined(__CYGWIN__)
   return getenv(vname) ? true : false;
 #else
-  char* buf;
-  size_t sz;
-  if (_dupenv_s(&buf, &sz, vname) == 0)
-    {
-    free(buf);
-    // We do not dereference buf here, so should be OK:
-    return buf ? true : false;
-    }
-  return false;
+  char* buf; //allocated or assigned by _dupenv_s
+  const bool valid = (_dupenv_s(&buf, NULL, vname) == 0) && (buf != NULL);
+  free(buf); //perfectly valid to free a NULL pointer
+  return valid;
 #endif
 }
 
