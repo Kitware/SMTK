@@ -5,6 +5,8 @@
 #include <ctime> // for time()
 #include <stdlib.h> // for getenv()/_dupenv_s()
 
+namespace
+{
 // Return true when \a vname exists in the environment (empty or not).
 static bool checkenv(const char* vname)
 {
@@ -21,6 +23,8 @@ static bool checkenv(const char* vname)
     }
   return false;
 #endif
+}
+
 }
 
 namespace smtk {
