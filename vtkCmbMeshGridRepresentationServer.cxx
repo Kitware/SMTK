@@ -254,8 +254,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
     return false;
     }
 
-  const int indices[4] = {0,1,2,0}; //used for cell point indexes
-  vtkIdType npts,*pts,modelIds[3],i=0;
+  vtkIdType npts,*pts,modelIds[3];
   vtkCellArray *polys = this->Representation->GetPolys();
 
   if(vtkDiscreteModelEntityGroup* boundaryGroup =
@@ -267,10 +266,10 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
       {
       vtkModelEntity *entity = vtkModelEntity::SafeDownCast(entities->GetCurrentItem());
       vtkIdType id = entity->GetUniquePersistentId();
-      polys->InitTraversal();
-      while(polys->GetNextCell(npts,pts))
+      polys->InitTraversal(); //needs to be reset for each entities
+      for(vtkIdType i=0; polys->GetNextCell(npts,pts); ++i)
         {
-        ids->GetTupleValue(i++,modelIds);
+        ids->GetTupleValue(i,modelIds);
         for (vtkIdType j=0; j < 3; j++)
           {
           if (modelIds[j] == id)
