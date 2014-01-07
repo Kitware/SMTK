@@ -128,7 +128,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
       }
     iterEdge->Delete();
     vtkIdType entId;
-    bool bAdd;
+    bool bAdd = false;
     for ( vtkIdType i=0; i < ids->GetNumberOfTuples(); ++i)
       {
       entId = ids->GetValue(i);
@@ -157,7 +157,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBCSNodalAnalysisGridPointIds(
 
 //----------------------------------------------------------------------------
 bool vtkCmbMeshGridRepresentationServer::GetFloatingEdgeAnalysisGridPointIds(
-  vtkDiscreteModel* model, vtkIdType floatingEdgeId, vtkIdList* pointIds)
+  vtkDiscreteModel* /* model */, vtkIdType /* floatingEdgeId */, vtkIdList* /* pointIds */)
 {
   return false;
 }
