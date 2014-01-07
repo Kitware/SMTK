@@ -267,7 +267,7 @@ bool vtkCmbMeshGridRepresentationServer::GetBoundaryGroupAnalysisFacets(
       vtkModelEntity *entity = vtkModelEntity::SafeDownCast(entities->GetCurrentItem());
       vtkIdType id = entity->GetUniquePersistentId();
       polys->InitTraversal(); //needs to be reset for each entities
-      for(vtkIdType i=0; npolys->GetNextCell(npts,pts); ++i)
+      for(vtkIdType i=0; polys->GetNextCell(npts,pts); ++i)
         {
         ids->GetTupleValue(i,modelIds);
         for (vtkIdType j=0; j < 3; j++)
