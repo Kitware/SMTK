@@ -251,7 +251,7 @@ inline std::string NewModelEdgeInfo::to_key(const vtkIdType* data,
   const std::size_t charLen = sizeof(vtkIdType) * len;
 
   unsigned const char* cdata = reinterpret_cast<unsigned const char*>(&sorted[0]);
-  vtksysMD5_Append(hasher, cdata, charLen);
+  vtksysMD5_Append(hasher, cdata, static_cast<int>(charLen));
 
   //convert the hash to a string and return
   char hash[33];
