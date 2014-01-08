@@ -14,7 +14,7 @@ class SMTKCORE_EXPORT InstanceEntity : public Cursor
 public:
   SMTK_CURSOR_CLASS(InstanceEntity,Cursor,isInstanceEntity);
 
-  Cursor parent() const;
+  Cursor prototype() const;
 
   // InstanceEntity& setTransform(const smtk::util::Matrix4d&);
   // smtk::util::Matrix4d transform() const;

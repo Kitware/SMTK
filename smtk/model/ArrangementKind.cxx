@@ -4,24 +4,28 @@ namespace smtk {
  namespace model {
 
 const char* ArrangementKindName[KINDS_OF_ARRANGEMENTS + 1] = {
-  "inclusion",   // INCLUDES
-  "cell",        // HAS_CELL
-  "shell",       // HAS_SHELL
-  "use",         // HAS_USE
-  "embedding",   // EMBEDDED_IN
-  "subset",      // SUBSET_OF
-  "superset",      // SUPERSET_OF
-  "invalid"      // KINDS_OF_ARRANGEMENTS
+  "inclusion",    // INCLUDES
+  "cell",         // HAS_CELL
+  "shell",        // HAS_SHELL
+  "use",          // HAS_USE
+  "embedding",    // EMBEDDED_IN
+  "subset",       // SUBSET_OF
+  "superset",     // SUPERSET_OF
+  "instantiates", // INSTANCE_OF
+  "instance",     // INSTANCED_BY
+  "invalid"       // KINDS_OF_ARRANGEMENTS
 };
 
 const char* ArrangementKindAbbr[KINDS_OF_ARRANGEMENTS + 1] = {
-  "i", // INCLUSION
-  "c", // CELL
-  "s", // SHELL
-  "u", // ORIENTATION
-  "e", // EMBEDDING
-  "b", // SUBSET_OF
-  "r", // SUPERSET_OF
+  "i", // INCLUDES
+  "c", // HAS_CELL
+  "s", // HAS_SHELL
+  "u", // HAS_USE
+  "e", // EMBEDDED_IN
+  "b", // SUBSET_OF (suBset)
+  "r", // SUPERSET_OF (supeRset)
+  "p", // INSTANCE_OF (Prototype)
+  "x", // INSTANCED_BY (eXemplar)
   "?"  // KINDS_OF_ARRANGEMENTS
 };
 

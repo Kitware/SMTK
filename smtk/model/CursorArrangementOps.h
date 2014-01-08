@@ -2,6 +2,7 @@
 #define __smtk_model_CursorArrangementOps_h
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/ArrangementKind.h"
 
 namespace smtk {
   namespace model {
@@ -156,6 +157,18 @@ public:
       }
     }
 };
+
+// -----------------------------------------------------------------------------
+// What follows are methods of Cursor that require CursorArrangementOps.
+// This breaks an include-dependency cycle.
+
+template<typename T> T Cursor::instances() const
+{
+  T result;
+  CursorArrangementOps::appendAllRelations(*this, INSTANCED_BY, result);
+  return result;
+}
+
 
   } // namespace model
 } // namespace smtk

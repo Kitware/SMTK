@@ -48,6 +48,8 @@ public:
   static Arrangement ShellHasCellWithIndex(int relationIdx);
   static Arrangement ShellHasUseWithIndexRange(int relationBegin, int relationEnd);
   static Arrangement ShellEmbeddedInUseOrShellWithIndex(int relationIdx);
+  static Arrangement InstanceInstanceOfWithIndex(int relationIdx);
+  static Arrangement EntityInstancedByWithIndex(int relationIdx);
 
   bool IndexSenseAndOrientationFromCellHasUse(int& relationIdx, int& sense, Orientation& orient) const;
   bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
@@ -59,6 +61,8 @@ public:
   bool IndexFromShellHasCell(int& relationIdx) const;
   bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd) const;
   bool IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const;
+  bool IndexFromInstanceInstanceOf(int& relationIdx) const;
+  bool IndexFromEntityInstancedBy(int& relationIdx) const;
 
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;

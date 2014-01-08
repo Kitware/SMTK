@@ -104,11 +104,6 @@ int main(int argc, char* argv[])
     // Test ModelEntity::submodels()
     test(model.submodels().empty(), "Tetrahedron should not be reported as a submodel.");
 
-    std::string json = ExportJSON::fromModel(sm);
-    std::ofstream jsonFile("/tmp/cursor.json");
-    jsonFile << json;
-    jsonFile.close();
-
     sm->assignDefaultNames();
     Cursors entities;
     Cursor::CursorsFromUUIDs(entities, sm, uids);
@@ -140,6 +135,15 @@ int main(int argc, char* argv[])
     test(groupUses.size() == 30, "Use group has wrong number of members.");
     test(groupShells.size() == 25, "Shell group has wrong number of members.");
 
+    InstanceEntity ie = sm->addInstance(model);
+    test(ie.prototype() == model, "Instance parent should be its prototype.");
+    InstanceEntities ies = model.instances<InstanceEntities>();
+    test(ies.size() == 1 && ies[0] == ie, "Prototype should list its instances.");
+
+    std::string json = ExportJSON::fromModel(sm);
+    std::ofstream jsonFile("/tmp/cursor.json");
+    jsonFile << json;
+    jsonFile.close();
 
     Cursor entity(sm, uids[0]);
     test(entity.isValid() == true);

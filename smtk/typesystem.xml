@@ -28,6 +28,7 @@
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::GroupEntity::members', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Cursor::embedEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::instances', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
@@ -689,6 +690,25 @@
       </inject-code>
     </modify-function>
 
+    <modify-function signature="addGroup(int, const std::string&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addGroup(%1, %2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="addInstance()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addInstance(const smtk::model::Cursor&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
 
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>

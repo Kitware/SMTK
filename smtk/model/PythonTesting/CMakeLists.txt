@@ -1,5 +1,6 @@
 set(smtkModelPythonTests
   modelBodyCreate
+  cursorTutorial
 )
 
 find_package( PythonInterp 2.7 )

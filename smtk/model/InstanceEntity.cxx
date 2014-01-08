@@ -7,9 +7,9 @@
 namespace smtk {
   namespace model {
 
-Cursor InstanceEntity::parent() const
+Cursor InstanceEntity::prototype() const
 {
-  return CursorArrangementOps::firstRelation<Cursor>(*this, EMBEDDED_IN);
+  return CursorArrangementOps::firstRelation<Cursor>(*this, INSTANCE_OF);
 }
 
   } // namespace model

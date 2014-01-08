@@ -140,6 +140,18 @@ Arrangement Arrangement::ShellEmbeddedInUseOrShellWithIndex(int relationIdx)
 {
   return Arrangement::SimpleIndex(relationIdx);
 }
+
+/// Create a record for an instance indicating the prototype entity it instantiates.
+Arrangement Arrangement::InstanceInstanceOfWithIndex(int relationIdx)
+{
+  return Arrangement::SimpleIndex(relationIdx);
+}
+
+/// Create a record for an entity indicating that is serves as a prototype for an instance.
+Arrangement Arrangement::EntityInstancedByWithIndex(int relationIdx)
+{
+  return Arrangement::SimpleIndex(relationIdx);
+}
 ///@}
 
 /** @name Methods to interpret arrangements.
@@ -225,6 +237,18 @@ bool Arrangement::IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd
 
 /// Obtain the index of the shell or cell-use in which this shell is embedded.
 bool Arrangement::IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
+/// Obtain the index of the prototype of which this entity is an instance.
+bool Arrangement::IndexFromInstanceInstanceOf(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
+/// Obtain the index of the instance for which this entity is a prototype.
+bool Arrangement::IndexFromEntityInstancedBy(int& relationIdx) const
 {
   return this->IndexFromSimple(relationIdx);
 }

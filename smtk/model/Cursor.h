@@ -170,6 +170,8 @@ public:
   bool isEmbedded(Cursor& entity) const;
   Cursor embeddedIn() const;
 
+  template<typename T> T instances() const;
+
   bool operator == (const Cursor& other) const;
   bool operator < (const Cursor& other) const;
 
@@ -180,7 +182,6 @@ protected:
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
 
-/// Convert a set of UUIDs into a set of cursors referencing the same \a storage.
 template<typename S, typename T>
 void Cursor::CursorsFromUUIDs(
   S& result, StoragePtr storage, const T& uids)

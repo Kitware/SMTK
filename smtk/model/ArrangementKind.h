@@ -35,14 +35,17 @@ enum Orientation {
 /// Specification of how a cell's relations are arranged.
 enum ArrangementKind {
   // Enums specific to cell, use, and shell relationships:
-  INCLUDES,    //!< How another cell is contained in the interior of this cell.
-  HAS_CELL,    //!< How a use or shell is related to its cell.
-  HAS_SHELL,   //!< How this cell is bounded by cells of lower dimension or how a use participates in a shell.
-  HAS_USE,     //!< How this cell's shells are combined into a single orientation for use by bordant cells.
-  EMBEDDED_IN, //!< How this cell is embedded in the interior of a cell of higher dimension
+  INCLUDES,     //!< How another cell is contained in the interior of this cell.
+  HAS_CELL,     //!< How a use or shell is related to its cell.
+  HAS_SHELL,    //!< How this cell is bounded by cells of lower dimension or how a use participates in a shell.
+  HAS_USE,      //!< How this cell's shells are combined into a single orientation for use by bordant cells.
+  EMBEDDED_IN,  //!< How this cell is embedded in the interior of a cell of higher dimension
   // Enums specific to group relationships:
-  SUBSET_OF,   //!< This entity is a subset of the related entity.
-  SUPERSET_OF, //!< This entity is a superset of the related entity.
+  SUBSET_OF,    //!< This entity is a subset of the related entity.
+  SUPERSET_OF,  //!< This entity is a superset of the related entity.
+  // Enums specific to instance relationships:
+  INSTANCE_OF,  //!< This entity is an instance of the related entity.
+  INSTANCED_BY, //!< This entity has an instance (duplicate) that is the related entity.
   //
   KINDS_OF_ARRANGEMENTS //!< The number of different kinds of arrangement relationships enumerated here.
 };

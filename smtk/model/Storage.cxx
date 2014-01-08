@@ -8,6 +8,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/FaceUse.h"
 #include "smtk/model/GroupEntity.h"
+#include "smtk/model/InstanceEntity.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Shell.h"
@@ -975,6 +976,39 @@ ModelEntity Storage::addModel(
   else
     this->assignDefaultName(uid, this->type(uid));
   return ModelEntity(shared_from_this(), uid);
+}
+
+/**\brief Add an instance to storage.
+  *
+  * An instance is a reference to some other item in storage.
+  * Any entity may be instanced, but generally models are instanced
+  * as part of a scene graph.
+  */
+InstanceEntity Storage::addInstance()
+{
+  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
+  return InstanceEntity(shared_from_this(), uid);
+}
+
+/**\brief Add an instance of the given prototype to storage.
+  *
+  * The prototype \a object (the parent of the instance)
+  * is a reference to some other item in storage.
+  * Any entity may be instanced, but generally models are instanced
+  * as part of a scene graph.
+  */
+InstanceEntity Storage::addInstance(const Cursor& object)
+{
+  if (object.isValid())
+    {
+    smtk::util::UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
+    int iidx = this->findEntity(object.entity())->findOrAppendRelation(uid);
+    int oidx = this->findEntity(uid)->findOrAppendRelation(object.entity());
+    this->arrangeEntity(uid, INSTANCE_OF, Arrangement::InstanceInstanceOfWithIndex(oidx));
+    this->arrangeEntity(object.entity(), INSTANCED_BY, Arrangement::InstanceInstanceOfWithIndex(iidx));
+    return InstanceEntity(shared_from_this(), uid);
+    }
+  return InstanceEntity();
 }
 
   } // namespace model

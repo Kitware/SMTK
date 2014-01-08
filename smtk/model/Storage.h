@@ -25,6 +25,7 @@ class EdgeUse;
 class Face;
 class FaceUse;
 class GroupEntity;
+class InstanceEntity;
 class Loop;
 class ModelEntity;
 class Shell;
@@ -125,6 +126,9 @@ public:
 
   ModelEntity addModel(
     int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
+
+  InstanceEntity addInstance();
+  InstanceEntity addInstance(const Cursor& instanceOf);
 
 protected:
   shared_ptr<UUIDsToArrangements> m_arrangements;
