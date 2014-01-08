@@ -8,3 +8,11 @@ target_link_libraries(cgm-convert
   SMTKCore
   ${CGM_LIBRARIES}
 )
+
+add_executable(facet-convert
+  facet-convert.cxx
+)
+target_link_libraries(facet-convert
+  SMTKCore
+  ${CGM_LIBRARIES}
+)
