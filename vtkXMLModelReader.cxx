@@ -249,7 +249,7 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
       vtkWarningMacro("Could not get object id");
       continue;
       }
-    vtkSerializableObject* obj;
+    vtkSerializableObject* obj = NULL;
     if(!strcmp(ObjectName, "vtkModelMaterial"))
       {
       obj = this->Model->BuildMaterial(id);
@@ -327,6 +327,11 @@ void vtkXMLModelReader::Serialize(const char* ObjectName)
         {
         return;
         }
+      }
+    else
+      {
+      vtkErrorMacro("Unknown object name: " << ObjectName);
+      return;
       }
     obj->Serialize(this);
     }
