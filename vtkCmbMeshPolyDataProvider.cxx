@@ -118,7 +118,7 @@ int vtkCmbMeshPolyDataProvider::RequestUpdateExtent(
 
 //----------------------------------------------------------------------------
 int vtkCmbMeshPolyDataProvider::RequestData(
-  vtkInformation* request,
+  vtkInformation* /*request*/,
   vtkInformationVector** vtkNotUsed( inputVector ),
   vtkInformationVector* outputVector)
 {

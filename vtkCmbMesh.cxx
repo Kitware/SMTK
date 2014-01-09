@@ -78,7 +78,7 @@ vtkModel* vtkCmbMesh::GetModel()
 
 //----------------------------------------------------------------------------
 void vtkCmbMesh::ModelGeometricEntityChanged(
-  vtkObject *caller, unsigned long event, void *cData, void *callData)
+  vtkObject * /*caller*/, unsigned long event, void *cData, void *callData)
 {
   vtkCmbMesh* cmbMesh = static_cast<vtkCmbMesh*>(cData);
   vtkModel* model = cmbMesh->Model;

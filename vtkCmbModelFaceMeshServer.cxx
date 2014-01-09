@@ -79,7 +79,7 @@ bool vtkCmbModelFaceMeshServer::SetLocalMinimumAngle(double minAngle)
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
+bool vtkCmbModelFaceMeshServer::BuildMesh(bool /*meshHigherDimensionalEntities*/)
 {
   this->FaceMesherFailed = 0;
 

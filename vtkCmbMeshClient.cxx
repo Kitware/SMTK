@@ -396,7 +396,7 @@ void vtkCmbMeshClient::ModelEdgeMerge(vtkMergeEventData* mergeEventData)
 }
 
 //----------------------------------------------------------------------------
-void vtkCmbMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* entity)
+void vtkCmbMeshClient::ModelEntityBoundaryModified(vtkModelGeometricEntity* /*entity*/)
 {
   // no op on the client
 }

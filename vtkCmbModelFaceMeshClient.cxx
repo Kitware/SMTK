@@ -92,7 +92,7 @@ bool vtkCmbModelFaceMeshClient::SendLengthAndAngleToServer()
 }
 
 //----------------------------------------------------------------------------
-bool vtkCmbModelFaceMeshClient::BuildMesh(bool meshHigherDimensionalEntities)
+bool vtkCmbModelFaceMeshClient::BuildMesh(bool /*meshHigherDimensionalEntities*/)
 {
   this->SetMeshedLength(0);
   this->SetMeshedMinimumAngle(0);
