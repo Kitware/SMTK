@@ -332,7 +332,7 @@ int vtkCmbMeshToModelWriter::Write2DModelMeshInfo(vtkIndent* parentindent)
     return 0;
     }
 
-  vtkIdType npts,*pts,i=0;
+  vtkIdType npts,*pts;
   vtkIdTypeArray *cellPointIds=NULL;
   vtkIdType numCells = gridPoly->GetNumberOfCells();
   if(numCells>0)
