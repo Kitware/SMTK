@@ -1,0 +1,46 @@
+#ifndef __smtk_model_AttributeListPhrase_h
+#define __smtk_model_AttributeListPhrase_h
+
+#include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/AttributeAssignments.h"
+
+#include <string>
+#include <vector>
+
+namespace smtk {
+  namespace model {
+
+/**\brief Describe a list of property (name,value) pairs
+  * associated with an entity for user presentation.
+  *
+  * This enumerates properties of a single primitive storage
+  * type (e.g. only string properties or only integer properties),
+  * not all of an entity's properties at once.
+  */
+class SMTKCORE_EXPORT AttributeListPhrase : public DescriptivePhrase
+{
+public:
+  smtkTypeMacro(AttributeListPhrase);
+  smtkSharedPtrCreateMacro(DescriptivePhrase);
+  Ptr setup(const Cursor& ent, DescriptivePhrasePtr parent);
+  Ptr setup(const Cursor& ent, const AttributeSet& subset, DescriptivePhrasePtr parent);
+
+  virtual std::string title();
+  virtual std::string subtitle();
+
+  virtual smtk::util::UUID relatedEntityId() const;
+  virtual Cursor relatedEntity() const;
+
+protected:
+  AttributeListPhrase();
+
+  virtual bool buildSubphrasesInternal();
+
+  Cursor m_entity;
+  AttributeSet m_attributes; // Subset to be presented, modifications do not affect storage!
+};
+
+  } // model namespace
+} // smtk namespace
+
+#endif // __smtk_model_DescriptivePhrase_h

@@ -3,6 +3,7 @@
 
 #include "smtk/util/SharedFromThis.h"
 #include "smtk/model/Cursor.h"
+#include "smtk/model/AttributeAssignments.h" // for AttributeId
 
 #include <string>
 #include <vector>
@@ -15,6 +16,7 @@ enum DescriptivePhraseType {
   ENTITY_LIST,                  //!< Multiple entities should be summarized.
   ENTITY_SUMMARY,               //!< Summarize an entity by displaying its name, type, and dimension.
   ARRANGEMENT_LIST,             //!< The entity has multiple arrangements (of a single kind).
+  ATTRIBUTE_LIST,               //!< The entity has multiple attribute values defined on it.
   MODEL_INCLUDES_ENTITY,        //!< The entity is a model with a "free" entity.
   MODEL_EMBEDDED_IN_MODEL,      //!< The entity is a model that has child model(s).
   CELL_INCLUDES_CELL,           //!< The entity is a cell that includes a lower-dimensional cell.
@@ -82,7 +84,7 @@ public:
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
-  virtual int relatedAttributeId() const                       { return -1; }
+  virtual AttributeId relatedAttributeId() const               { return -1; }
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
 

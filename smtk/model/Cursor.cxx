@@ -290,7 +290,7 @@ AttributeAssignments& Cursor::attributes()
 }
 /**\brief Does the cursor have any attributes associated with it?
   */
-AttributeAssignments::AttributeSet Cursor::attributes() const
+AttributeSet Cursor::attributes() const
 {
   return this->m_storage->attributeAssignments()[this->m_entity].attributes();
 }

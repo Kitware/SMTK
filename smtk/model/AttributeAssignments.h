@@ -10,15 +10,18 @@
 namespace smtk {
   namespace model {
 
+/// A type for attribute identifiers.
+typedef int AttributeId;
+
+/// A set of attribute identifiers.
+typedef std::set<AttributeId> AttributeSet;
+
 /**\brief Store a list of attributes assigned to solid model entities.
   *
   */
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  typedef int AttributeId;
-  typedef std::set<AttributeId> AttributeSet;
-
   bool attachAttribute(int attribId);
   bool detachAttribute(int attribId);
   bool isAssociated(int attribId) const;

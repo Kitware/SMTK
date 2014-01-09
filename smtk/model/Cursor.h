@@ -127,7 +127,7 @@ public:
   bool attachAttribute(int attribId);
   bool detachAttribute(int attribId, bool reverse = true);
   AttributeAssignments& attributes();
-  AttributeAssignments::AttributeSet attributes() const;
+  AttributeSet attributes() const;
 
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);
