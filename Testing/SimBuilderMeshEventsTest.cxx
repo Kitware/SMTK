@@ -65,17 +65,17 @@ int Check2DModel(const char* fileName)
   edges.TakeReference(model->NewIterator(vtkModelEdgeType));
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkModelEdge* vmEdge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(edge));
+      mesh->GetModelEntityMesh(vmEdge));
     edgeMesh->BuildModelEntityMesh(false);
     }
 
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkModelEdge* vmEdge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(edge));
+      mesh->GetModelEntityMesh(vmEdge));
     if(edgeMesh->GetLength() != 0.)
       {
       numberOfErrors++;
@@ -147,9 +147,9 @@ int Check2DModel(const char* fileName)
     }
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkModelEdge* vmEdge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(edge));
+      mesh->GetModelEntityMesh(vmEdge));
     if(edge->GetUniquePersistentId() == 42)
       {
       if(edgeMesh->GetLength() != 5.)
@@ -206,9 +206,9 @@ int Check2DModel(const char* fileName)
   mesh->SetGlobalMinimumAngle(20);
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
-    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkModelEdge* vmEdge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
-      mesh->GetModelEntityMesh(edge));
+      mesh->GetModelEntityMesh(vmEdge));
     edgeMesh->BuildModelEntityMesh(false);
     }
   for(faces->Begin();!faces->IsAtEnd();faces->Next())

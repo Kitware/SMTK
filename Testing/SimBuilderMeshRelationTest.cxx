@@ -123,11 +123,11 @@ int Check2DModel(const char* fileName)
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
     vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
-    vtkPolyData *mesh = faceMesh->GetModelEntityMesh();
+    vtkPolyData *meshTmp = faceMesh->GetModelEntityMesh();
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
     vtkIntArray *types = vtkIntArray::SafeDownCast(
-      mesh->GetPointData()->GetArray(
+      meshTmp->GetPointData()->GetArray(
       ModelFaceRep::Get2DAnalysisPointModelTypesString()));
     for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
       {
@@ -186,11 +186,11 @@ int Check2DModel(const char* fileName)
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
     vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(mesh->GetModelEntityMesh(face));
-    vtkPolyData *mesh = faceMesh->GetModelEntityMesh();
+    vtkPolyData *meshTmp = faceMesh->GetModelEntityMesh();
 
     vtkIdType faceId = face->GetUniquePersistentId() - 26;
     vtkIntArray *types = vtkIntArray::SafeDownCast(
-      mesh->GetCellData()->GetArray(
+      meshTmp->GetCellData()->GetArray(
       ModelFaceRep::Get2DAnalysisCellModelTypesString()));
     for (vtkIdType i=0; i < types->GetNumberOfTuples(); ++i)
       {

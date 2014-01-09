@@ -71,11 +71,11 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   mesh->Initialize(model);
   mesh->SetGlobalLength(Length);
 
-  vtkSmartPointer<vtkModelItemIterator> edges;
-  edges.TakeReference(model->NewIterator(vtkModelEdgeType));
-  for(edges->Begin();!edges->IsAtEnd();edges->Next())
+  vtkSmartPointer<vtkModelItemIterator> edgesIter;
+  edgesIter.TakeReference(model->NewIterator(vtkModelEdgeType));
+  for(edgesIter->Begin();!edgesIter->IsAtEnd();edgesIter->Next())
     {
-    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
+    vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edgesIter->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(edge));
     }
@@ -84,11 +84,11 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   vtkSmartPointer<vtkTimerLog> tl = vtkSmartPointer<vtkTimerLog>::New();
   tl->StartTimer();
   mesh->SetGlobalMinimumAngle(MinAngle);
-  vtkSmartPointer<vtkModelItemIterator> faces;
-  faces.TakeReference(model->NewIterator(vtkModelFaceType));
-  for(faces->Begin();!faces->IsAtEnd();faces->Next())
+  vtkSmartPointer<vtkModelItemIterator> facesIter;
+  facesIter.TakeReference(model->NewIterator(vtkModelFaceType));
+  for(facesIter->Begin();!facesIter->IsAtEnd();facesIter->Next())
     {
-    vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
+    vtkModelFace* face = vtkModelFace::SafeDownCast(facesIter->GetCurrentItem());
     vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
     }

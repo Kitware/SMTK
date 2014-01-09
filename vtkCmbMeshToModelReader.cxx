@@ -138,9 +138,8 @@ void vtkCmbMeshToModelReader::ReadXMLData()
     return;
     }
 
-  vtkXMLDataElement* eNested = this->FieldDataElement;
   // See if there is a FieldData element. There should be one, and only one for now
-  if(!eNested)
+  if(!this->FieldDataElement)
     {
     vtkWarningMacro("There is no FieldData in the file.");
     this->DataError = 1;
