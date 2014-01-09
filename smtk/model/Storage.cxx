@@ -1,7 +1,9 @@
 #include "smtk/model/Storage.h"
 
-#include "smtk/model/AttributeAssignments.h"
+#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/Attribute.h"
 
+#include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
@@ -36,7 +38,8 @@ Storage::Storage() :
   BRepModel(shared_ptr<UUIDsToEntities>(new UUIDsToEntities)),
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
-  m_attributeAssignments(new UUIDsToAttributeAssignments)
+  m_attributeAssignments(new UUIDsToAttributeAssignments),
+  m_attributeManager(NULL)
 {
 }
 
@@ -47,12 +50,14 @@ Storage::Storage(
   shared_ptr<UUIDsToAttributeAssignments> attribs)
   :
     BRepModel(inTopology), m_arrangements(inArrangements),
-    m_tessellations(tess), m_attributeAssignments(attribs)
+    m_tessellations(tess), m_attributeAssignments(attribs),
+    m_attributeManager(NULL)
 {
 }
 
 Storage::~Storage()
 {
+  this->setAttributeManager(NULL);
 }
 
 UUIDsToArrangements& Storage::arrangements()
@@ -84,6 +89,60 @@ const UUIDsToAttributeAssignments& Storage::attributeAssignments() const
 {
   return *this->m_attributeAssignments;
 }
+
+/**\brief Set the attribute manager.
+  *
+  * This is an error if the manager already has a non-null
+  * reference to a different model storage instance.
+  *
+  * If this storage is associated with a different manager,
+  * that manager is detached (its storage reference set to
+  * null) and all attribute associations in the storage
+  * are erased.
+  * This is not an error, but a warning message will be
+  * generated.
+  *
+  * On error, false is returned, an error message is generated,
+  * and no change is made to the attribute manager.
+  */
+bool Storage::setAttributeManager(smtk::attribute::Manager* mgr, bool reverse)
+{
+  if (mgr)
+    {
+    Storage* mgrStorage = mgr->refStorage().get();
+    if (mgrStorage && mgrStorage != this)
+      {
+      return false;
+      }
+    }
+  if (this->m_attributeManager && this->m_attributeManager != mgr)
+    {
+    // Only warn when (a) the new manager is non-NULL and (b) we
+    // have at least 1 attribute association.
+    if (!this->m_attributeAssignments->empty() && mgr)
+      {
+      std::cout
+        << "WARNING: Changing attribute managers.\n"
+        << "         Current attribute associations cleared.\n";
+      this->m_attributeAssignments->clear();
+      }
+    if (reverse)
+      this->m_attributeManager->setRefStorage(StoragePtr());
+    }
+  this->m_attributeManager = mgr;
+  if (this->m_attributeManager && reverse)
+    this->m_attributeManager->setRefStorage(shared_from_this());
+  return true;
+}
+
+/**\brief Return the attribute manager associated with this storage.
+  *
+  */
+smtk::attribute::Manager* Storage::attributeManager() const
+{
+  return this->m_attributeManager;
+}
+
 
 Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
@@ -671,10 +730,22 @@ bool Storage::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
 
 /**\brief Assign an attribute to an entity.
   *
+  * This returns true when the attribute association is
+  * valid (whether it was previously associated or not)
+  * and false otherwise.
   */
 bool Storage::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
 {
-  return this->attributeAssignments()[toEntity].attachAttribute(attribId);
+  bool allowed = true;
+  if (this->m_attributeManager)
+    {
+    attribute::AttributePtr att = this->m_attributeManager->findAttribute(attribId);
+    if (!att || !att->associateEntity(toEntity))
+      allowed = false;
+    }
+  if (allowed)
+    this->attributeAssignments()[toEntity].attachAttribute(attribId);
+  return allowed;
 }
 
 /**\brief Unassign an attribute from an entity.
@@ -688,24 +759,32 @@ bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
     {
     return didRemove;
     }
-  if ((didRemove = ref->second.detachAttribute(attribId)) && reverse)
+  if ((didRemove = ref->second.detachAttribute(attribId)))
     {
-    /* FIXME: Let manager know.
-    smtk::attribute::Manager* mgr = smtk::attribute::Manager::getGlobalManager();
-    if (mgr)
+    // If the AttributeAssignments instance is now empty, remove it.
+    // (Only do this for std::map storage, as it triggers assertion
+    // failures in sparsehash for no discernable reason.)
+#ifndef SMTK_HASH_STORAGE
+    if (ref->second.attributes().empty())
       {
-      smtk::attribute::AttributePtr attrib = mgr->findAttribute(attribId);
-      if (attrib)
+      this->m_attributeAssignments->erase(ref);
+      }
+#endif
+    // Notify the Attribute of the removal
+    if (reverse)
+      {
+      if (this->m_attributeManager)
         {
-        // We don't need a shared pointer to ourselves since we are
-        // passing reverse=false here. Thus we can get by without
-        // inheriting shared_from_this(), which is a rat's nest
-        // should anyone ever derive a class from Storage.
-        smtk::model::StoragePtr model; // a NULL shared pointer.
-        attrib->disassociateEntity(model, fromEntity, false);
+        smtk::attribute::AttributePtr attrib =
+          this->m_attributeManager->findAttribute(attribId);
+        // FIXME: Should we check that the manager's refStorage
+        //        is this Storage instance?
+        if (attrib)
+          {
+          attrib->disassociateEntity(fromEntity, false);
+          }
         }
       }
-      */
     }
   return didRemove;
 }

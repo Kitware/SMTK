@@ -13,6 +13,7 @@
 
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_refStorage' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Storage&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
   <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
@@ -32,8 +33,9 @@
   <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
 
-  <!-- Return a list.  For now we will ingore the iterators-->
+  <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
@@ -735,6 +737,13 @@
         std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt; _out;
         %CPPSELF->get()->references(_out);
         %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="isEntityAssociated(const smtk::model::Cursor&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE result = %CPPSELF-&gt;get()-&gt;isEntityAssociated(*%1);
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
       </inject-code>
     </modify-function>
   </value-type>

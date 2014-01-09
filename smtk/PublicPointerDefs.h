@@ -41,7 +41,10 @@ namespace smtk
     class BRepModel;
     class CellEntity;
     class Chain;
+    typedef std::vector<Chain> Chains;
     class Cursor;
+    typedef std::set<Cursor> Cursors;
+    typedef std::vector<Cursor> CursorArray;
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<Edge> Edges;
@@ -60,9 +63,13 @@ namespace smtk
     class InstanceEntity;
     class Item;
     class ImportJSON;
+    class Loop;
+    typedef std::vector<Loop> Loops;
     class Entity;
     class Model;
     class ModelEntity;
+    class Shell;
+    typedef std::vector<Shell> Shells;
     class ShellEntity;
     typedef std::vector<ShellEntity> ShellEntities;
     class Storage;
@@ -76,6 +83,8 @@ namespace smtk
     typedef std::vector<VertexUse> VertexUses;
     class Volume;
     typedef std::vector<Volume> Volumes;
+    class VolumeUse;
+    typedef std::vector<VolumeUse> VolumeUses;
   }
 
   namespace attribute
@@ -110,6 +119,8 @@ namespace smtk
     class UserData;
     class UUID;
     class UUIDGenerator;
+    typedef std::set<UUID> UUIDs;
+    typedef std::vector<UUID> UUIDArray;
   }
 
   namespace view
