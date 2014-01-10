@@ -41,12 +41,14 @@ namespace smtk
     class ItemDefinition;
     class GroupItem;
     class GroupItemDefinition;
+    class ValueItemDefinition;
     class Attribute;
 
     class SMTKCORE_EXPORT Item
     {
       friend class Definition;
       friend class GroupItemDefinition;
+      friend class ValueItemDefinition;
     public:
       enum Type
       {

@@ -313,13 +313,34 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int i, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode;
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+    xml_node dnode, snode, inodes;
+    std::string ename;
+    std::vector<std::string> citems;
     for (i = 0; i < n; i++)
       {
-      dnode = dnodes.append_child("Value");
-      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
-      dnode.text().set(idef->discreteValue(i));
+      ename = idef->discreteEnum(i);
+      // Lets see if there are any conditional items
+      citems = idef->conditionalItems(ename);
+      nItems = citems.size();
+      if (nItems)
+        {
+        snode = dnodes.append_child("Structure");
+        dnode = snode.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        inodes = snode.append_child("Items");
+        for (j = 0; j < nItems; j++)
+          {
+          inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+      else
+        {
+        dnode = dnodes.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        }
       }
     if (idef->hasDefault())
       {
@@ -368,13 +389,34 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int i, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode;
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+    xml_node dnode, snode, inodes;
+    std::string ename;
+    std::vector<std::string> citems;
     for (i = 0; i < n; i++)
       {
-      dnode = dnodes.append_child("Value");
-      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
-      dnode.text().set(idef->discreteValue(i));
+      ename = idef->discreteEnum(i);
+      // Lets see if there are any conditional items
+      citems = idef->conditionalItems(ename);
+      nItems = citems.size();
+      if (nItems)
+        {
+        snode = dnodes.append_child("Structure");
+        dnode = snode.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        inodes = snode.append_child("Items");
+        for (j = 0; j < nItems; j++)
+          {
+          inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+      else
+        {
+        dnode = dnodes.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        }
       }
     if (idef->hasDefault())
       {
@@ -427,13 +469,34 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int i, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode;
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+    xml_node dnode, snode, inodes;
+    std::string ename;
+    std::vector<std::string> citems;
     for (i = 0; i < n; i++)
       {
-      dnode = dnodes.append_child("Value");
-      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
-      dnode.text().set(idef->discreteValue(i).c_str());
+      ename = idef->discreteEnum(i);
+      // Lets see if there are any conditional items
+      citems = idef->conditionalItems(ename);
+      nItems = citems.size();
+      if (nItems)
+        {
+        snode = dnodes.append_child("Structure");
+        dnode = snode.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i).c_str());
+        inodes = snode.append_child("Items");
+        for (j = 0; j < nItems; j++)
+          {
+          inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+      else
+        {
+        dnode = dnodes.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i).c_str());
+        }
       }
     if (idef->hasDefault())
       {
@@ -511,6 +574,22 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
     {
     xml_node unode = node.append_child("Units");
     unode.text().set(idef->units().c_str());
+    }
+  // Now lets process its children items
+  if (!idef->numberOfChildrenItemDefinitions())
+    {
+    return;
+    }
+  xml_node itemDefNode, itemDefNodes = node.append_child("ChildrenDefinitions");
+  std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator iter;
+  for (iter = idef->childrenItemDefinitions().begin();
+       iter != idef->childrenItemDefinitions().end();
+       ++iter)
+    {
+    itemDefNode = itemDefNodes.append_child();
+    itemDefNode.set_name(Item::type2String(iter->second->type()).c_str());
+    this->processItemDefinition(itemDefNode,
+                                iter->second);
     }
 }
 //----------------------------------------------------------------------------
@@ -753,6 +832,22 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     {
     return; // there is nothing else to be done
     }
+
+  if (item->numberOfChildrenItems())
+    {
+    xml_node childNode, childNodes = node.append_child("ChildrenItems");
+    std::map<std::string, smtk::attribute::ItemPtr>::const_iterator iter;
+    const std::map<std::string, smtk::attribute::ItemPtr> &childrenItems = item->childrenItems();
+    for (iter = childrenItems.begin();
+         iter != childrenItems.end();
+         iter++)
+      {
+      childNode = childNodes.append_child();
+      childNode.set_name(Item::type2String(iter->second->type()).c_str());
+      this->processItem(childNode, iter->second);
+      }
+    }
+
   xml_node val, values;
   if (numRequiredVals == 1) // Special Common Case
     {

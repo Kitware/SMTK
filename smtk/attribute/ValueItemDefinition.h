@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <string>
 #include <set>
+#include <map>
 #include <vector>
 
 #include "smtk/SMTKCoreExports.h"
@@ -80,6 +81,7 @@ namespace smtk
       void setExpressionDefinition(smtk::attribute::DefinitionPtr exp);
       // Should only be called internally by the ValueItem
       void buildExpressionItem(ValueItem *vitem, int position) const;
+      void buildChildrenItems(ValueItem *vitem) const;
 
       bool hasDefault() const
       {return this->m_hasDefault;}
@@ -113,6 +115,49 @@ namespace smtk
       {return ((index > -1) &&
                (static_cast<unsigned int>(index) < this->m_discreteValueEnums.size()));}
 
+      // For conditional children items based on the item's current discrete value
+      std::size_t numberOfChildrenItemDefinitions() const
+      {return this->m_itemDefs.size();}
+
+      const std::map<std::string, smtk::attribute::ItemDefinitionPtr> &childrenItemDefinitions() const
+      {
+        return  this->m_itemDefs;
+      }
+
+      // returns true if this item has a child item definition of itemName
+      bool hasChildItemDefinition(const std::string &itemName) const
+      {
+      return (this->m_itemDefs.find(itemName) != this->m_itemDefs.end());
+      }
+
+      // returns true if valueName has a child item definition of itemName
+      bool hasChildItemDefinition(const std::string &valueName,
+                                  const std::string &itemName);
+
+      bool addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
+
+      template<typename T>
+        typename smtk::internal::shared_ptr_type<T>::SharedPointerType
+        addItemDefinition(const std::string &name)
+      {
+        typedef smtk::internal::shared_ptr_type<T> SharedTypes;
+        typename SharedTypes::SharedPointerType item;
+
+        // First see if there is a item by the same name
+        if (this->hasChildItemDefinition(name))
+          {
+          // Already has an item of this name - do nothing
+          return item;
+          }
+        std::size_t n = this->m_itemDefs.size();
+        item = SharedTypes::RawPointerType::New(name);
+        this->m_itemDefs[item->name()] = item;
+        return item;
+      }
+
+      bool addConditionalItem(const std::string &enumValue, const std::string &itemName);
+      std::vector<std::string> conditionalItems(const std::string &enumValue) const;
+
     protected:
 
       bool m_hasDefault;
@@ -123,10 +168,29 @@ namespace smtk
       std::size_t m_numberOfRequiredValues;
       std::string m_units;
       smtk::attribute::RefItemDefinitionPtr m_expressionDefinition;
+      std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;
+      std::map<std::string, std::set<std::string> > m_itemToValueAssociations;
+      std::map<std::string, std::vector<std::string> > m_valueToItemAssociations;
     private:
 
     };
   }
+}
+
+//----------------------------------------------------------------------------
+
+// returns true if valueName has a child item definition of itemName
+inline bool smtk::attribute::ValueItemDefinition::
+hasChildItemDefinition(const std::string &valueName,
+                       const std::string &itemName)
+{
+  // First we need to check to see if we have this child item
+  if (!this->hasChildItemDefinition(itemName))
+    {
+    return false;
+    }
+  return (this->m_itemToValueAssociations[itemName].find(valueName) !=
+          this->m_itemToValueAssociations[itemName].end());
 }
 
 #endif /* __smtk_attribute_ValueItemDefinition_h */

@@ -128,6 +128,12 @@ namespace smtk
       if (def->isDiscrete())
         {
         int index = def->findDiscreteIndex(val);
+        // Is this the current value?
+        if (index == this->m_discreteIndices[element] )
+          {
+          return true;
+          }
+
         if (index != -1)
           {
           this->m_discreteIndices[element] = index;
@@ -137,6 +143,13 @@ namespace smtk
             this->m_expressions[element]->unset();
             }
           this->m_isSet[element] = true;
+          // Update active children if needed - note that
+          // we currently only support active children based on the
+          // 0th value changing
+          if (element == 0)
+            {
+            this->updateActiveChildrenItems();
+            }
           return true;
           }
         return false;
