@@ -61,6 +61,101 @@ using namespace smtk;
 using namespace smtk::util;
 using namespace smtk::attribute;
 
+// Some helper functions
+namespace {
+
+  int getValueForXMLElement(int v)
+  {
+    return v;
+  }
+
+//----------------------------------------------------------------------------
+  double getValueForXMLElement(double v)
+  {
+    return v;
+  }
+
+//----------------------------------------------------------------------------
+  const char *getValueForXMLElement(std::string v)
+  {
+    return v.c_str();
+  }
+
+//----------------------------------------------------------------------------
+  template<typename ItemDefType>
+  void processDerivedValueDef(pugi::xml_node &node,  ItemDefType idef)
+  {
+    if (idef->isDiscrete())
+      {
+      xml_node dnodes = node.append_child("DiscreteInfo");
+      int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+      xml_node dnode, snode, inodes;
+      std::string ename;
+      std::vector<std::string> citems;
+      for (i = 0; i < n; i++)
+        {
+        ename = idef->discreteEnum(i);
+        // Lets see if there are any conditional items
+        citems = idef->conditionalItems(ename);
+        nItems = citems.size();
+        if (nItems)
+          {
+          snode = dnodes.append_child("Structure");
+          dnode = snode.append_child("Value");
+          dnode.append_attribute("Enum").set_value(ename.c_str());
+          dnode.text().set(getValueForXMLElement(idef->discreteValue(i)));
+          inodes = snode.append_child("Items");
+          for (j = 0; j < nItems; j++)
+            {
+            inodes.append_child("Item").text().set(citems[j].c_str());
+            }
+          }
+        else
+          {
+          dnode = dnodes.append_child("Value");
+          dnode.append_attribute("Enum").set_value(ename.c_str());
+          dnode.text().set(getValueForXMLElement(idef->discreteValue(i)));
+          }
+        }
+      if (idef->hasDefault())
+        {
+        dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
+        }
+      return;
+      }
+    // Does this def have a default value
+    if (idef->hasDefault())
+      {
+      xml_node defnode = node.append_child("DefaultValue");
+      defnode.text().set(getValueForXMLElement(idef->defaultValue()));
+      }
+    // Does this node have a range?
+    if (idef->hasRange())
+      {
+      xml_node rnode = node.append_child("RangeInfo");
+      xml_node r;
+      if (idef->hasMinRange())
+        {
+        r = rnode.append_child("Min");
+        if (idef->minRangeInclusive())
+          {
+          r.append_attribute("Inclusive").set_value(true);
+          }
+        r.text().set(getValueForXMLElement(idef->minRange()));
+        }
+      if (idef->hasMaxRange())
+        {
+        r = rnode.append_child("Max");
+        if (idef->maxRangeInclusive())
+          {
+          r.append_attribute("Inclusive").set_value(true);
+          }
+        r.text().set(getValueForXMLElement(idef->maxRange()));
+        }
+      }
+  }
+};
+
 //----------------------------------------------------------------------------
 XmlV1StringWriter::XmlV1StringWriter(const attribute::Manager &myManager):
 m_manager(myManager)
@@ -310,74 +405,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
   // First process the common value item def stuff
   this->processValueDef(node,
                         dynamic_pointer_cast<ValueItemDefinition>(idef));
-  if (idef->isDiscrete())
-    {
-    xml_node dnodes = node.append_child("DiscreteInfo");
-    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode, snode, inodes;
-    std::string ename;
-    std::vector<std::string> citems;
-    for (i = 0; i < n; i++)
-      {
-      ename = idef->discreteEnum(i);
-      // Lets see if there are any conditional items
-      citems = idef->conditionalItems(ename);
-      nItems = citems.size();
-      if (nItems)
-        {
-        snode = dnodes.append_child("Structure");
-        dnode = snode.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i));
-        inodes = snode.append_child("Items");
-        for (j = 0; j < nItems; j++)
-          {
-          inodes.append_child("Item").text().set(citems[j].c_str());
-          }
-        }
-      else
-        {
-        dnode = dnodes.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i));
-        }
-      }
-    if (idef->hasDefault())
-      {
-      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
-      }
-    return;
-    }
-  // Does this def have a default value
-  if (idef->hasDefault())
-    {
-    xml_node defnode = node.append_child("DefaultValue");
-    defnode.text().set(idef->defaultValue());
-    }
-  // Does this node have a range?
-  if (idef->hasRange())
-    {
-    xml_node rnode = node.append_child("RangeInfo");
-    xml_node r;
-    if (idef->hasMinRange())
-      {
-      r = rnode.append_child("Min");
-      if (idef->minRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->minRange());
-      }
-    if (idef->hasMaxRange())
-      {
-      r = rnode.append_child("Max");
-      if (idef->maxRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->maxRange());
-      }
-    }
+  processDerivedValueDef<attribute::DoubleItemDefinitionPtr>(node, idef);
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
@@ -386,74 +414,7 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
   // First process the common value item def stuff
   this->processValueDef(node,
                         smtk::dynamic_pointer_cast<ValueItemDefinition>(idef));
-  if (idef->isDiscrete())
-    {
-    xml_node dnodes = node.append_child("DiscreteInfo");
-    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode, snode, inodes;
-    std::string ename;
-    std::vector<std::string> citems;
-    for (i = 0; i < n; i++)
-      {
-      ename = idef->discreteEnum(i);
-      // Lets see if there are any conditional items
-      citems = idef->conditionalItems(ename);
-      nItems = citems.size();
-      if (nItems)
-        {
-        snode = dnodes.append_child("Structure");
-        dnode = snode.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i));
-        inodes = snode.append_child("Items");
-        for (j = 0; j < nItems; j++)
-          {
-          inodes.append_child("Item").text().set(citems[j].c_str());
-          }
-        }
-      else
-        {
-        dnode = dnodes.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i));
-        }
-      }
-    if (idef->hasDefault())
-      {
-      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
-      }
-    return;
-    }
-  // Does this def have a default value
-  if (idef->hasDefault())
-    {
-    xml_node defnode = node.append_child("DefaultValue");
-    defnode.text().set(idef->defaultValue());
-    }
-  // Does this node have a range?
-  if (idef->hasRange())
-    {
-    xml_node rnode = node.append_child("RangeInfo");
-    xml_node r;
-    if (idef->hasMinRange())
-      {
-      r = rnode.append_child("Min");
-      if (idef->minRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->minRange());
-      }
-    if (idef->hasMaxRange())
-      {
-      r = rnode.append_child("Max");
-      if (idef->maxRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->maxRange());
-      }
-    }
+  processDerivedValueDef<attribute::IntItemDefinitionPtr>(node, idef);
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
@@ -466,74 +427,7 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
     {
     node.append_attribute("MultipleLines").set_value(true);
     }
-  if (idef->isDiscrete())
-    {
-    xml_node dnodes = node.append_child("DiscreteInfo");
-    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
-    xml_node dnode, snode, inodes;
-    std::string ename;
-    std::vector<std::string> citems;
-    for (i = 0; i < n; i++)
-      {
-      ename = idef->discreteEnum(i);
-      // Lets see if there are any conditional items
-      citems = idef->conditionalItems(ename);
-      nItems = citems.size();
-      if (nItems)
-        {
-        snode = dnodes.append_child("Structure");
-        dnode = snode.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i).c_str());
-        inodes = snode.append_child("Items");
-        for (j = 0; j < nItems; j++)
-          {
-          inodes.append_child("Item").text().set(citems[j].c_str());
-          }
-        }
-      else
-        {
-        dnode = dnodes.append_child("Value");
-        dnode.append_attribute("Enum").set_value(ename.c_str());
-        dnode.text().set(idef->discreteValue(i).c_str());
-        }
-      }
-    if (idef->hasDefault())
-      {
-      dnodes.append_attribute("DefaultIndex").set_value(idef->defaultDiscreteIndex());
-      }
-    return;
-    }
-  // Does this def have a default value
-  if (idef->hasDefault())
-    {
-    xml_node defnode = node.append_child("DefaultValue");
-    defnode.text().set(idef->defaultValue().c_str());
-    }
-  // Does this node have a range?
-  if (idef->hasRange())
-    {
-    xml_node rnode = node.append_child("RangeInfo");
-    xml_node r;
-    if (idef->hasMinRange())
-      {
-      r = rnode.append_child("Min");
-      if (idef->minRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->minRange().c_str());
-      }
-    if (idef->hasMaxRange())
-      {
-      r = rnode.append_child("Max");
-      if (idef->maxRangeInclusive())
-        {
-        r.append_attribute("Inclusive").set_value(true);
-        }
-      r.text().set(idef->maxRange().c_str());
-      }
-    }
+  processDerivedValueDef<attribute::StringItemDefinitionPtr>(node, idef);
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
