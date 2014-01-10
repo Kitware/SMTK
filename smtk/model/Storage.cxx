@@ -5,6 +5,7 @@
 
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Chain.h"
+#include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
@@ -713,6 +714,30 @@ bool Storage::findOrAddInclusionToCell(
   // garbage-in => garbage-out
   // FIXME: Should we throw() here?
   return false;
+}
+
+/**\brief Add an entity as a subset of a group.
+  *
+  * Note that no group/partition constraints are enforced.
+  * Returns true when the entity was successfully added (or already existed)
+  * and false upon failure (such as when \a grp or \a ent are invalid).
+  */
+bool Storage::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent)
+{
+  GroupEntity group(shared_from_this(), grp);
+  Cursor member(shared_from_this(), ent);
+  int count = 0;
+  if (group.isValid() && member.isValid())
+    {
+    count = static_cast<int>(group.members<Cursors>().count(member));
+    if (count == 0)
+      {
+      CursorArrangementOps::findOrAddSimpleRelationship(group, SUPERSET_OF, member);
+      CursorArrangementOps::findOrAddSimpleRelationship(member, SUBSET_OF, group);
+      ++count;
+      }
+    }
+  return count > 0 ? true :false;
 }
 
 /**\brief Report whether an entity has been assigned an attribute.

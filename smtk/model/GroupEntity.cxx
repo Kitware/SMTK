@@ -26,8 +26,7 @@ Cursor GroupEntity::parent() const
   */
 GroupEntity& GroupEntity::addEntity(const Cursor& thing)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, thing);
-  CursorArrangementOps::findOrAddSimpleRelationship(thing, SUBSET_OF, *this);
+  this->m_storage->findOrAddEntityToGroup(this->entity(), thing.entity());
   return *this;
 }
 
