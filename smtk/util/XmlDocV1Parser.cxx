@@ -62,6 +62,143 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace pugi;
 using namespace smtk::util;
 using namespace smtk;
+
+// Some helper functions
+namespace {
+
+  int getValueFromXMLElement(xml_node &node, int)
+  {
+    return node.text().as_int();
+  }
+
+//----------------------------------------------------------------------------
+  double getValueFromXMLElement(xml_node &node, double)
+  {
+    return node.text().as_double();
+  }
+
+//----------------------------------------------------------------------------
+  const char *getValueFromXMLElement(xml_node &node, std::string)
+  {
+    return node.text().get();
+  }
+
+//----------------------------------------------------------------------------
+  template<typename ItemDefType, typename BasicType>
+  void processDerivedValueDef(pugi::xml_node &node,
+                              ItemDefType idef, Logger &logger)
+  {
+    xml_node dnode, child, rnode;
+    xml_attribute xatt;
+    // Is the item discrete?
+    dnode = node.child("DiscreteInfo");
+    if (dnode)
+      {
+      BasicType val;
+      int i;
+      xml_node vnode;
+      std::string cname;
+      for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
+        {
+        cname = child.name();
+        if ( cname == "Structure")
+          {
+          vnode = child.child("Value");
+          }
+        else if (cname == "Value")
+          {
+          vnode = child;
+          }
+        else
+          {
+          continue; // XML Element I don't care about
+          }
+        if (!vnode)
+          {
+          smtkErrorMacro(logger,
+                         "Missing XML Node \"Value\" in DiscreteInfo section of Item Definition : "
+                         << idef->name());
+          continue;
+          }
+
+        xatt = vnode.attribute("Enum");
+        val = getValueFromXMLElement(vnode, BasicType());
+        if (xatt)
+          {
+          idef->addDiscreteValue(val, xatt.value());
+          }
+        else
+          {
+          idef->addDiscreteValue(val);
+          }
+        if (cname != "Structure")
+          {
+          continue;
+          }
+        // Ok lets read in the items associated with this value
+        // First grab the associated enum
+        std::string v = idef->discreteEnum(i);
+        xml_node inode, items = child.child("Items");
+        if (!items)
+          {
+          continue;
+          }
+        for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"))
+          {
+          std::string iname = inode.text().get();
+          idef->addConditionalItem(v, iname);
+          }
+        }
+      xatt = dnode.attribute("DefaultIndex");
+      if (xatt)
+        {
+        idef->setDefaultDiscreteIndex(xatt.as_int());
+        }
+      return;
+      }
+    // Does this def have a default value
+    dnode = node.child("DefaultValue");
+    if (dnode)
+      {
+      idef->setDefaultValue(getValueFromXMLElement(dnode, BasicType()));
+      }
+    // Does this node have a range?
+    rnode = node.child("RangeInfo");
+    if (rnode)
+      {
+      bool inclusive;
+      child = rnode.child("Min");
+      if (child)
+        {
+        xatt = child.attribute("Inclusive");
+        if (xatt)
+          {
+          inclusive = xatt.as_bool();
+          }
+        else
+          {
+          inclusive = false;
+          }
+        idef->setMinRange(getValueFromXMLElement(child, BasicType()), inclusive);
+        }
+
+      child = rnode.child("Max");
+      if (child)
+        {
+        xatt = child.attribute("Inclusive");
+        if (xatt)
+          {
+          inclusive = xatt.as_bool();
+          }
+        else
+          {
+          inclusive = false;
+          }
+        idef->setMaxRange(getValueFromXMLElement(child, BasicType()), inclusive);
+        }
+      }
+  }
+};
 //----------------------------------------------------------------------------
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::Manager &myManager):
 m_manager(myManager)
@@ -446,356 +583,28 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
 void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
                                          attribute::DoubleItemDefinitionPtr idef)
 {
-  xml_node dnode, child, rnode;
-  xml_attribute xatt;
   // First process the common value item def stuff
   this->processValueDef(node, idef);
-  // Is the item discrete?
-  dnode = node.child("DiscreteInfo");
-  if (dnode)
-    {
-    double val;
-    int i;
-    xml_node vnode;
-    std::string cname;
-    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
-      {
-      cname = child.name();
-      if ( cname == "Structure")
-        {
-        vnode = child.child("Value");
-        }
-      else if (cname == "Value")
-        {
-        vnode = child;
-        }
-      else
-        {
-        continue; // XML Element I don't care about
-        }
-      if (!vnode)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Node \"Value\" in DiscreteInfo section of Double Item Definition : "
-                       << idef->name());
-        continue;
-        }
-
-      xatt = vnode.attribute("Enum");
-      val = vnode.text().as_double();
-      if (xatt)
-        {
-        idef->addDiscreteValue(val, xatt.value());
-        }
-      else
-        {
-        idef->addDiscreteValue(val);
-        }
-      if (cname != "Structure")
-        {
-        continue;
-        }
-      // Ok lets read in the items associated with this value
-      // First grab the associated enum
-      std::string v = idef->discreteEnum(i);
-      xml_node inode, items = child.child("Items");
-      if (!items)
-        {
-        continue;
-        }
-      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
-        {
-        std::string iname = inode.text().get();
-        idef->addConditionalItem(v, iname);
-        }
-      }
-    xatt = dnode.attribute("DefaultIndex");
-    if (xatt)
-      {
-      idef->setDefaultDiscreteIndex(xatt.as_int());
-      }
-    return;
-    }
-  // Does this def have a default value
-  dnode = node.child("DefaultValue");
-  if (dnode)
-    {
-    idef->setDefaultValue(dnode.text().as_double());
-    }
-  // Does this node have a range?
-  rnode = node.child("RangeInfo");
-  if (rnode)
-    {
-    bool inclusive;
-    child = rnode.child("Min");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMinRange(child.text().as_double(), inclusive);
-      }
-
-    child = rnode.child("Max");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMaxRange(child.text().as_double(), inclusive);
-      }
-    }
+  processDerivedValueDef<attribute::DoubleItemDefinitionPtr, double>
+    (node, idef, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
                                       attribute::IntItemDefinitionPtr idef)
 {
-  xml_node dnode, child, rnode;
-  xml_attribute xatt;
   // First process the common value item def stuff
   this->processValueDef(node, idef);
-  // Is the item discrete?
-  dnode = node.child("DiscreteInfo");
-  if (dnode)
-    {
-    int val;
-    int i;
-    xml_node vnode;
-    std::string cname;
-    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
-      {
-      cname = child.name();
-      if ( cname == "Structure")
-        {
-        vnode = child.child("Value");
-        }
-      else if (cname == "Value")
-        {
-        vnode = child;
-        }
-      else
-        {
-        continue; // XML Element I don't care about
-        }
-      if (!vnode)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Node \"Value\" in DiscreteInfo section of Int Item Definition : "
-                       << idef->name());
-        continue;
-        }
-
-      xatt = vnode.attribute("Enum");
-      val = vnode.text().as_int();
-      if (xatt)
-        {
-        idef->addDiscreteValue(val, xatt.value());
-        }
-      else
-        {
-        idef->addDiscreteValue(val);
-        }
-      if (cname != "Structure")
-        {
-        continue;
-        }
-      // Ok lets read in the items associated with this value
-      // First grab the associated enum
-      std::string v = idef->discreteEnum(i);
-      xml_node inode, items = child.child("Items");
-      if (!items)
-        {
-        continue;
-        }
-      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
-        {
-        std::string iname = inode.text().get();
-        idef->addConditionalItem(v, iname);
-        }
-      }
-    xatt = dnode.attribute("DefaultIndex");
-    if (xatt)
-      {
-      idef->setDefaultDiscreteIndex(xatt.as_int());
-      }
-    return;
-    }
-  // Does this def have a default value
-  dnode = node.child("DefaultValue");
-  if (dnode)
-    {
-    idef->setDefaultValue(dnode.text().as_int());
-    }
-  // Does this node have a range?
-  rnode = node.child("RangeInfo");
-  if (rnode)
-    {
-    bool inclusive;
-    child = rnode.child("Min");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMinRange(child.text().as_int(), inclusive);
-      }
-
-    child = rnode.child("Max");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMaxRange(child.text().as_int(), inclusive);
-      }
-    }
+  processDerivedValueDef<attribute::IntItemDefinitionPtr, int>
+    (node, idef, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
                                          attribute::StringItemDefinitionPtr idef)
 {
-  xml_node dnode, child, rnode;
-  xml_attribute xatt;
   // First process the common value item def stuff
   this->processValueDef(node, idef);
-
-  xatt = node.attribute("MultipleLines");
-  if (xatt)
-    {
-    idef->setIsMultiline(xatt.as_bool());
-    }
-
-  // Is the item discrete?
-  dnode = node.child("DiscreteInfo");
-  if (dnode)
-    {
-    std::string val;
-    int i;
-    xml_node vnode;
-    std::string cname;
-    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
-      {
-      cname = child.name();
-      if ( cname == "Structure")
-        {
-        vnode = child.child("Value");
-        }
-      else if (cname == "Value")
-        {
-        vnode = child;
-        }
-      else
-        {
-        continue; // XML Element I don't care about
-        }
-      if (!vnode)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Node \"Value\" in DiscreteInfo section of String Item Definition : "
-                       << idef->name());
-        continue;
-        }
-
-      xatt = vnode.attribute("Enum");
-      val = vnode.text().get();
-      if (xatt)
-        {
-        idef->addDiscreteValue(val, xatt.value());
-        }
-      else
-        {
-        idef->addDiscreteValue(val);
-        }
-      if (cname != "Structure")
-        {
-        continue;
-        }
-      // Ok lets read in the items associated with this value
-      // First grab the associated enum
-      std::string v = idef->discreteEnum(i);
-      xml_node inode, items = child.child("Items");
-      if (!items)
-        {
-        continue;
-        }
-      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
-        {
-        std::string iname = inode.text().get();
-        idef->addConditionalItem(v, iname);
-        }
-      }
-    xatt = dnode.attribute("DefaultIndex");
-    if (xatt)
-      {
-      idef->setDefaultDiscreteIndex(xatt.as_int());
-      }
-    return;
-    }
-  // Does this def have a default value
-  dnode = node.child("DefaultValue");
-  if (dnode)
-    {
-    idef->setDefaultValue(dnode.text().get());
-    }
-  // Does this node have a range?
-  rnode = node.child("RangeInfo");
-  if (rnode)
-    {
-    bool inclusive;
-    child = rnode.child("Min");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMinRange(child.text().get(), inclusive);
-      }
-
-    child = rnode.child("Max");
-    if (child)
-      {
-      xatt = child.attribute("Inclusive");
-      if (xatt)
-        {
-        inclusive = xatt.as_bool();
-        }
-      else
-        {
-        inclusive = false;
-        }
-      idef->setMaxRange(child.text().get(), inclusive);
-      }
-    }
+  processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
+    (node, idef, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
