@@ -2,6 +2,7 @@
 #define __smtk_model_SubphraseGenerator_h
 
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
 #include "smtk/model/BRepModel.h" // For PropertyType enum.
@@ -27,10 +28,13 @@ typedef std::vector<DescriptivePhrase> DescriptivePhrasees;
   * are provided to fetch phrases for common information.
   * Subclasses may use these in their implementations of subphrases().
   */
-class SMTKCORE_EXPORT SubphraseGenerator
+class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerator)
 {
 public:
-  virtual DescriptivePhrases subphrases(DescriptivePhrase& src) = 0;
+  smtkTypeMacro(SubphraseGenerator);
+
+  virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) = 0;
+  virtual int directLimit() const { return 4; }
 
 protected:
   void InstancesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
@@ -58,7 +62,7 @@ protected:
 
   void PrototypeOfInstance(DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result);
 
-  void EntitiesOfEntityList(DescriptivePhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
+  void EntitiesOfEntityList(EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
   void PropertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
 };
 

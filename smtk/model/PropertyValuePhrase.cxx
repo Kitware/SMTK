@@ -121,61 +121,6 @@ PropertyType PropertyValuePhrase::relatedPropertyType() const
   return this->m_plist->relatedPropertyType();
 }
 
-bool PropertyValuePhrase::buildSubphrasesInternal()
-{
-  /*
-  switch (this->m_propertyType)
-    {
-  case FLOAT_PROPERTY:
-    if (this->m_entity.hasFloatProperty(this->m_propertyName))
-      {
-      FloatList const& prop(ent.floatProperty(this->m_propertyName()));
-      for (
-        FloatList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case STRING_PROPERTY:
-    if (this->m_entity.hasStringProperty(this->m_propertyName))
-      {
-      StringList const& prop(ent.stringProperty(this->m_propertyName()));
-      for (
-        StringList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case INTEGER_PROPERTY:
-    if (this->m_entity.hasIntegerProperty(this->m_propertyName))
-      {
-      IntegerList const& prop(ent.integerProperty(this->m_propertyName()));
-      for (
-        IntegerList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case INVALID_PROPERTY:
-  default:
-    break;
-    }
-    */
-  return true;
-}
-
 DescriptivePhraseType PropertyValuePhrase::propertyToPhraseType(PropertyType p)
 {
   switch (p)

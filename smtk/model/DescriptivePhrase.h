@@ -42,6 +42,8 @@ enum DescriptivePhraseType {
 };
 
 class DescriptivePhrase;
+class SubphraseGenerator;
+typedef smtk::shared_ptr<SubphraseGenerator> SubphraseGeneratorPtr;
 typedef std::vector<DescriptivePhrasePtr> DescriptivePhrases;
 
 /**\brief A base class for phrases describing an SMTK model.
@@ -72,6 +74,7 @@ class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 public:
   smtkTypeMacro(DescriptivePhrase);
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());
+  Ptr setDelegate(SubphraseGeneratorPtr delegate);
 
   virtual std::string title()                                  { return std::string(); }
   virtual std::string subtitle()                               { return std::string(); }
@@ -91,11 +94,12 @@ public:
 protected:
   DescriptivePhrase();
 
+  SubphraseGeneratorPtr findDelegate();
   void buildSubphrases();
-  virtual bool buildSubphrasesInternal() { return true; }
 
   DescriptivePhrasePtr m_parent;
   DescriptivePhraseType m_type;
+  SubphraseGeneratorPtr m_delegate;
   mutable DescriptivePhrases m_subphrases;
   mutable bool m_subphrasesBuilt;
 };

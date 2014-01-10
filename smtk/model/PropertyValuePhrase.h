@@ -34,8 +34,6 @@ public:
 protected:
   PropertyListPhrase::Ptr m_plist;
   std::string m_propertyName;
-
-  virtual bool buildSubphrasesInternal();
 };
 
   } // model namespace

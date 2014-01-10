@@ -37,8 +37,6 @@ public:
 protected:
   PropertyListPhrase();
 
-  virtual bool buildSubphrasesInternal();
-
   Cursor m_entity;
   PropertyType m_propertyType;
 };

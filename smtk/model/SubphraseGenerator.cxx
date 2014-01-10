@@ -20,16 +20,29 @@
 namespace smtk {
   namespace model {
 
+template<typename T>
+void addEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result)
+{
+  if (static_cast<int>(ents.size()) < limit)
+    {
+    for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
+      {
+      result.push_back(
+        EntityPhrase::create()->setup(*it, parent));
+      }
+    }
+  else
+    {
+    result.push_back(
+      EntityListPhrase::create()->setup(ents, parent));
+    }
+}
+
 void SubphraseGenerator::InstancesOfEntity(
   DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result)
 {
   InstanceEntities instances = ent.instances<InstanceEntities>();
-  if (!instances.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        instances, src));
-    }
+  addEntityPhrases(instances, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::AttributesOfEntity(
@@ -105,24 +118,14 @@ void SubphraseGenerator::BoundingShellsOfUse(
   DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result)
 {
   ShellEntities boundingShells = ent.boundingShellEntities<ShellEntities>();
-  if (!boundingShells.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        boundingShells, src));
-    }
+  addEntityPhrases(boundingShells, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::ToplevelShellsOfUse(
   DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result)
 {
   ShellEntities toplevelShells = ent.shellEntities<ShellEntities>();
-  if (!toplevelShells.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        toplevelShells, src));
-    }
+  addEntityPhrases(toplevelShells, src, this->directLimit(), result);
 }
 
 
@@ -130,36 +133,21 @@ void SubphraseGenerator::ToplevelShellsOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
   ShellEntities toplevelShells = ent.shellEntities();
-  if (!toplevelShells.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        toplevelShells, src));
-    }
+  addEntityPhrases(toplevelShells, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::UsesOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
   UseEntities cellUses = ent.uses<UseEntities>();
-  if (!cellUses.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        cellUses, src));
-    }
+  addEntityPhrases(cellUses, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::InclusionsOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
   Cursors inclusions = ent.inclusions<Cursors>();
-  if (!inclusions.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        inclusions, src));
-    }
+  addEntityPhrases(inclusions, src, this->directLimit(), result);
 }
 
 
@@ -167,12 +155,7 @@ void SubphraseGenerator::UsesOfShell(
   DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result)
 {
   UseEntities shellUses = ent.uses<UseEntities>();
-  if (!shellUses.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        shellUses, src));
-    }
+  addEntityPhrases(shellUses, src, this->directLimit(), result);
 }
 
 
@@ -180,48 +163,29 @@ void SubphraseGenerator::MembersOfGroup(
   DescriptivePhrase::Ptr src, const GroupEntity& grp, DescriptivePhrases& result)
 {
   CursorArray members = grp.members<CursorArray>();
-  if (!members.empty())
-    { // TODO: Sort by entity type, name, etc.?
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        members, src));
-    }
+  addEntityPhrases(members, src, this->directLimit(), result);
+  // TODO: Sort by entity type, name, etc.?
 }
 
 void SubphraseGenerator::FreeSubmodelsOfModel(
   DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
 {
   ModelEntities freeSubmodelsInModel = mod.submodels();
-  if (!freeSubmodelsInModel.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        freeSubmodelsInModel, src));
-    }
+  addEntityPhrases(freeSubmodelsInModel, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::FreeGroupsInModel(
   DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
 {
   GroupEntities freeGroupsInModel = mod.groups();
-  if (!freeGroupsInModel.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        freeGroupsInModel, src));
-    }
+  addEntityPhrases(freeGroupsInModel, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::FreeCellsOfModel(
   DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
 {
   CellEntities freeCellsInModel = mod.cells();
-  if (!freeCellsInModel.empty())
-    {
-    result.push_back(
-      EntityListPhrase::create()->setup(
-        freeCellsInModel, src));
-    }
+  addEntityPhrases(freeCellsInModel, src, this->directLimit(), result);
 }
 
 
@@ -239,14 +203,25 @@ void SubphraseGenerator::PrototypeOfInstance(
 
 
 void SubphraseGenerator::EntitiesOfEntityList(
-  DescriptivePhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result)
+  EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result)
 {
+  BitFlags commonFlags = INVALID;
+  BitFlags unionFlags = 0;
+
+  for (CursorArray::const_iterator it = ents.begin(); it != ents.end(); ++it)
+    {
+    result.push_back(
+      EntityPhrase::create()->setup(*it, src));
+    commonFlags &= it->entityFlags();
+    unionFlags |= it->entityFlags();
+    }
+  src->setFlags(commonFlags, unionFlags);
 }
 
 void SubphraseGenerator::PropertiesOfPropertyList(
    PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result)
 {
-  switch (src->relatedPropertyType())
+  switch (p)
     {
   case FLOAT_PROPERTY:
     if (src->relatedEntity().hasFloatProperties())

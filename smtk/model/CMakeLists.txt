@@ -31,6 +31,7 @@ set(modelSrcs
   PropertyValuePhrase.cxx
   Shell.cxx
   ShellEntity.cxx
+  SimpleModelSubphrases.cxx
   Storage.cxx
   SubphraseGenerator.cxx
   ModelDomainItem.cxx
@@ -75,11 +76,12 @@ set(modelHeaders
   ModelEntity.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
+  Shell.h
+  ShellEntity.h
+  SimpleModelSubphrases.h
   Storage.h
   SubphraseGenerator.h
   ModelDomainItem.h
-  Shell.h
-  ShellEntity.h
   StringData.h
   Tessellation.h
   UseEntity.h
