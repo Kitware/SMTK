@@ -454,19 +454,58 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
   if (dnode)
     {
     double val;
-    for (child = dnode.first_child(); child; child = child.next_sibling())
+    int i;
+    xml_node vnode;
+    std::string cname;
+    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
       {
-      xatt = child.attribute("Enum");
+      cname = child.name();
+      if ( cname == "Structure")
+        {
+        vnode = child.child("Value");
+        }
+      else if (cname == "Value")
+        {
+        vnode = child;
+        }
+      else
+        {
+        continue; // XML Element I don't care about
+        }
+      if (!vnode)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Node \"Value\" in DiscreteInfo section of Doubel Item Definition : "
+                       << idef->name());
+        continue;
+        }
+
+      xatt = vnode.attribute("Enum");
+      val = vnode.text().as_double();
       if (xatt)
         {
-        val = child.text().as_double();
         idef->addDiscreteValue(val, xatt.value());
         }
       else
         {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Attribute Enum in DiscreteInfo section of Double Item Definition : "
-                       << idef->name());
+        idef->addDiscreteValue(val);
+        }
+      if (cname != "Structure")
+        {
+        continue;
+        }
+      // Ok lets read in the items associated with this value
+      // First grab the associated enum
+      std::string v = idef->discreteEnum(i);
+      xml_node inode, items = child.child("Items");
+      if (!items)
+        {
+        continue;
+        }
+      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
+        {
+        std::string iname = inode.text().get();
+        idef->addConditionalItem(v, iname);
         }
       }
     xatt = dnode.attribute("DefaultIndex");
@@ -768,6 +807,56 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   if (xatt)
     {
     idef->setUnits(xatt.value());
+    }
+
+  // Now lets process its children items
+  xml_node cinode, citemsNode = node.child("ChildrenDefinitions");
+  std::string citemName;
+  smtk::attribute::Item::Type citype;
+  smtk::attribute::ItemDefinitionPtr cidef;
+  for (cinode = citemsNode.first_child(); cinode; cinode = cinode.next_sibling())
+    {
+    citype = smtk::attribute::Item::string2Type(cinode.name());
+    citemName = cinode.attribute("Name").value();
+    switch (citype)
+      {
+      case smtk::attribute::Item::ATTRIBUTE_REF:
+        cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName);
+        this->processRefDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::DOUBLE:
+        cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName);
+        this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::DIRECTORY:
+        cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName);
+        this->processDirectoryDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::FILE:
+        cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName);
+        this->processFileDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::GROUP:
+        cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName);
+        this->processGroupDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::INT:
+        cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName);
+        this->processIntDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::STRING:
+        cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName);
+        this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
+        break;
+      case smtk::attribute::Item::VOID:
+        cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName);
+        this->processItemDef(cinode, cidef);
+      break;
+    default:
+      smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
+                     << cinode.name()
+                     << " needed to create Definition: " << citype);
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -1243,7 +1332,58 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     {
     return; // there is nothing to be done
     }
-  xml_node val, values;
+
+  // OK Time to process the children items of this Discrete Item
+  xml_node val, values, childNode, childrenNodes, inode;
+  childrenNodes = node.child("ChildrenItems");
+  if (childrenNodes)
+    {
+    // Process all of the children items in the item w/r to the XML
+    // NOTE That the writer processes the items in order - lets assume
+    // that for speed and if that fails we can try to search for the correct
+    // xml node
+    std::map<std::string, smtk::attribute::ItemPtr>::const_iterator iter;
+    const std::map<std::string, smtk::attribute::ItemPtr> &childrenItems = item->childrenItems();
+    for (childNode = childrenNodes.first_child(), iter = childrenItems.begin();
+         (iter != childrenItems.end()) && childNode;
+         iter++, childNode = childNode.next_sibling())
+      {
+      // See if the name of the item matches the name of node
+      xatt = childNode.attribute("Name");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Bad Child Item for Item : " << item->name()
+                       << "- missing XML Attribute Name");
+        inode = childrenNodes.find_child_by_attribute("Name", iter->second->name().c_str());
+        }
+      else
+        {
+        // Is the ith xml node the same as the ith item of the attribute?
+        if (iter->second->name() == xatt.value())
+          {
+          inode = childNode;
+          }
+        else
+          {
+          inode = childrenNodes.find_child_by_attribute("Name", iter->second->name().c_str());
+          }
+        }
+      if (!inode)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Can not locate XML Child Item node :" << iter->second->name()
+                       << " for Item : " << item->name());
+        continue;
+        }
+      this->processItem(inode, iter->second);
+      }
+    if (childNode || (iter != childrenItems.end()))
+      {
+      smtkErrorMacro(this->m_logger,
+                     "Number of Children Items does not match XML for Item : " << item->name());
+      }
+    }
   int index=0;
   if (!n)
     {

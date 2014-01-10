@@ -49,6 +49,7 @@ namespace smtk
     {
       friend class smtk::attribute::Definition;
       friend class smtk::attribute::GroupItemDefinition;
+      friend class smtk::attribute::ValueItemDefinition;
     public:
       virtual ~ItemDefinition();
       const std::string &name() const

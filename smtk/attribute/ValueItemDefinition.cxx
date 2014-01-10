@@ -21,6 +21,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 
+#include <algorithm>
 
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
@@ -133,9 +134,84 @@ ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
   vitem->m_expressions[position] = aref;
 }
 //----------------------------------------------------------------------------
+void
+ValueItemDefinition::buildChildrenItems(ValueItem *vitem) const
+{
+  std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it;
+  smtk::attribute::ItemPtr child;
+  for (it = this->m_itemDefs.begin(); it != this->m_itemDefs.end(); it++)
+    {
+    child = it->second->buildItem(vitem, 0, -1);
+    child->setDefinition(it->second);
+    vitem->m_childrenItems[it->first] = child;
+    }
+}
+//----------------------------------------------------------------------------
 void ValueItemDefinition::setDefaultDiscreteIndex(int discreteIndex)
 {
   this->m_defaultDiscreteIndex = discreteIndex;
   this->m_hasDefault = true;
+}
+//----------------------------------------------------------------------------
+bool ValueItemDefinition::
+addChildItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
+{
+  // First see if there is a item by the same name
+  if (this->hasChildItemDefinition(cdef->name()))
+    {
+    return false;
+    }
+  this->m_itemDefs[cdef->name()] = cdef;
+  return true;
+}
+//----------------------------------------------------------------------------
+bool ValueItemDefinition::
+addConditionalItem(const std::string &valueName, const std::string &itemName)
+{
+  // Do we have this valueName?
+  if (std::find(this->m_discreteValueEnums.begin(),
+                this->m_discreteValueEnums.end(), valueName) ==
+      this->m_discreteValueEnums.end())
+    {
+    return false;
+    }
+  // Next do we have such an iten definition?
+  if (!this->hasChildItemDefinition(itemName))
+    {
+    return false;
+    }
+
+  // Finally we need to verify that we don't already have this item assigned
+  if (this->hasChildItemDefinition(valueName, itemName))
+    {
+    return false;
+    }
+
+  // create the association
+  this->m_valueToItemAssociations[valueName].push_back(itemName);
+  this->m_itemToValueAssociations[itemName].insert(valueName);
+  return true;
+}
+//----------------------------------------------------------------------------
+std::vector<std::string>
+ValueItemDefinition::conditionalItems(const std::string &valueName) const
+{
+  // Do we have this valueName?
+  if (std::find(this->m_discreteValueEnums.begin(),
+                this->m_discreteValueEnums.end(), valueName) ==
+      this->m_discreteValueEnums.end())
+    {
+    std::vector<std::string> temp;
+    return temp;
+    }
+  std::map<std::string, std::vector<std::string> >::const_iterator citer =
+    this->m_valueToItemAssociations.find(valueName);
+  // Does the value have conditional items associated with it?
+  if (citer == this->m_valueToItemAssociations.end())
+    {
+    std::vector<std::string> dummy;
+    return dummy;
+    }
+  return citer->second;
 }
 //----------------------------------------------------------------------------

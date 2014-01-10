@@ -72,6 +72,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
     if (def->isDiscrete())
       {
       this->m_discreteIndices.resize(n, def->defaultDiscreteIndex());
+      this->updateActiveChildrenItems();
       }
     if (def->allowsExpressions())
       {
@@ -83,6 +84,9 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
         }
       }
     }
+
+  // Build the item's children
+  def->buildChildrenItems(this);
   return true;
 }
 //----------------------------------------------------------------------------
@@ -207,8 +211,40 @@ bool ValueItem::setDiscreteIndex(int element, int index)
       }
     this->m_isSet[element] = true;
     this->updateDiscreteValue(element);
+    this->updateActiveChildrenItems();
     return true;
     }
   return false;
+}
+//----------------------------------------------------------------------------
+void ValueItem::updateActiveChildrenItems()
+{
+  // This is only for Discrete Value Items
+  if (!this->isDiscrete())
+    {
+    return;
+    }
+
+  // Clear the current list of active children items
+  this->m_activeChildrenItems.clear();
+
+  // Note that for the current implementation only value items with 1
+  // required value is support for conditional children.
+  // Check to see if the index is valid
+  const ValueItemDefinition *def =
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (!def->isDiscreteIndexValid(this->m_discreteIndices[0]))
+    {
+    return;
+    }
+
+  // Get the children that should be active for the current value
+  std::string v = def->discreteEnum(this->m_discreteIndices[0]);
+  std::vector<std::string> citems = def->conditionalItems(v);
+  std::size_t i, n = citems.size();
+  for (i = 0; i < n; i++)
+    {
+    this->m_activeChildrenItems.push_back(this->m_childrenItems[citems[i]]);
+    }
 }
 //----------------------------------------------------------------------------

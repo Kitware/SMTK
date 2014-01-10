@@ -84,14 +84,37 @@ namespace smtk
       smtk::attribute::RefItemPtr expressionReference(int elementIndex=0) const
       {return this->m_expressions[elementIndex];}
 
+      // Interface for getting discrete-value based children items
+      std::size_t numberOfChildrenItems() const
+      { return this->m_childrenItems.size();}
+
+      const std::map<std::string, smtk::attribute::ItemPtr> childrenItems() const
+      { return this->m_childrenItems; }
+
+      std::size_t numberOfActiveChildrenItems() const
+      { return this->m_activeChildrenItems.size();}
+
+      smtk::attribute::ItemPtr activeChildItem(int i) const
+      {
+        if ((i < 0) || (i >= this->m_activeChildrenItems.size()))
+          {
+          smtk::attribute::ItemPtr item;
+          return item;
+          }
+        return this->m_activeChildrenItems[i];
+      }
+
     protected:
       ValueItem(Attribute *owningAttribute, int itemPosition);
       ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
       virtual void updateDiscreteValue(int elementIndex) = 0;
+      virtual void updateActiveChildrenItems();
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;
       std::vector<smtk::attribute::RefItemPtr > m_expressions;
+      std::map<std::string, smtk::attribute::ItemPtr> m_childrenItems;
+      std::vector<smtk::attribute::ItemPtr> m_activeChildrenItems;
     private:
 
     };
