@@ -2,9 +2,13 @@
 #define __smtk_model_EntityTypeBits_h
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
+#include "smtk/util/SystemConfig.h"
 
 namespace smtk {
   namespace model {
+
+/// The integer type used to hold bit values describing an entity's type.
+typedef unsigned int BitFlags;
 
 /// Different types of entities the model can hold and their inherent properties.
 enum EntityTypeBits
@@ -36,11 +40,11 @@ enum EntityTypeBits
   VERTEX               = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   EDGE                 = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   FACE                 = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
-  REGION               = 0x00000108, //!< A cell of dimension 3 (i.e., a region)
+  VOLUME               = 0x00000108, //!< A cell of dimension 3 (i.e., a volume)
   CELL_0D              = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   CELL_1D              = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   CELL_2D              = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
-  CELL_3D              = 0x00000108, //!< A cell of dimension 3 (i.e., a region)
+  CELL_3D              = 0x00000108, //!< A cell of dimension 3 (i.e., a volume)
   ANY_CELL             = 0x000001ff, //!< A cell of any dimension
   VERTEX_USE           = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   EDGE_USE             = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
@@ -48,6 +52,7 @@ enum EntityTypeBits
   USE_0D               = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   USE_1D               = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
   USE_2D               = 0x00000204, //!< A cell-use of dimension 2 (i.e., a face use)
+  USE_3D               = 0x00000208, //!< A cell-use of dimension 3 (i.e., a volume use)
   ANY_USE              = 0x000002ff, //!< A cell-use of any dimension
   CHAIN                = 0x00000403, //!< A shell of dimension 0+1 (i.e., a vertex chain)
   LOOP                 = 0x00000406, //!< A shell of dimension 1+2 (i.e., an edge loop)
@@ -68,19 +73,26 @@ enum EntityTypeBits
   INVALID              = 0xffffffff  //!< The entity is invalid
 };
 
-inline bool isVertex(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
-inline bool isEdge(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
-inline bool isFace(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
-inline bool isRegion(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
+inline bool isCellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == CELL_ENTITY; }
+inline bool isVertex(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_0D; }
+inline bool isEdge(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_1D; }
+inline bool isFace(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == CELL_2D; }
+inline bool isVolume(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == CELL_3D; }
 
-inline bool isVertexUse(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
-inline bool isEdgeUse(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
-inline bool isFaceUse(unsigned int entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
+inline bool isUseEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == USE_ENTITY; }
+inline bool isVertexUse(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == USE_0D; }
+inline bool isEdgeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_1D; }
+inline bool isFaceUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_2D; }
+inline bool isVolumeUse(BitFlags entityFlags)   { return (entityFlags & ANY_ENTITY) == USE_3D; }
 
-inline bool isChain(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }
-inline bool isLoop(unsigned int entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
-inline bool isShell(unsigned int entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
+inline bool isShellEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == SHELL_ENTITY; }
+inline bool isChain(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_0D; }
+inline bool isLoop(BitFlags entityFlags)  { return (entityFlags & ANY_ENTITY) == SHELL_1D; }
+inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) == SHELL_2D; }
 
+inline bool isGroupEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
+inline bool isModelEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
+inline bool isInstanceEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
   } // namespace model
 } // namespace smtk
 

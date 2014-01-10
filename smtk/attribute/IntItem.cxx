@@ -35,10 +35,10 @@ IntItem::IntItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-IntItem::IntItem(Item *owningItem,
+IntItem::IntItem(Item *inOwningItem,
                  int itemPosition,
                  int mySubGroupPosition): 
-  ValueItemTemplate<int>(owningItem, itemPosition, mySubGroupPosition)
+  ValueItemTemplate<int>(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 //----------------------------------------------------------------------------

@@ -111,7 +111,7 @@ void qtAttributeRefItem::createWidget()
   for(i = 0; i < n; i++)
     {
     QComboBox* combo = new QComboBox(this->Widget);
-    QVariant vdata((int)i);
+    QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
     layout->addWidget(combo);

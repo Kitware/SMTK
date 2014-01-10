@@ -44,15 +44,17 @@ if(SMTK_BUILD_QT)
   smtk_prepend_string("Qt" QAttrLibUIs ${QAttrLibUIs})
 
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
+  qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc)
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES})
+  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
 
   set(qtsmtk_headers ${QAttrLibHeaders})
   set(qtsmtk_srcs
    ${QAttrLibSrcs}
    ${UI_BUILT_SOURCES}
+   ${RCS_RESOURCES}
    )
 
   add_library(QtSMTK ${qtsmtk_srcs})
@@ -115,6 +117,13 @@ if(SMTK_BUILD_VTK)
   #install the library and exports the library when used from a build tree
   smtk_install_library(vtkSMTK DEPENDS SMTKCore)
 endif()
+
+if (SMTK_BUILD_CGM)
+
+  add_subdirectory(cgm)
+  smtk_source_group(cgm)
+
+endif(SMTK_BUILD_CGM)
 
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 

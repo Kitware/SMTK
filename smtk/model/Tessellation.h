@@ -2,17 +2,11 @@
 #define __smtk_model_Tessellation_h
 
 #include "smtk/util/UUID.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "sparsehash/sparse_hash_map"
 
 #include <vector>
-
-#if defined(WIN32)
-template class SMTKCORE_EXPORT std::allocator<double>;
-template class SMTKCORE_EXPORT std::allocator<int>;
-template class SMTKCORE_EXPORT std::vector<double>;
-template class SMTKCORE_EXPORT std::vector<int>;
-#endif
 
 namespace smtk {
   namespace model {
@@ -24,14 +18,22 @@ namespace smtk {
   * However, it may also evolve to store information about the
   * underlying geometric construct being approximated.
   */
-struct SMTKCORE_EXPORT Tessellation
+class SMTKCORE_EXPORT Tessellation
 {
-  std::vector<double> coords;
-  std::vector<int> conn;
-  // We may eventually want geometry to include a reference
-  // to a: boost::variant<point,curve,face,volume> Definition;
-
+public:
   Tessellation();
+
+  /// Direct access to the underlying point-coordinate storage
+  std::vector<double>& coords()
+    { return this->m_coords; }
+  std::vector<double> const& coords() const
+    { return this->m_coords; }
+
+  /// Direct access to the underlying connectivity storage
+  std::vector<int>& conn()
+    { return this->m_conn; }
+  std::vector<int> const& conn() const
+    { return this->m_conn; }
 
   int addCoords(double* a);
   Tessellation& addCoords(double x, double y, double z);
@@ -45,6 +47,10 @@ struct SMTKCORE_EXPORT Tessellation
   Tessellation& addTriangle(int ai, int bi, int ci);
 
   Tessellation& reset();
+
+protected:
+  std::vector<double> m_coords;
+  std::vector<int> m_conn;
 };
 
 typedef google::sparse_hash_map<smtk::util::UUID,Tessellation> UUIDsToTessellations;

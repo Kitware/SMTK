@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.s
 using namespace smtk::model;
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Model *model, int myid, MaskType mask):
-  Item(model, myid), m_entityMask(mask)
+GroupItem::GroupItem(Model *inModel, int myid, MaskType mask):
+  Item(inModel, myid), m_entityMask(mask)
 {
 }
 
@@ -42,9 +42,10 @@ Item::Type GroupItem::type() const
 }
 
 //----------------------------------------------------------------------------
-smtk::model::ItemPtr GroupItem::item(int id) const
+smtk::model::ItemPtr GroupItem::item(int inId) const
 {
-  std::map<int, smtk::model::ItemPtr>::const_iterator it = this->m_items.find(id);
+  std::map<int, smtk::model::ItemPtr>::const_iterator it =
+    this->m_items.find(inId);
   if (it == this->m_items.end())
     {
     return smtk::model::ItemPtr();

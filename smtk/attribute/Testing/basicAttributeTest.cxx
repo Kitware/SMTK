@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include <iostream>
 
 int main()
@@ -71,6 +72,100 @@ int main()
     {
     std::cout << "ERROR: Duplicate Attribute testAtt  created\n";
     status++;
+    }
+
+  if (att)
+    {
+    if( att->id() != 0 )
+      {
+      std::cout << "Unexpected id: " << att->id() << " should be 0\n";
+      status++;
+      }
+    double color[] = {3,24,12,6};
+    if (att->isColorSet())
+      {
+      std::cout << "Color should not be set.\n";
+      status++;
+      }
+    double const* tcol = att->color();
+    if (tcol[0] != 1 || tcol[1] != 1 || tcol[2] != 1 || tcol[3] != 1)
+      {
+      std::cout << "wrong default color values: " <<tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3] << std::endl;
+      status++;
+      }
+    att->setColor(color);
+    tcol = att->color();
+    if (tcol[0] != 3 || tcol[1] != 24 || tcol[2] != 12 || tcol[3] != 6)
+      {
+      std::cout << "wrong set color values: " <<tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3] << std::endl;
+      status++;
+      }
+    if (!att->isColorSet())
+      {
+      std::cout << "Color should be set.\n";
+      status++;
+      }
+    att->unsetColor();
+    if (att->isColorSet())
+      {
+      std::cout << "Color should not be set.\n";
+      status++;
+      }
+    tcol = att->color();
+    if (tcol[0] != 1 || tcol[1] != 1 || tcol[2] != 1 || tcol[3] != 1)
+      {
+      std::cout << "wrong default color values: " <<tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3] << std::endl;
+      status++;
+      }
+    if (att->numberOfAssociatedEntities() != 0)
+      {
+      std::cout << "Should not have associated entities.\n";
+      status++;
+      }
+    if ( att->associatedEntitiesSet().size() !=0 )
+      {
+      std::cout << "Should not have associated entities.\n";
+      status++;
+      }
+    if (att->appliesToBoundaryNodes())
+      {
+      std::cout << "Should not be applies to boundry node.\n";
+      status++;
+      }
+    att->setAppliesToBoundaryNodes(true);
+    if (!att->appliesToBoundaryNodes())
+      {
+      std::cout << "Should be applies to boundry node.\n";
+      status++;
+      }
+    att->setAppliesToBoundaryNodes(false);
+    if (att->appliesToBoundaryNodes())
+      {
+      std::cout << "Should not be applies to boundry node.\n";
+      status++;
+      }
+    if (att->appliesToInteriorNodes())
+      {
+      std::cout << "Should not be applies to interior node.\n";
+      status++;
+      }
+    att->setAppliesToInteriorNodes(true);
+    if (!att->appliesToInteriorNodes())
+      {
+      std::cout << "Should be applies to interior node.\n";
+      status++;
+      }
+    att->setAppliesToInteriorNodes(false);
+    if (att->appliesToInteriorNodes())
+      {
+      std::cout << "Should not applies to interior node.\n";
+      status++;
+      }
+    if (att->manager() != &manager)
+      {
+      std::cout << "Should be this manager.\n";
+      status++;
+      }
     }
 
   std::cout << "Manager destroyed\n";

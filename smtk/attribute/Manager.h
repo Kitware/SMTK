@@ -50,12 +50,6 @@ namespace smtk
     class SMTKCORE_EXPORT Manager
     {
     public:
-      // static set and get methods for setting a Manager that can be accessed
-      // through the shiboken wrapping. we probably want to do something better
-      // in the future but I think that may require wrapping parts of CMB with
-      // shiboken.
-      static Manager* getGlobalManager();
-      static void setGlobalManager(Manager* m);
 
       Manager();
       virtual ~Manager();
@@ -128,6 +122,9 @@ namespace smtk
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
 
+      // When a definition's items has changed use this method to update derived def
+      // item offsets which is used by the find item method
+      void updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;

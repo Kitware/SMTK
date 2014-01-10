@@ -2,18 +2,42 @@
 #define __smtk_model_BRepModel_h
 
 #include "smtk/util/UUID.h"
+#include "smtk/util/UUIDGenerator.h"
+#include "smtk/util/SharedFromThis.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/SharedPtr.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
+#include "smtk/model/IntegerData.h"
 
-#include "sparsehash/sparse_hash_map"
+#include "smtk/options.h" // for SMTK_HASH_STORAGE
+#ifdef SMTK_HASH_STORAGE
+#  include "sparsehash/sparse_hash_map"
+#else
+#  include <map>
+#endif
 
 namespace smtk {
   namespace model {
 
+#ifdef SMTK_HASH_STORAGE
 typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
+#else
+typedef std::map<smtk::util::UUID,Entity> UUIDsToEntities;
+#endif
 typedef UUIDsToEntities::iterator UUIDWithEntity;
+
+/// Primitive storage types for model properties
+enum PropertyType
+{
+  FLOAT_PROPERTY,    //!< Property is an array of floating-point numbers
+  STRING_PROPERTY,   //!< Property is an array of strings
+  INTEGER_PROPERTY,  //!< Property is an array of integers
+  INVALID_PROPERTY   //!< Property has no storage.
+};
 
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *
@@ -23,21 +47,24 @@ typedef UUIDsToEntities::iterator UUIDWithEntity;
   * This is templated so we can switch to uint32 values if CGM
   * is unable/unwilling to work with UUIDs.
   */
-class SMTKCORE_EXPORT BRepModel
+class SMTKCORE_EXPORT BRepModel : smtkEnableSharedPtr(BRepModel)
 {
 public:
-  typedef google::sparse_hash_map<smtk::util::UUID,Entity> storage_type;
+  typedef UUIDsToEntities storage_type;
   typedef storage_type::iterator iter_type;
 
+  smtkTypeMacro(BRepModel);
+  smtkCreateMacro(BRepModel);
   BRepModel();
-  BRepModel(storage_type* topology, bool shouldDelete);
-  ~BRepModel();
+  BRepModel(shared_ptr<storage_type> topology);
+  virtual ~BRepModel();
 
-  google::sparse_hash_map<smtk::util::UUID,Entity>& topology();
-  const google::sparse_hash_map<smtk::util::UUID,Entity>& topology() const;
+  UUIDsToEntities& topology();
+  const UUIDsToEntities& topology() const;
 
-  int type(const smtk::util::UUID& ofEntity);
-  int dimension(const smtk::util::UUID& ofEntity);
+  int type(const smtk::util::UUID& ofEntity) const;
+  int dimension(const smtk::util::UUID& ofEntity) const;
+  std::string name(const smtk::util::UUID& ofEntity) const;
 
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);
@@ -51,17 +78,17 @@ public:
   smtk::util::UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
   smtk::util::UUIDs adjacentEntities(const smtk::util::UUID& ofEntity, int ofDimension);
 
-  smtk::util::UUIDs entitiesMatchingFlags(unsigned int mask, bool exactMatch = true);
+  smtk::util::UUIDs entitiesMatchingFlags(BitFlags mask, bool exactMatch = true);
   smtk::util::UUIDs entitiesOfDimension(int dim);
 
-  iter_type insertEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
+  iter_type insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   iter_type insertEntity(Entity& cell);
-  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
+  iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, BitFlags entityFlags, int dim);
   iter_type setEntity(const smtk::util::UUID& uid, Entity& cell);
 
-  smtk::util::UUID addEntityOfTypeAndDimension(unsigned int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   smtk::util::UUID addEntity(Entity& cell);
-  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, unsigned int entityFlags, int dim);
+  smtk::util::UUID addEntityOfTypeAndDimensionWithUUID(const smtk::util::UUID& uid, BitFlags entityFlags, int dim);
   smtk::util::UUID addEntityWithUUID(const smtk::util::UUID& uid, Entity& cell);
 
   iter_type insertCellOfDimension(int dim);
@@ -71,61 +98,61 @@ public:
 
   void insertEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
-  void setDeleteStorage(bool d);
 
+  bool removeEntity(const smtk::util::UUID& uid);
 
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const std::string& propValue)
-    {
-    smtk::model::StringList tmp;
-    tmp.push_back(propValue);
-    this->setStringProperty(entity, propName, tmp);
-    }
+  virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
-  void setStringProperty(const smtk::util::UUID& entity, const std::string propName, const smtk::model::StringList& propValue)
-    {
-    (*this->m_stringData)[entity][propName] = propValue;
-    }
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Float propValue);
+  void setFloatProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::FloatList& propValue);
+  smtk::model::FloatList const& floatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::FloatList& floatProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasFloatProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeFloatProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithFloatProperties floatPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithFloatProperties floatPropertiesForEntity(const smtk::util::UUID& entity);
+  UUIDsToFloatData& floatProperties() { return *this->m_floatData; }
+  UUIDsToFloatData const& floatProperties() const { return *this->m_floatData; }
 
-  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string propName) const
-    {
-    StringData& strings((*this->m_stringData)[entity]);
-    return strings[propName];
-    }
+  void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::String& propValue);
+  void setStringProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::StringList& propValue);
+  smtk::model::StringList const& stringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasStringProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeStringProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithStringProperties stringPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithStringProperties stringPropertiesForEntity(const smtk::util::UUID& entity);
+  UUIDsToStringData& stringProperties() { return *this->m_stringData; }
+  UUIDsToStringData const& stringProperties() const { return *this->m_stringData; }
 
-  smtk::model::StringList& stringProperty(const smtk::util::UUID& entity, const std::string propName)
-    {
-    StringData& strings((*this->m_stringData)[entity]);
-    return strings[propName];
-    }
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, smtk::model::Integer propValue);
+  void setIntegerProperty(const smtk::util::UUID& entity, const std::string& propName, const smtk::model::IntegerList& propValue);
+  smtk::model::IntegerList const& integerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  smtk::model::IntegerList& integerProperty(const smtk::util::UUID& entity, const std::string& propName);
+  bool hasIntegerProperty(const smtk::util::UUID& entity, const std::string& propName) const;
+  bool removeIntegerProperty(const smtk::util::UUID& entity, const std::string& propName);
+  const UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::util::UUID& entity) const;
+  UUIDWithIntegerProperties integerPropertiesForEntity(const smtk::util::UUID& entity);
+  UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
+  UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
-  bool hasStringProperty(const smtk::util::UUID& entity, const std::string propName) const
-    {
-    UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
-    if (uit == this->m_stringData->end())
-      {
-      return false;
-      }
-    StringData::const_iterator sit = uit->second.find(propName);
-    return sit == uit->second.end() ? false : true;
-    }
+  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
 
-  smtk::util::UUID addVertex() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 0); }
-  smtk::util::UUID addEdge() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 1); }
-  smtk::util::UUID addFace() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 2); }
-  smtk::util::UUID addRegion() { return this->addEntityOfTypeAndDimension(CELL_ENTITY, 3); }
-  smtk::util::UUID addGroup(int extraFlags = 0, const std::string& name = std::string())
-    {
-    smtk::util::UUID uid = this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
-    this->setStringProperty(uid, "name", name);
-    return uid;
-    }
-
-  void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
+  void assignDefaultNames();
+  std::string assignDefaultName(const smtk::util::UUID& uid);
+  static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
 protected:
-  UUIDsToEntities* m_topology;
-  UUIDsToStringData* m_stringData;
-  bool m_deleteStorage;
+  shared_ptr<UUIDsToEntities> m_topology;
+  smtk::shared_ptr<UUIDsToFloatData> m_floatData;
+  smtk::shared_ptr<UUIDsToStringData> m_stringData;
+  smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
+  smtk::util::UUIDGenerator m_uuidGenerator;
+  int m_modelCount;
+
+  std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
+  IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
+  void prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry);
 };
 
   } // model namespace

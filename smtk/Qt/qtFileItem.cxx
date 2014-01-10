@@ -109,7 +109,7 @@ void qtFileItem::updateItemData()
 
   for(i = 0; i < n; i++)
     {
-    QWidget* fileframe = this->createFileBrowseWidget((int)i);
+    QWidget* fileframe = this->createFileBrowseWidget(static_cast<int>(i));
     entryLayout->addWidget(fileframe);
     }
 
@@ -146,7 +146,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   lineEdit->setText(valText);
 
   QVariant vdata;
-  vdata.setValue((void*)lineEdit);
+  vdata.setValue(static_cast<void*>(lineEdit));
   this->setProperty("DataItem", vdata);
 
   QVariant vdata1(elementIdx);

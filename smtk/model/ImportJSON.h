@@ -13,15 +13,24 @@ namespace smtk {
 
 class Storage;
 
+/**\brief Import an SMTK model from JSON data.
+  *
+  * Methods are also provided for importing individual records
+  * and groups of records directly from cJSON nodes.
+  * These may be used to update relevant entities without
+  * storing or transmitting a potentially-large string.
+  */
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
   static int intoModel(const char* json, StoragePtr model);
-  static int intoModel(const char* json, Storage* model);
-  static int ofStorage(cJSON* body, Storage* model);
-  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, Storage* model);
-  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, Storage* model);
-  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, Storage* model);
+  static int ofStorage(cJSON* body, StoragePtr model);
+  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
 };
 
   } // namespace model

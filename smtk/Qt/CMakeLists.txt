@@ -3,6 +3,9 @@ set(QAttrLibSrcs
     qtUIManager.cxx
     qtAttribute.cxx
     qtBaseView.cxx
+    qtEntityItemDelegate.cxx
+    qtEntityItemEditor.cxx
+    qtEntityItemModel.cxx
     qtGroupView.cxx
     qtRootView.cxx
     qtAttributeView.cxx
@@ -32,6 +35,9 @@ set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
     qtBaseView.h
+    qtEntityItemDelegate.h
+    qtEntityItemEditor.h
+    qtEntityItemModel.h
     qtGroupView.h
     qtRootView.h
     qtAttributeView.h
@@ -55,3 +61,6 @@ set(QAttrLibHeaders
 #install the headers
 smtk_public_headers(${QAttrLibHeaders})
 
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif()

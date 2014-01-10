@@ -1,38 +1,88 @@
 # set up sources to build
 set(modelSrcs
   Arrangement.cxx
+  ArrangementKind.cxx
+  AttributeAssignments.cxx
   BRepModel.cxx
+  CellEntity.cxx
+  Chain.cxx
+  Cursor.cxx
+  CursorArrangementOps.cxx
+  DescriptivePhrase.cxx
+  Edge.cxx
+  EdgeUse.cxx
   Entity.cxx
+  EntityListPhrase.cxx
+  EntityPhrase.cxx
   ExportJSON.cxx
+  Face.cxx
+  FaceUse.cxx
   GroupItem.cxx
+  GroupEntity.cxx
   GridInfo.cxx
-  GridInfo2D.cxx
-  GridInfo3D.cxx
   ImportJSON.cxx
   Item.cxx
+  InstanceEntity.cxx
+  Loop.cxx
   Model.cxx
+  ModelEntity.cxx
+  PropertyListPhrase.cxx
+  PropertyValuePhrase.cxx
+  Shell.cxx
+  ShellEntity.cxx
   Storage.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
+  UseEntity.cxx
+  Vertex.cxx
+  VertexUse.cxx
+  Volume.cxx
+  VolumeUse.cxx
   )
 
 set(modelHeaders
   Arrangement.h
+  ArrangementKind.h
+  AttributeAssignments.h
   BRepModel.h
+  CellEntity.h
+  Chain.h
+  Cursor.h
+  CursorArrangementOps.h
+  DescriptivePhrase.h
+  Edge.h
+  EdgeUse.h
   Entity.h
+  EntityListPhrase.h
+  EntityPhrase.h
   EntityTypeBits.h
   ExportJSON.h
-  ImportJSON.h
-  Item.h
+  Face.h
+  FaceUse.h
+  FloatData.h
   GridInfo.h
-  GridInfo2D.h
-  GridInfo3D.h
+  GroupEntity.h
   GroupItem.h
+  ImportJSON.h
+  InstanceEntity.h
+  IntegerData.h
+  Item.h
+  Loop.h
   Model.h
+  ModelEntity.h
+  PropertyListPhrase.h
+  PropertyValuePhrase.h
   Storage.h
   ModelDomainItem.h
+  Shell.h
+  ShellEntity.h
   StringData.h
   Tessellation.h
+  UseEntity.h
+  Vertex.h
+  VertexUse.h
+  Volume.h
+  VolumeUse.h
   )
 
 #install the headers

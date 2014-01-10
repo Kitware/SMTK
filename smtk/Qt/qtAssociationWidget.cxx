@@ -124,13 +124,13 @@ void qtAssociationWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showAdvanced(int checked)
+void qtAssociationWidget::showAdvanced(int /*checked*/)
 {
 }
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showDomainsAssociation(
-  std::vector<smtk::model::GroupItemPtr>& theDomains, const QString& category,
+  std::vector<smtk::model::GroupItemPtr>& theDomains,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(true);
@@ -184,7 +184,7 @@ void qtAssociationWidget::showDomainsAssociation(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
-  smtk::model::ItemPtr theEntiy, const QString& category,
+  smtk::model::ItemPtr theEntiy,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(false);
@@ -246,8 +246,8 @@ void qtAssociationWidget::showAttributeAssociation(
   this->Internals->AvailableList->blockSignals(false);
 }
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr theAtt,
-                                                 const QString& category)
+void qtAssociationWidget::showEntityAssociation(
+  smtk::attribute::AttributePtr theAtt)
 {
   this->Internals->domainGroup->setVisible(false);
   this->Internals->boundaryGroup->setVisible(true);
@@ -287,7 +287,7 @@ void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr t
 
   smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
   // add current-associated items
-  int numAstItems = (int)theAtt->numberOfAssociatedEntities();
+  int numAstItems = static_cast<int>(theAtt->numberOfAssociatedEntities());
   std::set<smtk::model::ItemPtr>::const_iterator it = theAtt->associatedEntities();
   QList<int> assignedIds;
   for(int i=0; i<numAstItems; ++it, ++i)
@@ -297,8 +297,6 @@ void qtAssociationWidget::showEntityAssociation( smtk::attribute::AttributePtr t
     }
 
   this->processAttUniqueness(attDef, assignedIds);
-
-  int numItems = (int)refModel->numberOfItems();
 
   typedef smtk::model::Model::const_iterator c_iter;
   for(c_iter itemIt = refModel->beginItemIterator();
@@ -354,7 +352,7 @@ void qtAssociationWidget::processAttUniqueness(
         std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
         for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
           {
-          int numAstItems = (int)(*itAtt)->numberOfAssociatedEntities();
+          int numAstItems = static_cast<int>((*itAtt)->numberOfAssociatedEntities());
           std::set<smtk::model::ItemPtr>::const_iterator itIt = (*itAtt)->associatedEntities();
           for(int i=0; i<numAstItems; ++itIt, ++i)
             {
@@ -378,8 +376,7 @@ void qtAssociationWidget::processDefUniqueness(
     {
     return;
     }
-  int numAtts = theEntiy->numberOfAssociatedAttributes();
-  if( numAtts == 0)
+  if( theEntiy->numberOfAssociatedAttributes() == 0)
     {
     return;
     }
@@ -410,13 +407,13 @@ void qtAssociationWidget::processDefUniqueness(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onCurrentListSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onAvailableListSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
 }
 
@@ -487,7 +484,7 @@ QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
   QListWidgetItem* item = new QListWidgetItem(txtLabel,
       theList, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(modelItem.get()));
+  vdata.setValue(static_cast<void*>(modelItem.get()));
   item->setData(Qt::UserRole, vdata);
   //item->setFlags(item->flags() | Qt::ItemIsEditable);
   theList->addItem(item);
@@ -503,7 +500,7 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
   QListWidgetItem* item = new QListWidgetItem(txtLabel,
       theList, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(att.get()));
+  vdata.setValue(static_cast<void*>(att.get()));
   item->setData(Qt::UserRole, vdata);
   //item->setFlags(item->flags() | Qt::ItemIsEditable);
   theList->addItem(item);
@@ -544,7 +541,7 @@ void qtAssociationWidget::addDomainListItem(
     this, SLOT(onDomainAssociationChanged()), Qt::QueuedConnection);
 
   QVariant vdata;
-  vdata.setValue((void*)(domainEnt.get()));
+  vdata.setValue(static_cast<void*>(domainEnt.get()));
   combo->setProperty("DomainEntityObj", vdata);
 
   this->Internals->DomainMaterialTable->setCellWidget(numRows-1, 1, combo);

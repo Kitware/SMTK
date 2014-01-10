@@ -47,7 +47,7 @@ ValueItemDefinition::~ValueItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-void ValueItemDefinition::setNumberOfRequiredValues(int esize)
+void ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
@@ -60,7 +60,7 @@ void ValueItemDefinition::setNumberOfRequiredValues(int esize)
     }
 }
 //----------------------------------------------------------------------------
-void ValueItemDefinition::setValueLabel(int element, const std::string &elabel)
+void ValueItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
     {
@@ -85,13 +85,13 @@ void ValueItemDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string ValueItemDefinition::valueLabel(int element) const
+std::string ValueItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {
     return this->m_valueLabels[0];
     }
-  if (this->m_valueLabels.size())
+  if (element < this->m_valueLabels.size())
     {
     return this->m_valueLabels[element];
     }

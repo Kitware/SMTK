@@ -38,10 +38,10 @@ FileItem::FileItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-FileItem::FileItem(Item *owningItem,
+FileItem::FileItem(Item *inOwningItem,
                    int itemPosition,
-                   int subGroupPosition): 
-  Item(owningItem, itemPosition, subGroupPosition)
+                   int inSubGroupPosition):
+  Item(inOwningItem, itemPosition, inSubGroupPosition)
 {
 }
 
@@ -62,7 +62,7 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     }
   // Find out how many values this item is suppose to have
   // if the size is 0 then its unbounded
-  int n = def->numberOfRequiredValues();
+  std::size_t n = def->numberOfRequiredValues();
   if (n)
     {
     this->m_isSet.resize(n, false);
@@ -82,7 +82,7 @@ Item::Type FileItem::type() const
 }
 
 //----------------------------------------------------------------------------
-int FileItem::numberOfRequiredValues() const
+std::size_t FileItem::numberOfRequiredValues() const
 {
   const FileItemDefinition *def = 
     static_cast<const FileItemDefinition*>(this->m_definition.get());
@@ -151,8 +151,7 @@ FileItem::appendValue(const std::string &val)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -172,8 +171,7 @@ FileItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if ( def->numberOfRequiredValues() != 0 )
     {
     return false; // The number of values is fixed
     }
@@ -194,7 +192,7 @@ bool FileItem::setNumberOfValues(std::size_t newSize)
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
   std::size_t n = def->numberOfRequiredValues();
-  if (n)
+  if (n != 0)
     {
     return false; // The number of values is fixed
     }
@@ -209,8 +207,8 @@ FileItem::reset()
   const FileItemDefinition *def
     = static_cast<const FileItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfRequiredValues();
-  if (!n)
+  std::size_t i, n = def->numberOfRequiredValues();
+  if (n == 0)
     {
     this->m_values.clear();
     this->m_isSet.clear();

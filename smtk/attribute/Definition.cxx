@@ -52,8 +52,16 @@ Definition::Definition(const std::string &myType,
   this->m_associationMask = 0;
   this->m_isNotApplicableColorSet = false;
   this->m_isDefaultColorSet = false;
+  if (myBaseDef)
+    {
+    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions() +
+      myBaseDef->m_baseItemOffset;
+    }
+  else
+    {
+    this->m_baseItemOffset = 0;
+    }
 }
-
 //----------------------------------------------------------------------------
 Definition::~Definition()
 {
@@ -131,8 +139,8 @@ bool Definition::associatesWithGroup() const
 
 //----------------------------------------------------------------------------
 bool
-Definition::canBeAssociated(smtk::model::ItemPtr entity,
-                            std::vector<Attribute *>*conflicts) const
+Definition::canBeAssociated(smtk::model::ItemPtr /*entity*/,
+                            std::vector<Attribute *>* /*inConflicts*/) const
 {
   // TO DO - Need to pull in Model Entity class to do this
   // Procedure:
@@ -167,18 +175,18 @@ void Definition::buildAttribute(Attribute *att) const
   j = att->numberOfItems();
   for (i = 0; i < n; i++, j++)
     {
-    comp = this->m_itemDefs[i]->buildItem(att, j);
+    comp = this->m_itemDefs[i]->buildItem(att, static_cast<int>(j));
     comp->setDefinition(this->m_itemDefs[i]);
     att->addItem(comp);
     }
 }
 //----------------------------------------------------------------------------
-bool Definition::isMemberOf(const std::vector<std::string> &categories) const
+bool Definition::isMemberOf(const std::vector<std::string> &inCategories) const
 {
-  std::size_t i, n = categories.size();
+  std::size_t i, n = inCategories.size();
   for (i = 0; i < n; i++)
     {
-    if (this->isMemberOf(categories[i]))
+    if (this->isMemberOf(inCategories[i]))
       return true;
     }
   return false;
@@ -193,8 +201,18 @@ bool Definition::addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
     }
   std::size_t n = this->m_itemDefs.size();
   this->m_itemDefs.push_back(cdef);
-  this->m_itemDefPositions[cdef->name()] = n;
+  this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
+  this->updateDerivedDefinitions();
   return true;
+}
+//----------------------------------------------------------------------------
+void Definition::updateDerivedDefinitions()
+{
+  DefinitionPtr def = this->pointer();
+  if (def)
+    {
+    this->m_manager->updateDerivedDefinitionIndexOffsets(def);
+    }
 }
 //----------------------------------------------------------------------------
 void Definition::setCategories()
@@ -207,12 +225,22 @@ void Definition::setCategories()
     {
     this->m_categories.clear();
     }
-  int i, n = this->m_itemDefs.size();
+  std::size_t i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
     this->m_itemDefs[i]->updateCategories();
     const std::set<std::string> &itemCats = this->m_itemDefs[i]->categories();
     this->m_categories.insert(itemCats.begin(), itemCats.end());
     }
+}
+//----------------------------------------------------------------------------
+smtk::attribute::DefinitionPtr Definition::pointer() const
+{
+  Manager *m = this->manager();
+  if (m)
+    {
+    return m->findDefinition(this->m_type);
+    }
+  return smtk::attribute::DefinitionPtr();
 }
 //----------------------------------------------------------------------------

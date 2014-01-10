@@ -61,11 +61,9 @@ using namespace smtk::attribute;
 class qtModelEntityViewInternals
 {
 public:
-  QListWidget* ListBox;
-  QComboBox* ShowCategoryCombo;
-  QFrame* FiltersFrame;
-  QFrame* topFrame;
-  QFrame* bottomFrame;
+  QPointer<QListWidget> ListBox;
+  QPointer<QFrame> topFrame;
+  QPointer<QFrame> bottomFrame;
   QPointer<qtAssociationWidget> AssociationsWidget;
   std::vector<smtk::attribute::DefinitionPtr> attDefs;
 };
@@ -132,30 +130,12 @@ void qtModelEntityView::createWidget( )
   QVBoxLayout* rightLayout = new QVBoxLayout(bottomFrame);
   rightLayout->setMargin(0);
 
-  this->Internals->FiltersFrame = new QFrame(bottomFrame);
-  QHBoxLayout* filterLayout = new QHBoxLayout(this->Internals->FiltersFrame);
-  filterLayout->setMargin(0);
-  this->Internals->ShowCategoryCombo = new QComboBox(this->Internals->FiltersFrame);
-
-  const Manager* attMan = qtUIManager::instance()->attManager();
-  std::set<std::string>::const_iterator it;
-  const std::set<std::string> &cats = attMan->categories();
-  for (it = cats.begin(); it != cats.end(); it++)
-    {
-    this->Internals->ShowCategoryCombo->addItem(it->c_str());
-    }
-
-  QLabel* labelShow = new QLabel("Show Category: ", this->Internals->FiltersFrame);
-  filterLayout->addWidget(labelShow);
-  filterLayout->addWidget(this->Internals->ShowCategoryCombo);
-
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   // create a list box for all the entries
   this->Internals->ListBox = new QListWidget(topFrame);
   this->Internals->ListBox->setSelectionMode(QAbstractItemView::SingleSelection);
 
   this->Internals->AssociationsWidget = new qtAssociationWidget(bottomFrame);
-  rightLayout->addWidget(this->Internals->FiltersFrame);
   rightLayout->addWidget(this->Internals->AssociationsWidget);
 
   leftLayout->addWidget(this->Internals->ListBox);
@@ -173,9 +153,6 @@ void qtModelEntityView::createWidget( )
     }
 
   // signals/slots
-  QObject::connect(this->Internals->ShowCategoryCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
-
   QObject::connect(this->Internals->ListBox,
     SIGNAL(currentItemChanged (QListWidgetItem * , QListWidgetItem * )),
     this, SLOT(onListBoxSelectionChanged(QListWidgetItem * , QListWidgetItem * )));
@@ -262,12 +239,11 @@ void qtModelEntityView::onShowCategory()
     smtk::view::ModelEntityPtr mview =
       smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(this->getObject());
     smtk::model::MaskType mask = mview->modelEntityMask() ?
-      mview->modelEntityMask() : smtk::model::Item::REGION;
+      mview->modelEntityMask() : static_cast<smtk::model::MaskType>(smtk::model::Item::REGION);
     smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
     std::vector<smtk::model::GroupItemPtr> result(refModel->findGroupItems(mask));
     this->Internals->AssociationsWidget->showDomainsAssociation(
-      result, this->Internals->ShowCategoryCombo->currentText(),
-      this->Internals->attDefs);
+      result, this->Internals->attDefs);
     }
   else
     {
@@ -275,14 +251,13 @@ void qtModelEntityView::onShowCategory()
     if(theItem)
       {
       this->Internals->AssociationsWidget->showAttributeAssociation(
-        theItem, this->Internals->ShowCategoryCombo->currentText(),
-        this->Internals->attDefs);
+        theItem, this->Internals->attDefs);
       }
     }
 }
 //----------------------------------------------------------------------------
 void qtModelEntityView::onListBoxSelectionChanged(
-  QListWidgetItem * current, QListWidgetItem * previous)
+  QListWidgetItem * /*current*/, QListWidgetItem * /*previous*/)
 {
   this->onShowCategory();
 }
@@ -312,7 +287,7 @@ QListWidgetItem* qtModelEntityView::addModelItem(
       QString::fromUtf8(childData->name().c_str()),
       this->Internals->ListBox, smtk_USER_DATA_TYPE);
   QVariant vdata;
-  vdata.setValue((void*)(childData.get()));
+  vdata.setValue(static_cast<void*>(childData.get()));
   item->setData(Qt::UserRole, vdata);
 //  item->setFlags(item->flags() | Qt::ItemIsEditable);
   this->Internals->ListBox->addItem(item);

@@ -32,16 +32,16 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 RefItem::RefItem(Attribute *owningAttribute,
-                                   int itemPosition):
+                 int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
 
 //----------------------------------------------------------------------------
-RefItem::RefItem(Item *owningItem,
-                                   int itemPosition,
-                                   int mySubGroupPosition):
-  Item(owningItem, itemPosition, mySubGroupPosition)
+RefItem::RefItem(Item *inOwningItem,
+                 int itemPosition,
+                 int mySubGroupPosition):
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -60,8 +60,8 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
     {
     return false;
     }
-  int n = def->numberOfRequiredValues();
-  if (n)
+  std::size_t n = def->numberOfRequiredValues();
+  if (n != 0)
     {
     this->m_values.resize(n);
     }
@@ -94,7 +94,7 @@ Item::Type RefItem::type() const
 }
 
 //----------------------------------------------------------------------------
-int RefItem::numberOfRequiredValues() const
+std::size_t RefItem::numberOfRequiredValues() const
 {
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition*>(this->m_definition.get());
@@ -146,8 +146,7 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -155,7 +154,7 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
-    val->addReference(this, this->m_values.size() - 1);
+    val->addReference(this, static_cast<int>(this->m_values.size() - 1));
     return true;
     }
   return false;
@@ -167,8 +166,7 @@ RefItem::removeValue(int element)
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
-  int n = def->numberOfRequiredValues();
-  if (n)
+  if (def->numberOfRequiredValues() != 0)
     {
     return false; // The number of values is fixed
     }
@@ -208,7 +206,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
       att = this->m_values[i].lock().get();
       if (att != NULL)
         {
-        att->removeReference(this, i);
+        att->removeReference(this, static_cast<int>(i));
         }
       }
     }
@@ -217,7 +215,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
 }
 //----------------------------------------------------------------------------
 void
-RefItem::unset(int element)
+RefItem::unset(std::size_t element)
 {
   Attribute *att = this->m_values[element].lock().get();
   if (att == NULL)
@@ -238,7 +236,7 @@ RefItem::reset()
   const RefItemDefinition *def
     = static_cast<const RefItemDefinition *>(this->definition().get());
   // Was the initial size 0?
-  int i, n = def->numberOfRequiredValues();
+  size_t i, n = def->numberOfRequiredValues();
   if (!n)
     {
     this->clearAllReferences();

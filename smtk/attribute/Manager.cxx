@@ -32,23 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 using namespace smtk::attribute;
 
-namespace
-{
-  Manager* s_globalManager = 0;
-}
-
-//----------------------------------------------------------------------------
-Manager* Manager::getGlobalManager()
-{
-  return s_globalManager;
-}
-
-//----------------------------------------------------------------------------
-void Manager::setGlobalManager(Manager* m)
-{
-  s_globalManager = m;
-}
-
 //----------------------------------------------------------------------------
 Manager::Manager(): m_nextAttributeId(0), m_rootView(new view::Root(""))
 {
@@ -57,10 +40,6 @@ Manager::Manager(): m_nextAttributeId(0), m_rootView(new view::Root(""))
 //----------------------------------------------------------------------------
 Manager::~Manager()
 {
-  if(s_globalManager == this)
-    {
-    s_globalManager = NULL;
-    }
   std::map<std::string,  smtk::attribute::DefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
@@ -446,7 +425,7 @@ derivedDefinitions(smtk::attribute::DefinitionPtr def,
     {
     return;
     }
-  int i, n = it->second.size();
+  std::size_t i, n = it->second.size();
   result.resize(n);
   smtk::attribute::WeakDefinitionPtrSet::const_iterator dit;
   for (i = 0, dit = it->second.begin(); i < n; dit++, i++)
@@ -473,5 +452,23 @@ smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
     uDef = def;
     }
   return smtk::attribute::ConstDefinitionPtr();
+}
+//----------------------------------------------------------------------------
+void
+Manager::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
+{
+  WeakDefinitionPtrSet ddefs = m_derivedDefInfo[def];
+  WeakDefinitionPtrSet::iterator iter;
+  smtk::attribute::DefinitionPtr d;
+  for (iter = ddefs.begin(); iter != ddefs.end(); ++iter)
+    {
+    d = iter->lock();
+    if (!d)
+      {
+      continue;
+      }
+    d->resetItemOffset();
+    this->updateDerivedDefinitionIndexOffsets(d);
+    }
 }
 //----------------------------------------------------------------------------

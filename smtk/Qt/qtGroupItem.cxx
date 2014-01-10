@@ -75,7 +75,11 @@ void qtGroupItem::createWidget()
   //   groupBox->setCheckable(true);
   //   groupBox->setChecked(true);
   this->Widget = groupBox;
-  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
+  // Instantiate a layout for the widget, but do *not* assign it to a variable.
+  // because that would cause a compiler warning, since the layout is not
+  // explicitly referenced anywhere in this scope. (There is no memory
+  // leak because the layout instance is parented by the widget.)
+  new QVBoxLayout(this->Widget);
   if(this->parentWidget())
     {
     this->parentWidget()->layout()->setAlignment(Qt::AlignTop);
@@ -101,7 +105,7 @@ void qtGroupItem::updateItemData()
     {
     for (j = 0; j < m; j++)
       {
-      qtItem* childItem = qtAttribute::createItem(item->item(i,j), this->Widget);
+      qtItem* childItem = qtAttribute::createItem(item->item(static_cast<int>(i), static_cast<int>(j)), this->Widget);
       if(childItem)
         {
         this->Widget->layout()->addWidget(childItem->widget());

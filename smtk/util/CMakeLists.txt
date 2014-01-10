@@ -4,9 +4,11 @@ project(SMTK_Util)
 set(utilSrcs
   AttributeReader.cxx
   AttributeWriter.cxx
+  ExportSpec.cxx
   Logger.cxx
   UserData.cxx
   UUID.cxx
+  UUIDGenerator.cxx
   XmlDocV1Parser.cxx
   XmlV1StringWriter.cxx
   )
@@ -14,11 +16,15 @@ set(utilSrcs
 set(utilHeaders
   AttributeReader.h
   AttributeWriter.h
+  ExportSpec.h
   Logger.h
+  SharedFromThis.h
   UserData.h
   UUID.h
+  UUIDGenerator.h
   XmlDocV1Parser.h
   XmlV1StringWriter.h
+  SystemConfig.h
   )
 
 #Install headers

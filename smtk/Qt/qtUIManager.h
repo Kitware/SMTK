@@ -84,15 +84,18 @@ namespace smtk
         {return this->RootView;}
       static QString clipBoardText();
       static void setClipBoardText(QString& text);
-
+      std::string currentCategory();
+      bool categoryEnabled();
       void clearRoot();
 
-      bool passItemAdvancedCheck(bool advancedItem);
-      bool passAttributeAdvancedCheck(bool advancedAtt);
+      bool passAdvancedCheck(bool advancedAtt);
+      bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
+      bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
+      bool passCategoryCheck(const std::set<std::string> & categories);
+
       const QFont& advancedFont()
         {return this->advFont;}
-      bool showAdvanced()
-      {  return this->ShowAdvanced;  }
+
       void setWidgetToDefaultValueColor(QWidget *widget,
         bool setToDefault);
       bool getExpressionArrayString(
@@ -146,10 +149,6 @@ namespace smtk
       static void processSimpleExpressionView(qtSimpleExpressionView* v);
       static void processGroupView(qtGroupView* v);
       static void processBasicView(qtBaseView* v);
-
-      void setShowAdvanced(bool val)
-      {  this->ShowAdvanced = val;  }
-      bool ShowAdvanced;
 
     private:
       static qtUIManager* Instance;

@@ -67,6 +67,7 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
 
 vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation()
 {
+  this->SetApplyColors(NULL);
   this->SetTransform(NULL);
   this->SetMapper(NULL);
   this->SetActor(NULL);
@@ -155,8 +156,8 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
 
 vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSelection* selection)
 {
-  /*
   (void)view;
+  /*
   cout << "Convert selection called\n";
   vtkIndent indent;
   selection->PrintSelf(cout, indent);

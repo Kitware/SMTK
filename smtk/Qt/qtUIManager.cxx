@@ -80,10 +80,9 @@ using namespace smtk::attribute;
 qtUIManager* qtUIManager::Instance = 0;
 
 //-----------------------------------------------------------------------------
-qtDoubleValidator::qtDoubleValidator(QObject * parent)
-  :QDoubleValidator(parent)
+qtDoubleValidator::qtDoubleValidator(QObject * inParent)
+  :QDoubleValidator(inParent)
 {
-  this->setNotation( QDoubleValidator::StandardNotation );
 }
 
 //-----------------------------------------------------------------------------
@@ -132,7 +131,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     qtUIManager::Instance = this;
     }
   this->RootView = NULL;
-  this->ShowAdvanced =false;
+
   if(manager.rootView())
     {
     this->advFont.setBold(manager.rootView()->advancedBold());
@@ -203,16 +202,40 @@ void qtUIManager::updateModelViews()
 }
 
 //----------------------------------------------------------------------------
-bool qtUIManager::passItemAdvancedCheck(bool advancedItem)
+std::string qtUIManager::currentCategory()
 {
-  return (!advancedItem || advancedItem==this->showAdvanced());
+  return this->RootView ? this->RootView->currentCategory() : "";
 }
 //----------------------------------------------------------------------------
-bool qtUIManager::passAttributeAdvancedCheck(bool advancedAtt)
+bool qtUIManager::categoryEnabled()
 {
-  return (!advancedAtt || advancedAtt==this->showAdvanced());
+  return this->RootView ? this->RootView->categoryEnabled() : false;
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAdvancedCheck(bool advanced)
+{
+  return (!advanced || this->RootView == NULL ||
+    advanced == this->RootView->showAdvanced());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passAttributeCategoryCheck(
+  smtk::attribute::ConstDefinitionPtr AttDef)
+{
+  return this->passCategoryCheck(AttDef->categories());
+}
+//----------------------------------------------------------------------------
+bool qtUIManager::passItemCategoryCheck(
+  smtk::attribute::ConstItemDefinitionPtr ItemDef)
+{
+  return this->passCategoryCheck(ItemDef->categories());
 }
 
+//----------------------------------------------------------------------------
+bool qtUIManager::passCategoryCheck(const std::set<std::string> & categories)
+{
+  return !this->categoryEnabled() ||
+    categories.find(this->currentCategory()) != categories.end();
+}
 //----------------------------------------------------------------------------
 void qtUIManager::processAttributeView(qtAttributeView* qtView)
 {
@@ -256,7 +279,7 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
   qtBaseView* qtView = NULL;
   for (i = 0; i < n; i++)
     {
-    v = group->subView(i);
+    v = group->subView(static_cast<int>(i));
     switch(v->type())
       {
       case smtk::view::Base::ATTRIBUTE:
@@ -292,7 +315,7 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::processBasicView(qtBaseView* v)
+void qtUIManager::processBasicView(qtBaseView* /*v*/)
 {
   //node.append_attribute("Title").set_value(v->title().c_str());
   //if (v->iconName() != "")
@@ -322,7 +345,6 @@ void qtUIManager::clearRoot()
     delete this->RootView;
     this->RootView = NULL;
     }
-  this->setShowAdvanced(false);
 }
 
 //----------------------------------------------------------------------------
@@ -361,7 +383,7 @@ void qtUIManager::updateArrayTableWidget(
     }
 
   std::size_t n = dataItem->numberOfGroups();
-  std::size_t j, m = dataItem->numberOfItemsPerGroup();
+  std::size_t m = dataItem->numberOfItemsPerGroup();
   if(!m  || !n)
     {
     return;
@@ -372,7 +394,7 @@ void qtUIManager::updateArrayTableWidget(
     return;
     }
 
-  int numCols = (int)(n*m), numRows = (int)(item->numberOfValues());
+  int numCols = static_cast<int>(n*m), numRows = static_cast<int>(item->numberOfValues());
   widget->setColumnCount(numCols);
   widget->setRowCount(numRows);
   for(int h=0; h<numCols; h++)
@@ -380,7 +402,7 @@ void qtUIManager::updateArrayTableWidget(
     QTableWidgetItem *qtablewidgetitem = new QTableWidgetItem();
     widget->setHorizontalHeaderItem(h, qtablewidgetitem);
     }
-  for (j = 0; j < numCols; j++) // expecting one item for each column
+  for (int j = 0; j < numCols; j++) // expecting one item for each column
     {
     qtUIManager::updateTableColRows(dataItem->item(j), j, widget);
     }
@@ -395,7 +417,7 @@ void qtUIManager::updateTableColRows(smtk::attribute::ItemPtr dataItem,
     {
     return;
     }
-  int numRows = (int)(item->numberOfValues());
+  int numRows = static_cast<int>(item->numberOfValues());
   widget->setRowCount(numRows);
   QString strValue;
   for(int row=0; row < numRows; row++)
@@ -440,8 +462,8 @@ bool qtUIManager::getExpressionArrayString(
     {
     return false;
     }
-  int numberOfComponents = dataItem->numberOfItemsPerGroup();
-  int nVals = (int)(item->numberOfValues());
+  int numberOfComponents = static_cast<int>(dataItem->numberOfItemsPerGroup());
+  int nVals = static_cast<int>(item->numberOfValues());
   QStringList strVals;
   smtk::attribute::ValueItemPtr valueitem;
   for(int i=0; i < nVals; i++)
@@ -549,8 +571,8 @@ QWidget* qtUIManager::createExpressionRefWidget(
     }
   QList<QString> attNames;
   std::vector<smtk::attribute::AttributePtr> result;
-  Manager *attManager = attDef->manager();
-  attManager->findAttributes(attDef, result);
+  Manager *lAttManager = attDef->manager();
+  lAttManager->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
@@ -561,7 +583,7 @@ QWidget* qtUIManager::createExpressionRefWidget(
   QVariant vdata(elementIdx);
   combo->setProperty("ElementIndex", vdata);
   QVariant vobject;
-  vobject.setValue((void*)(attitem.get()));
+  vobject.setValue(static_cast<void*>(attitem.get()));
   combo->setProperty("AttItemObj", vobject);
   combo->addItems(attNames);
 
@@ -602,8 +624,8 @@ void qtUIManager::onExpressionReferenceChanged()
 
   if(curIdx>=0)
     {
-    Manager *attManager = item->attribute()->manager();
-    AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+    Manager *lAttManager = item->attribute()->manager();
+    AttributePtr attPtr = lAttManager->findAttribute(comboBox->currentText().toStdString());
     if(attPtr)
       {
       inputitem->setExpression(elementIdx, attPtr);
@@ -637,9 +659,9 @@ QWidget* qtUIManager::createComboBox(
   QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
     {
-    std::string enumText = itemDef->discreteEnum(i);
+    std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
     if(itemDef->hasDefault() &&
-      itemDef->defaultDiscreteIndex() == i)
+      static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
       {
       tooltip = "Default: " + QString(enumText.c_str());
       }
@@ -654,7 +676,7 @@ QWidget* qtUIManager::createComboBox(
   QVariant vdata(elementIdx);
   combo->setProperty("ElementIndex", vdata);
   QVariant vobject;
-  vobject.setValue((void*)(attitem.get()));
+  vobject.setValue(static_cast<void*>(attitem.get()));
   combo->setProperty("AttItemObj", vobject);
   combo->addItems(discreteVals);
   int setIndex = -1;
@@ -789,9 +811,7 @@ QWidget* qtUIManager::createEditBox(
       if(item->isSet(elementIdx))
         {
         editBox->setText(item->valueAsString(elementIdx).c_str());
-
-        isDefault = dDef->hasDefault() &&
-          dDef->defaultValue()==ditem->value(elementIdx);
+        isDefault = item->isUsingDefault(elementIdx);
         }
       else if(dDef->hasDefault())
         {
@@ -802,9 +822,9 @@ QWidget* qtUIManager::createEditBox(
         {
         editBox->setToolTip(tooltip);
         }
-      QVariant vdata;
-      vdata.setValue((void*)editBox);
-      validator->setProperty("MyWidget", vdata);
+      QVariant tvdata;
+      tvdata.setValue(static_cast<void*>(editBox));
+      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -867,9 +887,9 @@ QWidget* qtUIManager::createEditBox(
         {
         editBox->setToolTip(tooltip);
         }
-      QVariant vdata;
-      vdata.setValue((void*)editBox);
-      validator->setProperty("MyWidget", vdata);
+      QVariant tvdata;
+      tvdata.setValue(static_cast<void*>(editBox));
+      validator->setProperty("MyWidget", tvdata);
       inputWidget = editBox;
       break;
       }
@@ -923,7 +943,7 @@ QWidget* qtUIManager::createEditBox(
     {
     inputWidget->setProperty("ElementIndex", vdata);
     QVariant vobject;
-    vobject.setValue((void*)(attitem.get()));
+    vobject.setValue(static_cast<void*>(attitem.get()));
     inputWidget->setProperty("AttItemObj", vobject);
 
     qtUIManager::instance()->setWidgetToDefaultValueColor(inputWidget,isDefault);
@@ -1013,7 +1033,7 @@ bool qtUIManager::updateTableItemCheckState(
      (attItem->definition()->isEnabledByDefault() ? Qt::Checked : Qt::Unchecked);
     labelitem->setCheckState(checkState);
     QVariant vdata;
-    vdata.setValue((void*)attItem.get());
+    vdata.setValue(static_cast<void*>(attItem.get()));
     labelitem->setData(Qt::UserRole, vdata);
     labelitem->setFlags(labelitem->flags() | Qt::ItemIsUserCheckable);
     bEnabled = (checkState==Qt::Checked);

@@ -32,10 +32,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute; 
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName, 
-  smtk::attribute::DefinitionPtr myDefinition, unsigned long myId):
-  m_name(myName), m_definition(myDefinition),
-  m_id(myId), m_aboutToBeDeleted(false), m_isColorSet(false),
-  m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false)
+                     smtk::attribute::DefinitionPtr myDefinition,
+                     unsigned long myId):
+  m_name(myName), m_id(myId), m_definition(myDefinition),
+  m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false),
+  m_isColorSet(false), m_aboutToBeDeleted(false)
 {
   this->m_definition->buildAttribute(this);
 }
@@ -176,9 +177,9 @@ void Attribute::removeAllAssociations()
     }
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr Attribute::find(const std::string &name) const
+smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const
 {
-  int i = this->m_definition->findItemPosition(name);
+  int i = this->m_definition->findItemPosition(inName);
   if (i < 0)
     {
     return smtk::attribute::ConstItemPtr();
@@ -187,9 +188,9 @@ smtk::attribute::ConstItemPtr Attribute::find(const std::string &name) const
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr Attribute::find(const std::string &name)
+smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
 {
-  int i = this->m_definition->findItemPosition(name);
+  int i = this->m_definition->findItemPosition(inName);
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[i];
 }
 //-----------------------------------------------------------------------------

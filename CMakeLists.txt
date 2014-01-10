@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 2.8.10)
+cmake_policy(SET CMP0020 NEW)
 project(SMTK)
 
 #Add our Cmake directory to the module search path
@@ -26,10 +27,12 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
+option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
-mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH)
+option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
+mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
 ################################################################################
 # Testing Related Settings
@@ -83,6 +86,15 @@ if(SMTK_BUILD_VTK)
   )
   include(${VTK_USE_FILE})
 endif()
+
+
+################################################################################
+# CGM Related Settings
+################################################################################
+
+if(SMTK_BUILD_CGM)
+  find_package(CGM REQUIRED)
+endif(SMTK_BUILD_CGM)
 
 ################################################################################
 # Sparsehash Related Settings
@@ -140,6 +152,18 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
 
 
 ################################################################################
+# Save compile-time options for use by other packages
+################################################################################
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/options.h.in
+  ${PROJECT_BINARY_DIR}/smtk/options.h
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/smtk/options.h
+  DESTINATION include/smtk)
+
+
+################################################################################
 # Install Related Settings
 ################################################################################
 
@@ -166,6 +190,12 @@ mark_as_advanced(
 ################################################################################
 
 add_subdirectory(ThirdParty)
+
+################################################################################
+# Build documentation
+################################################################################
+
+add_subdirectory(doc)
 
 ################################################################################
 # Include Dirs Settings

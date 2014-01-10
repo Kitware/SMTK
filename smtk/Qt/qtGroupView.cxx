@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtUIManager.h"
 
 #include "smtk/view/Base.h"
+#include "smtk/view/Group.h"
 
 #include <QScrollArea>
 #include <QHBoxLayout>
@@ -34,6 +35,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QFile>
 #include <QApplication>
 #include <QVariant>
+#include <QFrame>
+#include <QLabel>
+#include <QFont>
 
 using namespace smtk::attribute;
 
@@ -42,7 +46,6 @@ class qtGroupViewInternals
 {
 public:
   QList<smtk::attribute::qtBaseView*> ChildViews;
-
 };
 
 //----------------------------------------------------------------------------
@@ -51,7 +54,6 @@ qtGroupView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
 {
   this->Internals = new qtGroupViewInternals;
   this->createWidget( );
-
 }
 
 //----------------------------------------------------------------------------
@@ -67,10 +69,25 @@ void qtGroupView::createWidget( )
     {
     return;
     }
+  smtk::view::GroupPtr gview =
+    smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
+  if(!gview)
+    {
+    return;
+    }
+
   this->clearChildViews();
-  QTabWidget *tab = new QTabWidget(this->parentWidget());
-  tab->setUsesScrollButtons( true );
-  this->Widget = tab;
+  if(gview->style() == smtk::view::Group::TILED)
+    {
+    this->Widget = new QFrame(this->parentWidget());
+    }
+  else
+    {
+    QTabWidget *tab = new QTabWidget(this->parentWidget());
+    tab->setUsesScrollButtons( true );
+    this->Widget = tab;
+    }
+
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
@@ -98,7 +115,6 @@ void qtGroupView::getChildView(
 //----------------------------------------------------------------------------
 qtBaseView* qtGroupView::getChildView(int pageIndex)
 {
-  QTabWidget* tabWidget = static_cast<QTabWidget*>(this->Widget);
   if(pageIndex >= 0 && pageIndex < this->Internals->ChildViews.count())
     {
     return this->Internals->ChildViews.value(pageIndex);
@@ -111,7 +127,16 @@ void qtGroupView::addChildView(qtBaseView* child)
   if(!this->Internals->ChildViews.contains(child))
     {
     this->Internals->ChildViews.append(child);
-    this->addTabEntry(child);
+    smtk::view::GroupPtr gview =
+      smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
+    if(gview->style() == smtk::view::Group::TILED)
+      {
+      this->addTileEntry(child);
+      }
+    else
+      {
+      this->addTabEntry(child);
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -132,9 +157,12 @@ void qtGroupView::clearChildViews()
 //----------------------------------------------------------------------------
 void qtGroupView::showAdvanced(int checked)
 {
-  int currentTab = 0;
+  smtk::view::GroupPtr gview =
+    smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
 
-  if(this->childViews().count())
+  int currentTab = 0;
+  if(this->childViews().count() &&
+    gview->style() == smtk::view::Group::TABBED)
     {
     QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
     if(selfW)
@@ -148,7 +176,8 @@ void qtGroupView::showAdvanced(int checked)
     childView->showAdvanced(checked);
     }
 
-  if(this->childViews().count())
+  if(this->childViews().count() &&
+    gview->style() == smtk::view::Group::TABBED)
     {
     QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
     if(selfW)
@@ -157,7 +186,14 @@ void qtGroupView::showAdvanced(int checked)
       }
     }
 }
-
+//----------------------------------------------------------------------------
+void qtGroupView::updateUI()
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->updateUI();
+    }
+}
 //----------------------------------------------------------------------------
 void qtGroupView::addTabEntry(qtBaseView* child)
 {
@@ -216,5 +252,27 @@ void qtGroupView::addTabEntry(qtBaseView* child)
     tabWidget->setTabText( index, "");
     }
 
+  vLayout->setAlignment(Qt::AlignTop);
+}
+
+//----------------------------------------------------------------------------
+void qtGroupView::addTileEntry(qtBaseView* child)
+{
+  QFrame* frame = static_cast<QFrame*>(this->Widget);
+  if(!frame || !child || !child->getObject())
+    {
+    return;
+    }
+  QLabel* label = new QLabel(child->getObject()->title().c_str(),
+    this->Widget);
+  QFont titleFont;
+  titleFont.setBold(true);
+  titleFont.setItalic(true);
+  label->setFont(titleFont);
+
+  QLayout* vLayout = this->Widget->layout();
+  vLayout->setMargin(0);
+  vLayout->addWidget(label);
+  vLayout->addWidget(child->widget());
   vLayout->setAlignment(Qt::AlignTop);
 }

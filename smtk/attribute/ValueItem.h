@@ -46,7 +46,7 @@ namespace smtk
       virtual ~ValueItem();
       virtual std::size_t numberOfValues() const
       {return this->m_isSet.size();}
-      int numberOfRequiredValues() const;
+      std::size_t numberOfRequiredValues() const;
 
       bool allowsExpressions() const;
       bool isExpression(int elementIndex=0) const
@@ -73,13 +73,18 @@ namespace smtk
       // having no values
       virtual void reset();
       virtual bool setToDefault(int elementIndex=0) = 0;
+      // Returns true if there is a default defined and the item is curently set to it
+      virtual bool isUsingDefault(int elementIndex) const = 0;
+      // This method tests all of the values of the items w/r the default value
+      virtual bool isUsingDefault() const = 0;
+
       virtual std::string valueAsString() const
       { return this->valueAsString(0);}
 
       virtual std::string valueAsString(int elementIndex) const = 0;
-      virtual bool isSet(int elementIndex = 0) const
+      virtual bool isSet(std::size_t elementIndex = 0) const
       {return this->m_isSet[elementIndex];}
-      virtual void unset(int elementIndex=0)
+      virtual void unset(std::size_t elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
       smtk::attribute::RefItemPtr expressionReference(int elementIndex=0) const
       {return this->m_expressions[elementIndex];}

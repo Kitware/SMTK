@@ -30,8 +30,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::model;
 
 //----------------------------------------------------------------------------
-Item::Item(Model *model, int myid):
-  m_model(model), m_id(myid)
+Item::Item(Model *inModel, int myid):
+  m_model(inModel), m_id(myid)
 {
   this->m_UserName = "";
 }

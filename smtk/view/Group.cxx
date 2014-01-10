@@ -28,6 +28,7 @@ using namespace smtk::view;
 //----------------------------------------------------------------------------
 Group::Group(const std::string &myTitle): Base(myTitle)
 {
+  this->m_style = Group::TABBED;
 }
 
 //----------------------------------------------------------------------------

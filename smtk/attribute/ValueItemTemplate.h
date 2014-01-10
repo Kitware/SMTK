@@ -60,7 +60,9 @@ namespace smtk
       virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       bool removeValue(int element);
       virtual void reset();
-      bool setToDefault(int element=0);
+      virtual bool setToDefault(int element=0);
+      virtual bool isUsingDefault(int element) const;
+      virtual bool isUsingDefault() const;
 
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
@@ -81,10 +83,10 @@ namespace smtk
 
 //----------------------------------------------------------------------------
     template<typename DataT>
-    ValueItemTemplate<DataT>::ValueItemTemplate(Item *owningItem,
+    ValueItemTemplate<DataT>::ValueItemTemplate(Item *inOwningItem,
                                                 int itemPosition,
                                                 int mySubGroupPosition):
-      ValueItem(owningItem, itemPosition, mySubGroupPosition)
+      ValueItem(inOwningItem, itemPosition, mySubGroupPosition)
     {
     }
 //----------------------------------------------------------------------------
@@ -102,7 +104,7 @@ namespace smtk
         {
         return false;
         }
-      int n = def->numberOfRequiredValues();
+      size_t n = def->numberOfRequiredValues();
       if (n)
         {
         if (def->hasDefault())
@@ -195,8 +197,7 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      int n = def->numberOfRequiredValues();
-      if (n)
+      if (def->numberOfRequiredValues() != 0)
         {
         return false; // The number of values is fixed
         }
@@ -211,9 +212,9 @@ namespace smtk
           this->m_isSet.push_back(true);
           if (def->allowsExpressions())
             {
-            int nextPos = this->m_expressions.size();
+            std::size_t nextPos = this->m_expressions.size();
             this->m_expressions.resize(nextPos+1);
-            def->buildExpressionItem(this, nextPos);
+            def->buildExpressionItem(this, static_cast<int>(nextPos));
             }
           return true;
           }
@@ -223,9 +224,9 @@ namespace smtk
         {
         if (def->allowsExpressions())
           {
-          int nextPos = this->m_expressions.size();
+          std::size_t nextPos = this->m_expressions.size();
           this->m_expressions.resize(nextPos+1);
-          def->buildExpressionItem(this, nextPos);
+          def->buildExpressionItem(this, static_cast<int>(nextPos));
           }
         this->m_values.push_back(val);
         this->m_isSet.push_back(true);
@@ -256,7 +257,7 @@ namespace smtk
         {
         if (def->allowsExpressions())
           {
-          int i;
+          std::size_t i;
           for (i = newSize; i < n; i++)
             {
             this->m_expressions[i]->detachOwningItem();
@@ -287,11 +288,11 @@ namespace smtk
         }
       if (def->allowsExpressions())
         {
-        int i;
+        std::size_t i;
         this->m_expressions.resize(newSize);
         for (i = n; i < newSize; i++)
           {
-          def->buildExpressionItem(this, i);
+          def->buildExpressionItem(this, static_cast<int>(i));
           }
         }
       return true;
@@ -303,8 +304,7 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      int n = def->numberOfRequiredValues();
-      if (n)
+      if (def->numberOfRequiredValues() != 0)
         {
         return false; // The number of values is fixed
         }
@@ -344,12 +344,47 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
+    bool
+    ValueItemTemplate<DataT>::isUsingDefault() const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!def->hasDefault())
+        {
+        return false; // Doesn't have a default value
+        }
+
+      std::size_t i, n = this->numberOfValues();
+      DataT dval = def->defaultValue();
+      for (i = 0; i < n; i++)
+        {
+        if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+          {
+          return false;
+          }
+        }
+      return true;
+    }
+///----------------------------------------------------------------------------
+    template<typename DataT>
+    bool
+    ValueItemTemplate<DataT>::isUsingDefault(int element) const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!(def->hasDefault() && this->m_isSet[element]))
+        {
+        return false; // Doesn't have a default value
+        }
+
+      return (this->m_values[element] == def->defaultValue());
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
     void
     ValueItemTemplate<DataT>::reset()
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
-      int i, n = def->numberOfRequiredValues();
+      std::size_t i, n = def->numberOfRequiredValues();
       if (!n)
         {
         this->m_values.clear();
@@ -357,7 +392,7 @@ namespace smtk
         this->m_discreteIndices.clear();
         if (def->allowsExpressions())
           {
-          int j, m = this->m_expressions.size();
+          std::size_t j, m = this->m_expressions.size();
           for (j = 0; j < m; j++)
             {
             this->m_expressions[j]->detachOwningItem();
@@ -389,7 +424,7 @@ namespace smtk
         int index = def->defaultDiscreteIndex();
         for(i = 0; i < n; i++)
           {
-          this->setDiscreteIndex(i, index);
+          this->setDiscreteIndex(static_cast<int>(i), index);
           }
         }
       else
@@ -397,7 +432,7 @@ namespace smtk
         DataT val = def->defaultValue();
         for(i = 0; i < n; i++)
           {
-          this->setValue(i, val);
+          this->setValue(static_cast<int>(i), val);
           }
         }
       ValueItem::reset();

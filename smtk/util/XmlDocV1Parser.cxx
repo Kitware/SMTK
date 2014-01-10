@@ -57,6 +57,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace pugi;
 using namespace smtk::util;
@@ -475,7 +476,7 @@ void XmlDocV1Parser::processDoubleDef(pugi::xml_node &node,
       if (!vnode)
         {
         smtkErrorMacro(this->m_logger,
-                       "Missing XML Node \"Value\" in DiscreteInfo section of Doubel Item Definition : "
+                       "Missing XML Node \"Value\" in DiscreteInfo section of Double Item Definition : "
                        << idef->name());
         continue;
         }
@@ -570,19 +571,58 @@ void XmlDocV1Parser::processIntDef(pugi::xml_node &node,
   if (dnode)
     {
     int val;
-    for (child = dnode.first_child(); child; child = child.next_sibling())
+    int i;
+    xml_node vnode;
+    std::string cname;
+    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
       {
-      xatt = child.attribute("Enum");
+      cname = child.name();
+      if ( cname == "Structure")
+        {
+        vnode = child.child("Value");
+        }
+      else if (cname == "Value")
+        {
+        vnode = child;
+        }
+      else
+        {
+        continue; // XML Element I don't care about
+        }
+      if (!vnode)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Node \"Value\" in DiscreteInfo section of Int Item Definition : "
+                       << idef->name());
+        continue;
+        }
+
+      xatt = vnode.attribute("Enum");
+      val = vnode.text().as_int();
       if (xatt)
         {
-        val = child.text().as_int();
         idef->addDiscreteValue(val, xatt.value());
         }
       else
         {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Attribute Enum in DiscreteInfo section of Int Item Definition : "
-                       << idef->name());
+        idef->addDiscreteValue(val);
+        }
+      if (cname != "Structure")
+        {
+        continue;
+        }
+      // Ok lets read in the items associated with this value
+      // First grab the associated enum
+      std::string v = idef->discreteEnum(i);
+      xml_node inode, items = child.child("Items");
+      if (!items)
+        {
+        continue;
+        }
+      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
+        {
+        std::string iname = inode.text().get();
+        idef->addConditionalItem(v, iname);
         }
       }
     xatt = dnode.attribute("DefaultIndex");
@@ -654,19 +694,58 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
   if (dnode)
     {
     std::string val;
-    for (child = dnode.first_child(); child; child = child.next_sibling())
+    int i;
+    xml_node vnode;
+    std::string cname;
+    for (child = dnode.first_child(), i = 0; child; child = child.next_sibling(), i++)
       {
-      xatt = child.attribute("Enum");
+      cname = child.name();
+      if ( cname == "Structure")
+        {
+        vnode = child.child("Value");
+        }
+      else if (cname == "Value")
+        {
+        vnode = child;
+        }
+      else
+        {
+        continue; // XML Element I don't care about
+        }
+      if (!vnode)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "Missing XML Node \"Value\" in DiscreteInfo section of String Item Definition : "
+                       << idef->name());
+        continue;
+        }
+
+      xatt = vnode.attribute("Enum");
+      val = vnode.text().get();
       if (xatt)
         {
-        val = child.text().get();
         idef->addDiscreteValue(val, xatt.value());
         }
       else
         {
-        smtkErrorMacro(this->m_logger,
-                       "Missing XML Attribute Enum in DiscreteInfo section of String Item Definition : "
-                       << idef->name());
+        idef->addDiscreteValue(val);
+        }
+      if (cname != "Structure")
+        {
+        continue;
+        }
+      // Ok lets read in the items associated with this value
+      // First grab the associated enum
+      std::string v = idef->discreteEnum(i);
+      xml_node inode, items = child.child("Items");
+      if (!items)
+        {
+        continue;
+        }
+      for (inode = items.child("Item"); inode; inode = inode.next_sibling("Item"), i++)
+        {
+        std::string iname = inode.text().get();
+        idef->addConditionalItem(v, iname);
         }
       }
     xatt = dnode.attribute("DefaultIndex");
@@ -1135,8 +1214,8 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   xml_attribute xatt;
   attribute::AttributePtr att;
   attribute::DefinitionPtr def;
-  unsigned long id, maxId = 0;
-  std::size_t i, n;
+  unsigned long id;
+  int i, n;
 
   xatt = attNode.attribute("Name");
   if (!xatt)
@@ -1221,7 +1300,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   // NOTE That the writer processes the items in order - lets assume
   // that for speed and if that fails we can try to search for the correct
   // xml node
-  n = att->numberOfItems();
+  n = static_cast<int>(att->numberOfItems());
   for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
        i++, iNode = iNode.next_sibling())
     {
@@ -1414,7 +1493,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
         continue;
         }
       index = val.text().as_int();
-      if (!item->setDiscreteIndex(i, index))
+      if (!item->setDiscreteIndex(static_cast<int>(i), index))
         {
         smtkErrorMacro(this->m_logger,
                        "Discrete Index " << index
@@ -1492,12 +1571,12 @@ void XmlDocV1Parser::processRefItem(pugi::xml_node &node,
       att = this->m_manager.findAttribute(attName);
       if (!att)
         {
-        info.item = item; info.pos = i; info.attName = attName;
+        info.item = item; info.pos = static_cast<int>(i); info.attName = attName;
         this->m_attRefInfo.push_back(info);
         }
       else
         {
-        item->setValue(i, att);
+        item->setValue(static_cast<int>(i), att);
         }
       }
     }
@@ -1572,7 +1651,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         continue;
         }
-      item->setValue(i, val.text().get());
+      item->setValue(static_cast<int>(i), val.text().get());
       }
     }
   else if (numRequiredVals == 1)
@@ -1655,7 +1734,7 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().as_double());
+        item->setValue(static_cast<int>(i), val.text().as_double());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -1663,12 +1742,12 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else
@@ -1758,7 +1837,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
                        << " is out of range for Item: " << item->name());
         continue;
         }
-      item->setValue(i, val.text().get());
+      item->setValue(static_cast<int>(i), val.text().get());
       }
     }
   else if (numRequiredVals == 1)
@@ -1828,7 +1907,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                        << " for Group Item: " << item->name());
           continue;
           }
-        this->processItem(itemNode, item->item(i,j));
+        this->processItem(itemNode, item->item(static_cast<int>(i),static_cast<int>(j)));
         }
       }
     }
@@ -1844,7 +1923,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
                        << " for Group Item: " << item->name());
           continue;
           }
-        this->processItem(itemNode, item->item(j));
+        this->processItem(itemNode, item->item(static_cast<int>(j)));
         }
     }
   else
@@ -1918,7 +1997,7 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().as_int());
+        item->setValue(static_cast<int>(i), val.text().as_int());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -1926,12 +2005,12 @@ void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else
@@ -2039,7 +2118,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         }
       if (nodeName == "Val")
         {
-        item->setValue(i, val.text().get());
+        item->setValue(static_cast<int>(i), val.text().get());
         }
       else if (allowsExpressions && (nodeName == "Expression"))
         {
@@ -2047,12 +2126,12 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
         expAtt = this->m_manager.findAttribute(expName);
         if (!expAtt)
           {
-          info.item = item; info.pos = i; info.expName = expName;
+          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
           this->m_itemExpressionInfo.push_back(info);
           }
         else
           {
-          item->setExpression(i, expAtt);
+          item->setExpression(static_cast<int>(i), expAtt);
           }
         }
       else
@@ -2135,13 +2214,13 @@ void XmlDocV1Parser::processViews(xml_node &root)
   node = views.child("AdvancedFontEffects");
   if (node)
     {
-    if(xml_attribute xatt = node.attribute("Bold"))
+    if(xml_attribute txtatt = node.attribute("Bold"))
       {
-      rs->setAdvancedBold(strcmp(xatt.value(), "1"));
+      rs->setAdvancedBold(strcmp(txtatt.value(), "1")==0);
       }
-    if(xml_attribute xatt = node.attribute("Italic"))
+    if(xml_attribute txtatt = node.attribute("Italic"))
       {
-      rs->setAdvancedItalic(strcmp(xatt.value(), "1"));
+      rs->setAdvancedItalic(strcmp(txtatt.value(), "1")==0);
       }
     }
 
@@ -2300,6 +2379,17 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(group));
+
+  // Group style (Optional), Tabbed (default) or Tiled
+  xml_attribute xatt;
+  xatt = node.attribute("Style");
+  if (xatt)
+    {
+    std::string style = xatt.value();
+    std::transform(style.begin(), style.end(), style.begin(), ::tolower);
+    group->setStyle(style == "tiled" ? smtk::view::Group::TILED :
+      smtk::view::Group::TABBED);
+    }
 
   xml_node child;
   std::string childName;

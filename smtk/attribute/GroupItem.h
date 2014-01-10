@@ -54,11 +54,11 @@ namespace smtk
       smtk::attribute::ItemPtr item(int element, int ith) const
         {return this->m_items[element][ith];}
 
-      smtk::attribute::ItemPtr find(const std::string &name)
-        {return this->find(0, name);}
+      smtk::attribute::ItemPtr find(const std::string &inName)
+        {return this->find(0, inName);}
       smtk::attribute::ItemPtr find(int element, const std::string &name) ;
-      smtk::attribute::ConstItemPtr find(const std::string &name) const
-        {return this->find(0, name);}
+      smtk::attribute::ConstItemPtr find(const std::string &inName) const
+        {return this->find(0, inName);}
       smtk::attribute::ConstItemPtr find(int element, const std::string &name) const;
 
       virtual void reset();

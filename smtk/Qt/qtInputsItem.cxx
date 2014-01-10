@@ -76,7 +76,9 @@ qtInputsItem::~qtInputsItem()
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck())
+  if(!dataObj || !this->passAdvancedCheck() ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      dataObj->definition()))
     {
     return;
     }
@@ -87,7 +89,7 @@ void qtInputsItem::createWidget()
 
 //----------------------------------------------------------------------------
 void qtInputsItem::loadInputValues(
-  QBoxLayout* labellayout, QBoxLayout* entrylayout)
+  QBoxLayout* /*labellayout*/, QBoxLayout* entrylayout)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
@@ -134,7 +136,9 @@ void qtInputsItem::loadInputValues(
 void qtInputsItem::updateUI()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck())
+  if(!dataObj || !this->passAdvancedCheck() ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      dataObj->definition()))
     {
     return;
     }
@@ -166,8 +170,7 @@ void qtInputsItem::updateUI()
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
-    this->Internals->EntryFrame->setEnabled(
-      dataObj->definition()->isEnabledByDefault());
+    this->Internals->EntryFrame->setEnabled(dataObj->isEnabled());
     labelLayout->addWidget(optionalCheck);
     }
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);

@@ -165,8 +165,12 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     node.append_attribute("AdvanceLevel") = def->advanceLevel();
     }
   if (def->isUnique())
-    {
+    { // true is the default
     node.append_attribute("Unique").set_value("true");
+    }
+  else
+    {
+    node.append_attribute("Unique").set_value("false");
     }
   if (def->isNodal())
     {
@@ -205,9 +209,9 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     for (i = 0; i < n; i++)
       {
       itemDefNode = itemDefNodes.append_child();
-      itemDefNode.set_name(Item::type2String(def->itemDefinition(i)->type()).c_str());
+      itemDefNode.set_name(Item::type2String(def->itemDefinition(static_cast<int>(i))->type()).c_str());
       this->processItemDefinition(itemDefNode,
-                                  def->itemDefinition(i));
+                                  def->itemDefinition(static_cast<int>(i)));
       }
     }
   // Process all attributes based on this class
@@ -309,7 +313,7 @@ void XmlV1StringWriter::processDoubleDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int j, i, nItems, n = idef->numberOfDiscreteValues();
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
     xml_node dnode, snode, inodes;
     std::string ename;
     std::vector<std::string> citems;
@@ -385,13 +389,34 @@ void XmlV1StringWriter::processIntDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int i, n = idef->numberOfDiscreteValues();
-    xml_node dnode;
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+    xml_node dnode, snode, inodes;
+    std::string ename;
+    std::vector<std::string> citems;
     for (i = 0; i < n; i++)
       {
-      dnode = dnodes.append_child("Value");
-      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
-      dnode.text().set(idef->discreteValue(i));
+      ename = idef->discreteEnum(i);
+      // Lets see if there are any conditional items
+      citems = idef->conditionalItems(ename);
+      nItems = citems.size();
+      if (nItems)
+        {
+        snode = dnodes.append_child("Structure");
+        dnode = snode.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        inodes = snode.append_child("Items");
+        for (j = 0; j < nItems; j++)
+          {
+          inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+      else
+        {
+        dnode = dnodes.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i));
+        }
       }
     if (idef->hasDefault())
       {
@@ -444,13 +469,34 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
   if (idef->isDiscrete())
     {
     xml_node dnodes = node.append_child("DiscreteInfo");
-    int i, n = idef->numberOfDiscreteValues();
-    xml_node dnode;
+    int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+    xml_node dnode, snode, inodes;
+    std::string ename;
+    std::vector<std::string> citems;
     for (i = 0; i < n; i++)
       {
-      dnode = dnodes.append_child("Value");
-      dnode.append_attribute("Enum").set_value(idef->discreteEnum(i).c_str());
-      dnode.text().set(idef->discreteValue(i).c_str());
+      ename = idef->discreteEnum(i);
+      // Lets see if there are any conditional items
+      citems = idef->conditionalItems(ename);
+      nItems = citems.size();
+      if (nItems)
+        {
+        snode = dnodes.append_child("Structure");
+        dnode = snode.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i).c_str());
+        inodes = snode.append_child("Items");
+        for (j = 0; j < nItems; j++)
+          {
+          inodes.append_child("Item").text().set(citems[j].c_str());
+          }
+        }
+      else
+        {
+        dnode = dnodes.append_child("Value");
+        dnode.append_attribute("Enum").set_value(ename.c_str());
+        dnode.text().set(idef->discreteValue(i).c_str());
+        }
       }
     if (idef->hasDefault())
       {
@@ -494,7 +540,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
                                         attribute::ValueItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredValues") =
-    idef->numberOfRequiredValues();
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
@@ -505,13 +551,13 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
         ln = lnode.append_child();
         ln.set_name("Label");
-        ln.set_value(idef->valueLabel(i).c_str());
+        ln.text().set(idef->valueLabel(i).c_str());
         }
       }
     }
@@ -558,7 +604,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
     anode.text().set(adp->type().c_str());
     }
   node.append_attribute("NumberOfRequiredValues") =
-    idef->numberOfRequiredValues();
+    static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
@@ -569,7 +615,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -584,7 +630,7 @@ void XmlV1StringWriter::processRefDef(pugi::xml_node &node,
 void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
                                             attribute::DirectoryItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
+  node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);
@@ -603,7 +649,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -618,7 +664,7 @@ void XmlV1StringWriter::processDirectoryDef(pugi::xml_node &node,
 void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredValues") = idef->numberOfRequiredValues();
+  node.append_attribute("NumberOfRequiredValues") = static_cast<unsigned int>(idef->numberOfRequiredValues());
   if (idef->shouldExist())
     {
     node.append_attribute("ShouldExist").set_value(true);
@@ -637,7 +683,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredValues();
+      size_t i, n = idef->numberOfRequiredValues();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -652,7 +698,7 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
 void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
                                         attribute::GroupItemDefinitionPtr idef)
 {
-  node.append_attribute("NumberOfRequiredGroups") = idef->numberOfRequiredGroups();
+  node.append_attribute("NumberOfRequiredGroups") = static_cast<unsigned int>(idef->numberOfRequiredGroups());
   xml_node itemDefNode, itemDefNodes;
   if (idef->hasSubGroupLabels())
     {
@@ -664,7 +710,7 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
       }
     else
       {
-      int i, n = idef->numberOfRequiredGroups();
+      size_t i, n = idef->numberOfRequiredGroups();
       xml_node ln;
       for (i = 0; i < n; i++)
         {
@@ -675,7 +721,7 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
       }
     }
   // Now lets process its items
-  std::size_t i, n = idef->numberOfItemDefinitions();
+  int i, n = static_cast<int>(idef->numberOfItemDefinitions());
   if (n != 0)
     {
     itemDefNodes = node.append_child("ItemDefinitions");
@@ -703,7 +749,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
       node.append_attribute("OnBoundaryNodes").set_value(att->appliesToBoundaryNodes());
       }
     }
-  node.append_attribute("ID").set_value((unsigned int)att->id());
+  node.append_attribute("ID").set_value(static_cast<unsigned int>(att->id()));
   // Save Color Information
   if (att->isColorSet())
     {
@@ -711,7 +757,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
     s = this->encodeColor(att->color());
     node.append_child("Color").text().set(s.c_str());
     }
-  std::size_t i, n = att->numberOfItems();
+  int i, n = static_cast<int>(att->numberOfItems());
   if (n)
     {
     xml_node itemNode, items = node.append_child("Items");
@@ -769,7 +815,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
                                          attribute::ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -779,7 +825,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (!item->isDiscrete())
@@ -818,13 +864,13 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Index");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->discreteIndex(i));
       }
     else
       {
       val = values.append_child("UnsetDiscreteVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -832,7 +878,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
 void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
                                                attribute::RefItemPtr item)
 {
-  std::size_t i=0, n = item->numberOfValues();
+  int i=0, n = static_cast<int>(item->numberOfValues());
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
 
   xml_node val;
@@ -843,7 +889,7 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
 
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1)
@@ -861,13 +907,13 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i)->name().c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -875,7 +921,7 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
 void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
                                              attribute::DirectoryItemPtr item)
 {
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   if (!n)
     {
@@ -886,7 +932,7 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1)
@@ -903,13 +949,13 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i).c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -924,7 +970,7 @@ void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -953,20 +999,20 @@ void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
-        val.text().set(item->value(i));
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+        val.text().set(item->value(static_cast<int>(i)));
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -975,7 +1021,7 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -985,7 +1031,7 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
   // values it has
   if (!numRequiredVals)
     {
-    node.append_attribute("NumberOfValues").set_value((unsigned int) n);
+    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1) // Special Common Case
@@ -1002,13 +1048,13 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
     if (item->isSet(i))
       {
       val = values.append_child("Val");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       val.text().set(item->value(i).c_str());
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -1016,11 +1062,11 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
 void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
                                          attribute::GroupItemPtr item)
 {
-  std::size_t i, j, m, n;
+  int i, j, m, n;
   std::size_t  numRequiredGroups = item->numberOfRequiredGroups();
   xml_node itemNode;
-  n = item->numberOfGroups();
-  m = item->numberOfItemsPerGroup();
+  n = static_cast<int>(item->numberOfGroups());
+  m = static_cast<int>(item->numberOfItemsPerGroup());
   if (!n)
     {
     return;
@@ -1030,7 +1076,7 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
   //  it has
   if (!numRequiredGroups)
     {
-    node.append_attribute("NumberOfGroups").set_value((unsigned int) n);
+    node.append_attribute("NumberOfGroups").set_value(static_cast<unsigned int>(n));
     }
 
   // Optimize for number of required groups = 1
@@ -1048,7 +1094,7 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
   for(i = 0; i < n; i++)
     {
     cluster = clusters.append_child("Cluster");
-    cluster.append_attribute("Ith").set_value((unsigned int) i);
+    cluster.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
     for (j = 0; j < m; j++)
       {
       itemNode = cluster.append_child();
@@ -1067,7 +1113,7 @@ void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -1096,20 +1142,20 @@ void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->value(i));
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -1123,7 +1169,7 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
     {
     return; // nothing left to do
     }
-  std::size_t i, n = item->numberOfValues();
+  int i, n = static_cast<int>(item->numberOfValues());
   if (!n)
     {
     return;
@@ -1152,20 +1198,20 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
       if (item->isExpression(i))
         {
         val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->expression(i)->name().c_str());
         }
       else
         {
         val = values.append_child("Val");
-        val.append_attribute("Ith").set_value((unsigned int) i);
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
         val.text().set(item->value(i).c_str());
         }
       }
     else
       {
       val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value((unsigned int) i);
+      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
@@ -1204,7 +1250,7 @@ void XmlV1StringWriter::processAttributeView(xml_node &node,
       node.append_attribute("CreateEntities").set_value(true);
       }
     }
-  std::size_t i, n = v->numberOfDefinitions();
+  int i, n = static_cast<int>(v->numberOfDefinitions());
   if (n)
     {
     xml_node atypes = node.append_child("AttributeTypes");
@@ -1220,7 +1266,7 @@ void XmlV1StringWriter::processInstancedView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(v));
-  std::size_t i, n = v->numberOfInstances();
+  int i, n = static_cast<int>(v->numberOfInstances());
   xml_node child;
    if (n)
     {
@@ -1267,7 +1313,12 @@ void XmlV1StringWriter::processGroupView(xml_node &node,
 {
   this->processBasicView(node,
                          smtk::dynamic_pointer_cast<smtk::view::Base>(group));
-  std::size_t i, n = group->numberOfSubViews();
+  if(group->style() == smtk::view::Group::TILED)
+    {
+    node.append_attribute("Style").set_value("Tiled");
+    }
+
+  int i, n = static_cast<int>(group->numberOfSubViews());
   xml_node child;
   view::BasePtr bview;
   for (i = 0; i < n; i++)
@@ -1335,9 +1386,9 @@ void XmlV1StringWriter::processModelInfo()
         if(itemGroup)
           {
           xml_node gnode = modelInfo.append_child("GroupItem");
-          gnode.append_attribute("Id").set_value((unsigned int)itemGroup->id());
+          gnode.append_attribute("Id").set_value(static_cast<unsigned int>(itemGroup->id()));
           gnode.append_attribute("Name").set_value(itemGroup->name().c_str());
-          gnode.append_attribute("Mask").set_value((unsigned int)itemGroup->entityMask());
+          gnode.append_attribute("Mask").set_value(static_cast<unsigned int>(itemGroup->entityMask()));
 
           // associated attributes
           typedef smtk::model::Item::const_iterator a_iter;

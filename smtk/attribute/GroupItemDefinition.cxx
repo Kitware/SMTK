@@ -72,7 +72,7 @@ addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef)
     }
   std::size_t n = this->m_itemDefs.size();
   this->m_itemDefs.push_back(cdef);
-  this->m_itemDefPositions[cdef->name()] = n;
+  this->m_itemDefPositions[cdef->name()] = static_cast<int>(n);
   return true;
 }
 //----------------------------------------------------------------------------
@@ -84,7 +84,9 @@ buildGroup(GroupItem *groupItem, int subGroupPosition) const
   items.resize(n);
   for (i = 0; i < n; i++)
     {
-    items[i] = this->m_itemDefs[i]->buildItem(groupItem, i, subGroupPosition);
+    items[i] = this->m_itemDefs[i]->buildItem(groupItem,
+                                              static_cast<int>(i),
+                                              subGroupPosition);
     items[i]->setDefinition(this->m_itemDefs[i]);
     }
 }
@@ -92,7 +94,7 @@ buildGroup(GroupItem *groupItem, int subGroupPosition) const
 void GroupItemDefinition::updateCategories()
 {
   this->m_categories.clear();
-  int i, n = this->m_itemDefs.size();
+  std::size_t i, n = this->m_itemDefs.size();
   for (i = 0; i < n; i++)
     {
     this->m_itemDefs[i]->updateCategories();
@@ -101,19 +103,19 @@ void GroupItemDefinition::updateCategories()
     }
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::addCategory(const std::string &category)
+void GroupItemDefinition::addCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot add categories to a group item definition. "
             << "The name is " << this->name() << std::endl;
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::removeCategory(const std::string &category)
+void GroupItemDefinition::removeCategory(const std::string &/*category*/)
 {
   std::cerr << "Cannot remove categories to a group item definition. "
             << "The name is " << this->name() << std::endl;
 }
 //----------------------------------------------------------------------------
-void GroupItemDefinition::setSubGroupLabel(int element, const std::string &elabel)
+void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredGroups == 0)
     {
@@ -138,7 +140,7 @@ void GroupItemDefinition::setCommonSubGroupLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string GroupItemDefinition::subGroupLabel(int element) const
+std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {

@@ -95,7 +95,7 @@ void qtComboItem::createWidget()
   for(i = 0; i < n; i++)
     {
     QComboBox* combo = new QComboBox(this->Widget);
-    QVariant vdata((int)i);
+    QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
     layout->addWidget(combo);
@@ -127,7 +127,7 @@ void qtComboItem::updateItemData()
   QList<QString> discreteVals;
   for (i = 0; i < itemDef->numberOfDiscreteValues(); i++)
     {
-    discreteVals.push_back(itemDef->discreteEnum(i).c_str());
+    discreteVals.push_back(itemDef->discreteEnum(static_cast<int>(i)).c_str());
     }
 
   foreach(QComboBox* combo, this->Internals->comboBoxes)

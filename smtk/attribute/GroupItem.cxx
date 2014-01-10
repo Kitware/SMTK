@@ -34,10 +34,10 @@ GroupItem::GroupItem(Attribute *owningAttribute,
 }
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Item *owningItem,
+GroupItem::GroupItem(Item *inOwningItem,
                      int itemPosition,
                      int mySubGroupPosition): 
-  Item(owningItem, itemPosition, mySubGroupPosition)
+  Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
 
@@ -90,7 +90,7 @@ GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
     this->m_items.resize(n);
     for (i = 0; i < n; i++)
       {
-      def->buildGroup(this, i);
+      def->buildGroup(this, static_cast<int>(i));
       }
     }
   return true;
@@ -146,7 +146,7 @@ bool GroupItem::appendGroup()
     }
   n = this->m_items.size();
   this->m_items.resize(n+1);
-  def->buildGroup(this, n);
+  def->buildGroup(this, static_cast<int>(n));
   return true;
 }
 //----------------------------------------------------------------------------
@@ -205,25 +205,25 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     this->m_items.resize(newSize);
     for (i = n; i < newSize; i++)
       {
-      def->buildGroup(this, i);
+      def->buildGroup(this, static_cast<int>(i));
       }
     }
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &name)
+smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &inName)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  int i = def->findItemPosition(name);
+  int i = def->findItemPosition(inName);
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][i];
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &name) const
+smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &inName) const
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  int i = def->findItemPosition(name);
+  int i = def->findItemPosition(inName);
   if (i < 0)
     {
     return smtk::attribute::ConstItemPtr();

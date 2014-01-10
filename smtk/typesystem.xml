@@ -18,11 +18,20 @@
   <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
   <suppress-warning text="skipping field 'RefItemDefinition::m_definition' with unmatched type 'smtk::weak_ptr&lt;smtk::attribute::Definition&gt;'"/>
 
-  <!-- Suppressed because they are templated functions -->
+  <!-- Suppressed because they are templated methods -->
   <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::CursorsFromUUIDs', unmatched parameter type 'S&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addCells', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addGroups', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::GroupEntity::members', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::embedEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::instances', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
 
   <!-- Return a list.  For now we will ingore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
@@ -53,17 +62,106 @@
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageIntegerProperties', unmatched parameter type 'cJSON*'"/>
 
-  <!-- Ignore warnings from protected functions -->
+  <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
-	<suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping field 'Storage::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
+  <suppress-warning text="skipping field 'Storage::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
+  <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
   <suppress-warning text="skipping function 'smtk::util::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
 
-  <!-- Constructor given raw pointers -->
-  <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'smtk::model::UUIDsToEntities*'"/>
+  <!-- do not support model property data (yet)-->
+  <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_floatData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToFloatData&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_integerData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToIntegerData&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::floatPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithFloatProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::stringPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithStringProperties'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
+
+  <suppress-warning text="skipping field 'Storage::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
+
+  <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
+  <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Chain'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Edge'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'EdgeUse'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Face'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'FaceUse'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'GroupEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'InstanceEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Loop'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'ModelEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Shell'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'ShellEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'UseEntity'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Vertex'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'VertexUse'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'Volume'"/>
+  <suppress-warning text="hiding of function 'isValid' in class 'VolumeUse'"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and CellEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Chain::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Edge::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and EdgeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Face::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and GroupEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and InstanceEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and ModelEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Shell::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and ShellEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and UseEntity::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Vertex::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and VertexUse::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and Volume::isValid() const"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and VolumeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Chain::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Loop::isValid() const"/>
+  <suppress-warning text="Shadowing: ShellEntity::isValid() const and Shell::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::isValid() const and Edge::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::isValid() const and Face::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::isValid() const and Vertex::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::isValid() const and Volume::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and EdgeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and FaceUse::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
+  <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
+
+  <!-- ignore templated cast for now. -->
+  <suppress-warning text="skipping function 'smtk::model::CellEntity::inclusions', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::CellEntity::uses', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::as', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::ShellEntity::uses', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::ShellEntity::containedShellEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::UseEntity::shellEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::UseEntity::boundingShellEntities', unmatched return type 'T'"/>
+
+  <!-- we are not going to wrap std::[io]stream, so ignore -->
+  <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
+
+  <!-- ignore shared_from_this base class-->
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
+
 
   @EXTRA_TYPESYSTEMS@
 
@@ -334,6 +432,7 @@
     <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>
     <modify-function signature="unsetNotApplicableColor()" remove="all"/>
     <modify-function signature="unsetDefaultColor()" remove="all"/>
+    <modify-function signature="resetItemOffset()" remove="all"/>
     <modify-function signature="setVersion(int)" remove="all"/>
     <modify-function signature="setNotApplicableColor(const double *)" remove="all"/>
     <modify-function signature="setNotApplicableColor(double, double, double, double)" remove="all"/>
@@ -444,11 +543,176 @@
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
+
+    <!-- Fix improper dereferencing and/or Python conversion of cursor methods -->
+    <!--
+         Methods that take an argument of the form "const Cursor&" (or some Cursor
+         subclass) do not properly dereference the pointer to the cursor which is
+         what the Python wrapper actually holds.
+           Example: "addChain(%1))" becomes "addChain(*%1))"
+
+         Methods that return a Cursor instance (or subclass instance) by value
+         do not properly create a pointer to the instance instead of the
+         value itself. The Python converter must have a pointer to wrap, not a
+         value. We use the copy constructor to create a pointer that can be
+         wrapped properly.
+           Example:
+             "%RETURN_TYPE result = %CPPSELF-&gt;get()-&gt;addVertex()"
+             becomes
+             "%RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertex())"
+         -->
+    <modify-function signature="addChain()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addChain(const smtk::model::EdgeUse&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addChain(const smtk::model::Chain&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addLoop()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addLoop(const smtk::model::FaceUse&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addLoop(const smtk::model::Loop&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addShell()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addShell(const smtk::model::Volume&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addShell(const smtk::model::VolumeUse&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="addVertex()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertex());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addEdge()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdge());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addFace()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFace());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addVolume()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolume());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="addVertexUse()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertexUse());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addVertexUse(const smtk::model::Vertex&amp;, int)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertexUse(*%1, %2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addEdgeUse()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdgeUse());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addEdgeUse(const smtk::model::Edge&amp;, int, smtk::model::Orientation)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdgeUse(*%1, %2, %3));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addFaceUse()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFaceUse());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addFaceUse(const smtk::model::Face&amp;, int, smtk::model::Orientation)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFaceUse(*%1, %2, %3));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addVolumeUse()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolumeUse());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addVolumeUse(const smtk::model::Volume&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolumeUse(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="addGroup(int, const std::string&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addGroup(%1, %2));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
+    <modify-function signature="addInstance()">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance());
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+    <modify-function signature="addInstance(const smtk::model::Cursor&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance(*%1));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo2D"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo3D"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
     <modify-function signature="find(const std::string &amp;)">
@@ -506,9 +770,6 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
-  <!--value-type template="smtk::shared_ptr" args="smtk::attribute::Manager" >
-    <modify-function signature="findAttributes(std::string)" remove="all"/>
-  </value-type-->
 
   <value-type template="smtk::shared_ptr" args="smtk::view::Base" />
 
@@ -527,10 +788,89 @@
       <!-- setup the model classes -->
       <object-type name="BRepModel">
         <include file-name="smtk/model/BRepModel.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::BRepModel&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::BRepModel::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <enum-type name="ArrangementKind">
-        <include file-name="smtk/model/Arrangement.h" location="local"/>
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <object-type name="AttributeAssignments">
+        <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
+      </object-type>
+
+      <enum-type name="Orientation">
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <object-type name="CellEntity">
+        <include file-name="smtk/model/CellEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Chain">
+        <include file-name="smtk/model/Chain.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Cursor">
+        <include file-name="smtk/model/Cursor.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <enum-type name="DescriptivePhraseType">
+        <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
+      </enum-type>
+
+      <object-type name="Edge">
+        <include file-name="smtk/model/Edge.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="EdgeUse">
+        <include file-name="smtk/model/EdgeUse.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Face">
+        <include file-name="smtk/model/Face.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="FaceUse">
+        <include file-name="smtk/model/FaceUse.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="GroupEntity">
+        <include file-name="smtk/model/GroupEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="InstanceEntity">
+        <include file-name="smtk/model/InstanceEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Loop">
+        <include file-name="smtk/model/Loop.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="ModelEntity">
+        <include file-name="smtk/model/ModelEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <enum-type name="PropertyType">
+        <include file-name="smtk/model/BRepModel.h" location="local"/>
       </enum-type>
 
       <enum-type name="EntityTypeBits">
@@ -551,6 +891,12 @@
 
       <object-type name="Arrangement">
         <include file-name="smtk/model/Arrangement.h" location="local"/>
+        <modify-function signature="IndexSenseAndOrientationFromCellHasUse(int&amp;, int&amp;, smtk::model::Orientation&amp;) const">
+          <inject-code class="target" position="beginning">
+            %RETURN_TYPE result = %CPPSELF-&gt;IndexSenseAndOrientationFromCellHasUse(%1, %2, *%3);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
+          </inject-code>
+        </modify-function>
       </object-type>
 
       <object-type name="Tessellation">
@@ -577,10 +923,28 @@
       <object-type name="Model">
         <include file-name="smtk/model/Model.h" location="local"/>
         <enum-type name="ModelEntityNodalTypes"/>
+        <!-- Add static New() method, for internal use only -->
+        <add-function signature="New()"
+            static="yes"
+            return-type = "smtk::shared_ptr&lt;smtk::model::Model&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = %RETURN_TYPE(new smtk::model::Model());
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="Storage">
         <include file-name="smtk/model/Storage.h" location="local"/>
+
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::Storage&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::Storage::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
         <add-function signature="setTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
@@ -590,15 +954,6 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <!--<modify-function signature="topology()const" remove="all"/>-->
-        <!--<modify-function signature="topology()" remove="all"/>-->
-        <!--<add-function signature="topology()"
-          return-type="std::map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
-          <inject-code class="target" position="beginning">
-            %RETURN_TYPE %0 = %CPPSELF-&gt;topology();
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>-->
         <add-function signature="insertEntityOfTypeAndDimension(int, int)"
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
@@ -649,10 +1004,49 @@
         </add-function>
       </object-type>
 
-      <object-type name="GridInfo">
-        <include file-name="smtk/model/GridInfo.h" location="local"/>
+      <object-type name="Shell">
+        <include file-name="smtk/model/Shell.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </object-type>
 
+      <object-type name="ShellEntity">
+        <include file-name="smtk/model/ShellEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="UseEntity">
+        <include file-name="smtk/model/UseEntity.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Vertex">
+        <include file-name="smtk/model/Vertex.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="VertexUse">
+        <include file-name="smtk/model/VertexUse.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="Volume">
+        <include file-name="smtk/model/Volume.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="VolumeUse">
+        <include file-name="smtk/model/VolumeUse.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+      </object-type>
+
+      <object-type name="GridInfo">
+        <include file-name="smtk/model/GridInfo.h" location="local" />
+        <value-type name="ApiStatus" />
+        <enum-type name="ApiReturnType" />
+        <enum-type name="PointClosure" />
+      </object-type>
+
+      <!--
       <object-type name="GridInfo2D">
         <include file-name="smtk/model/GridInfo2D.h" location="local"/>
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::model::GridInfo &gt;)"
@@ -668,6 +1062,7 @@
       <object-type name="GridInfo3D">
         <include file-name="smtk/model/GridInfo3D.h" location="local"/>
       </object-type>
+      -->
 
     </namespace-type>
 
@@ -911,7 +1306,18 @@
 
       <object-type name="Manager">
         <include file-name="smtk/attribute/Manager.h" location="local" />
-
+        <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
+          static="yes"
+          return-type="smtk::attribute::Manager *">
+          <inject-code>
+            unsigned long tadd;
+            std::stringstream ss;
+            ss &lt;&lt; std::hex &lt;&lt; %1;
+            ss &gt;&gt; tadd;
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::attribute::Manager * &gt;(tadd);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
         <modify-function signature="findAttributes(std::string, std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Attribute &gt; &gt;&amp;) const">
           <modify-argument index="2">
             <remove-argument />
@@ -1056,6 +1462,27 @@
         <include file-name="smtk/util/AttributeWriter.h" location="local"/>
       </object-type>
 
+      <object-type name="ExportSpec">
+        <include file-name="smtk/util/ExportSpec.h" location="local"/>
+        <modify-function signature="clear()" access="private" />
+        <modify-function signature="setManager(smtk::attribute::Manager*)" access="private" />
+        <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
+        <modify-function signature="setOutputPath(const std::string&amp;)" access="private" />
+        <modify-function signature="appendAnalysisName(const std::string&amp;)" access="private" />
+        <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
+          static="yes"
+          return-type="smtk::util::ExportSpec *">
+          <inject-code>
+            unsigned long tadd;
+            std::stringstream ss;
+            ss &lt;&lt; std::hex &lt;&lt; %1;
+            ss &gt;&gt; tadd;
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::util::ExportSpec * &gt;(tadd);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
       <object-type name="Logger">
         <include file-name="smtk/util/Logger.h" location="local"/>
         <enum-type name="Severity"/>
@@ -1066,6 +1493,9 @@
         <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>
 
+      <object-type name="UUIDGenerator">
+        <include file-name="smtk/util/UUIDGenerator.h" location="local"/>
+      </object-type>
     </namespace-type>
 
     <namespace-type name="view">
@@ -1089,6 +1519,8 @@
       </object-type>
 
       <object-type name="Group">
+        <enum-type name="Style">
+        </enum-type>
         <include file-name="smtk/view/Group.h" location="local"/>
         <add-function signature="ToBase(const smtk::shared_ptr&lt;smtk::view::Group &gt;)"
           static="yes"

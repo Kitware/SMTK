@@ -51,42 +51,42 @@ namespace smtk
       smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
         return (ith < 0) ? smtk::attribute::ItemDefinitionPtr() :
-          (ith >= this->m_itemDefs.size() ?
+          (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
            smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
       bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
-        addItemDefinition(const std::string &name)
+        addItemDefinition(const std::string &inName)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::SharedPointerType item;
 
         // First see if there is a item by the same name
-        if (this->findItemPosition(name) < 0)
+        if (this->findItemPosition(inName) < 0)
           {
           std::size_t n = this->m_itemDefs.size();
-          item = SharedTypes::RawPointerType::New(name);
+          item = SharedTypes::RawPointerType::New(inName);
           this->m_itemDefs.push_back(item);
-          this->m_itemDefPositions[name] = n;
+          this->m_itemDefPositions[inName] = static_cast<int>(n);
           }
         return item;
       }
 
       int findItemPosition(const std::string &name) const;
 
-      int numberOfRequiredGroups() const
+      std::size_t numberOfRequiredGroups() const
       {return this->m_numberOfRequiredGroups;}
-      void setNumberOfRequiredGroups(int gsize)
+      void setNumberOfRequiredGroups(std::size_t gsize)
       {this->m_numberOfRequiredGroups = gsize;}
       bool hasSubGroupLabels() const
-      {return this->m_labels.size();}
+      {return !this->m_labels.empty();}
 
-      void setSubGroupLabel(int element, const std::string &elabel);
+      void setSubGroupLabel(std::size_t element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
       bool usingCommonSubGroupLabel() const
       {return this->m_useCommonLabel;}
-      std::string subGroupLabel(int element) const;
+      std::string subGroupLabel(std::size_t element) const;
 
       virtual smtk::attribute::ItemPtr buildItem(Attribute *owningAttribute,
                                                 int itemPosition) const;
@@ -103,16 +103,16 @@ namespace smtk
       std::vector<smtk::attribute::ItemDefinitionPtr> m_itemDefs;
       std::map<std::string, int> m_itemDefPositions;
       std::vector<std::string> m_labels;
-      int m_numberOfRequiredGroups;
+      std::size_t m_numberOfRequiredGroups;
       bool m_useCommonLabel;
     private:
     };
 //----------------------------------------------------------------------------
     inline int GroupItemDefinition::
-    findItemPosition(const std::string &name) const
+    findItemPosition(const std::string &inName) const
     {
       std::map<std::string, int>::const_iterator it;
-      it = this->m_itemDefPositions.find(name);
+      it = this->m_itemDefPositions.find(inName);
       if (it == this->m_itemDefPositions.end())
         {
         return -1; // named item doesn't exist

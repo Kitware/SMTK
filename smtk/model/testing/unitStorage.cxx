@@ -1,130 +1,111 @@
 #include "smtk/model/Storage.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
+#include "smtk/model/testing/helpers.h"
+#include <smtk/util/Testing/helpers.h>
 
 #include "cJSON.h"
 
-#include <assert.h>
-
+using smtk::shared_ptr;
 using namespace smtk::util;
 using namespace smtk::model;
+using namespace smtk::model::testing;
 
 int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  UUIDsToEntities smTopology;
-  UUIDsToArrangements smArrangements;
-  UUIDsToTessellations smTessellation;
-  Storage sm(&smTopology, &smArrangements, &smTessellation);
+  StoragePtr sm = Storage::create();
 
-  UUID uc00 = sm.insertCellOfDimension(0)->first; // keep just the UUID around.
-  UUID uc01 = sm.insertCellOfDimension(0)->first;
-  UUID uc02 = sm.insertCellOfDimension(0)->first;
-  UUID uc03 = sm.insertCellOfDimension(0)->first;
-  UUID uc04 = sm.insertCellOfDimension(0)->first;
-  UUID uc05 = sm.insertCellOfDimension(0)->first;
-  UUID uc06 = sm.insertCellOfDimension(0)->first;
+  UUIDArray uids = createTet(sm);
 
-  UUID uc07 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
-  UUID uc08 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
-  UUID uc09 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
-  UUID uc10 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
-  UUID uc11 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
-  UUID uc12 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
-  UUID uc13 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
-  UUID uc14 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
-  UUID uc15 = sm.insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
+  BitFlags uc00Flags = sm->findEntity(uids[0])->entityFlags();
+  test( smtk::model::isVertex(uc00Flags),          "isVertex(vertexFlags) incorrect");
+  test(!smtk::model::isEdge(uc00Flags),            "isEdge(vertexFlags) incorrect");
+  test(!smtk::model::isFace(uc00Flags),            "isFace(vertexFlags) incorrect");
+  test(!smtk::model::isVolume(uc00Flags),          "isVolume(vertexFlags) incorrect");
+  test(!smtk::model::isChain(uc00Flags),           "isChain(vertexFlags) incorrect");
+  test(!smtk::model::isLoop(uc00Flags),            "isLoop(vertexFlags) incorrect");
+  test(!smtk::model::isShell(uc00Flags),           "isShell(vertexFlags) incorrect");
+  test(!smtk::model::isVertexUse(uc00Flags),       "isVertexUse(vertexFlags) incorrect");
+  test(!smtk::model::isEdgeUse(uc00Flags),         "isEdgeUse(vertexFlags) incorrect");
+  test(!smtk::model::isFaceUse(uc00Flags),         "isFaceUse(vertexFlags) incorrect");
 
-  UUID uc16 = sm.insertEntity(
-    Entity(CELL_ENTITY, 2)
-    .appendRelation(uc07)
-    .appendRelation(uc08)
-    .appendRelation(uc09)
-    .appendRelation(uc10)
-    .appendRelation(uc11)
-    .appendRelation(uc12)
-    )->first;
-  UUID uc17 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc10).appendRelation(uc11).appendRelation(uc12))->first;
-  UUID uc18 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc07).appendRelation(uc13).appendRelation(uc14))->first;
-  UUID uc19 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc08).appendRelation(uc14).appendRelation(uc15))->first;
-  UUID uc20 = sm.insertEntity(Entity(CELL_ENTITY, 2).appendRelation(uc09).appendRelation(uc15).appendRelation(uc13))->first;
+  test( smtk::model::isCellEntity(uc00Flags),      "isCellEntity(vertexFlags) incorrect");
+  test(!smtk::model::isUseEntity(uc00Flags),       "isUseEntity(vertexFlags) incorrect");
+  test(!smtk::model::isShellEntity(uc00Flags),     "isShellEntity(vertexFlags) incorrect");
+  test(!smtk::model::isGroupEntity(uc00Flags),     "isGroupEntity(vertexFlags) incorrect");
+  test(!smtk::model::isModelEntity(uc00Flags),     "isModelEntity(vertexFlags) incorrect");
+  test(!smtk::model::isInstanceEntity(uc00Flags),  "isInstanceEntity(vertexFlags) incorrect");
 
-  UUID uc21 = sm.insertEntity(
-    Entity(CELL_ENTITY, 3)
-    .appendRelation(uc16)
-    .appendRelation(uc17)
-    .appendRelation(uc18)
-    .appendRelation(uc19)
-    .appendRelation(uc20))->first;
-
-  sm.setTessellation(uc21, Tessellation()
-    .addCoords(0., 0., 0.)
-    .addCoords(4., 0., 0.)
-    .addCoords(2., 4., 0.)
-    .addCoords(1., 1., 0.)
-    .addCoords(2., 3., 0.)
-    .addCoords(3., 1., 0.)
-    .addCoords(2., 0.,-4.)
-    .addTriangle(0, 3, 5)
-    .addTriangle(0, 5, 1)
-    .addTriangle(1, 5, 4)
-    .addTriangle(1, 4, 2)
-    .addTriangle(2, 4, 3)
-    .addTriangle(2, 3, 0)
-    .addTriangle(3, 5, 4)
-    .addTriangle(0, 6, 1)
-    .addTriangle(1, 6, 2)
-    .addTriangle(2, 6, 0));
-
-  unsigned int uc00Flags = sm.findEntity(uc00)->entityFlags();
-  assert( smtk::model::isVertex(uc00Flags)    && "isVertex(vertexFlags) incorrect");
-  assert(!smtk::model::isEdge(uc00Flags)      && "isEdge(vertexFlags) incorrect");
-  assert(!smtk::model::isFace(uc00Flags)      && "isFace(vertexFlags) incorrect");
-  assert(!smtk::model::isRegion(uc00Flags)    && "isRegion(vertexFlags) incorrect");
-  assert(!smtk::model::isChain(uc00Flags)     && "isChain(vertexFlags) incorrect");
-  assert(!smtk::model::isLoop(uc00Flags)      && "isLoop(vertexFlags) incorrect");
-  assert(!smtk::model::isShell(uc00Flags)     && "isShell(vertexFlags) incorrect");
-  assert(!smtk::model::isVertexUse(uc00Flags) && "isVertexUse(vertexFlags) incorrect");
-  assert(!smtk::model::isEdgeUse(uc00Flags)   && "isEdgeUse(vertexFlags) incorrect");
-  assert(!smtk::model::isFaceUse(uc00Flags)   && "isFaceUse(vertexFlags) incorrect");
-
-  UUIDs nodes = sm.entitiesOfDimension(0);
-  UUIDs edges = sm.entitiesOfDimension(1);
-  UUIDs faces = sm.entitiesOfDimension(2);
-  UUIDs zones = sm.entitiesOfDimension(3);
+  UUIDs nodes = sm->entitiesOfDimension(0);
+  UUIDs edges = sm->entitiesOfDimension(1);
+  UUIDs faces = sm->entitiesOfDimension(2);
+  UUIDs zones = sm->entitiesOfDimension(3);
 
   // Test the methods used to set/get string properties
-  sm.setStringProperty(uc21, "name", "Tetrahedron");
+  sm->setStringProperty(uids[21], "name", "Tetrahedron");
   smtk::model::StringList components;
   components.push_back("vx");
   components.push_back("vy");
   components.push_back("vz");
-  sm.setStringProperty(uc00, "velocity", components);
-  sm.stringProperty(uc21, "name")[0] = "Ignatius";
-  sm.stringProperty(uc21, "name").push_back("J");
-  sm.stringProperty(uc21, "name").push_back("Fumblemumbler");
-  sm.setStringProperty(uc21, "name", "Tetrahedron"); // Resets name to length 1.
-  assert(sm.stringProperty(uc00, "velocity")[0] == "vx");
-  assert(sm.stringProperty(uc00, "velocity")[1] == "vy");
-  assert(sm.stringProperty(uc00, "velocity").size() == 3); // Test multi-entry length.
-  assert(sm.stringProperty(uc21, "velocity").size() == 0); // Test missing entry length.
-  assert(sm.stringProperty(uc21, "name").size() == 1); // Test length of reset property.
+  sm->setStringProperty(uids[0], "velocity", components);
+  sm->stringProperty(uids[21], "name")[0] = "Ignatius";
+  sm->stringProperty(uids[21], "name").push_back("J");
+  sm->stringProperty(uids[21], "name").push_back("Fumblemumbler");
+  sm->setStringProperty(uids[21], "name", "Tetrahedron"); // Resets name to length 1.
+  test(sm->stringProperty(uids[0], "velocity")[0] == "vx");
+  test(sm->stringProperty(uids[0], "velocity")[1] == "vy");
+  test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
+  test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
+  test(sm->stringProperty(uids[21], "name").size() == 1); // Test length of reset property.
+
+  // Test addModel
+  UUIDArray::size_type modelStart = uids.size();
+  for (int i = 0; i < 53; ++i)
+    {
+    uids.push_back(sm->addModel().entity());
+    test(sm->hasIntegerProperty(uids.back(), "cell_counters"));
+    test(sm->hasStringProperty(uids.back(), "name"));
+    }
+  sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
+  // Correct computation of hexavigesimal name strings:
+  test(sm->stringProperty(uids[modelStart + 0], "name")[0] == "Model A");
+  test(sm->stringProperty(uids[modelStart + 26], "name")[0] == "Model AA");
+  test(sm->stringProperty(uids[modelStart + 52], "name")[0] == "Model BA");
+
+  sm->assignDefaultNames();
+  // Verify we don't overwrite existing names
+  test(sm->stringProperty(uids[21], "name")[0] == "Tetrahedron");
+  // Verify we do give everything a name
+  test(sm->hasStringProperty(uids[11], "name"));
 
   cJSON* root = cJSON_CreateObject();
-  ExportJSON::fromModel(root, &sm);
+  ExportJSON::fromModel(root, sm);
   cJSON_AddItemToObject(root, "nodes", ExportJSON::fromUUIDs(nodes));
   cJSON_AddItemToObject(root, "edges", ExportJSON::fromUUIDs(edges));
   cJSON_AddItemToObject(root, "faces", ExportJSON::fromUUIDs(faces));
   cJSON_AddItemToObject(root, "zones", ExportJSON::fromUUIDs(zones));
-  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)", ExportJSON::fromUUIDs(sm.boundaryEntities(sm.bordantEntities(uc13,2),1)));
-  cJSON_AddItemToObject(root, "bdy(uc20,2)", ExportJSON::fromUUIDs(sm.boundaryEntities(uc20,2)));
-  cJSON_AddItemToObject(root, "brd(uc20,2)", ExportJSON::fromUUIDs(sm.bordantEntities(uc20,2)));
-  cJSON_AddItemToObject(root, "bdy(uc20,1)", ExportJSON::fromUUIDs(sm.boundaryEntities(uc20,1)));
-  cJSON_AddItemToObject(root, "brd(uc20,3)", ExportJSON::fromUUIDs(sm.bordantEntities(uc20,3)));
-  cJSON_AddItemToObject(root, "lower(uc21,1)", ExportJSON::fromUUIDs(sm.lowerDimensionalBoundaries(uc21,1)));
-  cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm.higherDimensionalBordants(uc00,3)));
-  std::cout << cJSON_Print(root) << "\n";
+  cJSON_AddItemToObject(root, "bdy(brd(uc13,2),1)", ExportJSON::fromUUIDs(sm->boundaryEntities(sm->bordantEntities(uids[13],2),1)));
+  cJSON_AddItemToObject(root, "bdy(uc20,2)", ExportJSON::fromUUIDs(sm->boundaryEntities(uids[20],2)));
+  cJSON_AddItemToObject(root, "brd(uc20,2)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],2)));
+  cJSON_AddItemToObject(root, "bdy(uc20,1)", ExportJSON::fromUUIDs(sm->boundaryEntities(uids[20],1)));
+  cJSON_AddItemToObject(root, "brd(uc20,3)", ExportJSON::fromUUIDs(sm->bordantEntities(uids[20],3)));
+  cJSON_AddItemToObject(root, "lower(uc21,1)", ExportJSON::fromUUIDs(sm->lowerDimensionalBoundaries(uids[21],1)));
+  cJSON_AddItemToObject(root, "upper(uc00,3)", ExportJSON::fromUUIDs(sm->higherDimensionalBordants(uids[0],3)));
+  char* json = cJSON_Print(root);
+  std::cout << json << "\n";
+  free(json);
   cJSON_Delete(root);
+
+  // Test attribute assignment (model-side only; no attributes are
+  // created, but we can make up attribute IDs and assign them to
+  // entities).
+  test( sm->attachAttribute(/*attribId*/0, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->attachAttribute(/*attribId*/1, uids[0]), "Inserting a new attribute should succeed");
+  test(!sm->attachAttribute(/*attribId*/0, uids[0]), "Removing an existing attribute should succeed");
+  test( sm->detachAttribute(/*attribId*/0, uids[0]), "Removing a non-existent attribute should fail");
+  test(!sm->detachAttribute(/*attribId*/0, uids[1]), "Removing a non-existent attribute should fail");
 
   return 0;
 }

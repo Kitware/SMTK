@@ -26,8 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::model; 
 
 //----------------------------------------------------------------------------
-ModelDomainItem::ModelDomainItem(Model *model, unsigned long myid):
-  Item(model, myid)
+ModelDomainItem::ModelDomainItem(Model *inModel, unsigned long myid):
+  Item(inModel, myid)
 {
 }
 

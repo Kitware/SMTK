@@ -165,8 +165,8 @@ namespace smtk
       bool associatesWithRegion() const;
       bool associatesWithModel() const;
       bool associatesWithGroup() const;
-      bool canBeAssociated(smtk::model::MaskType type) const
-      { return (type == (type & this->m_associationMask));}
+      bool canBeAssociated(smtk::model::MaskType maskType) const
+      { return (maskType == (maskType & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return
       // the appropriate associatesWith method
@@ -180,7 +180,7 @@ namespace smtk
       smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
       {
         return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
-          : (ith >= this->m_itemDefs.size() ?
+          : (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
              smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
       }
 
@@ -202,7 +202,8 @@ namespace smtk
           std::size_t n = this->m_itemDefs.size();
           item = SharedTypes::RawPointerType::New(name);
           this->m_itemDefs.push_back(item);
-          this->m_itemDefPositions[name] = n;
+          this->m_itemDefPositions[name] = static_cast<int>(n);
+          this->updateDerivedDefinitions();
           }
         return item;
       }
@@ -224,6 +225,14 @@ namespace smtk
       // attribute already has items, clear them out.
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
+      //This method resets the definition item offset - this is used by the
+      // manager when a definition is modified
+      void resetItemOffset();
+      std::size_t itemOffset() const
+      {return this->m_baseItemOffset;}
+
+      // Return the public pointer for this definition.
+      smtk::attribute::DefinitionPtr pointer() const;
     protected:
       friend class smtk::attribute::Manager;
       // AttributeDefinitions can only be created by an attribute manager
@@ -234,6 +243,10 @@ namespace smtk
       { this->m_manager = NULL;}
 
       void setCategories();
+
+      // This method updates derived definitions when this
+      // definition's items have been changed
+      void updateDerivedDefinitions();
 
       smtk::attribute::Manager *m_manager;
       int m_version;
@@ -250,7 +263,7 @@ namespace smtk
 // model entity - NOTE This can be inherited meaning that if the definition's Super definition
 // has isUnique = true it will also prevent an attribute from this definition being assigned if the
 // targeted model entity has an attribute derived from the Super Definition
-      int m_isUnique;
+      bool m_isUnique;
       bool m_isRequired;
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;
@@ -258,6 +271,8 @@ namespace smtk
 
       std::string m_detailedDescription;
       std::string m_briefDescription;
+      // Used by the find method to calculate an item's position
+      std::size_t m_baseItemOffset;
     private:
 
       // These colors are returned for base definitions w/o set colors
@@ -271,15 +286,32 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
+    inline void Definition::resetItemOffset()
+    {
+      if (this->m_baseDefinition)
+        {
+        this->m_baseItemOffset = this->m_baseDefinition->m_baseItemOffset +
+          this->m_baseDefinition->numberOfItemDefinitions();
+        }
+    }
+ //----------------------------------------------------------------------------
     inline int Definition::findItemPosition(const std::string &name) const
     {
       std::map<std::string, int>::const_iterator it;
       it = this->m_itemDefPositions.find(name);
       if (it == this->m_itemDefPositions.end())
         {
-        return -1; // named item doesn't exist
+        // Check the base definition if there is one
+        if (this->m_baseDefinition)
+          {
+          return this->m_baseDefinition->findItemPosition(name);
+          }
+        else
+          {
+          return -1; // named item doesn't exist
+          }
         }
-      return it->second;
+      return it->second + static_cast<int>(this->m_baseItemOffset);
     }
 //----------------------------------------------------------------------------
     inline const double * Definition::notApplicableColor() const

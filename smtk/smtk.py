@@ -67,15 +67,15 @@ attribute = _temp.smtk.attribute
 util = _temp.smtk.util
 view = _temp.smtk.view
 
-attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: attribute.RefItem,
-                        attribute.Item.DOUBLE: attribute.DoubleItem,
-                        attribute.Item.GROUP: attribute.GroupItem,
-                        attribute.Item.INT: attribute.IntItem,
-                        attribute.Item.STRING: attribute.StringItem,
-                        attribute.Item.VOID: attribute.VoidItem,
-                        attribute.Item.FILE: attribute.FileItem,
-                        attribute.Item.DIRECTORY: attribute.DirectoryItem,
-                        attribute.Item.COLOR: None
+attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attribute.RefItemDefinition),
+                        attribute.Item.DOUBLE: (attribute.DoubleItem, attribute.DoubleItemDefinition),
+                        attribute.Item.GROUP: (attribute.GroupItem, attribute.GroupItemDefinition),
+                        attribute.Item.INT: (attribute.IntItem, attribute.IntItemDefinition),
+                        attribute.Item.STRING: (attribute.StringItem, attribute.StringItemDefinition),
+                        attribute.Item.VOID: (attribute.VoidItem, attribute.VoidItemDefinition),
+                        attribute.Item.FILE: (attribute.FileItem, attribute.FileItemDefinition),
+                        attribute.Item.DIRECTORY: (attribute.DirectoryItem, attribute.DirectoryItemDefinition),
+                        attribute.Item.COLOR: (None, None)
                       }
 
 @staticmethod
@@ -87,8 +87,12 @@ def __to_concrete__(item):
     concrete_item = None
     for item_type,klass in attribute.type_dict.items():
       if i.type() == item_type:
-        concrete_item = klass.CastTo(i)
-        break
+        try:
+          concrete_item = klass[0].CastTo(i)
+          break
+        except TypeError:
+          concrete_item = klass[1].CastTo(i)
+          break
     if concrete_item is None:
       print 'WARNING - unsupported type %s, item %s' % \
         (i.type(), i.name())

@@ -96,6 +96,7 @@ int main()
     ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
     OUTPUT_VARIABLE _result
     )
+  file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx")
   #message("Tried ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx got ${HASH_SPECIALIZATION_IS_STRUCT} ${_result}")
   if (HASH_SPECIALIZATION_IS_STRUCT)
     set(${HASH_SPECIALIZATION} "1")
@@ -126,6 +127,7 @@ int main()
       ${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx
       OUTPUT_VARIABLE _result
     )
+    file(REMOVE "${CMAKE_CURRENT_BINARY_DIR}/_cmHashFun${_tmpf}.cxx")
     if (HASH_SPECIALIZATION_IS_CAST)
       set(${HASH_SPECIALIZATION} "2")
     endif()

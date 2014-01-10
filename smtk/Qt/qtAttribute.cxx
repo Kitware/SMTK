@@ -148,7 +148,7 @@ void qtAttribute::updateItemsData()
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
-    qItem = this->createItem(att->item(i), this->Widget);
+    qItem = this->createItem(att->item(static_cast<int>(i)), this->Widget);
     if(qItem)
       {
       layout->addWidget(qItem->widget());
@@ -172,8 +172,10 @@ QWidget* qtAttribute::parentWidget()
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW)
 {
-  if(!qtUIManager::instance()->passItemAdvancedCheck(
-    item->definition()->advanceLevel()))
+  if(!qtUIManager::instance()->passAdvancedCheck(
+      item->definition()->advanceLevel()) ||
+    !qtUIManager::instance()->passItemCategoryCheck(
+      item->definition()))
     {
     return NULL;
     }

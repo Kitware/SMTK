@@ -108,7 +108,7 @@ int main()
     status = -1;
     }
 
-  int i, n = att->numberOfItems();
+  int i, n = static_cast<int>(att->numberOfItems());
   std::cout << "Items of testAtt:\n";
   for (i = 0; i < n; i++)
     {

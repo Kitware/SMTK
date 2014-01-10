@@ -48,7 +48,7 @@ Item::Type DirectoryItemDefinition::type() const
 
 //----------------------------------------------------------------------------
 bool 
-DirectoryItemDefinition::isValueValid(const std::string &val) const
+DirectoryItemDefinition::isValueValid(const std::string &/*val*/) const
 {
   return true;
 }
@@ -71,7 +71,7 @@ DirectoryItemDefinition::buildItem(Item *owningItem,
                                                    subGroupPosition));
 }
 //----------------------------------------------------------------------------
-void DirectoryItemDefinition::setNumberOfRequiredValues(int esize)
+void DirectoryItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
@@ -84,7 +84,7 @@ void DirectoryItemDefinition::setNumberOfRequiredValues(int esize)
     }
 }
 //----------------------------------------------------------------------------
-void DirectoryItemDefinition::setValueLabel(int element, const std::string &elabel)
+void DirectoryItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
   if (this->m_numberOfRequiredValues == 0)
     {
@@ -109,7 +109,7 @@ void DirectoryItemDefinition::setCommonValueLabel(const std::string &elabel)
 }
 
 //----------------------------------------------------------------------------
-std::string DirectoryItemDefinition::valueLabel(int element) const
+std::string DirectoryItemDefinition::valueLabel(std::size_t element) const
 {
   if (this->m_useCommonLabel)
     {
