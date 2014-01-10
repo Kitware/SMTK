@@ -221,4 +221,3 @@ Resolver.add_implicit_resolver(
         u'tag:yaml.org,2002:yaml',
         re.compile(ur'^(?:!|&|\*)$'),
         list(u'!&*'))
-
