@@ -51,6 +51,7 @@ protected:
   void ToplevelShellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
   void UsesOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
   void InclusionsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
+  void BoundingCellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
 
   void UsesOfShell(DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result);
 

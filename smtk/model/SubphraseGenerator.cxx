@@ -150,6 +150,12 @@ void SubphraseGenerator::InclusionsOfCell(
   addEntityPhrases(inclusions, src, this->directLimit(), result);
 }
 
+void SubphraseGenerator::BoundingCellsOfCell(
+  DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
+{
+  CellEntities boundingCells = ent.boundingCells();
+  addEntityPhrases(boundingCells, src, this->directLimit(), result);
+}
 
 void SubphraseGenerator::UsesOfShell(
   DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result)

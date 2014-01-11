@@ -23,9 +23,13 @@ public:
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
 
 protected:
+  SimpleModelSubphrases();
+
   virtual void ChildrenOfEntity(EntityPhrase::Ptr, DescriptivePhrases&);
   virtual void ChildrenOfEntityList(EntityListPhrase::Ptr, DescriptivePhrases&);
   virtual void ChildrenOfPropertyList(PropertyListPhrase::Ptr, DescriptivePhrases&);
+
+  bool m_passOverUses;
 };
 
   } // namespace model

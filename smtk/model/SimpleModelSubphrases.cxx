@@ -38,28 +38,36 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
   return result;
 }
 
+SimpleModelSubphrases::SimpleModelSubphrases()
+  : m_passOverUses(true)
+{
+}
+
 void SimpleModelSubphrases::ChildrenOfEntity(
   EntityPhrase::Ptr phr, DescriptivePhrases& result)
 {
   // I. Determine dimension of parent.
   //    We will avoid reporting sub-entities if this entity has a
   //    dimension higher than its parent.
-  int dimBits = 0;
-  for (DescriptivePhrasePtr pphr = phr->parent(); pphr; pphr = pphr->parent())
+  if (!this->m_passOverUses)
     {
-    Cursor c(pphr->relatedEntity());
-    if (c.isValid() && c.dimensionBits() > 0)
+    int dimBits = 0;
+    for (DescriptivePhrasePtr pphr = phr->parent(); pphr; pphr = pphr->parent())
       {
-      dimBits = c.dimensionBits();
-      break;
+      Cursor c(pphr->relatedEntity());
+      if (c.isValid() && c.dimensionBits() > 0)
+        {
+        dimBits = c.dimensionBits();
+        break;
+        }
       }
-    }
-  if (
-    dimBits > 0 && phr->relatedEntity().dimensionBits() > 0 && (
-      (dimBits > phr->relatedEntity().dimensionBits() && !(dimBits & phr->relatedEntity().dimensionBits())) ||
-      phr->relatedEntity().isModelEntity()))
-    { // Do not report higher-dimensional relation
-    return;
+    if (
+      dimBits > 0 && phr->relatedEntity().dimensionBits() > 0 && (
+        (dimBits > phr->relatedEntity().dimensionBits() && !(dimBits & phr->relatedEntity().dimensionBits())) ||
+        phr->relatedEntity().isModelEntity()))
+      { // Do not report higher-dimensional relation
+      return;
+      }
     }
   // II. Add arrangement information
   // This is dependent on both the entity type and the ArrangementKind
@@ -82,7 +90,10 @@ void SimpleModelSubphrases::ChildrenOfEntity(
     else if (cent.isValid())
       {
       this->ToplevelShellsOfCell(phr, cent, result);
-      this->UsesOfCell(phr, cent, result);
+      if (!this->m_passOverUses)
+        this->UsesOfCell(phr, cent, result);
+      else
+        this->BoundingCellsOfCell(phr, cent, result);
       this->InclusionsOfCell(phr, cent, result);
       }
     else if (sent.isValid())

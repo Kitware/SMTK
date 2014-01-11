@@ -9,7 +9,9 @@
 namespace smtk {
   namespace model {
 
+class CellEntity;
 class ModelEntity;
+typedef std::vector<CellEntity> CellEntities;
 
 /**\brief A cursor subclass with methods specific to cell entities.
   *
@@ -21,6 +23,7 @@ public:
 
   ModelEntity model() const;
   ShellEntities shellEntities() const;
+  CellEntities boundingCells() const;
 
   template<typename T> T inclusions() const;
   template<typename T> T uses() const;
