@@ -154,6 +154,60 @@ namespace {
         }
       }
   }
+//----------------------------------------------------------------------------
+  template<typename ItemType>
+  void processDerivedValue(pugi::xml_node &node,  ItemType item)
+  {
+    if (item->isDiscrete())
+      {
+      return; // nothing left to do
+      }
+    int i, n = static_cast<int>(item->numberOfValues());
+    if (!n)
+      {
+      return;
+      }
+    if (item->numberOfRequiredValues() == 1)
+      {
+      if (item->isSet())
+        {
+        if (item->isExpression())
+          {
+          node.append_attribute("Expression").set_value(true);
+          node.text().set(item->expression()->name().c_str());
+          }
+        else
+          {
+          node.text().set(getValueForXMLElement(item->value()));
+          }
+        }
+      return;
+      }
+    xml_node val, values = node.append_child("Values");
+    for(i = 0; i < n; i++)
+      {
+      if (item->isSet(i))
+        {
+        if (item->isExpression(i))
+          {
+          val = values.append_child("Expression");
+          val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+          val.text().set(item->expression(i)->name().c_str());
+          }
+        else
+          {
+          val = values.append_child("Val");
+          val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+          val.text().set(getValueForXMLElement(item->value(i)));
+          }
+        }
+      else
+        {
+        val = values.append_child("UnsetVal");
+        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
+        }
+      }
+  }
 };
 
 //----------------------------------------------------------------------------
@@ -769,6 +823,30 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     }
 }
 //----------------------------------------------------------------------------
+void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
+                                          attribute::DoubleItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<ValueItem>(item));
+  processDerivedValue<attribute::DoubleItemPtr>(node, item);
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
+                                       attribute::IntItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<ValueItem>(item));
+  processDerivedValue<attribute::IntItemPtr>(node, item);
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
+                                          attribute::StringItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<ValueItem>(item));
+  processDerivedValue<attribute::StringItemPtr>(node, item);
+}
+//----------------------------------------------------------------------------
 void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
                                                attribute::RefItemPtr item)
 {
@@ -855,62 +933,6 @@ void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
 }
 
 //----------------------------------------------------------------------------
-void XmlV1StringWriter::processDoubleItem(pugi::xml_node &node,
-                                          attribute::DoubleItemPtr item)
-{
-  this->processValueItem(node,
-                         dynamic_pointer_cast<ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-  int i, n = static_cast<int>(item->numberOfValues());
-  if (!n)
-    {
-    return;
-    }
-  if (item->numberOfRequiredValues() == 1)
-    {
-    if (item->isSet())
-      {
-      if (item->isExpression())
-        {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
-        }
-      else
-        {
-        node.text().set(item->value());
-        }
-      }
-    return;
-    }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
-    {
-    if (item->isSet(i))
-      {
-      if (item->isExpression(i))
-        {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->expression(i)->name().c_str());
-        }
-      else
-        {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->value(static_cast<int>(i)));
-        }
-      }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      }
-    }
-}
-//----------------------------------------------------------------------------
 void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
@@ -994,118 +1016,6 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
       itemNode = cluster.append_child();
       itemNode.set_name(Item::type2String(item->item(i,j)->type()).c_str());
       this->processItem(itemNode, item->item(i,j));
-      }
-    }
-}
-//----------------------------------------------------------------------------
-void XmlV1StringWriter::processIntItem(pugi::xml_node &node,
-                                       attribute::IntItemPtr item)
-{
-  this->processValueItem(node,
-                         dynamic_pointer_cast<ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-  int i, n = static_cast<int>(item->numberOfValues());
-  if (!n)
-    {
-    return;
-    }
-  if (item->numberOfRequiredValues() == 1)
-    {
-    if (item->isSet())
-      {
-      if (item->isExpression())
-        {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
-        }
-      else
-        {
-        node.text().set(item->value());
-        }
-      }
-    return;
-    }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
-    {
-    if (item->isSet(i))
-      {
-      if (item->isExpression(i))
-        {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->expression(i)->name().c_str());
-        }
-      else
-        {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->value(i));
-        }
-      }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-      }
-    }
-}
-//----------------------------------------------------------------------------
-void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
-                                          attribute::StringItemPtr item)
-{
-  this->processValueItem(node,
-                         dynamic_pointer_cast<ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-  int i, n = static_cast<int>(item->numberOfValues());
-  if (!n)
-    {
-    return;
-    }
-  if (item->numberOfRequiredValues() == 1)
-    {
-    if (item->isSet())
-      {
-      if (item->isExpression())
-        {
-        node.append_attribute("Expression").set_value(true);
-        node.text().set(item->expression()->name().c_str());
-        }
-      else
-        {
-        node.text().set(item->value().c_str());
-        }
-      }
-    return;
-    }
-  xml_node val, values = node.append_child("Values");
-  for(i = 0; i < n; i++)
-    {
-    if (item->isSet(i))
-      {
-      if (item->isExpression(i))
-        {
-        val = values.append_child("Expression");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->expression(i)->name().c_str());
-        }
-      else
-        {
-        val = values.append_child("Val");
-        val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
-        val.text().set(item->value(i).c_str());
-        }
-      }
-    else
-      {
-      val = values.append_child("UnsetVal");
-      val.append_attribute("Ith").set_value(static_cast<unsigned int>(i));
       }
     }
 }
