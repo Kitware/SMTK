@@ -150,7 +150,7 @@ int Check2DModel(const char* fileName)
     vtkModelEdge* vmEdge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
     vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(vmEdge));
-    if(edge->GetUniquePersistentId() == 42)
+    if(vmEdge->GetUniquePersistentId() == 42)
       {
       if(edgeMesh->GetLength() != 5.)
         {
