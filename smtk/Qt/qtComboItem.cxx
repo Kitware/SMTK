@@ -26,9 +26,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QHBoxLayout>
 #include <QFrame>
 #include <QLabel>
+#include <QPointer>
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/Qt/qtAttribute.h"
 
 using namespace smtk::attribute;
 
@@ -36,16 +38,19 @@ using namespace smtk::attribute;
 class qtComboItemInternals
 {
 public:
-
-  QList<QComboBox*> comboBoxes;
+  qtComboItemInternals(int elementIdx) : ElementIndex(elementIdx)
+  {
+  }
+  int ElementIndex;
+  QPointer<QComboBox> Combo;
+  QPointer<QFrame> ChildrenFrame;
 };
-
 
 //----------------------------------------------------------------------------
 qtComboItem::qtComboItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p) : qtItem(dataObj, p)
 {
-  this->Internals = new qtComboItemInternals;
+  this->Internals = new qtComboItemInternals(elementIdx);
   this->IsLeafItem = true;
   this->createWidget();
 }
@@ -63,7 +68,6 @@ void qtComboItem::createWidget()
     return;
     }
   this->clearChildItems();
-  this->Internals->comboBoxes.clear();
   this->Widget = new QFrame(this->parentWidget());
 
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
@@ -77,32 +81,36 @@ void qtComboItem::createWidget()
     {
     return;
     }
-
-  QBoxLayout* layout = NULL;
-  if(n == 1)
-    {
-    layout = new QHBoxLayout(this->Widget);
-    }
-  else
-    {
-    layout = new QVBoxLayout(this->Widget);
-    }
+  QBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
-  QLabel* label = new QLabel(this->getObject()->label().c_str(),
-    this->Widget);
-  layout->addWidget(label);
 
-  for(i = 0; i < n; i++)
+  int elementIdx = this->Internals->ElementIndex;
+  const ValueItemDefinition *itemDef =
+    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  QList<QString> discreteVals;
+  QString tooltip;
+  for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
     {
-    QComboBox* combo = new QComboBox(this->Widget);
-    QVariant vdata(static_cast<int>(i));
-    combo->setProperty("ElementIndex", vdata);
-    this->Internals->comboBoxes.push_back(combo);
-    layout->addWidget(combo);
-    QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
-      this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
+    std::string enumText = itemDef->discreteEnum(static_cast<int>(i));
+    if(itemDef->hasDefault() &&
+      static_cast<size_t>(itemDef->defaultDiscreteIndex()) == i)
+      {
+      tooltip = "Default: " + QString(enumText.c_str());
+      }
+    discreteVals.push_back(enumText.c_str());
     }
-  
+
+  QComboBox* combo = new QComboBox(this->Widget);
+  if(!tooltip.isEmpty())
+    {
+    combo->setToolTip(tooltip);
+    }
+  combo->addItems(discreteVals);
+
+  QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
+    this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
+  layout->addWidget(combo);
+  this->Internals->Combo = combo;
   this->updateItemData();
 }
 
@@ -120,36 +128,27 @@ void qtComboItem::updateItemData()
     {
     return;
     }
-    
+  QComboBox* combo = this->Internals->Combo;
+  if(!combo)
+    {
+    return;
+    }
   const ValueItemDefinition *itemDef = 
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
-    
-  QList<QString> discreteVals;
-  for (i = 0; i < itemDef->numberOfDiscreteValues(); i++)
-    {
-    discreteVals.push_back(itemDef->discreteEnum(static_cast<int>(i)).c_str());
-    }
 
-  foreach(QComboBox* combo, this->Internals->comboBoxes)
+  int setIndex = -1, elementIdx = this->Internals->ElementIndex;
+  if (item->isSet(elementIdx))
     {
-    combo->blockSignals(true);
-    combo->clear();
-    combo->addItems(discreteVals);
-    int elementIdx = combo->property("ElementIndex").toInt();
-    int setIndex = -1;
-    if (item->isSet(elementIdx))
-      {
-      setIndex = item->discreteIndex(elementIdx);
-      }
-    if(setIndex < 0 && itemDef->hasDefault() &&
-      itemDef->defaultDiscreteIndex() < combo->count())
-      {
-      setIndex = itemDef->defaultDiscreteIndex();
-      }
-    combo->setCurrentIndex(setIndex);
-    combo->blockSignals(false);
+    setIndex = item->discreteIndex(elementIdx);
     }
+  if(setIndex < 0 && itemDef->hasDefault() &&
+    itemDef->defaultDiscreteIndex() < combo->count())
+    {
+    setIndex = itemDef->defaultDiscreteIndex();
+    }
+  combo->setCurrentIndex(setIndex);
 }
+
 //----------------------------------------------------------------------------
 void qtComboItem::onInputValueChanged()
 {
@@ -159,8 +158,9 @@ void qtComboItem::onInputValueChanged()
     {
     return;
     }
+
   int curIdx = comboBox->currentIndex();
-  int elementIdx = comboBox->property("ElementIndex").toInt();
+  int elementIdx =this->Internals->ElementIndex;
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(curIdx>=0)
     {
@@ -170,4 +170,34 @@ void qtComboItem::onInputValueChanged()
     {
     item->unset(elementIdx);
     }
+
+  // update children frame if necessary
+  if(this->Internals->ChildrenFrame)
+    {
+    this->Widget->layout()->removeWidget(this->Internals->ChildrenFrame);
+    delete this->Internals->ChildrenFrame;
+    }
+
+  if(item->numberOfActiveChildrenItems() > 0)
+    {
+    this->Internals->ChildrenFrame = new QFrame(this->Widget);
+    this->Internals->ChildrenFrame->setObjectName("ChildItemsFrame");
+    QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    QVBoxLayout* layout = new QVBoxLayout(this->Internals->ChildrenFrame);
+    layout->setMargin(0);
+    this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
+    std::size_t i, m = item->numberOfActiveChildrenItems();
+    for(i = 0; i < m; i++)
+      {
+      qtItem* childItem = qtAttribute::createItem(
+        item->activeChildItem(static_cast<int>(i)),
+        this->Internals->ChildrenFrame);
+      if(childItem)
+        {
+        layout->addWidget(childItem->widget());
+        }
+      }
+    this->Widget->layout()->addWidget(this->Internals->ChildrenFrame);
+    }
+
 }

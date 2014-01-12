@@ -19,7 +19,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtComboItem - a Functions item
+// .NAME qtComboItem - an item for display value item with child items
 // .SECTION Description
 // .SECTION See Also
 // qtItem
@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtComboItem(smtk::attribute::ItemPtr, QWidget* parent);
+      qtComboItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent);
       virtual ~qtComboItem();  
 
     public slots:

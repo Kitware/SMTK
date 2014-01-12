@@ -652,6 +652,7 @@ QWidget* qtUIManager::createComboBox(
     {
     return NULL;
     }
+/*
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
@@ -693,8 +694,9 @@ QWidget* qtUIManager::createComboBox(
 
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onComboIndexChanged()), Qt::QueuedConnection);
-
-  return combo;
+*/
+  qtItem* returnItem = new qtComboItem(attitem, elementIdx, pWidget);
+  return returnItem ? returnItem->widget() : NULL;
 }
 
 //----------------------------------------------------------------------------

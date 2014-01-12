@@ -182,6 +182,10 @@ void qtInputsItem::updateUI()
     {
     labelText = item->label().c_str();
     }
+  else
+    {
+    labelText = item->name().c_str();
+    }
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
 
