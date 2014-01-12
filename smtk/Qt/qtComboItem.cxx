@@ -76,7 +76,7 @@ void qtComboItem::createWidget()
     return;
     }
 
-  std::size_t i, n = item->numberOfValues();
+  std::size_t n = item->numberOfValues();
   if (!n)
     {
     return;
@@ -112,6 +112,7 @@ void qtComboItem::createWidget()
   layout->addWidget(combo);
   this->Internals->Combo = combo;
   this->updateItemData();
+  this->onInputValueChanged();
 }
 
 //----------------------------------------------------------------------------
@@ -123,7 +124,7 @@ void qtComboItem::updateItemData()
     return;
     }
 
-  std::size_t i, n = item->numberOfValues();
+  std::size_t n = item->numberOfValues();
   if (!n)
     {
     return;
@@ -152,8 +153,7 @@ void qtComboItem::updateItemData()
 //----------------------------------------------------------------------------
 void qtComboItem::onInputValueChanged()
 {
-  QComboBox* const comboBox = qobject_cast<QComboBox*>(
-    QObject::sender());
+  QComboBox* const comboBox = this->Internals->Combo;
   if(!comboBox)
     {
     return;
