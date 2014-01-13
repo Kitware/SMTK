@@ -19,10 +19,35 @@
 #include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
+#include "vtkTextProperty.h"
+#include "vtkViewTheme.h"
 
 using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
+
+void applyPublicationTheme(vtkSMTKModelView* view)
+{
+  vtkNew<vtkViewTheme> theme;
+  theme->SetPointSize(7);
+  theme->SetLineWidth(2);
+  theme->SetBackgroundColor(1., 1., 1.);
+  theme->SetBackgroundColor2(1., 1., 1.);
+  theme->GetPointTextProperty()->SetColor(0, 0, 0);
+  theme->GetCellTextProperty()->SetColor(.7, .7, 1);
+  theme->SetPointColor(0.5, 0.5, 0.5);
+  theme->SetPointHueRange(0.667, 0);
+  theme->SetCellColor(0.85, 0.85, 0.85);
+  theme->SetCellOpacity(1.);
+  theme->SetCellHueRange(0.667, 0);
+  theme->SetCellAlphaRange(1, 1);
+  theme->SetCellValueRange(0.5, 1);
+  theme->SetCellSaturationRange(0.5, 1);
+  theme->SetOutlineColor(0.8, 0.4, 0.4);
+  theme->SetSelectedPointColor(0.8, 0.6, 0.4);
+  theme->SetSelectedCellColor(0.8, 0.6, 0.6);
+  view->ApplyViewTheme(theme.GetPointer());
+}
 
 // An observer that prints out selected model faces and
 // switches interaction modes when the "m" key is pressed.
@@ -281,6 +306,7 @@ int main(int argc, char* argv[])
 
     if (debug)
       {
+      applyPublicationTheme(view.GetPointer());
       view->GetInteractor()->Start();
       hlp->GetSelectionInteractor()->RemoveAllObservers();
       hlp->GetCameraInteractor()->RemoveAllObservers();
