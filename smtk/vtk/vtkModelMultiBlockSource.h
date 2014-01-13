@@ -7,12 +7,20 @@
 
 class vtkPolyData;
 
-class VTKSMTK_EXPORT vtkSMTKModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+namespace smtk {
+  namespace model {
+
+/**\brief A VTK source for exposing model geometry in SMTK Storage as multiblock data.
+  *
+  * This filter generates a single block per UUID, for every UUID
+  * in model storage with a tessellation entry.
+  */
+class VTKSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
-  static vtkSMTKModelMultiBlockSource* New();
+  static vtkModelMultiBlockSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkSMTKModelMultiBlockSource,vtkMultiBlockDataSetAlgorithm);
+  vtkTypeMacro(vtkModelMultiBlockSource,vtkMultiBlockDataSetAlgorithm);
 
   vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
 
@@ -22,8 +30,8 @@ public:
   void Dirty();
 
 protected:
-  vtkSMTKModelMultiBlockSource();
-  virtual ~vtkSMTKModelMultiBlockSource();
+  vtkModelMultiBlockSource();
+  virtual ~vtkModelMultiBlockSource();
 
   void GenerateRepresentationFromModelEntity(
     vtkPolyData* poly, smtk::model::StoragePtr model, const smtk::util::UUID& uid);
@@ -45,8 +53,11 @@ protected:
   vtkMultiBlockDataSet* CachedOutput;
 
 private:
-  vtkSMTKModelMultiBlockSource(const vtkSMTKModelMultiBlockSource&); // Not implemented.
-  void operator = (const vtkSMTKModelMultiBlockSource&); // Not implemented.
+  vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
+  void operator = (const vtkModelMultiBlockSource&); // Not implemented.
 };
+
+  } // namespace model
+} // namespace smtk
 
 #endif // __smtk_vtk_ModelMultiBlockSource_h

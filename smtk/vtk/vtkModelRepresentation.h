@@ -12,16 +12,20 @@ class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkTransformFilter;
 
-/**\brief Generate a VTK dataset used to represent an SMTK model.
+namespace smtk {
+  namespace model {
+
+/**\brief Generate a VTK pipeline to represent an SMTK model.
   *
-  * This requires the model to have per-body or per-face tessellation information.
+  * This representation only works with vtkModelSource, not vtkModelMultiBlockSource.
+  * It requires the model to have per-body or per-face tessellation information.
   */
-class VTKSMTK_EXPORT vtkSMTKModelRepresentation : public vtkRenderedRepresentation
+class VTKSMTK_EXPORT vtkModelRepresentation : public vtkRenderedRepresentation
 {
 public:
-  static vtkSMTKModelRepresentation* New();
+  static vtkModelRepresentation* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkSMTKModelRepresentation,vtkRenderedRepresentation);
+  vtkTypeMacro(vtkModelRepresentation,vtkRenderedRepresentation);
 
   /**\brief Get/set the selection mask.
     *
@@ -57,8 +61,8 @@ public:
   vtkGetObjectMacro(Actor,vtkActor);
 
 protected:
-  vtkSMTKModelRepresentation();
-  virtual ~vtkSMTKModelRepresentation();
+  vtkModelRepresentation();
+  virtual ~vtkModelRepresentation();
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -87,8 +91,11 @@ protected:
   smtk::model::StoragePtr Model;
 
 private:
-  vtkSMTKModelRepresentation(const vtkSMTKModelRepresentation&); // Not implemented.
-  void operator = (const vtkSMTKModelRepresentation&); // Not implemented.
+  vtkModelRepresentation(const vtkModelRepresentation&); // Not implemented.
+  void operator = (const vtkModelRepresentation&); // Not implemented.
 };
+
+  } // namespace model
+} // namespace smtk
 
 #endif // __smtk_vtk_ModelRepresentation_h

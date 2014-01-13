@@ -1,8 +1,8 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
-#include "smtk/vtk/vtkSMTKModelRepresentation.h"
-#include "smtk/vtk/vtkSMTKModelSource.h"
-#include "smtk/vtk/vtkSMTKModelView.h"
+#include "smtk/vtk/vtkModelRepresentation.h"
+#include "smtk/vtk/vtkModelSource.h"
+#include "smtk/vtk/vtkModelView.h"
 
 #include "vtkAnnotationLink.h"
 #include "vtkCommand.h"
@@ -26,7 +26,7 @@ using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
 
-void applyPublicationTheme(vtkSMTKModelView* view)
+void applyPublicationTheme(vtkModelView* view)
 {
   vtkNew<vtkViewTheme> theme;
   theme->SetPointSize(7);
@@ -53,14 +53,14 @@ void applyPublicationTheme(vtkSMTKModelView* view)
 // switches interaction modes when the "m" key is pressed.
 // (By default, mouse motion moves the camera but this
 //  is toggled to selecting model faces with the "m" key.)
-class vtkSMTKModelSelectionHelper : public vtkCommand
+class vtkModelSelectionHelper : public vtkCommand
 {
 public:
-  static vtkSMTKModelSelectionHelper* New() { return new vtkSMTKModelSelectionHelper; }
-  vtkSMTKModelSelectionHelper()
+  static vtkModelSelectionHelper* New() { return new vtkModelSelectionHelper; }
+  vtkModelSelectionHelper()
     {
     }
-  ~vtkSMTKModelSelectionHelper()
+  ~vtkModelSelectionHelper()
     {
     }
   void PrintSelectionMask(int mask)
@@ -192,7 +192,7 @@ public:
     this->RenderWindow = rw;
     }
 
-  void SetRepresentation(vtkSMTKModelRepresentation* rep)
+  void SetRepresentation(vtkModelRepresentation* rep)
     {
     if (this->Representation == rep)
       {
@@ -227,7 +227,7 @@ protected:
   vtkSmartPointer<vtkRenderWindowInteractor> CameraInteractor;
   vtkSmartPointer<vtkRenderWindowInteractor> SelectionInteractor;
   vtkSmartPointer<vtkRenderWindow> RenderWindow;
-  vtkSmartPointer<vtkSMTKModelRepresentation> Representation;
+  vtkSmartPointer<vtkModelRepresentation> Representation;
 };
 
 int main(int argc, char* argv[])
@@ -262,13 +262,13 @@ int main(int argc, char* argv[])
   int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (! status)
     {
-    vtkNew<vtkSMTKModelView> view;
-    vtkNew<vtkSMTKModelSource> src;
-    vtkNew<vtkSMTKModelRepresentation> rep;
-    vtkSMTKModelSelectionHelper* hlp = NULL;
+    vtkNew<vtkModelView> view;
+    vtkNew<vtkModelSource> src;
+    vtkNew<vtkModelRepresentation> rep;
+    vtkModelSelectionHelper* hlp = NULL;
     if (debug)
       {
-      hlp = vtkSMTKModelSelectionHelper::New();
+      hlp = vtkModelSelectionHelper::New();
       }
     src->SetModel(sm);
     rep->SetModel(sm);

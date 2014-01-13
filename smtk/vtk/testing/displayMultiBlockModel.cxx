@@ -1,6 +1,6 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
-#include "smtk/vtk/vtkSMTKModelMultiBlockSource.h"
+#include "smtk/vtk/vtkModelMultiBlockSource.h"
 
 #include "vtkActor.h"
 #include "vtkCommand.h"
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
   if (! status)
     {
     vtkNew<vtkActor> act;
-    vtkNew<vtkSMTKModelMultiBlockSource> src;
+    vtkNew<vtkModelMultiBlockSource> src;
     vtkNew<vtkCompositePolyDataMapper> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
