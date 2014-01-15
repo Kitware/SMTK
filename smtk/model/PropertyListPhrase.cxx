@@ -13,6 +13,7 @@ PropertyListPhrase::PropertyListPhrase()
 {
 }
 
+/// Initialize the list with information required to generate subphrases.
 PropertyListPhrase::Ptr PropertyListPhrase::setup(
   const Cursor& entity, PropertyType ptype, DescriptivePhrasePtr parnt)
 {
@@ -24,6 +25,19 @@ PropertyListPhrase::Ptr PropertyListPhrase::setup(
   return shared_from_this();
 }
 
+/// Initialize the list with a subset \a pnames of the \a entity's properties.
+PropertyListPhrase::Ptr PropertyListPhrase::setup(
+  const Cursor& entity, PropertyType ptype,
+  const std::set<std::string>& pnames, DescriptivePhrasePtr parnt)
+{
+  this->m_entity = entity;
+  this->m_propertyType = ptype;
+  this->m_propertyNames = pnames;
+  this->DescriptivePhrase::setup(
+    PropertyListPhrase::propertyToPhraseType(ptype),
+    parnt);
+  return shared_from_this();
+}
 std::string PropertyListPhrase::title()
 {
   std::ostringstream message;
@@ -49,11 +63,6 @@ smtk::util::UUID PropertyListPhrase::relatedEntityId() const
 Cursor PropertyListPhrase::relatedEntity() const
 {
   return this->m_entity;
-}
-
-std::string PropertyListPhrase::relatedPropertyName() const
-{
-  return std::string(); // lists do not have a single name; their subphrases do.
 }
 
 PropertyType PropertyListPhrase::relatedPropertyType() const

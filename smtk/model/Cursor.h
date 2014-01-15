@@ -136,6 +136,7 @@ public:
   bool hasFloatProperty(const std::string& propName) const;
   bool removeFloatProperty(const std::string& propName);
   bool hasFloatProperties() const;
+  std::set<std::string> floatPropertyNames() const;
   FloatData& floatProperties();
   FloatData const& floatProperties() const;
 
@@ -146,6 +147,7 @@ public:
   bool hasStringProperty(const std::string& propName) const;
   bool removeStringProperty(const std::string& propName);
   bool hasStringProperties() const;
+  std::set<std::string> stringPropertyNames() const;
   StringData& stringProperties();
   StringData const& stringProperties() const;
 
@@ -156,6 +158,7 @@ public:
   bool hasIntegerProperty(const std::string& propName) const;
   bool removeIntegerProperty(const std::string& propName);
   bool hasIntegerProperties() const;
+  std::set<std::string> integerPropertyNames() const;
   IntegerData& integerProperties();
   IntegerData const& integerProperties() const;
 

@@ -21,13 +21,15 @@ public:
   smtkSharedPtrCreateMacro(SubphraseGenerator);
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
+  virtual bool shouldOmitProperty(
+    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
 
 protected:
   SimpleModelSubphrases();
 
-  virtual void ChildrenOfEntity(EntityPhrase::Ptr, DescriptivePhrases&);
-  virtual void ChildrenOfEntityList(EntityListPhrase::Ptr, DescriptivePhrases&);
-  virtual void ChildrenOfPropertyList(PropertyListPhrase::Ptr, DescriptivePhrases&);
+  virtual void childrenOfEntity(EntityPhrase::Ptr, DescriptivePhrases&);
+  virtual void childrenOfEntityList(EntityListPhrase::Ptr, DescriptivePhrases&);
+  virtual void childrenOfPropertyList(PropertyListPhrase::Ptr, DescriptivePhrases&);
 
   bool m_passOverUses;
 };

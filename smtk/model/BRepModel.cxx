@@ -815,7 +815,40 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
     smtk::model::BitFlags etype = it->second.entityFlags();
     switch (etype & ENTITY_MASK)
       {
+    case INSTANCE_ENTITY:
+      // Look for any relationship. We assume the first one is our prototype.
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (subentity != this->topology().end() && subentity->first != uid)
+          {
+          if (subentity->second.entityFlags() & MODEL_ENTITY)
+            return subentity->first;
+          return this->modelOwningEntity(subentity->first);
+          break;
+          }
+        }
+      break;
     case SHELL_ENTITY:
+      // Loop for a relationship to a use.
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (
+          subentity != this->topology().end() &&
+          smtk::model::isUseEntity(subentity->second.entityFlags()))
+          {
+          it = subentity;
+          break;
+          }
+        }
+      // Now fall through and look for the use's relationship to a cell.
     case USE_ENTITY:
       // Look for a relationship to a cell
       for (
@@ -836,7 +869,6 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
     // Remaining types should all have a direct relationship with a model if they are free:
     default:
     case MODEL_ENTITY:
-    case INSTANCE_ENTITY:
     case CELL_ENTITY:
       break;
       }

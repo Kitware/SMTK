@@ -13,6 +13,11 @@
 namespace smtk {
   namespace model {
 
+SimpleModelSubphrases::SimpleModelSubphrases()
+  : m_passOverUses(true)
+{
+}
+
 DescriptivePhrases SimpleModelSubphrases::subphrases(
   DescriptivePhrase::Ptr src)
 {
@@ -20,17 +25,17 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
   switch (src->phraseType())
     {
   case ENTITY_SUMMARY:
-    this->ChildrenOfEntity(
+    this->childrenOfEntity(
       dynamic_pointer_cast<EntityPhrase>(src), result);
     break;
   case ENTITY_LIST:
-    this->ChildrenOfEntityList(
+    this->childrenOfEntityList(
       dynamic_pointer_cast<EntityListPhrase>(src), result);
     break;
   case FLOAT_PROPERTY_LIST:
   case STRING_PROPERTY_LIST:
   case INTEGER_PROPERTY_LIST:
-    this->ChildrenOfPropertyList(
+    this->childrenOfPropertyList(
       dynamic_pointer_cast<PropertyListPhrase>(src), result);
   default:
     break;
@@ -38,12 +43,22 @@ DescriptivePhrases SimpleModelSubphrases::subphrases(
   return result;
 }
 
-SimpleModelSubphrases::SimpleModelSubphrases()
-  : m_passOverUses(true)
+bool SimpleModelSubphrases::shouldOmitProperty(
+  DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const
 {
+  if (ptype == STRING_PROPERTY && pname == "name")
+    return true;
+  if (
+    ptype == INTEGER_PROPERTY &&
+    parent && parent->relatedEntity().isModelEntity())
+    {
+    if (pname.find("_counters") != std::string::npos)
+      return true;
+    }
+  return false;
 }
 
-void SimpleModelSubphrases::ChildrenOfEntity(
+void SimpleModelSubphrases::childrenOfEntity(
   EntityPhrase::Ptr phr, DescriptivePhrases& result)
 {
   // I. Determine dimension of parent.
@@ -83,56 +98,56 @@ void SimpleModelSubphrases::ChildrenOfEntity(
     InstanceEntity ient = ent.as<InstanceEntity>();
     if (uent.isValid())
       {
-      this->CellOfUse(phr, uent, result);
-      this->BoundingShellsOfUse(phr, uent, result);
-      this->ToplevelShellsOfUse(phr, uent, result);
+      this->cellOfUse(phr, uent, result);
+      this->boundingShellsOfUse(phr, uent, result);
+      this->toplevelShellsOfUse(phr, uent, result);
       }
     else if (cent.isValid())
       {
-      this->ToplevelShellsOfCell(phr, cent, result);
+      this->toplevelShellsOfCell(phr, cent, result);
       if (!this->m_passOverUses)
-        this->UsesOfCell(phr, cent, result);
+        this->usesOfCell(phr, cent, result);
       else
-        this->BoundingCellsOfCell(phr, cent, result);
-      this->InclusionsOfCell(phr, cent, result);
+        this->boundingCellsOfCell(phr, cent, result);
+      this->inclusionsOfCell(phr, cent, result);
       }
     else if (sent.isValid())
       {
-      this->UsesOfShell(phr, sent, result);
+      this->usesOfShell(phr, sent, result);
       }
     else if (gent.isValid())
       {
-      this->MembersOfGroup(phr, gent, result);
+      this->membersOfGroup(phr, gent, result);
       }
     else if (ment.isValid())
       {
-      this->FreeSubmodelsOfModel(phr, ment, result);
-      this->FreeGroupsInModel(phr, ment, result);
-      this->FreeCellsOfModel(phr, ment, result);
+      this->freeSubmodelsOfModel(phr, ment, result);
+      this->freeGroupsInModel(phr, ment, result);
+      this->freeCellsOfModel(phr, ment, result);
       }
     else if (ient.isValid())
       {
-      this->PrototypeOfInstance(phr, ient, result);
+      this->prototypeOfInstance(phr, ient, result);
       }
     }
   // Things common to all entities
-  this->InstancesOfEntity(phr, ent, result);
+  this->instancesOfEntity(phr, ent, result);
   // III. Add attribute information
-  this->AttributesOfEntity(phr, ent, result);
+  this->attributesOfEntity(phr, ent, result);
   // IV. Add property information
-  this->PropertiesOfEntity(phr, ent, result);
+  this->propertiesOfEntity(phr, ent, result);
 }
 
-void SimpleModelSubphrases::ChildrenOfEntityList(
+void SimpleModelSubphrases::childrenOfEntityList(
   EntityListPhrase::Ptr elist, DescriptivePhrases& result)
 {
-  this->EntitiesOfEntityList(elist, elist->relatedEntities(), result);
+  this->entitiesOfEntityList(elist, elist->relatedEntities(), result);
 }
 
-void SimpleModelSubphrases::ChildrenOfPropertyList(
+void SimpleModelSubphrases::childrenOfPropertyList(
   PropertyListPhrase::Ptr plist, DescriptivePhrases& result)
 {
-  this->PropertiesOfPropertyList(plist, plist->relatedPropertyType(), result);
+  this->propertiesOfPropertyList(plist, plist->relatedPropertyType(), result);
 }
 
   } // namespace model

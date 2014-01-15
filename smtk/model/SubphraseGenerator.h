@@ -2,6 +2,7 @@
 #define __smtk_model_SubphraseGenerator_h
 
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 
@@ -11,9 +12,6 @@ namespace smtk {
   namespace model {
 
 class InstanceEntity;
-
-class DescriptivePhrase;
-typedef std::vector<DescriptivePhrase> DescriptivePhrasees;
 
 /**\brief Generate subphrases to display for a given descriptive phrase.
   *
@@ -34,38 +32,66 @@ public:
   smtkTypeMacro(SubphraseGenerator);
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) = 0;
-  virtual int directLimit() const { return 4; }
+  virtual int directLimit() const;
+  virtual bool shouldOmitProperty(
+    DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;
 
 protected:
-  void InstancesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void AttributesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void PropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void FloatPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void StringPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
-  void IntegerPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void instancesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void attributesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void propertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void floatPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void stringPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
+  void integerPropertiesOfEntity(DescriptivePhrase::Ptr src, const Cursor& ent, DescriptivePhrases& result);
 
-  void CellOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
-  void BoundingShellsOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
-  void ToplevelShellsOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
+  void cellOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
+  void boundingShellsOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
+  void toplevelShellsOfUse(DescriptivePhrase::Ptr src, const UseEntity& ent, DescriptivePhrases& result);
 
-  void ToplevelShellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
-  void UsesOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
-  void InclusionsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
-  void BoundingCellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
+  void toplevelShellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
+  void usesOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
+  void inclusionsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
+  void boundingCellsOfCell(DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result);
 
-  void UsesOfShell(DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result);
+  void usesOfShell(DescriptivePhrase::Ptr src, const ShellEntity& ent, DescriptivePhrases& result);
 
-  void MembersOfGroup(DescriptivePhrase::Ptr src, const GroupEntity& grp, DescriptivePhrases& result);
+  void membersOfGroup(DescriptivePhrase::Ptr src, const GroupEntity& grp, DescriptivePhrases& result);
 
-  void FreeSubmodelsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
-  void FreeGroupsInModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
-  void FreeCellsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
+  void freeSubmodelsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
+  void freeGroupsInModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
+  void freeCellsOfModel(DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result);
 
-  void PrototypeOfInstance(DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result);
+  void prototypeOfInstance(DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result);
 
-  void EntitiesOfEntityList(EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
-  void PropertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
+  void entitiesOfEntityList(EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
+  void propertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
+
+  void addEntityProperties(
+    PropertyType ptype, std::set<std::string>& props,
+    DescriptivePhrase::Ptr parent, DescriptivePhrases& result);
+
+  template<typename T>
+  void addEntityPhrases(const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result);
 };
+
+template<typename T>
+void SubphraseGenerator::addEntityPhrases(
+  const T& ents, DescriptivePhrase::Ptr parent, int limit, DescriptivePhrases& result)
+{
+  if (static_cast<int>(ents.size()) < limit)
+    {
+    for (typename T::const_iterator it = ents.begin(); it != ents.end(); ++it)
+      {
+      result.push_back(
+        EntityPhrase::create()->setup(*it, parent));
+      }
+    }
+  else
+    {
+    result.push_back(
+      EntityListPhrase::create()->setup(ents, parent));
+    }
+}
 
   } // namespace model
 } // namespace smtk
