@@ -49,6 +49,22 @@ def generate_model_items(manager, model_description):
     return model
 
 
+def set_item_value(item, value, index=0):
+    '''
+    Sets value, casting to type as needed
+    '''
+    methods = {
+        smtk.attribute.Item.DOUBLE: float,
+        smtk.attribute.Item.INT: int,
+    }
+    cast_method = methods.get(item.type())
+    if cast_method is not None:
+        value = cast_method(value)
+
+    print 'Setting value to', value, type(value)
+    item.setValue(index, value)
+
+
 def set_item(item, item_description):
     '''
     Recursive method to set contents of Item instances
@@ -81,18 +97,15 @@ def set_item(item, item_description):
 
     value = item_description.get('value')
     if value is not None:
-        num_values = 1
         if isinstance(value, (list, tuple)):
             num_values = len(value)
             print 'num_values', num_values
             item.setNumberOfValues(num_values)
             for i in range(num_values):
-                print 'Setting value to', value[i], type(value[i])
-                item.setValue(i, value[i])
+                set_item_value(item, value[i], i)
         else:
-            print 'Setting value to', value, type(value)
-            item.setNumberOfValues(num_values)
-            item.setValue(0, value)
+            item.setNumberOfValues(1)
+            set_item_value(item, value)
 
 
 def process_items(parent, parent_description):
@@ -109,7 +122,7 @@ def process_items(parent, parent_description):
         item = parent.find(item_name)
         if item is None:
             print 'Warning: no item %s for parent %s - skipping' % \
-                (parent.name(), name)
+                (item_name, parent.name())
             if isinstance(parent, smtk.attribute.Attribute):
                 manager.removeAttribute(name)
                 count -= 1
