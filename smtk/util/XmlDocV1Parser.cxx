@@ -198,6 +198,128 @@ namespace {
         }
       }
   }
+//----------------------------------------------------------------------------
+  template<typename ItemType, typename BasicType>
+  void processDerivedValue(pugi::xml_node &node,
+                           ItemType item, attribute::Manager &manager,
+                           std::vector<ItemExpressionInfo> &itemExpressionInfo,
+                           Logger &logger)
+  {
+    if (item->isDiscrete())
+      {
+      return; // nothing left to do
+      }
+
+    xml_attribute xatt;
+    xml_node valsNode;
+    std::size_t i, n = item->numberOfValues();
+    xml_node val;
+    std::size_t  numRequiredVals = item->numberOfRequiredValues();
+    std::string nodeName, expName;
+    attribute::AttributePtr expAtt;
+    bool allowsExpressions = item->allowsExpressions();
+    ItemExpressionInfo info;
+    if (!numRequiredVals)
+      {
+      // The node should have an attribute indicating how many values are
+      // associated with the item
+      xatt = node.attribute("NumberOfValues");
+      if (!xatt)
+        {
+        smtkErrorMacro(logger,
+                       "XML Attribute NumberOfValues is missing for Item: "
+                       << item->name());
+        return;
+        }
+      n = xatt.as_uint();
+      item->setNumberOfValues(n);
+      }
+
+    if (!n)
+      {
+      return;
+      }
+    valsNode = node.child("Values");
+    if (valsNode)
+      {
+      for (val = valsNode.first_child(); val; val = val.next_sibling())
+        {
+        nodeName = val.name();
+        if (nodeName == "UnsetVal")
+          {
+          continue;
+          }
+        xatt = val.attribute("Ith");
+        if (!xatt)
+          {
+          smtkErrorMacro(logger,
+                         "XML Attribute Ith is missing for Item: " << item->name());
+          continue;
+          }
+        i = xatt.as_uint();
+        if (i >= n)
+          {
+          smtkErrorMacro(logger, "XML Attribute Ith = " << i
+                         << " is out of range for Item: " << item->name());
+          continue;
+          }
+        if (nodeName == "Val")
+          {
+          item->setValue(static_cast<int>(i), getValueFromXMLElement(val, BasicType()));
+          }
+        else if (allowsExpressions && (nodeName == "Expression"))
+          {
+          expName = val.text().get();
+          expAtt = manager.findAttribute(expName);
+          if (!expAtt)
+            {
+            info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
+            itemExpressionInfo.push_back(info);
+            }
+          else
+            {
+            item->setExpression(static_cast<int>(i), expAtt);
+            }
+          }
+        else
+          {
+          smtkErrorMacro(logger, "Unsupported Value Node Type  Item: "
+                         << item->name());
+          }
+        }
+      }
+    else if (numRequiredVals == 1)
+      {
+      // Lets see if the value is set
+      if (node.text())
+        {
+        // Is this an exapression?
+        xatt = node.attribute("Expression");
+        if (allowsExpressions && xatt)
+          {
+          expName = node.text().get();
+          expAtt = manager.findAttribute(expName);
+          if (!expAtt)
+            {
+            info.item = item; info.pos = 0; info.expName = expName;
+            itemExpressionInfo.push_back(info);
+            }
+          else
+            {
+            item->setExpression(expAtt);
+            }
+          }
+        else
+          {
+          item->setValue(getValueFromXMLElement(node, BasicType()));
+          }
+        }
+      }
+    else
+      {
+      smtkErrorMacro(logger, "XML Node Values is missing for Item: " << item->name());
+      }
+  }
 };
 //----------------------------------------------------------------------------
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::Manager &myManager):
@@ -1483,120 +1605,26 @@ void XmlDocV1Parser::processDoubleItem(pugi::xml_node &node,
 {
   this->processValueItem(node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-
-  xml_attribute xatt;
-  xml_node valsNode;
-  std::size_t i, n = item->numberOfValues();
-  xml_node val;
-  std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::string nodeName, expName;
-  attribute::AttributePtr expAtt;
-  bool allowsExpressions = item->allowsExpressions();
-  ItemExpressionInfo info;
-  if (!numRequiredVals)
-    {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-      {
-      smtkErrorMacro(this->m_logger,
-                     "XML Attribute NumberOfValues is missing for Item: "
-                     << item->name());
-      return;
-      }
-    n = xatt.as_uint();
-    item->setNumberOfValues(n);
-    }
-
-  if (!n)
-    {
-    return;
-    }
-  valsNode = node.child("Values");
-  if (valsNode)
-    {
-    for (val = valsNode.first_child(); val; val = val.next_sibling())
-      {
-      nodeName = val.name();
-      if (nodeName == "UnsetVal")
-        {
-        continue;
-        }
-      xatt = val.attribute("Ith");
-      if (!xatt)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "XML Attribute Ith is missing for Item: " << item->name());
-        continue;
-        }
-      i = xatt.as_uint();
-      if (i >= n)
-        {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
-                       << " is out of range for Item: " << item->name());
-        continue;
-        }
-      if (nodeName == "Val")
-        {
-        item->setValue(static_cast<int>(i), val.text().as_double());
-        }
-      else if (allowsExpressions && (nodeName == "Expression"))
-        {
-        expName = val.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(static_cast<int>(i), expAtt);
-          }
-        }
-      else
-        {
-        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
-                       << item->name());
-        }
-      }
-    }
-  else if (numRequiredVals == 1)
-    {
-    // Lets see if the value is set
-    if (node.text())
-      {
-      // Is this an exapression?
-      xatt = node.attribute("Expression");
-      if (allowsExpressions && xatt)
-        {
-        expName = node.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = 0; info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(expAtt);
-          }
-        }
-      else
-        {
-        item->setValue(node.text().as_double());
-        }
-      }
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
-    }
+  processDerivedValue<attribute::DoubleItemPtr, double>
+    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
+                                       attribute::IntItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
+  processDerivedValue<attribute::IntItemPtr, int>
+    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
+                                          attribute::StringItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
+  processDerivedValue<attribute::StringItemPtr, std::string>
+    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
@@ -1738,248 +1766,6 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   else
     {
     smtkErrorMacro(this->m_logger,"XML Node GroupClusters is missing for Item: " << item->name());
-    }
-}
-//----------------------------------------------------------------------------
-void XmlDocV1Parser::processIntItem(pugi::xml_node &node,
-                                       attribute::IntItemPtr item)
-{
-  this->processValueItem(node,
-                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-
-  xml_attribute xatt;
-  xml_node valsNode;
-  std::size_t i, n = item->numberOfValues();
-  xml_node val;
-  std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::string nodeName, expName;
-  attribute::AttributePtr expAtt;
-  bool allowsExpressions = item->allowsExpressions();
-  ItemExpressionInfo info;
-  if (!numRequiredVals)
-    {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-      {
-      smtkErrorMacro(this->m_logger,
-                     "XML Attribute NumberOfValues is missing for Item: "
-                     << item->name());
-      return;
-      }
-    n = xatt.as_uint();
-    item->setNumberOfValues(n);
-    }
-
-  if (!n)
-    {
-    return;
-    }
-  valsNode = node.child("Values");
-  if (valsNode)
-    {
-    for (val = valsNode.first_child(); val; val = val.next_sibling())
-      {
-      nodeName = val.name();
-      if (nodeName == "UnsetVal")
-        {
-        continue;
-        }
-      xatt = val.attribute("Ith");
-      if (!xatt)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "XML Attribute Ith is missing for Item: " << item->name());
-       continue;
-        }
-      i = xatt.as_uint();
-      if (i >= n)
-        {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
-                       << " is out of range for Item: " << item->name());
-        continue;
-        }
-      if (nodeName == "Val")
-        {
-        item->setValue(static_cast<int>(i), val.text().as_int());
-        }
-      else if (allowsExpressions && (nodeName == "Expression"))
-        {
-        expName = val.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(static_cast<int>(i), expAtt);
-          }
-        }
-      else
-        {
-        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
-                       << item->name());
-        }
-      }
-    }
-  else if (numRequiredVals == 1)
-    {
-    // Lets see if the value is set
-    if (node.text())
-      {
-      // Is this an exapression?
-      xatt = node.attribute("Expression");
-      if (allowsExpressions && xatt)
-        {
-        expName = node.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = 0; info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(expAtt);
-          }
-        }
-      else
-        {
-        item->setValue(node.text().as_int());
-        }
-      }
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
-    }
-}
-//----------------------------------------------------------------------------
-void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
-                                          attribute::StringItemPtr item)
-{
-  this->processValueItem(node,
-                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
-  if (item->isDiscrete())
-    {
-    return; // nothing left to do
-    }
-
-  xml_attribute xatt;
-  xml_node valsNode;
-  std::size_t i, n = item->numberOfValues();
-  xml_node val;
-  std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  std::string nodeName, expName;
-  attribute::AttributePtr expAtt;
-  bool allowsExpressions = item->allowsExpressions();
-  ItemExpressionInfo info;
-  if (!numRequiredVals)
-    {
-    // The node should have an attribute indicating how many values are
-    // associated with the item
-    xatt = node.attribute("NumberOfValues");
-    if (!xatt)
-      {
-      smtkErrorMacro(this->m_logger,
-                     "XML Attribute NumberOfValues is missing for Item: "
-                     << item->name());
-      return;
-      }
-    n = xatt.as_uint();
-    item->setNumberOfValues(n);
-    }
-
-  if (!n)
-    {
-    return;
-    }
-  valsNode = node.child("Values");
-  if (valsNode)
-    {
-    for (val = valsNode.first_child(); val; val = val.next_sibling())
-      {
-      nodeName = val.name();
-      if (nodeName == "UnsetVal")
-        {
-        continue;
-        }
-      xatt = val.attribute("Ith");
-      if (!xatt)
-        {
-        smtkErrorMacro(this->m_logger,
-                       "XML Attribute Ith is missing for Item: " << item->name());
-        continue;
-        }
-      i = xatt.as_uint();
-      if (i >= n)
-        {
-        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
-                       << " is out of range for Item: " << item->name());
-        continue;
-        }
-      if (nodeName == "Val")
-        {
-        item->setValue(static_cast<int>(i), val.text().get());
-        }
-      else if (allowsExpressions && (nodeName == "Expression"))
-        {
-        expName = val.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(static_cast<int>(i), expAtt);
-          }
-        }
-      else
-        {
-        smtkErrorMacro(this->m_logger, "Unsupported Value Node Type  Item: "
-                       << item->name());
-        }
-      }
-    }
-  else if (numRequiredVals == 1)
-    {
-    // Lets see if the value is set
-    if (node.text())
-      {
-      // Is this an exapression?
-      xatt = node.attribute("Expression");
-      if (allowsExpressions && xatt)
-        {
-        expName = node.text().get();
-        expAtt = this->m_manager.findAttribute(expName);
-        if (!expAtt)
-          {
-          info.item = item; info.pos = 0; info.expName = expName;
-          this->m_itemExpressionInfo.push_back(info);
-          }
-        else
-          {
-          item->setExpression(expAtt);
-          }
-        }
-      else
-        {
-        item->setValue(node.text().get());
-        }
-      }
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
     }
 }
 //----------------------------------------------------------------------------
