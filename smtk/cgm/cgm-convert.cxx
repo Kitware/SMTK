@@ -41,6 +41,7 @@
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/cgm/TDUUID.h"
+#include "smtk/cgm/CAUUID.h"
 #include "cJSON.h"
 
 #include <map>
@@ -95,7 +96,8 @@ void AddEntitiesToBody(
     {
     // First, create a cell for the given entity:
     E* entry = entities.get_and_step();
-    smtk::model::UUIDWithEntity cell = storage->insertCellOfDimension(entry->dimension());
+    smtk::cgm::TDUUID* refId = smtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::model::UUIDWithEntity cell = storage->setCellOfDimension(refId->entityId(), entry->dimension());
     int cgmId = TDUniqueId::get_unique_id(entry);
     // Now, if owningBodyId is non-NULL (because the entity is a "free" member
     // of the body (i.e., not attached to some higher-dimensional entity), then
@@ -119,10 +121,6 @@ void AddEntitiesToBody(
       }
     //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
-    if (dynamic_cast<ToolDataUser*>(entry))
-      {
-      new smtk::cgm::TDUUID(entry, cell->first);
-      }
     // Now, since AddEntitiesToBody is always called with entities
     // of ascending dimension, add the children of this entity to
     // its relations. Then add this entity to each of its children's
@@ -533,6 +531,7 @@ int main (int argc, char **argv)
 {
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
+  smtk::cgm::CAUUID::registerWithAttributeManager();
   const char* engine = ENGINE;
   if (argc > 2)
     { // Choose the engine to use based on the file type.

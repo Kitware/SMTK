@@ -1,5 +1,8 @@
 #include "smtk/cgm/TDUUID.h"
+#include "smtk/cgm/CAUUID.h"
 
+#include "CubitAttrib.hpp"
+#include "CubitAttribUser.hpp"
 #include "ToolDataUser.hpp"
 
 #include <sstream>
@@ -38,6 +41,15 @@ TDUUID::TDUUID(ToolDataUser* entity, const smtk::util::UUID& uid)
 
   entity->add_TD(this);
   TDUUID::s_reverseLookup[this->m_entityId] = entity;
+
+  // Update the CubitAttrib if the entity may be cast to it.
+  CubitAttribUser* cau = dynamic_cast<CubitAttribUser*>(entity);
+  if (cau)
+    {
+    CubitAttrib* attrib = cau->get_cubit_attrib(CA_UUID);
+    attrib->has_updated(CUBIT_FALSE);
+    attrib->update();
+    }
 }
 
 TDUUID::~TDUUID()

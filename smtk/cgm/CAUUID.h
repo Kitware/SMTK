@@ -22,6 +22,7 @@ enum CubitAttributeTypeExtensions
 class CAUUID : public CubitAttrib
 {
 public:
+  static void registerWithAttributeManager();
   CAUUID(RefEntity*);
   CAUUID(RefEntity*, CubitSimpleAttrib*);
   virtual ~CAUUID();
@@ -38,6 +39,8 @@ public:
   static CubitStatus actuate_all();
 
 protected:
+  static CubitAttrib* creator(RefEntity*, CubitSimpleAttrib*);
+
   smtk::util::UUID m_entityId;
 };
 

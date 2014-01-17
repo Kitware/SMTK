@@ -11,17 +11,42 @@
 namespace smtk {
   namespace cgm {
 
+/**\brief Register the CAUUID attribute type with the attribute manager.
+  *
+  * You must call this method before attempting to instantiate a CAUUID.
+  */
+void CAUUID::registerWithAttributeManager()
+{
+  std::cout << "CAUUID construct.\n";
+  static bool caUUIDRegistered = false;
+  if (!caUUIDRegistered)
+    {
+    CGMApp::instance()->attrib_manager()->register_attrib_type(
+      CA_UUID, "uuid", "UUID",
+      &CAUUID::creator,
+      CUBIT_TRUE,     // auto_actuate_flag
+      CUBIT_TRUE,     // auto_update_flag
+      CUBIT_TRUE,     // auto_write_flag
+      CUBIT_TRUE,     // auto_read_flag
+      CUBIT_TRUE,     // actuate_in_constructor
+      CUBIT_FALSE);   // actuate_after_geom_changes
+    caUUIDRegistered = true;
+    }
+}
+
+/// Construct a CAUUID and attach it to \a ref.
 CAUUID::CAUUID(RefEntity* ref)
   : CubitAttrib(ref)
 {
   // m_entityId is initialized to null by default
 }
 
+/// Construct a CAUUID and restore the UUID from the simple attribute's string data.
 CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
   : CubitAttrib(ref)
 {
-  m_entityId = smtk::util::UUID(
-    std::string(sa->string_data_list()->get()->c_str()));
+  this->m_entityId = smtk::util::UUID(
+    std::string(sa->string_data_list()->last_item()->c_str()));
 }
 
 CAUUID::~CAUUID()
@@ -56,7 +81,14 @@ CubitStatus CAUUID::actuate()
     }
   else
     {
-    if( !GSaveOpen::performingUndo &&
+    /*
+    std::cout
+      << " undo?   " << (GSaveOpen::performingUndo ? "Y" : "N")
+      << " import? " << (GeometryQueryTool::importingSolidModel ? "Y" : "N")
+      << " merge?  " << (GeometryQueryTool::mergeGloballyOnImport ? "Y" : "N")
+      << "\n";
+      */
+    if(!GSaveOpen::performingUndo &&
       GeometryQueryTool::importingSolidModel &&
       !GeometryQueryTool::mergeGloballyOnImport)
       {
@@ -74,6 +106,13 @@ CubitStatus CAUUID::actuate()
         }
       }
     uuid = new TDUUID(attrib_owner(), this->m_entityId);
+      {
+      RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
+      if (ownerAsEnt)
+        {
+        std::cout << "Restored " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+        }
+      }
     }
   this->delete_attrib(CUBIT_TRUE);
   this->hasActuated = CUBIT_TRUE;
@@ -110,6 +149,11 @@ CubitStatus CAUUID::reset()
 
 CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
 {
+  RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
+  if (ownerAsEnt)
+    {
+    std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    }
   return new CubitSimpleAttrib(
     this->att_internal_name(),
     this->m_entityId.toString().c_str());
@@ -122,7 +166,17 @@ smtk::util::UUID CAUUID::entityId() const
 
 CubitStatus CAUUID::actuate_all()
 {
+  std::cerr << "CAUUID actuate_all not implemented.\n";
   return CUBIT_SUCCESS;
+}
+
+CubitAttrib* CAUUID::creator(RefEntity* entity, CubitSimpleAttrib* p_csa)
+{
+  CAUUID* attrib = p_csa ?
+    new CAUUID(entity, p_csa) :
+    new CAUUID(entity);
+
+  return attrib;
 }
 
   } // namespace cgm
