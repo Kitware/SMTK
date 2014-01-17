@@ -138,19 +138,19 @@ namespace smtk
 
       template<typename T>
         typename smtk::internal::shared_ptr_type<T>::SharedPointerType
-        addItemDefinition(const std::string &name)
+        addItemDefinition(const std::string &idName)
       {
         typedef smtk::internal::shared_ptr_type<T> SharedTypes;
         typename SharedTypes::SharedPointerType item;
 
         // First see if there is a item by the same name
-        if (this->hasChildItemDefinition(name))
+        if (this->hasChildItemDefinition(idName))
           {
           // Already has an item of this name - do nothing
           return item;
           }
         std::size_t n = this->m_itemDefs.size();
-        item = SharedTypes::RawPointerType::New(name);
+        item = SharedTypes::RawPointerType::New(idName);
         this->m_itemDefs[item->name()] = item;
         return item;
       }
