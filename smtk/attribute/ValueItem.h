@@ -101,7 +101,7 @@ namespace smtk
 
       smtk::attribute::ItemPtr activeChildItem(int i) const
       {
-        if ((i < 0) || (i >= this->m_activeChildrenItems.size()))
+        if ((i < 0) || (static_cast<std::size_t>(i) >= this->m_activeChildrenItems.size()))
           {
           smtk::attribute::ItemPtr item;
           return item;
