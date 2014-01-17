@@ -40,6 +40,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
+#include "smtk/cgm/TDUUID.h"
 #include "cJSON.h"
 
 #include <map>
@@ -118,6 +119,10 @@ void AddEntitiesToBody(
       }
     //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
+    if (dynamic_cast<ToolDataUser*>(entry))
+      {
+      new smtk::cgm::TDUUID(entry, cell->first);
+      }
     // Now, since AddEntitiesToBody is always called with entities
     // of ascending dimension, add the children of this entity to
     // its relations. Then add this entity to each of its children's
@@ -541,13 +546,14 @@ int main (int argc, char **argv)
     {
     std::cerr
       << "Usage:\n"
-      << "  " << argv[0] << " filename [filetype ['1' [result]]]\n"
+      << "  " << argv[0] << " filename [filetype ['1' [result [cgm_output]]]]\n"
       << "where\n"
       << "  filename   - is the path to a solid model that CGM can import\n"
       << "  filetype   - is a solid model filetype to help CGM.\n"
       << "  1          - is an optional argument specifying that a single\n"
       << "               model file should be written instead of one per body.\n"
       << "  result     - is an output filename. The default is \"smtkModel.json\"\n"
+      << "  cgm_output - is an output filename. The default is \"smtkModel.brep\"\n"
       << "\n"
       << "The default filetype is \"OCC\"\n"
       << "Valid values for filetype:"
@@ -628,6 +634,29 @@ int main (int argc, char **argv)
       std::ostringstream filename;
       filename << "smtkModel-" << bnum << ".json";
       ExportBodyToJSONFile(*it, filename.str());
+      }
+    }
+
+  // Save as a CGM file of the same type as the input (if output filename spec)
+  if (argc > 5)
+    {
+    int num_ents_exported;
+    CubitString cubit_version;
+    stat = CubitCompat_export_solid_model(
+      imported,
+      argv[5],
+      argv[2],
+      num_ents_exported,
+      cubit_version,
+      /* logfile_name */ NULL);
+    if (stat != CUBIT_SUCCESS)
+      {
+      std::cerr << "Failed to export CGM model, status " << stat << "\n";
+      return -1;
+      }
+    else
+      {
+      std::cout << "Exported " << num_ents_exported << " entities, CubitVersion " << cubit_version << "\n";
       }
     }
 
