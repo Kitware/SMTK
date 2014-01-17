@@ -6,6 +6,7 @@ set(utilSrcs
   AttributeWriter.cxx
   ExportSpec.cxx
   Logger.cxx
+  Resource.cxx
   UserData.cxx
   UUID.cxx
   UUIDGenerator.cxx
@@ -18,6 +19,7 @@ set(utilHeaders
   AttributeWriter.h
   ExportSpec.h
   Logger.h
+  Resource.h
   SharedFromThis.h
   UserData.h
   UUID.h
