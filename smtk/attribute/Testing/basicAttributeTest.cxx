@@ -32,6 +32,14 @@ int main()
   int status = 0;
   smtk::attribute::Manager manager;
   std::cout << "Manager Created\n";
+  smtk::util::Resource::Type t = manager.resourceType();
+  if (t != smtk::util::Resource::ATTRIBUTE)
+    {
+    std::cout << "ERROR: Returned wrong resource type";
+    status++;
+    }
+  std::cout << "Resource type: "
+            << smtk::util::Resource::type2String(t) << "\n";
   smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
   if (def)
     {

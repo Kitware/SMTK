@@ -1,5 +1,5 @@
 """
-Manual port of SMTK/smtk/attribute/Testing/basicAttributeDefinitionTest.cxx
+Manual port of SMTK/smtk/attribute/Testing/basicAttributeTest.cxx
 For verifying python-shiboken wrappers
 
 Requires SMTKCorePython.so to be in module path
@@ -14,6 +14,11 @@ if __name__ == '__main__':
 
     manager = smtk.attribute.Manager()
     print 'Manager created'
+    t = manager.resourceType()
+    if t != smtk.util.Resource.ATTRIBUTE:
+      print 'ERROR: Returned wrong resource type'
+      status = -1
+    print 'Resource type:', smtk.util.Resource.type2String(t)
     def_ = manager.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'

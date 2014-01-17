@@ -49,6 +49,13 @@ Manager::~Manager()
  }
 
 //----------------------------------------------------------------------------
+smtk::util::Resource::Type
+Manager::resourceType() const
+{
+  return smtk::util::Resource::ATTRIBUTE;
+}
+
+//----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr
 Manager::createDefinition(const std::string &typeName,
                           const std::string &baseTypeName)
