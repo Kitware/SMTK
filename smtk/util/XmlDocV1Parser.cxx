@@ -1776,9 +1776,8 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
   int i = this->decodeColorInfo(s, color);
   if (i)
     {
-    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << i
-                   << "components for "
-                   << colorName);
+    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << 4-i
+                   << " components for " << colorName << " from string " << s);
     return false;
     }
   return true;
