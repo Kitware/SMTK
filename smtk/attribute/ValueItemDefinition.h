@@ -149,7 +149,6 @@ namespace smtk
           // Already has an item of this name - do nothing
           return item;
           }
-        std::size_t n = this->m_itemDefs.size();
         item = SharedTypes::RawPointerType::New(idName);
         this->m_itemDefs[item->name()] = item;
         return item;
