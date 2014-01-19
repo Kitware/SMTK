@@ -200,4 +200,37 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
                 set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk.py ${CMAKE_INSTALL_PREFIX}/python/smtk.py )" )
+
+  # Now handle wrapping dependent libraries
+  if (SMTK_BUILD_CGM)
+    set(smtk_cgm_headers ${cgmHeaders} ${vtkHeaders})
+    sbk_wrap_library(cgmSMTK
+      GENERATOR_ARGS --avoid-protected-hack
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      LOCAL_INCLUDE_DIRECTORIES
+        ${CMAKE_CURRENT_SOURCE_DIR}/attribute
+        ${CMAKE_CURRENT_SOURCE_DIR}/cgm
+        ${CMAKE_CURRENT_SOURCE_DIR}/model
+        ${CMAKE_CURRENT_SOURCE_DIR}/util
+        ${CMAKE_CURRENT_SOURCE_DIR}/view
+        ${CMAKE_CURRENT_SOURCE_DIR}/vtk
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
+      TYPESYSTEM typesystem_cgm.xml
+      HEADERS ${smtk_cgm_headers}
+      DEPENDS SMTKCore
+    )
+
+    #if(SMTK_ENABLE_TESTING)
+    #  add_subdirectory(cgm/PythonTesting)
+    #  add_subdirectory(vtk/PythonTesting)
+    #endif(SMTK_ENABLE_TESTING)
+
+    #todo we need to install this file in such a way that it can resolve
+    #the location of shiboken, which is going to mean running fixup bundle
+    #on the mac, and than fixing up the smtk.py package script
+
+    install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
+                  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk_cgm.py ${CMAKE_INSTALL_PREFIX}/python/smtk_cgm.py )" )
+  endif()
 endif()

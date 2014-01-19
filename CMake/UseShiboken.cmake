@@ -258,7 +258,7 @@ function(sbk_wrap_library NAME)
   endif()
 
   # Remove "special" dependencies
-  if(_DEPENDS)
+  if(_DEPENDS AND SHIBOKEN_VIRTUAL_DEPENDENCIES)
     list(REMOVE_ITEM _DEPENDS ${SHIBOKEN_VIRTUAL_DEPENDENCIES})
   endif()
 

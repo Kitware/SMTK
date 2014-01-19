@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Additional objects to be wrapped when building with CGM -->
+  <namespace-type name="smtk">
+    <namespace-type name="cgm">
+      <object-type name="ImportSolid">
+        <include file-name="smtk/cgm/ImportSolid.h" location="local"/>
+      </object-type>
+    </namespace-type>
+  </namespace-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

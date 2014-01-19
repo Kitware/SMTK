@@ -34,6 +34,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
+  namespace cgm
+  {
+    class ImportSolid;
+  }
   namespace model
   {
     class Arrangement;
@@ -133,6 +137,11 @@ namespace smtk
     class Root;
     class SimpleExpression;
   };
+
+  namespace cgm
+  {
+    typedef smtk::shared_ptr< smtk::cgm::ImportSolid > ImportSolidPtr;
+  }
 
   //Shiboken requires that we use fully qualified namespaces for all
   //types that these shared_ptr and weak_ptr are holding

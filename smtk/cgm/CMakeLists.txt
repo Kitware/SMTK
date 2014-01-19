@@ -3,21 +3,24 @@ add_definitions(${CGM_DEFINES})
 
 set(CGMLibSrcs
   CAUUID.cxx
+  ImportSolid.cxx
   TDUUID.cxx
 )
 
 set(CGMLibHeaders
   CAUUID.h
+  ImportSolid.h
   TDUUID.h
 )
 
-#install the headers
+# Install the headers
 smtk_public_headers(${CGMLibHeaders})
 # ... and make header compilation tests link properly:
 target_link_libraries(TestBuild_smtk_cgm
   LINK_PRIVATE ${CGM_LIBRARIES}
 )
 
+# Utility programs using CGM:
 add_executable(cgm-convert
   cgm-convert.cxx
 )
