@@ -20,10 +20,11 @@ public:
   virtual std::string title();
   virtual std::string subtitle();
 
+  CursorArray relatedEntities() const;
+  virtual void setFlags(BitFlags commonFlags, BitFlags unionFlags);
+
 protected:
   EntityListPhrase();
-
-  virtual bool buildSubphrasesInternal();
 
   CursorArray m_entities;
   BitFlags m_commonFlags;

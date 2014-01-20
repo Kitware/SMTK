@@ -6,6 +6,7 @@
 #include "smtk/model/Storage.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/SimpleModelSubphrases.h"
 #include "smtk/model/testing/helpers.h"
 
 #include <QtGui/QApplication>
@@ -67,7 +68,10 @@ int main(int argc, char* argv[])
     cursors, model, model->entitiesMatchingFlags(mask, false));
   std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
   qmodel->setRoot(
-    smtk::model::EntityListPhrase::create()->setup(cursors));
+    smtk::model::EntityListPhrase::create()
+      ->setup(cursors)
+      ->setDelegate( // set the subphrase generator:
+        smtk::model::SimpleModelSubphrases::create()));
   view->setModel(qmodel); // must come after qmodel->setRoot()
   view->setItemDelegate(qdelegate);
 

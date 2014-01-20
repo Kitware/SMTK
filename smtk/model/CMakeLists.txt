@@ -3,6 +3,7 @@ set(modelSrcs
   Arrangement.cxx
   ArrangementKind.cxx
   AttributeAssignments.cxx
+  AttributeListPhrase.cxx
   BRepModel.cxx
   CellEntity.cxx
   Chain.cxx
@@ -30,7 +31,9 @@ set(modelSrcs
   PropertyValuePhrase.cxx
   Shell.cxx
   ShellEntity.cxx
+  SimpleModelSubphrases.cxx
   Storage.cxx
+  SubphraseGenerator.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
   UseEntity.cxx
@@ -44,6 +47,7 @@ set(modelHeaders
   Arrangement.h
   ArrangementKind.h
   AttributeAssignments.h
+  AttributeListPhrase.h
   BRepModel.h
   CellEntity.h
   Chain.h
@@ -72,10 +76,12 @@ set(modelHeaders
   ModelEntity.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
-  Storage.h
-  ModelDomainItem.h
   Shell.h
   ShellEntity.h
+  SimpleModelSubphrases.h
+  Storage.h
+  SubphraseGenerator.h
+  ModelDomainItem.h
   StringData.h
   Tessellation.h
   UseEntity.h

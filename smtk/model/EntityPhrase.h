@@ -25,8 +25,6 @@ public:
 protected:
   EntityPhrase();
 
-  virtual bool buildSubphrasesInternal();
-
   Cursor m_entity;
 };
 

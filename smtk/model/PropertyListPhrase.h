@@ -23,24 +23,26 @@ public:
   smtkTypeMacro(PropertyListPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const Cursor& entity, PropertyType ptype, DescriptivePhrasePtr parent);
+  Ptr setup(const Cursor& entity, PropertyType ptype, const std::set<std::string>& pnames, DescriptivePhrasePtr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
 
   virtual smtk::util::UUID relatedEntityId() const;
   virtual Cursor relatedEntity() const;
-  virtual std::string relatedPropertyName() const;
   virtual PropertyType relatedPropertyType() const;
+
+  std::set<std::string>& propertyNames() { return this->m_propertyNames; }
+  const std::set<std::string>& propertyNames() const { return this->m_propertyNames; }
 
   static DescriptivePhraseType propertyToPhraseType(PropertyType p);
 
 protected:
   PropertyListPhrase();
 
-  virtual bool buildSubphrasesInternal();
-
   Cursor m_entity;
   PropertyType m_propertyType;
+  std::set<std::string> m_propertyNames; // an optional subset of m_entity's properties
 };
 
   } // model namespace

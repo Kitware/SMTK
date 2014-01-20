@@ -19,7 +19,7 @@ public:
   smtkTypeMacro(PropertyValuePhrase);
   smtkCreateMacro(DescriptivePhrase);
   PropertyValuePhrase();
-  Ptr setup(const std::string& propName, PropertyListPhrase::Ptr parent);
+  Ptr setup(PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parent);
 
   virtual std::string title();
   virtual std::string subtitle();
@@ -32,10 +32,8 @@ public:
   static DescriptivePhraseType propertyToPhraseType(PropertyType p);
 
 protected:
-  PropertyListPhrase::Ptr m_plist;
+  PropertyType m_propertyType;
   std::string m_propertyName;
-
-  virtual bool buildSubphrasesInternal();
 };
 
   } // model namespace

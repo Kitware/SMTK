@@ -290,7 +290,7 @@ AttributeAssignments& Cursor::attributes()
 }
 /**\brief Does the cursor have any attributes associated with it?
   */
-AttributeAssignments::AttributeSet Cursor::attributes() const
+AttributeSet Cursor::attributes() const
 {
   return this->m_storage->attributeAssignments()[this->m_entity].attributes();
 }
@@ -351,6 +351,21 @@ bool Cursor::hasFloatProperties() const
     this->m_storage->floatProperties().find(this->m_entity)
     == this->m_storage->floatProperties().end() ?
     false : true;
+}
+
+/// Return the names of all the floating-point properties.
+std::set<std::string> Cursor::floatPropertyNames() const
+{
+  std::set<std::string> pnames;
+  if (this->hasFloatProperties())
+    {
+    const FloatData& props(this->floatProperties());
+    for (FloatData::const_iterator it = props.begin(); it != props.end(); ++it)
+      {
+      pnames.insert(it->first);
+      }
+    }
+  return pnames;
 }
 
 FloatData& Cursor::floatProperties()
@@ -421,6 +436,21 @@ bool Cursor::hasStringProperties() const
     false : true;
 }
 
+/// Return the names of all the string properties.
+std::set<std::string> Cursor::stringPropertyNames() const
+{
+  std::set<std::string> pnames;
+  if (this->hasStringProperties())
+    {
+    const StringData& props(this->stringProperties());
+    for (StringData::const_iterator it = props.begin(); it != props.end(); ++it)
+      {
+      pnames.insert(it->first);
+      }
+    }
+  return pnames;
+}
+
 StringData& Cursor::stringProperties()
 {
   return this->m_storage->stringProperties().find(this->m_entity)->second;
@@ -487,6 +517,21 @@ bool Cursor::hasIntegerProperties() const
     this->m_storage->integerProperties().find(this->m_entity)
     == this->m_storage->integerProperties().end() ?
     false : true;
+}
+
+/// Return the names of all the integer properties.
+std::set<std::string> Cursor::integerPropertyNames() const
+{
+  std::set<std::string> pnames;
+  if (this->hasIntegerProperties())
+    {
+    const IntegerData& props(this->integerProperties());
+    for (IntegerData::const_iterator it = props.begin(); it != props.end(); ++it)
+      {
+      pnames.insert(it->first);
+      }
+    }
+  return pnames;
 }
 
 IntegerData& Cursor::integerProperties()
