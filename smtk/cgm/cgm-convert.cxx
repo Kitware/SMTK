@@ -528,7 +528,13 @@ int main (int argc, char **argv)
 {
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
-  CubitStatus s = InitCGMA::initialize_cgma( ENGINE );
+  const char* engine = ENGINE;
+  if (argc > 2)
+    { // Choose the engine to use based on the file type.
+    if (!strcmp(argv[2], "FACET_TYPE")) engine = "FACET";
+    else if (!strcmp(argv[2], "ACIS_SAT")) engine = "ACIS";
+    }
+  CubitStatus s = InitCGMA::initialize_cgma(engine);
   if (CUBIT_SUCCESS != s) return 1;
 
   if (argc < 2)

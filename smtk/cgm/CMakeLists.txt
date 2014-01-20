@@ -16,3 +16,12 @@ target_link_libraries(facet-convert
   SMTKCore
   ${CGM_LIBRARIES}
 )
+
+if (SMTK_BUILD_VTK)
+  add_executable(vtk-to-cholla vtk-to-cholla.cxx)
+  target_link_libraries(vtk-to-cholla
+    SMTKCore
+    ${VTK_MODULES}
+    ${CGM_LIBRARIES}
+  )
+endif()
