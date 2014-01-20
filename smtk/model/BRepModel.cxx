@@ -526,6 +526,9 @@ bool BRepModel::removeEntity(const smtk::util::UUID& uid)
 /**\brief Add entities (specified by their \a uids) to the given group (\a groupId).
   *
   * This will append \a groupId to each entity in \a uids.
+  * Note that this does **not** add the proper Arrangement information
+  * that Storage::findOrAddEntityToGroup() does, since BRepModel
+  * does not store Arrangement information.
   */
 void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
 {

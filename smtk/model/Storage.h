@@ -96,6 +96,8 @@ public:
 
   bool findOrAddInclusionToCell(const smtk::util::UUID& cell, const smtk::util::UUID& inclusion);
 
+  bool findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent);
+
   bool hasAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse = true);

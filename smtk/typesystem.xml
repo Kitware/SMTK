@@ -699,6 +699,13 @@
       </inject-code>
     </modify-function>
 
+    <modify-function signature="addModel(int, int, const std::string&amp;)">
+      <inject-code class="target" position="beginning">
+        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addModel(%1, %2, %3));
+        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
+      </inject-code>
+    </modify-function>
+
     <modify-function signature="addInstance()">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance());
@@ -861,6 +868,16 @@
       <object-type name="GroupEntity">
         <include file-name="smtk/model/GroupEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <add-function signature="members()" static="no"
+          return-type="std::vector&lt;smtk::model::Cursor*&gt;">
+          <inject-code>
+            smtk::model::CursorArray tmp = %CPPSELF-&gt;members&lt;smtk::model::CursorArray&gt;();
+            %RETURN_TYPE %0;
+            for (smtk::model::CursorArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::Cursor(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="InstanceEntity">
@@ -876,6 +893,39 @@
       <object-type name="ModelEntity">
         <include file-name="smtk/model/ModelEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <!-- We can add, rather than modify, signatures by not making the methods const.
+             This allows us to change the return type to an array of pointers-to-cursors,
+             which shiboken properly converts. -->
+        <add-function signature="cells()" static="no"
+          return-type="std::vector&lt;smtk::model::CellEntity*&gt;">
+          <inject-code>
+            smtk::model::CellEntities tmp = %CPPSELF-&gt;cells();
+            %RETURN_TYPE %0;
+            for (smtk::model::CellEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::CellEntity(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="groups()" static="no"
+          return-type="std::vector&lt;smtk::model::GroupEntity*&gt;">
+          <inject-code>
+            smtk::model::GroupEntities tmp = %CPPSELF-&gt;groups();
+            %RETURN_TYPE %0;
+            for (smtk::model::GroupEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::GroupEntity(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="submodels()" static="no"
+          return-type="std::vector&lt;smtk::model::ModelEntity*&gt;">
+          <inject-code>
+            smtk::model::ModelEntities tmp = %CPPSELF-&gt;submodels();
+            %RETURN_TYPE %0;
+            for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::ModelEntity(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <enum-type name="PropertyType">
