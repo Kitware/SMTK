@@ -831,36 +831,84 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     switch (citype)
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
-        cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName);
-        this->processRefDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName))
+          {
+          this->processRefDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::DOUBLE:
-        cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName);
-        this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName))
+          {
+          this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::DIRECTORY:
-        cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName);
-        this->processDirectoryDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName))
+          {
+          this->processDirectoryDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::FILE:
-        cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName);
-        this->processFileDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName))
+          {
+          this->processFileDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::GROUP:
-        cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName);
-        this->processGroupDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName))
+          {
+          this->processGroupDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::INT:
-        cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName);
-        this->processIntDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName))
+          {
+          this->processIntDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::STRING:
-        cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName);
-        this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
+        if(cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName))
+          {
+          this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
         break;
       case smtk::attribute::Item::VOID:
-        cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName);
-        this->processItemDef(cinode, cidef);
+        if(cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName))
+          {
+          this->processItemDef(cinode, cidef);
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
       break;
     default:
       smtkErrorMacro(this->m_logger, "Unsupported Item definition Type: "
@@ -1776,9 +1824,8 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
   int i = this->decodeColorInfo(s, color);
   if (i)
     {
-    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << i
-                   << "components for "
-                   << colorName);
+    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << 4-i
+                   << " components for " << colorName << " from string " << s);
     return false;
     }
   return true;
