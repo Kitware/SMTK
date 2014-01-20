@@ -41,6 +41,15 @@ CAUUID::CAUUID(RefEntity* ref)
   // m_entityId is initialized to null by default
 }
 
+#if CGM_MAJOR_VERSION >= 14
+/// Construct a CAUUID and restore the UUID from the simple attribute's string data.
+CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
+  : CubitAttrib(ref)
+{
+  this->m_entityId = smtk::util::UUID(
+    std::string(sa.string_data_list().back().c_str()));
+}
+#else
 /// Construct a CAUUID and restore the UUID from the simple attribute's string data.
 CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
   : CubitAttrib(ref)
@@ -48,12 +57,13 @@ CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
   this->m_entityId = smtk::util::UUID(
     std::string(sa->string_data_list()->last_item()->c_str()));
 }
+#endif
 
 CAUUID::~CAUUID()
 {
 }
 
-const type_info& CAUUID::entity_type_info() const
+const std::type_info& CAUUID::entity_type_info() const
 {
   return typeid(CAUUID);
 }
@@ -147,6 +157,19 @@ CubitStatus CAUUID::reset()
   return CUBIT_SUCCESS;
 }
 
+#if CGM_MAJOR_VERSION >= 14
+CubitSimpleAttrib CAUUID::cubit_simple_attrib()
+{
+  RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
+  if (ownerAsEnt)
+    {
+    std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    }
+  return CubitSimpleAttrib(
+    this->att_internal_name(),
+    this->m_entityId.toString().c_str());
+}
+#else
 CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
 {
   RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
@@ -158,6 +181,7 @@ CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
     this->att_internal_name(),
     this->m_entityId.toString().c_str());
 }
+#endif
 
 smtk::util::UUID CAUUID::entityId() const
 {
@@ -170,14 +194,21 @@ CubitStatus CAUUID::actuate_all()
   return CUBIT_SUCCESS;
 }
 
+#if CGM_MAJOR_VERSION >= 14
+CubitAttrib* CAUUID::creator(RefEntity* entity, const CubitSimpleAttrib& p_csa)
+{
+  CAUUID* attrib = new CAUUID(entity, p_csa);
+  return attrib;
+}
+#else
 CubitAttrib* CAUUID::creator(RefEntity* entity, CubitSimpleAttrib* p_csa)
 {
   CAUUID* attrib = p_csa ?
     new CAUUID(entity, p_csa) :
     new CAUUID(entity);
-
   return attrib;
 }
+#endif
 
   } // namespace cgm
 } // namespace smtk

@@ -5,10 +5,11 @@
 # locate CGM assets for your package to use.
 #
 # This script defines the following CMake variables:
-#   CGM_FOUND         defined when CGM is located, false otherwise
-#   CGM_INCLUDE_DIRS  directories containing CGM headers
-#   CGM_DEFINES       preprocessor definitions you should add to source files
-#   CGM_LIBRARIES     paths to CGM library and its dependencies
+#   CGM_FOUND           defined when CGM is located, false otherwise
+#   CGM_INCLUDE_DIRS    directories containing CGM headers
+#   CGM_DEFINES         preprocessor definitions you should add to source files
+#   CGM_LIBRARIES       paths to CGM library and its dependencies
+#   CGM_HAVE_VERSION_H  true when the "cgm_version.h" header exists (v14.0 or later).
 #
 # Note that this script does not produce CGM_VERSION as that information
 # is not available in the "cgm.make" configuration file that CGM creates.
@@ -113,6 +114,30 @@ if(CGM_CFG)
   endforeach()
   #message("Libs ${CGM_LIBRARIES}")
 
+  # Now detect the CGM version (or at least whether it is v14+).
+  #
+  # This is not as simple as it should be. CGM v14.0 and later
+  # provide macros in cgm_version.h while earlier versions provide
+  # "const int GeometryQueryTool::CGM_MAJOR_VERSION" which may
+  # only be queried at run time, not compile time. We want to avoid
+  # TRY_RUN since we may be cross-compiling.
+
+  # Verify the file exists every time CMake is run, not just
+  # the first time.
+  if (CGM_VERSION_H AND NOT EXISTS "${CGM_VERSION_H}")
+    unset(CGM_VERSION_H CACHE)
+  endif()
+  find_file(CGM_VERSION_H
+    NAMES cgm_version.h
+    PATHS ${CGM_INCLUDE_DIRS}
+    DOC "Path to cgm_version.h if it exists"
+    NO_DEFAULT_PATH
+  )
+  if (EXISTS "${CGM_VERSION_H}")
+    set(CGM_HAVE_VERSION_H 1)
+  else()
+    unset(CGM_HAVE_VERSION_H)
+  endif()
 
   ##
   ## Kill temporary variables

@@ -11,6 +11,8 @@
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
 #cmakedefine SMTK_BUILD_CGM
+// Does CGM provide cgm_version.h (true for v14+, false otherwise).
+#cmakedefine CGM_HAVE_VERSION_H
 
 // Should sparse_hash_map be used (instead of std::map) for primary storage?
 #cmakedefine SMTK_HASH_STORAGE

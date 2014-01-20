@@ -12,6 +12,10 @@
 
 #include "stdio.h"
 
+#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "CubitCompat.hpp"
 #include "GMem.hpp"
 #include "GeometryQueryTool.hpp"
@@ -71,13 +75,13 @@ int AddEntityToBody(RefEntity* ent, smtk::model::StoragePtr storage)
   DLIList<RefEntity*> children;
   ent->get_child_ref_entities(children);
   int nc = children.size();
-  //cout << "        has " << nc << " child entities:\n";
+  //std::cout << "        has " << nc << " child entities:\n";
   for (int i = 0; i < nc; ++i)
     {
     RefEntity* child = children.get_and_step();
-    //cout << "        ++" << child->class_name() << "\n";
+    //std::cout << "        ++" << child->class_name() << "\n";
     AddEntityToBody(child, storage);
-    //cout << "        --" << child->class_name() << "\n";
+    //std::cout << "        --" << child->class_name() << "\n";
     }
 
   return 0;
@@ -91,7 +95,7 @@ void AddEntitiesToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -117,9 +121,9 @@ void AddEntitiesToBody(
       bodyInclusions[0].details().push_back(
         storage->findEntity(owningBodyId)->findOrAppendRelation(
           cell->first));
-      //cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
+      //std::cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
       }
-    //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
+    //std::cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
     // Now, since AddEntitiesToBody is always called with entities
     // of ascending dimension, add the children of this entity to
@@ -145,7 +149,7 @@ void AddArrangementsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
+  std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     E* shell = entities.get_and_step();
@@ -163,10 +167,10 @@ void AddArrangementsToBody(
     smtk::model::Entity* vcell = storage->findEntity(smtkId);
     if (!vcell)
       {
-      cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
+      std::cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
       continue;
       }
-    //cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
+    //std::cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
 
     // Now build a list of offsets of UUIDs in the cell's relations array:
     std::map<smtk::util::UUID,int> offsets;
@@ -221,7 +225,7 @@ void AddArrangementsToBody(
           smtk::model::POSITIVE);
       shellRelations[j] = smtkFaceUseId;
       /*
-      cout
+      std::cout
         << "          " << j << "  " << faceId
         << "  face " << smtkFaceId
         << " dir " << (se->get_sense() == CUBIT_FORWARD ? "+" : "-")
@@ -244,7 +248,7 @@ void AddArrangementsToBody(
     aid = storage->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
       smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
     (void)aid; // keep aid around for debugging
-    //cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
+    //std::cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
     }
 }
 
@@ -255,7 +259,7 @@ void AddTessellationsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -343,7 +347,7 @@ void AddTessellationsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -497,7 +501,7 @@ CubitStatus ConvertModel(
   bool singleModel)
 {
   int ni = imported.size();
-  //cout << "Imported " << ni << " entities:\n";
+  //std::cout << "Imported " << ni << " entities:\n";
   for (int i = 0; i < ni; ++i)
     {
     RefEntity* ent = imported.get_and_step();
@@ -514,23 +518,28 @@ CubitStatus ConvertModel(
       int cgmBodyId = TDUniqueId::get_unique_id(ent);
       smtk::model::ModelEntity smtkBody = (*bodies.rbegin())->addModel();
       translation[cgmBodyId] = smtkBody.entity();
-      //cout << "  Body " << ent << "\n";
+      //std::cout << "  Body " << ent << "\n";
       ImportBody(dynamic_cast<Body*>(ent), *bodies.rbegin(), translation);
       }
     else
       {
-      //cout << "  Other: " << typeid(*ent).name() << "\n";
+      //std::cout << "  Other: " << typeid(*ent).name() << "\n";
       }
     }
-  //cout << "\n";
+  //std::cout << "\n";
   return CUBIT_SUCCESS;
 }
 
 // main program - initialize, then send to proper function
 int main (int argc, char **argv)
 {
+#if CGM_MAJOR_VERSION >= 14
+  std::vector<CubitString> args(argv + 1, argv + argc);
+  CGMApp::instance()->startup(args);
+#else
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
+#endif
   smtk::cgm::CAUUID::registerWithAttributeManager();
   const char* engine = ENGINE;
   if (argc > 2)
@@ -661,7 +670,7 @@ int main (int argc, char **argv)
 
   int ret_val = ( CubitMessage::instance()->error_count() );
   if ( ret_val != 0 )
-    cerr << "Errors found during session.\n";
+    std::cerr << "Errors found during session.\n";
   else
     ret_val = 0;
 
