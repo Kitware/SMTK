@@ -44,11 +44,11 @@ ShellEntities CellEntity::shellEntities() const
 CellEntities CellEntity::boundingCells() const
 {
   CellEntities cells;
-  UseEntities uses = this->uses<UseEntities>();
-  if (!uses.empty())
+  UseEntities useEnts = this->uses<UseEntities>();
+  if (!useEnts.empty())
     {
     std::deque<ShellEntity> tmp =
-      uses[0].shellEntities<std::deque<ShellEntity> >();
+      useEnts[0].shellEntities<std::deque<ShellEntity> >();
     ShellEntity shell;
     for (; !tmp.empty(); tmp.pop_front())
       {

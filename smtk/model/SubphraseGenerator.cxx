@@ -185,8 +185,8 @@ void SubphraseGenerator::freeSubmodelsOfModel(
 void SubphraseGenerator::freeGroupsInModel(
   DescriptivePhrase::Ptr src, const ModelEntity& mod, DescriptivePhrases& result)
 {
-  GroupEntities freeGroupsInModel = mod.groups();
-  addEntityPhrases(freeGroupsInModel, src, this->directLimit(), result);
+  GroupEntities freeGroups = mod.groups();
+  addEntityPhrases(freeGroups, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::freeCellsOfModel(
