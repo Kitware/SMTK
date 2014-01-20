@@ -6,6 +6,10 @@
 #include "vtkPointData.h"
 #include "vtkXMLPolyDataReader.h"
 
+#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "AppUtil.hpp"
 #include "CGMApp.hpp"
 #include "GeometryQueryTool.hpp"
@@ -212,8 +216,14 @@ int main(int argc, char* argv[])
     }
 
   // Initialize CGM
+#if CGM_MAJOR_VERSION >= 14
+  std::vector<CubitString> args(argv + 1, argv + argc);
+  AppUtil::instance()->startup(args);
+  CGMApp::instance()->startup(args);
+#else
   AppUtil::instance()->startup(argc, argv);
   CGMApp::instance()->startup(argc, argv);
+#endif
   FacetQueryEngine* fqe = FacetQueryEngine::instance();
 
   // Read the VTK dataset
