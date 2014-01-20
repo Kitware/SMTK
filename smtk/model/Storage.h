@@ -64,6 +64,8 @@ public:
   UUIDsToAttributeAssignments& attributeAssignments();
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
+  smtk::attribute::Manager* attributeManager() const;
+
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
   int arrangeEntity(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
@@ -131,9 +133,13 @@ public:
   InstanceEntity addInstance(const Cursor& instanceOf);
 
 protected:
+  friend class smtk::attribute::Manager;
+  bool setAttributeManager(smtk::attribute::Manager* mgr, bool reverse = true);
+
   shared_ptr<UUIDsToArrangements> m_arrangements;
   shared_ptr<UUIDsToTessellations> m_tessellations;
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
+  smtk::attribute::Manager* m_attributeManager;
 };
 
   } // model namespace

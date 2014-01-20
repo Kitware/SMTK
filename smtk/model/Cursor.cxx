@@ -256,9 +256,13 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   */
 bool Cursor::hasAttributes() const
 {
-  return this->m_storage->attributeAssignments().find(this->m_entity) ==
-    this->m_storage->attributeAssignments().end() ?
-    false : true;
+  UUIDsToAttributeAssignments::const_iterator it =
+    this->m_storage->attributeAssignments().find(this->m_entity);
+  if (it != this->m_storage->attributeAssignments().end())
+    {
+    return it->second.attributes().empty() ? false : true;
+    }
+  return false;
 }
 
 /**\brief Does the cursor have any attributes associated with it?
