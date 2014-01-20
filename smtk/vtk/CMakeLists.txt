@@ -1,15 +1,15 @@
 set(VTKLibSrcs
-  vtkSMTKModelMultiBlockSource.cxx
-  vtkSMTKModelRepresentation.cxx
-  vtkSMTKModelSource.cxx
-  vtkSMTKModelView.cxx
+  vtkModelMultiBlockSource.cxx
+  vtkModelRepresentation.cxx
+  vtkModelSource.cxx
+  vtkModelView.cxx
 )
 
 set(VTKLibHeaders
-  vtkSMTKModelMultiBlockSource.h
-  vtkSMTKModelRepresentation.h
-  vtkSMTKModelSource.h
-  vtkSMTKModelView.h
+  vtkModelMultiBlockSource.h
+  vtkModelRepresentation.h
+  vtkModelSource.h
+  vtkModelView.h
 )
 
 #install the headers

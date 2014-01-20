@@ -1,4 +1,4 @@
-#include "smtk/vtk/vtkSMTKModelRepresentation.h"
+#include "smtk/vtk/vtkModelRepresentation.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Entity.h"
@@ -25,13 +25,16 @@
 #include "vtkTransformFilter.h"
 #include "vtkViewTheme.h"
 
-vtkStandardNewMacro(vtkSMTKModelRepresentation);
-vtkCxxSetObjectMacro(vtkSMTKModelRepresentation,Actor,vtkActor);
-vtkCxxSetObjectMacro(vtkSMTKModelRepresentation,ApplyColors,vtkApplyColors);
-vtkCxxSetObjectMacro(vtkSMTKModelRepresentation,Mapper,vtkPolyDataMapper);
-vtkCxxSetObjectMacro(vtkSMTKModelRepresentation,Transform,vtkTransformFilter);
+namespace smtk {
+  namespace model {
 
-vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
+vtkStandardNewMacro(vtkModelRepresentation);
+vtkCxxSetObjectMacro(vtkModelRepresentation,Actor,vtkActor);
+vtkCxxSetObjectMacro(vtkModelRepresentation,ApplyColors,vtkApplyColors);
+vtkCxxSetObjectMacro(vtkModelRepresentation,Mapper,vtkPolyDataMapper);
+vtkCxxSetObjectMacro(vtkModelRepresentation,Transform,vtkTransformFilter);
+
+vtkModelRepresentation::vtkModelRepresentation()
 {
   this->Transform = NULL;
   this->ApplyColors = NULL;
@@ -65,7 +68,7 @@ vtkSMTKModelRepresentation::vtkSMTKModelRepresentation()
   this->ApplyViewTheme(theme.GetPointer());
 }
 
-vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation()
+vtkModelRepresentation::~vtkModelRepresentation()
 {
   this->SetApplyColors(NULL);
   this->SetTransform(NULL);
@@ -73,7 +76,7 @@ vtkSMTKModelRepresentation::~vtkSMTKModelRepresentation()
   this->SetActor(NULL);
 }
 
-void vtkSMTKModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
@@ -83,7 +86,7 @@ void vtkSMTKModelRepresentation::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Apply a theme to this representation.
-void vtkSMTKModelRepresentation::ApplyViewTheme(vtkViewTheme* theme)
+void vtkModelRepresentation::ApplyViewTheme(vtkViewTheme* theme)
 {
   this->Superclass::ApplyViewTheme(theme);
 
@@ -113,7 +116,7 @@ void vtkSMTKModelRepresentation::ApplyViewTheme(vtkViewTheme* theme)
 }
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKModelRepresentation::RequestData(
+int vtkModelRepresentation::RequestData(
   vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo),
   vtkInformationVector* vtkNotUsed(outInfo))
@@ -123,14 +126,14 @@ int vtkSMTKModelRepresentation::RequestData(
   return 1;
 }
 
-void vtkSMTKModelRepresentation::PrepareForRendering(vtkRenderView* view)
+void vtkModelRepresentation::PrepareForRendering(vtkRenderView* view)
 {
   this->Superclass::PrepareForRendering(view);
 
   this->Transform->SetTransform(view->GetTransform());
 }
 
-bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
+bool vtkModelRepresentation::AddToView(vtkView* view)
 {
   vtkRenderView* rview = vtkRenderView::SafeDownCast(view);
   if (!rview)
@@ -142,7 +145,7 @@ bool vtkSMTKModelRepresentation::AddToView(vtkView* view)
   return true;
 }
 
-bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
+bool vtkModelRepresentation::RemoveFromView(vtkView* view)
 {
   vtkRenderView* rview = vtkRenderView::SafeDownCast(view);
   if (!rview)
@@ -154,7 +157,7 @@ bool vtkSMTKModelRepresentation::RemoveFromView(vtkView* view)
   return true;
 }
 
-vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSelection* selection)
+vtkSelection* vtkModelRepresentation::ConvertSelection(vtkView* view, vtkSelection* selection)
 {
   (void)view;
   /*
@@ -251,3 +254,6 @@ vtkSelection* vtkSMTKModelRepresentation::ConvertSelection(vtkView* view, vtkSel
 
   return converted;
 }
+
+  } // namespace model
+} // namespace smtk
