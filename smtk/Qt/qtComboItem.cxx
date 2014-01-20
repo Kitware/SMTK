@@ -84,7 +84,6 @@ void qtComboItem::createWidget()
   QBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
 
-  int elementIdx = this->Internals->ElementIndex;
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
   QList<QString> discreteVals;
