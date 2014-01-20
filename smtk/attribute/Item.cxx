@@ -82,7 +82,26 @@ ItemPtr Item::pointer() const
     ValueItem *vitem = dynamic_cast<ValueItem *>(this->m_owningItem);
     if (vitem)
       {
-      return vitem->expressionReference(this->m_position);
+      if(vitem->numberOfChildrenItems() > 0)
+        {
+        const std::map<std::string, smtk::attribute::ItemPtr> childrenItems =
+          vitem->childrenItems();
+        std::map<std::string, smtk::attribute::ItemPtr>::const_iterator it =
+          childrenItems.find(this->name());
+        if (it != childrenItems.end())
+          {
+          return it->second;
+          }
+        }
+      else if(vitem->isExpression(this->m_position))
+        {
+        // assume that this is owned by an expression
+        return vitem->expressionReference(this->m_position);
+        }
+      else
+        {
+        std::cerr << "Cannot find owning item.\n";
+        }
       }
     }
   return ItemPtr();
