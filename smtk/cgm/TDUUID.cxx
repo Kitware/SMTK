@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-namespace smtk {
+namespace cgmsmtk {
   namespace cgm {
 
 UUIDToCGMRef TDUUID::s_reverseLookup;
@@ -140,4 +140,4 @@ void TDUUID::checkForCollision(ToolDataUser* entity, const smtk::util::UUID& uid
 }
 
   } // namespace cgm
-} //  smtk
+} // namespace cgmsmtk

@@ -203,7 +203,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
 
   # Now handle wrapping dependent libraries
   if (SMTK_BUILD_CGM)
-    set(smtk_cgm_headers ${cgmHeaders} ${vtkHeaders})
+    set(smtk_cgm_headers ${cgmsmtk_headers})
     sbk_wrap_library(cgmSMTK
       GENERATOR_ARGS --avoid-protected-hack
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -221,6 +221,12 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       DEPENDS SMTKCore
     )
 
+    configure_file(
+      "${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py"
+      "${SMTK_BINARY_DIR}/cgmsmtk.py"
+      @ONLY
+    )
+
     #if(SMTK_ENABLE_TESTING)
     #  add_subdirectory(cgm/PythonTesting)
     #  add_subdirectory(vtk/PythonTesting)
@@ -228,9 +234,9 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
 
     #todo we need to install this file in such a way that it can resolve
     #the location of shiboken, which is going to mean running fixup bundle
-    #on the mac, and than fixing up the smtk.py package script
+    #on the mac, and than fixing up the cgmsmtk.py package script
 
     install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-                  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk_cgm.py ${CMAKE_INSTALL_PREFIX}/python/smtk_cgm.py )" )
+                  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py ${CMAKE_INSTALL_PREFIX}/python/cgmsmtk.py )" )
   endif()
 endif()

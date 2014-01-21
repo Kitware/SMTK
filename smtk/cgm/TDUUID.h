@@ -16,7 +16,7 @@
 #  include <map>
 #endif // SMTK_HASH_STORAGE
 
-namespace smtk {
+namespace cgmsmtk {
   namespace cgm {
 
 #ifdef SMTK_HASH_STORAGE
@@ -51,6 +51,6 @@ protected:
 };
 
   } // namespace cgm
-} //  smtk
+} // namespace cgmsmtk
 
 #endif // __smtk_cgm_TDUUID_h

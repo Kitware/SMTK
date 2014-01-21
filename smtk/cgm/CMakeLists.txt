@@ -3,12 +3,14 @@ add_definitions(${CGM_DEFINES})
 
 set(CGMLibSrcs
   CAUUID.cxx
+  ExportSolid.cxx
   ImportSolid.cxx
   TDUUID.cxx
 )
 
 set(CGMLibHeaders
   CAUUID.h
+  ExportSolid.h
   ImportSolid.h
   TDUUID.h
 )

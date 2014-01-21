@@ -1,5 +1,5 @@
-#ifndef __smtk_cgm_ImportSolid_h
-#define __smtk_cgm_ImportSolid_h
+#ifndef __smtk_cgm_ExportSolid_h
+#define __smtk_cgm_ExportSolid_h
 
 #include "smtk/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
@@ -18,7 +18,7 @@ namespace cgmsmtk {
 /**\brief Load a solid model using CGM.
   *
   */
-class CGMSMTK_EXPORT ImportSolid
+class CGMSMTK_EXPORT ExportSolid
 {
 public:
   static smtk::util::UUID fromFileNameIntoStorage(
@@ -28,4 +28,4 @@ public:
   } // namespace cgm
 } // namespace cgmsmtk
 
-#endif // __smtk_cgm_ImportSolid_h
+#endif // __smtk_cgm_ExportSolid_h

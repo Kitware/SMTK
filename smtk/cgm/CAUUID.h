@@ -8,7 +8,7 @@
 #include "CubitAttrib.hpp"
 #include "smtk/util/UUID.h"
 
-namespace smtk {
+namespace cgmsmtk {
   namespace cgm {
 
 /// An extension of the CubitAttributeType enum
@@ -61,6 +61,6 @@ protected:
 };
 
   } // namespace cgm
-} // namespace smtk
+} // namespace cgmsmtk
 
 #endif // __smtk_cgm_CAUUID_h

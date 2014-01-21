@@ -1,13 +1,13 @@
 #BEGIN REMOVE ME FROM PACKAGE
 
-def __bootstrap_smtk_cgm__():
+def __bootstrap_cgmsmtk__():
   import sys, os
 
   shiboken_lib = "@SHIBOKEN_LIBRARY@"
   shiboken_path = os.path.dirname(shiboken_lib)
-  smtk_cgm_path = "@LIBRARY_OUTPUT_PATH@"
+  cgmsmtk_path = "@LIBRARY_OUTPUT_PATH@"
 
-  extra_paths = [shiboken_path, smtk_cgm_path]
+  extra_paths = [shiboken_path, cgmsmtk_path]
   for (path, dirs, files) in os.walk(shiboken_path, topdown=False):
     #walk shiboken path and find the python/site-packages sub folders
     #add this to sys path
@@ -16,7 +16,7 @@ def __bootstrap_smtk_cgm__():
       extra_paths = extra_paths + x
   sys.path = sys.path + extra_paths
 
-__bootstrap_smtk_cgm__()
+__bootstrap_cgmsmtk__()
 
 #END REMOVE ME FROM PACKAGE
 
@@ -55,14 +55,15 @@ def __import_shared_ptrs__():
 
 #import the modules information we need.
 #We are using _import__ since shiboken doesn't create proper python modules
-#We can't just import cgmSMTKPython.smtk_cgm.cgm as cgm, so instead
+#We can't just import cgmSMTKPython.cgmsmtk.cgm as cgm, so instead
 #we have to use _import__ so that we get a nice interface.
 
 import shiboken
+import smtk
 _temp = __import__('cgmSMTKPython', globals(), locals(), [], -1)
 __import_shared_ptrs__()
 
-cgm = _temp.smtk_cgm.cgm
+cgm = _temp.cgmsmtk.cgm
 
 import inspect
 
@@ -71,25 +72,25 @@ def _Debug( self, message ):
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.util.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
 
 def _Error( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.util.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
 
 def _Warn( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.util.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
 
-util.Logger.addDebug = _Debug
-util.Logger.addWarning = _Warn
-util.Logger.addError = _Error
+smtk.util.Logger.addDebug = _Debug
+smtk.util.Logger.addWarning = _Warn
+smtk.util.Logger.addError = _Error
 
 del _Debug
 del _Warn

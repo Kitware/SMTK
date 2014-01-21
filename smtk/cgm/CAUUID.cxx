@@ -8,7 +8,7 @@
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 
-namespace smtk {
+namespace cgmsmtk {
   namespace cgm {
 
 /**\brief Register the CAUUID attribute type with the attribute manager.
@@ -211,4 +211,4 @@ CubitAttrib* CAUUID::creator(RefEntity* entity, CubitSimpleAttrib* p_csa)
 #endif
 
   } // namespace cgm
-} // namespace smtk
+} // namespace cgmsmtk
