@@ -50,11 +50,12 @@ bool AttributeWriter::write(const smtk::attribute::Manager &manager,
 //----------------------------------------------------------------------------
 bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
                                     std::string &filecontents,
-                                    Logger &logger)
+                                    Logger &logger,
+                                    bool no_declaration)
 {
   logger.reset();
   XmlV1StringWriter theWriter(manager);
-  filecontents = theWriter.convertToString(logger);
+  filecontents = theWriter.convertToString(logger, no_declaration);
   return logger.hasErrors();
 }
 

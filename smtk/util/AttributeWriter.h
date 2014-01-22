@@ -50,7 +50,8 @@ namespace smtk
                  smtk::util::Logger &logger);
       bool writeContents(const smtk::attribute::Manager &manager,
                          std::string &filecontents,
-                         smtk::util::Logger &logger);
+                         smtk::util::Logger &logger,
+                         bool no_declaration = false);
     protected:
     private:
     };

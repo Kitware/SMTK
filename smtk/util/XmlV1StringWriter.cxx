@@ -224,7 +224,8 @@ XmlV1StringWriter::~XmlV1StringWriter()
 {
 }
 //----------------------------------------------------------------------------
-std::string XmlV1StringWriter::convertToString(Logger &logger)
+std::string XmlV1StringWriter::convertToString(Logger &logger,
+                                               bool no_declaration)
 {
   // Reset the message log
   this->m_logger.reset();
@@ -263,7 +264,12 @@ std::string XmlV1StringWriter::convertToString(Logger &logger)
   this->processViews();
   this->processModelInfo();
   std::stringstream oss;
-  this->m_doc.save(oss, "  ");
+  unsigned int flags = 0;
+  if (no_declaration)
+    {
+    flags = pugi::format_no_declaration;
+    }
+  this->m_doc.save(oss, "  ", flags);
   std::string result = oss.str();
   logger = this->m_logger;
   return result;
