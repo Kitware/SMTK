@@ -135,6 +135,15 @@ std::string Cursor::name() const
   return this->m_storage->name(this->m_entity);
 }
 
+/** Assign a name to an entity.
+  *
+  * This will override any existing name.
+  */
+void Cursor::setName(const std::string& n)
+{
+  this->setStringProperty("name", n);
+}
+
 /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
   *
   * Subclasses should not override this method. It is a convenience

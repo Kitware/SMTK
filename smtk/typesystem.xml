@@ -564,161 +564,6 @@
              becomes
              "%RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertex())"
          -->
-    <modify-function signature="addChain()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addChain(const smtk::model::EdgeUse&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addChain(const smtk::model::Chain&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addChain(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addLoop()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addLoop(const smtk::model::FaceUse&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addLoop(const smtk::model::Loop&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addLoop(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addShell()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addShell(const smtk::model::Volume&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addShell(const smtk::model::VolumeUse&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addShell(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="addVertex()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertex());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addEdge()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdge());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addFace()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFace());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addVolume()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolume());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="addVertexUse()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertexUse());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addVertexUse(const smtk::model::Vertex&amp;, int)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVertexUse(*%1, %2));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addEdgeUse()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdgeUse());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addEdgeUse(const smtk::model::Edge&amp;, int, smtk::model::Orientation)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addEdgeUse(*%1, %2, %3));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addFaceUse()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFaceUse());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addFaceUse(const smtk::model::Face&amp;, int, smtk::model::Orientation)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addFaceUse(*%1, %2, %3));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addVolumeUse()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolumeUse());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addVolumeUse(const smtk::model::Volume&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addVolumeUse(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="addGroup(int, const std::string&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addGroup(%1, %2));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="addModel(int, int, const std::string&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addModel(%1, %2, %3));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="addInstance()">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance());
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
-    <modify-function signature="addInstance(const smtk::model::Cursor&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE* result = new %RETURN_TYPE(%CPPSELF-&gt;get()-&gt;addInstance(*%1));
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
-      </inject-code>
-    </modify-function>
 
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
@@ -745,13 +590,6 @@
         std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt; _out;
         %CPPSELF->get()->references(_out);
         %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
-      </inject-code>
-    </modify-function>
-
-    <modify-function signature="isEntityAssociated(const smtk::model::Cursor&amp;)">
-      <inject-code class="target" position="beginning">
-        %RETURN_TYPE result = %CPPSELF-&gt;get()-&gt;isEntityAssociated(*%1);
-        %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE*](result);
       </inject-code>
     </modify-function>
   </value-type>
@@ -827,46 +665,50 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
-      <object-type name="CellEntity">
+      <value-type name="CellEntity">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Chain">
+      <value-type name="Chain">
         <include file-name="smtk/model/Chain.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Cursor">
+      <value-type name="Cursor">
         <include file-name="smtk/model/Cursor.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
       <enum-type name="DescriptivePhraseType">
         <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
       </enum-type>
 
-      <object-type name="Edge">
+      <object-type name="DescriptivePhrase">
+        <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
+      </object-type>
+
+      <value-type name="Edge">
         <include file-name="smtk/model/Edge.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="EdgeUse">
+      <value-type name="EdgeUse">
         <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Face">
+      <value-type name="Face">
         <include file-name="smtk/model/Face.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="FaceUse">
+      <value-type name="FaceUse">
         <include file-name="smtk/model/FaceUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="GroupEntity">
+      <value-type name="GroupEntity">
         <include file-name="smtk/model/GroupEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <add-function signature="members()" static="no"
@@ -879,19 +721,19 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-      </object-type>
+      </value-type>
 
-      <object-type name="InstanceEntity">
+      <value-type name="InstanceEntity">
         <include file-name="smtk/model/InstanceEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Loop">
+      <value-type name="Loop">
         <include file-name="smtk/model/Loop.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="ModelEntity">
+      <value-type name="ModelEntity">
         <include file-name="smtk/model/ModelEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
@@ -927,7 +769,7 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-      </object-type>
+      </value-type>
 
       <enum-type name="PropertyType">
         <include file-name="smtk/model/BRepModel.h" location="local"/>
@@ -1064,40 +906,40 @@
         </add-function>
       </object-type>
 
-      <object-type name="Shell">
+      <value-type name="Shell">
         <include file-name="smtk/model/Shell.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="ShellEntity">
+      <value-type name="ShellEntity">
         <include file-name="smtk/model/ShellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="UseEntity">
+      <value-type name="UseEntity">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Vertex">
+      <value-type name="Vertex">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="VertexUse">
+      <value-type name="VertexUse">
         <include file-name="smtk/model/VertexUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="Volume">
+      <value-type name="Volume">
         <include file-name="smtk/model/Volume.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
-      <object-type name="VolumeUse">
+      <value-type name="VolumeUse">
         <include file-name="smtk/model/VolumeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
-      </object-type>
+      </value-type>
 
       <object-type name="GridInfo">
         <include file-name="smtk/model/GridInfo.h" location="local" />

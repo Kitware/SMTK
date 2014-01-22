@@ -46,7 +46,7 @@ CAUUID::CAUUID(RefEntity* ref)
 CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
   : CubitAttrib(ref)
 {
-  if (sa.string_data_list().size() > 0)
+  if (!sa.string_data_list().empty())
     {
     this->m_entityId = smtk::util::UUID(
       std::string(sa.string_data_list().back().c_str()));
@@ -57,7 +57,7 @@ CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
 CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
   : CubitAttrib(ref)
 {
-  if (sa && sa->string_data_list()->size() > 0)
+  if (sa && sa->string_data_list() && sa->string_data_list()->size() != 0)
     {
     this->m_entityId = smtk::util::UUID(
       std::string(sa->string_data_list()->last_item()->c_str()));

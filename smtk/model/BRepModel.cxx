@@ -51,8 +51,8 @@ const UUIDsToEntities& BRepModel::topology() const
 
 /// Entity construction
 //@{
-/// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
-BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
+/// Return a currently-unused UUID (guaranteed not to collide if inserted immediately).
+smtk::util::UUID BRepModel::unusedUUID()
 {
   UUID actual;
   do
@@ -60,18 +60,20 @@ BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFl
     actual = this->m_uuidGenerator.random();
     }
   while (this->m_topology->find(actual) != this->m_topology->end());
+  return actual;
+}
+
+/// Insert a new cell of the specified \a dimension, returning an iterator with a new, unique UUID.
+BRepModel::iter_type BRepModel::insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim)
+{
+  UUID actual = this->unusedUUID();
   return this->setEntityOfTypeAndDimension(actual, entityFlags, dim);
 }
 
 /// Insert the specified cell, returning an iterator with a new, unique UUID.
 BRepModel::iter_type BRepModel::insertEntity(Entity& c)
 {
-  UUID actual;
-  do
-    {
-    actual = this->m_uuidGenerator.random();
-    }
-  while (this->m_topology->find(actual) != this->m_topology->end());
+  UUID actual = this->unusedUUID();
   return this->setEntity(actual, c);
 }
 

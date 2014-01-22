@@ -84,6 +84,7 @@ public:
   smtk::util::UUIDs entitiesMatchingFlags(BitFlags mask, bool exactMatch = true);
   smtk::util::UUIDs entitiesOfDimension(int dim);
 
+  smtk::util::UUID unusedUUID();
   iter_type insertEntityOfTypeAndDimension(BitFlags entityFlags, int dim);
   iter_type insertEntity(Entity& cell);
   iter_type setEntityOfTypeAndDimension(const smtk::util::UUID& uid, BitFlags entityFlags, int dim);

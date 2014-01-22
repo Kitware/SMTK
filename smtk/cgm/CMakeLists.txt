@@ -2,6 +2,7 @@ include_directories(${CGM_INCLUDE_DIRS})
 add_definitions(${CGM_DEFINES})
 
 set(CGMLibSrcs
+  Bridge.cxx
   CAUUID.cxx
   ExportSolid.cxx
   ImportSolid.cxx
@@ -9,6 +10,7 @@ set(CGMLibSrcs
 )
 
 set(CGMLibHeaders
+  Bridge.h
   CAUUID.h
   ExportSolid.h
   ImportSolid.h
