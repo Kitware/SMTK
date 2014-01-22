@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/model/Storage.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -459,6 +460,20 @@ smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
     uDef = def;
     }
   return smtk::attribute::ConstDefinitionPtr();
+}
+//----------------------------------------------------------------------------
+void Manager::setRefStorage(smtk::model::StoragePtr refstorage)
+{
+  smtk::model::StoragePtr curStorage = this->m_refStorage.lock();
+  if (curStorage && curStorage != refstorage)
+    {
+    curStorage->setAttributeManager(NULL, false);
+    }
+  this->m_refStorage = refstorage;
+  if (refstorage && this->m_refStorage.lock()->attributeManager() != this)
+    {
+    refstorage->setAttributeManager(this, false);
+    }
 }
 //----------------------------------------------------------------------------
 void

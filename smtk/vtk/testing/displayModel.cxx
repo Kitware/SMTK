@@ -1,8 +1,8 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
-#include "smtk/vtk/vtkSMTKModelRepresentation.h"
-#include "smtk/vtk/vtkSMTKModelSource.h"
-#include "smtk/vtk/vtkSMTKModelView.h"
+#include "smtk/vtk/vtkModelRepresentation.h"
+#include "smtk/vtk/vtkModelSource.h"
+#include "smtk/vtk/vtkModelView.h"
 
 #include "vtkAnnotationLink.h"
 #include "vtkCommand.h"
@@ -19,23 +19,48 @@
 #include "vtkSelectionNode.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
+#include "vtkTextProperty.h"
+#include "vtkViewTheme.h"
 
 using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
 
+void applyPublicationTheme(vtkModelView* view)
+{
+  vtkNew<vtkViewTheme> theme;
+  theme->SetPointSize(7);
+  theme->SetLineWidth(2);
+  theme->SetBackgroundColor(1., 1., 1.);
+  theme->SetBackgroundColor2(1., 1., 1.);
+  theme->GetPointTextProperty()->SetColor(0, 0, 0);
+  theme->GetCellTextProperty()->SetColor(.7, .7, 1);
+  theme->SetPointColor(0.5, 0.5, 0.5);
+  theme->SetPointHueRange(0.667, 0);
+  theme->SetCellColor(0.85, 0.85, 0.85);
+  theme->SetCellOpacity(1.);
+  theme->SetCellHueRange(0.667, 0);
+  theme->SetCellAlphaRange(1, 1);
+  theme->SetCellValueRange(0.5, 1);
+  theme->SetCellSaturationRange(0.5, 1);
+  theme->SetOutlineColor(0.8, 0.4, 0.4);
+  theme->SetSelectedPointColor(0.8, 0.6, 0.4);
+  theme->SetSelectedCellColor(0.8, 0.6, 0.6);
+  view->ApplyViewTheme(theme.GetPointer());
+}
+
 // An observer that prints out selected model faces and
 // switches interaction modes when the "m" key is pressed.
 // (By default, mouse motion moves the camera but this
 //  is toggled to selecting model faces with the "m" key.)
-class vtkSMTKModelSelectionHelper : public vtkCommand
+class vtkModelSelectionHelper : public vtkCommand
 {
 public:
-  static vtkSMTKModelSelectionHelper* New() { return new vtkSMTKModelSelectionHelper; }
-  vtkSMTKModelSelectionHelper()
+  static vtkModelSelectionHelper* New() { return new vtkModelSelectionHelper; }
+  vtkModelSelectionHelper()
     {
     }
-  ~vtkSMTKModelSelectionHelper()
+  ~vtkModelSelectionHelper()
     {
     }
   void PrintSelectionMask(int mask)
@@ -167,7 +192,7 @@ public:
     this->RenderWindow = rw;
     }
 
-  void SetRepresentation(vtkSMTKModelRepresentation* rep)
+  void SetRepresentation(vtkModelRepresentation* rep)
     {
     if (this->Representation == rep)
       {
@@ -202,7 +227,7 @@ protected:
   vtkSmartPointer<vtkRenderWindowInteractor> CameraInteractor;
   vtkSmartPointer<vtkRenderWindowInteractor> SelectionInteractor;
   vtkSmartPointer<vtkRenderWindow> RenderWindow;
-  vtkSmartPointer<vtkSMTKModelRepresentation> Representation;
+  vtkSmartPointer<vtkModelRepresentation> Representation;
 };
 
 int main(int argc, char* argv[])
@@ -237,13 +262,13 @@ int main(int argc, char* argv[])
   int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (! status)
     {
-    vtkNew<vtkSMTKModelView> view;
-    vtkNew<vtkSMTKModelSource> src;
-    vtkNew<vtkSMTKModelRepresentation> rep;
-    vtkSMTKModelSelectionHelper* hlp = NULL;
+    vtkNew<vtkModelView> view;
+    vtkNew<vtkModelSource> src;
+    vtkNew<vtkModelRepresentation> rep;
+    vtkModelSelectionHelper* hlp = NULL;
     if (debug)
       {
-      hlp = vtkSMTKModelSelectionHelper::New();
+      hlp = vtkModelSelectionHelper::New();
       }
     src->SetModel(sm);
     rep->SetModel(sm);
@@ -281,6 +306,7 @@ int main(int argc, char* argv[])
 
     if (debug)
       {
+      applyPublicationTheme(view.GetPointer());
       view->GetInteractor()->Start();
       hlp->GetSelectionInteractor()->RemoveAllObservers();
       hlp->GetCameraInteractor()->RemoveAllObservers();

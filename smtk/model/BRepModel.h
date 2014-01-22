@@ -24,10 +24,13 @@ namespace smtk {
   namespace model {
 
 #ifdef SMTK_HASH_STORAGE
+/// Store information mapping IDs to Entity records. This is the primary storage for SMTK models.
 typedef google::sparse_hash_map<smtk::util::UUID,Entity> UUIDsToEntities;
 #else
+/// Store information mapping IDs to Entity records. This is the primary storage for SMTK models.
 typedef std::map<smtk::util::UUID,Entity> UUIDsToEntities;
 #endif
+/// An abbreviation for an iterator into primary model storage.
 typedef UUIDsToEntities::iterator UUIDWithEntity;
 
 /// Primitive storage types for model properties

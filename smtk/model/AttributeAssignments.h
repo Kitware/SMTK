@@ -3,12 +3,22 @@
 
 #include "smtk/util/UUID.h"
 
-#include "sparsehash/sparse_hash_map"
-
+#include "smtk/options.h" // for SMTK_HASH_STORAGE
+#ifdef SMTK_HASH_STORAGE
+#  include "sparsehash/sparse_hash_map"
+#else
+#  include <map>
+#endif
 #include <set>
 
 namespace smtk {
   namespace model {
+
+/// A type for attribute identifiers.
+typedef unsigned long AttributeId;
+
+/// A set of attribute identifiers.
+typedef std::set<AttributeId> AttributeSet;
 
 /**\brief Store a list of attributes assigned to solid model entities.
   *
@@ -16,9 +26,6 @@ namespace smtk {
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  typedef int AttributeId;
-  typedef std::set<AttributeId> AttributeSet;
-
   bool attachAttribute(int attribId);
   bool detachAttribute(int attribId);
   bool isAssociated(int attribId) const;
@@ -30,10 +37,17 @@ protected:
   AttributeSet m_attributes; // IDs of attributes assigned to an entity.
 };
 
+#ifdef SMTK_HASH_STORAGE
 /// Each Storage entity's UUID is mapped to a set of assigned attribute IDs.
 typedef google::sparse_hash_map<smtk::util::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
 typedef google::sparse_hash_map<smtk::util::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;
+#else
+/// Each Storage entity's UUID is mapped to a set of assigned attribute IDs.
+typedef std::map<smtk::util::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
+/// An iterator referencing a (UUID,AttributeAssignments)-tuple.
+typedef std::map<smtk::util::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;
+#endif
 
   } // model namespace
 } // smtk namespace

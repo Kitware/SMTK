@@ -12,14 +12,14 @@ PropertyValuePhrase::PropertyValuePhrase()
 {
 }
 
-PropertyValuePhrase::Ptr PropertyValuePhrase::setup(const std::string& propName, PropertyListPhrase::Ptr parnt)
+PropertyValuePhrase::Ptr PropertyValuePhrase::setup(
+  PropertyType propType, const std::string& propName, DescriptivePhrase::Ptr parnt)
 {
   this->DescriptivePhrase::setup(
-    PropertyValuePhrase::propertyToPhraseType(
-      parnt->relatedPropertyType()),
+    PropertyValuePhrase::propertyToPhraseType(propType),
     parnt);
+  this->m_propertyType = propType;
   this->m_propertyName = propName;
-  this->m_plist = parnt;
   return static_pointer_cast<SelfType>(shared_from_this());
 }
 
@@ -31,10 +31,13 @@ std::string PropertyValuePhrase::title()
 std::string PropertyValuePhrase::subtitle()
 {
   std::ostringstream message;
-  if (this->m_plist)
+  DescriptivePhrase::Ptr p = this->parent();
+  while (p && !p->relatedEntity().isValid())
+    p = p->parent();
+  if (p)
     {
-    Cursor ent = this->m_plist->relatedEntity();
-    switch (this->m_plist->relatedPropertyType())
+    Cursor ent = p->relatedEntity();
+    switch (this->m_propertyType)
       {
     case FLOAT_PROPERTY:
       if (ent.hasFloatProperty(this->m_propertyName))
@@ -103,12 +106,16 @@ std::string PropertyValuePhrase::subtitle()
 
 smtk::util::UUID PropertyValuePhrase::relatedEntityId() const
 {
-  return this->m_plist->relatedEntityId();
+  return this->relatedEntity().entity();
 }
 
 Cursor PropertyValuePhrase::relatedEntity() const
 {
-  return this->m_plist->relatedEntity();
+  DescriptivePhrase::Ptr p = this->parent();
+  Cursor result;
+  while (p && !(result = p->relatedEntity()).isValid())
+    p = p->parent();
+  return result;
 }
 
 std::string PropertyValuePhrase::relatedPropertyName() const
@@ -118,62 +125,7 @@ std::string PropertyValuePhrase::relatedPropertyName() const
 
 PropertyType PropertyValuePhrase::relatedPropertyType() const
 {
-  return this->m_plist->relatedPropertyType();
-}
-
-bool PropertyValuePhrase::buildSubphrasesInternal()
-{
-  /*
-  switch (this->m_propertyType)
-    {
-  case FLOAT_PROPERTY:
-    if (this->m_entity.hasFloatProperty(this->m_propertyName))
-      {
-      FloatList const& prop(ent.floatProperty(this->m_propertyName()));
-      for (
-        FloatList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case STRING_PROPERTY:
-    if (this->m_entity.hasStringProperty(this->m_propertyName))
-      {
-      StringList const& prop(ent.stringProperty(this->m_propertyName()));
-      for (
-        StringList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case INTEGER_PROPERTY:
-    if (this->m_entity.hasIntegerProperty(this->m_propertyName))
-      {
-      IntegerList const& prop(ent.integerProperty(this->m_propertyName()));
-      for (
-        IntegerList::size_type i = 0;
-        i < prop.size();
-        ++i)
-        {
-        this->m_subphrases.push_back(
-          new PropertyValueEntry(i, this));
-        }
-      }
-    break;
-  case INVALID_PROPERTY:
-  default:
-    break;
-    }
-    */
-  return true;
+  return this->m_propertyType;
 }
 
 DescriptivePhraseType PropertyValuePhrase::propertyToPhraseType(PropertyType p)

@@ -5,12 +5,18 @@
 #include "vtkPolyDataAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
-class VTKSMTK_EXPORT vtkSMTKModelSource : public vtkPolyDataAlgorithm
+namespace smtk {
+  namespace model {
+
+/**\brief A VTK filter that provides polydata for an SMTK storage instance.
+  *
+  */
+class VTKSMTK_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
 {
 public:
-  static vtkSMTKModelSource* New();
+  static vtkModelSource* New();
   virtual void PrintSelf(ostream& os, vtkIndent indent);
-  vtkTypeMacro(vtkSMTKModelSource,vtkPolyDataAlgorithm);
+  vtkTypeMacro(vtkModelSource,vtkPolyDataAlgorithm);
 
   vtkGetObjectMacro(CachedOutput,vtkPolyData);
 
@@ -20,8 +26,8 @@ public:
   void Dirty();
 
 protected:
-  vtkSMTKModelSource();
-  virtual ~vtkSMTKModelSource();
+  vtkModelSource();
+  virtual ~vtkModelSource();
 
   void GenerateRepresentationFromModel(
     vtkPolyData* poly, smtk::model::StoragePtr model);
@@ -41,8 +47,11 @@ protected:
   vtkPolyData* CachedOutput;
 
 private:
-  vtkSMTKModelSource(const vtkSMTKModelSource&); // Not implemented.
-  void operator = (const vtkSMTKModelSource&); // Not implemented.
+  vtkModelSource(const vtkModelSource&); // Not implemented.
+  void operator = (const vtkModelSource&); // Not implemented.
 };
+
+  } // namespace model
+} // namespace smtk
 
 #endif // __smtk_vtk_ModelSource_h

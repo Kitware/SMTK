@@ -12,6 +12,10 @@
 
 #include "stdio.h"
 
+#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "CubitCompat.hpp"
 #include "GMem.hpp"
 #include "GeometryQueryTool.hpp"
@@ -40,6 +44,8 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
+#include "smtk/cgm/TDUUID.h"
+#include "smtk/cgm/CAUUID.h"
 #include "cJSON.h"
 
 #include <map>
@@ -69,13 +75,13 @@ int AddEntityToBody(RefEntity* ent, smtk::model::StoragePtr storage)
   DLIList<RefEntity*> children;
   ent->get_child_ref_entities(children);
   int nc = children.size();
-  //cout << "        has " << nc << " child entities:\n";
+  //std::cout << "        has " << nc << " child entities:\n";
   for (int i = 0; i < nc; ++i)
     {
     RefEntity* child = children.get_and_step();
-    //cout << "        ++" << child->class_name() << "\n";
+    //std::cout << "        ++" << child->class_name() << "\n";
     AddEntityToBody(child, storage);
-    //cout << "        --" << child->class_name() << "\n";
+    //std::cout << "        --" << child->class_name() << "\n";
     }
 
   return 0;
@@ -89,12 +95,13 @@ void AddEntitiesToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
     E* entry = entities.get_and_step();
-    smtk::model::UUIDWithEntity cell = storage->insertCellOfDimension(entry->dimension());
+    smtk::cgm::TDUUID* refId = smtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::model::UUIDWithEntity cell = storage->setCellOfDimension(refId->entityId(), entry->dimension());
     int cgmId = TDUniqueId::get_unique_id(entry);
     // Now, if owningBodyId is non-NULL (because the entity is a "free" member
     // of the body (i.e., not attached to some higher-dimensional entity), then
@@ -114,9 +121,9 @@ void AddEntitiesToBody(
       bodyInclusions[0].details().push_back(
         storage->findEntity(owningBodyId)->findOrAppendRelation(
           cell->first));
-      //cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
+      //std::cout << i << "  " << cgmId << "  " << cell->first << " in body " << owningBodyId << "\n";
       }
-    //cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
+    //std::cout << "        " << i << "  " << cgmId << "  " << cell->first << "\n";
     translation[cgmId] = cell->first;
     // Now, since AddEntitiesToBody is always called with entities
     // of ascending dimension, add the children of this entity to
@@ -142,7 +149,7 @@ void AddArrangementsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
+  std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     E* shell = entities.get_and_step();
@@ -160,10 +167,10 @@ void AddArrangementsToBody(
     smtk::model::Entity* vcell = storage->findEntity(smtkId);
     if (!vcell)
       {
-      cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
+      std::cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
       continue;
       }
-    //cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
+    //std::cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
 
     // Now build a list of offsets of UUIDs in the cell's relations array:
     std::map<smtk::util::UUID,int> offsets;
@@ -218,7 +225,7 @@ void AddArrangementsToBody(
           smtk::model::POSITIVE);
       shellRelations[j] = smtkFaceUseId;
       /*
-      cout
+      std::cout
         << "          " << j << "  " << faceId
         << "  face " << smtkFaceId
         << " dir " << (se->get_sense() == CUBIT_FORWARD ? "+" : "-")
@@ -241,7 +248,7 @@ void AddArrangementsToBody(
     aid = storage->arrangeEntity(shellSMTKId, smtk::model::HAS_USE,
       smtk::model::Arrangement::ShellHasUseWithIndexRange(0, ns));
     (void)aid; // keep aid around for debugging
-    //cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
+    //std::cout << "           +++ as shell " << aid << " of cell " << smtkId << "\n";
     }
 }
 
@@ -252,7 +259,7 @@ void AddTessellationsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -340,7 +347,7 @@ void AddTessellationsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
+  //std::cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -494,7 +501,7 @@ CubitStatus ConvertModel(
   bool singleModel)
 {
   int ni = imported.size();
-  //cout << "Imported " << ni << " entities:\n";
+  //std::cout << "Imported " << ni << " entities:\n";
   for (int i = 0; i < ni; ++i)
     {
     RefEntity* ent = imported.get_and_step();
@@ -511,37 +518,50 @@ CubitStatus ConvertModel(
       int cgmBodyId = TDUniqueId::get_unique_id(ent);
       smtk::model::ModelEntity smtkBody = (*bodies.rbegin())->addModel();
       translation[cgmBodyId] = smtkBody.entity();
-      //cout << "  Body " << ent << "\n";
+      //std::cout << "  Body " << ent << "\n";
       ImportBody(dynamic_cast<Body*>(ent), *bodies.rbegin(), translation);
       }
     else
       {
-      //cout << "  Other: " << typeid(*ent).name() << "\n";
+      //std::cout << "  Other: " << typeid(*ent).name() << "\n";
       }
     }
-  //cout << "\n";
+  //std::cout << "\n";
   return CUBIT_SUCCESS;
 }
 
 // main program - initialize, then send to proper function
 int main (int argc, char **argv)
 {
+#if CGM_MAJOR_VERSION >= 14
+  std::vector<CubitString> args(argv + 1, argv + argc);
+  CGMApp::instance()->startup(args);
+#else
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
-  CubitStatus s = InitCGMA::initialize_cgma( ENGINE );
+#endif
+  smtk::cgm::CAUUID::registerWithAttributeManager();
+  const char* engine = ENGINE;
+  if (argc > 2)
+    { // Choose the engine to use based on the file type.
+    if (!strcmp(argv[2], "FACET_TYPE")) engine = "FACET";
+    else if (!strcmp(argv[2], "ACIS_SAT")) engine = "ACIS";
+    }
+  CubitStatus s = InitCGMA::initialize_cgma(engine);
   if (CUBIT_SUCCESS != s) return 1;
 
   if (argc < 2)
     {
     std::cerr
       << "Usage:\n"
-      << "  " << argv[0] << " filename [filetype ['1' [result]]]\n"
+      << "  " << argv[0] << " filename [filetype ['1' [result [cgm_output]]]]\n"
       << "where\n"
       << "  filename   - is the path to a solid model that CGM can import\n"
       << "  filetype   - is a solid model filetype to help CGM.\n"
       << "  1          - is an optional argument specifying that a single\n"
       << "               model file should be written instead of one per body.\n"
       << "  result     - is an output filename. The default is \"smtkModel.json\"\n"
+      << "  cgm_output - is an output filename. The default is \"smtkModel.brep\"\n"
       << "\n"
       << "The default filetype is \"OCC\"\n"
       << "Valid values for filetype:"
@@ -625,9 +645,32 @@ int main (int argc, char **argv)
       }
     }
 
+  // Save as a CGM file of the same type as the input (if output filename spec)
+  if (argc > 5)
+    {
+    int num_ents_exported;
+    CubitString cubit_version;
+    stat = CubitCompat_export_solid_model(
+      imported,
+      argv[5],
+      argv[2],
+      num_ents_exported,
+      cubit_version,
+      /* logfile_name */ NULL);
+    if (stat != CUBIT_SUCCESS)
+      {
+      std::cerr << "Failed to export CGM model, status " << stat << "\n";
+      return -1;
+      }
+    else
+      {
+      std::cout << "Exported " << num_ents_exported << " entities, CubitVersion " << cubit_version << "\n";
+      }
+    }
+
   int ret_val = ( CubitMessage::instance()->error_count() );
   if ( ret_val != 0 )
-    cerr << "Errors found during session.\n";
+    std::cerr << "Errors found during session.\n";
   else
     ret_val = 0;
 

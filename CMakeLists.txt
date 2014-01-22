@@ -48,8 +48,9 @@ endif()
 # Boost Related Settings
 ################################################################################
 
+# Boost is required for boost::uuids::uuid and, depending
+# on the platform, for boost::shared_ptr.
 find_package(Boost 1.50.0 REQUIRED)
-include_directories("${Boost_INCLUDE_DIRS}")
 
 ################################################################################
 # Qt Related Settings
@@ -122,13 +123,6 @@ endif()
 # Determine shared_ptr
 ################################################################################
 determineSharedPtrType(POINTER_NAMESPACE POINTER_TYPE_HEADERS)
-
-#if the shared_ptr isn't able to be
-#found in c++ or c++ tr1 we include boost
-if(${POINTER_NAMESPACE_BOOST_TRUE})
-  find_package(Boost)
-  include_directories( ${Boost_INCLUDE_DIR} )
-endif()
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/SharedPtr.h.in
@@ -203,12 +197,12 @@ add_subdirectory(doc)
 
 #add this directory so we can include files like: <smtk/internal/Test.h>
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${SPARSEHASH_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON
-  ${VTK_INCLUDE_DIRS}
-  )
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${SPARSEHASH_INCLUDE_DIRS}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON"
+  "${Boost_INCLUDE_DIRS}"
+)
 
 ################################################################################
 # Finally build smtk

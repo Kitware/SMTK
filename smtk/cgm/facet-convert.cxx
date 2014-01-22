@@ -10,6 +10,10 @@
 
 #include "stdio.h"
 
+#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "CubitCompat.hpp"
 #include "FacetQueryEngine.hpp"
 #include "GMem.hpp"
@@ -141,7 +145,7 @@ void AddArrangementsToBody(
   std::map<int,smtk::util::UUID>& translation)
 {
   int ne = entities.size();
-  cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
+  std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
   for (int i = 0; i < ne; ++i)
     {
     E* shell = entities.get_and_step();
@@ -159,7 +163,7 @@ void AddArrangementsToBody(
     smtk::model::Entity* vcell = storage->findEntity(smtkId);
     if (!vcell)
       {
-      cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
+      std::cerr << "Shell for unknown cell TDUniqueId " << cgmId << " UUID " << smtkId << ". Skipping.\n";
       continue;
       }
     //cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
@@ -532,8 +536,13 @@ FacetFileFormat fileFormatFromString(const std::string& txt)
 // main program - initialize, then send to proper function
 int main (int argc, char **argv)
 {
+#if CGM_MAJOR_VERSION >= 14
+  std::vector<CubitString> args(argv + 1, argv + argc);
+  CGMApp::instance()->startup(args);
+#else
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
+#endif
   CubitStatus s = InitCGMA::initialize_cgma( ENGINE );
   if (CUBIT_SUCCESS != s) return 1;
 
@@ -624,7 +633,7 @@ int main (int argc, char **argv)
 
   int ret_val = ( CubitMessage::instance()->error_count() );
   if ( ret_val != 0 )
-    cerr << "Errors found during session.\n";
+    std::cerr << "Errors found during session.\n";
   else
     ret_val = 0;
 

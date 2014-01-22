@@ -135,6 +135,11 @@ int main()
       std::cout << "Should not have associated entities.\n";
       status++;
       }
+    if ( att->associatedModelEntityIds().size() !=0 )
+      {
+      std::cout << "Should not have associated entity IDs.\n";
+      status++;
+      }
     if (att->appliesToBoundaryNodes())
       {
       std::cout << "Should not be applies to boundry node.\n";

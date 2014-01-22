@@ -64,6 +64,8 @@ public:
   UUIDsToAttributeAssignments& attributeAssignments();
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
+  smtk::attribute::Manager* attributeManager() const;
+
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
 
   int arrangeEntity(const smtk::util::UUID& cellId, ArrangementKind, const Arrangement& arr, int index = -1);
@@ -93,6 +95,8 @@ public:
   bool findOrAddUseToShell(const smtk::util::UUID& shell, const smtk::util::UUID& use);
 
   bool findOrAddInclusionToCell(const smtk::util::UUID& cell, const smtk::util::UUID& inclusion);
+
+  bool findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent);
 
   bool hasAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
@@ -131,9 +135,13 @@ public:
   InstanceEntity addInstance(const Cursor& instanceOf);
 
 protected:
+  friend class smtk::attribute::Manager;
+  bool setAttributeManager(smtk::attribute::Manager* mgr, bool reverse = true);
+
   shared_ptr<UUIDsToArrangements> m_arrangements;
   shared_ptr<UUIDsToTessellations> m_tessellations;
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
+  smtk::attribute::Manager* m_attributeManager;
 };
 
   } // model namespace

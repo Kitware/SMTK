@@ -1,4 +1,5 @@
 #include "smtk/model/DescriptivePhrase.h"
+#include "smtk/model/SubphraseGenerator.h"
 
 namespace smtk {
   namespace model {
@@ -13,6 +14,12 @@ DescriptivePhrasePtr DescriptivePhrase::setup(DescriptivePhraseType ptype, Ptr p
   this->m_parent = parnt;
   this->m_type = ptype;
   this->m_subphrasesBuilt = false;
+  return shared_from_this();
+}
+
+DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delegate)
+{
+  this->m_delegate = delegate;
   return shared_from_this();
 }
 
@@ -35,12 +42,28 @@ int DescriptivePhrase::argFindChild(DescriptivePhrase* child) const
   return -1;
 }
 
+/// Find the subphrase generator to use. It may be held by a parent phrase.
+SubphraseGeneratorPtr DescriptivePhrase::findDelegate()
+{
+  DescriptivePhrasePtr phr;
+  for (
+    phr = shared_from_this();
+    phr && !phr->m_delegate;
+    phr = phr->parent())
+    /* do nothing */ ;
+  return phr ? phr->m_delegate : SubphraseGeneratorPtr();
+}
+
+/// Build (if required) the cached subphrases of this phrase.
 void DescriptivePhrase::buildSubphrases()
 {
   if (!this->m_subphrasesBuilt)
     {
     this->m_subphrasesBuilt = true;
-    this->buildSubphrasesInternal();
+    SubphraseGeneratorPtr delegate = this->findDelegate();
+    if (delegate)
+      this->m_subphrases =
+        delegate->subphrases(shared_from_this());
     }
 }
 

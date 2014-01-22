@@ -1,4 +1,4 @@
-#include "smtk/vtk/vtkSMTKModelSource.h"
+#include "smtk/vtk/vtkModelSource.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
@@ -19,21 +19,24 @@
 #include "vtkRenderView.h"
 #include "vtkStringArray.h"
 
-vtkStandardNewMacro(vtkSMTKModelSource);
-vtkCxxSetObjectMacro(vtkSMTKModelSource,CachedOutput,vtkPolyData);
+namespace smtk {
+  namespace model {
 
-vtkSMTKModelSource::vtkSMTKModelSource()
+vtkStandardNewMacro(vtkModelSource);
+vtkCxxSetObjectMacro(vtkModelSource,CachedOutput,vtkPolyData);
+
+vtkModelSource::vtkModelSource()
 {
   this->SetNumberOfInputPorts(0);
   this->CachedOutput = NULL;
 }
 
-vtkSMTKModelSource::~vtkSMTKModelSource()
+vtkModelSource::~vtkModelSource()
 {
   this->SetCachedOutput(NULL);
 }
 
-void vtkSMTKModelSource::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
@@ -42,7 +45,7 @@ void vtkSMTKModelSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkSMTKModelSource::SetModel(smtk::model::StoragePtr model)
+void vtkModelSource::SetModel(smtk::model::StoragePtr model)
 {
   if (this->Model == model)
     {
@@ -53,13 +56,13 @@ void vtkSMTKModelSource::SetModel(smtk::model::StoragePtr model)
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::StoragePtr vtkSMTKModelSource::GetModel()
+smtk::model::StoragePtr vtkModelSource::GetModel()
 {
   return this->Model;
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
-void vtkSMTKModelSource::Dirty()
+void vtkModelSource::Dirty()
 {
   // This both clears the output and marks this filter
   // as modified so that RequestData() will run the next
@@ -139,7 +142,7 @@ void AddEntityTessToPolyData(
 }
 
 /// Do the actual work of grabbing primitives from the model.
-void vtkSMTKModelSource::GenerateRepresentationFromModel(
+void vtkModelSource::GenerateRepresentationFromModel(
   vtkPolyData* pd, smtk::model::StoragePtr model)
 {
   vtkNew<vtkPoints> pts;
@@ -218,7 +221,7 @@ void vtkSMTKModelSource::GenerateRepresentationFromModel(
 }
 
 /*
-int vtkSMTKModelSource::FillInputPortInformation(
+int vtkModelSource::FillInputPortInformation(
   int port, vtkInformation* info)
 {
   if (port < 2)
@@ -228,7 +231,7 @@ int vtkSMTKModelSource::FillInputPortInformation(
   return 1;
 }
 
-int vtkSMTKModelSource::FillOutputPortInformation(
+int vtkModelSource::FillOutputPortInformation(
   int vtkNotUsed(port), vtkInformation* info)
 {
   info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkPolyData");
@@ -237,7 +240,7 @@ int vtkSMTKModelSource::FillOutputPortInformation(
 */
 
 /// Generate polydata from an smtk::model with tessellation information.
-int vtkSMTKModelSource::RequestData(
+int vtkModelSource::RequestData(
   vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inInfo),
   vtkInformationVector* outInfo)
@@ -264,3 +267,6 @@ int vtkSMTKModelSource::RequestData(
   output->ShallowCopy(this->CachedOutput);
   return 1;
 }
+
+  } // namespace model
+} // namespace smtk

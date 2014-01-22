@@ -123,6 +123,34 @@ if (SMTK_BUILD_CGM)
   add_subdirectory(cgm)
   smtk_source_group(cgm)
 
+  get_directory_property(CGMLibSrcs DIRECTORY cgm DEFINITION CGMLibSrcs)
+  smtk_prepend_string("cgm" CGMLibSrcs ${CGMLibSrcs})
+  get_directory_property(CGMLibHeaders DIRECTORY cgm DEFINITION CGMLibHeaders)
+  smtk_prepend_string("cgm" CGMLibHeaders ${CGMLibHeaders})
+
+  source_group("cgm_Source" FILES ${CGMLibSrcs} ${CGMLibUIs})
+  source_group("cgm_Header" FILES ${CGMLibHeaders})
+
+  set(cgmsmtk_headers ${CGMLibHeaders})
+  set(cgmsmtk_srcs ${CGMLibSrcs})
+
+  add_library(cgmSMTK ${cgmsmtk_srcs})
+
+  #set cgmSMTK to publicly link to SMTKCore and CGM
+  target_link_libraries(cgmSMTK
+    LINK_PUBLIC
+      SMTKCore
+    LINK_PRIVATE
+      ${CGM_LIBRARIES}
+    )
+  smtk_export_header(cgmSMTK cgmSMTKExports.h)
+
+  # Add compile definitions and include directories
+  set_property(TARGET cgmSMTK APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
+  set_property(TARGET cgmSMTK APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
+
+  #install the library and exports the library when used from a build tree
+  smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 endif(SMTK_BUILD_CGM)
 
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)

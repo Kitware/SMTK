@@ -1,14 +1,17 @@
-#include "smtk/vtk/vtkSMTKModelView.h"
+#include "smtk/vtk/vtkModelView.h"
 
 #include "vtkObjectFactory.h"
 
-vtkStandardNewMacro(vtkSMTKModelView);
+namespace smtk {
+  namespace model {
 
-vtkSMTKModelView::vtkSMTKModelView()
+vtkStandardNewMacro(vtkModelView);
+
+vtkModelView::vtkModelView()
 {
 }
 
-vtkSMTKModelView::~vtkSMTKModelView()
+vtkModelView::~vtkModelView()
 {
   // Even though the base class will call this again, we must
   // call RemoveAllRepresentations() now.
@@ -18,7 +21,10 @@ vtkSMTKModelView::~vtkSMTKModelView()
   this->RemoveAllRepresentations();
 }
 
-void vtkSMTKModelView::PrintSelf(ostream& os, vtkIndent indent)
+void vtkModelView::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
+
+  } // namespace model
+} // namespace smtk

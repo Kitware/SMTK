@@ -52,21 +52,25 @@ std::string EntityListPhrase::subtitle()
   return std::string();
 }
 
-bool EntityListPhrase::buildSubphrasesInternal()
+/// The list of entities to be presented.
+CursorArray EntityListPhrase::relatedEntities() const
 {
-  this->m_commonFlags = INVALID;
-  this->m_unionFlags = 0;
-  for (
-    CursorArray::iterator it = this->m_entities.begin();
-    it != this->m_entities.end();
-    ++it)
-    {
-    this->m_subphrases.push_back(
-      EntityPhrase::create()->setup(*it, shared_from_this()));
-    this->m_commonFlags &= it->entityFlags();
-    this->m_unionFlags |= it->entityFlags();
-    }
-  return true;
+  return this->m_entities;
+}
+
+/**\brief Inform the descriptor what bits in entityFlags() are set across the list.
+  *
+  * The \a commonFlags argument is the logical-AND of all entityFlags()
+  * of all entities in the list. The \a unionFlags argument is the
+  * logical-OR of all entityFlags().
+  *
+  * These are used by EntityListPhrase to choose an appropriate summary
+  * description of the entities.
+  */
+void EntityListPhrase::setFlags(BitFlags commonFlags, BitFlags unionFlags)
+{
+  this->m_commonFlags = commonFlags;
+  this->m_unionFlags = unionFlags;
 }
 
   } // model namespace

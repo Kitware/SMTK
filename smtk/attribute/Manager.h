@@ -122,6 +122,10 @@ namespace smtk
       void setRefModel(smtk::model::ModelPtr refmodel )
         {this->m_refModel = refmodel;}
 
+      smtk::model::StoragePtr refStorage() const
+        {return this->m_refStorage.lock();}
+      void setRefStorage(smtk::model::StoragePtr refstorage);
+
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
 
@@ -145,6 +149,7 @@ namespace smtk
       smtk::view::RootPtr m_rootView;
 
       smtk::model::WeakModelPtr m_refModel;
+      smtk::model::WeakStoragePtr m_refStorage;
     private:
     };
 //----------------------------------------------------------------------------

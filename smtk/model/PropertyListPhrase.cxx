@@ -13,6 +13,7 @@ PropertyListPhrase::PropertyListPhrase()
 {
 }
 
+/// Initialize the list with information required to generate subphrases.
 PropertyListPhrase::Ptr PropertyListPhrase::setup(
   const Cursor& entity, PropertyType ptype, DescriptivePhrasePtr parnt)
 {
@@ -24,6 +25,19 @@ PropertyListPhrase::Ptr PropertyListPhrase::setup(
   return shared_from_this();
 }
 
+/// Initialize the list with a subset \a pnames of the \a entity's properties.
+PropertyListPhrase::Ptr PropertyListPhrase::setup(
+  const Cursor& entity, PropertyType ptype,
+  const std::set<std::string>& pnames, DescriptivePhrasePtr parnt)
+{
+  this->m_entity = entity;
+  this->m_propertyType = ptype;
+  this->m_propertyNames = pnames;
+  this->DescriptivePhrase::setup(
+    PropertyListPhrase::propertyToPhraseType(ptype),
+    parnt);
+  return shared_from_this();
+}
 std::string PropertyListPhrase::title()
 {
   std::ostringstream message;
@@ -51,11 +65,6 @@ Cursor PropertyListPhrase::relatedEntity() const
   return this->m_entity;
 }
 
-std::string PropertyListPhrase::relatedPropertyName() const
-{
-  return std::string(); // lists do not have a single name; their subphrases do.
-}
-
 PropertyType PropertyListPhrase::relatedPropertyType() const
 {
   return this->m_propertyType;
@@ -76,59 +85,6 @@ DescriptivePhraseType PropertyListPhrase::propertyToPhraseType(PropertyType p)
     break;
     }
   return INVALID_DESCRIPTION;
-}
-
-bool PropertyListPhrase::buildSubphrasesInternal()
-{
-  switch (this->m_propertyType)
-    {
-  case FLOAT_PROPERTY:
-    if (this->m_entity.hasFloatProperties())
-      {
-      for (
-        PropertyNameWithConstFloats it = this->m_entity.floatProperties().begin();
-        it != this->m_entity.floatProperties().end();
-        ++it)
-        {
-        this->m_subphrases.push_back(
-          PropertyValuePhrase::create()->setup(it->first, shared_from_this()));
-        }
-      }
-    break;
-  case STRING_PROPERTY:
-    if (this->m_entity.hasStringProperties())
-      {
-      for (
-        PropertyNameWithConstStrings it = this->m_entity.stringProperties().begin();
-        it != this->m_entity.stringProperties().end();
-        ++it)
-        {
-        if (it->first != "name")
-          {
-          this->m_subphrases.push_back(
-            PropertyValuePhrase::create()->setup(it->first, shared_from_this()));
-          }
-        }
-      }
-    break;
-  case INTEGER_PROPERTY:
-    if (this->m_entity.hasIntegerProperties())
-      {
-      for (
-        PropertyNameWithConstIntegers it = this->m_entity.integerProperties().begin();
-        it != this->m_entity.integerProperties().end();
-        ++it)
-        {
-        this->m_subphrases.push_back(
-          PropertyValuePhrase::create()->setup(it->first, shared_from_this()));
-        }
-      }
-    break;
-  case INVALID_PROPERTY:
-  default:
-    break;
-    }
-  return true;
 }
 
   } // model namespace

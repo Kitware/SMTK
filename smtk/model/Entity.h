@@ -65,6 +65,7 @@ protected:
 private:
 };
 
+/// An abbreviation for the record type used by maps of Entity records.
 typedef std::pair<smtk::util::UUID,Entity> UUIDEntityPair;
 
   } // namespace model
