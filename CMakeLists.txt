@@ -201,7 +201,6 @@ include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${SPARSEHASH_INCLUDE_DIRS}"
   "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON"
-  "${VTK_INCLUDE_DIRS}"
   "${Boost_INCLUDE_DIRS}"
 )
 
