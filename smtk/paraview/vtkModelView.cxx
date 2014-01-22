@@ -1,11 +1,17 @@
-#include "smtk/vtk/vtkModelView.h"
+#include "smtk/paraview/vtkModelView.h"
 
 #include "vtkObjectFactory.h"
+
+using namespace smtk::model;
+vtkInstantiatorNewMacro(vtkModelView);
 
 namespace smtk {
   namespace model {
 
-vtkStandardNewMacro(vtkModelView);
+vtkModelView* vtkModelView::New()
+{
+  VTK_STANDARD_NEW_BODY(vtkModelView);
+}
 
 vtkModelView::vtkModelView()
 {

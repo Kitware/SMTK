@@ -1,4 +1,4 @@
-#include "smtk/vtk/vtkModelRepresentation.h"
+#include "smtk/paraview/vtkModelRepresentation.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Entity.h"
@@ -25,14 +25,21 @@
 #include "vtkTransformFilter.h"
 #include "vtkViewTheme.h"
 
+using namespace smtk::model;
+vtkInstantiatorNewMacro(vtkModelRepresentation);
+
 namespace smtk {
   namespace model {
 
-vtkStandardNewMacro(vtkModelRepresentation);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Actor,vtkActor);
 vtkCxxSetObjectMacro(vtkModelRepresentation,ApplyColors,vtkApplyColors);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Mapper,vtkPolyDataMapper);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Transform,vtkTransformFilter);
+
+vtkModelRepresentation* vtkModelRepresentation::New()
+{
+  VTK_STANDARD_NEW_BODY(vtkModelRepresentation);
+}
 
 vtkModelRepresentation::vtkModelRepresentation()
 {

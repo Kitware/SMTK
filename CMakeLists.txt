@@ -26,7 +26,7 @@ include(CMake/FindHashFunctor.cmake)
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-option(SMTK_BUILD_VTK "Build VTK component" OFF)
+option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
@@ -67,24 +67,14 @@ endif()
 ################################################################################
 
 if(SMTK_BUILD_VTK)
-  set(VTK_MODULES
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkRenderingCore
-    vtkRenderingOpenGL
-    vtkRenderingFreeType
-    vtkInteractionStyle
-    vtkViewsCore
-    vtkViewsInfovis
-    vtkIOXML
-    vtkIOLegacy
-  )
-  find_package(VTK 6.1
-    COMPONENTS ${VTK_MODULES}
-    NO_MODULE
-  )
-  include(${VTK_USE_FILE})
+  find_package(ParaView REQUIRED)
+  include("${PARAVIEW_USE_FILE}")
+  include(ParaViewPlugins)
+  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+  set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
+  pv_setup_module_environment("SMTK")
+  pv_process_modules()
+
 endif()
 
 

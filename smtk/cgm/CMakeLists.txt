@@ -40,11 +40,12 @@ target_link_libraries(facet-convert
   ${CGM_LIBRARIES}
 )
 
-if (SMTK_BUILD_VTK)
+if (SMTK_BUILD_ParaView)
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
     SMTKCore
-    ${VTK_MODULES}
+    vtkCommonDataModel
+    vtkIOXML
     ${CGM_LIBRARIES}
   )
 endif()

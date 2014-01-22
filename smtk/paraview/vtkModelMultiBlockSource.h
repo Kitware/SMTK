@@ -1,7 +1,7 @@
-#ifndef __smtk_vtk_ModelMultiBlockSource_h
-#define __smtk_vtk_ModelMultiBlockSource_h
+#ifndef __smtk_paraview_ModelMultiBlockSource_h
+#define __smtk_paraview_ModelMultiBlockSource_h
 
-#include "smtk/vtkSMTKExports.h"
+#include "smtk/pvSMTKExports.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -15,7 +15,7 @@ namespace smtk {
   * This filter generates a single block per UUID, for every UUID
   * in model storage with a tessellation entry.
   */
-class VTKSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+class PVSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkModelMultiBlockSource* New();
@@ -60,4 +60,4 @@ private:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_vtk_ModelMultiBlockSource_h
+#endif // __smtk_paraview_ModelMultiBlockSource_h
