@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef =
     base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
-  iitemdef->setCommonValueLabel("Time");
+  iitemdef->setLabel("Time");
   iitemdef->addDiscreteValue(0, "Seconds");
   iitemdef->addDiscreteValue(1, "Minutes");
   iitemdef->addDiscreteValue(2, "Hours");
