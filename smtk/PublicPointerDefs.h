@@ -116,6 +116,7 @@ namespace smtk
 
   namespace util
   {
+    class Resource;
     class UserData;
     class UUID;
     class UUIDGenerator;
@@ -209,6 +210,7 @@ namespace smtk
   namespace util
   {
     //custom user data classes
+    typedef smtk::shared_ptr< smtk::util::Resource > ResourcePtr;
     typedef smtk::shared_ptr< smtk::util::UserData > UserDataPtr;
   };
 

@@ -1548,6 +1548,11 @@
         <object-type name="Record" />
       </object-type>
 
+      <object-type name="Resource">
+        <include file-name="smtk/util/Resource.h" location="local" />
+        <enum-type name="Type" />
+      </object-type>
+
       <object-type name="UserData">
         <include file-name="smtk/util/UserData.h" location="local" />
       </object-type>

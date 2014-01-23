@@ -44,7 +44,8 @@ namespace smtk
     public:
       XmlV1StringWriter(const smtk::attribute::Manager &manager);
       virtual ~XmlV1StringWriter();
-      std::string convertToString(smtk::util::Logger &logger);
+      std::string convertToString(smtk::util::Logger &logger,
+                                  bool no_declaration = false);
       const smtk::util::Logger &messageLog() const
       {return this->m_logger;}
     protected:

@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
+Copyright (c) 1998-2014 Kitware Inc. 28 Corporate Drive,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced, distributed,
@@ -17,46 +17,59 @@ INCLUDING,
 BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
 PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
+// .NAME smtkResource.cxx - Abstract base class for CMB resources
+// .SECTION Description
+// .SECTION See Also
 
 
-#include "smtk/util/AttributeWriter.h"
-#include "smtk/util/XmlV1StringWriter.h"
-#include "smtk/util/Logger.h"
-#include <fstream>
+#include "smtk/util/Resource.h"
 
 using namespace smtk::util;
 
+
 //----------------------------------------------------------------------------
-bool AttributeWriter::write(const smtk::attribute::Manager &manager,
-                            const std::string &filename,
-                            Logger &logger)
+Resource::Resource()
 {
-  logger.reset();
-  XmlV1StringWriter theWriter(manager);
-  std::string result = theWriter.convertToString(logger);
-  if(!logger.hasErrors())
-	{
-	std::ofstream outfile;
-	outfile.open(filename.c_str());
-	outfile << result;
-	outfile.close();
-	}
-  return logger.hasErrors();
 }
 
 //----------------------------------------------------------------------------
-bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
-                                    std::string &filecontents,
-                                    Logger &logger,
-                                    bool no_declaration)
+Resource::~Resource()
 {
-  logger.reset();
-  XmlV1StringWriter theWriter(manager);
-  filecontents = theWriter.convertToString(logger, no_declaration);
-  return logger.hasErrors();
 }
 
 //----------------------------------------------------------------------------
+std::string Resource::type2String(Resource::Type t)
+{
+  switch (t)
+    {
+    case ATTRIBUTE:
+      return "attribute";
+    case MODEL:
+      return "model";
+    case MESH:
+      return "mesh";
+    default:
+      return "";
+    }
+  return "Error!";
+}
+
+//----------------------------------------------------------------------------
+Resource::Type Resource::string2Type(const std::string &s)
+{
+  if (s == "attribute")
+    {
+    return ATTRIBUTE;
+    }
+  if (s == "model")
+    {
+    return MODEL;
+    }
+  if (s == "mesh")
+    {
+    return MESH;
+    }
+  return NUMBER_OF_TYPES;
+}

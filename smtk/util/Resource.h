@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
+Copyright (c) 1998-2014 Kitware Inc. 28 Corporate Drive,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced, distributed,
@@ -17,46 +17,46 @@ INCLUDING,
 BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
 PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
+PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME AttributeWriter.h -
+// .NAME smtkResource.h - Abstract base class for CMB resources
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_util_AttributeWriter_h
-#define __smtk_util_AttributeWriter_h
+#ifndef __smtk_util_Resource_h
+#define __smtk_util_Resource_h
+
 
 #include "smtk/SMTKCoreExports.h"
-#include "smtk/util/SystemConfig.h"
 #include <string>
+
 
 namespace smtk
 {
-  namespace attribute
-  {
-    class Manager;
-  };
-
   namespace util
   {
-    class Logger;
-    class SMTKCORE_EXPORT AttributeWriter
+    class SMTKCORE_EXPORT Resource
     {
     public:
-      // Returns true if there was a problem with writing the file
-      bool write(const smtk::attribute::Manager &manager,
-                 const std::string &filename,
-                 smtk::util::Logger &logger);
-      bool writeContents(const smtk::attribute::Manager &manager,
-                         std::string &filecontents,
-                         smtk::util::Logger &logger,
-                         bool no_declaration = false);
+      /// Identifies resource type
+      enum Type
+      {
+        ATTRIBUTE = 0,
+        MODEL,        // future
+        MESH,         // future
+        NUMBER_OF_TYPES
+      };
+
+      virtual Resource::Type resourceType() const = 0;
+
+      static std::string type2String(Resource::Type t);
+      static Resource::Type string2Type(const std::string &s);
+
     protected:
-    private:
+      Resource();
+      virtual ~Resource();
     };
   }
 }
 
-
-#endif /* __smtk_util_AttributeWriter_h */
+#endif  /* __smtk_util_Resource_h */
