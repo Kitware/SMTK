@@ -394,7 +394,8 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
   std::vector<LoopInfo> loops;
   std::vector<bool> visited;
   NewModelEdgeInfo newEdgesInfo;
-  int i, nlines, currentLoop, dummyInt, nLoops, j, nEdges;
+  int i, nlines, dummyInt, nLoops, j, nEdges;
+  size_t currentLoop;
   vtkIdType gid;
   vtkIdType idLoops, idEdges, idOrient, fid = this->GetUniquePersistentId();
 
@@ -442,7 +443,7 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
   this->CreateModelEdges(newEdgesInfo, newModelEdges, showEdge, splitInfo);
 
   // Now we are ready to add the model edges to the model face
-  nLoops = loops.size();
+  nLoops = static_cast<int>(loops.size());
   if (!nLoops)
     {
     // This face has no loops - like a sphere
@@ -461,7 +462,7 @@ void vtkDiscreteModelFace::BuildEdges(bool showEdge,
   for (i = 0; i < nLoops; i++)
     {
     // std::cout << "\tLoop " << i << ":";
-    nEdges = loops[i].loop.size();
+    nEdges = static_cast<int>(loops[i].loop.size());
     orientations.resize(nEdges);
     gedges.resize(nEdges);
     if(saveLoopInfo)
@@ -716,7 +717,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
   // we didn't  not start at a "model vertex".  The condition we need to
   // check for is if the first and last edges are either both "new" or both
   // existing
-  int numLoops = loopInfo.loop.size();
+  size_t numLoops = loopInfo.loop.size();
   if (numLoops == 1)
     {
     // There is only a single model edge so there is no problem

@@ -150,7 +150,7 @@ int vtkModelItem::GetNumberOfAssociations(int itemType)
   if(this->Internal->Associations.find(itemType) !=
      this->Internal->Associations.end())
     {
-    return this->Internal->Associations[itemType].size();
+    return static_cast<int>(this->Internal->Associations[itemType].size());
     }
   return 0;
 }

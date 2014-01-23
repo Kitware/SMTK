@@ -440,7 +440,7 @@ void vtkDiscreteModel::GetModelEntityDefaultName(int entityType, const char* bas
   vtkModelItemIterator* iter = this->NewIterator(entityType);
   for(iter->Begin();!iter->IsAtEnd();iter->Next())
     {
-    int baseNameLength = strlen(baseName);
+    int baseNameLength = static_cast<int>(strlen(baseName));
     vtkModelEntity* entity = vtkModelEntity::SafeDownCast(
       iter->GetCurrentItem());
     if(!entity || vtkModelUserName::GetUserName(entity) == 0)
