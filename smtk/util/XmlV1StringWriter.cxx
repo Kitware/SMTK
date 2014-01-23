@@ -264,10 +264,10 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
   this->processViews();
   this->processModelInfo();
   std::stringstream oss;
-  unsigned int flags = 0;
+  unsigned int flags = pugi::format_indent;
   if (no_declaration)
     {
-    flags = pugi::format_no_declaration;
+    flags |= pugi::format_no_declaration;
     }
   this->m_doc.save(oss, "  ", flags);
   std::string result = oss.str();
