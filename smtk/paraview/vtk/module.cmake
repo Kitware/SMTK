@@ -1,4 +1,4 @@
-vtk_module(pvSMTK
+vtk_module(vtkSMTK
   DEPENDS
     vtkCommonCore
     vtkCommonDataModel

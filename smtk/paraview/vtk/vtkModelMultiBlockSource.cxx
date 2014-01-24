@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtkModelMultiBlockSource.h"
+#include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
@@ -22,9 +22,6 @@
 
 using namespace smtk::model;
 vtkInstantiatorNewMacro(vtkModelMultiBlockSource);
-
-namespace smtk {
-  namespace model {
 
 vtkCxxSetObjectMacro(vtkModelMultiBlockSource,CachedOutput,vtkMultiBlockDataSet);
 
@@ -243,6 +240,3 @@ int vtkModelMultiBlockSource::RequestData(
   output->ShallowCopy(this->CachedOutput);
   return 1;
 }
-
-  } // namespace model
-} // namespace smtk

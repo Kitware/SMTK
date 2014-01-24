@@ -1,5 +1,5 @@
 add_executable(displayModel MACOSX_BUNDLE displayModel.cxx)
-target_link_libraries(displayModel SMTKCore pvSMTK ${VTK_MODULES})
+target_link_libraries(displayModel SMTKCore vtkSMTK ${VTK_MODULES})
 add_test(
   NAME displayModel
   COMMAND
@@ -8,7 +8,7 @@ add_test(
 )
 
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
-target_link_libraries(displayMultiBlockModel SMTKCore pvSMTK ${VTK_MODULES})
+target_link_libraries(displayMultiBlockModel SMTKCore vtkSMTK ${VTK_MODULES})
 add_test(
   NAME displayMultiBlockModel
   COMMAND

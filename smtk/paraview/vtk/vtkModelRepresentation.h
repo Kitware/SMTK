@@ -1,7 +1,7 @@
-#ifndef __smtk_paraview_ModelRepresentation_h
-#define __smtk_paraview_ModelRepresentation_h
+#ifndef __smtk_vtk_ModelRepresentation_h
+#define __smtk_vtk_ModelRepresentation_h
 
-#include "smtk/pvSMTKExports.h"
+#include "smtk/vtkSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "vtkRenderedRepresentation.h"
@@ -12,15 +12,12 @@ class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkTransformFilter;
 
-namespace smtk {
-  namespace model {
-
 /**\brief Generate a VTK pipeline to represent an SMTK model.
   *
   * This representation only works with vtkModelSource, not vtkModelMultiBlockSource.
   * It requires the model to have per-body or per-face tessellation information.
   */
-class PVSMTK_EXPORT vtkModelRepresentation : public vtkRenderedRepresentation
+class VTKSMTK_EXPORT vtkModelRepresentation : public vtkRenderedRepresentation
 {
 public:
   static vtkModelRepresentation* New();
@@ -95,7 +92,4 @@ private:
   void operator = (const vtkModelRepresentation&); // Not implemented.
 };
 
-  } // namespace model
-} // namespace smtk
-
-#endif // __smtk_paraview_ModelRepresentation_h
+#endif // __smtk_vtk_ModelRepresentation_h

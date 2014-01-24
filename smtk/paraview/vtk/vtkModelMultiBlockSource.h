@@ -1,21 +1,18 @@
-#ifndef __smtk_paraview_ModelMultiBlockSource_h
-#define __smtk_paraview_ModelMultiBlockSource_h
+#ifndef __smtk_vtk_ModelMultiBlockSource_h
+#define __smtk_vtk_ModelMultiBlockSource_h
 
-#include "smtk/pvSMTKExports.h"
+#include "smtk/vtkSMTKExports.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
 class vtkPolyData;
-
-namespace smtk {
-  namespace model {
 
 /**\brief A VTK source for exposing model geometry in SMTK Storage as multiblock data.
   *
   * This filter generates a single block per UUID, for every UUID
   * in model storage with a tessellation entry.
   */
-class PVSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
+class VTKSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
 public:
   static vtkModelMultiBlockSource* New();
@@ -57,7 +54,4 @@ private:
   void operator = (const vtkModelMultiBlockSource&); // Not implemented.
 };
 
-  } // namespace model
-} // namespace smtk
-
-#endif // __smtk_paraview_ModelMultiBlockSource_h
+#endif // __smtk_vtk_ModelMultiBlockSource_h

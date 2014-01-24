@@ -1,17 +1,15 @@
-#ifndef __smtk_paraview_ModelSource_h
-#define __smtk_paraview_ModelSource_h
+#ifndef __smtk_vtk_ModelSource_h
+#define __smtk_vtk_ModelSource_h
 
-#include "smtk/pvSMTKExports.h"
+#include "smtk/vtkSMTKExports.h"
 #include "vtkPolyDataAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
-namespace smtk {
-  namespace model {
 
 /**\brief A VTK filter that provides polydata for an SMTK storage instance.
   *
   */
-class PVSMTK_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
+class VTKSMTK_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
 {
 public:
   static vtkModelSource* New();
@@ -51,7 +49,4 @@ private:
   void operator = (const vtkModelSource&); // Not implemented.
 };
 
-  } // namespace model
-} // namespace smtk
-
-#endif // __smtk_paraview_ModelSource_h
+#endif // __smtk_vtk_ModelSource_h

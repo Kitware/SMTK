@@ -1,17 +1,14 @@
-#ifndef __smtk_paraview_ModelView_h
-#define __smtk_paraview_ModelView_h
+#ifndef __smtk_vtk_ModelView_h
+#define __smtk_vtk_ModelView_h
 
-#include "smtk/pvSMTKExports.h"
+#include "smtk/vtkSMTKExports.h"
 #include "vtkRenderView.h"
-
-namespace smtk {
-  namespace model {
 
 /**\brief A vtkView subclass for displaying SMTK model geometry.
   *
   * This currently only works with the vtkPolyData-style vtkModelSource class.
   */
-class PVSMTK_EXPORT vtkModelView : public vtkRenderView
+class VTKSMTK_EXPORT vtkModelView : public vtkRenderView
 {
 public:
   static vtkModelView* New();
@@ -27,7 +24,4 @@ private:
   void operator = (const vtkModelView&); // Not implemented.
 };
 
-  } // namespace model
-} // namespace smtk
-
-#endif // __smtk_paraview_ModelView_h
+#endif // __smtk_vtk_ModelView_h

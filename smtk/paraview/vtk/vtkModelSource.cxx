@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtkModelSource.h"
+#include "smtk/paraview/vtk/vtkModelSource.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
@@ -21,9 +21,6 @@
 
 using namespace smtk::model;
 vtkInstantiatorNewMacro(vtkModelSource);
-
-namespace smtk {
-  namespace model {
 
 vtkCxxSetObjectMacro(vtkModelSource,CachedOutput,vtkPolyData);
 
@@ -274,6 +271,3 @@ int vtkModelSource::RequestData(
   output->ShallowCopy(this->CachedOutput);
   return 1;
 }
-
-  } // namespace model
-} // namespace smtk

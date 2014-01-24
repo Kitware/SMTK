@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtkModelRepresentation.h"
+#include "smtk/paraview/vtk/vtkModelRepresentation.h"
 
 #include "smtk/model/Storage.h"
 #include "smtk/model/Entity.h"
@@ -27,9 +27,6 @@
 
 using namespace smtk::model;
 vtkInstantiatorNewMacro(vtkModelRepresentation);
-
-namespace smtk {
-  namespace model {
 
 vtkCxxSetObjectMacro(vtkModelRepresentation,Actor,vtkActor);
 vtkCxxSetObjectMacro(vtkModelRepresentation,ApplyColors,vtkApplyColors);
@@ -261,6 +258,3 @@ vtkSelection* vtkModelRepresentation::ConvertSelection(vtkView* view, vtkSelecti
 
   return converted;
 }
-
-  } // namespace model
-} // namespace smtk

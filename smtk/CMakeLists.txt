@@ -93,7 +93,11 @@ if(SMTK_BUILD_ParaView)
 
   # However, we do need to generate the export macro in this directory,
   # even if the library is not built here.
+
+  smtk_export_header(vtkSMTK vtkSMTKExports.h)
   smtk_export_header(pvSMTK pvSMTKExports.h)
+
+  add_subdirectory(paraview)
 endif()
 
 if (SMTK_BUILD_CGM)

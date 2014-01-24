@@ -63,18 +63,18 @@ if(SMTK_BUILD_QT)
 endif()
 
 ################################################################################
-# VTK Related Settings
+# Paraview-VTK Related Settings
 ################################################################################
 
-if(SMTK_BUILD_VTK)
+if(SMTK_BUILD_ParaView)
   find_package(ParaView REQUIRED)
   include("${PARAVIEW_USE_FILE}")
   include(ParaViewPlugins)
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
+
   pv_setup_module_environment("SMTK")
   pv_process_modules()
-
 endif()
 
 
