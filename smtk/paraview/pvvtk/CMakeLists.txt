@@ -7,7 +7,7 @@ include_directories(
   ${SMTK_SOURCE_DIR}/ThirdParty
   ${SMTK_BINARY_DIR}/ThirdParty
   ${SMTK_SOURCE_DIR}/ThirdParty/cJSON
-  ${Paraview_INCLUDE_DIRS}
+  ${ParaView_INCLUDE_DIRS}
 )
 
 set(pvSMTK_SRC

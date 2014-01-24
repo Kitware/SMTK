@@ -63,7 +63,7 @@ if(SMTK_BUILD_QT)
 endif()
 
 ################################################################################
-# Paraview-VTK Related Settings
+# ParaView-VTK Related Settings
 ################################################################################
 
 if(SMTK_BUILD_ParaView)

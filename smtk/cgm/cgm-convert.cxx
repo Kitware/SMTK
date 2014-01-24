@@ -664,7 +664,7 @@ int main (int argc, char **argv)
       }
     else
       {
-      std::cout << "Exported " << num_ents_exported << " entities, CubitVersion " << cubit_version << "\n";
+      std::cout << "Exported " << num_ents_exported << " entities, CubitVersion " << cubit_version.c_str() << "\n";
       }
     }
 
