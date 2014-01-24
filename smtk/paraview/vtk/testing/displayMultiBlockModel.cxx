@@ -1,6 +1,6 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Storage.h"
-#include "smtk/vtk/vtkModelMultiBlockSource.h"
+#include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
 #include "vtkActor.h"
 #include "vtkCommand.h"

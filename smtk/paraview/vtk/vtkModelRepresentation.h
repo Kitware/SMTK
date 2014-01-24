@@ -12,9 +12,6 @@ class vtkPolyData;
 class vtkPolyDataMapper;
 class vtkTransformFilter;
 
-namespace smtk {
-  namespace model {
-
 /**\brief Generate a VTK pipeline to represent an SMTK model.
   *
   * This representation only works with vtkModelSource, not vtkModelMultiBlockSource.
@@ -94,8 +91,5 @@ private:
   vtkModelRepresentation(const vtkModelRepresentation&); // Not implemented.
   void operator = (const vtkModelRepresentation&); // Not implemented.
 };
-
-  } // namespace model
-} // namespace smtk
 
 #endif // __smtk_vtk_ModelRepresentation_h

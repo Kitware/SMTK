@@ -32,6 +32,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <set>
 #include <vector>
 
+namespace cgmsmtk
+{
+  namespace cgm
+  {
+    class ImportSolid;
+    class ExportSolid;
+  }
+}
+
 namespace smtk
 {
   namespace model

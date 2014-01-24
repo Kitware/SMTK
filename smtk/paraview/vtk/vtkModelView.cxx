@@ -1,11 +1,14 @@
-#include "smtk/vtk/vtkModelView.h"
+#include "smtk/paraview/vtk/vtkModelView.h"
 
 #include "vtkObjectFactory.h"
 
-namespace smtk {
-  namespace model {
+vtkInstantiatorNewMacro(vtkModelView);
 
-vtkStandardNewMacro(vtkModelView);
+
+vtkModelView* vtkModelView::New()
+{
+  VTK_STANDARD_NEW_BODY(vtkModelView);
+}
 
 vtkModelView::vtkModelView()
 {
@@ -25,6 +28,3 @@ void vtkModelView::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
-
-  } // namespace model
-} // namespace smtk

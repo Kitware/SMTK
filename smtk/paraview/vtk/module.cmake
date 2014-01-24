@@ -1,0 +1,25 @@
+vtk_module(vtkSMTK
+  DEPENDS
+    vtkCommonCore
+    vtkCommonDataModel
+    vtkCommonExecutionModel
+    vtkRenderingCore
+    vtkRenderingOpenGL
+    vtkRenderingFreeType
+    vtkInteractionStyle
+    vtkViewsCore
+    vtkViewsInfovis
+    vtkIOXML
+    vtkIOLegacy
+    vtkRenderingOpenGL
+    vtkRenderingMatplotlib
+    vtkRenderingVolumeOpenGL
+    vtkRenderingFreeTypeOpenGL
+  TEST_DEPENDS
+    vtkInteractionStyle
+    vtkRenderingOpenGL
+    vtkRenderingMatplotlib
+    vtkRenderingVolumeOpenGL
+    vtkRenderingFreeTypeOpenGL
+  EXCLUDE_FROM_WRAP_HIERARCHY
+)

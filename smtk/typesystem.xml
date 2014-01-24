@@ -4,12 +4,13 @@
   <suppress-warning text="template baseclass 'std::shared_ptr&lt;*&gt;' of 'ptr' is not known"/>
 
   <!-- Ignore some namespaces -->
-  <suppress-warning text="namespace 'std' does not have a type entry"/>
+  <suppress-warning text="namespace 'boost' does not have a type entry"/>
+	<suppress-warning text="namespace 'cgmsmtk' does not have a type entry"/>
+  <suppress-warning text="namespace 'google' does not have a type entry"/>
+  <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
-  <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
-  <suppress-warning text="namespace 'boost' does not have a type entry"/>
-  <suppress-warning text="namespace 'google' does not have a type entry"/>
+  <suppress-warning text="namespace 'std' does not have a type entry"/>
 
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>

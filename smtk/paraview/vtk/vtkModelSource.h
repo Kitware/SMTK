@@ -5,8 +5,6 @@
 #include "vtkPolyDataAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
-namespace smtk {
-  namespace model {
 
 /**\brief A VTK filter that provides polydata for an SMTK storage instance.
   *
@@ -50,8 +48,5 @@ private:
   vtkModelSource(const vtkModelSource&); // Not implemented.
   void operator = (const vtkModelSource&); // Not implemented.
 };
-
-  } // namespace model
-} // namespace smtk
 
 #endif // __smtk_vtk_ModelSource_h

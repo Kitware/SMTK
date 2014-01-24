@@ -3,21 +3,26 @@ add_definitions(${CGM_DEFINES})
 
 set(CGMLibSrcs
   CAUUID.cxx
+  ExportSolid.cxx
+  ImportSolid.cxx
   TDUUID.cxx
 )
 
 set(CGMLibHeaders
   CAUUID.h
+  ExportSolid.h
+  ImportSolid.h
   TDUUID.h
 )
 
-#install the headers
+# Install the headers
 smtk_public_headers(${CGMLibHeaders})
 # ... and make header compilation tests link properly:
 target_link_libraries(TestBuild_smtk_cgm
   LINK_PRIVATE ${CGM_LIBRARIES}
 )
 
+# Utility programs using CGM:
 add_executable(cgm-convert
   cgm-convert.cxx
 )
@@ -35,11 +40,12 @@ target_link_libraries(facet-convert
   ${CGM_LIBRARIES}
 )
 
-if (SMTK_BUILD_VTK)
+if (SMTK_BUILD_ParaView)
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
     SMTKCore
-    ${VTK_MODULES}
+    vtkCommonDataModel
+    vtkIOXML
     ${CGM_LIBRARIES}
   )
 endif()

@@ -8,7 +8,7 @@
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 
-namespace smtk {
+namespace cgmsmtk {
   namespace cgm {
 
 /**\brief Register the CAUUID attribute type with the attribute manager.
@@ -46,16 +46,22 @@ CAUUID::CAUUID(RefEntity* ref)
 CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
   : CubitAttrib(ref)
 {
-  this->m_entityId = smtk::util::UUID(
-    std::string(sa.string_data_list().back().c_str()));
+  if (sa.string_data_list().size() > 0)
+    {
+    this->m_entityId = smtk::util::UUID(
+      std::string(sa.string_data_list().back().c_str()));
+    }
 }
 #else
 /// Construct a CAUUID and restore the UUID from the simple attribute's string data.
 CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
   : CubitAttrib(ref)
 {
-  this->m_entityId = smtk::util::UUID(
-    std::string(sa->string_data_list()->last_item()->c_str()));
+  if (sa && sa->string_data_list()->size() > 0)
+    {
+    this->m_entityId = smtk::util::UUID(
+      std::string(sa->string_data_list()->last_item()->c_str()));
+    }
 }
 #endif
 
@@ -211,4 +217,4 @@ CubitAttrib* CAUUID::creator(RefEntity* entity, CubitSimpleAttrib* p_csa)
 #endif
 
   } // namespace cgm
-} // namespace smtk
+} // namespace cgmsmtk

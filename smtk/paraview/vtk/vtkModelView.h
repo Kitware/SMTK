@@ -4,9 +4,6 @@
 #include "smtk/vtkSMTKExports.h"
 #include "vtkRenderView.h"
 
-namespace smtk {
-  namespace model {
-
 /**\brief A vtkView subclass for displaying SMTK model geometry.
   *
   * This currently only works with the vtkPolyData-style vtkModelSource class.
@@ -26,8 +23,5 @@ private:
   vtkModelView(const vtkModelView&); // Not implemented.
   void operator = (const vtkModelView&); // Not implemented.
 };
-
-  } // namespace model
-} // namespace smtk
 
 #endif // __smtk_vtk_ModelView_h

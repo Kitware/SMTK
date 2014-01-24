@@ -7,9 +7,6 @@
 
 class vtkPolyData;
 
-namespace smtk {
-  namespace model {
-
 /**\brief A VTK source for exposing model geometry in SMTK Storage as multiblock data.
   *
   * This filter generates a single block per UUID, for every UUID
@@ -56,8 +53,5 @@ private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
   void operator = (const vtkModelMultiBlockSource&); // Not implemented.
 };
-
-  } // namespace model
-} // namespace smtk
 
 #endif // __smtk_vtk_ModelMultiBlockSource_h
