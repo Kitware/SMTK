@@ -73,9 +73,6 @@ if(SMTK_BUILD_ParaView)
   include(ParaViewPlugins)
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
-
-  pv_setup_module_environment("SMTK")
-  pv_process_modules()
 endif()
 
 
@@ -185,7 +182,9 @@ add_subdirectory(doc)
 # Include Dirs Settings
 ################################################################################
 
-#add this directory so we can include files like: <smtk/internal/Test.h>
+# Add the current directory so we can include files like: <smtk/internal/Test.h>
+# Save the include directories in a variable so that VTK and ParaView modules
+# (inside the paraview/{vtk,pvvtk} directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -193,6 +192,16 @@ include_directories(
   "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON"
   "${Boost_INCLUDE_DIRS}"
 )
+
+################################################################################
+# Look for VTK and ParaView modules
+################################################################################
+# Cannot prepare ParaView/VTK modules until the include directories
+# have been set or they will be unable to find SMTK, Boost, etc.
+if(SMTK_BUILD_ParaView)
+  pv_setup_module_environment("SMTK")
+  pv_process_modules()
+endif()
 
 ################################################################################
 # Finally build smtk

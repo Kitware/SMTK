@@ -126,8 +126,17 @@ public:
   Shell addShell(const Volume& src);
   Shell addShell(const VolumeUse& src);
 
+  GroupEntity insertGroup(
+    const smtk::util::UUID& uid,
+    int extraFlags = 0,
+    const std::string& name = std::string());
   GroupEntity addGroup(int extraFlags = 0, const std::string& name = std::string());
 
+  ModelEntity insertModel(
+    const smtk::util::UUID& uid,
+    int parametricDim = 3,
+    int embeddingDim = 3,
+    const std::string& name = std::string());
   ModelEntity addModel(
     int parametricDim = 3, int embeddingDim = 3, const std::string& name = std::string());
 

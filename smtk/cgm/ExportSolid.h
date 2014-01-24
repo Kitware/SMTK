@@ -21,8 +21,10 @@ namespace cgmsmtk {
 class CGMSMTK_EXPORT ExportSolid
 {
 public:
-  static smtk::util::UUID fromFileNameIntoStorage(
-    const std::string& filename, smtk::model::StoragePtr storage);
+  static int entitiesToFileOfNameAndType(
+    const std::vector<smtk::model::Cursor>& entities,
+    const std::string& filename,
+    const std::string& filetype);
 };
 
   } // namespace cgm

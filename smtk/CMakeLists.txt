@@ -202,6 +202,8 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       HEADERS ${smtk_cgm_headers}
       DEPENDS SMTKCore
     )
+  target_include_directories(cgmSMTKPython
+    PRIVATE ${CGM_INCLUDE_DIRS})
 
     configure_file(
       "${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py"

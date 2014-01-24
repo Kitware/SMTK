@@ -75,7 +75,9 @@ public:
   int dimensionBits() const;
   BitFlags entityFlags() const;
   std::string flagSummary(int form = 0) const;
+
   std::string name() const;
+  void setName(const std::string& n);
 
   bool isValid() const;
   virtual bool isValid(Entity** entityRecord) const;

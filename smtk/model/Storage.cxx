@@ -1040,13 +1040,25 @@ Shell Storage::addShell(const VolumeUse& v)
   * You may also specify a \a name for the group. If \a name is empty, then no
   * name is assigned.
   */
-GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
+GroupEntity Storage::insertGroup(
+  const smtk::util::UUID& uid, int extraFlags, const std::string& groupName)
 {
-  smtk::util::UUID uid =
-    this->addEntityOfTypeAndDimension(GROUP_ENTITY | extraFlags, -1);
+  UUIDWithEntity result =
+    this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
+  if (result == this->m_topology->end())
+    return GroupEntity();
+
   if (!groupName.empty())
     this->setStringProperty(uid, "name", groupName);
+
   return GroupEntity(shared_from_this(), uid);
+}
+
+/// Add a group, creating a new UUID in the process. \sa insertGroup().
+GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
+{
+  smtk::util::UUID uid = this->unusedUUID();
+  return this->insertGroup(uid, extraFlags, groupName);
 }
 
 /**\brief Add a model to storage.
@@ -1067,19 +1079,34 @@ GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
   * model). Any entities related to the model (directly or indirectly via topological
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
-ModelEntity Storage::addModel(
+ModelEntity Storage::insertModel(
+  const smtk::util::UUID& uid,
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
-  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(MODEL_ENTITY, parametricDim);
+  UUIDWithEntity result =
+    this->setEntityOfTypeAndDimension(uid, MODEL_ENTITY, parametricDim);
+  if (result == this->m_topology->end())
+    return ModelEntity();
+
   if (embeddingDim > 0)
     {
     this->setIntegerProperty(uid, "embedding dimension", embeddingDim);
     }
+
   if (!modelName.empty())
     this->setStringProperty(uid, "name", modelName);
   else
     this->assignDefaultName(uid, this->type(uid));
+
   return ModelEntity(shared_from_this(), uid);
+}
+
+/// Add a model, creating a new UUID at the time. \sa insertModel().
+ModelEntity Storage::addModel(
+  int parametricDim, int embeddingDim, const std::string& modelName)
+{
+  smtk::util::UUID uid = this->unusedUUID();
+  return this->insertModel(uid, parametricDim, embeddingDim, modelName);
 }
 
 /**\brief Add an instance to storage.

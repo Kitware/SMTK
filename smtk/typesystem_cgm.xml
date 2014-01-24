@@ -6,9 +6,14 @@
   <!-- Additional objects to be wrapped when building with CGM -->
   <namespace-type name="cgmsmtk">
     <namespace-type name="cgm">
+      <enum-type name="CubitAttributeTypeExtensions">
+        <include file-name="smtk/cgm/CAUUID.h" location="local"/>
+      </enum-type>
+
       <object-type name="ImportSolid">
         <include file-name="smtk/cgm/ImportSolid.h" location="local"/>
       </object-type>
+
       <object-type name="ExportSolid">
         <include file-name="smtk/cgm/ExportSolid.h" location="local"/>
       </object-type>
