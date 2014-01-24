@@ -12,17 +12,6 @@ set(VTKLibHeaders
   vtkModelView.h
 )
 
-# Although these are set in the toplevel CMakeLists, apparently
-# the vtk module macros need to see them again:
-include_directories(
-  ${SMTK_SOURCE_DIR}
-  ${SMTK_BINARY_DIR}
-  ${SMTK_SOURCE_DIR}/ThirdParty
-  ${SMTK_BINARY_DIR}/ThirdParty
-  ${SMTK_SOURCE_DIR}/ThirdParty/cJSON
-  ${VTK_INCLUDE_DIRS}
-)
-
 # Add compile definitions to force linking to implementation modules
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 

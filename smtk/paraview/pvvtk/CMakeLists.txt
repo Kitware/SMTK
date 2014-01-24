@@ -1,15 +1,4 @@
 
-# Although these are set in the toplevel CMakeLists, apparently
-# the vtk module macros need to see them again:
-include_directories(
-  ${SMTK_SOURCE_DIR}
-  ${SMTK_BINARY_DIR}
-  ${SMTK_SOURCE_DIR}/ThirdParty
-  ${SMTK_BINARY_DIR}/ThirdParty
-  ${SMTK_SOURCE_DIR}/ThirdParty/cJSON
-  ${ParaView_INCLUDE_DIRS}
-)
-
 set(pvSMTK_SRC
   vtkSMTKModelReader.cxx
 )
