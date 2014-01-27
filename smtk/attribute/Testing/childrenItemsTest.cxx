@@ -168,6 +168,7 @@ int main(int argc, char *argv[])
   smtk::attribute::DefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
   smtk::attribute::RefItemDefinitionPtr aritemdef =
     attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
+  aritemdef->setNumberOfRequiredValues(1);
   aritemdef->setCommonValueLabel("A reference to another attribute");
   aritemdef->setAttributeDefinition(base);
 
