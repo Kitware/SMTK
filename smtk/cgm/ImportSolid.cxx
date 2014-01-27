@@ -2,6 +2,7 @@
 
 #include "smtk/cgm/Bridge.h"
 #include "smtk/cgm/CAUUID.h"
+#include "smtk/cgm/Engines.h"
 #include "smtk/cgm/TDUUID.h"
 
 #include "smtk/model/CellEntity.h"
@@ -17,6 +18,7 @@
 #include "DLIList.hpp"
 #include "InitCGMA.hpp"
 #include "GeometryModifyTool.hpp"
+#include "GeometryQueryEngine.hpp"
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
@@ -38,11 +40,13 @@ smtk::util::UUID ImportSolid::fromFileNameIntoStorage(
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
-  CubitStatus s = InitCGMA::initialize_cgma(engine.c_str());
-  if (s != CUBIT_SUCCESS)
+  if (!Engines::setDefault(engine))
     {
+    std::cerr << "Could not set default engine to \"" << engine << "\"\n";
     return smtk::util::UUID::null();
     }
+  std::cout << "Default modeler now \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
+  CubitStatus s;
   DLIList<RefEntity*> imported;
   s = CubitCompat_import_solid_model(
     filename.c_str(),
