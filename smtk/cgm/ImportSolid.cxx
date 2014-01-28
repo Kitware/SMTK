@@ -1,8 +1,12 @@
-#include "smtk/cgm/CAUUID.h"
 #include "smtk/cgm/ImportSolid.h"
+
+#include "smtk/cgm/Bridge.h"
+#include "smtk/cgm/CAUUID.h"
+#include "smtk/cgm/Engines.h"
 #include "smtk/cgm/TDUUID.h"
 
 #include "smtk/model/CellEntity.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Storage.h"
 
@@ -14,6 +18,7 @@
 #include "DLIList.hpp"
 #include "InitCGMA.hpp"
 #include "GeometryModifyTool.hpp"
+#include "GeometryQueryEngine.hpp"
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
@@ -35,11 +40,13 @@ smtk::util::UUID ImportSolid::fromFileNameIntoStorage(
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
-  CubitStatus s = InitCGMA::initialize_cgma(engine.c_str());
-  if (s != CUBIT_SUCCESS)
+  if (!Engines::setDefault(engine))
     {
+    std::cerr << "Could not set default engine to \"" << engine << "\"\n";
     return smtk::util::UUID::null();
     }
+  std::cout << "Default modeler now \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
+  CubitStatus s;
   DLIList<RefEntity*> imported;
   s = CubitCompat_import_solid_model(
     filename.c_str(),
@@ -53,42 +60,46 @@ smtk::util::UUID ImportSolid::fromFileNameIntoStorage(
     /*free_surfaces*/ CUBIT_TRUE,
     &imported
   );
- if (s != CUBIT_SUCCESS)
-   {
-   std::cerr << "Failed to import CGM model, status " << s << "\n";
-   return smtk::util::UUID::null();
-   }
+  if (s != CUBIT_SUCCESS)
+    {
+    std::cerr << "Failed to import CGM model, status " << s << "\n";
+    return smtk::util::UUID::null();
+    }
 
- // Create a model and a matching CGM RefGroup that will "model" the model.
- std::string modelName = filename.substr(0, filename.find_last_of("."));
- RefGroup* mg =
-   RefEntityFactory::instance()->construct_RefGroup(modelName.c_str());
- smtk::util::UUID mid = cgmsmtk::cgm::TDUUID::ofEntity(mg, true)->entityId();
- smtk::model::ModelEntity me = storage->insertModel(mid, 3, 3, modelName);
+  // Create a model and a matching CGM RefGroup that will "model" the model.
+  std::string modelName = filename.substr(0, filename.find_last_of("."));
+  RefGroup* mg =
+    RefEntityFactory::instance()->construct_RefGroup(modelName.c_str());
+  smtk::util::UUID mid = cgmsmtk::cgm::TDUUID::ofEntity(mg, true)->entityId();
+  smtk::model::ModelEntity me = storage->insertModel(mid, 3, 3, modelName);
 
- int ne = static_cast<int>(imported.size());
- for (int i = 0; i < ne; ++i)
-   {
-   RefEntity* entry = imported.get_and_step();
-   cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
-   smtk::util::UUID entId = refId->entityId();
-   // Eventually replace with:
-   // Cursor smtkEntry = Bridge::AddCGMEntityToStorage(entId, storage);
-   if (entry->dag_type() == DagType::body_type())
-     {
-     UUIDWithEntity iter = storage->setEntityOfTypeAndDimension(entId, MODEL_ENTITY, 3);
-     me.addSubmodel(smtk::model::ModelEntity(storage, iter->first));
-     }
-   else if (entry->dag_type().functional_type() == DagType::BasicTopologyEntity_TYPE)
-     {
-     //std::cout << i << " cls " << entry->class_name() << " d " << entry->dimension() << "\n";
-     UUIDWithEntity iter = storage->setCellOfDimension(entId, entry->dimension());
-     me.addCell(CellEntity(storage, iter->first));
-     }
-   }
- // Add the same entities to the model
- imported.reset();
- mg->add_ref_entity(imported);
+  int ne = static_cast<int>(imported.size());
+  for (int i = 0; i < ne; ++i)
+    {
+    RefEntity* entry = imported.get_and_step();
+    cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::util::UUID entId = refId->entityId();
+    Cursor smtkEntry = Bridge::addCGMEntityToStorage(entId, entry, storage, true);
+    if (smtkEntry.isGroupEntity())
+      {
+      me.addGroup(smtkEntry.as<smtk::model::GroupEntity>());
+      }
+    else if (smtkEntry.isCellEntity())
+      {
+      me.addCell(smtkEntry.as<smtk::model::CellEntity>());
+      }
+    else if (smtkEntry.isModelEntity())
+      {
+      me.addSubmodel(smtkEntry.as<smtk::model::ModelEntity>());
+      }
+    else
+      { // Should never happen. :-)
+      std::cerr << "Discarding imported " << smtkEntry.flagSummary() << "\n";
+      }
+    }
+  // Add the same entities to the model
+  imported.reset();
+  mg->add_ref_entity(imported);
 
   return me.entity();
 }

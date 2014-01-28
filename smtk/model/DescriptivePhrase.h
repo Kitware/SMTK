@@ -82,6 +82,7 @@ public:
 
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
   virtual DescriptivePhrases& subphrases();
+  virtual DescriptivePhrases subphrases() const;
   virtual int argFindChild(DescriptivePhrase* child) const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }

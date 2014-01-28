@@ -3,6 +3,36 @@
 
   @EXTRA_TYPESYSTEMS@
 
+  <!-- Ignore methods that refer directly to CGM pointers -->
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addGroupToStorage', unmatched parameter type 'RefGroup*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeToStorage', unmatched parameter type 'RefEdge*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexUseToStorage', unmatched parameter type 'CoVertex*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'GroupingEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addBodyToStorage', unmatched parameter type 'Body*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addChainToStorage', unmatched parameter type 'Chain*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeUseToStorage', unmatched parameter type 'CoEdge*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexToStorage', unmatched parameter type 'RefVertex*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceToStorage', unmatched parameter type 'RefFace*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addLoopToStorage', unmatched parameter type 'Loop*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeToStorage', unmatched parameter type 'RefVolume*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'SenseEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceUseToStorage', unmatched parameter type 'CoFace*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeUseToStorage', unmatched parameter type 'CoVolume*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addShellToStorage', unmatched parameter type 'Shell*'"/>
+
+  <!-- ignore shared_from_this base class-->
+  <!--
+  <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
+  <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::shared_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
+  <suppress-warning text="skipping field 'DescriptivePhrase::m_subphrases' with unmatched type 'std::vector&lt;smtk::model::DescriptivePhrasePtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::findDelegate', unmatched return type 'smtk::model::SubphraseGeneratorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::parent', unmatched return type 'smtk::model::DescriptivePhrasePtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::setup', unmatched return type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::subphrases', unmatched return type 'smtk::model::DescriptivePhrases&'"/>
+  -->
+
+
   <!-- Additional objects to be wrapped when building with CGM -->
   <namespace-type name="cgmsmtk">
     <namespace-type name="cgm">
@@ -10,8 +40,16 @@
         <include file-name="smtk/cgm/CAUUID.h" location="local"/>
       </enum-type>
 
+      <object-type name="Bridge">
+        <include file-name="smtk/cgm/Bridge.h" location="local"/>
+      </object-type>
+
       <object-type name="ImportSolid">
         <include file-name="smtk/cgm/ImportSolid.h" location="local"/>
+      </object-type>
+
+      <object-type name="Engines">
+        <include file-name="smtk/cgm/Engines.h" location="local"/>
       </object-type>
 
       <object-type name="ExportSolid">

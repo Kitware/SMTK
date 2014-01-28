@@ -36,7 +36,9 @@ namespace cgmsmtk
 {
   namespace cgm
   {
+    class Bridge;
     class ImportSolid;
+    class Engines;
     class ExportSolid;
   }
 }
@@ -46,6 +48,7 @@ namespace smtk
   namespace model
   {
     class Arrangement;
+    class AttributeListPhrase;
     typedef std::vector<Arrangement> Arrangements;
     class BRepModel;
     class CellEntity;
@@ -59,6 +62,8 @@ namespace smtk
     typedef std::vector<Edge> Edges;
     class EdgeUse;
     typedef std::vector<EdgeUse> EdgeUses;
+    class EntityPhrase;
+    class EntityListPhrase;
     class Face;
     typedef std::vector<Face> Faces;
     class FaceUse;
@@ -77,11 +82,15 @@ namespace smtk
     class Entity;
     class Model;
     class ModelEntity;
+    class PropertyValuePhrase;
+    class PropertyListPhrase;
     class Shell;
     typedef std::vector<Shell> Shells;
     class ShellEntity;
     typedef std::vector<ShellEntity> ShellEntities;
     class Storage;
+    class SimpleModelSubphrases;
+    class SubphraseGenerator;
     class ModelDomainItem;
     class Tessellation;
     class UseEntity;
@@ -149,20 +158,26 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::model::DescriptivePhrase > DescriptivePhrasePtr;
-    typedef smtk::shared_ptr< smtk::model::Model >             ModelPtr;
-    typedef smtk::weak_ptr< smtk::model::Model >               WeakModelPtr;
-    typedef smtk::shared_ptr< smtk::model::Storage >           StoragePtr;
-    typedef smtk::weak_ptr< smtk::model::Storage >             WeakStoragePtr;
-    typedef smtk::shared_ptr< smtk::model::Item >              ItemPtr;
-    typedef smtk::weak_ptr< smtk::model::Item >                WeakItemPtr;
-    typedef smtk::shared_ptr< smtk::model::GroupItem >         GroupItemPtr;
-    typedef smtk::shared_ptr< smtk::model::Entity >            EntityPtr;
-    typedef smtk::weak_ptr< smtk::model::Entity >              WeakEntityPtr;
-    typedef smtk::shared_ptr< smtk::model::Arrangement >       ArrangementPtr;
-    typedef smtk::weak_ptr< smtk::model::Arrangement >         WeakArrangementPtr;
-    typedef smtk::shared_ptr< smtk::model::Tessellation >      TessellationPtr;
-    typedef smtk::weak_ptr< smtk::model::Tessellation >        WeakTessellationPtr;
+    typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::EntityListPhrase >      EntityListPhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::PropertyValuePhrase >   PropertyValuePhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::PropertyListPhrase >    PropertyListPhrasePtr;
+    typedef smtk::shared_ptr< smtk::model::SimpleModelSubphrases > SimpleModelSubphrasesPtr;
+    typedef smtk::shared_ptr< smtk::model::SubphraseGenerator >    SubphraseGeneratorPtr;
+    typedef smtk::shared_ptr< smtk::model::Model >                 ModelPtr;
+    typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Storage >               StoragePtr;
+    typedef smtk::weak_ptr< smtk::model::Storage >                 WeakStoragePtr;
+    typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;
+    typedef smtk::weak_ptr< smtk::model::Item >                    WeakItemPtr;
+    typedef smtk::shared_ptr< smtk::model::GroupItem >             GroupItemPtr;
+    typedef smtk::shared_ptr< smtk::model::Entity >                EntityPtr;
+    typedef smtk::weak_ptr< smtk::model::Entity >                  WeakEntityPtr;
+    typedef smtk::shared_ptr< smtk::model::Arrangement >           ArrangementPtr;
+    typedef smtk::weak_ptr< smtk::model::Arrangement >             WeakArrangementPtr;
+    typedef smtk::shared_ptr< smtk::model::Tessellation >          TessellationPtr;
+    typedef smtk::weak_ptr< smtk::model::Tessellation >            WeakTessellationPtr;
 
     // class for making the analysis grid information available in SMTK
     typedef smtk::shared_ptr< smtk::model::GridInfo >          GridInfoPtr;

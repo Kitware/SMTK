@@ -4,6 +4,7 @@ add_definitions(${CGM_DEFINES})
 set(CGMLibSrcs
   Bridge.cxx
   CAUUID.cxx
+  Engines.cxx
   ExportSolid.cxx
   ImportSolid.cxx
   TDUUID.cxx
@@ -12,6 +13,7 @@ set(CGMLibSrcs
 set(CGMLibHeaders
   Bridge.h
   CAUUID.h
+  Engines.h
   ExportSolid.h
   ImportSolid.h
   TDUUID.h
@@ -52,6 +54,6 @@ if (SMTK_BUILD_ParaView)
   )
 endif()
 
-#if (SMTK_ENABLE_TESTING)
-#  add_subdirectory(testing)
-#endif()
+if (SMTK_ENABLE_TESTING)
+  add_subdirectory(testing)
+endif()
