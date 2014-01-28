@@ -23,8 +23,14 @@ class CGMSMTK_EXPORT Engines
 {
 public:
   static bool areInitialized();
-  static bool isInitialized(const std::string& engine, const std::vector<std::string>& args = std::vector<std::string>());
+
+  static bool isInitialized(
+    const std::string& engine,
+    const std::vector<std::string>& args = std::vector<std::string>());
   static bool setDefault(const std::string& engine);
+
+  static std::vector<std::string> listEngines();
+
   static bool shutdown();
 };
 

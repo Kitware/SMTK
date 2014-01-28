@@ -116,7 +116,8 @@ bool Engines::setDefault(const std::string& engine)
   for (int i = 0; i < gqes.size(); ++i)
     {
     gqe = gqes.get_and_step();
-    std::string modeler = gqe->modeler_type();
+    const char* mtxt = gqe->modeler_type();
+    std::string modeler = (mtxt && mtxt[0] ? mtxt : "(null)");
     std::transform(modeler.begin(), modeler.end(), modeler.begin(),
       std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
     if (modeler == engineLower)
@@ -175,6 +176,44 @@ bool Engines::setDefault(const std::string& engine)
   // For now, we cannot rely on anyone providing a healer.
   defaultChanged = (gmt && gqt ? true : false);
   return defaultChanged;
+}
+
+std::vector<std::string> Engines::listEngines()
+{
+  std::vector<std::string> result;
+
+  if (!Engines::areInitialized())
+    Engines::setDefault("FACET");
+
+  GeometryQueryEngine* gqe;
+  DLIList<GeometryQueryEngine*> gqes;
+  GeometryQueryTool::instance()->get_gqe_list(gqes);
+  for (int i = 0; i < gqes.size(); ++i)
+    {
+    gqe = gqes.get_and_step();
+    if (gqe->is_intermediate_engine())
+      continue; // skip, e.g., virtual geometry engine
+    const char* kernel = gqe->modeler_type();
+    if (!kernel || !kernel[0])
+      { // Cubit is nasty
+      std::string typeName = typeid(*gqe).name();
+      if (typeName.find("AcisQueryEngine") != std::string::npos)
+        {
+        kernel = "ACIS";
+        }
+      else if (typeName.find("FacetQueryEngine") != std::string::npos)
+        {
+        kernel = "FACET";
+        }
+      else
+        {
+        std::cerr << "Unknown unnamed query engine, type " << typeName << ". Skipping.\n";
+        continue;
+        }
+      }
+    result.push_back(kernel);
+    }
+  return result;
 }
 
 bool Engines::shutdown()
