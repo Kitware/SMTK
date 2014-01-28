@@ -76,7 +76,7 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   for(edgesIter->Begin();!edgesIter->IsAtEnd();edgesIter->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edgesIter->GetCurrentItem());
-    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    /*vtkCmbModelEdgeMesh* edgeMesh = */vtkCmbModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(edge));
     }
 
@@ -89,7 +89,7 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   for(facesIter->Begin();!facesIter->IsAtEnd();facesIter->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(facesIter->GetCurrentItem());
-    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+    /*vtkCmbModelFaceMesh* faceMesh = */vtkCmbModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
     }
   //end timing

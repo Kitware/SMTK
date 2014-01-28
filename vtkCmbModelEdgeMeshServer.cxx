@@ -102,8 +102,6 @@ bool vtkCmbModelEdgeMeshServer::BuildMesh(bool meshHigherDimensionalEntities)
   vtkNew<vtkCleanPolylines> stripper;
   stripper->SetMinimumLineLength(0);
   stripper->UseRelativeLineLengthOff();
-  vtkDiscreteModelEdge* cmbModelEdge = vtkDiscreteModelEdge::SafeDownCast(this->GetModelEdge());
-  vtkPolyData* polyd = vtkPolyData::SafeDownCast(cmbModelEdge->GetGeometry());
   stripper->SetInputData(vtkPolyData::SafeDownCast(vtkDiscreteModelEdge::SafeDownCast(this->GetModelEdge())->GetGeometry() ) );
   stripper->Update();
 

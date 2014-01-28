@@ -55,7 +55,6 @@ void vtkCmbMeshToModelReadOperator::Operate(vtkDiscreteModelWrapper* ModelWrappe
     }
 
   vtkDebugMacro("Reading a m2m file into a CMB model.");
-  vtkDiscreteModel* Model = ModelWrapper->GetModel();
   this->OperateSucceeded = 0;
   if(!this->GetFileName())
     {
