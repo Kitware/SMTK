@@ -62,7 +62,7 @@ namespace smtk
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
 
-      bool setDiscreteIndex(std::size_t value)
+      bool setDiscreteIndex(int value)
       {return this->setDiscreteIndex(0, value);}
       bool setDiscreteIndex(std::size_t elementIndex, int value);
       // Reset returns the item to its initial state.

@@ -26,9 +26,9 @@ typedef std::set<AttributeId> AttributeSet;
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  bool attachAttribute(std::size_t attribId);
-  bool detachAttribute(std::size_t attribId);
-  bool isAssociated(std::size_t attribId) const;
+  bool attachAttribute(AttributeId attribId);
+  bool detachAttribute(AttributeId attribId);
+  bool isAssociated(AttributeId attribId) const;
 
   AttributeSet& attributes() { return this->m_attributes; }
   const AttributeSet& attributes() const { return this->m_attributes; }
