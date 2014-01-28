@@ -80,7 +80,8 @@ void GroupItemDefinition::
 buildGroup(GroupItem *groupItem, int subGroupPosition) const
 {
   std::size_t i, n = this->m_itemDefs.size();
-  std::vector<smtk::attribute::ItemPtr> &items = groupItem->m_items[subGroupPosition];
+  std::vector<smtk::attribute::ItemPtr> &items =
+     groupItem->m_items[static_cast<size_t>(subGroupPosition)];
   items.resize(n);
   for (i = 0; i < n; i++)
     {

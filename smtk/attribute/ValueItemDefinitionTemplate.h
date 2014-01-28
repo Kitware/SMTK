@@ -47,7 +47,7 @@ namespace smtk
       const DataT &defaultValue() const
       {return this->m_defaultValue;}
       void setDefaultValue(const DataT &val);
-      const DataT &discreteValue(int element) const
+      const DataT &discreteValue(std::size_t element) const
       {return this->m_discreteValues[element];}
       void addDiscreteValue(const DataT &val);
       void addDiscreteValue(const DataT &val, const std::string &discreteEnum);
@@ -167,12 +167,12 @@ namespace smtk
         {
         return -1;
         }
-      int i, n = static_cast<int>(this->m_discreteValues.size());
+      std::size_t i, n = this->m_discreteValues.size();
       for (i = 0; i < n; i++)
         {
         if (this->m_discreteValues[i] == val)
           {
-          return i;
+          return static_cast<int>(i);
           }
         }
       return -1;

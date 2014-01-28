@@ -49,22 +49,22 @@ namespace smtk
       std::size_t numberOfRequiredValues() const;
 
       bool allowsExpressions() const;
-      bool isExpression(int elementIndex=0) const
+      bool isExpression(std::size_t elementIndex=0) const
       { return static_cast<bool>(this->expression(elementIndex));}
-      smtk::attribute::AttributePtr expression(int elementIndex=0) const;
+      smtk::attribute::AttributePtr expression(std::size_t elementIndex=0) const;
       bool setExpression(smtk::attribute::AttributePtr exp)
       {return this->setExpression(0, exp);}
-      bool setExpression(int elementIndex, smtk::attribute::AttributePtr exp);
+      bool setExpression(std::size_t elementIndex, smtk::attribute::AttributePtr exp);
       virtual bool appendExpression(smtk::attribute::AttributePtr exp);
       virtual bool setNumberOfValues(std::size_t newSize) = 0;
 
-      int discreteIndex(int elementIndex=0) const
+      int discreteIndex(std::size_t elementIndex=0) const
       {return this->m_discreteIndices[elementIndex];}
       bool isDiscrete() const;
 
-      bool setDiscreteIndex(int value)
+      bool setDiscreteIndex(std::size_t value)
       {return this->setDiscreteIndex(0, value);}
-      bool setDiscreteIndex(int elementIndex, int value);
+      bool setDiscreteIndex(std::size_t elementIndex, int value);
       // Reset returns the item to its initial state.
       //If the item is of fixed size, then it's values  to their initial state.
       // If there is a default available it will use it, else
@@ -72,21 +72,21 @@ namespace smtk
       //If the item's definition indicated a size of 0 then it will go back to
       // having no values
       virtual void reset();
-      virtual bool setToDefault(int elementIndex=0) = 0;
+      virtual bool setToDefault(std::size_t elementIndex=0) = 0;
       // Returns true if there is a default defined and the item is curently set to it
-      virtual bool isUsingDefault(int elementIndex) const = 0;
+      virtual bool isUsingDefault(std::size_t elementIndex) const = 0;
       // This method tests all of the values of the items w/r the default value
       virtual bool isUsingDefault() const = 0;
 
       virtual std::string valueAsString() const
       { return this->valueAsString(0);}
 
-      virtual std::string valueAsString(int elementIndex) const = 0;
+      virtual std::string valueAsString(std::size_t elementIndex) const = 0;
       virtual bool isSet(std::size_t elementIndex = 0) const
       {return this->m_isSet[elementIndex];}
       virtual void unset(std::size_t elementIndex=0)
       {this->m_isSet[elementIndex] = false;}
-      smtk::attribute::RefItemPtr expressionReference(int elementIndex=0) const
+      smtk::attribute::RefItemPtr expressionReference(std::size_t elementIndex=0) const
       {return this->m_expressions[elementIndex];}
 
       // Interface for getting discrete-value based children items
@@ -106,14 +106,14 @@ namespace smtk
           smtk::attribute::ItemPtr item;
           return item;
           }
-        return this->m_activeChildrenItems[i];
+        return this->m_activeChildrenItems[static_cast<std::size_t>(i)];
       }
 
     protected:
       ValueItem(Attribute *owningAttribute, int itemPosition);
       ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr def);
-      virtual void updateDiscreteValue(int elementIndex) = 0;
+      virtual void updateDiscreteValue(std::size_t elementIndex) = 0;
       virtual void updateActiveChildrenItems();
       std::vector<int> m_discreteIndices;
       std::vector<bool> m_isSet;

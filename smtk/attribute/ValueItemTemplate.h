@@ -48,27 +48,27 @@ namespace smtk
 
       virtual ~ValueItemTemplate() {}
       virtual bool setNumberOfValues(std::size_t newSize);
-      DataT value(int element=0) const
+      DataT value(std::size_t element=0) const
       {return this->m_values[element];}
       virtual std::string valueAsString() const
       {return this->valueAsString(0);}
-      virtual std::string valueAsString(int element) const;
+      virtual std::string valueAsString(std::size_t element) const;
       bool setValue(const DataT &val)
       {return this->setValue(0, val);}
-      bool setValue(int element, const DataT &val);
+      bool setValue(std::size_t element, const DataT &val);
       bool appendValue(const DataT &val);
       virtual bool appendExpression(smtk::attribute::AttributePtr exp);
-      bool removeValue(int element);
+      bool removeValue(std::size_t element);
       virtual void reset();
-      virtual bool setToDefault(int element=0);
-      virtual bool isUsingDefault(int element) const;
+      virtual bool setToDefault(std::size_t element=0);
+      virtual bool isUsingDefault(std::size_t element) const;
       virtual bool isUsingDefault() const;
 
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
       ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
-      virtual void updateDiscreteValue(int element);
+      virtual void updateDiscreteValue(std::size_t element);
       std::vector<DataT> m_values;
     private:
     };
@@ -122,7 +122,7 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    bool ValueItemTemplate<DataT>::setValue(int element, const DataT &val)
+    bool ValueItemTemplate<DataT>::setValue(size_t element, const DataT &val)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (def->isDiscrete())
@@ -164,16 +164,16 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueItemTemplate<DataT>::updateDiscreteValue(int element)
+    void ValueItemTemplate<DataT>::updateDiscreteValue(std::size_t element)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       this->m_values[element] =
-        def->discreteValue(this->m_discreteIndices[element]);
+        def->discreteValue(static_cast<size_t>(this->m_discreteIndices[element]));
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
     std::string
-    ValueItemTemplate<DataT>::valueAsString(int element) const
+    ValueItemTemplate<DataT>::valueAsString(std::size_t element) const
     {
       if (this->m_isSet[element])
         {
@@ -300,7 +300,7 @@ namespace smtk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueItemTemplate<DataT>::removeValue(int element)
+    ValueItemTemplate<DataT>::removeValue(std::size_t element)
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
@@ -324,7 +324,7 @@ namespace smtk
 //----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueItemTemplate<DataT>::setToDefault(int element)
+    ValueItemTemplate<DataT>::setToDefault(std::size_t element)
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def->hasDefault())
@@ -367,7 +367,7 @@ namespace smtk
 ///----------------------------------------------------------------------------
     template<typename DataT>
     bool
-    ValueItemTemplate<DataT>::isUsingDefault(int element) const
+    ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!(def->hasDefault() && this->m_isSet[element]))
@@ -424,7 +424,7 @@ namespace smtk
         int index = def->defaultDiscreteIndex();
         for(i = 0; i < n; i++)
           {
-          this->setDiscreteIndex(static_cast<int>(i), index);
+          this->setDiscreteIndex(i, index);
           }
         }
       else
@@ -432,7 +432,7 @@ namespace smtk
         DataT val = def->defaultValue();
         for(i = 0; i < n; i++)
           {
-          this->setValue(static_cast<int>(i), val);
+          this->setValue(i, val);
           }
         }
       ValueItem::reset();

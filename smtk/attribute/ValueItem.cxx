@@ -124,7 +124,7 @@ bool ValueItem::allowsExpressions() const
   return def->allowsExpressions();
 }
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr ValueItem::expression(int element) const
+smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -135,7 +135,8 @@ smtk::attribute::AttributePtr ValueItem::expression(int element) const
   return smtk::attribute::AttributePtr();
 }
 //----------------------------------------------------------------------------
-bool ValueItem::setExpression(int element, smtk::attribute::AttributePtr exp)
+bool ValueItem::setExpression(std::size_t element,
+                              smtk::attribute::AttributePtr exp)
 {
   const ValueItemDefinition *def = 
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
@@ -176,9 +177,9 @@ bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
     {
     return false; // Attribute is of the proper type
     }
-  int n = static_cast<int>(m_expressions.size());
+  size_t n = m_expressions.size();
   this->m_expressions.resize(n+1);
-  def->buildExpressionItem(this, n);
+  def->buildExpressionItem(this, static_cast<int>(n));
   this->m_expressions[n]->setValue(exp);
   this->m_isSet.push_back(true);
   return true;
@@ -195,7 +196,7 @@ void ValueItem::reset()
   Item::reset();
 }
 //----------------------------------------------------------------------------
-bool ValueItem::setDiscreteIndex(int element, int index)
+bool ValueItem::setDiscreteIndex(std::size_t element, int index)
 {
   if (!this->isDiscrete())
     {
@@ -240,7 +241,8 @@ void ValueItem::updateActiveChildrenItems()
     }
 
   // Get the children that should be active for the current value
-  std::string v = def->discreteEnum(this->m_discreteIndices[0]);
+  std::string v =
+     def->discreteEnum(static_cast<size_t>(this->m_discreteIndices[0]));
   std::vector<std::string> citems = def->conditionalItems(v);
   std::size_t i, n = citems.size();
   for (i = 0; i < n; i++)

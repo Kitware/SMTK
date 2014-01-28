@@ -105,7 +105,7 @@ std::size_t RefItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
-bool RefItem::setValue(int element, smtk::attribute::AttributePtr att)
+bool RefItem::setValue(std::size_t element, smtk::attribute::AttributePtr att)
 {
   const RefItemDefinition *def =
     static_cast<const RefItemDefinition *>(this->definition().get());
@@ -124,8 +124,8 @@ bool RefItem::setValue(int element, smtk::attribute::AttributePtr att)
 }
 //----------------------------------------------------------------------------
 std::string
-RefItem::valueAsString(int element,
-                                      const std::string &format) const
+RefItem::valueAsString(std::size_t element,
+                       const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
@@ -154,14 +154,14 @@ RefItem::appendValue(smtk::attribute::AttributePtr val)
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
-    val->addReference(this, static_cast<int>(this->m_values.size() - 1));
+    val->addReference(this, this->m_values.size() - 1);
     return true;
     }
   return false;
 }
 //----------------------------------------------------------------------------
 bool
-RefItem::removeValue(int element)
+RefItem::removeValue(std::size_t element)
 {
   //First - are we allowed to change the number of values?
   const RefItemDefinition *def =
@@ -206,7 +206,7 @@ RefItem::setNumberOfValues(std::size_t newSize)
       att = this->m_values[i].lock().get();
       if (att != NULL)
         {
-        att->removeReference(this, static_cast<int>(i));
+        att->removeReference(this, i);
         }
       }
     }

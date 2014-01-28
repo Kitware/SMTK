@@ -91,7 +91,7 @@ namespace smtk
       {
         return (ith < 0) ? smtk::attribute::ItemPtr() :
           (static_cast<unsigned int>(ith) >= this->m_items.size() ?
-           smtk::attribute::ItemPtr() : this->m_items[ith]);
+           smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(ith)]);
       }
 
       smtk::attribute::ItemPtr find(const std::string &name) ;
@@ -158,10 +158,10 @@ namespace smtk
       void setName(const std::string &newname)
       {this->m_name = newname;}
 
-      void addReference(smtk::attribute::RefItem *attRefItem, int pos)
+      void addReference(smtk::attribute::RefItem *attRefItem, std::size_t pos)
         {this->m_references[attRefItem].insert(pos);}
       // This removes a specific ref item
-      void removeReference(smtk::attribute::RefItem *attRefItem, int pos)
+      void removeReference(smtk::attribute::RefItem *attRefItem, std::size_t pos)
         {this->m_references[attRefItem].erase(pos);}
       // This removes all references to a specific Ref Item
       void removeReference(smtk::attribute::RefItem *attRefItem)
@@ -172,7 +172,7 @@ namespace smtk
       smtk::attribute::DefinitionPtr m_definition;
       std::set<smtk::model::ItemPtr> m_entities;
       smtk::util::UUIDs m_modelEntities;
-      std::map<smtk::attribute::RefItem *, std::set<int> > m_references;
+      std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       bool m_isColorSet;

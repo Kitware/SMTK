@@ -50,7 +50,7 @@ namespace smtk
       {this->m_definitions.push_back(def);}
       std::size_t numberOfDefinitions() const
       { return this->m_definitions.size();}
-      smtk::attribute::DefinitionPtr definition(int ith) const
+      smtk::attribute::DefinitionPtr definition(std::size_t ith) const
       {return this->m_definitions[ith];}
       smtk::model::MaskType modelEntityMask() const
       {return this->m_modelEntityMask;}
