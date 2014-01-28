@@ -48,10 +48,10 @@ Attribute::~Attribute()
 {
   this->m_aboutToBeDeleted = true;
   // Clear all references to the attribute
-  std::map<smtk::attribute::RefItem *, std::set<int> >::iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<std::size_t> >::iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
-    std::set<int>::iterator sit;
+    std::set<std::size_t>::iterator sit;
     for (sit = it->second.begin(); sit != it->second.end(); sit++)
       {
       it->first->unset(*sit);
@@ -75,7 +75,7 @@ void Attribute::removeAllItems()
 void Attribute::references(std::vector<smtk::attribute::ItemPtr> &list) const
 {
   list.clear();
-  std::map<smtk::attribute::RefItem *, std::set<int> >::const_iterator it;
+  std::map<smtk::attribute::RefItem *, std::set<std::size_t> >::const_iterator it;
   for (it = this->m_references.begin(); it != this->m_references.end(); it++)
     {
     if (it->second.size())
@@ -302,13 +302,13 @@ smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const
     {
     return smtk::attribute::ConstItemPtr();
     }
-  return this->m_items[i];
+  return this->m_items[static_cast<std::size_t>(i)];
 }
 
 //----------------------------------------------------------------------------
 smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
 {
   int i = this->m_definition->findItemPosition(inName);
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[i];
+  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
 }
 //-----------------------------------------------------------------------------

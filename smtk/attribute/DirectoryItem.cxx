@@ -115,7 +115,7 @@ bool DirectoryItem::shouldExist() const
   return true;
 }
 //----------------------------------------------------------------------------
-bool DirectoryItem::setValue(int element, const std::string &val)
+bool DirectoryItem::setValue(std::size_t element, const std::string &val)
 {
   const DirectoryItemDefinition *def = 
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
@@ -129,8 +129,8 @@ bool DirectoryItem::setValue(int element, const std::string &val)
 }
 //----------------------------------------------------------------------------
 std::string
-DirectoryItem::valueAsString(int element, 
-                                      const std::string &format) const
+DirectoryItem::valueAsString(std::size_t element,
+                             const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];

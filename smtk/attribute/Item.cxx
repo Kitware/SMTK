@@ -77,7 +77,8 @@ ItemPtr Item::pointer() const
     GroupItem *gitem = dynamic_cast<GroupItem *>(this->m_owningItem);
     if (gitem)
       {
-      return gitem->item(this->m_subGroupPosition, this->m_position);
+      return gitem->item(static_cast<size_t>(this->m_subGroupPosition),
+                         static_cast<size_t>(this->m_position));
       }
     ValueItem *vitem = dynamic_cast<ValueItem *>(this->m_owningItem);
     if (vitem)
@@ -93,10 +94,10 @@ ItemPtr Item::pointer() const
           return it->second;
           }
         }
-      else if(vitem->isExpression(this->m_position))
+      else if(vitem->isExpression(static_cast<size_t>(this->m_position)))
         {
         // assume that this is owned by an expression
-        return vitem->expressionReference(this->m_position);
+        return vitem->expressionReference(static_cast<size_t>(this->m_position));
         }
       else
         {

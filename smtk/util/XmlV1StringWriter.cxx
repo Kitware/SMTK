@@ -88,7 +88,7 @@ namespace {
     if (idef->isDiscrete())
       {
       xml_node dnodes = node.append_child("DiscreteInfo");
-      int j, i, nItems, n = static_cast<int>(idef->numberOfDiscreteValues());
+      size_t j, i, nItems, n = idef->numberOfDiscreteValues();
       xml_node dnode, snode, inodes;
       std::string ename;
       std::vector<std::string> citems;
@@ -162,7 +162,7 @@ namespace {
       {
       return; // nothing left to do
       }
-    int i, n = static_cast<int>(item->numberOfValues());
+    size_t i, n = item->numberOfValues();
     if (!n)
       {
       return;
@@ -769,7 +769,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
                                          attribute::ValueItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  int i, n = static_cast<int>(item->numberOfValues());
+  size_t i, n = item->numberOfValues();
   if (!n)
     {
     return;
@@ -856,7 +856,7 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
 void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
                                                attribute::RefItemPtr item)
 {
-  int i=0, n = static_cast<int>(item->numberOfValues());
+  size_t i=0, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
 
   xml_node val;
@@ -899,7 +899,7 @@ void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
 void XmlV1StringWriter::processDirectoryItem(pugi::xml_node &node,
                                              attribute::DirectoryItemPtr item)
 {
-  int i, n = static_cast<int>(item->numberOfValues());
+  size_t i, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   if (!n)
     {
@@ -943,7 +943,7 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
                                         attribute::FileItemPtr item)
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
-  int i, n = static_cast<int>(item->numberOfValues());
+  size_t i, n = item->numberOfValues();
   if (!n)
     {
     return;
@@ -984,11 +984,11 @@ void XmlV1StringWriter::processFileItem(pugi::xml_node &node,
 void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
                                          attribute::GroupItemPtr item)
 {
-  int i, j, m, n;
+  size_t i, j, m, n;
   std::size_t  numRequiredGroups = item->numberOfRequiredGroups();
   xml_node itemNode;
-  n = static_cast<int>(item->numberOfGroups());
-  m = static_cast<int>(item->numberOfItemsPerGroup());
+  n = item->numberOfGroups();
+  m = item->numberOfItemsPerGroup();
   if (!n)
     {
     return;
@@ -1128,7 +1128,7 @@ void XmlV1StringWriter::processGroupView(xml_node &node,
     node.append_attribute("Style").set_value("Tiled");
     }
 
-  int i, n = static_cast<int>(group->numberOfSubViews());
+  size_t i, n = group->numberOfSubViews();
   xml_node child;
   view::BasePtr bview;
   for (i = 0; i < n; i++)

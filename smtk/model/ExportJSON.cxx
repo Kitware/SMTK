@@ -147,7 +147,7 @@ int ExportJSON::forStorageEntity(
     cJSON_AddItemToObject(cellRec, "r",
       cJSON_CreateUUIDArray(
         &entry->second.relations()[0],
-        static_cast<int>(entry->second.relations().size())));
+        static_cast<unsigned int>(entry->second.relations().size())));
     }
   return 1;
 }
@@ -261,7 +261,7 @@ int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* d
       }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateStringArray(
-        &entry->second[0], static_cast<int>(entry->second.size())));
+        &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
   return status;
 }
@@ -285,7 +285,7 @@ int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* 
       }
     cJSON_AddItemToObject(pdict, entry->first.c_str(),
       cJSON_CreateLongArray(
-        &entry->second[0], static_cast<int>(entry->second.size())));
+        &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
   return status;
 }

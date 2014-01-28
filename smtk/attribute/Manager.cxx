@@ -230,7 +230,7 @@ bool Manager::removeAttribute(smtk::attribute::AttributePtr att)
   return true;
 }
 //----------------------------------------------------------------------------
-void Manager::findDefinitions(long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const
+void Manager::findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   smtk::attribute::DefinitionPtr def;
   result.clear();

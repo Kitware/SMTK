@@ -50,7 +50,7 @@ namespace smtk
       virtual Base::Type type() const;
       std::size_t numberOfSubViews() const
       {return this->m_subViews.size();}
-      smtk::view::BasePtr subView(int ith) const
+      smtk::view::BasePtr subView(std::size_t ith) const
       {return this->m_subViews[ith];}
 
       bool addSubView( smtk::view::BasePtr subview )

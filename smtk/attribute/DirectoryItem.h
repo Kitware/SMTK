@@ -50,17 +50,17 @@ namespace smtk
       {return this->m_values.size();}
       bool  setNumberOfValues(std::size_t newSize);
       std::size_t numberOfRequiredValues() const;
-      std::string value(int element=0) const
+      std::string value(std::size_t element=0) const
       {return this->m_values[element];}
       bool setValue(const std::string &val)
       {return this->setValue(0, val);}
-      bool setValue(int element, const std::string &val);
+      bool setValue(std::size_t element, const std::string &val);
       bool appendValue(const std::string &val);
       bool removeValue(int element);
       virtual void reset();
       virtual std::string valueAsString(const std::string &format="") const
       {return this->valueAsString(0, format);}
-      virtual std::string valueAsString(int element, const std::string &format="") const;
+      virtual std::string valueAsString(std::size_t element, const std::string &format="") const;
       virtual bool isSet(std::size_t element=0) const
       {return this->m_isSet[element];}
       virtual void unset(std::size_t element=0)
