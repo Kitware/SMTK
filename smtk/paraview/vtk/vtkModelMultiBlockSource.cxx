@@ -71,6 +71,13 @@ smtk::model::StoragePtr vtkModelMultiBlockSource::GetModel()
   return this->Model;
 }
 
+/// Get the map from model entity UUID to the block index in multiblock output
+void vtkModelMultiBlockSource::GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid)
+{
+  uuid2mid.clear();
+  uuid2mid.insert(this->UUID2BlockIdMap.begin(), this->UUID2BlockIdMap.end());
+}
+
 /// Indicate that the model has changed and should have its VTK representation updated.
 void vtkModelMultiBlockSource::Dirty()
 {
@@ -270,6 +277,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     // Set the block name to the entity UUID.
     mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
     this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
+    this->UUID2BlockIdMap[cursor.name()] = static_cast<unsigned int>(i);
     }
 }
 
@@ -279,6 +287,7 @@ int vtkModelMultiBlockSource::RequestData(
   vtkInformationVector** vtkNotUsed(inInfo),
   vtkInformationVector* outInfo)
 {
+  this->UUID2BlockIdMap.clear();
   vtkMultiBlockDataSet* output = vtkMultiBlockDataSet::GetData(outInfo, 0);
   if (!output)
     {

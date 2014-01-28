@@ -8,6 +8,7 @@
 
 #include "smtk/Qt/qtEntityItemDelegate.h"
 #include "smtk/Qt/qtEntityItemModel.h"
+#include "smtk/Qt/qtModelView.h"
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
@@ -34,19 +35,36 @@
 #include <QMessageBox>
 
 #include <pqSMAdaptor.h>
+#include <pqDataRepresentation.h>
+#include <pqPipelineSource.h>
+#include <pqView.h>
+#include <pqApplicationCore.h>
+#include <pqObjectBuilder.h>
+#include <pqSelectionManager.h>
+#include <pqOutputPort.h>
+
 #include "vtkEventQtSlotConnect.h"
 #include "vtkSmartPointer.h"
+#include "vtkPVSMTKModelInformation.h"
+#include "vtkSMProxyManager.h"
+#include "vtkSMSessionProxyManager.h"
+#include "vtkNew.h"
+ #include "vtkSMSourceProxy.h"
+ #include "vtkSMPropertyHelper.h"
 
 using namespace std;
+using namespace smtk::model;
 
 //-----------------------------------------------------------------------------
 class pqSMTKModelReaderPanel::pqInternal
 {
 public:
-  QPointer<QTreeView> ModelView;
+  QPointer<qtModelView> ModelView;
   QPointer<QDockWidget> ModelDock;
   vtkSmartPointer<vtkEventQtSlotConnect> VTKConnect;
   bool ModelLoaded;
+  vtkNew<vtkPVSMTKModelInformation> ModelInfo;
+  vtkSmartPointer<vtkSMProxy> SelectionSource;
 
   pqInternal()
     {
@@ -107,7 +125,7 @@ void pqSMTKModelReaderPanel::onDataUpdated()
     this->Internal->ModelDock = new QDockWidget;
     this->Internal->ModelDock->setWindowTitle("SMTK Model");
     //QVBoxLayout* vLayout = new QVBoxLayout(this->Internal->ModelDock);
-    this->Internal->ModelView = new QTreeView;
+    this->Internal->ModelView = new qtModelView(this);
     QSizePolicy expandPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->Internal->ModelView->setSizePolicy(expandPolicy);
     this->Internal->ModelDock->setWidget(this->Internal->ModelView);
@@ -126,6 +144,10 @@ void pqSMTKModelReaderPanel::onDataUpdated()
       {
       this->layout()->addWidget(this->Internal->ModelDock);
       }
+    QObject::connect(this->Internal->ModelView, SIGNAL(entitiesSelected(QList<smtk::util::UUID>)),
+      this, SLOT(selectEntities(QList<smtk::util::UUID>)));
+
+
     }
   //cout << "emask " << hexconst(emask) << "\n";
 
@@ -144,6 +166,94 @@ void pqSMTKModelReaderPanel::onDataUpdated()
   this->Internal->ModelDock->show();
 
   this->Internal->ModelLoaded = true;
+  this->proxy()->GatherInformation(this->Internal->ModelInfo.GetPointer());
+
+
+  // create block selection source proxy
+  vtkSMSessionProxyManager *proxyManager =
+    vtkSMProxyManager::GetProxyManager()->GetActiveSessionProxyManager();
+
+  this->Internal->SelectionSource.TakeReference(
+    proxyManager->NewProxy("sources", "BlockSelectionSource"));
+  pqPipelineSource* source = qobject_cast<pqPipelineSource*>(
+    this->referenceProxy());
+  pqOutputPort* outport = source->getOutputPort(0);
+  // set the selection
+  if(outport)
+    {
+    outport->setSelectionInput(vtkSMSourceProxy::SafeDownCast(
+      this->Internal->SelectionSource), 0);
+    }
+}
+
+
+void pqSMTKModelReaderPanel::selectEntities(QList<smtk::util::UUID> selEntities)
+{
+  // create vector of selected block ids
+  std::vector<vtkIdType> blockIds;
+  foreach(smtk::util::UUID uuid, selEntities)
+    {
+    unsigned int flatIndex;
+    if(this->Internal->ModelInfo->GetBlockId(uuid.toString(), flatIndex))
+      {
+      blockIds.push_back(flatIndex);
+      }
+    }
+
+  vtkSMProxy* selectionSource = this->Internal->SelectionSource;
+
+  // set selected blocks
+  if (blockIds.size() > 0)
+    {
+    vtkSMPropertyHelper(selectionSource, "Blocks")
+      .Set(&blockIds[0], static_cast<unsigned int>(blockIds.size()));
+    }
+  else
+    {
+    vtkSMPropertyHelper(selectionSource, "Blocks").SetNumberOfElements(0);
+    }
+  selectionSource->UpdateVTKObjects();
+
+  vtkSMSourceProxy *selectionSourceProxy =
+    vtkSMSourceProxy::SafeDownCast(selectionSource);
+  pqPipelineSource* source = qobject_cast<pqPipelineSource*>(
+    this->referenceProxy());
+  pqOutputPort* outport = source->getOutputPort(0);
+
+  // update the selection manager
+  pqSelectionManager *selectionManager =
+    qobject_cast<pqSelectionManager*>(
+      pqApplicationCore::instance()->manager("SelectionManager"));
+  if(selectionManager && outport)
+    {
+    selectionManager->select(outport);
+    }
+
+  // delete the selection source
+  // selectionSourceProxy->Delete();
+
+  // update the views
+  if(outport)
+    {
+    outport->renderAllViews();
+    }
+
+}
+
+//-----------------------------------------------------------------------------
+pqDataRepresentation* pqSMTKModelReaderPanel::getRepresentation()
+{
+  pqPipelineSource* source = qobject_cast<pqPipelineSource*>(
+    this->referenceProxy());
+  QList<pqView*> views = source->getViews();
+  pqView* view = views.value(0);
+  pqDataRepresentation* selfRep = source->getRepresentation(view);
+  if(!selfRep)
+    {
+    pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
+    selfRep = builder->createDataRepresentation(source->getOutputPort(0), view);
+    }
+  return selfRep;
 }
 
 void pqSMTKModelReaderPanel::updateInformationAndDomains()

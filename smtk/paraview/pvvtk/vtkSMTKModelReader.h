@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/pvSMTKExports.h" // For export macro
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include <string>
+#include <map>
 
 class PVSMTK_EXPORT vtkSMTKModelReader : public vtkMultiBlockDataSetAlgorithm
 {
@@ -49,6 +50,10 @@ public:
   virtual const char* GetJSONModel()
     {return this->JSONModel.c_str();}
 
+  // Description:
+  // Get the map of entityid (UUID) to blockindex of multiblock
+  void GetEntityId2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
+
 protected:
   vtkSMTKModelReader();
   virtual ~vtkSMTKModelReader();
@@ -66,6 +71,9 @@ private:
   // Description:
   // smtk model in json
   std::string JSONModel;
+
+  class vtkInternal;
+  vtkInternal* Internal;
 
   vtkSMTKModelReader(const vtkSMTKModelReader&);  // Not implemented.
   void operator=(const vtkSMTKModelReader&);  // Not implemented.
