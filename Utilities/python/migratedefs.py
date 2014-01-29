@@ -62,7 +62,38 @@ def create_item(elem, name, indent=''):
         elif ctype == 'Maximum':
             item.setMaxRange(cast(value), is_inclusive)
 
+    # Handle <Group> --> category
+    group_elem = elem.find('Group')
+    if group_elem is not None:
+        category = group_elem.attrib.get('Name')
+        item.addCategory(category)
+
     return item
+
+
+def create_definition(manager, elem, indent=''):
+    '''
+    Instantiates Definition from element
+    '''
+    tagname = elem.attrib.get('TagName')
+    name = elem.attrib.get('Name')
+    uiname = elem.attrib.get('UIName')
+    print '%s<%s> name %s, tagname %s, UIName \"%s\"' % \
+        (elem.tag, indent, name, tagname, uiname)
+
+    att_type = tagname
+    if att_type is None:
+        att_type = name
+    print '%sCreate definition for <%s> %s' % (elem.tag, indent, tagname)
+    defn = manager.createDefinition(att_type)
+    if defn is None:
+        print 'ERROR - manager did not create definition \"%s\"' % att_type
+        return None
+
+    if uiname is not None:
+        defn.setLabel(uiname)
+
+    return defn
 
 
 def process_multivalue_elem(elem, group_item, indent=''):
@@ -115,22 +146,9 @@ def process_instance_elem(manager, elem, indent=''):
     Processes <Instance> element
     '''
     child_indent = '  ' + indent
-    tagname = elem.attrib.get('TagName')
-    name = elem.attrib.get('Name')
-    uiname = elem.attrib.get('UIName')
-    print '%sInstance name %s, tagname %s, UIName \"%s\"' % (indent, name, tagname, uiname)
-
-    att_type = tagname
-    if att_type is None:
-        att_type = name
-    print '%sCreate definition for <Instance> %s' % (indent, att_type)
-    defn = manager.createDefinition(att_type)
+    defn = create_definition(manager, elem, child_indent)
     if defn is None:
-        print 'ERROR - manager did not create definition \"%s\"' % att_type
         return
-
-    if uiname is not None:
-        defn.setLabel(uiname)
 
     for child in elem:
         if child.tag == 'InformationValue':
@@ -147,23 +165,9 @@ def process_templates_elem(manager, elem, indent=''):
             process_instance_elem(manager, child, child_indent)
 
     for child in elem.findall('InformationValue'):
-        # Create Definition & item
-        tagname = elem.attrib.get('TagName')
-        name = elem.attrib.get('Name')
-        uiname = elem.attrib.get('UIName')
-        print '%sInstance name %s, tagname %s, UIName \"%s\"' % (indent, name, tagname, uiname)
-
-        att_type = tagname
-        if att_type is None:
-            att_type = name
-        print '%sCreate definition for <InformationValue> %s' % (indent, tagname)
-        defn = manager.createDefinition(att_type)
+        defn = create_definition(manager, child)
         if defn is None:
-            print 'ERROR - manager did not create definition \"%s\"' % att_type
-            return
-
-        if uiname is not None:
-            defn.setLabel(uiname)
+            continue
 
         process_information_elem(elem, defn, child_indent)
 
@@ -179,11 +183,14 @@ def process_toplevel_elem(manager, elem, indent=''):
         print '%s(skipping)' % child_indent
         return
 
-    for child in elem:
-        if child.tag == 'Templates':
-            process_templates_elem(manager, child, child_indent)
-        #if child.tag == 'InformationValue':
-        #    process_information_elem(child, defn, child_indent)
+    for child in elem.findall('Templates'):
+        process_templates_elem(manager, child, child_indent)
+
+    for child in elem.findall('InformationValue'):
+        # Create defn then create item
+        defn = create_definition(manager, child, child_indent)
+        if defn is not None:
+            process_information_elem(child, defn, child_indent)
 
 
 def process_toplevel_group(manager, elem, indent=''):
