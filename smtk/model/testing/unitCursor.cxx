@@ -220,6 +220,19 @@ int main(int argc, char* argv[])
 
     std::cout << entity << "\n";
 
+    // Test color/hasColor/setColor
+    test(!entity.hasColor(), "Entity should not have had a color assigned to it.");
+    smtk::model::FloatList rgba = entity.color();
+    test(rgba.size() == 4, "Colors (even undefined) should have 4 components.");
+    test(rgba[3] == -1., "Undefined color should have negative alpha.");
+    entity.setColor(1., 0., 0.);
+    rgba = entity.color();
+    test(rgba[3] == 1., "Default alpha should be opaque.");
+    rgba[3] = 0.5;
+    entity.setColor(rgba);
+    rgba = entity.color();
+    test(rgba[3] == .5, "Alpha not set.");
+
     entity = Cursor(sm, UUID::null());
     test(entity.dimension() == -1);
     test(entity.isValid() == false);

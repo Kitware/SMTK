@@ -19,6 +19,9 @@ public:
   virtual std::string subtitle();
 
   virtual Cursor relatedEntity() const;
+  virtual FloatList relatedColor() const;
+  virtual bool isRelatedColorMutable() const;
+  virtual bool setRelatedColor(const FloatList& rgba);
 
   static DescriptivePhrases PhrasesFromUUIDs(smtk::model::StoragePtr, const smtk::util::UUIDs&);
 

@@ -92,6 +92,10 @@ public:
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
 
+  virtual FloatList relatedColor() const                       { return FloatList(4, -1.); }
+  virtual bool isRelatedColorMutable() const                   { return false; }
+  virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
+
 protected:
   DescriptivePhrase();
 
