@@ -33,6 +33,8 @@ def create_item(elem, name, indent=''):
         cast = str
     elif valuetype == 'void':
         item = smtk.attribute.VoidItemDefinition.New(name)
+    elif valuetype == 'FunctionId':
+        item = smtk.attribute.DoubleItemDefinition.New(name)
     else:
         print '%sCode for type %s not implemented -- skipping' % (indent, valuetype)
         return None
@@ -61,6 +63,7 @@ def create_item(elem, name, indent=''):
             item.setMaxRange(cast(value), is_inclusive)
 
     return item
+
 
 def process_multivalue_elem(elem, group_item, indent=''):
     '''
@@ -109,7 +112,7 @@ def process_information_elem(elem, defn, indent=''):
 def process_instance_elem(manager, elem, indent=''):
 
     '''
-    Process <Instance> element
+    Processes <Instance> element
     '''
     child_indent = '  ' + indent
     tagname = elem.attrib.get('TagName')
@@ -120,10 +123,10 @@ def process_instance_elem(manager, elem, indent=''):
     att_type = tagname
     if att_type is None:
         att_type = name
-    print '%sCreate definition %s' % (indent, att_type)
-    defn = manager.createDefinition(tagname)
+    print '%sCreate definition for <Instance> %s' % (indent, att_type)
+    defn = manager.createDefinition(att_type)
     if defn is None:
-        print 'ERROR - manager did not create definition \"%s\"' % tagname
+        print 'ERROR - manager did not create definition \"%s\"' % att_type
         return
 
     if uiname is not None:
@@ -136,12 +139,33 @@ def process_instance_elem(manager, elem, indent=''):
 
 def process_templates_elem(manager, elem, indent=''):
     '''
-    Process <Templates> element
+    Processes <Templates> element
     '''
     child_indent = '  ' + indent
-    for child in elem:
+    for child in elem.findall('Instance'):
         if child.tag == 'Instance':
             process_instance_elem(manager, child, child_indent)
+
+    for child in elem.findall('InformationValue'):
+        # Create Definition & item
+        tagname = elem.attrib.get('TagName')
+        name = elem.attrib.get('Name')
+        uiname = elem.attrib.get('UIName')
+        print '%sInstance name %s, tagname %s, UIName \"%s\"' % (indent, name, tagname, uiname)
+
+        att_type = tagname
+        if att_type is None:
+            att_type = name
+        print '%sCreate definition for <InformationValue> %s' % (indent, tagname)
+        defn = manager.createDefinition(att_type)
+        if defn is None:
+            print 'ERROR - manager did not create definition \"%s\"' % att_type
+            return
+
+        if uiname is not None:
+            defn.setLabel(uiname)
+
+        process_information_elem(elem, defn, child_indent)
 
 
 def process_toplevel_elem(manager, elem, indent=''):
