@@ -43,6 +43,33 @@ Cursor EntityPhrase::relatedEntity() const
   return this->m_entity;
 }
 
+/// Return a color associated with the related entity.
+FloatList EntityPhrase::relatedColor() const
+{
+  return this->m_entity.color();
+}
+
+bool EntityPhrase::isRelatedColorMutable() const
+{
+  return this->m_entity.isValid();
+}
+
+bool EntityPhrase::setRelatedColor(const FloatList& rgba)
+{
+  if (this->m_entity.isValid())
+    {
+    bool colorValid = rgba.size() == 4;
+    for (int i = 0; colorValid && i < 4; ++i)
+      colorValid &= (rgba[i] >= 0. && rgba[i] <= 1.);
+    if (colorValid)
+      {
+      this->m_entity.setColor(rgba);
+      return true;
+      }
+    }
+  return false;
+}
+
 DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
   smtk::model::StoragePtr storage, const smtk::util::UUIDs& uids)
 {

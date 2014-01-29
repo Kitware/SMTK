@@ -144,6 +144,70 @@ void Cursor::setName(const std::string& n)
   this->setStringProperty("name", n);
 }
 
+/** Return a user-assigned color for the entity.
+  *
+  * If no color was assigned, (0,0,0,0) will be returned.
+  */
+FloatList Cursor::color() const
+{
+  FloatList result = this->floatProperty("color");
+  int ncomp = static_cast<int>(result.size());
+  if (ncomp < 4)
+    {
+    result.resize(4);
+    for (int i = ncomp; i < 3; ++i)
+      result[i] = 0.;
+    switch (ncomp)
+      {
+    default:
+    case 0: // Assuming color not defined; mark alpha invalid.
+      result[3] = -1.;
+      break;
+    case 1:
+    case 3: // Assume RGB or greyscale; default alpha = 1.
+      result[3] = 1.;
+      break;
+    case 2: // Assume greyscale+alpha; remap alpha to result[4]
+      result[3] = (result[1] >= 0. && result[1] <= 0. ? result[1] : 1.);
+      break;
+      }
+    }
+  return result;
+}
+
+/// Returns true if the "color" float-property exists. No check on the size is performed.
+bool Cursor::hasColor() const
+{
+  return this->hasFloatProperty("color");
+}
+
+/** Assign a color to an entity.
+  *
+  * This will override any existing color.
+  * No check on the size is performed, but you should provide 4 values per color:
+  * red, green, blue, and alpha. Each should be in [0,1].
+  */
+void Cursor::setColor(const smtk::model::FloatList& rgba)
+{
+  this->setFloatProperty("color", rgba);
+}
+
+/** Assign a color to an entity.
+  *
+  * This will override any existing color.
+  * Each value should be in [0,1].
+  */
+void Cursor::setColor(double red, double green, double blue, double alpha)
+{
+  FloatList rgba;
+  rgba.resize(4);
+  rgba[0] = red;
+  rgba[1] = green;
+  rgba[2] = blue;
+  rgba[3] = alpha;
+  this->setColor(rgba);
+}
+
 /**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
   *
   * Subclasses should not override this method. It is a convenience

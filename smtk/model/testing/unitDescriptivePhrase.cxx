@@ -1,6 +1,7 @@
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
+#include "smtk/model/SimpleModelSubphrases.h"
 
 #include "smtk/model/ImportJSON.h"
 
@@ -10,16 +11,27 @@
 #include <iostream>
 #include <string>
 
-#include <assert.h>
+#include <stdlib.h>
 
 using smtk::shared_ptr;
 using namespace smtk::util;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 
+static int maxIndent = 10;
+
 void prindent(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
 {
-  os << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")" << "\n";
+  // Do not descend too far, as infinite recursion is possible,
+  // even with the SimpleSubphraseGenerator
+  if (indent > maxIndent)
+    return;
+
+  os << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
+  FloatList rgba = p->relatedColor();
+  if (rgba[3] >= 0.)
+    os << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3] << ")";
+  os << "\n";
   DescriptivePhrases sub = p->subphrases();
   indent += 2;
   for (DescriptivePhrases::iterator it = sub.begin(); it != sub.end(); ++it)
@@ -31,6 +43,8 @@ void prindent(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
 int main(int argc, char* argv[])
 {
   StoragePtr sm = Storage::create();
+  if (argc > 2)
+    maxIndent = atol(argv[2]);
 
   // Block to ensure timely destruction of JSON data.
     {
@@ -52,10 +66,20 @@ int main(int argc, char* argv[])
   Cursor::CursorsFromUUIDs(
     ents, sm, sm->entitiesMatchingFlags(MODEL_ENTITY, false));
 
+  CursorArray faces;
+  Cursor::CursorsFromUUIDs(
+    faces, sm, sm->entitiesMatchingFlags(CELL_2D, true));
+  for (CursorArray::iterator it = faces.begin(); it != faces.end(); ++it)
+    {
+    it->setColor(0.5, 0.5, 0.5, 1.); // Make every face grey.
+    }
+
   if (!ents.empty())
     {
     DescriptivePhrase::Ptr dit;
     EntityListPhrase::Ptr elist = EntityListPhrase::create()->setup(ents, dit);
+    SimpleModelSubphrases::Ptr spg = SimpleModelSubphrases::create();
+    elist->setDelegate(spg);
     prindent(std::cout, 0, elist);
     }
   else
