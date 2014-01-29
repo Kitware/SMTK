@@ -208,9 +208,7 @@
         return %out;
       </native-to-target>
       <target-to-native>
-        <!-- The 'check' attribute can be derived from the 'type' attribute,
-             it is defined here to test the CHECKTYPE type system variable. -->
-        <add-conversion type="PyObject" check="%CHECKTYPE[smtk::util::UUID](%in)">
+        <add-conversion check="checkForUUID(%in)" type="PyObject">
           PyObject* uuidBytes = PyObject_GetAttrString(%in, "bytes");
           char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
           if (ustr) {
@@ -221,6 +219,15 @@
       </target-to-native>
     </conversion-rule>
   </primitive-type>
+  <inject-code class="native" position="beginning">
+    static bool checkForUUID(PyObject* pyObj)
+    {
+      std::string tmp(PyString_AsString(PyObject_Str(pyObj)));
+      return tmp.find("SMTK") == std::string::npos &amp;&amp; tmp.find("-")==8 &amp;&amp;
+             tmp.find("-", 9) == 13 &amp;&amp; tmp.find("-", 14) == 18 &amp;&amp;
+             tmp.find("-", 19) == 23 &amp;&amp; tmp.find("-", 24) == std::string::npos;
+    }
+  </inject-code>
 
   <container-type name="std::pair" type="pair">
     <include file-name="utility" location="global"/>
