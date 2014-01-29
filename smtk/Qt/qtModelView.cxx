@@ -16,6 +16,8 @@ namespace smtk {
 qtModelView::qtModelView(QWidget* p)
   : QTreeView(p)
 {
+  this->setSelectionBehavior(QAbstractItemView::SelectRows);
+  this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
 }
 

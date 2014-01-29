@@ -177,13 +177,6 @@ void pqSMTKModelReaderPanel::onDataUpdated()
     proxyManager->NewProxy("sources", "BlockSelectionSource"));
   pqPipelineSource* source = qobject_cast<pqPipelineSource*>(
     this->referenceProxy());
-  pqOutputPort* outport = source->getOutputPort(0);
-  // set the selection
-  if(outport)
-    {
-    outport->setSelectionInput(vtkSMSourceProxy::SafeDownCast(
-      this->Internal->SelectionSource), 0);
-    }
 }
 
 
@@ -219,6 +212,10 @@ void pqSMTKModelReaderPanel::selectEntities(QList<smtk::util::UUID> selEntities)
   pqPipelineSource* source = qobject_cast<pqPipelineSource*>(
     this->referenceProxy());
   pqOutputPort* outport = source->getOutputPort(0);
+  if(outport)
+    {
+    outport->setSelectionInput(selectionSourceProxy, 0);
+    }
 
   // update the selection manager
   pqSelectionManager *selectionManager =
