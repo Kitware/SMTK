@@ -151,7 +151,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
   QVariant vdata1(elementIdx);
   lineEdit->setProperty("ElementIndex", vdata1);
-  QObject::connect(lineEdit, SIGNAL(editingFinished()),
+  QObject::connect(lineEdit, SIGNAL(textChanged(const QString &)),
     this, SLOT(onInputValueChanged()));
 
   QObject::connect(fileBrowserButton, SIGNAL(clicked()),
