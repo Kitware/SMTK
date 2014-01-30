@@ -134,22 +134,19 @@ namespace {
       {
       xml_node rnode = node.append_child("RangeInfo");
       xml_node r;
+      bool inclusive;
       if (idef->hasMinRange())
         {
         r = rnode.append_child("Min");
-        if (idef->minRangeInclusive())
-          {
-          r.append_attribute("Inclusive").set_value(true);
-          }
+        inclusive = idef->minRangeInclusive();
+        r.append_attribute("Inclusive").set_value(inclusive);
         r.text().set(getValueForXMLElement(idef->minRange()));
         }
       if (idef->hasMaxRange())
         {
         r = rnode.append_child("Max");
-        if (idef->maxRangeInclusive())
-          {
-          r.append_attribute("Inclusive").set_value(true);
-          }
+        inclusive = idef->maxRangeInclusive();
+        r.append_attribute("Inclusive").set_value(inclusive);
         r.text().set(getValueForXMLElement(idef->maxRange()));
         }
       }
