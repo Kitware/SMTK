@@ -20,19 +20,15 @@ add_executable(unitStorage unitStorage.cxx)
 target_link_libraries(unitStorage SMTKCore SMTKCoreModelTesting)
 add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
-add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
-target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)
-add_test(unitDescriptivePhrase ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhrase
-  "${CMAKE_CURRENT_SOURCE_DIR}/cube.json")
-
 add_executable(unitCursor unitCursor.cxx)
 target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)
 add_test(unitCursor ${EXECUTABLE_OUTPUT_PATH}/unitCursor)
 
+add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
+target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)
+
 add_executable(unitImportExportJSON unitImportExportJSON.cxx)
 target_link_libraries(unitImportExportJSON SMTKCore)
-add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON
-  "${CMAKE_CURRENT_SOURCE_DIR}/cube.json")
 
 add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement SMTKCore)
@@ -45,3 +41,14 @@ add_test(unitEntity ${EXECUTABLE_OUTPUT_PATH}/unitEntity)
 add_executable(benchmarkModel benchmarkModel.cxx)
 target_link_libraries(benchmarkModel SMTKCore SMTKCoreModelTesting)
 #add_test(benchmarkModel ${EXECUTABLE_OUTPUT_PATH}/benchmarkModel)
+
+################################################################################
+# Tests that require SMTK_DATA_DIR
+################################################################################
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+  add_test(unitDescriptivePhrase ${EXECUTABLE_OUTPUT_PATH}/unitDescriptivePhrase
+    "${SMTK_DATA_DIR}/smtk/simple.json")
+
+  add_test(unitImportExportJSON ${EXECUTABLE_OUTPUT_PATH}/unitImportExportJSON
+    "${SMTK_DATA_DIR}/smtk/simple.json")
+endif()

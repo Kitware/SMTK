@@ -284,11 +284,16 @@ namespace smtk {
 
 using smtk::util::UUID;
 
+/**\brief Create records in \a storage given a string containing \a json data.
+  *
+  * The top level JSON object must be a dictionary with key "type" set to "Storage"
+  * and key "topo" set to a dictionary of UUIDs with matching entries.
+  */
 int ImportJSON::intoModel(
-  const char* json, StoragePtr model)
+  const char* json, StoragePtr storage)
 {
   int status = 0;
-  if (!json || !json[0] || !model)
+  if (!json || !json[0] || !storage)
     {
     std::cerr << "Invalid arguments.\n";
     return status;
@@ -322,17 +327,23 @@ int ImportJSON::intoModel(
   if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"Storage"))
     {
     cJSON* body = cJSON_GetObjectItem(root, "topo");
-    status = ImportJSON::ofStorage(body, model);
+    status = ImportJSON::ofStorage(body, storage);
     }
 
   cJSON_Delete(root);
   return status;
 }
 
+/**\brief Create records in \a storage from a JSON dictionary, \a dict.
+  *
+  * The dictionary must have keys that are valid UUID strings and
+  * values that describe entity, tessellation, arrangement, and/or
+  * properties associated with the UUID.
+  */
 int ImportJSON::ofStorage(
-  cJSON* dict, StoragePtr model)
+  cJSON* dict, StoragePtr storage)
 {
-  if (!dict || !model)
+  if (!dict || !storage)
     {
     return 0;
     }
@@ -350,18 +361,23 @@ int ImportJSON::ofStorage(
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
       }
-    status &= ImportJSON::ofStorageEntity(uid, curChild, model);
-    status &= ImportJSON::ofStorageArrangement(uid, curChild, model);
-    status &= ImportJSON::ofStorageTessellation(uid, curChild, model);
-    status &= ImportJSON::ofStorageFloatProperties(uid, curChild, model);
-    status &= ImportJSON::ofStorageStringProperties(uid, curChild, model);
-    status &= ImportJSON::ofStorageIntegerProperties(uid, curChild, model);
+    status &= ImportJSON::ofStorageEntity(uid, curChild, storage);
+    status &= ImportJSON::ofStorageArrangement(uid, curChild, storage);
+    status &= ImportJSON::ofStorageTessellation(uid, curChild, storage);
+    status &= ImportJSON::ofStorageFloatProperties(uid, curChild, storage);
+    status &= ImportJSON::ofStorageStringProperties(uid, curChild, storage);
+    status &= ImportJSON::ofStorageIntegerProperties(uid, curChild, storage);
     }
   return status;
 }
 
+/**\brief Create an entity record from a JSON \a cellRec.
+  *
+  * The \a uid is the UUID corresponding to \a cellRec and
+  * the resulting record will be inserted into \a storage.
+  */
 int ImportJSON::ofStorageEntity(
-  const UUID& uid, cJSON* cellRec, StoragePtr model)
+  const UUID& uid, cJSON* cellRec, StoragePtr storage)
 {
   long dim = 0;
   long entityFlags = 0;
@@ -370,15 +386,20 @@ int ImportJSON::ofStorageEntity(
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
   if (status == 0)
     {
-    UUIDWithEntity iter = model->setEntityOfTypeAndDimension(uid, entityFlags, dim);
+    UUIDWithEntity iter = storage->setEntityOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
     cJSON_GetObjectUUIDArray(cellRec, "r", iter->second.relations());
     }
   return status ? 0 : 1;
 }
 
+/**\brief Create entity arrangement records from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a storage.
+  */
 int ImportJSON::ofStorageArrangement(
-  const UUID& uid, cJSON* dict, StoragePtr model)
+  const UUID& uid, cJSON* dict, StoragePtr storage)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
   if (!arrNode)
@@ -397,6 +418,9 @@ int ImportJSON::ofStorageArrangement(
     cJSON* arrangements = cJSON_GetObjectItem(arrNode, abbr.c_str());
     if (arrangements && arrangements->type == cJSON_Array)
       {
+      // First, erase any pre-existing arrangements to avoid duplicates.
+      storage->arrangementsOfKindForEntity(uid, k).clear();
+      // Now insert arrangements from the JSON object
       for (cJSON* arr = arrangements->child; arr; arr = arr->next)
         {
         if (arr->type == cJSON_Array)
@@ -404,7 +428,7 @@ int ImportJSON::ofStorageArrangement(
           Arrangement a;
           if (cJSON_GetArrangement(arr, a) > 0)
             {
-            model->arrangeEntity(uid, k, a);
+            storage->arrangeEntity(uid, k, a);
             }
           }
         }
@@ -413,8 +437,13 @@ int ImportJSON::ofStorageArrangement(
   return 1;
 }
 
+/**\brief Create an entity tessellation record from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a storage.
+  */
 int ImportJSON::ofStorageTessellation(
-  const UUID& uid, cJSON* dict, StoragePtr model)
+  const UUID& uid, cJSON* dict, StoragePtr storage)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
   if (!tessNode)
@@ -429,11 +458,11 @@ int ImportJSON::ofStorageTessellation(
   // We should fetch the metadata->formatVersion and verify it,
   // but I don't think it makes any difference to the fields
   // we rely on... yet.
-  UUIDsToTessellations::iterator tessIt = model->tessellations().find(uid);
-  if (tessIt == model->tessellations().end())
+  UUIDsToTessellations::iterator tessIt = storage->tessellations().find(uid);
+  if (tessIt == storage->tessellations().end())
     {
     Tessellation blank;
-    tessIt = model->tessellations().insert(
+    tessIt = storage->tessellations().insert(
       std::pair<UUID,Tessellation>(uid, blank)).first;
     }
   int numVerts = cJSON_GetTessellationCoords(
@@ -446,7 +475,12 @@ int ImportJSON::ofStorageTessellation(
   return 1;
 }
 
-int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+/**\brief Create entity floating-point-property records from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a storage.
+  */
+int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
 {
   int status = 0;
   cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
@@ -462,12 +496,17 @@ int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dic
       }
     FloatList propVal;
     cJSON_GetRealArray(floatProp, propVal);
-    model->setFloatProperty(uid, floatProp->string, propVal);
+    storage->setFloatProperty(uid, floatProp->string, propVal);
     }
   return status ? 0 : 1;
 }
 
-int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+/**\brief Create entity string-property records from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a storage.
+  */
+int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
 {
   int status = 0;
   cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
@@ -483,12 +522,17 @@ int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* di
       }
     StringList propVal;
     cJSON_GetStringArray(stringProp, propVal);
-    model->setStringProperty(uid, stringProp->string, propVal);
+    storage->setStringProperty(uid, stringProp->string, propVal);
     }
   return status ? 0 : 1;
 }
 
-int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+/**\brief Create entity integer-property records from a JSON \a dict.
+  *
+  * The \a uid is the UUID corresponding to \a dict and
+  * the resulting record will be inserted into \a storage.
+  */
+int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
 {
   int status = 0;
   cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
@@ -504,7 +548,7 @@ int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* d
       }
     IntegerList propVal;
     cJSON_GetIntegerArray(integerProp, propVal);
-    model->setIntegerProperty(uid, integerProp->string, propVal);
+    storage->setIntegerProperty(uid, integerProp->string, propVal);
     }
   return status ? 0 : 1;
 }
