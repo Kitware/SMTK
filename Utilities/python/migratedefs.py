@@ -104,9 +104,10 @@ def create_item(elem, name, indent=''):
     # Handle <Option>
     option_elem = elem.find('Option')
     if option_elem is not None:
-        option_string = option_elem.attrib.get('Default', 'OFF')
-        option_value = True if option_string == 'ON' else False
-        item.setIsOptional(option_value)
+        item.setIsOptional(True)
+        default_string = option_elem.attrib.get('Default', 'OFF')
+        default_value = True if default_string == 'ON' else False
+        item.setIsEnabledByDefault(default_value)
 
     # Handle <Units>
     units_attrib = elem.attrib.get('Units')
@@ -192,6 +193,13 @@ def process_information_elem(elem, defn, indent=''):
     if uiname is not None:
         item.setLabel(uiname)
 
+    # Check for <BoundaryConditionGroup Name="Nodal"
+    bcgroup_elem = elem.find('BoundaryConditionGroup')
+    if bcgroup_elem is not None:
+        name = bcgroup_elem.attrib.get('Name')
+        if name == 'Nodal':
+            defn.setIsNodal(True)
+
     defn.addItemDefinition(item)
 
 
@@ -205,9 +213,8 @@ def process_instance_elem(manager, elem, indent=''):
     if defn is None:
         return
 
-    for child in elem:
-        if child.tag == 'InformationValue':
-            process_information_elem(child, defn, child_indent)
+    for child in elem.findall('InformationValue'):
+        process_information_elem(child, defn, child_indent)
 
 
 def process_templates_elem(manager, elem, indent=''):
