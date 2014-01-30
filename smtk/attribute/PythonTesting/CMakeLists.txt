@@ -15,6 +15,7 @@ if( PYTHONINTERP_FOUND )
   endif()
   message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
   message("${SHIBOKEN_LIBRARY_PATH}")
+   add_test(associationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/associationTest.py)
    add_test(basicAttributeTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeTest.py)
    add_test(basicAttributeDefinitionTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDefinitionTest.py)
    add_test(basicAttributeDerivationTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicAttributeDerivationTest.py)
@@ -25,7 +26,7 @@ if( PYTHONINTERP_FOUND )
    add_test(attributeReferencingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeReferencingTest.py)
    add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
    add_test(attributeFindItemTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeFindItemTest.py)
-  set_tests_properties( basicAttributeTestPy basicAttributeDefinitionTestPy
+  set_tests_properties( associationTestPy basicAttributeTestPy basicAttributeDefinitionTestPy
                         basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
                         expressintTestPy expressionTest2Py
                         attributeAutoNamingTestPy attributeAutoNamingTestPy

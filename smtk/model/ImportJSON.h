@@ -23,14 +23,14 @@ class Storage;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int intoModel(const char* json, StoragePtr model);
-  static int ofStorage(cJSON* body, StoragePtr model);
-  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
-  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
-  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
-  static int ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
-  static int ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
-  static int ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr model);
+  static int intoModel(const char* json, StoragePtr storage);
+  static int ofStorage(cJSON* body, StoragePtr storage);
+  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
 };
 
   } // namespace model

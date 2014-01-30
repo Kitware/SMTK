@@ -47,19 +47,19 @@ namespace smtk
       bool  setNumberOfGroups(std::size_t newSize);
       std::size_t numberOfItemsPerGroup() const;
       bool appendGroup();
-      bool removeGroup(int element);
+      bool removeGroup(std::size_t element);
 
-      smtk::attribute::ItemPtr item(int ith) const
+      smtk::attribute::ItemPtr item(std::size_t ith) const
       {return this->item(0, ith);}
-      smtk::attribute::ItemPtr item(int element, int ith) const
+      smtk::attribute::ItemPtr item(std::size_t element, std::size_t ith) const
         {return this->m_items[element][ith];}
 
       smtk::attribute::ItemPtr find(const std::string &inName)
         {return this->find(0, inName);}
-      smtk::attribute::ItemPtr find(int element, const std::string &name) ;
+      smtk::attribute::ItemPtr find(std::size_t element, const std::string &name) ;
       smtk::attribute::ConstItemPtr find(const std::string &inName) const
         {return this->find(0, inName);}
-      smtk::attribute::ConstItemPtr find(int element, const std::string &name) const;
+      smtk::attribute::ConstItemPtr find(std::size_t element, const std::string &name) const;
 
       virtual void reset();
     protected:

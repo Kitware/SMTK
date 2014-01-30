@@ -69,7 +69,7 @@ namespace smtk
       {return (this->m_discreteValueEnums.size() != 0);}
       std::size_t numberOfDiscreteValues() const
       {return this->m_discreteValueEnums.size();}
-      const std::string &discreteEnum(int ith) const
+      const std::string &discreteEnum(std::size_t ith) const
       {return this->m_discreteValueEnums[ith];}
       int defaultDiscreteIndex() const
       {return this->m_defaultDiscreteIndex;}

@@ -52,7 +52,7 @@ namespace smtk
       {
         return (ith < 0) ? smtk::attribute::ItemDefinitionPtr() :
           (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
-           smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[ith]);
+           smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[static_cast<std::size_t>(ith)]);
       }
       bool addItemDefinition(smtk::attribute::ItemDefinitionPtr cdef);
       template<typename T>

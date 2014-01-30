@@ -20,6 +20,17 @@
 namespace smtk {
   namespace model {
 
+/**\brief Return a list of descriptive phrases that elaborate upon \a src.
+  *
+  * Subclasses must override this method.
+  */
+DescriptivePhrases SubphraseGenerator::subphrases(DescriptivePhrase::Ptr src)
+{
+  (void)src;
+  DescriptivePhrases empty;
+  return empty;
+}
+
 /**\brief The maximum number of subphrases to directly include before turning into a list.
   *
   * The helper methods in SubphraseGenerator (such as InstancesOfEntity()), will

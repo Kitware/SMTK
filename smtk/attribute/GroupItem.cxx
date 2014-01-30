@@ -150,7 +150,7 @@ bool GroupItem::appendGroup()
   return true;
 }
 //----------------------------------------------------------------------------
-bool GroupItem::removeGroup(int element)
+bool GroupItem::removeGroup(std::size_t element)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
@@ -211,15 +211,15 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   return true;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr GroupItem::find(int element, const std::string &inName)
+smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string &inName)
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(inName);
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][i];
+  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &inName) const
+smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string &inName) const
 {
   const GroupItemDefinition *def = 
     static_cast<const GroupItemDefinition *>(this->definition().get());
@@ -228,6 +228,6 @@ smtk::attribute::ConstItemPtr GroupItem::find(int element, const std::string &in
     {
     return smtk::attribute::ConstItemPtr();
     }
-  return this->m_items[element][i];
+  return this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------

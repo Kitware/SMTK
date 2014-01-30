@@ -213,12 +213,25 @@ int main(int argc, char* argv[])
       entity.stringProperty("name").size() == 1 &&
       entity.stringProperty("name")[0] == "Tetrahedron");
 
-    entity.setIntegerProperty("deadbeef", 3735928559);
+    entity.setIntegerProperty("7beef", 507631);
     test(
-      entity.integerProperty("deadbeef").size() == 1 &&
-      entity.integerProperty("deadbeef")[0] == 3735928559);
+      entity.integerProperty("7beef").size() == 1 &&
+      entity.integerProperty("7beef")[0] == 507631);
 
     std::cout << entity << "\n";
+
+    // Test color/hasColor/setColor
+    test(!entity.hasColor(), "Entity should not have had a color assigned to it.");
+    smtk::model::FloatList rgba = entity.color();
+    test(rgba.size() == 4, "Colors (even undefined) should have 4 components.");
+    test(rgba[3] == -1., "Undefined color should have negative alpha.");
+    entity.setColor(1., 0., 0.);
+    rgba = entity.color();
+    test(rgba[3] == 1., "Default alpha should be opaque.");
+    rgba[3] = 0.5;
+    entity.setColor(rgba);
+    rgba = entity.color();
+    test(rgba[3] == .5, "Alpha not set.");
 
     entity = Cursor(sm, UUID::null());
     test(entity.dimension() == -1);
@@ -227,11 +240,11 @@ int main(int argc, char* argv[])
     // Verify that setting properties on an invalid cursor works.
     entity.setFloatProperty("perpendicular", 1.57);
     entity.setStringProperty("name", "Tetrahedron");
-    entity.setIntegerProperty("deadbeef", 3735928559);
+    entity.setIntegerProperty("7beef", 507631);
     // The above should have had no effect since the cursor is invalid:
     test(entity.hasFloatProperty("perpendicular") == false);
     test(entity.hasStringProperty("name") == false);
-    test(entity.hasIntegerProperty("deadbeef") == false);
+    test(entity.hasIntegerProperty("7beef") == false);
 
     // Verify that attribute assignment works (with some
     // made-up attribute IDs)

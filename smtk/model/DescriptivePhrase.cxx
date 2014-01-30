@@ -23,9 +23,17 @@ DescriptivePhrasePtr DescriptivePhrase::setDelegate(SubphraseGeneratorPtr delega
   return shared_from_this();
 }
 
+/// An efficient, but unwrappable, method that returns further phrases describing this one.
 DescriptivePhrases& DescriptivePhrase::subphrases()
 {
   this->buildSubphrases();
+  return this->m_subphrases;
+}
+
+/// A wrappable version of subphrases().
+DescriptivePhrases DescriptivePhrase::subphrases() const
+{
+  const_cast<DescriptivePhrase*>(this)->buildSubphrases();
   return this->m_subphrases;
 }
 

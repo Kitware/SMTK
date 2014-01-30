@@ -671,6 +671,7 @@ WARN_LOGFILE           =
 INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk" \
   "@SMTK_SOURCE_DIR@/smtk/attribute" \
+  "@SMTK_SOURCE_DIR@/smtk/cgm" \
   "@SMTK_SOURCE_DIR@/smtk/model" \
   "@SMTK_SOURCE_DIR@/smtk/model/testing" \
   "@SMTK_SOURCE_DIR@/smtk/Qt" \
@@ -680,6 +681,7 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/vtk" \
   "@SMTK_BINARY_DIR@/smtk" \
   "@SMTK_BINARY_DIR@/smtk/attribute" \
+  "@SMTK_BINARY_DIR@/smtk/cgm" \
   "@SMTK_BINARY_DIR@/smtk/model" \
   "@SMTK_BINARY_DIR@/smtk/model/testing" \
   "@SMTK_BINARY_DIR@/smtk/Qt" \

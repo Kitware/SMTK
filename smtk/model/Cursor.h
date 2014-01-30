@@ -79,6 +79,11 @@ public:
   std::string name() const;
   void setName(const std::string& n);
 
+  FloatList color() const;
+  bool hasColor() const;
+  void setColor(const FloatList& rgba);
+  void setColor(double r, double g, double b, double a = 1.);
+
   bool isValid() const;
   virtual bool isValid(Entity** entityRecord) const;
   virtual bool checkForArrangements(ArrangementKind k, Entity*& entry, Arrangements*& arr) const;

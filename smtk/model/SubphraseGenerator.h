@@ -31,7 +31,7 @@ class SMTKCORE_EXPORT SubphraseGenerator : smtkEnableSharedPtr(SubphraseGenerato
 public:
   smtkTypeMacro(SubphraseGenerator);
 
-  virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src) = 0;
+  virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
   virtual int directLimit() const;
   virtual bool shouldOmitProperty(
     DescriptivePhrase::Ptr parent, PropertyType ptype, const std::string& pname) const;

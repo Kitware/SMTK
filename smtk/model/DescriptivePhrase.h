@@ -82,14 +82,19 @@ public:
 
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
   virtual DescriptivePhrases& subphrases();
+  virtual DescriptivePhrases subphrases() const;
   virtual int argFindChild(DescriptivePhrase* child) const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
-  virtual AttributeId relatedAttributeId() const               { return -1; }
+  virtual AttributeId relatedAttributeId() const               { return static_cast<AttributeId>(-1); }
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
+
+  virtual FloatList relatedColor() const                       { return FloatList(4, -1.); }
+  virtual bool isRelatedColorMutable() const                   { return false; }
+  virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
 
 protected:
   DescriptivePhrase();

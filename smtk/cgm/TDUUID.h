@@ -27,7 +27,7 @@ typedef google::sparse_hash_map<smtk::util::UUID,ToolDataUser*> UUIDToCGMRef;
 typedef std::map<smtk::util::UUID,ToolDataUser*> UUIDToCGMRef;
 #endif // SMTK_HASH_STORAGE
 
-class TDUUID : public ToolData
+class CGMSMTK_EXPORT TDUUID : public ToolData
 {
 public:
   TDUUID(ToolDataUser* entity, const smtk::util::UUID& uid = smtk::util::UUID());

@@ -1635,11 +1635,7 @@ void XmlDocV1Parser::processDirectoryItem(pugi::xml_node &node,
     }
   else if (numRequiredVals == 1)
     {
-    val = node.child("Val");
-    if (val)
-      {
-      item->setValue(val.text().get());
-      }
+    item->setValue(node.text().get());
     }
   else
     {
@@ -1727,11 +1723,7 @@ void XmlDocV1Parser::processFileItem(pugi::xml_node &node,
     }
   else if (numRequiredVals == 1)
     {
-    val = node.child("Val");
-    if (val)
-      {
-      item->setValue(val.text().get());
-      }
+    item->setValue(node.text().get());
     }
   else
     {

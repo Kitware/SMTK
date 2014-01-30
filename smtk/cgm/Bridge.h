@@ -17,6 +17,9 @@ class RefFace;
 class RefEdge;
 class RefVertex;
 class RefGroup;
+class RefEntity;
+class SenseEntity;
+class GroupingEntity;
 
 namespace cgmsmtk {
   namespace cgm {
@@ -41,27 +44,34 @@ namespace cgmsmtk {
 class CGMSMTK_EXPORT Bridge
 {
 public:
-  static bool addCGMEntityToStorage(
-    const smtk::util::UUID& entity, smtk::model::StoragePtr storage);
+  static smtk::model::Cursor addCGMEntityToStorage(
+    const smtk::util::UUID& entity, smtk::model::StoragePtr storage, bool addRels = true);
 
   static bool addStorageEntityToCGM(const smtk::model::Cursor& ent);
 
 protected:
   friend class ImportSolid;
 
-  static void AddBodyToStorage(const smtk::util::UUID&, Body*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddVolumeUseToStorage(const smtk::util::UUID&, CoVolume*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddFaceUseToStorage(const smtk::util::UUID&, CoFace*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddEdgeUseToStorage(const smtk::util::UUID&, CoEdge*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddVertexUseToStorage(const smtk::util::UUID&, CoVertex*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddShellToStorage(const smtk::util::UUID&, Shell*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddLoopToStorage(const smtk::util::UUID&, Loop*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddChainToStorage(const smtk::util::UUID&, Chain*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddVolumeToStorage(const smtk::util::UUID&, RefVolume*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddFaceToStorage(const smtk::util::UUID&, RefFace*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddEdgeToStorage(const smtk::util::UUID&, RefEdge*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddVertexToStorage(const smtk::util::UUID&, RefVertex*, smtk::model::StoragePtr, bool addRels = true);
-  static void AddGroupToStorage(const smtk::util::UUID&, RefGroup*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Cursor addCGMEntityToStorage(
+    const smtk::util::UUID& entity, RefEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
+  static smtk::model::Cursor addCGMEntityToStorage(
+    const smtk::util::UUID& entity, GroupingEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
+  static smtk::model::Cursor addCGMEntityToStorage(
+    const smtk::util::UUID& entity, SenseEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
+
+  static smtk::model::ModelEntity addBodyToStorage(const smtk::util::UUID&, Body*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::VolumeUse addVolumeUseToStorage(const smtk::util::UUID&, CoVolume*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::FaceUse addFaceUseToStorage(const smtk::util::UUID&, CoFace*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::EdgeUse addEdgeUseToStorage(const smtk::util::UUID&, CoEdge*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::VertexUse addVertexUseToStorage(const smtk::util::UUID&, CoVertex*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Shell addShellToStorage(const smtk::util::UUID&, Shell*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Loop addLoopToStorage(const smtk::util::UUID&, Loop*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Chain addChainToStorage(const smtk::util::UUID&, Chain*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Volume addVolumeToStorage(const smtk::util::UUID&, RefVolume*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Face addFaceToStorage(const smtk::util::UUID&, RefFace*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Edge addEdgeToStorage(const smtk::util::UUID&, RefEdge*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::Vertex addVertexToStorage(const smtk::util::UUID&, RefVertex*, smtk::model::StoragePtr, bool addRels = true);
+  static smtk::model::GroupEntity addGroupToStorage(const smtk::util::UUID&, RefGroup*, smtk::model::StoragePtr, bool addRels = true);
 };
 
   } // namespace cgm

@@ -82,7 +82,7 @@ namespace smtk
 
       void findDefinitionAttributes(const std::string &type,
                                     std::vector<smtk::attribute::AttributePtr> &result) const;
-      void findDefinitions(long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const;
+      void findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const;
 
       smtk::attribute::ConstDefinitionPtr findIsUniqueBaseClass(
         smtk::attribute::DefinitionPtr attDef) const;

@@ -161,10 +161,57 @@
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
 
+  <!-- TODO: Fix or categorize these warnings -->
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityProperties', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::shouldOmitProperty', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::setup', unmatched return type 'smtk::model::EntityListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::prototypeOfInstance', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::attributesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::subphrases', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::stringPropertiesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityPhrase::setup', unmatched return type 'smtk::model::EntityPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::entitiesOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfPropertyList', unmatched parameter type 'smtk::model::PropertyListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::freeSubmodelsOfModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingCellsOfCell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::propertiesOfPropertyList', unmatched parameter type 'smtk::model::PropertyListPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::cellOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'SubphraseGenerator' is not known"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::freeGroupsInModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::membersOfGroup', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::setDelegate', unmatched return type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::freeCellsOfModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityPhrase::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::propertiesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::findDelegate', unmatched return type 'smtk::model::SubphraseGeneratorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::inclusionsOfCell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::floatPropertiesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::toplevelShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntity', unmatched parameter type 'smtk::model::EntityPhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::subphrases', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfCell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::instancesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityPhrases', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::integerPropertiesOfEntity', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::toplevelShellsOfCell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shouldOmitProperty', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::setup', unmatched return type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfShell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -208,9 +255,7 @@
         return %out;
       </native-to-target>
       <target-to-native>
-        <!-- The 'check' attribute can be derived from the 'type' attribute,
-             it is defined here to test the CHECKTYPE type system variable. -->
-        <add-conversion type="PyObject" check="%CHECKTYPE[smtk::util::UUID](%in)">
+        <add-conversion check="checkForUUID(%in)" type="PyObject">
           PyObject* uuidBytes = PyObject_GetAttrString(%in, "bytes");
           char* ustr = uuidBytes ? PyString_AsString(uuidBytes) : NULL;
           if (ustr) {
@@ -221,6 +266,15 @@
       </target-to-native>
     </conversion-rule>
   </primitive-type>
+  <inject-code class="native" position="beginning">
+    static bool checkForUUID(PyObject* pyObj)
+    {
+      std::string tmp(PyString_AsString(PyObject_Str(pyObj)));
+      return tmp.find("SMTK") == std::string::npos &amp;&amp; tmp.find("-")==8 &amp;&amp;
+             tmp.find("-", 9) == 13 &amp;&amp; tmp.find("-", 14) == 18 &amp;&amp;
+             tmp.find("-", 19) == 23 &amp;&amp; tmp.find("-", 24) == std::string::npos;
+    }
+  </inject-code>
 
   <container-type name="std::pair" type="pair">
     <include file-name="utility" location="global"/>
@@ -470,9 +524,13 @@
     <modify-function signature="removeCategory(const std::string &amp;)" remove="all"/>
   </value-type>
 
+  <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Storage">
     <modify-function signature="arrangeEntity(smtk::util::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
@@ -566,6 +624,7 @@
          -->
 
   </value-type>
+  <value-type template="smtk::shared_ptr" args="smtk::model::SubphraseGenerator"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
@@ -686,6 +745,7 @@
 
       <object-type name="DescriptivePhrase">
         <include file-name="smtk/model/DescriptivePhrase.h" location="local"/>
+        <modify-function signature="subphrases()" remove="all"/>
       </object-type>
 
       <value-type name="Edge">
@@ -697,6 +757,30 @@
         <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
+
+      <object-type name="EntityPhrase">
+        <include file-name="smtk/model/EntityPhrase.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::EntityPhrase&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::EntityPhrase::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="EntityListPhrase">
+        <include file-name="smtk/model/EntityListPhrase.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::EntityListPhrase&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::EntityListPhrase::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
 
       <value-type name="Face">
         <include file-name="smtk/model/Face.h" location="local"/>
@@ -799,6 +883,22 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
           </inject-code>
         </modify-function>
+      </object-type>
+
+      <object-type name="SimpleModelSubphrases">
+        <include file-name="smtk/model/SimpleModelSubphrases.h" location="local"/>
+        <add-function signature="create()"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases&gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::model::SimpleModelSubphrases::create();
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="SubphraseGenerator">
+        <include file-name="smtk/model/SubphraseGenerator.h" location="local"/>
       </object-type>
 
       <object-type name="Tessellation">

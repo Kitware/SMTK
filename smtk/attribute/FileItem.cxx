@@ -115,7 +115,7 @@ bool FileItem::shouldExist() const
   return true;
 }
 //----------------------------------------------------------------------------
-bool FileItem::setValue(int element, const std::string &val)
+bool FileItem::setValue(std::size_t element, const std::string &val)
 {
   const FileItemDefinition *def = 
     static_cast<const FileItemDefinition *>(this->definition().get());
@@ -129,8 +129,8 @@ bool FileItem::setValue(int element, const std::string &val)
 }
 //----------------------------------------------------------------------------
 std::string
-FileItem::valueAsString(int element, 
-                                      const std::string &format) const
+FileItem::valueAsString(std::size_t element,
+                        const std::string &format) const
 {
   // For the initial design we will use sprintf and force a limit of 300 char
   char dummy[300];
@@ -166,7 +166,7 @@ FileItem::appendValue(const std::string &val)
 }
 //----------------------------------------------------------------------------
 bool
-FileItem::removeValue(int element)
+FileItem::removeValue(std::size_t element)
 {
   //First - are we allowed to change the number of values?
   const FileItemDefinition *def =

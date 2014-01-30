@@ -17,7 +17,6 @@ namespace cgmsmtk {
   */
 void CAUUID::registerWithAttributeManager()
 {
-  std::cout << "CAUUID construct.\n";
   static bool caUUIDRegistered = false;
   if (!caUUIDRegistered)
     {
