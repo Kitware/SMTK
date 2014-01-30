@@ -1,0 +1,69 @@
+# Simulation Modeling Tool Kit (SMTK)
+
+SMTK is a library which provides a way to specify attributes
+(such as initial and boundary conditions, but also things
+like mesh sizing functions) that describe a physical simulation
+on a geometric domain, as well as high-level access to model
+geometry (through various solid model and mesh tools) for the
+purpose of linking attributes to geometric models.
+
+## Building SMTK
+
+In order to build SMTK you must have
+
++ A modern C++ compiler (gcc, clang, or VS),
++ [CMake](http://cmake.org) 2.8.11 or newer, and
++ [Boost](http://boost.org) 1.50.0 or newer.
+
+We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
+
+You may optionally provide
+
++ [Qt](http://qt-project.org) version 4.8 or newer,
++ [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer, and
++ [VTK](http://vtk.org) version 6.0 or newer
+
+for additional functionality.
+
+You may wish to obtain the test-data repository for SMTK in order
+to run tests which require input datasets; run:
+
+    git clone git@www.kitware.com:SMTKTestData.git
+
+somewhere *outside* the SMTK source directory. When running CMake on SMTK,
+set the `SMTK_DATA_DIR` variable to point to the directory `git clone`
+created.
+
+Once you have prepared all of the dependencies, it is time to
+create a build directory (again, *outside* the SMTK source directory
+containing this ReadMe file) and run CMake.
+These instructions will assume you have the SMTK source in a
+directory named `/source/SMTK`, the SMTK test-data in `/data/SMTK`,
+that you wish to build in a directory named `/build/SMTK`, and will
+install SMTK into `/install/SMTK`.
+To begin:
+
+    mkdir /build/SMTK
+    cd /build/SMTK
+    # If you do not have Ninja and do not have the SMTK test data:
+    cmake /source/SMTK
+    # or, if you have Ninja and the SMTK test data:
+    cmake -G Ninja -DSMTK_DATA_DIR:PATH=/data/SMTK /source/SMTK
+
+At this point, CMake will likely complain that you are missing Boost.
+It will also default to not build python wrappings, Qt, VTK, or CGMA
+functionality since those require optional dependencies.
+To change these defaults and specify where Boost is located, you may
+do any of the following:
+
++ manually edit the newly-created `/build/SMTK/CMakeCache.txt` file,
++ run the Qt `cmake-gui` command (assuming it is present in your build of CMake), or
++ run the text-based `ccmake` command (assuming it is present in your build of CMake).
+
+Once you have updated all of the required settings, reconfigure (by re-running
+`cmake`, pressing the "Configure" button, or pressing the `c` key, respectively --
+depending on which method above you use to edit CMake settings). Once CMake is
+in a good state, it will generate project files (either Makefiles, Ninja build
+files, or an IDE project) either automatically (if you manually re-run `cmake`)
+or at your request (when running `cmake-gui` or `ccmake`).
+You may then build and install SMTK using the generated project files.
