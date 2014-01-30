@@ -141,7 +141,7 @@ def create_definition(manager, elem, indent=''):
     return defn
 
 
-def process_multivalue_elem(elem, group_item, indent=''):
+def process_multivalue_elem(elem, group_item, category, indent=''):
     '''
     Processes <MultiValue> elements
     '''
@@ -151,6 +151,10 @@ def process_multivalue_elem(elem, group_item, indent=''):
         name = 'Value%s' % input_elem.attrib.get('Index')
         input_item = create_item(input_elem, name, child_indent)
         if input_item is not None:
+            # Assign category to first item (only)
+            if category is not None:
+                input_item.addCategory(category)
+                category = None
             group_item.addItemDefinition(input_item)
 
 
@@ -169,8 +173,14 @@ def process_information_elem(elem, defn, indent=''):
     if mvalue_elem is not None:
         print '%sProcessing <MultiValue> element' % indent
         item = smtk.attribute.GroupItemDefinition.New(tagname)
-        # TODO SET CATEGORY
-        process_multivalue_elem(mvalue_elem, item, child_indent)
+        if uiname is not None:
+            item.setLabel(uiname)
+
+        category = None
+        group_elem = elem.find('Group')
+        if group_elem is not None:
+            category = group_elem.attrib.get('Name')
+        process_multivalue_elem(mvalue_elem, item, category, child_indent)
         defn.addItemDefinition(item)
         return
 
