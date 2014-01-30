@@ -526,8 +526,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
     }
   if (idef->units() != "")
     {
-    xml_node unode = node.append_child("Units");
-    unode.text().set(idef->units().c_str());
+    node.append_attribute("Units") = idef->units().c_str();
     }
   // Now lets process its children items
   if (!idef->numberOfChildrenItemDefinitions())
