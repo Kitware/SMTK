@@ -1,14 +1,36 @@
 """
-Script to convert CMB2 template to CMB3 format
+Expermental script to translate CMB2 template files to CMB3 format.
+i.e., USE THIS SCRIPT AT YOUR OWN RISK!
+This script does not completely migrate everything, but it should
+help reduce the manual workload.
 
 This script parses the CMB2 template in python, and creates the
 corresponding attdefs in current (CMB3) format.
 
-Note: this code presumes that the input template is valid
+Only generates Definitions, does NOT generate sections.
+
+There are two basic patterns from input to output:
+    Pattern #1:
+        <TopLevel>
+            <Templates>
+                <Instance>              --> Definition
+                    <InformationValue>  --> ItemDefinition
+
+    Pattern #2:
+        <TopLevel>
+            <InformationValue>  --> Definition & ItemDefinition
+
+This code presumes that the input template is valid.
+
+Also hard-codes one ExpressionType definition, for connecting to elements
+specifying "FunctionId" as their <ValueType>.
 """
 
 import xml.etree.ElementTree as ET
 import smtk
+
+# Use one AttDef as the global/default expression, initialized in main()
+global_exp_def = None
 
 
 def create_item(elem, name, indent=''):
@@ -35,6 +57,8 @@ def create_item(elem, name, indent=''):
         item = smtk.attribute.VoidItemDefinition.New(name)
     elif valuetype == 'FunctionId':
         item = smtk.attribute.DoubleItemDefinition.New(name)
+        # Assign global expression type
+        item.setExpressionDefinition(global_exp_def)
     else:
         print '%sCode for type %s not implemented -- skipping' % (indent, valuetype)
         return None
@@ -43,12 +67,6 @@ def create_item(elem, name, indent=''):
     advanced_elem = elem.find('Advanced')
     if advanced_elem is not None:
         item.setAdvanceLevel(1)
-
-    # Handle <DefaultValue>
-    default_elem = elem.find('DefaultValue')
-    if default_elem is not None:
-        default_value = default_elem.attrib.get('Value')
-        item.setDefaultValue(cast(default_value))
 
     # Handle <Constraint>
     constraint_elem_list = elem.findall('Constraint')
@@ -61,12 +79,39 @@ def create_item(elem, name, indent=''):
             item.setMinRange(cast(value), is_inclusive)
         elif ctype == 'Maximum':
             item.setMaxRange(cast(value), is_inclusive)
+        elif ctype == 'Discrete':
+            enum_elem_list = constraint_elem.findall('Enum')
+            for enum_elem in enum_elem_list:
+                value = enum_elem.attrib.get('Value')
+                name = enum_elem.attrib.get('Name')
+                item.addDiscreteValue(cast(value), name)
+            default_index = constraint_elem.attrib.get('DefaultIndex')
+            if default_index is not None:
+                item.setDefaultDiscreteIndex(int(default_index))
 
-    # Handle <Group> --> category
+    # Handle <DefaultValue>
+    default_elem = elem.find('DefaultValue')
+    if default_elem is not None:
+        default_value = default_elem.attrib.get('Value')
+        item.setDefaultValue(cast(default_value))
+
+    # Handle <Group>, which maps to Category
     group_elem = elem.find('Group')
     if group_elem is not None:
         category = group_elem.attrib.get('Name')
         item.addCategory(category)
+
+    # Handle <Option>
+    option_elem = elem.find('Option')
+    if option_elem is not None:
+        option_string = option_elem.attrib.get('Default', 'OFF')
+        option_value = True if option_string == 'ON' else False
+        item.setIsOptional(option_value)
+
+    # Handle <Units>
+    units_attrib = elem.attrib.get('Units')
+    if units_attrib is not None:
+        item.setUnits(units_attrib)
 
     return item
 
@@ -211,6 +256,26 @@ if __name__ == '__main__':
 
     # Instantiate attribute manager for outpot
     manager = smtk.attribute.Manager()
+
+    # Generate default expression types
+    sim_exp = manager.createDefinition('SimExpression')
+    sim_exp.setIsAbstract(True)
+    interp_exp = manager.createDefinition('SimInterpolation', sim_exp)
+    interp_exp.setIsAbstract(True)
+    poly_exp = manager.createDefinition('PolyLinearFunction', interp_exp)
+    poly_exp.setLabel('PolyLinear Function')
+
+    group_item = smtk.attribute.GroupItemDefinition.New('ValuePairs')
+    group_item.setLabel('Value Pairs')
+    x_item = smtk.attribute.DoubleItemDefinition.New('X')
+    group_item.addItemDefinition(x_item)
+    value_item = smtk.attribute.DoubleItemDefinition.New('Value')
+    group_item.addItemDefinition(value_item)
+    poly_exp.addItemDefinition(group_item)
+
+    name_item = smtk.attribute.StringItemDefinition.New('Sim1DLinearExp')
+    poly_exp.addItemDefinition(name_item)
+    global_exp_def = poly_exp
 
     input_path = '/media/ssd/sim/cmb_core/git/CMB/Source/Applications/ModelBuilder/SimBuilder/XML/GEOTACS_Template.sbt'
     tree = ET.parse(input_path)
