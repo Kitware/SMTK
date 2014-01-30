@@ -26,8 +26,26 @@ Also hard-codes one ExpressionType definition, for connecting to elements
 specifying "FunctionId" as their <ValueType>.
 """
 
+import sys
 import xml.etree.ElementTree as ET
+
+app_description = 'Python script to parse CMB2.0 template file' + \
+    ' and generate eqivalent defintions in CMB3.0 format.'
+
+try:
+    import smtk
+except ImportError:
+    print
+    print app_description
+    print 'Not able to import smtk library. You might need to:'
+    print '  - Use the PYTHONPATH variable to point to the smtk python lib'
+    print '  - And/or use the LD_LIBRARY_PATH variable to point to the shiboken libraries'
+    print
+    sys.exit(-1)
+
 import smtk
+
+
 
 # Use one AttDef as the global/default expression, initialized in main()
 global_exp_def = None
@@ -267,9 +285,15 @@ def process_toplevel_group(manager, elem, indent=''):
 
 
 if __name__ == '__main__':
-    import sys
+    import argparse
 
-    # TODO Get args for input & output
+    print
+
+    # Get command line args
+    parser = argparse.ArgumentParser(description=app_description)
+    parser.add_argument('-i', '--input_template_file', required=True)
+    parser.add_argument('-o', '--output_template_file', default='output.sbt')
+    args = parser.parse_args()
 
     # Instantiate attribute manager for outpot
     manager = smtk.attribute.Manager()
@@ -294,7 +318,8 @@ if __name__ == '__main__':
     poly_exp.addItemDefinition(name_item)
     global_exp_def = poly_exp
 
-    input_path = '/media/ssd/sim/cmb_core/git/CMB/Source/Applications/ModelBuilder/SimBuilder/XML/GEOTACS_Template.sbt'
+    #input_path = '/media/ssd/sim/cmb_core/git/CMB/Source/Applications/ModelBuilder/SimBuilder/XML/GEOTACS_Template.sbt'
+    input_path = args.input_template_file
     tree = ET.parse(input_path)
     root = tree.getroot()
     print 'root', root.tag
@@ -304,7 +329,7 @@ if __name__ == '__main__':
             process_toplevel_group(manager, child)
 
     # Write manager to template file
-    output_path = 'output.sbt'
+    output_path = args.output_template_file
     writer = smtk.util.AttributeWriter()
     logger = smtk.util.Logger()
     hasErr = writer.write(manager, output_path, logger)
