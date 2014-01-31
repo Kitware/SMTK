@@ -134,22 +134,19 @@ namespace {
       {
       xml_node rnode = node.append_child("RangeInfo");
       xml_node r;
+      bool inclusive;
       if (idef->hasMinRange())
         {
         r = rnode.append_child("Min");
-        if (idef->minRangeInclusive())
-          {
-          r.append_attribute("Inclusive").set_value(true);
-          }
+        inclusive = idef->minRangeInclusive();
+        r.append_attribute("Inclusive").set_value(inclusive);
         r.text().set(getValueForXMLElement(idef->minRange()));
         }
       if (idef->hasMaxRange())
         {
         r = rnode.append_child("Max");
-        if (idef->maxRangeInclusive())
-          {
-          r.append_attribute("Inclusive").set_value(true);
-          }
+        inclusive = idef->maxRangeInclusive();
+        r.append_attribute("Inclusive").set_value(inclusive);
         r.text().set(getValueForXMLElement(idef->maxRange()));
         }
       }
@@ -526,8 +523,7 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
     }
   if (idef->units() != "")
     {
-    xml_node unode = node.append_child("Units");
-    unode.text().set(idef->units().c_str());
+    node.append_attribute("Units") = idef->units().c_str();
     }
   // Now lets process its children items
   if (!idef->numberOfChildrenItemDefinitions())
