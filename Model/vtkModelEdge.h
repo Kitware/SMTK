@@ -63,6 +63,7 @@ public:
   int GetNumberOfAdjacentModelFaces();
   vtkModelItemIterator* NewAdjacentModelFaceIterator();
 
+  using Superclass::Initialize;
   virtual void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
                           vtkIdType edgeId);
 

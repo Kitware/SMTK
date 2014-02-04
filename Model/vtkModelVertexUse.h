@@ -49,6 +49,7 @@ public:
   int GetNumberOfModelEdgeUses();
   vtkModelItemIterator* NewModelEdgeUseIterator();
 
+  using Superclass::Initialize;
   void Initialize(vtkModelVertex* vertex);
 
   // Description:

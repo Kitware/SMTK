@@ -89,6 +89,8 @@ public:
   // more objects in it than this->GetNumberOfModeledges().
   vtkModelItemIterator* NewAdjacentModelEdgeIterator();
 
+  using Superclass::Initialize;
+
   // Description:
   // Assume that the loop is the face's outer loop
   // Initializes the model face by creating the outer loop for it.

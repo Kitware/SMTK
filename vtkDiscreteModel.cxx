@@ -271,8 +271,15 @@ vtkModelRegion* vtkDiscreteModel::BuildModelRegion(
   return region;
 }
 
-bool vtkDiscreteModel::DestroyModelGeometricEntity(vtkDiscreteModelGeometricEntity* geomEntity)
+bool vtkDiscreteModel::DestroyModelGeometricEntity(vtkModelGeometricEntity* ge)
 {
+  vtkDiscreteModelGeometricEntity* geomEntity = dynamic_cast<vtkDiscreteModelGeometricEntity*>(ge);
+  if (!geomEntity)
+    {
+    vtkErrorMacro(<< "Tried to destroy " << ge << " (" << ge->GetClassName()
+      << ") which is not of type vtkDiscreteModelGeometricEntity.");
+    return false;
+    }
   vtkModelMaterial* material = geomEntity->GetMaterial();
   if(material)
     {

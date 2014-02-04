@@ -66,6 +66,7 @@ public:
   // associated model edge's direction (0 is the opposite direction).
   int GetDirection();
 
+  using Superclass::Initialize;
   void Initialize(vtkModelVertex* vertex0, vtkModelVertex* vertex1,
                   vtkModelEdgeUse* pairedEdgeUse, int direction);
 

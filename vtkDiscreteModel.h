@@ -176,7 +176,7 @@ public:
     vtkIdType modelRegionId, vtkModelMaterial* material);
 
   virtual bool DestroyModelGeometricEntity(
-    vtkDiscreteModelGeometricEntity* geomEntity);
+    vtkModelGeometricEntity* geomEntity);
 
   virtual void GetBounds(double bounds[6]);
 
