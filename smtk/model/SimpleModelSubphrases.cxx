@@ -104,8 +104,8 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
     return ta.size() < tb.size() ? true : false;
 
   // Both ta & tb have some character present and different.
-  bool da = static_cast<bool>(isdigit(ta[i]));
-  bool db = static_cast<bool>(isdigit(tb[i]));
+  bool da = isdigit(ta[i]) ? true : false;
+  bool db = isdigit(tb[i]) ? true : false;
   if ( da && !db) return true; // digits come before other things
   if (!da &&  db) return false; // non-digits come after digits
   if (!da && !db) return ta[i] < tb[i];

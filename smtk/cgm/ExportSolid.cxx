@@ -35,7 +35,7 @@ int ExportSolid::entitiesToFileOfNameAndType(
   int num_exported;
   CubitString version;
   CubitStatus s;
-  CubitCompat_export_solid_model(
+  s = CubitCompat_export_solid_model(
     refsOut, filename.c_str(), filetype.c_str(),
     num_exported, version, /*logfile_name*/ NULL);
   return s == CUBIT_SUCCESS ? 0 : 1;

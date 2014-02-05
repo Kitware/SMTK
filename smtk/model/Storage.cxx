@@ -814,6 +814,38 @@ bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
   return didRemove;
 }
 
+/// Add a vertex to storage (without any relationships) at the given \a uid.
+Vertex Storage::insertVertex(const smtk::util::UUID& uid)
+{
+  return Vertex(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 0)->first);
+}
+
+/// Add an edge to storage (without any relationships) at the given \a uid.
+Edge Storage::insertEdge(const smtk::util::UUID& uid)
+{
+  return Edge(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 1)->first);
+}
+
+/// Add a face to storage (without any relationships) at the given \a uid.
+Face Storage::insertFace(const smtk::util::UUID& uid)
+{
+  return Face(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 2)->first);
+}
+
+/// Add a volume to storage (without any relationships) at the given \a uid.
+Volume Storage::insertVolume(const smtk::util::UUID& uid)
+{
+  return Volume(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 3)->first);
+}
+
 /// Add an edge to storage (without any relationships)
 Vertex Storage::addVertex()
 {

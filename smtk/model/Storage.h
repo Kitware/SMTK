@@ -102,6 +102,11 @@ public:
   bool attachAttribute(int attribId, const smtk::util::UUID& toEntity);
   bool detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse = true);
 
+  Vertex insertVertex(const smtk::util::UUID& uid);
+  Edge insertEdge(const smtk::util::UUID& uid);
+  Face insertFace(const smtk::util::UUID& uid);
+  Volume insertVolume(const smtk::util::UUID& uid);
+
   Vertex addVertex();
   Edge addEdge();
   Face addFace();
