@@ -1226,6 +1226,13 @@ std::string XmlV1StringWriter::encodeColor(const double *c)
   std::string result = oss.str();
   return result;
 }
+
+//----------------------------------------------------------------------------
+pugi::xml_document &smtk::util::XmlV1StringWriter::getPugiDoc()
+{
+  return this->m_pugi->doc;
+}
+
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::encodeModelEntityMask(smtk::model::MaskType m)
 {

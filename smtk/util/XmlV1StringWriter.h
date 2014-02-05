@@ -126,6 +126,8 @@ namespace smtk
       struct PugiPrivate;
       PugiPrivate *m_pugi;
 
+      pugi::xml_document &getPugiDoc();
+
       smtk::util::Logger  m_logger;
     private:
 
