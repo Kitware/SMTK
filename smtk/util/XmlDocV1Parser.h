@@ -33,8 +33,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <utility>
 #include <string>
 #include <vector>
-#include "pugixml-1.2/src/pugixml.hpp"
 
+namespace pugi {
+class xml_document;
+class xml_node;
+}
 
 namespace smtk
 {
@@ -144,7 +147,6 @@ namespace smtk
       std::vector<ItemExpressionInfo> m_itemExpressionInfo;
       std::vector<AttRefInfo> m_attRefInfo;
       std::string m_defaultCategory;
-      pugi::xml_node m_root; // Dummy for now!
       smtk::util::Logger m_logger;
     private:
 

@@ -33,7 +33,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <string>
 #include <sstream>
 #include <vector>
-#include "pugixml-1.2/src/pugixml.hpp"
+
+namespace pugi {
+class xml_document;
+class xml_node;
+}
 
 namespace smtk
 {
@@ -117,8 +121,11 @@ namespace smtk
       static std::string encodeColor(const double *color);
 
       const smtk::attribute::Manager &m_manager;
-      pugi::xml_document m_doc;
-      pugi::xml_node m_root;
+
+      // Keep pugi headers out of public headers:
+      struct PugiPrivate;
+      PugiPrivate *m_pugi;
+
       smtk::util::Logger  m_logger;
     private:
 

@@ -207,13 +207,20 @@ namespace {
   }
 };
 
+struct XmlV1StringWriter::PugiPrivate
+{
+  xml_document doc;
+  xml_node root;
+};
+
 //----------------------------------------------------------------------------
 XmlV1StringWriter::XmlV1StringWriter(const attribute::Manager &myManager):
-m_manager(myManager)
+m_manager(myManager),
+m_pugi(new PugiPrivate)
 {
-  this->m_doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
-  this->m_root = this->m_doc.append_child("SMTK_AttributeManager");
-  this->m_root.append_attribute("Version").set_value(1);
+  this->m_pugi->doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
+  this->m_pugi->root = this->m_pugi->doc.append_child("SMTK_AttributeManager");
+  this->m_pugi->root.append_attribute("Version").set_value(1);
 }
 
 //----------------------------------------------------------------------------
@@ -227,11 +234,11 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
   // Reset the message log
   this->m_logger.reset();
 
-  this->m_root.append_child(node_comment).set_value("**********  Category and Analysis Infomation ***********");
+  this->m_pugi->root.append_child(node_comment).set_value("**********  Category and Analysis Infomation ***********");
   // Write out the category and analysis information
   if (this->m_manager.numberOfCategories())
     {
-    xml_node cnode, catNodes = this->m_root.append_child("Categories");
+    xml_node cnode, catNodes = this->m_pugi->root.append_child("Categories");
     std::set<std::string>::const_iterator it;
     const std::set<std::string> &cats = this->m_manager.categories();
     for (it = cats.begin(); it != cats.end(); it++)
@@ -242,7 +249,7 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
 
   if (this->m_manager.numberOfAnalyses())
     {
-    xml_node cnode, catNodes = this->m_root.append_child("Analyses");
+    xml_node cnode, catNodes = this->m_pugi->root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
     const std::map<std::string, std::set<std::string> > &analyses =
       this->m_manager.analyses();
@@ -266,7 +273,7 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
     {
     flags |= pugi::format_no_declaration;
     }
-  this->m_doc.save(oss, "  ", flags);
+  this->m_pugi->doc.save(oss, "  ", flags);
   std::string result = oss.str();
   logger = this->m_logger;
   return result;
@@ -277,10 +284,10 @@ void XmlV1StringWriter::processAttributeInformation()
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
   this->m_manager.findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
-  this->m_root.append_child(node_comment).set_value("**********  Attribute Definitions ***********");
-  xml_node definitions = this->m_root.append_child("Definitions");
-  this->m_root.append_child(node_comment).set_value("**********  Attribute Instances ***********");
-  xml_node attributes = this->m_root.append_child("Attributes");
+  this->m_pugi->root.append_child(node_comment).set_value("**********  Attribute Definitions ***********");
+  xml_node definitions = this->m_pugi->root.append_child("Definitions");
+  this->m_pugi->root.append_child(node_comment).set_value("**********  Attribute Instances ***********");
+  xml_node attributes = this->m_pugi->root.append_child("Attributes");
   for (i = 0; i < n; i++)
     {
     this->processDefinition(definitions, attributes, baseDefs[i]);
@@ -1024,8 +1031,8 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processViews()
 {
-  this->m_root.append_child(node_comment).set_value("********** Workflow Views ***********");
-  xml_node views = this->m_root.append_child("RootView");
+  this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
+  xml_node views = this->m_pugi->root.append_child("RootView");
   smtk::view::RootPtr rs = this->m_manager.rootView();
   std::string s;
   s = this->encodeColor(rs->defaultColor());
@@ -1176,7 +1183,7 @@ void XmlV1StringWriter::processBasicView(xml_node &node,
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processModelInfo()
 {
-  xml_node modelInfo = this->m_root.append_child("ModelInfo");
+  xml_node modelInfo = this->m_pugi->root.append_child("ModelInfo");
   smtk::model::ModelPtr refModel = this->m_manager.refModel();
   if ( refModel && refModel->numberOfItems())
     {
