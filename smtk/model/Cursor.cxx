@@ -321,6 +321,25 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   return result;
 }
 
+/// Add a relation to an entity, \a ent, with no arrangement information.
+Cursor& Cursor::addRawRelation(const Cursor& ent)
+{
+  if (
+    this->m_storage &&
+    !this->m_entity.isNull() &&
+    this->m_storage == ent.storage() &&
+    !ent.entity().isNull() &&
+    ent.entity() != this->m_entity)
+    {
+    Entity* entRec = this->m_storage->findEntity(this->m_entity);
+    if (entRec)
+      {
+      entRec->appendRelation(ent.entity());
+      }
+    }
+  return *this;
+}
+
 /** @name Attribute associations
   *
   */

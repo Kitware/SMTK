@@ -129,6 +129,8 @@ public:
   Cursors higherDimensionalBordants(int higherDimension);
   Cursors adjacentEntities(int ofDimension);
 
+  Cursor& addRawRelation(const Cursor& ent);
+
   bool hasAttributes() const;
   bool hasAttribute(int attribId) const;
   bool attachAttribute(int attribId);
