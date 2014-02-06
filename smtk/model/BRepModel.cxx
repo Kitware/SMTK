@@ -811,8 +811,9 @@ UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util
 ///@}
 
 /// Attempt to find a model owning the given entity.
-smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
+smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
 {
+  smtk::util::UUID uid(ent);
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
@@ -820,6 +821,28 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
     smtk::model::BitFlags etype = it->second.entityFlags();
     switch (etype & ENTITY_MASK)
       {
+    case GROUP_ENTITY:
+      // Assume the first relationship that is a group or model is our owner.
+      // Keep going up parent groups until we hit the top.
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (subentity != this->topology().end() && subentity->first != uid)
+          {
+          if (subentity->second.entityFlags() & MODEL_ENTITY)
+            return subentity->first;
+          if (subentity->second.entityFlags() & GROUP_ENTITY)
+            { // Switch to finding relations of the group (assume it is our parent)
+            uid = subentity->first;
+            it = this->m_topology->find(uid);
+            sit = it->second.relations().begin();
+            }
+          }
+        }
+      break;
     case INSTANCE_ENTITY:
       // Look for any relationship. We assume the first one is our prototype.
       for (
