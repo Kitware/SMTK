@@ -8,6 +8,7 @@
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -151,6 +152,7 @@ protected:
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
+  std::map<smtk::util::UUID,BridgeBasePtr> m_modelBridges;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
 

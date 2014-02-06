@@ -81,6 +81,7 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Storage::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,BridgeBasePtr&gt;'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
@@ -719,6 +720,10 @@
       <object-type name="AttributeAssignments">
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
       </object-type>
+
+      <enum-type name="BridgedInformation">
+        <include file-name="smtk/model/BridgeBase.h" location="local"/>
+      </enum-type>
 
       <enum-type name="Orientation">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
