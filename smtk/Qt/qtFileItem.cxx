@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QLineEdit>
 #include <QFrame>
+#include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -73,7 +74,7 @@ void qtFileItem::createWidget()
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   layout->setAlignment(Qt::AlignTop);
-  this->updateItemData();  
+  this->updateItemData();
 }
 //----------------------------------------------------------------------------
 bool qtFileItem::isDirectory()
@@ -104,8 +105,17 @@ void qtFileItem::updateItemData()
 
   this->Internals->EntryFrame = new QFrame(this->parentWidget());
   this->Internals->EntryFrame->setObjectName("FileBrowsingFrame");
+  //this->Internals->EntryFrame->setStyleSheet("QFrame { background-color: pink; }");
+
   QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
-  entryLayout->setMargin(0);
+  int spacing = entryLayout->spacing() / 2;  // reduce spacing
+  entryLayout->setSpacing(spacing);
+
+  QLabel* label = new QLabel("Label Text", this->Widget);
+  //label->setStyleSheet("QLabel { background-color: lightblue; }");
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  label->setSizePolicy(sizeFixedPolicy);
+  entryLayout->addWidget(label);
 
   for(i = 0; i < n; i++)
     {
@@ -123,6 +133,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
 
   QFrame *frame = new QFrame(this->parentWidget());
+  //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QLineEdit* lineEdit = new QLineEdit(frame);
   // As a file input, if the name is too long lets favor
   // the file name over the path
@@ -131,6 +142,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
   QHBoxLayout* layout = new QHBoxLayout(frame);
+  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(lineEdit);
   layout->addWidget(fileBrowserButton);
 
