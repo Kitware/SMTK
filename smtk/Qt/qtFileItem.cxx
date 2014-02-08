@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
+Copyright (c) 1998-2014 Kitware Inc. 469 Clifton Corporate Parkway,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced, distributed,
@@ -24,18 +24,18 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtBaseView.h"
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 
-#include <QLineEdit>
 #include <QFrame>
-#include <QLabel>
-#include <QPushButton>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QPointer>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 using namespace smtk::attribute;
 
