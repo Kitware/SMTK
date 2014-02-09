@@ -53,7 +53,7 @@ namespace smtk
       qtUIManager(smtk::attribute::Manager &manager);
       virtual ~qtUIManager();
 
-      void initializeUI(QWidget* pWidget);
+      void initializeUI(QWidget* pWidget, bool useInternalFileBrowsers=false);
       smtk::attribute::Manager* attManager() const
         {return &this->m_AttManager;}
 
@@ -124,7 +124,6 @@ namespace smtk
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget);
 
-
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
@@ -158,7 +157,7 @@ namespace smtk
       bool AdvancedItalic; // false by default
 
       smtk::attribute::Manager &m_AttManager;
-
+      bool m_useInternalFileBrowsers;
     }; // class
 
     //A sublcass of QDoubleValidator to fixup input outside of range

@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 
+#include <QDir>
 #include <QFileDialog>
 #include <QFrame>
 #include <QHBoxLayout>
@@ -87,12 +88,21 @@ bool qtFileItem::isDirectory()
 }
 
 //----------------------------------------------------------------------------
-void qtFileItem::enableFileBrowser()
+// Although you *can* disable this feature, it is not recommended.
+// Behavior is not defined if this method is called after
+// the ancestor qtUIManager::initializeUI() method is called.
+void qtFileItem::enableFileBrowser(bool state)
 {
-  if (NULL == this->Internals->FileBrowser)
+  if (!state)
+    {
+    delete this->Internals->FileBrowser;
+    this->Internals->FileBrowser = NULL;
+    }
+  else if (NULL == this->Internals->FileBrowser)
     {
     this->Internals->FileBrowser = new QFileDialog(this->Widget);
     this->Internals->FileBrowser->setObjectName("Select File Dialog");
+    this->Internals->FileBrowser->setDirectory(QDir::currentPath());
     }
 }
 

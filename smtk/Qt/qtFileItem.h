@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // In more typical applications, use the second, optional
 // argument in qtUIManager.initializeUI() to enable the option.
 //
-// Note that the current code does not support multiple file
+// Note: The current code does not support multiple file
 // or directory selection.
 //
 // .SECTION See Also
@@ -56,7 +56,7 @@ namespace smtk
     public:
       qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview, bool dirOnly=false);
       virtual ~qtFileItem();
-      void enableFileBrowser();
+      void enableFileBrowser(bool state=true);
       bool isDirectory();
 
     public slots:

@@ -78,7 +78,8 @@ int main(int argc, char *argv[])
   QVBoxLayout *layout = new QVBoxLayout();
   widget->setLayout(layout);
 
-  uiManager->initializeUI(widget);
+  bool useInternalFileBrowser = true;
+  uiManager->initializeUI(widget, useInternalFileBrowser);
   widget->show();
   int retcode = app->exec();
 
