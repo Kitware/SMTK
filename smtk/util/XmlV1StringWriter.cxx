@@ -643,6 +643,11 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
         }
       }
     }
+  std::string fileFilters = idef->getFileFilters();
+  if (fileFilters != "")
+    {
+    node.append_attribute("FileFilters") = fileFilters.c_str();
+    }
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
