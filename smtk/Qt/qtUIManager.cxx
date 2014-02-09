@@ -120,7 +120,7 @@ void qtDoubleValidator::fixup(QString &input) const
 
 //----------------------------------------------------------------------------
 qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
-  m_AttManager(manager), m_useInternalFileBrowsers(false)
+  m_AttManager(manager), m_useInternalFileBrowser(false)
 {
   this->RootView = NULL;
 
@@ -152,9 +152,9 @@ qtUIManager::~qtUIManager()
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowsers)
+void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
-  m_useInternalFileBrowsers = useInternalFileBrowsers;
+  m_useInternalFileBrowser = useInternalFileBrowser;
   if(!this->m_AttManager.rootView())
     {
     return;
@@ -507,7 +507,7 @@ void qtUIManager::addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
 //----------------------------------------------------------------------------
 void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 {
-  if (m_useInternalFileBrowsers)
+  if (m_useInternalFileBrowser)
     {
     fileItem->enableFileBrowser();
     }

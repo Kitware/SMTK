@@ -53,7 +53,7 @@ namespace smtk
       qtUIManager(smtk::attribute::Manager &manager);
       virtual ~qtUIManager();
 
-      void initializeUI(QWidget* pWidget, bool useInternalFileBrowsers=false);
+      void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
       smtk::attribute::Manager* attManager() const
         {return &this->m_AttManager;}
 
@@ -159,7 +159,7 @@ namespace smtk
       bool AdvancedItalic; // false by default
 
       smtk::attribute::Manager &m_AttManager;
-      bool m_useInternalFileBrowsers;
+      bool m_useInternalFileBrowser;
     }; // class
 
     //A sublcass of QDoubleValidator to fixup input outside of range
