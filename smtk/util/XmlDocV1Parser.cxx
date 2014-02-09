@@ -1090,6 +1090,13 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
         }
       }
     }
+
+  // Check for filters
+  xatt = node.attribute("FileFilters");
+  if (xatt)
+    {
+    idef->setFileFilters(xatt.as_string());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
