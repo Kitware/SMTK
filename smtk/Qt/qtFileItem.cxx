@@ -22,6 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtFileItem.h"
 
+#include "smtk/Qt/qtBaseView.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
@@ -107,16 +108,43 @@ void qtFileItem::updateItemData()
   this->Internals->EntryFrame->setObjectName("FileBrowsingFrame");
   //this->Internals->EntryFrame->setStyleSheet("QFrame { background-color: pink; }");
 
+  // Setup layout
   QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
   int spacing = entryLayout->spacing() / 2;  // reduce spacing
   entryLayout->setSpacing(spacing);
 
-  QLabel* label = new QLabel("Label Text", this->Widget);
+  // Add label
+  smtk::attribute::ItemPtr item = dynamic_pointer_cast<Item>(this->getObject());
+  QString labelText;
+  if(!item->label().empty())
+    {
+    labelText = item->label().c_str();
+    }
+  else
+    {
+    labelText = item->name().c_str();
+    }
+  QLabel* label = new QLabel(labelText, this->Widget);
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   label->setSizePolicy(sizeFixedPolicy);
+
+  // Add in BriefDescription as tooltip if available
+  smtk::attribute::ConstItemDefinitionPtr itemDef = item->definition();
+  const std::string strBriefDescription = itemDef->briefDescription();
+  if(!strBriefDescription.empty())
+    {
+    label->setToolTip(strBriefDescription.c_str());
+    }
+
+  // If advanced level, update font
+  if(itemDef->advanceLevel())
+    {
+    label->setFont(this->baseView()->uiManager()->advancedFont());
+    }
   entryLayout->addWidget(label);
 
+  // Add file items
   for(i = 0; i < n; i++)
     {
     QWidget* fileframe = this->createFileBrowseWidget(static_cast<int>(i));
