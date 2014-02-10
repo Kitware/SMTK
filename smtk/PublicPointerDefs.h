@@ -48,9 +48,12 @@ namespace smtk
   namespace model
   {
     class Arrangement;
+    class ArrangementReference;
+    typedef std::vector<ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
     typedef std::vector<Arrangement> Arrangements;
     class BRepModel;
+    class BridgeBase;
     class CellEntity;
     class Chain;
     typedef std::vector<Chain> Chains;
@@ -158,6 +161,7 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
+    typedef smtk::shared_ptr< smtk::model::BridgeBase >            BridgeBasePtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityListPhrase >      EntityListPhrasePtr;

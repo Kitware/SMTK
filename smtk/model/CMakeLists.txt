@@ -5,6 +5,7 @@ set(modelSrcs
   AttributeAssignments.cxx
   AttributeListPhrase.cxx
   BRepModel.cxx
+  BridgeBase.cxx
   CellEntity.cxx
   Chain.cxx
   Cursor.cxx
@@ -49,6 +50,7 @@ set(modelHeaders
   AttributeAssignments.h
   AttributeListPhrase.h
   BRepModel.h
+  BridgeBase.h
   CellEntity.h
   Chain.h
   Cursor.h

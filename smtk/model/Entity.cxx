@@ -292,7 +292,16 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
       }
     break;
   case MODEL_ENTITY:
-    result = "model";
+    // If dimension bits are set, use them.
+    switch (flags & ANY_DIMENSION)
+      {
+    case DIMENSION_0: result = "point "; break;
+    case DIMENSION_1: result = "curve "; break;
+    case DIMENSION_2: result = "surface "; break;
+    case DIMENSION_3: result = "volumetric "; break;
+    case DIMENSION_4: result = "space-time "; break;
+      }
+    result += "model";
     if (form)
       {
       result += "s"; // plural is easy in this case.

@@ -147,11 +147,24 @@ Arrangement Arrangement::InstanceInstanceOfWithIndex(int relationIdx)
   return Arrangement::SimpleIndex(relationIdx);
 }
 
-/// Create a record for an entity indicating that is serves as a prototype for an instance.
+/// Create a record for an entity indicating that it serves as a prototype for an instance.
 Arrangement Arrangement::EntityInstancedByWithIndex(int relationIdx)
 {
   return Arrangement::SimpleIndex(relationIdx);
 }
+
+/// Create a record for an entity indicating that it groups other entities beneath it (as children).
+Arrangement Arrangement::EntitySupersetOfWithIndex(int relationIdx)
+{
+  return Arrangement::SimpleIndex(relationIdx);
+}
+
+/// Create a record for an entity indicating that is a group member of another (its parent).
+Arrangement Arrangement::EntitySubsetOfWithIndex(int relationIdx)
+{
+  return Arrangement::SimpleIndex(relationIdx);
+}
+
 ///@}
 
 /** @name Methods to interpret arrangements.
@@ -253,6 +266,18 @@ bool Arrangement::IndexFromEntityInstancedBy(int& relationIdx) const
   return this->IndexFromSimple(relationIdx);
 }
 
+/// Obtain the index of an entity contained within this entity.
+bool Arrangement::IndexFromEntitySupersetOf(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
+/// Obtain the index of the entity containing this one as its child.
+bool Arrangement::IndexFromEntitySubsetOf(int& relationIdx) const
+{
+  return this->IndexFromSimple(relationIdx);
+}
+
 /// Create an arrangement holding the index of a single entity ID (a simple arrangement).
 Arrangement Arrangement::SimpleIndex(int relationIdx)
 {
@@ -272,6 +297,129 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   return true;
 }
 ///@}
+
+/**\brief Return the UUIDs of any related entities referenced by this arrangement.
+  *
+  * You must provide the smtk::model::Entity record \a ent and
+  * smtk::model::ArrangementKind \a k that define this arrangement.
+  * These provide the context in which the arrangement information
+  * should be interpreted: \a ent provides the type of entity on
+  * which the arrangement is defined, \a k defines the type of
+  * relationship, and \a ent then provides the list of UUIDs which
+  * some entry in this arrangement references.
+  *
+  * If this method returns true, then \a relsOut will have the
+  * relevant UUID(s) appended. Otherwise, \a relsOut will be unchanged.
+  * Note that this method does not clear \a relsOut so that you may
+  * accumulate relations from multiple arrangements into a single array
+  * for later processing.
+  *
+  * This method and smtk::model::Storage::findDualArrangements() are
+  * the two main methods which determine how arrangements should be
+  * interpreted in context without any prior constraints on the
+  * context. (Other methods create and interpret arrangements in
+  * specific circumstances where the context is known.)
+  */
+bool Arrangement::relations(smtk::util::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
+{
+  if (!ent) return false;
+  switch (ent->entityFlags() & ENTITY_MASK)
+    {
+    case CELL_ENTITY:
+      switch (k)
+        {
+      case HAS_USE: return CellHasUseRelationHelper()(relsOut, ent, *this);
+
+      case EMBEDDED_IN: return CellEmbeddedInEntityRelationHelper()(relsOut, ent, *this);
+      case INCLUDES: return CellIncludesEntityRelationHelper()(relsOut, ent, *this);
+
+      case HAS_SHELL: return CellHasShellRelationHelper()(relsOut, ent, *this);
+
+      // Should cells be allowed to be supersets (i.e., are they groups in addition to geometric cells?)
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+      case SUBSET_OF: return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
+
+      case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case USE_ENTITY:
+      switch (k)
+        {
+      case HAS_CELL: return UseHasCellRelationHelper()(relsOut, ent, *this);
+      case HAS_SHELL: return UseHasShellRelationHelper()(relsOut, ent, *this);
+      case INCLUDES: return UseOrShellIncludesShellRelationHelper()(relsOut, ent, *this);
+      // FIXME: Should use-records be allowed to be prototypes for instances?
+      case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case SHELL_ENTITY:
+      switch (k)
+        {
+      case EMBEDDED_IN: return ShellEmbeddedInUseOrShellRelationHelper()(relsOut, ent, *this);
+      case INCLUDES: return UseOrShellIncludesShellRelationHelper()(relsOut, ent, *this);
+
+      case HAS_CELL: return ShellHasCellRelationHelper()(relsOut, ent, *this);
+
+      case HAS_USE: return ShellHasUseRelationHelper()(relsOut, ent, *this);
+
+      // FIXME: Should shells be allowed to be prototypes for instances?
+      case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case GROUP_ENTITY:
+      switch (k)
+        {
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+      case SUBSET_OF: return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
+
+      case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case MODEL_ENTITY:
+      switch (k)
+        {
+      case EMBEDDED_IN: return CellEmbeddedInEntityRelationHelper()(relsOut, ent, *this);
+      case INCLUDES: return CellIncludesEntityRelationHelper()(relsOut, ent, *this);
+
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+      case SUBSET_OF: return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
+
+      case INSTANCED_BY: return InstanceInstancedByRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    case INSTANCE_ENTITY:
+      switch (k)
+        {
+      case SUPERSET_OF: return EntitySupersetOfRelationHelper()(relsOut, ent, *this);
+      case SUBSET_OF: return EntitySubsetOfRelationHelper()(relsOut, ent, *this);
+
+      // Note that we do not allow an instance to be a prototype for another
+      // instance... for now. Infinite recursion could result and would be hard
+      // to detect.
+      case INSTANCE_OF: return InstanceInstanceOfRelationHelper()(relsOut, ent, *this);
+      default:
+        break;
+        }
+      break;
+    default:
+      break;
+    }
+  std::cerr
+    << "Unknown relationship context:"
+    << " arrangement of kind " << NameForArrangementKind(k)
+    << " for entity of type " << ent->flagSummary() << "\n";
+  return false;
+}
 
   } //namespace model
 } // namespace smtk

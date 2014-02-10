@@ -483,6 +483,28 @@ Entity* BRepModel::findEntity(const UUID& uid)
 }
 //@}
 
+/**\brief Remove the entity with the given \a uid.
+  *
+  * Returns true upon success, false when the entity did not exist.
+  */
+bool BRepModel::erase(const smtk::util::UUID& uid)
+{
+  UUIDWithEntity ent = this->m_topology->find(uid);
+  if (ent == this->m_topology->end())
+    return false;
+
+  // Before removing the entity, loop through its relations and
+  // make sure none of them retain any references back to \a uid.
+  // However, we cannot erase entries in relatedEntity->relations()
+  // because relatedEntity's arrangements reference them by integer
+  // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
+  this->elideEntityReferences(ent);
+
+  // TODO: Notify model of entity removal?
+  this->m_topology->erase(ent);
+  return true;
+}
+
 /// Given an entity \a c, ensure that all of its references contain a reference to it.
 void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
 {
@@ -494,6 +516,36 @@ void BRepModel::insertEntityReferences(const UUIDWithEntity& c)
     if (ref)
       {
       ref->appendRelation(c->first);
+      }
+    }
+}
+
+/**\brief Given an entity \a c, ensure that all of its references
+  *       contain <b>no</b> reference to it.
+  *
+  * This is accomplished by overwriting matching references with
+  * UUID::null() rather than removing the reference from the array.
+  * We do things this way because indices into the list of
+  * relations are used by arrangements and we do not want to
+  * rewrite arrangements.
+  */
+void BRepModel::elideEntityReferences(const UUIDWithEntity& c)
+{
+  UUIDArray::const_iterator bit;
+  Entity* ref;
+  for (bit = c->second.relations().begin(); bit != c->second.relations().end(); ++bit)
+    {
+    ref = this->findEntity(*bit);
+    if (ref)
+      {
+      UUIDArray::iterator rit;
+      for (rit = ref->relations().begin(); rit != ref->relations().end(); ++rit)
+        {
+        if (*rit == c->first)
+          { // TODO: Notify *bit of imminent elision?
+          *rit = smtk::util::UUID::null();
+          }
+        }
       }
     }
 }
@@ -511,18 +563,6 @@ void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
       ref->removeRelation(c->first);
       }
     }
-}
-
-/// Remove an entity \a uid from storage and ensure that all of its references contain <b>no</b> reference to it.
-bool BRepModel::removeEntity(const smtk::util::UUID& uid)
-{
-  UUIDWithEntity it = this->m_topology->find(uid);
-  if (it != this->m_topology->end())
-    {
-    this->removeEntityReferences(it);
-    return true;
-    }
-  return false;
 }
 
 /**\brief Add entities (specified by their \a uids) to the given group (\a groupId).
@@ -811,8 +851,9 @@ UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util
 ///@}
 
 /// Attempt to find a model owning the given entity.
-smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
+smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
 {
+  smtk::util::UUID uid(ent);
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
@@ -820,6 +861,28 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& uid)
     smtk::model::BitFlags etype = it->second.entityFlags();
     switch (etype & ENTITY_MASK)
       {
+    case GROUP_ENTITY:
+      // Assume the first relationship that is a group or model is our owner.
+      // Keep going up parent groups until we hit the top.
+      for (
+        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        sit != it->second.relations().end();
+        ++sit)
+        {
+        UUIDWithEntity subentity = this->topology().find(*sit);
+        if (subentity != this->topology().end() && subentity->first != uid)
+          {
+          if (subentity->second.entityFlags() & MODEL_ENTITY)
+            return subentity->first;
+          if (subentity->second.entityFlags() & GROUP_ENTITY)
+            { // Switch to finding relations of the group (assume it is our parent)
+            uid = subentity->first;
+            it = this->m_topology->find(uid);
+            sit = it->second.relations().begin();
+            }
+          }
+        }
+      break;
     case INSTANCE_ENTITY:
       // Look for any relationship. We assume the first one is our prototype.
       for (
@@ -1044,7 +1107,7 @@ void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
     Storage* store = dynamic_cast<Storage*>(this);
     if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_SHELL))
       {
-      // Create arrangement to hold parent shell (or, for 3-uses, a parent volume cell):
+      // Create arrangement to hold parent shell:
       store->arrangeEntity(entry.first, HAS_SHELL, Arrangement::UseHasShellWithIndex(-1));
       }
     }

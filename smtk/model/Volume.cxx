@@ -42,5 +42,15 @@ smtk::model::Faces Volume::faces() const
   return result;
 }
 
+Volume& Volume::setVolumeUse(const VolumeUse& volUse)
+{
+  if (volUse.isValid() && this->isValid())
+    {
+    this->m_storage->findCreateOrReplaceCellUseOfSenseAndOrientation(
+      this->m_entity, 0, POSITIVE, volUse.entity());
+    }
+  return *this;
+}
+
   } // namespace model
 } // namespace smtk

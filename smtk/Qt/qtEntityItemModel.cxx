@@ -210,7 +210,7 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& own
     this->m_reverse.erase(this->m_reverse.find(*it));
     if (this->m_deleteOnRemoval)
       {
-      this->m_storage->removeEntity(*it);
+      this->m_storage->erase(*it);
       // FIXME: Should we keep a set of all it->second.relations()
       //        and emit "didChange" events for all the relations
       //        that were affected by removal of this entity?

@@ -8,6 +8,7 @@
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -72,6 +73,8 @@ public:
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);
 
+  virtual bool erase(const smtk::util::UUID& uid);
+
   smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
   smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
   smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
@@ -101,9 +104,8 @@ public:
   smtk::util::UUID addCellOfDimensionWithUUID(const smtk::util::UUID& uid, int dim);
 
   void insertEntityReferences(const UUIDWithEntity& c);
+  void elideEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
-
-  bool removeEntity(const smtk::util::UUID& uid);
 
   virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 
@@ -151,6 +153,7 @@ protected:
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
+  std::map<smtk::util::UUID,BridgeBasePtr> m_modelBridges;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
 

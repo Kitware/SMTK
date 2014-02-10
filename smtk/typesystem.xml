@@ -75,12 +75,14 @@
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping field 'Storage::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Storage::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,BridgeBasePtr&gt;'"/>
 
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
@@ -712,6 +714,10 @@
         </add-function>
       </object-type>
 
+      <value-type name="ArrangementReference">
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </value-type>
+
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
@@ -719,6 +725,10 @@
       <object-type name="AttributeAssignments">
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
       </object-type>
+
+      <enum-type name="BridgedInformation">
+        <include file-name="smtk/model/BridgeBase.h" location="local"/>
+      </enum-type>
 
       <enum-type name="Orientation">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
