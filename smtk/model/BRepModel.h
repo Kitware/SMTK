@@ -73,6 +73,8 @@ public:
   const Entity* findEntity(const smtk::util::UUID& uid) const;
   Entity* findEntity(const smtk::util::UUID& uid);
 
+  virtual bool erase(const smtk::util::UUID& uid);
+
   smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
   smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
   smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
@@ -102,9 +104,8 @@ public:
   smtk::util::UUID addCellOfDimensionWithUUID(const smtk::util::UUID& uid, int dim);
 
   void insertEntityReferences(const UUIDWithEntity& c);
+  void elideEntityReferences(const UUIDWithEntity& c);
   void removeEntityReferences(const UUIDWithEntity& c);
-
-  bool removeEntity(const smtk::util::UUID& uid);
 
   virtual void addToGroup(const smtk::util::UUID& groupId, const smtk::util::UUIDs& uids);
 

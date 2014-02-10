@@ -91,6 +91,41 @@ const UUIDsToAttributeAssignments& Storage::attributeAssignments() const
   return *this->m_attributeAssignments;
 }
 
+/**\brief Remove an entity from storage.
+  *
+  * This overrides BRepModel::erase() in order to ensure that all
+  * Arrangements referencing \a uid are also removed. (BRepModel
+  * does not store arrangement information.)
+  *
+  * **Warning**: Invoking this method naively will likely result
+  * in an inconsistent solid model. This does not cascade
+  * any changes required to remove dependent entities (i.e.,
+  * removing a face does not remove any face-uses or shells that
+  * the face participated in, potentially leaving an improper volume
+  * boundary). The application is expected to perform further
+  * operations to keep the model valid.
+  */
+bool Storage::erase(const smtk::util::UUID& uid)
+{
+  Entity* ent = this->findEntity(uid);
+  UUIDWithArrangementDictionary ad = this->m_arrangements->find(uid);
+  if (!ent || ad == this->m_arrangements->end())
+    return false; // Can't erase what we don't have.
+
+  ArrangementKindWithArrangements ak;
+  do
+    {
+    ak = ad->second.begin();
+    if (ak == ad->second.end())
+     break;
+    Arrangements::size_type aidx = ak->second.size();
+    for (; aidx > 0; --aidx)
+      this->unarrangeEntity(uid, ak->first, aidx - 1, false);
+    }
+  while (1);
+  return this->BRepModel::erase(uid);
+}
+
 /**\brief Set the attribute manager.
   *
   * This is an error if the manager already has a non-null
@@ -162,16 +197,16 @@ Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tesse
   return result;
 }
 
-/**\brief Add or replace information about the arrangement of a cell.
+/**\brief Add or replace information about the arrangement of an entity.
   *
   * When \a index is -1, the arrangement is considered new and added to the end of
   * the vector of arrangements of the given \a kind.
   * Otherwise, it should be positive and refer to a pre-existing arrangement to be replaced.
   * The actual \a index location used is returned.
   */
-int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arrangement& arr, int index)
+int Storage::arrangeEntity(const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
 {
-  UUIDsToArrangements::iterator cit = this->m_arrangements->find(cellId);
+  UUIDsToArrangements::iterator cit = this->m_arrangements->find(entityId);
   if (cit == this->m_arrangements->end())
     {
     if (index >= 0)
@@ -179,7 +214,7 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
       return -1;
       }
     KindsToArrangements blank;
-    cit = this->m_arrangements->insert(std::pair<UUID,KindsToArrangements>(cellId, blank)).first;
+    cit = this->m_arrangements->insert(std::pair<UUID,KindsToArrangements>(entityId, blank)).first;
     }
   KindsToArrangements::iterator kit = cit->second.find(kind);
   if (kit == cit->second.end())
@@ -206,6 +241,75 @@ int Storage::arrangeEntity(const UUID& cellId, ArrangementKind kind, const Arran
     kit->second.push_back(arr);
     }
   return index;
+}
+
+/**\brief Remove an arrangement from an entity, and optionally the entity itself.
+  *
+  * When no action is taken (because of a missing entityId, a missing arrangement
+  * or a bad index), 0 is returned.
+  * When a the arrangement is successfully removed, 1 is returned.
+  * When \a removeIfLast is true and the entity is removed, 2 is returned.
+  * When the related entity specified by the arrangement is also removed (only
+  * attempted when \a removeIfLast is true), 3 is returned.
+  *
+  * **Warning**: Invoking this method naively will likely result
+  * in an inconsistent solid model.
+  * The caller is expected to perform further operations to keep
+  * the model valid.
+  */
+int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
+{
+  int result = 0;
+  bool canRemoveEntity = false;
+  if (index < 0)
+    return result;
+  UUIDWithArrangementDictionary ad = this->m_arrangements->find(entityId);
+  if (ad == this->m_arrangements->end())
+   return result;
+  ArrangementKindWithArrangements ak = ad->second.find(k);
+  if (ak == ad->second.end() || index >= static_cast<int>(ak->second.size()))
+    return result;
+
+  // TODO: notify relation + entity (or their delegates) of imminent removal
+  ak->second.erase(ak->second.begin() + index);
+  // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
+  if (ak->second.empty())
+    {
+    ad->second.erase(ak);
+    // Now if we removed the last kind with arrangements in ad, kill the uuid-dictionary entry
+    if (ad->second.empty())
+      {
+      this->m_arrangements->erase(ad);
+      ++result;
+      canRemoveEntity = true;
+      }
+    }
+
+  // Now find and remove the dual arrangement (if one exists)
+  // This branch should not be taken if we are inside the inner unarrangeEntity call below.
+  ArrangementReferences duals;
+  if (this->findDualArrangements(entityId, k, index, duals))
+    {
+    // Unarrange every dual to this arrangement.
+    bool canIncrement = false;
+    for (ArrangementReferences::iterator dit = duals.begin(); dit != duals.end(); ++dit)
+      {
+      if (this->unarrangeEntity(dit->entityId, dit->kind, dit->index, removeIfLast) == 2)
+        canIncrement = true; // Only increment result when dualEntity is remove, not the dual arrangement.
+      }
+    // Only increment once if other entities were removed; we do not indicate how many were removed.
+    if (canIncrement) ++result;
+    }
+
+  // If we removed the last arrangement relating this entity to others,
+  // and if the caller has requested it: remove the entity itself.
+  if (removeIfLast && canRemoveEntity)
+    {
+    // TODO: notify entity of removal.
+    this->m_topology->erase(entityId);
+    ++result;
+    }
+  return result;
 }
 
 /**\brief Returns true when the given \a entity has any arrangements of the given \a kind (otherwise false).
@@ -320,6 +424,149 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
   return &kit->second[index];
 }
 
+/**\brief Find an arrangement of type \a kind that relates \a entityId to \a involvedEntity.
+  *
+  * This method returns the index upon success and a negative number upon failure.
+  */
+int Storage::findArrangementInvolvingEntity(
+  const smtk::util::UUID& entityId, ArrangementKind kind,
+  const smtk::util::UUID& involvedEntity) const
+{
+  const Entity* src = this->findEntity(entityId);
+  if (!src)
+    return -1;
+
+  const Arrangements* arr = this->hasArrangementsOfKindForEntity(entityId, kind);
+  if (!arr)
+    return -1;
+
+  Arrangements::const_iterator it;
+  int idx = 0;
+  smtk::util::UUIDArray rels;
+  for (it = arr->begin(); it != arr->end(); ++it, ++idx, rels.clear())
+    if (it->relations(rels, src, kind))
+      for (smtk::util::UUIDArray::iterator rit = rels.begin(); rit != rels.end(); ++rit)
+        if (*rit == involvedEntity)
+          return idx;
+
+  return -1;
+}
+
+/**\brief Find the inverse of the given arrangement, if it exists.
+  *
+  * When an arrangement relates one entity to another, it usually
+  * has a dual, or inverse, arrangement stored with the other entity
+  * so that the relationship may be discovered given either of the
+  * entities involved.
+  *
+  * Note that the dual is not related to sense or orientation;
+  * for example the dual of a face-cell's HAS_USE arrangement is
+  * *not* the opposite face. Rather, the dual is the face-use
+  * record's HAS_CELL arrangement (pointing from the face-use to
+  * the face-cell).
+  *
+  * Because some relations are one-to-many in nature, it is possible
+  * for the dual of a relation to have multiple values. For example,
+  * a Shell's HAS_USE arrangement refer to many FaceUse instances.
+  * For this reason, findDualArrangements returns an array of duals.
+  *
+  * This method and smtk::model::Arrangement::relations() are
+  * the two main methods which determine how arrangements should be
+  * interpreted in context without any prior constraints on the
+  * context. (Other methods create and interpret arrangements in
+  * specific circumstances where the context is known.)
+  */
+bool Storage::findDualArrangements(
+    const smtk::util::UUID& entityId, ArrangementKind kind, int index,
+    ArrangementReferences& duals) const
+{
+  if (index < 0)
+    return false;
+
+  const Entity* src = this->findEntity(entityId);
+  if (!src)
+    return false;
+
+  const Arrangements* arr = this->hasArrangementsOfKindForEntity(entityId, kind);
+  if (!arr || index >= static_cast<int>(arr->size()))
+    return false;
+
+  int relationIdx;
+  int sense;
+  Orientation orient;
+
+  smtk::util::UUID dualEntityId;
+  ArrangementKind dualKind;
+  int dualIndex;
+  int relStart, relEnd;
+
+  switch (kind)
+    {
+  case HAS_USE:
+    switch (src->entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY:
+      if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
+        { // OK, find use's reference to this cell.
+        dualEntityId = src->relations()[relationIdx];
+        dualKind = HAS_CELL;
+        if ((dualIndex =
+            this->findArrangementInvolvingEntity(
+              dualEntityId, dualKind, entityId)) >= 0)
+          {
+          duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          return true;
+          }
+        }
+       break;
+    case SHELL_ENTITY:
+      if ((*arr)[index].IndexRangeFromShellHasUse(relStart, relEnd))
+        { // Find the use's reference to this shell.
+        dualKind = HAS_SHELL;
+        for (; relStart != relEnd; ++relStart)
+          {
+          dualEntityId = src->relations()[relStart];
+          if ((dualIndex =
+              this->findArrangementInvolvingEntity(
+                dualEntityId, dualKind, entityId)) >= 0)
+            duals.push_back(ArrangementReference(dualEntityId, dualKind, dualIndex));
+          }
+        if (!duals.empty()) return true;
+        }
+      break;
+      /*
+      bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
+      bool IndexFromCellIncludesEntity(int& relationIdx) const;
+      bool IndexFromCellHasShell(int& relationIdx) const;
+      bool IndexAndSenseFromUseHasCell(int& relationIdx, int& sense) const;
+      bool IndexFromUseHasShell(int& relationIdx) const;
+      bool IndexFromUseOrShellIncludesShell(int& relationIdx) const;
+      bool IndexFromShellHasCell(int& relationIdx) const;
+      bool IndexRangeFromShellHasUse(int& relationBegin, int& relationEnd) const;
+      bool IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const;
+      bool IndexFromInstanceInstanceOf(int& relationIdx) const;
+      bool IndexFromEntityInstancedBy(int& relationIdx) const;
+      */
+    case USE_ENTITY:
+    case GROUP_ENTITY:
+    case MODEL_ENTITY:
+    case INSTANCE_ENTITY:
+      break;
+      }
+  case HAS_CELL:
+  case HAS_SHELL:
+  case INCLUDES:
+  case EMBEDDED_IN:
+  case SUPERSET_OF:
+  case SUBSET_OF:
+  case INSTANCE_OF:
+  case INSTANCED_BY:
+  default:
+    break;
+    }
+  return false;
+}
+
 /**\brief Find a particular arrangement: a cell's HAS_USE with a given sense.
   *
   * The index of the matching arrangement is returned (or -1 if no such sense
@@ -411,10 +658,12 @@ smtk::util::UUID Storage::cellHasUseOfSenseAndOrientation(
 }
 
 /**\brief Find a use record for the given \a cell and \a sense,
-  * creating one if it does not exist.
+  * creating one if it does not exist or replacing it if \a replacement is non-NULL.
+  *
   */
-smtk::util::UUID Storage::findOrCreateCellUseOfSenseAndOrientation(
-  const smtk::util::UUID& cell, int sense, Orientation orient)
+smtk::util::UUID Storage::findCreateOrReplaceCellUseOfSenseAndOrientation(
+  const smtk::util::UUID& cell, int sense, Orientation orient,
+  const smtk::util::UUID& replacement)
 {
   Entity* entity = this->findEntity(cell);
   if (!entity)
@@ -437,7 +686,13 @@ smtk::util::UUID Storage::findOrCreateCellUseOfSenseAndOrientation(
     if (itSense == sense && itOrient == orient)
       {
       if (itIdx >= 0)
-        { // Found a valid use.
+        { // Found a valid use. If we have a replacement, use it.
+        if (!replacement.isNull())
+          {
+          this->unarrangeEntity(cell, HAS_USE, relIdx, true);
+          arrIdx = relIdx;
+          break;
+          }
         return entity->relations()[itIdx];
         }
       else
@@ -452,11 +707,19 @@ smtk::util::UUID Storage::findOrCreateCellUseOfSenseAndOrientation(
   // the specified sense relative to the cell.
   // Note that there may still be an entry in arr
   // which we should overwrite (with itIdx == -1).
-  UUIDWithEntity use = this->insertEntityOfTypeAndDimension(
-    USE_ENTITY | entity->dimensionBits(), entity->dimension());
-  // We must re-fetch entity since inserting the use
-  // may have invalidated our reference to it.
-  entity = this->findEntity(cell);
+  UUIDWithEntity use;
+  if (replacement.isNull())
+    {
+    use = this->insertEntityOfTypeAndDimension(
+      USE_ENTITY | entity->dimensionBits(), entity->dimension());
+    // We must re-fetch entity since inserting the use
+    // may have invalidated our reference to it.
+    entity = this->findEntity(cell);
+    }
+  else
+    {
+    use = this->m_topology->find(replacement);
+    }
 
   // Now add the use to the cell and the cell to the use:
   smtk::util::UUIDArray::size_type useIdx = entity->relations().size();
@@ -884,6 +1147,23 @@ Volume Storage::addVolume()
     this->addEntityOfTypeAndDimension(CELL_ENTITY, 3));
 }
 
+/// Insert a VolumeUse at the specified \a uid.
+VolumeUse Storage::insertVolumeUse(const smtk::util::UUID& uid)
+{
+  return VolumeUse(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 3)->first);
+}
+
+/// Create a VolumeUse with the specified \a uid and replace \a src's VolumeUse.
+VolumeUse Storage::setVolumeUse(const smtk::util::UUID& uid, const Volume& src)
+{
+  VolumeUse volUse = this->insertVolumeUse(uid);
+  this->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    src.entity(), 0, POSITIVE, uid);
+  return volUse;
+}
+
 /// Add a vertex-use to storage (without any relationships)
 VertexUse Storage::addVertexUse()
 {
@@ -899,7 +1179,7 @@ VertexUse Storage::addVertexUse(const Vertex& src, int sense)
     {
     return VertexUse(
       src.storage(),
-      this->findOrCreateCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE));
+      this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE));
     }
   return VertexUse(); // invalid vertex use if source vertex was invalid or from different storage.
 }
@@ -919,7 +1199,7 @@ EdgeUse Storage::addEdgeUse(const Edge& src, int sense, Orientation orient)
     {
     return EdgeUse(
       src.storage(),
-      this->findOrCreateCellUseOfSenseAndOrientation(src.entity(), sense, orient));
+      this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
     }
   return EdgeUse(); // invalid edge use if source edge was invalid or from different storage.
 }
@@ -939,7 +1219,7 @@ FaceUse Storage::addFaceUse(const Face& src, int sense, Orientation orient)
     {
     return FaceUse(
       src.storage(),
-      src.storage()->findOrCreateCellUseOfSenseAndOrientation(src.entity(), sense, orient));
+      src.storage()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
     }
   return FaceUse(); // invalid face use if source face was invalid or from different storage.
 }
@@ -959,7 +1239,7 @@ VolumeUse Storage::addVolumeUse(const Volume& src)
     {
     return VolumeUse(
       src.storage(),
-      src.storage()->findOrCreateCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
+      src.storage()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
     }
   return VolumeUse(); // invalid volume use if source volume was invalid or from different storage.
 }

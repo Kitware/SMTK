@@ -25,6 +25,8 @@ public:
   VolumeUse use() const;
   Shells shells() const;
   Faces faces() const;
+
+  Volume& setVolumeUse(const VolumeUse& volUse);
 };
 
 typedef std::vector<Volume> Volumes;

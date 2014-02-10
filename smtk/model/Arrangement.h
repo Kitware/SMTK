@@ -50,6 +50,8 @@ public:
   static Arrangement ShellEmbeddedInUseOrShellWithIndex(int relationIdx);
   static Arrangement InstanceInstanceOfWithIndex(int relationIdx);
   static Arrangement EntityInstancedByWithIndex(int relationIdx);
+  static Arrangement EntitySupersetOfWithIndex(int relationIdx);
+  static Arrangement EntitySubsetOfWithIndex(int relationIdx);
 
   bool IndexSenseAndOrientationFromCellHasUse(int& relationIdx, int& sense, Orientation& orient) const;
   bool IndexFromCellEmbeddedInEntity(int& relationIdx) const;
@@ -63,12 +65,125 @@ public:
   bool IndexFromShellEmbeddedInUseOrShell(int& relationIdx) const;
   bool IndexFromInstanceInstanceOf(int& relationIdx) const;
   bool IndexFromEntityInstancedBy(int& relationIdx) const;
+  bool IndexFromEntitySupersetOf(int& relationIdx) const;
+  bool IndexFromEntitySubsetOf(int& relationIdx) const;
 
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;
 
+  bool relations(smtk::util::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const;
+
+  /// A helper to extract the relationship from an arrangement that stores only an index.
+  template<bool (Arrangement::*M)(int&) const>
+  struct IndexHelper
+  {
+    bool operator () (
+      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx;
+        if ((arr.*M)(idx))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            rels.push_back(entity->relations()[idx]);
+        }
+      return rels.empty() ? false : true;
+      }
+  };
+
+  /// A helper to extract the relationship from an arrangement that stores an index and sense.
+  template<bool (Arrangement::*M)(int&, int&) const>
+  struct IndexAndSenseHelper
+  {
+    bool operator () (
+      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx, sense;
+        if ((arr.*M)(idx, sense))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            rels.push_back(entity->relations()[idx]);
+        }
+      return rels.empty() ? false : true;
+      }
+  };
+
+  /// A helper to extract relationships from an arrangement that stores an index range.
+  template<bool (Arrangement::*M)(int&, int&) const>
+  struct IndexRangeHelper
+  {
+    bool operator () (
+      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int ibeg, iend;
+        if ((arr.*M)(ibeg, iend))
+          for (; ibeg < iend; ++ibeg)
+            if (ibeg >= 0 && ibeg < static_cast<int>(entity->relations().size()))
+              rels.push_back(entity->relations()[ibeg]);
+        }
+      return rels.empty() ? false : true;
+      }
+  };
+
+  /// A helper to extract the relationship from an arrangement that stores an index, sense, and orientation.
+  template<bool (Arrangement::*M)(int&, int&, Orientation&) const>
+  struct IndexSenseAndOrientationHelper
+  {
+    bool operator () (
+      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      {
+      if (entity)
+        {
+        int idx, sense;
+        Orientation orient;
+        if ((arr.*M)(idx, sense, orient))
+          if (idx >= 0 && idx < static_cast<int>(entity->relations().size()))
+            rels.push_back(entity->relations()[idx]);
+        }
+      return rels.empty() ? false : true;
+      }
+  };
+
+  typedef IndexSenseAndOrientationHelper<&Arrangement::IndexSenseAndOrientationFromCellHasUse> CellHasUseRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromCellEmbeddedInEntity> CellEmbeddedInEntityRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromCellIncludesEntity> CellIncludesEntityRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromCellHasShell> CellHasShellRelationHelper;
+  typedef IndexAndSenseHelper<&Arrangement::IndexAndSenseFromUseHasCell> UseHasCellRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromUseHasShell> UseHasShellRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromUseOrShellIncludesShell> UseOrShellIncludesShellRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromShellHasCell> ShellHasCellRelationHelper;
+  typedef IndexRangeHelper<&Arrangement::IndexRangeFromShellHasUse> ShellHasUseRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromShellEmbeddedInUseOrShell> ShellEmbeddedInUseOrShellRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromInstanceInstanceOf> InstanceInstanceOfRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromEntityInstancedBy> InstanceInstancedByRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromEntitySupersetOf> EntitySupersetOfRelationHelper;
+  typedef IndexHelper<&Arrangement::IndexFromEntitySubsetOf> EntitySubsetOfRelationHelper;
+
+
 protected:
   std::vector<int> m_details; // Kind-dependent specification of the arrangement.
+};
+
+/**\brief A simple structure that robustly references an arrangement.
+  *
+  * This is more robust than pointers or iterators into instances of
+  * UUIDsToArrangements objects, since these are invalidated by
+  * modifications to arrangements.
+  */
+class ArrangementReference
+{
+public:
+  ArrangementReference(
+    const smtk::util::UUID& entId, ArrangementKind k, int idx)
+    : entityId(entId), kind(k), index(idx)
+    { }
+
+  smtk::util::UUID entityId; //!< The ID of the entity on which the arrangement is defined.
+  ArrangementKind kind;      //!< The kind of the arrangement.
+  int index;                 //!< The index of the arrangement.
 };
 
 /// A vector of Arrangements is associated to each Storage entity.
@@ -88,6 +203,8 @@ typedef std::map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrange
 #endif // SMTK_HASH_STORAGE
 /// An iterator referencing an (ArrangementKind,Arrangements)-tuple.
 typedef std::map<ArrangementKind,Arrangements>::iterator ArrangementKindWithArrangements;
+/// An array of ArrangementReference objects used, for instance, to enumerate inverse relations.
+typedef std::vector<ArrangementReference> ArrangementReferences;
 
   } // model namespace
 } // smtk namespace

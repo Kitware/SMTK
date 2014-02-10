@@ -107,5 +107,12 @@ int main(int argc, char* argv[])
   test( sm->detachAttribute(/*attribId*/0, uids[0]), "Removing a non-existent attribute should fail");
   test(!sm->detachAttribute(/*attribId*/0, uids[1]), "Removing a non-existent attribute should fail");
 
+  // Test removal of arrangement information and entities.
+  // Remove a volume from its volume use and the model containing it.
+  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 0, "Detaching a Volume from a non-existent Model did not fail.");
+  test(sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
+  test(sm->findEntity(uids[21]) == NULL, "unarrangeEntity(..., true) failed to remove the entity afterwards.");
+  test(sm->erase(uids[0]), "Failed to erase a vertex.");
+
   return 0;
 }

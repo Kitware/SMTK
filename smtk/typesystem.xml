@@ -75,6 +75,7 @@
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
   <suppress-warning text="skipping field 'Storage::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
@@ -712,6 +713,10 @@
           </inject-code>
         </add-function>
       </object-type>
+
+      <value-type name="ArrangementReference">
+        <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </value-type>
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>

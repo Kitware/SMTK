@@ -48,6 +48,8 @@ namespace smtk
   namespace model
   {
     class Arrangement;
+    class ArrangementReference;
+    typedef std::vector<ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
     typedef std::vector<Arrangement> Arrangements;
     class BRepModel;
