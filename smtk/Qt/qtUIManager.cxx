@@ -120,7 +120,7 @@ void qtDoubleValidator::fixup(QString &input) const
 
 //----------------------------------------------------------------------------
 qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
-  m_AttManager(manager)
+  m_AttManager(manager), m_useInternalFileBrowser(false)
 {
   this->RootView = NULL;
 
@@ -152,8 +152,9 @@ qtUIManager::~qtUIManager()
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::initializeUI(QWidget* pWidget)
+void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
+  m_useInternalFileBrowser = useInternalFileBrowser;
   if(!this->m_AttManager.rootView())
     {
     return;
@@ -170,6 +171,31 @@ void qtUIManager::initializeUI(QWidget* pWidget)
 
   this->RootView = new qtRootView(
     this->m_AttManager.rootView(), pWidget, this);
+}
+
+//----------------------------------------------------------------------------
+// [Experimenta]: Generates widget for a single input view
+// bypassing the RootView tab widget
+void qtUIManager::initializeView(QWidget* pWidget,
+                                 smtk::view::BasePtr smtkView,
+                                 bool useInternalFileBrowser)
+{
+  m_useInternalFileBrowser = useInternalFileBrowser;
+  if(!this->m_AttManager.rootView())
+    {
+    return;
+    }
+  if(this->RootView)
+    {
+    delete this->RootView;
+    }
+  smtk::view::RootPtr rs = this->m_AttManager.rootView();
+  const double *dcolor = rs->defaultColor();
+  this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+  dcolor = rs->invalidColor();
+  this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+
+  this->createView(smtkView, pWidget);
 }
 
 //----------------------------------------------------------------------------
@@ -268,33 +294,7 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
   for (i = 0; i < n; i++)
     {
     v = group->subView(static_cast<int>(i));
-    switch(v->type())
-      {
-      case smtk::view::Base::ATTRIBUTE:
-        qtView = new qtAttributeView(v, pQtGroup->widget(), this);
-        this->processAttributeView(qobject_cast<qtAttributeView*>(qtView));
-        break;
-      case smtk::view::Base::GROUP:
-        qtView = new qtGroupView(v, pQtGroup->widget(), this);
-        this->processGroupView(qobject_cast<qtGroupView*>(qtView));
-        break;
-      case smtk::view::Base::INSTANCED:
-        qtView = new qtInstancedView(v, pQtGroup->widget(), this);
-        this->processInstancedView(qobject_cast<qtInstancedView*>(qtView));
-        break;
-      case smtk::view::Base::MODEL_ENTITY:
-        qtView = new qtModelEntityView(v, pQtGroup->widget(), this);
-        this->processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
-        break;
-      case smtk::view::Base::SIMPLE_EXPRESSION:
-        qtView = new qtSimpleExpressionView(v, pQtGroup->widget(), this);
-        this->processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
-        break;
-      default:
-        break;
-        //this->m_errorStatus << "Unsupport View Type "
-        //                    << View::type2String(sec->type()) << "\n";
-      }
+    qtView = qtUIManager::createView(v, pQtGroup->widget());
     if(qtView)
       {
       pQtGroup->addChildView(qtView);
@@ -532,7 +532,14 @@ void qtUIManager::addNewTableValues(smtk::attribute::GroupItemPtr dataItem,
 //----------------------------------------------------------------------------
 void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 {
-  emit this->fileItemCreated(fileItem);
+  if (m_useInternalFileBrowser)
+    {
+    fileItem->enableFileBrowser();
+    }
+  else
+    {
+    emit this->fileItemCreated(fileItem);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1032,4 +1039,39 @@ bool qtUIManager::updateTableItemCheckState(
     bEnabled = (checkState==Qt::Checked);
     }
   return bEnabled;
+}
+
+//----------------------------------------------------------------------------
+qtBaseView *qtUIManager::createView(smtk::view::BasePtr smtkView,
+  QWidget *pWidget)
+{
+  qtBaseView *qtView = NULL;  // return value
+  switch(smtkView->type())
+    {
+    case smtk::view::Base::ATTRIBUTE:
+      qtView = new qtAttributeView(smtkView, pWidget, this);
+      qtUIManager::processAttributeView(qobject_cast<qtAttributeView*>(qtView));
+      break;
+    case smtk::view::Base::GROUP:
+      qtView = new qtGroupView(smtkView, pWidget, this);
+      qtUIManager::processGroupView(qobject_cast<qtGroupView*>(qtView));
+      break;
+    case smtk::view::Base::INSTANCED:
+      qtView = new qtInstancedView(smtkView, pWidget, this);
+      qtUIManager::processInstancedView(qobject_cast<qtInstancedView*>(qtView));
+      break;
+    case smtk::view::Base::MODEL_ENTITY:
+      qtView = new qtModelEntityView(smtkView, pWidget, this);
+      qtUIManager::processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
+      break;
+    case smtk::view::Base::SIMPLE_EXPRESSION:
+      qtView = new qtSimpleExpressionView(smtkView, pWidget, this);
+      qtUIManager::processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
+      break;
+    default:
+      break;
+      //this->m_errorStatus << "Unsupport View Type "
+      //                    << View::type2String(sec->type()) << "\n";
+    }
+  return qtView;
 }

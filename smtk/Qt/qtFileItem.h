@@ -21,6 +21,20 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
 // .NAME qtFileItem - an Expression item
 // .SECTION Description
+//
+// This is widget is designed to let applications connect a file
+// browser widget for selecting files, by connecting to the
+// launchFileBrowser signal and onInputValueChanged slot.
+//
+// The class can also instantiate its own file browser.
+// To use this option, you can call the enableFileBrowser() method
+// in response to the qtUIManager::fileItemCreated signal.
+// In more typical applications, use the second, optional
+// argument in qtUIManager.initializeUI() to enable the option.
+//
+// Note: The current code does not support multiple file
+// or directory selection.
+//
 // .SECTION See Also
 // qtItem
 
@@ -39,15 +53,16 @@ namespace smtk
     {
       Q_OBJECT
 
-    public:         
-      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,bool dirOnly=false);
-      virtual ~qtFileItem();  
+    public:
+      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview, bool dirOnly=false);
+      virtual ~qtFileItem();
+      void enableFileBrowser(bool state=true);
       bool isDirectory();
 
     public slots:
       virtual void onInputValueChanged();
-      virtual void onLaunchFileBrowser()
-        {emit this->launchFileBrowser();}
+      virtual void onLaunchFileBrowser();
+
     signals:
       void launchFileBrowser();
 

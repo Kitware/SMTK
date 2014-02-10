@@ -1,6 +1,6 @@
 /*=========================================================================
 
-Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
+Copyright (c) 1998-2014 Kitware Inc. 469 Clifton Corporate Parkway,
 Clifton Park, NY, 12065, USA.
 
 All rights reserved. No part of this software may be reproduced, distributed,
@@ -22,18 +22,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtFileItem.h"
 
+#include "smtk/Qt/qtBaseView.h"
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/attribute/FileItem.h"
-#include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/FileItemDefinition.h"
 
-#include <QLineEdit>
+#include <QDir>
+#include <QFileDialog>
 #include <QFrame>
-#include <QPushButton>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
 #include <QPointer>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 using namespace smtk::attribute;
 
@@ -42,6 +46,7 @@ class qtFileItemInternals
 {
 public:
   bool IsDirectory;
+  QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
 };
 
@@ -52,6 +57,7 @@ qtFileItem::qtFileItem(
 {
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory = dirOnly;
+  this->Internals->FileBrowser = NULL;
   this->IsLeafItem = true;
   this->createWidget();
 }
@@ -73,12 +79,31 @@ void qtFileItem::createWidget()
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
   layout->setAlignment(Qt::AlignTop);
-  this->updateItemData();  
+  this->updateItemData();
 }
 //----------------------------------------------------------------------------
 bool qtFileItem::isDirectory()
 {
   return this->Internals->IsDirectory;
+}
+
+//----------------------------------------------------------------------------
+// Although you *can* disable this feature, it is not recommended.
+// Behavior is not defined if this method is called after
+// the ancestor qtUIManager::initializeUI() method is called.
+void qtFileItem::enableFileBrowser(bool state)
+{
+  if (!state)
+    {
+    delete this->Internals->FileBrowser;
+    this->Internals->FileBrowser = NULL;
+    }
+  else if (NULL == this->Internals->FileBrowser)
+    {
+    this->Internals->FileBrowser = new QFileDialog(this->Widget);
+    this->Internals->FileBrowser->setObjectName("Select File Dialog");
+    this->Internals->FileBrowser->setDirectory(QDir::currentPath());
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -104,9 +129,45 @@ void qtFileItem::updateItemData()
 
   this->Internals->EntryFrame = new QFrame(this->parentWidget());
   this->Internals->EntryFrame->setObjectName("FileBrowsingFrame");
-  QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
-  entryLayout->setMargin(0);
+  //this->Internals->EntryFrame->setStyleSheet("QFrame { background-color: pink; }");
 
+  // Setup layout
+  QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+  int spacing = entryLayout->spacing() / 2;  // reduce spacing
+  entryLayout->setSpacing(spacing);
+
+  // Add label
+  smtk::attribute::ItemPtr item = dynamic_pointer_cast<Item>(this->getObject());
+  QString labelText;
+  if(!item->label().empty())
+    {
+    labelText = item->label().c_str();
+    }
+  else
+    {
+    labelText = item->name().c_str();
+    }
+  QLabel* label = new QLabel(labelText, this->Widget);
+  //label->setStyleSheet("QLabel { background-color: lightblue; }");
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  label->setSizePolicy(sizeFixedPolicy);
+
+  // Add in BriefDescription as tooltip if available
+  smtk::attribute::ConstItemDefinitionPtr itemDef = item->definition();
+  const std::string strBriefDescription = itemDef->briefDescription();
+  if(!strBriefDescription.empty())
+    {
+    label->setToolTip(strBriefDescription.c_str());
+    }
+
+  // If advanced level, update font
+  if(itemDef->advanceLevel())
+    {
+    label->setFont(this->baseView()->uiManager()->advancedFont());
+    }
+  entryLayout->addWidget(label);
+
+  // Add file items
   for(i = 0; i < n; i++)
     {
     QWidget* fileframe = this->createFileBrowseWidget(static_cast<int>(i));
@@ -123,6 +184,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
 
   QFrame *frame = new QFrame(this->parentWidget());
+  //frame->setStyleSheet("QFrame { background-color: yellow; }");
   QLineEdit* lineEdit = new QLineEdit(frame);
   // As a file input, if the name is too long lets favor
   // the file name over the path
@@ -131,6 +193,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
   QHBoxLayout* layout = new QHBoxLayout(frame);
+  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(lineEdit);
   layout->addWidget(fileBrowserButton);
 
@@ -159,6 +222,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
   return frame;
 }
+
 //----------------------------------------------------------------------------
 void qtFileItem::onInputValueChanged()
 {
@@ -191,5 +255,59 @@ void qtFileItem::onInputValueChanged()
   else if(dItem)
     {
     dItem->unset(elementIdx);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::onLaunchFileBrowser()
+{
+  // If we are not using local file browser, just emit signal and return
+  if (!this->Internals->FileBrowser)
+    {
+    emit this->launchFileBrowser();
+    return;
+    }
+
+  // If local file browser instantiated, get data from it
+  smtk::attribute::DirectoryItemPtr dItem;
+  smtk::attribute::FileItemPtr fItem;
+  smtk::attribute::ItemPtr item =
+    smtk::dynamic_pointer_cast<smtk::attribute::Item>(this->getObject());
+
+  QString filters;
+  QFileDialog::FileMode mode = QFileDialog::AnyFile;
+  if (this->Internals->IsDirectory)
+    {
+    dItem = smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item);
+    const smtk::attribute::DirectoryItemDefinition *dItemDef =
+      dynamic_cast<const smtk::attribute::DirectoryItemDefinition*>(dItem->definition().get());
+    mode = QFileDialog::Directory;
+    this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly,
+      dItemDef->shouldExist());
+    }
+  else
+    {
+    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+    const smtk::attribute::FileItemDefinition *fItemDef =
+      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    filters = fItemDef->getFileFilters().c_str();
+    mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile :
+      QFileDialog::AnyFile;
+    }
+  this->Internals->FileBrowser->setFileMode(mode);
+  this->Internals->FileBrowser->setFilter(filters);
+
+ this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
+  if (this->Internals->FileBrowser->exec() == QDialog::Accepted)
+    {
+    QStringList files = this->Internals->FileBrowser->selectedFiles();
+
+    QLineEdit* lineEdit =  static_cast<QLineEdit*>(
+      this->property("DataItem").value<void *>());
+    if(!lineEdit)
+      {
+      return;
+      }
+    lineEdit->setText(files[0]);
     }
 }

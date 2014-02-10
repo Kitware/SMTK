@@ -30,10 +30,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/util/AttributeReader.h"
 #include "smtk/util/AttributeWriter.h"
 #include "smtk/util/Logger.h"
+#include "smtk/view/Base.h"
+#include "smtk/view/Root.h"
 
 #include <QApplication>
+#include <QFrame>
 #include <QVBoxLayout>
 #include <QWidget>
+
+#include <boost/lexical_cast.hpp>
+
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -42,7 +48,8 @@ int main(int argc, char *argv[])
     {
     std::cout << "\n"
               << "Simple program to load attribute manager and display corresponding editor panel" << "\n"
-              << "Usage: qtViewTest attribute_filename  [output_filename]" << "\n"
+              << "Usage: qtViewTest attribute_filename  [output_filename]"
+              << "  [view_name | view_number]" << "\n"
               << std::endl;
     return -1;
     }
@@ -78,7 +85,57 @@ int main(int argc, char *argv[])
   QVBoxLayout *layout = new QVBoxLayout();
   widget->setLayout(layout);
 
-  uiManager->initializeUI(widget);
+  bool useInternalFileBrowser = true;
+
+  // Check for input "view" argument
+  if (argc <= 3)
+    {
+    // Generate tab group with all views (standard)
+    uiManager->initializeUI(widget, useInternalFileBrowser);
+    }
+  else
+    {
+    // Render one view (experimental)
+    smtk::view::RootPtr rootView = manager.rootView();
+    smtk::view::BasePtr view;
+    // First check if argv[3] is index or name
+    std::string input = argv[3];
+    try
+      {
+      int index = boost::lexical_cast<int>(input);
+      view = rootView->subView(index);
+      }
+    catch (const boost::bad_lexical_cast &)
+      {
+      // If input not an int, check for view with matching title
+      for (std::size_t i=0; i<rootView->numberOfSubViews(); ++i)
+        {
+        if (rootView->subView(i)->title() == input)
+          {
+          view = rootView->subView(i);
+          break;
+          }
+        }
+      }
+
+    if (!view)
+      {
+      std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;
+      return -4;
+      }
+
+    // Add simple panel (QFrame) for aesthetics
+    QFrame *frame = new QFrame();
+    frame->setFrameShadow(QFrame::Raised);
+    frame->setFrameShape(QFrame::Panel);
+    //frame->setStyleSheet("QFrame { background-color: pink; }");
+
+    QVBoxLayout *frameLayout = new QVBoxLayout();
+    frame->setLayout(frameLayout);
+    uiManager->initializeView(frame, view, useInternalFileBrowser);
+    widget->layout()->addWidget(frame);
+    }
+
   widget->show();
   int retcode = app->exec();
 
