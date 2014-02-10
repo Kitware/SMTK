@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
 
+#include <QFileDialog>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -44,6 +45,7 @@ class qtFileItemInternals
 {
 public:
   bool IsDirectory;
+  QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
 };
 
@@ -54,6 +56,7 @@ qtFileItem::qtFileItem(
 {
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory = dirOnly;
+  this->Internals->FileBrowser = NULL;
   this->IsLeafItem = true;
   this->createWidget();
 }
@@ -81,6 +84,16 @@ void qtFileItem::createWidget()
 bool qtFileItem::isDirectory()
 {
   return this->Internals->IsDirectory;
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::enableFileBrowser()
+{
+  if (NULL == this->Internals->FileBrowser)
+    {
+    this->Internals->FileBrowser = new QFileDialog(this->Widget);
+    this->Internals->FileBrowser->setObjectName("Select File Dialog");
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -199,6 +212,7 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
 
   return frame;
 }
+
 //----------------------------------------------------------------------------
 void qtFileItem::onInputValueChanged()
 {
@@ -231,5 +245,59 @@ void qtFileItem::onInputValueChanged()
   else if(dItem)
     {
     dItem->unset(elementIdx);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::onLaunchFileBrowser()
+{
+  // If we are not using local file browser, just emit signal and return
+  if (!this->Internals->FileBrowser)
+    {
+    emit this->launchFileBrowser();
+    return;
+    }
+
+  // If local file browser instantiated, get data from it
+  smtk::attribute::DirectoryItemPtr dItem;
+  smtk::attribute::FileItemPtr fItem;
+  smtk::attribute::ItemPtr item =
+    smtk::dynamic_pointer_cast<smtk::attribute::Item>(this->getObject());
+
+  QString filters;
+  QFileDialog::FileMode mode = QFileDialog::AnyFile;
+  if (this->Internals->IsDirectory)
+    {
+    dItem = smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItem>(item);
+    const smtk::attribute::DirectoryItemDefinition *dItemDef =
+      dynamic_cast<const smtk::attribute::DirectoryItemDefinition*>(dItem->definition().get());
+    mode = QFileDialog::Directory;
+    this->Internals->FileBrowser->setOption(QFileDialog::ShowDirsOnly,
+      dItemDef->shouldExist());
+    }
+  else
+    {
+    fItem = smtk::dynamic_pointer_cast<smtk::attribute::FileItem>(item);
+    const smtk::attribute::FileItemDefinition *fItemDef =
+      dynamic_cast<const smtk::attribute::FileItemDefinition*>(fItem->definition().get());
+    filters = fItemDef->getFileFilters().c_str();
+    mode = fItemDef->shouldExist() ? QFileDialog::ExistingFile :
+      QFileDialog::AnyFile;
+    }
+  this->Internals->FileBrowser->setFileMode(mode);
+  this->Internals->FileBrowser->setFilter(filters);
+
+ this->Internals->FileBrowser->setWindowModality(Qt::WindowModal);
+  if (this->Internals->FileBrowser->exec() == QDialog::Accepted)
+    {
+    QStringList files = this->Internals->FileBrowser->selectedFiles();
+
+    QLineEdit* lineEdit =  static_cast<QLineEdit*>(
+      this->property("DataItem").value<void *>());
+    if(!lineEdit)
+      {
+      return;
+      }
+    lineEdit->setText(files[0]);
     }
 }
