@@ -174,6 +174,31 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 }
 
 //----------------------------------------------------------------------------
+// [Experimenta]: Generates widget for a single input view
+// bypassing the RootView tab widget
+void qtUIManager::initializeView(QWidget* pWidget,
+                                 smtk::view::BasePtr smtkView,
+                                 bool useInternalFileBrowser)
+{
+  m_useInternalFileBrowser = useInternalFileBrowser;
+  if(!this->m_AttManager.rootView())
+    {
+    return;
+    }
+  if(this->RootView)
+    {
+    delete this->RootView;
+    }
+  smtk::view::RootPtr rs = this->m_AttManager.rootView();
+  const double *dcolor = rs->defaultColor();
+  this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+  dcolor = rs->invalidColor();
+  this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
+
+  this->createView(smtkView, pWidget);
+}
+
+//----------------------------------------------------------------------------
 void qtUIManager::updateModelViews()
 {
   if(!this->RootView)

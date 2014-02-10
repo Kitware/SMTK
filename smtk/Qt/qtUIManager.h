@@ -54,6 +54,8 @@ namespace smtk
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
+      void initializeView(QWidget* pWidget, smtk::view::BasePtr base,
+        bool useInternalFileBrowser=true);
       smtk::attribute::Manager* attManager() const
         {return &this->m_AttManager;}
 
@@ -124,8 +126,6 @@ namespace smtk
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget);
 
-    qtBaseView* createView(smtk::view::BasePtr smtkView, QWidget *pWidget);
-
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
@@ -150,7 +150,9 @@ namespace smtk
       void processGroupView(qtGroupView* v);
       void processBasicView(qtBaseView* v);
 
-    private:
+      qtBaseView* createView(smtk::view::BasePtr smtkView, QWidget *pWidget);
+
+   private:
       qtRootView* RootView;
       QFont advFont;
       QColor DefaultValueColor;
