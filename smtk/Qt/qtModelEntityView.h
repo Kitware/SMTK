@@ -43,7 +43,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtModelEntityView(smtk::view::BasePtr, QWidget* p);
+      qtModelEntityView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtModelEntityView();
       QListWidgetItem* getSelectedItem();
       const std::vector<smtk::attribute::DefinitionPtr> &attDefinitions() const;

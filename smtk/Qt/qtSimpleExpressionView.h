@@ -45,7 +45,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtSimpleExpressionView(smtk::view::BasePtr, QWidget* parent);
+      qtSimpleExpressionView(smtk::view::BasePtr, QWidget* parent, qtUIManager* uiman);
       virtual ~qtSimpleExpressionView();
 
       void buildSimpleExpression(

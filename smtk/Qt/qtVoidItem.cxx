@@ -22,6 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtVoidItem.h"
 #include "smtk/Qt/qtUIManager.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include <QCheckBox>
 #include <QSizePolicy>
@@ -38,10 +39,10 @@ public:
 
 };
 
-
 //----------------------------------------------------------------------------
 qtVoidItem::qtVoidItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
+   qtItem(dataObj, p, bview)
 {
   this->Internals = new qtVoidItemInternals;
   this->IsLeafItem = true;
@@ -58,7 +59,7 @@ void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() ||
-    !qtUIManager::instance()->passItemCategoryCheck(
+    !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition()))
     {
     return;
@@ -74,7 +75,7 @@ void qtVoidItem::createWidget()
 
   if(dataObj->definition()->advanceLevel() >0)
     {
-    optionalCheck->setFont(qtUIManager::instance()->advancedFont());
+    optionalCheck->setFont(this->baseView()->uiManager()->advancedFont());
     }
   if(dataObj->definition()->briefDescription().length())
     {

@@ -35,13 +35,14 @@ namespace smtk
 {
   namespace attribute
   {
+    class qtBaseView;
     class QTSMTK_EXPORT qtAttributeRefItem : public qtItem
     {
       Q_OBJECT
 
     public:
       qtAttributeRefItem(smtk::attribute::ItemPtr,
-        QWidget* parent);
+        QWidget* parent,  qtBaseView* view);
       virtual ~qtAttributeRefItem();
       QString labelText() const;
       void setLabelVisible(bool);

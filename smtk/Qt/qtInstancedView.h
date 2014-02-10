@@ -41,7 +41,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtInstancedView(smtk::view::BasePtr, QWidget* p);
+      qtInstancedView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtInstancedView();
 
     public slots:

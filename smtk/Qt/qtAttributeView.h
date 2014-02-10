@@ -44,7 +44,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtAttributeView(smtk::view::BasePtr, QWidget* p);
+      qtAttributeView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtAttributeView();
       const QMap<QString, QList<smtk::attribute::DefinitionPtr> > &attDefinitionMap() const;
 

@@ -50,7 +50,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtGroupView::
-qtGroupView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
+qtGroupView(smtk::view::BasePtr dataObj, QWidget* p,
+  qtUIManager* uiman) : qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtGroupViewInternals;
   this->createWidget( );

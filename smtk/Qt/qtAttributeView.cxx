@@ -109,7 +109,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtAttributeView::
-qtAttributeView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
+qtAttributeView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+  qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtAttributeViewInternals;
   this->createWidget( );
@@ -171,7 +172,7 @@ void qtAttributeView::createWidget( )
   filterLayout->addWidget(labelViewBy, 0, 0);
   filterLayout->addWidget(this->Internals->ViewByCombo, 0, 1);
 
-  const Manager* attMan = qtUIManager::instance()->attManager();
+  const Manager* attMan = this->uiManager()->attManager();
   std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = attMan->categories();
   this->Internals->AttDefMap.clear();
@@ -222,7 +223,7 @@ void qtAttributeView::createWidget( )
 
   // the association widget
   this->Internals->ReferencesWidget = new qtReferencesWidget(frame);
-  this->Internals->AssociationsWidget = new qtAssociationWidget(frame);
+  this->Internals->AssociationsWidget = new qtAssociationWidget(frame, this);
   this->updateAssociationEnableState(smtk::attribute::AttributePtr());
   BottomLayout->addWidget(this->Internals->AssociationsWidget);
   BottomLayout->addWidget(this->Internals->ReferencesWidget);
@@ -399,7 +400,7 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
     {
     return;
     }
-  //qtUIManager::instance()->updateArrayDataValue(dataItem, item);
+  //this->uiManager()->updateArrayDataValue(dataItem, item);
 */
 }
 //----------------------------------------------------------------------------
@@ -481,7 +482,7 @@ void qtAttributeView::onCreateNew()
   QString strDef = this->Internals->DefsCombo->currentText();
   foreach (attribute::DefinitionPtr attDef,
     this->Internals->getCurrentDefs(
-      qtUIManager::instance()->currentCategory().c_str()))
+      this->uiManager()->currentCategory().c_str()))
     {
     if(strDef == QString::fromUtf8(attDef->label().c_str()))
       {
@@ -572,9 +573,9 @@ void qtAttributeView::addAttributePropertyItems(
   for (i = 0; i < n; i++)
     {
     smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
-    if(qtUIManager::instance()->passItemCategoryCheck(
+    if(this->uiManager()->passItemCategoryCheck(
         attItem->definition()) &&
-      qtUIManager::instance()->passAdvancedCheck(
+      this->uiManager()->passAdvancedCheck(
       attItem->definition()->advanceLevel()))
       {
       // No User data, not editable
@@ -601,7 +602,7 @@ void qtAttributeView::addAttributePropertyItems(
 
       if(attItem->definition()->advanceLevel())
         {
-        item->setFont(qtUIManager::instance()->instance()->advancedFont());
+        item->setFont(this->uiManager()->advancedFont());
         }
       }
     }
@@ -654,7 +655,7 @@ void qtAttributeView::onViewBy(int viewBy)
 
   QList<smtk::attribute::DefinitionPtr> currentDefs =
     this->Internals->getCurrentDefs(
-    qtUIManager::instance()->currentCategory().c_str());
+    this->uiManager()->currentCategory().c_str());
   this->Internals->AddButton->setEnabled(currentDefs.count()>0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
@@ -718,7 +719,7 @@ void qtAttributeView::onViewByWithDefinition(
         QTableWidgetItem* item = this->addAttributeListItem(*it);
         if((*it)->definition()->advanceLevel())
           {
-          item->setFont(qtUIManager::instance()->instance()->advancedFont());
+          item->setFont(this->uiManager()->advancedFont());
           }
         }
       }
@@ -756,9 +757,9 @@ void qtAttributeView::updateTableWithAttribute(
     smtk::attribute::ItemPtr attItem = att->item(static_cast<int>(i));
     const ItemDefinition* itemDef =
      dynamic_cast<const ItemDefinition*>(attItem->definition().get());
-    if(!qtUIManager::instance()->passAdvancedCheck(
+    if(!this->uiManager()->passAdvancedCheck(
       itemDef->advanceLevel()) ||
-      !qtUIManager::instance()->passItemCategoryCheck(
+      !this->uiManager()->passItemCategoryCheck(
         attItem->definition()))
       {
       continue;
@@ -819,9 +820,9 @@ void qtAttributeView::updateTableWithProperty(
       smtk::attribute::ItemPtr attItem = (*it)->item(static_cast<int>(i));
       const ItemDefinition* itemDef =
       dynamic_cast<const ItemDefinition*>(attItem->definition().get());
-      if(!qtUIManager::instance()->passAdvancedCheck(
+      if(!this->uiManager()->passAdvancedCheck(
           itemDef->advanceLevel()) ||
-        !qtUIManager::instance()->passItemCategoryCheck(
+        !this->uiManager()->passItemCategoryCheck(
           attItem->definition()))
         {
         continue;
@@ -946,7 +947,7 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
   QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
   if(advanced)
     {
-    labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
+    labelitem->setFont(this->uiManager()->advancedFont());
     }
   // add in BriefDescription as tooltip if available
   const std::string strBriefDescription = vItemDef->briefDescription();
@@ -957,7 +958,7 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
 
   labelitem->setFlags(nonEditableFlags);
   vtWidget->setItem(numRows-1, 0, labelitem);
-  bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
+  bool bEnabled = this->uiManager()->updateTableItemCheckState(
     labelitem, dynamic_pointer_cast<Item>(attItem));
 
   QString unitText = vItemDef && !vItemDef->units().empty() ? vItemDef->units().c_str() : "";
@@ -969,8 +970,8 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
   std::size_t i, n = attItem->numberOfValues();
   for(i = 0; i < n; i++)
     {
-    QWidget* inputWidget = qtUIManager::instance()->createInputWidget(
-      attItem, static_cast<int>(i), this->Widget);
+    QWidget* inputWidget = this->uiManager()->createInputWidget(
+      attItem, static_cast<int>(i), this->Widget, this);
     if(inputWidget)
       {
       numRows = numAdded>0 ? numRows+1 : numRows;
@@ -988,7 +989,7 @@ void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
         QTableWidgetItem* componentlabelitem = new QTableWidgetItem(labelText);
         if(advanced)
           {
-          componentlabelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
+          componentlabelitem->setFont(this->uiManager()->advancedFont());
           }
         componentlabelitem->setFlags(nonEditableFlags);
         // add in BriefDescription as tooltip if available
@@ -1014,7 +1015,7 @@ void qtAttributeView::addTableAttRefItems(
     }
   QTableWidget* vtWidget = this->Internals->ValuesTable;
   qtAttributeRefItem* refItem = qobject_cast<qtAttributeRefItem*>(
-    qtAttribute::createAttributeRefItem(attItem, vtWidget));
+    qtAttribute::createAttributeRefItem(attItem, vtWidget, this));
   if(!refItem)
     {
     return;
@@ -1028,13 +1029,13 @@ void qtAttributeView::addTableAttRefItems(
   QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
   if(advanced)
     {
-    labelitem->setFont(qtUIManager::instance()->instance()->advancedFont());
+    labelitem->setFont(this->uiManager()->advancedFont());
     }
 
   labelitem->setFlags(nonEditableFlags);
   vtWidget->setItem(numRows-1, 0, labelitem);
 
-  bool bEnabled = qtUIManager::instance()->updateTableItemCheckState(
+  bool bEnabled = this->uiManager()->updateTableItemCheckState(
     labelitem, dynamic_pointer_cast<Item>(attItem));
   refItem->widget()->setEnabled(bEnabled);
   vtWidget->setCellWidget(numRows-1, 1, refItem->widget());
@@ -1051,7 +1052,7 @@ void qtAttributeView::addTableVoidItems(
     }
   QTableWidget* vtWidget = this->Internals->ValuesTable;
   qtVoidItem* voidItem = qobject_cast<qtVoidItem*>(
-    qtAttribute::createItem(attItem, vtWidget));
+    qtAttribute::createItem(attItem, vtWidget, this));
   if(!voidItem)
     {
     return;
@@ -1063,7 +1064,7 @@ void qtAttributeView::addTableVoidItems(
   if(advanced && voidItem->widget())
     {
     voidItem->widget()->setFont(
-      qtUIManager::instance()->advancedFont());
+      this->uiManager()->advancedFont());
     }
 }
 

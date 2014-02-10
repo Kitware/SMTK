@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtComboItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent);
+      qtComboItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
       virtual ~qtComboItem();  
 
     public slots:

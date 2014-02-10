@@ -65,8 +65,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtRootView::qtRootView(
-  smtk::view::RootPtr dataObj, QWidget* p) :
-  qtBaseView(smtk::dynamic_pointer_cast<smtk::view::Base>(dataObj), p)
+  smtk::view::RootPtr dataObj, QWidget* p, qtUIManager* uiman) :
+  qtBaseView(smtk::dynamic_pointer_cast<smtk::view::Base>(dataObj), p, uiman)
 {
   this->Internals = new qtRootViewInternals;
   this->ScrollArea = NULL;
@@ -103,12 +103,12 @@ void qtRootView::createWidget( )
   this->Internals->AdvancedCheck = new QCheckBox(this->Widget);
   this->Internals->AdvancedCheck->setText("Show Advanced");
   this->Internals->AdvancedCheck->setFont(
-    qtUIManager::instance()->advancedFont());
+    this->uiManager()->advancedFont());
 
   this->Internals->FilterByCheck = new QCheckBox(this->Widget);
   this->Internals->FilterByCheck->setText("Show by Category: ");
   this->Internals->ShowCategoryCombo = new QComboBox(this->Widget);
-  const Manager* attMan = qtUIManager::instance()->attManager();
+  const Manager* attMan = this->uiManager()->attManager();
   std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = attMan->categories();
   for (it = cats.begin(); it != cats.end(); it++)
@@ -184,8 +184,9 @@ void qtRootView::onShowAdvanced(int /*checked*/)
   layout->setMargin(0);
   this->Widget->setLayout( layout );
 
-  this->Internals->TabGroup = new qtGroupView(this->getObject(), this->Widget);
-  qtUIManager::processGroupView(this->Internals->TabGroup);
+  this->Internals->TabGroup = new qtGroupView(this->getObject(), this->Widget,
+    this->uiManager());
+  this->uiManager()->processGroupView(this->Internals->TabGroup);
   this->initRootTabGroup();
 
   if(this->Internals->TabGroup->childViews().count())

@@ -46,7 +46,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtAttributeRefItem::qtAttributeRefItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view) :
+   qtItem(dataObj, p, view)
 {
   this->Internals = new qtAttributeRefItemInternals;
   this->IsLeafItem = true;

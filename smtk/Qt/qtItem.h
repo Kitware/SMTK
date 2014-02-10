@@ -63,12 +63,13 @@ namespace smtk
 {
   namespace attribute
   {
+    class qtBaseView;
     class QTSMTK_EXPORT qtItem : public QObject
     {
       Q_OBJECT
 
     public:         
-      qtItem(smtk::attribute::ItemPtr, QWidget* parent);
+      qtItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
       virtual ~qtItem();  
       
       smtk::attribute::ItemPtr getObject();
@@ -90,6 +91,8 @@ namespace smtk
 
     protected:
       virtual void createWidget(){;}
+      virtual qtBaseView* baseView();
+
       QWidget* Widget;
       bool IsLeafItem;
     private:

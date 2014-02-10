@@ -37,23 +37,27 @@ using namespace smtk::attribute;
 class qtBaseViewInternals
 {
 public:
-  qtBaseViewInternals(smtk::view::BasePtr dataObject, QWidget* p)
+  qtBaseViewInternals(smtk::view::BasePtr dataObject, QWidget* p,
+    qtUIManager* uiman)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
+  this->UIManager = uiman;
   }
   ~qtBaseViewInternals()
   {
   }
-  smtk::view::WeakBasePtr DataObject;
+ smtk::view::WeakBasePtr DataObject;
  QPointer<QWidget> ParentWidget;
+ QPointer<qtUIManager> UIManager;
 };
 
 
 //----------------------------------------------------------------------------
-qtBaseView::qtBaseView(smtk::view::BasePtr dataObject, QWidget* p)
+qtBaseView::qtBaseView(smtk::view::BasePtr dataObject, QWidget* p,
+  qtUIManager* uiman)
 {
-  this->Internals  = new qtBaseViewInternals(dataObject, p);
+  this->Internals  = new qtBaseViewInternals(dataObject, p, uiman);
   this->Widget = NULL;
 }
 
@@ -102,4 +106,10 @@ void qtBaseView::getDefinitions(
       defs.push_back(*itDef);
       }
     }
+}
+
+//----------------------------------------------------------------------------
+qtUIManager* qtBaseView::uiManager()
+{
+  return this->Internals->UIManager;
 }

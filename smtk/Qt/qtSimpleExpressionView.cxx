@@ -126,8 +126,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtSimpleExpressionView::
-qtSimpleExpressionView(smtk::view::BasePtr dataObj, QWidget* p) :
-  qtBaseView(dataObj, p)
+qtSimpleExpressionView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+  qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtSimpleExpressionViewInternals;
   this->createWidget();
@@ -341,7 +341,7 @@ void qtSimpleExpressionView::onFuncSelectionChanged(
   this->Internals->FuncTable->blockSignals(true);
   if(dataItem)
     {
-    qtUIManager::instance()->updateArrayTableWidget(dataItem,
+    this->uiManager()->updateArrayTableWidget(dataItem,
       this->Internals->FuncTable);
     this->Internals->FuncTable->resizeColumnsToContents();
     this->updateTableHeader();
@@ -422,7 +422,7 @@ void qtSimpleExpressionView::onFuncValueChanged(QTableWidgetItem* item)
     {
     return;
     }
-  qtUIManager::instance()->updateArrayDataValue(dataItem, item);
+  this->uiManager()->updateArrayDataValue(dataItem, item);
   this->clearFuncExpression();
 }
 //----------------------------------------------------------------------------
@@ -569,7 +569,7 @@ void qtSimpleExpressionView::onCopySelected()
     {
     smtk::attribute::GroupItemPtr groupItem = dynamic_pointer_cast<GroupItem>(dataItem->item(0));
     QString valuesText;
-    if(groupItem && qtUIManager::instance()->getExpressionArrayString(groupItem, valuesText))
+    if(groupItem && this->uiManager()->getExpressionArrayString(groupItem, valuesText))
       {
       smtk::attribute::ValueItemPtr expressionItem = this->getStringDataFromItem(
         this->Internals->FuncList->currentItem());
@@ -605,9 +605,9 @@ void qtSimpleExpressionView::onDeleteSelected()
 QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
   smtk::attribute::AttributePtr childData)
 {
-  if(!qtUIManager::instance()->passAdvancedCheck(
+  if(!this->uiManager()->passAdvancedCheck(
     childData->definition()->advanceLevel()) ||
-    !qtUIManager::instance()->passAttributeCategoryCheck(
+    !this->uiManager()->passAttributeCategoryCheck(
       childData->definition()))
     {
     return NULL;
@@ -625,7 +625,7 @@ QListWidgetItem* qtSimpleExpressionView::addFunctionListItem(
     item->setData(Qt::UserRole, vdata);
     if(childData->definition()->advanceLevel())
       {
-      item->setFont(qtUIManager::instance()->advancedFont());
+      item->setFont(this->uiManager()->advancedFont());
       }
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     this->Internals->FuncList->addItem(item);
@@ -639,7 +639,7 @@ void qtSimpleExpressionView::onFuncTableKeyPress(QKeyEvent* e)
   // Allow paste
   if(e->key() == Qt::Key_V && e->modifiers() == Qt::ControlModifier)
     {
-    QString values = qtUIManager::instance()->clipBoardText();
+    QString values = this->uiManager()->clipBoardText();
     this->pasteFunctionValues(values);
     e->accept();
     return;
@@ -665,7 +665,7 @@ void qtSimpleExpressionView::onFuncTableKeyPress(QKeyEvent* e)
       }
 
     QString tempText = list.join(" ");
-    qtUIManager::instance()->setClipBoardText( tempText ) ;
+    this->uiManager()->setClipBoardText( tempText ) ;
 
     e->accept();
     return;
@@ -730,7 +730,7 @@ void qtSimpleExpressionView::onAddValue()
   int numVals = this->Internals->FuncTable->columnCount();
   double zero = 0.;
   std::vector<double> vals(numVals, zero);
-  //  qtUIManager::instance()->updateArrayDataValue(dataItem, item);
+  //  this->uiManager()->updateArrayDataValue(dataItem, item);
   this->addNewValue(&vals[0], numVals);
   this->clearFuncExpression();
 }
@@ -743,7 +743,7 @@ void qtSimpleExpressionView::addNewValue(double* vals, int numVals)
     return;
     }
   this->Internals->FuncTable->blockSignals(true);
-  qtUIManager::instance()->addNewTableValues(dataItem,
+  this->uiManager()->addNewTableValues(dataItem,
     this->Internals->FuncTable, vals, numVals);
   this->Internals->FuncTable->blockSignals(false);
 }
@@ -757,7 +757,7 @@ void qtSimpleExpressionView::onRemoveSelectedValues()
     return;
     }
   this->Internals->FuncTable->blockSignals(true);
-  qtUIManager::instance()->removeSelectedTableValues(dataItem,
+  this->uiManager()->removeSelectedTableValues(dataItem,
     this->Internals->FuncTable);
   this->Internals->FuncTable->blockSignals(false);
   this->clearFuncExpression();
