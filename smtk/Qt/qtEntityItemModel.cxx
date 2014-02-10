@@ -1,6 +1,7 @@
 #include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Storage.h"
@@ -220,70 +221,23 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& own
   endRemoveRows();
   return true;
 }
+*/
 
 bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
-  if(idx.isValid())
+  DescriptivePhrase* phrase;
+  if(idx.isValid() &&
+    (phrase = static_cast<DescriptivePhrase*>(idx.internalPointer())))
     {
-    smtk::model::Entity* entity;
-    int row = idx.row();
-    int col = idx.column();
-    if (role == TitleTextRole)
+    if (role == TitleTextRole && phrase->isTitleMutable())
       {
       std::string sval = value.value<QString>().toStdString();
-      if (sval.size())
-        {
-        this->m_storage->setStringProperty(
-          this->m_phrases[row], "name", sval);
-        didChange = true;
-        }
-      else
-        {
-        didChange = this->m_storage->removeStringProperty(
-          this->m_phrases[row], "name");
-        }
-      }
-    else if (role == Qt::EditRole)
-      {
-      switch (col)
-        {
-      case 0:
-        entity = this->m_storage->findEntity(this->m_phrases[row]);
-        if (entity)
-          {
-          didChange = entity->setEntityFlags(value.value<int>());
-          }
-        break;
-      case 1:
-        // FIXME: No way to change dimension yet.
-        break;
-      case 2:
-          {
-          std::string sval = value.value<QString>().toStdString();
-          if (sval.size())
-            {
-            this->m_storage->setStringProperty(
-              this->m_phrases[row], "name", sval);
-            didChange = true;
-            }
-          else
-            {
-            didChange = this->m_storage->removeStringProperty(
-              this->m_phrases[row], "name");
-            }
-          }
-        break;
-        }
-      if (didChange)
-        {
-        emit(dataChanged(idx, idx));
-        }
+      didChange = phrase->setTitle(sval);
       }
     }
   return didChange;
 }
-*/
 
 /*
 void QEntityItemModel::sort(int column, Qt::SortOrder order)

@@ -54,7 +54,7 @@ public:
 
   //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
   //bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  //bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
   //virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
