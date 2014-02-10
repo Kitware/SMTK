@@ -124,6 +124,8 @@ namespace smtk
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget);
 
+    qtBaseView* createView(smtk::view::BasePtr smtkView, QWidget *pWidget);
+
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
