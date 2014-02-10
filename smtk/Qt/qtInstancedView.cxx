@@ -53,7 +53,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtInstancedView::
-qtInstancedView(smtk::view::BasePtr dataObj, QWidget* p) : qtBaseView(dataObj, p)
+qtInstancedView(smtk::view::BasePtr dataObj, QWidget* p, qtUIManager* uiman) :
+  qtBaseView(dataObj, p, uiman)
 {
   this->Internals = new qtInstancedViewInternals;
   this->createWidget( );
@@ -135,7 +136,7 @@ void qtInstancedView::updateAttributeData()
       }
     else
       {
-      qtAttribute* attInstance = new qtAttribute(attobj, this->widget());
+      qtAttribute* attInstance = new qtAttribute(attobj, this->widget(), this);
       if(attInstance)
         {
         this->Internals->AttInstances.push_back(attInstance);

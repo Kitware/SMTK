@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtInputsItem.h"
 
 #include "smtk/Qt/qtUIManager.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include <QCheckBox>
 #include <QFrame>
@@ -60,7 +61,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtInputsItem::qtInputsItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
+   qtItem(dataObj, p, bview)
 {
   this->Internals = new qtInputsItemInternals;
   this->IsLeafItem = true;
@@ -77,7 +79,7 @@ void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() ||
-    !qtUIManager::instance()->passItemCategoryCheck(
+    !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition()))
     {
     return;
@@ -109,8 +111,8 @@ void qtInputsItem::loadInputValues(
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   for(int i = 0; i < n; i++)
     {
-    QWidget* editBox = qtUIManager::instance()->createInputWidget(
-      item, i, this->Widget);
+    QWidget* editBox = this->baseView()->uiManager()->createInputWidget(
+      item, i, this->Widget, this->baseView());
     if(!editBox)
       {
       continue;
@@ -137,7 +139,7 @@ void qtInputsItem::updateUI()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() ||
-    !qtUIManager::instance()->passItemCategoryCheck(
+    !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition()))
     {
     return;
@@ -204,7 +206,7 @@ void qtInputsItem::updateUI()
     }
   if(itemDef->advanceLevel())
     {
-    label->setFont(qtUIManager::instance()->advancedFont());
+    label->setFont(this->baseView()->uiManager()->advancedFont());
     }
   labelLayout->addWidget(label);
 

@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, bool dirOnly=false);
+      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,bool dirOnly=false);
       virtual ~qtFileItem();  
       bool isDirectory();
 

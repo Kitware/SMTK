@@ -48,7 +48,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtComboItem::qtComboItem(
-  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p, qtBaseView* bview) :
+   qtItem(dataObj, p, bview)
 {
   this->Internals = new qtComboItemInternals(elementIdx);
   this->IsLeafItem = true;
@@ -190,7 +191,7 @@ void qtComboItem::onInputValueChanged()
       {
       qtItem* childItem = qtAttribute::createItem(
         item->activeChildItem(static_cast<int>(i)),
-        this->Internals->ChildrenFrame);
+        this->Internals->ChildrenFrame, this->baseView());
       if(childItem)
         {
         layout->addWidget(childItem->widget());

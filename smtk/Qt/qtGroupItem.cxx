@@ -44,7 +44,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtGroupItem::qtGroupItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p) : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
+   qtItem(dataObj, p, bview)
 {
   this->Internals = new qtGroupItemInternals;
   this->IsLeafItem = true;
@@ -105,7 +106,8 @@ void qtGroupItem::updateItemData()
     {
     for (j = 0; j < m; j++)
       {
-      qtItem* childItem = qtAttribute::createItem(item->item(static_cast<int>(i), static_cast<int>(j)), this->Widget);
+      qtItem* childItem = qtAttribute::createItem(item->item(static_cast<int>(i),
+        static_cast<int>(j)), this->Widget, this->baseView());
       if(childItem)
         {
         this->Widget->layout()->addWidget(childItem->widget());

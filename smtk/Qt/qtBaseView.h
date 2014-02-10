@@ -36,18 +36,21 @@ namespace smtk
 {
   namespace attribute
   {
+    class qtUIManager;
+
     class QTSMTK_EXPORT qtBaseView : public QObject
     {
       Q_OBJECT
 
     public:
-      qtBaseView(smtk::view::BasePtr, QWidget* parent);
+      qtBaseView(smtk::view::BasePtr, QWidget* parent, qtUIManager* uiman);
       virtual ~qtBaseView();
 
       smtk::view::BasePtr getObject();
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();
+      qtUIManager* uiManager();
 
     public slots:
       virtual void updateUI()

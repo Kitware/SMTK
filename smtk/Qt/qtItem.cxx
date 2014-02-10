@@ -22,6 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtItem.h"
 
 #include "smtk/Qt/qtUIManager.h"
+#include "smtk/Qt/qtBaseView.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 
@@ -35,10 +36,12 @@ using namespace smtk::attribute;
 class qtItemInternals
 {
 public:
-  qtItemInternals(smtk::attribute::ItemPtr dataObject, QWidget* p)
+  qtItemInternals(smtk::attribute::ItemPtr dataObject, QWidget* p,
+   qtBaseView* bview)
   {
   this->ParentWidget = p;
   this->DataObject = dataObject;
+  this->BaseView = bview;
   }
   ~qtItemInternals()
   {
@@ -46,13 +49,14 @@ public:
  smtk::attribute::WeakItemPtr DataObject;
  QPointer<QWidget> ParentWidget;
  QList<smtk::attribute::qtItem*> ChildItems;
+ QPointer<qtBaseView> BaseView;
 };
 
 
 //----------------------------------------------------------------------------
-qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p)
+qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bview)
 { 
-  this->Internals  = new qtItemInternals(dataObject, p); 
+  this->Internals  = new qtItemInternals(dataObject, p, bview);
   this->Widget = NULL;
   this->IsLeafItem = false;
   //this->Internals->DataConnect = NULL;
@@ -72,6 +76,12 @@ qtItem::~qtItem()
       }
     delete this->Internals;
     }
+}
+
+//----------------------------------------------------------------------------
+qtBaseView* qtItem::baseView()
+{
+  return this->Internals->BaseView;
 }
 
 //----------------------------------------------------------------------------
@@ -113,6 +123,6 @@ QWidget* qtItem::parentWidget()
 bool qtItem::passAdvancedCheck()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  return qtUIManager::instance()->passAdvancedCheck(
+  return this->baseView()->uiManager()->passAdvancedCheck(
     dataObj->definition()->advanceLevel());
 }

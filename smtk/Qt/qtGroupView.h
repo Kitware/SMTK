@@ -41,7 +41,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtGroupView(smtk::view::BasePtr, QWidget* p);
+      qtGroupView(smtk::view::BasePtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtGroupView();
 
       void getChildView(smtk::view::Base::Type viewType,

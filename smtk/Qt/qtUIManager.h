@@ -50,9 +50,6 @@ namespace smtk
     friend class qtRootView;
 
     public:
-      // Get the global instace for the pqApplicationCore.
-      static qtUIManager* instance();
-
       qtUIManager(smtk::attribute::Manager &manager);
       virtual ~qtUIManager();
 
@@ -117,11 +114,13 @@ namespace smtk
       QTableWidgetItem* labelitem, smtk::attribute::ItemPtr attItem);
 
     virtual QWidget* createInputWidget(smtk::attribute::ItemPtr,
-                                       int elementIdx, QWidget* pWidget);
+                                       int elementIdx, QWidget* pWidget,
+                                       qtBaseView* bview);
     virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
                                    int elementIdx, QWidget* pWidget);
     virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
-                                    int elementIdx, QWidget* pWidget);
+                                    int elementIdx, QWidget* pWidget,
+                                   qtBaseView* bview);
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget);
 
@@ -143,15 +142,14 @@ namespace smtk
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
 
     protected:
-      static void processAttributeView(qtAttributeView* v);
-      static void processInstancedView(qtInstancedView* v);
-      static void processModelEntityView(qtModelEntityView* v);
-      static void processSimpleExpressionView(qtSimpleExpressionView* v);
-      static void processGroupView(qtGroupView* v);
-      static void processBasicView(qtBaseView* v);
+      void processAttributeView(qtAttributeView* v);
+      void processInstancedView(qtInstancedView* v);
+      void processModelEntityView(qtModelEntityView* v);
+      void processSimpleExpressionView(qtSimpleExpressionView* v);
+      void processGroupView(qtGroupView* v);
+      void processBasicView(qtBaseView* v);
 
     private:
-      static qtUIManager* Instance;
       qtRootView* RootView;
       QFont advFont;
       QColor DefaultValueColor;
@@ -170,6 +168,10 @@ namespace smtk
     public:
         qtDoubleValidator(QObject * parent);
         virtual void fixup(QString &input) const;
+
+        void setUIManager(qtUIManager* uiman);
+    private:
+      qtUIManager* UIManager;
     };
 
   }; // namespace attribute

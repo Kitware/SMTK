@@ -77,14 +77,16 @@ using namespace smtk::attribute;
 #define SB_DOUBLE_CONSTRAINT_PRECISION 0.000001
 
 //-----------------------------------------------------------------------------
-qtUIManager* qtUIManager::Instance = 0;
-
-//-----------------------------------------------------------------------------
 qtDoubleValidator::qtDoubleValidator(QObject * inParent)
   :QDoubleValidator(inParent)
 {
+  this->UIManager = NULL;
 }
-
+//-----------------------------------------------------------------------------
+void qtDoubleValidator::setUIManager(smtk::attribute::qtUIManager* uiman)
+{
+  this->UIManager = uiman;
+}
 //-----------------------------------------------------------------------------
 void qtDoubleValidator::fixup(QString &input) const
 {
@@ -111,25 +113,15 @@ void qtDoubleValidator::fixup(QString &input) const
   if(editBox && outofrange)
     {
     QPalette pal = editBox->palette();
-    pal.setColor(QPalette::Base, qtUIManager::instance()->invalidValueColor());
+    pal.setColor(QPalette::Base, this->UIManager->invalidValueColor());
     editBox->setPalette(pal);
     }
-}
-
-//-----------------------------------------------------------------------------
-qtUIManager* qtUIManager::instance()
-{
-  return qtUIManager::Instance;
 }
 
 //----------------------------------------------------------------------------
 qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
   m_AttManager(manager)
 {
-  if (!qtUIManager::Instance)
-    {
-    qtUIManager::Instance = this;
-    }
   this->RootView = NULL;
 
   if(manager.rootView())
@@ -157,10 +149,6 @@ qtUIManager::~qtUIManager()
     {
     delete this->RootView;
     }
-  if (qtUIManager::Instance == this)
-    {
-    qtUIManager::Instance = 0;
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -181,7 +169,7 @@ void qtUIManager::initializeUI(QWidget* pWidget)
   this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
 
   this->RootView = new qtRootView(
-    this->m_AttManager.rootView(), pWidget);
+    this->m_AttManager.rootView(), pWidget, this);
 }
 
 //----------------------------------------------------------------------------
@@ -242,7 +230,7 @@ void qtUIManager::processAttributeView(qtAttributeView* qtView)
   smtk::view::AttributePtr v = smtk::dynamic_pointer_cast<smtk::view::Attribute>(
     qtView->getObject());
 
-  qtUIManager::processBasicView(qtView);
+  this->processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processInstancedView(qtInstancedView* qtView)
@@ -250,7 +238,7 @@ void qtUIManager::processInstancedView(qtInstancedView* qtView)
   smtk::view::InstancedPtr v = smtk::dynamic_pointer_cast<smtk::view::Instanced>(
     qtView->getObject());
 
-  qtUIManager::processBasicView(qtView);
+  this->processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
@@ -258,7 +246,7 @@ void qtUIManager::processModelEntityView(qtModelEntityView* qtView)
   smtk::view::ModelEntityPtr v = smtk::dynamic_pointer_cast<smtk::view::ModelEntity>(
     qtView->getObject());
 
-  qtUIManager::processBasicView(qtView);
+  this->processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
@@ -266,14 +254,14 @@ void qtUIManager::processSimpleExpressionView(qtSimpleExpressionView* qtView)
   smtk::view::SimpleExpressionPtr v = smtk::dynamic_pointer_cast<smtk::view::SimpleExpression>(
     qtView->getObject());
 
-  qtUIManager::processBasicView(qtView);
+  this->processBasicView(qtView);
 }
 //----------------------------------------------------------------------------
 void qtUIManager::processGroupView(qtGroupView* pQtGroup)
 {
   smtk::view::GroupPtr group = smtk::dynamic_pointer_cast<smtk::view::Group>(
     pQtGroup->getObject());
-  qtUIManager::processBasicView( pQtGroup);
+  this->processBasicView( pQtGroup);
   std::size_t i, n = group->numberOfSubViews();
   smtk::view::BasePtr v;
   qtBaseView* qtView = NULL;
@@ -283,24 +271,24 @@ void qtUIManager::processGroupView(qtGroupView* pQtGroup)
     switch(v->type())
       {
       case smtk::view::Base::ATTRIBUTE:
-        qtView = new qtAttributeView(v, pQtGroup->widget());
-        qtUIManager::processAttributeView(qobject_cast<qtAttributeView*>(qtView));
+        qtView = new qtAttributeView(v, pQtGroup->widget(), this);
+        this->processAttributeView(qobject_cast<qtAttributeView*>(qtView));
         break;
       case smtk::view::Base::GROUP:
-        qtView = new qtGroupView(v, pQtGroup->widget());
-        qtUIManager::processGroupView(qobject_cast<qtGroupView*>(qtView));
+        qtView = new qtGroupView(v, pQtGroup->widget(), this);
+        this->processGroupView(qobject_cast<qtGroupView*>(qtView));
         break;
       case smtk::view::Base::INSTANCED:
-        qtView = new qtInstancedView(v, pQtGroup->widget());
-        qtUIManager::processInstancedView(qobject_cast<qtInstancedView*>(qtView));
+        qtView = new qtInstancedView(v, pQtGroup->widget(), this);
+        this->processInstancedView(qobject_cast<qtInstancedView*>(qtView));
         break;
       case smtk::view::Base::MODEL_ENTITY:
-        qtView = new qtModelEntityView(v, pQtGroup->widget());
-        qtUIManager::processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
+        qtView = new qtModelEntityView(v, pQtGroup->widget(), this);
+        this->processModelEntityView(qobject_cast<qtModelEntityView*>(qtView));
         break;
       case smtk::view::Base::SIMPLE_EXPRESSION:
-        qtView = new qtSimpleExpressionView(v, pQtGroup->widget());
-        qtUIManager::processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
+        qtView = new qtSimpleExpressionView(v, pQtGroup->widget(), this);
+        this->processSimpleExpressionView(qobject_cast<qtSimpleExpressionView*>(qtView));
         break;
       default:
         break;
@@ -645,7 +633,8 @@ void qtUIManager::onExpressionReferenceChanged()
 
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createComboBox(
-  smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget)
+  smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget,
+  qtBaseView* bview)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
@@ -695,7 +684,7 @@ QWidget* qtUIManager::createComboBox(
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onComboIndexChanged()), Qt::QueuedConnection);
 */
-  qtItem* returnItem = new qtComboItem(attitem, elementIdx, pWidget);
+  qtItem* returnItem = new qtComboItem(attitem, elementIdx, pWidget, bview);
   return returnItem ? returnItem->widget() : NULL;
 }
 
@@ -727,7 +716,8 @@ void qtUIManager::onComboIndexChanged()
 }
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createInputWidget(
-  smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget)
+  smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget,
+  qtBaseView* bview)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
@@ -738,7 +728,7 @@ QWidget* qtUIManager::createInputWidget(
   return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
     this->createExpressionRefWidget(item,elementIdx,pWidget) :
     (item->isDiscrete() ?
-      this->createComboBox(item,elementIdx,pWidget) :
+      this->createComboBox(item,elementIdx,pWidget, bview) :
       this->createEditBox(item,elementIdx,pWidget));
 }
 //----------------------------------------------------------------------------
@@ -762,6 +752,7 @@ QWidget* qtUIManager::createEditBox(
       const DoubleItemDefinition *dDef =
         dynamic_cast<const DoubleItemDefinition*>(item->definition().get());
       qtDoubleValidator *validator = new qtDoubleValidator(pWidget);
+      validator->setUIManager(this);
       editBox->setValidator(validator);
       editBox->setFixedWidth(100);
       QString tooltip;
@@ -948,7 +939,7 @@ QWidget* qtUIManager::createEditBox(
     vobject.setValue(static_cast<void*>(attitem.get()));
     inputWidget->setProperty("AttItemObj", vobject);
 
-    qtUIManager::instance()->setWidgetToDefaultValueColor(inputWidget,isDefault);
+    this->setWidgetToDefaultValueColor(inputWidget,isDefault);
     }
   if(QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
     {

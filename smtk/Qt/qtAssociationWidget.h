@@ -40,12 +40,13 @@ namespace smtk
 {
   namespace attribute
   {
+    class qtBaseView;
     class QTSMTK_EXPORT qtAssociationWidget : public QWidget
     {
       Q_OBJECT
 
     public:
-      qtAssociationWidget(QWidget* p);
+      qtAssociationWidget(QWidget* p, qtBaseView* view);
       virtual ~qtAssociationWidget();
 
     public slots:

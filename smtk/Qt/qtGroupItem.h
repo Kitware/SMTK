@@ -40,7 +40,7 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent);
+      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
       virtual ~qtGroupItem();  
 
     protected slots:

@@ -47,8 +47,8 @@ public:
 
 //----------------------------------------------------------------------------
 qtFileItem::qtFileItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, bool dirOnly)
-   : qtItem(dataObj, p)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview, bool dirOnly)
+   : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory = dirOnly;

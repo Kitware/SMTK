@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtTableWidget.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtItem.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -65,14 +66,16 @@ public:
   QPointer<QComboBox> NodalDropDown;
   WeakAttributePtr CurrentAtt;
   smtk::model::WeakItemPtr CurrentModelGroup;
+  QPointer<qtBaseView> View;
 };
 
 //----------------------------------------------------------------------------
 qtAssociationWidget::qtAssociationWidget(
-  QWidget* _p): QWidget(_p)
+  QWidget* _p, qtBaseView* bview): QWidget(_p)
 {
   this->Internals = new qtAssociationWidgetInternals;
   this->Internals->setupUi(this);
+  this->Internals->View = bview;
 
   this->initWidget( );
   this->Internals->domainGroup->setVisible(false);
@@ -90,7 +93,6 @@ void qtAssociationWidget::initWidget( )
 {
   this->Internals->NodalDropDown = new QComboBox(this);
   this->Internals->NodalDropDown->setVisible(false);
-  smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
   QStringList nodalOptions;
   nodalOptions << smtk::model::Model::convertNodalTypeToString(
          smtk::model::Model::AllNodesType).c_str()
@@ -149,10 +151,10 @@ void qtAssociationWidget::showDomainsAssociation(
     return;
     }
 
-  Manager *attManager = qtUIManager::instance()->attManager();
-  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
+  Manager *attManager = (*itAttDef)->manager();
   QList<smtk::attribute::AttributePtr> allAtts;
-  for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
+  for (; itAttDef!=attDefs.end(); ++itAttDef)
     {
     if((*itAttDef)->isAbstract())
       {
@@ -208,10 +210,10 @@ void qtAssociationWidget::showAttributeAssociation(
   QList<smtk::attribute::DefinitionPtr> uniqueDefs;
   this->processDefUniqueness(theEntiy, uniqueDefs);
 
-  Manager *attManager = qtUIManager::instance()->attManager();
-  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
+  Manager *attManager = (*itAttDef)->manager();
   std::set<smtk::attribute::AttributePtr> doneAtts;
-  for (itAttDef=attDefs.begin(); itAttDef!=attDefs.end(); ++itAttDef)
+  for (; itAttDef!=attDefs.end(); ++itAttDef)
     {
     if((*itAttDef)->isAbstract())
       {
@@ -285,7 +287,7 @@ void qtAssociationWidget::showEntityAssociation(
     this->Internals->NodalDropDown->blockSignals(false);
     }
 
-  smtk::model::ModelPtr refModel = qtUIManager::instance()->attManager()->refModel();
+  smtk::model::ModelPtr refModel = attDef->manager()->refModel();
   // add current-associated items
   int numAstItems = static_cast<int>(theAtt->numberOfAssociatedEntities());
   std::set<smtk::model::ItemPtr>::const_iterator it = theAtt->associatedEntities();
@@ -724,9 +726,10 @@ void qtAssociationWidget::onDomainAssociationChanged()
     {
     return;
     }
+
+  Manager *attManager = this->Internals->View->uiManager()->attManager();
   QString attName = combo->currentText();
-  AttributePtr attPtr = qtUIManager::instance()->attManager()->
-    findAttribute(attName.toStdString());
+  AttributePtr attPtr = attManager->findAttribute(attName.toStdString());
   if(attPtr)
     {
     domainItem->attachAttribute(attPtr);

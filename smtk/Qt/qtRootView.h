@@ -44,7 +44,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtRootView(smtk::view::RootPtr, QWidget* p);
+      qtRootView(smtk::view::RootPtr, QWidget* p, qtUIManager* uiman);
       virtual ~qtRootView();
       void getChildView(smtk::view::Base::Type viewType,
         QList<qtBaseView*>& views);
