@@ -195,7 +195,7 @@ UUID BRepModel::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-int BRepModel::type(const smtk::util::UUID& ofEntity) const
+BitFlags BRepModel::type(const smtk::util::UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());

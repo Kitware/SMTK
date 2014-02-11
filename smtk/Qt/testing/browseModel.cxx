@@ -7,6 +7,7 @@
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
+#include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
 #include <QtGui/QApplication>
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
   smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
   qdelegate->setTitleFontSize(12);
-  qdelegate->setTitleFontWeight(1);
+  qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
   QTreeView* view = new QTreeView;
@@ -78,6 +79,8 @@ int main(int argc, char* argv[])
         smtk::model::SimpleModelSubphrases::create()));
   view->setModel(qmodel); // must come after qmodel->setRoot()
   view->setItemDelegate(qdelegate);
+  test(cursors.empty() || qmodel->storage() == model,
+    "Failed to obtain Storage from QEntityItemModel.");
 
   // Enable user sorting.
   view->setSortingEnabled(true);
@@ -86,7 +89,12 @@ int main(int argc, char* argv[])
 
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
-  std::cout << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+  if (argc > 4)
+    {
+    std::ofstream result(argv[4]);
+    result << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+    result.close();
+    }
 
   delete view;
   delete qmodel;
