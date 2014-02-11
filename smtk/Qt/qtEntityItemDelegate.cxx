@@ -9,9 +9,61 @@
 namespace smtk {
   namespace model {
 
-QEntityItemDelegate::QEntityItemDelegate(QWidget* owner)
-  : QStyledItemDelegate(owner)
+QEntityItemDelegate::QEntityItemDelegate(QWidget* owner) :
+  QStyledItemDelegate(owner), m_swatchSize(16),
+  m_titleFontSize(14), m_subtitleFontSize(10),
+  m_titleFontWeight(2), m_subtitleFontWeight(1)
 {
+}
+
+int QEntityItemDelegate::swatchSize() const
+{
+  return this->m_swatchSize;
+}
+
+void QEntityItemDelegate::setSwatchSize(int sfs)
+{
+  this->m_swatchSize = sfs;
+}
+
+int QEntityItemDelegate::titleFontSize() const
+{
+  return this->m_titleFontSize;
+}
+
+void QEntityItemDelegate::setTitleFontSize(int tfs)
+{
+  this->m_titleFontSize = tfs;
+}
+
+int QEntityItemDelegate::subtitleFontSize() const
+{
+  return this->m_subtitleFontSize;
+}
+
+void QEntityItemDelegate::setSubtitleFontSize(int sfs)
+{
+  this->m_subtitleFontSize = sfs;
+}
+
+int QEntityItemDelegate::titleFontWeight() const
+{
+  return this->m_titleFontWeight;
+}
+
+void QEntityItemDelegate::setTitleFontWeight(int tfw)
+{
+  this->m_titleFontWeight = tfw;
+}
+
+int QEntityItemDelegate::subtitleFontWeight() const
+{
+  return this->m_subtitleFontWeight;
+}
+
+void QEntityItemDelegate::setSubtitleFontWeight(int sfw)
+{
+  this->m_subtitleFontWeight = sfw;
 }
 
 QSize QEntityItemDelegate::sizeHint(
@@ -21,12 +73,12 @@ QSize QEntityItemDelegate::sizeHint(
   QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
-  titleFont.setPixelSize(24);
-  titleFont.setBold(true);
+  titleFont.setPixelSize(this->m_titleFontSize);
+  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   QFontMetrics titleFM(titleFont);
-  QFont subtitleFont = titleFont;
-  //subtitleFont.setPixelSize(subtitleFont.pixelSize() - 2);
-  subtitleFont.setWeight(subtitleFont.weight() - 2);
+  QFont subtitleFont = QApplication::font();
+  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
   QFontMetrics subtitleFM(subtitleFont);
   int minHeight = titleFM.height() + 2 /*inter-line spacing*/ + subtitleFM.height();
   if (minHeight < iconsize.height())
@@ -35,7 +87,7 @@ QSize QEntityItemDelegate::sizeHint(
     }
   minHeight += 4; // 2-pixel border at top and bottom
 
-  return(QSize(iconsize.width(), minHeight));
+  return(QSize(iconsize.width() + this->m_swatchSize, minHeight));
 }
 
 void QEntityItemDelegate::paint(
@@ -49,12 +101,14 @@ void QEntityItemDelegate::paint(
 
   QIcon icon = qvariant_cast<QIcon>(idx.data(QEntityItemModel::EntityIconRole));
   QSize iconsize = icon.actualSize(option.decorationSize);
+  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
   QFont titleFont = QApplication::font();
-  QFont subtitleFont = titleFont;
-  titleFont.setPixelSize(24);
-  titleFont.setBold(true);
-  //subtitleFont.setPixelSize(subtitleFont.pixelSize() - 2);
-  subtitleFont.setWeight(subtitleFont.weight() - 2);
+  QFont subtitleFont = QApplication::font();
+  titleFont.setPixelSize(this->m_titleFontSize);
+  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
+  subtitleFont.setPixelSize(this->m_subtitleFontSize);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+  //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
   QFontMetrics subtitleFM(subtitleFont);
 
@@ -65,7 +119,13 @@ void QEntityItemDelegate::paint(
   QRect titleRect = option.rect;
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
+  QRect colorRect = option.rect;
 
+  colorRect.setRight(colorRect.left() + this->m_swatchSize);
+  int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
+  swdelta = (swdelta < 0 ? 0 : swdelta);
+  colorRect.adjust(0, swdelta, 0, -swdelta);
+  iconRect.setLeft(colorRect.right());
   iconRect.setRight(iconRect.left() + iconsize.width() + 30);
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
@@ -74,6 +134,11 @@ void QEntityItemDelegate::paint(
   titleRect.setBottom(titleRect.top() + titleFM.height());
   subtitleRect.setTop(titleRect.bottom() + 2);
 
+  painter->save();
+  painter->setBrush(swatchColor);
+  painter->setPen(Qt::NoPen);
+  painter->drawRect(colorRect);
+  painter->restore();
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   painter->drawPixmap(
     QPoint(

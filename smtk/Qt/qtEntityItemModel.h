@@ -39,12 +39,13 @@ public:
   enum DataRoles {
     TitleTextRole       = Qt::UserRole + 100, //!< Entity name (user-editable)
     SubtitleTextRole    = Qt::UserRole + 101, //!< Entity type description
-    EntityIconRole      = Qt::UserRole + 102  //!< Entity type icon
+    EntityIconRole      = Qt::UserRole + 102, //!< Entity type icon
+    EntityColorRole     = Qt::UserRole + 103  //!< Per-entity color
   };
 
   virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;
   virtual QModelIndex parent(const QModelIndex& child) const;
-  //virtual bool hasChildren(const QModelIndex& parent) const;
+  virtual bool hasChildren(const QModelIndex& parent) const;
 
   int rowCount(const QModelIndex& parent = QModelIndex()) const;
   int columnCount(const QModelIndex& inParent = QModelIndex()) const { (void)inParent; return 1; }
@@ -54,7 +55,7 @@ public:
 
   //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
   //bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  //bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+  bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
   //virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 

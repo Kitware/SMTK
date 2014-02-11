@@ -77,7 +77,13 @@ public:
   Ptr setDelegate(SubphraseGeneratorPtr delegate);
 
   virtual std::string title()                                  { return std::string(); }
+  virtual bool isTitleMutable() const                          { return false; }
+  virtual bool setTitle(const std::string& newTitle)           { (void)newTitle; return false; }
+
   virtual std::string subtitle()                               { return std::string(); }
+  virtual bool isSubtitleMutable() const                       { return false; }
+  virtual bool setSubtitle(const std::string& newSubtitle)     { (void)newSubtitle; return false; }
+
   virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
 
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
