@@ -45,6 +45,7 @@ public:
   smtk::model::QEntityItemModel* getModel();
 
 public slots:
+  void selectEntities(const QList<std::string>& selIds);
 
 signals:
   void entitiesSelected(QList<smtk::util::UUID>);
