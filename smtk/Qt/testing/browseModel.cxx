@@ -54,6 +54,10 @@ int main(int argc, char* argv[])
 
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
   smtk::model::QEntityItemDelegate* qdelegate = new smtk::model::QEntityItemDelegate;
+  qdelegate->setTitleFontSize(12);
+  qdelegate->setTitleFontWeight(1);
+  qdelegate->setSubtitleFontSize(10);
+  qdelegate->setSubtitleFontWeight(1);
   QTreeView* view = new QTreeView;
   cout << "mask " << hexconst(mask) << "\n";
   /*

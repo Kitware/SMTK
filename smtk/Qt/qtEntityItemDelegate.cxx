@@ -9,8 +9,10 @@
 namespace smtk {
   namespace model {
 
-QEntityItemDelegate::QEntityItemDelegate(QWidget* owner)
-  : QStyledItemDelegate(owner), m_swatchSize(16), m_titleFontSize(16), m_subtitleFontSize(12)
+QEntityItemDelegate::QEntityItemDelegate(QWidget* owner) :
+  QStyledItemDelegate(owner), m_swatchSize(16),
+  m_titleFontSize(14), m_subtitleFontSize(10),
+  m_titleFontWeight(2), m_subtitleFontWeight(1)
 {
 }
 
@@ -44,6 +46,26 @@ void QEntityItemDelegate::setSubtitleFontSize(int sfs)
   this->m_subtitleFontSize = sfs;
 }
 
+int QEntityItemDelegate::titleFontWeight() const
+{
+  return this->m_titleFontWeight;
+}
+
+void QEntityItemDelegate::setTitleFontWeight(int tfw)
+{
+  this->m_titleFontWeight = tfw;
+}
+
+int QEntityItemDelegate::subtitleFontWeight() const
+{
+  return this->m_subtitleFontWeight;
+}
+
+void QEntityItemDelegate::setSubtitleFontWeight(int sfw)
+{
+  this->m_subtitleFontWeight = sfw;
+}
+
 QSize QEntityItemDelegate::sizeHint(
   const QStyleOptionViewItem& option,
   const QModelIndex& idx) const
@@ -52,13 +74,11 @@ QSize QEntityItemDelegate::sizeHint(
   QSize iconsize = icon.actualSize(option.decorationSize);
   QFont titleFont = QApplication::font();
   titleFont.setPixelSize(this->m_titleFontSize);
-  titleFont.setBold(true);
+  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   QFontMetrics titleFM(titleFont);
-  QFont subtitleFont = titleFont;
-  //std::cout << "Subtitle is " << subtitleFont.pixelSize() << "\n";
+  QFont subtitleFont = QApplication::font();
   subtitleFont.setPixelSize(this->m_subtitleFontSize);
-  //subtitleFont.setPixelSize(subtitleFont.pixelSize() - 2);
-  subtitleFont.setWeight(subtitleFont.weight() - 2);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
   QFontMetrics subtitleFM(subtitleFont);
   int minHeight = titleFM.height() + 2 /*inter-line spacing*/ + subtitleFM.height();
   if (minHeight < iconsize.height())
@@ -83,12 +103,12 @@ void QEntityItemDelegate::paint(
   QSize iconsize = icon.actualSize(option.decorationSize);
   QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
   QFont titleFont = QApplication::font();
-  QFont subtitleFont = titleFont;
+  QFont subtitleFont = QApplication::font();
   titleFont.setPixelSize(this->m_titleFontSize);
-  titleFont.setBold(true);
+  titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   subtitleFont.setPixelSize(this->m_subtitleFontSize);
-  //subtitleFont.setPixelSize(subtitleFont.pixelSize() - 2);
-  subtitleFont.setWeight(subtitleFont.weight() - 2);
+  subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+  //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
   QFontMetrics subtitleFM(subtitleFont);
 
