@@ -66,7 +66,7 @@ public:
   UUIDsToEntities& topology();
   const UUIDsToEntities& topology() const;
 
-  int type(const smtk::util::UUID& ofEntity) const;
+  BitFlags type(const smtk::util::UUID& ofEntity) const;
   int dimension(const smtk::util::UUID& ofEntity) const;
   std::string name(const smtk::util::UUID& ofEntity) const;
 
