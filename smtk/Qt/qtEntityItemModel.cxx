@@ -14,6 +14,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <deque>
 
 // -----------------------------------------------------------------------------
 // The following is used to ensure that the QRC file
@@ -335,6 +336,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
 }
 */
 
+/// Provide meta-information about a model entry.
 Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 {
   if(!idx.isValid())
@@ -343,6 +345,41 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
   return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+}
+
+/**\brief Return the first smtk::model::Storage instance presented by this model.
+  *
+  * Note that it is possible for a QEntityItemModel to present information
+  * on entities from multiple Storage instances.
+  * However, in this case, external updates to the selection must either be
+  * made via Cursor instances (which couple UUIDs with Storage instances) or
+  * there will be breakage.
+  */
+smtk::model::StoragePtr QEntityItemModel::storage() const
+{
+  if (this->m_root)
+    {
+    Cursor related = this->m_root->relatedEntity();
+    if (related.isValid())
+      return related.storage();
+    // Keep looking until we find a phrase with a valid
+    // relatedEntity (which must have valid storage).
+    std::deque<DescriptivePhrase::Ptr> phrases(
+      this->m_root->subphrases().begin(),
+      this->m_root->subphrases().end());
+    while (!phrases.empty())
+      {
+      related = phrases.front()->relatedEntity();
+      if (related.isValid())
+        return related.storage();
+      DescriptivePhrases ptmp = phrases.front()->subphrases();
+      phrases.pop_front();
+      phrases.insert(phrases.end(), ptmp.begin(), ptmp.end());
+      }
+    }
+
+  smtk::model::StoragePtr null;
+  return null;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)

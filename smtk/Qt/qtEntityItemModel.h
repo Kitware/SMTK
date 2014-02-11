@@ -66,6 +66,8 @@ public:
     this->m_root = root;
     }
 
+  smtk::model::StoragePtr storage() const;
+
   void setDeleteOnRemoval(bool del)
     {
     this->m_deleteOnRemoval = del;
