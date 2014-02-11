@@ -89,7 +89,12 @@ int main(int argc, char* argv[])
 
   // FIXME: Actually test something when not in debug mode.
   int status = debug ? app.exec() : 0;
-  std::cout << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+  if (argc > 4)
+    {
+    std::ofstream result(argv[4]);
+    result << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+    result.close();
+    }
 
   delete view;
   delete qmodel;
