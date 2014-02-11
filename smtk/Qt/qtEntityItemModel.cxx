@@ -97,37 +97,34 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
   return this->createIndex(childRow, 0, parentPhrase.get());
 }
 
-/*
+/// Return true when \a owner has subphrases.
 bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 {
+  // According to various Qt mailing-list posts, we might
+  // speed things up by always returning true here.
   if (owner.isValid())
     {
-    DescriptivePhrase* parnt =
+    DescriptivePhrase* phrase =
       static_cast<DescriptivePhrase*>(owner.internalPointer());
-    if (parnt)
+    if (phrase)
       { // Return whether the parent has subphrases.
-      return parnt->subphrases().empty() ? false : true;
-      }
-    else
-      { // Return whether the toplevel m_phrases list entry has subphrases.
-      int np = static_cast<int>(this->m_phrases.size());
-      if (owner.row() >= 0 && owner.row() < np)
-        {
-        return this->m_phrases[owner.row()]->subphrases().empty() ? false : true;
-        }
+      return phrase->subphrases().empty() ? false : true;
       }
     }
   // Return whether the toplevel m_phrases list is empty.
-  return (rowCount() > 0);
+  return (this->m_root ?
+    (this->m_root->subphrases().empty() ? false : true) :
+    false);
 }
-*/
 
+/// The number of rows in the table "underneath" \a owner.
 int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
   DescriptivePhrase* ownerPhrase = this->getItem(owner);
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
+/// Return something to display in the table header.
 QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
   if (role != Qt::DisplayRole)
@@ -150,6 +147,7 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
+/// Relate information, by its \a role, from a \a DescriptivePhrase to the Qt model.
 QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
@@ -175,6 +173,37 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         return QVariant(
           this->lookupIconForEntityFlags(
             item->phraseType()));
+        }
+      else if (role == EntityColorRole)
+        {
+        QColor color;
+        FloatList rgba = item->relatedColor();
+        if (rgba.size() >= 4 && rgba[3] < 0)
+          color = QColor(255, 255, 255, 255);
+        else
+          {
+          // Color may be luminance, luminance+alpha, rgb, or rgba:
+          switch (rgba.size())
+            {
+          case 0:
+            color = QColor(0, 0, 0, 0);
+            break;
+          case 1:
+            color.setHslF(0., 0., rgba[0], 1.);
+            break;
+          case 2:
+            color.setHslF(0., 0., rgba[0], rgba[1]);
+            break;
+          case 3:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
+            break;
+          case 4:
+          default:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
+            break;
+            }
+          }
+        return color;
         }
       }
     }
@@ -234,6 +263,21 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       {
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setTitle(sval);
+      }
+    else if (role == SubtitleTextRole && phrase->isSubtitleMutable())
+      {
+      std::string sval = value.value<QString>().toStdString();
+      didChange = phrase->setSubtitle(sval);
+      }
+    else if (role == EntityColorRole && phrase->isRelatedColorMutable())
+      {
+      QColor color = value.value<QColor>();
+      FloatList rgba(4);
+      rgba[0] = color.redF();
+      rgba[1] = color.greenF();
+      rgba[2] = color.blueF();
+      rgba[3] = color.alphaF();
+      didChange = phrase->setRelatedColor(rgba);
       }
     }
   return didChange;
