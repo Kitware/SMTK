@@ -117,7 +117,7 @@ static bool SpecialEntityNameSort(const DescriptivePhrasePtr& a, const Descripti
 }
 
 SimpleModelSubphrases::SimpleModelSubphrases()
-  : m_passOverUses(true)
+  : m_abridgeUses(true)
 {
 }
 
@@ -169,13 +169,23 @@ bool SimpleModelSubphrases::shouldOmitProperty(
   return false;
 }
 
+void SimpleModelSubphrases::setAbridgeUses(bool doAbridge)
+{
+  this->m_abridgeUses = doAbridge;
+}
+
+bool SimpleModelSubphrases::abridgeUses() const
+{
+  return this->m_abridgeUses;
+}
+
 void SimpleModelSubphrases::childrenOfEntity(
   EntityPhrase::Ptr phr, DescriptivePhrases& result)
 {
   // I. Determine dimension of parent.
   //    We will avoid reporting sub-entities if this entity has a
   //    dimension higher than its parent.
-  if (!this->m_passOverUses)
+  if (!this->m_abridgeUses)
     {
     int dimBits = 0;
     for (DescriptivePhrasePtr pphr = phr->parent(); pphr; pphr = pphr->parent())
@@ -216,7 +226,7 @@ void SimpleModelSubphrases::childrenOfEntity(
     else if (cent.isValid())
       {
       this->toplevelShellsOfCell(phr, cent, result);
-      if (!this->m_passOverUses)
+      if (!this->m_abridgeUses)
         this->usesOfCell(phr, cent, result);
       else
         this->boundingCellsOfCell(phr, cent, result);
