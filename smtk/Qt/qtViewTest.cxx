@@ -24,6 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/Qt/qtUIManager.h"
@@ -31,6 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/util/AttributeWriter.h"
 #include "smtk/util/Logger.h"
 #include "smtk/view/Base.h"
+#include "smtk/view/Instanced.h"
 #include "smtk/view/Root.h"
 
 #include <QApplication>
@@ -87,17 +90,57 @@ int main(int argc, char *argv[])
 
   bool useInternalFileBrowser = true;
 
+  smtk::view::RootPtr rootView = manager.rootView();
+  smtk::view::BasePtr view;
+
   // Check for input "view" argument
   if (argc <= 3)
     {
-    // Generate tab group with all views (standard)
-    uiManager->initializeUI(widget, useInternalFileBrowser);
+    if (rootView->numberOfSubViews() > 0)
+      {
+      // Generate tab group with all views (standard)
+      uiManager->initializeUI(widget, useInternalFileBrowser);
+      }
+    else
+      {
+      // If rootView is empty, generate 1 instanced view w/all attdefs
+      std::cout << "Creating default view" << std::endl;
+      smtk::view::InstancedPtr instanced = smtk::view::Instanced::New("Default");
+
+      std::vector<smtk::attribute::DefinitionPtr> defList;
+      manager.findBaseDefinitions(defList);
+      for (size_t i=0; i<defList.size(); ++i)
+        {
+        smtk::attribute::DefinitionPtr defn = defList[i];
+        if (defn->isAbstract())
+          {
+          // For abstract definitions, retrieve all derived & concrete defs
+          std::vector<smtk::attribute::DefinitionPtr> derivedList;
+          manager.findAllDerivedDefinitions(defn, true, derivedList);
+          for (size_t j=0; j<derivedList.size(); ++j)
+            {
+            std::string attType = derivedList[j]->type();
+            smtk::attribute::AttributePtr att = manager.createAttribute(attType);
+            instanced->addInstance(att);
+            }
+          }
+        else
+          {
+          std::string attType = defn->type();
+          smtk::attribute::AttributePtr att = manager.createAttribute(attType);
+          instanced->addInstance(att);
+          }
+        }
+      std::cout << "Number of atts added to default view: "
+                << instanced->numberOfInstances() << std::endl;
+
+      view = instanced;
+      rootView->addSubView(view);
+      }
     }
   else
     {
     // Render one view (experimental)
-    smtk::view::RootPtr rootView = manager.rootView();
-    smtk::view::BasePtr view;
     // First check if argv[3] is index or name
     std::string input = argv[3];
     try
@@ -123,7 +166,10 @@ int main(int argc, char *argv[])
       std::cout << "ERROR: View \"" << input << "\" not found" << std::endl;
       return -4;
       }
+    }
 
+  if (view)
+    {
     // Add simple panel (QFrame) for aesthetics
     QFrame *frame = new QFrame();
     frame->setFrameShadow(QFrame::Raised);
