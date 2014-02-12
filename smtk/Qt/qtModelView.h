@@ -48,11 +48,20 @@ public slots:
   void selectEntities(const QList<std::string>& selIds);
 
 signals:
-  void entitiesSelected(QList<smtk::util::UUID>);
+  void entitiesSelected(const smtk::util::UUIDs& ids);
 
 protected:
   virtual void  selectionChanged (
     const QItemSelection & selected, const QItemSelection & deselected );
+  virtual void selectionHelper(
+  QEntityItemModel* qmodel,
+    const QModelIndex& parent,
+    const smtk::util::UUIDs& selEntities,
+    QItemSelection& selItems);
+  void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
+  void recursiveSelect (
+   smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
+    smtk::util::UUIDs& ids);
 };
 
   } // namespace model
