@@ -12,7 +12,7 @@ if __name__ == '__main__':
     store = smtk.model.Storage.create()
     # Add some models to storage:
     model = store.addModel(3, 3, 'Test Model')
-    model2 = store.addModel(2, 3, 'Submodel A')
+    model2 = store.addModel(3, 3, 'Submodel A')
     model3 = store.addModel(3, 3, 'Submodel B')
     # Add a group
     group = store.addGroup(0, 'Test Group')
