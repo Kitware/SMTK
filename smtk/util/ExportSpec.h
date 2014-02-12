@@ -46,8 +46,10 @@ namespace smtk
     public:
       // ----------------------------------------
       // Data-get methods, intended to be called from python scripts
-      smtk::attribute::Manager *getManager() const
-      { return m_manager; }
+      smtk::attribute::Manager *getSimulationAttributes() const
+      { return m_simulationManager; }
+      smtk::attribute::Manager *getExportAttributes() const
+      { return m_exportManager; }
       smtk::model::GridInfoPtr getAnalysisGridInfo() const
       { return m_analysisGridInfo; }
       std::string getOutputPath() const
@@ -62,8 +64,10 @@ namespace smtk
       ExportSpec();
       void clear();
 
-      void setManager(smtk::attribute::Manager *manager)
-      { m_manager = manager; }
+      void setSimulationAttributes(smtk::attribute::Manager *manager)
+      { m_simulationManager = manager; }
+      void setExportAttributes(smtk::attribute::Manager *manager)
+      { m_exportManager = manager; }
       void setAnalysisGridInfo(smtk::model::GridInfoPtr analysisGridInfo)
       { m_analysisGridInfo = analysisGridInfo; }
       void setOutputPath(const std::string& outputPath)
@@ -72,7 +76,8 @@ namespace smtk
       { m_analysisNames.push_back(name); }
 
     private:
-      smtk::attribute::Manager *m_manager;
+      smtk::attribute::Manager *m_simulationManager;
+      smtk::attribute::Manager *m_exportManager;
       smtk::model::GridInfoPtr  m_analysisGridInfo;
       std::string               m_outputPath;
       std::vector<std::string>  m_analysisNames;

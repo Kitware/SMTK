@@ -32,7 +32,8 @@ ExportSpec::ExportSpec()
 void
 ExportSpec::clear()
 {
-  m_manager = 0;
+  m_simulationManager = NULL;
+  m_exportManager = NULL;
   m_analysisGridInfo = smtk::model::GridInfoPtr();
   m_outputPath = "";
   m_analysisNames.clear();
