@@ -1,6 +1,6 @@
 #include <@dir_prefix@/@header@>
 
-int @headername@()
+int testBuild_@headername@()
 {
   return 0;
 }
