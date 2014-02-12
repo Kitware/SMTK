@@ -127,10 +127,7 @@ void qtModelView::selectionHelper(
       QItemSelectionRange sr(idx);
       selItems.append(sr);
       }
-    else
-      {
-      this->selectionHelper(qmodel, idx, selEntities, selItems);
-      }
+    this->selectionHelper(qmodel, idx, selEntities, selItems);
     }
 }
   } // namespace model
