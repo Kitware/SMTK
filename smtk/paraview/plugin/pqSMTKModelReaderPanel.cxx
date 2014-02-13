@@ -89,7 +89,7 @@ void pqSMTKModelReaderPanel::onDataUpdated()
                                           "JSONModel")).toString().toStdString();
 
   // QMessageBox::warning(NULL, "JSON Model",  json.c_str());
-  smtk::model::BitFlags mask = smtk::model::MODEL_ENTITY;
+  smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY;
 
   smtk::model::StoragePtr model = smtk::model::Storage::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
@@ -127,11 +127,11 @@ void pqSMTKModelReaderPanel::onDataUpdated()
       this->layout()->addWidget(this->Internal->ModelDock);
       }
     }
-  //cout << "mask " << hexconst(mask) << "\n";
+  //cout << "emask " << hexconst(emask) << "\n";
 
   smtk::model::Cursors cursors;
   smtk::model::Cursor::CursorsFromUUIDs(
-    cursors, model, model->entitiesMatchingFlags(mask, false));
+    cursors, model, model->entitiesMatchingFlags(emask, false));
   std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
   smtk::model::SimpleModelSubphrases::Ptr sgen = smtk::model::SimpleModelSubphrases::create();
   sgen->setAbridgeUses(true);
