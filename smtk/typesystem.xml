@@ -526,6 +526,7 @@
     <modify-function signature="removeCategory(const std::string &amp;)" remove="all"/>
   </value-type>
 
+  <value-type template="smtk::shared_ptr" args="smtk::model::BridgeBase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
@@ -724,6 +725,10 @@
 
       <object-type name="AttributeAssignments">
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
+      </object-type>
+
+      <object-type name="BridgeBase">
+        <include file-name="smtk/model/BridgeBase.h" location="local"/>
       </object-type>
 
       <enum-type name="BridgedInformation">

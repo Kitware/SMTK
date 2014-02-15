@@ -21,7 +21,7 @@ namespace cgmsmtk {
 class CGMSMTK_EXPORT ImportSolid
 {
 public:
-  static smtk::util::UUID fromFileNameIntoStorage(
+  static smtk::util::UUIDArray fromFilenameIntoStorage(
     const std::string& filename,
     const std::string& filetype,
     smtk::model::StoragePtr storage);

@@ -2,7 +2,7 @@
 #define __smtk_cgm_Bridge_h
 
 #include "smtk/cgmSMTKExports.h"
-#include "smtk/PublicPointerDefs.h"
+#include "smtk/model/BridgeBase.h"
 
 class Body;
 class CoVolume;
@@ -37,41 +37,50 @@ namespace cgmsmtk {
   * exist. This class (Bridge) provides a method for requesting the
   * entity, arrangement, and/or tessellation information for a UUID be
   * mapped into SMTK from CGM.
-  *
-  * Because CGM heavily relies on the singleton pattern, this
-  * class only has static methods.
   */
-class CGMSMTK_EXPORT Bridge
+class CGMSMTK_EXPORT Bridge : public smtk::model::BridgeBase
 {
 public:
-  static smtk::model::Cursor addCGMEntityToStorage(
-    const smtk::util::UUID& entity, smtk::model::StoragePtr storage, bool addRels = true);
+  typedef smtk::shared_ptr<Bridge> Ptr;
+  typedef smtk::model::BridgedInfoBits BridgedInfoBits;
+  static BridgePtr create();
+  virtual ~Bridge();
+
+  virtual BridgedInfoBits allSupportedInformation() const;
 
   static bool addStorageEntityToCGM(const smtk::model::Cursor& ent);
 
 protected:
   friend class ImportSolid;
 
-  static smtk::model::Cursor addCGMEntityToStorage(
-    const smtk::util::UUID& entity, RefEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
-  static smtk::model::Cursor addCGMEntityToStorage(
-    const smtk::util::UUID& entity, GroupingEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
-  static smtk::model::Cursor addCGMEntityToStorage(
-    const smtk::util::UUID& entity, SenseEntity* refEnt, smtk::model::StoragePtr storage, bool addRels = true);
+  Bridge();
 
-  static smtk::model::ModelEntity addBodyToStorage(const smtk::util::UUID&, Body*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::VolumeUse addVolumeUseToStorage(const smtk::util::UUID&, CoVolume*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::FaceUse addFaceUseToStorage(const smtk::util::UUID&, CoFace*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::EdgeUse addEdgeUseToStorage(const smtk::util::UUID&, CoEdge*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::VertexUse addVertexUseToStorage(const smtk::util::UUID&, CoVertex*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Shell addShellToStorage(const smtk::util::UUID&, Shell*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Loop addLoopToStorage(const smtk::util::UUID&, Loop*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Chain addChainToStorage(const smtk::util::UUID&, Chain*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Volume addVolumeToStorage(const smtk::util::UUID&, RefVolume*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Face addFaceToStorage(const smtk::util::UUID&, RefFace*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Edge addEdgeToStorage(const smtk::util::UUID&, RefEdge*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::Vertex addVertexToStorage(const smtk::util::UUID&, RefVertex*, smtk::model::StoragePtr, bool addRels = true);
-  static smtk::model::GroupEntity addGroupToStorage(const smtk::util::UUID&, RefGroup*, smtk::model::StoragePtr, bool addRels = true);
+  virtual BridgedInfoBits transcribeInternal(
+    const smtk::model::Cursor& entity, BridgedInfoBits requestedInfo);
+
+  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, RefEntity* refEnt, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, GroupingEntity* refEnt, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, SenseEntity* refEnt, BridgedInfoBits requestedInfo);
+
+  BridgedInfoBits addBodyToStorage(const smtk::model::ModelEntity&, Body*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVolumeUseToStorage(const smtk::model::VolumeUse&, CoVolume*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addFaceUseToStorage(const smtk::model::FaceUse&, CoFace*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addEdgeUseToStorage(const smtk::model::EdgeUse&, CoEdge*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVertexUseToStorage(const smtk::model::VertexUse&, CoVertex*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addShellToStorage(const smtk::model::Shell&, ::Shell*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addLoopToStorage(const smtk::model::Loop&, ::Loop*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addChainToStorage(const smtk::model::Chain&, ::Chain*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVolumeToStorage(const smtk::model::Volume&, RefVolume*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addFaceToStorage(const smtk::model::Face&, RefFace*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addEdgeToStorage(const smtk::model::Edge&, RefEdge*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVertexToStorage(const smtk::model::Vertex&, RefVertex*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addGroupToStorage(const smtk::model::GroupEntity&, RefGroup*, BridgedInfoBits requestedInfo);
+
+  static void colorPropFromIndex(smtk::model::Cursor&, int);
+
+private:
+  Bridge(const Bridge&); // Not implemented.
+  void operator = (const Bridge&); // Not implemented.
 };
 
   } // namespace cgm

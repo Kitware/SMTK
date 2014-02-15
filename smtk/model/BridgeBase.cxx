@@ -4,30 +4,46 @@
 namespace smtk {
   namespace model {
 
-/**\brief Transcribe an entity from a foreign modeler into SMTK storage.
+/**\brief Transcribe an entity from a foreign modeler into SMTK Storage.
   *
+  * On input, the \a entity will not be valid but if transcription is
+  * successful, the \a requested records in the \a entity's Storage will
+  * be valid. If \a requested includes BRIDGE_ENTITY_TYPE, then
+  * \a entity.isValid() should return true after this call.
+  *
+  * Only honor requests for entity IDs listed as dangling unless
+  * \a onlyDangling is false (default is true).
+  * This prevents expensive requests by Storage instances over many Bridges.
+  *
+  * The return value is 0 upon failure and non-zero upon success.
+  * Failure occurs when any \a requested bits of information that
+  * are in BridgeBasee::allSupportedInformation() are not transcribed,
+  * or when \a requested is 0.
   */
-int BridgeBase::transcribe(const Cursor& entity, BridgedInfoBits requested)
+int BridgeBase::transcribe(
+  const Cursor& entity, BridgedInfoBits requested, bool onlyDangling)
 {
   int retval = 0;
   if (requested)
     {
+    // Check that the entity IDs is dangling or we are forced to continue.
     DanglingEntities::iterator it = this->m_dangling.find(entity);
-    if (it == this->m_dangling.end())
+    if (onlyDangling && it == this->m_dangling.end())
       { // The bridge has not been told that this UUID exists.
       return retval;;
       }
-    BridgedInfoBits actual(requested);
-    retval = this->transcribeInternal(entity, actual);
-    if (retval)
-      {
-      if ((actual & this->allSupportedInformation()) == this->allSupportedInformation())
-        {
-        // The call succeeded and every possible bit of information has
-        // been transcribed; thus the entity is no longer dangling.
+    // Ask the subclass to transcribe information.
+    BridgedInfoBits actual = this->transcribeInternal(entity, requested);
+    // Decide which bits of the request can possibly be honored...
+    BridgedInfoBits honorable = requested & this->allSupportedInformation();
+    // ... and verify that all of those have been satisfied.
+    retval = (honorable & actual) == honorable;
+    // If transcription is complete, then remove the UUID from the dangling
+    // entity set:
+    if (
+      ((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
+      (it != this->m_dangling.end()))
         this->m_dangling.erase(it);
-        }
-      }
     }
   return retval;
 }
@@ -70,13 +86,12 @@ void BridgeBase::declareDanglingEntity(const Cursor& ent, BridgedInfoBits presen
   * This should always be at least the information requested but may
   * include more information.
   */
-int BridgeBase::transcribeInternal(const Cursor& entity, BridgedInfoBits& flags)
+BridgedInfoBits BridgeBase::transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
 {
   (void)entity;
   (void)flags;
   // Fail to transcribe anything:
-  flags = 0;
-  return 1;
+  return 0;
 }
 
   } // namespace model
