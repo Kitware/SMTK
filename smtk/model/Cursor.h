@@ -113,7 +113,7 @@ public:
     * will happily return an invalid object.
     */
   template<typename T>
-  T as()
+  T as() const
     {
     return T(*this);
     }

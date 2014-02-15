@@ -932,7 +932,7 @@ bool Storage::findOrAddUseToShell(
   * Thus, the \a inclusion must have a dimension less-than
   * or equal to the \a cell.
   */
-bool Storage::findOrAddInclusionToCell(
+bool Storage::findOrAddInclusionToCellOrModel(
   const smtk::util::UUID& cell, const smtk::util::UUID& inclusion)
 {
   Entity* cellEnt;

@@ -37,6 +37,7 @@ namespace cgmsmtk
   namespace cgm
   {
     class Bridge;
+    typedef smtk::shared_ptr<cgmsmtk::cgm::Bridge> BridgePtr;
     class ImportSolid;
     class Engines;
     class ExportSolid;
