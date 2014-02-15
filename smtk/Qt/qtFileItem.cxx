@@ -197,6 +197,17 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   layout->addWidget(lineEdit);
   layout->addWidget(fileBrowserButton);
 
+  QString defaultText;
+  if (fItem)
+    {
+    const smtk::attribute::FileItemDefinition *fDef =
+    dynamic_cast<const FileItemDefinition*>(fItem->definition().get());
+    if (fDef && fDef->hasDefault())
+      {
+      defaultText = fDef->defaultValue().c_str();
+      }
+    }
+
   QString valText;
   if(fItem && fItem->isSet(elementIdx))
     {
@@ -205,6 +216,10 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   else if(dItem && dItem->isSet(elementIdx))
     {
     valText = dItem->valueAsString(elementIdx).c_str();
+    }
+  else if (defaultText != "")
+    {
+    valText = defaultText;
     }
   lineEdit->setText(valText);
 
