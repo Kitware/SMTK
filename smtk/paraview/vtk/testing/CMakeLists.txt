@@ -26,7 +26,7 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   )
 
   add_test(
-    NAME displayMultiBlockModel
+    NAME displayMultiBlockModel-test2D
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
       "${SMTK_DATA_DIR}/smtk/test2D.json"
