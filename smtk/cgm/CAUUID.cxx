@@ -125,7 +125,7 @@ CubitStatus CAUUID::actuate()
       RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
       if (ownerAsEnt)
         {
-        std::cout << "Restored " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+        //std::cout << "Restored " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
         }
       }
     }
@@ -168,7 +168,7 @@ CubitSimpleAttrib CAUUID::cubit_simple_attrib()
   RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
   if (ownerAsEnt)
     {
-    std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
     }
   return CubitSimpleAttrib(
     this->att_internal_name(),
@@ -180,7 +180,7 @@ CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
   RefEntity* ownerAsEnt = dynamic_cast<RefEntity*>(attrib_owner());
   if (ownerAsEnt)
     {
-    std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
+    //std::cout << "Exported " << ownerAsEnt->entity_name().c_str() << " (" << ownerAsEnt->class_name() << ") " << this->m_entityId << "\n";
     }
   return new CubitSimpleAttrib(
     this->att_internal_name(),
