@@ -21,5 +21,6 @@ vtk_module(vtkSMTK
     vtkRenderingMatplotlib
     vtkRenderingVolumeOpenGL
     vtkRenderingFreeTypeOpenGL
+    vtkTestingRendering
   EXCLUDE_FROM_WRAP_HIERARCHY
 )

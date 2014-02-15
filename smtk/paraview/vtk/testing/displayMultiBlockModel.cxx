@@ -17,13 +17,16 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 
+#include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
+
 using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
 
 int main(int argc, char* argv[])
 {
-  int debug = argc > 2 ? 1 : 0;
+  int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
   std::ifstream file(argc > 1 ? argv[1] : "smtkModel.json");
   if (!file.good())
     {
@@ -77,6 +80,8 @@ int main(int argc, char* argv[])
 
     win->Render();
     ren->ResetCamera();
+
+    status = ! vtkRegressionTestImage(win.GetPointer());
 
     if (debug)
       {
