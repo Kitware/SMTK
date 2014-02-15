@@ -26,12 +26,15 @@ public:
 
   void Dirty();
 
+  vtkGetVector4Macro(DefaultColor,double);
+  vtkSetVector4Macro(DefaultColor,double);
+
 protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
 
   void GenerateRepresentationFromModelEntity(
-    vtkPolyData* poly, smtk::model::StoragePtr model, const smtk::util::UUID& uid);
+    vtkPolyData* poly, const smtk::model::Cursor& entity);
   void GenerateRepresentationFromModel(
     vtkMultiBlockDataSet* mbds, smtk::model::StoragePtr model);
 
@@ -48,6 +51,7 @@ protected:
   // Instance storage:
   smtk::model::StoragePtr Model;
   vtkMultiBlockDataSet* CachedOutput;
+  double DefaultColor[4];
 
 private:
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
