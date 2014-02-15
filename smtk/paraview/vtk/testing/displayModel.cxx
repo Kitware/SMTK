@@ -137,7 +137,10 @@ public:
           std::set<std::string>::iterator it;
           for (it = uniques.begin(); it != uniques.end(); ++it)
             {
-            cout << indent << *it << "\n";
+            cout
+              << indent << *it << "  "
+              << (this->Storage ? this->Storage->name(smtk::util::UUID(*it)) : "--")
+              << "\n";
             }
           }
         cout << "]\n";
@@ -201,6 +204,11 @@ public:
     this->Representation = rep;
     }
 
+  void SetStorage(smtk::model::StoragePtr sm)
+    {
+    this->Storage = sm;
+    }
+
   void SwitchInteractors()
     {
     if (this->RenderWindow->GetInteractor() == this->CameraInteractor)
@@ -228,6 +236,7 @@ protected:
   vtkSmartPointer<vtkRenderWindowInteractor> SelectionInteractor;
   vtkSmartPointer<vtkRenderWindow> RenderWindow;
   vtkSmartPointer<vtkModelRepresentation> Representation;
+  smtk::model::StoragePtr Storage;
 };
 
 int main(int argc, char* argv[])
@@ -290,6 +299,7 @@ int main(int argc, char* argv[])
       hlp->SetCameraInteractor(iac);
       hlp->SetRenderWindow(view->GetRenderWindow());
       hlp->SetRepresentation(rep.GetPointer());
+      hlp->SetStorage(sm);
       }
 
     view->Render();
@@ -306,6 +316,7 @@ int main(int argc, char* argv[])
 
     if (debug)
       {
+      sm->assignDefaultNames();
       applyPublicationTheme(view.GetPointer());
       view->GetInteractor()->Start();
       hlp->GetSelectionInteractor()->RemoveAllObservers();
