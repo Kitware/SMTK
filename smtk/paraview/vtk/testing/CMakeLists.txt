@@ -26,6 +26,15 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   )
 
   add_test(
+    NAME displayMultiBlockModel-simple
+    COMMAND
+      $<TARGET_FILE:displayMultiBlockModel>
+      "${SMTK_DATA_DIR}/smtk/simple.json"
+      -V "${SMTK_DATA_DIR}/baselines/vtk/simple-with-colors.png"
+      -T "${CMAKE_CURRENT_BINARY_DIR}"
+  )
+
+  add_test(
     NAME displayMultiBlockModel-test2D
     COMMAND
       $<TARGET_FILE:displayMultiBlockModel>
