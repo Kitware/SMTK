@@ -315,9 +315,29 @@ smtk::model::BridgedInfoBits Bridge::addVolumeUseToStorage(
   BridgedInfoBits actual = 0;
   if (coVolume)
     {
-    if (requestedInfo)
+    smtk::model::VolumeUse mutableCursor(cursor);
+    mutableCursor.storage()->insertVolumeUse(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // Add coVolume relations and arrangements
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      // FIXME: Todo.
       }
     }
   return actual;
@@ -329,6 +349,7 @@ smtk::model::BridgedInfoBits Bridge::addFaceUseToStorage(
   CoFace* coFace,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (coFace)
     {
@@ -346,6 +367,7 @@ smtk::model::BridgedInfoBits Bridge::addEdgeUseToStorage(
   CoEdge* coEdge,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (coEdge)
     {
@@ -363,6 +385,7 @@ smtk::model::BridgedInfoBits Bridge::addVertexUseToStorage(
   CoVertex* coVertex,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (coVertex)
     {
@@ -380,6 +403,7 @@ smtk::model::BridgedInfoBits Bridge::addShellToStorage(
   Shell* shell,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (shell)
     {
@@ -397,6 +421,7 @@ smtk::model::BridgedInfoBits Bridge::addLoopToStorage(
   Loop* loop,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (loop)
     {
@@ -414,6 +439,7 @@ smtk::model::BridgedInfoBits Bridge::addChainToStorage(
   Chain* chain,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (chain)
     {
@@ -431,6 +457,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToStorage(
   RefVolume* refVolume,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refVolume)
     {
@@ -470,6 +497,7 @@ smtk::model::BridgedInfoBits Bridge::addFaceToStorage(
   RefFace* refFace,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refFace)
     {
@@ -487,6 +515,7 @@ smtk::model::BridgedInfoBits Bridge::addEdgeToStorage(
   RefEdge* refEdge,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refEdge)
     {
@@ -504,6 +533,7 @@ smtk::model::BridgedInfoBits Bridge::addVertexToStorage(
   RefVertex* refVertex,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refVertex)
     {
@@ -521,6 +551,7 @@ smtk::model::BridgedInfoBits Bridge::addGroupToStorage(
   RefGroup* refGroup,
   BridgedInfoBits requestedInfo)
 {
+  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refGroup)
     {
