@@ -27,15 +27,20 @@ using namespace smtk::util;
 int main(int argc, char* argv[])
 {
   int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
-  std::ifstream file(argc > 1 ? argv[1] : "smtkModel.json");
-  if (!file.good())
+  std::ifstream file;
+  if (argc > 1)
+    file.open(argv[1]);
+  if (argc < 2 || !file.good())
     {
     cout
       << "Could not open file \"" << (argc > 1 ? argv[1] : "smtkModel.json") << "\".\n\n"
-      << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
+      << "Usage:\n  " << argv[0] << " [filename [debug|test_options]]\n"
       << "where\n"
       << "  filename is the path to a JSON model.\n"
-      << "  debug    is any character other than '-'; its presence turns the test into an interactive demo.\n\n"
+      << "  debug    is any character other than '-'; its presence turns the test into an interactive demo.\n"
+      << "and test_options is some combination of the following\n"
+      << "  -T tmpdir is a temporary directory to store baselines from tests.\n"
+      << "  -V image  is the path to a baseline image for filename.\n"
       ;
     return 1;
     }
