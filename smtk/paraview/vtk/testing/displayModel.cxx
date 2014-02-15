@@ -22,6 +22,9 @@
 #include "vtkTextProperty.h"
 #include "vtkViewTheme.h"
 
+#include "vtkTestUtilities.h"
+#include "vtkRegressionTestImage.h"
+
 using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
@@ -241,7 +244,7 @@ protected:
 
 int main(int argc, char* argv[])
 {
-  int debug = argc > 2 ? 1 : 0;
+  int debug = argc > 2 ? (argv[2][0] == '-' ? 0 : 1) : 0;
   std::ifstream file(argc > 1 ? argv[1] : "smtkModel.json");
   if (!file.good())
     {
@@ -250,7 +253,7 @@ int main(int argc, char* argv[])
       << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
       << "where\n"
       << "  filename is the path to a JSON model.\n"
-      << "  debug    is any character; its presence turns the test into an interactive demo.\n\n"
+      << "  debug    is any character other than '-'; its presence turns the test into an interactive demo.\n\n"
       ;
     return 1;
     }
@@ -305,6 +308,8 @@ int main(int argc, char* argv[])
     view->Render();
     view->ResetCamera();
     view->ResetCameraClippingRange();
+
+    status = ! vtkRegressionTestImage(view->GetRenderWindow());
 
 #if 0
     // Using legacy writer... XML format doesn't deal well with string arrays (UUIDs).

@@ -1,8 +1,18 @@
 add_executable(displayModel MACOSX_BUNDLE displayModel.cxx)
-target_link_libraries(displayModel SMTKCore vtkSMTK ${VTK_MODULES})
+target_link_libraries(displayModel
+  SMTKCore
+  vtkSMTK
+  ${VTK_MODULES}
+  vtkTestingRendering
+)
 
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
-target_link_libraries(displayMultiBlockModel SMTKCore vtkSMTK ${VTK_MODULES} vtkTestingRendering)
+target_link_libraries(displayMultiBlockModel
+  SMTKCore
+  vtkSMTK
+  ${VTK_MODULES}
+  vtkTestingRendering
+)
 
 # Only run tests if the data directory exists
 if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
@@ -11,6 +21,8 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
     COMMAND
       $<TARGET_FILE:displayModel>
       "${SMTK_DATA_DIR}/smtk/simple.json"
+      -V "${SMTK_DATA_DIR}/baselines/vtk/simple.png"
+      -T "${CMAKE_CURRENT_BINARY_DIR}"
   )
 
   add_test(

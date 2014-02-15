@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
       << "Usage:\n  " << argv[0] << " [[filename] debug]\n"
       << "where\n"
       << "  filename is the path to a JSON model.\n"
-      << "  debug    is any character; its presence turns the test into an interactive demo.\n\n"
+      << "  debug    is any character other than '-'; its presence turns the test into an interactive demo.\n\n"
       ;
     return 1;
     }
