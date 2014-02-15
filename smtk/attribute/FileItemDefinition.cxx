@@ -32,7 +32,7 @@ using namespace smtk::attribute;
 FileItemDefinition::
 FileItemDefinition(const std::string &myName):
   ItemDefinition(myName), m_shouldExist(false), m_shouldBeRelative(false),
-  m_useCommonLabel(false), m_numberOfRequiredValues(1)
+  m_useCommonLabel(false), m_numberOfRequiredValues(1), m_hasDefault(false)
 {
 }
 
@@ -118,5 +118,11 @@ std::string FileItemDefinition::valueLabel(std::size_t element) const
     return this->m_valueLabels[element];
     }
   return ""; // If we threw execeptions this method could return const string &
+}
+//----------------------------------------------------------------------------
+void FileItemDefinition::setDefaultValue(const std::string& val)
+{
+  this->m_defaultValue = val;
+  this->m_hasDefault = true;
 }
 //----------------------------------------------------------------------------
