@@ -89,7 +89,7 @@ void pqSMTKModelReaderPanel::onDataUpdated()
                                           "JSONModel")).toString().toStdString();
 
   // QMessageBox::warning(NULL, "JSON Model",  json.c_str());
-  smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY;
+  smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY | smtk::model::GROUP_ENTITY;
 
   smtk::model::StoragePtr model = smtk::model::Storage::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
