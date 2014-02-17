@@ -5,6 +5,12 @@
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/StringData.h"
+
+#include "smtk/Qt/qtEntityItemDelegate.h"
+#include "smtk/model/EntityPhrase.h"
+#include "smtk/model/EntityListPhrase.h"
+
+#include <QPointer>
 #include <iomanip>
 // -----------------------------------------------------------------------------
 
@@ -16,9 +22,17 @@ namespace smtk {
 qtModelView::qtModelView(QWidget* p)
   : QTreeView(p)
 {
+  QPointer<smtk::model::QEntityItemModel> qmodel = new smtk::model::QEntityItemModel;
+  QPointer<smtk::model::QEntityItemDelegate> qdelegate = new smtk::model::QEntityItemDelegate;
+  this->setModel(qmodel); // must come after qmodel->setRoot()
+  this->setItemDelegate(qdelegate);
+
   this->setSelectionBehavior(QAbstractItemView::SelectRows);
   this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  this->setSortingEnabled(true);
 
+  QSizePolicy expandPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+  this->setSizePolicy(expandPolicy);
 }
 
 //-----------------------------------------------------------------------------
