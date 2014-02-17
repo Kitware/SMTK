@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/Manager.h"
 #include "smtk/model/Model.h"
+#include "smtk/Qt/qtRootView.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/util/AttributeReader.h"
 #include "smtk/util/AttributeWriter.h"
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
     }
 
   widget->show();
+  uiManager->rootView()->onShowAdvanced(0);
   int retcode = app->exec();
 
   if (argc > 2)
