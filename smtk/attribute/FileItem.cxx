@@ -28,11 +28,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 #include <stdio.h>
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-FileItem::FileItem(Attribute *owningAttribute, 
-                   int itemPosition): 
+FileItem::FileItem(Attribute *owningAttribute,
+                   int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
@@ -51,9 +51,9 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const FileItemDefinition *def = 
+  const FileItemDefinition *def =
     dynamic_cast<const FileItemDefinition *>(adef.get());
-  
+
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
   if ((def == NULL) || (!Item::setDefinition(adef)))
@@ -65,8 +65,16 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
   std::size_t n = def->numberOfRequiredValues();
   if (n)
     {
-    this->m_isSet.resize(n, false);
-    this->m_values.resize(n);
+    if (def->hasDefault())
+      {
+      this->m_values.resize(n, def->defaultValue());
+      this->m_isSet.resize(n, true);
+      }
+    else
+      {
+      this->m_isSet.resize(n, false);
+      this->m_values.resize(n);
+      }
     }
   return true;
 }
@@ -84,7 +92,7 @@ Item::Type FileItem::type() const
 //----------------------------------------------------------------------------
 std::size_t FileItem::numberOfRequiredValues() const
 {
-  const FileItemDefinition *def = 
+  const FileItemDefinition *def =
     static_cast<const FileItemDefinition*>(this->m_definition.get());
   if (def == NULL)
     {
@@ -95,7 +103,7 @@ std::size_t FileItem::numberOfRequiredValues() const
 //----------------------------------------------------------------------------
 bool FileItem::shouldBeRelative() const
 {
-  const FileItemDefinition *def = 
+  const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
   if (def != NULL)
     {
@@ -106,7 +114,7 @@ bool FileItem::shouldBeRelative() const
 //----------------------------------------------------------------------------
 bool FileItem::shouldExist() const
 {
-  const FileItemDefinition *def = 
+  const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
   if (def != NULL)
     {
@@ -117,7 +125,7 @@ bool FileItem::shouldExist() const
 //----------------------------------------------------------------------------
 bool FileItem::setValue(std::size_t element, const std::string &val)
 {
-  const FileItemDefinition *def = 
+  const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
   if ((def == NULL) || (def->isValueValid(val)))
     {
@@ -155,7 +163,7 @@ FileItem::appendValue(const std::string &val)
     {
     return false; // The number of values is fixed
     }
-  
+
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -187,7 +195,7 @@ bool FileItem::setNumberOfValues(std::size_t newSize)
     {
     return true;
     }
-  
+
   //Next - are we allowed to change the number of values?
   const FileItemDefinition *def =
     static_cast<const FileItemDefinition *>(this->definition().get());
