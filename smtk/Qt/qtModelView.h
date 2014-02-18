@@ -31,8 +31,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtEntityItemModel.h"
 #include "smtk/util/UUID.h"
 
+class QDropEvent;
+
 namespace smtk {
   namespace model {
+
+class DescriptivePhrase;
 
 class QTSMTK_EXPORT qtModelView : public QTreeView
 {
@@ -42,7 +46,8 @@ public:
   qtModelView(QWidget* p = NULL);
   ~qtModelView();
 
-  smtk::model::QEntityItemModel* getModel();
+  smtk::model::QEntityItemModel* getModel() const;
+  DescriptivePhrase* currentItem() const;
 
 public slots:
   void selectEntities(const QList<std::string>& selIds);
@@ -51,6 +56,17 @@ signals:
   void entitiesSelected(const smtk::util::UUIDs& ids);
 
 protected:
+
+  // Description:
+  // Support for customized drag-n-drop events
+  virtual Qt::DropActions supportedDropActions() const;
+  void dragEnterEvent( QDragEnterEvent * event );
+  void dragMoveEvent( QDragMoveEvent * event );
+  virtual void startDrag ( Qt::DropActions supportedActions );
+  virtual void dropEvent(QDropEvent* event);
+
+  // Description:
+  // Customized selection related methods
   virtual void  selectionChanged (
     const QItemSelection & selected, const QItemSelection & deselected );
   virtual void selectionHelper(
@@ -61,7 +77,7 @@ protected:
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
   void recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::util::UUIDs& ids);
+    smtk::util::UUIDs& ids, BitFlags entityFlags);
 };
 
   } // namespace model

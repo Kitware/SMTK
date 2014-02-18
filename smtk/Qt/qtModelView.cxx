@@ -1,6 +1,7 @@
 #include "smtk/Qt/qtModelView.h"
 
 #include "smtk/model/Entity.h"
+#include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Storage.h"
@@ -11,6 +12,10 @@
 #include "smtk/model/EntityListPhrase.h"
 
 #include <QPointer>
+#include <QDropEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+
 #include <iomanip>
 // -----------------------------------------------------------------------------
 
@@ -41,9 +46,67 @@ qtModelView::~qtModelView()
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::QEntityItemModel* qtModelView::getModel()
+smtk::model::QEntityItemModel* qtModelView::getModel() const
 {
   return qobject_cast<QEntityItemModel*>(this->model());
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::dropEvent(QDropEvent* dEvent)
+{
+  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  smtk::util::UUIDs ids;
+  // depends on the QModelIndex we dropped on, the selected
+  // entities will be filtered accordingly based on what type of entities
+  // the recieving group can take
+
+  QPersistentModelIndex dropIdx = this->indexAt(dEvent->pos());
+  DescriptivePhrase* dp = this->getModel()->getItem(dropIdx);
+  if(dp && dp->relatedEntity().isGroupEntity() )
+    {
+    BitFlags ef = (dp->relatedEntity().entityFlags() & FACE) ?
+      FACE : EDGE;
+    foreach(QModelIndex sel, this->selectedIndexes())
+      {
+      this->recursiveSelect(qmodel, sel, ids, ef);
+      }
+    qmodel->storage()->addToGroup(dp->relatedEntityId(), ids);
+    if ( dEvent->proposedAction() == Qt::MoveAction )
+      {
+      //move events break the way we handle drops, convert it to a copy
+      dEvent->setDropAction( Qt::CopyAction );
+      }
+    dEvent->accept();
+    }
+}
+
+//-----------------------------------------------------------------------------
+Qt::DropActions qtModelView::supportedDropActions () const
+{
+  // returns what actions are supported when dropping
+  return Qt::CopyAction;
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::startDrag ( Qt::DropActions supportedActions )
+{
+//  emit this->dragStarted(this);
+  this->QTreeView::startDrag(supportedActions);
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::dragEnterEvent ( QDragEnterEvent * event )
+{
+  this->QTreeView::dragEnterEvent(event);
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::dragMoveEvent( QDragMoveEvent * event )
+{
+  if ( event->proposedAction() & this->supportedDropActions() )
+    {
+    event->accept();
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -59,15 +122,16 @@ void qtModelView::selectionChanged (
   smtk::util::UUIDs ids;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    this->recursiveSelect(qmodel, sel, ids);
+    this->recursiveSelect(qmodel, sel, ids, CELL_ENTITY);
     }
 
   emit this->entitiesSelected(ids);
 }
 
+//----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::util::UUIDs& ids)
+    smtk::util::UUIDs& ids, BitFlags entityFlags)
 {
   DescriptivePhrase* dPhrase = qmodel->getItem(sel);
   if(dPhrase && ids.find(dPhrase->relatedEntityId()) == ids.end())
@@ -75,7 +139,7 @@ void qtModelView::recursiveSelect (
 
   for (int row=0; row < qmodel->rowCount(sel); ++row)
     {
-    this->recursiveSelect(qmodel, qmodel->index(row, 0, sel), ids);
+    this->recursiveSelect(qmodel, qmodel->index(row, 0, sel), ids, entityFlags);
     }
 }
 
@@ -143,6 +207,16 @@ void qtModelView::selectionHelper(
       }
     this->selectionHelper(qmodel, idx, selEntities, selItems);
     }
+}
+
+DescriptivePhrase* qtModelView::currentItem() const
+{
+  QModelIndex idx = this->currentIndex();
+  if (idx.isValid())
+    {
+    return this->getModel()->getItem(idx);
+    }
+  return NULL;
 }
   } // namespace model
 } // namespace smtk

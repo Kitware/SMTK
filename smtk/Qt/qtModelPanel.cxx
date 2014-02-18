@@ -67,12 +67,29 @@ smtk::model::qtModelView* qtModelPanel::getModelView()
 //-----------------------------------------------------------------------------
 void qtModelPanel::onAddDomainset()
 {
-
+  QEntityItemModel* qmodel = this->getModelView()->getModel();
+  smtk::model::StoragePtr pstore = qmodel->storage();
+  // bgroup.addEntities(entities);
+  smtk::util::UUIDs ents = pstore->entitiesMatchingFlags(MODEL_ENTITY, false);
+  if(!ents.empty())
+    {
+    smtk::model::ModelEntity me(pstore, *ents.begin());
+    GroupEntity ds = pstore->addGroup(
+      smtk::model::VOLUME, "Domain Set");
+    me.addGroup(ds);
+    this->Internal->ModelView->repaint();
+    }
 }
 
 //-----------------------------------------------------------------------------
 void qtModelPanel::onRemoveDomainset()
 {
+  DescriptivePhrase* dp = this->Internal->ModelView->currentItem();
+  if(dp && dp->relatedEntity().isGroupEntity())
+    {
+    QEntityItemModel* qmodel = this->getModelView()->getModel();
+    qmodel->storage()->erase(dp->relatedEntityId());
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -86,7 +103,7 @@ void qtModelPanel::onAddBC()
     {
     smtk::model::ModelEntity me(pstore, *ents.begin());
     GroupEntity bgroup = pstore->addGroup(
-      smtk::model::MODEL_BOUNDARY, "BC Group");
+      FACE | EDGE, "BC Group");
     me.addGroup(bgroup);
     this->Internal->ModelView->repaint();
     }
@@ -95,6 +112,12 @@ void qtModelPanel::onAddBC()
 //-----------------------------------------------------------------------------
 void qtModelPanel::onRemoveBC()
 {
+  DescriptivePhrase* dp = this->Internal->ModelView->currentItem();
+  if(dp && dp->relatedEntity().isGroupEntity())
+    {
+    QEntityItemModel* qmodel = this->getModelView()->getModel();
+    qmodel->storage()->erase(dp->relatedEntityId());
+    }
 }
 
   } // namespace model
