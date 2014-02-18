@@ -46,6 +46,7 @@ namespace smtk {
 class Cursor;
 typedef std::set<Cursor> Cursors;
 typedef std::vector<Cursor> CursorArray;
+class Tessellation;
 
 /**\brief A lightweight cursor pointing to a model entity's storage.
   *
@@ -113,7 +114,7 @@ public:
     * will happily return an invalid object.
     */
   template<typename T>
-  T as()
+  T as() const
     {
     return T(*this);
     }
@@ -130,6 +131,8 @@ public:
   Cursors adjacentEntities(int ofDimension);
 
   Cursor& addRawRelation(const Cursor& ent);
+
+  const Tessellation* hasTessellation() const;
 
   bool hasAttributes() const;
   bool hasAttribute(int attribId) const;

@@ -1,6 +1,7 @@
 #include "smtk/Qt/qtEntityItemModel.h"
 
 #include "smtk/model/Entity.h"
+#include "smtk/model/EntityPhrase.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Storage.h"
@@ -13,6 +14,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <deque>
 
 // -----------------------------------------------------------------------------
 // The following is used to ensure that the QRC file
@@ -96,37 +98,34 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
   return this->createIndex(childRow, 0, parentPhrase.get());
 }
 
-/*
+/// Return true when \a owner has subphrases.
 bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 {
+  // According to various Qt mailing-list posts, we might
+  // speed things up by always returning true here.
   if (owner.isValid())
     {
-    DescriptivePhrase* parnt =
+    DescriptivePhrase* phrase =
       static_cast<DescriptivePhrase*>(owner.internalPointer());
-    if (parnt)
+    if (phrase)
       { // Return whether the parent has subphrases.
-      return parnt->subphrases().empty() ? false : true;
-      }
-    else
-      { // Return whether the toplevel m_phrases list entry has subphrases.
-      int np = static_cast<int>(this->m_phrases.size());
-      if (owner.row() >= 0 && owner.row() < np)
-        {
-        return this->m_phrases[owner.row()]->subphrases().empty() ? false : true;
-        }
+      return phrase->subphrases().empty() ? false : true;
       }
     }
   // Return whether the toplevel m_phrases list is empty.
-  return (rowCount() > 0);
+  return (this->m_root ?
+    (this->m_root->subphrases().empty() ? false : true) :
+    false);
 }
-*/
 
+/// The number of rows in the table "underneath" \a owner.
 int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
   DescriptivePhrase* ownerPhrase = this->getItem(owner);
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
+/// Return something to display in the table header.
 QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
   if (role != Qt::DisplayRole)
@@ -149,6 +148,7 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
+/// Relate information, by its \a role, from a \a DescriptivePhrase to the Qt model.
 QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
@@ -174,6 +174,37 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         return QVariant(
           this->lookupIconForEntityFlags(
             item->phraseType()));
+        }
+      else if (role == EntityColorRole)
+        {
+        QColor color;
+        FloatList rgba = item->relatedColor();
+        if (rgba.size() >= 4 && rgba[3] < 0)
+          color = QColor(255, 255, 255, 255);
+        else
+          {
+          // Color may be luminance, luminance+alpha, rgb, or rgba:
+          switch (rgba.size())
+            {
+          case 0:
+            color = QColor(0, 0, 0, 0);
+            break;
+          case 1:
+            color.setHslF(0., 0., rgba[0], 1.);
+            break;
+          case 2:
+            color.setHslF(0., 0., rgba[0], rgba[1]);
+            break;
+          case 3:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], 1.);
+            break;
+          case 4:
+          default:
+            color.setRgbF(rgba[0], rgba[1], rgba[2], rgba[3]);
+            break;
+            }
+          }
+        return color;
         }
       }
     }
@@ -220,70 +251,38 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& own
   endRemoveRows();
   return true;
 }
+*/
 
 bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
-  if(idx.isValid())
+  DescriptivePhrase* phrase;
+  if(idx.isValid() &&
+    (phrase = static_cast<DescriptivePhrase*>(idx.internalPointer())))
     {
-    smtk::model::Entity* entity;
-    int row = idx.row();
-    int col = idx.column();
-    if (role == TitleTextRole)
+    if (role == TitleTextRole && phrase->isTitleMutable())
       {
       std::string sval = value.value<QString>().toStdString();
-      if (sval.size())
-        {
-        this->m_storage->setStringProperty(
-          this->m_phrases[row], "name", sval);
-        didChange = true;
-        }
-      else
-        {
-        didChange = this->m_storage->removeStringProperty(
-          this->m_phrases[row], "name");
-        }
+      didChange = phrase->setTitle(sval);
       }
-    else if (role == Qt::EditRole)
+    else if (role == SubtitleTextRole && phrase->isSubtitleMutable())
       {
-      switch (col)
-        {
-      case 0:
-        entity = this->m_storage->findEntity(this->m_phrases[row]);
-        if (entity)
-          {
-          didChange = entity->setEntityFlags(value.value<int>());
-          }
-        break;
-      case 1:
-        // FIXME: No way to change dimension yet.
-        break;
-      case 2:
-          {
-          std::string sval = value.value<QString>().toStdString();
-          if (sval.size())
-            {
-            this->m_storage->setStringProperty(
-              this->m_phrases[row], "name", sval);
-            didChange = true;
-            }
-          else
-            {
-            didChange = this->m_storage->removeStringProperty(
-              this->m_phrases[row], "name");
-            }
-          }
-        break;
-        }
-      if (didChange)
-        {
-        emit(dataChanged(idx, idx));
-        }
+      std::string sval = value.value<QString>().toStdString();
+      didChange = phrase->setSubtitle(sval);
+      }
+    else if (role == EntityColorRole && phrase->isRelatedColorMutable())
+      {
+      QColor color = value.value<QColor>();
+      FloatList rgba(4);
+      rgba[0] = color.redF();
+      rgba[1] = color.greenF();
+      rgba[2] = color.blueF();
+      rgba[3] = color.alphaF();
+      didChange = phrase->setRelatedColor(rgba);
       }
     }
   return didChange;
 }
-*/
 
 /*
 void QEntityItemModel::sort(int column, Qt::SortOrder order)
@@ -337,6 +336,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
 }
 */
 
+/// Provide meta-information about a model entry.
 Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 {
   if(!idx.isValid())
@@ -345,6 +345,41 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
   return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+}
+
+/**\brief Return the first smtk::model::Storage instance presented by this model.
+  *
+  * Note that it is possible for a QEntityItemModel to present information
+  * on entities from multiple Storage instances.
+  * However, in this case, external updates to the selection must either be
+  * made via Cursor instances (which couple UUIDs with Storage instances) or
+  * there will be breakage.
+  */
+smtk::model::StoragePtr QEntityItemModel::storage() const
+{
+  if (this->m_root)
+    {
+    Cursor related = this->m_root->relatedEntity();
+    if (related.isValid())
+      return related.storage();
+    // Keep looking until we find a phrase with a valid
+    // relatedEntity (which must have valid storage).
+    std::deque<DescriptivePhrase::Ptr> phrases(
+      this->m_root->subphrases().begin(),
+      this->m_root->subphrases().end());
+    while (!phrases.empty())
+      {
+      related = phrases.front()->relatedEntity();
+      if (related.isValid())
+        return related.storage();
+      DescriptivePhrases ptmp = phrases.front()->subphrases();
+      phrases.pop_front();
+      phrases.insert(phrases.end(), ptmp.begin(), ptmp.end());
+      }
+    }
+
+  smtk::model::StoragePtr null;
+  return null;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)

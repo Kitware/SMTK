@@ -88,10 +88,8 @@ void pqSMTKModelReaderPanel::onDataUpdated()
   std::string json = pqSMAdaptor::getElementProperty(this->proxy()->GetProperty(
                                           "JSONModel")).toString().toStdString();
 
- // QMessageBox::warning(NULL, "JSON Model",  json.c_str());
-
-  char* endMask;
-  long mask = strtol("0xffffffff", &endMask, 16);
+  // QMessageBox::warning(NULL, "JSON Model",  json.c_str());
+  smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY | smtk::model::GROUP_ENTITY;
 
   smtk::model::StoragePtr model = smtk::model::Storage::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
@@ -99,10 +97,15 @@ void pqSMTKModelReaderPanel::onDataUpdated()
 
   QPointer<smtk::model::QEntityItemModel> qmodel = new smtk::model::QEntityItemModel;
   QPointer<smtk::model::QEntityItemDelegate> qdelegate = new smtk::model::QEntityItemDelegate;
+  // Make things fit inside tiny ParaView panel.
+  qdelegate->setTitleFontSize(14);
+  qdelegate->setSubtitleFontSize(10);
+  qdelegate->setTitleFontWeight(1);
+  qdelegate->setSubtitleFontWeight(1);
   if(!this->Internal->ModelDock)
     {
     this->Internal->ModelDock = new QDockWidget;
-    this->Internal->ModelDock->setWindowTitle("SMTK JSON Model");
+    this->Internal->ModelDock->setWindowTitle("SMTK Model");
     //QVBoxLayout* vLayout = new QVBoxLayout(this->Internal->ModelDock);
     this->Internal->ModelView = new QTreeView;
     QSizePolicy expandPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -124,17 +127,18 @@ void pqSMTKModelReaderPanel::onDataUpdated()
       this->layout()->addWidget(this->Internal->ModelDock);
       }
     }
-  //cout << "mask " << hexconst(mask) << "\n";
+  //cout << "emask " << hexconst(emask) << "\n";
 
   smtk::model::Cursors cursors;
   smtk::model::Cursor::CursorsFromUUIDs(
-    cursors, model, model->entitiesMatchingFlags(mask, false));
+    cursors, model, model->entitiesMatchingFlags(emask, false));
   std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
+  smtk::model::SimpleModelSubphrases::Ptr sgen = smtk::model::SimpleModelSubphrases::create();
+  sgen->setAbridgeUses(true);
   qmodel->setRoot(
     smtk::model::EntityListPhrase::create()
       ->setup(cursors)
-      ->setDelegate( // set the subphrase generator:
-        smtk::model::SimpleModelSubphrases::create()));
+      ->setDelegate(sgen)); // set the subphrase generator:
   this->Internal->ModelView->setModel(qmodel); // must come after qmodel->setRoot()
   this->Internal->ModelView->setItemDelegate(qdelegate);
   this->Internal->ModelDock->show();

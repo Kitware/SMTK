@@ -16,6 +16,8 @@ public:
   Ptr setup(const Cursor& entity, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
 
   virtual std::string title();
+  virtual bool isTitleMutable() const;
+  virtual bool setTitle(const std::string& newTitle);
   virtual std::string subtitle();
 
   virtual Cursor relatedEntity() const;
@@ -23,12 +25,15 @@ public:
   virtual bool isRelatedColorMutable() const;
   virtual bool setRelatedColor(const FloatList& rgba);
 
+  void setMutability(int whatsMutable);
+
   static DescriptivePhrases PhrasesFromUUIDs(smtk::model::StoragePtr, const smtk::util::UUIDs&);
 
 protected:
   EntityPhrase();
 
   Cursor m_entity;
+  int m_mutability;
 };
 
   } // model namespace

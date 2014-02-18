@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
     sm->addVertexUse(v, 0);
     v.setStringProperty("name", "Loopy");
     std::cout << v << "\n";
-    sm->findOrAddInclusionToCell(uids[21], v.entity());
+    sm->findOrAddInclusionToCellOrModel(uids[21], v.entity());
     // Now perform the same operation another way to ensure that
     // the existing arrangement blocks the new one from being
     // redundantly created:

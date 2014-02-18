@@ -77,14 +77,14 @@ typedef unsigned long BridgedInfoBits;
 class SMTKCORE_EXPORT BridgeBase
 {
 public:
-  int transcribe(const Cursor& entity, BridgedInfoBits flags);
+  int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 
   virtual BridgedInfoBits allSupportedInformation() const;
 
 protected:
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
 
-  virtual int transcribeInternal(const Cursor& entity, BridgedInfoBits& flags);
+  virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   typedef std::map<smtk::model::Cursor,int> DanglingEntities;
   DanglingEntities m_dangling;

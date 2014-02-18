@@ -106,7 +106,7 @@ public:
   //smtk::util::UUIDs shellHasUses(const smtk::util::UUID& shell) const;
   bool findOrAddUseToShell(const smtk::util::UUID& shell, const smtk::util::UUID& use);
 
-  bool findOrAddInclusionToCell(const smtk::util::UUID& cell, const smtk::util::UUID& inclusion);
+  bool findOrAddInclusionToCellOrModel(const smtk::util::UUID& cell, const smtk::util::UUID& inclusion);
 
   bool findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent);
 

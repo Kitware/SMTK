@@ -1,5 +1,6 @@
 #include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
+#include "smtk/model/Cursor.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
 
@@ -34,6 +35,10 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
 {
   this->SetNumberOfInputPorts(0);
   this->CachedOutput = NULL;
+  for (int i = 0; i < 4; ++i)
+    {
+    this->DefaultColor[i] = 1.;
+    }
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
@@ -75,25 +80,65 @@ void vtkModelMultiBlockSource::Dirty()
   this->SetCachedOutput(NULL);
 }
 
+/*! \fn vtkModelMultiBlockSource::GetDefaultColor()
+ *  \brief Get the RGBA color for model entities that do not have a color property set.
+ *
+ * The default value for DefaultColor is [1., 1., 1., 1.].
+ *
+ *  \fn vtkModelMultiBlockSource::GetDefaultColor(double& r, double& g, double& b, double& a)
+ *  \brief Get the RGBA color for model entities that do not have a color property set.
+ *
+ * The default value for DefaultColor is [1., 1., 1., 1.].
+ *
+ *  \fn vtkModelMultiBlockSource::GetDefaultColor(double rgba[4])
+ *  \brief Get the RGBA color for model entities that do not have a color property set.
+ *
+ * The default value for DefaultColor is [1., 1., 1., 1.].
+ */
+
+/*! \fn vtkModelMultiBlockSource::SetDefaultColor(double r, double g, double b, double a)
+ *  \brief Set the default color (RGBA) for each model entity.
+ *
+ * This color will be assigned to each cell of each block for entities
+ * that do not provide a color float-property.
+ *
+ * Setting the alhpa component of the default color to a
+ * negative number will turn off per-cell color array generation
+ * to save space.
+ *
+ * \sa vtkModelMultiBlockSource::GetDefaultColor
+ *
+ *  \fn vtkModelMultiBlockSource::SetDefaultColor(double rgba[4])
+ *  \brief Set the default color (RGBA) for each model entity.
+ *
+ * This color will be assigned to each cell of each block for entities
+ * that do not provide a color float-property.
+ *
+ * Setting the alhpa component of the default color to a
+ * negative number will turn off per-cell color array generation
+ * to save space.
+ *
+ * \sa vtkModelMultiBlockSource::GetDefaultColor
+ */
+
 template<int Dim>
 void AddEntityTessToPolyData(
-  smtk::model::StoragePtr model, const smtk::util::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
+  const smtk::model::Cursor& cursor, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
 {
-  smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
-  if (it == model->tessellations().end())
-    {
+  const smtk::model::Tessellation* tess = cursor.hasTessellation();
+  if (!tess)
     return;
-    }
+
   vtkIdType i;
   vtkIdType connOffset = pts->GetNumberOfPoints();
   std::vector<vtkIdType> conn;
-  std::string uuidStr = uid.toString();
-  vtkIdType npts = it->second.coords().size() / 3;
+  std::string uuidStr = cursor.entity().toString();
+  vtkIdType npts = tess->coords().size() / 3;
   for (i = 0; i < npts; ++i)
     {
-    pts->InsertNextPoint(&it->second.coords()[3*i]);
+    pts->InsertNextPoint(&tess->coords()[3*i]);
     }
-  vtkIdType nconn = it->second.conn().size();
+  vtkIdType nconn = tess->conn().size();
   int ptsPerPrim = 0;
   if (nconn == 0 && Dim == 0)
     { // every point is a vertex cell.
@@ -110,12 +155,12 @@ void AddEntityTessToPolyData(
       {
       if (Dim < 2)
         {
-        ptsPerPrim = it->second.conn()[i];
+        ptsPerPrim = tess->conn()[i];
         }
       else
         {
         // TODO: Handle "extended" format that allows lines and verts.
-        switch (it->second.conn()[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
+        switch (tess->conn()[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
           {
         case 0:
           ptsPerPrim = 3; //primType = VTK_TRIANGLE;
@@ -125,7 +170,7 @@ void AddEntityTessToPolyData(
           break;
         default:
             {
-            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << it->second.conn()[i]);
+            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << tess->conn()[i]);
             return;
             }
           }
@@ -138,7 +183,7 @@ void AddEntityTessToPolyData(
       // Rewrite connectivity for polydata:
       for (int k = 0; k < ptsPerPrim; ++k)
         {
-        conn[k] = it->second.conn()[i + k + 1] + connOffset;
+        conn[k] = tess->conn()[i + k + 1] + connOffset;
         }
       cells->InsertNextCell(ptsPerPrim, &conn[0]);
       pedigree->InsertNextValue(uuidStr);
@@ -148,22 +193,22 @@ void AddEntityTessToPolyData(
 
 /// Loop over the model generating blocks of polydata.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
-  vtkPolyData* pd, smtk::model::StoragePtr model, const smtk::util::UUID& uid)
+  vtkPolyData* pd, const smtk::model::Cursor& cursor)
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkStringArray> pedigree;
   pedigree->SetName("UUID");
   pd->SetPoints(pts.GetPointer());
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
-  smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
-  if (it == model->tessellations().end())
+  const smtk::model::Tessellation* tess;
+  if (!(tess = cursor.hasTessellation()))
     { // Oops.
     return;
     }
-  vtkIdType npts = it->second.coords().size() / 3;
+  vtkIdType npts = tess->coords().size() / 3;
   pts->Allocate(npts);
-  smtk::model::Entity* entity = model->findEntity(it->first);
-  if (entity)
+  smtk::model::Entity* entity;
+  if (cursor.isValid(&entity))
     {
     switch(entity->dimension())
       {
@@ -171,25 +216,41 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
         {
         vtkNew<vtkCellArray> verts;
         pd->SetVerts(verts.GetPointer());
-        AddEntityTessToPolyData<0>(model, it->first, pts.GetPointer(), pd->GetVerts(), pedigree.GetPointer());
+        AddEntityTessToPolyData<0>(cursor, pts.GetPointer(), pd->GetVerts(), pedigree.GetPointer());
         }
       break;
     case 1:
         {
         vtkNew<vtkCellArray> lines;
         pd->SetLines(lines.GetPointer());
-        AddEntityTessToPolyData<1>(model, it->first, pts.GetPointer(), pd->GetLines(), pedigree.GetPointer());
+        AddEntityTessToPolyData<1>(cursor, pts.GetPointer(), pd->GetLines(), pedigree.GetPointer());
         }
       break;
     case 2:
         {
         vtkNew<vtkCellArray> polys;
         pd->SetPolys(polys.GetPointer());
-        AddEntityTessToPolyData<2>(model, it->first, pts.GetPointer(), pd->GetPolys(), pedigree.GetPointer());
+        AddEntityTessToPolyData<2>(cursor, pts.GetPointer(), pd->GetPolys(), pedigree.GetPointer());
         }
       break;
     default:
       break;
+      }
+    // Only create the color array if there is a valid default:
+    if (this->DefaultColor[3] >= 0.)
+      {
+      FloatList rgba = cursor.color();
+      vtkNew<vtkUnsignedCharArray> cellColor;
+      cellColor->SetNumberOfComponents(4);
+      cellColor->SetNumberOfTuples(pd->GetNumberOfCells());
+      cellColor->SetName("Entity Color");
+      for (int i = 0; i < 4; ++i)
+        {
+        cellColor->FillComponent(i,
+          (rgba[3] >= 0 ? rgba[i] : this->DefaultColor[i])* 255.);
+        }
+      pd->GetCellData()->AddArray(cellColor.GetPointer());
+      pd->GetCellData()->SetScalars(cellColor.GetPointer());
       }
     }
 }
@@ -205,10 +266,10 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     {
     vtkNew<vtkPolyData> poly;
     mbds->SetBlock(i, poly.GetPointer());
+    smtk::model::Cursor cursor(model, it->first);
     // Set the block name to the entity UUID.
-    mbds->GetMetaData(i)->Set(
-      vtkCompositeDataSet::NAME(), it->first.toString().c_str());
-    this->GenerateRepresentationFromModelEntity(poly.GetPointer(), model, it->first);
+    mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
+    this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
     }
 }
 

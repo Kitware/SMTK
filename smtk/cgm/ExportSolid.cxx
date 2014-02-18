@@ -4,7 +4,9 @@
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Storage.h"
 
+#include "CGMApp.hpp"
 #include "CubitCompat.hpp"
+#include "CubitAttribManager.hpp"
 #include "RefEntity.hpp"
 
 namespace cgmsmtk {
@@ -35,9 +37,12 @@ int ExportSolid::entitiesToFileOfNameAndType(
   int num_exported;
   CubitString version;
   CubitStatus s;
+  int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
+  CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
   s = CubitCompat_export_solid_model(
     refsOut, filename.c_str(), filetype.c_str(),
     num_exported, version, /*logfile_name*/ NULL);
+  CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   return s == CUBIT_SUCCESS ? 0 : 1;
 }
 

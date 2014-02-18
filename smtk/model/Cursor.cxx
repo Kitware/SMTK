@@ -2,6 +2,7 @@
 
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Tessellation.h"
 
 namespace smtk {
   namespace model {
@@ -338,6 +339,20 @@ Cursor& Cursor::addRawRelation(const Cursor& ent)
       }
     }
   return *this;
+}
+
+/**\brief Return the entity's tessellation if one exists or NULL otherwise.
+  *
+  */
+const Tessellation* Cursor::hasTessellation() const
+{
+  if (this->m_storage && !this->m_entity.isNull())
+    {
+    UUIDsToTessellations::const_iterator it = this->m_storage->tessellations().find(this->m_entity);
+    if (it != this->m_storage->tessellations().end())
+      return &it->second;
+    }
+  return NULL;
 }
 
 /** @name Attribute associations
