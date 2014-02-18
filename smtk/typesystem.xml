@@ -1021,6 +1021,10 @@
         </add-function>
       </object-type>
 
+      <enum-type name="StorageEventType">
+        <include file-name="smtk/model/Storage.h" location="local"/>
+      </enum-type>
+
       <value-type name="Shell">
         <include file-name="smtk/model/Shell.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>

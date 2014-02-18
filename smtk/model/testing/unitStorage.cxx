@@ -1,3 +1,4 @@
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
@@ -11,11 +12,32 @@ using namespace smtk::util;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 
+static int subgroups = 0;
+static int subcells = 0;
+static int submodels = 0;
+
+int addEntityToModel(const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
+{
+  if (src.isModelEntity())
+    {
+    if (related.isGroupEntity())
+      ++subgroups;
+    else if (related.isCellEntity())
+      ++subcells;
+    else if (related.isModelEntity())
+      ++submodels;
+    }
+  return 0;
+}
+
 int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
   StoragePtr sm = Storage::create();
+  sm->observe(ADD_CELL_TO_MODEL, &addEntityToModel, NULL);
+  sm->observe(ADD_GROUP_TO_MODEL, &addEntityToModel, NULL);
+  sm->observe(ADD_MODEL_TO_MODEL, &addEntityToModel, NULL);
 
   UUIDArray uids = createTet(sm);
 
@@ -73,6 +95,10 @@ int main(int argc, char* argv[])
   test(sm->stringProperty(uids[modelStart + 0], "name")[0] == "Model A");
   test(sm->stringProperty(uids[modelStart + 26], "name")[0] == "Model AA");
   test(sm->stringProperty(uids[modelStart + 52], "name")[0] == "Model BA");
+  ModelEntity model(sm, uids[modelStart]);
+  for (int i = 0; i < 22; ++i)
+    model.addCell(Cursor(sm, uids[i]));
+  model.addSubmodel(ModelEntity(sm, uids[modelStart + 26]));
 
   sm->assignDefaultNames();
   // Verify we don't overwrite existing names
@@ -113,6 +139,10 @@ int main(int argc, char* argv[])
   test(sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
   test(sm->findEntity(uids[21]) == NULL, "unarrangeEntity(..., true) failed to remove the entity afterwards.");
   test(sm->erase(uids[0]), "Failed to erase a vertex.");
+
+  std::cout << "subgroups " << subgroups << "\n";
+  std::cout << "submodels " << submodels << "\n";
+  std::cout << "subcells " << subcells << "\n";
 
   return 0;
 }

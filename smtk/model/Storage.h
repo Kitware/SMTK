@@ -34,6 +34,45 @@ class VertexUse;
 class Volume;
 class VolumeUse;
 
+/// Significant events for the storage class
+enum StorageEventType {
+  // Things added to storage
+  ADD_MODEL_TO_MODEL,
+  ADD_GROUP_TO_MODEL,
+  ADD_CELL_TO_MODEL,
+  ADD_SHELL_TO_MODEL,
+  ADD_USE_TO_MODEL,
+  ADD_CELL_EMBEDDED_IN_CELL,
+  ADD_SHELL_EMBEDDED_IN_SHELL,
+  ADD_USE_EMBEDDED_IN_SHELL,
+
+  // Things removed from storage
+  DEL_MODEL_FROM_MODEL,
+  DEL_GROUP_FROM_MODEL,
+  DEL_CELL_FROM_MODEL,
+  DEL_SHELL_FROM_MODEL,
+  DEL_USE_FROM_MODEL,
+  DEL_CELL_EMBEDDED_IN_CELL,
+  DEL_SHELL_EMBEDDED_IN_SHELL,
+  DEL_USE_EMBEDDED_IN_SHELL,
+
+  INVALID_STORAGE_EVENT
+};
+
+/// Callbacks for one-to-one relationships between entities.
+typedef int (*OneToOneCallback)(const smtk::model::Cursor&, const smtk::model::Cursor&, void*);
+/// An observer of a one-to-one relationship-event.
+typedef std::pair<OneToOneCallback,void*> OneToOneObserver;
+/// A trigger entry for an event-observer pair.
+typedef std::pair<StorageEventType,OneToOneObserver> OneToOneTrigger;
+
+/// Callbacks for one-to-many relationships between entities.
+typedef int (*OneToManyCallback)(const smtk::model::Cursor&, const smtk::model::CursorArray&, void*);
+/// An observer of a one-to-many relationship-event.
+typedef std::pair<OneToManyCallback,void*> OneToManyObserver;
+/// A trigger entry for an event-observer pair.
+typedef std::pair<StorageEventType,OneToManyObserver> OneToManyTrigger;
+
 /**\brief Store information about solid models.
   *
   * This adds information about arrangements and tessellations
@@ -171,10 +210,17 @@ public:
   InstanceEntity addInstance();
   InstanceEntity addInstance(const Cursor& instanceOf);
 
+  void observe(StorageEventType event, OneToOneCallback functionHandle, void* callData);
+  void observe(StorageEventType event, OneToManyCallback functionHandle, void* callData);
+  void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
+  void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
+
 protected:
   friend class smtk::attribute::Manager;
   bool setAttributeManager(smtk::attribute::Manager* mgr, bool reverse = true);
 
+  std::set<OneToOneTrigger> m_oneToOneTriggers;
+  std::set<OneToManyTrigger> m_oneToManyTriggers;
   shared_ptr<UUIDsToArrangements> m_arrangements;
   shared_ptr<UUIDsToTessellations> m_tessellations;
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;

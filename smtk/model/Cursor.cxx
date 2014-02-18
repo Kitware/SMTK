@@ -704,8 +704,37 @@ Cursor Cursor::relationFromArrangement(
   */
 Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
-  CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+  StorageEventType event = INVALID_STORAGE_EVENT;
+  switch (this->entityFlags() & ENTITY_MASK)
+    {
+  case MODEL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: event = ADD_SHELL_TO_MODEL; break;
+    case CELL_ENTITY: event = ADD_CELL_TO_MODEL; break;
+    case USE_ENTITY: event = ADD_USE_TO_MODEL; break;
+      }
+    break;
+  case CELL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY: event = ADD_CELL_EMBEDDED_IN_CELL; break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: event = ADD_SHELL_EMBEDDED_IN_SHELL; break;
+    case USE_ENTITY: event = ADD_USE_EMBEDDED_IN_SHELL; break;
+      }
+    break;
+    }
+  if (event != INVALID_STORAGE_EVENT)
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
+    CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+    this->m_storage->trigger(event, *this, thingToEmbed);
+    }
   return *this;
 }
 

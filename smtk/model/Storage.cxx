@@ -1454,5 +1454,37 @@ InstanceEntity Storage::addInstance(const Cursor& object)
   return InstanceEntity();
 }
 
+void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, void* callData)
+{
+  this->m_oneToOneTriggers.insert(
+    OneToOneTrigger(event,
+      OneToOneObserver(functionHandle, callData)));
+}
+
+void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, void* callData)
+{
+  this->m_oneToManyTriggers.insert(
+    OneToManyTrigger(event,
+      OneToManyObserver(functionHandle, callData)));
+}
+
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related)
+{
+  std::set<OneToOneTrigger>::const_iterator begin =
+    this->m_oneToOneTriggers.lower_bound(
+      OneToOneTrigger(event,
+        OneToOneObserver(NULL, NULL)));
+  std::set<OneToOneTrigger>::const_iterator end =
+    this->m_oneToOneTriggers.upper_bound(
+      OneToOneTrigger(static_cast<StorageEventType>(event + 1),
+        OneToOneObserver(NULL, NULL)));
+  for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(src, related, it->second.second);
+}
+
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
+{
+}
+
   } // namespace model
 } //namespace smtk
