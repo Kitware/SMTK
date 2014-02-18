@@ -64,6 +64,7 @@ public:
   void setRoot(DescriptivePhrasePtr root)
     {
     this->m_root = root;
+    this->updateObserver();
     }
 
   smtk::model::StoragePtr storage() const;
@@ -88,6 +89,7 @@ protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
 
+  void updateObserver();
   //template<typename T>
   //void sortDataWithContainer(T& sorter, Qt::SortOrder order);
 };
@@ -99,7 +101,7 @@ template<typename T, typename C>
 bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt)
 {
   // visit parent, then children if we aren't told to terminate:
-  if (visitor(this, top, collector))
+  if (!visitor(this, top, collector))
     {
     DescriptivePhrase* phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
@@ -123,7 +125,7 @@ template<typename T, typename C>
 bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt) const
 {
   // visit parent, then children if we aren't told to terminate:
-  if (visitor(this, top, collector))
+  if (!visitor(this, top, collector))
     {
     DescriptivePhrase* phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke

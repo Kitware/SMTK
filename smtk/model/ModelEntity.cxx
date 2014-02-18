@@ -49,7 +49,7 @@ ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
     CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
-    this->m_storage->trigger(ADD_GROUP_TO_MODEL, g, *this);
+    this->m_storage->trigger(ADD_GROUP_TO_MODEL, *this, g);
     }
   return *this;
 }
@@ -60,7 +60,7 @@ ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
     CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
-    this->m_storage->trigger(ADD_MODEL_TO_MODEL, m, *this);
+    this->m_storage->trigger(ADD_MODEL_TO_MODEL, *this, m);
     }
   return *this;
 }

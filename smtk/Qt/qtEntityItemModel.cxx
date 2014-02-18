@@ -58,14 +58,15 @@ bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const C
       phrase->markDirty();
       qmodel->dataChangedExternally(
         qmodel->index(0, 0, qidx),
-        qmodel->index(qmodel->rowCount(qidx), 0, qidx));
+        qmodel->index(qmodel->rowCount(qidx) - 1, 0, qidx));
+      qmodel->dataChangedExternally(qidx, qidx);
       }
     }
   return false; // Always visit every phrase, since \a ent may appear multiple times.
 }
 
 // Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
-int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+static int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
@@ -388,7 +389,8 @@ static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx,
     if (related.isValid())
       {
       storage = related.storage();
-      return storage ? true : false;
+      if (storage)
+        return true;
       }
     }
   return false;
@@ -405,7 +407,7 @@ static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx,
 smtk::model::StoragePtr QEntityItemModel::storage() const
 {
   StoragePtr storage;
-  this->foreach_phrase(FindStorage, storage, QModelIndex());
+  this->foreach_phrase(FindStorage, storage, QModelIndex(), false);
   return storage;
 }
 
@@ -522,6 +524,15 @@ DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
 void QEntityItemModel::dataChangedExternally(const QModelIndex& topLeft, const QModelIndex& bottomRight)
 {
   emit dataChanged(topLeft, bottomRight);
+}
+
+void QEntityItemModel::updateObserver()
+{
+  StoragePtr store = this->storage();
+  if (store)
+    {
+    store->observe(ADD_GROUP_TO_MODEL, &entityEmbedded, this);
+    }
 }
 
   } // namespace model
