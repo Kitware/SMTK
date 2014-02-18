@@ -46,6 +46,38 @@ inline void cleanupIconResource()
 namespace smtk {
   namespace model {
 
+// A visitor functor called by foreach_phrase() to let the view know when to redraw data.
+bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
+{
+  DescriptivePhrase* phrase = qmodel->getItem(qidx);
+  if (phrase)
+    {
+    Cursor related = phrase->relatedEntity();
+    if (related == ent)
+      {
+      phrase->markDirty();
+      qmodel->dataChangedExternally(
+        qmodel->index(0, 0, qidx),
+        qmodel->index(qmodel->rowCount(qidx), 0, qidx));
+      }
+    }
+  return false; // Always visit every phrase, since \a ent may appear multiple times.
+}
+
+// Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
+int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+{
+  QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
+  if (!qmodel)
+    return 1;
+
+  // Find EntityPhrase instances under the root node whose relatedEntity
+  // is \a ent and rerun the subphrase generator.
+  // This should in turn invoke callbacks on the QEntityItemModel
+  // to handle insertions/deletions.
+  return qmodel->foreach_phrase(UpdateSubphrases, ent) ? -1 : 0;
+}
+
 // -----------------------------------------------------------------------------
 QEntityItemModel::QEntityItemModel(QObject* owner)
   : QAbstractItemModel(owner)
@@ -347,6 +379,21 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
 }
 
+static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx, StoragePtr& storage)
+{
+  DescriptivePhrase* phrase = qmodel->getItem(qidx);
+  if (phrase)
+    {
+    Cursor related = phrase->relatedEntity();
+    if (related.isValid())
+      {
+      storage = related.storage();
+      return storage ? true : false;
+      }
+    }
+  return false;
+}
+
 /**\brief Return the first smtk::model::Storage instance presented by this model.
   *
   * Note that it is possible for a QEntityItemModel to present information
@@ -357,29 +404,9 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   */
 smtk::model::StoragePtr QEntityItemModel::storage() const
 {
-  if (this->m_root)
-    {
-    Cursor related = this->m_root->relatedEntity();
-    if (related.isValid())
-      return related.storage();
-    // Keep looking until we find a phrase with a valid
-    // relatedEntity (which must have valid storage).
-    std::deque<DescriptivePhrase::Ptr> phrases(
-      this->m_root->subphrases().begin(),
-      this->m_root->subphrases().end());
-    while (!phrases.empty())
-      {
-      related = phrases.front()->relatedEntity();
-      if (related.isValid())
-        return related.storage();
-      DescriptivePhrases ptmp = phrases.front()->subphrases();
-      phrases.pop_front();
-      phrases.insert(phrases.end(), ptmp.begin(), ptmp.end());
-      }
-    }
-
-  smtk::model::StoragePtr null;
-  return null;
+  StoragePtr storage;
+  this->foreach_phrase(FindStorage, storage, QModelIndex());
+  return storage;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
@@ -490,6 +517,11 @@ DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
       }
     }
   return this->m_root.get();
+}
+
+void QEntityItemModel::dataChangedExternally(const QModelIndex& topLeft, const QModelIndex& bottomRight)
+{
+  emit dataChanged(topLeft, bottomRight);
 }
 
   } // namespace model

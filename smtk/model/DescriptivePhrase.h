@@ -89,6 +89,8 @@ public:
   virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
   virtual DescriptivePhrases& subphrases();
   virtual DescriptivePhrases subphrases() const;
+  virtual bool areSubphrasesBuilt() const                      { return this->m_subphrasesBuilt; }
+  virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = dirty; }
   virtual int argFindChild(DescriptivePhrase* child) const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
