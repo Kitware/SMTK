@@ -29,6 +29,7 @@ qtModelView::qtModelView(QWidget* p)
 {
   QPointer<smtk::model::QEntityItemModel> qmodel = new smtk::model::QEntityItemModel;
   QPointer<smtk::model::QEntityItemDelegate> qdelegate = new smtk::model::QEntityItemDelegate;
+  qmodel->setSupportedDragActions(Qt::CopyAction);
   this->setModel(qmodel); // must come after qmodel->setRoot()
   this->setItemDelegate(qdelegate);
 
@@ -38,6 +39,10 @@ qtModelView::qtModelView(QWidget* p)
 
   QSizePolicy expandPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   this->setSizePolicy(expandPolicy);
+  this->setDragDropMode(QAbstractItemView::DragDrop);
+  this->setDropIndicatorShown(true);
+  this->setDragEnabled(true);
+  this->setAcceptDrops(true);
 }
 
 //-----------------------------------------------------------------------------
@@ -56,6 +61,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
 {
   smtk::model::QEntityItemModel* qmodel = this->getModel();
   smtk::util::UUIDs ids;
+
   // depends on the QModelIndex we dropped on, the selected
   // entities will be filtered accordingly based on what type of entities
   // the recieving group can take
@@ -134,7 +140,8 @@ void qtModelView::recursiveSelect (
     smtk::util::UUIDs& ids, BitFlags entityFlags)
 {
   DescriptivePhrase* dPhrase = qmodel->getItem(sel);
-  if(dPhrase && ids.find(dPhrase->relatedEntityId()) == ids.end())
+  if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) &&
+  ids.find(dPhrase->relatedEntityId()) == ids.end())
     ids.insert(dPhrase->relatedEntityId());
 
   for (int row=0; row < qmodel->rowCount(sel); ++row)

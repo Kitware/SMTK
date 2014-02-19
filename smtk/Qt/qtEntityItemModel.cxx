@@ -344,7 +344,12 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
-  return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+  Qt::ItemFlags itemFlags = QAbstractItemModel::flags(idx) |
+     Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+  DescriptivePhrase* dp = this->getItem(idx);
+  if( dp && dp->relatedEntity().isGroupEntity() )
+    itemFlags = itemFlags | Qt::ItemIsDropEnabled;
+  return itemFlags;
 }
 
 /**\brief Return the first smtk::model::Storage instance presented by this model.
