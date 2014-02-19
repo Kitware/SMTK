@@ -55,19 +55,13 @@ if (MSVC)
    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
 endif(MSVC)
 
+# we unset the pv-plugin variable because that will bring in stuff
+# which we don't want brought in for client-server library initialization
+unset(pv-plugin)
 add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_MANAGER_XML smconfigSimBuilderMesh.xml
   SERVER_MANAGER_SOURCES ${CMBProxyFiles}
   SERVER_SOURCES ${vtkMeshFiles}
-  CS_KITS
-    vtkCMBGeneral
-    vtkCMBFiltering
-    vtkCMBGraphics
-    vtkCMBMeshing
-    vtkCMBIO
-    vtkCmbDiscreteModel
-    vtkDiscreteModel
-    vtkFiltersCore
 )
 
 # Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
