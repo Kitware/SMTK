@@ -55,11 +55,7 @@ bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const C
     Cursor related = phrase->relatedEntity();
     if (related == ent)
       {
-      phrase->markDirty();
-      qmodel->dataChangedExternally(
-        qmodel->index(0, 0, qidx),
-        qmodel->index(qmodel->rowCount(qidx) - 1, 0, qidx));
-      qmodel->dataChangedExternally(qidx, qidx);
+      qmodel->subphrasesUpdated(qidx);
       }
     }
   return false; // Always visit every phrase, since \a ent may appear multiple times.
@@ -521,9 +517,20 @@ DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
   return this->m_root.get();
 }
 
-void QEntityItemModel::dataChangedExternally(const QModelIndex& topLeft, const QModelIndex& bottomRight)
+void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
 {
-  emit dataChanged(topLeft, bottomRight);
+  int nrows = this->rowCount(qidx);
+  DescriptivePhrase* phrase = this->getItem(qidx);
+
+  this->beginRemoveRows(qidx, 0, nrows);
+  if (phrase)
+    phrase->markDirty(true);
+  this->endRemoveRows();
+
+  nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
+  this->beginInsertRows(qidx, 0, nrows);
+  this->endInsertRows();
+  emit dataChanged(qidx, qidx);
 }
 
 void QEntityItemModel::updateObserver()

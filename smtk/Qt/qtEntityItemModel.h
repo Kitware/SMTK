@@ -83,7 +83,7 @@ public:
   template<typename T, typename C>
   bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true) const;
 
-  void dataChangedExternally(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+  void subphrasesUpdated(const QModelIndex& qidx);
 
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
