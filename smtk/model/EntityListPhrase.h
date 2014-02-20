@@ -16,6 +16,7 @@ public:
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   template<typename T>
   Ptr setup(const T& entities, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+  virtual ~EntityListPhrase() { std::cout << "Phrase " << this << " " << this->title() << " killed\n"; }
 
   virtual std::string title();
   virtual std::string subtitle();

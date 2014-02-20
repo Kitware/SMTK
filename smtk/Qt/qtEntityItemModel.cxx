@@ -55,6 +55,7 @@ bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const C
     Cursor related = phrase->relatedEntity();
     if (related == ent)
       {
+      std::cout << "  Phrase " << phrase->title() << " matches ent " << ent.name() << "\n";
       qmodel->subphrasesUpdated(qidx);
       }
     }
@@ -62,11 +63,13 @@ bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const C
 }
 
 // Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
-static int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+static int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
     return 1;
+
+  std::cout << "Slot: " << ent.name() << "(" << ent.flagSummary() << ") has new child " << e2.name() << "(" << e2.flagSummary() << ")\n";
 
   // Find EntityPhrase instances under the root node whose relatedEntity
   // is \a ent and rerun the subphrase generator.
@@ -257,30 +260,25 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& own
   endInsertRows();
   return true;
 }
+*/
 
-bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& owner)
+/// Remove rows from the model.
+bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& parentIdx)
 {
-  (void)owner;
-  beginRemoveRows(QModelIndex(), position, position + rows - 1);
+  if (rows <= 0 || position < 0)
+    return false;
 
-  smtk::util::UUIDArray uids(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
-  this->m_phrases.erase(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
-  for (smtk::util::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
+  this->beginRemoveRows(parentIdx, position, position + rows - 1);
+  DescriptivePhrase* phrase = this->getItem(parentIdx);
+  if (phrase)
     {
-    this->m_reverse.erase(this->m_reverse.find(*it));
-    if (this->m_deleteOnRemoval)
-      {
-      this->m_storage->erase(*it);
-      // FIXME: Should we keep a set of all it->second.relations()
-      //        and emit "didChange" events for all the relations
-      //        that were affected by removal of this entity?
-      }
+    phrase->subphrases().erase(
+      phrase->subphrases().begin() + position,
+      phrase->subphrases().begin() + position + rows);
     }
-
-  endRemoveRows();
+  this->endRemoveRows();
   return true;
 }
-*/
 
 bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
@@ -522,10 +520,9 @@ void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
   int nrows = this->rowCount(qidx);
   DescriptivePhrase* phrase = this->getItem(qidx);
 
-  this->beginRemoveRows(qidx, 0, nrows);
+  this->removeRows(0, nrows, qidx);
   if (phrase)
     phrase->markDirty(true);
-  this->endRemoveRows();
 
   nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
   this->beginInsertRows(qidx, 0, nrows);

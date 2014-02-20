@@ -53,8 +53,8 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-  //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  //bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
+  //virtual bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
+  virtual bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
   //virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
