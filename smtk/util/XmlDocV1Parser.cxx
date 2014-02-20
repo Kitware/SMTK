@@ -725,6 +725,10 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node, idef);
+  if( xml_attribute xatt = node.attribute("MultipleLines") )
+    {
+    idef->setIsMultiline(true);
+    }
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
     (node, idef, this->m_logger);
 }
