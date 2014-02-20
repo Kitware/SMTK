@@ -30,5 +30,23 @@ GroupEntity& GroupEntity::addEntity(const Cursor& thing)
   return *this;
 }
 
+/**\brief Remove an entity from this group.
+  *
+  * TODO: Implement constraint-checking and related changes (i.e., if
+  * this group is part of a partition, move \a thing out of
+  * other groups in the partition so that we maintain "partition-ness."
+  */
+bool GroupEntity::removeEntity(const Cursor& thing)
+{
+  if (this->isValid() && !thing.entity().isNull())
+    {
+    int aidx = this->m_storage->findArrangementInvolvingEntity(
+      this->m_entity, SUPERSET_OF, thing.entity());
+    if (this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+      return true;
+    }
+  return false;
+}
+
   } // namespace model
 } // namespace smtk
