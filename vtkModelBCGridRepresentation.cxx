@@ -352,7 +352,7 @@ bool vtkModelBCGridRepresentation::Initialize(
       int cellSide = atoi(values[2].c_str())-1; // analysis grid cell side (0-3)
       vtkIdType modelCellId = atoi(values[7].c_str());
       this->MasterCellToMeshCellInfo[modelCellId].insert(
-        std::make_pair<vtkIdType, int>(cellId, cellSide));
+        std::pair<vtkIdType, int>(cellId, cellSide));
       }
     else if(line.empty() == 0)
       {
@@ -436,7 +436,7 @@ bool vtkModelBCGridRepresentation::AddModelFace(
     cellId = cellIds->GetId(i);
     cellSide = cellSides->GetId(i);
     this->MasterCellToMeshCellInfo[masterCellId].insert(
-      std::make_pair<vtkIdType, int>(cellId, cellSide));
+      std::pair<vtkIdType, int>(cellId, cellSide));
     }
   return true;
 }
