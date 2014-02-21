@@ -110,7 +110,7 @@ bool ValueItemDefinition::isValidExpression(smtk::attribute::AttributePtr exp) c
 //----------------------------------------------------------------------------
 bool ValueItemDefinition::allowsExpressions() const
 {
-  return this->m_expressionDefinition->attributeDefinition();
+  return this->m_expressionDefinition->attributeDefinition() ? true : false;
 }
 //----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr ValueItemDefinition::expressionDefinition() const
@@ -124,7 +124,7 @@ ValueItemDefinition::setExpressionDefinition(smtk::attribute::DefinitionPtr exp)
   this->m_expressionDefinition->setAttributeDefinition(exp);
 }
 //----------------------------------------------------------------------------
-void 
+void
 ValueItemDefinition::buildExpressionItem(ValueItem *vitem, int position) const
 {
   smtk::attribute::RefItemPtr aref =
