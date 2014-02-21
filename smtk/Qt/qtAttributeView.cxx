@@ -787,6 +787,7 @@ void qtAttributeView::updateTableWithAttribute(
         dynamic_pointer_cast<ValueItem>(attItem), numRows);
       }
     }
+  vtWidget->resizeRowsToContents();
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithProperty(
@@ -858,6 +859,7 @@ void qtAttributeView::updateTableWithProperty(
         }
       }
     }
+  vtWidget->resizeRowsToContents();
 }
 
 //----------------------------------------------------------------------------

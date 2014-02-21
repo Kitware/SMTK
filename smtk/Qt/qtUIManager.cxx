@@ -35,7 +35,6 @@
 #include <QComboBox>
 #include <QStringList>
 #include <QIntValidator>
-#include <QTextEdit>
 #include <QFrame>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -175,6 +174,18 @@ void qtIntValidator::fixup(QString &input) const
     {
     this->UIManager->setWidgetColor(editBox, this->UIManager->invalidValueColor());
     }
+}
+
+//-----------------------------------------------------------------------------
+qtTextEdit::qtTextEdit(QWidget * inParent)
+:QTextEdit(inParent)
+{
+}
+
+//-----------------------------------------------------------------------------
+QSize qtTextEdit::sizeHint() const
+{
+  return QSize(200, 70);
 }
 
 //----------------------------------------------------------------------------
@@ -963,7 +974,7 @@ QWidget* qtUIManager::createEditBox(
 
       if(sDef->isMultiline())
         {
-        QTextEdit* textEdit = new QTextEdit(pWidget);
+        qtTextEdit* textEdit = new qtTextEdit(pWidget);
         textEdit->setPlainText(valText);
         QObject::connect(textEdit, SIGNAL(textChanged()),
           this, SLOT(onInputValueChanged()));
