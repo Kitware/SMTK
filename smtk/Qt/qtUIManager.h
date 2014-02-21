@@ -23,6 +23,7 @@
 #include <QFont>
 #include <QColor>
 #include <QDoubleValidator>
+#include <QTextEdit>
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -187,6 +188,15 @@ namespace smtk
         void setUIManager(qtUIManager* uiman);
       private:
         qtUIManager* UIManager;
+      };
+
+    //A sublcass of QTextEdit to give initial sizehint
+    class QTSMTK_EXPORT qtTextEdit : public QTextEdit
+      {
+      Q_OBJECT
+      public:
+        qtTextEdit(QWidget * parent);
+        virtual QSize sizeHint() const;
       };
 
   }; // namespace attribute
