@@ -725,6 +725,10 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
 {
   // First process the common value item def stuff
   this->processValueDef(node, idef);
+  if( xml_attribute xatt = node.attribute("MultipleLines") )
+    {
+    idef->setIsMultiline(true);
+    }
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
     (node, idef, this->m_logger);
 }
@@ -1827,10 +1831,17 @@ bool XmlDocV1Parser::getColor(xml_node &node, double color[4],
                                  const std::string &colorName)
 {
   std::string s = node.text().get();
+  if(s.empty())
+    {
+    smtkErrorMacro(this->m_logger, "Color Format Problem - empty input for "
+                   << colorName);
+    return false;
+    }
+
   int i = this->decodeColorInfo(s, color);
   if (i)
     {
-    smtkErrorMacro(this->m_logger, "Color Format Probem - only found " << 4-i
+    smtkErrorMacro(this->m_logger, "Color Format Problem - only found " << 4-i
                    << " components for " << colorName << " from string " << s);
     return false;
     }

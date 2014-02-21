@@ -23,6 +23,7 @@
 #include <QFont>
 #include <QColor>
 #include <QDoubleValidator>
+#include <QTextEdit>
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -95,8 +96,7 @@ namespace smtk
       const QFont& advancedFont()
         {return this->advFont;}
 
-      void setWidgetToDefaultValueColor(QWidget *widget,
-        bool setToDefault);
+      void setWidgetColor(QWidget *widget, const QColor &color);
       bool getExpressionArrayString(
         smtk::attribute::GroupItemPtr dataItem, QString& strValues);
 
@@ -176,6 +176,28 @@ namespace smtk
     private:
       qtUIManager* UIManager;
     };
+
+    //A sublcass of QIntValidator to fixup input outside of range
+    class QTSMTK_EXPORT qtIntValidator : public QIntValidator
+      {
+      Q_OBJECT
+      public:
+        qtIntValidator(QObject * parent);
+        virtual void fixup(QString &input) const;
+
+        void setUIManager(qtUIManager* uiman);
+      private:
+        qtUIManager* UIManager;
+      };
+
+    //A sublcass of QTextEdit to give initial sizehint
+    class QTSMTK_EXPORT qtTextEdit : public QTextEdit
+      {
+      Q_OBJECT
+      public:
+        qtTextEdit(QWidget * parent);
+        virtual QSize sizeHint() const;
+      };
 
   }; // namespace attribute
 }; // namespace smtk
