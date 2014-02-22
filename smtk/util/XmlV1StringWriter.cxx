@@ -650,6 +650,11 @@ void XmlV1StringWriter::processFileDef(pugi::xml_node &node,
         }
       }
     }
+  if (idef->hasDefault())
+    {
+    xml_node defaultNode = node.append_child();
+    defaultNode.set_value(idef->defaultValue().c_str());
+    }
   std::string fileFilters = idef->getFileFilters();
   if (fileFilters != "")
     {

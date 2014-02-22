@@ -1041,7 +1041,7 @@ void XmlDocV1Parser::processDirectoryDef(pugi::xml_node &node,
 void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
                                        attribute::FileItemDefinitionPtr idef)
 {
-  xml_node labels, child;
+  xml_node labels, defaultNode, child;
   xml_attribute xatt;
   int i;
   this->processItemDef(node, idef);
@@ -1100,6 +1100,13 @@ void XmlDocV1Parser::processFileDef(pugi::xml_node &node,
   if (xatt)
     {
     idef->setFileFilters(xatt.as_string());
+    }
+
+  // Check for default value
+  defaultNode = node.child("DefaultValue");
+  if (defaultNode)
+    {
+    idef->setDefaultValue(defaultNode.text().get());
     }
 }
 //----------------------------------------------------------------------------

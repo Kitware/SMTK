@@ -79,6 +79,12 @@ namespace smtk
       void setFileFilters(const std::string &filters)
       {this->m_fileFilters = filters;}
 
+      std::string defaultValue() const
+      {return this->m_defaultValue;}
+      void setDefaultValue(const std::string& val);
+      bool hasDefault() const
+      {return m_hasDefault;}
+
     protected:
       FileItemDefinition(const std::string &myName);
       bool m_shouldExist;
@@ -87,6 +93,9 @@ namespace smtk
       std::vector<std::string> m_valueLabels;
       std::size_t m_numberOfRequiredValues;
       std::string m_fileFilters;
+
+      std::string m_defaultValue;
+      bool m_hasDefault;
 
      private:
 
