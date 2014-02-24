@@ -5,6 +5,7 @@
 #include "smtk/model/FloatData.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/IntegerData.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/StringData.h"
 
@@ -86,8 +87,8 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
     std::cout << ids.size() << " ids, " << entities.size() << " entities\n";
 
     group.addEntities(entities);
-    //qmodel->storage()->addToGroup(dp->relatedEntityId(), ids);
     this->getModel()->subphrasesUpdated(dropIdx);
+    this->setExpanded(dropIdx, true);
     if ( dEvent->proposedAction() == Qt::MoveAction )
       {
       //move events break the way we handle drops, convert it to a copy
@@ -237,9 +238,56 @@ DescriptivePhrase* qtModelView::currentItem() const
   return NULL;
 }
 
-void qtModelView::removeFromGroup()
+void qtModelView::addGroup(BitFlags flag, const std::string& name)
 {
-  QModelIndex qidx = this->currentIndex();
+  QEntityItemModel* qmodel = this->getModel();
+  smtk::model::StoragePtr pstore = qmodel->storage();
+  ModelEntities models;
+  smtk::model::Cursor::CursorsFromUUIDs(
+    models,
+    pstore,
+    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+
+  if(!models.empty())
+    {
+    GroupEntity bgroup = pstore->addGroup(
+      flag, name);
+    models.begin()->addGroup(bgroup);
+    std::cout << "Added " << bgroup.name() << " to " << models.begin()->name() << "\n";
+    }
+}
+
+void qtModelView::removeSelected()
+{
+
+  foreach(QModelIndex sel, this->selectedIndexes())
+    {
+    DescriptivePhrase* dp = this->getModel()->getItem(sel);
+    if(dp && dp->relatedEntity().as<smtk::model::GroupEntity>().isValid())
+      {
+        /*
+      // remove this group
+      dp->parent()->markDirty();
+      QEntityItemModel* qmodel = this->getModelView()->getModel();
+
+      //this->Internal->ModelView->blockSignals(true);
+      this->Internal->ModelView->selectionModel()->clearSelection();
+      //this->Internal->ModelView->blockSignals(false);
+
+      QModelIndex idx = this->Internal->ModelView->currentIndex();
+      qmodel->storage()->erase(dp->relatedEntityId());
+      qmodel->subphrasesUpdated(qmodel->parent(idx));
+      */
+      }
+    else
+      {
+      this->removeFromGroup(sel);
+      }
+    }
+}
+
+void qtModelView::removeFromGroup(const QModelIndex& qidx)
+{
   smtk::model::GroupEntity group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
     {

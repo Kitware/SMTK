@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>338</width>
+    <width>349</width>
     <height>325</height>
    </rect>
   </property>
@@ -39,19 +39,6 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QPushButton" name="RemoveDomainset">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Remove Domain Set</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
       <widget class="QPushButton" name="AddBC">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -64,16 +51,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="RemoveBC">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="RemoveButton">
        <property name="text">
-        <string>Remove BC</string>
+        <string>Remove</string>
        </property>
       </widget>
      </item>

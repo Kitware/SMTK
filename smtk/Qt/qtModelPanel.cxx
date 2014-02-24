@@ -45,12 +45,10 @@ qtModelPanel::qtModelPanel(QWidget* p)
 
   QObject::connect(this->Internal->AddDomainset,
     SIGNAL(clicked()), this, SLOT(onAddDomainset()));
-  QObject::connect(this->Internal->RemoveDomainset,
-    SIGNAL(clicked()), this, SLOT(onRemoveDomainset()));
   QObject::connect(this->Internal->AddBC,
     SIGNAL(clicked()), this, SLOT(onAddBC()));
-  QObject::connect(this->Internal->RemoveBC,
-    SIGNAL(clicked()), this, SLOT(onRemoveBC()));
+  QObject::connect(this->Internal->RemoveButton,
+    SIGNAL(clicked()), this, SLOT(onRemove()));
 }
 
 //-----------------------------------------------------------------------------
@@ -67,63 +65,19 @@ smtk::model::qtModelView* qtModelPanel::getModelView()
 //-----------------------------------------------------------------------------
 void qtModelPanel::onAddDomainset()
 {
-  QEntityItemModel* qmodel = this->getModelView()->getModel();
-  smtk::model::StoragePtr pstore = qmodel->storage();
-  ModelEntities models;
-  smtk::model::Cursor::CursorsFromUUIDs(
-    models,
-    pstore,
-    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
-
-  if(!models.empty())
-    {
-    GroupEntity ds = pstore->addGroup(
-      DIMENSION_3, "Domain Set");
-    models.begin()->addGroup(ds);
-    std::cout << "Added " << ds.name() << " to " << models.begin()->name() << "\n";
-    }
-}
-
-//-----------------------------------------------------------------------------
-void qtModelPanel::onRemoveDomainset()
-{
-  DescriptivePhrase* dp = this->Internal->ModelView->currentItem();
-  if(dp && dp->relatedEntity().isGroupEntity())
-    {
-    QEntityItemModel* qmodel = this->getModelView()->getModel();
-    qmodel->storage()->erase(dp->relatedEntityId());
-    }
+  this->getModelView()->addGroup(DIMENSION_3, "Domain Set");
 }
 
 //-----------------------------------------------------------------------------
 void qtModelPanel::onAddBC()
 {
-  QEntityItemModel* qmodel = this->getModelView()->getModel();
-  smtk::model::StoragePtr pstore = qmodel->storage();
-  ModelEntities models;
-  smtk::model::Cursor::CursorsFromUUIDs(
-    models,
-    pstore,
-    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
-
-  if(!models.empty())
-    {
-    GroupEntity bgroup = pstore->addGroup(
-      DIMENSION_2, "BC Group");
-    models.begin()->addGroup(bgroup);
-    std::cout << "Added " << bgroup.name() << " to " << models.begin()->name() << "\n";
-    }
+  this->getModelView()->addGroup(DIMENSION_2, "BC Group");
 }
 
 //-----------------------------------------------------------------------------
-void qtModelPanel::onRemoveBC()
+void qtModelPanel::onRemove()
 {
-  DescriptivePhrase* dp = this->Internal->ModelView->currentItem();
-  if(dp && dp->relatedEntity().isGroupEntity())
-    {
-    QEntityItemModel* qmodel = this->getModelView()->getModel();
-    qmodel->storage()->erase(dp->relatedEntityId());
-    }
+  this->getModelView()->removeSelected();
 }
 
   } // namespace model

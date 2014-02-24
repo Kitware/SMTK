@@ -46,9 +46,8 @@ public:
 
 public slots:
   void onAddDomainset();
-  void onRemoveDomainset();
   void onAddBC();
-  void onRemoveBC();
+  void onRemove();
 
 signals:
 

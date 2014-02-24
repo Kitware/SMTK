@@ -48,10 +48,12 @@ public:
 
   smtk::model::QEntityItemModel* getModel() const;
   DescriptivePhrase* currentItem() const;
+  void addGroup(BitFlags flag, const std::string& name);
 
 public slots:
   void selectEntities(const QList<std::string>& selIds);
-  virtual void removeFromGroup();
+  virtual void removeFromGroup(const QModelIndex& qidx);
+  virtual void removeSelected();
 
 signals:
   void entitiesSelected(const smtk::util::UUIDs& ids);
