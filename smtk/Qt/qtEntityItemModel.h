@@ -75,17 +75,12 @@ public:
 
   static QIcon lookupIconForEntityFlags(unsigned long flags);
 
+  DescriptivePhrase* getItem(const QModelIndex& idx) const;
+
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
 
-  friend class qtModelView;
-
-  DescriptivePhrase* getItem(const QModelIndex& idx) const;
-
-  //template<typename T>
-  //void sortDataWithContainer(T& sorter, Qt::SortOrder order);
-private:
 };
 
   } // namespace model
