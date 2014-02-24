@@ -3,6 +3,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/FloatData.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/Storage.h"
 #include "smtk/model/StringData.h"
@@ -66,17 +67,27 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
   // entities will be filtered accordingly based on what type of entities
   // the recieving group can take
 
-  QPersistentModelIndex dropIdx = this->indexAt(dEvent->pos());
+  QModelIndex dropIdx = this->indexAt(dEvent->pos());
   DescriptivePhrase* dp = this->getModel()->getItem(dropIdx);
-  if(dp && dp->relatedEntity().isGroupEntity() )
+  smtk::model::GroupEntity group;
+  if (dp && (group = dp->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
+//  if(dp && dp->relatedEntity().isGroupEntity() )
     {
-    BitFlags ef = (dp->relatedEntity().entityFlags() & FACE) ?
-      FACE : EDGE;
+    BitFlags ef = (dp->relatedEntity().entityFlags() & DIMENSION_2) ?
+      CELL_2D : CELL_3D;
     foreach(QModelIndex sel, this->selectedIndexes())
       {
+  //    DescriptivePhrase* childp = this->getModel()->getItem(sel);
+  //    group.addEntity(childp->relatedEntity());
       this->recursiveSelect(qmodel, sel, ids, ef);
       }
-    qmodel->storage()->addToGroup(dp->relatedEntityId(), ids);
+    Cursors entities;
+    Cursor::CursorsFromUUIDs(entities, qmodel->storage(), ids);
+    std::cout << ids.size() << " ids, " << entities.size() << " entities\n";
+
+    group.addEntities(entities);
+    //qmodel->storage()->addToGroup(dp->relatedEntityId(), ids);
+    this->getModel()->subphrasesUpdated(dropIdx);
     if ( dEvent->proposedAction() == Qt::MoveAction )
       {
       //move events break the way we handle drops, convert it to a copy
@@ -140,7 +151,7 @@ void qtModelView::recursiveSelect (
     smtk::util::UUIDs& ids, BitFlags entityFlags)
 {
   DescriptivePhrase* dPhrase = qmodel->getItem(sel);
-  if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) &&
+  if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) == entityFlags &&
   ids.find(dPhrase->relatedEntityId()) == ids.end())
     ids.insert(dPhrase->relatedEntityId());
 
@@ -224,6 +235,57 @@ DescriptivePhrase* qtModelView::currentItem() const
     return this->getModel()->getItem(idx);
     }
   return NULL;
+}
+
+void qtModelView::removeFromGroup()
+{
+  QModelIndex qidx = this->currentIndex();
+  smtk::model::GroupEntity group;
+  if ((group = this->groupParentOfIndex(qidx)).isValid())
+    {
+    DescriptivePhrase* phrase = this->getModel()->getItem(qidx);
+    if (phrase)
+      {
+      // Removing from the group emits a signal that
+      // m_p->qmodel listens for, causing m_p->modelTree redraw.
+      group.removeEntity(phrase->relatedEntity());
+      }
+    }
+}
+
+/**\brief Does \a qidx refer to an entity that is displayed as the child of a group?
+  *
+  * Note that a group (EntityPhrase with a Cursor whose isGroup() is true)
+  * may contain an EntityListPhrase, each entry of which is in the group.
+  * We must test for this 1 level of indirection as well as for direct
+  * children.
+  */
+smtk::model::GroupEntity qtModelView::groupParentOfIndex(const QModelIndex& qidx)
+{
+  smtk::model::GroupEntity group;
+  DescriptivePhrase* phrase = this->getModel()->getItem(qidx);
+  if (phrase)
+    {
+    EntityPhrase* ephrase = dynamic_cast<EntityPhrase*>(phrase);
+    if (ephrase && ephrase->relatedEntity().isValid())
+      {
+      phrase = ephrase->parent().get();
+      if (phrase)
+        {
+        ephrase = dynamic_cast<EntityPhrase*>(phrase);
+        if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
+          return group; // direct child of a GroupEntity's summary phrase.
+        EntityListPhrase* lphrase = dynamic_cast<EntityListPhrase*>(phrase);
+        if (lphrase)
+          {
+          ephrase = dynamic_cast<EntityPhrase*>(lphrase->parent().get());
+          if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
+            return group; // member of a list inside a GroupEntity's summary.
+          }
+        }
+      }
+    }
+  return group;
 }
   } // namespace model
 } // namespace smtk

@@ -51,6 +51,7 @@ public:
 
 public slots:
   void selectEntities(const QList<std::string>& selIds);
+  virtual void removeFromGroup();
 
 signals:
   void entitiesSelected(const smtk::util::UUIDs& ids);
@@ -78,6 +79,8 @@ protected:
   void recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
     smtk::util::UUIDs& ids, BitFlags entityFlags);
+
+  smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
 };
 
   } // namespace model

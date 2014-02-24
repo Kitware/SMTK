@@ -69,15 +69,18 @@ void qtModelPanel::onAddDomainset()
 {
   QEntityItemModel* qmodel = this->getModelView()->getModel();
   smtk::model::StoragePtr pstore = qmodel->storage();
-  // bgroup.addEntities(entities);
-  smtk::util::UUIDs ents = pstore->entitiesMatchingFlags(MODEL_ENTITY, false);
-  if(!ents.empty())
+  ModelEntities models;
+  smtk::model::Cursor::CursorsFromUUIDs(
+    models,
+    pstore,
+    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+
+  if(!models.empty())
     {
-    smtk::model::ModelEntity me(pstore, *ents.begin());
     GroupEntity ds = pstore->addGroup(
-      smtk::model::VOLUME, "Domain Set");
-    me.addGroup(ds);
-    this->Internal->ModelView->repaint();
+      DIMENSION_3, "Domain Set");
+    models.begin()->addGroup(ds);
+    std::cout << "Added " << ds.name() << " to " << models.begin()->name() << "\n";
     }
 }
 
@@ -97,15 +100,18 @@ void qtModelPanel::onAddBC()
 {
   QEntityItemModel* qmodel = this->getModelView()->getModel();
   smtk::model::StoragePtr pstore = qmodel->storage();
-  // bgroup.addEntities(entities);
-  smtk::util::UUIDs ents = pstore->entitiesMatchingFlags(MODEL_ENTITY, false);
-  if(!ents.empty())
+  ModelEntities models;
+  smtk::model::Cursor::CursorsFromUUIDs(
+    models,
+    pstore,
+    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+
+  if(!models.empty())
     {
-    smtk::model::ModelEntity me(pstore, *ents.begin());
     GroupEntity bgroup = pstore->addGroup(
-      FACE | EDGE, "BC Group");
-    me.addGroup(bgroup);
-    this->Internal->ModelView->repaint();
+      DIMENSION_2, "BC Group");
+    models.begin()->addGroup(bgroup);
+    std::cout << "Added " << bgroup.name() << " to " << models.begin()->name() << "\n";
     }
 }
 
