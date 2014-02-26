@@ -87,7 +87,7 @@ void ModelBrowser::removeFromGroup()
   GroupEntity group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
     {
-    DescriptivePhrase* phrase = this->m_p->qmodel->getItem(qidx);
+    DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
     if (phrase)
       {
       // Removing from the group emits a signal that
@@ -113,22 +113,22 @@ void ModelBrowser::updateButtonStates(const QModelIndex& curr, const QModelIndex
 smtk::model::GroupEntity ModelBrowser::groupParentOfIndex(const QModelIndex& qidx)
 {
   smtk::model::GroupEntity group;
-  DescriptivePhrase* phrase = this->m_p->qmodel->getItem(qidx);
+  DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
   if (phrase)
     {
-    EntityPhrase* ephrase = dynamic_cast<EntityPhrase*>(phrase);
+    EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
     if (ephrase && ephrase->relatedEntity().isValid())
       {
-      phrase = ephrase->parent().get();
+      phrase = ephrase->parent();
       if (phrase)
         {
-        ephrase = dynamic_cast<EntityPhrase*>(phrase);
+        ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
         if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
           return group; // direct child of a GroupEntity's summary phrase.
-        EntityListPhrase* lphrase = dynamic_cast<EntityListPhrase*>(phrase);
+        EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(phrase);
         if (lphrase)
           {
-          ephrase = dynamic_cast<EntityPhrase*>(lphrase->parent().get());
+          ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(lphrase->parent());
           if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
             return group; // member of a list inside a GroupEntity's summary.
           }

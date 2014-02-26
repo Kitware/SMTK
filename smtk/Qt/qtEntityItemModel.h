@@ -76,7 +76,7 @@ public:
 
   static QIcon lookupIconForEntityFlags(unsigned long flags);
 
-  DescriptivePhrase* getItem(const QModelIndex& idx) const;
+  DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 
   template<typename T, typename C>
   bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true);
@@ -88,6 +88,8 @@ public:
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
+  class Internal;
+  Internal* P;
 
   void updateObserver();
   //template<typename T>
@@ -103,7 +105,7 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
     {
-    DescriptivePhrase* phrase = this->getItem(top);
+    DescriptivePhrasePtr phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some models
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
@@ -127,7 +129,7 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
   // visit parent, then children if we aren't told to terminate:
   if (!visitor(this, top, collector))
     {
-    DescriptivePhrase* phrase = this->getItem(top);
+    DescriptivePhrasePtr phrase = this->getItem(top);
     // Do not descend if top's corresponding phrase would have to invoke
     // the subphrase generator to obtain the list of children... some models
     // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.

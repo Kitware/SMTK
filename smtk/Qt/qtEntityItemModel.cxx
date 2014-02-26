@@ -12,6 +12,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
+#include "freerange"
+
 #include <iomanip>
 #include <sstream>
 #include <deque>
@@ -46,10 +48,22 @@ inline void cleanupIconResource()
 namespace smtk {
   namespace model {
 
+typedef smtk::weak_ptr<DescriptivePhrase> DescriptivePhraseWeakPtr;
+struct empty_ptr
+{
+  DescriptivePhraseWeakPtr operator () () const
+    { return DescriptivePhraseWeakPtr(); }
+};
+
+class QEntityItemModel::Internal : public freerange<DescriptivePhraseWeakPtr,int,empty_ptr>
+{
+public:
+};
+
 // A visitor functor called by foreach_phrase() to let the view know when to redraw data.
 bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
 {
-  DescriptivePhrase* phrase = qmodel->getItem(qidx);
+  DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
     {
     Cursor related = phrase->relatedEntity();
@@ -83,12 +97,14 @@ QEntityItemModel::QEntityItemModel(QObject* owner)
   : QAbstractItemModel(owner)
 {
   this->m_deleteOnRemoval = true;
+  this->P = new Internal;
   initIconResource();
 }
 
 QEntityItemModel::~QEntityItemModel()
 {
   cleanupIconResource();
+  delete this->P;
 }
 
 QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owner) const
@@ -96,12 +112,15 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
   if (owner.isValid() && owner.column() != 0)
     return QModelIndex();
 
-  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
     {
     //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
-    return this->createIndex(row, column, subphrases[row].get());
+
+    int idx = this->P->grabAndAssign(subphrases[row]);
+    std::cout << idx << "\n";
+    return this->createIndex(row, column, reinterpret_cast<void*>(idx));
     }
   std::cerr << "index(): Bad row " << row << " for owner " << ownerPhrase->title() << "\n";
   return QModelIndex();
@@ -114,14 +133,14 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
     return QModelIndex();
     }
 
-  DescriptivePhrase* childPhrase = this->getItem(child);
+  DescriptivePhrasePtr childPhrase = this->getItem(child);
   DescriptivePhrasePtr parentPhrase = childPhrase->parent();
   if (parentPhrase == this->m_root)
     {
     return QModelIndex();
     }
 
-  int childRow = parentPhrase ? parentPhrase->argFindChild(childPhrase) : -1;
+  int childRow = parentPhrase ? parentPhrase->argFindChild(childPhrase.get()) : -1;
   if (childRow < 0)
     {
     std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
@@ -137,8 +156,7 @@ bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
   // speed things up by always returning true here.
   if (owner.isValid())
     {
-    DescriptivePhrase* phrase =
-      static_cast<DescriptivePhrase*>(owner.internalPointer());
+    DescriptivePhrasePtr phrase = this->getItem(owner);
     if (phrase)
       { // Return whether the parent has subphrases.
       return phrase->subphrases().empty() ? false : true;
@@ -153,7 +171,7 @@ bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 /// The number of rows in the table "underneath" \a owner.
 int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
-  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
@@ -180,17 +198,16 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
-/// Relate information, by its \a role, from a \a DescriptivePhrase to the Qt model.
+/// Relate information, by its \a role, from a \a DescriptivePhrasePtrto the Qt model.
 QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
     {
     // A valid index may have a *parent* that is:
     // + invalid (in which case we use row() as an offset into m_phrases to obtain data)
-    // + valid (in which case it points to a DescriptivePhrase instance and row() is an offset into the subphrases)
+    // + valid (in which case it points to a DescriptivePhrasePtrinstance and row() is an offset into the subphrases)
 
-    DescriptivePhrase* item =
-      static_cast<DescriptivePhrase*>(idx.internalPointer());
+    DescriptivePhrasePtr item = this->getItem(idx);
     if (item)
       {
       if (role == TitleTextRole)
@@ -269,7 +286,7 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
     return false;
 
   this->beginRemoveRows(parentIdx, position, position + rows - 1);
-  DescriptivePhrase* phrase = this->getItem(parentIdx);
+  DescriptivePhrasePtr phrase = this->getItem(parentIdx);
   if (phrase)
     {
     phrase->subphrases().erase(
@@ -283,9 +300,9 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
 bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
-  DescriptivePhrase* phrase;
+  DescriptivePhrasePtr phrase;
   if(idx.isValid() &&
-    (phrase = static_cast<DescriptivePhrase*>(idx.internalPointer())))
+    (phrase = this->getItem(idx)))
     {
     if (role == TitleTextRole && phrase->isTitleMutable())
       {
@@ -376,7 +393,7 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 
 static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx, StoragePtr& storage)
 {
-  DescriptivePhrase* phrase = qmodel->getItem(qidx);
+  DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
     {
     Cursor related = phrase->relatedEntity();
@@ -501,24 +518,31 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 }
   */
 
-/// A utility function to retrieve the DescriptivePhrase associated with a model index.
-DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
+/// A utility function to retrieve the DescriptivePhrasePtrassociated with a model index.
+DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
 {
   if (idx.isValid())
     {
-    DescriptivePhrase* phrase = static_cast<DescriptivePhrase*>(idx.internalPointer());
-    if (phrase)
+    int phraseIdx = static_cast<int>(reinterpret_cast<size_t>(idx.internalPointer()));
+    std::cout << phraseIdx << "\n";
+    DescriptivePhraseWeakPtr weakPhrase = (*this->P)[phraseIdx];
+    DescriptivePhrasePtr phrase;
+    if ((phrase = weakPhrase.lock()))
       {
       return phrase;
       }
+    else
+      { // The phrase has disappeared. Remove the weak pointer from the freelist.
+      this->P->free(phraseIdx);
+      }
     }
-  return this->m_root.get();
+  return this->m_root;
 }
 
 void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
 {
   int nrows = this->rowCount(qidx);
-  DescriptivePhrase* phrase = this->getItem(qidx);
+  DescriptivePhrasePtr phrase = this->getItem(qidx);
 
   this->removeRows(0, nrows, qidx);
   if (phrase)
