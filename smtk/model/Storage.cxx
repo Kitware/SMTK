@@ -1484,6 +1484,16 @@ void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, co
 
 void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
 {
+  std::set<OneToManyTrigger>::const_iterator begin =
+    this->m_oneToManyTriggers.lower_bound(
+      OneToManyTrigger(event,
+        OneToManyObserver(NULL, NULL)));
+  std::set<OneToManyTrigger>::const_iterator end =
+    this->m_oneToManyTriggers.upper_bound(
+      OneToManyTrigger(static_cast<StorageEventType>(event + 1),
+        OneToManyObserver(NULL, NULL)));
+  for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(src, related, it->second.second);
 }
 
   } // namespace model

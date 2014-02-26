@@ -42,6 +42,14 @@ bool GroupEntity::removeEntity(const Cursor& thing)
     {
     int aidx = this->m_storage->findArrangementInvolvingEntity(
       this->m_entity, SUPERSET_OF, thing.entity());
+
+    // FIXME: This really belongs inside unarrangeEntity().
+    // But there we have no access to thing.entity() until too late.
+    this->m_storage->trigger(
+      DEL_ENTITY_FROM_GROUP,
+      *this,
+      Cursor(this->m_storage, thing.entity()));
+
     if (this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       return true;
     }

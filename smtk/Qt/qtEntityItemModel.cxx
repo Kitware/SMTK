@@ -63,13 +63,13 @@ bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const C
 }
 
 // Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
-static int entityEmbedded(const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
+static int entityModified(const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
     return 1;
 
-  std::cout << "Slot: " << ent.name() << "(" << ent.flagSummary() << ") has new child " << e2.name() << "(" << e2.flagSummary() << ")\n";
+  std::cout << "Slot: " << ent.name() << "(" << ent.flagSummary() << ") changed relationship with " << e2.name() << "(" << e2.flagSummary() << ")\n";
 
   // Find EntityPhrase instances under the root node whose relatedEntity
   // is \a ent and rerun the subphrase generator.
@@ -535,7 +535,8 @@ void QEntityItemModel::updateObserver()
   StoragePtr store = this->storage();
   if (store)
     {
-    store->observe(ADD_GROUP_TO_MODEL, &entityEmbedded, this);
+    store->observe(ADD_GROUP_TO_MODEL, &entityModified, this);
+    store->observe(DEL_ENTITY_FROM_GROUP, &entityModified, this);
     }
 }
 

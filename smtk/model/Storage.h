@@ -36,25 +36,37 @@ class VolumeUse;
 
 /// Significant events for the storage class
 enum StorageEventType {
-  // Things added to storage
+  // Things added to models
   ADD_MODEL_TO_MODEL,
   ADD_GROUP_TO_MODEL,
   ADD_CELL_TO_MODEL,
   ADD_SHELL_TO_MODEL,
   ADD_USE_TO_MODEL,
-  ADD_CELL_EMBEDDED_IN_CELL,
-  ADD_SHELL_EMBEDDED_IN_SHELL,
-  ADD_USE_EMBEDDED_IN_SHELL,
 
-  // Things removed from storage
+  // Things removed from models
   DEL_MODEL_FROM_MODEL,
   DEL_GROUP_FROM_MODEL,
   DEL_CELL_FROM_MODEL,
   DEL_SHELL_FROM_MODEL,
   DEL_USE_FROM_MODEL,
+
+  // Embedding lower-dimensional entities
+  ADD_CELL_EMBEDDED_IN_CELL,
+  ADD_SHELL_EMBEDDED_IN_SHELL,
+  ADD_USE_EMBEDDED_IN_SHELL,
+
+  // Un-embedding lower-dimensional entities
   DEL_CELL_EMBEDDED_IN_CELL,
   DEL_SHELL_EMBEDDED_IN_SHELL,
   DEL_USE_EMBEDDED_IN_SHELL,
+
+  // Things added to groups
+  ADD_ENTITY_TO_GROUP,
+
+  // Things removed from groups
+  DEL_ENTITY_FROM_GROUP,
+
+  // TODO: Instances
 
   INVALID_STORAGE_EVENT
 };
