@@ -835,7 +835,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
     switch (citype)
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
-        if(cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::RefItemDefinition>(citemName)) )
           {
           this->processRefDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(cidef));
           }
@@ -845,7 +845,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::DOUBLE:
-        if(cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::DoubleItemDefinition>(citemName)) )
           {
           this->processDoubleDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(cidef));
           }
@@ -855,7 +855,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::DIRECTORY:
-        if(cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(citemName)) )
           {
           this->processDirectoryDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(cidef));
           }
@@ -865,7 +865,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::FILE:
-        if(cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::FileItemDefinition>(citemName)) )
           {
           this->processFileDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(cidef));
           }
@@ -875,7 +875,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::GROUP:
-        if(cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::GroupItemDefinition>(citemName)) )
           {
           this->processGroupDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(cidef));
           }
@@ -885,7 +885,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::INT:
-        if(cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::IntItemDefinition>(citemName)) )
           {
           this->processIntDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(cidef));
           }
@@ -895,7 +895,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::STRING:
-        if(cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)) )
           {
           this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
           }
@@ -905,7 +905,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
           }
         break;
       case smtk::attribute::Item::VOID:
-        if(cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName))
+        if( (cidef = idef->addItemDefinition<smtk::attribute::VoidItemDefinition>(citemName)) )
           {
           this->processItemDef(cinode, cidef);
           }
