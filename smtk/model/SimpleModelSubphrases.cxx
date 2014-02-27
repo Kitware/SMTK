@@ -124,6 +124,9 @@ SimpleModelSubphrases::SimpleModelSubphrases()
 DescriptivePhrases SimpleModelSubphrases::subphrases(
   DescriptivePhrase::Ptr src)
 {
+  std::cout << "  Generating subphrases for " << src.get() << " (" << src->phraseType() << ", " << src->phraseId();
+  if (src->relatedEntity().isValid()) std::cout << ", " << src->relatedEntity().name();
+  std::cout << ")\n";
   DescriptivePhrases result;
   switch (src->phraseType())
     {

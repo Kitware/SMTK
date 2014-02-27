@@ -87,12 +87,45 @@ void ModelBrowser::removeFromGroup()
   GroupEntity group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
     {
-    DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
-    if (phrase)
+    Cursor relEnt;
       {
+      DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
+      if (phrase)
+        relEnt = phrase->relatedEntity();
+      }
+    // Now that our shared pointer keeping "phrase" alive is gone,
+    // remove the entity from the group.
+    if (relEnt.isValid())
+      {
+      // Deselect row, select another.
+      QModelIndex sidx = qidx.parent();
+      int nsiblings = sidx.model()->rowCount(sidx);
+      if (nsiblings)
+        {
+        if (qidx.row() < nsiblings - 1)
+          sidx = qidx.sibling(qidx.row() + 1, 0);
+        else if (qidx.row() > 0)
+          sidx = qidx.sibling(qidx.row() - 1, 0);
+        }
+      if (sidx.model() != qidx.model())
+        {
+        std::cout << "Erp! Models differ: q " << qidx.model() << " s " << sidx.model() << "\n";
+        }
+      if (sidx.parent() != qidx.parent())
+        {
+        std::cout
+          << "Erp! Model parents"
+          << "   s\"" << sidx.model()->data(sidx.parent(), smtk::model::QEntityItemModel::TitleTextRole).toString().toStdString()
+          << "\" q\"" << sidx.model()->data(qidx.parent(), smtk::model::QEntityItemModel::TitleTextRole).toString().toStdString()
+          << "\" differ\n";
+        }
+      this->m_p->modelTree->selectionModel()->select(
+        sidx, QItemSelectionModel::Columns | QItemSelectionModel::SelectCurrent);
       // Removing from the group emits a signal that
       // m_p->qmodel listens for, causing m_p->modelTree redraw.
-      group.removeEntity(phrase->relatedEntity());
+      std::cout << "Removing " << relEnt.name() << " from " << group.name() << "   (had " << group.members<Cursors>().size() << ")";
+      group.removeEntity(relEnt);
+      std::cout << "Group " << group.name() << " (now " << group.members<Cursors>().size() << ")\n";
       }
     }
 }

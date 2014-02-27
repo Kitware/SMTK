@@ -272,6 +272,7 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
 
   // TODO: notify relation + entity (or their delegates) of imminent removal
   ak->second.erase(ak->second.begin() + index);
+  ++result;
   // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
   if (ak->second.empty())
     {

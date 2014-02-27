@@ -117,7 +117,6 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
           return true; // early termination;
         }
       }
-    return true;
     }
   return false;
 }
@@ -141,7 +140,6 @@ bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelInde
           return true; // early termination;
         }
       }
-    return true;
     }
   return false;
 }

@@ -4,9 +4,12 @@
 namespace smtk {
   namespace model {
 
+unsigned int DescriptivePhrase::s_nextPhraseId = 0;
+
 DescriptivePhrase::DescriptivePhrase()
   : m_type(INVALID_DESCRIPTION), m_subphrasesBuilt(false)
 {
+  this->m_phraseId = DescriptivePhrase::s_nextPhraseId++;
 }
 
 DescriptivePhrasePtr DescriptivePhrase::setup(DescriptivePhraseType ptype, Ptr parnt)
@@ -38,7 +41,7 @@ DescriptivePhrases DescriptivePhrase::subphrases() const
 }
 
 /// Return the index of the given phrase in this instance's subphrases (or -1).
-int DescriptivePhrase::argFindChild(DescriptivePhrase* child) const
+int DescriptivePhrase::argFindChild(const DescriptivePhrase* child) const
 {
   int i = 0;
   DescriptivePhrases::const_iterator it;
@@ -48,6 +51,17 @@ int DescriptivePhrase::argFindChild(DescriptivePhrase* child) const
       return i;
     }
   return -1;
+}
+
+/// Return the index of this phrase in its parent instance's subphrases (or -1).
+int DescriptivePhrase::indexInParent() const
+{
+  const DescriptivePhrasePtr prnt = this->parent();
+  if (prnt)
+    {
+    return prnt->argFindChild(this);
+    }
+  return 0;
 }
 
 /// Find the subphrase generator to use. It may be held by a parent phrase.

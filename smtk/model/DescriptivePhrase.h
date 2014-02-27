@@ -86,12 +86,13 @@ public:
 
   virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
 
-  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
+  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent.lock(); }
   virtual DescriptivePhrases& subphrases();
   virtual DescriptivePhrases subphrases() const;
   virtual bool areSubphrasesBuilt() const                      { return this->m_subphrasesBuilt; }
   virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = !dirty; }
-  virtual int argFindChild(DescriptivePhrase* child) const;
+  virtual int argFindChild(const DescriptivePhrase* child) const;
+  int indexInParent() const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
@@ -104,17 +105,23 @@ public:
   virtual bool isRelatedColorMutable() const                   { return false; }
   virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
 
+  unsigned int phraseId() const                                { return this->m_phraseId; }
+
 protected:
   DescriptivePhrase();
 
   SubphraseGeneratorPtr findDelegate();
   void buildSubphrases();
 
-  DescriptivePhrasePtr m_parent;
+  WeakDescriptivePhrasePtr m_parent;
   DescriptivePhraseType m_type;
   SubphraseGeneratorPtr m_delegate;
+  unsigned int m_phraseId;
   mutable DescriptivePhrases m_subphrases;
   mutable bool m_subphrasesBuilt;
+
+private:
+  static unsigned int s_nextPhraseId;
 };
 
   } // model namespace

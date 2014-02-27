@@ -12,11 +12,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
-#include "freerange"
-
-#include <iomanip>
-#include <sstream>
 #include <deque>
+#include <iomanip>
+#include <map>
+#include <sstream>
 
 // -----------------------------------------------------------------------------
 // The following is used to ensure that the QRC file
@@ -48,20 +47,24 @@ inline void cleanupIconResource()
 namespace smtk {
   namespace model {
 
-typedef smtk::weak_ptr<DescriptivePhrase> DescriptivePhraseWeakPtr;
-struct empty_ptr
-{
-  DescriptivePhraseWeakPtr operator () () const
-    { return DescriptivePhraseWeakPtr(); }
-};
-
-class QEntityItemModel::Internal : public freerange<DescriptivePhraseWeakPtr,int,empty_ptr>
+/// Private storage for QEntityItemModel.
+class QEntityItemModel::Internal
 {
 public:
+  /**\brief Store a map of weak pointers to phrases by their phrase IDs.
+    *
+    * We hold a strong pointer to the root phrase in QEntityItemModel::m_root.
+    * This map is a reverse lookup of pointers to subphrases by integer handles
+    * that Qt can associate with QModelIndex entries.
+    *
+    * This all exists because Qt is lame and cannot associate shared pointers
+    * with QModelIndex entries.
+    */
+  std::map<unsigned int,WeakDescriptivePhrasePtr> ptrs;
 };
 
 // A visitor functor called by foreach_phrase() to let the view know when to redraw data.
-bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
+static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
 {
   DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
@@ -117,12 +120,13 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
     {
     //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
+    //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
 
-    int idx = this->P->grabAndAssign(subphrases[row]);
-    std::cout << idx << "\n";
-    return this->createIndex(row, column, reinterpret_cast<void*>(idx));
+    DescriptivePhrasePtr entry = subphrases[row];
+    this->P->ptrs[entry->phraseId()] = entry;
+    return this->createIndex(row, column, entry->phraseId());
     }
-  std::cerr << "index(): Bad row " << row << " for owner " << ownerPhrase->title() << "\n";
+
   return QModelIndex();
 }
 
@@ -140,13 +144,14 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
     return QModelIndex();
     }
 
-  int childRow = parentPhrase ? parentPhrase->argFindChild(childPhrase.get()) : -1;
-  if (childRow < 0)
+  int rowInGrandparent = parentPhrase ? parentPhrase->indexInParent() : -1;
+  if (rowInGrandparent < 0)
     {
-    std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
+    //std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
     return QModelIndex();
     }
-  return this->createIndex(childRow, 0, parentPhrase.get());
+  this->P->ptrs[parentPhrase->phraseId()] = parentPhrase;
+  return this->createIndex(rowInGrandparent, 0, parentPhrase->phraseId());
 }
 
 /// Return true when \a owner has subphrases.
@@ -292,6 +297,7 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
     phrase->subphrases().erase(
       phrase->subphrases().begin() + position,
       phrase->subphrases().begin() + position + rows);
+    std::cout << "    Now have " << phrase->subphrases().size() << " = " << this->rowCount(parentIdx) << " subs\n";
     }
   this->endRemoveRows();
   return true;
@@ -523,9 +529,15 @@ DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
 {
   if (idx.isValid())
     {
-    int phraseIdx = static_cast<int>(reinterpret_cast<size_t>(idx.internalPointer()));
-    std::cout << phraseIdx << "\n";
-    DescriptivePhraseWeakPtr weakPhrase = (*this->P)[phraseIdx];
+    unsigned int phraseIdx = idx.internalId();
+    std::map<unsigned int,WeakDescriptivePhrasePtr>::iterator it;
+    if ((it = this->P->ptrs.find(phraseIdx)) == this->P->ptrs.end())
+      {
+      //std::cout << "  Missing index " << phraseIdx << "\n";
+      std::cout.flush();
+      return this->m_root;
+      }
+    WeakDescriptivePhrasePtr weakPhrase = it->second;
     DescriptivePhrasePtr phrase;
     if ((phrase = weakPhrase.lock()))
       {
@@ -533,7 +545,7 @@ DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
       }
     else
       { // The phrase has disappeared. Remove the weak pointer from the freelist.
-      this->P->free(phraseIdx);
+      this->P->ptrs.erase(phraseIdx);
       }
     }
   return this->m_root;
@@ -544,12 +556,14 @@ void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
   int nrows = this->rowCount(qidx);
   DescriptivePhrasePtr phrase = this->getItem(qidx);
 
+  std::cout << "Marking phrase dirty " << phrase->title() << "\n";
   this->removeRows(0, nrows, qidx);
   if (phrase)
     phrase->markDirty(true);
 
+  this->beginInsertRows(qidx, 0, nrows - 1);
   nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
-  this->beginInsertRows(qidx, 0, nrows);
+  std::cout << "  phrase now has " << nrows << " subphrases\n";
   this->endInsertRows();
   emit dataChanged(qidx, qidx);
 }
