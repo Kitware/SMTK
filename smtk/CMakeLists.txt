@@ -43,30 +43,30 @@ if(SMTK_BUILD_QT)
   get_directory_property(QAttrLibUIs DIRECTORY Qt DEFINITION QAttrLibUIs)
   smtk_prepend_string("Qt" QAttrLibUIs ${QAttrLibUIs})
 
+  qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibHeaders})
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
   qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc)
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-  source_group("Qt_Generated" FILES ${QAttrLibMocSrcs} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
+  source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
   source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
 
   set(qtsmtk_headers ${QAttrLibHeaders})
   set(qtsmtk_srcs
    ${QAttrLibSrcs}
+   ${MOC_BUILT_SOURCES}
    ${UI_BUILT_SOURCES}
    ${RCS_RESOURCES}
    )
 
   add_library(QtSMTK ${qtsmtk_srcs})
 
-  #let cmake do what qt4_wrap_cpp used to do automatically
-  set_target_properties(QtSMTK PROPERTIES AUTOMOC TRUE
+  #specify the install directory for this library
+  set_target_properties(QtSMTK PROPERTIES
                         INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
-  #we need to add the location of the moc files to the include dir for
-  #qtsmtk
-  set_property(TARGET QtSMTK
-               APPEND PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
+  #we need to add the location of the moc files to the include dir for qtsmtk
+  target_include_directories(QtSMTK PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
   #set QtSMTK to link to qtGUI and include dirs
   qt4_use_modules(QtSMTK LINK_PUBLIC Core Gui)
@@ -78,9 +78,10 @@ if(SMTK_BUILD_QT)
   #install the library and exports the library when used from a build tree
   smtk_install_library(QtSMTK DEPENDS SMTKCore)
 
-  add_executable(qtViewTest Qt/qtViewTest.cxx)
-  qt4_use_modules(qtViewTest LINK_PUBLIC Core Gui)
-  target_link_libraries(qtViewTest LINK_PUBLIC  QtSMTK SMTKCore)
+  if(SMTK_ENABLE_TESTING)
+    add_executable(qtViewTest Qt/qtViewTest.cxx)
+    target_link_libraries(qtViewTest LINK_PUBLIC QtSMTK)
+  endif()
 
 endif()
 
@@ -210,11 +211,6 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       "${SMTK_BINARY_DIR}/cgmsmtk.py"
       @ONLY
     )
-
-    #if(SMTK_ENABLE_TESTING)
-    #  add_subdirectory(cgm/PythonTesting)
-    #  add_subdirectory(vtk/PythonTesting)
-    #endif(SMTK_ENABLE_TESTING)
 
     #todo we need to install this file in such a way that it can resolve
     #the location of shiboken, which is going to mean running fixup bundle
