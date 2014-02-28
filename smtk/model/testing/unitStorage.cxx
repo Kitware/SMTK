@@ -149,6 +149,7 @@ int main(int argc, char* argv[])
 
   // Test removal of arrangement information and entities.
   // Remove a volume from its volume use and the model containing it.
+  test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 1, "Detaching a Volume from its parent Model did not succeed.");
   test(sm->unarrangeEntity(uids[21], EMBEDDED_IN, 0, true) == 0, "Detaching a Volume from a non-existent Model did not fail.");
   test(sm->unarrangeEntity(uids[21], HAS_USE, 0, true) == 2, "Detaching a Volume/VolumeUse failed.");
   test(sm->findEntity(uids[21]) == NULL, "unarrangeEntity(..., true) failed to remove the entity afterwards.");

@@ -79,7 +79,7 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
   return false; // Always visit every phrase, since \a ent may appear multiple times.
 }
 
-// Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
+// Callback function, invoked when a new arrangement is added to an entity.
 static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
@@ -572,7 +572,9 @@ void QEntityItemModel::updateObserver()
   StoragePtr store = this->storage();
   if (store)
     {
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &entityModified, this);
     store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &entityModified, this);
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &entityModified, this);
     // Group membership changing
     store->observe(std::make_pair(ANY_EVENT,GROUP_SUPERSET_OF_ENTITY), &entityModified, this);
     }

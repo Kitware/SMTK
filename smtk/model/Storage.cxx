@@ -271,8 +271,8 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
     return result;
 
   // TODO: notify relation + entity (or their delegates) of imminent removal?
-  if (ak->second.erase(ak->second.begin() + index) != ak->second.end())
-    ++result;
+  ak->second.erase(ak->second.begin() + index);
+  ++result;
 
   // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
   if (ak->second.empty())
@@ -282,7 +282,6 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
     if (ad->second.empty())
       {
       this->m_arrangements->erase(ad);
-      ++result;
       canRemoveEntity = true;
       }
     }

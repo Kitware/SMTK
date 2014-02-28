@@ -136,7 +136,8 @@ void ModelBrowser::removeFromGroup()
     // remove the entity from the group.
     if (relEnt.isValid())
       {
-      // Deselect row, select another.
+      // Deselect the current row, select another.
+      // This helps un-confuse Qt's treeview.
       QModelIndex sidx = qidx.parent();
       int nsiblings = sidx.model()->rowCount(sidx);
       if (nsiblings)
@@ -146,6 +147,7 @@ void ModelBrowser::removeFromGroup()
         else if (qidx.row() > 0)
           sidx = qidx.sibling(qidx.row() - 1, 0);
         }
+      std::cout << "Selecting: s " << sidx.model() << " r " << sidx.row() << " c " << sidx.column() << " ptr " << sidx.internalId() << this->m_p->qmodel->getItem(sidx)->relatedEntity().name() << "\n";
       if (sidx.model() != qidx.model())
         {
         std::cout << "Erp! Models differ: q " << qidx.model() << " s " << sidx.model() << "\n";
