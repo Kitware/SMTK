@@ -36,6 +36,10 @@ ModelBrowser::ModelBrowser(QWidget* p) :
     this->m_p->removeFromGroupButton, SIGNAL(clicked()),
     this, SLOT(removeFromGroup())
   );
+  QObject::connect(
+    this->m_p->addToGroupButton, SIGNAL(clicked()),
+    this, SLOT(addToGroup())
+  );
 }
 
 ModelBrowser::~ModelBrowser()
@@ -78,6 +82,41 @@ void ModelBrowser::addGroup()
     {
     models.begin()->addGroup(newGroup);
     std::cout << "Added " << newGroup.name() << " to " << models.begin()->name() << "\n";
+    }
+}
+
+// Add the entity under the cursor to the first group (ordered by UUID)
+void ModelBrowser::addToGroup()
+{
+  QModelIndex qidx = this->m_p->modelTree->currentIndex();
+  GroupEntity group;
+  Cursor item;
+  GroupEntities groups;
+  Cursor::CursorsFromUUIDs(
+    groups, this->m_storage, this->m_storage->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
+  if (groups.empty())
+    return;
+
+  group = *groups.begin();
+
+  // Only keep the phrase alive as long as we must.
+    {
+    DescriptivePhrasePtr phrase = this->m_p->qmodel->getItem(qidx);
+    if (!phrase)
+      return;
+
+    item = phrase->relatedEntity();
+    }
+
+  if (!item.isValid())
+    return;
+
+  // Now that our shared pointer keeping "phrase" alive is gone,
+  // remove the entity from the group.
+  if (group.isValid())
+    {
+    std::cout << "Adding " << item.name() << " to " << group.name() << "\n";
+    group.addEntity(item);
     }
 }
 

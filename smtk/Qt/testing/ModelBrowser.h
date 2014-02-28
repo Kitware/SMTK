@@ -33,6 +33,7 @@ public:
 
 public slots:
   virtual void addGroup();
+  virtual void addToGroup();
   virtual void removeFromGroup();
   virtual void updateButtonStates(const QModelIndex& curr, const QModelIndex& prev);
 
