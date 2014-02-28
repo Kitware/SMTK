@@ -99,6 +99,14 @@ enum StorageEventRelationType
   */
 typedef std::pair<StorageEventChangeType, StorageEventRelationType> StorageEventType;
 
+/// Callbacks for changes in the condition of an entity. WARNING: Likely to change in future releases.
+typedef int (*ConditionCallback)(
+  StorageEventType, const smtk::model::Cursor&, void*);
+/// An observer of an entity-condition-change (i.e., addition, update or removal) event.
+typedef std::pair<ConditionCallback,void*> ConditionObserver;
+/// A trigger entry for an event-observer pair.
+typedef std::pair<StorageEventType,ConditionObserver> ConditionTrigger;
+
 /// Callbacks for one-to-one relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToOneCallback)(
   StorageEventType, const smtk::model::Cursor&, const smtk::model::Cursor&, void*);

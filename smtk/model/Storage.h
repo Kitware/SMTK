@@ -210,10 +210,13 @@ public:
   InstanceEntity addInstance();
   InstanceEntity addInstance(const Cursor& instanceOf);
 
+  void observe(StorageEventType event, ConditionCallback functionHandle, void* callData);
   void observe(StorageEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(StorageEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(StorageEventType event, ConditionCallback functionHandle, void* callData);
   void unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData);
   void unobserve(StorageEventType event, OneToManyCallback functionHandle, void* callData);
+  void trigger(StorageEventType event, const smtk::model::Cursor& src);
   void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
   void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
 
@@ -221,6 +224,7 @@ protected:
   friend class smtk::attribute::Manager;
   bool setAttributeManager(smtk::attribute::Manager* mgr, bool reverse = true);
 
+  std::set<ConditionTrigger> m_conditionTriggers;
   std::set<OneToOneTrigger> m_oneToOneTriggers;
   std::set<OneToManyTrigger> m_oneToManyTriggers;
   shared_ptr<UUIDsToArrangements> m_arrangements;

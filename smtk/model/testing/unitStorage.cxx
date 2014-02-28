@@ -12,9 +12,19 @@ using namespace smtk::util;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 
+static int entCount = 0;
 static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
+
+int entityStorageEvent(StorageEventType evt, const smtk::model::Cursor&, void*)
+{
+  if (evt.first == ADD_EVENT)
+    ++entCount;
+  else if (evt.first == DEL_EVENT)
+    --entCount;
+  return 0;
+}
 
 int addEntityToModel(StorageEventType evt, const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
 {
@@ -38,6 +48,7 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
   StoragePtr sm = Storage::create();
+  sm->observe(std::make_pair(ANY_EVENT,ENTITY_ENTRY), &entityStorageEvent, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
@@ -143,6 +154,7 @@ int main(int argc, char* argv[])
   test(sm->findEntity(uids[21]) == NULL, "unarrangeEntity(..., true) failed to remove the entity afterwards.");
   test(sm->erase(uids[0]), "Failed to erase a vertex.");
 
+  std::cout << entCount << " total entities:\n";
   std::cout << "subgroups " << subgroups << "\n";
   std::cout << "submodels " << submodels << "\n";
   std::cout << "subcells " << subcells << "\n";

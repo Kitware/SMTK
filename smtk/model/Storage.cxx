@@ -1457,6 +1457,22 @@ InstanceEntity Storage::addInstance(const Cursor& object)
 }
 
 /// Request notification from this storage instance when \a event occurs.
+void Storage::observe(StorageEventType event, ConditionCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->observe(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_conditionTriggers.insert(
+    ConditionTrigger(event,
+      ConditionObserver(functionHandle, callData)));
+}
+
+/// Request notification from this storage instance when \a event occurs.
 void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
@@ -1489,6 +1505,22 @@ void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, 
 }
 
 /// Decline further notification from this storage instance when \a event occurs.
+void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->unobserve(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_conditionTriggers.erase(
+    ConditionTrigger(event,
+      ConditionObserver(functionHandle, callData)));
+}
+
+/// Decline further notification from this storage instance when \a event occurs.
 void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
@@ -1518,6 +1550,21 @@ void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle
   this->m_oneToManyTriggers.erase(
     OneToManyTrigger(event,
       OneToManyObserver(functionHandle, callData)));
+}
+
+/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src)
+{
+  std::set<ConditionTrigger>::const_iterator begin =
+    this->m_conditionTriggers.lower_bound(
+      ConditionTrigger(event,
+        ConditionObserver(NULL, NULL)));
+  std::set<ConditionTrigger>::const_iterator end =
+    this->m_conditionTriggers.upper_bound(
+      ConditionTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+        ConditionObserver(NULL, NULL)));
+  for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(it->first, src, it->second.second);
 }
 
 /// Called by this Storage instance or Cursor instances referencing it when \a event occurs.

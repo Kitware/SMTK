@@ -27,6 +27,11 @@ Cursor GroupEntity::parent() const
 GroupEntity& GroupEntity::addEntity(const Cursor& thing)
 {
   this->m_storage->findOrAddEntityToGroup(this->entity(), thing.entity());
+  this->m_storage->trigger(
+    std::make_pair(ADD_EVENT,GROUP_SUPERSET_OF_ENTITY),
+    *this,
+    Cursor(this->m_storage, thing.entity()));
+
   return *this;
 }
 

@@ -109,14 +109,17 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     }
   std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dim));
   this->prepareForEntity(entry);
-  BRepModel::iter_type result = this->m_topology->insert(entry).first;
+  std::pair<BRepModel::iter_type,bool> result = this->m_topology->insert(entry);
 
-  Storage* store = dynamic_cast<Storage*>(this);
-  if (store)
-    store->trigger(std::make_pair(ADD_EVENT, ENTITY_ENTRY),
-      Cursor(store->shared_from_this(), uid), Cursor());
+  if (result.second)
+    {
+    Storage* store = dynamic_cast<Storage*>(this);
+    if (store)
+      store->trigger(std::make_pair(ADD_EVENT, ENTITY_ENTRY),
+        Cursor(store->shared_from_this(), uid));
+    }
 
-  return result;
+  return result.first;
 }
 
 /**\brief Map the specified cell \a c to the given \a uid.
@@ -504,7 +507,7 @@ bool BRepModel::erase(const smtk::util::UUID& uid)
   Storage* store = dynamic_cast<Storage*>(this);
   if (store)
     store->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
-      Cursor(store->shared_from_this(), uid), Cursor());
+      Cursor(store->shared_from_this(), uid));
 
   // Before removing the entity, loop through its relations and
   // make sure none of them retain any references back to \a uid.
