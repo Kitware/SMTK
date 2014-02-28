@@ -147,7 +147,6 @@ void ModelBrowser::removeFromGroup()
         else if (qidx.row() > 0)
           sidx = qidx.sibling(qidx.row() - 1, 0);
         }
-      std::cout << "Selecting: s " << sidx.model() << " r " << sidx.row() << " c " << sidx.column() << " ptr " << sidx.internalId() << this->m_p->qmodel->getItem(sidx)->relatedEntity().name() << "\n";
       if (sidx.model() != qidx.model())
         {
         std::cout << "Erp! Models differ: q " << qidx.model() << " s " << sidx.model() << "\n";
@@ -164,9 +163,7 @@ void ModelBrowser::removeFromGroup()
         sidx, QItemSelectionModel::Columns | QItemSelectionModel::SelectCurrent);
       // Removing from the group emits a signal that
       // m_p->qmodel listens for, causing m_p->modelTree redraw.
-      std::cout << "Removing " << relEnt.name() << " from " << group.name() << "   (had " << group.members<Cursors>().size() << ")";
       group.removeEntity(relEnt);
-      std::cout << "Group " << group.name() << " (now " << group.members<Cursors>().size() << ")\n";
       }
     }
 }

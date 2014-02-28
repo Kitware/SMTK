@@ -72,7 +72,6 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
     Cursor related = phrase->relatedEntity();
     if (related == ent)
       {
-      std::cout << "  Phrase " << phrase->title() << " matches ent " << ent.name() << "\n";
       qmodel->subphrasesUpdated(qidx);
       }
     }
@@ -80,13 +79,11 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
 }
 
 // Callback function, invoked when a new arrangement is added to an entity.
-static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
+static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
     return 1;
-
-  std::cout << "Slot: " << ent.name() << "(" << ent.flagSummary() << ") changed relationship with " << e2.name() << "(" << e2.flagSummary() << ")\n";
 
   // Find EntityPhrase instances under the root node whose relatedEntity
   // is \a ent and rerun the subphrase generator.
@@ -555,14 +552,12 @@ void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
   int nrows = this->rowCount(qidx);
   DescriptivePhrasePtr phrase = this->getItem(qidx);
 
-  std::cout << "Marking phrase dirty " << phrase->title() << "\n";
   this->removeRows(0, nrows, qidx);
   if (phrase)
     phrase->markDirty(true);
 
-  this->beginInsertRows(qidx, 0, nrows - 1);
   nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
-  std::cout << "  phrase now has " << nrows << " subphrases\n";
+  this->beginInsertRows(qidx, 0, nrows);
   this->endInsertRows();
   emit dataChanged(qidx, qidx);
 }
