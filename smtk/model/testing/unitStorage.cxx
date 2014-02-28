@@ -16,16 +16,19 @@ static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
 
-int addEntityToModel(const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
+int addEntityToModel(StorageEventType evt, const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
 {
-  if (src.isModelEntity())
+  if (evt.first == ADD_EVENT)
     {
-    if (related.isGroupEntity())
-      ++subgroups;
-    else if (related.isCellEntity())
-      ++subcells;
-    else if (related.isModelEntity())
-      ++submodels;
+    if (src.isModelEntity())
+      {
+      if (related.isGroupEntity())
+        ++subgroups;
+      else if (related.isCellEntity())
+        ++subcells;
+      else if (related.isModelEntity())
+        ++submodels;
+      }
     }
   return 0;
 }
@@ -35,9 +38,9 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
   StoragePtr sm = Storage::create();
-  sm->observe(ADD_CELL_TO_MODEL, &addEntityToModel, NULL);
-  sm->observe(ADD_GROUP_TO_MODEL, &addEntityToModel, NULL);
-  sm->observe(ADD_MODEL_TO_MODEL, &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
+  sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);
 
   UUIDArray uids = createTet(sm);
 

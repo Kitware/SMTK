@@ -48,7 +48,7 @@ bool GroupEntity::removeEntity(const Cursor& thing)
     if (this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
       this->m_storage->trigger(
-        DEL_ENTITY_FROM_GROUP,
+        std::make_pair(DEL_EVENT,GROUP_SUPERSET_OF_ENTITY),
         *this,
         Cursor(this->m_storage, thing.entity()));
 

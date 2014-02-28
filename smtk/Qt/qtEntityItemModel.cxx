@@ -80,7 +80,7 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
 }
 
 // Callback function, invoked when a new EMBEDDED_IN arrangement is added to storage.
-static int entityModified(const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
+static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor& e2, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
@@ -297,7 +297,6 @@ bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& par
     phrase->subphrases().erase(
       phrase->subphrases().begin() + position,
       phrase->subphrases().begin() + position + rows);
-    std::cout << "    Now have " << phrase->subphrases().size() << " = " << this->rowCount(parentIdx) << " subs\n";
     }
   this->endRemoveRows();
   return true;
@@ -573,8 +572,9 @@ void QEntityItemModel::updateObserver()
   StoragePtr store = this->storage();
   if (store)
     {
-    store->observe(ADD_GROUP_TO_MODEL, &entityModified, this);
-    store->observe(DEL_ENTITY_FROM_GROUP, &entityModified, this);
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &entityModified, this);
+    // Group membership changing
+    store->observe(std::make_pair(ANY_EVENT,GROUP_SUPERSET_OF_ENTITY), &entityModified, this);
     }
 }
 

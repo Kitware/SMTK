@@ -1,5 +1,6 @@
 #include "smtk/model/BRepModel.h"
 
+#include "smtk/model/Cursor.h"
 #include "smtk/model/Storage.h"
 
 namespace smtk {
@@ -108,7 +109,14 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
     }
   std::pair<UUID,Entity> entry(uid,Entity(entityFlags, dim));
   this->prepareForEntity(entry);
-  return this->m_topology->insert(entry).first;
+  BRepModel::iter_type result = this->m_topology->insert(entry).first;
+
+  Storage* store = dynamic_cast<Storage*>(this);
+  if (store)
+    store->trigger(std::make_pair(ADD_EVENT, ENTITY_ENTRY),
+      Cursor(store->shared_from_this(), uid), Cursor());
+
+  return result;
 }
 
 /**\brief Map the specified cell \a c to the given \a uid.
@@ -492,6 +500,11 @@ bool BRepModel::erase(const smtk::util::UUID& uid)
   UUIDWithEntity ent = this->m_topology->find(uid);
   if (ent == this->m_topology->end())
     return false;
+
+  Storage* store = dynamic_cast<Storage*>(this);
+  if (store)
+    store->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
+      Cursor(store->shared_from_this(), uid), Cursor());
 
   // Before removing the entity, loop through its relations and
   // make sure none of them retain any references back to \a uid.

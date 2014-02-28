@@ -214,6 +214,10 @@
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfShell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
+  <suppress-warning text="skipping field 'Storage::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
+  <suppress-warning text="skipping field 'Storage::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
+  <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
 
   @EXTRA_TYPESYSTEMS@
 
@@ -1021,8 +1025,12 @@
         </add-function>
       </object-type>
 
-      <enum-type name="StorageEventType">
-        <include file-name="smtk/model/Storage.h" location="local"/>
+      <enum-type name="StorageEventChangeType">
+        <include file-name="smtk/model/Events.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="StorageEventRelationType">
+        <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
       <value-type name="Shell">
@@ -1615,6 +1623,10 @@
 
 
   </namespace-type>
+
+  <rejection class="smtk::model::Storage" function-name="trigger"/>
+  <rejection class="smtk::model::Storage" function-name="observe"/>
+  <rejection class="smtk::model::Storage" function-name="unobserve"/>
 
   @EXTRA_OBJECTS@
 

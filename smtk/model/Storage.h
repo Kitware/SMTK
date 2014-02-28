@@ -7,6 +7,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/AttributeAssignments.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Events.h"
 #include "smtk/model/Tessellation.h"
 
 #include <algorithm>
@@ -34,7 +35,7 @@ class VertexUse;
 class Volume;
 class VolumeUse;
 
-/// Significant events for the storage class
+/* Significant events for the storage class
 enum StorageEventType {
   // Things added to models
   ADD_MODEL_TO_MODEL,
@@ -70,20 +71,7 @@ enum StorageEventType {
 
   INVALID_STORAGE_EVENT
 };
-
-/// Callbacks for one-to-one relationships between entities.
-typedef int (*OneToOneCallback)(const smtk::model::Cursor&, const smtk::model::Cursor&, void*);
-/// An observer of a one-to-one relationship-event.
-typedef std::pair<OneToOneCallback,void*> OneToOneObserver;
-/// A trigger entry for an event-observer pair.
-typedef std::pair<StorageEventType,OneToOneObserver> OneToOneTrigger;
-
-/// Callbacks for one-to-many relationships between entities.
-typedef int (*OneToManyCallback)(const smtk::model::Cursor&, const smtk::model::CursorArray&, void*);
-/// An observer of a one-to-many relationship-event.
-typedef std::pair<OneToManyCallback,void*> OneToManyObserver;
-/// A trigger entry for an event-observer pair.
-typedef std::pair<StorageEventType,OneToManyObserver> OneToManyTrigger;
+*/
 
 /**\brief Store information about solid models.
   *
@@ -224,6 +212,8 @@ public:
 
   void observe(StorageEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(StorageEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData);
+  void unobserve(StorageEventType event, OneToManyCallback functionHandle, void* callData);
   void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
   void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
 

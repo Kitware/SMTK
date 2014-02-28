@@ -17,23 +17,13 @@ enum DescriptivePhraseType {
   ENTITY_SUMMARY,               //!< Summarize an entity by displaying its name, type, and dimension.
   ARRANGEMENT_LIST,             //!< The entity has multiple arrangements (of a single kind).
   ATTRIBUTE_LIST,               //!< The entity has multiple attribute values defined on it.
-  MODEL_INCLUDES_ENTITY,        //!< The entity is a model with a "free" entity.
-  MODEL_EMBEDDED_IN_MODEL,      //!< The entity is a model that has child model(s).
-  CELL_INCLUDES_CELL,           //!< The entity is a cell that includes a lower-dimensional cell.
-  CELL_EMBEDDED_IN_CELL,        //!< The entity is a cell embedded in a higher-dimensional cell.
-  CELL_HAS_SHELL,               //!< The entity is a cell with a shell describing its boundary.
-  CELL_HAS_USE,                 //!< The entity is a cell with a sense that is in use as a boundary.
-  SHELL_HAS_CELL,               //!< The entity is a shell and this is its parent cell.
-  SHELL_HAS_USE,                //!< The entity is a shell composed of multiple uses.
-  USE_HAS_CELL,                 //!< The entity is a use and this is its parent cell.
-  USE_HAS_SHELL,                //!< The entity is a use and it participates in a shell.
   FLOAT_PROPERTY_LIST,          //!< The entity has a list of floating-point properties.
   STRING_PROPERTY_LIST,         //!< The entity has a list of string properties.
   INTEGER_PROPERTY_LIST,        //!< The entity has a list of integer properties.
   ENTITY_HAS_FLOAT_PROPERTY,    //!< The entity has floating-point properties.
   ENTITY_HAS_STRING_PROPERTY,   //!< The entity has string properties.
   ENTITY_HAS_INTEGER_PROPERTY,  //!< The entity has integer properties.
-  ENTITY_HAS_ATTRIBUTE,         //!< The entity is associated with an attribute.
+  ATTRIBUTE_ASSOCIATION,        //!< The entity is associated with an attribute.
   FLOAT_PROPERTY_VALUE,         //!< One property of an entity has a list of floating-point values.
   STRING_PROPERTY_VALUE,        //!< One property of an entity has a list of string values.
   INTEGER_PROPERTY_VALUE,       //!< One property of an entity has a list of integer values.
