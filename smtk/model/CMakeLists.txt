@@ -62,6 +62,7 @@ set(modelHeaders
   EntityListPhrase.h
   EntityPhrase.h
   EntityTypeBits.h
+  Events.h
   ExportJSON.h
   Face.h
   FaceUse.h

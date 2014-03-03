@@ -1,10 +1,12 @@
 #ifndef __smtk_model_Events_h
 #define __smtk_model_Events_h
 
+
+#include "smtk/PublicPointerDefs.h" // For Cursor and CursorArray
+#include <utility> // For std::pair
+
 namespace smtk {
   namespace model {
-
-class Cursor;
 
 /**\brief Enumerate the types of changes storage has.
   *
