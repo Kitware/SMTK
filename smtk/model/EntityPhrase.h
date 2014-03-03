@@ -14,6 +14,7 @@ public:
   smtkTypeMacro(EntityPhrase);
   smtkSharedPtrCreateMacro(DescriptivePhrase);
   Ptr setup(const Cursor& entity, DescriptivePhrase::Ptr parent = DescriptivePhrasePtr());
+  virtual ~EntityPhrase() { }
 
   virtual std::string title();
   virtual bool isTitleMutable() const;

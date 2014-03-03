@@ -104,6 +104,9 @@ void qtRootView::createWidget( )
   this->Internals->AdvancedCheck->setText("Show Advanced");
   this->Internals->AdvancedCheck->setFont(
     this->uiManager()->advancedFont());
+  smtk::view::RootPtr rview =
+    smtk::dynamic_pointer_cast<smtk::view::Root>(this->getObject());
+  this->Internals->AdvancedCheck->setChecked(rview->showAdvanced());
 
   this->Internals->FilterByCheck = new QCheckBox(this->Widget);
   this->Internals->FilterByCheck->setText("Show by Category: ");
@@ -131,7 +134,7 @@ void qtRootView::createWidget( )
   parentlayout->setAlignment(Qt::AlignTop);
   parentlayout->addLayout(layout);
 
-  this->onShowAdvanced(0);
+  this->onShowAdvanced(this->showAdvanced());
 
   QObject::connect(this->Internals->AdvancedCheck,
     SIGNAL(stateChanged(int)), this, SLOT(onShowAdvanced(int)));
@@ -139,10 +142,14 @@ void qtRootView::createWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtRootView::onShowAdvanced(int /*checked*/)
+void qtRootView::onShowAdvanced(int checked)
 {
-  int currentTab = 0;
+  // update Root for smtk::view
+  smtk::view::RootPtr rview =
+    smtk::dynamic_pointer_cast<smtk::view::Root>(this->getObject());
+  rview->setShowAdvanced(checked != 0);
 
+  int currentTab = 0;
   if(this->Internals->TabGroup)
     {
     QTabWidget* selfW = static_cast<QTabWidget*>(

@@ -23,6 +23,8 @@ public:
 
   GroupEntity& addEntity(const Cursor& entity);
   template<typename T> GroupEntity& addEntities(const T& container);
+
+  bool removeEntity(const Cursor& entity);
 };
 
 template<typename T>

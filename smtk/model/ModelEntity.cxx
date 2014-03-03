@@ -45,15 +45,23 @@ ModelEntity& ModelEntity::addCell(const CellEntity& c)
 
 ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
-  CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
+  if (this->isValid() && g.isValid())
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
+    CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
+    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+    }
   return *this;
 }
 
 ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
-  CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
+  if (this->isValid() && m.isValid() && m.storage() == this->storage() && m.entity() != this->entity())
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
+    CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
+    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+    }
   return *this;
 }
 

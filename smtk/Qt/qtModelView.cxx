@@ -69,7 +69,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
   // the recieving group can take
 
   QModelIndex dropIdx = this->indexAt(dEvent->pos());
-  DescriptivePhrase* dp = this->getModel()->getItem(dropIdx);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(dropIdx);
   smtk::model::GroupEntity group;
   if (dp && (group = dp->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
 //  if(dp && dp->relatedEntity().isGroupEntity() )
@@ -78,7 +78,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       CELL_2D : CELL_3D;
     foreach(QModelIndex sel, this->selectedIndexes())
       {
-  //    DescriptivePhrase* childp = this->getModel()->getItem(sel);
+  //    DescriptivePhrasePtr childp = this->getModel()->getItem(sel);
   //    group.addEntity(childp->relatedEntity());
       this->recursiveSelect(qmodel, sel, ids, ef);
       }
@@ -151,7 +151,7 @@ void qtModelView::recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
     smtk::util::UUIDs& ids, BitFlags entityFlags)
 {
-  DescriptivePhrase* dPhrase = qmodel->getItem(sel);
+  DescriptivePhrasePtr dPhrase = qmodel->getItem(sel);
   if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) == entityFlags &&
   ids.find(dPhrase->relatedEntityId()) == ids.end())
     ids.insert(dPhrase->relatedEntityId());
@@ -193,7 +193,7 @@ void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
   if(0)
   {
     std::cout << "idx isValid " << idx.isValid() << std::endl;
-    DescriptivePhrase* dPhrase = qmodel->getItem(idx);
+    DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
     if(dPhrase)
     {
       std::cout << "title " << dPhrase->title() << std::endl;
@@ -217,7 +217,7 @@ void qtModelView::selectionHelper(
   for (int row=0; row < qmodel->rowCount(parent); ++row)
     {
     QModelIndex idx(qmodel->index(row, 0, parent));
-    DescriptivePhrase* dPhrase = qmodel->getItem(idx);
+    DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
     if (dPhrase && selEntities.find(dPhrase->relatedEntityId()) != selEntities.end())
       {
       this->expandToRoot(qmodel, parent);
@@ -228,14 +228,14 @@ void qtModelView::selectionHelper(
     }
 }
 
-DescriptivePhrase* qtModelView::currentItem() const
+DescriptivePhrasePtr qtModelView::currentItem() const
 {
   QModelIndex idx = this->currentIndex();
   if (idx.isValid())
     {
     return this->getModel()->getItem(idx);
     }
-  return NULL;
+  return DescriptivePhrasePtr();
 }
 
 void qtModelView::addGroup(BitFlags flag, const std::string& name)
@@ -262,7 +262,7 @@ void qtModelView::removeSelected()
 
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    DescriptivePhrase* dp = this->getModel()->getItem(sel);
+    DescriptivePhrasePtr dp = this->getModel()->getItem(sel);
     if(dp && dp->relatedEntity().as<smtk::model::GroupEntity>().isValid())
       {
         /*
@@ -291,7 +291,7 @@ void qtModelView::removeFromGroup(const QModelIndex& qidx)
   smtk::model::GroupEntity group;
   if ((group = this->groupParentOfIndex(qidx)).isValid())
     {
-    DescriptivePhrase* phrase = this->getModel()->getItem(qidx);
+    DescriptivePhrasePtr phrase = this->getModel()->getItem(qidx);
     if (phrase)
       {
       // Removing from the group emits a signal that
@@ -311,22 +311,22 @@ void qtModelView::removeFromGroup(const QModelIndex& qidx)
 smtk::model::GroupEntity qtModelView::groupParentOfIndex(const QModelIndex& qidx)
 {
   smtk::model::GroupEntity group;
-  DescriptivePhrase* phrase = this->getModel()->getItem(qidx);
+  DescriptivePhrasePtr phrase = this->getModel()->getItem(qidx);
   if (phrase)
     {
-    EntityPhrase* ephrase = dynamic_cast<EntityPhrase*>(phrase);
+    EntityPhrasePtr ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
     if (ephrase && ephrase->relatedEntity().isValid())
       {
-      phrase = ephrase->parent().get();
+      phrase = ephrase->parent();
       if (phrase)
         {
-        ephrase = dynamic_cast<EntityPhrase*>(phrase);
+        ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(phrase);
         if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
           return group; // direct child of a GroupEntity's summary phrase.
-        EntityListPhrase* lphrase = dynamic_cast<EntityListPhrase*>(phrase);
+        EntityListPhrasePtr lphrase = smtk::dynamic_pointer_cast<EntityListPhrase>(phrase);
         if (lphrase)
           {
-          ephrase = dynamic_cast<EntityPhrase*>(lphrase->parent().get());
+          ephrase = smtk::dynamic_pointer_cast<EntityPhrase>(lphrase->parent());
           if (ephrase && (group = ephrase->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
             return group; // member of a list inside a GroupEntity's summary.
           }

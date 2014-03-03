@@ -164,6 +164,7 @@ namespace smtk
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::BridgeBase >            BridgeBasePtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
+    typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityListPhrase >      EntityListPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::PropertyValuePhrase >   PropertyValuePhrasePtr;

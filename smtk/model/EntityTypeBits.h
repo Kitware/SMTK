@@ -93,6 +93,7 @@ inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isGroupEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
 inline bool isModelEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstanceEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
+
   } // namespace model
 } // namespace smtk
 

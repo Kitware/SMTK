@@ -2,6 +2,7 @@
 
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Events.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
@@ -704,8 +705,37 @@ Cursor Cursor::relationFromArrangement(
   */
 Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
-  CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+  StorageEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
+  switch (this->entityFlags() & ENTITY_MASK)
+    {
+  case MODEL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: event.second = MODEL_INCLUDES_FREE_SHELL; break;
+    case CELL_ENTITY: event.second = MODEL_INCLUDES_FREE_CELL; break;
+    case USE_ENTITY: event.second = MODEL_INCLUDES_FREE_USE; break;
+      }
+    break;
+  case CELL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY: event.second = CELL_INCLUDES_CELL; break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: event.second = SHELL_INCLUDES_SHELL; break;
+    case USE_ENTITY: event.second = SHELL_HAS_USE; break;
+      }
+    break;
+    }
+  if (event.second != INVALID_RELATIONSHIP)
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
+    CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
+    this->m_storage->trigger(event, *this, thingToEmbed);
+    }
   return *this;
 }
 

@@ -53,8 +53,8 @@ public:
   QVariant headerData(int section, Qt::Orientation orientation, int role) const;
   QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
-  //bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-  //bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
+  //virtual bool insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
+  virtual bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
   bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
   //virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
@@ -64,6 +64,7 @@ public:
   void setRoot(DescriptivePhrasePtr root)
     {
     this->m_root = root;
+    this->updateObserver();
     }
 
   smtk::model::StoragePtr storage() const;
@@ -75,13 +76,73 @@ public:
 
   static QIcon lookupIconForEntityFlags(unsigned long flags);
 
-  DescriptivePhrase* getItem(const QModelIndex& idx) const;
+  DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
+
+  template<typename T, typename C>
+  bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true);
+  template<typename T, typename C>
+  bool foreach_phrase(T& visitor, C& collector, const QModelIndex& top = QModelIndex(), bool onlyBuilt = true) const;
+
+  void subphrasesUpdated(const QModelIndex& qidx);
 
 protected:
   smtk::model::DescriptivePhrasePtr m_root;
   bool m_deleteOnRemoval; // remove UUIDs from mesh when they are removed from the list?
+  class Internal;
+  Internal* P;
 
+  void updateObserver();
+  //template<typename T>
+  //void sortDataWithContainer(T& sorter, Qt::SortOrder order);
 };
+
+/**\brief Iterate over all expanded entries in the tree.
+  *
+  */
+template<typename T, typename C>
+bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt)
+{
+  // visit parent, then children if we aren't told to terminate:
+  if (!visitor(this, top, collector))
+    {
+    DescriptivePhrasePtr phrase = this->getItem(top);
+    // Do not descend if top's corresponding phrase would have to invoke
+    // the subphrase generator to obtain the list of children... some models
+    // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
+    if (phrase && (!onlyBuilt || phrase->areSubphrasesBuilt()))
+      {
+      for (int row = 0; row < this->rowCount(top); ++row)
+        {
+        if (this->foreach_phrase(visitor, collector, this->index(row, 0, top), onlyBuilt))
+          return true; // early termination;
+        }
+      }
+    }
+  return false;
+}
+
+/// A const version of foreach_phrase. See the non-const version for documentation.
+template<typename T, typename C>
+bool QEntityItemModel::foreach_phrase(T& visitor, C& collector, const QModelIndex& top, bool onlyBuilt) const
+{
+  // visit parent, then children if we aren't told to terminate:
+  if (!visitor(this, top, collector))
+    {
+    DescriptivePhrasePtr phrase = this->getItem(top);
+    // Do not descend if top's corresponding phrase would have to invoke
+    // the subphrase generator to obtain the list of children... some models
+    // are cyclic graphs. In these cases, only descend if "onlyBuilt" is false.
+    if (phrase && (!onlyBuilt || phrase->areSubphrasesBuilt()))
+      {
+      for (int row = 0; row < this->rowCount(top); ++row)
+        {
+        if (this->foreach_phrase(visitor, collector, this->index(row, 0, top), onlyBuilt))
+          return true; // early termination;
+        }
+      }
+    }
+  return false;
+}
 
   } // namespace model
 } // namespace smtk

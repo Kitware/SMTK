@@ -298,8 +298,8 @@ bool qtUIManager::categoryEnabled()
 //----------------------------------------------------------------------------
 bool qtUIManager::passAdvancedCheck(bool advanced)
 {
-  return (!advanced || this->RootView == NULL ||
-    advanced == this->RootView->showAdvanced());
+  return (!advanced || !this->m_AttManager.rootView() ||
+    advanced == this->m_AttManager.rootView()->showAdvanced());
 }
 //----------------------------------------------------------------------------
 bool qtUIManager::passAttributeCategoryCheck(

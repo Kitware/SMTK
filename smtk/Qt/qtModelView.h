@@ -47,7 +47,7 @@ public:
   ~qtModelView();
 
   smtk::model::QEntityItemModel* getModel() const;
-  DescriptivePhrase* currentItem() const;
+  DescriptivePhrasePtr currentItem() const;
   void addGroup(BitFlags flag, const std::string& name);
 
 public slots:

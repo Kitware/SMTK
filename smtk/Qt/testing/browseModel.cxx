@@ -10,6 +10,8 @@
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
+#include "smtk/Qt/testing/ModelBrowser.h"
+
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
 #include <QtGui/QHeaderView>
@@ -59,7 +61,8 @@ int main(int argc, char* argv[])
   qdelegate->setTitleFontWeight(2);
   qdelegate->setSubtitleFontSize(10);
   qdelegate->setSubtitleFontWeight(1);
-  QTreeView* view = new QTreeView;
+  ModelBrowser* view = new ModelBrowser;
+  //QTreeView* view = new QTreeView;
   cout << "mask " << hexconst(mask) << "\n";
   /*
   smtk::model::DescriptivePhrases plist =
@@ -72,18 +75,19 @@ int main(int argc, char* argv[])
   smtk::model::Cursor::CursorsFromUUIDs(
     cursors, model, model->entitiesMatchingFlags(mask, false));
   std::cout << std::setbase(10) << "Found " << cursors.size() << " entries\n";
-  qmodel->setRoot(
+  view->setup(
+    model,
+    qmodel,
+    qdelegate,
     smtk::model::EntityListPhrase::create()
       ->setup(cursors)
       ->setDelegate( // set the subphrase generator:
         smtk::model::SimpleModelSubphrases::create()));
-  view->setModel(qmodel); // must come after qmodel->setRoot()
-  view->setItemDelegate(qdelegate);
   test(cursors.empty() || qmodel->storage() == model,
     "Failed to obtain Storage from QEntityItemModel.");
 
   // Enable user sorting.
-  view->setSortingEnabled(true);
+  view->tree()->setSortingEnabled(true);
 
   view->show();
 
