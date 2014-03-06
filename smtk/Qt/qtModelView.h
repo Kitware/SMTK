@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef _qtModelView_h
 #define _qtModelView_h
 
-#include <QtGui/QTreeView.h>
+#include <QTreeView>
 #include "smtk/QtSMTKExports.h"
 #include "smtk/Qt/qtEntityItemModel.h"
 #include "smtk/util/UUID.h"

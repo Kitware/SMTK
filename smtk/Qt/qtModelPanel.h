@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef _qtModelPanel_h
 #define _qtModelPanel_h
 
-#include <QtGui/QWidget.h>
+#include <QWidget>
 #include "smtk/QtSMTKExports.h"
 #include "smtk/Qt/qtModelView.h"
 #include "smtk/util/UUID.h"
