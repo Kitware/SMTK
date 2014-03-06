@@ -96,7 +96,7 @@ if(SMTK_BUILD_ParaView)
   # even if the library is not built here.
 
   smtk_export_header(vtkSMTK vtkSMTKExports.h)
-  smtk_export_header(pvSMTK pvSMTKExports.h)
+#  smtk_export_header(pvSMTK pvSMTKExports.h)
 
   add_subdirectory(paraview)
 endif()

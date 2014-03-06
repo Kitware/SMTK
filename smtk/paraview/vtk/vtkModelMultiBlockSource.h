@@ -5,6 +5,8 @@
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include <map>
+
 class vtkPolyData;
 
 /**\brief A VTK source for exposing model geometry in SMTK Storage as multiblock data.
@@ -24,6 +26,7 @@ public:
   smtk::model::StoragePtr GetModel();
   void SetModel(smtk::model::StoragePtr);
 
+  void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
   void Dirty();
 
   vtkGetVector4Macro(DefaultColor,double);
@@ -53,7 +56,11 @@ protected:
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 
+  // Internal map of UUID and block index into multiblock
+  std::map<std::string, unsigned int> UUID2BlockIdMap;
+
 private:
+
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
   void operator = (const vtkModelMultiBlockSource&); // Not implemented.
 };

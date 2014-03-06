@@ -270,8 +270,10 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
   if (ak == ad->second.end() || index >= static_cast<int>(ak->second.size()))
     return result;
 
-  // TODO: notify relation + entity (or their delegates) of imminent removal
+  // TODO: notify relation + entity (or their delegates) of imminent removal?
   ak->second.erase(ak->second.begin() + index);
+  ++result;
+
   // Now, if we removed the last arrangement of this kind, kill the kind-dictionary entry
   if (ak->second.empty())
     {
@@ -280,7 +282,6 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
     if (ad->second.empty())
       {
       this->m_arrangements->erase(ad);
-      ++result;
       canRemoveEntity = true;
       }
     }
@@ -1452,6 +1453,147 @@ InstanceEntity Storage::addInstance(const Cursor& object)
     return InstanceEntity(shared_from_this(), uid);
     }
   return InstanceEntity();
+}
+
+/// Request notification from this storage instance when \a event occurs.
+void Storage::observe(StorageEventType event, ConditionCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->observe(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_conditionTriggers.insert(
+    ConditionTrigger(event,
+      ConditionObserver(functionHandle, callData)));
+}
+
+/// Request notification from this storage instance when \a event occurs.
+void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->observe(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_oneToOneTriggers.insert(
+    OneToOneTrigger(event,
+      OneToOneObserver(functionHandle, callData)));
+}
+
+/// Request notification from this storage instance when \a event occurs.
+void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->observe(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_oneToManyTriggers.insert(
+    OneToManyTrigger(event,
+      OneToManyObserver(functionHandle, callData)));
+}
+
+/// Decline further notification from this storage instance when \a event occurs.
+void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->unobserve(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_conditionTriggers.erase(
+    ConditionTrigger(event,
+      ConditionObserver(functionHandle, callData)));
+}
+
+/// Decline further notification from this storage instance when \a event occurs.
+void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->unobserve(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_oneToOneTriggers.erase(
+    OneToOneTrigger(event,
+      OneToOneObserver(functionHandle, callData)));
+}
+
+/// Decline further notification from this storage instance when \a event occurs.
+void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle, void* callData)
+{
+  if (event.first == ANY_EVENT)
+    {
+    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+      this->unobserve(event, functionHandle, callData);
+
+    return;
+    }
+
+  this->m_oneToManyTriggers.erase(
+    OneToManyTrigger(event,
+      OneToManyObserver(functionHandle, callData)));
+}
+
+/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src)
+{
+  std::set<ConditionTrigger>::const_iterator begin =
+    this->m_conditionTriggers.lower_bound(
+      ConditionTrigger(event,
+        ConditionObserver(NULL, NULL)));
+  std::set<ConditionTrigger>::const_iterator end =
+    this->m_conditionTriggers.upper_bound(
+      ConditionTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+        ConditionObserver(NULL, NULL)));
+  for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(it->first, src, it->second.second);
+}
+
+/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related)
+{
+  std::set<OneToOneTrigger>::const_iterator begin =
+    this->m_oneToOneTriggers.lower_bound(
+      OneToOneTrigger(event,
+        OneToOneObserver(NULL, NULL)));
+  std::set<OneToOneTrigger>::const_iterator end =
+    this->m_oneToOneTriggers.upper_bound(
+      OneToOneTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+        OneToOneObserver(NULL, NULL)));
+  for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(it->first, src, related, it->second.second);
+}
+
+/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
+void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
+{
+  std::set<OneToManyTrigger>::const_iterator begin =
+    this->m_oneToManyTriggers.lower_bound(
+      OneToManyTrigger(event,
+        OneToManyObserver(NULL, NULL)));
+  std::set<OneToManyTrigger>::const_iterator end =
+    this->m_oneToManyTriggers.upper_bound(
+      OneToManyTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+        OneToManyObserver(NULL, NULL)));
+  for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
+    (*it->second.first)(it->first, src, related, it->second.second);
 }
 
   } // namespace model

@@ -12,9 +12,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QVariant>
 
-#include <iomanip>
-#include <sstream>
 #include <deque>
+#include <iomanip>
+#include <map>
+#include <sstream>
 
 // -----------------------------------------------------------------------------
 // The following is used to ensure that the QRC file
@@ -46,17 +47,64 @@ inline void cleanupIconResource()
 namespace smtk {
   namespace model {
 
+/// Private storage for QEntityItemModel.
+class QEntityItemModel::Internal
+{
+public:
+  /**\brief Store a map of weak pointers to phrases by their phrase IDs.
+    *
+    * We hold a strong pointer to the root phrase in QEntityItemModel::m_root.
+    * This map is a reverse lookup of pointers to subphrases by integer handles
+    * that Qt can associate with QModelIndex entries.
+    *
+    * This all exists because Qt is lame and cannot associate shared pointers
+    * with QModelIndex entries.
+    */
+  std::map<unsigned int,WeakDescriptivePhrasePtr> ptrs;
+};
+
+// A visitor functor called by foreach_phrase() to let the view know when to redraw data.
+static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, const Cursor& ent)
+{
+  DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
+  if (phrase)
+    {
+    Cursor related = phrase->relatedEntity();
+    if (related == ent)
+      {
+      qmodel->subphrasesUpdated(qidx);
+      }
+    }
+  return false; // Always visit every phrase, since \a ent may appear multiple times.
+}
+
+// Callback function, invoked when a new arrangement is added to an entity.
+static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+{
+  QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
+  if (!qmodel)
+    return 1;
+
+  // Find EntityPhrase instances under the root node whose relatedEntity
+  // is \a ent and rerun the subphrase generator.
+  // This should in turn invoke callbacks on the QEntityItemModel
+  // to handle insertions/deletions.
+  return qmodel->foreach_phrase(UpdateSubphrases, ent) ? -1 : 0;
+}
+
 // -----------------------------------------------------------------------------
 QEntityItemModel::QEntityItemModel(QObject* owner)
   : QAbstractItemModel(owner)
 {
   this->m_deleteOnRemoval = true;
+  this->P = new Internal;
   initIconResource();
 }
 
 QEntityItemModel::~QEntityItemModel()
 {
   cleanupIconResource();
+  delete this->P;
 }
 
 QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owner) const
@@ -64,14 +112,18 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
   if (owner.isValid() && owner.column() != 0)
     return QModelIndex();
 
-  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
     {
     //std::cout << "index(_"  << ownerPhrase->title() << "_, " << row << ") = " << subphrases[row]->title() << "\n";
-    return this->createIndex(row, column, subphrases[row].get());
+    //std::cout << "index(_"  << ownerPhrase->phraseId() << "_, " << row << ") = " << subphrases[row]->phraseId() << ", " << subphrases[row]->title() << "\n";
+
+    DescriptivePhrasePtr entry = subphrases[row];
+    this->P->ptrs[entry->phraseId()] = entry;
+    return this->createIndex(row, column, entry->phraseId());
     }
-  std::cerr << "index(): Bad row " << row << " for owner " << ownerPhrase->title() << "\n";
+
   return QModelIndex();
 }
 
@@ -82,20 +134,21 @@ QModelIndex QEntityItemModel::parent(const QModelIndex& child) const
     return QModelIndex();
     }
 
-  DescriptivePhrase* childPhrase = this->getItem(child);
+  DescriptivePhrasePtr childPhrase = this->getItem(child);
   DescriptivePhrasePtr parentPhrase = childPhrase->parent();
   if (parentPhrase == this->m_root)
     {
     return QModelIndex();
     }
 
-  int childRow = parentPhrase ? parentPhrase->argFindChild(childPhrase) : -1;
-  if (childRow < 0)
+  int rowInGrandparent = parentPhrase ? parentPhrase->indexInParent() : -1;
+  if (rowInGrandparent < 0)
     {
-    std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
+    //std::cerr << "parent(): could not find child " << childPhrase->title() << " in parent " << parentPhrase->title() << "\n";
     return QModelIndex();
     }
-  return this->createIndex(childRow, 0, parentPhrase.get());
+  this->P->ptrs[parentPhrase->phraseId()] = parentPhrase;
+  return this->createIndex(rowInGrandparent, 0, parentPhrase->phraseId());
 }
 
 /// Return true when \a owner has subphrases.
@@ -105,8 +158,7 @@ bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
   // speed things up by always returning true here.
   if (owner.isValid())
     {
-    DescriptivePhrase* phrase =
-      static_cast<DescriptivePhrase*>(owner.internalPointer());
+    DescriptivePhrasePtr phrase = this->getItem(owner);
     if (phrase)
       { // Return whether the parent has subphrases.
       return phrase->subphrases().empty() ? false : true;
@@ -121,7 +173,7 @@ bool QEntityItemModel::hasChildren(const QModelIndex& owner) const
 /// The number of rows in the table "underneath" \a owner.
 int QEntityItemModel::rowCount(const QModelIndex& owner) const
 {
-  DescriptivePhrase* ownerPhrase = this->getItem(owner);
+  DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   return static_cast<int>(ownerPhrase->subphrases().size());
 }
 
@@ -148,17 +200,16 @@ QVariant QEntityItemModel::headerData(int section, Qt::Orientation orientation, 
   return QVariant();
 }
 
-/// Relate information, by its \a role, from a \a DescriptivePhrase to the Qt model.
+/// Relate information, by its \a role, from a \a DescriptivePhrasePtrto the Qt model.
 QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
 {
   if (idx.isValid())
     {
     // A valid index may have a *parent* that is:
     // + invalid (in which case we use row() as an offset into m_phrases to obtain data)
-    // + valid (in which case it points to a DescriptivePhrase instance and row() is an offset into the subphrases)
+    // + valid (in which case it points to a DescriptivePhrasePtrinstance and row() is an offset into the subphrases)
 
-    DescriptivePhrase* item =
-      static_cast<DescriptivePhrase*>(idx.internalPointer());
+    DescriptivePhrasePtr item = this->getItem(idx);
     if (item)
       {
       if (role == TitleTextRole)
@@ -228,37 +279,32 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& own
   endInsertRows();
   return true;
 }
+*/
 
-bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& owner)
+/// Remove rows from the model.
+bool QEntityItemModel::removeRows(int position, int rows, const QModelIndex& parentIdx)
 {
-  (void)owner;
-  beginRemoveRows(QModelIndex(), position, position + rows - 1);
+  if (rows <= 0 || position < 0)
+    return false;
 
-  smtk::util::UUIDArray uids(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
-  this->m_phrases.erase(this->m_phrases.begin() + position, this->m_phrases.begin() + position + rows);
-  for (smtk::util::UUIDArray::const_iterator it = uids.begin(); it != uids.end(); ++it)
+  this->beginRemoveRows(parentIdx, position, position + rows - 1);
+  DescriptivePhrasePtr phrase = this->getItem(parentIdx);
+  if (phrase)
     {
-    this->m_reverse.erase(this->m_reverse.find(*it));
-    if (this->m_deleteOnRemoval)
-      {
-      this->m_storage->erase(*it);
-      // FIXME: Should we keep a set of all it->second.relations()
-      //        and emit "didChange" events for all the relations
-      //        that were affected by removal of this entity?
-      }
+    phrase->subphrases().erase(
+      phrase->subphrases().begin() + position,
+      phrase->subphrases().begin() + position + rows);
     }
-
-  endRemoveRows();
+  this->endRemoveRows();
   return true;
 }
-*/
 
 bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
   bool didChange = false;
-  DescriptivePhrase* phrase;
+  DescriptivePhrasePtr phrase;
   if(idx.isValid() &&
-    (phrase = static_cast<DescriptivePhrase*>(idx.internalPointer())))
+    (phrase = this->getItem(idx)))
     {
     if (role == TitleTextRole && phrase->isTitleMutable())
       {
@@ -344,7 +390,28 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
 
   // TODO: Check to make sure column is not "information-only".
   //       We don't want to allow people to randomly edit an enum string.
-  return QAbstractItemModel::flags(idx) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
+  Qt::ItemFlags itemFlags = QAbstractItemModel::flags(idx) |
+     Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled;
+  DescriptivePhrasePtr dp = this->getItem(idx);
+  if( dp && dp->relatedEntity().isGroupEntity() )
+    itemFlags = itemFlags | Qt::ItemIsDropEnabled;
+  return itemFlags;
+}
+
+static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx, StoragePtr& storage)
+{
+  DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
+  if (phrase)
+    {
+    Cursor related = phrase->relatedEntity();
+    if (related.isValid())
+      {
+      storage = related.storage();
+      if (storage)
+        return true;
+      }
+    }
+  return false;
 }
 
 /**\brief Return the first smtk::model::Storage instance presented by this model.
@@ -357,29 +424,9 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   */
 smtk::model::StoragePtr QEntityItemModel::storage() const
 {
-  if (this->m_root)
-    {
-    Cursor related = this->m_root->relatedEntity();
-    if (related.isValid())
-      return related.storage();
-    // Keep looking until we find a phrase with a valid
-    // relatedEntity (which must have valid storage).
-    std::deque<DescriptivePhrase::Ptr> phrases(
-      this->m_root->subphrases().begin(),
-      this->m_root->subphrases().end());
-    while (!phrases.empty())
-      {
-      related = phrases.front()->relatedEntity();
-      if (related.isValid())
-        return related.storage();
-      DescriptivePhrases ptmp = phrases.front()->subphrases();
-      phrases.pop_front();
-      phrases.insert(phrases.end(), ptmp.begin(), ptmp.end());
-      }
-    }
-
-  smtk::model::StoragePtr null;
-  return null;
+  StoragePtr storage;
+  this->foreach_phrase(FindStorage, storage, QModelIndex(), false);
+  return storage;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
@@ -478,18 +525,59 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 }
   */
 
-/// A utility function to retrieve the DescriptivePhrase associated with a model index.
-DescriptivePhrase* QEntityItemModel::getItem(const QModelIndex& idx) const
+/// A utility function to retrieve the DescriptivePhrasePtrassociated with a model index.
+DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
 {
   if (idx.isValid())
     {
-    DescriptivePhrase* phrase = static_cast<DescriptivePhrase*>(idx.internalPointer());
-    if (phrase)
+    unsigned int phraseIdx = idx.internalId();
+    std::map<unsigned int,WeakDescriptivePhrasePtr>::iterator it;
+    if ((it = this->P->ptrs.find(phraseIdx)) == this->P->ptrs.end())
+      {
+      //std::cout << "  Missing index " << phraseIdx << "\n";
+      std::cout.flush();
+      return this->m_root;
+      }
+    WeakDescriptivePhrasePtr weakPhrase = it->second;
+    DescriptivePhrasePtr phrase;
+    if ((phrase = weakPhrase.lock()))
       {
       return phrase;
       }
+    else
+      { // The phrase has disappeared. Remove the weak pointer from the freelist.
+      this->P->ptrs.erase(phraseIdx);
+      }
     }
-  return this->m_root.get();
+  return this->m_root;
+}
+
+void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
+{
+  int nrows = this->rowCount(qidx);
+  DescriptivePhrasePtr phrase = this->getItem(qidx);
+
+  this->removeRows(0, nrows, qidx);
+  if (phrase)
+    phrase->markDirty(true);
+
+  nrows = phrase ? static_cast<int>(phrase->subphrases().size()) : 0;
+  this->beginInsertRows(qidx, 0, nrows);
+  this->endInsertRows();
+  emit dataChanged(qidx, qidx);
+}
+
+void QEntityItemModel::updateObserver()
+{
+  StoragePtr store = this->storage();
+  if (store)
+    {
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &entityModified, this);
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &entityModified, this);
+    store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &entityModified, this);
+    // Group membership changing
+    store->observe(std::make_pair(ANY_EVENT,GROUP_SUPERSET_OF_ENTITY), &entityModified, this);
+    }
 }
 
   } // namespace model

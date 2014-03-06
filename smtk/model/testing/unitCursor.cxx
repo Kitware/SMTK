@@ -29,6 +29,24 @@ using namespace smtk::model;
 using namespace smtk::model::testing;
 using smtk::shared_ptr;
 
+static int numberOfInclusionsRemoved = 0;
+static int numberOfFreeCellsRemoved = 0;
+static int numberOfSubmodelsRemoved = 0;
+static int numberOfGroupsRemoved = 0;
+
+int didRemove(StorageEventType event, const Cursor&, const Cursor&, void*)
+{
+  switch (event.second)
+    {
+  case MODEL_INCLUDES_MODEL:     ++numberOfSubmodelsRemoved; break;
+  case MODEL_INCLUDES_GROUP:     ++numberOfGroupsRemoved; break;
+  case MODEL_INCLUDES_FREE_CELL: ++numberOfFreeCellsRemoved; break;
+  case CELL_INCLUDES_CELL:       ++numberOfInclusionsRemoved; break;
+  default: break;
+    }
+  return 0;
+}
+
 void testComplexVertexChain()
 {
   StoragePtr sm = Storage::create();
@@ -82,6 +100,11 @@ int main(int argc, char* argv[])
   try
     {
     StoragePtr sm = Storage::create();
+    sm->observe(StorageEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
+    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
+    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
+    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
+
     UUIDArray uids = createTet(sm);
 
     ModelEntity model = sm->addModel(3, 3, "TestModel");
@@ -275,6 +298,26 @@ int main(int argc, char* argv[])
       !vol.inclusions<CellEntities>().empty() &&
       vol.inclusions<CellEntities>()[0] == v,
       "Volume should have an included vertex.");
+
+    // Test removing cell inclusions and model members.
+    // a. Cell inclusion
+    vol.unembedEntity(v);
+    test(numberOfInclusionsRemoved == 1, "Did not unembed vertex from volume");
+
+    // b. Free cell in model
+    model.addCell(v);
+    model.removeCell(v);
+    test(numberOfFreeCellsRemoved == 1, "Did not remove free vertex from model");
+
+    // c. Group in model
+    model.removeGroup(bits);
+    test(numberOfGroupsRemoved == 1, "Did not remove group from model");
+
+    // d. Submodel of model
+    ModelEntity submodel = sm->addModel(3, 3, "Surplus model");
+    model.addSubmodel(submodel);
+    model.removeSubmodel(submodel);
+    test(numberOfSubmodelsRemoved == 1, "Did not remove submodel from model");
 
     // Test Volume::shells()
     Shells shells = vol.shells();

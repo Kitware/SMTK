@@ -43,17 +43,57 @@ ModelEntity& ModelEntity::addCell(const CellEntity& c)
   return *this;
 }
 
+ModelEntity& ModelEntity::removeCell(const CellEntity& c)
+{
+  this->unembedEntity(c);
+  return *this;
+}
+
 ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
-  CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
+  if (this->isValid() && g.isValid())
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
+    CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
+    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+    }
+  return *this;
+}
+
+ModelEntity& ModelEntity::removeGroup(const GroupEntity& g)
+{
+  if (this->isValid() && g.isValid())
+    {
+    int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
+    if (aidx >= 0 && this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+      {
+      this->m_storage->trigger(StorageEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+      }
+    }
   return *this;
 }
 
 ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
 {
-  CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
-  CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
+  if (this->isValid() && m.isValid() && m.storage() == this->storage() && m.entity() != this->entity())
+    {
+    CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
+    CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
+    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+    }
+  return *this;
+}
+
+ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
+{
+  if (this->isValid() && m.isValid() && m.storage() == this->storage() && m.entity() != this->entity())
+    {
+    int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, m);
+    if (aidx >= 0 && this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+      {
+      this->m_storage->trigger(StorageEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+      }
+    }
   return *this;
 }
 

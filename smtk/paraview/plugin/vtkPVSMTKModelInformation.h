@@ -13,7 +13,7 @@
 
 =========================================================================*/
 // .NAME vtkPVSMTKModelInformation - Light object for holding information
-// about a model face object.
+// about a smtk model object.
 // .SECTION Description
 // .SECTION Caveats
 
@@ -24,10 +24,7 @@
 #include <string>
 #include <map>
 
-class vtkTransform;
-class vtkIntArray;
-
-class VTK_EXPORT vtkPVSMTKModelInformation : public vtkPVInformation
+class vtkPVSMTKModelInformation : public vtkPVInformation
 {
 public:
   static vtkPVSMTKModelInformation* New();
@@ -42,51 +39,19 @@ public:
   // Merge another information object. Calls AddInformation(info, 0).
   virtual void AddInformation(vtkPVInformation* info);
 
+  virtual void CopyToStream(vtkClientServerStream*){;}
+  virtual void CopyFromStream(const vtkClientServerStream*){;}
+
   // Description:
-  // Manage a serialized version of the information.
-  virtual void CopyToStream(vtkClientServerStream*);
-  virtual void CopyFromStream(const vtkClientServerStream*);
-
-  vtkGetObjectMacro(Transform, vtkTransform);
-  vtkGetVector3Macro(Translation, double);
-  vtkGetVector3Macro(Orientation, double);
-  vtkGetMacro(Scale, double);
-  vtkGetVector3Macro(Color, double);
-  vtkGetMacro(NumberOfPoints, int);
-  vtkGetMacro(NumberOfCells, int);
-  const char *GetObjectType() { return this->ObjectType.c_str(); }
-
-  vtkGetObjectMacro(ModelFaceInfoArray, vtkIntArray);
-  vtkGetObjectMacro(SplitModelFaces, vtkIntArray);
-
-  virtual int GetModelFaceId();
-  virtual int GetShellId();
-  virtual int GetMaterialId();
-  virtual int GetInfoArrayBCStartIndex();
-  virtual int GetMasterCellId(int idx);
-  virtual vtkIdType GetModelEntityId(unsigned int flatidx);
+  // return the blockid given a entity UUID.
+  virtual bool GetBlockId(std::string uuid, unsigned int& bid);
 
   //BTX
 protected:
   vtkPVSMTKModelInformation();
   ~vtkPVSMTKModelInformation();
 
-  // Data information collected from remote processes.
-  vtkTransform  *Transform;
-  double         Translation[3];
-  double         Orientation[3];
-  double         Scale;
-  double         Color[3];
-  int            NumberOfPoints;
-  int            NumberOfCells;
-
-  std::string ObjectType;
-
-  vtkIntArray    *ModelFaceInfoArray;
-  vtkIntArray    *SplitModelFaces;
-  vtkIntArray    *CellIdMapArray;
-
-  std::map<int, vtkIdType> EnityIdsMap;
+  std::map<std::string, unsigned int> UUID2BlockIdMap;
 
 private:
 

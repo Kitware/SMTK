@@ -58,5 +58,12 @@ target_link_libraries(SMTKModel_Plugin
     vtkSMTKCS
   )
 
+install(TARGETS SMTKModel_Plugin
+#    EXPORT SMTK-targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
+
 # smtk_install_library(SMTKModel_Plugin)
 # smtk_install_plugin(SMTKModel_Plugin)

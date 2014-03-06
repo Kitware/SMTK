@@ -17,23 +17,13 @@ enum DescriptivePhraseType {
   ENTITY_SUMMARY,               //!< Summarize an entity by displaying its name, type, and dimension.
   ARRANGEMENT_LIST,             //!< The entity has multiple arrangements (of a single kind).
   ATTRIBUTE_LIST,               //!< The entity has multiple attribute values defined on it.
-  MODEL_INCLUDES_ENTITY,        //!< The entity is a model with a "free" entity.
-  MODEL_EMBEDDED_IN_MODEL,      //!< The entity is a model that has child model(s).
-  CELL_INCLUDES_CELL,           //!< The entity is a cell that includes a lower-dimensional cell.
-  CELL_EMBEDDED_IN_CELL,        //!< The entity is a cell embedded in a higher-dimensional cell.
-  CELL_HAS_SHELL,               //!< The entity is a cell with a shell describing its boundary.
-  CELL_HAS_USE,                 //!< The entity is a cell with a sense that is in use as a boundary.
-  SHELL_HAS_CELL,               //!< The entity is a shell and this is its parent cell.
-  SHELL_HAS_USE,                //!< The entity is a shell composed of multiple uses.
-  USE_HAS_CELL,                 //!< The entity is a use and this is its parent cell.
-  USE_HAS_SHELL,                //!< The entity is a use and it participates in a shell.
   FLOAT_PROPERTY_LIST,          //!< The entity has a list of floating-point properties.
   STRING_PROPERTY_LIST,         //!< The entity has a list of string properties.
   INTEGER_PROPERTY_LIST,        //!< The entity has a list of integer properties.
   ENTITY_HAS_FLOAT_PROPERTY,    //!< The entity has floating-point properties.
   ENTITY_HAS_STRING_PROPERTY,   //!< The entity has string properties.
   ENTITY_HAS_INTEGER_PROPERTY,  //!< The entity has integer properties.
-  ENTITY_HAS_ATTRIBUTE,         //!< The entity is associated with an attribute.
+  ATTRIBUTE_ASSOCIATION,        //!< The entity is associated with an attribute.
   FLOAT_PROPERTY_VALUE,         //!< One property of an entity has a list of floating-point values.
   STRING_PROPERTY_VALUE,        //!< One property of an entity has a list of string values.
   INTEGER_PROPERTY_VALUE,       //!< One property of an entity has a list of integer values.
@@ -86,10 +76,13 @@ public:
 
   virtual DescriptivePhraseType phraseType()                   { return this->m_type; }
 
-  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent; }
+  virtual DescriptivePhrasePtr parent() const                  { return this->m_parent.lock(); }
   virtual DescriptivePhrases& subphrases();
   virtual DescriptivePhrases subphrases() const;
-  virtual int argFindChild(DescriptivePhrase* child) const;
+  virtual bool areSubphrasesBuilt() const                      { return this->m_subphrasesBuilt; }
+  virtual void markDirty(bool dirty = true)                    { this->m_subphrasesBuilt = !dirty; }
+  virtual int argFindChild(const DescriptivePhrase* child) const;
+  int indexInParent() const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
@@ -102,17 +95,23 @@ public:
   virtual bool isRelatedColorMutable() const                   { return false; }
   virtual bool setRelatedColor(const FloatList& rgba)          { (void)rgba; return false; }
 
+  unsigned int phraseId() const                                { return this->m_phraseId; }
+
 protected:
   DescriptivePhrase();
 
   SubphraseGeneratorPtr findDelegate();
   void buildSubphrases();
 
-  DescriptivePhrasePtr m_parent;
+  WeakDescriptivePhrasePtr m_parent;
   DescriptivePhraseType m_type;
   SubphraseGeneratorPtr m_delegate;
+  unsigned int m_phraseId;
   mutable DescriptivePhrases m_subphrases;
   mutable bool m_subphrasesBuilt;
+
+private:
+  static unsigned int s_nextPhraseId;
 };
 
   } // model namespace

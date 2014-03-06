@@ -40,17 +40,30 @@ using smtk::shared_ptr;
 using namespace smtk::model;
 using namespace smtk::util;
 
+class vtkSMTKModelReader::vtkInternal
+{
+public:
+  vtkNew<vtkModelMultiBlockSource> ReaderSource;
+};
+
 vtkStandardNewMacro(vtkSMTKModelReader);
 
 vtkSMTKModelReader::vtkSMTKModelReader()
 {
   this->FileName = 0;
   this->SetNumberOfInputPorts(0);
+  this->Internal = new vtkInternal;
 }
 
 vtkSMTKModelReader:: ~vtkSMTKModelReader()
 {
+  delete this->Internal;
   this->SetFileName(0);
+}
+
+void vtkSMTKModelReader::GetEntityId2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid)
+{
+  this->Internal->ReaderSource->GetUUID2BlockIdMap(uuid2mid);
 }
 
 int vtkSMTKModelReader::RequestData(
@@ -89,10 +102,9 @@ int vtkSMTKModelReader::RequestData(
     return 0;
     }
 
-  vtkNew<vtkModelMultiBlockSource> src;
-  src->SetModel(sm);
-  src->Update();
-  output->ShallowCopy(src->GetOutput());
+  this->Internal->ReaderSource->SetModel(sm);
+  this->Internal->ReaderSource->Update();
+  output->ShallowCopy(this->Internal->ReaderSource->GetOutput());
   this->JSONModel = data;
   //vtkErrorMacro( << "json model (JSONModel): " << this->JSONModel.c_str());
   return 1;
