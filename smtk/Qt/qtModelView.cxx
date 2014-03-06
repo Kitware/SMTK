@@ -259,30 +259,39 @@ void qtModelView::addGroup(BitFlags flag, const std::string& name)
 
 void qtModelView::removeSelected()
 {
+  QEntityItemModel* qmodel = this->getModel();
+  smtk::model::StoragePtr pstore = qmodel->storage();
+  ModelEntities models;
+  smtk::model::Cursor::CursorsFromUUIDs(
+    models,
+    pstore,
+    pstore->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+  if(models.empty())
+    {
+    return;
+    }
 
+  // remove the groups later, in case some of the group's
+  // children may also be selected.
+  QList<smtk::model::GroupEntity> groups;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
     DescriptivePhrasePtr dp = this->getModel()->getItem(sel);
-    if(dp && dp->relatedEntity().as<smtk::model::GroupEntity>().isValid())
+    smtk::model::GroupEntity group;
+    if(dp && (group = dp->relatedEntity().as<smtk::model::GroupEntity>()).isValid())
       {
-        /*
-      // remove this group
-      dp->parent()->markDirty();
-      QEntityItemModel* qmodel = this->getModelView()->getModel();
-
-      //this->Internal->ModelView->blockSignals(true);
-      this->Internal->ModelView->selectionModel()->clearSelection();
-      //this->Internal->ModelView->blockSignals(false);
-
-      QModelIndex idx = this->Internal->ModelView->currentIndex();
-      qmodel->storage()->erase(dp->relatedEntityId());
-      qmodel->subphrasesUpdated(qmodel->parent(idx));
-      */
+      groups.append(group);
       }
     else
       {
       this->removeFromGroup(sel);
       }
+    }
+
+  foreach(smtk::model::GroupEntity group, groups)
+    {
+    models.begin()->removeGroup(group);
+    pstore->erase(group.entity());
     }
 }
 
