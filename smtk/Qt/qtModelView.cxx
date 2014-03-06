@@ -113,17 +113,17 @@ void qtModelView::startDrag ( Qt::DropActions supportedActions )
 }
 
 //-----------------------------------------------------------------------------
-void qtModelView::dragEnterEvent ( QDragEnterEvent * event )
+void qtModelView::dragEnterEvent ( QDragEnterEvent * eevent )
 {
-  this->QTreeView::dragEnterEvent(event);
+  this->QTreeView::dragEnterEvent(eevent);
 }
 
 //-----------------------------------------------------------------------------
-void qtModelView::dragMoveEvent( QDragMoveEvent * event )
+void qtModelView::dragMoveEvent( QDragMoveEvent * mevent )
 {
-  if ( event->proposedAction() & this->supportedDropActions() )
+  if ( mevent->proposedAction() & this->supportedDropActions() )
     {
-    event->accept();
+    mevent->accept();
     }
 }
 
@@ -208,19 +208,19 @@ void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
 
 void qtModelView::selectionHelper(
   QEntityItemModel* qmodel,
-  const QModelIndex& parent,
+  const QModelIndex& parentIdx,
   const smtk::util::UUIDs& selEntities,
   QItemSelection& selItems)
 {
   // For all the children of this index, see if
   // each child should be selected and then queue its children.
-  for (int row=0; row < qmodel->rowCount(parent); ++row)
+  for (int row=0; row < qmodel->rowCount(parentIdx); ++row)
     {
-    QModelIndex idx(qmodel->index(row, 0, parent));
+    QModelIndex idx(qmodel->index(row, 0, parentIdx));
     DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
     if (dPhrase && selEntities.find(dPhrase->relatedEntityId()) != selEntities.end())
       {
-      this->expandToRoot(qmodel, parent);
+      this->expandToRoot(qmodel, parentIdx);
       QItemSelectionRange sr(idx);
       selItems.append(sr);
       }
