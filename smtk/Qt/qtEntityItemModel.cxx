@@ -424,9 +424,9 @@ static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx,
   */
 smtk::model::StoragePtr QEntityItemModel::storage() const
 {
-  StoragePtr storage;
-  this->foreach_phrase(FindStorage, storage, QModelIndex(), false);
-  return storage;
+  StoragePtr store;
+  this->foreach_phrase(FindStorage, store, QModelIndex(), false);
+  return store;
 }
 
 QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
