@@ -705,36 +705,33 @@ Cursor Cursor::relationFromArrangement(
   */
 Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 {
-  StorageEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
-  switch (this->entityFlags() & ENTITY_MASK)
-    {
-  case MODEL_ENTITY:
-    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
-      {
-    case SHELL_ENTITY: event.second = MODEL_INCLUDES_FREE_SHELL; break;
-    case CELL_ENTITY: event.second = MODEL_INCLUDES_FREE_CELL; break;
-    case USE_ENTITY: event.second = MODEL_INCLUDES_FREE_USE; break;
-      }
-    break;
-  case CELL_ENTITY:
-    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
-      {
-    case CELL_ENTITY: event.second = CELL_INCLUDES_CELL; break;
-      }
-    break;
-  case SHELL_ENTITY:
-    switch (thingToEmbed.entityFlags() & ENTITY_MASK)
-      {
-    case SHELL_ENTITY: event.second = SHELL_INCLUDES_SHELL; break;
-    case USE_ENTITY: event.second = SHELL_HAS_USE; break;
-      }
-    break;
-    }
+  //StorageEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
+  StorageEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
     CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
     this->m_storage->trigger(event, *this, thingToEmbed);
+    }
+  return *this;
+}
+
+/**\brief Unembed the specified \a thingToUnembed as an inclusion into this cursor's entity.
+  *
+  * This removes an INCLUDES relation (if necessary) to this entity and
+  * an EMBEDDED_IN relation (if necessary) to the \a thingToUnembed.
+  */
+Cursor& Cursor::unembedEntity(const Cursor& thingToEmbed)
+{
+  StorageEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
+  if (event.second != INVALID_RELATIONSHIP)
+    {
+    int aidx = CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, thingToEmbed);
+    if (aidx >= 0)
+      {
+      this->m_storage->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
+      this->m_storage->trigger(event, *this, thingToEmbed);
+      }
     }
   return *this;
 }
@@ -778,6 +775,38 @@ bool Cursor::operator < (const Cursor& other) const
     return false;
     }
   return this->m_entity < other.m_entity;
+}
+
+StorageEventRelationType Cursor::embeddingRelationType(const Cursor& embedded) const
+{
+  StorageEventRelationType reln = INVALID_RELATIONSHIP;
+
+  switch (this->entityFlags() & ENTITY_MASK)
+    {
+  case MODEL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: reln = MODEL_INCLUDES_FREE_SHELL; break;
+    case CELL_ENTITY: reln = MODEL_INCLUDES_FREE_CELL; break;
+    case USE_ENTITY: reln = MODEL_INCLUDES_FREE_USE; break;
+      }
+    break;
+  case CELL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case CELL_ENTITY: reln = CELL_INCLUDES_CELL; break;
+      }
+    break;
+  case SHELL_ENTITY:
+    switch (embedded.entityFlags() & ENTITY_MASK)
+      {
+    case SHELL_ENTITY: reln = SHELL_INCLUDES_SHELL; break;
+    case USE_ENTITY: reln = SHELL_HAS_USE; break;
+      }
+    break;
+    }
+
+  return reln;
 }
 
 std::ostream& operator << (std::ostream& os, const Cursor& c)

@@ -22,10 +22,12 @@ namespace smtk {
   * affect storage are typically reported with
   * ADD_EVENT notifications generated before addition
   * and DEL_EVENT notifications after removal.
-  * The rationale is that observers should have
+  * The rationale is that (1) observers should have
   * direct access to the most difficult-to-infer
   * configuration while the event type specifies enough
-  * information to infer the simpler configuration.
+  * information to infer the simpler configuration and
+  * (2) observers may wish to perform other operations
+  * after removal to maintain the consistency of Storage.
   *
   * Events that add new smtk::model::Entity, smtk::model::Tessellation,
   * smtk::model::FloatData, smtk::model::StringData, or

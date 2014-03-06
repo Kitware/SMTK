@@ -33,6 +33,10 @@
   <suppress-warning text="skipping function 'smtk::model::Cursor::instances', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeGroups', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeCells', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::unembedEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
 
@@ -219,6 +223,7 @@
   <suppress-warning text="skipping field 'Storage::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
+
 
   @EXTRA_TYPESYSTEMS@
 

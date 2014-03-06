@@ -185,6 +185,9 @@ public:
   bool isEmbedded(Cursor& entity) const;
   Cursor embeddedIn() const;
 
+  Cursor& unembedEntity(const Cursor& thingToUnembed);
+  template<typename T> Cursor& unembedEntities(const T& container);
+
   template<typename T> T instances() const;
 
   bool operator == (const Cursor& other) const;
@@ -193,6 +196,10 @@ public:
 protected:
   StoragePtr m_storage;
   smtk::util::UUID m_entity;
+
+  // When embedding/unembedding, this method determines the relationship type
+  // based on the entities involved.
+  StorageEventRelationType embeddingRelationType(const Cursor& embedded) const;
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
@@ -217,6 +224,15 @@ template<typename T> Cursor& Cursor::embedEntities(const T& container)
   for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
     {
     this->embedEntity(*it);
+    }
+  return *this;
+}
+
+template<typename T> Cursor& Cursor::unembedEntities(const T& container)
+{
+  for (typename T::const_iterator it = container.begin(); it != container.end(); ++it)
+    {
+    this->unembedEntity(*it);
     }
   return *this;
 }
