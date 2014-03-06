@@ -1460,8 +1460,13 @@ void Storage::observe(StorageEventType event, ConditionCallback functionHandle, 
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->observe(event, functionHandle, callData);
+      }
 
     return;
     }
@@ -1476,8 +1481,13 @@ void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, v
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->observe(event, functionHandle, callData);
+      }
 
     return;
     }
@@ -1492,8 +1502,13 @@ void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, 
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->observe(event, functionHandle, callData);
+      }
 
     return;
     }
@@ -1508,8 +1523,13 @@ void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
+      }
 
     return;
     }
@@ -1524,8 +1544,13 @@ void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle,
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
+      }
 
     return;
     }
@@ -1540,8 +1565,13 @@ void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle
 {
   if (event.first == ANY_EVENT)
     {
-    for (event.first = ADD_EVENT; event.first != ANY_EVENT; ++event.first)
+    int i;
+    int iend = static_cast<int>(ANY_EVENT);
+    for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
+      {
+      event.first = static_cast<StorageEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
+      }
 
     return;
     }
