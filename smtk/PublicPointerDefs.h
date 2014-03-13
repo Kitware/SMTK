@@ -86,6 +86,9 @@ namespace smtk
     class Entity;
     class Model;
     class ModelEntity;
+    class Operator;
+    class OperatorResult;
+    class Parameter;
     class PropertyValuePhrase;
     class PropertyListPhrase;
     class Shell;
@@ -173,6 +176,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::SubphraseGenerator >    SubphraseGeneratorPtr;
     typedef smtk::shared_ptr< smtk::model::Model >                 ModelPtr;
     typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
+    typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
     typedef smtk::shared_ptr< smtk::model::Storage >               StoragePtr;
     typedef smtk::weak_ptr< smtk::model::Storage >                 WeakStoragePtr;
     typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;

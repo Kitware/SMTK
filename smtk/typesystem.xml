@@ -733,6 +733,18 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
+      <enum-type name="OperatorOutcome">
+        <include file-name="smtk/model/OperatorResult.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="ParameterValidState">
+        <include file-name="smtk/model/Parameter.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="OperatorEventType">
+        <include file-name="smtk/model/Events.h" location="local"/>
+      </enum-type>
+
       <object-type name="AttributeAssignments">
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>
       </object-type>

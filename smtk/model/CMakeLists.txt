@@ -28,6 +28,9 @@ set(modelSrcs
   Loop.cxx
   Model.cxx
   ModelEntity.cxx
+  Operator.cxx
+  OperatorResult.cxx
+  Parameter.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
   Shell.cxx
@@ -77,6 +80,9 @@ set(modelHeaders
   Loop.h
   Model.h
   ModelEntity.h
+  Operator.h
+  OperatorResult.h
+  Parameter.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
   Shell.h
