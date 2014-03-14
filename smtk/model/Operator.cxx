@@ -107,6 +107,21 @@ bool Operator::hasIntegerParameter(const std::string& name, int minSize, int max
   return ok; // Failed to find parameter
 }
 
+/// Check whether a parameter of the given name exists and has an acceptable number of entries.
+bool Operator::hasUUIDParameter(const std::string& name, int minSize, int maxSize, bool validate)
+{
+  bool ok = false;
+  Parameters::const_iterator it;
+  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+    {
+    int psize = static_cast<int>(it->uuidValues().size());
+    ok = this->checkParameterSize(psize, minSize, maxSize);
+    if (validate)
+      const_cast<Parameter&>(*it).setValidState(ok ? PARAMETER_VALIDATED : PARAMETER_INVALID);
+    }
+  return ok; // Failed to find parameter
+}
+
 /// Add an observer to parameter changes of this operator.
 void Operator::observe(OperatorEventType event, ParameterChangeCallback functionHandle, void* callData)
 {

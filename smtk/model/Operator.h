@@ -33,6 +33,7 @@ public:
   bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
   bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
   bool hasIntegerParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
+  bool hasUUIDParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
 
   void observe(OperatorEventType event, ParameterChangeCallback functionHandle, void* callData);
   void observe(OperatorEventType event, WillOperateCallback functionHandle, void* callData);

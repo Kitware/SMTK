@@ -35,6 +35,8 @@ public:
   Parameter(const std::string& name, const StringList& val);
   Parameter(const std::string& name, const Integer& val);
   Parameter(const std::string& name, const IntegerList& val);
+  Parameter(const std::string& name, const smtk::util::UUID& val);
+  Parameter(const std::string& name, const smtk::util::UUIDArray& val);
 
   std::string name() const;
   ParameterValidState validState() const;
@@ -53,6 +55,11 @@ public:
   const IntegerList& integerValues() const { return this->m_integerVals; }
   void setIntegerValue(const Integer& sval);
   void setIntegerValue(const IntegerList& sval);
+
+  smtk::util::UUIDArray& uuidValues() { return this->m_uuidVals; }
+  const smtk::util::UUIDArray& uuidValues() const { return this->m_uuidVals; }
+  void setUUIDValue(const smtk::util::UUID& sval);
+  void setUUIDValue(const smtk::util::UUIDArray& sval);
 
   bool operator < (const Parameter& other) const;
 

@@ -98,6 +98,19 @@ void Parameter::setIntegerValue(const IntegerList& ival)
   this->setValidState(PARAMETER_UNKNOWN);
 }
 
+void Parameter::setUUIDValue(const smtk::util::UUID& ival)
+{
+  this->m_uuidVals.clear();
+  this->m_uuidVals.push_back(ival);
+  this->setValidState(PARAMETER_UNKNOWN);
+}
+
+void Parameter::setUUIDValue(const smtk::util::UUIDArray& ival)
+{
+  this->m_uuidVals = ival;
+  this->setValidState(PARAMETER_UNKNOWN);
+}
+
 bool Parameter::operator < (const Parameter& other) const
 {
   return this->name() < other.name();

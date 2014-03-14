@@ -26,6 +26,7 @@ void printParam(const Parameter& param)
   printVec(param.integerValues(), "i");
   printVec(param.floatValues(), "f");
   printVec(param.stringValues(), "s");
+  printVec(param.uuidValues(), "u");
 }
 
 int ParameterWatcher(OperatorEventType event, const Operator& op, const Parameter& oldParam, const Parameter& newParam, void* user)
@@ -151,6 +152,7 @@ public:
     Parameter p0("shouldSucceed");
     p0.setIntegerValue(1);
     p0.setStringValue("zero");
+    p0.setUUIDValue(smtk::util::UUID::random());
     FloatList fvec(3);
     fvec[0] = 0.; fvec[1] = 1.; fvec[2] = 2.;
     p0.setFloatValue(fvec);
@@ -163,7 +165,8 @@ public:
       // Is "shouldSucceed" parameter present for each primitive type?
       this->hasFloatParameter("shouldSucceed", 3, 3) &&
       this->hasStringParameter("shouldSucceed", 1, 2) &&
-      this->hasIntegerParameter("shouldSucceed", 1, 1)
+      this->hasIntegerParameter("shouldSucceed", 1, 1) &&
+      this->hasUUIDParameter("shouldSucceed", 1, -1)
       ;
     }
 
@@ -197,6 +200,8 @@ int testParameterChecks(Storage::Ptr storage)
   extra.setFloatValue(FloatList(2, 2.7));
   extra.setStringValue(StringList(1, "huh?"));
   extra.setIntegerValue(IntegerList(3, 0));
+  extra.setUUIDValue(smtk::util::UUIDArray(2, smtk::util::UUID::random()));
+  extra.setUUIDValue(smtk::util::UUID::null());
   op->setParameter(extra);
   test(op->operate().outcome() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
   test(op->parameter("shouldSucceed").validState() == PARAMETER_VALIDATED, "Required parameter was not valid.");
