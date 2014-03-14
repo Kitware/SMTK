@@ -41,6 +41,11 @@ public:
   ModelEntity& removeSubmodel(const ModelEntity& m);
   template<typename T> ModelEntity& addSubmodels(const T& container);
   template<typename T> ModelEntity& removeSubmodels(const T& container);
+
+  OperatorPtr op(const std::string& operatorName) const;
+  Operators operators() const;
+
+  BridgeBasePtr bridge() const;
 };
 
 /// Add all the free cells in \a container to this model.

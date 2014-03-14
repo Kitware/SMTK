@@ -70,6 +70,17 @@ Operators BridgeBase::operators()
   return this->m_operators;
 }
 
+OperatorPtr BridgeBase::op(const std::string& opName) const
+{
+  Operators::const_iterator it;
+  for (it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
+    {
+    if ((*it)->name() == opName)
+      return *it;
+    }
+  return OperatorPtr();
+}
+
 /**\brief Add a solid-model operator to this bridge.
   *
   * Subclasses of BridgeBase should call this method in their

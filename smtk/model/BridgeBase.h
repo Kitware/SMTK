@@ -92,6 +92,7 @@ public:
 
   const Operators& operators() const;
   Operators operators();
+  OperatorPtr op(const std::string& opName) const;
   virtual void addOperator(OperatorPtr op);
 
 protected:

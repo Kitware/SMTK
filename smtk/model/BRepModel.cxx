@@ -252,10 +252,10 @@ std::string BRepModel::name(const UUID& ofEntity) const
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
     {
     return result;
@@ -265,8 +265,8 @@ UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimensi
     // can't ask for "higher" dimensional boundaries that are lower than the dimension of this cell.
     return result;
     }
-  UUIDsToEntities::iterator other;
-  for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
+  UUIDsToEntities::const_iterator other;
+  for (UUIDArray::const_iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
     {
     other = this->m_topology->find(*ai);
     if (other == this->m_topology->end())
@@ -287,7 +287,7 @@ UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimensi
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -303,10 +303,10 @@ UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDime
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
-  UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
+  UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
   if (it == this->m_topology->end())
     {
     return result;
@@ -317,7 +317,7 @@ UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimens
     return result;
     }
   UUIDsToEntities::iterator other;
-  for (UUIDArray::iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
+  for (UUIDArray::const_iterator ai = it->second.relations().begin(); ai != it->second.relations().end(); ++ai)
     {
     other = this->m_topology->find(*ai);
     if (other == this->m_topology->end())
@@ -338,7 +338,7 @@ UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimens
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension)
+UUIDs BRepModel::boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -883,10 +883,10 @@ UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util
 ///@}
 
 /// Attempt to find a model owning the given entity.
-smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
+smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
 {
   smtk::util::UUID uid(ent);
-  UUIDWithEntity it = this->m_topology->find(uid);
+  UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
     // If we have a use or a shell, get the associated cell, if any
@@ -897,11 +897,11 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
       // Assume the first relationship that is a group or model is our owner.
       // Keep going up parent groups until we hit the top.
       for (
-        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
-        UUIDWithEntity subentity = this->topology().find(*sit);
+        UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
         if (subentity != this->topology().end() && subentity->first != uid)
           {
           if (subentity->second.entityFlags() & MODEL_ENTITY)
@@ -918,11 +918,11 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
     case INSTANCE_ENTITY:
       // Look for any relationship. We assume the first one is our prototype.
       for (
-        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
-        UUIDWithEntity subentity = this->topology().find(*sit);
+        UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
         if (subentity != this->topology().end() && subentity->first != uid)
           {
           if (subentity->second.entityFlags() & MODEL_ENTITY)
@@ -935,11 +935,11 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
     case SHELL_ENTITY:
       // Loop for a relationship to a use.
       for (
-        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
-        UUIDWithEntity subentity = this->topology().find(*sit);
+        UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
         if (
           subentity != this->topology().end() &&
           smtk::model::isUseEntity(subentity->second.entityFlags()))
@@ -952,11 +952,11 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
     case USE_ENTITY:
       // Look for a relationship to a cell
       for (
-        smtk::model::UUIDArray::iterator sit = it->second.relations().begin();
+        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
-        UUIDWithEntity subentity = this->topology().find(*sit);
+        UUIDsToEntities::const_iterator subentity = this->topology().find(*sit);
         if (
           subentity != this->topology().end() &&
           smtk::model::isCellEntity(subentity->second.entityFlags()))
@@ -972,7 +972,12 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
       // point to each other, which could throw us into an infinite loop. So,
       // we attempt to cast ourselves to Storage and identify a parent model.
         {
-        StoragePtr store = smtk::dynamic_pointer_cast<Storage>(shared_from_this());
+        // Although const_pointer_cast is evil, changing the cursor classes
+        // to accept any type of shared_ptr<X/X const>
+        StoragePtr store =
+          smtk::dynamic_pointer_cast<Storage>(
+            smtk::const_pointer_cast<BRepModel>(
+              shared_from_this()));
         if (store)
           {
           ModelEntities parents;
@@ -997,11 +1002,11 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
       {
       for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
         {
-        Entity* bordEnt = this->findEntity(*uit);
+        const Entity* bordEnt = this->findEntity(*uit);
         if (!bordEnt) continue;
-        for (smtk::util::UUIDArray::iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
+        for (smtk::util::UUIDArray::const_iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
           {
-          Entity* relEnt = this->findEntity(*rit);
+          const Entity* relEnt = this->findEntity(*rit);
           if (relEnt && (relEnt->entityFlags() & MODEL_ENTITY))
             {
             return *rit;
@@ -1023,10 +1028,10 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent)
   *
   * \sa BridgeBase
   */
-BridgeBasePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid)
+BridgeBasePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
 {
   // See if the passed entity has a bridge.
-  UUIDsToBridges::iterator it = this->m_modelBridges.find(uid);
+  UUIDsToBridges::const_iterator it = this->m_modelBridges.find(uid);
   if (it != this->m_modelBridges.end())
     return it->second;
 

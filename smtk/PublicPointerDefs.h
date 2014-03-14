@@ -180,6 +180,7 @@ namespace smtk
     typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
     typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
     typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
+    typedef std::set< smtk::model::OperatorPtr >                   Operators;
     typedef smtk::shared_ptr< smtk::model::Storage >               StoragePtr;
     typedef smtk::weak_ptr< smtk::model::Storage >                 WeakStoragePtr;
     typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;

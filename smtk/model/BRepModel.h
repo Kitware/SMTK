@@ -67,10 +67,10 @@ public:
 
   virtual bool erase(const smtk::util::UUID& uid);
 
-  smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
-  smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  smtk::util::UUIDs boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2) const;
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2) const;
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2) const;
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2) const;
 
   smtk::util::UUIDs lowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
   smtk::util::UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
@@ -134,8 +134,8 @@ public:
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
-  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
-  BridgeBasePtr bridgeForModel(const smtk::util::UUID& uid);
+  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid) const;
+  BridgeBasePtr bridgeForModel(const smtk::util::UUID& uid) const;
   void setBridgeForModel(BridgeBasePtr bridge, const smtk::util::UUID& uid);
 
   void assignDefaultNames();

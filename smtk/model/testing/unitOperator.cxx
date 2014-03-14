@@ -1,6 +1,9 @@
+#include "smtk/model/BridgeBase.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/OperatorResult.h"
 #include "smtk/model/Parameter.h"
+#include "smtk/model/Storage.h"
 
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
@@ -89,10 +92,13 @@ protected:
     }
 };
 
-int testOperatorOutcomes()
+int testOperatorOutcomes(Storage::Ptr storage)
 {
   int status = 0;
   TestOutcomeOperator::Ptr op = TestOutcomeOperator::create();
+
+  // Add the operator to the default bridge of our storage.
+  storage->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
 
   int shouldCancel = 1;
   int parameterWasModified = 0;
@@ -171,10 +177,13 @@ protected:
     }
 };
 
-int testParameterChecks()
+int testParameterChecks(Storage::Ptr storage)
 {
   int status = 0;
   TestParameterOperator::Ptr op = TestParameterOperator::create();
+
+  // Add the operator to the default bridge of our storage.
+  storage->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
 
   int parameterModifiedCount = 0;
   op->observe(PARAMETER_CHANGE, ParameterWatcher, &parameterModifiedCount);
@@ -205,11 +214,31 @@ int testParameterChecks()
   return status;
 }
 
+int testBridgeAssociation(Storage::Ptr storage)
+{
+  ModelEntity model = storage->addModel(3, 3, "Model Airplane");
+  test(model.operators().size() == 2, "Expected 2 operators defined for the test model.");
+
+  Operator::Ptr op = model.op("ParameterTest");
+  test(op, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
+
+  return 0;
+}
+
 int main()
 {
   int status = 0;
 
-  status |= testOperatorOutcomes();
-  status |= testParameterChecks();
+  Storage::Ptr storage = Storage::create();
+
+  try {
+    status |= testOperatorOutcomes(storage);
+    status |= testParameterChecks(storage);
+    status |= testBridgeAssociation(storage);
+  } catch (const std::string& msg) {
+    std::cerr << "Exiting...\n";
+    status = -1;
+  }
+
   return status;
 }

@@ -1,5 +1,6 @@
 #include "smtk/model/ModelEntity.h"
 
+#include "smtk/model/BridgeBase.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/Storage.h"
@@ -95,6 +96,21 @@ ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
       }
     }
   return *this;
+}
+
+OperatorPtr ModelEntity::op(const std::string& operatorName) const
+{
+  return this->bridge()->op(operatorName);
+}
+
+Operators ModelEntity::operators() const
+{
+  return this->bridge()->operators();
+}
+
+BridgeBasePtr ModelEntity::bridge() const
+{
+  return this->m_storage->bridgeForModel(this->m_entity);
 }
 
   } // namespace model
