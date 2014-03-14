@@ -27,7 +27,7 @@
 #define smtkTypeMacro(...) \
   typedef __VA_ARGS__ SelfType; \
   typedef smtk::shared_ptr< __VA_ARGS__ > Ptr; \
-  typedef const smtk::shared_ptr< __VA_ARGS__ > ConstPtr;
+  typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr;
 
 /**\brief Add static create() methods to a class.
   *
@@ -127,6 +127,11 @@
   smtk::shared_ptr<SelfType> shared_from_this() \
     { \
     return smtk::static_pointer_cast<SelfType>( \
+      SharedPtrBaseType::shared_from_this()); \
+    } \
+  smtk::shared_ptr<const SelfType> shared_from_this() const \
+    { \
+    return smtk::static_pointer_cast<const SelfType>( \
       SharedPtrBaseType::shared_from_this()); \
     }
 

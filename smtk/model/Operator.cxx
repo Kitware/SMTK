@@ -1,6 +1,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/OperatorResult.h"
 #include "smtk/model/Parameter.h"
+#include "smtk/model/Storage.h"
 
 namespace smtk {
   namespace model {
@@ -205,12 +206,48 @@ int Operator::trigger(OperatorEventType event, const OperatorResult& result)
   return 0;
 }
 
+/// Return the storage associated with this operator (or a "null"/invalid shared-pointer).
+StoragePtr Operator::storage() const
+{
+  return this->m_storage;
+}
+
+/** Set the storage which will initiate the operation.
+  *
+  * If a BridgeBase subclass manages multiple Storage instances,
+  * it is responsible for notifying all of them of any changes.
+  * This \a storage is merely the location holding any
+  * entities referenced by parameters of the operation.
+  *
+  * The return value is a shared pointer to this operator.
+  */
+Operator::Ptr Operator::setStorage(StoragePtr storage)
+{
+  this->m_storage = storage;
+  return shared_from_this();
+}
+
 /// A comparator so that Operators may be placed in ordered sets.
 bool Operator::operator < (const Operator& other) const
 {
   return this->name() < other.name();
 }
 
+/**\brief Copy information from another Operator instance.
+  *
+  * Subclasses should override this method if they
+  * contain any non-static members.
+  *
+  * The return value is a shared pointer to this instance.
+  */
+Operator::Ptr Operator::cloneInternal(ConstPtr src)
+{
+  this->m_parameters = src->parameters();
+  this->m_storage = src->storage();
+  return shared_from_this();
+}
+
+/// A method used to verify that parameters have the proper number of entries.
 bool Operator::checkParameterSize(int psize, int minSize, int maxSize)
 {
   bool ok = false;
@@ -232,6 +269,20 @@ bool Operator::checkParameterSize(int psize, int minSize, int maxSize)
     }
   return ok;
 }
+
+/*! \fn Operator::clone() const
+ * \brief Create a copy of this Operator.
+ *
+ * Subclasses must implement this method.
+ * Inside their implementation, they should call
+ * Operator::cloneInternal to copy base-class data.
+ * If your subclass uses smtkCreateMacro and has no
+ * storage, then this implementation should suffice:
+ * <pre>
+ *   virtual Operator::Ptr clone() const
+ *     { return create()->cloneInternal(shared_from_this()); }
+ * </pre>
+ */
 
   } // model namespace
 } // smtk namespace

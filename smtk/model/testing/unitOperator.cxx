@@ -63,7 +63,9 @@ class TestOutcomeOperator : public Operator
 {
 public:
   smtkTypeMacro(TestOutcomeOperator);
-  smtkCreateMacro(Operator);
+  smtkCreateMacro(TestOutcomeOperator);
+  smtkSharedFromThisMacro(Operator);
+
   TestOutcomeOperator()
     : m_able(false) // fail operation until told otherwise
     {
@@ -82,6 +84,8 @@ public:
       ;
     }
   bool m_able; // Used to force UNABLE_TO_OPERATE result.
+  virtual OperatorPtr clone() const
+    { return create()->cloneInternal(shared_from_this()); }
 
 protected:
   virtual OperatorResult operateInternal()
@@ -146,7 +150,9 @@ class TestParameterOperator : public Operator
 {
 public:
   smtkTypeMacro(TestParameterOperator);
-  smtkCreateMacro(Operator);
+  smtkCreateMacro(TestParameterOperator);
+  smtkSharedFromThisMacro(Operator);
+
   TestParameterOperator()
     {
     Parameter p0("shouldSucceed");
@@ -169,6 +175,8 @@ public:
       this->hasUUIDParameter("shouldSucceed", 1, -1)
       ;
     }
+  virtual OperatorPtr clone() const
+    { return create()->cloneInternal(shared_from_this()); }
 
 protected:
   virtual OperatorResult operateInternal()

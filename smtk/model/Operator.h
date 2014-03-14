@@ -22,9 +22,12 @@ class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {
 public:
   smtkTypeMacro(Operator);
+
   virtual std::string name() const = 0;
   virtual bool ableToOperate() { return false; }
   virtual OperatorResult operate();
+
+  virtual Ptr clone() const = 0;
 
   Parameters parameters() const;
   const Parameter& parameter(const std::string& name) const;
@@ -47,15 +50,20 @@ public:
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
 
+  StoragePtr storage() const;
+  Ptr setStorage(StoragePtr storage);
+
   bool operator < (const Operator& other) const;
 
 protected:
   Parameters m_parameters;
+  StoragePtr m_storage;
   std::set<ParameterChangeObserver> m_parameterChangeTriggers;
   std::set<WillOperateObserver> m_willOperateTriggers;
   std::set<DidOperateObserver> m_didOperateTriggers;
 
   virtual OperatorResult operateInternal() = 0;
+  virtual Ptr cloneInternal(ConstPtr src);
 
   bool checkParameterSize(int actualSize, int minSize, int maxSize);
 };
