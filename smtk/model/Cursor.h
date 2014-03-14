@@ -4,12 +4,14 @@
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
 #include "smtk/util/SystemConfig.h" // For type macros.
 #include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/model/Arrangement.h" // for ArrangementKind and Arrangements types
 #include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
+#include "smtk/model/Events.h" // for StorageEventRelationType type
 #include "smtk/model/FloatData.h" // for Float, FloatData, ...
-#include "smtk/model/StringData.h" // for String, StringData, ...
 #include "smtk/model/IntegerData.h" // for Integer, IntegerData, ...
-#include "smtk/model/Storage.h"
+#include "smtk/model/PropertyType.h" // for PropertyType
+#include "smtk/model/StringData.h" // for String, StringData, ...
 
 #include "smtk/util/UUID.h"
 

@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SharedPtr.h"
 #include "smtk/util/SystemConfig.h"
+#include <map>
 #include <set>
 #include <vector>
 
@@ -166,6 +167,7 @@ namespace smtk
   {
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::BridgeBase >            BridgeBasePtr;
+    typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::BridgeBase > > UUIDsToBridges;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;

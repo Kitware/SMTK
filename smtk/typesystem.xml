@@ -167,6 +167,7 @@
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BridgeBase' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>

@@ -3,6 +3,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Entity.h"
+#include "smtk/model/Storage.h"
 
 namespace smtk {
   namespace model {

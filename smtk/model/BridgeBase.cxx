@@ -58,6 +58,28 @@ BridgedInfoBits BridgeBase::allSupportedInformation() const
   return BRIDGE_EVERYTHING;
 }
 
+/// Return the list of solid-model operators available.
+const Operators& BridgeBase::operators() const
+{
+  return this->m_operators;
+}
+
+/// Return the list of solid-model operators available.
+Operators BridgeBase::operators()
+{
+  return this->m_operators;
+}
+
+/**\brief Add a solid-model operator to this bridge.
+  *
+  * Subclasses of BridgeBase should call this method in their
+  * constructors to indicate which modeling operations they will support.
+  */
+void BridgeBase::addOperator(OperatorPtr op)
+{
+  this->m_operators.insert(op);
+}
+
 /**\brief Mark an entity, \a ent, as partially transcribed.
   *
   * Subclasses should call this method when a UUID has been assigned

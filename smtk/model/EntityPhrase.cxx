@@ -7,6 +7,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/ShellEntity.h"
+#include "smtk/model/Storage.h"
 #include "smtk/model/UseEntity.h"
 
 namespace smtk {

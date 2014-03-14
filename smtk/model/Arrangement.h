@@ -2,7 +2,7 @@
 #define __smtk_model_Arrangement_h
 
 #include "smtk/model/ArrangementKind.h"
-#include "smtk/model/BRepModel.h"
+#include "smtk/model/Entity.h"
 #include "smtk/util/UUID.h"
 
 #include "smtk/options.h" // for SMTK_HASH_STORAGE
