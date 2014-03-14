@@ -64,7 +64,7 @@ void Operator::setParameter(const Parameter& p)
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasFloatParameter(const std::string& name, int minSize, int maxSize, bool validate)
+bool Operator::hasFloatParameter(const std::string& name, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
@@ -79,7 +79,7 @@ bool Operator::hasFloatParameter(const std::string& name, int minSize, int maxSi
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasStringParameter(const std::string& name, int minSize, int maxSize, bool validate)
+bool Operator::hasStringParameter(const std::string& name, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
@@ -94,7 +94,7 @@ bool Operator::hasStringParameter(const std::string& name, int minSize, int maxS
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasIntegerParameter(const std::string& name, int minSize, int maxSize, bool validate)
+bool Operator::hasIntegerParameter(const std::string& name, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
@@ -109,7 +109,7 @@ bool Operator::hasIntegerParameter(const std::string& name, int minSize, int max
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasUUIDParameter(const std::string& name, int minSize, int maxSize, bool validate)
+bool Operator::hasUUIDParameter(const std::string& name, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
@@ -248,7 +248,7 @@ Operator::Ptr Operator::cloneInternal(ConstPtr src)
 }
 
 /// A method used to verify that parameters have the proper number of entries.
-bool Operator::checkParameterSize(int psize, int minSize, int maxSize)
+bool Operator::checkParameterSize(int psize, int minSize, int maxSize) const
 {
   bool ok = false;
   if (minSize < 1)

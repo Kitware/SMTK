@@ -33,10 +33,10 @@ public:
   const Parameter& parameter(const std::string& name) const;
   Parameter parameter(const std::string& name);
   virtual void setParameter(const Parameter& p);
-  bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
-  bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
-  bool hasIntegerParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
-  bool hasUUIDParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true);
+  bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasIntegerParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasUUIDParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
 
   void observe(OperatorEventType event, ParameterChangeCallback functionHandle, void* callData);
   void observe(OperatorEventType event, WillOperateCallback functionHandle, void* callData);
@@ -65,7 +65,7 @@ protected:
   virtual OperatorResult operateInternal() = 0;
   virtual Ptr cloneInternal(ConstPtr src);
 
-  bool checkParameterSize(int actualSize, int minSize, int maxSize);
+  bool checkParameterSize(int actualSize, int minSize, int maxSize) const;
 };
 
   } // model namespace

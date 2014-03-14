@@ -58,6 +58,17 @@ BridgedInfoBits BridgeBase::allSupportedInformation() const
   return BRIDGE_EVERYTHING;
 }
 
+/// Return a list of names of solid-model operators available.
+StringList BridgeBase::operatorNames() const
+{
+  StringList result;
+  for (Operators::const_iterator it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
+    {
+    result.push_back((*it)->name());
+    }
+  return result;
+}
+
 /// Return the list of solid-model operators available.
 const Operators& BridgeBase::operators() const
 {

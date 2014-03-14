@@ -973,7 +973,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
       // we attempt to cast ourselves to Storage and identify a parent model.
         {
         // Although const_pointer_cast is evil, changing the cursor classes
-        // to accept any type of shared_ptr<X/X const>
+        // to accept any type of shared_ptr<X/X const> is more evil.
         StoragePtr store =
           smtk::dynamic_pointer_cast<Storage>(
             smtk::const_pointer_cast<BRepModel>(

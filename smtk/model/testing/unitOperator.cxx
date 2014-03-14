@@ -11,12 +11,17 @@
 using namespace smtk::model;
 
 template<typename T>
-void printVec(const std::vector<T>& v, const char* typeName)
+void printVec(const std::vector<T>& v, const char* typeName, char sep = '\0')
 {
   if (v.empty()) return;
   std::cout << " " << typeName << "(" << v.size() << "): [";
-  for (typename std::vector<T>::size_type i = 0; i < v.size(); ++i)
-    std::cout << " " << v[i];
+  std::cout << " " << v[0];
+  if (sep)
+    for (typename std::vector<T>::size_type i = 1; i < v.size(); ++i)
+      std::cout << sep << " " << v[i];
+  else
+    for (typename std::vector<T>::size_type i = 1; i < v.size(); ++i)
+      std::cout << " " << v[i];
   std::cout << " ]";
 }
 
@@ -72,7 +77,7 @@ public:
     Parameter p0("shouldSucceed", Integer(0));
     this->setParameter(p0);
     }
-  virtual std::string name() const { return "OutcomeTest"; }
+  virtual std::string name() const { return "outcome test"; }
   virtual bool ableToOperate()
     {
     Parameters params = this->parameters();
@@ -97,9 +102,8 @@ protected:
     }
 };
 
-int testOperatorOutcomes(Storage::Ptr storage)
+void testOperatorOutcomes(Storage::Ptr storage)
 {
-  int status = 0;
   TestOutcomeOperator::Ptr op = TestOutcomeOperator::create();
 
   // Add the operator to the default bridge of our storage.
@@ -143,7 +147,6 @@ int testOperatorOutcomes(Storage::Ptr storage)
 
   op->unobserve(DID_OPERATE, DidOperateWatcher, &numberOfFailedOperations);
   op->unobserve(PARAMETER_CHANGE, ParameterWatcher, &parameterWasModified);
-  return status;
 }
 
 class TestParameterOperator : public Operator
@@ -164,7 +167,7 @@ public:
     p0.setFloatValue(fvec);
     this->setParameter(p0);
     }
-  virtual std::string name() const { return "ParameterTest"; }
+  virtual std::string name() const { return "parameter test"; }
   virtual bool ableToOperate()
     {
     return
@@ -188,9 +191,8 @@ protected:
     }
 };
 
-int testParameterChecks(Storage::Ptr storage)
+void testParameterChecks(Storage::Ptr storage)
 {
-  int status = 0;
   TestParameterOperator::Ptr op = TestParameterOperator::create();
 
   // Add the operator to the default bridge of our storage.
@@ -223,19 +225,22 @@ int testParameterChecks(Storage::Ptr storage)
   test(op->parameter("shouldSucceed").validState() == PARAMETER_INVALID, "Required parameter was invalid but marked valid.");
   test(op->parameter("nonExistent").validState() == PARAMETER_UNKNOWN, "Missing parameter was validated?");
   std::cout << "--\n";
-
-  return status;
 }
 
-int testBridgeAssociation(Storage::Ptr storage)
+void testBridgeAssociation(Storage::Ptr storage)
 {
+  // Test that operators added by previous tests still exist
   ModelEntity model = storage->addModel(3, 3, "Model Airplane");
   test(model.operators().size() == 2, "Expected 2 operators defined for the test model.");
 
-  Operator::Ptr op = model.op("ParameterTest");
+  // Test op(name) method
+  Operator::Ptr op = model.op("parameter test");
   test(op, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
 
-  return 0;
+  // Test operatorNames()
+  StringList opNames = model.bridge()->operatorNames();
+  printVec(opNames, "operator names", ',');
+  std::cout << "\n";
 }
 
 int main()
@@ -245,9 +250,11 @@ int main()
   Storage::Ptr storage = Storage::create();
 
   try {
-    status |= testOperatorOutcomes(storage);
-    status |= testParameterChecks(storage);
-    status |= testBridgeAssociation(storage);
+
+    testOperatorOutcomes(storage);
+    testParameterChecks(storage);
+    testBridgeAssociation(storage);
+
   } catch (const std::string& msg) {
     std::cerr << "Exiting...\n";
     status = -1;

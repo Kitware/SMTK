@@ -90,6 +90,7 @@ public:
 
   virtual BridgedInfoBits allSupportedInformation() const;
 
+  StringList operatorNames() const;
   const Operators& operators() const;
   Operators operators();
   OperatorPtr op(const std::string& opName) const;
