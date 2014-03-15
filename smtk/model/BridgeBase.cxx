@@ -75,12 +75,6 @@ const Operators& BridgeBase::operators() const
   return this->m_operators;
 }
 
-/// Return the list of solid-model operators available.
-Operators BridgeBase::operators()
-{
-  return this->m_operators;
-}
-
 OperatorPtr BridgeBase::op(const std::string& opName) const
 {
   Operators::const_iterator it;
@@ -99,7 +93,7 @@ OperatorPtr BridgeBase::op(const std::string& opName) const
   */
 void BridgeBase::addOperator(OperatorPtr op)
 {
-  this->m_operators.insert(op);
+  this->m_operators.insert(op->clone()->setBridge(shared_from_this()));
 }
 
 /**\brief Mark an entity, \a ent, as partially transcribed.

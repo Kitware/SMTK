@@ -221,9 +221,25 @@ StoragePtr Operator::storage() const
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setStorage(StoragePtr storage)
+Operator::Ptr Operator::setStorage(StoragePtr s)
 {
-  this->m_storage = storage;
+  this->m_storage = s;
+  return shared_from_this();
+}
+
+/// Return the bridge associated with this operator (or a "null"/invalid shared-pointer).
+BridgeBasePtr Operator::bridge() const
+{
+  return this->m_bridge;
+}
+
+/** Set the bridge that owns this operation.
+  *
+  * The return value is a shared pointer to this operator.
+  */
+Operator::Ptr Operator::setBridge(BridgeBasePtr b)
+{
+  this->m_bridge = b;
   return shared_from_this();
 }
 

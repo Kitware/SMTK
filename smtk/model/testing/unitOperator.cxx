@@ -237,6 +237,13 @@ void testBridgeAssociation(Storage::Ptr storage)
   Operator::Ptr op = model.op("parameter test");
   test(op, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
 
+  // Test Operator->Bridge association
+  test(op->bridge() == storage->bridgeForModel(smtk::util::UUID::null()),
+    "Bad bridge reported by operator.");
+
+  // Test Operator->Storage association
+  test(op->storage() == storage, "Bad storage reported by operator.");
+
   // Test operatorNames()
   StringList opNames = model.bridge()->operatorNames();
   printVec(opNames, "operator names", ',');

@@ -98,14 +98,26 @@ ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
   return *this;
 }
 
-OperatorPtr ModelEntity::op(const std::string& operatorName) const
+/// Return an operator of the given \a name with its Storage set to this model's.
+OperatorPtr ModelEntity::op(const std::string& name) const
 {
-  return this->bridge()->op(operatorName);
+  return this->bridge()->op(name)->setStorage(this->m_storage);
 }
 
+/// Return a set of the operators available for this model.
 Operators ModelEntity::operators() const
 {
-  return this->bridge()->operators();
+  Operators ops;
+  Operators::const_iterator it;
+  BridgeBase::ConstPtr bridge = this->bridge();
+  for (
+    it = bridge->operators().begin();
+    it != bridge->operators().end();
+    ++it)
+    {
+    ops.insert((*it)->clone()->setStorage(this->m_storage));
+    }
+  return ops;
 }
 
 BridgeBasePtr ModelEntity::bridge() const
