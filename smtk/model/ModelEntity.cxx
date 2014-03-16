@@ -120,6 +120,12 @@ Operators ModelEntity::operators() const
   return ops;
 }
 
+/// Return the names of all the operators which can be applied to this model.
+StringList ModelEntity::operatorNames() const
+{
+  return this->bridge()->operatorNames();
+}
+
 BridgeBasePtr ModelEntity::bridge() const
 {
   return this->m_storage->bridgeForModel(this->m_entity);

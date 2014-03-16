@@ -43,6 +43,16 @@ Parameter::Parameter(const std::string& name, const IntegerList& val)
 {
 }
 
+Parameter::Parameter(const std::string& name, const smtk::util::UUID& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(name), m_uuidVals(1, val)
+{
+}
+
+Parameter::Parameter(const std::string& name, const smtk::util::UUIDArray& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(name), m_uuidVals(val)
+{
+}
+
 /// Return the name of the parameter.
 std::string Parameter::name() const
 {

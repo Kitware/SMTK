@@ -44,6 +44,7 @@ public:
 
   OperatorPtr op(const std::string& operatorName) const;
   Operators operators() const;
+  StringList operatorNames() const;
 
   BridgeBasePtr bridge() const;
 };
