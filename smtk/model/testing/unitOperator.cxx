@@ -235,7 +235,7 @@ void testBridgeAssociation(Storage::Ptr storage)
 
   // Test op(name) method
   Operator::Ptr op = model.op("parameter test");
-  test(op, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
+  test(op ? 1 : 0, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
 
   // Test Operator->Bridge association
   test(op->bridge() == storage->bridgeForModel(smtk::util::UUID::null()),
