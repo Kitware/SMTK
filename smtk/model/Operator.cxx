@@ -28,20 +28,20 @@ Parameters Operator::parameters() const
 }
 
 /// Return the parameter of the given name (or an invalid, uninitialized parameter if it does not exist)
-const Parameter& Operator::parameter(const std::string& name) const
+const Parameter& Operator::parameter(const std::string& pname) const
 {
   static const Parameter invalid;
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     return *it;
   return invalid;
 }
 
 /// Return the parameter of the given name (or an invalid, uninitialized parameter if it does not exist)
-Parameter Operator::parameter(const std::string& name)
+Parameter Operator::parameter(const std::string& pname)
 {
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     return *it;
   return Parameter();
 }
@@ -64,11 +64,11 @@ void Operator::setParameter(const Parameter& p)
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasFloatParameter(const std::string& name, int minSize, int maxSize, bool validate) const
+bool Operator::hasFloatParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     {
     int psize = static_cast<int>(it->floatValues().size());
     ok = this->checkParameterSize(psize, minSize, maxSize);
@@ -79,11 +79,11 @@ bool Operator::hasFloatParameter(const std::string& name, int minSize, int maxSi
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasStringParameter(const std::string& name, int minSize, int maxSize, bool validate) const
+bool Operator::hasStringParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     {
     int psize = static_cast<int>(it->stringValues().size());
     ok = this->checkParameterSize(psize, minSize, maxSize);
@@ -94,11 +94,11 @@ bool Operator::hasStringParameter(const std::string& name, int minSize, int maxS
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasIntegerParameter(const std::string& name, int minSize, int maxSize, bool validate) const
+bool Operator::hasIntegerParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     {
     int psize = static_cast<int>(it->integerValues().size());
     ok = this->checkParameterSize(psize, minSize, maxSize);
@@ -109,11 +109,11 @@ bool Operator::hasIntegerParameter(const std::string& name, int minSize, int max
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasUUIDParameter(const std::string& name, int minSize, int maxSize, bool validate) const
+bool Operator::hasUUIDParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
 {
   bool ok = false;
   Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(name))) != this->m_parameters.end())
+  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
     {
     int psize = static_cast<int>(it->uuidValues().size());
     ok = this->checkParameterSize(psize, minSize, maxSize);

@@ -91,9 +91,9 @@ OperatorPtr BridgeBase::op(const std::string& opName) const
   * Subclasses of BridgeBase should call this method in their
   * constructors to indicate which modeling operations they will support.
   */
-void BridgeBase::addOperator(OperatorPtr op)
+void BridgeBase::addOperator(OperatorPtr oper)
 {
-  this->m_operators.insert(op->clone()->setBridge(shared_from_this()));
+  this->m_operators.insert(oper->clone()->setBridge(shared_from_this()));
 }
 
 /**\brief Mark an entity, \a ent, as partially transcribed.
