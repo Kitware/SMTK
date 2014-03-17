@@ -65,7 +65,7 @@ def set_item_value(item, value, index=0):
     item.setValue(index, value)
 
 
-def set_item(item, item_description):
+def set_item(item, item_description, refitem_list):
     '''
     Recursive method to set contents of Item instances
     Returns boolean indicating success
@@ -75,8 +75,14 @@ def set_item(item, item_description):
         item.setIsEnabled(enabled)
 
     if item.type() == smtk.attribute.Item.GROUP:
-        success = process_items(item, item_description)
+        success = process_items(item, item_description, refitem_list)
         return success
+
+    if item.type() == smtk.attribute.Item.ATTRIBUTE_REF:
+        # RefItem instances get set after all attributes have been created
+        refitem_list.append((item, item_description))
+        print 'refitem_list', refitem_list
+        return True
 
     expression = item_description.get('expression')
     if expression is not None:
@@ -108,7 +114,7 @@ def set_item(item, item_description):
             set_item_value(item, value)
 
 
-def process_items(parent, parent_description):
+def process_items(parent, parent_description, refitem_list):
     '''
     Traverses all items contained by parent
     Note that parent may be either Attribute or GroupItem
@@ -116,9 +122,16 @@ def process_items(parent, parent_description):
     '''
     success = True
 
+    debug_flag = False
+    if hasattr(parent, 'type') and parent.type() == 'NaturalTransport':
+        debug_flag = True
+        print 'Set debug_flag', debug_flag
+
     item_list = parent_description.get('items', list())
     for item_description in item_list:
         item_name = item_description.get('name')
+        if debug_flag:
+            print 'debug item name', item_name
         item = parent.find(item_name)
         if item is None:
             print 'Warning: no item %s for parent %s - skipping' % \
@@ -131,7 +144,7 @@ def process_items(parent, parent_description):
 
         print 'Set item %s' % item.name()
         concrete_item = smtk.attribute.to_concrete(item)
-        set_item(concrete_item, item_description)
+        set_item(concrete_item, item_description, refitem_list)
     return success
 
 
@@ -182,7 +195,7 @@ def fetch_attribute(manager, att_type, name, att_id):
     return att
 
 
-def generate_atts(manager, attributes_description):
+def generate_atts(manager, attributes_description, refitem_list):
     '''
     Constructs attributes based on input description
     Returns number of attributes that got created
@@ -221,7 +234,7 @@ def generate_atts(manager, attributes_description):
                     att.associateEntity(model_item)
 
         count += 1
-        process_items(att, att_description)
+        process_items(att, att_description, refitem_list)
 
     return count
 
@@ -241,7 +254,21 @@ def generate_sim(manager, description):
     if att_description is None:
         print 'Warning: no attributes found in input description'
     else:
-        count = generate_atts(manager, att_description)
+        refitem_list = list()
+        count = generate_atts(manager, att_description, refitem_list)
+
+        # Process RefItem instances after all attributes created:
+        #print 'refitem_list', refitem_list
+        for item, description in refitem_list:
+            attname = description.get('attributeref')
+            if attname is None:
+                print 'Warning: no attributeref specified for', item.name()
+                continue
+
+            att = manager.findAttribute(attname)
+            refitem = smtk.attribute.to_concrete(item)
+            print 'Setting RefItem %s to %s' % (refitem.name(), attname)
+            refitem.setValue(att)
 
     return count
 
@@ -275,7 +302,8 @@ if __name__ == '__main__':
     reader = smtk.util.AttributeReader()
     err = reader.read(manager, args.template_filename, logger)
     if err:
-        print 'Abort: Could not load attribute file'
+        print 'Abort: Could not load template file'
+        print logger.convertToString()
         sys.exit(-3)
     model = smtk.model.Model.New()
     manager.setRefModel(model)
