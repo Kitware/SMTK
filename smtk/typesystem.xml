@@ -167,6 +167,7 @@
 
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BridgeBase' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
@@ -223,6 +224,20 @@
   <suppress-warning text="skipping field 'Storage::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Storage::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
+
+  <!-- Ignore until we have time to support Operators -->
+  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;BridgeBase&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_defaultBridge' with unmatched type 'smtk::shared_ptr&lt;BridgeBase&gt;'"/>
+  <suppress-warning text="skipping field 'BridgeBase::m_operators' with unmatched type 'std::set&lt;smtk::model::OperatorPtr&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Storage::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BridgeBase::addOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::BridgeBase::op', unmatched return type 'smtk::model::OperatorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::BridgeBase::operators', unmatched return type 'smtk::model::Operators const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::operators', unmatched return type 'smtk::model::Operators'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityListPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityPhrase::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ModelEntity::op', unmatched return type 'smtk::model::OperatorPtr'"/>
 
 
   @EXTRA_TYPESYSTEMS@
@@ -731,6 +746,18 @@
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="OperatorOutcome">
+        <include file-name="smtk/model/OperatorResult.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="ParameterValidState">
+        <include file-name="smtk/model/Parameter.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="OperatorEventType">
+        <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
       <object-type name="AttributeAssignments">

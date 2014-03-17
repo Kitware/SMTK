@@ -3,6 +3,7 @@
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
+#include "smtk/model/Storage.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {

@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SharedPtr.h"
 #include "smtk/util/SystemConfig.h"
+#include <map>
 #include <set>
 #include <vector>
 
@@ -86,6 +87,9 @@ namespace smtk
     class Entity;
     class Model;
     class ModelEntity;
+    class Operator;
+    class OperatorResult;
+    class Parameter;
     class PropertyValuePhrase;
     class PropertyListPhrase;
     class Shell;
@@ -163,6 +167,7 @@ namespace smtk
   {
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::BridgeBase >            BridgeBasePtr;
+    typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::BridgeBase > > UUIDsToBridges;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
@@ -173,6 +178,9 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::SubphraseGenerator >    SubphraseGeneratorPtr;
     typedef smtk::shared_ptr< smtk::model::Model >                 ModelPtr;
     typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
+    typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
+    typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
+    typedef std::set< smtk::model::OperatorPtr >                   Operators;
     typedef smtk::shared_ptr< smtk::model::Storage >               StoragePtr;
     typedef smtk::weak_ptr< smtk::model::Storage >                 WeakStoragePtr;
     typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;

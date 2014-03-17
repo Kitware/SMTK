@@ -5,6 +5,8 @@
 #include "smtk/model/StringData.h"
 #include "smtk/model/IntegerData.h"
 
+#include <sstream>
+
 namespace smtk {
   namespace model {
 

@@ -97,7 +97,7 @@ enum StorageEventRelationType
   INVALID_RELATIONSHIP          //!< The event is invalid. Used internally. This must be the last enum.
 };
 
-/**\brief A notification of an event.
+/**\brief A notification of a storage event.
   *
   * All events have both a change type and a relationship type.
   */
@@ -127,6 +127,33 @@ typedef std::pair<OneToManyCallback,void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.
 typedef std::pair<StorageEventType,OneToManyObserver> OneToManyTrigger;
 
+/**\brief Enumerate events that an operator may encounter.
+  *
+  */
+enum OperatorEventType
+{
+  PARAMETER_CHANGE,   //!< A parameter has been modified
+  WILL_OPERATE,       //!< The operation will commence if no observers cancel it.
+  DID_OPERATE         //!< The operation has completed or been canceled.
+};
+
+/// Callbacks for operator PARAMETER_CHANGE events.
+typedef int (*ParameterChangeCallback)(
+  OperatorEventType event, const Operator& op, const Parameter& oldValue, const Parameter& newValue, void* user);
+/// An observer of PARAMETER_CHANGE events binds a callback and opaque, user-provided data.
+typedef std::pair<ParameterChangeCallback,void*> ParameterChangeObserver;
+
+/// Callbacks for WILL_OPERATE events provide access to the operator. Returning non-zero values cancel the operation.
+typedef int (*WillOperateCallback)(
+  OperatorEventType event, const Operator& op, void* user);
+/// An observer of WILL_OPERATE events binds a callback and opaque, user-provided data.
+typedef std::pair<WillOperateCallback,void*> WillOperateObserver;
+
+/// Callbacks for DID_OPERATE events provide access to the operator and the results of the operation. Return values are ignored.
+typedef int (*DidOperateCallback)(
+  OperatorEventType event, const Operator& op, const OperatorResult& r, void* user);
+/// An observer of DID_OPERATE events binds a callback and opaque, user-provided data.
+typedef std::pair<DidOperateCallback,void*> DidOperateObserver;
 
   } // namespace model
 } // namespace smtk

@@ -10,6 +10,7 @@ set(modelSrcs
   Chain.cxx
   Cursor.cxx
   CursorArrangementOps.cxx
+  DefaultBridge.cxx
   DescriptivePhrase.cxx
   Edge.cxx
   EdgeUse.cxx
@@ -28,6 +29,9 @@ set(modelSrcs
   Loop.cxx
   Model.cxx
   ModelEntity.cxx
+  Operator.cxx
+  OperatorResult.cxx
+  Parameter.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
   Shell.cxx
@@ -55,6 +59,7 @@ set(modelHeaders
   Chain.h
   Cursor.h
   CursorArrangementOps.h
+  DefaultBridge.h
   DescriptivePhrase.h
   Edge.h
   EdgeUse.h
@@ -77,6 +82,10 @@ set(modelHeaders
   Loop.h
   Model.h
   ModelEntity.h
+  Operator.h
+  OperatorResult.h
+  Parameter.h
+  PropertyType.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
   Shell.h

@@ -11,8 +11,9 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
-#include "smtk/model/StringData.h"
 #include "smtk/model/IntegerData.h"
+#include "smtk/model/PropertyType.h"
+#include "smtk/model/StringData.h"
 
 #include "smtk/options.h" // for SMTK_HASH_STORAGE
 #ifdef SMTK_HASH_STORAGE
@@ -33,15 +34,6 @@ typedef std::map<smtk::util::UUID,Entity> UUIDsToEntities;
 #endif
 /// An abbreviation for an iterator into primary model storage.
 typedef UUIDsToEntities::iterator UUIDWithEntity;
-
-/// Primitive storage types for model properties
-enum PropertyType
-{
-  FLOAT_PROPERTY,    //!< Property is an array of floating-point numbers
-  STRING_PROPERTY,   //!< Property is an array of strings
-  INTEGER_PROPERTY,  //!< Property is an array of integers
-  INVALID_PROPERTY   //!< Property has no storage.
-};
 
 /**\brief A solid model whose entities are referenced individually with instances of T and collectively as sets of type S.
   *
@@ -75,10 +67,10 @@ public:
 
   virtual bool erase(const smtk::util::UUID& uid);
 
-  smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
-  smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2);
-  smtk::util::UUIDs boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2);
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2) const;
+  smtk::util::UUIDs bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2) const;
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension = -2) const;
+  smtk::util::UUIDs boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension = -2) const;
 
   smtk::util::UUIDs lowerDimensionalBoundaries(const smtk::util::UUID& ofEntity, int lowerDimension);
   smtk::util::UUIDs higherDimensionalBordants(const smtk::util::UUID& ofEntity, int higherDimension);
@@ -142,7 +134,9 @@ public:
   UUIDsToIntegerData& integerProperties() { return *this->m_integerData; }
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
-  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid);
+  smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid) const;
+  BridgeBasePtr bridgeForModel(const smtk::util::UUID& uid) const;
+  void setBridgeForModel(BridgeBasePtr bridge, const smtk::util::UUID& uid);
 
   void assignDefaultNames();
   std::string assignDefaultName(const smtk::util::UUID& uid);
@@ -153,7 +147,8 @@ protected:
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
-  std::map<smtk::util::UUID,BridgeBasePtr> m_modelBridges;
+  UUIDsToBridges m_modelBridges;
+  smtk::shared_ptr<BridgeBase> m_defaultBridge;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
 

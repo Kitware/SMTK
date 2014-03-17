@@ -10,11 +10,15 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/Operator.h"
 
 namespace smtk {
   namespace model {
 
+class BridgeBase;
 class Cursor;
+class Operator;
+typedef std::map<smtk::util::UUID,smtk::shared_ptr<BridgeBase> > UUIDsToBridges;
 
 /**\brief Bit flags describing types of information bridged to Storage.
   *
@@ -59,6 +63,9 @@ typedef unsigned long BridgedInfoBits;
   * destroyed. In extreme cases, SMTK Storage must be reset after
   * each modeling operation to guarantee a consistent model.
   *
+  * Bridges may provide SMTK with Operators that can be used to
+  * modify models in storage.
+  *
   * Register an instance of a BridgeBase subclass to a
   * model with Storage::bridgeModel(). Then, when an
   * entity cannot be resolved from a UUID created by
@@ -72,14 +79,21 @@ typedef unsigned long BridgedInfoBits;
   * by subclasses in order to track UUIDs for which there
   * is only partial information in Storage.
   *
-  * \sa smtk::model::BridgedInformation.
+  * \sa smtk::model::BridgedInformation smtk::model::Operator
   */
-class SMTKCORE_EXPORT BridgeBase
+class SMTKCORE_EXPORT BridgeBase : smtkEnableSharedPtr(BridgeBase)
 {
 public:
+  smtkTypeMacro(BridgeBase);
+
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 
   virtual BridgedInfoBits allSupportedInformation() const;
+
+  StringList operatorNames() const;
+  const Operators& operators() const;
+  OperatorPtr op(const std::string& opName) const;
+  virtual void addOperator(OperatorPtr op);
 
 protected:
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
@@ -88,6 +102,7 @@ protected:
 
   typedef std::map<smtk::model::Cursor,int> DanglingEntities;
   DanglingEntities m_dangling;
+  Operators m_operators;
 };
 
   } // namespace model

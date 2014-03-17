@@ -8,6 +8,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/Storage.h"
 
 #include <QtGui/QPushButton>
 #include <QtGui/QTreeView>
