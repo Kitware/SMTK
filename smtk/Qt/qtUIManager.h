@@ -134,10 +134,13 @@ namespace smtk
 
     public slots:
       void onFileItemCreated(smtk::attribute::qtFileItem*);
-      void onInputValueChanged();
       void onComboIndexChanged();
       void onExpressionReferenceChanged();
       void updateModelViews();
+      void onTextEditChanged();
+      void onLineEditChanged();
+      void onLineEditFinished();
+      void onInputValueChanged(QObject*);
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
