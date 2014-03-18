@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QGroupBox>
 #include <QVBoxLayout>
+#include <QPointer>
 
 using namespace smtk::attribute;
 
@@ -39,7 +40,7 @@ using namespace smtk::attribute;
 class qtGroupItemInternals
 {
 public:
-
+  QPointer<QFrame> ChildrensFrame;
 };
 
 //----------------------------------------------------------------------------
@@ -73,23 +74,45 @@ void qtGroupItem::createWidget()
 
   QGroupBox* groupBox = new QGroupBox(item->label().c_str(),
     this->parentWidget());
-  //   groupBox->setCheckable(true);
-  //   groupBox->setChecked(true);
   this->Widget = groupBox;
   // Instantiate a layout for the widget, but do *not* assign it to a variable.
   // because that would cause a compiler warning, since the layout is not
   // explicitly referenced anywhere in this scope. (There is no memory
   // leak because the layout instance is parented by the widget.)
   new QVBoxLayout(this->Widget);
+  this->Widget->layout()->setMargin(0);
+  this->Internals->ChildrensFrame = new QFrame(groupBox);
+  new QVBoxLayout(this->Internals->ChildrensFrame);
+  this->Widget->layout()->addWidget(this->Internals->ChildrensFrame);
+
   if(this->parentWidget())
     {
     this->parentWidget()->layout()->setAlignment(Qt::AlignTop);
     this->parentWidget()->layout()->addWidget(this->Widget);
     }
-
   this->updateItemData();
+
+  // If the group is optional, we need a checkbox
+  if(item->isOptional())
+    {
+    groupBox->setCheckable(true);
+    groupBox->setChecked(item->isEnabled());
+    this->Internals->ChildrensFrame->setEnabled(item->isEnabled());
+    connect(groupBox, SIGNAL(toggled(bool)),
+            this, SLOT(setEnabledState(bool)));
+    }
 }
 
+//----------------------------------------------------------------------------
+void qtGroupItem::setEnabledState(bool checked)
+{
+  this->Internals->ChildrensFrame->setEnabled(checked);
+  if(!this->getObject())
+    {
+    return;
+    }
+  this->getObject()->setIsEnabled(checked);
+}
 
 //----------------------------------------------------------------------------
 void qtGroupItem::updateItemData()
@@ -110,7 +133,7 @@ void qtGroupItem::updateItemData()
         static_cast<int>(j)), this->Widget, this->baseView());
       if(childItem)
         {
-        this->Widget->layout()->addWidget(childItem->widget());
+        this->Internals->ChildrensFrame->layout()->addWidget(childItem->widget());
         }
       }
     }
