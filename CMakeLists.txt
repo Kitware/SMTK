@@ -6,12 +6,6 @@ configure_file(
   "${PROJECT_BINARY_DIR}/VTKUUIDConfigure.h"
   )
 
-include_directories(
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/Serialize
-  ${PROJECT_SOURCE_DIR}/Model
-  ${PROJECT_BINARY_DIR}
-)
 
 ###############################################################################
 ###############################################################################
@@ -179,3 +173,10 @@ set(vtkDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkDiscreteModel ${_module_src})
 
 target_link_libraries(vtkDiscreteModel LINK_PRIVATE ${UUID_LIBS})
+
+target_include_directories(vtkDiscreteModel PUBLIC
+  ${PROJECT_SOURCE_DIR}
+  ${PROJECT_SOURCE_DIR}/Serialize
+  ${PROJECT_SOURCE_DIR}/Model
+  ${PROJECT_BINARY_DIR}
+  )
