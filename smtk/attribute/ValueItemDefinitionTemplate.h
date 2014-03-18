@@ -46,7 +46,7 @@ namespace smtk
 
       const DataT &defaultValue() const
       {return this->m_defaultValue;}
-      void setDefaultValue(const DataT &val);
+      bool setDefaultValue(const DataT &val);
       const DataT &discreteValue(std::size_t element) const
       {return this->m_discreteValues[element];}
       void addDiscreteValue(const DataT &val);
@@ -97,11 +97,17 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
-    void ValueItemDefinitionTemplate<DataT>::
+    bool ValueItemDefinitionTemplate<DataT>::
     setDefaultValue(const DataT &dvalue)
     {
+      // Is this a vaild value?
+      if (!this->isValueValid(dvalue))
+        {
+        return false;
+        }
       this->m_defaultValue = dvalue;
       this->m_hasDefault = true;
+      return true;
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
@@ -126,6 +132,18 @@ namespace smtk
     bool ValueItemDefinitionTemplate<DataT>::
     setMinRange(const DataT &minVal, bool isInclusive)
     {
+      // If there is a default value is it within the new range?
+      if (this->m_hasDefault)
+        {
+        if (this->m_defaultValue < minVal)
+          {
+          return false;
+          }
+        if ((!isInclusive) && (this->m_defaultValue == minVal))
+          {
+          return false;
+          }
+        }
       if ((!this->m_maxRangeSet) || (minVal < this->m_maxRange))
         {
         this->m_minRangeSet = true;
@@ -140,6 +158,18 @@ namespace smtk
     bool ValueItemDefinitionTemplate<DataT>::
     setMaxRange(const DataT &maxVal, bool isInclusive)
     {
+      // If there is a default value is it within the new range?
+      if (this->m_hasDefault)
+        {
+        if (this->m_defaultValue > maxVal)
+          {
+          return false;
+          }
+        if ((!isInclusive) && (this->m_defaultValue == maxVal))
+          {
+          return false;
+          }
+        }
       if ((!this->m_minRangeSet) || (maxVal > this->m_minRange))
         {
         this->m_maxRangeSet = true;

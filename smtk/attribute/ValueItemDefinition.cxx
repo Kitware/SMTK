@@ -38,6 +38,8 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
   this->m_numberOfRequiredValues = 1;
+  this->m_maxNumberOfValues = 0;
+  this->m_isExtensible = false;
   this->m_expressionDefinition = RefItemDefinition::New("expression");
   this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }

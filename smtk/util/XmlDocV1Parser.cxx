@@ -742,17 +742,22 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
-  int numberOfComponents = -1;
+  std::size_t numberOfComponents = 0;
   if (xatt)
     {
-    numberOfComponents = xatt.as_int();
+    numberOfComponents = xatt.as_uint();
     idef->setNumberOfRequiredValues(numberOfComponents);
     }
-  else
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
     {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
+    def->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      def->setMaxNumberOfValues(xatt.as_uint());
+      }
     }
 
   // Lets see if there are labels
@@ -1121,15 +1126,19 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
   xatt = node.attribute("NumberOfRequiredGroups");
   if (xatt)
     {
-    def->setNumberOfRequiredGroups(xatt.as_int());
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredGroups for Item Definition : "
-                   << def->name());
+    def->setNumberOfRequiredGroups(xatt.as_uint());
     }
 
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    def->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfGroups");
+    if (xatt)
+      {
+      def->setMaxNumberOfGroups(xatt.as_uint());
+      }
+    }
   // Lets see if there are labels
   if(node.child("Labels"))
     {
@@ -1389,7 +1398,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::size_t i=0, n = item->numberOfValues();
   xml_attribute xatt;
-  if (!numRequiredVals)
+  if (item->isExtensible())
     {
     // The node should have an attribute indicating how many values are
     // associated with the item
@@ -1404,6 +1413,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     n = xatt.as_uint();
     item->setNumberOfValues(n);
     }
+
   if (!item->isDiscrete())
     {
     return; // there is nothing to be done
@@ -1758,7 +1768,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   xml_attribute xatt;
   n = item->numberOfGroups();
   m = item->numberOfItemsPerGroup();
-  if (!numRequiredGroups)
+  if (item->isExtensible())
     {
     // The node should have an attribute indicating how many groups are
     // associated with the item

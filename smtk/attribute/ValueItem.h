@@ -47,6 +47,9 @@ namespace smtk
       virtual std::size_t numberOfValues() const
       {return this->m_isSet.size();}
       std::size_t numberOfRequiredValues() const;
+      std::size_t maxNumberOfValues() const;
+
+      bool isExtensible() const;
 
       bool allowsExpressions() const;
       bool isExpression(std::size_t elementIndex=0) const

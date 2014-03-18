@@ -27,11 +27,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-ValueItem::ValueItem(Attribute *owningAttribute, 
-                     int itemPosition): 
+ValueItem::ValueItem(Attribute *owningAttribute,
+                     int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
@@ -39,7 +39,7 @@ ValueItem::ValueItem(Attribute *owningAttribute,
 //----------------------------------------------------------------------------
 ValueItem::ValueItem(Item *inOwningItem,
                      int itemPosition,
-                     int mySubGroupPosition): 
+                     int mySubGroupPosition):
   Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
@@ -48,7 +48,7 @@ bool ValueItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef)
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     dynamic_cast<const ValueItemDefinition *>(vdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -102,9 +102,20 @@ ValueItem::~ValueItem()
     }
 }
 //----------------------------------------------------------------------------
+bool ValueItem::isExtensible() const
+{
+  const ValueItemDefinition *def =
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isExtensible();
+}
+//----------------------------------------------------------------------------
 std::size_t ValueItem::numberOfRequiredValues() const
 {
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (!def)
     {
@@ -113,9 +124,20 @@ std::size_t ValueItem::numberOfRequiredValues() const
   return def->numberOfRequiredValues();
 }
 //----------------------------------------------------------------------------
+std::size_t ValueItem::maxNumberOfValues() const
+{
+  const ValueItemDefinition *def =
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return 0;
+    }
+  return def->maxNumberOfValues();
+}
+//----------------------------------------------------------------------------
 bool ValueItem::allowsExpressions() const
 {
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (!def)
     {
@@ -126,7 +148,7 @@ bool ValueItem::allowsExpressions() const
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 {
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->allowsExpressions())
     {
@@ -138,7 +160,7 @@ smtk::attribute::AttributePtr ValueItem::expression(std::size_t element) const
 bool ValueItem::setExpression(std::size_t element,
                               smtk::attribute::AttributePtr exp)
 {
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->allowsExpressions())
     {
@@ -163,21 +185,27 @@ bool ValueItem::setExpression(std::size_t element,
 //----------------------------------------------------------------------------
 bool ValueItem::appendExpression(smtk::attribute::AttributePtr exp)
 {
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  size_t n = m_expressions.size(), maxN = def->maxNumberOfValues();
+
   if (!def->allowsExpressions())
     {
     return false;
     }
-  if (def->numberOfRequiredValues() != 0)
+  if (!def->isExtensible())
     {
     return false; // The number of values is fixed
     }
+  if (maxN && (n >= maxN))
+    {
+    return false; // max number reached
+    }
+
   if (!def->isValidExpression(exp))
     {
     return false; // Attribute is of the proper type
     }
-  size_t n = m_expressions.size();
   this->m_expressions.resize(n+1);
   def->buildExpressionItem(this, static_cast<int>(n));
   this->m_expressions[n]->setValue(exp);
@@ -191,7 +219,7 @@ bool ValueItem::isDiscrete() const
     isDiscrete();
 }
 //----------------------------------------------------------------------------
-void ValueItem::reset() 
+void ValueItem::reset()
 {
   Item::reset();
 }
@@ -202,7 +230,7 @@ bool ValueItem::setDiscreteIndex(std::size_t element, int index)
     {
     return false;
     }
-  const ValueItemDefinition *def = 
+  const ValueItemDefinition *def =
     static_cast<const ValueItemDefinition*>(this->m_definition.get());
   if (def->isDiscreteIndexValid(index))
     {

@@ -197,9 +197,15 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      if (def->numberOfRequiredValues() != 0)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
+        }
+
+      std::size_t n = this->maxNumberOfValues();
+      if (n && (this->numberOfValues() >= n))
+        {
+        return false; // max number reached
         }
 
       if (def->isDiscrete())
@@ -246,12 +252,25 @@ namespace smtk
         }
 
       //Next - are we allowed to change the number of values?
-      const DefType *def = static_cast<const DefType *>(this->definition().get());
-      std::size_t n = def->numberOfRequiredValues();
-      if (n)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
         }
+
+      // Is this size between the required number and the max?
+      if (newSize < this->numberOfRequiredValues())
+        {
+        return false;
+        }
+
+      std::size_t n = this->maxNumberOfValues();
+      if (n && (newSize >= n))
+        {
+        return false; // greater than max number
+        }
+
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      n = this->numberOfValues();
       // Are we increasing or decreasing?
       if (newSize < n)
         {
@@ -304,10 +323,13 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      if (def->numberOfRequiredValues() != 0)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
         }
+      if (this->numberOfValues() <= this->numberOfRequiredValues())
+        {
+        return false; // min number of values reeched
       if (def->allowsExpressions())
         {
         this->m_expressions[element]->detachOwningItem();
@@ -384,7 +406,11 @@ namespace smtk
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
-      std::size_t i, n = def->numberOfRequiredValues();
+      std::size_t i, n = this->numberOfRequiredValues();
+      if (this->numberOfValues() != n)
+        {
+        this->setNumberOfValues(n);
+        }
       if (!n)
         {
         this->m_values.clear();
@@ -399,6 +425,7 @@ namespace smtk
             }
           this->m_expressions.clear();
           }
+        ValueItem::reset();
         return;
         }
 
@@ -416,6 +443,7 @@ namespace smtk
           {
           this->unset(i);
           }
+        ValueItem::reset();
         return;
         }
 

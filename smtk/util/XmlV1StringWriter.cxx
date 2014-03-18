@@ -499,6 +499,14 @@ void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
 {
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible").set_value("true");
+    if (idef->maxNumberOfValues())
+      {
+      node.append_attribute("MaxNumberOfValues") = static_cast<unsigned int>(idef->maxNumberOfValues());
+      }
+    }
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
@@ -666,6 +674,15 @@ void XmlV1StringWriter::processGroupDef(pugi::xml_node &node,
                                         attribute::GroupItemDefinitionPtr idef)
 {
   node.append_attribute("NumberOfRequiredGroups") = static_cast<unsigned int>(idef->numberOfRequiredGroups());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible").set_value("true");
+    if (idef->maxNumberOfGroups())
+      {
+      node.append_attribute("MaxNumberOfGroups") = static_cast<unsigned int>(idef->maxNumberOfGroups());
+      }
+    }
+
   xml_node itemDefNode, itemDefNodes;
   if (idef->hasSubGroupLabels())
     {
@@ -790,7 +807,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
 
   // If the item can have variable number of values then store how many
   // values it has
-  if (!numRequiredVals)
+  if (item->isExtensible())
     {
     node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }

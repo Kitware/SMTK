@@ -75,12 +75,29 @@ namespace smtk
 
       int findItemPosition(const std::string &name) const;
 
+      // Returns or Sets the def's extensiblity property.  If true then items from this def
+      // can have a variable number of groups.  The number of sub groups is always <= to number of
+      // required groups and max number of groups (provided max number of groups > 0)
+      // Default value is false.
+      bool isExtensible() const
+      {return this->m_isExtensible;}
+      void setIsExtensible(bool mode)
+      {this->m_isExtensible = mode;}
+
       std::size_t numberOfRequiredGroups() const
       {return this->m_numberOfRequiredGroups;}
       void setNumberOfRequiredGroups(std::size_t gsize)
       {this->m_numberOfRequiredGroups = gsize;}
       bool hasSubGroupLabels() const
       {return !this->m_labels.empty();}
+
+      // Returns or Sets the maximum number of groups that items from this def can have.
+      // if 0 is returned then there is no max limit.  Default value is 0
+      // Note that this is used only when the def is extensible
+      std::size_t maxNumberOfGroups() const
+      {return this->m_maxNumberOfGroups;}
+      void setMaxNumberOfGroups(std::size_t esize)
+      {this->this->m_maxNumberOfGroups = esize;}
 
       void setSubGroupLabel(std::size_t element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
@@ -104,6 +121,8 @@ namespace smtk
       std::map<std::string, int> m_itemDefPositions;
       std::vector<std::string> m_labels;
       std::size_t m_numberOfRequiredGroups;
+      std::size_t m_maxNumberOfGroups;
+      bool m_isExtensible;
       bool m_useCommonLabel;
     private:
     };

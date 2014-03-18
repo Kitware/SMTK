@@ -42,6 +42,10 @@ namespace smtk
       virtual ~GroupItem();
       virtual Item::Type type() const;
       std::size_t numberOfRequiredGroups() const;
+      std::size_t maxNumberOfGroups() const;
+
+      bool isExtensible() const;
+
       std::size_t numberOfGroups() const
       {return this->m_items.size();}
       bool  setNumberOfGroups(std::size_t newSize);
