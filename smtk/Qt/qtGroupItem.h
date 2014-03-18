@@ -45,7 +45,8 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-     
+      virtual void setEnabledState(bool checked);
+
     protected:
       virtual void createWidget();
 
