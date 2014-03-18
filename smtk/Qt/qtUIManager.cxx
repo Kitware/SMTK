@@ -30,7 +30,6 @@
 #include <QMimeData>
 #include <QClipboard>
 #include <QSpinBox>
-#include <QLineEdit>
 #include <QApplication>
 #include <QComboBox>
 #include <QStringList>
@@ -38,6 +37,7 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QLineEdit>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -977,7 +977,7 @@ QWidget* qtUIManager::createEditBox(
         qtTextEdit* textEdit = new qtTextEdit(pWidget);
         textEdit->setPlainText(valText);
         QObject::connect(textEdit, SIGNAL(textChanged()),
-          this, SLOT(onInputValueChanged()));
+          this, SLOT(onTextEditChanged()));
         inputWidget = textEdit;
         }
       else
@@ -1012,19 +1012,53 @@ QWidget* qtUIManager::createEditBox(
     }
   if(QLineEdit* const editBox = qobject_cast<QLineEdit*>(inputWidget))
     {
+    QObject::connect(editBox, SIGNAL(textChanged(const QString&)),
+      this, SLOT(onLineEditChanged()), Qt::QueuedConnection);
     QObject::connect(editBox, SIGNAL(editingFinished()),
-      this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
+      this, SLOT(onLineEditFinished()), Qt::QueuedConnection);
     }
 
   return inputWidget;
 }
+
 //----------------------------------------------------------------------------
-void qtUIManager::onInputValueChanged()
+void qtUIManager::onTextEditChanged()
 {
-  QLineEdit* const editBox = qobject_cast<QLineEdit*>(
-    QObject::sender());
-  QTextEdit* const textBox = qobject_cast<QTextEdit*>(
-    QObject::sender());
+  this->onInputValueChanged(QObject::sender());
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::onLineEditChanged()
+{
+  // Here we only handle changes when this is invoked from setText()
+  // which is normally used programatically, and the setText() will have
+  // modified flag reset to false;
+  QLineEdit* const editBox = qobject_cast<QLineEdit*>(QObject::sender());
+  if(!editBox)
+    {
+    return;
+    }
+  // If this is not from setText(), ignore it. We are using editingFinished
+  // signal to handle others.
+  if(editBox->isModified())
+    {
+    return;
+    }
+
+  this->onInputValueChanged(editBox);
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::onLineEditFinished()
+{
+  this->onInputValueChanged(QObject::sender());
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::onInputValueChanged(QObject* obj)
+{
+  QLineEdit* const editBox = qobject_cast<QLineEdit*>(obj);
+  QTextEdit* const textBox = qobject_cast<QTextEdit*>(obj);
   if(!editBox && !textBox)
     {
     return;
