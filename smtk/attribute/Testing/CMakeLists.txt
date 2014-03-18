@@ -9,6 +9,7 @@ add_executable(attributeAssociationTest attributeAssociationTest.cxx)
 add_executable(attributeAutoNamingTest attributeAutoNamingTest.cxx)
 add_executable(attributeReferencingTest attributeReferencingTest.cxx)
 add_executable(categoryTest categoryTest.cxx)
+add_executable(extensibleAttributeTest extensibleAttributeTest.cxx)
 
 target_link_libraries(basicAttributeTest SMTKCore)
 target_link_libraries(basicAttributeDefinitionTest SMTKCore)
@@ -21,6 +22,7 @@ target_link_libraries(attributeAssociationTest SMTKCore)
 target_link_libraries(attributeAutoNamingTest SMTKCore)
 target_link_libraries(attributeReferencingTest SMTKCore)
 target_link_libraries(categoryTest SMTKCore)
+target_link_libraries(extensibleAttributeTest SMTKCore)
 
 
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeTest)
@@ -34,3 +36,4 @@ add_test(attributeAssociationTest ${EXECUTABLE_OUTPUT_PATH}/attributeAssociation
 add_test(attributeAutoNamingTest ${EXECUTABLE_OUTPUT_PATH}/attributeAutoNamingTest)
 add_test(attributeReferencingTest ${EXECUTABLE_OUTPUT_PATH}/attributeReferencingTest)
 add_test(categoryTest ${EXECUTABLE_OUTPUT_PATH}/categoryTest)
+add_test(extensibleAttributeTest ${EXECUTABLE_OUTPUT_PATH}/extensibleAttributeTest)

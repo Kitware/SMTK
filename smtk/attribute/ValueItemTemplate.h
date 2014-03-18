@@ -329,7 +329,8 @@ namespace smtk
         }
       if (this->numberOfValues() <= this->numberOfRequiredValues())
         {
-        return false; // min number of values reeched
+        return false; // min number of values reached
+        }
       if (def->allowsExpressions())
         {
         this->m_expressions[element]->detachOwningItem();
