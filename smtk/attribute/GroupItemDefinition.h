@@ -81,13 +81,14 @@ namespace smtk
       // Default value is false.
       bool isExtensible() const
       {return this->m_isExtensible;}
-      void setIsExtensible(bool mode)
-      {this->m_isExtensible = mode;}
+      void setIsExtensible(bool mode);
 
       std::size_t numberOfRequiredGroups() const
       {return this->m_numberOfRequiredGroups;}
-      void setNumberOfRequiredGroups(std::size_t gsize)
-      {this->m_numberOfRequiredGroups = gsize;}
+
+      // Returns false if gsize is greater than max number of groups (and max number > 0)
+      bool setNumberOfRequiredGroups(std::size_t gsize);
+
       bool hasSubGroupLabels() const
       {return !this->m_labels.empty();}
 
@@ -96,9 +97,10 @@ namespace smtk
       // Note that this is used only when the def is extensible
       std::size_t maxNumberOfGroups() const
       {return this->m_maxNumberOfGroups;}
-      void setMaxNumberOfGroups(std::size_t esize)
-      {this->this->m_maxNumberOfGroups = esize;}
-
+      // Returns false if the new max is less than the number of required groups
+      // and is not 0
+      bool setMaxNumberOfGroups(std::size_t esize);
+\
       void setSubGroupLabel(std::size_t element, const std::string &elabel);
       void setCommonSubGroupLabel(const std::string &elabel);
       bool usingCommonSubGroupLabel() const

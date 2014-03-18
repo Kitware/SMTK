@@ -92,15 +92,18 @@ namespace smtk
       // Default value is 1
       std::size_t numberOfRequiredValues() const
       {return this->m_numberOfRequiredValues;}
-      void setNumberOfRequiredValues(std::size_t esize);
+
+      // Returns false if esize is greater than max number of values (and max number > 0)
+      bool setNumberOfRequiredValues(std::size_t esize);
 
       // Returns or Sets the maximum number of values that items from this def can have.
       // if 0 is returned then there is no max limit.  Default value is 0
       // Note that this is used only when the def is extensible
       std::size_t maxNumberOfValues() const
       {return this->m_maxNumberOfValues;}
-      void setMaxNumberOfValues(std::size_t esize)
-      {this->this->m_maxNumberOfValues = esize;}
+
+      // Returns false if esize is less than number of required values (and esize > 0)
+      bool setMaxNumberOfValues(std::size_t esize);
 
       // Returns or Sets the def's extensiblity property.  If true then items from this def
       // can have a variable number of values.  The number of values is always <= to number of
@@ -108,8 +111,7 @@ namespace smtk
       // Default value is false.
       bool isExtensible() const
       {return this->m_isExtensible;}
-      void setIsExtensible(bool mode)
-      {this->m_isExtensible = mode;}
+      void setIsExtensible(bool mode);
 
       // Description:
       // Return whether or not there are labels for components.

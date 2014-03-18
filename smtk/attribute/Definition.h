@@ -36,6 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <string>
 #include <set>
 #include <vector>
+#include <iostream>
 
 namespace smtk
 {
@@ -176,13 +177,9 @@ namespace smtk
                            std::vector<smtk::attribute::Attribute *>*conflicts) const;
       bool conflicts(smtk::attribute::DefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const
-      {return this->m_itemDefs.size();}
-      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
-      {
-        return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
-          : (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
-             smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[static_cast<std::size_t>(ith)]);
-      }
+      {return this->m_itemDefs.size() + this->m_baseItemOffset;}
+
+      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const;
 
       // Description:
       // Item definitions are the definitions of what data is stored
@@ -290,8 +287,7 @@ namespace smtk
     {
       if (this->m_baseDefinition)
         {
-        this->m_baseItemOffset = this->m_baseDefinition->m_baseItemOffset +
-          this->m_baseDefinition->numberOfItemDefinitions();
+        this->m_baseItemOffset = this->m_baseDefinition->numberOfItemDefinitions();
         }
     }
  //----------------------------------------------------------------------------
@@ -359,7 +355,22 @@ namespace smtk
       this->m_defaultColor[2]= b;
       this->m_defaultColor[3]= a;
     }
+
+//----------------------------------------------------------------------------
+    inline smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
+    {
+      // Is the item in this defintion?
+      if (ith >= this->m_baseItemOffset)
+        {
+        std::cout << "new ith = " << ith-this->m_baseItemOffset << "offset = " << this->m_baseItemOffset << std::endl;
+        return this->m_itemDefs[static_cast<std::size_t>(ith-this->m_baseItemOffset)];
+        }
+      else if (this->m_baseDefinition)
+        {
+        return this->m_baseDefinition->itemDefinition(ith);
+        }
+      return smtk::attribute::ItemDefinitionPtr();
+    }
   }
 }
-
 #endif /* __smtk_attribute_Definition_h */

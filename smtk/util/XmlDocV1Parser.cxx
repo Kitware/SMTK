@@ -521,8 +521,19 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
 {
   xml_node node;
   attribute::DefinitionPtr def, baseDef;
-  std::string type = defNode.attribute("Type").value();
-  std::string baseType = defNode.attribute("BaseType").value();
+  xml_attribute xatt;
+  std::string type, baseType;
+  xatt = defNode.attribute("Type");
+  if (xatt)
+    {
+    type = xatt.value();
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "Definition missing Type XML Attribute");
+    return;
+    }
+  baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
     {
     baseDef = this->m_manager.findDefinition(baseType);
@@ -539,13 +550,16 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     {
     def = this->m_manager.createDefinition(type);
     }
-  xml_attribute xatt;
   xatt = defNode.attribute("Label");
   if (xatt)
     {
     def->setLabel(xatt.value());
     }
-  def->setVersion(defNode.attribute("Version").as_int());
+  xatt = defNode.attribute("Version");
+  if (xatt)
+    {
+    def->setVersion(xatt.as_int());
+    }
 
   xatt = defNode.attribute("Abstract");
   if (xatt)
@@ -571,9 +585,12 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     def->setIsNodal(xatt.as_bool());
     }
 
-  unsigned int mask =
-    this->decodeModelEntityMask(defNode.attribute("Associations").value());
-  def->setAssociationMask(mask);
+  xatt = defNode.attribute("Associations");
+    {
+    unsigned int mask =
+      this->decodeModelEntityMask(xatt.value());
+    def->setAssociationMask(mask);
+    }
 
   double color[4];
 
@@ -662,7 +679,11 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
     {
     idef->setLabel(xatt.value());
     }
-  idef->setVersion(node.attribute("Version").as_int());
+  xatt = node.attribute("Version");
+  if (xatt)
+    {
+    idef->setVersion(xatt.as_int());
+    }
   xatt = node.attribute("Optional");
   if (xatt)
     {
@@ -752,11 +773,11 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   xatt = node.attribute("Extensible");
   if (xatt)
     {
-    def->setIsExtensible(xatt.as_bool());
+    idef->setIsExtensible(xatt.as_bool());
     xatt = node.attribute("MaxNumberOfValues");
     if (xatt)
       {
-      def->setMaxNumberOfValues(xatt.as_uint());
+      idef->setMaxNumberOfValues(xatt.as_uint());
       }
     }
 

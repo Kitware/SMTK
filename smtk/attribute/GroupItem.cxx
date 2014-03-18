@@ -229,7 +229,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
   const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   std::size_t i;
-  n = thia->numberOfGroups();
+  n = this->numberOfGroups();
   if (newSize < n)
     {
     // We need to detach all of the items we no longer need

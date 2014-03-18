@@ -54,8 +54,10 @@ Definition::Definition(const std::string &myType,
   this->m_isDefaultColorSet = false;
   if (myBaseDef)
     {
-    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions() +
-      myBaseDef->m_baseItemOffset;
+    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
+    std::cout << myType << ": Num Base Item Defs: " << myBaseDef->numberOfItemDefinitions()
+              << " Base Def Offset: " << myBaseDef->m_baseItemOffset << "My Offset: "
+              << this->m_baseItemOffset << std::endl;
     }
   else
     {
