@@ -164,7 +164,7 @@ namespace {
       {
       return;
       }
-    if (item->numberOfRequiredValues() == 1)
+    if ((item->numberOfRequiredValues() == 1) && !item->isExtensible())
       {
       if (item->isSet())
         {
@@ -362,10 +362,11 @@ void XmlV1StringWriter::processDefinition(xml_node &definitions,
     }
   // Now lets process its items
   std::size_t i, n = def->numberOfItemDefinitions();
-  if (n != 0)
+  // Does this definition have items not derived from its base def?
+  if (n != def->itemOffset())
     {
     itemDefNodes = node.append_child("ItemDefinitions");
-    for (i = 0; i < n; i++)
+    for (i = def->itemOffset(); i < n; i++)
       {
       itemDefNode = itemDefNodes.append_child();
       itemDefNode.set_name(Item::type2String(def->itemDefinition(static_cast<int>(i))->type()).c_str());
@@ -833,7 +834,7 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
     }
 
   xml_node val, values;
-  if (numRequiredVals == 1) // Special Common Case
+  if ((numRequiredVals == 1)  && !item->isExtensible())// Special Common Case
     {
     node.append_attribute("Discrete").set_value(true);
     if (item->isSet())

@@ -63,6 +63,7 @@ namespace smtk
       virtual bool setToDefault(std::size_t element=0);
       virtual bool isUsingDefault(std::size_t element) const;
       virtual bool isUsingDefault() const;
+      DataT defaultValue() const;
 
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
@@ -264,7 +265,7 @@ namespace smtk
         }
 
       std::size_t n = this->maxNumberOfValues();
-      if (n && (newSize >= n))
+      if (n && (newSize > n))
         {
         return false; // greater than max number
         }
@@ -387,7 +388,7 @@ namespace smtk
         }
       return true;
     }
-///----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
@@ -399,6 +400,20 @@ namespace smtk
         }
 
       return (this->m_values[element] == def->defaultValue());
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    DataT
+    ValueItemTemplate<DataT>::defaultValue() const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!def)
+        {
+        DataT dummy;
+        return dummy;
+        }
+
+      return def->defaultValue();
     }
 //----------------------------------------------------------------------------
     template<typename DataT>

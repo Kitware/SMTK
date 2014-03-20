@@ -43,15 +43,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 
 const char *itemNames[] = {
-  "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2"
+  "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2", "StringItem3"
 };
 
-int checkStringItemDef(const char *name, smtk::attribute::DefinitionPtr def)
+int checkStringItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool isExtensible)
 {
   int pos = def->findItemPosition(name);
   if (pos < 0)
     {
-    std::cerr << "Could not find " << name << "!\n";
+    std::cerr << "Could not find " << name << "! - ERROR\n";
     return -1;
     }
   else
@@ -62,25 +62,64 @@ int checkStringItemDef(const char *name, smtk::attribute::DefinitionPtr def)
     smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(def->itemDefinition(pos));
   if (!sdef)
     {
-    std::cerr << name << " Def is not a string! at pos: " << pos << "\n";
+    std::cerr << name << " Def is not a string! at pos: " << pos << " - ERROR\n";
     return -1;
     }
-
+  // Is this suppose to be extenisble
   // Is it extensible?
-  if (sdef->isExtensible())
+  if (isExtensible)
     {
-    std::cout << name << " is extensible!, NumOfRequired Values: " << sdef->numberOfRequiredValues()
-              << " MaxNumberOfValues: " << sdef->maxNumberOfValues() << "\n";
+    if (sdef->isExtensible())
+      {
+      std::cout << name << " is extensible!, NumOfRequired Values: " << sdef->numberOfRequiredValues()
+                << " MaxNumberOfValues: " << sdef->maxNumberOfValues() << " - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is not extensible - ERROR\n";
+      return -1;
+      }
     }
   else
     {
-    std::cerr << name << " Def is not extensible\n";
-    return -1;
+    if (!sdef->isExtensible())
+      {
+      std::cout << name << " is not extensible - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is  extensible - ERROR\n";
+      return -1;
+      }
     }
+
   return pos;
 }
 
-int checkStringItem(const char *name, smtk::attribute::AttributePtr att)
+int checkDefaults(smtk::attribute::StringItemPtr sitem)
+{
+  std::size_t n = sitem->numberOfValues();
+  // If there is a default value is it correct?
+  if (!(sitem->hasDefault() && (n >0)))
+      {
+      return 0; // Nothing to check
+      }
+  std::cout << sitem->name() << "'s Default Value is " << sitem->defaultValue();
+  if (!sitem->isUsingDefault())
+    {
+    std::cout << " - Not all values are set to default! - ERROR\n";
+    for (int i = 0; i < n; i++)
+      {
+      std::cout << "\t" << i << ":" << sitem->value(i) << "\n";
+      }
+    return -1;
+    }
+  std::cout << " and all values are set to it - PASSED\n";
+  return 0;
+}
+
+
+int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
 {
   int status = 0;
   smtk::attribute::ItemPtr item = att->find(name);
@@ -99,16 +138,47 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att)
   std::size_t minN = sitem->numberOfRequiredValues(), maxN = sitem->maxNumberOfValues();
   std::cout << name << ": NumOfRequired Values: " << minN
               << " MaxNumberOfValues: " << maxN << "\n";
+  if (checkDefaults(sitem))
+    {
+    std::cout << "Problem with default for " << sitem->name() << " - ERROR\n";
+    status = -1;
+    }
+  if (!isExtensible)
+    {
+    if (!sitem->appendValue("New Val"))
+      {
+      std::cout << name << "did not allow append op for a fixed length item - PASSED\n";
+      }
+    else
+      {
+      std::cout << name << " allowed appending of new value for a fixed length item. RequiredSize:" << minN
+                << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
+      status = -1;
+      }
+    // Can we remove from the item?
+    if (!sitem->removeValue(0))
+      {
+      std::cout << name << "did not allow remove op for a fixed length item - PASSED\n";
+      }
+    else
+      {
+      std::cout << name << " allowed removing of  value for a fixed length item. RequiredSize:" << minN
+                << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
+      status = -1;
+      }
+    return status;
+    }
+
   // Is the number of initial values correct?
   if (minN != sitem->numberOfValues())
     {
     std::cerr << name << "'s initial size is not correct RequiredSize:" << minN
-              << " Initial Size: " << sitem->numberOfValues() << "\n";
+              << " Initial Size: " << sitem->numberOfValues() << " - ERROR\n";
     status = -1;
     }
   else
     {
-    std::cout << name << " is have correct initial size\n";
+    std::cout << name << " is have correct initial size - PASSED\n";
     }
 
   if (minN)
@@ -117,38 +187,56 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att)
     if (sitem->removeValue(0))
       {
       std::cerr << name << " allowed deleting below min size. RequiredSize:" << minN
-                << " Current Size: " << sitem->numberOfValues() << "\n";
+                << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
       status = -1;
       }
     else
       {
-      std::cout << name << " passed deleting below required size test\n";
+      std::cout << name << " - attempting to delete below required size test - PASSED\n";
       }
     }
   else
     {
     std::cout << name << " had no min size\n";
     }
-  // Can we add to the item?
-  if (sitem->appendValue("New Val"))
+  // Does resizing work?
+  sitem->setNumberOfValues(minN+1);
+  if (sitem->numberOfValues() != (minN+1))
     {
-    std::cout << name << " allowed appending of new value. RequiredSize:" << minN
-              << " Current Size: " << sitem->numberOfValues() << "\n";
+    std::cerr << name << " did not resize correctly. RequiredSize:" << minN
+              << " Current Size: " << sitem->numberOfValues() << " - ERROR\n";
+    status = -1;
     }
   else
     {
-    std::cout << name << " failed append test!\n";
+    std::cout << name << "'s resize test - PASSED\n";
+    }
+
+  if (checkDefaults(sitem))
+    {
+    std::cout << "Problem with default for resized " << sitem->name() << "- ERROR\n";
+    status = -1;
+    }
+  // Can we add to the item?
+  if (sitem->appendValue("New Val"))
+    {
+    std::cout << name << "'s attempt of appending of new value. RequiredSize:" << minN
+              << " Current Size: " << sitem->numberOfValues() << " - PASSED\n";
+    }
+  else
+    {
+    std::cout << name << "'s append test - ERROR\n";
     status = -1;
     }
   // Can we remove from the item?
   if (sitem->removeValue(0))
     {
     std::cout << name << " allowed removing of 0th val. RequiredSize:" << minN
-              << " Current Size: " << sitem->numberOfValues() << "\n";
+              << " Current Size: " << sitem->numberOfValues() << "- PASSED\n";
     }
   else
     {
-    std::cout << name << " failed remove test!\n";
+    std::cout << name << "'s remove test - ERROR\n";
     status = -1;
     }
   if (maxN)
@@ -162,18 +250,18 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att)
     if (sitem->appendValue("Problem Val"))
       {
       std::cerr << name << " allowed appending above max size. MaxSize:" << maxN
-                << " Current Size: " << sitem->numberOfValues() << "\n";
+                << " Current Size: " << sitem->numberOfValues() << " - FAILED\n";
       status = -1;
       }
     else
       {
-      std::cout << name  << " passed appending above max size test  MaxSize:" << maxN
-                << " Current Size: " << sitem->numberOfValues() << "\n";
+      std::cout << name  << "'s appending above max size test  MaxSize:" << maxN
+                << " Current Size: " << sitem->numberOfValues() << " - PASSED\n";
       }
     }
   else
     {
-    std::cout << name << " had no max size\n";
+    std::cout << name << " had no max size (IGNORED)\n";
     }
   return status;
 }
@@ -199,20 +287,20 @@ int main(int argc, char *argv[])
     }
   else
     {
-    std::cout << "Read in template!\n";
+    std::cout << "Read in template - PASSED\n";
     }
 
   smtk::attribute::DefinitionPtr def = manager.findDefinition("Derived2");
   if (!def)
     {
-    std::cerr << "Could not find Derived 2 Def!\n";
+    std::cerr << "Could not find Derived 2 Def! - ERROR\n";
     return -2;
     }
 
   int i, n = def->numberOfItemDefinitions();
-  if (n != 6)
+  if (n != 7)
     {
-    std::cerr << "Derived 2 has incorrect number of items!\n";
+    std::cerr << "Derived 2 has incorrect number of items! - ERROR\n";
     return -2;
     }
 
@@ -221,7 +309,7 @@ int main(int argc, char *argv[])
     std::cout << i << ":" << def->itemDefinition(i)->name();
     if (def->itemDefinition(i)->name() == itemNames[i])
       {
-      std::cout << "- Correct!" << std::endl;
+      std::cout << "- PASSED!" << std::endl;
       }
     else
       {
@@ -235,40 +323,70 @@ int main(int argc, char *argv[])
     }
 
   // Lets find the extensible definitions
-  int pos1 = checkStringItemDef("StringItem1", def);
+  int pos1 = checkStringItemDef("StringItem1", def, true);
   if (pos1 < 0)
     {
-    std::cerr << "Problem with StringItem1 Def!\n";
+    std::cerr << "Problem with StringItem1 Def - ERROR\n";
     return -3;
     }
 
-  int pos2 = checkStringItemDef("StringItem2", def);
+  int pos2 = checkStringItemDef("StringItem2", def, true);
   if (pos2 < 0)
     {
-    std::cerr << "Problem with StringItem2 Def!\n";
+    std::cerr << "Problem with StringItem2 Def - ERROR\n";
     return -4;
     }
 
-  // Create an attribute
-  smtk::attribute::AttributePtr att = manager.createAttribute("Derived2Att", def);
+  int pos3 = checkStringItemDef("StringItem3", def, false);
+  if (pos3 < 0)
+    {
+    std::cerr << "Problem with StringItem3 Def - ERROR\n";
+    return -4;
+    }
+
+  // Find or Create an attribute
+  smtk::attribute::AttributePtr att = manager.findAttribute("Derived2Att");
   if (!att)
     {
-    std::cerr << "Could not create Attribute!\n";
-    return -5;
+    att = manager.createAttribute("Derived2Att", def);
+    if (!att)
+      {
+      std::cerr << "Could not create Attribute - ERROR\n";
+      return -5;
+      }
+    std::cout << "Created Derived2Att\n";
     }
-
-  if (checkStringItem("StringItem1", att))
+  else
     {
-    std::cerr << "Problem with StringItem1!\n";
-    return -6;
+    std::cout << "Found Derived2Att\n";
     }
 
-  if (checkStringItem("StringItem2", att))
+  if (checkStringItem("StringItem1", att, true))
     {
-    std::cerr << "Problem with StringItem2!\n";
-    return -7;
+    std::cerr << "Problem with StringItem1- ERROR\n";
+    status =  -6;
     }
 
+  if (checkStringItem("StringItem2", att, true))
+    {
+    std::cerr << "Problem with StringItem2- ERROR\n";
+    status = -7;
+    }
+
+  if (checkStringItem("StringItem3", att, false))
+    {
+    std::cerr << "Problem with StringItem3- ERROR\n";
+    status =  -8;
+    }
+
+  smtk::util::AttributeWriter writer;
+  smtk::util::Logger logger1;
+  if (writer.write(manager, argv[2],logger1))
+    {
+    std::cerr << "Errors encountered creating Attribute File:\n";
+    std::cerr << logger1.convertToString();
+    status = -1;
+    }
 
   std::cout << "Manager destroyed\n";
   }

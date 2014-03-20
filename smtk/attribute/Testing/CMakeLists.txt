@@ -36,4 +36,13 @@ add_test(attributeAssociationTest ${EXECUTABLE_OUTPUT_PATH}/attributeAssociation
 add_test(attributeAutoNamingTest ${EXECUTABLE_OUTPUT_PATH}/attributeAutoNamingTest)
 add_test(attributeReferencingTest ${EXECUTABLE_OUTPUT_PATH}/attributeReferencingTest)
 add_test(categoryTest ${EXECUTABLE_OUTPUT_PATH}/categoryTest)
-add_test(extensibleAttributeTest ${EXECUTABLE_OUTPUT_PATH}/extensibleAttributeTest)
+
+################################################################################
+# Tests that require SMTK_DATA_DIR
+################################################################################
+if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+add_test(extensibleAttributeTest
+${EXECUTABLE_OUTPUT_PATH}/extensibleAttributeTest
+   "${SMTK_DATA_DIR}/smtk/attribute/ExtensibleTemplateTest.xml"
+   "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml")
+endif()

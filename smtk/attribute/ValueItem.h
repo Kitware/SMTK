@@ -80,7 +80,8 @@ namespace smtk
       virtual bool isUsingDefault(std::size_t elementIndex) const = 0;
       // This method tests all of the values of the items w/r the default value
       virtual bool isUsingDefault() const = 0;
-
+      // Does this item have a default value?
+      bool hasDefault() const;
       virtual std::string valueAsString() const
       { return this->valueAsString(0);}
 

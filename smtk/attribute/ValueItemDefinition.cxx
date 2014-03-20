@@ -61,6 +61,10 @@ bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     }
 
   this->m_numberOfRequiredValues = esize;
+  if (!this->hasValueLabels())
+    {
+    return true;
+    }
   if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_valueLabels.resize(esize);
@@ -236,6 +240,12 @@ ValueItemDefinition::conditionalItems(const std::string &valueName) const
 void ValueItemDefinition::setIsExtensible(bool mode)
 {
   this->m_isExtensible = mode;
+  if (!this->hasValueLabels())
+    {
+    // If there are no value labels there is nothing to do
+    return;
+    }
+
   if (mode && !this->usingCommonLabel())
     {
     // Need to clear individual labels - can only use common label with

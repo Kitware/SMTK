@@ -219,7 +219,7 @@ namespace {
     attribute::AttributePtr expAtt;
     bool allowsExpressions = item->allowsExpressions();
     ItemExpressionInfo info;
-    if (!numRequiredVals)
+    if (item->isExtensible())
       {
       // The node should have an attribute indicating how many values are
       // associated with the item
@@ -288,7 +288,7 @@ namespace {
           }
         }
       }
-    else if (numRequiredVals == 1)
+    else if ((numRequiredVals == 1) && !item->isExtensible())
       {
       // Lets see if the value is set
       if (node.text())
@@ -791,7 +791,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   labels = node.child("ComponentLabels");
   if (labels)
     {
-    if(numberOfComponents == 1)
+    if((numberOfComponents == 1) && !idef->isExtensible())
       {
       smtkErrorMacro(this->m_logger,
                      "Should not use Labels when NumberOfRequiredValues=1 : "

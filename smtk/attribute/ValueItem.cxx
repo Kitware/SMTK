@@ -102,6 +102,17 @@ ValueItem::~ValueItem()
     }
 }
 //----------------------------------------------------------------------------
+bool ValueItem::hasDefault() const
+{
+  const ValueItemDefinition *def =
+    static_cast<const ValueItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->hasDefault();
+}
+//----------------------------------------------------------------------------
 bool ValueItem::isExtensible() const
 {
   const ValueItemDefinition *def =
