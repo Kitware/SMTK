@@ -38,6 +38,8 @@ ValueItemDefinition::ValueItemDefinition(const std::string &myName):
   this->m_hasDefault = false;
   this->m_useCommonLabel = false;
   this->m_numberOfRequiredValues = 1;
+  this->m_maxNumberOfValues = 0;
+  this->m_isExtensible = false;
   this->m_expressionDefinition = RefItemDefinition::New("expression");
   this->m_expressionDefinition->setNumberOfRequiredValues(1);
 }
@@ -47,22 +49,42 @@ ValueItemDefinition::~ValueItemDefinition()
 {
 }
 //----------------------------------------------------------------------------
-void ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
+bool ValueItemDefinition::setNumberOfRequiredValues(std::size_t esize)
 {
   if (esize == this->m_numberOfRequiredValues)
     {
-    return;
+    return true;
     }
+  if (this->m_maxNumberOfValues && (esize > this->m_maxNumberOfValues))
+    {
+    return false;
+    }
+
   this->m_numberOfRequiredValues = esize;
-  if (!this->m_useCommonLabel)
+  if (!this->hasValueLabels())
+    {
+    return true;
+    }
+  if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_valueLabels.resize(esize);
     }
+  return true;
+}
+//----------------------------------------------------------------------------
+bool  ValueItemDefinition::setMaxNumberOfValues(std::size_t esize)
+{
+  if (esize && (esize < this->m_numberOfRequiredValues))
+    {
+    return false;
+    }
+  this->m_maxNumberOfValues = esize;
+  return true;
 }
 //----------------------------------------------------------------------------
 void ValueItemDefinition::setValueLabel(std::size_t element, const std::string &elabel)
 {
-  if (this->m_numberOfRequiredValues == 0)
+  if (this->m_isExtensible)
     {
     return;
     }
@@ -215,3 +237,19 @@ ValueItemDefinition::conditionalItems(const std::string &valueName) const
   return citer->second;
 }
 //----------------------------------------------------------------------------
+void ValueItemDefinition::setIsExtensible(bool mode)
+{
+  this->m_isExtensible = mode;
+  if (!this->hasValueLabels())
+    {
+    // If there are no value labels there is nothing to do
+    return;
+    }
+
+  if (mode && !this->usingCommonLabel())
+    {
+    // Need to clear individual labels - can only use common label with
+    // extensible values
+    this->setCommonValueLabel("");
+    }
+}

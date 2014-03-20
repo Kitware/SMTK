@@ -176,13 +176,9 @@ namespace smtk
                            std::vector<smtk::attribute::Attribute *>*conflicts) const;
       bool conflicts(smtk::attribute::DefinitionPtr definition) const;
       std::size_t numberOfItemDefinitions() const
-      {return this->m_itemDefs.size();}
-      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const
-      {
-        return (ith < 0) ? smtk::attribute::ItemDefinitionPtr()
-          : (static_cast<unsigned int>(ith) >= this->m_itemDefs.size() ?
-             smtk::attribute::ItemDefinitionPtr() : this->m_itemDefs[static_cast<std::size_t>(ith)]);
-      }
+      {return this->m_itemDefs.size() + this->m_baseItemOffset;}
+
+      smtk::attribute::ItemDefinitionPtr itemDefinition(int ith) const;
 
       // Description:
       // Item definitions are the definitions of what data is stored
@@ -290,28 +286,8 @@ namespace smtk
     {
       if (this->m_baseDefinition)
         {
-        this->m_baseItemOffset = this->m_baseDefinition->m_baseItemOffset +
-          this->m_baseDefinition->numberOfItemDefinitions();
+        this->m_baseItemOffset = this->m_baseDefinition->numberOfItemDefinitions();
         }
-    }
- //----------------------------------------------------------------------------
-    inline int Definition::findItemPosition(const std::string &name) const
-    {
-      std::map<std::string, int>::const_iterator it;
-      it = this->m_itemDefPositions.find(name);
-      if (it == this->m_itemDefPositions.end())
-        {
-        // Check the base definition if there is one
-        if (this->m_baseDefinition)
-          {
-          return this->m_baseDefinition->findItemPosition(name);
-          }
-        else
-          {
-          return -1; // named item doesn't exist
-          }
-        }
-      return it->second + static_cast<int>(this->m_baseItemOffset);
     }
 //----------------------------------------------------------------------------
     inline const double * Definition::notApplicableColor() const
@@ -359,7 +335,7 @@ namespace smtk
       this->m_defaultColor[2]= b;
       this->m_defaultColor[3]= a;
     }
+
   }
 }
-
 #endif /* __smtk_attribute_Definition_h */

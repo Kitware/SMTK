@@ -30,7 +30,8 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
-  ItemDefinition(myName), m_numberOfRequiredGroups(1), m_useCommonLabel(false)
+  ItemDefinition(myName), m_numberOfRequiredGroups(1), m_useCommonLabel(false),
+  m_isExtensible(false), m_maxNumberOfGroups(0)
 {
 }
 
@@ -118,7 +119,7 @@ void GroupItemDefinition::removeCategory(const std::string &/*category*/)
 //----------------------------------------------------------------------------
 void GroupItemDefinition::setSubGroupLabel(std::size_t element, const std::string &elabel)
 {
-  if (this->m_numberOfRequiredGroups == 0)
+  if (this->m_isExtensible)
     {
     return;
     }
@@ -154,3 +155,43 @@ std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
+bool  GroupItemDefinition::setMaxNumberOfGroups(std::size_t esize)
+{
+  if (esize && (esize > this->m_numberOfRequiredGroups))
+    {
+    return false;
+    }
+  this->m_maxNumberOfGroups = esize;
+  return true;
+}
+//----------------------------------------------------------------------------
+bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
+{
+  if (gsize == this->m_numberOfRequiredGroups)
+    {
+    return true;
+    }
+  std::size_t maxN = this->maxNumberOfGroups();
+  if (maxN && (gsize > maxN))
+    {
+    return false;
+    }
+
+  this->m_numberOfRequiredGroups = gsize;
+  if (!(this->m_useCommonLabel || this->m_isExtensible))
+    {
+    this->m_labels.resize(gsize);
+    }
+  return true;
+}
+//----------------------------------------------------------------------------
+void GroupItemDefinition::setIsExtensible(bool mode)
+{
+  this->m_isExtensible = mode;
+  if (mode && !this->usingCommonSubGroupLabel())
+    {
+    // Need to clear individual labels - can only use common label with
+    // extensible groups
+    this->setCommonSubGroupLabel("");
+    }
+}

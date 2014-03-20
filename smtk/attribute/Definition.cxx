@@ -54,8 +54,7 @@ Definition::Definition(const std::string &myType,
   this->m_isDefaultColorSet = false;
   if (myBaseDef)
     {
-    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions() +
-      myBaseDef->m_baseItemOffset;
+    this->m_baseItemOffset = myBaseDef->numberOfItemDefinitions();
     }
   else
     {
@@ -242,5 +241,38 @@ smtk::attribute::DefinitionPtr Definition::pointer() const
     return m->findDefinition(this->m_type);
     }
   return smtk::attribute::DefinitionPtr();
+}
+//----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr Definition::itemDefinition(int ith) const
+{
+  // Is the item in this defintion?
+  if (ith >= this->m_baseItemOffset)
+    {
+    return this->m_itemDefs[static_cast<std::size_t>(ith-this->m_baseItemOffset)];
+    }
+  else if (this->m_baseDefinition)
+    {
+    return this->m_baseDefinition->itemDefinition(ith);
+    }
+  return smtk::attribute::ItemDefinitionPtr();
+}
+ //----------------------------------------------------------------------------
+int Definition::findItemPosition(const std::string &name) const
+{
+  std::map<std::string, int>::const_iterator it;
+  it = this->m_itemDefPositions.find(name);
+  if (it == this->m_itemDefPositions.end())
+    {
+    // Check the base definition if there is one
+    if (this->m_baseDefinition)
+      {
+      return this->m_baseDefinition->findItemPosition(name);
+      }
+    else
+      {
+      return -1; // named item doesn't exist
+      }
+    }
+  return it->second + static_cast<int>(this->m_baseItemOffset);
 }
 //----------------------------------------------------------------------------

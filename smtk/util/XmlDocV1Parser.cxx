@@ -219,7 +219,7 @@ namespace {
     attribute::AttributePtr expAtt;
     bool allowsExpressions = item->allowsExpressions();
     ItemExpressionInfo info;
-    if (!numRequiredVals)
+    if (item->isExtensible())
       {
       // The node should have an attribute indicating how many values are
       // associated with the item
@@ -288,7 +288,7 @@ namespace {
           }
         }
       }
-    else if (numRequiredVals == 1)
+    else if ((numRequiredVals == 1) && !item->isExtensible())
       {
       // Lets see if the value is set
       if (node.text())
@@ -521,8 +521,19 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
 {
   xml_node node;
   attribute::DefinitionPtr def, baseDef;
-  std::string type = defNode.attribute("Type").value();
-  std::string baseType = defNode.attribute("BaseType").value();
+  xml_attribute xatt;
+  std::string type, baseType;
+  xatt = defNode.attribute("Type");
+  if (xatt)
+    {
+    type = xatt.value();
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "Definition missing Type XML Attribute");
+    return;
+    }
+  baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
     {
     baseDef = this->m_manager.findDefinition(baseType);
@@ -539,13 +550,16 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     {
     def = this->m_manager.createDefinition(type);
     }
-  xml_attribute xatt;
   xatt = defNode.attribute("Label");
   if (xatt)
     {
     def->setLabel(xatt.value());
     }
-  def->setVersion(defNode.attribute("Version").as_int());
+  xatt = defNode.attribute("Version");
+  if (xatt)
+    {
+    def->setVersion(xatt.as_int());
+    }
 
   xatt = defNode.attribute("Abstract");
   if (xatt)
@@ -571,9 +585,12 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     def->setIsNodal(xatt.as_bool());
     }
 
-  unsigned int mask =
-    this->decodeModelEntityMask(defNode.attribute("Associations").value());
-  def->setAssociationMask(mask);
+  xatt = defNode.attribute("Associations");
+    {
+    unsigned int mask =
+      this->decodeModelEntityMask(xatt.value());
+    def->setAssociationMask(mask);
+    }
 
   double color[4];
 
@@ -662,7 +679,11 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
     {
     idef->setLabel(xatt.value());
     }
-  idef->setVersion(node.attribute("Version").as_int());
+  xatt = node.attribute("Version");
+  if (xatt)
+    {
+    idef->setVersion(xatt.as_int());
+    }
   xatt = node.attribute("Optional");
   if (xatt)
     {
@@ -742,17 +763,22 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
-  int numberOfComponents = -1;
+  std::size_t numberOfComponents = 0;
   if (xatt)
     {
-    numberOfComponents = xatt.as_int();
+    numberOfComponents = xatt.as_uint();
     idef->setNumberOfRequiredValues(numberOfComponents);
     }
-  else
+
+  xatt = node.attribute("Extensible");
+  if (xatt)
     {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
-                   << idef->name());
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+      }
     }
 
   // Lets see if there are labels
@@ -765,7 +791,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
   labels = node.child("ComponentLabels");
   if (labels)
     {
-    if(numberOfComponents == 1)
+    if((numberOfComponents == 1) && !idef->isExtensible())
       {
       smtkErrorMacro(this->m_logger,
                      "Should not use Labels when NumberOfRequiredValues=1 : "
@@ -1121,15 +1147,19 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
   xatt = node.attribute("NumberOfRequiredGroups");
   if (xatt)
     {
-    def->setNumberOfRequiredGroups(xatt.as_int());
-    }
-  else
-    {
-    smtkErrorMacro(this->m_logger,
-                   "Missing XML Attribute NumberOfRequiredGroups for Item Definition : "
-                   << def->name());
+    def->setNumberOfRequiredGroups(xatt.as_uint());
     }
 
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    def->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfGroups");
+    if (xatt)
+      {
+      def->setMaxNumberOfGroups(xatt.as_uint());
+      }
+    }
   // Lets see if there are labels
   if(node.child("Labels"))
     {
@@ -1389,7 +1419,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::size_t i=0, n = item->numberOfValues();
   xml_attribute xatt;
-  if (!numRequiredVals)
+  if (item->isExtensible())
     {
     // The node should have an attribute indicating how many values are
     // associated with the item
@@ -1404,6 +1434,7 @@ void XmlDocV1Parser::processValueItem(pugi::xml_node &node,
     n = xatt.as_uint();
     item->setNumberOfValues(n);
     }
+
   if (!item->isDiscrete())
     {
     return; // there is nothing to be done
@@ -1758,7 +1789,7 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   xml_attribute xatt;
   n = item->numberOfGroups();
   m = item->numberOfItemsPerGroup();
-  if (!numRequiredGroups)
+  if (item->isExtensible())
     {
     // The node should have an attribute indicating how many groups are
     // associated with the item

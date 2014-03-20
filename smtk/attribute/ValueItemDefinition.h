@@ -88,9 +88,30 @@ namespace smtk
 
       virtual bool hasRange() const = 0;
 
+      // Returns or Sets the minimum number of values that items from this def can have
+      // Default value is 1
       std::size_t numberOfRequiredValues() const
       {return this->m_numberOfRequiredValues;}
-      void setNumberOfRequiredValues(std::size_t esize);
+
+      // Returns false if esize is greater than max number of values (and max number > 0)
+      bool setNumberOfRequiredValues(std::size_t esize);
+
+      // Returns or Sets the maximum number of values that items from this def can have.
+      // if 0 is returned then there is no max limit.  Default value is 0
+      // Note that this is used only when the def is extensible
+      std::size_t maxNumberOfValues() const
+      {return this->m_maxNumberOfValues;}
+
+      // Returns false if esize is less than number of required values (and esize > 0)
+      bool setMaxNumberOfValues(std::size_t esize);
+
+      // Returns or Sets the def's extensiblity property.  If true then items from this def
+      // can have a variable number of values.  The number of values is always <= to number of
+      // required values and max number of values (provided max number of values > 0)
+      // Default value is false.
+      bool isExtensible() const
+      {return this->m_isExtensible;}
+      void setIsExtensible(bool mode);
 
       // Description:
       // Return whether or not there are labels for components.
@@ -169,6 +190,8 @@ namespace smtk
       std::vector<std::string> m_discreteValueEnums;
       int m_defaultDiscreteIndex;
       std::size_t m_numberOfRequiredValues;
+      std::size_t m_maxNumberOfValues;
+      bool m_isExtensible;
       std::string m_units;
       smtk::attribute::RefItemDefinitionPtr m_expressionDefinition;
       std::map<std::string, smtk::attribute::ItemDefinitionPtr> m_itemDefs;

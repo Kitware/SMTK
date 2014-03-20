@@ -24,11 +24,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-GroupItem::GroupItem(Attribute *owningAttribute, 
-                     int itemPosition): 
+GroupItem::GroupItem(Attribute *owningAttribute,
+                     int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
@@ -36,7 +36,7 @@ GroupItem::GroupItem(Attribute *owningAttribute,
 //----------------------------------------------------------------------------
 GroupItem::GroupItem(Item *inOwningItem,
                      int itemPosition,
-                     int mySubGroupPosition): 
+                     int mySubGroupPosition):
   Item(inOwningItem, itemPosition, mySubGroupPosition)
 {
 }
@@ -75,7 +75,7 @@ GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
 {
    // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     dynamic_cast<const GroupItemDefinition *>(gdef.get());
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
@@ -96,11 +96,15 @@ GroupItem::setDefinition(smtk::attribute::ConstItemDefinitionPtr gdef)
   return true;
 }
 //----------------------------------------------------------------------------
-void GroupItem::reset() 
+void GroupItem::reset()
 {
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     dynamic_cast<const GroupItemDefinition *>(this->m_definition.get());
   std::size_t i, n = def->numberOfRequiredGroups();
+  if (this->numberOfGroups() != n)
+    {
+    this->setNumberOfGroups(n);
+    }
   if (!n)
     {
     this->detachAllItems();
@@ -120,31 +124,57 @@ void GroupItem::reset()
   Item::reset();
 }
 //----------------------------------------------------------------------------
+bool GroupItem::isExtensible() const
+{
+  const GroupItemDefinition *def =
+    static_cast<const GroupItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return false;
+    }
+  return def->isExtensible();
+}
+//----------------------------------------------------------------------------
 std::size_t GroupItem::numberOfItemsPerGroup() const
 {
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   return def->numberOfItemDefinitions();
 }
 //----------------------------------------------------------------------------
 std::size_t GroupItem::numberOfRequiredGroups() const
 {
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   return def->numberOfRequiredGroups();
 }
 //----------------------------------------------------------------------------
+std::size_t GroupItem::maxNumberOfGroups() const
+{
+  const GroupItemDefinition *def =
+    static_cast<const GroupItemDefinition*>(this->m_definition.get());
+  if (!def)
+    {
+    return 0;
+    }
+  return def->maxNumberOfGroups();
+}
+//----------------------------------------------------------------------------
 bool GroupItem::appendGroup()
 {
-  const GroupItemDefinition *def = 
-    static_cast<const GroupItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfRequiredGroups();
-  if (n)
+  if (!this->isExtensible())
     {
-    // Can not change the number of items
     return false;
     }
-  n = this->m_items.size();
+
+  const GroupItemDefinition *def =
+    static_cast<const GroupItemDefinition *>(this->definition().get());
+  std::size_t maxN = def->maxNumberOfGroups(), n = this->numberOfGroups();
+  if (maxN && (n >= maxN))
+    {
+    // max number of groups reached
+    return false;
+    }
   this->m_items.resize(n+1);
   def->buildGroup(this, static_cast<int>(n));
   return true;
@@ -152,14 +182,15 @@ bool GroupItem::appendGroup()
 //----------------------------------------------------------------------------
 bool GroupItem::removeGroup(std::size_t element)
 {
-  const GroupItemDefinition *def = 
-    static_cast<const GroupItemDefinition *>(this->definition().get());
-  std::size_t n = def->numberOfRequiredGroups();
-  if (n)
+  if (!this->isExtensible())
     {
-    // Can not change the number of items
     return false;
     }
+  if (this->numberOfGroups() <= this->numberOfRequiredGroups())
+    {
+    return false; // min number of groups reached
+    }
+
   std::vector<smtk::attribute::ItemPtr> &items = this->m_items[element];
   std::size_t j, m = items.size();
   for(j = 0; j < m; j++)
@@ -177,15 +208,28 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     {
     return true;
     }
-  
+
   //Next - are we allowed to change the number of values?
+  if (!this->isExtensible())
+    {
+    return false;
+    }
+  // Is this size between the required number and the max?
+  if (newSize < this->numberOfRequiredGroups())
+    {
+    return false;
+    }
+
+  std::size_t n = this->maxNumberOfGroups();
+  if (n && (newSize >= n))
+    {
+    return false; // greater than max number
+    }
+
   const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
-  std::size_t i, n = def->numberOfRequiredGroups();
-  if (n)
-    {
-    return false; // The number of values is fixed
-    }
+  std::size_t i;
+  n = this->numberOfGroups();
   if (newSize < n)
     {
     // We need to detach all of the items we no longer need
@@ -213,7 +257,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
 //----------------------------------------------------------------------------
 smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string &inName)
 {
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(inName);
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[element][static_cast<std::size_t>(i)];
@@ -221,7 +265,7 @@ smtk::attribute::ItemPtr GroupItem::find(std::size_t element, const std::string 
 //----------------------------------------------------------------------------
 smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::string &inName) const
 {
-  const GroupItemDefinition *def = 
+  const GroupItemDefinition *def =
     static_cast<const GroupItemDefinition *>(this->definition().get());
   int i = def->findItemPosition(inName);
   if (i < 0)

@@ -63,6 +63,7 @@ namespace smtk
       virtual bool setToDefault(std::size_t element=0);
       virtual bool isUsingDefault(std::size_t element) const;
       virtual bool isUsingDefault() const;
+      DataT defaultValue() const;
 
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
@@ -197,9 +198,15 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      if (def->numberOfRequiredValues() != 0)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
+        }
+
+      std::size_t n = this->maxNumberOfValues();
+      if (n && (this->numberOfValues() >= n))
+        {
+        return false; // max number reached
         }
 
       if (def->isDiscrete())
@@ -246,12 +253,25 @@ namespace smtk
         }
 
       //Next - are we allowed to change the number of values?
-      const DefType *def = static_cast<const DefType *>(this->definition().get());
-      std::size_t n = def->numberOfRequiredValues();
-      if (n)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
         }
+
+      // Is this size between the required number and the max?
+      if (newSize < this->numberOfRequiredValues())
+        {
+        return false;
+        }
+
+      std::size_t n = this->maxNumberOfValues();
+      if (n && (newSize > n))
+        {
+        return false; // greater than max number
+        }
+
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      n = this->numberOfValues();
       // Are we increasing or decreasing?
       if (newSize < n)
         {
@@ -304,9 +324,13 @@ namespace smtk
     {
       //First - are we allowed to change the number of values?
       const DefType *def = static_cast<const DefType *>(this->definition().get());
-      if (def->numberOfRequiredValues() != 0)
+      if (!this->isExtensible())
         {
         return false; // The number of values is fixed
+        }
+      if (this->numberOfValues() <= this->numberOfRequiredValues())
+        {
+        return false; // min number of values reached
         }
       if (def->allowsExpressions())
         {
@@ -364,7 +388,7 @@ namespace smtk
         }
       return true;
     }
-///----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
     template<typename DataT>
     bool
     ValueItemTemplate<DataT>::isUsingDefault(std::size_t element) const
@@ -379,12 +403,30 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
+    DataT
+    ValueItemTemplate<DataT>::defaultValue() const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!def)
+        {
+        DataT dummy;
+        return dummy;
+        }
+
+      return def->defaultValue();
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
     void
     ValueItemTemplate<DataT>::reset()
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       // Was the initial size 0?
-      std::size_t i, n = def->numberOfRequiredValues();
+      std::size_t i, n = this->numberOfRequiredValues();
+      if (this->numberOfValues() != n)
+        {
+        this->setNumberOfValues(n);
+        }
       if (!n)
         {
         this->m_values.clear();
@@ -399,6 +441,7 @@ namespace smtk
             }
           this->m_expressions.clear();
           }
+        ValueItem::reset();
         return;
         }
 
@@ -416,6 +459,7 @@ namespace smtk
           {
           this->unset(i);
           }
+        ValueItem::reset();
         return;
         }
 
