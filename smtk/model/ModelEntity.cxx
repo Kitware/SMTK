@@ -101,7 +101,9 @@ ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
 /// Return an operator of the given \a name with its Storage set to this model's.
 OperatorPtr ModelEntity::op(const std::string& name) const
 {
-  return this->bridge()->op(name)->setStorage(this->m_storage);
+  OperatorPtr oper = this->bridge()->op(name);
+  if (oper) oper->setStorage(this->m_storage);
+  return oper;
 }
 
 /// Return a set of the operators available for this model.
