@@ -72,6 +72,7 @@ namespace smtk
       void updateAssociationEnableState(smtk::attribute::AttributePtr);
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
+      void onAttributeCellChanged(int, int);
 
     signals:
       void numOfAttriubtesChanged();

@@ -249,6 +249,12 @@ void qtAttributeView::createWidget( )
   QObject::connect(this->Internals->ListTable,
     SIGNAL(itemChanged (QTableWidgetItem *)),
     this, SLOT(onAttributeNameChanged(QTableWidgetItem * )));
+  // we need this so that the attribute name will also be changed
+  // when a recorded test is play back, which is using setText
+  // on the underline QLineEdit of the cell.
+  QObject::connect(this->Internals->ListTable,
+    SIGNAL(cellChanged (int, int)),
+    this, SLOT(onAttributeCellChanged(int, int)));
 
   QObject::connect(this->Internals->AddButton,
     SIGNAL(clicked()), this, SLOT(onCreateNew()));
@@ -374,14 +380,22 @@ void qtAttributeView::onListBoxSelectionChanged()
 void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
 {
   smtk::attribute::AttributePtr aAttribute = this->getAttributeFromItem(item);
-  if(aAttribute)
+  if(aAttribute && item->text().toStdString() != aAttribute->name())
     {
     Manager *attManager = aAttribute->definition()->manager();
-    attManager->rename(aAttribute, item->text().toAscii().constData());
+    attManager->rename(aAttribute, item->text().toStdString());
     //aAttribute->definition()->setLabel(item->text().toAscii().constData());
     }
 }
-
+//----------------------------------------------------------------------------
+void qtAttributeView::onAttributeCellChanged(int row, int col)
+{
+  if(col == 0)
+    {
+    QTableWidgetItem* item = this->Internals->ListTable->item(row, col);
+    this->onAttributeNameChanged(item);
+    }
+}
 //----------------------------------------------------------------------------
 void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 {
