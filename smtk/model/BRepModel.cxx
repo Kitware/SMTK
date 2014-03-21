@@ -984,7 +984,10 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
           CursorArrangementOps::appendAllRelations(ModelEntity(store,ent), EMBEDDED_IN, parents);
           if (!parents.empty())
             return parents[0].entity();
+          return smtk::util::UUID::null();
           }
+        // We failed to cast ourselves up. BRepModels may not have hierarchies of models.
+        return smtk::util::UUID::null();
         }
       break;
     // Remaining types should all have a direct relationship with a model if they are free:
@@ -1007,7 +1010,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
         for (smtk::util::UUIDArray::const_iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
           {
           const Entity* relEnt = this->findEntity(*rit);
-          if (relEnt && (relEnt->entityFlags() & MODEL_ENTITY))
+          if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
             {
             return *rit;
             }
