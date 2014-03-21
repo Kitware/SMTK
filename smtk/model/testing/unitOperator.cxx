@@ -1,4 +1,4 @@
-#include "smtk/model/BridgeBase.h"
+#include "smtk/model/Bridge.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/OperatorResult.h"

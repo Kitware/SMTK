@@ -1,5 +1,5 @@
-#ifndef __smtk_model_BridgeBase_h
-#define __smtk_model_BridgeBase_h
+#ifndef __smtk_model_Bridge_h
+#define __smtk_model_Bridge_h
 
 #include "smtk/util/UUID.h"
 #include "smtk/util/SharedFromThis.h"
@@ -15,10 +15,10 @@
 namespace smtk {
   namespace model {
 
-class BridgeBase;
+class Bridge;
 class Cursor;
 class Operator;
-typedef std::map<smtk::util::UUID,smtk::shared_ptr<BridgeBase> > UUIDsToBridges;
+typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
 
 /**\brief Bit flags describing types of information bridged to Storage.
   *
@@ -66,7 +66,7 @@ typedef unsigned long BridgedInfoBits;
   * Bridges may provide SMTK with Operators that can be used to
   * modify models in storage.
   *
-  * Register an instance of a BridgeBase subclass to a
+  * Register an instance of a Bridge subclass to a
   * model with Storage::bridgeModel(). Then, when an
   * entity cannot be resolved from a UUID created by
   * the bridge, the \a transcribe method will be invoked
@@ -81,10 +81,10 @@ typedef unsigned long BridgedInfoBits;
   *
   * \sa smtk::model::BridgedInformation smtk::model::Operator
   */
-class SMTKCORE_EXPORT BridgeBase : smtkEnableSharedPtr(BridgeBase)
+class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 {
 public:
-  smtkTypeMacro(BridgeBase);
+  smtkTypeMacro(Bridge);
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 
@@ -108,4 +108,4 @@ protected:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_BridgeBase_h
+#endif // __smtk_model_Bridge_h

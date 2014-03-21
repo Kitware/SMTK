@@ -36,7 +36,6 @@
 #include "RefGroup.hpp"
 
 using smtk::model::Cursor;
-using smtk::model::BridgeBase;
 
 namespace cgmsmtk {
   namespace cgm {
@@ -46,7 +45,7 @@ Bridge::Bridge()
 {
 }
 
-/// Virtual destructor. Here because Bridge overrides virtual methods from BridgeBase.
+/// Virtual destructor. Here because Bridge overrides virtual methods from Bridge.
 Bridge::~Bridge()
 {
 }

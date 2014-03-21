@@ -1,7 +1,7 @@
 #ifndef __smtk_model_DefaultBridge_h
 #define __smtk_model_DefaultBridge_h
 
-#include "smtk/model/BridgeBase.h"
+#include "smtk/model/Bridge.h"
 
 namespace smtk {
   namespace model {
@@ -10,12 +10,12 @@ namespace smtk {
   *
   * In other words, this bridge marks models as being "native" to SMTK.
   */
-class DefaultBridge : public BridgeBase
+class DefaultBridge : public Bridge
 {
 public:
   smtkTypeMacro(DefaultBridge);
-  smtkCreateMacro(BridgeBase);
-  smtkSharedFromThisMacro(BridgeBase);
+  smtkCreateMacro(Bridge);
+  smtkSharedFromThisMacro(Bridge);
 
 protected:
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);

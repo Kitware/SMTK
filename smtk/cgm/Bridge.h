@@ -2,7 +2,7 @@
 #define __smtk_cgm_Bridge_h
 
 #include "smtk/cgmSMTKExports.h"
-#include "smtk/model/BridgeBase.h"
+#include "smtk/model/Bridge.h"
 
 class Body;
 class CoVolume;
@@ -38,7 +38,7 @@ namespace cgmsmtk {
   * entity, arrangement, and/or tessellation information for a UUID be
   * mapped into SMTK from CGM.
   */
-class CGMSMTK_EXPORT Bridge : public smtk::model::BridgeBase
+class CGMSMTK_EXPORT Bridge : public smtk::model::Bridge
 {
 public:
   typedef smtk::shared_ptr<Bridge> Ptr;

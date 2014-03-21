@@ -1029,9 +1029,9 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
   * and the original modeling kernel, operations are associated with the
   * bridge that performs the transcription.
   *
-  * \sa BridgeBase
+  * \sa Bridge
   */
-BridgeBasePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
+BridgePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
 {
   // See if the passed entity has a bridge.
   UUIDsToBridges::const_iterator it = this->m_modelBridges.find(uid);
@@ -1060,10 +1060,10 @@ BridgeBasePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
   * If \a uid already had a bridge entry, it will be changed to the
   * specified \a bridge.
   *
-  * \sa BridgeBase
+  * \sa Bridge
   */
 void BRepModel::setBridgeForModel(
-  BridgeBasePtr bridge, const smtk::util::UUID& uid)
+  BridgePtr bridge, const smtk::util::UUID& uid)
 {
   this->m_modelBridges[uid] = bridge;
 }

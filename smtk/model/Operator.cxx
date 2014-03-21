@@ -214,7 +214,7 @@ StoragePtr Operator::storage() const
 
 /** Set the storage which will initiate the operation.
   *
-  * If a BridgeBase subclass manages multiple Storage instances,
+  * If a Bridge subclass manages multiple Storage instances,
   * it is responsible for notifying all of them of any changes.
   * This \a storage is merely the location holding any
   * entities referenced by parameters of the operation.
@@ -228,7 +228,7 @@ Operator::Ptr Operator::setStorage(StoragePtr s)
 }
 
 /// Return the bridge associated with this operator (or a "null"/invalid shared-pointer).
-BridgeBasePtr Operator::bridge() const
+BridgePtr Operator::bridge() const
 {
   return this->m_bridge;
 }
@@ -237,7 +237,7 @@ BridgeBasePtr Operator::bridge() const
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setBridge(BridgeBasePtr b)
+Operator::Ptr Operator::setBridge(BridgePtr b)
 {
   this->m_bridge = b;
   return shared_from_this();

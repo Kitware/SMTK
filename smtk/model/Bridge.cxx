@@ -1,5 +1,4 @@
-#include "smtk/model/BridgeBase.h"
-
+#include "smtk/model/Bridge.h"
 
 namespace smtk {
   namespace model {
@@ -17,10 +16,10 @@ namespace smtk {
   *
   * The return value is 0 upon failure and non-zero upon success.
   * Failure occurs when any \a requested bits of information that
-  * are in BridgeBasee::allSupportedInformation() are not transcribed,
+  * are in Bridgee::allSupportedInformation() are not transcribed,
   * or when \a requested is 0.
   */
-int BridgeBase::transcribe(
+int Bridge::transcribe(
   const Cursor& entity, BridgedInfoBits requested, bool onlyDangling)
 {
   int retval = 0;
@@ -53,13 +52,13 @@ int BridgeBase::transcribe(
   * This is used to determine when an entity has been fully transcribed into storage
   * and is no longer "dangling."
   */
-BridgedInfoBits BridgeBase::allSupportedInformation() const
+BridgedInfoBits Bridge::allSupportedInformation() const
 {
   return BRIDGE_EVERYTHING;
 }
 
 /// Return a list of names of solid-model operators available.
-StringList BridgeBase::operatorNames() const
+StringList Bridge::operatorNames() const
 {
   StringList result;
   for (Operators::const_iterator it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
@@ -70,12 +69,12 @@ StringList BridgeBase::operatorNames() const
 }
 
 /// Return the list of solid-model operators available.
-const Operators& BridgeBase::operators() const
+const Operators& Bridge::operators() const
 {
   return this->m_operators;
 }
 
-OperatorPtr BridgeBase::op(const std::string& opName) const
+OperatorPtr Bridge::op(const std::string& opName) const
 {
   Operators::const_iterator it;
   for (it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
@@ -88,10 +87,10 @@ OperatorPtr BridgeBase::op(const std::string& opName) const
 
 /**\brief Add a solid-model operator to this bridge.
   *
-  * Subclasses of BridgeBase should call this method in their
+  * Subclasses of Bridge should call this method in their
   * constructors to indicate which modeling operations they will support.
   */
-void BridgeBase::addOperator(OperatorPtr oper)
+void Bridge::addOperator(OperatorPtr oper)
 {
   this->m_operators.insert(oper->clone()->setBridge(shared_from_this()));
 }
@@ -107,9 +106,9 @@ void BridgeBase::addOperator(OperatorPtr oper)
   *
   * The entity is added to the list of dangling entities and will be
   * removed from the list when a call to \a transcribeInternal indicates
-  * that BridgeBase::allSupportedInformation() is now present in storage.
+  * that Bridge::allSupportedInformation() is now present in storage.
   */
-void BridgeBase::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
+void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
 {
   if ((present & this->allSupportedInformation()) < this->allSupportedInformation())
     this->m_dangling[ent] = present;
@@ -124,7 +123,7 @@ void BridgeBase::declareDanglingEntity(const Cursor& ent, BridgedInfoBits presen
   * This should always be at least the information requested but may
   * include more information.
   */
-BridgedInfoBits BridgeBase::transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
+BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
 {
   (void)entity;
   (void)flags;

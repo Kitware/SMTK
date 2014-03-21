@@ -46,7 +46,7 @@ public:
   Operators operators() const;
   StringList operatorNames() const;
 
-  BridgeBasePtr bridge() const;
+  BridgePtr bridge() const;
 };
 
 /// Add all the free cells in \a container to this model.

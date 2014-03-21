@@ -55,7 +55,7 @@ namespace smtk
     class AttributeListPhrase;
     typedef std::vector<Arrangement> Arrangements;
     class BRepModel;
-    class BridgeBase;
+    class Bridge;
     class CellEntity;
     class Chain;
     typedef std::vector<Chain> Chains;
@@ -166,8 +166,8 @@ namespace smtk
   namespace model
   {
     // Model Related Pointer Classes
-    typedef smtk::shared_ptr< smtk::model::BridgeBase >            BridgeBasePtr;
-    typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::BridgeBase > > UUIDsToBridges;
+    typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
+    typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
