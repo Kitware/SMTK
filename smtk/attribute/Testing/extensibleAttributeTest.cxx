@@ -108,7 +108,7 @@ int checkDefaults(smtk::attribute::StringItemPtr sitem)
   if (!sitem->isUsingDefault())
     {
     std::cout << " - Not all values are set to default! - ERROR\n";
-    for (int i = 0; i < n; i++)
+    for (std::size_t i = 0; i < n; i++)
       {
       std::cout << "\t" << i << ":" << sitem->value(i) << "\n";
       }

@@ -759,7 +759,7 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
 {
   xml_node labels, child;
   xml_attribute xatt;
-  int i;
+  std::size_t i;
   this->processItemDef(node, idef);
 
   xatt = node.attribute("NumberOfRequiredValues");
