@@ -30,8 +30,8 @@ using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 GroupItemDefinition::GroupItemDefinition(const std::string &myName):
-  ItemDefinition(myName), m_numberOfRequiredGroups(1), m_useCommonLabel(false),
-  m_isExtensible(false), m_maxNumberOfGroups(0)
+  ItemDefinition(myName), m_numberOfRequiredGroups(1), m_maxNumberOfGroups(0),
+  m_isExtensible(false), m_useCommonLabel(false)
 {
 }
 
