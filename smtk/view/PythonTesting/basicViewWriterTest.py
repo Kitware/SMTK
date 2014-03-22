@@ -168,7 +168,7 @@ if __name__ == '__main__':
     modSec.setModelEntityMask(smtk.model.Item.FACE) # Look at 3d boundary entities only
 
     manager.updateCategories()
-    att = manager.createAttribute("TimeInfomation", timeParamDef)
+    att = manager.createAttribute("TimeInformation", timeParamDef)
     iSec = addSubView(root, smtk.view.Instanced, "Time Parameters")
     iSec.addInstance(att)
     att = manager.createAttribute("Globals", globalsDef)
