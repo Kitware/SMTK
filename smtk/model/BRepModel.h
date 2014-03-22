@@ -135,8 +135,8 @@ public:
   UUIDsToIntegerData const& integerProperties() const { return *this->m_integerData; }
 
   smtk::util::UUID modelOwningEntity(const smtk::util::UUID& uid) const;
-  BridgeBasePtr bridgeForModel(const smtk::util::UUID& uid) const;
-  void setBridgeForModel(BridgeBasePtr bridge, const smtk::util::UUID& uid);
+  BridgePtr bridgeForModel(const smtk::util::UUID& uid) const;
+  void setBridgeForModel(BridgePtr bridge, const smtk::util::UUID& uid);
 
   void assignDefaultNames();
   std::string assignDefaultName(const smtk::util::UUID& uid);
@@ -148,7 +148,7 @@ protected:
   smtk::shared_ptr<UUIDsToStringData> m_stringData;
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   UUIDsToBridges m_modelBridges;
-  smtk::shared_ptr<BridgeBase> m_defaultBridge;
+  smtk::shared_ptr<Bridge> m_defaultBridge;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
 

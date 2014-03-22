@@ -53,15 +53,15 @@ public:
   StoragePtr storage() const;
   Ptr setStorage(StoragePtr s);
 
-  BridgeBasePtr bridge() const;
-  Ptr setBridge(BridgeBasePtr b);
+  BridgePtr bridge() const;
+  Ptr setBridge(BridgePtr b);
 
   bool operator < (const Operator& other) const;
 
 protected:
   Parameters m_parameters;
   StoragePtr m_storage;
-  BridgeBasePtr m_bridge;
+  BridgePtr m_bridge;
   std::set<ParameterChangeObserver> m_parameterChangeTriggers;
   std::set<WillOperateObserver> m_willOperateTriggers;
   std::set<DidOperateObserver> m_didOperateTriggers;
