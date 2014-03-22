@@ -164,7 +164,7 @@ int main()
   modSec->setModelEntityMask(smtk::model::Item::FACE); // Look at 3D boundary entities only
 
   manager.updateCategories();
-  attribute::AttributePtr att = manager.createAttribute("TimeInfomation", timeParamDef);
+  attribute::AttributePtr att = manager.createAttribute("TimeInformation", timeParamDef);
   view::InstancedPtr iSec;
   iSec = root->addSubView<view::InstancedPtr>("Time Parameters");
   iSec->addInstance(att);

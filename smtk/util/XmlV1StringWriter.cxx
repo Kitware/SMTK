@@ -234,7 +234,7 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
   // Reset the message log
   this->m_logger.reset();
 
-  this->m_pugi->root.append_child(node_comment).set_value("**********  Category and Analysis Infomation ***********");
+  this->m_pugi->root.append_child(node_comment).set_value("**********  Category and Analysis Information ***********");
   // Write out the category and analysis information
   if (this->m_manager.numberOfCategories())
     {
