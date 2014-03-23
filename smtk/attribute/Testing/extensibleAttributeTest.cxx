@@ -42,9 +42,200 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <iostream>
 
-const char *itemNames[] = {
+const char *d2items[] = {
   "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "StringItem1", "StringItem2", "StringItem3"
 };
+
+const char *d3items[] = {
+  "IntItem1", "IntItem2", "DoubleItem1", "DoubleItem2", "GroupItem1", "GroupItem2", "GroupItem3"
+};
+
+int checkGroupItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool isExtensible)
+{
+  int pos = def->findItemPosition(name);
+  if (pos < 0)
+    {
+    std::cerr << "Could not find " << name << "! - ERROR\n";
+    return -1;
+    }
+  else
+    {
+    std::cout << "Pos of " << name << " = " << pos << std::endl;
+    }
+  smtk::attribute::GroupItemDefinitionPtr gdef =
+    smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(def->itemDefinition(pos));
+  if (!gdef)
+    {
+    std::cerr << name << " Def is not a group! at pos: " << pos << " - ERROR\n";
+    return -1;
+    }
+  // Is this suppose to be extenisble
+  // Is it extensible?
+  if (isExtensible)
+    {
+    if (gdef->isExtensible())
+      {
+      std::cout << name << " is extensible!, NumOfRequired Groups: " << gdef->numberOfRequiredValues()
+                << " MaxNumberOfGroups: " << gdef->maxNumberOfGroups() << " - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is not extensible - ERROR\n";
+      return -1;
+      }
+    }
+  else
+    {
+    if (!gdef->isExtensible())
+      {
+      std::cout << name << " is not extensible - PASSED\n";
+      }
+    else
+      {
+      std::cerr << name << " Def is  extensible - ERROR\n";
+      return -1;
+      }
+    }
+
+  return pos;
+}
+
+int checkGroupItem(const char *name, smtk::attribute::AttributePtr att, bool isExtensible)
+{
+  int status = 0;
+  smtk::attribute::ItemPtr item = att->find(name);
+  if (!item)
+    {
+    std::cerr << name << " could not be found\n";
+    return -1;
+    }
+  smtk::attribute::GroupItemPtr gitem =
+    smtk::dynamic_pointer_cast<smtk::attribute::GroupItem>(item);
+  if (!gitem)
+    {
+    std::cerr << name << " is not a group\n";
+    return -1;
+    }
+  std::size_t minN = gitem->numberOfRequiredGroups(), maxN = gitem->maxNumberOfGroups();
+  std::cout << name << ": NumOfRequired Groups: " << minN
+              << " MaxNumberOfGroups: " << maxN << "\n";
+  if (!isExtensible)
+    {
+    if (!gitem->appendGroup())
+      {
+      std::cout << name << "did not allow append op for a fixed length item - PASSED\n";
+      }
+    else
+      {
+      std::cout << name << " allowed appending of new value for a fixed length item. RequiredSize:" << minN
+                << " Current Size: " << gitem->numberOfGroups() << " - ERROR\n";
+      status = -1;
+      }
+    // Can we remove from the item?
+    if (!gitem->removeGroup(0))
+      {
+      std::cout << name << "did not allow remove op for a fixed length item - PASSED\n";
+      }
+    else
+      {
+      std::cout << name << " allowed removing of  value for a fixed length item. RequiredSize:" << minN
+                << " Current Size: " << gitem->numberOfGroups() << " - ERROR\n";
+      status = -1;
+      }
+    return status;
+    }
+
+  // Is the number of initial values correct?
+  if (minN != gitem->numberOfValues())
+    {
+    std::cerr << name << "'s initial size is not correct RequiredSize:" << minN
+              << " Initial Size: " << gitem->numberOfGroups() << " - ERROR\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << name << " is have correct initial size - PASSED\n";
+    }
+
+  if (minN)
+    {
+    // Can we delete below the required number of values?
+    if (gitem->removeGroup(0))
+      {
+      std::cerr << name << " allowed deleting below min size. RequiredSize:" << minN
+                << " Current Size: " << gitem->numberOfGroups() << " - ERROR\n";
+      status = -1;
+      }
+    else
+      {
+      std::cout << name << " - attempting to delete below required size test - PASSED\n";
+      }
+    }
+  else
+    {
+    std::cout << name << " had no min size\n";
+    }
+  // Does resizing work?
+  gitem->setNumberOfGroups(minN+1);
+  if (gitem->numberOfGroups() != (minN+1))
+    {
+    std::cerr << name << " did not resize correctly. RequiredSize:" << minN
+              << " Current Size: " << gitem->numberOfGroups() << " - ERROR\n";
+    status = -1;
+    }
+  else
+    {
+    std::cout << name << "'s resize test - PASSED\n";
+    }
+
+  // Can we add to the item?
+  if (gitem->appendGroup())
+    {
+    std::cout << name << "'s attempt of appending of new value. RequiredSize:" << minN
+              << " Current Size: " << gitem->numberOfGroups() << " - PASSED\n";
+    }
+  else
+    {
+    std::cout << name << "'s append test - ERROR\n";
+    status = -1;
+    }
+  // Can we remove from the item?
+  if (gitem->removeGroup(0))
+    {
+    std::cout << name << " allowed removing of 0th val. RequiredSize:" << minN
+              << " Current Size: " << gitem->numberOfGroups() << "- PASSED\n";
+    }
+  else
+    {
+    std::cout << name << "'s remove test - ERROR\n";
+    status = -1;
+    }
+  if (maxN)
+    {
+    // add enough values to reach max number
+    while (gitem->numberOfGroups() != maxN)
+      {
+      gitem->appendGroup();
+      }
+    // Now try to append past it
+    if (gitem->appendGroup())
+      {
+      std::cerr << name << " allowed appending above max size. MaxSize:" << maxN
+                << " Current Size: " << gitem->numberOfGroups() << " - FAILED\n";
+      status = -1;
+      }
+    else
+      {
+      std::cout << name  << "'s appending above max size test  MaxSize:" << maxN
+                << " Current Size: " << gitem->numberOfGroups() << " - PASSED\n";
+      }
+    }
+  else
+    {
+    std::cout << name << " had no max size (IGNORED)\n";
+    }
+  return status;
+}
 
 int checkStringItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool isExtensible)
 {
@@ -266,6 +457,7 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
   return status;
 }
 
+
 int main(int argc, char *argv[])
 {
   int status = 0;
@@ -290,6 +482,7 @@ int main(int argc, char *argv[])
     std::cout << "Read in template - PASSED\n";
     }
 
+  std::cout << "Checking Extensible Value Items........\n";
   smtk::attribute::DefinitionPtr def = manager.findDefinition("Derived2");
   if (!def)
     {
@@ -307,7 +500,7 @@ int main(int argc, char *argv[])
   for (i = 0; i < n; i++)
     {
     std::cout << i << ":" << def->itemDefinition(i)->name();
-    if (def->itemDefinition(i)->name() == itemNames[i])
+    if (def->itemDefinition(i)->name() == d2items[i])
       {
       std::cout << "- PASSED!" << std::endl;
       }
@@ -376,6 +569,96 @@ int main(int argc, char *argv[])
   if (checkStringItem("StringItem3", att, false))
     {
     std::cerr << "Problem with StringItem3- ERROR\n";
+    status =  -8;
+    }
+
+  std::cout << "Checking Extensible Group Items........\n";
+  def = manager.findDefinition("Derived3");
+  if (!def)
+    {
+    std::cerr << "Could not find Derived 3 Def! - ERROR\n";
+    return -2;
+    }
+
+  int i, n = def->numberOfItemDefinitions();
+  if (n != 7)
+    {
+    std::cerr << "Derived 3 has incorrect number of items! - ERROR\n";
+    return -2;
+    }
+
+  for (i = 0; i < n; i++)
+    {
+    std::cout << i << ":" << def->itemDefinition(i)->name();
+    if (def->itemDefinition(i)->name() == d3items[i])
+      {
+      std::cout << "- PASSED!" << std::endl;
+      }
+    else
+      {
+      std::cout << "- Error!" << std::endl;
+      status = -2;
+      }
+    }
+  if (status)
+    {
+    return status;
+    }
+
+  // Lets find the extensible definitions
+  int pos1 = checkGroupItemDef("GroupItem1", def, true);
+  if (pos1 < 0)
+    {
+    std::cerr << "Problem with GroupItem1 Def - ERROR\n";
+    return -3;
+    }
+
+  int pos2 = checkGroupItemDef("GroupItem2", def, true);
+  if (pos2 < 0)
+    {
+    std::cerr << "Problem with GroupItem2 Def - ERROR\n";
+    return -4;
+    }
+
+  int pos3 = checkGroupItemDef("GroupItem3", def, false);
+  if (pos3 < 0)
+    {
+    std::cerr << "Problem with GroupItem3 Def - ERROR\n";
+    return -4;
+    }
+
+  // Find or Create an attribute
+  smtk::attribute::AttributePtr att = manager.findAttribute("Derived2Att");
+  if (!att)
+    {
+    att = manager.createAttribute("Derived2Att", def);
+    if (!att)
+      {
+      std::cerr << "Could not create Attribute - ERROR\n";
+      return -5;
+      }
+    std::cout << "Created Derived2Att\n";
+    }
+  else
+    {
+    std::cout << "Found Derived2Att\n";
+    }
+
+  if (checkGroupItem("GroupItem1", att, true))
+    {
+    std::cerr << "Problem with GroupItem1- ERROR\n";
+    status =  -6;
+    }
+
+  if (checkGroupItem("GroupItem2", att, true))
+    {
+    std::cerr << "Problem with GroupItem2- ERROR\n";
+    status = -7;
+    }
+
+  if (checkGroupItem("GroupItem3", att, false))
+    {
+    std::cerr << "Problem with GroupItem3- ERROR\n";
     status =  -8;
     }
 
