@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItemDefinition.h"
 #include "smtk/attribute/GroupItemDefinition.h"
+#include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -75,7 +76,7 @@ int checkGroupItemDef(const char *name, smtk::attribute::DefinitionPtr def, bool
     {
     if (gdef->isExtensible())
       {
-      std::cout << name << " is extensible!, NumOfRequired Groups: " << gdef->numberOfRequiredValues()
+      std::cout << name << " is extensible!, NumOfRequired Groups: " << gdef->numberOfRequiredGroups()
                 << " MaxNumberOfGroups: " << gdef->maxNumberOfGroups() << " - PASSED\n";
       }
     else
@@ -146,7 +147,7 @@ int checkGroupItem(const char *name, smtk::attribute::AttributePtr att, bool isE
     }
 
   // Is the number of initial values correct?
-  if (minN != gitem->numberOfValues())
+  if (minN != gitem->numberOfGroups())
     {
     std::cerr << name << "'s initial size is not correct RequiredSize:" << minN
               << " Initial Size: " << gitem->numberOfGroups() << " - ERROR\n";
@@ -580,7 +581,7 @@ int main(int argc, char *argv[])
     return -2;
     }
 
-  int i, n = def->numberOfItemDefinitions();
+  n = def->numberOfItemDefinitions();
   if (n != 7)
     {
     std::cerr << "Derived 3 has incorrect number of items! - ERROR\n";
@@ -606,21 +607,21 @@ int main(int argc, char *argv[])
     }
 
   // Lets find the extensible definitions
-  int pos1 = checkGroupItemDef("GroupItem1", def, true);
+  pos1 = checkGroupItemDef("GroupItem1", def, true);
   if (pos1 < 0)
     {
     std::cerr << "Problem with GroupItem1 Def - ERROR\n";
     return -3;
     }
 
-  int pos2 = checkGroupItemDef("GroupItem2", def, true);
+  pos2 = checkGroupItemDef("GroupItem2", def, true);
   if (pos2 < 0)
     {
     std::cerr << "Problem with GroupItem2 Def - ERROR\n";
     return -4;
     }
 
-  int pos3 = checkGroupItemDef("GroupItem3", def, false);
+  pos3 = checkGroupItemDef("GroupItem3", def, false);
   if (pos3 < 0)
     {
     std::cerr << "Problem with GroupItem3 Def - ERROR\n";
@@ -628,20 +629,20 @@ int main(int argc, char *argv[])
     }
 
   // Find or Create an attribute
-  smtk::attribute::AttributePtr att = manager.findAttribute("Derived2Att");
+  att = manager.findAttribute("Derived3Att");
   if (!att)
     {
-    att = manager.createAttribute("Derived2Att", def);
+    att = manager.createAttribute("Derived3Att", def);
     if (!att)
       {
       std::cerr << "Could not create Attribute - ERROR\n";
       return -5;
       }
-    std::cout << "Created Derived2Att\n";
+    std::cout << "Created Derived3Att\n";
     }
   else
     {
-    std::cout << "Found Derived2Att\n";
+    std::cout << "Found Derived3Att\n";
     }
 
   if (checkGroupItem("GroupItem1", att, true))
