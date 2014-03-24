@@ -44,6 +44,7 @@ enum BridgedInformation
   BRIDGE_ATTRIBUTE_ASSOCIATIONS = 0x00000080, //!< Attribute associations.
 
   // Common combinations
+  BRIDGE_NOTHING                = 0x00000000, //!< Transcribe nothing.
   BRIDGE_ENTITY_RECORD          = 0x00000003, //!< Transcribe both entity type and relations.
   BRIDGE_ENTITY_ARRANGED        = 0x00000007, //!< Transcribe the entity record and all arrangement information.
   BRIDGE_PROPERTIES             = 0x00000070, //!< Transcribe all properties.
