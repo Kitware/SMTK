@@ -33,7 +33,7 @@ if __name__ == '__main__':
       pushRelation(model.entity())
     u00 = store.addEntity(volume)
     # Now verify that the faces refer back to the volume:
-    status = False if store.findEntity(u01).relations()[0] == u00 else True
+    status = False if store.findEntity(u01, True).relations()[0] == u00 else True
     # Add cells to the group, the group and cells to the model, submodels to the model:
     [store.findOrAddEntityToGroup(group.entity(), x) for x in [u00,u01,u02,u03,u04]]
     [model.addCell(smtk.model.CellEntity(x)) for x in group.members()]

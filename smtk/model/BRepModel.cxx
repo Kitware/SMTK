@@ -476,23 +476,64 @@ UUIDs BRepModel::entitiesOfDimension(int dim)
 }
 //@}
 
-/// Return the smtk::model::Entity associated with \a uid (or NULL).
+/**\brief Return the smtk::model::Entity associated with \a uid (or NULL).
+  *
+  * Note that even the const version of this method may invalidate other
+  * pointers to Entity records since it may ask a Bridge instance to fetch
+  * a dangling UUID (one marked as existing but un-transcribed) and insert
+  * the Entity into Storage. If it is important that Entity pointers remain
+  * valid, call with the second argument (\a tryBridges) set to false.
+  */
 //@{
-const Entity* BRepModel::findEntity(const UUID& uid) const
+const Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges) const
 {
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
     {
+    // Not in storage... is it in any bridge's dangling entity list?
+    // We use an evil const-cast here because we are working under the fiction
+    // that fetching an entity that exists (even if it hasn't been transcribed
+    // yet) does not affect storage.
+    StoragePtr store = smtk::dynamic_pointer_cast<Storage>(
+      const_cast<BRepModel*>(this)->shared_from_this());
+    if (tryBridges && store)
+      {
+      UUIDsToBridges::iterator bit;
+      for (bit = store->m_modelBridges.begin(); bit != store->m_modelBridges.end(); ++bit)
+        {
+        if (bit->second->transcribe(Cursor(store, uid), BRIDGE_ENTITY_ARRANGED, true))
+          {
+          it = this->m_topology->find(uid);
+          if (it != this->m_topology->end())
+            return &it->second;
+          }
+        }
+      }
     return NULL;
     }
   return &it->second;
 }
 
-Entity* BRepModel::findEntity(const UUID& uid)
+Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges)
 {
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
-    {
+    { // Not in storage... is it in any bridge's dangling entity list?
+    StoragePtr store = smtk::dynamic_pointer_cast<Storage>(
+      const_cast<BRepModel*>(this)->shared_from_this());
+    if (tryBridges && store)
+      {
+      UUIDsToBridges::iterator bit;
+      for (bit = store->m_modelBridges.begin(); bit != store->m_modelBridges.end(); ++bit)
+        {
+        if (bit->second->transcribe(Cursor(store, uid), BRIDGE_ENTITY_ARRANGED, true))
+          {
+          it = this->m_topology->find(uid);
+          if (it != this->m_topology->end())
+            return &it->second;
+          }
+        }
+      }
     return NULL;
     }
   return &it->second;
