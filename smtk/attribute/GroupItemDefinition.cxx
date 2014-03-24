@@ -157,7 +157,7 @@ std::string GroupItemDefinition::subGroupLabel(std::size_t element) const
 //----------------------------------------------------------------------------
 bool  GroupItemDefinition::setMaxNumberOfGroups(std::size_t esize)
 {
-  if (esize && (esize > this->m_numberOfRequiredGroups))
+  if (esize && (esize < this->m_numberOfRequiredGroups))
     {
     return false;
     }
@@ -178,6 +178,10 @@ bool GroupItemDefinition::setNumberOfRequiredGroups(std::size_t gsize)
     }
 
   this->m_numberOfRequiredGroups = gsize;
+  if (!this->hasSubGroupLabels())
+    {
+    return true;
+    }
   if (!(this->m_useCommonLabel || this->m_isExtensible))
     {
     this->m_labels.resize(gsize);
