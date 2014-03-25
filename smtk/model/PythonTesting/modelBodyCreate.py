@@ -26,11 +26,11 @@ if __name__ == '__main__':
     u02 = store.addEntity(f2)
     u03 = store.addEntity(f3)
     u04 = store.addEntity(f4)
-    volume.appendRelation(u01).\
-      appendRelation(u02).\
-      appendRelation(u03).\
-      appendRelation(u04).\
-      appendRelation(model.entity())
+    volume.pushRelation(u01).\
+      pushRelation(u02).\
+      pushRelation(u03).\
+      pushRelation(u04).\
+      pushRelation(model.entity())
     u00 = store.addEntity(volume)
     # Now verify that the faces refer back to the volume:
     status = False if store.findEntity(u01).relations()[0] == u00 else True

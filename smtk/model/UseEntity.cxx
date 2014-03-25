@@ -25,7 +25,7 @@ Orientation UseEntity::orientation() const
 {
   // This is tricky. We currently only store the orientation with
   // the cell, not the cell-use. So we must retrieve the particular
-  // arrangement on the cell pointing to this FaceUse and report
+  // arrangement on the cell pointing to this Use and report
   // that arrangement's orientation.
 
   // Find the cell for this use record.

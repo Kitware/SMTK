@@ -1,5 +1,6 @@
 set(smtkModelPythonTests
   modelBodyCreate
+  modelBodyCursors
   cursorTutorial
 )
 
