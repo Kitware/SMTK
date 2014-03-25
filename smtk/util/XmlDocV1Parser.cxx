@@ -414,58 +414,54 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 {
   // Process definitions first
   xml_node child, node = root.child("Definitions");
-  if (!node)
+  if (node)
     {
-    smtkErrorMacro(this->m_logger, "Definition Section is missing!");
-    return;
-    }
-  for (child = node.first_child(); child; child = child.next_sibling())
-    {
-    this->processDefinition(child);
-    }
-
-  // At this point we have all the definitions read in so lets
-  // fix up all of the attribute definition references
-  std::size_t i;
-  attribute::DefinitionPtr def;
-  for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
-    {
-    def = this->m_manager.findDefinition(this->m_itemExpressionDefInfo[i].second);
-    if (def)
+    for (child = node.first_child(); child; child = child.next_sibling())
       {
-      this->m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
+      this->processDefinition(child);
       }
-    else
+
+    // At this point we have all the definitions read in so lets
+    // fix up all of the attribute definition references
+    std::size_t i;
+    attribute::DefinitionPtr def;
+    for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
       {
-      smtkErrorMacro(this->m_logger,
+      def = this->m_manager.findDefinition(this->m_itemExpressionDefInfo[i].second);
+      if (def)
+        {
+        this->m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
+        }
+      else
+        {
+        smtkErrorMacro(this->m_logger,
                        "Referenced Attribute Definition: "
                        << this->m_itemExpressionDefInfo[i].second
                        << " is missing and required by Item Definition: "
                        << this->m_itemExpressionDefInfo[i].first->name());
         }
-    }
-
-  for (i = 0; i < this->m_attRefDefInfo.size(); i++)
-    {
-    def = this->m_manager.findDefinition(this->m_attRefDefInfo[i].second);
-    if (def)
-      {
-      this->m_attRefDefInfo[i].first->setAttributeDefinition(def);
       }
-    else
+
+    for (i = 0; i < this->m_attRefDefInfo.size(); i++)
       {
-      smtkErrorMacro(this->m_logger,
+      def = this->m_manager.findDefinition(this->m_attRefDefInfo[i].second);
+      if (def)
+        {
+        this->m_attRefDefInfo[i].first->setAttributeDefinition(def);
+        }
+      else
+        {
+        smtkErrorMacro(this->m_logger,
                        "Referenced Attribute Definition: "
                        << this->m_attRefDefInfo[i].second
                        << " is missing and required by Item Definition: "
                        << this->m_attRefDefInfo[i].first->name());
         }
+      }
     }
-
   node = root.child("Attributes");
   if (!node)
     {
-    smtkErrorMacro(this->m_logger,"Attributes Section is missing!");
     return;
     }
 
@@ -1196,34 +1192,91 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
       {
       case smtk::attribute::Item::ATTRIBUTE_REF:
         idef = def->addItemDefinition<smtk::attribute::RefItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Ref Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processRefDef(child, smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DOUBLE:
         idef = def->addItemDefinition<smtk::attribute::DoubleItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Double Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processDoubleDef(child, smtk::dynamic_pointer_cast<smtk::attribute::DoubleItemDefinition>(idef));
         break;
       case smtk::attribute::Item::DIRECTORY:
         idef = def->addItemDefinition<smtk::attribute::DirectoryItemDefinition>(itemName);
-        this->processDirectoryDef(child, smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Directory Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
+        this->processDirectoryDef(child,
+                                  smtk::dynamic_pointer_cast<smtk::attribute::DirectoryItemDefinition>(idef));
         break;
       case smtk::attribute::Item::FILE:
         idef = def->addItemDefinition<smtk::attribute::FileItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create File Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processFileDef(child, smtk::dynamic_pointer_cast<smtk::attribute::FileItemDefinition>(idef));
         break;
       case smtk::attribute::Item::GROUP:
         idef = def->addItemDefinition<smtk::attribute::GroupItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Group Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processGroupDef(child, smtk::dynamic_pointer_cast<smtk::attribute::GroupItemDefinition>(idef));
         break;
       case smtk::attribute::Item::INT:
         idef = def->addItemDefinition<smtk::attribute::IntItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Int Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processIntDef(child, smtk::dynamic_pointer_cast<smtk::attribute::IntItemDefinition>(idef));
         break;
       case smtk::attribute::Item::STRING:
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create String Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processStringDef(child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create Void Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
         this->processItemDef(child, idef);
         break;
       default:
