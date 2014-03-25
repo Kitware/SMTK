@@ -30,6 +30,14 @@ typedef std::vector<UseEntity> UseEntities;
   *
   * A vertex may have any number of use records; one should exist for each
   * volume, free face, or free edge attached to the vertex.
+  *
+  * The boundingShellEntity() is the ShellEntity in which this
+  * use participates as part or all of a higher-dimensional use's boundary.
+  * VertexUse entities may participate in multiple chains, and so
+  * boundingShellEntities() is provided.
+  * VolumeUse entities should always return an invalid boundingShellEntity()
+  * (until the need for space-time or higher-dimensional modeling drives
+  * a change).
   */
 class SMTKCORE_EXPORT UseEntity : public Cursor
 {
@@ -42,6 +50,10 @@ public:
   template<typename T> T shellEntities() const;
   Orientation orientation() const;
   int sense() const;
+
+  UseEntity& setBoundingShellEntity(const ShellEntity& shell);
+  UseEntity& addShellEntity(const ShellEntity& shell);
+  template<typename T> UseEntity& addShellEntities(const T& shellContainer);
 };
 
 template<typename T> T UseEntity::boundingShellEntities() const
@@ -56,6 +68,16 @@ template<typename T> T UseEntity::shellEntities() const
   T container;
   CursorArrangementOps::appendAllRelations(*this, INCLUDES, container);
   return container;
+}
+
+template<typename T>
+UseEntity& UseEntity::addShellEntities(const T& shellContainer)
+{
+  for (typename T::const_iterator it = shellContainer.begin(); it != shellContainer.end(); ++it)
+    {
+    this->addShellEntity(*it);
+    }
+  return *this;
 }
 
   } // namespace model

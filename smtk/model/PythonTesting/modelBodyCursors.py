@@ -56,10 +56,15 @@ if __name__ == '__main__':
     shell1 = store.setShell(uids[16], voluse)
     loop1 = store.setLoop(uids[17], face1use)
     loop2 = store.setLoop(uids[18], face2use)
+    # One can call storage.setXXX(shellEntityId, parentUse) or equivalently
+    # call parentUse.setBoundingShellEntity(storage.insertXXX(shellEntityId)).
+    # We demonstrate/test both below:
     chain1 = store.setChain(uids[19], edge1use1)
     chain2 = store.setChain(uids[20], edge2use1)
-    chain3 = store.setChain(uids[21], edge1use2)
-    chain4 = store.setChain(uids[22], edge2use2)
+    chain3 = store.insertChain(uids[21])
+    chain4 = store.insertChain(uids[22])
+    edge1use2.setBoundingShellEntity(chain3)
+    edge2use2.setBoundingShellEntity(chain4)
     # Now we add child cell-uses to each shell:
     shell1.addUse(face1use).addUse(face2use)
     loop1.addUse(edge1use1).addUse(edge2use1)
@@ -73,13 +78,13 @@ if __name__ == '__main__':
     # Without these, boundaryEntities/bordantEntities will not work.
     # assignDefaultNames needs bordantEntities in order to determine
     # the owningModelEntity for naming...
-    store.findEntity(uids[0]).pushRelation(uids[1]).pushRelation(uids[2])
-    store.findEntity(uids[1]).pushRelation(uids[0]).pushRelation(uids[3])
-    store.findEntity(uids[2]).pushRelation(uids[0]).pushRelation(uids[4])
-    store.findEntity(uids[3]).pushRelation(uids[1]).pushRelation(uids[5])
-    store.findEntity(uids[4]).pushRelation(uids[2]).pushRelation(uids[6])
-    store.findEntity(uids[5]).pushRelation(uids[3]).pushRelation(uids[4])
-    store.findEntity(uids[6]).pushRelation(uids[4]).pushRelation(uids[3])
+    store.findEntity(uids[0], True).pushRelation(uids[1]).pushRelation(uids[2])
+    store.findEntity(uids[1], True).pushRelation(uids[0]).pushRelation(uids[3])
+    store.findEntity(uids[2], True).pushRelation(uids[0]).pushRelation(uids[4])
+    store.findEntity(uids[3], True).pushRelation(uids[1]).pushRelation(uids[5])
+    store.findEntity(uids[4], True).pushRelation(uids[2]).pushRelation(uids[6])
+    store.findEntity(uids[5], True).pushRelation(uids[3]).pushRelation(uids[4])
+    store.findEntity(uids[6], True).pushRelation(uids[4]).pushRelation(uids[3])
 
     store.assignDefaultNames()
     print smtk.model.ExportJSON.fromModel(store)

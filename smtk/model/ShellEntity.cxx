@@ -49,6 +49,7 @@ ShellEntity ShellEntity::containingShellEntity() const
   return CursorArrangementOps::firstRelation<ShellEntity>(*this, EMBEDDED_IN);
 }
 
+/// Add the (lower-dimensional) use as a child of the shell.
 ShellEntity& ShellEntity::addUse(const UseEntity& use)
 {
   if (this->m_storage)
