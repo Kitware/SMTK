@@ -723,20 +723,15 @@ smtk::util::UUID Storage::findCreateOrReplaceCellUseOfSenseAndOrientation(
     }
 
   // Now add the use to the cell and the cell to the use:
-  smtk::util::UUIDArray::size_type useIdx = entity->relations().size();
-  entity->appendRelation(use->first);
-  smtk::util::UUIDArray::size_type cellIdx = use->second.relations().size();
-  use->second.appendRelation(cell);
-
   this->arrangeEntity(
     cell, HAS_USE,
     Arrangement::CellHasUseWithIndexSenseAndOrientation(
-      static_cast<int>(useIdx), sense, orient),
+      entity->appendRelation(use->first), sense, orient),
     arrIdx);
   this->arrangeEntity(
     use->first, HAS_CELL,
     Arrangement::UseHasCellWithIndexAndSense(
-      static_cast<int>(cellIdx), sense));
+      use->second.appendRelation(cell), sense));
 
   return use->first;
 }
@@ -809,6 +804,38 @@ smtk::util::UUID Storage::createIncludedShell(const smtk::util::UUID& useOrShell
   shell->second.appendRelation(useOrShell);
 
   return shell->first;
+}
+
+/** Add a shell to \a parentUseOrShell as an inclusion unless it already exists.
+  *
+  * Returns true when adding the shell was necessary.
+  * Returns false if either entity does not exist or the shell was already owned by the parent.
+  */
+bool Storage::findOrAddIncludedShell(
+  const smtk::util::UUID& parentUseOrShell,
+  const smtk::util::UUID& shellToInclude)
+{
+  Entity* parEnt = this->findEntity(parentUseOrShell);
+  Entity* shlEnt = this->findEntity(shellToInclude);
+  if (!parEnt || !shlEnt)
+    {
+    return false;
+    }
+
+  int indexOfShell = this->findArrangementInvolvingEntity(
+    parentUseOrShell, INCLUDES, shellToInclude);
+  if (indexOfShell >= 0)
+    return false;
+
+  // Didn't find it. Add both forward and inverse relations.
+  this->arrangeEntity(parentUseOrShell, INCLUDES,
+    Arrangement::UseOrShellIncludesShellWithIndex(
+      parEnt->appendRelation(shellToInclude)));
+  this->arrangeEntity(shellToInclude, EMBEDDED_IN,
+    Arrangement::ShellEmbeddedInUseOrShellWithIndex(
+      shlEnt->appendRelation(parentUseOrShell)));
+
+  return true;
 }
 
 /**\brief Add a cell-use to a shell if it is not already contained in the shell.
@@ -1148,6 +1175,57 @@ Volume Storage::addVolume()
     this->addEntityOfTypeAndDimension(CELL_ENTITY, 3));
 }
 
+/// Insert a VertexUse at the specified \a uid.
+VertexUse Storage::insertVertexUse(const smtk::util::UUID& uid)
+{
+  return VertexUse(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 0)->first);
+}
+
+/// Create a VertexUse with the specified \a uid and replace \a src's VertexUse.
+VertexUse Storage::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense)
+{
+  VertexUse vertUse = this->insertVertexUse(uid);
+  this->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    src.entity(), sense, POSITIVE, uid);
+  return vertUse;
+}
+
+/// Insert a EdgeUse at the specified \a uid.
+EdgeUse Storage::insertEdgeUse(const smtk::util::UUID& uid)
+{
+  return EdgeUse(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 1)->first);
+}
+
+/// Create a EdgeUse with the specified \a uid and replace \a src's EdgeUse.
+EdgeUse Storage::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o)
+{
+  EdgeUse edgeUse = this->insertEdgeUse(uid);
+  this->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    src.entity(), sense, o, uid);
+  return edgeUse;
+}
+
+/// Insert a FaceUse at the specified \a uid.
+FaceUse Storage::insertFaceUse(const smtk::util::UUID& uid)
+{
+  return FaceUse(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, USE_ENTITY, 2)->first);
+}
+
+/// Create a FaceUse with the specified \a uid and replace \a src's FaceUse.
+FaceUse Storage::setFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o)
+{
+  FaceUse faceUse = this->insertFaceUse(uid);
+  this->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    src.entity(), sense, o, uid);
+  return faceUse;
+}
+
 /// Insert a VolumeUse at the specified \a uid.
 VolumeUse Storage::insertVolumeUse(const smtk::util::UUID& uid)
 {
@@ -1244,6 +1322,81 @@ VolumeUse Storage::addVolumeUse(const Volume& src)
     }
   return VolumeUse(); // invalid volume use if source volume was invalid or from different storage.
 }
+
+/// Insert a Chain at the specified \a uid.
+Chain Storage::insertChain(const smtk::util::UUID& uid)
+{
+  return Chain(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1)->first);
+}
+
+/// Find or add a chain to storage with a relationship back to its owning edge-use.
+Chain Storage::setChain(const smtk::util::UUID& uid, const EdgeUse& use)
+{
+  Chain chain = this->insertChain(uid);
+  this->findOrAddIncludedShell(use.entity(), uid);
+  return chain;
+}
+
+/// Find or add a chain to storage with a relationship back to its owning chain.
+Chain Storage::setChain(const smtk::util::UUID& uid, const Chain& parent)
+{
+  Chain chain = this->insertChain(uid);
+  this->findOrAddIncludedShell(parent.entity(), uid);
+  return chain;
+}
+
+
+/// Insert a Loop at the specified \a uid.
+Loop Storage::insertLoop(const smtk::util::UUID& uid)
+{
+  return Loop(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1)->first);
+}
+
+/// Find or add a chain to storage with a relationship back to its owning face-use.
+Loop Storage::setLoop(const smtk::util::UUID& uid, const FaceUse& use)
+{
+  Loop loop = this->insertLoop(uid);
+  this->findOrAddIncludedShell(use.entity(), uid);
+  return loop;
+}
+
+/// Find or add a chain to storage with a relationship back to its owning loop.
+Loop Storage::setLoop(const smtk::util::UUID& uid, const Loop& parent)
+{
+  Loop loop = this->insertLoop(uid);
+  this->findOrAddIncludedShell(parent.entity(), uid);
+  return loop;
+}
+
+
+/// Insert a Shell at the specified \a uid.
+Shell Storage::insertShell(const smtk::util::UUID& uid)
+{
+  return Shell(
+    shared_from_this(),
+    this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1)->first);
+}
+
+/// Find or add a chain to storage with a relationship back to its owning volume-use.
+Shell Storage::setShell(const smtk::util::UUID& uid, const VolumeUse& use)
+{
+  Shell shell = this->insertShell(uid);
+  this->findOrAddIncludedShell(use.entity(), uid);
+  return shell;
+}
+
+/// Find or add a chain to storage with a relationship back to its owning shell.
+Shell Storage::setShell(const smtk::util::UUID& uid, const Shell& parent)
+{
+  Shell shell = this->insertShell(uid);
+  this->findOrAddIncludedShell(parent.entity(), uid);
+  return shell;
+}
+
 
 /// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
 Chain Storage::addChain()

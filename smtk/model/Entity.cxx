@@ -133,7 +133,14 @@ const UUIDArray& Entity::relations() const
   return this->m_relations;
 }
 
-Entity& Entity::appendRelation(const UUID& b)
+int Entity::appendRelation(const UUID& b)
+{
+  int reln = static_cast<int>(this->m_relations.size());
+  this->m_relations.push_back(b);
+  return reln;
+}
+
+Entity& Entity::pushRelation(const UUID& b)
 {
   this->m_relations.push_back(b);
   return *this;

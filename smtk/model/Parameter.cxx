@@ -8,48 +8,48 @@ Parameter::Parameter()
 {
 }
 
-Parameter::Parameter(const std::string& name)
-  : m_state(PARAMETER_UNKNOWN), m_name(name)
+Parameter::Parameter(const std::string& pname)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname)
 {
 }
 
-Parameter::Parameter(const std::string& name, const Float& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_floatVals(1, val)
+Parameter::Parameter(const std::string& pname, const Float& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_floatVals(1, val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const FloatList& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_floatVals(val)
+Parameter::Parameter(const std::string& pname, const FloatList& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_floatVals(val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const String& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_stringVals(1, val)
+Parameter::Parameter(const std::string& pname, const String& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_stringVals(1, val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const StringList& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_stringVals(val)
+Parameter::Parameter(const std::string& pname, const StringList& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_stringVals(val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const Integer& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_integerVals(1, val)
+Parameter::Parameter(const std::string& pname, const Integer& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_integerVals(1, val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const IntegerList& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_integerVals(val)
+Parameter::Parameter(const std::string& pname, const IntegerList& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_integerVals(val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const smtk::util::UUID& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_uuidVals(1, val)
+Parameter::Parameter(const std::string& pname, const smtk::util::UUID& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_uuidVals(1, val)
 {
 }
 
-Parameter::Parameter(const std::string& name, const smtk::util::UUIDArray& val)
-  : m_state(PARAMETER_UNKNOWN), m_name(name), m_uuidVals(val)
+Parameter::Parameter(const std::string& pname, const smtk::util::UUIDArray& val)
+  : m_state(PARAMETER_UNKNOWN), m_name(pname), m_uuidVals(val)
 {
 }
 

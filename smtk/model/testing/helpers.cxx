@@ -49,57 +49,57 @@ UUIDArray createTet(smtk::model::StoragePtr sm)
   smtk::util::UUID uc05 = sm->insertCellOfDimension(0)->first;
   smtk::util::UUID uc06 = sm->insertCellOfDimension(0)->first;
 
-  smtk::util::UUID uc07 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc01))->first;
-  smtk::util::UUID uc08 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc02))->first;
-  smtk::util::UUID uc09 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc00))->first;
-  smtk::util::UUID uc10 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc03).appendRelation(uc04))->first;
-  smtk::util::UUID uc11 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc04).appendRelation(uc05))->first;
-  smtk::util::UUID uc12 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc05).appendRelation(uc03))->first;
-  smtk::util::UUID uc13 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc00).appendRelation(uc06))->first;
-  smtk::util::UUID uc14 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc01).appendRelation(uc06))->first;
-  smtk::util::UUID uc15 = sm->insertEntity(Entity(CELL_ENTITY, 1).appendRelation(uc02).appendRelation(uc06))->first;
+  smtk::util::UUID uc07 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc00).pushRelation(uc01))->first;
+  smtk::util::UUID uc08 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc01).pushRelation(uc02))->first;
+  smtk::util::UUID uc09 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc02).pushRelation(uc00))->first;
+  smtk::util::UUID uc10 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc03).pushRelation(uc04))->first;
+  smtk::util::UUID uc11 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc04).pushRelation(uc05))->first;
+  smtk::util::UUID uc12 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc05).pushRelation(uc03))->first;
+  smtk::util::UUID uc13 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc00).pushRelation(uc06))->first;
+  smtk::util::UUID uc14 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc01).pushRelation(uc06))->first;
+  smtk::util::UUID uc15 = sm->insertEntity(Entity(CELL_ENTITY, 1).pushRelation(uc02).pushRelation(uc06))->first;
 
   smtk::util::UUID uc16 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
-    .appendRelation(uc07)
-    .appendRelation(uc08)
-    .appendRelation(uc09)
-    .appendRelation(uc10)
-    .appendRelation(uc11)
-    .appendRelation(uc12)
+    .pushRelation(uc07)
+    .pushRelation(uc08)
+    .pushRelation(uc09)
+    .pushRelation(uc10)
+    .pushRelation(uc11)
+    .pushRelation(uc12)
     )->first;
   smtk::util::UUID uc17 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
-    .appendRelation(uc10)
-    .appendRelation(uc12)
-    .appendRelation(uc11)
+    .pushRelation(uc10)
+    .pushRelation(uc12)
+    .pushRelation(uc11)
     )->first;
   smtk::util::UUID uc18 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
-    .appendRelation(uc07)
-    .appendRelation(uc13)
-    .appendRelation(uc14)
+    .pushRelation(uc07)
+    .pushRelation(uc13)
+    .pushRelation(uc14)
     )->first;
   smtk::util::UUID uc19 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
-    .appendRelation(uc08)
-    .appendRelation(uc14)
-    .appendRelation(uc15)
+    .pushRelation(uc08)
+    .pushRelation(uc14)
+    .pushRelation(uc15)
     )->first;
   smtk::util::UUID uc20 = sm->insertEntity(
     Entity(CELL_ENTITY, 2)
-    .appendRelation(uc09)
-    .appendRelation(uc15)
-    .appendRelation(uc13)
+    .pushRelation(uc09)
+    .pushRelation(uc15)
+    .pushRelation(uc13)
     )->first;
 
   smtk::util::UUID uc21 = sm->insertEntity(
     Entity(CELL_ENTITY, 3)
-    .appendRelation(uc16)
-    .appendRelation(uc17)
-    .appendRelation(uc18)
-    .appendRelation(uc19)
-    .appendRelation(uc20))->first;
+    .pushRelation(uc16)
+    .pushRelation(uc17)
+    .pushRelation(uc18)
+    .pushRelation(uc19)
+    .pushRelation(uc20))->first;
 
   sm->setTessellation(uc21, Tessellation()
     .addCoords(x[0][0], x[0][1], x[0][2])

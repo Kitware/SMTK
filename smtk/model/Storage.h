@@ -87,6 +87,7 @@ public:
 
   smtk::util::UUIDs useOrShellIncludesShells(const smtk::util::UUID& cellUseOrShell) const;
   smtk::util::UUID createIncludedShell(const smtk::util::UUID& cellUseOrShell);
+  bool findOrAddIncludedShell(const smtk::util::UUID& parentUseOrShell, const smtk::util::UUID& shellToInclude);
 
   //bool shellHasUse(const smtk::util::UUID& shell, const smtk::util::UUID& use) const;
   //smtk::util::UUIDs shellHasUses(const smtk::util::UUID& shell) const;
@@ -110,14 +111,12 @@ public:
   Face addFace();
   Volume addVolume();
 
-  /*
   VertexUse insertVertexUse(const smtk::util::UUID& uid);
-  VertexUse insertVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense);
+  VertexUse setVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense);
   EdgeUse insertEdgeUse(const smtk::util::UUID& uid);
-  EdgeUse insertEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o);
+  EdgeUse setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o);
   FaceUse insertFaceUse(const smtk::util::UUID& uid);
-  FaceUse insertFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o);
-  */
+  FaceUse setFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o);
   VolumeUse insertVolumeUse(const smtk::util::UUID& uid);
   VolumeUse setVolumeUse(const smtk::util::UUID& uid, const Volume& src);
 
@@ -129,6 +128,16 @@ public:
   FaceUse addFaceUse(const Face& src, int sense, Orientation o);
   VolumeUse addVolumeUse();
   VolumeUse addVolumeUse(const Volume& src);
+
+  Chain insertChain(const smtk::util::UUID& uid);
+  Chain setChain(const smtk::util::UUID& uid, const EdgeUse& use);
+  Chain setChain(const smtk::util::UUID& uid, const Chain& parent);
+  Loop insertLoop(const smtk::util::UUID& uid);
+  Loop setLoop(const smtk::util::UUID& uid, const FaceUse& use);
+  Loop setLoop(const smtk::util::UUID& uid, const Loop& parent);
+  Shell insertShell(const smtk::util::UUID& uid);
+  Shell setShell(const smtk::util::UUID& uid, const VolumeUse& use);
+  Shell setShell(const smtk::util::UUID& uid, const Shell& parent);
 
   Chain addChain();
   Chain addChain(const EdgeUse&);

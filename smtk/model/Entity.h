@@ -43,7 +43,8 @@ public:
   smtk::util::UUIDArray& relations();
   const smtk::util::UUIDArray& relations() const;
 
-  Entity& appendRelation(const smtk::util::UUID& b);
+  int appendRelation(const smtk::util::UUID& b);
+  Entity& pushRelation(const smtk::util::UUID& b);
   Entity& removeRelation(const smtk::util::UUID& b);
 
   int findOrAppendRelation(const smtk::util::UUID& r);
