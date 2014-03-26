@@ -472,11 +472,11 @@ int main(int argc, char *argv[])
   std::cout << "Manager Created\n";
   smtk::util::AttributeReader reader;
   smtk::util::Logger logger;
-  if (reader.read(manager, argv[1], logger))
+  if (reader.read(manager, argv[1], true, logger))
     {
     std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
     std::cerr << logger.convertToString();
-    status = -1;
+    return -1;
     }
   else
     {

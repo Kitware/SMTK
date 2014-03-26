@@ -24,6 +24,7 @@ include(CMake/FindHashFunctor.cmake)
 # Options that the user controls
 ################################################################################
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
+option(Smtk_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
@@ -50,8 +51,34 @@ endif()
 ################################################################################
 
 # Boost is required for boost::uuids::uuid and, depending
-# on the platform, for boost::shared_ptr.
-find_package(Boost 1.50.0 REQUIRED)
+# on the platform, for boost::shared_ptr, as well as for filesystem support.
+#setup if we should use boost static libraries based on if we are
+#building static or shared. We need to match boosts library type to ours so
+#that we handle symbol visibility properly
+if(${BUILD_SHARED_LIBS})
+  set(Boost_USE_STATIC_LIBS OFF)
+else()
+  set(Boost_USE_STATIC_LIBS ON)
+endif()
+
+#if boost is installed as a system library on a machine, we will never
+#be able to set the superbuild to use the custom boost version. The solution
+#is that when doing a system
+set(Boost_NO_SYSTEM_PATHS ${Smtk_NO_SYSTEM_BOOST})
+
+# List of Boost features used:
+# * Filesystem
+# * Scoped Ptr
+# * Shared Ptr
+# * String algorithms
+# * UUID Generation
+find_package(Boost 1.50.0
+             COMPONENTS   filesystem system  REQUIRED)
+
+#setup windows exception handling so we can compile properly with boost enabled
+if(WIN32 AND MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+endif()
 
 ################################################################################
 # Qt Related Settings

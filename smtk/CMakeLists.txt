@@ -16,7 +16,10 @@ set(smtk_headers ${attributeHeaders} ${modelHeaders} ${utilHeaders} ${viewHeader
 set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs} ${viewSrcs})
 
 add_library(SMTKCore ${smtk_srcs})
-target_link_libraries(SMTKCore LINK_PUBLIC cJSON)
+target_link_libraries(SMTKCore
+  LINK_PUBLIC cJSON
+  LINK_PRIVATE ${Boost_LIBRARIES})
+
 smtk_export_header(SMTKCore SMTKCoreExports.h)
 if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
   # Set position-independent flag when other project libs are shared.

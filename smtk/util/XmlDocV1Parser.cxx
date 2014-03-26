@@ -414,6 +414,7 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 {
   // Process definitions first
   xml_node child, node = root.child("Definitions");
+  std::size_t i;
   if (node)
     {
     for (child = node.first_child(); child; child = child.next_sibling())
@@ -423,7 +424,6 @@ void XmlDocV1Parser::processAttributeInformation(xml_node &root)
 
     // At this point we have all the definitions read in so lets
     // fix up all of the attribute definition references
-    std::size_t i;
     attribute::DefinitionPtr def;
     for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
       {
