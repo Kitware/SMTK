@@ -1582,6 +1582,14 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::view::Base &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::view::Attribute &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::view::Attribute &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="Group">

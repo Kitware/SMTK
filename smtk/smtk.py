@@ -164,3 +164,34 @@ util.Logger.addError = _Error
 del _Debug
 del _Warn
 del _Error
+
+
+# Type dictionary for non-attribute items & definitions
+alt_type_dict = {
+  view.Base.ATTRIBUTE: view.Attribute
+}
+
+def to_concrete(instance):
+  '''General type converter for smtk objects
+  '''
+  # Use current smtk.attribute.to_concrete for its types
+  if instance.__class__.__module__.endswith('smtk.attribute'):
+    return smtk.attribute.to_concrete(instance)
+
+  # Use alt_type_dict for other types
+  if not hasattr(instance, 'type'):
+    print 'class %s has no type() method, cannot convert' % \
+      str(instance.__class__)
+    return None
+
+  klass = alt_type_dict.get(instance.type())
+  if klass is None:
+    print 'no converter available for class %s, cannot convert' % \
+      str(instance.__class__)
+    return None
+
+  if not hasattr(klass, 'CastTo'):
+    print 'class %s has no CastTo() method, cannot convert' % str(klass)
+    return None
+
+  return klass.CastTo(instance)
