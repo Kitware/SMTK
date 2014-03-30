@@ -52,10 +52,6 @@ namespace smtk
       { return m_exportManager; }
       smtk::model::GridInfoPtr getAnalysisGridInfo() const
       { return m_analysisGridInfo; }
-      std::string getOutputPath() const
-      { return m_outputPath; }
-      std::vector<std::string> getAnalysisNames() const
-      { return m_analysisNames; }
       smtk::util::Logger getLogger() const
       { return m_logger; }
 
@@ -70,17 +66,11 @@ namespace smtk
       { m_exportManager = manager; }
       void setAnalysisGridInfo(smtk::model::GridInfoPtr analysisGridInfo)
       { m_analysisGridInfo = analysisGridInfo; }
-      void setOutputPath(const std::string& outputPath)
-      { m_outputPath = outputPath; }
-      void appendAnalysisName(const std::string& name)
-      { m_analysisNames.push_back(name); }
 
     private:
       smtk::attribute::Manager *m_simulationManager;
       smtk::attribute::Manager *m_exportManager;
       smtk::model::GridInfoPtr  m_analysisGridInfo;
-      std::string               m_outputPath;
-      std::vector<std::string>  m_analysisNames;
       smtk::util::Logger        m_logger;
     };
   }

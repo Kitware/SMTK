@@ -35,7 +35,5 @@ ExportSpec::clear()
   m_simulationManager = NULL;
   m_exportManager = NULL;
   m_analysisGridInfo = smtk::model::GridInfoPtr();
-  m_outputPath = "";
-  m_analysisNames.clear();
   m_logger.reset();
 }
