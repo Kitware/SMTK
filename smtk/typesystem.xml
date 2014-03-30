@@ -1530,8 +1530,6 @@
         <modify-function signature="setSimulationAttributes(smtk::attribute::Manager*)" access="private" />
         <modify-function signature="setExportAttributes(smtk::attribute::Manager*)" access="private" />
         <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
-        <modify-function signature="setOutputPath(const std::string&amp;)" access="private" />
-        <modify-function signature="appendAnalysisName(const std::string&amp;)" access="private" />
         <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
           static="yes"
           return-type="smtk::util::ExportSpec *">
