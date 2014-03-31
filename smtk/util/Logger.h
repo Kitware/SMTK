@@ -94,6 +94,8 @@ namespace smtk
       std::string convertToString() const;
       void reset();
 
+      void append(const Logger &l);
+
       static std::string severityAsString(Severity s);
 
     protected:

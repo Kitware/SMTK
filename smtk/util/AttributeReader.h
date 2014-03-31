@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/util/SystemConfig.h"
 #include <string>
+#include <vector>
 
 namespace smtk
 {
@@ -45,14 +46,22 @@ namespace smtk
     public:
       // Returns true if there was a problem with reading the file
       bool read(smtk::attribute::Manager &manager,
-                const std::string &filename,
+                const std::string &filename, bool includePath,
                 smtk::util::Logger &logger);
+      bool read(smtk::attribute::Manager &manager,
+                const std::string &filename,
+                smtk::util::Logger &logger)
+      {return this->read(manager, filename, false, logger);}
+
       bool readContents(smtk::attribute::Manager &manager,
                         const std::string &filecontents,
                         smtk::util::Logger &logger);
+      void setSearchPaths(const std::vector<std::string> &paths)
+      { this->m_searchPaths = paths;}
 
     protected:
     private:
+      std::vector<std::string> m_searchPaths;
     };
   }
 }

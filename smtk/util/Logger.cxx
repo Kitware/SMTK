@@ -37,6 +37,16 @@ void Logger::addRecord(Severity s, const std::string &m,
   this->m_records.push_back(Record(s, m, fname, line));
 }
 //----------------------------------------------------------------------------
+void Logger::append(const Logger &l)
+{
+  this->m_records.insert(this->m_records.end(), l.m_records.begin(),
+                         l.m_records.end());
+  if (l.m_hasErrors)
+    {
+    this->m_hasErrors = true;
+    }
+}
+//----------------------------------------------------------------------------
 void Logger::reset()
 {
   this->m_hasErrors = false;
