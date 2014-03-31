@@ -202,6 +202,7 @@ void qtComboItem::onInputValueChanged()
     QVBoxLayout* layout = new QVBoxLayout(this->Internals->ChildrenFrame);
     layout->setMargin(0);
     this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
+    this->Internals->ChildrenFrame->setFrameShape(QFrame::Box);
     std::size_t i, m = item->numberOfActiveChildrenItems();
     for(i = 0; i < m; i++)
       {

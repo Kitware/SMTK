@@ -41,7 +41,8 @@ namespace smtk
 
     public:         
       qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
-      virtual ~qtVoidItem();  
+      virtual ~qtVoidItem();
+      virtual void setLabelVisible(bool);
 
     public slots:
       void setOutputOptional(int);

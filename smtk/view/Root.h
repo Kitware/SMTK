@@ -70,6 +70,13 @@ namespace smtk
       void setShowAdvanced(bool b)
       {this->m_showAdvanced = b;}
 
+      int maxValueLabelLength() const
+      {return this->m_maxValueLabelLen;}
+      void setMaxValueLabelLength(int l);
+      int minValueLabelLength() const
+      {return this->m_minValueLabelLen;}
+      void setMinValueLabelLength(int l);
+
     private:
       //needs to be private for shiboken wrapping to work properly
       double m_defaultColor[4];
@@ -79,6 +86,9 @@ namespace smtk
       bool m_advancedItalic;
       // option to show advanced attributes/items, default false
       bool m_showAdvanced;
+      // maximum length for the label of value item, in pixels
+      int m_maxValueLabelLen;
+      int m_minValueLabelLen;
     };
 //----------------------------------------------------------------------------
     inline void Root::setDefaultColor(double r, double g, double b,

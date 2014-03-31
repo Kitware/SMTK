@@ -58,6 +58,7 @@ namespace smtk
       virtual ~qtFileItem();
       void enableFileBrowser(bool state=true);
       bool isDirectory();
+      virtual void setLabelVisible(bool);
 
     public slots:
       virtual void onInputValueChanged();

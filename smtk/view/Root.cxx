@@ -39,6 +39,8 @@ Root::Root(const std::string &myTitle): Group(myTitle)
   this->m_advancedBold = true;
   this->m_advancedItalic = false;
   this->m_showAdvanced = false;
+  this->m_maxValueLabelLen = 300;
+  this->m_minValueLabelLen = 100;
 }
 
 //----------------------------------------------------------------------------
@@ -49,4 +51,20 @@ Root::~Root()
 Base::Type Root::type() const
 {
   return ROOT;
+}
+//----------------------------------------------------------------------------
+void Root::setMaxValueLabelLength(int l)
+{
+  if(l>=this->m_minValueLabelLen)
+    {
+    this->m_maxValueLabelLen = l;
+    }
+}
+//----------------------------------------------------------------------------
+void Root::setMinValueLabelLength(int l)
+{
+  if(l<=this->m_maxValueLabelLen)
+    {
+    this->m_minValueLabelLen = l;
+    }
 }

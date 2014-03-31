@@ -48,6 +48,7 @@ public:
   bool IsDirectory;
   QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
+  QPointer<QLabel> theLabel;
 };
 
 //----------------------------------------------------------------------------
@@ -67,6 +68,13 @@ qtFileItem::~qtFileItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+void qtFileItem::setLabelVisible(bool visible)
+{
+  this->Internals->theLabel->setVisible(visible);
+}
+
 //----------------------------------------------------------------------------
 void qtFileItem::createWidget()
 {
@@ -151,6 +159,7 @@ void qtFileItem::updateItemData()
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   label->setSizePolicy(sizeFixedPolicy);
+  this->Internals->theLabel = label;
 
   // Add in BriefDescription as tooltip if available
   smtk::attribute::ConstItemDefinitionPtr itemDef = item->definition();

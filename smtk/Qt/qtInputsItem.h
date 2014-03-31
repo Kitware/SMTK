@@ -43,6 +43,7 @@ namespace smtk
     public:         
       qtInputsItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview);
       virtual ~qtInputsItem();  
+      virtual void setLabelVisible(bool);
 
     public slots:
       void setOutputOptional(int);

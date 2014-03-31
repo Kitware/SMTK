@@ -55,6 +55,20 @@ qtVoidItem::~qtVoidItem()
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
+void qtVoidItem::setLabelVisible(bool visible)
+{
+  smtk::attribute::ItemPtr dataObj = this->getObject();
+  if(!dataObj)
+    {
+    return;
+    }
+
+  QCheckBox* optionalCheck = qobject_cast<QCheckBox*>(this->Widget);
+  optionalCheck->setText(visible ?
+    dataObj->definition()->label().c_str() : "");
+}
+
+//----------------------------------------------------------------------------
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();

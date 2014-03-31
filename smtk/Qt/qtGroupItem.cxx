@@ -59,6 +59,25 @@ qtGroupItem::~qtGroupItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+void qtGroupItem::setLabelVisible(bool visible)
+{
+  if(!this->getObject())
+    {
+    return;
+    }
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  if(!item || !item->numberOfGroups())
+    {
+    return;
+    }
+
+  QGroupBox* groupBox = qobject_cast<QGroupBox*>(this->Widget);
+  groupBox->setTitle(visible ?
+    item->label().c_str() : "");
+}
+
 //----------------------------------------------------------------------------
 void qtGroupItem::createWidget()
 {

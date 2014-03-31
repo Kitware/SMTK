@@ -1072,6 +1072,11 @@ void XmlV1StringWriter::processViews()
   std::string italicValue = rs->advancedItalic() ? "1" : "0";
   s = "Bold=\"" + boldValue + "\" Italic=\"" + italicValue + "\"";
   views.append_child("AdvancedFontEffects").text().set(s.c_str());
+  // max/min value label length
+  views.append_child("MaxValueLabelLength").text().set(
+    getValueForXMLElement(rs->maxValueLabelLength()));
+  views.append_child("MinValueLabelLength").text().set(
+    getValueForXMLElement(rs->minValueLabelLength()));
 
   this->processGroupView(views,
                          smtk::dynamic_pointer_cast<smtk::view::Group>(rs));

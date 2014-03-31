@@ -72,6 +72,8 @@ namespace smtk
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
       void onAttributeCellChanged(int, int);
+      void onPropertySelectionChanged(int row, int col);
+      void onPropertyDefSelected();
 
     signals:
       void numOfAttriubtesChanged();
@@ -88,7 +90,7 @@ namespace smtk
       void addAttributePropertyItems(
         smtk::attribute::AttributePtr childData);
       void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);
-      void updateTableWithProperty(QString& propertyName,
+      void addComparativeProperty(QTableWidgetItem* current,
         smtk::attribute::DefinitionPtr attDef);
       void addTableGroupItems(
         smtk::attribute::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
@@ -110,6 +112,8 @@ namespace smtk
         smtk::attribute::ItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
 
+      virtual void updateTableWithProperties();
+      virtual void removeComparativeProperty(const QString& propertyName);
     private:
 
       qtAttributeViewInternals *Internals;

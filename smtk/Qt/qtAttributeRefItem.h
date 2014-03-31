@@ -45,7 +45,8 @@ namespace smtk
       qtAttributeRefItem(smtk::attribute::ItemPtr,
         QWidget* parent,  qtBaseView* view);
       virtual ~qtAttributeRefItem();
-      void setLabelVisible(bool);
+
+      virtual void setLabelVisible(bool);
       // this will turn on/off the Edit button.
       // Also, if the turning off, the Attribute widget will be turned off too
       virtual void setAttributeEditorVisible(bool);

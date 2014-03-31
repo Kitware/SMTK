@@ -1981,6 +1981,16 @@ void XmlDocV1Parser::processViews(xml_node &root)
       rs->setAdvancedItalic(strcmp(txtatt.value(), "1")==0);
       }
     }
+  node = views.child("MaxValueLabelLength");
+  if (node)
+     {
+     rs->setMaxValueLabelLength(node.text().as_int());
+     }
+  node = views.child("MinValueLabelLength");
+  if (node)
+     {
+     rs->setMinValueLabelLength(node.text().as_int());
+     }
 
   this->processGroupView(views,
                          smtk::dynamic_pointer_cast<smtk::view::Group>(rs));
@@ -2192,7 +2202,8 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
     // In case this was root section
     if ((group->type() == smtk::view::Base::ROOT) && ((childName == "DefaultColor") ||
                                                       (childName == "InvalidColor") ||
-                                                      (childName == "AdvancedFontEffects")))
+                                                      (childName == "AdvancedFontEffects") ||
+                                                      (childName == "MaxValueLabelLength")))
       {
       continue;
       }

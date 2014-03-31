@@ -48,6 +48,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/view/Root.h"
 
 using namespace smtk::attribute;
 
@@ -57,6 +58,7 @@ class qtInputsItemInternals
 public:
 
   QPointer<QFrame> EntryFrame;
+  QPointer<QLabel> theLabel;
 };
 
 //----------------------------------------------------------------------------
@@ -74,6 +76,12 @@ qtInputsItem::~qtInputsItem()
 {
   delete this->Internals;
 }
+//----------------------------------------------------------------------------
+void qtInputsItem::setLabelVisible(bool visible)
+{
+  this->Internals->theLabel->setVisible(visible);
+}
+
 //----------------------------------------------------------------------------
 void qtInputsItem::createWidget()
 {
@@ -152,7 +160,7 @@ void qtInputsItem::updateUI()
     }
 
   this->Widget = new QFrame(this->parentWidget());
-  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
+  QGridLayout* layout = new QGridLayout(this->Widget);
   layout->setMargin(0);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -163,7 +171,7 @@ void qtInputsItem::updateUI()
   entryLayout->setMargin(0);
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
-  labelLayout->setAlignment(Qt::AlignLeft);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   if(dataObj->isOptional())
     {
@@ -190,6 +198,10 @@ void qtInputsItem::updateUI()
     }
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
+  label->setFixedWidth(rs->maxValueLabelLength());
+  label->setWordWrap(true);
+  label->setAlignment(Qt::AlignTop);
 
   // add in BriefDescription as tooltip if available
   const std::string strBriefDescription = itemDef->briefDescription();
@@ -209,14 +221,15 @@ void qtInputsItem::updateUI()
     label->setFont(this->baseView()->uiManager()->advancedFont());
     }
   labelLayout->addWidget(label);
+  this->Internals->theLabel = label;
 
   this->loadInputValues(labelLayout, entryLayout);
 
-  entryLayout->setAlignment(Qt::AlignLeft);
-  layout->addLayout(labelLayout);
-  layout->addWidget(this->Internals->EntryFrame);
+  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  layout->addLayout(labelLayout, 0, 0);
+  layout->addWidget(this->Internals->EntryFrame, 0, 1);
   layout->setAlignment(Qt::AlignTop);
-  if(this->parentWidget()->layout())
+  if(this->parentWidget() && this->parentWidget()->layout())
     {
     this->parentWidget()->layout()->addWidget(this->Widget);
     }

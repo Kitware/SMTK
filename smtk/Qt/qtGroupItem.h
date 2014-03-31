@@ -42,6 +42,7 @@ namespace smtk
     public:         
       qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
       virtual ~qtGroupItem();  
+      virtual void setLabelVisible(bool);
 
     protected slots:
       virtual void updateItemData();
