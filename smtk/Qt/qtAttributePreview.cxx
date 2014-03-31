@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME qtViewTest - Standalone test program for qtRootView instances
+// .NAME qtAttributePreview - Standalone test program for qtRootView instances
 // .SECTION Description
 // .SECTION See Also
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     {
     std::cout << "\n"
               << "Simple program to load attribute manager and display corresponding editor panel" << "\n"
-              << "Usage: qtViewTest attribute_filename  [output_filename]"
+              << "Usage: qtAttributePreview attribute_filename  [output_filename]"
               << "  [view_name | view_number]" << "\n"
               << std::endl;
     return -1;
@@ -70,6 +70,43 @@ int main(int argc, char *argv[])
     std::cout << "Error loading simulation file -- exiting" << "\n";
     std::cout << inputLogger.convertToString() << std::endl;
     return -2;
+    }
+
+  // If manager contains no views, create InstancedView by default
+  if (manager.rootView()->numberOfSubViews() == 0)
+    {
+    smtk::view::InstancedPtr view = smtk::view::Instanced::New("Default");
+    manager.rootView()->addSubView(view);
+
+    // Generate list of all concrete definitions in the manager
+    std::vector<smtk::attribute::DefinitionPtr> defs;
+    std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
+    manager.findBaseDefinitions(baseDefinitions);
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
+
+    for (baseIter = baseDefinitions.begin();
+         baseIter != baseDefinitions.end();
+         baseIter++)
+      {
+      // Add def if not abstract
+      if (!(*baseIter)->isAbstract())
+        {
+        //defs.push_back(*baseIter);
+        }
+
+      std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
+      manager.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
+      }
+
+    // Instantiate attribute for each concrete definition
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
+    for (defIter = defs.begin(); defIter != defs.end(); defIter++)
+      {
+      smtk::attribute::AttributePtr instance =
+        manager.createAttribute((*defIter)->type());
+      view->addInstance(instance);
+      }
     }
 
   // Instantiate (empty) model

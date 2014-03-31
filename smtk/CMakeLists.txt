@@ -81,10 +81,8 @@ if(SMTK_BUILD_QT)
   #install the library and exports the library when used from a build tree
   smtk_install_library(QtSMTK DEPENDS SMTKCore)
 
-  if(SMTK_ENABLE_TESTING)
-    add_executable(qtViewTest Qt/qtViewTest.cxx)
-    target_link_libraries(qtViewTest LINK_PUBLIC QtSMTK)
-  endif()
+  add_executable(qtAttributePreview Qt/qtAttributePreview.cxx)
+  target_link_libraries(qtAttributePreview LINK_PUBLIC QtSMTK)
 
 endif()
 
