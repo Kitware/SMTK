@@ -582,6 +582,7 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     }
 
   xatt = defNode.attribute("Associations");
+  if (xatt)
     {
     unsigned int mask =
       this->decodeModelEntityMask(xatt.value());
