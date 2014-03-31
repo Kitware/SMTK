@@ -72,6 +72,43 @@ int main(int argc, char *argv[])
     return -2;
     }
 
+  // If manager contains no views, create InstancedView by default
+  if (manager.rootView()->numberOfSubViews() == 0)
+    {
+    smtk::view::InstancedPtr view = smtk::view::Instanced::New("Default");
+    manager.rootView()->addSubView(view);
+
+    // Generate list of all concrete definitions in the manager
+    std::vector<smtk::attribute::DefinitionPtr> defs;
+    std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
+    manager.findBaseDefinitions(baseDefinitions);
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
+
+    for (baseIter = baseDefinitions.begin();
+         baseIter != baseDefinitions.end();
+         baseIter++)
+      {
+      // Add def if not abstract
+      if (!(*baseIter)->isAbstract())
+        {
+        //defs.push_back(*baseIter);
+        }
+
+      std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
+      manager.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
+      }
+
+    // Instantiate attribute for each concrete definition
+    std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
+    for (defIter = defs.begin(); defIter != defs.end(); defIter++)
+      {
+      smtk::attribute::AttributePtr instance =
+        manager.createAttribute((*defIter)->type());
+      view->addInstance(instance);
+      }
+    }
+
   // Instantiate (empty) model
   smtk::model::ModelPtr model =
     smtk::model::ModelPtr(new smtk::model::Model());
