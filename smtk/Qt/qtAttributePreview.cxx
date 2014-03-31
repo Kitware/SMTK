@@ -20,7 +20,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME qtViewTest - Standalone test program for qtRootView instances
+// .NAME qtAttributePreview - Standalone test program for qtRootView instances
 // .SECTION Description
 // .SECTION See Also
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     {
     std::cout << "\n"
               << "Simple program to load attribute manager and display corresponding editor panel" << "\n"
-              << "Usage: qtViewTest attribute_filename  [output_filename]"
+              << "Usage: qtAttributePreview attribute_filename  [output_filename]"
               << "  [view_name | view_number]" << "\n"
               << std::endl;
     return -1;
