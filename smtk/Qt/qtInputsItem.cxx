@@ -227,4 +227,5 @@ void qtInputsItem::setOutputOptional(int state)
 {
   this->getObject()->setIsEnabled(state ? true : false);
   this->Internals->EntryFrame->setEnabled(state);
+  this->baseView()->valueChanged(this);
 }

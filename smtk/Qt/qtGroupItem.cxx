@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtAttribute.h"
+#include "smtk/Qt/qtBaseView.h"
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -112,6 +113,7 @@ void qtGroupItem::setEnabledState(bool checked)
     return;
     }
   this->getObject()->setIsEnabled(checked);
+  this->baseView()->valueChanged(this);
 }
 
 //----------------------------------------------------------------------------

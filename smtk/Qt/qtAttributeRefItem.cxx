@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttributeRefItem.h"
 
 #include "smtk/Qt/qtUIManager.h"
+#include "smtk/Qt/qtBaseView.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -204,4 +205,5 @@ void qtAttributeRefItem::onInputValueChanged()
     {
     item->unset(elementIdx);
     }
+  this->baseView()->valueChanged(this);
 }

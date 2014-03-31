@@ -31,6 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/Qt/qtAttribute.h"
+#include "smtk/Qt/qtBaseView.h"
 
 using namespace smtk::attribute;
 
@@ -170,6 +171,7 @@ void qtComboItem::onInputValueChanged()
     {
     item->unset(elementIdx);
     }
+  this->baseView()->valueChanged(this);
 
   // update children frame if necessary
   if(this->Internals->ChildrenFrame)

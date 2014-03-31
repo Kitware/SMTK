@@ -37,6 +37,7 @@ namespace smtk
   namespace attribute
   {
     class qtUIManager;
+    class qtItem;
 
     class QTSMTK_EXPORT qtBaseView : public QObject
     {
@@ -52,6 +53,9 @@ namespace smtk
       QWidget* parentWidget();
       qtUIManager* uiManager();
 
+    signals:
+      void modified();
+
     public slots:
       virtual void updateUI()
       {
@@ -60,6 +64,7 @@ namespace smtk
       }
       virtual void showAdvanced(int){;}
       virtual void updateModelAssociation() {;}
+      virtual void valueChanged(qtItem*);
 
     protected slots:
       virtual void updateAttributeData() {;}
