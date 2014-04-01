@@ -113,3 +113,10 @@ qtUIManager* qtBaseView::uiManager()
 {
   return this->Internals->UIManager;
 }
+
+//----------------------------------------------------------------------------
+void qtBaseView::valueChanged(qtItem*)
+{
+  emit this->modified();
+  this->uiManager()->onViewUIModified(this);
+}

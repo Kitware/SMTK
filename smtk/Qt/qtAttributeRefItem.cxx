@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttributeRefItem.h"
 
 #include "smtk/Qt/qtUIManager.h"
+#include "smtk/Qt/qtBaseView.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -191,6 +192,11 @@ void qtAttributeRefItem::onInputValueChanged()
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
     AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+    if(elementIdx >=0 && static_cast<int>(item->numberOfValues()) > elementIdx &&
+      item->isSet(elementIdx) && attPtr == item->value(elementIdx))
+      {
+      return; // nothing to do
+      }
     if(attPtr)
       {
       item->setValue(elementIdx, attPtr);
@@ -204,4 +210,5 @@ void qtAttributeRefItem::onInputValueChanged()
     {
     item->unset(elementIdx);
     }
+  this->baseView()->valueChanged(this);
 }

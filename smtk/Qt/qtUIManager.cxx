@@ -606,7 +606,7 @@ void qtUIManager::onFileItemCreated(qtFileItem* fileItem)
 
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createExpressionRefWidget(
-  smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget)
+  smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget, qtBaseView* bview)
 {
   smtk::attribute::ValueItemPtr inputitem =dynamic_pointer_cast<ValueItem>(attitem);
   if(!inputitem)
@@ -650,6 +650,9 @@ QWidget* qtUIManager::createExpressionRefWidget(
     setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
     }
   combo->setCurrentIndex(setIndex);
+  QVariant viewobject;
+  viewobject.setValue(static_cast<void*>(bview));
+  combo->setProperty("QtViewObj", viewobject);
 
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onExpressionReferenceChanged()), Qt::QueuedConnection);
@@ -683,6 +686,12 @@ void qtUIManager::onExpressionReferenceChanged()
     {
     Manager *lAttManager = item->attribute()->manager();
     AttributePtr attPtr = lAttManager->findAttribute(comboBox->currentText().toStdString());
+    if(elementIdx >=0 && inputitem->isSet(elementIdx) &&
+      attPtr == inputitem->expression(elementIdx))
+      {
+      return; // nothing to do
+      }
+
     if(attPtr)
       {
       inputitem->setExpression(elementIdx, attPtr);
@@ -697,6 +706,13 @@ void qtUIManager::onExpressionReferenceChanged()
     {
     item->unset(elementIdx);
     inputitem->unset(elementIdx);
+    }
+
+  qtBaseView* bview =static_cast<qtBaseView*>(
+    comboBox->property("QtViewObj").value<void *>());
+  if(bview)
+    {
+    bview->valueChanged(NULL);
     }
 }
 
@@ -756,7 +772,7 @@ QWidget* qtUIManager::createComboBox(
   qtItem* returnItem = new qtComboItem(attitem, elementIdx, pWidget, bview);
   return returnItem ? returnItem->widget() : NULL;
 }
-
+/*
 //----------------------------------------------------------------------------
 void qtUIManager::onComboIndexChanged()
 {
@@ -783,9 +799,10 @@ void qtUIManager::onComboIndexChanged()
     item->unset(elementIdx);
     }
 }
+*/
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createInputWidget(
-  smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget,
+  smtk::attribute::ItemPtr attitem,int elementIdx, QWidget* pWidget,
   qtBaseView* bview)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
@@ -795,14 +812,14 @@ QWidget* qtUIManager::createInputWidget(
     }
 
   return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
-    this->createExpressionRefWidget(item,elementIdx,pWidget) :
+    this->createExpressionRefWidget(item,elementIdx,pWidget, bview) :
     (item->isDiscrete() ?
       this->createComboBox(item,elementIdx,pWidget, bview) :
-      this->createEditBox(item,elementIdx,pWidget));
+      this->createEditBox(item,elementIdx,pWidget, bview));
 }
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createEditBox(
-  smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget)
+  smtk::attribute::ItemPtr attitem,int elementIdx,QWidget* pWidget, qtBaseView* bview)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
@@ -1007,6 +1024,10 @@ QWidget* qtUIManager::createEditBox(
     vobject.setValue(static_cast<void*>(attitem.get()));
     inputWidget->setProperty("AttItemObj", vobject);
 
+    QVariant viewobject;
+    viewobject.setValue(static_cast<void*>(bview));
+    inputWidget->setProperty("QtViewObj", viewobject);
+
     this->setWidgetColor(inputWidget,
       isDefault ? this->DefaultValueColor : Qt::white);
     }
@@ -1082,28 +1103,44 @@ void qtUIManager::onInputValueChanged(QObject* obj)
   int elementIdx = editBox ? editBox->property("ElementIndex").toInt() :
     textBox->property("ElementIndex").toInt();
   bool isDefault = false;
+  bool valChanged = false;
   if(editBox && !editBox->text().isEmpty())
     {
     if(rawitem->type()==smtk::attribute::Item::DOUBLE)
       {
-      smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toDouble());
+      double val = smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toDouble())
+        {
+        smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toDouble());
+        valChanged = true;
+        }
       const DoubleItemDefinition* def =
         dynamic_cast<const DoubleItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toDouble() == def->defaultValue();
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
-      smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toInt());
+      int val = smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toInt())
+        {
+        smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toInt());
+        valChanged = true;
+        }
       const IntItemDefinition* def =
         dynamic_cast<const IntItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toInt() == def->defaultValue();
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
-      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toStdString());
+      std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+        {
+        smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toStdString());
+        valChanged = true;
+        }
       const StringItemDefinition* def =
         dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toStdString() == def->defaultValue();
@@ -1111,13 +1148,19 @@ void qtUIManager::onInputValueChanged(QObject* obj)
     else
       {
       rawitem->unset(elementIdx);
+      valChanged = true;
       }
     }
   else if(textBox && !textBox->toPlainText().isEmpty() &&
      rawitem->type()==smtk::attribute::Item::STRING)
     {
-    smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-      ->setValue(elementIdx, textBox->toPlainText().toStdString());
+    std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+    if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+      {
+      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
+        ->setValue(elementIdx, textBox->toPlainText().toStdString());
+      valChanged = true;
+      }
     const StringItemDefinition* def =
       dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
     isDefault = def->hasDefault() && textBox->toPlainText().toStdString() == def->defaultValue();
@@ -1125,6 +1168,14 @@ void qtUIManager::onInputValueChanged(QObject* obj)
   else
     {
     rawitem->unset(elementIdx);
+    valChanged = true;
+    }
+
+  qtBaseView* bview =static_cast<qtBaseView*>(
+    inputBox->property("QtViewObj").value<void *>());
+  if(bview && valChanged)
+    {
+    bview->valueChanged(NULL);
     }
 
   this->setWidgetColor(inputBox,
@@ -1183,4 +1234,10 @@ qtBaseView *qtUIManager::createView(smtk::view::BasePtr smtkView,
       //                    << View::type2String(sec->type()) << "\n";
     }
   return qtView;
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::onViewUIModified(smtk::attribute::qtBaseView* bview)
+{
+  emit this->uiChanged(bview);
 }

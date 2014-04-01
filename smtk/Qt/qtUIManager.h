@@ -119,12 +119,12 @@ namespace smtk
                                        int elementIdx, QWidget* pWidget,
                                        qtBaseView* bview);
     virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
-                                   int elementIdx, QWidget* pWidget);
+                                   int elementIdx, QWidget* pWidget, qtBaseView* bview);
     virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
                                     int elementIdx, QWidget* pWidget,
                                    qtBaseView* bview);
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
-                                               int elementIdx,QWidget* pWidget);
+                                               int elementIdx,QWidget* pWidget, qtBaseView* bview);
 
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
@@ -134,16 +134,18 @@ namespace smtk
 
     public slots:
       void onFileItemCreated(smtk::attribute::qtFileItem*);
-      void onComboIndexChanged();
+//      void onComboIndexChanged();
       void onExpressionReferenceChanged();
       void updateModelViews();
       void onTextEditChanged();
       void onLineEditChanged();
       void onLineEditFinished();
       void onInputValueChanged(QObject*);
+      void onViewUIModified(smtk::attribute::qtBaseView*);
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
+      void uiChanged(smtk::attribute::qtBaseView*);
 
     protected:
       void processAttributeView(qtAttributeView* v);
