@@ -163,15 +163,24 @@ void qtComboItem::onInputValueChanged()
   int curIdx = comboBox->currentIndex();
   int elementIdx =this->Internals->ElementIndex;
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
-  if(curIdx>=0)
+  const ValueItemDefinition *itemDef =
+    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+   if(itemDef->isDiscreteIndexValid(curIdx) && item->isSet(elementIdx) &&
+      item->discreteIndex(elementIdx) == curIdx)
+    {
+    return; // nothing to do
+    }
+
+  if(itemDef->isDiscreteIndexValid(curIdx))
     {
     item->setDiscreteIndex(elementIdx, curIdx);
+    this->baseView()->valueChanged(this);
     }
-  else
+  else if(item->isSet(elementIdx))
     {
     item->unset(elementIdx);
+    this->baseView()->valueChanged(this);
     }
-  this->baseView()->valueChanged(this);
 
   // update children frame if necessary
   if(this->Internals->ChildrenFrame)

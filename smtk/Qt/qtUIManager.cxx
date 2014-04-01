@@ -686,6 +686,12 @@ void qtUIManager::onExpressionReferenceChanged()
     {
     Manager *lAttManager = item->attribute()->manager();
     AttributePtr attPtr = lAttManager->findAttribute(comboBox->currentText().toStdString());
+    if(elementIdx >=0 && inputitem->isSet(elementIdx) &&
+      attPtr == inputitem->expression(elementIdx))
+      {
+      return; // nothing to do
+      }
+
     if(attPtr)
       {
       inputitem->setExpression(elementIdx, attPtr);
@@ -1097,28 +1103,44 @@ void qtUIManager::onInputValueChanged(QObject* obj)
   int elementIdx = editBox ? editBox->property("ElementIndex").toInt() :
     textBox->property("ElementIndex").toInt();
   bool isDefault = false;
+  bool valChanged = false;
   if(editBox && !editBox->text().isEmpty())
     {
     if(rawitem->type()==smtk::attribute::Item::DOUBLE)
       {
-      smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toDouble());
+      double val = smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toDouble())
+        {
+        smtk::dynamic_pointer_cast<DoubleItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toDouble());
+        valChanged = true;
+        }
       const DoubleItemDefinition* def =
         dynamic_cast<const DoubleItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toDouble() == def->defaultValue();
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
-      smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toInt());
+      int val = smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toInt())
+        {
+        smtk::dynamic_pointer_cast<IntItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toInt());
+        valChanged = true;
+        }
       const IntItemDefinition* def =
         dynamic_cast<const IntItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toInt() == def->defaultValue();
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
-      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-        ->setValue(elementIdx, editBox->text().toStdString());
+      std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+      if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+        {
+        smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
+          ->setValue(elementIdx, editBox->text().toStdString());
+        valChanged = true;
+        }
       const StringItemDefinition* def =
         dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
       isDefault = def->hasDefault() && editBox->text().toStdString() == def->defaultValue();
@@ -1126,13 +1148,19 @@ void qtUIManager::onInputValueChanged(QObject* obj)
     else
       {
       rawitem->unset(elementIdx);
+      valChanged = true;
       }
     }
   else if(textBox && !textBox->toPlainText().isEmpty() &&
      rawitem->type()==smtk::attribute::Item::STRING)
     {
-    smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
-      ->setValue(elementIdx, textBox->toPlainText().toStdString());
+    std::string val = smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())->value(elementIdx);
+    if(!(rawitem->isSet(elementIdx)) || val != editBox->text().toStdString())
+      {
+      smtk::dynamic_pointer_cast<StringItem>(rawitem->pointer())
+        ->setValue(elementIdx, textBox->toPlainText().toStdString());
+      valChanged = true;
+      }
     const StringItemDefinition* def =
       dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
     isDefault = def->hasDefault() && textBox->toPlainText().toStdString() == def->defaultValue();
@@ -1140,11 +1168,12 @@ void qtUIManager::onInputValueChanged(QObject* obj)
   else
     {
     rawitem->unset(elementIdx);
+    valChanged = true;
     }
 
   qtBaseView* bview =static_cast<qtBaseView*>(
     inputBox->property("QtViewObj").value<void *>());
-  if(bview)
+  if(bview && valChanged)
     {
     bview->valueChanged(NULL);
     }

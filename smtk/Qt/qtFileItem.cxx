@@ -252,6 +252,11 @@ void qtFileItem::onInputValueChanged()
   smtk::attribute::DirectoryItemPtr dItem =dynamic_pointer_cast<DirectoryItem>(this->getObject());
   int elementIdx = editBox->property("ElementIndex").toInt();
 
+  if((fItem && fItem->isSet(elementIdx) && fItem->value(elementIdx) == editBox->text().toStdString()) ||
+     (dItem && dItem->isSet(elementIdx) && dItem->value(elementIdx) == editBox->text().toStdString()))
+    {
+    return;
+    }
   if(!editBox->text().isEmpty())
     {
     if(fItem)

@@ -192,6 +192,11 @@ void qtAttributeRefItem::onInputValueChanged()
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
     AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+    if(elementIdx >=0 && static_cast<int>(item->numberOfValues()) > elementIdx &&
+      item->isSet(elementIdx) && attPtr == item->value(elementIdx))
+      {
+      return; // nothing to do
+      }
     if(attPtr)
       {
       item->setValue(elementIdx, attPtr);
