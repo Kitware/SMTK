@@ -225,7 +225,11 @@ void qtInputsItem::updateUI()
 //----------------------------------------------------------------------------
 void qtInputsItem::setOutputOptional(int state)
 {
-  this->getObject()->setIsEnabled(state ? true : false);
-  this->Internals->EntryFrame->setEnabled(state);
-  this->baseView()->valueChanged(this);
+  bool enable = state ? true : false;
+  this->Internals->EntryFrame->setEnabled(enable);
+  if(enable != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(enable);
+    this->baseView()->valueChanged(this);
+    }
 }
