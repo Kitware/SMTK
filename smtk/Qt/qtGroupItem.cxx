@@ -112,8 +112,12 @@ void qtGroupItem::setEnabledState(bool checked)
     {
     return;
     }
-  this->getObject()->setIsEnabled(checked);
-  this->baseView()->valueChanged(this);
+
+  if(checked != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(checked);
+    this->baseView()->valueChanged(this);
+    }
 }
 
 //----------------------------------------------------------------------------

@@ -105,6 +105,10 @@ void qtVoidItem::updateItemData()
 //----------------------------------------------------------------------------
 void qtVoidItem::setOutputOptional(int state)
 {
-  this->getObject()->setIsEnabled(state ? true : false);
-  this->baseView()->valueChanged(this);
+  bool enable = state ? true : false;
+  if(enable != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(enable);
+    this->baseView()->valueChanged(this);
+    }
 }
