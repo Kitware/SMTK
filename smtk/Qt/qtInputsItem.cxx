@@ -172,12 +172,14 @@ void qtInputsItem::updateUI()
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
+  int padding = 0;
   if(dataObj->isOptional())
     {
     QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
     optionalCheck->setChecked(dataObj->isEnabled());
+    optionalCheck->setText("");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
+    padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
     this->Internals->EntryFrame->setEnabled(dataObj->isEnabled());
@@ -199,7 +201,7 @@ void qtInputsItem::updateUI()
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
   smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
-  label->setFixedWidth(rs->maxValueLabelLength());
+  label->setFixedWidth(rs->maxValueLabelLength() - padding);
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignTop);
 
