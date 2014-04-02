@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::util::AttributeReader reader;
   smtk::util::Logger inputLogger;
-  bool  err = reader.read(manager, inputPath, inputLogger);
+  bool  err = reader.read(manager, inputPath, true, inputLogger);
   if (err)
     {
     std::cout << "Error loading simulation file -- exiting" << "\n";
