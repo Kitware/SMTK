@@ -44,6 +44,8 @@ namespace smtk
     class SMTKCORE_EXPORT AttributeReader
     {
     public:
+      AttributeReader() : m_reportAsError(true) {}
+
       // Returns true if there was a problem with reading the file
       bool read(smtk::attribute::Manager &manager,
                 const std::string &filename, bool includePath,
@@ -59,8 +61,12 @@ namespace smtk
       void setSearchPaths(const std::vector<std::string> &paths)
       { this->m_searchPaths = paths;}
 
+      void setReportDuplicateDefinitionsAsErrors(bool mode)
+      {this->m_reportAsError = mode;}
+
     protected:
     private:
+      bool m_reportAsError;
       std::vector<std::string> m_searchPaths;
     };
   }

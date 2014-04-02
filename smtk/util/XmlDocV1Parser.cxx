@@ -323,7 +323,7 @@ namespace {
 };
 //----------------------------------------------------------------------------
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::Manager &myManager):
-m_manager(myManager)
+  m_manager(myManager), m_reportAsError(true)
 {
 }
 
@@ -545,6 +545,20 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
   else
     {
     def = this->m_manager.createDefinition(type);
+    }
+  if (!def)
+    {
+    if (m_reportAsError)
+      {
+      smtkErrorMacro(this->m_logger, "Definition: "
+                     << type << " already exists in the Manager");
+      }
+    else
+      {
+      smtkWarningMacro(this->m_logger, "Definition: "
+                       << type << " already exists in the Manager");
+      }
+    return;
     }
   xatt = defNode.attribute("Label");
   if (xatt)
