@@ -73,6 +73,9 @@ namespace smtk
       const smtk::util::Logger &messageLog() const
       {return this->m_logger;}
 
+      void setReportDuplicateDefinitionsAsErrors(bool mode)
+      {this->m_reportAsError = mode;}
+
     protected:
       void processAttributeInformation(pugi::xml_node &root);
       void processViews(pugi::xml_node &root);
@@ -140,7 +143,7 @@ namespace smtk
 
       smtk::model::MaskType decodeModelEntityMask(const std::string &s);
       static int decodeColorInfo(const std::string &s, double *color);
-
+      bool m_reportAsError;
       smtk::attribute::Manager &m_manager;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
       std::vector<AttRefDefInfo> m_attRefDefInfo;

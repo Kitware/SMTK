@@ -122,7 +122,7 @@ bool Internal_scanIncludes(pugi::xml_document& doc,
 }
 //----------------------------------------------------------------------------
 void Internal_parseXmlDoc(smtk::attribute::Manager &manager,
-                          pugi::xml_document& doc,
+                          pugi::xml_document& doc, bool reportAsError,
                           Logger &logger)
 {
   // Lets get the version of the Attribute File Format
@@ -147,6 +147,7 @@ void Internal_parseXmlDoc(smtk::attribute::Manager &manager,
     return;
     }
   XmlDocV1Parser theReader(manager);
+  theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
   theReader.process(doc);
   logger.append(theReader.messageLog());
 }
@@ -156,6 +157,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
                              const std::string &initialFileName,
                              pugi::xml_document& doc,
                              const std::vector<std::string> &spaths,
+                             bool reportAsError,
                              Logger &logger)
 {
   // First lets process the include files
@@ -179,7 +181,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
     pugi::xml_document doc1;
     pugi::xml_parse_result presult = doc1.load_file(includeStack.back().c_str());
     std::cout << "Processing Include File: " << includeStack.back().c_str() << "\n";
-    Internal_parseXmlDoc(manager, doc1, logger);
+    Internal_parseXmlDoc(manager, doc1, reportAsError, logger);
     if (logger.hasErrors())
       {
       return;
@@ -187,7 +189,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
     includeStack.pop_back();
     }
   // Finally process the initial doc
-    Internal_parseXmlDoc(manager, doc, logger);
+  Internal_parseXmlDoc(manager, doc, reportAsError, logger);
 }
 
 //----------------------------------------------------------------------------
@@ -211,11 +213,13 @@ bool AttributeReader::read(smtk::attribute::Manager &manager,
     std::vector<std::string> newSPaths(1, p.parent_path().string());
     newSPaths.insert(newSPaths.end(), this->m_searchPaths.begin(),
                      this->m_searchPaths.end());
-    Internal_readAttributes(manager, filename, doc, newSPaths, logger);
+    Internal_readAttributes(manager, filename, doc, newSPaths,
+                            this->m_reportAsError, logger);
     }
   else
     {
-    Internal_readAttributes(manager, filename, doc, this->m_searchPaths, logger);
+    Internal_readAttributes(manager, filename, doc, this->m_searchPaths,
+                            this->m_reportAsError, logger);
     }
   return logger.hasErrors();
 }
@@ -234,7 +238,8 @@ bool AttributeReader::readContents(smtk::attribute::Manager &manager,
     smtkErrorMacro(logger, presult.description());
     return true;
     }
-  Internal_readAttributes(manager, "", doc, this->m_searchPaths, logger);
+  Internal_readAttributes(manager, "", doc, this->m_searchPaths,
+                          this->m_reportAsError, logger);
   return logger.hasErrors();
 }
 
