@@ -267,7 +267,7 @@ void qtFileItem::onInputValueChanged()
       {
       dItem->setValue(elementIdx, editBox->text().toStdString());
       }
-    this->baseView()->valueChanged(this);
+    this->baseView()->valueChanged(this->getObject());
     }
   else if(fItem)
     {

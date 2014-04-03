@@ -712,7 +712,7 @@ void qtUIManager::onExpressionReferenceChanged()
     comboBox->property("QtViewObj").value<void *>());
   if(bview)
     {
-    bview->valueChanged(NULL);
+    bview->valueChanged(inputitem->pointer());
     }
 }
 
@@ -1175,7 +1175,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
     inputBox->property("QtViewObj").value<void *>());
   if(bview && valChanged)
     {
-    bview->valueChanged(NULL);
+    bview->valueChanged(rawitem->pointer());
     }
 
   this->setWidgetColor(inputBox,
@@ -1237,7 +1237,8 @@ qtBaseView *qtUIManager::createView(smtk::view::BasePtr smtkView,
 }
 
 //----------------------------------------------------------------------------
-void qtUIManager::onViewUIModified(smtk::attribute::qtBaseView* bview)
+void qtUIManager::onViewUIModified(smtk::attribute::qtBaseView* bview,
+                                   smtk::attribute::ItemPtr item)
 {
-  emit this->uiChanged(bview);
+  emit this->uiChanged(bview, item);
 }

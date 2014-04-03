@@ -210,5 +210,5 @@ void qtAttributeRefItem::onInputValueChanged()
     {
     item->unset(elementIdx);
     }
-  this->baseView()->valueChanged(this);
+  this->baseView()->valueChanged(this->getObject());
 }
