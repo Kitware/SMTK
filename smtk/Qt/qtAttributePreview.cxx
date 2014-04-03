@@ -75,9 +75,6 @@ int main(int argc, char *argv[])
   // If manager contains no views, create InstancedView by default
   if (manager.rootView()->numberOfSubViews() == 0)
     {
-    smtk::view::InstancedPtr view = smtk::view::Instanced::New("Default");
-    manager.rootView()->addSubView(view);
-
     // Generate list of all concrete definitions in the manager
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
@@ -103,6 +100,9 @@ int main(int argc, char *argv[])
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
     for (defIter = defs.begin(); defIter != defs.end(); defIter++)
       {
+      smtk::view::InstancedPtr view =
+          smtk::view::Instanced::New((*defIter)->type());
+      manager.rootView()->addSubView(view);
       smtk::attribute::AttributePtr instance =
         manager.createAttribute((*defIter)->type());
       view->addInstance(instance);
