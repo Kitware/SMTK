@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtAttributeRefItem_h
 
 #include "smtk/Qt/qtItem.h"
+#include <QComboBox>
 
 class qtAttributeRefItemInternals;
 
@@ -52,15 +53,30 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
+      virtual void showAttributeEditor(bool showEditor);
 
     protected:
       virtual void createWidget();
+      virtual void refreshUI(QComboBox* combo);
 
     private:
 
       qtAttributeRefItemInternals *Internals;
 
     }; // class
+
+    //A sublcass of QComboBox to refresh the list on popup
+    class QTSMTK_EXPORT qtAttRefCombo : public QComboBox
+      {
+      Q_OBJECT
+      public:
+        qtAttRefCombo(smtk::attribute::ItemPtr, QWidget * parent);
+        virtual void showPopup();
+
+      private:
+        smtk::attribute::WeakItemPtr m_RefItem;
+      };
+
   }; // namespace attribute
 }; // namespace smtk
 

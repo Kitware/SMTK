@@ -22,6 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtAttributeRefItem.h"
 
+#include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtBaseView.h"
 #include "smtk/attribute/Attribute.h"
@@ -30,19 +31,72 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 
-#include <QComboBox>
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QLabel>
+#include <QPointer>
+#include <QToolButton>
 
 using namespace smtk::attribute;
+
+inline void init_Att_Names_and_NEW(QList<QString>& attNames,
+  const RefItemDefinition *itemDef)
+{
+  smtk::attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
+  if(!attDef)
+    {
+    return;
+    }
+  std::vector<smtk::attribute::AttributePtr> result;
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
+  std::vector<smtk::attribute::AttributePtr>::iterator it;
+  for (it=result.begin(); it!=result.end(); ++it)
+    {
+    attNames.push_back((*it)->name().c_str());
+    }
+  attNames.push_back("New");
+}
+
+//-----------------------------------------------------------------------------
+qtAttRefCombo::qtAttRefCombo(smtk::attribute::ItemPtr refitem, QWidget * inParent)
+: QComboBox(inParent), m_RefItem(refitem)
+{
+}
+
+//-----------------------------------------------------------------------------
+void qtAttRefCombo::showPopup()
+{
+  QList<QString> attNames;
+  if(!this->m_RefItem.lock())
+    {
+    this->QComboBox::showPopup();
+    return;
+    }
+  // need to update the list, since it may be changed
+  const RefItemDefinition *itemDef =
+    dynamic_cast<const RefItemDefinition*>(
+    this->m_RefItem.lock()->definition().get());
+  init_Att_Names_and_NEW(attNames, itemDef);
+  this->blockSignals(true);
+  int currentIndex = attNames.indexOf(this->currentText());
+  this->clear();
+  this->addItems(attNames);
+  this->setCurrentIndex(currentIndex);
+  this->blockSignals(false);
+
+  this->QComboBox::showPopup();
+}
 
 //----------------------------------------------------------------------------
 class qtAttributeRefItemInternals
 {
 public:
-  QList<QComboBox*> comboBoxes;
+  QList<qtAttRefCombo*> comboBoxes;
   QLabel* theLabel;
+  QPointer<qtAttribute> CurretRefAtt;
+  QVBoxLayout* AttLayout;
+  QPointer<QToolButton> EditButton;
 };
 
 //----------------------------------------------------------------------------
@@ -58,6 +112,11 @@ qtAttributeRefItem::qtAttributeRefItem(
 //----------------------------------------------------------------------------
 qtAttributeRefItem::~qtAttributeRefItem()
 {
+  if(this->Internals->CurretRefAtt)
+    {
+    delete this->Internals->CurretRefAtt->widget();
+    delete this->Internals->CurretRefAtt;
+    }
   delete this->Internals;
 }
 
@@ -96,23 +155,30 @@ void qtAttributeRefItem::createWidget()
     return;
     }
 
-  QBoxLayout* layout = NULL;
-  if(n == 1)
-    {
-    layout = new QHBoxLayout(this->Widget);
-    }
-  else
-    {
-    layout = new QVBoxLayout(this->Widget);
-    }
+  this->Internals->AttLayout = new QVBoxLayout(this->Widget);
+  QBoxLayout* layout = new QHBoxLayout();
+
+  this->Internals->EditButton = new QToolButton(this->Widget);
+
+  QString resourceName(":/icons/attribute/edit.png");
+  this->Internals->EditButton->setFixedSize(QSize(16, 16));
+  this->Internals->EditButton->setIcon(QIcon(resourceName));
+  this->Internals->EditButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  this->Internals->EditButton->setCheckable(true);
+  this->Internals->EditButton->setChecked(true);
+
+  connect(this->Internals->EditButton, SIGNAL(toggled(bool)),
+    this, SLOT(showAttributeEditor(bool)));
+
   layout->setMargin(0);
   QString lText = this->getObject()->label().c_str();
   this->Internals->theLabel = new QLabel(lText, this->Widget);
+  layout->addWidget(this->Internals->EditButton);
   layout->addWidget(this->Internals->theLabel);
 
   for(i = 0; i < n; i++)
     {
-    QComboBox* combo = new QComboBox(this->Widget);
+    qtAttRefCombo* combo = new qtAttRefCombo(item, this->Widget);
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
@@ -120,7 +186,7 @@ void qtAttributeRefItem::createWidget()
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
-
+  this->Internals->AttLayout->addLayout(layout);
   this->updateItemData();
 }
 
@@ -147,14 +213,7 @@ void qtAttributeRefItem::updateItemData()
     return;
     }
   QList<QString> attNames;
-  std::vector<smtk::attribute::AttributePtr> result;
-  Manager *attManager = attDef->manager();
-  attManager->findAttributes(attDef, result);
-  std::vector<smtk::attribute::AttributePtr>::iterator it;
-  for (it=result.begin(); it!=result.end(); ++it)
-    {
-    attNames.push_back((*it)->name().c_str());
-    }
+  init_Att_Names_and_NEW(attNames, itemDef);
 
   foreach(QComboBox* combo, this->Internals->comboBoxes)
     {
@@ -170,6 +229,10 @@ void qtAttributeRefItem::updateItemData()
     combo->setCurrentIndex(setIndex);
     combo->blockSignals(false);
     }
+  if(this->Internals->comboBoxes.count())
+    {
+    this->refreshUI(this->Internals->comboBoxes[0]);
+    }
 }
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onInputValueChanged()
@@ -180,10 +243,17 @@ void qtAttributeRefItem::onInputValueChanged()
     {
     return;
     }
+  this->refreshUI(comboBox);
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
+{
   int curIdx = comboBox->currentIndex();
   int elementIdx = comboBox->property("ElementIndex").toInt();
 
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
+  AttributePtr attPtr;
 
   if(curIdx>=0)
     {
@@ -191,24 +261,68 @@ void qtAttributeRefItem::onInputValueChanged()
       dynamic_cast<const RefItemDefinition*>(item->definition().get());
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
-    AttributePtr attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
-    if(elementIdx >=0 && static_cast<int>(item->numberOfValues()) > elementIdx &&
-      item->isSet(elementIdx) && attPtr == item->value(elementIdx))
+    if(curIdx == comboBox->count() - 1)
       {
-      return; // nothing to do
-      }
-    if(attPtr)
-      {
-      item->setValue(elementIdx, attPtr);
+      attPtr = attManager->createAttribute(attDef->type());
+      comboBox->blockSignals(true);
+      comboBox->insertItem(0, attPtr->name().c_str());
+      comboBox->setCurrentIndex(0);
+      comboBox->blockSignals(false);
       }
     else
       {
-      item->unset(elementIdx);
+      attPtr = attManager->findAttribute(comboBox->currentText().toStdString());
+      }
+
+    if(elementIdx >=0 && static_cast<int>(item->numberOfValues()) > elementIdx &&
+      item->isSet(elementIdx) && attPtr == item->value(elementIdx))
+      {
+      ; // nothing to do
+      }
+    else
+      {
+      if(attPtr)
+        {
+        item->setValue(elementIdx, attPtr);
+        }
+      else
+        {
+        item->unset(elementIdx);
+        }
       }
     }
   else
     {
     item->unset(elementIdx);
     }
+  if(attPtr)
+    {
+    if(this->Internals->CurretRefAtt && this->Internals->CurretRefAtt->getObject() != attPtr)
+      {
+      delete this->Internals->CurretRefAtt->widget();
+      delete this->Internals->CurretRefAtt;
+      this->Internals->CurretRefAtt = NULL;
+      }
+    if(!this->Internals->CurretRefAtt)
+      {
+      this->Internals->CurretRefAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
+      QFrame* attFrame = qobject_cast<QFrame*>(this->Internals->CurretRefAtt->widget());
+      if(attFrame)
+        {
+        attFrame->setFrameShape(QFrame::Box);
+        }
+      this->Widget->layout()->addWidget(this->Internals->CurretRefAtt->widget());
+      }
+
+    this->showAttributeEditor(this->Internals->EditButton->isChecked());
+    }
   this->baseView()->valueChanged(this->getObject());
+}
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::showAttributeEditor(bool showEditor)
+{
+  if(this->Internals->CurretRefAtt)
+    {
+    this->Internals->CurretRefAtt->widget()->setVisible(showEditor);
+    }
 }

@@ -48,7 +48,7 @@ if(SMTK_BUILD_QT)
 
   qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibHeaders})
   qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
-  qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc)
+  qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc Qt/qtAttributeIcons.qrc)
 
   source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
   source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})

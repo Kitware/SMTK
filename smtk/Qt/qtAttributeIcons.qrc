@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="/icons/attribute">
+    <file>edit.png</file>
+  </qresource>
+</RCC>
