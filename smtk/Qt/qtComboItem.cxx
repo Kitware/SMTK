@@ -176,13 +176,13 @@ void qtComboItem::onInputValueChanged()
     if(itemDef->isDiscreteIndexValid(curIdx))
       {
       item->setDiscreteIndex(elementIdx, curIdx);
-      this->baseView()->valueChanged(this);
+      this->baseView()->valueChanged(this->getObject());
       refresh = true;
       }
     else if(item->isSet(elementIdx))
       {
       item->unset(elementIdx);
-      this->baseView()->valueChanged(this);
+      this->baseView()->valueChanged(this->getObject());
       refresh = true;
       }
     }

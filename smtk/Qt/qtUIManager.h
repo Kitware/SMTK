@@ -141,11 +141,11 @@ namespace smtk
       void onLineEditChanged();
       void onLineEditFinished();
       void onInputValueChanged(QObject*);
-      void onViewUIModified(smtk::attribute::qtBaseView*);
+      void onViewUIModified(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
-      void uiChanged(smtk::attribute::qtBaseView*);
+      void uiChanged(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
 
     protected:
       void processAttributeView(qtAttributeView* v);

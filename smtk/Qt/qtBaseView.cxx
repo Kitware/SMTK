@@ -115,8 +115,8 @@ qtUIManager* qtBaseView::uiManager()
 }
 
 //----------------------------------------------------------------------------
-void qtBaseView::valueChanged(qtItem*)
+void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 {
-  emit this->modified();
-  this->uiManager()->onViewUIModified(this);
+  emit this->modified(item);
+  this->uiManager()->onViewUIModified(this, item);
 }

@@ -230,6 +230,6 @@ void qtInputsItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
-    this->baseView()->valueChanged(this);
+    this->baseView()->valueChanged(this->getObject());
     }
 }

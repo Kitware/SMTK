@@ -54,7 +54,7 @@ namespace smtk
       qtUIManager* uiManager();
 
     signals:
-      void modified();
+      void modified(smtk::attribute::ItemPtr);
 
     public slots:
       virtual void updateUI()
@@ -64,7 +64,7 @@ namespace smtk
       }
       virtual void showAdvanced(int){;}
       virtual void updateModelAssociation() {;}
-      virtual void valueChanged(qtItem*);
+      virtual void valueChanged(smtk::attribute::ItemPtr);
 
     protected slots:
       virtual void updateAttributeData() {;}
