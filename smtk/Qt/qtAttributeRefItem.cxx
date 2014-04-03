@@ -254,7 +254,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   AttributePtr attPtr;
-
+  bool valChanged = true;
   if(curIdx>=0)
     {
     const RefItemDefinition *itemDef =
@@ -277,7 +277,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     if(elementIdx >=0 && static_cast<int>(item->numberOfValues()) > elementIdx &&
       item->isSet(elementIdx) && attPtr == item->value(elementIdx))
       {
-      ; // nothing to do
+      valChanged = false; // nothing to do
       }
     else
       {
@@ -316,7 +316,10 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
     this->showAttributeEditor(this->Internals->EditButton->isChecked());
     }
-  this->baseView()->valueChanged(this->getObject());
+  if(valChanged)
+    {
+    this->baseView()->valueChanged(this->getObject());
+    }
 }
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::showAttributeEditor(bool showEditor)
