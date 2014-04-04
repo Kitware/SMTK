@@ -120,15 +120,18 @@ public:
   QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtAttributeRefItem::qtAttributeRefItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view) :
+  smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view,
+  Qt::Orientation enVectorItemOrient ) :
    qtItem(dataObj, p, view)
 {
   this->Internals = new qtAttributeRefItemInternals;
   this->IsLeafItem = true;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
@@ -238,7 +241,17 @@ void qtAttributeRefItem::createWidget()
     }
 
   QVBoxLayout* thisLayout = new QVBoxLayout(this->Widget);
-  QBoxLayout* layout = new QHBoxLayout();
+  // Setup layout
+  QBoxLayout* layout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    layout = new QVBoxLayout(this->Widget);
+    }
+  else
+    {
+    layout = new QHBoxLayout(this->Widget);
+    }
+  layout->setMargin(0);
   layout->setAlignment(Qt::AlignLeft);
   this->Internals->RefComboLayout = new QHBoxLayout();
   this->Internals->RefComboLayout->setMargin(0);
@@ -263,7 +276,6 @@ void qtAttributeRefItem::createWidget()
   connect(this->Internals->EditButton, SIGNAL(clicked()),
     this, SLOT(onLaunchAttributeView()));
 
-  layout->setMargin(0);
   smtk::attribute::ItemPtr dataObj = this->getObject();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 

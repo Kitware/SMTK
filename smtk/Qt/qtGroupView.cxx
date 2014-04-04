@@ -204,7 +204,7 @@ void qtGroupView::addTabEntry(qtBaseView* child)
     return;
     }
   QWidget* tabPage = new QWidget();
-  tabPage->setSizePolicy(QSizePolicy::Ignored,
+  tabPage->setSizePolicy(QSizePolicy::Preferred,
     QSizePolicy::Expanding);
 
   QScrollArea* s = new QScrollArea(tabWidget);

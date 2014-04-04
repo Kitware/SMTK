@@ -59,15 +59,17 @@ public:
 
   QPointer<QFrame> EntryFrame;
   QPointer<QLabel> theLabel;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtInputsItem::qtInputsItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
-   qtItem(dataObj, p, bview)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
+   Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtInputsItemInternals;
   this->IsLeafItem = true;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
@@ -167,7 +169,16 @@ void qtInputsItem::updateUI()
 
   this->Internals->EntryFrame = new QFrame(this->parentWidget());
   this->Internals->EntryFrame->setObjectName("CheckAndEntryInputFrame");
-  QHBoxLayout* entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
+  QBoxLayout* entryLayout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+    }
+  else
+    {
+    entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
+    }
+
   entryLayout->setMargin(0);
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);

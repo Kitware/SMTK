@@ -41,7 +41,8 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtInputsItem(smtk::attribute::ItemPtr, QWidget* p, qtBaseView* bview);
+      qtInputsItem(smtk::attribute::ItemPtr, QWidget* p,
+        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
       virtual ~qtInputsItem();  
       virtual void setLabelVisible(bool);
 

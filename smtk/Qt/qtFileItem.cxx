@@ -49,16 +49,20 @@ public:
   QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
   QPointer<QLabel> theLabel;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtFileItem::qtFileItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview, bool dirOnly)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
+   bool dirOnly, Qt::Orientation enVectorItemOrient)
    : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory = dirOnly;
   this->Internals->FileBrowser = NULL;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
+
   this->IsLeafItem = true;
   this->createWidget();
 }
@@ -140,7 +144,16 @@ void qtFileItem::updateItemData()
   //this->Internals->EntryFrame->setStyleSheet("QFrame { background-color: pink; }");
 
   // Setup layout
-  QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+  QBoxLayout* entryLayout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+    }
+  else
+    {
+    entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
+    }
+
   int spacing = entryLayout->spacing() / 2;  // reduce spacing
   entryLayout->setSpacing(spacing);
 

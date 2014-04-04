@@ -43,7 +43,7 @@ namespace smtk
 
     public:
       qtAttributeRefItem(smtk::attribute::ItemPtr,
-        QWidget* parent,  qtBaseView* view);
+        QWidget* parent,  qtBaseView* view, Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       virtual ~qtAttributeRefItem();
 
       virtual void setLabelVisible(bool);

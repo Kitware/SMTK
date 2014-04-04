@@ -1087,7 +1087,7 @@ void qtAttributeView::addComparativeProperty(
       std::string strItemLabel = attItem->label();
       if(current->text() == strItemLabel.c_str())
         {
-        qtItem* qItem = qtAttribute::createItem(attItem, NULL, this);
+        qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
         qItem->setLabelVisible(false);
         vtWidget->setCellWidget(insertRow, col, qItem->widget());
         vtWidget->setItem(insertRow, col, new QTableWidgetItem());

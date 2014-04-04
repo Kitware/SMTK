@@ -54,7 +54,8 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview, bool dirOnly=false);
+      qtFileItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
+        bool dirOnly=false, Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       virtual ~qtFileItem();
       void enableFileBrowser(bool state=true);
       bool isDirectory();

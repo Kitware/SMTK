@@ -40,7 +40,8 @@ namespace smtk
       Q_OBJECT
 
     public:         
-      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
+                  Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       virtual ~qtGroupItem();  
       virtual void setLabelVisible(bool);
 
