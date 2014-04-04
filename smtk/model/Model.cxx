@@ -40,11 +40,18 @@ Model::Model()
 //----------------------------------------------------------------------------
 Model::~Model()
 {
+  this->clearItems();
+}
+//----------------------------------------------------------------------------
+void Model::clearItems()
+{
   std::map<int, smtk::model::ItemPtr>::iterator it;
   for (it = this->m_items.begin(); it != this->m_items.end(); it++)
     {
+    it->second->detachAllAttributes();
     it->second->clearModel();
     }
+  this->m_items.clear();
 }
 
 //----------------------------------------------------------------------------

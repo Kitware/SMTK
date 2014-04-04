@@ -137,6 +137,7 @@ namespace smtk
 //      void onComboIndexChanged();
       void onExpressionReferenceChanged();
       void updateModelViews();
+      void updateModelViews(qtGroupView*);
       void onTextEditChanged();
       void onLineEditChanged();
       void onLineEditFinished();
