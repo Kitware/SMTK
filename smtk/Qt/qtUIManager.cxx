@@ -275,9 +275,23 @@ void qtUIManager::updateModelViews()
     {
     return;
     }
-  foreach(qtBaseView* childView, this->RootView->getRootGroup()->childViews())
+  this->updateModelViews(this->RootView->getRootGroup());
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::updateModelViews(qtGroupView* groupView)
+{
+  if(!groupView)
     {
-    if(childView->getObject()->type() == smtk::view::Base::ATTRIBUTE ||
+    return;
+    }
+  foreach(qtBaseView* childView, groupView->childViews())
+    {
+    if(childView->getObject()->type() == smtk::view::Base::GROUP)
+      {
+      this->updateModelViews(qobject_cast<qtGroupView*>(childView));
+      }
+    else if(childView->getObject()->type() == smtk::view::Base::ATTRIBUTE ||
        childView->getObject()->type() == smtk::view::Base::MODEL_ENTITY)
       {
       childView->updateModelAssociation();

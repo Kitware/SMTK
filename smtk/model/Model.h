@@ -90,6 +90,7 @@ namespace smtk
         {
         return this->m_gridInfo;
         }
+    virtual void clearItems();
 
     protected:
       smtk::model::ItemPtr m_modelDomain;

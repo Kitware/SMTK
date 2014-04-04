@@ -347,12 +347,12 @@ void qtAttributeView::onListBoxSelectionChanged()
 {
   this->Internals->ValuesTable->blockSignals(true);
   this->Internals->ValuesTable->clear();
+  this->Internals->ValuesTable->setRowCount(0);
+  this->Internals->ValuesTable->setColumnCount(0);
   QTableWidgetItem* current = this->getSelectedItem();
 
   if(current)
     {
-    this->Internals->ValuesTable->setRowCount(0);
-    this->Internals->ValuesTable->setColumnCount(0);
     if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
       {
       smtk::attribute::AttributePtr dataItem = this->getAttributeFromItem(current);
@@ -370,6 +370,10 @@ void qtAttributeView::onListBoxSelectionChanged()
       QString temp = current->text();
       this->updateTableWithProperty(temp, att->definition());
       }
+    }
+  else
+    {
+    this->updateAssociationEnableState(smtk::attribute::AttributePtr());
     }
 
   this->Internals->ValuesTable->blockSignals(false);
@@ -525,16 +529,6 @@ void qtAttributeView::createNewAttribute(
     this->Internals->ListTable->selectRow(item->row());
     }
   emit this->numOfAttriubtesChanged();
-}
-//----------------------------------------------------------------------------
-void qtAttributeView::onAttributeModified()
-{
-  this->onViewBy(VIEWBY_Attribute);
-  int last = this->Internals->ListTable->rowCount()-1;
-  if(last >=0)
-    {
-    this->Internals->ListTable->selectRow(last);
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -706,7 +700,7 @@ void qtAttributeView::onViewBy(int viewBy)
     }
   this->Internals->ListTable->blockSignals(false);
   this->Internals->ListTable->resizeColumnsToContents();
-  if(this->Internals->ListTable->rowCount())
+  if(this->Internals->ListTable->rowCount() && !this->getSelectedItem())
     {
     this->Internals->ListTable->selectRow(0);
     }
@@ -715,6 +709,7 @@ void qtAttributeView::onViewBy(int viewBy)
     this->onListBoxSelectionChanged();
     }
 }
+
 //----------------------------------------------------------------------------
 void qtAttributeView::onViewByWithDefinition(
   int viewBy, smtk::attribute::DefinitionPtr attDef)

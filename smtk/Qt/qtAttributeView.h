@@ -68,7 +68,6 @@ namespace smtk
       void onCreateNew();
       void onCopySelected();
       void onDeleteSelected();
-      void onAttributeModified();
       void updateAssociationEnableState(smtk::attribute::AttributePtr);
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
