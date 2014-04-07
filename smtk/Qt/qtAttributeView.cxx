@@ -1032,7 +1032,7 @@ void qtAttributeView::addTableAttRefItems(
     return;
     }
   refItem->setLabelVisible(false);
-  QString labelText = refItem->labelText();
+  QString labelText = attItem->label().c_str();
   labelText = labelText.isEmpty() ? attLabel : labelText;
 
   Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);

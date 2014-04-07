@@ -45,7 +45,6 @@ namespace smtk
       qtAttributeRefItem(smtk::attribute::ItemPtr,
         QWidget* parent,  qtBaseView* view);
       virtual ~qtAttributeRefItem();
-      QString labelText() const;
       void setLabelVisible(bool);
 
     public slots:
@@ -54,6 +53,7 @@ namespace smtk
     protected slots:
       virtual void updateItemData();
       virtual void showAttributeEditor(bool showEditor);
+      virtual void setOutputOptional(int);
 
     protected:
       virtual void createWidget();

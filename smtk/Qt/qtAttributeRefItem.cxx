@@ -36,6 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QLabel>
 #include <QPointer>
 #include <QToolButton>
+#include <QCheckBox>
 
 using namespace smtk::attribute;
 
@@ -93,9 +94,10 @@ class qtAttributeRefItemInternals
 {
 public:
   QList<qtAttRefCombo*> comboBoxes;
-  QLabel* theLabel;
+  QPointer<QCheckBox> optionalCheck;
+  QPointer<QLabel> theLabel;
   QPointer<qtAttribute> CurretRefAtt;
-  QVBoxLayout* AttLayout;
+  QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
 };
 
@@ -121,15 +123,9 @@ qtAttributeRefItem::~qtAttributeRefItem()
 }
 
 //----------------------------------------------------------------------------
-QString qtAttributeRefItem::labelText() const
-{
-  return this->Internals->theLabel->text();
-}
-
-//----------------------------------------------------------------------------
 void qtAttributeRefItem::setLabelVisible(bool visible)
 {
-  return this->Internals->theLabel->setVisible(visible);
+  this->Internals->theLabel->setVisible(visible);
 }
 
 //----------------------------------------------------------------------------
@@ -155,11 +151,13 @@ void qtAttributeRefItem::createWidget()
     return;
     }
 
-  this->Internals->AttLayout = new QVBoxLayout(this->Widget);
+  QVBoxLayout* thisLayout = new QVBoxLayout(this->Widget);
   QBoxLayout* layout = new QHBoxLayout();
+  layout->setAlignment(Qt::AlignLeft);
+  this->Internals->RefComboLayout = new QHBoxLayout();
+  this->Internals->RefComboLayout->setMargin(0);
 
   this->Internals->EditButton = new QToolButton(this->Widget);
-
   QString resourceName(":/icons/attribute/edit.png");
   this->Internals->EditButton->setFixedSize(QSize(16, 16));
   this->Internals->EditButton->setIcon(QIcon(resourceName));
@@ -171,22 +169,48 @@ void qtAttributeRefItem::createWidget()
     this, SLOT(showAttributeEditor(bool)));
 
   layout->setMargin(0);
-  QString lText = this->getObject()->label().c_str();
-  this->Internals->theLabel = new QLabel(lText, this->Widget);
-  layout->addWidget(this->Internals->EditButton);
-  layout->addWidget(this->Internals->theLabel);
+  smtk::attribute::ItemPtr dataObj = this->getObject();
 
+  if(dataObj->isOptional())
+    {
+    this->Internals->optionalCheck = new QCheckBox(this->Widget);
+    this->Internals->optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
+    QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    this->Internals->optionalCheck->setSizePolicy(sizeFixedPolicy);
+
+    if(dataObj->definition()->advanceLevel() >0)
+      {
+      this->Internals->optionalCheck->setFont(
+        this->baseView()->uiManager()->advancedFont());
+      }
+    if(dataObj->definition()->briefDescription().length())
+      {
+      this->Internals->optionalCheck->setToolTip(
+        dataObj->definition()->briefDescription().c_str());
+      }
+
+    QObject::connect(this->Internals->optionalCheck,
+      SIGNAL(stateChanged(int)),
+      this, SLOT(setOutputOptional(int)));
+    layout->addWidget(this->Internals->optionalCheck);
+    }
+
+  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   for(i = 0; i < n; i++)
     {
     qtAttRefCombo* combo = new qtAttRefCombo(item, this->Widget);
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
-    layout->addWidget(combo);
+    this->Internals->RefComboLayout->addWidget(combo);
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
-  this->Internals->AttLayout->addLayout(layout);
+  QString lText = dataObj->label().c_str();
+  this->Internals->theLabel = new QLabel(lText);
+  layout->addWidget(this->Internals->theLabel);
+  layout->addLayout(this->Internals->RefComboLayout);
+  thisLayout->addLayout(layout);
   this->updateItemData();
 }
 
@@ -233,7 +257,40 @@ void qtAttributeRefItem::updateItemData()
     {
     this->refreshUI(this->Internals->comboBoxes[0]);
     }
+  if(item->isOptional() && this->Internals->optionalCheck)
+    {
+    if(this->Internals->optionalCheck->isChecked() == item->isEnabled())
+      {
+      this->setOutputOptional(this->Internals->optionalCheck->checkState());
+      }
+    else
+      {
+      this->Internals->optionalCheck->setChecked(item->isEnabled());
+      }
+    }
 }
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::setOutputOptional(int state)
+{
+  bool enable = state ? true : false;
+
+  this->Internals->EditButton->setEnabled(enable);
+  foreach(QComboBox* combo, this->Internals->comboBoxes)
+    {
+    combo->setEnabled(enable);
+    }
+  if(this->Internals->CurretRefAtt)
+    {
+    this->Internals->CurretRefAtt->widget()->setEnabled(enable);
+    }
+  if(enable != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(enable);
+    this->baseView()->valueChanged(this->getObject());
+    }
+}
+
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onInputValueChanged()
 {
