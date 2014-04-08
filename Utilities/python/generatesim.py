@@ -40,7 +40,7 @@ def generate_model_items(manager, model_description):
         name = item_description.get('name')
         mask = item_description.get('mask')
         if (group is None) or (name is None) or (mask is None):
-            print 'Warning: model item description incomplete' + \
+            print 'WARNING: model item description incomplete' + \
                 ' - group %s, name %s, mask %s ' % (group, name, mask) + \
                 ' - skipping'
             continue
@@ -134,7 +134,7 @@ def process_items(parent, parent_description, refitem_list):
             print 'debug item name', item_name
         item = parent.find(item_name)
         if item is None:
-            print 'Warning: no item %s for parent %s - skipping' % \
+            print 'WARNING: no item %s for parent %s - skipping' % \
                 (item_name, parent.name())
             if isinstance(parent, smtk.attribute.Attribute):
                 manager.removeAttribute(name)
@@ -157,11 +157,12 @@ def fetch_attribute(manager, att_type, name, att_id):
     # First check that Definition exists
     defn = manager.findDefinition(att_type)
     if defn is None:
-        print 'Warning: no attribute definition for %s type' % \
+        print 'WARNING: no attribute definition for %s type' % \
             att_type + ' - skipping'
         return None
 
     if name is not None:
+        # Check for attribute with given name
         att = manager.findAttribute(name)
     else:
         # Check for single attribute instance
@@ -191,12 +192,12 @@ def fetch_attribute(manager, att_type, name, att_id):
             att = manager.createAttribute(name, att_type)
 
         if att is None:
-            print 'Warning: Manager did not create attribute of type %s -skipping' % \
+            print 'WARNING: Manager did not create attribute of type %s -skipping' % \
                 att_type
     else:
-        print 'Found attribute %s' % name
+        print 'Found attribute type \"%s\" name \"%s\"' % (att_type, att.name())
         if att_id is not None and att_id != att.id():
-            print 'Warning: attribute id (%d) does not match input %d' % \
+            print 'WARNING: attribute id (%d) does not match input %d' % \
                 (att.id(), att_id)
     return att
 
@@ -216,7 +217,7 @@ def generate_atts(manager, attributes_description, refitem_list):
 
         """
         if (att_type is None) or (name is None):
-            print 'Warning: attribute description incomplete' + \
+            print 'WARNING: attribute description incomplete' + \
                 ' - type %s, name %s, id %s ' % (att_type, name, att_id) + \
                 ' - skipping'
             continue
@@ -233,7 +234,7 @@ def generate_atts(manager, attributes_description, refitem_list):
             if model_item_id is not None:
                 model_item = model.getModelItem(model_item_id)
                 if model_item is None:
-                    print 'Warning: Did not find model item %d for attribute type %s - skipping' % \
+                    print 'WARNING: Did not find model item %d for attribute type %s - skipping' % \
                         (model_item_id, name)
                 else:
                     print 'Associate model item %d to att %s' % (model_item_id, att.name())
@@ -258,7 +259,7 @@ def generate_sim(manager, description):
 
     att_description = description.get('attributes')
     if att_description is None:
-        print 'Warning: no attributes found in input description'
+        print 'WARNING: no attributes found in input description'
     else:
         refitem_list = list()
         count = generate_atts(manager, att_description, refitem_list)
@@ -268,7 +269,7 @@ def generate_sim(manager, description):
         for item, description in refitem_list:
             attname = description.get('attributeref')
             if attname is None:
-                print 'Warning: no attributeref specified for', item.name()
+                print 'WARNING: no attributeref specified for', item.name()
                 continue
 
             att = manager.findAttribute(attname)
