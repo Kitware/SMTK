@@ -163,6 +163,12 @@ def fetch_attribute(manager, att_type, name, att_id):
 
     if name is not None:
         att = manager.findAttribute(name)
+    else:
+        # Check for single attribute instance
+        att_list = manager.findAttributes(att_type)
+        if len(att_list) == 1:
+            #print 'Found single attribute type \"%s\"' % att_type
+            att = att_list[0]
 
     if att is None:
         print 'Creating %s attribute' % att_type
