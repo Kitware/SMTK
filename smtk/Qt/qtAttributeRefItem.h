@@ -46,13 +46,19 @@ namespace smtk
         QWidget* parent,  qtBaseView* view);
       virtual ~qtAttributeRefItem();
       void setLabelVisible(bool);
+      // this will turn on/off the Edit button.
+      // Also, if the turning off, the Attribute widget will be turned off too
+      virtual void setAttributeEditorVisible(bool);
+      // turn on/off the attribute widget and the Collapse button.
+      virtual void setAttributeWidgetVisible(bool);
 
     public slots:
       void onInputValueChanged();
+      void onToggleAttributeWidgetVisibility();
+      void onLaunchAttributeView();
 
     protected slots:
       virtual void updateItemData();
-      virtual void showAttributeEditor(bool showEditor);
       virtual void setOutputOptional(int);
 
     protected:

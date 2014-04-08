@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/icons/attribute">
     <file>edit.png</file>
+    <file>expand-up.png</file>
+    <file>expand-down.png</file>
   </qresource>
 </RCC>

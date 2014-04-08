@@ -1032,6 +1032,9 @@ void qtAttributeView::addTableAttRefItems(
     return;
     }
   refItem->setLabelVisible(false);
+  refItem->setAttributeEditorVisible(false);
+  refItem->setAttributeWidgetVisible(false);
+
   QString labelText = attItem->label().c_str();
   labelText = labelText.isEmpty() ? attLabel : labelText;
 

@@ -48,6 +48,7 @@ inline void init_Att_Names_and_NEW(QList<QString>& attNames,
     {
     return;
     }
+  attNames.push_back("None");
   std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
@@ -80,10 +81,18 @@ void qtAttRefCombo::showPopup()
     this->m_RefItem.lock()->definition().get());
   init_Att_Names_and_NEW(attNames, itemDef);
   this->blockSignals(true);
-  int currentIndex = attNames.indexOf(this->currentText());
+
+  RefItemPtr refitem =
+    smtk::dynamic_pointer_cast<RefItem>(this->m_RefItem.lock());
+  int elementIdx = this->property("ElementIndex").toInt();
+  int setIndex = 0; // None
+  if (refitem->isSet(elementIdx))
+    {
+    setIndex = attNames.indexOf(refitem->valueAsString(elementIdx).c_str());
+    }
   this->clear();
   this->addItems(attNames);
-  this->setCurrentIndex(currentIndex);
+  this->setCurrentIndex(setIndex);
   this->blockSignals(false);
 
   this->QComboBox::showPopup();
@@ -96,9 +105,10 @@ public:
   QList<qtAttRefCombo*> comboBoxes;
   QPointer<QCheckBox> optionalCheck;
   QPointer<QLabel> theLabel;
-  QPointer<qtAttribute> CurretRefAtt;
+  QPointer<qtAttribute> CurrentRefAtt;
   QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
+  QPointer<QToolButton> CollapseButton;
 };
 
 //----------------------------------------------------------------------------
@@ -114,10 +124,10 @@ qtAttributeRefItem::qtAttributeRefItem(
 //----------------------------------------------------------------------------
 qtAttributeRefItem::~qtAttributeRefItem()
 {
-  if(this->Internals->CurretRefAtt)
+  if(this->Internals->CurrentRefAtt)
     {
-    delete this->Internals->CurretRefAtt->widget();
-    delete this->Internals->CurretRefAtt;
+    delete this->Internals->CurrentRefAtt->widget();
+    delete this->Internals->CurrentRefAtt;
     }
   delete this->Internals;
 }
@@ -126,6 +136,43 @@ qtAttributeRefItem::~qtAttributeRefItem()
 void qtAttributeRefItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::setAttributeEditorVisible(bool visible)
+{
+  this->Internals->EditButton->setVisible(visible);
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
+{
+  this->Internals->CollapseButton->setVisible(visible);
+  if(this->Internals->CurrentRefAtt &&
+     this->Internals->CurrentRefAtt->widget()->isVisible() != visible)
+    {
+    this->onToggleAttributeWidgetVisibility();
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
+{
+  if(this->Internals->CurrentRefAtt)
+    {
+    bool bVisible = this->Internals->CurrentRefAtt->widget()->isVisible();
+    this->Internals->CurrentRefAtt->widget()->setVisible(!bVisible);
+    this->Internals->CollapseButton->setArrowType(bVisible ? Qt::UpArrow : Qt::DownArrow);
+    //QString exapndDownName = bVisible ? ":/icons/attribute/expand-down.png" :
+    //  ":/icons/attribute/expand-up.png";
+    //this->Internals->CollapseButton->setIcon(QIcon(exapndDownName));
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::onLaunchAttributeView()
+{
+  //this->onToggleAttributeWidgetVisibility();
 }
 
 //----------------------------------------------------------------------------
@@ -157,16 +204,23 @@ void qtAttributeRefItem::createWidget()
   this->Internals->RefComboLayout = new QHBoxLayout();
   this->Internals->RefComboLayout->setMargin(0);
 
+  this->Internals->CollapseButton = new QToolButton(this->Widget);
+  //QString exapndDownName(":/icons/attribute/expand-down.png");
+  this->Internals->CollapseButton->setFixedSize(QSize(16, 16));
+  this->Internals->CollapseButton->setArrowType(Qt::DownArrow);
+  //this->Internals->CollapseButton->setIcon(QIcon(exapndDownName));
+  this->Internals->CollapseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  connect(this->Internals->CollapseButton, SIGNAL(clicked()),
+    this, SLOT(onToggleAttributeWidgetVisibility()));
+
   this->Internals->EditButton = new QToolButton(this->Widget);
   QString resourceName(":/icons/attribute/edit.png");
   this->Internals->EditButton->setFixedSize(QSize(16, 16));
   this->Internals->EditButton->setIcon(QIcon(resourceName));
   this->Internals->EditButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  this->Internals->EditButton->setCheckable(true);
-  this->Internals->EditButton->setChecked(true);
 
-  connect(this->Internals->EditButton, SIGNAL(toggled(bool)),
-    this, SLOT(showAttributeEditor(bool)));
+  connect(this->Internals->EditButton, SIGNAL(clicked()),
+    this, SLOT(onLaunchAttributeView()));
 
   layout->setMargin(0);
   smtk::attribute::ItemPtr dataObj = this->getObject();
@@ -195,7 +249,7 @@ void qtAttributeRefItem::createWidget()
     layout->addWidget(this->Internals->optionalCheck);
     }
 
-  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
+//  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   for(i = 0; i < n; i++)
     {
     qtAttRefCombo* combo = new qtAttRefCombo(item, this->Widget);
@@ -210,6 +264,8 @@ void qtAttributeRefItem::createWidget()
   this->Internals->theLabel = new QLabel(lText);
   layout->addWidget(this->Internals->theLabel);
   layout->addLayout(this->Internals->RefComboLayout);
+  layout->addWidget(this->Internals->EditButton);
+  layout->addWidget(this->Internals->CollapseButton);
   thisLayout->addLayout(layout);
   this->updateItemData();
 }
@@ -245,7 +301,7 @@ void qtAttributeRefItem::updateItemData()
     combo->clear();
     combo->addItems(attNames);
     int elementIdx = combo->property("ElementIndex").toInt();
-    int setIndex = -1;
+    int setIndex = 0; // None
     if (item->isSet(elementIdx))
       {
       setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
@@ -276,13 +332,14 @@ void qtAttributeRefItem::setOutputOptional(int state)
   bool enable = state ? true : false;
 
   this->Internals->EditButton->setEnabled(enable);
+  this->Internals->CollapseButton->setEnabled(enable);
   foreach(QComboBox* combo, this->Internals->comboBoxes)
     {
     combo->setEnabled(enable);
     }
-  if(this->Internals->CurretRefAtt)
+  if(this->Internals->CurrentRefAtt)
     {
-    this->Internals->CurretRefAtt->widget()->setEnabled(enable);
+    this->Internals->CurrentRefAtt->widget()->setEnabled(enable);
     }
   if(enable != this->getObject()->isEnabled())
     {
@@ -301,6 +358,13 @@ void qtAttributeRefItem::onInputValueChanged()
     return;
     }
   this->refreshUI(comboBox);
+
+  if(this->Internals->CurrentRefAtt)
+    {
+    bool bVisible = ( this->Internals->CollapseButton->isVisible() &&
+      this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
+    this->Internals->CurrentRefAtt->widget()->setVisible(bVisible);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -312,18 +376,18 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   AttributePtr attPtr;
   bool valChanged = true;
-  if(curIdx>=0)
+  if(curIdx>0) // index 0 is None
     {
     const RefItemDefinition *itemDef =
       dynamic_cast<const RefItemDefinition*>(item->definition().get());
     attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
     Manager *attManager = attDef->manager();
-    if(curIdx == comboBox->count() - 1)
+    if(curIdx == comboBox->count() - 1) // create New attribute
       {
       attPtr = attManager->createAttribute(attDef->type());
       comboBox->blockSignals(true);
-      comboBox->insertItem(0, attPtr->name().c_str());
-      comboBox->setCurrentIndex(0);
+      comboBox->insertItem(1, attPtr->name().c_str());
+      comboBox->setCurrentIndex(1);
       comboBox->blockSignals(false);
       }
     else
@@ -354,35 +418,32 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     }
   if(attPtr)
     {
-    if(this->Internals->CurretRefAtt && this->Internals->CurretRefAtt->getObject() != attPtr)
+    if(this->Internals->CurrentRefAtt && this->Internals->CurrentRefAtt->getObject() != attPtr)
       {
-      delete this->Internals->CurretRefAtt->widget();
-      delete this->Internals->CurretRefAtt;
-      this->Internals->CurretRefAtt = NULL;
+      delete this->Internals->CurrentRefAtt->widget();
+      delete this->Internals->CurrentRefAtt;
+      this->Internals->CurrentRefAtt = NULL;
       }
-    if(!this->Internals->CurretRefAtt)
+    if(!this->Internals->CurrentRefAtt)
       {
-      this->Internals->CurretRefAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
-      QFrame* attFrame = qobject_cast<QFrame*>(this->Internals->CurretRefAtt->widget());
+      this->Internals->CurrentRefAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
+      QFrame* attFrame = qobject_cast<QFrame*>(this->Internals->CurrentRefAtt->widget());
       if(attFrame)
         {
         attFrame->setFrameShape(QFrame::Box);
         }
-      this->Widget->layout()->addWidget(this->Internals->CurretRefAtt->widget());
+      this->Widget->layout()->addWidget(this->Internals->CurrentRefAtt->widget());
       }
-
-    this->showAttributeEditor(this->Internals->EditButton->isChecked());
     }
+  else if(this->Internals->CurrentRefAtt)
+    {
+    delete this->Internals->CurrentRefAtt->widget();
+    delete this->Internals->CurrentRefAtt;
+    this->Internals->CurrentRefAtt = NULL;
+    }
+
   if(valChanged)
     {
     this->baseView()->valueChanged(this->getObject());
-    }
-}
-//----------------------------------------------------------------------------
-void qtAttributeRefItem::showAttributeEditor(bool showEditor)
-{
-  if(this->Internals->CurretRefAtt)
-    {
-    this->Internals->CurretRefAtt->widget()->setVisible(showEditor);
     }
 }
