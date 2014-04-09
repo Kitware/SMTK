@@ -24,13 +24,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtAttributeView.h"
 #include "smtk/Qt/qtNewAttributeWidget.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/view/Attribute.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -38,6 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QPointer>
 #include <QToolButton>
 #include <QCheckBox>
+#include <QDialogButtonBox>
 
 using namespace smtk::attribute;
 
@@ -173,7 +175,34 @@ void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onLaunchAttributeView()
 {
-  //this->onToggleAttributeWidgetVisibility();
+  if(!this->getObject())
+    {
+    return;
+    }
+  smtk::view::AttributePtr newAttView(new smtk::view::Attribute("Attribute View"));
+  smtk::attribute::RefItemPtr item =
+    smtk::dynamic_pointer_cast<RefItem>(this->getObject());
+  const RefItemDefinition *itemDef =
+    dynamic_cast<const RefItemDefinition*>(item->definition().get());
+  attribute::DefinitionPtr attDef = itemDef->attributeDefinition();
+  newAttView->addDefinition(attDef);
+
+  QDialog attViewDlg;
+  attViewDlg.setWindowTitle(attDef->label().empty() ?
+                            attDef->type().c_str() : attDef->label().c_str());
+  QVBoxLayout* layout = new QVBoxLayout(&attViewDlg);
+
+  qtAttributeView attView(newAttView, &attViewDlg, this->baseView()->uiManager());
+  //layout->addWidget(attView.widget())
+  QDialogButtonBox* buttonBox=new QDialogButtonBox( &attViewDlg );
+  buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+  layout->addWidget(buttonBox);
+  attViewDlg.setModal(true);
+  QObject::connect(buttonBox, SIGNAL(accepted()), &attViewDlg, SLOT(accept()));
+  attViewDlg.exec();
+
+  this->updateItemData();
+  this->updateAttWidgetState();
 }
 
 //----------------------------------------------------------------------------
@@ -272,6 +301,17 @@ void qtAttributeRefItem::createWidget()
 }
 
 //----------------------------------------------------------------------------
+void qtAttributeRefItem::updateAttWidgetState()
+{
+  if(this->Internals->CurrentRefAtt)
+    {
+    bool bVisible = ( this->Internals->CollapseButton->isVisible() &&
+      this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
+    this->Internals->CurrentRefAtt->widget()->setVisible(bVisible);
+    }
+}
+
+//----------------------------------------------------------------------------
 void qtAttributeRefItem::updateItemData()
 {
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
@@ -306,6 +346,7 @@ void qtAttributeRefItem::updateItemData()
     if (item->isSet(elementIdx))
       {
       setIndex = attNames.indexOf(item->valueAsString(elementIdx).c_str());
+      setIndex = setIndex < 0 ? 0 : setIndex;
       }
     combo->setCurrentIndex(setIndex);
     combo->blockSignals(false);
@@ -359,13 +400,7 @@ void qtAttributeRefItem::onInputValueChanged()
     return;
     }
   this->refreshUI(comboBox);
-
-  if(this->Internals->CurrentRefAtt)
-    {
-    bool bVisible = ( this->Internals->CollapseButton->isVisible() &&
-      this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
-    this->Internals->CurrentRefAtt->widget()->setVisible(bVisible);
-    }
+  this->updateAttWidgetState();
 }
 
 //----------------------------------------------------------------------------

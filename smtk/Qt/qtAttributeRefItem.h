@@ -64,6 +64,7 @@ namespace smtk
     protected:
       virtual void createWidget();
       virtual void refreshUI(QComboBox* combo);
+      virtual void updateAttWidgetState();
 
     private:
 

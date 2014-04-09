@@ -687,8 +687,10 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     if(!attDef->isAbstract())
       {
+      std::string txtDef = attDef->label().empty() ?
+        attDef->type() : attDef->label();
       this->Internals->DefsCombo->addItem(
-        QString::fromUtf8(attDef->label().c_str()));
+        QString::fromUtf8(txtDef.c_str()));
       }
     }
   this->Internals->DefsCombo->setCurrentIndex(0);
