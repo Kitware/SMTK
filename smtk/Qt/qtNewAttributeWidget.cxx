@@ -45,13 +45,16 @@ void qtNewAttributeWidget::setBaseWidget(QWidget* widget)
 }
 
 // -------------------------------------------------------------------------
-int qtNewAttributeWidget::showWidget(const QString& name)
+int qtNewAttributeWidget::showWidget(const QString& name,
+                                     const QList<QString>& attTypes)
 {
   if(!this->Private->BaseWidget)
     {
     return QDialog::Rejected;
     }
-
+  this->Private->comboBoxType->clear();
+  this->Private->comboBoxType->addItems(attTypes);
+  this->Private->comboBoxType->setCurrentIndex(0);
   this->Private->lineEditName->setText(name);
   QPoint mappedPoint = this->Private->BaseWidget->parentWidget()->childrenRect().topLeft();
   mappedPoint.setX(0);
@@ -67,4 +70,9 @@ int qtNewAttributeWidget::showWidget(const QString& name)
 QString qtNewAttributeWidget::attributeName() const
 {
   return this->Private->lineEditName->text();
+}
+// -------------------------------------------------------------------------
+QString qtNewAttributeWidget::attributeType() const
+{
+  return this->Private->comboBoxType->currentText();
 }

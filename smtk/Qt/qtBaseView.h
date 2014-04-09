@@ -52,6 +52,8 @@ namespace smtk
       {return this->Widget;}
       QWidget* parentWidget();
       qtUIManager* uiManager();
+      virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
+        QList<smtk::attribute::DefinitionPtr>& defs);
 
     signals:
       void modified(smtk::attribute::ItemPtr);
@@ -71,8 +73,6 @@ namespace smtk
 
     protected:
       virtual void createWidget(){;}
-      virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
-        QList<smtk::attribute::DefinitionPtr>& defs);
 
       QWidget* Widget;
     private:

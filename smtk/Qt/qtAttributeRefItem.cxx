@@ -39,6 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QPointer>
 #include <QToolButton>
 #include <QCheckBox>
+#include <QMessageBox>
 #include <QDialogButtonBox>
 
 using namespace smtk::attribute;
@@ -420,21 +421,55 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     Manager *attManager = attDef->manager();
     if(curIdx == comboBox->count() - 1) // create New attribute
       {
-      attPtr = attManager->createAttribute(attDef->type());
-
-      qtNewAttributeWidget attDialog(comboBox);
-      attDialog.setBaseWidget(comboBox);
-      if(attDialog.showWidget(attPtr->name().c_str()) == QDialog::Accepted &&
-        !attDialog.attributeName().isEmpty() &&
-         attDialog.attributeName().toStdString() != attPtr->name())
+      QList<smtk::attribute::DefinitionPtr> AllDefs;
+      this->baseView()->getDefinitions(attDef, AllDefs);
+      QList<QString> defTypes;
+      QList<QString> defLabels;
+      foreach (smtk::attribute::DefinitionPtr aDef, AllDefs)
         {
-        attManager->rename(attPtr, attDialog.attributeName().toStdString());
+        if(!aDef->isAbstract())
+          {
+          std::string txtDef = attDef->label().empty() ?
+            attDef->type() : attDef->label();
+          defLabels.push_back(txtDef.c_str());
+          defTypes.push_back(attDef->type().c_str());
+          }
         }
-
-      comboBox->blockSignals(true);
-      comboBox->insertItem(1, attPtr->name().c_str());
-      comboBox->setCurrentIndex(1);
-      comboBox->blockSignals(false);
+      if(defTypes.count() > 0)
+        {
+        std::string attName = attManager->createUniqueName(defTypes[0].toStdString());
+        qtNewAttributeWidget attDialog(comboBox);
+        attDialog.setBaseWidget(comboBox);
+        if(attDialog.showWidget(attName.c_str(), defLabels) == QDialog::Accepted &&
+          !attDialog.attributeName().isEmpty())
+          {
+          int defIndex = defLabels.indexOf(attDialog.attributeType());
+          attPtr = attManager->createAttribute(attDialog.attributeName().toStdString(),
+            defTypes[defIndex].toStdString());
+          comboBox->blockSignals(true);
+          comboBox->insertItem(1, attDialog.attributeName());
+          comboBox->setCurrentIndex(1);
+          comboBox->blockSignals(false);
+          }
+        else
+          {
+          int idx = 0;
+          // reset combo text
+          if(item->isSet(elementIdx))
+            {
+            attPtr = item->value(elementIdx);
+            idx = comboBox->findText(attPtr->name().c_str());
+            }
+          comboBox->blockSignals(true);
+          comboBox->setCurrentIndex(idx<0 ? 0 : idx);
+          comboBox->blockSignals(false);
+          }
+        }
+      else
+        {
+        QMessageBox::warning(this->Widget, tr("Create Attribute"),
+          tr("No attribute definition, or all definitions are abstract!"));
+        }
       }
     else
       {

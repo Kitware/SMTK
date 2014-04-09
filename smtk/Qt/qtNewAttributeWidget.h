@@ -45,8 +45,9 @@ namespace smtk
     virtual ~qtNewAttributeWidget();
 
     QString attributeName() const;
+    QString attributeType() const;
     virtual void setBaseWidget(QWidget* baseWidget);
-    virtual int showWidget(const QString& name);
+    virtual int showWidget(const QString& name, const QList<QString>& attTypes);
 
   private:
     qtNewAttributeWidget(const qtNewAttributeWidget&); // Not implemented.
