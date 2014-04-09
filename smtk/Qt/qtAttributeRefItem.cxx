@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtNewAttributeWidget.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
@@ -385,6 +386,16 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     if(curIdx == comboBox->count() - 1) // create New attribute
       {
       attPtr = attManager->createAttribute(attDef->type());
+
+      qtNewAttributeWidget attDialog(comboBox);
+      attDialog.setBaseWidget(comboBox);
+      if(attDialog.showWidget(attPtr->name().c_str()) == QDialog::Accepted &&
+        !attDialog.attributeName().isEmpty() &&
+         attDialog.attributeName().toStdString() != attPtr->name())
+        {
+        attManager->rename(attPtr, attDialog.attributeName().toStdString());
+        }
+
       comboBox->blockSignals(true);
       comboBox->insertItem(1, attPtr->name().c_str());
       comboBox->setCurrentIndex(1);
