@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "DiscreteMeshCellIdIterator.h" //needed for iterator
 #include "vtkType.h" //needed for vtkIdType
 #include "vtkSmartPointer.h" //needed for vtkSmartPointer
+#include "vtkStdString.h"  // needed for FileName
 #include <vector> //needed for Face and FaceIds;
 #include <map> //needed for the edge storage
 #include "cmbSystemConfig.h"
@@ -109,6 +110,9 @@ public:
   //verifies that Data is valid.
   //does a deep copy of Edge and Face Data into the returned polydata
   vtkSmartPointer<vtkPolyData> GetAsSinglePolyData() const;
+
+  vtkStdString GetFileName() const
+  { return this->FileName; }
 
   //Doesn't verify Data is valid!
   //special method to signify that something is sharing
@@ -229,7 +233,7 @@ private:
   //both poly data's point to the same vtkPoints
   vtkPoints* SharedPoints;
 
-
+  vtkStdString FileName;
 };
 
 //----------------------------------------------------------------------------

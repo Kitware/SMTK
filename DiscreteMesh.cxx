@@ -37,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPolygon.h"
+#include "vtkStringArray.h"
 
 namespace detail
 {
@@ -121,6 +122,18 @@ DiscreteMesh::DiscreteMesh(vtkPolyData* allData)
     }
   this->FaceData->SetPoints(this->SharedPoints);
   this->EdgeData->SetPoints(this->SharedPoints);
+
+  // Save input file name (if any)
+  vtkAbstractArray *filenameArray =
+    allData->GetFieldData()->GetAbstractArray("FileName");
+  if (filenameArray)
+  {
+    vtkStringArray *stringArray = vtkStringArray::SafeDownCast(filenameArray);
+    if (stringArray)
+    {
+    this->FileName = stringArray->GetValue(0);
+    }
+  }
 }
 //=============================================================================
 DiscreteMesh::DiscreteMesh(const DiscreteMesh& other)
@@ -592,6 +605,7 @@ void DiscreteMesh::ShallowAssignment(const DiscreteMesh& other)
 {
   this->FaceData->ShallowCopy( other.FaceData );
   this->EdgeData->ShallowCopy( other.EdgeData );
+  this->FileName = other.FileName;
 
   if(this->SharedPoints)
    {
