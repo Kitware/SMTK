@@ -232,6 +232,8 @@ void qtAttributeView::createWidget( )
     QHeaderView::ResizeToContents);
   this->Internals->ValuesTable->horizontalHeader()->setResizeMode(
     QHeaderView::ResizeToContents);
+  this->Internals->ValuesTable->verticalHeader()->setResizeMode(
+    QHeaderView::ResizeToContents);
 
   // signals/slots
   QObject::connect(this->Internals->AssociationsWidget,
@@ -378,6 +380,7 @@ void qtAttributeView::onListBoxSelectionChanged()
 
   this->Internals->ValuesTable->blockSignals(false);
   this->Internals->ValuesTable->resizeColumnsToContents();
+  this->Internals->ValuesTable->resizeRowsToContents();
 }
 
 //----------------------------------------------------------------------------

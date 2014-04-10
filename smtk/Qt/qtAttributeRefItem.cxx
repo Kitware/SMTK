@@ -167,6 +167,7 @@ void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
     bool bVisible = this->Internals->CurrentRefAtt->widget()->isVisible();
     this->Internals->CurrentRefAtt->widget()->setVisible(!bVisible);
     this->Internals->CollapseButton->setArrowType(bVisible ? Qt::UpArrow : Qt::DownArrow);
+    emit this->widgetResized();
     //QString exapndDownName = bVisible ? ":/icons/attribute/expand-down.png" :
     //  ":/icons/attribute/expand-up.png";
     //this->Internals->CollapseButton->setIcon(QIcon(exapndDownName));
@@ -429,10 +430,10 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
         {
         if(!aDef->isAbstract())
           {
-          std::string txtDef = attDef->label().empty() ?
-            attDef->type() : attDef->label();
+          std::string txtDef = aDef->label().empty() ?
+            aDef->type() : aDef->label();
           defLabels.push_back(txtDef.c_str());
-          defTypes.push_back(attDef->type().c_str());
+          defTypes.push_back(aDef->type().c_str());
           }
         }
       if(defTypes.count() > 0)
