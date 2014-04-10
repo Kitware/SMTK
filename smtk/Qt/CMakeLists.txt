@@ -26,11 +26,13 @@ set(QAttrLibSrcs
     qtVoidItem.cxx
     qtModelView.cxx
     qtModelPanel.cxx
+    qtNewAttributeWidget.cxx
   )
 
   set(QAttrLibUIs
     qtAttributeAssociation.ui
     qtModelPanel.ui
+    qtNewAttributeWidget.ui
     )
 
 
@@ -61,6 +63,7 @@ set(QAttrLibHeaders
     qtVoidItem.h
     qtModelView.h
     qtModelPanel.h
+    qtNewAttributeWidget.h
   )
 
 #install the headers

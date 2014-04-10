@@ -85,6 +85,8 @@ namespace smtk
         {return this->IsLeafItem;}
       
       bool passAdvancedCheck();
+    signals:
+      void widgetResized();
 
     protected slots:
       virtual void updateItemData() {;}

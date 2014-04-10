@@ -19,65 +19,42 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtBaseView - a class that encapsulates the UI of an Attribute
+// .NAME qtModelView - a tree view of smtk model.
 // .SECTION Description
+// .SECTION Caveats
 
-#ifndef __smtk_attribute_qtBaseView_h
-#define __smtk_attribute_qtBaseView_h
+#ifndef __smtk_attribute_qtNewAttributeWidget_h
+#define __smtk_attribute_qtNewAttributeWidget_h
 
-#include <QObject>
+#include <QDialog>
+
 #include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include <QList>
-
-class qtBaseViewInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class qtUIManager;
-    class qtItem;
+  class QTSMTK_EXPORT qtNewAttributeWidget : public QDialog
+  {
+    Q_OBJECT
+    typedef QDialog Superclass;
 
-    class QTSMTK_EXPORT qtBaseView : public QObject
-    {
-      Q_OBJECT
+  public:
+    qtNewAttributeWidget(QWidget* parent = 0);
+    virtual ~qtNewAttributeWidget();
 
-    public:
-      qtBaseView(smtk::view::BasePtr, QWidget* parent, qtUIManager* uiman);
-      virtual ~qtBaseView();
+    QString attributeName() const;
+    QString attributeType() const;
+    virtual void setBaseWidget(QWidget* baseWidget);
+    virtual int showWidget(const QString& name, const QList<QString>& attTypes);
 
-      smtk::view::BasePtr getObject();
-      QWidget* widget()
-      {return this->Widget;}
-      QWidget* parentWidget();
-      qtUIManager* uiManager();
-      virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
-        QList<smtk::attribute::DefinitionPtr>& defs);
+  private:
+    qtNewAttributeWidget(const qtNewAttributeWidget&); // Not implemented.
+    void operator=(const qtNewAttributeWidget&); // Not implemented.
 
-    signals:
-      void modified(smtk::attribute::ItemPtr);
-
-    public slots:
-      virtual void updateUI()
-      {
-      this->updateAttributeData();
-      this->updateModelAssociation();
-      }
-      virtual void showAdvanced(int){;}
-      virtual void updateModelAssociation() {;}
-      virtual void valueChanged(smtk::attribute::ItemPtr);
-
-    protected slots:
-      virtual void updateAttributeData() {;}
-
-    protected:
-      virtual void createWidget(){;}
-
-      QWidget* Widget;
-    private:
-
-      qtBaseViewInternals *Internals;
+    class PIMPL;
+    PIMPL *Private;
 
     }; // class
   }; // namespace attribute
