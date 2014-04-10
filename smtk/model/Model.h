@@ -92,11 +92,21 @@ namespace smtk
         }
     virtual void clearItems();
 
+    void setNativeModelName(const std::string& name)
+    {
+      this->m_nativeModelName = name;
+    }
+    std::string getNativeModelName() const
+      {
+      return this->m_nativeModelName;
+      }
+
     protected:
       smtk::model::ItemPtr m_modelDomain;
       mutable std::map<int, smtk::model::ItemPtr> m_items;
     private:
       smtk::model::GridInfoPtr m_gridInfo;
+      std::string m_nativeModelName;
     };
 
     inline smtk::model::ItemPtr Model::getModelItem(int id)
