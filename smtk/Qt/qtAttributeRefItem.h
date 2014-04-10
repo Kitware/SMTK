@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtAttributeRefItem_h
 
 #include "smtk/Qt/qtItem.h"
+#include <QComboBox>
 
 class qtAttributeRefItemInternals;
 
@@ -44,23 +45,45 @@ namespace smtk
       qtAttributeRefItem(smtk::attribute::ItemPtr,
         QWidget* parent,  qtBaseView* view);
       virtual ~qtAttributeRefItem();
-      QString labelText() const;
       void setLabelVisible(bool);
+      // this will turn on/off the Edit button.
+      // Also, if the turning off, the Attribute widget will be turned off too
+      virtual void setAttributeEditorVisible(bool);
+      // turn on/off the attribute widget and the Collapse button.
+      virtual void setAttributeWidgetVisible(bool);
 
     public slots:
       void onInputValueChanged();
+      void onToggleAttributeWidgetVisibility();
+      void onLaunchAttributeView();
 
     protected slots:
       virtual void updateItemData();
+      virtual void setOutputOptional(int);
 
     protected:
       virtual void createWidget();
+      virtual void refreshUI(QComboBox* combo);
+      virtual void updateAttWidgetState();
 
     private:
 
       qtAttributeRefItemInternals *Internals;
 
     }; // class
+
+    //A sublcass of QComboBox to refresh the list on popup
+    class QTSMTK_EXPORT qtAttRefCombo : public QComboBox
+      {
+      Q_OBJECT
+      public:
+        qtAttRefCombo(smtk::attribute::ItemPtr, QWidget * parent);
+        virtual void showPopup();
+        //virtual QSize sizeHint() const;
+      private:
+        smtk::attribute::WeakItemPtr m_RefItem;
+      };
+
   }; // namespace attribute
 }; // namespace smtk
 

@@ -215,5 +215,5 @@ void qtComboItem::onInputValueChanged()
       }
     this->Widget->layout()->addWidget(this->Internals->ChildrenFrame);
     }
-
+  emit this->widgetResized();
 }
