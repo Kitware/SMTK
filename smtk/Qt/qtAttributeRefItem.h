@@ -79,7 +79,7 @@ namespace smtk
       public:
         qtAttRefCombo(smtk::attribute::ItemPtr, QWidget * parent);
         virtual void showPopup();
-
+        //virtual QSize sizeHint() const;
       private:
         smtk::attribute::WeakItemPtr m_RefItem;
       };

@@ -68,8 +68,15 @@ inline void init_Att_Names_and_NEW(QList<QString>& attNames,
 qtAttRefCombo::qtAttRefCombo(smtk::attribute::ItemPtr refitem, QWidget * inParent)
 : QComboBox(inParent), m_RefItem(refitem)
 {
+  this->setMinimumWidth(80);
 }
-
+/*
+//-----------------------------------------------------------------------------
+QSize qtAttRefCombo::sizeHint() const
+{
+  return QSize(150, this->height());
+}
+*/
 //-----------------------------------------------------------------------------
 void qtAttRefCombo::showPopup()
 {
@@ -217,7 +224,7 @@ void qtAttributeRefItem::createWidget()
   this->clearChildItems();
   this->Internals->comboBoxes.clear();
   this->Widget = new QFrame(this->parentWidget());
-
+  this->Widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
   smtk::attribute::RefItemPtr item =dynamic_pointer_cast<RefItem>(this->getObject());
   if(!item)
     {
@@ -251,17 +258,19 @@ void qtAttributeRefItem::createWidget()
   this->Internals->EditButton->setIcon(QIcon(resourceName));
   this->Internals->EditButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
+  this->Widget->setMinimumWidth(150); //combobox width, edit button, collapse button, spacing.
+
   connect(this->Internals->EditButton, SIGNAL(clicked()),
     this, SLOT(onLaunchAttributeView()));
 
   layout->setMargin(0);
   smtk::attribute::ItemPtr dataObj = this->getObject();
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
   if(dataObj->isOptional())
     {
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
     this->Internals->optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
-    QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     this->Internals->optionalCheck->setSizePolicy(sizeFixedPolicy);
 
     if(dataObj->definition()->advanceLevel() >0)
@@ -288,6 +297,7 @@ void qtAttributeRefItem::createWidget()
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
+    combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     this->Internals->RefComboLayout->addWidget(combo);
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);

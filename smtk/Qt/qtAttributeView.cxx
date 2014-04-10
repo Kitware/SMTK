@@ -182,7 +182,7 @@ void qtAttributeView::createWidget( )
     this->Internals->AttDefMap[it->c_str()] = attdeflist;
     }
 
-  QSizePolicy tableSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+  QSizePolicy tableSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // create a list box for all the entries
   this->Internals->ListTable = new qtTableWidget(frame);
   this->Internals->ListTable->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -801,7 +801,6 @@ void qtAttributeView::updateTableWithAttribute(
         dynamic_pointer_cast<ValueItem>(attItem), numRows);
       }
     }
-  vtWidget->resizeRowsToContents();
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::updateTableWithProperty(
@@ -873,7 +872,6 @@ void qtAttributeView::updateTableWithProperty(
         }
       }
     }
-  vtWidget->resizeRowsToContents();
 }
 
 //----------------------------------------------------------------------------
@@ -1037,8 +1035,8 @@ void qtAttributeView::addTableAttRefItems(
     return;
     }
   refItem->setLabelVisible(false);
-  refItem->setAttributeEditorVisible(false);
-  refItem->setAttributeWidgetVisible(false);
+//  refItem->setAttributeEditorVisible(false);
+//  refItem->setAttributeWidgetVisible(false);
 
   QString labelText = attItem->label().c_str();
   labelText = labelText.isEmpty() ? attLabel : labelText;
@@ -1059,6 +1057,7 @@ void qtAttributeView::addTableAttRefItems(
   refItem->widget()->setEnabled(bEnabled);
   vtWidget->setCellWidget(numRows-1, 1, refItem->widget());
   vtWidget->setItem(numRows-1, 1, new QTableWidgetItem());
+//  vtWidget->update(vtWidget->visualItemRect(vtWidget->item(numRows-1, 1)));
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addTableVoidItems(
