@@ -233,6 +233,9 @@ public:
   vtkGetMacro(BlockEvent, bool);
   vtkBooleanMacro(BlockEvent, bool);
 
+  vtkSetMacro(FileName, vtkStdString);
+  vtkGetMacro(FileName, vtkStdString);
+
 protected:
   vtkDiscreteModel();
   virtual ~vtkDiscreteModel();
@@ -283,6 +286,7 @@ protected:
   bool BlockEvent;
   void InternalInvokeEvent(unsigned long event, void *callData);
 
+  vtkStdString FileName;
 private:
   DiscreteMesh Mesh;
   ClassificationType MeshClassificationInstance;
