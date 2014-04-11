@@ -634,7 +634,9 @@ void qtAttributeView::onCreateNew()
     this->Internals->getCurrentDefs(
       this->uiManager()->currentCategory().c_str()))
     {
-    if(strDef == QString::fromUtf8(attDef->label().c_str()))
+    std::string txtDef = attDef->label().empty() ?
+      attDef->type() : attDef->label();
+    if(strDef == QString::fromUtf8(txtDef.c_str()))
       {
       newAttDef = attDef;
       break;
@@ -706,8 +708,10 @@ void qtAttributeView::addAttributePropertyItems(
     return;
     }
 
+  std::string txtDef = childData->definition()->label().empty() ?
+    childData->definition()->type() : childData->definition()->label();
   if(this->Internals->PropDefsCombo->currentText() !=
-    QString::fromUtf8(childData->definition()->label().c_str()))
+    QString::fromUtf8(txtDef.c_str()))
     {
     return;
     }
@@ -751,8 +755,11 @@ void qtAttributeView::addAttributePropertyItems(
       this->Internals->ListTable->setItem(numRows-1, 0, item);
 
       // add the type column too.
+      std::string txtDef = childData->definition()->label().empty() ?
+        childData->definition()->type() : childData->definition()->label();
+
       QTableWidgetItem* defitem = new QTableWidgetItem(
-        QString::fromUtf8(childData->definition()->label().c_str()),
+        QString::fromUtf8(txtDef.c_str()),
         smtk_USER_DATA_TYPE);
       defitem->setFlags(nonEditableFlags);
       this->Internals->ListTable->setItem(numRows-1, 1, defitem);
@@ -785,8 +792,11 @@ QTableWidgetItem* qtAttributeView::addAttributeListItem(
   this->Internals->ListTable->setItem(numRows-1, 0, item);
 
   // add the type column too.
+  std::string txtDef = childData->definition()->label().empty() ?
+    childData->definition()->type() : childData->definition()->label();
+
   QTableWidgetItem* defitem = new QTableWidgetItem(
-    QString::fromUtf8(childData->definition()->label().c_str()),
+    QString::fromUtf8(txtDef.c_str()),
     smtk_USER_DATA_TYPE);
   defitem->setFlags(nonEditableFlags);
   this->Internals->ListTable->setItem(numRows-1, 1, defitem);

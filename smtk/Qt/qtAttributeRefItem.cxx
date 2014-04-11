@@ -245,11 +245,11 @@ void qtAttributeRefItem::createWidget()
   QBoxLayout* layout;
   if(this->Internals->VectorItemOrient == Qt::Vertical)
     {
-    layout = new QVBoxLayout(this->Widget);
+    layout = new QVBoxLayout();
     }
   else
     {
-    layout = new QHBoxLayout(this->Widget);
+    layout = new QHBoxLayout();
     }
   layout->setMargin(0);
   layout->setAlignment(Qt::AlignLeft);
@@ -315,11 +315,12 @@ void qtAttributeRefItem::createWidget()
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
   QString lText = dataObj->label().c_str();
-  this->Internals->theLabel = new QLabel(lText);
+  this->Internals->theLabel = new QLabel(lText, this->Widget);
+  this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
   layout->addWidget(this->Internals->theLabel);
+  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
+  this->Internals->RefComboLayout->addWidget(this->Internals->CollapseButton);
   layout->addLayout(this->Internals->RefComboLayout);
-  layout->addWidget(this->Internals->EditButton);
-  layout->addWidget(this->Internals->CollapseButton);
   thisLayout->addLayout(layout);
   this->updateItemData();
 }
