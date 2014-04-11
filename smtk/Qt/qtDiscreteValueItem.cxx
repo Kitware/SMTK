@@ -20,7 +20,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtComboItem.h"
+#include "smtk/Qt/qtDiscreteValueItem.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -36,10 +36,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtComboItemInternals
+class qtDiscreteValueItemInternals
 {
 public:
-  qtComboItemInternals(int elementIdx) : ElementIndex(elementIdx)
+  qtDiscreteValueItemInternals(int elementIdx) : ElementIndex(elementIdx)
   {
   }
   int ElementIndex;
@@ -48,22 +48,22 @@ public:
 };
 
 //----------------------------------------------------------------------------
-qtComboItem::qtComboItem(
+qtDiscreteValueItem::qtDiscreteValueItem(
   smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p, qtBaseView* bview) :
    qtItem(dataObj, p, bview)
 {
-  this->Internals = new qtComboItemInternals(elementIdx);
+  this->Internals = new qtDiscreteValueItemInternals(elementIdx);
   this->IsLeafItem = true;
   this->createWidget();
 }
 
 //----------------------------------------------------------------------------
-qtComboItem::~qtComboItem()
+qtDiscreteValueItem::~qtDiscreteValueItem()
 {
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
-void qtComboItem::createWidget()
+void qtDiscreteValueItem::createWidget()
 {
   if(!this->getObject())
     {
@@ -117,7 +117,7 @@ void qtComboItem::createWidget()
 }
 
 //----------------------------------------------------------------------------
-void qtComboItem::updateItemData()
+void qtDiscreteValueItem::updateItemData()
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item || !item->isDiscrete())
@@ -135,7 +135,7 @@ void qtComboItem::updateItemData()
     {
     return;
     }
-  const ValueItemDefinition *itemDef = 
+  const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
   int setIndex = -1, elementIdx = this->Internals->ElementIndex;
@@ -152,7 +152,7 @@ void qtComboItem::updateItemData()
 }
 
 //----------------------------------------------------------------------------
-void qtComboItem::onInputValueChanged()
+void qtDiscreteValueItem::onInputValueChanged()
 {
   QComboBox* const comboBox = this->Internals->Combo;
   if(!comboBox)

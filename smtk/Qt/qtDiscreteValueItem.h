@@ -19,29 +19,29 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtComboItem - an item for display value item with child items
+// .NAME qtDiscreteValueItem - an item for display value item with child items
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtComboItem_h
-#define __smtk_attribute_qtComboItem_h
+#ifndef __smtk_attribute_qtDiscreteValueItem_h
+#define __smtk_attribute_qtDiscreteValueItem_h
 
 #include "smtk/Qt/qtItem.h"
 
-class qtComboItemInternals;
+class qtDiscreteValueItemInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtComboItem : public qtItem
+    class QTSMTK_EXPORT qtDiscreteValueItem : public qtItem
     {
       Q_OBJECT
 
-    public:         
-      qtComboItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
-      virtual ~qtComboItem();  
+    public:
+      qtDiscreteValueItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
+      virtual ~qtDiscreteValueItem();
 
     public slots:
       void onInputValueChanged();
@@ -51,10 +51,10 @@ namespace smtk
 
     protected:
       virtual void createWidget();
-      
+
     private:
 
-      qtComboItemInternals *Internals;
+      qtDiscreteValueItemInternals *Internals;
 
     }; // class
   }; // namespace attribute
