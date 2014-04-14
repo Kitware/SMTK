@@ -68,6 +68,8 @@ namespace smtk
         bool dirOnly=false, Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createDiscreteValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
     protected slots:
       virtual void updateItemsData();

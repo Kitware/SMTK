@@ -20,7 +20,7 @@ set(QAttrLibSrcs
     qtColorButton.cxx
 
     qtItem.cxx
-    qtComboItem.cxx
+    qtDiscreteValueItem.cxx
     qtInputsItem.cxx
     qtGroupItem.cxx
     qtVoidItem.cxx
@@ -57,7 +57,7 @@ set(QAttrLibHeaders
     qtColorButton.h
 
     qtItem.h
-    qtComboItem.h
+    qtDiscreteValueItem.h
     qtInputsItem.h
     qtGroupItem.h
     qtVoidItem.h

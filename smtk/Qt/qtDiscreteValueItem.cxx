@@ -27,11 +27,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QFrame>
 #include <QLabel>
 #include <QPointer>
+#include <QGridLayout>
+#include <QCheckBox>
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtUIManager.h"
+#include "smtk/view/Root.h"
 
 using namespace smtk::attribute;
 
@@ -39,21 +44,25 @@ using namespace smtk::attribute;
 class qtDiscreteValueItemInternals
 {
 public:
-  qtDiscreteValueItemInternals(int elementIdx) : ElementIndex(elementIdx)
+  qtDiscreteValueItemInternals()
   {
   }
-  int ElementIndex;
-  QPointer<QComboBox> Combo;
-  QPointer<QFrame> ChildrenFrame;
+  QList< QPointer<QComboBox> > ChildCombos;
+  QPointer<QFrame> CurrentChildFrame;
+  QPointer<QFrame> EntryFrame;
+  QPointer<QLabel> theLabel;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtDiscreteValueItem::qtDiscreteValueItem(
-  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p, qtBaseView* bview) :
+  smtk::attribute::ItemPtr dataObj, QWidget* p,
+   qtBaseView* bview, Qt::Orientation enVectorItemOrient) :
    qtItem(dataObj, p, bview)
 {
-  this->Internals = new qtDiscreteValueItemInternals(elementIdx);
+  this->Internals = new qtDiscreteValueItemInternals();
   this->IsLeafItem = true;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
@@ -65,29 +74,99 @@ qtDiscreteValueItem::~qtDiscreteValueItem()
 //----------------------------------------------------------------------------
 void qtDiscreteValueItem::createWidget()
 {
-  if(!this->getObject())
-    {
-    return;
-    }
-  this->clearChildItems();
-  this->Widget = new QFrame(this->parentWidget());
-
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item || !item->isDiscrete())
     {
     return;
     }
-
   std::size_t n = item->numberOfValues();
   if (!n)
     {
     return;
     }
-  QBoxLayout* layout = new QVBoxLayout(this->Widget);
+
+  this->clearChildItems();
+  this->Internals->ChildCombos.clear();
+  if(this->Internals->EntryFrame)
+    {
+    this->Widget->layout()->removeWidget(this->Internals->EntryFrame);
+    delete this->Internals->EntryFrame;
+    }
+
+  this->Widget = new QFrame(this->parentWidget());
+  QGridLayout* layout = new QGridLayout(this->Widget);
   layout->setMargin(0);
+
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+  this->Internals->EntryFrame = new QFrame(this->parentWidget());
+  this->Internals->EntryFrame->setObjectName("DiscreteValueInputFrame");
+  QBoxLayout* entryLayout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+    }
+  else
+    {
+    entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
+    }
+
+  entryLayout->setMargin(0);
+  QHBoxLayout* labelLayout = new QHBoxLayout();
+  labelLayout->setMargin(0);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  int padding = 0;
+  if(item->isOptional())
+    {
+    QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
+    optionalCheck->setChecked(item->isEnabled());
+    optionalCheck->setText("");
+    optionalCheck->setSizePolicy(sizeFixedPolicy);
+    padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+    QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
+      this, SLOT(setOutputOptional(int)));
+    this->Internals->EntryFrame->setEnabled(item->isEnabled());
+    labelLayout->addWidget(optionalCheck);
+    }
 
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  QString labelText;
+  if(!item->label().empty())
+    {
+    labelText = item->label().c_str();
+    }
+  else
+    {
+    labelText = item->name().c_str();
+    }
+  QLabel* label = new QLabel(labelText, this->Widget);
+  label->setSizePolicy(sizeFixedPolicy);
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
+  label->setFixedWidth(rs->maxValueLabelLength() - padding);
+  label->setWordWrap(true);
+  label->setAlignment(Qt::AlignTop);
+
+  // add in BriefDescription as tooltip if available
+  const std::string strBriefDescription = itemDef->briefDescription();
+  if(!strBriefDescription.empty())
+    {
+    label->setToolTip(strBriefDescription.c_str());
+    }
+
+  if(!itemDef->units().empty())
+    {
+    QString unitText=label->text();
+    unitText.append(" (").append(itemDef->units().c_str()).append(")");
+    label->setText(unitText);
+    }
+  if(itemDef->advanceLevel())
+    {
+    label->setFont(this->baseView()->uiManager()->advancedFont());
+    }
+  labelLayout->addWidget(label);
+  this->Internals->theLabel = label;
+
   QList<QString> discreteVals;
   QString tooltip;
   for (size_t i = 0; i < itemDef->numberOfDiscreteValues(); i++)
@@ -101,19 +180,34 @@ void qtDiscreteValueItem::createWidget()
     discreteVals.push_back(enumText.c_str());
     }
 
-  QComboBox* combo = new QComboBox(this->Widget);
-  if(!tooltip.isEmpty())
+//  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
+  for(std::size_t i = 0; i < n; i++)
     {
-    combo->setToolTip(tooltip);
+    QComboBox* combo = new QComboBox(this->Internals->EntryFrame);
+    QVariant vdata(static_cast<int>(i));
+    combo->setProperty("ElementIndex", vdata);
+    this->Internals->ChildCombos.push_back(combo);
+    combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    if(!tooltip.isEmpty())
+      {
+      combo->setToolTip(tooltip);
+      }
+    combo->addItems(discreteVals);
+    entryLayout->addWidget(combo);
+    QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
+      this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
-  combo->addItems(discreteVals);
 
-  QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
-    this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
-  layout->addWidget(combo);
-  this->Internals->Combo = combo;
+  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  layout->addLayout(labelLayout, 0, 0);
+  layout->addWidget(this->Internals->EntryFrame, 0, 1);
+  layout->setAlignment(Qt::AlignTop);
+
   this->updateItemData();
-  this->onInputValueChanged();
+  if(this->Internals->ChildCombos.count() > 0)
+    {
+    this->refreshUI(this->Internals->ChildCombos[0]);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -130,38 +224,44 @@ void qtDiscreteValueItem::updateItemData()
     {
     return;
     }
-  QComboBox* combo = this->Internals->Combo;
-  if(!combo)
-    {
-    return;
-    }
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
-
-  int setIndex = -1, elementIdx = this->Internals->ElementIndex;
-  if (item->isSet(elementIdx))
+  foreach(QComboBox* combo, this->Internals->ChildCombos)
     {
-    setIndex = item->discreteIndex(elementIdx);
+    combo->blockSignals(true);
+    int elementIdx = combo->property("ElementIndex").toInt();
+    int setIndex = -1;
+    if (item->isSet(elementIdx))
+      {
+      setIndex = item->discreteIndex(elementIdx);
+      }
+    if(setIndex < 0 && itemDef->hasDefault() &&
+      itemDef->defaultDiscreteIndex() < combo->count())
+      {
+      setIndex = itemDef->defaultDiscreteIndex();
+      }
+    combo->setCurrentIndex(setIndex);
+    combo->blockSignals(false);
     }
-  if(setIndex < 0 && itemDef->hasDefault() &&
-    itemDef->defaultDiscreteIndex() < combo->count())
-    {
-    setIndex = itemDef->defaultDiscreteIndex();
-    }
-  combo->setCurrentIndex(setIndex);
 }
 
 //----------------------------------------------------------------------------
 void qtDiscreteValueItem::onInputValueChanged()
 {
-  QComboBox* const comboBox = this->Internals->Combo;
+  QComboBox* const comboBox = qobject_cast<QComboBox*>(
+    QObject::sender());
   if(!comboBox)
     {
     return;
     }
+  this->refreshUI(comboBox);
+}
 
+//----------------------------------------------------------------------------
+void qtDiscreteValueItem::refreshUI(QComboBox* comboBox)
+{
   int curIdx = comboBox->currentIndex();
-  int elementIdx =this->Internals->ElementIndex;
+  int elementIdx = comboBox->property("ElementIndex").toInt();
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   bool refresh = false;
   const ValueItemDefinition *itemDef =
@@ -188,33 +288,58 @@ void qtDiscreteValueItem::onInputValueChanged()
     }
 
   // update children frame if necessary
-  if(this->Internals->ChildrenFrame)
+  if(this->Internals->CurrentChildFrame)
     {
-    this->Widget->layout()->removeWidget(this->Internals->ChildrenFrame);
-    delete this->Internals->ChildrenFrame;
+    this->Widget->layout()->removeWidget(this->Internals->CurrentChildFrame);
+    delete this->Internals->CurrentChildFrame;
+    this->Internals->CurrentChildFrame = NULL;
     }
 
   if(refresh && item->numberOfActiveChildrenItems() > 0)
     {
-    this->Internals->ChildrenFrame = new QFrame(this->Widget);
-    this->Internals->ChildrenFrame->setObjectName("ChildItemsFrame");
-    QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    QVBoxLayout* layout = new QVBoxLayout(this->Internals->ChildrenFrame);
+    this->Internals->CurrentChildFrame = new QFrame(this->Widget);
+    this->Internals->CurrentChildFrame->setObjectName("ChildItemsFrame");
+    QSizePolicy sizeFixedPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    QVBoxLayout* layout = new QVBoxLayout(this->Internals->CurrentChildFrame);
     layout->setMargin(0);
-    this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
-    this->Internals->ChildrenFrame->setFrameShape(QFrame::Box);
+    this->Internals->CurrentChildFrame->setSizePolicy(sizeFixedPolicy);
+    this->Internals->CurrentChildFrame->setFrameShape(QFrame::Box);
     std::size_t i, m = item->numberOfActiveChildrenItems();
     for(i = 0; i < m; i++)
       {
       qtItem* childItem = qtAttribute::createItem(
         item->activeChildItem(static_cast<int>(i)),
-        this->Internals->ChildrenFrame, this->baseView());
+        this->Internals->CurrentChildFrame, this->baseView());
       if(childItem)
         {
         layout->addWidget(childItem->widget());
         }
       }
-    this->Widget->layout()->addWidget(this->Internals->ChildrenFrame);
+    QGridLayout* parentGrid = static_cast<QGridLayout*>(this->Widget->layout());
+    parentGrid->addWidget(this->Internals->CurrentChildFrame, 1, 0, 1, 2);
+    this->Internals->CurrentChildFrame->setEnabled(item->isEnabled());
     }
   emit this->widgetResized();
+}
+
+//----------------------------------------------------------------------------
+void qtDiscreteValueItem::setLabelVisible(bool visible)
+{
+  this->Internals->theLabel->setVisible(visible);
+}
+
+//----------------------------------------------------------------------------
+void qtDiscreteValueItem::setOutputOptional(int state)
+{
+  bool enable = state ? true : false;
+  this->Internals->EntryFrame->setEnabled(enable);
+  if(this->Internals->CurrentChildFrame)
+    {
+    this->Internals->CurrentChildFrame->setEnabled(enable);
+    }
+  if(enable != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(enable);
+    this->baseView()->valueChanged(this->getObject());
+    }
 }

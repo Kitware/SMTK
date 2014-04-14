@@ -19,7 +19,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtDiscreteValueItem - an item for display value item with child items
+// .NAME qtDiscreteValueItem - an item for display value item with enumerated values
 // .SECTION Description
 // .SECTION See Also
 // qtItem
@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtItem.h"
 
 class qtDiscreteValueItemInternals;
+class QComboBox;
 
 namespace smtk
 {
@@ -40,17 +41,22 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtDiscreteValueItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
+      qtDiscreteValueItem(smtk::attribute::ItemPtr,
+        QWidget* parent, qtBaseView* bview,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       virtual ~qtDiscreteValueItem();
+      virtual void setLabelVisible(bool);
 
     public slots:
       void onInputValueChanged();
+      void setOutputOptional(int);
 
     protected slots:
       virtual void updateItemData();
 
     protected:
       virtual void createWidget();
+      virtual void refreshUI(QComboBox* comboBox);
 
     private:
 
