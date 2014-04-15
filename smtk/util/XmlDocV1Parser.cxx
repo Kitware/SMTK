@@ -2203,7 +2203,8 @@ void XmlDocV1Parser::processGroupView(xml_node &node,
     if ((group->type() == smtk::view::Base::ROOT) && ((childName == "DefaultColor") ||
                                                       (childName == "InvalidColor") ||
                                                       (childName == "AdvancedFontEffects") ||
-                                                      (childName == "MaxValueLabelLength")))
+                                                      (childName == "MaxValueLabelLength") ||
+                                                      (childName == "MinValueLabelLength")))
       {
       continue;
       }
