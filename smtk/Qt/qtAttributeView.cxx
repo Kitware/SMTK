@@ -1254,6 +1254,7 @@ void qtAttributeView::onPropertyDefSelected()
   this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
   this->onViewByWithDefinition(VIEWBY_PROPERTY, rawPtr->pointer());
   this->Internals->ListTable->blockSignals(false);
+  this->initSelectAttCombo();
   this->updateTableWithProperties();
 }
 
