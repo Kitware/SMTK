@@ -56,12 +56,20 @@ namespace smtk
       QList<qtItem*>& items() const;
 
       // create all the items
-      static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view);
-      static qtItem* createValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view);
-      static qtItem* createDirectoryItem(smtk::attribute::DirectoryItemPtr item, QWidget* p, qtBaseView* view);
-      static qtItem* createAttributeRefItem(smtk::attribute::RefItemPtr item, QWidget* p, qtBaseView* view);
-      static qtItem* createFileItem(smtk::attribute::FileItemPtr item, QWidget* p, qtBaseView* view, bool dirOnly=false);
-      static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p, qtBaseView* view);
+      static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createDirectoryItem(smtk::attribute::DirectoryItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createAttributeRefItem(smtk::attribute::RefItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createFileItem(smtk::attribute::FileItemPtr item, QWidget* p, qtBaseView* view,
+        bool dirOnly=false, Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      static qtItem* createDiscreteValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
 
     protected slots:
       virtual void updateItemsData();

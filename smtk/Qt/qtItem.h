@@ -83,6 +83,8 @@ namespace smtk
 
       bool isLeafItem()
         {return this->IsLeafItem;}
+
+      virtual void setLabelVisible(bool) {;}
       
       bool passAdvancedCheck();
     signals:
@@ -97,6 +99,7 @@ namespace smtk
 
       QWidget* Widget;
       bool IsLeafItem;
+
     private:
 
       qtItemInternals *Internals;

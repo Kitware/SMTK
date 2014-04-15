@@ -48,16 +48,21 @@ public:
   bool IsDirectory;
   QFileDialog *FileBrowser;
   QPointer<QFrame> EntryFrame;
+  QPointer<QLabel> theLabel;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtFileItem::qtFileItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview, bool dirOnly)
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
+   bool dirOnly, Qt::Orientation enVectorItemOrient)
    : qtItem(dataObj, p, bview)
 {
   this->Internals = new qtFileItemInternals;
   this->Internals->IsDirectory = dirOnly;
   this->Internals->FileBrowser = NULL;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
+
   this->IsLeafItem = true;
   this->createWidget();
 }
@@ -67,6 +72,13 @@ qtFileItem::~qtFileItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+void qtFileItem::setLabelVisible(bool visible)
+{
+  this->Internals->theLabel->setVisible(visible);
+}
+
 //----------------------------------------------------------------------------
 void qtFileItem::createWidget()
 {
@@ -132,7 +144,16 @@ void qtFileItem::updateItemData()
   //this->Internals->EntryFrame->setStyleSheet("QFrame { background-color: pink; }");
 
   // Setup layout
-  QVBoxLayout* entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+  QBoxLayout* entryLayout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
+    }
+  else
+    {
+    entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
+    }
+
   int spacing = entryLayout->spacing() / 2;  // reduce spacing
   entryLayout->setSpacing(spacing);
 
@@ -151,6 +172,7 @@ void qtFileItem::updateItemData()
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   label->setSizePolicy(sizeFixedPolicy);
+  this->Internals->theLabel = label;
 
   // Add in BriefDescription as tooltip if available
   smtk::attribute::ConstItemDefinitionPtr itemDef = item->definition();

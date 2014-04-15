@@ -15,7 +15,6 @@
 #include "smtk/Qt/qtUIManager.h"
 
 #include "smtk/Qt/qtItem.h"
-#include "smtk/Qt/qtComboItem.h"
 #include "smtk/Qt/qtFileItem.h"
 #include "smtk/Qt/qtGroupView.h"
 #include "smtk/Qt/qtRootView.h"
@@ -729,7 +728,7 @@ void qtUIManager::onExpressionReferenceChanged()
     bview->valueChanged(inputitem->pointer());
     }
 }
-
+/*
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createComboBox(
   smtk::attribute::ItemPtr attitem, int elementIdx, QWidget* pWidget,
@@ -740,7 +739,7 @@ QWidget* qtUIManager::createComboBox(
     {
     return NULL;
     }
-/*
+
   const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
 
@@ -782,10 +781,11 @@ QWidget* qtUIManager::createComboBox(
 
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onComboIndexChanged()), Qt::QueuedConnection);
-*/
+
   qtItem* returnItem = new qtComboItem(attitem, elementIdx, pWidget, bview);
   return returnItem ? returnItem->widget() : NULL;
 }
+*/
 /*
 //----------------------------------------------------------------------------
 void qtUIManager::onComboIndexChanged()
@@ -827,8 +827,7 @@ QWidget* qtUIManager::createInputWidget(
 
   return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
     this->createExpressionRefWidget(item,elementIdx,pWidget, bview) :
-    (item->isDiscrete() ?
-      this->createComboBox(item,elementIdx,pWidget, bview) :
+    (item->isDiscrete() ? NULL :
       this->createEditBox(item,elementIdx,pWidget, bview));
 }
 //----------------------------------------------------------------------------

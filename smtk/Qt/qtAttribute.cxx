@@ -22,7 +22,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 
 #include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtComboItem.h"
+#include "smtk/Qt/qtDiscreteValueItem.h"
 #include "smtk/Qt/qtGroupItem.h"
 #include "smtk/Qt/qtInputsItem.h"
 #include "smtk/Qt/qtFileItem.h"
@@ -177,7 +177,7 @@ QWidget* qtAttribute::parentWidget()
 
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
-  qtBaseView* bview)
+  qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {
   if(!bview->uiManager()->passAdvancedCheck(
       item->definition()->advanceLevel()) ||
@@ -188,24 +188,43 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
     }
 
   qtItem* aItem = NULL;
+  smtk::attribute::ValueItemPtr valItemPtr;
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF: // This is always inside valueItem ???
-      aItem = qtAttribute::createAttributeRefItem(smtk::dynamic_pointer_cast<RefItem>(item), pW, bview);
+      aItem = qtAttribute::createAttributeRefItem(smtk::dynamic_pointer_cast<RefItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::DOUBLE:
     case smtk::attribute::Item::INT:
     case smtk::attribute::Item::STRING:
-      aItem = qtAttribute::createValueItem(smtk::dynamic_pointer_cast<ValueItem>(item), pW, bview);
+      valItemPtr = smtk::dynamic_pointer_cast<ValueItem>(item);
+      if(valItemPtr)
+        {
+      /*
+        if (valItemPtr->allowsExpressions())
+          {
+          aItem = qtAttribute::createExpressionRefItem(valItemPtr,elementIdx,pWidget, bview) :
+          }
+        else
+      */
+        if(valItemPtr->isDiscrete())
+          {
+          aItem = qtAttribute::createDiscreteValueItem(valItemPtr,pW, bview, enVectorItemOrient);
+          }
+        else
+          {
+          aItem = qtAttribute::createValueItem(valItemPtr, pW, bview, enVectorItemOrient);
+          }
+        }
       break;
     case smtk::attribute::Item::DIRECTORY:
-      aItem = qtAttribute::createDirectoryItem(smtk::dynamic_pointer_cast<DirectoryItem>(item), pW, bview);
+      aItem = qtAttribute::createDirectoryItem(smtk::dynamic_pointer_cast<DirectoryItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::FILE:
-      aItem = qtAttribute::createFileItem(smtk::dynamic_pointer_cast<FileItem>(item), pW, bview);
+      aItem = qtAttribute::createFileItem(smtk::dynamic_pointer_cast<FileItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::GROUP:
-      aItem = qtAttribute::createGroupItem(smtk::dynamic_pointer_cast<GroupItem>(item), pW, bview);
+      aItem = qtAttribute::createGroupItem(smtk::dynamic_pointer_cast<GroupItem>(item), pW, bview, enVectorItemOrient);
       break;
     case smtk::attribute::Item::VOID:
       aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview);
@@ -220,41 +239,67 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
 
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createAttributeRefItem(
-  smtk::attribute::RefItemPtr item, QWidget* pW, qtBaseView* view)
+  smtk::attribute::RefItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
 {
-  qtItem* returnItem = new qtAttributeRefItem(dynamic_pointer_cast<Item>(item), pW, view);
+  qtItem* returnItem = new qtAttributeRefItem(dynamic_pointer_cast<Item>(item), pW, view, enVectorItemOrient);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createDirectoryItem(
-  smtk::attribute::DirectoryItemPtr item, QWidget* pW, qtBaseView* view)
+  smtk::attribute::DirectoryItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
 {
-  qtFileItem* returnItem = new qtFileItem(dynamic_pointer_cast<Item>(item), pW, view, true);
+  qtFileItem* returnItem = new qtFileItem(dynamic_pointer_cast<Item>(item), pW, view, true, enVectorItemOrient);
   view->uiManager()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createFileItem(
-  smtk::attribute::FileItemPtr item, QWidget* pW, qtBaseView* view, bool dirOnly)
+  smtk::attribute::FileItemPtr item, QWidget* pW, qtBaseView* view, bool dirOnly,
+  Qt::Orientation enVectorItemOrient)
 {
   qtFileItem* returnItem = new qtFileItem(
-    dynamic_pointer_cast<Item>(item), pW, view, dirOnly);
+    dynamic_pointer_cast<Item>(item), pW, view, dirOnly, enVectorItemOrient);
   view->uiManager()->onFileItemCreated(returnItem);
   return returnItem;
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createGroupItem(smtk::attribute::GroupItemPtr item,
- QWidget* pW, qtBaseView* view)
+ QWidget* pW, qtBaseView* view, Qt::Orientation enVectorItemOrient)
 {
-  qtItem* returnItem = new qtGroupItem(dynamic_pointer_cast<Item>(item), pW, view);
+  qtItem* returnItem = new qtGroupItem(dynamic_pointer_cast<Item>(item), pW, view, enVectorItemOrient);
   return returnItem;
 }
 
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createValueItem(
-  smtk::attribute::ValueItemPtr item, QWidget* pW, qtBaseView* view)
+  smtk::attribute::ValueItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
 {
     // create the input item for editable type values
-  qtItem* returnItem = new qtInputsItem(dynamic_pointer_cast<Item>(item), pW, view);
+  qtItem* returnItem = new qtInputsItem(dynamic_pointer_cast<Item>(item), pW, view, enVectorItemOrient);
   return returnItem;
 }
+
+//----------------------------------------------------------------------------
+qtItem* qtAttribute::createDiscreteValueItem(
+  smtk::attribute::ValueItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
+{
+    // create the input item for editable type values
+  qtItem* returnItem = new qtDiscreteValueItem(dynamic_pointer_cast<Item>(item), pW, view, enVectorItemOrient);
+  return returnItem;
+}
+
+/*
+//----------------------------------------------------------------------------
+qtItem* qtAttribute::createExpressionRefItem(
+  smtk::attribute::ValueItemPtr item, QWidget* pW, qtBaseView* view,
+  Qt::Orientation enVectorItemOrient)
+{
+    // create the input item for editable type values
+  qtItem* returnItem = new qtAttributeRefItem(dynamic_pointer_cast<Item>(item), pW, view, enVectorItemOrient);
+  return returnItem;
+}
+*/

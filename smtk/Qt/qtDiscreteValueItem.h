@@ -19,42 +19,48 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtComboItem - an item for display value item with child items
+// .NAME qtDiscreteValueItem - an item for display value item with enumerated values
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtComboItem_h
-#define __smtk_attribute_qtComboItem_h
+#ifndef __smtk_attribute_qtDiscreteValueItem_h
+#define __smtk_attribute_qtDiscreteValueItem_h
 
 #include "smtk/Qt/qtItem.h"
 
-class qtComboItemInternals;
+class qtDiscreteValueItemInternals;
+class QComboBox;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtComboItem : public qtItem
+    class QTSMTK_EXPORT qtDiscreteValueItem : public qtItem
     {
       Q_OBJECT
 
-    public:         
-      qtComboItem(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
-      virtual ~qtComboItem();  
+    public:
+      qtDiscreteValueItem(smtk::attribute::ItemPtr,
+        QWidget* parent, qtBaseView* bview,
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      virtual ~qtDiscreteValueItem();
+      virtual void setLabelVisible(bool);
 
     public slots:
       void onInputValueChanged();
+      void setOutputOptional(int);
 
     protected slots:
       virtual void updateItemData();
 
     protected:
       virtual void createWidget();
-      
+      virtual void refreshUI(QComboBox* comboBox);
+
     private:
 
-      qtComboItemInternals *Internals;
+      qtDiscreteValueItemInternals *Internals;
 
     }; // class
   }; // namespace attribute

@@ -30,10 +30,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtBaseView.h"
 
 #include <QMap>
+#include <QStyledItemDelegate>
+#include <QComboBox>
 
 class qtAttributeViewInternals;
 class QTableWidgetItem;
 class QKeyEvent;
+class QStandardItem;
+class QTableWidget;
 
 namespace smtk
 {
@@ -72,6 +76,10 @@ namespace smtk
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
       void onAttributeCellChanged(int, int);
+      void onPropertySelectionChanged(int row, int col);
+      void onPropertyDefSelected();
+      void attributeFilterChanged(
+        const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
     signals:
       void numOfAttriubtesChanged();
@@ -88,7 +96,7 @@ namespace smtk
       void addAttributePropertyItems(
         smtk::attribute::AttributePtr childData);
       void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);
-      void updateTableWithProperty(QString& propertyName,
+      void addComparativeProperty(QTableWidgetItem* current,
         smtk::attribute::DefinitionPtr attDef);
       void addTableGroupItems(
         smtk::attribute::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
@@ -110,11 +118,46 @@ namespace smtk
         smtk::attribute::ItemPtr linkedData, int &startRow, bool enabled);
       virtual void getAllDefinitions();
 
+      virtual void updateTableWithProperties();
+      virtual void removeComparativeProperty(const QString& propertyName);
+      void initSelectAttCombo();
+      void addComparativeAttribute(smtk::attribute::AttributePtr att);
+      void removeComparativeAttribute(smtk::attribute::AttributePtr att);
+      void insertTableColumn(QTableWidget* wTable, int insertCol,
+        const QString& title, int advancedlevel);
+
     private:
 
       qtAttributeViewInternals *Internals;
 
     }; // class
+
+    //A sublcass of QTextEdit to give initial sizehint
+    class QTSMTK_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
+      {
+      Q_OBJECT
+      public:
+        qtCheckableComboItemDelegate(QWidget * owner);
+        virtual void paint(
+          QPainter* painter,
+          const QStyleOptionViewItem& option,
+          const QModelIndex& index) const;
+      };
+
+    //A sublcass of QComboBox to set text when hidePopup
+    class QTSMTK_EXPORT qtAttSelectCombo : public QComboBox
+      {
+      Q_OBJECT
+      public:
+        qtAttSelectCombo(QWidget * parentW);
+        virtual void hidePopup();
+        virtual void init();
+        virtual void updateText();
+
+      private:
+        QStandardItem* m_displayItem;
+      };
+
   }; // namespace attribute
 }; // namespace smtk
 

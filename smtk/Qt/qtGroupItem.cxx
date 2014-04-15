@@ -42,15 +42,18 @@ class qtGroupItemInternals
 {
 public:
   QPointer<QFrame> ChildrensFrame;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtGroupItem::qtGroupItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview) :
+  smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
+  Qt::Orientation enVectorItemOrient) :
    qtItem(dataObj, p, bview)
 {
   this->Internals = new qtGroupItemInternals;
   this->IsLeafItem = true;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
@@ -59,6 +62,25 @@ qtGroupItem::~qtGroupItem()
 {
   delete this->Internals;
 }
+
+//----------------------------------------------------------------------------
+void qtGroupItem::setLabelVisible(bool visible)
+{
+  if(!this->getObject())
+    {
+    return;
+    }
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  if(!item || !item->numberOfGroups())
+    {
+    return;
+    }
+
+  QGroupBox* groupBox = qobject_cast<QGroupBox*>(this->Widget);
+  groupBox->setTitle(visible ?
+    item->label().c_str() : "");
+}
+
 //----------------------------------------------------------------------------
 void qtGroupItem::createWidget()
 {
@@ -136,7 +158,7 @@ void qtGroupItem::updateItemData()
     for (j = 0; j < m; j++)
       {
       qtItem* childItem = qtAttribute::createItem(item->item(static_cast<int>(i),
-        static_cast<int>(j)), this->Widget, this->baseView());
+        static_cast<int>(j)), this->Widget, this->baseView(), this->Internals->VectorItemOrient);
       if(childItem)
         {
         this->Internals->ChildrensFrame->layout()->addWidget(childItem->widget());

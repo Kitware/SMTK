@@ -27,7 +27,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/view/Instanced.h"
 
-#include <QFrame>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPointer>
@@ -45,7 +44,7 @@ class qtInstancedViewInternals
 public:
   qtInstancedViewInternals()
     {
-//    this->ScrollArea = NULL;
+    //this->ScrollArea = NULL;
     }
   //QScrollArea *ScrollArea;
   QList< QPointer<qtAttribute> > AttInstances;
@@ -73,27 +72,28 @@ void qtInstancedView::createWidget( )
     {
     return;
     }
+  QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
+    this->parentWidget()->layout());
   if(this->Widget)
     {
-    //this->parentWidget()->layout()->removeWidget(
-    //  this->Internals->ScrollArea);
+    if(parentlayout)
+      {
+      parentlayout->removeWidget(this->Widget);
+      }
     delete this->Widget;
-    //delete this->Internals->ScrollArea;
+  //  delete this->Internals->ScrollArea;
     }
 
   this->Widget = new QFrame(this->parentWidget());
-
-  QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
-    this->parentWidget()->layout());
-
+/*
   //create the scroll area on the tabs, so we don't make the
   //3d window super small
-  //this->Internals->ScrollArea = new QScrollArea();
-  //this->Internals->ScrollArea->setWidgetResizable(true);
-  //this->Internals->ScrollArea->setFrameShape(QFrame::NoFrame);
-  //this->Internals->ScrollArea->setObjectName("rootScrollArea");
-  //this->Internals->ScrollArea->setWidget( this->Widget );
-
+  this->Internals->ScrollArea = new QScrollArea();
+  this->Internals->ScrollArea->setWidgetResizable(true);
+  this->Internals->ScrollArea->setFrameShape(QFrame::NoFrame);
+  this->Internals->ScrollArea->setObjectName("instancedViewScrollArea");
+  this->Internals->ScrollArea->setWidget( this->Widget );
+*/
   //create the layout for the tabs area
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);

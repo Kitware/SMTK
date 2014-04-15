@@ -120,9 +120,9 @@ namespace smtk
                                        qtBaseView* bview);
     virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
                                    int elementIdx, QWidget* pWidget, qtBaseView* bview);
-    virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
-                                    int elementIdx, QWidget* pWidget,
-                                   qtBaseView* bview);
+//    virtual QWidget* createComboBox(smtk::attribute::ItemPtr,
+//                                    int elementIdx, QWidget* pWidget,
+//                                   qtBaseView* bview);
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget, qtBaseView* bview);
 

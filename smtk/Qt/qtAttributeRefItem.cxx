@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/view/Attribute.h"
+#include "smtk/view/Root.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -120,15 +121,18 @@ public:
   QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
+  Qt::Orientation VectorItemOrient;
 };
 
 //----------------------------------------------------------------------------
 qtAttributeRefItem::qtAttributeRefItem(
-  smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view) :
+  smtk::attribute::ItemPtr dataObj, QWidget* p,  qtBaseView* view,
+  Qt::Orientation enVectorItemOrient ) :
    qtItem(dataObj, p, view)
 {
   this->Internals = new qtAttributeRefItemInternals;
   this->IsLeafItem = true;
+  this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
@@ -238,7 +242,17 @@ void qtAttributeRefItem::createWidget()
     }
 
   QVBoxLayout* thisLayout = new QVBoxLayout(this->Widget);
-  QBoxLayout* layout = new QHBoxLayout();
+  // Setup layout
+  QBoxLayout* layout;
+  if(this->Internals->VectorItemOrient == Qt::Vertical)
+    {
+    layout = new QVBoxLayout();
+    }
+  else
+    {
+    layout = new QHBoxLayout();
+    }
+  layout->setMargin(0);
   layout->setAlignment(Qt::AlignLeft);
   this->Internals->RefComboLayout = new QHBoxLayout();
   this->Internals->RefComboLayout->setMargin(0);
@@ -263,10 +277,10 @@ void qtAttributeRefItem::createWidget()
   connect(this->Internals->EditButton, SIGNAL(clicked()),
     this, SLOT(onLaunchAttributeView()));
 
-  layout->setMargin(0);
   smtk::attribute::ItemPtr dataObj = this->getObject();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
+  int padding = 0;
   if(dataObj->isOptional())
     {
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
@@ -283,7 +297,7 @@ void qtAttributeRefItem::createWidget()
       this->Internals->optionalCheck->setToolTip(
         dataObj->definition()->briefDescription().c_str());
       }
-
+    padding = this->Internals->optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
     QObject::connect(this->Internals->optionalCheck,
       SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
@@ -303,11 +317,16 @@ void qtAttributeRefItem::createWidget()
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
   QString lText = dataObj->label().c_str();
-  this->Internals->theLabel = new QLabel(lText);
+  this->Internals->theLabel = new QLabel(lText, this->Widget);
+  this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
+  this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength() - padding);
+  this->Internals->theLabel->setWordWrap(true);
+
   layout->addWidget(this->Internals->theLabel);
+  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
+  this->Internals->RefComboLayout->addWidget(this->Internals->CollapseButton);
   layout->addLayout(this->Internals->RefComboLayout);
-  layout->addWidget(this->Internals->EditButton);
-  layout->addWidget(this->Internals->CollapseButton);
   thisLayout->addLayout(layout);
   this->updateItemData();
 }
