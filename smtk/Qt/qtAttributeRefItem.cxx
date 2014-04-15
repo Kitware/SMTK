@@ -42,6 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QCheckBox>
 #include <QMessageBox>
 #include <QDialogButtonBox>
+#include <QGridLayout>
 
 using namespace smtk::attribute;
 
@@ -118,7 +119,7 @@ public:
   QPointer<QCheckBox> optionalCheck;
   QPointer<QLabel> theLabel;
   QPointer<qtAttribute> CurrentRefAtt;
-  QHBoxLayout* RefComboLayout;
+//  QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
   Qt::Orientation VectorItemOrient;
@@ -241,28 +242,30 @@ void qtAttributeRefItem::createWidget()
     return;
     }
 
-  QVBoxLayout* thisLayout = new QVBoxLayout(this->Widget);
-  // Setup layout
-  QBoxLayout* layout;
+  QGridLayout* thisLayout = new QGridLayout(this->Widget);
+  // Setup combo layout
+  QBoxLayout* comboLayout;
   if(this->Internals->VectorItemOrient == Qt::Vertical)
     {
-    layout = new QVBoxLayout();
+    comboLayout = new QVBoxLayout();
     }
   else
     {
-    layout = new QHBoxLayout();
+    comboLayout = new QHBoxLayout();
     }
-  layout->setMargin(0);
-  layout->setAlignment(Qt::AlignLeft);
-  this->Internals->RefComboLayout = new QHBoxLayout();
-  this->Internals->RefComboLayout->setMargin(0);
+  comboLayout->setMargin(0);
 
+  QBoxLayout* layout = new QHBoxLayout();
+  layout->setMargin(0);
+  layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   this->Internals->CollapseButton = new QToolButton(this->Widget);
   //QString exapndDownName(":/icons/attribute/expand-down.png");
   this->Internals->CollapseButton->setFixedSize(QSize(16, 16));
   this->Internals->CollapseButton->setArrowType(Qt::DownArrow);
   //this->Internals->CollapseButton->setIcon(QIcon(exapndDownName));
-  this->Internals->CollapseButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  this->Internals->CollapseButton->setSizePolicy(sizeFixedPolicy);
   connect(this->Internals->CollapseButton, SIGNAL(clicked()),
     this, SLOT(onToggleAttributeWidgetVisibility()));
 
@@ -270,7 +273,7 @@ void qtAttributeRefItem::createWidget()
   QString resourceName(":/icons/attribute/edit.png");
   this->Internals->EditButton->setFixedSize(QSize(16, 16));
   this->Internals->EditButton->setIcon(QIcon(resourceName));
-  this->Internals->EditButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  this->Internals->EditButton->setSizePolicy(sizeFixedPolicy);
 
   this->Widget->setMinimumWidth(150); //combobox width, edit button, collapse button, spacing.
 
@@ -278,7 +281,6 @@ void qtAttributeRefItem::createWidget()
     this, SLOT(onLaunchAttributeView()));
 
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
   int padding = 0;
   if(dataObj->isOptional())
@@ -312,22 +314,28 @@ void qtAttributeRefItem::createWidget()
     combo->setProperty("ElementIndex", vdata);
     this->Internals->comboBoxes.push_back(combo);
     combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    this->Internals->RefComboLayout->addWidget(combo);
+    comboLayout->addWidget(combo);
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
   QString lText = dataObj->label().c_str();
   this->Internals->theLabel = new QLabel(lText, this->Widget);
-  this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+
   smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
   this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength() - padding);
+  this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel->setWordWrap(true);
+  this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   layout->addWidget(this->Internals->theLabel);
-  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
-  this->Internals->RefComboLayout->addWidget(this->Internals->CollapseButton);
-  layout->addLayout(this->Internals->RefComboLayout);
-  thisLayout->addLayout(layout);
+  QBoxLayout* editlayout = new QHBoxLayout();
+  editlayout->setMargin(0);
+  editlayout->addLayout(comboLayout);
+  editlayout->addWidget(this->Internals->EditButton);
+  editlayout->addWidget(this->Internals->CollapseButton);
+  //layout->addLayout(this->Internals->RefComboLayout);
+  thisLayout->addLayout(layout, 0, 0);
+  thisLayout->addLayout(editlayout, 0, 1);
   this->updateItemData();
 }
 
@@ -543,7 +551,8 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
         {
         attFrame->setFrameShape(QFrame::Box);
         }
-      this->Widget->layout()->addWidget(this->Internals->CurrentRefAtt->widget());
+      QGridLayout* parentGrid = static_cast<QGridLayout*>(this->Widget->layout());
+      parentGrid->addWidget(this->Internals->CurrentRefAtt->widget(), 1, 0, 1, 2);
       }
     }
   else if(this->Internals->CurrentRefAtt)
