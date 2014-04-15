@@ -39,7 +39,7 @@ Root::Root(const std::string &myTitle): Group(myTitle)
   this->m_advancedBold = true;
   this->m_advancedItalic = false;
   this->m_showAdvanced = false;
-  this->m_maxValueLabelLen = 300;
+  this->m_maxValueLabelLen = 200;
   this->m_minValueLabelLen = 100;
 }
 

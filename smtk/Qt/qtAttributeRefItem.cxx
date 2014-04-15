@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/view/Attribute.h"
+#include "smtk/view/Root.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -279,6 +280,7 @@ void qtAttributeRefItem::createWidget()
   smtk::attribute::ItemPtr dataObj = this->getObject();
   QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
+  int padding = 0;
   if(dataObj->isOptional())
     {
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
@@ -295,7 +297,7 @@ void qtAttributeRefItem::createWidget()
       this->Internals->optionalCheck->setToolTip(
         dataObj->definition()->briefDescription().c_str());
       }
-
+    padding = this->Internals->optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
     QObject::connect(this->Internals->optionalCheck,
       SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
@@ -317,6 +319,10 @@ void qtAttributeRefItem::createWidget()
   QString lText = dataObj->label().c_str();
   this->Internals->theLabel = new QLabel(lText, this->Widget);
   this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
+  this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength() - padding);
+  this->Internals->theLabel->setWordWrap(true);
+
   layout->addWidget(this->Internals->theLabel);
   this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   this->Internals->RefComboLayout->addWidget(this->Internals->CollapseButton);

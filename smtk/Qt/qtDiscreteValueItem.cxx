@@ -95,7 +95,7 @@ void qtDiscreteValueItem::createWidget()
 
   this->Widget = new QFrame(this->parentWidget());
   QGridLayout* layout = new QGridLayout(this->Widget);
-  layout->setMargin(0);
+  layout->setMargin(3);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -301,7 +301,7 @@ void qtDiscreteValueItem::refreshUI(QComboBox* comboBox)
     this->Internals->CurrentChildFrame->setObjectName("ChildItemsFrame");
     QSizePolicy sizeFixedPolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     QVBoxLayout* layout = new QVBoxLayout(this->Internals->CurrentChildFrame);
-    layout->setMargin(0);
+    layout->setMargin(3);
     this->Internals->CurrentChildFrame->setSizePolicy(sizeFixedPolicy);
     this->Internals->CurrentChildFrame->setFrameShape(QFrame::Box);
     std::size_t i, m = item->numberOfActiveChildrenItems();
