@@ -256,11 +256,11 @@ qtItem* qtAttribute::createDirectoryItem(
 }
 //----------------------------------------------------------------------------
 qtItem* qtAttribute::createFileItem(
-  smtk::attribute::FileItemPtr item, QWidget* pW, qtBaseView* view, bool dirOnly,
+  smtk::attribute::FileItemPtr item, QWidget* pW, qtBaseView* view,
   Qt::Orientation enVectorItemOrient)
 {
   qtFileItem* returnItem = new qtFileItem(
-    dynamic_pointer_cast<Item>(item), pW, view, dirOnly, enVectorItemOrient);
+    dynamic_pointer_cast<Item>(item), pW, view, false, enVectorItemOrient);
   view->uiManager()->onFileItemCreated(returnItem);
   return returnItem;
 }

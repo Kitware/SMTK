@@ -65,7 +65,7 @@ namespace smtk
       static qtItem* createAttributeRefItem(smtk::attribute::RefItemPtr item, QWidget* p, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       static qtItem* createFileItem(smtk::attribute::FileItemPtr item, QWidget* p, qtBaseView* view,
-        bool dirOnly=false, Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       static qtItem* createGroupItem(smtk::attribute::GroupItemPtr item, QWidget* p, qtBaseView* view,
         Qt::Orientation enVectorItemOrient = Qt::Horizontal);
       static qtItem* createDiscreteValueItem(smtk::attribute::ValueItemPtr item, QWidget* p, qtBaseView* view,
