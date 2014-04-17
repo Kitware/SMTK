@@ -98,19 +98,6 @@ namespace smtk
       void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);
       void addComparativeProperty(QTableWidgetItem* current,
         smtk::attribute::DefinitionPtr attDef);
-      void addTableGroupItems(
-        smtk::attribute::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
-      void addTableValueItems(
-        smtk::attribute::ValueItemPtr attItem, int& numRows);
-      void addTableValueItems(
-        smtk::attribute::ValueItemPtr attItem, int& numRows,
-        const char* attLabel, int advanced);
-      void addTableAttRefItems(
-        smtk::attribute::RefItemPtr attItem, int& numRows,
-        const char* attLabel, int advanced);
-      void  addTableVoidItems(
-          smtk::attribute::VoidItemPtr attItem, int& numRows,
-          const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
         smtk::attribute::ItemPtr linkedData, QTableWidgetItem* item);

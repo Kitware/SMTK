@@ -296,9 +296,9 @@ void qtGroupItem::onRemoveSubGroup()
     delete qi;
     }
   delete this->Internals->ExtensibleMap.value(minusButton).first;
+  this->Internals->ExtensibleMap.remove(minusButton);
+  this->Internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
 
   item->removeGroup(gIdx);
-  this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
 }
