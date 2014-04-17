@@ -48,12 +48,14 @@ namespace smtk
     protected slots:
       virtual void updateItemData();
       virtual void setEnabledState(bool checked);
+      virtual void onAddSubGroup();
+      virtual void onRemoveSubGroup();
 
     protected:
       virtual void createWidget();
+      virtual void addSubGroup(int i);
 
     private:
-
       qtGroupItemInternals *Internals;
 
     }; // class

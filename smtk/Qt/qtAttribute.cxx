@@ -155,7 +155,7 @@ void qtAttribute::updateItemsData()
     {
     qItem = this->createItem(att->item(static_cast<int>(i)), this->Widget,
       this->Internals->View);
-    if(qItem)
+    if(qItem && qItem->widget())
       {
       layout->addWidget(qItem->widget());
       this->addItem(qItem);
