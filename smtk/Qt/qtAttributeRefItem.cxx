@@ -142,7 +142,7 @@ qtAttributeRefItem::~qtAttributeRefItem()
 {
   if(this->Internals->CurrentRefAtt)
     {
-    delete this->Internals->CurrentRefAtt->widget();
+//    delete this->Internals->CurrentRefAtt->widget();
     delete this->Internals->CurrentRefAtt;
     }
   delete this->Internals;

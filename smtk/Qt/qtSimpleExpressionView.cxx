@@ -544,11 +544,13 @@ void qtSimpleExpressionView::buildSimpleExpression(
       }
     }
 
+  this->Internals->FuncTable->blockSignals(true);
   this->Internals->FuncTable->clear();
   this->Internals->FuncTable->setRowCount(0);
   this->Internals->FuncTable->setColumnCount(numberOfComponents);
   this->pasteFunctionValues(funcVals, false);
   this->updateTableHeader();
+  this->Internals->FuncTable->blockSignals(false);
 }
 
 //----------------------------------------------------------------------------
@@ -716,7 +718,7 @@ void qtSimpleExpressionView::pasteFunctionValues(QString& str, bool clearExp)
       vals[j] = columns[j].toDouble();
       }
     this->addNewValue(vals, numColumns);
-    delete vals;
+    delete[] vals;
     }
   this->Internals->FuncTable->resizeColumnsToContents();
   if(clearExp)
