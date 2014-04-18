@@ -1408,6 +1408,34 @@
           </inject-code>
         </modify-function>
 
+        <modify-function signature="findBaseDefinitions(std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;&amp;) const">
+          <modify-argument index="1">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt; _out;
+            %CPPSELF->findBaseDefinitions(_out);
+            %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;](_out);
+          </inject-code>
+        </modify-function>
+
+        <modify-function signature="findAllDerivedDefinitions(smtk::shared_ptr&lt; smtk::attribute::Definition &gt;, bool, std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;&amp;) const">
+          <modify-argument index="3">
+            <remove-argument />
+          </modify-argument>
+          <modify-argument index="return">
+            <replace-type modified-type="std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;" />
+          </modify-argument>
+          <inject-code class="target" position="beginning">
+            std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt; _out;
+            %CPPSELF->findAllDerivedDefinitions(%1, %2, _out);
+            %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt; smtk::shared_ptr&lt; smtk::attribute::Definition &gt; &gt;](_out);
+          </inject-code>
+        </modify-function>
+
      </object-type>
 
       <object-type name="StringItem">
