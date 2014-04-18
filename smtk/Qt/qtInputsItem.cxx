@@ -334,9 +334,17 @@ void qtInputsItem::setOutputOptional(int state)
 //----------------------------------------------------------------------------
 void qtInputsItem::onAddNewValue()
 {
-  QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-    this->Internals->EntryFrame->layout());
-  this->addInputEditor(entryLayout, 0);
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  if(!item)
+    {
+    return;
+    }
+  if(item->setNumberOfValues(item->numberOfValues() + 1))
+    {
+    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
+      this->Internals->EntryFrame->layout());
+    this->addInputEditor(entryLayout, static_cast<int>(item->numberOfValues()) - 1);
+    }
 }
 //----------------------------------------------------------------------------
 void qtInputsItem::onRemoveValue()
