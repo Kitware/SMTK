@@ -14,7 +14,7 @@ For future reference, to run from template directory
 
 # Global vars
 app_description = 'Python script to list definitions'
-indent = '  '
+default_spaces_per_indent = 2
 
 import argparse
 import sys
@@ -45,13 +45,13 @@ def get_base_definitions(defn, def_list):
 
 
 # ---------------------------------------------------------------------------
-def list_items(parent, level, options={}):
+def list_items(parent, level, options):
   ''' Lists items contained by parent
 
   The level input sets the indentation
   Conditional children are prefixed with "*"
   '''
-  this_indent = indent * level
+  this_indent = options.indent * level
   if hasattr(parent, 'itemDefinition'):
     # Parent is Definition or GroupItemDefinition
     n = parent.numberOfItemDefinitions()
@@ -60,7 +60,7 @@ def list_items(parent, level, options={}):
       concrete_item = smtk.to_concrete(item)
       type_string = smtk.attribute.Item.type2String(item.type())
       print '%s%s \"%s\"' % (this_indent, type_string, item.name())
-      list_items(concrete_item, level+1)
+      list_items(concrete_item, level+1, options)
   elif hasattr(parent, 'childrenItemDefinitions'):
     # Parent is ValueItemDefinition
     item_dict = parent.childrenItemDefinitions()
@@ -73,11 +73,11 @@ def list_items(parent, level, options={}):
       concrete_item = smtk.to_concrete(item)
       type_string = smtk.attribute.Item.type2String(item.type())
       print '%s*%s \"%s\"' % (this_indent, type_string, name)
-      list_items(concrete_item, level+1)
+      list_items(concrete_item, level+1, options)
 
 
 # ---------------------------------------------------------------------------
-def list_definitions(manager, options={}):
+def list_definitions(manager, options):
   '''Lists definitions in indented-text format
 
   '''
@@ -106,7 +106,13 @@ def list_definitions(manager, options={}):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument('-t', '--template_filename', required=True)
+    parser.add_argument('-s', '--spaces_per_indent', type=int, \
+      default=default_spaces_per_indent)
     args = parser.parse_args()
+
+    # Construct options object
+    options = type('Options', (object,), {})
+    options.indent = ' ' * args.spaces_per_indent
 
     #  Load template file
     logger = smtk.util.Logger()
@@ -120,4 +126,4 @@ if __name__ == '__main__':
         sys.exit(-2)
 
     # List the output
-    list_definitions(manager)
+    list_definitions(manager, options)
