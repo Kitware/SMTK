@@ -39,6 +39,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QPointer>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QCheckBox>
+#include <QGridLayout>
 
 using namespace smtk::attribute;
 
@@ -89,7 +91,7 @@ void qtFileItem::createWidget()
     }
   this->clearChildItems();
   this->Widget = new QFrame(this->parentWidget());
-  QVBoxLayout* layout = new QVBoxLayout(this->Widget);
+  QGridLayout* layout = new QGridLayout(this->Widget);
   layout->setMargin(0);
   layout->setSpacing(0);
   layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -160,6 +162,25 @@ void qtFileItem::updateItemData()
   entryLayout->setSpacing(spacing);
   entryLayout->setMargin(0);
 
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QHBoxLayout* labelLayout = new QHBoxLayout();
+  labelLayout->setMargin(0);
+  labelLayout->setSpacing(0);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  int padding = 0;
+  if(this->getObject()->isOptional())
+    {
+    QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
+    optionalCheck->setChecked(this->getObject()->isEnabled());
+    optionalCheck->setText(" ");
+    optionalCheck->setSizePolicy(sizeFixedPolicy);
+    padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+    QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
+      this, SLOT(setOutputOptional(int)));
+    this->Internals->EntryFrame->setEnabled(this->getObject()->isEnabled());
+    labelLayout->addWidget(optionalCheck);
+    }
+
   // Add label
   smtk::attribute::ItemPtr item = dynamic_pointer_cast<Item>(this->getObject());
   QString labelText;
@@ -175,11 +196,11 @@ void qtFileItem::updateItemData()
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
-  label->setFixedWidth(rs->maxValueLabelLength());
+  label->setFixedWidth(rs->maxValueLabelLength() - padding);
   label->setWordWrap(true);
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   label->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel = label;
+  labelLayout->addWidget(label);
 
   // Add in BriefDescription as tooltip if available
   smtk::attribute::ConstItemDefinitionPtr itemDef = item->definition();
@@ -194,7 +215,9 @@ void qtFileItem::updateItemData()
     {
     label->setFont(this->baseView()->uiManager()->advancedFont());
     }
-  entryLayout->addWidget(label);
+//  entryLayout->addWidget(label);
+  QGridLayout* thisLayout = qobject_cast<QGridLayout*>(this->Widget->layout());
+  thisLayout->addLayout(labelLayout, 0 , 0);
 
   // Add file items
   for(i = 0; i < n; i++)
@@ -203,7 +226,8 @@ void qtFileItem::updateItemData()
     entryLayout->addWidget(fileframe);
     }
 
-  this->Widget->layout()->addWidget(this->Internals->EntryFrame);
+//  this->Widget->layout()->addWidget(this->Internals->EntryFrame);
+  thisLayout->addWidget(this->Internals->EntryFrame, 0 , 1);
 }
 
 //----------------------------------------------------------------------------
@@ -359,5 +383,17 @@ void qtFileItem::onLaunchFileBrowser()
       return;
       }
     lineEdit->setText(files[0]);
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtFileItem::setOutputOptional(int state)
+{
+  bool enable = state ? true : false;
+  this->Internals->EntryFrame->setEnabled(enable);
+  if(enable != this->getObject()->isEnabled())
+    {
+    this->getObject()->setIsEnabled(enable);
+    this->baseView()->valueChanged(this->getObject());
     }
 }
