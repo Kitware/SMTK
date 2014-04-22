@@ -268,6 +268,7 @@ void qtGroupItem::addSubGroup(int i)
     pair.second = itemList;
     this->Internals->ExtensibleMap[minusButton] = pair;
     this->Internals->MinusButtonIndices.push_back(minusButton);
+    this->updateExtensibleState();
     }
   else
     {
@@ -302,4 +303,25 @@ void qtGroupItem::onRemoveSubGroup()
   delete minusButton;
 
   item->removeGroup(gIdx);
+  this->updateExtensibleState();
+}
+
+//----------------------------------------------------------------------------
+void qtGroupItem::updateExtensibleState()
+{
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  if(!item || !item->isExtensible())
+    {
+    return;
+    }
+  bool maxReached = (item->maxNumberOfGroups() > 0) &&
+    (item->maxNumberOfGroups() == item->numberOfGroups());
+  this->Internals->AddItemButton->setEnabled(!maxReached);
+
+  bool minReached = (item->numberOfRequiredGroups() > 0) &&
+    (item->numberOfRequiredGroups() == item->numberOfGroups());
+  foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+    {
+    tButton->setEnabled(!minReached);
+    }
 }

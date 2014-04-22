@@ -181,6 +181,7 @@ void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
     {
     entrylayout->addLayout(editorLayout);
     }
+  this->updateExtensibleState();
 }
 
 //----------------------------------------------------------------------------
@@ -416,5 +417,26 @@ void qtInputsItem::onRemoveValue()
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<
       // smtk::attribute::Item::type2String(item->type()) << "\n";
       break;
+    }
+  this->updateExtensibleState();
+}
+
+//----------------------------------------------------------------------------
+void qtInputsItem::updateExtensibleState()
+{
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  if(!item || !item->isExtensible())
+    {
+    return;
+    }
+  bool maxReached = (item->maxNumberOfValues() > 0) &&
+    (item->maxNumberOfValues() == item->numberOfValues());
+  this->Internals->AddItemButton->setEnabled(!maxReached);
+
+  bool minReached = (item->numberOfRequiredValues() > 0) &&
+    (item->numberOfRequiredValues() == item->numberOfValues());
+  foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+    {
+    tButton->setEnabled(!minReached);
     }
 }

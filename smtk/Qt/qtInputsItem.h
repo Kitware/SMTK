@@ -60,6 +60,7 @@ namespace smtk
         QBoxLayout* labelLayout, QBoxLayout* entryLayout);
       virtual void updateUI();
       virtual void addInputEditor(QBoxLayout* entrylayout, int i);
+      virtual void updateExtensibleState();
 
     private:
 

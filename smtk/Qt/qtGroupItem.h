@@ -54,6 +54,7 @@ namespace smtk
     protected:
       virtual void createWidget();
       virtual void addSubGroup(int i);
+      virtual void updateExtensibleState();
 
     private:
       qtGroupItemInternals *Internals;
