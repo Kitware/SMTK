@@ -235,6 +235,7 @@ void qtInputsItem::updateUI()
   this->Widget = new QFrame(this->parentWidget());
   QGridLayout* layout = new QGridLayout(this->Widget);
   layout->setMargin(0);
+  layout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -312,7 +313,6 @@ void qtInputsItem::updateUI()
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   layout->addLayout(labelLayout, 0, 0);
   layout->addWidget(this->Internals->EntryFrame, 0, 1);
-  layout->setAlignment(Qt::AlignTop);
   if(this->parentWidget() && this->parentWidget()->layout())
     {
     this->parentWidget()->layout()->addWidget(this->Widget);

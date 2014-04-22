@@ -118,7 +118,9 @@ public:
   QList<qtAttRefCombo*> comboBoxes;
   QPointer<QCheckBox> optionalCheck;
   QPointer<QLabel> theLabel;
-  QPointer<qtAttribute> CurrentRefAtt;
+
+  QList<qtAttribute*> RefAtts;
+//  QPointer<qtAttribute> CurrentRefAtt;
 //  QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
@@ -140,10 +142,9 @@ qtAttributeRefItem::qtAttributeRefItem(
 //----------------------------------------------------------------------------
 qtAttributeRefItem::~qtAttributeRefItem()
 {
-  if(this->Internals->CurrentRefAtt)
+  foreach(qtAttribute* qa, this->Internals->RefAtts)
     {
-//    delete this->Internals->CurrentRefAtt->widget();
-    delete this->Internals->CurrentRefAtt;
+    delete qa;
     }
   delete this->Internals;
 }
@@ -151,7 +152,19 @@ qtAttributeRefItem::~qtAttributeRefItem()
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::setLabelVisible(bool visible)
 {
-  this->Internals->theLabel->setVisible(visible);
+  smtk::attribute::ItemPtr dataObj = this->getObject();
+
+  if(dataObj->isOptional() && this->Internals->optionalCheck)
+    {
+    QString lText = dataObj->label().empty() ?
+       dataObj->name().c_str() : dataObj->label().c_str();
+    this->Internals->optionalCheck->setText(visible ?
+      lText : "");
+    }
+  else if (this->Internals->theLabel)
+    {
+    this->Internals->theLabel->setVisible(visible);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -164,28 +177,32 @@ void qtAttributeRefItem::setAttributeEditorVisible(bool visible)
 void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
 {
   this->Internals->CollapseButton->setVisible(visible);
-  if(this->Internals->CurrentRefAtt &&
-     this->Internals->CurrentRefAtt->widget()->isVisible() != visible)
-    {
-    this->onToggleAttributeWidgetVisibility();
-    }
+  this->setAttributesVisible(visible);
 }
 
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
 {
-  if(this->Internals->CurrentRefAtt)
+  if(this->Internals->RefAtts.count() && this->Internals->RefAtts[0] != NULL)
     {
-    bool bVisible = this->Internals->CurrentRefAtt->widget()->isVisible();
-    this->Internals->CurrentRefAtt->widget()->setVisible(!bVisible);
+    bool bVisible = this->Internals->RefAtts[0]->widget()->isVisible();
+    this->setAttributesVisible(!bVisible);
     this->Internals->CollapseButton->setArrowType(bVisible ? Qt::UpArrow : Qt::DownArrow);
-    emit this->widgetResized();
-    //QString exapndDownName = bVisible ? ":/icons/attribute/expand-down.png" :
-    //  ":/icons/attribute/expand-up.png";
-    //this->Internals->CollapseButton->setIcon(QIcon(exapndDownName));
     }
 }
 
+//----------------------------------------------------------------------------
+void qtAttributeRefItem::setAttributesVisible(bool visible)
+{
+  foreach(qtAttribute* qa, this->Internals->RefAtts)
+    {
+    if(qa && qa->widget()->isVisible() != visible)
+      {
+      qa->widget()->setVisible(visible);
+      }
+    }
+  emit this->widgetResized();
+}
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onLaunchAttributeView()
 {
@@ -216,7 +233,10 @@ void qtAttributeRefItem::onLaunchAttributeView()
   attViewDlg.exec();
 
   this->updateItemData();
-  this->updateAttWidgetState();
+  foreach(qtAttribute* qa, this->Internals->RefAtts)
+    {
+    this->updateAttWidgetState(qa);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -243,6 +263,7 @@ void qtAttributeRefItem::createWidget()
     }
 
   QGridLayout* thisLayout = new QGridLayout(this->Widget);
+  thisLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   // Setup combo layout
   QBoxLayout* comboLayout;
   if(this->Internals->VectorItemOrient == Qt::Vertical)
@@ -254,9 +275,12 @@ void qtAttributeRefItem::createWidget()
     comboLayout = new QHBoxLayout();
     }
   comboLayout->setMargin(0);
+  comboLayout->setSpacing(6);
+  comboLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QBoxLayout* layout = new QHBoxLayout();
-  layout->setMargin(0);
+  layout->setMargin(5);
+  layout->setSpacing(3);
   layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -275,18 +299,23 @@ void qtAttributeRefItem::createWidget()
   this->Internals->EditButton->setIcon(QIcon(resourceName));
   this->Internals->EditButton->setSizePolicy(sizeFixedPolicy);
 
-  this->Widget->setMinimumWidth(150); //combobox width, edit button, collapse button, spacing.
+  this->Widget->setMinimumWidth(350); //combobox width, edit button, collapse button, spacing.
 
   connect(this->Internals->EditButton, SIGNAL(clicked()),
     this, SLOT(onLaunchAttributeView()));
 
   smtk::attribute::ItemPtr dataObj = this->getObject();
+  QString lText = dataObj->label().empty() ?
+     dataObj->name().c_str() : dataObj->label().c_str();
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
 
-  int padding = 0;
+//  int padding = 0;
   if(dataObj->isOptional())
     {
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
     this->Internals->optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
+    this->Internals->optionalCheck->setText(lText);
+    this->Internals->optionalCheck->setFixedWidth(rs->maxValueLabelLength());
     this->Internals->optionalCheck->setSizePolicy(sizeFixedPolicy);
 
     if(dataObj->definition()->advanceLevel() >0)
@@ -299,54 +328,75 @@ void qtAttributeRefItem::createWidget()
       this->Internals->optionalCheck->setToolTip(
         dataObj->definition()->briefDescription().c_str());
       }
-    padding = this->Internals->optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+//    padding = this->Internals->optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+
     QObject::connect(this->Internals->optionalCheck,
       SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
     layout->addWidget(this->Internals->optionalCheck);
     }
+  else
+    {
+    this->Internals->theLabel = new QLabel(lText, this->Widget);
 
+    this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength());
+    this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
+    this->Internals->theLabel->setWordWrap(true);
+    this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+    layout->addWidget(this->Internals->theLabel);
+    }
 //  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   for(i = 0; i < n; i++)
     {
     qtAttRefCombo* combo = new qtAttRefCombo(item, this->Widget);
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
+    QVBoxLayout* childLayout = new QVBoxLayout;
+    childLayout->setMargin(0);
+    childLayout->setSpacing(6);
+
+    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    childLayout->addWidget(combo);
+    QVariant vlayoutdata;
+    vlayoutdata.setValue(static_cast<void*>(childLayout));
+    combo->setProperty("MyLayout", vlayoutdata);
     this->Internals->comboBoxes.push_back(combo);
     combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    comboLayout->addWidget(combo);
+    comboLayout->addLayout(childLayout);
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
     }
-  QString lText = dataObj->label().c_str();
-  this->Internals->theLabel = new QLabel(lText, this->Widget);
 
-  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
-  this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength() - padding);
-  this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
-  this->Internals->theLabel->setWordWrap(true);
-  this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+//  QBoxLayout* editlayout = new QHBoxLayout();
+//  editlayout->setMargin(0);
+//  editlayout->addLayout(comboLayout);
+//  editlayout->addWidget(this->Internals->EditButton);
+//  editlayout->addWidget(this->Internals->CollapseButton);
 
-  layout->addWidget(this->Internals->theLabel);
-  QBoxLayout* editlayout = new QHBoxLayout();
-  editlayout->setMargin(0);
-  editlayout->addLayout(comboLayout);
-  editlayout->addWidget(this->Internals->EditButton);
-  editlayout->addWidget(this->Internals->CollapseButton);
+  layout->addWidget(this->Internals->EditButton);
+  layout->addWidget(this->Internals->CollapseButton);
+
+  QVBoxLayout* labelLayout = new QVBoxLayout();
+  labelLayout->setMargin(0);
+  labelLayout->setSpacing(0);
+  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  labelLayout->addLayout(layout);
+
   //layout->addLayout(this->Internals->RefComboLayout);
-  thisLayout->addLayout(layout, 0, 0);
-  thisLayout->addLayout(editlayout, 0, 1);
+  thisLayout->addLayout(labelLayout, 0, 0);
+  thisLayout->addLayout(comboLayout, 0, 1);
   this->updateItemData();
 }
 
 //----------------------------------------------------------------------------
-void qtAttributeRefItem::updateAttWidgetState()
+void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
 {
-  if(this->Internals->CurrentRefAtt)
+  if(qa && qa->widget())
     {
     bool bVisible = ( this->Internals->CollapseButton->isVisible() &&
       this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
-    this->Internals->CurrentRefAtt->widget()->setVisible(bVisible);
+    qa->widget()->setVisible(bVisible);
     }
 }
 
@@ -389,11 +439,9 @@ void qtAttributeRefItem::updateItemData()
       }
     combo->setCurrentIndex(setIndex);
     combo->blockSignals(false);
+    this->refreshUI(combo);
     }
-  if(this->Internals->comboBoxes.count())
-    {
-    this->refreshUI(this->Internals->comboBoxes[0]);
-    }
+
   if(item->isOptional() && this->Internals->optionalCheck)
     {
     if(this->Internals->optionalCheck->isChecked() == item->isEnabled())
@@ -418,9 +466,9 @@ void qtAttributeRefItem::setOutputOptional(int state)
     {
     combo->setEnabled(enable);
     }
-  if(this->Internals->CurrentRefAtt)
+  foreach(qtAttribute* qa, this->Internals->RefAtts)
     {
-    this->Internals->CurrentRefAtt->widget()->setEnabled(enable);
+    qa->widget()->setEnabled(enable);
     }
   if(enable != this->getObject()->isEnabled())
     {
@@ -439,7 +487,6 @@ void qtAttributeRefItem::onInputValueChanged()
     return;
     }
   this->refreshUI(comboBox);
-  this->updateAttWidgetState();
 }
 
 //----------------------------------------------------------------------------
@@ -537,29 +584,47 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     }
   if(attPtr)
     {
-    if(this->Internals->CurrentRefAtt && this->Internals->CurrentRefAtt->getObject() != attPtr)
+    qtAttribute* currentAtt = NULL;
+    foreach(qtAttribute* qa, this->Internals->RefAtts)
       {
-      delete this->Internals->CurrentRefAtt->widget();
-      delete this->Internals->CurrentRefAtt;
-      this->Internals->CurrentRefAtt = NULL;
+      if(qa->getObject() == attPtr)
+        {
+        currentAtt = qa;
+        break;
+        }
       }
-    if(!this->Internals->CurrentRefAtt)
+    if(valChanged || !currentAtt)
       {
-      this->Internals->CurrentRefAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
-      QFrame* attFrame = qobject_cast<QFrame*>(this->Internals->CurrentRefAtt->widget());
+      currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
+      QFrame* attFrame = qobject_cast<QFrame*>(currentAtt->widget());
       if(attFrame)
         {
         attFrame->setFrameShape(QFrame::Box);
         }
-      QGridLayout* parentGrid = static_cast<QGridLayout*>(this->Widget->layout());
-      parentGrid->addWidget(this->Internals->CurrentRefAtt->widget(), 1, 0, 1, 2);
+//      QGridLayout* parentGrid = static_cast<QGridLayout*>(this->Widget->layout());
+      QBoxLayout* mylayout =
+        static_cast<QBoxLayout*>(comboBox->property("MyLayout").value<void *>());
+      mylayout->insertWidget(1, currentAtt->widget());
+      QVariant vrefdata;
+      vrefdata.setValue(static_cast<void*>(currentAtt));
+      comboBox->setProperty("QtRefAtt", vrefdata);
+      this->Internals->RefAtts.push_back(currentAtt);
       }
+    this->updateAttWidgetState(currentAtt);
     }
-  else if(this->Internals->CurrentRefAtt)
+  else // check if we need to remove anything
     {
-    delete this->Internals->CurrentRefAtt->widget();
-    delete this->Internals->CurrentRefAtt;
-    this->Internals->CurrentRefAtt = NULL;
+    QVariant myRefAtt = comboBox->property("QtRefAtt");
+    if(myRefAtt.isValid())
+      {
+      qtAttribute* qa = static_cast<qtAttribute*>(myRefAtt.value<void *>());
+      if(qa)
+        {
+        this->Internals->RefAtts.removeOne(qa);
+        delete qa->widget();
+        delete qa;
+        }
+      }
     }
 
   if(valChanged)

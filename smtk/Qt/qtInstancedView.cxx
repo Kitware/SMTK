@@ -44,7 +44,6 @@ class qtInstancedViewInternals
 public:
   qtInstancedViewInternals()
     {
-    //this->ScrollArea = NULL;
     }
   //QScrollArea *ScrollArea;
   QList< QPointer<qtAttribute> > AttInstances;
@@ -81,7 +80,6 @@ void qtInstancedView::createWidget( )
       parentlayout->removeWidget(this->Widget);
       }
     delete this->Widget;
-  //  delete this->Internals->ScrollArea;
     }
 
   this->Widget = new QFrame(this->parentWidget());

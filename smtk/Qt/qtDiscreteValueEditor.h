@@ -19,48 +19,41 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtDiscreteValueItem - an item for display value item with enumerated values
+// .NAME qtDiscreteValueEditor - an item for display discrete value item
 // .SECTION Description
 // .SECTION See Also
-// qtItem
 
-#ifndef __smtk_attribute_qtDiscreteValueItem_h
-#define __smtk_attribute_qtDiscreteValueItem_h
+#ifndef __smtk_attribute_qtDiscreteValueEditor_h
+#define __smtk_attribute_qtDiscreteValueEditor_h
 
 #include "smtk/Qt/qtItem.h"
+#include <QtGui/QWidget>
 
-class qtDiscreteValueItemInternals;
-class QComboBox;
+class qtDiscreteValueEditorInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtDiscreteValueItem : public qtItem
+    class QTSMTK_EXPORT qtDiscreteValueEditor : public QWidget
     {
       Q_OBJECT
 
     public:
-      qtDiscreteValueItem(smtk::attribute::ItemPtr,
-        QWidget* parent, qtBaseView* bview,
-        Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      virtual ~qtDiscreteValueItem();
-      virtual void setLabelVisible(bool);
+      qtDiscreteValueEditor(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
+      virtual ~qtDiscreteValueEditor();
 
     public slots:
       void onInputValueChanged();
-      void setOutputOptional(int);
 
     protected slots:
       virtual void updateItemData();
 
     protected:
       virtual void createWidget();
-      virtual void refreshUI(QComboBox* comboBox);
 
     private:
-
-      qtDiscreteValueItemInternals *Internals;
+      qtDiscreteValueEditorInternals *Internals;
 
     }; // class
   }; // namespace attribute

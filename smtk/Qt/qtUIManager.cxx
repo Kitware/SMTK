@@ -23,6 +23,7 @@
 #include "smtk/Qt/qtInstancedView.h"
 #include "smtk/Qt/qtModelEntityView.h"
 #include "smtk/Qt/qtSimpleExpressionView.h"
+#include "smtk/Qt/qtDiscreteValueEditor.h"
 
 #include <QTableWidget>
 #include <QLayout>
@@ -827,7 +828,7 @@ QWidget* qtUIManager::createInputWidget(
 
   return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
     this->createExpressionRefWidget(item,elementIdx,pWidget, bview) :
-    (item->isDiscrete() ? NULL :
+    (item->isDiscrete() ? (new qtDiscreteValueEditor(item, elementIdx, pWidget, bview)) :
       this->createEditBox(item,elementIdx,pWidget, bview));
 }
 //----------------------------------------------------------------------------
