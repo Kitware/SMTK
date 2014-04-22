@@ -207,8 +207,10 @@ void qtInputsItem::loadInputValues(
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
       this->Internals->AddItemButton = new QToolButton(this->Internals->EntryFrame);
       QString iconName(":/icons/attribute/plus.png");
-      this->Internals->AddItemButton->setToolTip("Add new value");
-      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
+      this->Internals->AddItemButton->setText("Add New Value");
+      this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+//      this->Internals->AddItemButton->setFixedSize(QSize(12, 12));
       this->Internals->AddItemButton->setIcon(QIcon(iconName));
       this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
       connect(this->Internals->AddItemButton, SIGNAL(clicked()),
@@ -235,7 +237,8 @@ void qtInputsItem::loadInputValues(
 //----------------------------------------------------------------------------
 void qtInputsItem::updateUI()
 {
-  smtk::attribute::ItemPtr dataObj = this->getObject();
+  //smtk::attribute::ItemPtr dataObj = this->getObject();
+  smtk::attribute::ValueItemPtr dataObj =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!dataObj || !this->passAdvancedCheck() ||
     !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition()))
@@ -260,7 +263,7 @@ void qtInputsItem::updateUI()
   this->Internals->EntryFrame = new QFrame(this->parentWidget());
   this->Internals->EntryFrame->setObjectName("CheckAndEntryInputFrame");
   QBoxLayout* entryLayout;
-  if(this->Internals->VectorItemOrient == Qt::Vertical)
+  if(this->Internals->VectorItemOrient == Qt::Vertical || dataObj->isExtensible())
     {
     entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
     }
