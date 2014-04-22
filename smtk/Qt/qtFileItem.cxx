@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
+#include "smtk/view/Root.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -90,7 +91,8 @@ void qtFileItem::createWidget()
   this->Widget = new QFrame(this->parentWidget());
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(0);
-  layout->setAlignment(Qt::AlignTop);
+  layout->setSpacing(0);
+  layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   this->updateItemData();
 }
 //----------------------------------------------------------------------------
@@ -156,6 +158,7 @@ void qtFileItem::updateItemData()
 
   int spacing = entryLayout->spacing() / 2;  // reduce spacing
   entryLayout->setSpacing(spacing);
+  entryLayout->setMargin(0);
 
   // Add label
   smtk::attribute::ItemPtr item = dynamic_pointer_cast<Item>(this->getObject());
@@ -170,6 +173,10 @@ void qtFileItem::updateItemData()
     }
   QLabel* label = new QLabel(labelText, this->Widget);
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
+  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
+  label->setFixedWidth(rs->maxValueLabelLength());
+  label->setWordWrap(true);
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   label->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel = label;
