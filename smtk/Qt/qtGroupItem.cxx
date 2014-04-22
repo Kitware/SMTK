@@ -224,6 +224,7 @@ void qtGroupItem::addSubGroup(int i)
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* subGrouplayout = new QVBoxLayout();
   subGrouplayout->setMargin(0);
+  subGrouplayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QList<qtItem*> itemList;
   for (j = 0; j < m; j++)
     {

@@ -164,7 +164,23 @@ void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
       }
     }
   editorLayout->addWidget(editBox);
-  entrylayout->addLayout(editorLayout);
+  // there could be conditional children, so we need another layout
+  // so that the combobox will stay TOP-left when there are multiple
+  // combo boxes.
+  if(item->isDiscrete())
+    {
+    QVBoxLayout* childLayout = new QVBoxLayout;
+    childLayout->setMargin(0);
+    childLayout->setSpacing(6);
+
+    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    childLayout->addLayout(editorLayout);
+    entrylayout->addLayout(childLayout);
+    }
+  else
+    {
+    entrylayout->addLayout(editorLayout);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -235,6 +251,7 @@ void qtInputsItem::updateUI()
   this->Widget = new QFrame(this->parentWidget());
   QGridLayout* layout = new QGridLayout(this->Widget);
   layout->setMargin(0);
+  layout->setSpacing(0);
   layout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -254,13 +271,14 @@ void qtInputsItem::updateUI()
   entryLayout->setMargin(0);
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
+  labelLayout->setSpacing(0);
   labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   int padding = 0;
   if(dataObj->isOptional())
     {
     QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
     optionalCheck->setChecked(dataObj->isEnabled());
-    optionalCheck->setText("");
+    optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
     padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
@@ -286,7 +304,7 @@ void qtInputsItem::updateUI()
   smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
   label->setFixedWidth(rs->maxValueLabelLength() - padding);
   label->setWordWrap(true);
-  label->setAlignment(Qt::AlignTop);
+  label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
   // add in BriefDescription as tooltip if available
   const std::string strBriefDescription = itemDef->briefDescription();
@@ -311,7 +329,15 @@ void qtInputsItem::updateUI()
   this->loadInputValues(labelLayout, entryLayout);
 
   entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  layout->addLayout(labelLayout, 0, 0);
+
+  // we need this layout so that for items with conditionan children,
+  // the label will line up at Top-left against the chilren's widgets.
+  QVBoxLayout* vTLlayout = new QVBoxLayout;
+  vTLlayout->setMargin(0);
+  vTLlayout->setSpacing(0);
+  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  vTLlayout->addLayout(labelLayout);
+  layout->addLayout(vTLlayout, 0, 0);
   layout->addWidget(this->Internals->EntryFrame, 0, 1);
   if(this->parentWidget() && this->parentWidget()->layout())
     {
