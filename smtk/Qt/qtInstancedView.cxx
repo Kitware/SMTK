@@ -129,12 +129,12 @@ void qtInstancedView::updateAttributeData()
   for (i = 0; i < n; i++)
     {
     smtk::attribute::AttributePtr attobj = iview->instance(static_cast<int>(i));
-    if(!attobj || attobj->numberOfItems()==0)
+    if(!attobj)
       {
       QMessageBox::warning(this->parentWidget(), tr("Instanced Attribute View"),
-      tr("No attribute instance, or no items in the attribute instance!"));
+      tr("The requested attribute instance does not exist!"));
       }
-    else
+    else if(attobj->numberOfItems()>0)
       {
       qtAttribute* attInstance = new qtAttribute(attobj, this->widget(), this);
       if(attInstance)
