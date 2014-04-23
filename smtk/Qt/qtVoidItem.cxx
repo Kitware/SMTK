@@ -63,9 +63,11 @@ void qtVoidItem::setLabelVisible(bool visible)
     return;
     }
 
+  QString txtLabel = dataObj->label().empty() ?
+     dataObj->name().c_str() : dataObj->label().c_str();
+
   QCheckBox* optionalCheck = qobject_cast<QCheckBox*>(this->Widget);
-  optionalCheck->setText(visible ?
-    dataObj->definition()->label().c_str() : "");
+  optionalCheck->setText(visible ? txtLabel : "");
 }
 
 //----------------------------------------------------------------------------
@@ -85,7 +87,8 @@ void qtVoidItem::createWidget()
   optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
   optionalCheck->setSizePolicy(sizeFixedPolicy);
-  QString txtLabel = dataObj->definition()->label().c_str();
+  QString txtLabel = dataObj->label().empty() ?
+     dataObj->name().c_str() : dataObj->label().c_str();
 
   if(dataObj->definition()->advanceLevel() >0)
     {

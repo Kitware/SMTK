@@ -51,12 +51,17 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData() {this->updateUI();}
+      virtual void onAddNewValue();
+      virtual void onRemoveValue();
 
     protected:
       virtual void createWidget();
       virtual void loadInputValues(
         QBoxLayout* labelLayout, QBoxLayout* entryLayout);
       virtual void updateUI();
+      virtual void addInputEditor(QBoxLayout* entrylayout, int i);
+      virtual void updateExtensibleState();
+
     private:
 
       qtInputsItemInternals *Internals;

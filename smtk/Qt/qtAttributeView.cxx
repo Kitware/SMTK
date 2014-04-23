@@ -82,15 +82,15 @@ void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOption
     QStyledItemDelegate::paint(painter_, refToNonConstOption, index_);
 }
 
-qtAttSelectCombo::qtAttSelectCombo(QWidget* pw) :
-  QComboBox(pw)
+qtAttSelectCombo::qtAttSelectCombo(QWidget* pw, const QString& displayExt) :
+  QComboBox(pw), m_displayTextExt(displayExt), m_displayItem(NULL)
 {
 }
 void qtAttSelectCombo::init()
 {
   this->m_displayItem = new QStandardItem;
   this->m_displayItem->setFlags(Qt::ItemIsEnabled);
-  this->m_displayItem->setText("0 Attributes");
+  this->m_displayItem->setText("0 " + m_displayTextExt);
   QStandardItemModel* model = qobject_cast<QStandardItemModel*>(this->model());
   if(model)
     {
@@ -112,9 +112,10 @@ void qtAttSelectCombo::updateText()
         }
       }
     }
-  this->m_displayItem->setText(QString::number(numSel) + " Attributes");
+  QString displayText = QString::number(numSel) + " " + m_displayTextExt;
+  this->m_displayItem->setText(displayText);
   this->view()->model()->setData(this->view()->model()->index(0,0),
-    QString::number(numSel) + " Attributes", Qt::DisplayRole);
+    displayText, Qt::DisplayRole);
   this->view()->update();
 }
 
@@ -167,11 +168,16 @@ public:
   // Attribute widget
   QPointer<qtAttribute> CurrentAtt;
   QPointer<QFrame> AttFrame;
-  QMap<std::string, Qt::CheckState> AttProperties;
+
   // Model for filtering the attribute by combobox.
   QPointer<QStandardItemModel> checkableAttComboModel;
   QMap<std::string, Qt::CheckState> AttSelections;
   qtAttSelectCombo* SelectAttCombo;
+
+  // Model for filtering the attribute properties by combobox.
+  QPointer<QStandardItemModel> checkablePropComboModel;
+  qtAttSelectCombo* SelectPropCombo;
+  QMap<std::string, Qt::CheckState> AttProperties;
 
 };
 
@@ -226,6 +232,7 @@ void qtAttributeView::createWidget( )
   TopFrame->setSizePolicy(sizeFixedPolicy);
   QVBoxLayout* BottomLayout = new QVBoxLayout(BottomFrame);
   BottomLayout->setMargin(0);
+  BottomFrame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   // create a filter-frame with ViewBy-combo
   this->Internals->FiltersFrame = new QFrame(frame);
@@ -242,18 +249,30 @@ void qtAttributeView::createWidget( )
 
   this->Internals->PropDefsCombo = new QComboBox(TopFrame);
   this->Internals->PropDefsCombo->setVisible(false);
+  this->Internals->PropDefsCombo->setToolTip("Select definition to filter attributes and properties");
   filterLayout->addWidget(this->Internals->PropDefsCombo, 0, 2);
   QObject::connect(this->Internals->PropDefsCombo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onPropertyDefSelected()), Qt::QueuedConnection);
 
-  this->Internals->SelectAttCombo = new qtAttSelectCombo(TopFrame);
+  this->Internals->SelectPropCombo = new qtAttSelectCombo(TopFrame, "Properties");
+  this->Internals->SelectPropCombo->setVisible(false);
+  this->Internals->SelectPropCombo->setToolTip("Select properties to compare");
+  this->Internals->checkablePropComboModel = new QStandardItemModel();
+  this->Internals->SelectPropCombo->setModel(
+    this->Internals->checkablePropComboModel);
+  this->Internals->SelectPropCombo->setItemDelegate(
+    new qtCheckableComboItemDelegate(this->Internals->SelectPropCombo));
+  filterLayout->addWidget(this->Internals->SelectPropCombo, 0, 3);
+
+  this->Internals->SelectAttCombo = new qtAttSelectCombo(TopFrame, "Attributes");
   this->Internals->SelectAttCombo->setVisible(false);
+  this->Internals->SelectPropCombo->setToolTip("Select attributes to compare");
   this->Internals->checkableAttComboModel = new QStandardItemModel();
   this->Internals->SelectAttCombo->setModel(
     this->Internals->checkableAttComboModel);
   this->Internals->SelectAttCombo->setItemDelegate(
     new qtCheckableComboItemDelegate(this->Internals->SelectAttCombo));
-  filterLayout->addWidget(this->Internals->SelectAttCombo, 0, 3);
+  filterLayout->addWidget(this->Internals->SelectAttCombo, 0, 4);
 
   const Manager* attMan = this->uiManager()->attManager();
   std::set<std::string>::const_iterator it;
@@ -486,17 +505,10 @@ void qtAttributeView::onAttributeNameChanged(QTableWidgetItem* item)
 //----------------------------------------------------------------------------
 void qtAttributeView::onAttributeCellChanged(int row, int col)
 {
-  if(col == 0)
+  if(col == 0 && this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
     {
-    if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
-      {
-      QTableWidgetItem* item = this->Internals->ListTable->item(row, col);
-      this->onAttributeNameChanged(item);
-      }
-    else
-      {
-      this->onPropertySelectionChanged(row, col);
-      }
+    QTableWidgetItem* item = this->Internals->ListTable->item(row, col);
+    this->onAttributeNameChanged(item);
     }
 }
 //----------------------------------------------------------------------------
@@ -551,14 +563,20 @@ void qtAttributeView::updateTableWithProperties()
     j++;
     }
 
-  for(int r=0; r<this->Internals->ListTable->rowCount(); r++)
+  for(int r=1; r<this->Internals->SelectPropCombo->count(); r++)
     {
-    QTableWidgetItem* current = this->Internals->ListTable->item(r, 0);
+    QStandardItem* current = this->Internals->checkablePropComboModel->item(r);
     if(current && current->checkState() == Qt::Checked)
       {
-      smtk::attribute::ItemPtr attItem = this->getAttributeItemFromItem(current);
-      smtk::attribute::AttributePtr att = attItem->attribute();
-      this->addComparativeProperty(current, att->definition());
+      Item* rawPtr =
+        static_cast<Item*>(current->data(Qt::UserRole).value<void *>());
+      if(rawPtr)
+        {
+        smtk::attribute::ItemPtr attItem =
+          rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
+        smtk::attribute::AttributePtr att = attItem->attribute();
+        this->addComparativeProperty(current, att->definition());
+        }
       }
     }
 
@@ -581,42 +599,6 @@ void qtAttributeView::insertTableColumn(QTableWidget* vtWidget, int insertCol,
 }
 
 //----------------------------------------------------------------------------
-void qtAttributeView::onPropertySelectionChanged(int row, int col)
-{
-  if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
-    {
-    return;
-    }
-
-  this->Internals->ValuesTable->blockSignals(true);
-//  this->Internals->ValuesTable->clear();
-  QTableWidgetItem* current = this->Internals->ListTable->item(row, col);
-
-  if(current)
-    {
-//    this->Internals->ValuesTable->setRowCount(0);
-//    this->Internals->ValuesTable->setColumnCount(0);
-//    this->updateAssociationEnableState(smtk::attribute::AttributePtr());
-    smtk::attribute::ItemPtr attItem = this->getAttributeItemFromItem(current);
-    smtk::attribute::AttributePtr att = attItem->attribute();
-    std::string keyName = att->definition()->type() + attItem->name();
-    this->Internals->AttProperties[keyName] = current->checkState();
-    if(current->checkState() == Qt::Checked)
-      {
-      this->addComparativeProperty(current, att->definition());
-      }
-    else
-      {
-      this->removeComparativeProperty(current->text());
-      }
-    }
-
-  this->Internals->ValuesTable->blockSignals(false);
-  this->Internals->ValuesTable->resizeColumnsToContents();
-  this->Internals->ValuesTable->resizeRowsToContents();
-}
-
-//----------------------------------------------------------------------------
 void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
 {
   Item* linkedData = item ?
@@ -628,14 +610,6 @@ void qtAttributeView::onAttributeValueChanged(QTableWidgetItem* item)
     this->updateChildWidgetsEnableState(
      linkedData->pointer(), item);
     }
-/*
-  smtk::attribute::ValueItemPtr dataItem = this->getSelectedArrayData();
-  if(!dataItem)
-    {
-    return;
-    }
-  //this->uiManager()->updateArrayDataValue(dataItem, item);
-*/
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::updateChildWidgetsEnableState(
@@ -756,15 +730,6 @@ void qtAttributeView::onCopySelected()
   if(selObject)
     {
     this->createNewAttribute(selObject->definition());
-
-    //if(newAttribute)
-    //  {
-    //  QTableWidgetItem* item = this->addAttributeListItem(newAttribute);
-    //  if(item)
-    //    {
-    //    this->Internals->ListTable->setCurrentItem(item);
-    //    }
-    //  }
     }
 }
 //----------------------------------------------------------------------------
@@ -783,78 +748,6 @@ void qtAttributeView::onDeleteSelected()
     QTableWidgetItem* selItem = this->getSelectedItem();
     this->Internals->ListTable->removeRow(selItem->row());
     emit this->numOfAttriubtesChanged();
-    }
-}
-//----------------------------------------------------------------------------
-void qtAttributeView::addAttributePropertyItems(
-  smtk::attribute::AttributePtr childData)
-{
-  if(!childData)
-    {
-    return;
-    }
-
-  std::string txtDef = childData->definition()->label().empty() ?
-    childData->definition()->type() : childData->definition()->label();
-  if(this->Internals->PropDefsCombo->currentText() !=
-    QString::fromUtf8(txtDef.c_str()))
-    {
-    return;
-    }
-
-  this->Internals->AttFrame->setVisible(0);
-  this->Internals->ValuesTable->setVisible(1);
-
-  Qt::ItemFlags nonEditableFlags(
-    Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  Qt::ItemFlags checkableFlags = nonEditableFlags | Qt::ItemIsUserCheckable;
-  // Now lets process its items
-  std::size_t i, n = childData->numberOfItems();
-  for (i = 0; i < n; i++)
-    {
-    smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
-    if(this->uiManager()->passItemCategoryCheck(
-        attItem->definition()) &&
-      this->uiManager()->passAdvancedCheck(
-      attItem->definition()->advanceLevel()))
-      {
-      // No User data, not editable
-      std::string strItemLabel = attItem->label();
-      QTableWidgetItem* item = new QTableWidgetItem(
-        QString::fromUtf8(strItemLabel.c_str()),
-        smtk_USER_DATA_TYPE);
-
-      QVariant vdata;
-      vdata.setValue(static_cast<void*>(attItem.get()));
-      item->setData(Qt::UserRole, vdata);
-      item->setFlags(checkableFlags);
-      std::string keyName = childData->definition()->type() + attItem->name();
-      if(!this->Internals->AttProperties.contains(keyName))
-        {
-        this->Internals->AttProperties[keyName] = Qt::Unchecked;
-        }
-
-      item->setCheckState(this->Internals->AttProperties[keyName]);
-
-      int numRows = this->Internals->ListTable->rowCount();
-      this->Internals->ListTable->setRowCount(++numRows);
-      this->Internals->ListTable->setItem(numRows-1, 0, item);
-
-      // add the type column too.
-      std::string txtDef = childData->definition()->label().empty() ?
-        childData->definition()->type() : childData->definition()->label();
-
-      QTableWidgetItem* defitem = new QTableWidgetItem(
-        QString::fromUtf8(txtDef.c_str()),
-        smtk_USER_DATA_TYPE);
-      defitem->setFlags(nonEditableFlags);
-      this->Internals->ListTable->setItem(numRows-1, 1, defitem);
-
-      if(attItem->definition()->advanceLevel())
-        {
-        item->setFont(this->uiManager()->advancedFont());
-        }
-      }
     }
 }
 
@@ -912,7 +805,8 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->AddButton->setEnabled(currentDefs.count()>0);
 
   bool viewAtt = (viewBy == VIEWBY_Attribute);
-  this->Internals->ButtonsFrame->setEnabled(viewAtt);
+  this->Internals->ButtonsFrame->setVisible(viewAtt);
+  this->Internals->ListTable->setVisible(viewAtt);
   this->Internals->ListTable->blockSignals(true);
   this->Internals->ListTable->clear();
   this->Internals->ListTable->setRowCount(0);
@@ -952,15 +846,18 @@ void qtAttributeView::onViewBy(int viewBy)
   this->Internals->PropDefsCombo->setCurrentIndex(0);
   this->Internals->PropDefsCombo->blockSignals(false);
 
-  this->initSelectAttCombo();
-
-  foreach (attribute::DefinitionPtr attDef, currentDefs)
+  this->initSelectionFilters();
+  if(viewAtt)
     {
-    this->onViewByWithDefinition(viewBy, attDef);
+    foreach (attribute::DefinitionPtr attDef, currentDefs)
+      {
+      this->onViewByWithDefinition(viewBy, attDef);
+      }
     }
   this->Internals->ListTable->blockSignals(false);
   this->Internals->ListTable->resizeColumnsToContents();
 
+  QSplitter* frame = qobject_cast<QSplitter*>(this->Widget);
   if(viewAtt)
     {
     if(this->Internals->ListTable->rowCount() && !this->getSelectedItem())
@@ -975,34 +872,35 @@ void qtAttributeView::onViewBy(int viewBy)
   else
     {
     this->updateTableWithProperties();
+    QList<int> sizes;
+    sizes.push_back(this->Internals->FiltersFrame->height());
+    sizes.push_back(this->Internals->ValuesTable->height());
+    frame->setSizes(sizes);
     }
+  frame->handle(1)->setEnabled(viewAtt);
 }
 
 //----------------------------------------------------------------------------
 void qtAttributeView::onViewByWithDefinition(
   int viewBy, smtk::attribute::DefinitionPtr attDef)
 {
+  if(viewBy == VIEWBY_PROPERTY)
+    {
+    return;
+    }
   std::vector<smtk::attribute::AttributePtr> result;
   Manager *attManager = attDef->manager();
   attManager->findAttributes(attDef, result);
-  if(result.size())
+  if(result.size() && viewBy == VIEWBY_Attribute)
     {
-    //this->Internals->ButtonsFrame->setEnabled(true);
-    if(viewBy == VIEWBY_Attribute)
+    std::vector<smtk::attribute::AttributePtr>::iterator it;
+    for (it=result.begin(); it!=result.end(); ++it)
       {
-      std::vector<smtk::attribute::AttributePtr>::iterator it;
-      for (it=result.begin(); it!=result.end(); ++it)
+      QTableWidgetItem* item = this->addAttributeListItem(*it);
+      if((*it)->definition()->advanceLevel())
         {
-        QTableWidgetItem* item = this->addAttributeListItem(*it);
-        if((*it)->definition()->advanceLevel())
-          {
-          item->setFont(this->uiManager()->advancedFont());
-          }
+        item->setFont(this->uiManager()->advancedFont());
         }
-      }
-    else if(viewBy == VIEWBY_PROPERTY)
-      {
-      this->addAttributePropertyItems(result[0]);
       }
     }
 }
@@ -1033,66 +931,19 @@ void qtAttributeView::updateTableWithAttribute(
     this->Internals->AttFrame->layout()->addWidget(
       this->Internals->CurrentAtt->widget());
     }
-/*
-  QTableWidget* vtWidget = this->Internals->ValuesTable;
-  vtWidget->setColumnCount(3);
-
-  vtWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("Property"));
-  vtWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Value"));
-  vtWidget->setHorizontalHeaderItem(2, new QTableWidgetItem("Units"));
-  QString strValue;
-  int numRows = 0;
-  Qt::ItemFlags nonEditableFlags(
-    Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  std::size_t i, n = att->numberOfItems();
-  for (i = 0; i < n; i++)
-    {
-    smtk::attribute::ItemPtr attItem = att->item(static_cast<int>(i));
-    const ItemDefinition* itemDef =
-     dynamic_cast<const ItemDefinition*>(attItem->definition().get());
-    if(!this->uiManager()->passAdvancedCheck(
-      itemDef->advanceLevel()) ||
-      !this->uiManager()->passItemCategoryCheck(
-        attItem->definition()))
-      {
-      continue;
-      }
-    if(attItem->type() == smtk::attribute::Item::GROUP)
-      {
-      this->addTableGroupItems(
-        dynamic_pointer_cast<GroupItem>(attItem), numRows);
-      }
-    else if(attItem->type() == smtk::attribute::Item::ATTRIBUTE_REF)
-      {
-      this->addTableAttRefItems(
-        dynamic_pointer_cast<RefItem>(attItem), numRows,
-        itemDef->label().c_str(), itemDef->advanceLevel());
-      }
-    else if(attItem->type() == smtk::attribute::Item::VOID)
-      {
-      this->addTableVoidItems(
-        dynamic_pointer_cast<VoidItem>(attItem), numRows,
-        itemDef->label().c_str(), itemDef->advanceLevel());
-      }
-    else if(dynamic_pointer_cast<ValueItem>(attItem))
-      {
-      this->addTableValueItems(
-        dynamic_pointer_cast<ValueItem>(attItem), numRows);
-      }
-    }
-  vtWidget->resizeRowsToContents();
-*/
 }
-
 //----------------------------------------------------------------------------
-void qtAttributeView::initSelectAttCombo()
+void qtAttributeView::initSelectionFilters()
 {
   bool viewAtt = this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute;
   this->Internals->SelectAttCombo->setVisible(!viewAtt);
+  this->Internals->SelectPropCombo->setVisible(!viewAtt);
   if(viewAtt)
     {
     return;
     }
+  this->Internals->AttFrame->setVisible(0);
+  this->Internals->ValuesTable->setVisible(1);
 
   Definition* rawPtr = static_cast<Definition*>(
     this->Internals->PropDefsCombo->itemData(
@@ -1101,15 +952,97 @@ void qtAttributeView::initSelectAttCombo()
     {
     return;
     }
+  this->initSelectPropCombo(rawPtr->pointer());
+  this->initSelectAttCombo(rawPtr->pointer());
+  this->updateTableWithProperties();
+}
 
+//----------------------------------------------------------------------------
+void qtAttributeView::initSelectPropCombo(
+  smtk::attribute::DefinitionPtr attDef)
+{
+  this->Internals->SelectPropCombo->blockSignals(true);
+  this->Internals->SelectPropCombo->clear();
+  this->Internals->SelectPropCombo->init();
+  this->Internals->checkablePropComboModel->disconnect();
+  if(!attDef)
+    {
+    this->Internals->SelectPropCombo->blockSignals(false);
+    return;
+    }
+  std::vector<smtk::attribute::AttributePtr> result;
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
+  if(result.size() == 0)
+    {
+    this->Internals->SelectPropCombo->blockSignals(false);
+    return;
+    }
+
+  smtk::attribute::AttributePtr childData = result[0];
+  // Now lets process its items
+  std::size_t i, n = childData->numberOfItems();
+  int row=1;
+  for (i = 0; i < n; i++)
+    {
+    smtk::attribute::ItemPtr attItem = childData->item(static_cast<int>(i));
+    if(this->uiManager()->passItemCategoryCheck(
+        attItem->definition()) &&
+      this->uiManager()->passAdvancedCheck(
+      attItem->definition()->advanceLevel()))
+      {
+      // No User data, not editable
+      std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
+      std::string keyName = childData->definition()->type() + strItemLabel;
+      QStandardItem* item = new QStandardItem;
+      item->setText(strItemLabel.c_str());
+      if(!this->Internals->AttProperties.contains(keyName))
+        {
+        this->Internals->AttProperties[keyName] = Qt::Unchecked;
+        }
+
+      item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+      //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
+      item->setData(Qt::Unchecked, Qt::CheckStateRole);
+      item->setCheckable(true);
+      item->setCheckState(this->Internals->AttProperties[keyName]);
+      QVariant vdata;
+      vdata.setValue(static_cast<void*>(attItem.get()));
+      item->setData(vdata, Qt::UserRole);
+      this->Internals->checkablePropComboModel->insertRow(row++, item);
+      if(attItem->definition()->advanceLevel())
+        {
+        item->setFont(this->uiManager()->advancedFont());
+        }
+      }
+    }
+
+  connect(this->Internals->checkablePropComboModel,
+    SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),
+    this, SLOT(propertyFilterChanged(const QModelIndex&, const QModelIndex&)));
+
+  this->Internals->SelectPropCombo->blockSignals(false);
+  this->Internals->SelectPropCombo->updateText();
+  this->Internals->SelectPropCombo->hidePopup();
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeView::initSelectAttCombo(smtk::attribute::DefinitionPtr attDef)
+{
   this->Internals->SelectAttCombo->blockSignals(true);
   this->Internals->SelectAttCombo->clear();
   this->Internals->SelectAttCombo->init();
   this->Internals->checkableAttComboModel->disconnect();
 
+  if(!attDef)
+    {
+    this->Internals->SelectAttCombo->blockSignals(false);
+    return;
+    }
+
   std::vector<smtk::attribute::AttributePtr> result;
-  Manager *attManager = rawPtr->manager();
-  attManager->findAttributes(rawPtr->pointer(), result);
+  Manager *attManager = attDef->manager();
+  attManager->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   int row=1;
   for (it=result.begin(); it!=result.end(); ++it, ++row)
@@ -1145,7 +1078,45 @@ void qtAttributeView::initSelectAttCombo()
   this->Internals->SelectAttCombo->blockSignals(false);
   this->Internals->SelectAttCombo->updateText();
   this->Internals->SelectAttCombo->hidePopup();
-  this->updateTableWithProperties();
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeView::propertyFilterChanged(
+  const QModelIndex& topLeft, const QModelIndex& /* bottomRight */)
+{
+  if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute)
+    {
+    return;
+    }
+
+  QStandardItem* item = this->Internals->checkablePropComboModel->item(topLeft.row());
+  if(!item)
+    {
+    return;
+    }
+  smtk::attribute::Item* rawPtr =
+    static_cast<smtk::attribute::Item*>(item->data(Qt::UserRole).value<void *>());
+
+  if(rawPtr)
+    {
+  this->Internals->ValuesTable->blockSignals(true);
+    smtk::attribute::ItemPtr attItem = rawPtr->pointer();
+    smtk::attribute::AttributePtr att = attItem->attribute();
+    std::string keyName = att->definition()->type() + item->text().toStdString();
+    this->Internals->AttProperties[keyName] = item->checkState();
+    if(item->checkState() == Qt::Checked)
+      {
+      this->addComparativeProperty(item, att->definition());
+      }
+    else
+      {
+      this->removeComparativeProperty(item->text());
+      }
+    this->Internals->SelectPropCombo->updateText();
+    this->Internals->ValuesTable->blockSignals(false);
+    this->Internals->ValuesTable->resizeColumnsToContents();
+    this->Internals->ValuesTable->resizeRowsToContents();
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -1162,6 +1133,7 @@ void qtAttributeView::attributeFilterChanged(
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>());
   if(rawPtr)
     {
+    this->Internals->ValuesTable->blockSignals(true);
     this->Internals->AttSelections[rawPtr->name()] = item->checkState();
     if(item->checkState() == Qt::Checked)
       {
@@ -1172,6 +1144,9 @@ void qtAttributeView::attributeFilterChanged(
       this->removeComparativeAttribute(rawPtr->pointer());
       }
     this->Internals->SelectAttCombo->updateText();
+    this->Internals->ValuesTable->blockSignals(false);
+    this->Internals->ValuesTable->resizeColumnsToContents();
+    this->Internals->ValuesTable->resizeRowsToContents();
     }
 }
 
@@ -1195,7 +1170,7 @@ void qtAttributeView::addComparativeAttribute(
     for (i = 0; i < n; i++)// for each property
       {
       smtk::attribute::ItemPtr attItem = att->item(static_cast<int>(i));
-      std::string strItemLabel = attItem->label();
+      std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if(vtWidget->item(row, 0)->text() == strItemLabel.c_str())
         {
         qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
@@ -1245,16 +1220,7 @@ void qtAttributeView::onPropertyDefSelected()
     return;
     }
 
-  this->Internals->ListTable->blockSignals(true);
-  this->Internals->ListTable->clear();
-  this->Internals->ListTable->setRowCount(0);
-  this->Internals->ListTable->setColumnCount(2);
-  this->Internals->ListTable->setHorizontalHeaderItem(
-    0, new QTableWidgetItem("Property"));
-  this->Internals->ListTable->setHorizontalHeaderItem(1, new QTableWidgetItem("Type"));
-  this->onViewByWithDefinition(VIEWBY_PROPERTY, rawPtr->pointer());
-  this->Internals->ListTable->blockSignals(false);
-  this->initSelectAttCombo();
+  this->initSelectionFilters();
   this->updateTableWithProperties();
 }
 
@@ -1281,7 +1247,7 @@ void qtAttributeView::removeComparativeProperty(const QString& propertyName)
 }
 //----------------------------------------------------------------------------
 void qtAttributeView::addComparativeProperty(
-  QTableWidgetItem* current, smtk::attribute::DefinitionPtr attDef)
+  QStandardItem* current, smtk::attribute::DefinitionPtr attDef)
 {
   smtk::view::AttributePtr aview =
     smtk::dynamic_pointer_cast<smtk::view::Attribute>(this->getObject());
@@ -1305,7 +1271,7 @@ void qtAttributeView::addComparativeProperty(
   attManager->findAttributes(attDef, result);
 
   int numRows = this->Internals->ValuesTable->rowCount();
-  int insertRow = current->row() >= numRows ? numRows : current->row();
+  int insertRow = numRows;
   vtWidget->insertRow(insertRow);
   vtWidget->setItem(insertRow, 0, new QTableWidgetItem(current->text()));
   vtWidget->item(insertRow, 0)->setFont(current->font());
@@ -1323,7 +1289,7 @@ void qtAttributeView::addComparativeProperty(
     for (i = 0; i < n; i++)// for each property
       {
       smtk::attribute::ItemPtr attItem = (*it)->item(static_cast<int>(i));
-      std::string strItemLabel = attItem->label();
+      std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
       if(current->text() == strItemLabel.c_str())
         {
         qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
@@ -1334,218 +1300,6 @@ void qtAttributeView::addComparativeProperty(
         }
       }
     col++;
-    }
-}
-
-//----------------------------------------------------------------------------
-void qtAttributeView::addTableGroupItems(
-  smtk::attribute::GroupItemPtr attItem, int& numRows, const char* /*strCommonLabel*/)
-{
-  const GroupItemDefinition *gItemDef =
-    dynamic_cast<const GroupItemDefinition*>(attItem->definition().get());
-  std::string strAttLabel = attItem->label();
-  const char* attLabel = strAttLabel.empty() ? NULL : strAttLabel.c_str();
-  int advanced = gItemDef->advanceLevel();
-  // expecting one subgroup
-  int numItems = static_cast<int>(attItem->numberOfItemsPerGroup());
-  if(numItems > 0)
-    {
-    if(dynamic_pointer_cast<ValueItem>(attItem->item(0)))
-      {
-      this->addTableValueItems(dynamic_pointer_cast<ValueItem>(
-        attItem->item(0)), numRows, attLabel, advanced);
-      for (int j = 1; j < numItems; j++) // expecting one item for each column
-        {
-        this->addTableValueItems(dynamic_pointer_cast<ValueItem>(
-          attItem->item(j)), numRows, NULL, 0);
-        }
-      }
-    else if(attItem->item(0)->type() == smtk::attribute::Item::ATTRIBUTE_REF)
-      {
-      this->addTableAttRefItems(dynamic_pointer_cast<RefItem>(
-        attItem->item(0)), numRows, attLabel, advanced);
-      for (int j = 1; j < numItems; j++) // expecting one item for each column
-        {
-        this->addTableAttRefItems(dynamic_pointer_cast<RefItem>(
-          attItem->item(j)), numRows, NULL, 0);
-        }
-      }
-    else if(attItem->item(0)->type() == smtk::attribute::Item::VOID)
-      {
-      this->addTableVoidItems(dynamic_pointer_cast<VoidItem>(
-        attItem->item(0)), numRows, attLabel, advanced);
-      for (int j = 1; j < numItems; j++) // expecting one item for each column
-        {
-        this->addTableVoidItems(dynamic_pointer_cast<VoidItem>(
-          attItem->item(j)), numRows, NULL, 0);
-        }
-      }
-    }
-}
-
-//----------------------------------------------------------------------------
-void qtAttributeView::addTableValueItems(
-  smtk::attribute::ValueItemPtr attItem, int& numRows)
-{
-  if(!attItem)
-    {
-    return;
-    }
-  const ValueItemDefinition *vItemDef =
-    dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
-  std::string attLabel = attItem->label();
-  this->addTableValueItems(
-    attItem, numRows, attLabel.c_str(), vItemDef->advanceLevel());
-}
-
-//----------------------------------------------------------------------------
-void qtAttributeView::addTableValueItems(smtk::attribute::ValueItemPtr attItem,
-  int& numRows, const char* attLabel, int advanced)
-{
-  if(!attItem)
-    {
-    return;
-    }
-  QTableWidget* vtWidget = this->Internals->ValuesTable;
-  const ValueItemDefinition *vItemDef =
-    dynamic_cast<const ValueItemDefinition*>(attItem->definition().get());
-
-  Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  vtWidget->setRowCount(++numRows);
-  QString labelText = attLabel ? attLabel : "";
-  if(attItem->numberOfValues() > 1 && !vItemDef->valueLabel(0).empty())
-    {
-    if(labelText.length())
-      {
-      labelText.append(" ");
-      }
-    labelText.append(vItemDef->valueLabel(0).c_str());
-    }
-  QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
-  if(advanced)
-    {
-    labelitem->setFont(this->uiManager()->advancedFont());
-    }
-  // add in BriefDescription as tooltip if available
-  const std::string strBriefDescription = vItemDef->briefDescription();
-  if(!strBriefDescription.empty())
-    {
-    labelitem->setToolTip(strBriefDescription.c_str());
-    }
-
-  labelitem->setFlags(nonEditableFlags);
-  vtWidget->setItem(numRows-1, 0, labelitem);
-  bool bEnabled = this->uiManager()->updateTableItemCheckState(
-    labelitem, dynamic_pointer_cast<Item>(attItem));
-
-  QString unitText = vItemDef && !vItemDef->units().empty() ? vItemDef->units().c_str() : "";
-  QTableWidgetItem* unitItem = new QTableWidgetItem(unitText);
-  unitItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  vtWidget->setItem(numRows-1, 2, unitItem);
-
-  int numAdded = 0;
-  std::size_t i, n = attItem->numberOfValues();
-  for(i = 0; i < n; i++)
-    {
-    QWidget* inputWidget = this->uiManager()->createInputWidget(
-      attItem, static_cast<int>(i), this->Widget, this);
-    if(inputWidget)
-      {
-      numRows = numAdded>0 ? numRows+1 : numRows;
-      vtWidget->setRowCount(numRows);
-      inputWidget->setEnabled(bEnabled);
-      vtWidget->setCellWidget(numRows-1, 1, inputWidget);
-      vtWidget->setItem(numRows-1, 1, new QTableWidgetItem());
-
-      // component labels
-      std::string componentLabel = vItemDef->valueLabel(i);
-      if(i > 0 && !componentLabel.empty())
-        {
-        labelText = (attLabel ? attLabel : "");
-        labelText.append(" ").append(componentLabel.c_str());
-        QTableWidgetItem* componentlabelitem = new QTableWidgetItem(labelText);
-        if(advanced)
-          {
-          componentlabelitem->setFont(this->uiManager()->advancedFont());
-          }
-        componentlabelitem->setFlags(nonEditableFlags);
-        // add in BriefDescription as tooltip if available
-        const std::string bdStrBriefDescription = vItemDef->briefDescription();
-        if(!bdStrBriefDescription.empty())
-          {
-          componentlabelitem->setToolTip(bdStrBriefDescription.c_str());
-          }
-        vtWidget->setItem(numRows-1, 0, componentlabelitem);
-        }
-      numAdded++;
-      }
-    }
-}
-//----------------------------------------------------------------------------
-void qtAttributeView::addTableAttRefItems(
-  smtk::attribute::RefItemPtr attItem, int& numRows,
-  const char* attLabel, int advanced)
-{
-  if(!attItem)
-    {
-    return;
-    }
-  QTableWidget* vtWidget = this->Internals->ValuesTable;
-  qtAttributeRefItem* refItem = qobject_cast<qtAttributeRefItem*>(
-    qtAttribute::createAttributeRefItem(attItem, vtWidget, this));
-  if(!refItem)
-    {
-    return;
-    }
-  refItem->setLabelVisible(false);
-//  refItem->setAttributeEditorVisible(false);
-//  refItem->setAttributeWidgetVisible(false);
-
-  QString labelText = attItem->label().c_str();
-  labelText = labelText.isEmpty() ? attLabel : labelText;
-
-  Qt::ItemFlags nonEditableFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-  vtWidget->setRowCount(++numRows);
-  QTableWidgetItem* labelitem = new QTableWidgetItem(labelText);
-  if(advanced)
-    {
-    labelitem->setFont(this->uiManager()->advancedFont());
-    }
-
-  labelitem->setFlags(nonEditableFlags);
-  vtWidget->setItem(numRows-1, 0, labelitem);
-
-  bool bEnabled = this->uiManager()->updateTableItemCheckState(
-    labelitem, dynamic_pointer_cast<Item>(attItem));
-  refItem->widget()->setEnabled(bEnabled);
-  vtWidget->setCellWidget(numRows-1, 1, refItem->widget());
-  vtWidget->setItem(numRows-1, 1, new QTableWidgetItem());
-//  vtWidget->update(vtWidget->visualItemRect(vtWidget->item(numRows-1, 1)));
-}
-//----------------------------------------------------------------------------
-void qtAttributeView::addTableVoidItems(
-  smtk::attribute::VoidItemPtr attItem, int& numRows,
-  const char* /*attLabel*/, int advanced)
-{
-  if(!attItem)
-    {
-    return;
-    }
-  QTableWidget* vtWidget = this->Internals->ValuesTable;
-  qtVoidItem* voidItem = qobject_cast<qtVoidItem*>(
-    qtAttribute::createItem(attItem, vtWidget, this));
-  if(!voidItem)
-    {
-    return;
-    }
-
-  vtWidget->setRowCount(++numRows);
-  vtWidget->setCellWidget(numRows-1, 0, voidItem->widget());
-  vtWidget->setItem(numRows-1, 0, new QTableWidgetItem());
-  if(advanced && voidItem->widget())
-    {
-    voidItem->widget()->setFont(
-      this->uiManager()->advancedFont());
     }
 }
 

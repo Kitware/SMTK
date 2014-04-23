@@ -76,9 +76,10 @@ namespace smtk
       virtual void updateModelAssociation();
       void onListBoxClicked(QTableWidgetItem* item);
       void onAttributeCellChanged(int, int);
-      void onPropertySelectionChanged(int row, int col);
       void onPropertyDefSelected();
       void attributeFilterChanged(
+        const QModelIndex& topLeft, const QModelIndex& bottomRight);
+      void propertyFilterChanged(
         const QModelIndex& topLeft, const QModelIndex& bottomRight);
 
     signals:
@@ -93,24 +94,9 @@ namespace smtk
 
       smtk::attribute::AttributePtr getSelectedAttribute();
       QTableWidgetItem* addAttributeListItem(smtk::attribute::AttributePtr childData);
-      void addAttributePropertyItems(
-        smtk::attribute::AttributePtr childData);
       void updateTableWithAttribute(smtk::attribute::AttributePtr dataItem);
-      void addComparativeProperty(QTableWidgetItem* current,
+      void addComparativeProperty(QStandardItem* current,
         smtk::attribute::DefinitionPtr attDef);
-      void addTableGroupItems(
-        smtk::attribute::GroupItemPtr childData, int& numRows, const char* strCommonLabel=NULL);
-      void addTableValueItems(
-        smtk::attribute::ValueItemPtr attItem, int& numRows);
-      void addTableValueItems(
-        smtk::attribute::ValueItemPtr attItem, int& numRows,
-        const char* attLabel, int advanced);
-      void addTableAttRefItems(
-        smtk::attribute::RefItemPtr attItem, int& numRows,
-        const char* attLabel, int advanced);
-      void  addTableVoidItems(
-          smtk::attribute::VoidItemPtr attItem, int& numRows,
-          const char* attLabel, int advanced);
 
       void updateChildWidgetsEnableState(
         smtk::attribute::ItemPtr linkedData, QTableWidgetItem* item);
@@ -120,7 +106,9 @@ namespace smtk
 
       virtual void updateTableWithProperties();
       virtual void removeComparativeProperty(const QString& propertyName);
-      void initSelectAttCombo();
+      void initSelectionFilters();
+      void initSelectAttCombo(smtk::attribute::DefinitionPtr attDef);
+      void initSelectPropCombo(smtk::attribute::DefinitionPtr attDef);
       void addComparativeAttribute(smtk::attribute::AttributePtr att);
       void removeComparativeAttribute(smtk::attribute::AttributePtr att);
       void insertTableColumn(QTableWidget* wTable, int insertCol,
@@ -149,13 +137,14 @@ namespace smtk
       {
       Q_OBJECT
       public:
-        qtAttSelectCombo(QWidget * parentW);
+        qtAttSelectCombo(QWidget * parentW, const QString& displayExt);
         virtual void hidePopup();
         virtual void init();
         virtual void updateText();
 
       private:
         QStandardItem* m_displayItem;
+        QString m_displayTextExt;
       };
 
   }; // namespace attribute

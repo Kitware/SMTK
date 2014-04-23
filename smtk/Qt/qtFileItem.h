@@ -64,6 +64,7 @@ namespace smtk
     public slots:
       virtual void onInputValueChanged();
       virtual void onLaunchFileBrowser();
+      virtual void setOutputOptional(int);
 
     signals:
       void launchFileBrowser();

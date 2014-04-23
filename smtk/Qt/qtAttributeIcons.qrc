@@ -3,5 +3,7 @@
     <file>edit.png</file>
     <file>expand-up.png</file>
     <file>expand-down.png</file>
+    <file>minus.png</file>
+    <file>plus.png</file>
   </qresource>
 </RCC>

@@ -37,6 +37,8 @@ namespace smtk
   namespace attribute
   {
     class qtBaseView;
+    class qtAttribute;
+
     class QTSMTK_EXPORT qtAttributeRefItem : public qtItem
     {
       Q_OBJECT
@@ -65,7 +67,8 @@ namespace smtk
     protected:
       virtual void createWidget();
       virtual void refreshUI(QComboBox* combo);
-      virtual void updateAttWidgetState();
+      virtual void updateAttWidgetState(qtAttribute* qa);
+      virtual void setAttributesVisible(bool visible);
 
     private:
 
