@@ -58,6 +58,12 @@ namespace smtk
       bool readContents(smtk::attribute::Manager &manager,
                         const std::string &filecontents,
                         smtk::util::Logger &logger);
+
+      bool readContents(smtk::attribute::Manager &manager,
+                        const char *contents,
+                        std::size_t length,
+                        smtk::util::Logger &logger);
+
       void setSearchPaths(const std::vector<std::string> &paths)
       { this->m_searchPaths = paths;}
 

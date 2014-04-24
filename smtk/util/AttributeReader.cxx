@@ -37,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace boost::filesystem;
 using namespace smtk::util;
 
+namespace {
 // Returns the complete path to the file.  If the file does n
 std::string Internal_getDirectory(const std::string &fname,
                                   const std::vector<std::string> &spaths)
@@ -191,6 +192,8 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
   // Finally process the initial doc
   Internal_parseXmlDoc(manager, doc, reportAsError, logger);
 }
+}  // namespace
+
 
 //----------------------------------------------------------------------------
 bool AttributeReader::read(smtk::attribute::Manager &manager,
@@ -229,10 +232,21 @@ bool AttributeReader::readContents(smtk::attribute::Manager &manager,
                                    const std::string &filecontents,
                                    Logger &logger)
 {
+  return this->readContents(manager, filecontents.c_str(),
+                            filecontents.size(), logger);
+}
+
+
+//----------------------------------------------------------------------------
+bool AttributeReader::readContents(smtk::attribute::Manager &manager,
+                                   const char *content,
+                                   std::size_t length,
+                                   Logger &logger)
+{
   logger.reset();
   // First load in the xml document
   pugi::xml_document doc;
-  pugi::xml_parse_result presult = doc.load(filecontents.c_str());
+  pugi::xml_parse_result presult = doc.load_buffer(content, length);
   if (presult.status != pugi::status_ok)
     {
     smtkErrorMacro(logger, presult.description());
