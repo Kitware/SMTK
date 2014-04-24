@@ -51,7 +51,7 @@ import smtk
 global_exp_def = None
 
 
-def create_item(elem, name, indent=''):
+def create_item(elem, name, categories, indent=''):
     '''
     Creates new item based on <ValueType>, <DefaultValue>, <Constraint>,
     <Advanced>
@@ -118,6 +118,7 @@ def create_item(elem, name, indent=''):
     if group_elem is not None:
         category = group_elem.attrib.get('Name')
         item.addCategory(category)
+        categories.add(category)
 
     # Handle <Option>
     option_elem = elem.find('Option')
@@ -160,7 +161,7 @@ def create_definition(manager, elem, indent=''):
     return defn
 
 
-def process_multivalue_elem(elem, group_item, category, indent=''):
+def process_multivalue_elem(elem, group_item, category, categories, indent=''):
     '''
     Processes <MultiValue> elements
     '''
@@ -168,7 +169,7 @@ def process_multivalue_elem(elem, group_item, category, indent=''):
     input_elem_list = elem.findall('InputValue')
     for input_elem in input_elem_list:
         name = 'Value%s' % input_elem.attrib.get('Index')
-        input_item = create_item(input_elem, name, child_indent)
+        input_item = create_item(input_elem, name, categories, child_indent)
         if input_item is not None:
             # Assign category to first item (only)
             if category is not None:
@@ -177,7 +178,7 @@ def process_multivalue_elem(elem, group_item, category, indent=''):
             group_item.addItemDefinition(input_item)
 
 
-def process_information_elem(elem, defn, indent=''):
+def process_information_elem(elem, defn, categories, indent=''):
 
     '''
     Processes <InformationValue> element
@@ -199,11 +200,11 @@ def process_information_elem(elem, defn, indent=''):
         group_elem = elem.find('Group')
         if group_elem is not None:
             category = group_elem.attrib.get('Name')
-        process_multivalue_elem(mvalue_elem, item, category, child_indent)
+        process_multivalue_elem(mvalue_elem, item, category, categories, child_indent)
         defn.addItemDefinition(item)
         return
 
-    item = create_item(elem, tagname, child_indent)
+    item = create_item(elem, tagname, categories, child_indent)
     if item is None:
         return
 
@@ -221,7 +222,7 @@ def process_information_elem(elem, defn, indent=''):
     defn.addItemDefinition(item)
 
 
-def process_instance_elem(manager, elem, indent=''):
+def process_instance_elem(manager, elem, categories, indent=''):
 
     '''
     Processes <Instance> element
@@ -232,30 +233,32 @@ def process_instance_elem(manager, elem, indent=''):
         return
 
     for child in elem.findall('InformationValue'):
-        process_information_elem(child, defn, child_indent)
+        process_information_elem(child, defn, categories, child_indent)
 
 
-def process_templates_elem(manager, elem, indent=''):
+def process_templates_elem(manager, elem, view, categories, indent=''):
     '''
     Processes <Templates> element
     '''
     child_indent = '  ' + indent
     for child in elem.findall('Instance'):
         if child.tag == 'Instance':
-            process_instance_elem(manager, child, child_indent)
+            process_instance_elem(manager, child, categories, child_indent)
 
     for child in elem.findall('InformationValue'):
         defn = create_definition(manager, child)
         if defn is None:
             continue
+        view.addDefinition(defn)
 
-        process_information_elem(elem, defn, child_indent)
+        process_information_elem(elem, defn, categories, child_indent)
 
 
 def process_toplevel_elem(manager, elem, indent=''):
     '''
     Process <TopLevel> elements
     '''
+    categories = set()
     child_indent = '  ' + indent
     skip_types = set(['Functions', 'Domain'])
     section_type = elem.attrib.get('Section')
@@ -263,14 +266,25 @@ def process_toplevel_elem(manager, elem, indent=''):
         print '%s(skipping)' % child_indent
         return
 
+    # Create AttributeView because we can add definitions to them
+    print 'SECTION', section_type
+    view = smtk.view.Attribute.New(section_type)
+    manager.rootView().addSubView(view)
+
     for child in elem.findall('Templates'):
-        process_templates_elem(manager, child, child_indent)
+        process_templates_elem(manager, child, view, categories, child_indent)
 
     for child in elem.findall('InformationValue'):
         # Create defn then create item
         defn = create_definition(manager, child, child_indent)
         if defn is not None:
-            process_information_elem(child, defn, child_indent)
+            view.addDefinition(defn)
+            process_information_elem(child, defn, categories, child_indent)
+
+    # Add placeholder analysis type so we can add categories
+    # Otherwise smtk will refuse to read the file
+    manager.defineAnalysis('PlaceholderAnalysis', list(categories))
+    manager.updateCategories()
 
 
 def process_toplevel_group(manager, elem, indent=''):
