@@ -222,7 +222,7 @@ def process_information_elem(elem, defn, categories, indent=''):
     defn.addItemDefinition(item)
 
 
-def process_instance_elem(manager, elem, categories, indent=''):
+def process_instance_elem(manager, elem, view, categories, indent=''):
 
     '''
     Processes <Instance> element
@@ -234,6 +234,7 @@ def process_instance_elem(manager, elem, categories, indent=''):
 
     for child in elem.findall('InformationValue'):
         process_information_elem(child, defn, categories, child_indent)
+    view.addDefinition(defn)
 
 
 def process_templates_elem(manager, elem, view, categories, indent=''):
@@ -243,15 +244,15 @@ def process_templates_elem(manager, elem, view, categories, indent=''):
     child_indent = '  ' + indent
     for child in elem.findall('Instance'):
         if child.tag == 'Instance':
-            process_instance_elem(manager, child, categories, child_indent)
+            process_instance_elem(manager, child, view, categories, child_indent)
 
     for child in elem.findall('InformationValue'):
         defn = create_definition(manager, child)
         if defn is None:
             continue
-        view.addDefinition(defn)
 
         process_information_elem(elem, defn, categories, child_indent)
+        view.addDefinition(defn)
 
 
 def process_toplevel_elem(manager, elem, indent=''):

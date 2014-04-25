@@ -40,7 +40,8 @@ def get_base_definitions(defn, def_list):
   if base_def is None:
     return
 
-  def_list.append(base_def.type())
+  quoted = '\"%s\"' % base_def.type()
+  def_list.append(quoted)
   return get_base_definitions(base_def, def_list)
 
 
@@ -88,9 +89,9 @@ def list_definition(manager, defn, level, options):
 
   if base_list:
     base_string = ' : '.join(base_list)
-    print '%s%s : %s' % (this_indent, defn.type(), base_string)
+    print '%sAttDef \"%s\" : %s' % (this_indent, defn.type(), base_string)
   else:
-    print '%s%s' % (this_indent, defn.type())
+    print '%sAttDef \"%s\"' % (this_indent, defn.type())
 
   list_items(defn, sublevel, options)
 
