@@ -171,10 +171,8 @@ def process_multivalue_elem(elem, group_item, category, categories, indent=''):
         name = 'Value%s' % input_elem.attrib.get('Index')
         input_item = create_item(input_elem, name, categories, child_indent)
         if input_item is not None:
-            # Assign category to first item (only)
             if category is not None:
                 input_item.addCategory(category)
-                category = None
             group_item.addItemDefinition(input_item)
 
 
