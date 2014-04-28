@@ -873,7 +873,7 @@ void qtAttributeView::onViewBy(int viewBy)
     {
     this->updateTableWithProperties();
     QList<int> sizes;
-    sizes.push_back(this->Internals->FiltersFrame->height());
+    sizes.push_back(this->Internals->ViewByCombo->height());
     sizes.push_back(this->Internals->ValuesTable->height());
     frame->setSizes(sizes);
     }
