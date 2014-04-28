@@ -119,7 +119,8 @@ public:
   QPointer<QCheckBox> optionalCheck;
   QPointer<QLabel> theLabel;
 
-  QList<qtAttribute*> RefAtts;
+  // <elementIdx, qtAtt>
+  QMap<int, QPointer<qtAttribute> > RefAtts;
 //  QPointer<qtAttribute> CurrentRefAtt;
 //  QHBoxLayout* RefComboLayout;
   QPointer<QToolButton> EditButton;
@@ -142,9 +143,13 @@ qtAttributeRefItem::qtAttributeRefItem(
 //----------------------------------------------------------------------------
 qtAttributeRefItem::~qtAttributeRefItem()
 {
-  foreach(qtAttribute* qa, this->Internals->RefAtts)
+  foreach(int eleIdx, this->Internals->RefAtts.keys())
     {
-    delete qa;
+    qtAttribute* qa = this->Internals->RefAtts[eleIdx];
+    if(qa)
+      {
+      delete qa;
+      }
     }
   delete this->Internals;
 }
@@ -182,18 +187,22 @@ void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onToggleAttributeWidgetVisibility()
 {
-  if(this->Internals->RefAtts.count() && this->Internals->RefAtts[0] != NULL)
+  foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
-    bool bVisible = this->Internals->RefAtts[0]->widget()->isVisible();
-    this->setAttributesVisible(!bVisible);
-    this->Internals->CollapseButton->setArrowType(bVisible ? Qt::UpArrow : Qt::DownArrow);
+    if(qa)
+      {
+      bool bVisible = qa->widget()->isVisible();
+      this->setAttributesVisible(!bVisible);
+      this->Internals->CollapseButton->setArrowType(bVisible ? Qt::UpArrow : Qt::DownArrow);
+      break;
+      }
     }
 }
 
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::setAttributesVisible(bool visible)
 {
-  foreach(qtAttribute* qa, this->Internals->RefAtts)
+  foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
     if(qa && qa->widget()->isVisible() != visible)
       {
@@ -232,7 +241,7 @@ void qtAttributeRefItem::onLaunchAttributeView()
   attViewDlg.exec();
 
   this->updateItemData();
-  foreach(qtAttribute* qa, this->Internals->RefAtts)
+  foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
     this->updateAttWidgetState(qa);
     }
@@ -468,9 +477,12 @@ void qtAttributeRefItem::setOutputOptional(int state)
     {
     combo->setEnabled(enable);
     }
-  foreach(qtAttribute* qa, this->Internals->RefAtts)
+  foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
-    qa->widget()->setEnabled(enable);
+    if(qa)
+      {
+      qa->widget()->setEnabled(enable);
+      }
     }
   if(enable != this->getObject()->isEnabled())
     {
@@ -586,16 +598,17 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
     }
   if(attPtr)
     {
-    qtAttribute* currentAtt = NULL;
-    foreach(qtAttribute* qa, this->Internals->RefAtts)
+    qtAttribute* currentAtt =
+      this->Internals->RefAtts.contains(elementIdx) ?
+      this->Internals->RefAtts[elementIdx] : NULL;
+    if(currentAtt && currentAtt->getObject() != attPtr)
       {
-      if(qa->getObject() == attPtr)
-        {
-        currentAtt = qa;
-        break;
-        }
+      delete currentAtt->widget();
+      delete currentAtt;
+      currentAtt = NULL;
       }
-    if(valChanged || !currentAtt)
+
+    if(!currentAtt)
       {
       currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
       QFrame* attFrame = qobject_cast<QFrame*>(currentAtt->widget());
@@ -610,7 +623,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       QVariant vrefdata;
       vrefdata.setValue(static_cast<void*>(currentAtt));
       comboBox->setProperty("QtRefAtt", vrefdata);
-      this->Internals->RefAtts.push_back(currentAtt);
+      this->Internals->RefAtts[elementIdx] = currentAtt;
       }
     this->updateAttWidgetState(currentAtt);
     }
@@ -622,7 +635,7 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       qtAttribute* qa = static_cast<qtAttribute*>(myRefAtt.value<void *>());
       if(qa)
         {
-        this->Internals->RefAtts.removeOne(qa);
+        this->Internals->RefAtts[elementIdx] = NULL;
         delete qa->widget();
         delete qa;
         }
