@@ -925,7 +925,14 @@ void qtAttributeView::updateTableWithAttribute(
     delete this->Internals->CurrentAtt->widget();
     delete this->Internals->CurrentAtt;
     }
+
+  int currentLen = this->fixedLabelWidth();
+  int tmpLen = this->uiManager()->getWidthOfAttributeMaxLabel(
+    att->definition(), this->uiManager()->advancedFont());
+  this->setFixedLabelWidth(tmpLen);
+
   this->Internals->CurrentAtt = new qtAttribute(att, this->Internals->AttFrame, this);
+  this->setFixedLabelWidth(currentLen);
   if(this->Internals->CurrentAtt && this->Internals->CurrentAtt->widget())
     {
     this->Internals->AttFrame->layout()->addWidget(
