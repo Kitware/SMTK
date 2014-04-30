@@ -30,12 +30,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 using namespace smtk::util;
 
 //----------------------------------------------------------------------------
+AttributeWriter::AttributeWriter():
+  m_includeDefinitions(true), m_includeInstances(true),
+  m_includeModelInformation(true), m_includeViews(true)
+{
+}
+//----------------------------------------------------------------------------
 bool AttributeWriter::write(const smtk::attribute::Manager &manager,
                             const std::string &filename,
                             Logger &logger)
 {
   logger.reset();
   XmlV1StringWriter theWriter(manager);
+  theWriter.includeDefinitions(this->m_includeDefinitions);
+  theWriter.includeInstances(this->m_includeInstances);
+  theWriter.includeModelInformation(this->m_includeModelInformation);
+  theWriter.includeViews(this->m_includeViews);
+
   std::string result = theWriter.convertToString(logger);
   if(!logger.hasErrors())
 	{
@@ -55,6 +66,10 @@ bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
 {
   logger.reset();
   XmlV1StringWriter theWriter(manager);
+  theWriter.includeDefinitions(this->m_includeDefinitions);
+  theWriter.includeInstances(this->m_includeInstances);
+  theWriter.includeModelInformation(this->m_includeModelInformation);
+  theWriter.includeViews(this->m_includeViews);
   filecontents = theWriter.convertToString(logger, no_declaration);
   return logger.hasErrors();
 }
