@@ -54,6 +54,8 @@ namespace smtk
       qtUIManager* uiManager();
       virtual void getDefinitions(smtk::attribute::DefinitionPtr attDef,
         QList<smtk::attribute::DefinitionPtr>& defs);
+      int fixedLabelWidth();
+      bool setFixedLabelWidth(int w);
 
     signals:
       void modified(smtk::attribute::ItemPtr);

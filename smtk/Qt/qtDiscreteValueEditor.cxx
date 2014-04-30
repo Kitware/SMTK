@@ -27,11 +27,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QFrame>
 #include <QLabel>
 #include <QPointer>
+#include <QFontMetrics>
+#include <QFont>
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtUIManager.h"
 
 using namespace smtk::attribute;
 
@@ -226,7 +229,26 @@ void qtDiscreteValueEditor::onInputValueChanged()
     layout->setMargin(3);
     this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
     this->Internals->ChildrenFrame->setFrameShape(QFrame::Box);
+
+    QList<smtk::attribute::ItemDefinitionPtr> activeChildDefs;
     std::size_t i, m = item->numberOfActiveChildrenItems();
+    for(i = 0; i < m; i++)
+      {
+      smtk::attribute::ConstItemDefinitionPtr itDef = item->activeChildItem(
+            static_cast<int>(i))->definition();
+      std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator it =
+        itemDef->childrenItemDefinitions().find(itDef->name());
+      if(it != itemDef->childrenItemDefinitions().end())
+        {
+        activeChildDefs.push_back(it->second);
+        }
+      }
+
+    int tmpLen = this->Internals->BaseView->uiManager()->getWidthOfItemsMaxLabel(
+      activeChildDefs, this->Internals->BaseView->uiManager()->advancedFont());
+    int currentLen = this->Internals->BaseView->fixedLabelWidth();
+    this->Internals->BaseView->setFixedLabelWidth(tmpLen);
+
     for(i = 0; i < m; i++)
       {
       qtItem* childItem = qtAttribute::createItem(
@@ -238,6 +260,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
         this->Internals->ChildItems.push_back(childItem);
         }
       }
+    this->Internals->BaseView->setFixedLabelWidth(currentLen);
     this->layout()->addWidget(this->Internals->ChildrenFrame);
     }
 //  emit this->widgetResized();

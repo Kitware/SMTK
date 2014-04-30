@@ -28,7 +28,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/FileItemDefinition.h"
-#include "smtk/view/Root.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -174,7 +173,7 @@ void qtFileItem::updateItemData()
     optionalCheck->setChecked(this->getObject()->isEnabled());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
-    padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+    padding = optionalCheck->iconSize().width() + 3; // 3 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
     this->Internals->EntryFrame->setEnabled(this->getObject()->isEnabled());
@@ -195,8 +194,7 @@ void qtFileItem::updateItemData()
   QLabel* label = new QLabel(labelText, this->Widget);
   //label->setStyleSheet("QLabel { background-color: lightblue; }");
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
-  label->setFixedWidth(rs->maxValueLabelLength() - padding);
+  label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
   label->setWordWrap(true);
   label->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel = label;

@@ -24,6 +24,7 @@
 #include <QColor>
 #include <QDoubleValidator>
 #include <QTextEdit>
+#include <QMap>
 
 class QTableWidget;
 class QTableWidgetItem;
@@ -126,6 +127,12 @@ namespace smtk
     virtual QWidget* createExpressionRefWidget(smtk::attribute::ItemPtr,
                                                int elementIdx,QWidget* pWidget, qtBaseView* bview);
 
+    virtual int getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
+                                     const QFont &font);
+    virtual int getWidthOfItemsMaxLabel(
+      const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+      const QFont &font);
+
 #ifdef _WIN32
     #define LINE_BREAKER_STRING "\n";
 #else
@@ -168,6 +175,15 @@ namespace smtk
 
       smtk::attribute::Manager &m_AttManager;
       bool m_useInternalFileBrowser;
+      // map for <Definition, its longest item label>
+      // The longest label is used as a hint when aligning all item labels
+      QMap<smtk::attribute::DefinitionPtr, std::string> Def2LongLabel;
+      void findDefinitionsLongLabels();
+      void findDefinitionLongLabel(smtk::attribute::DefinitionPtr def, std::string &labelText);
+      void getItemsLongLabel(
+        const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+        std::string &labelText);
+
     }; // class
 
     //A sublcass of QDoubleValidator to fixup input outside of range
