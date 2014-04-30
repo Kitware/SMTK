@@ -226,6 +226,21 @@ void qtGroupItem::addSubGroup(int i)
   subGrouplayout->setMargin(0);
   subGrouplayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   QList<qtItem*> itemList;
+
+  QList<smtk::attribute::ItemDefinitionPtr> childDefs;
+  for (j = 0; j < m; j++)
+    {
+    smtk::attribute::ConstItemDefinitionPtr itDef = item->item(i,
+      static_cast<int>(j))->definition();
+    //smtk::attribute::ItemDefinitionPtr childDef(
+    //  smtk::const_pointer_cast<ItemDefinition>(itDef));
+    childDefs.push_back(smtk::const_pointer_cast<ItemDefinition>(itDef));
+    }
+  int tmpLen = this->baseView()->uiManager()->getWidthOfItemsMaxLabel(
+    childDefs, this->baseView()->uiManager()->advancedFont());
+  int currentLen = this->baseView()->fixedLabelWidth();
+  this->baseView()->setFixedLabelWidth(tmpLen);
+
   for (j = 0; j < m; j++)
     {
     qtItem* childItem = qtAttribute::createItem(item->item(i,
@@ -236,6 +251,7 @@ void qtGroupItem::addSubGroup(int i)
       itemList.push_back(childItem);
       }
     }
+  this->baseView()->setFixedLabelWidth(currentLen);
 
   if(item->isExtensible())
     {

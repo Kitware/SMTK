@@ -50,7 +50,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItemTemplate.h"
-#include "smtk/view/Root.h"
 
 using namespace smtk::attribute;
 
@@ -284,7 +283,7 @@ void qtInputsItem::updateUI()
     optionalCheck->setChecked(dataObj->isEnabled());
     optionalCheck->setText(" ");
     optionalCheck->setSizePolicy(sizeFixedPolicy);
-    padding = optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+    padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
     this->Internals->EntryFrame->setEnabled(dataObj->isEnabled());
@@ -305,8 +304,7 @@ void qtInputsItem::updateUI()
     }
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
-  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
-  label->setFixedWidth(rs->maxValueLabelLength() - padding);
+  label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 

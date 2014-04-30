@@ -32,7 +32,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/view/Attribute.h"
-#include "smtk/view/Root.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -318,7 +317,6 @@ void qtAttributeRefItem::createWidget()
   smtk::attribute::ItemPtr dataObj = this->getObject();
   QString lText = dataObj->label().empty() ?
      dataObj->name().c_str() : dataObj->label().c_str();
-  smtk::view::RootPtr rs = this->baseView()->uiManager()->attManager()->rootView();
 
   int padding = 0;
   int gridCol = 0;
@@ -327,20 +325,14 @@ void qtAttributeRefItem::createWidget()
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
     this->Internals->optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
     this->Internals->optionalCheck->setText(" ");// some space
-//    this->Internals->optionalCheck->setFixedWidth(rs->maxValueLabelLength());
     this->Internals->optionalCheck->setSizePolicy(sizeFixedPolicy);
 
-    if(dataObj->definition()->advanceLevel() >0)
-      {
-      this->Internals->optionalCheck->setFont(
-        this->baseView()->uiManager()->advancedFont());
-      }
-    if(dataObj->definition()->briefDescription().length())
+   if(dataObj->definition()->briefDescription().length())
       {
       this->Internals->optionalCheck->setToolTip(
         dataObj->definition()->briefDescription().c_str());
       }
-    padding = this->Internals->optionalCheck->iconSize().width() + 6; // 6 is for layout spacing
+    padding = this->Internals->optionalCheck->iconSize().width() + 3; // 3 is for layout spacing
 
     QObject::connect(this->Internals->optionalCheck,
       SIGNAL(stateChanged(int)),
@@ -350,10 +342,15 @@ void qtAttributeRefItem::createWidget()
 
   this->Internals->theLabel = new QLabel(lText, this->Widget);
 
-  this->Internals->theLabel->setFixedWidth(rs->maxValueLabelLength() - padding);
+  this->Internals->theLabel->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
   this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel->setWordWrap(true);
   this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  if(dataObj->definition()->advanceLevel() >0)
+    {
+    this->Internals->theLabel->setFont(
+      this->baseView()->uiManager()->advancedFont());
+    }
 
   layout->addWidget(this->Internals->theLabel, 0, gridCol++);
 
@@ -610,7 +607,12 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
 
     if(!currentAtt)
       {
+      int currentLen = this->baseView()->fixedLabelWidth();
+      int tmpLen = this->baseView()->uiManager()->getWidthOfAttributeMaxLabel(
+        attPtr->definition(), this->baseView()->uiManager()->advancedFont());
+      this->baseView()->setFixedLabelWidth(tmpLen);
       currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
+      this->baseView()->setFixedLabelWidth(currentLen);
       QFrame* attFrame = qobject_cast<QFrame*>(currentAtt->widget());
       if(attFrame)
         {

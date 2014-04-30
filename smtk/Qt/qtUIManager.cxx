@@ -38,6 +38,7 @@
 #include <QPushButton>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QFontMetrics>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -241,6 +242,8 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 
   this->RootView = new qtRootView(
     this->m_AttManager.rootView(), pWidget, this);
+
+  this->findDefinitionsLongLabels();
 }
 
 //----------------------------------------------------------------------------
@@ -1255,4 +1258,105 @@ void qtUIManager::onViewUIModified(smtk::attribute::qtBaseView* bview,
                                    smtk::attribute::ItemPtr item)
 {
   emit this->uiChanged(bview, item);
+}
+
+//----------------------------------------------------------------------------
+int qtUIManager::getWidthOfAttributeMaxLabel(smtk::attribute::DefinitionPtr def,
+                                     const QFont &font)
+{
+  std::string text;
+  if(this->Def2LongLabel.contains(def))
+    {
+    text = this->Def2LongLabel[def];
+    }
+  else
+    {
+    this->findDefinitionLongLabel(def, text);
+    }
+
+  this->Def2LongLabel[def] = text;
+  QFontMetrics fontsize(font);
+  return fontsize.width(text.c_str());
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::findDefinitionLongLabel(
+  smtk::attribute::DefinitionPtr def, std::string &labelText)
+{
+  QList<smtk::attribute::ItemDefinitionPtr> itemDefs;
+  int i, n = def->numberOfItemDefinitions();
+  bool hasOptionalItem = false;
+  for (i = 0; i < n; i++)
+    {
+    itemDefs.push_back(def->itemDefinition(i));
+    }
+
+  this->getItemsLongLabel(itemDefs, labelText);
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::getItemsLongLabel(
+  const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+  std::string &labelText)
+{
+  bool hasOptionalItem = false;
+  foreach (smtk::attribute::ItemDefinitionPtr itDef, itemDefs)
+    {
+    smtk::attribute::Item::Type itType = itDef->type();
+    // GROUP and VOID type uses their own label length
+    if(itType == Item::GROUP || itType == Item::VOID)
+      {
+      continue;
+      }
+    std::string text = itDef->label().empty() ?
+      itDef->name() : itDef->label();
+    if(itDef->isOptional())
+      {
+      hasOptionalItem = true;
+      }
+    labelText = (text.length() > labelText.length()) ?
+      text : labelText;
+    }
+
+  // Add spaces to compensate checkbox width and some spacing.
+  labelText += (hasOptionalItem ? "     " : " ");
+}
+
+//----------------------------------------------------------------------------
+int qtUIManager::getWidthOfItemsMaxLabel(
+      const QList<smtk::attribute::ItemDefinitionPtr>& itemDefs,
+      const QFont &font)
+{
+  std::string text;
+  this->getItemsLongLabel(itemDefs, text);
+  QFontMetrics fontsize(font);
+  return fontsize.width(text.c_str());
+}
+
+//----------------------------------------------------------------------------
+void qtUIManager::findDefinitionsLongLabels()
+{
+  this->Def2LongLabel.clear();
+  // Generate list of all concrete definitions in the manager
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+  std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
+  this->m_AttManager.findBaseDefinitions(baseDefinitions);
+  std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
+
+  for (baseIter = baseDefinitions.begin();
+       baseIter != baseDefinitions.end();
+       baseIter++)
+    {
+    std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
+    m_AttManager.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
+    }
+
+  std::vector<smtk::attribute::DefinitionPtr>::const_iterator defIter;
+  for (defIter = defs.begin(); defIter != defs.end(); defIter++)
+    {
+    std::string text;
+    this->findDefinitionLongLabel(*defIter, text);
+    this->Def2LongLabel[*defIter] = text;
+    }
 }

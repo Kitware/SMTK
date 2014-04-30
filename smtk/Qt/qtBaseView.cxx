@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 
 #include "smtk/view/Base.h"
+#include "smtk/view/Root.h"
 
 #include <QPointer>
 #include <QLayout>
@@ -43,6 +44,8 @@ public:
   this->ParentWidget = p;
   this->DataObject = dataObject;
   this->UIManager = uiman;
+  smtk::view::RootPtr rs = uiman->attManager()->rootView();
+  this->FixedLabelWidth = rs->maxValueLabelLength();
   }
   ~qtBaseViewInternals()
   {
@@ -50,6 +53,7 @@ public:
  smtk::view::WeakBasePtr DataObject;
  QPointer<QWidget> ParentWidget;
  QPointer<qtUIManager> UIManager;
+ int FixedLabelWidth;
 };
 
 
@@ -119,4 +123,20 @@ void qtBaseView::valueChanged(smtk::attribute::ItemPtr item)
 {
   emit this->modified(item);
   this->uiManager()->onViewUIModified(this, item);
+}
+
+//----------------------------------------------------------------------------
+int qtBaseView::fixedLabelWidth()
+{
+  return this->Internals->FixedLabelWidth;
+}
+
+//----------------------------------------------------------------------------
+bool qtBaseView::setFixedLabelWidth(int w)
+{
+  smtk::view::RootPtr rs = this->uiManager()->attManager()->rootView();
+  w = std::min(w, rs->maxValueLabelLength());
+  w = std::max(w, rs->minValueLabelLength());
+  this->Internals->FixedLabelWidth = w;
+  return false;
 }

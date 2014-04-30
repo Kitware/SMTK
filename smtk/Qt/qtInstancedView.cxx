@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/view/Instanced.h"
+#include "smtk/view/Root.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -123,7 +124,21 @@ void qtInstancedView::updateAttributeData()
     delete att->widget();
     }
   this->Internals->AttInstances.clear();
+
+  int longLabelWidth = 0;
   std::size_t i, n = iview->numberOfInstances();
+  for (i = 0; i < n; i++)
+    {
+    smtk::attribute::AttributePtr attobj = iview->instance(static_cast<int>(i));
+    if(attobj && attobj->numberOfItems()>0)
+      {
+      int labelWidth = this->uiManager()->getWidthOfAttributeMaxLabel(
+        attobj->definition(), this->uiManager()->advancedFont());
+      longLabelWidth = std::max(labelWidth, longLabelWidth);
+      }
+    }
+  this->setFixedLabelWidth(longLabelWidth);
+
   for (i = 0; i < n; i++)
     {
     smtk::attribute::AttributePtr attobj = iview->instance(static_cast<int>(i));
@@ -145,6 +160,7 @@ void qtInstancedView::updateAttributeData()
         }
       }
     }
+
 }
 
 //----------------------------------------------------------------------------
