@@ -107,10 +107,12 @@ void qtAttribute::createWidget()
     }
   this->clearItems();
 
-  this->Widget = new QFrame(this->parentWidget());
+  QFrame* attFrame = new QFrame(this->parentWidget());
+  attFrame->setFrameShape(QFrame::Box);
+  this->Widget = attFrame;
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
-  layout->setMargin(0);
-
+  layout->setMargin(3);
+  this->Widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 //  QLabel* label = new QLabel(this->getObject()->name().c_str(),
 //    this->parentWidget());
 //  layout->addWidget(label);
