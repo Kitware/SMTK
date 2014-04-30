@@ -125,6 +125,7 @@ public:
   QPointer<QToolButton> EditButton;
   QPointer<QToolButton> CollapseButton;
   Qt::Orientation VectorItemOrient;
+  bool UserSetAttVisibility;
 };
 
 //----------------------------------------------------------------------------
@@ -136,6 +137,7 @@ qtAttributeRefItem::qtAttributeRefItem(
   this->Internals = new qtAttributeRefItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
+  this->Internals->UserSetAttVisibility = true;
   this->createWidget();
 }
 
@@ -181,6 +183,7 @@ void qtAttributeRefItem::setAttributeWidgetVisible(bool visible)
 {
   this->Internals->CollapseButton->setVisible(visible);
   this->setAttributesVisible(visible);
+  this->Internals->UserSetAttVisibility = visible;
 }
 
 //----------------------------------------------------------------------------
@@ -402,7 +405,7 @@ void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
 {
   if(qa && qa->widget())
     {
-    bool bVisible = ( this->Internals->CollapseButton->isVisible() &&
+    bool bVisible = ( this->Internals->UserSetAttVisibility &&
       this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
     qa->widget()->setVisible(bVisible);
     }
