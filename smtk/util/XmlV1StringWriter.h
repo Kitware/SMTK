@@ -52,6 +52,25 @@ namespace smtk
                                   bool no_declaration = false);
       const smtk::util::Logger &messageLog() const
       {return this->m_logger;}
+
+      //Control which sections of the attribute manager should be writtern out
+      // By Default all sections are processed.  These are advance options!!
+      // If val is false then defintions will not be saved
+      void includeDefinitions(bool val)
+      {this->m_includeDefinitions = val;}
+
+      // If val is false then instances will not be saved
+      void includeInstances(bool val)
+      {this->m_includeInstances = val;}
+
+      // If val is false then model information will not be saved
+      void includeModelInformation(bool val)
+      {this->m_includeModelInformation = val;}
+
+      // If val is false then views will not be saved
+      void includeViews(bool val)
+      {this->m_includeViews = val;}
+
     protected:
       void processAttributeInformation();
       void processViews();
@@ -121,6 +140,10 @@ namespace smtk
       static std::string encodeColor(const double *color);
 
       const smtk::attribute::Manager &m_manager;
+      bool m_includeDefinitions;
+      bool m_includeInstances;
+      bool m_includeModelInformation;
+      bool m_includeViews;
 
       // Keep pugi headers out of public headers:
       struct PugiPrivate;

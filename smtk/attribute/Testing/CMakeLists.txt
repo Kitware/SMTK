@@ -28,7 +28,10 @@ target_link_libraries(extensibleAttributeTest SMTKCore)
 add_test(basicAttributeTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeTest)
 add_test(basicAttributeDefinitionTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDefinitionTest)
 add_test(basicAttributeDerivationTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDerivationTest)
-add_test(basicAttributeXMLWriterTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeXMLWriterTest dummy.sbi)
+add_test(basicAttributeXMLWriterTest
+${EXECUTABLE_OUTPUT_PATH}/basicAttributeXMLWriterTest
+  "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest.xml"
+  "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest1.xml")
 add_test(childrenItemsTest ${EXECUTABLE_OUTPUT_PATH}/childrenItemsTest dummy.sbi)
 add_test(expressintTest ${EXECUTABLE_OUTPUT_PATH}/expressionTest)
 add_test(expressionTest2 ${EXECUTABLE_OUTPUT_PATH}/expressionTest2)
