@@ -45,9 +45,9 @@ int main(int argc, char *argv[])
 {
   int status = 0;
   {
-  if (argc != 2)
+  if (argc != 3)
     {
-    std::cerr << "Usage: " << argv[0] << " filename\n";
+    std::cerr << "Usage: " << argv[0] << " FullAttributeFilename InstanceOnlyFileName\n";
     return -1;
     }
   smtk::attribute::Manager manager;
@@ -185,6 +185,17 @@ int main(int argc, char *argv[])
     std::cerr << logger.convertToString();
     status = -1;
     }
+  // Now repeat but only save the instance section
+  writer.includeModelInformation(false);
+  writer.includeDefinitions(false);
+  writer.includeViews(false);
+  if (writer.write(manager, argv[2],logger))
+    {
+    std::cerr << "Errors encountered creating Instance Only Attribute File:\n";
+    std::cerr << logger.convertToString();
+    status = -1;
+    }
+
   std::cout << "Manager destroyed\n";
   }
   return status;
