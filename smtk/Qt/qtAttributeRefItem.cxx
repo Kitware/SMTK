@@ -275,6 +275,12 @@ void qtAttributeRefItem::createWidget()
   QGridLayout* thisLayout = new QGridLayout(this->Widget);
   thisLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
   thisLayout->setContentsMargins(0, 0, 0, 0);
+ /*
+  // NOTE:: because the widget for the referenced attribute could be
+  // big and embed other reference attributes, so a horizontal layout
+  // of these attribute widget become prohibitive. So we always use
+  // a vertical layout for NumberOfRequiredValues > 1.
+
   // Setup combo layout
   QBoxLayout* comboLayout;
   if(this->Internals->VectorItemOrient == Qt::Vertical)
@@ -288,11 +294,7 @@ void qtAttributeRefItem::createWidget()
   comboLayout->setMargin(0);
   comboLayout->setSpacing(6);
   comboLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-  QGridLayout* layout = new QGridLayout();
-  layout->setContentsMargins(0, 5, 0, 0);
-  layout->setSpacing(3);
-  layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+*/
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   this->Internals->CollapseButton = new QToolButton(this->Widget);
@@ -318,11 +320,13 @@ void qtAttributeRefItem::createWidget()
     this, SLOT(onLaunchAttributeView()));
 
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  QString lText = dataObj->label().empty() ?
-     dataObj->name().c_str() : dataObj->label().c_str();
+
+  QBoxLayout* labellayout = new QHBoxLayout();
+  labellayout->setMargin(0);
+  labellayout->setSpacing(3);
 
   int padding = 0;
-  int gridCol = 0;
+//  int gridCol = 0;
   if(dataObj->isOptional())
     {
     this->Internals->optionalCheck = new QCheckBox(this->Widget);
@@ -340,9 +344,11 @@ void qtAttributeRefItem::createWidget()
     QObject::connect(this->Internals->optionalCheck,
       SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
-    layout->addWidget(this->Internals->optionalCheck, 0, gridCol++);
+    labellayout->addWidget(this->Internals->optionalCheck);//, 0, gridCol++);
     }
 
+  QString lText = dataObj->label().empty() ?
+     dataObj->name().c_str() : dataObj->label().c_str();
   this->Internals->theLabel = new QLabel(lText, this->Widget);
 
   this->Internals->theLabel->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
@@ -355,7 +361,10 @@ void qtAttributeRefItem::createWidget()
       this->baseView()->uiManager()->advancedFont());
     }
 
-  layout->addWidget(this->Internals->theLabel, 0, gridCol++);
+  labellayout->addWidget(this->Internals->theLabel);
+  labellayout->addWidget(this->Internals->EditButton);
+  labellayout->addWidget(this->Internals->CollapseButton);
+  thisLayout->addLayout(labellayout, 0, 0);
 
 //  this->Internals->RefComboLayout->addWidget(this->Internals->EditButton);
   for(i = 0; i < n; i++)
@@ -364,40 +373,21 @@ void qtAttributeRefItem::createWidget()
     QVariant vdata(static_cast<int>(i));
     combo->setProperty("ElementIndex", vdata);
     QVBoxLayout* childLayout = new QVBoxLayout;
-    childLayout->setMargin(0);
-    childLayout->setSpacing(6);
+    childLayout->setContentsMargins(12, 3, 3, 0);
 
-    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    childLayout->addWidget(combo);
     QVariant vlayoutdata;
     vlayoutdata.setValue(static_cast<void*>(childLayout));
     combo->setProperty("MyLayout", vlayoutdata);
     this->Internals->comboBoxes.push_back(combo);
     combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    comboLayout->addLayout(childLayout);
     QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
       this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
+
+    thisLayout->addWidget(combo, 2*i, 1);
+    thisLayout->addLayout(childLayout, 2*i+1, 0, 1, 2);
     }
 
-//  QBoxLayout* editlayout = new QHBoxLayout();
-//  editlayout->setMargin(0);
-//  editlayout->addLayout(comboLayout);
-//  editlayout->addWidget(this->Internals->EditButton);
-//  editlayout->addWidget(this->Internals->CollapseButton);
-
-  layout->addWidget(this->Internals->EditButton, 0, gridCol++);
-  layout->addWidget(this->Internals->CollapseButton, 0, gridCol);
-
-  QVBoxLayout* labelLayout = new QVBoxLayout();
-  labelLayout->setMargin(0);
-  labelLayout->setSpacing(0);
-  labelLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  labelLayout->addLayout(layout);
-
-  //layout->addLayout(this->Internals->RefComboLayout);
-  thisLayout->addLayout(labelLayout, 0, 0);
-  thisLayout->addLayout(comboLayout, 0, 1);
-  this->updateItemData();
+   this->updateItemData();
 }
 
 //----------------------------------------------------------------------------
@@ -586,16 +576,25 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
         {
         item->setValue(elementIdx, attPtr);
         }
-      else
+      else if(item->isSet(elementIdx))
         {
         item->unset(elementIdx);
         }
+      else
+        {
+        valChanged = false;
+        }
       }
     }
-  else
+  else if(item->isSet(elementIdx))
     {
     item->unset(elementIdx);
     }
+  else
+    {
+    valChanged = false;
+    }
+
   if(attPtr)
     {
     qtAttribute* currentAtt =
@@ -616,15 +615,9 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       this->baseView()->setFixedLabelWidth(tmpLen);
       currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
       this->baseView()->setFixedLabelWidth(currentLen);
-      QFrame* attFrame = qobject_cast<QFrame*>(currentAtt->widget());
-      if(attFrame)
-        {
-        attFrame->setFrameShape(QFrame::Box);
-        }
-//      QGridLayout* parentGrid = static_cast<QGridLayout*>(this->Widget->layout());
       QBoxLayout* mylayout =
         static_cast<QBoxLayout*>(comboBox->property("MyLayout").value<void *>());
-      mylayout->insertWidget(1, currentAtt->widget());
+      mylayout->addWidget(currentAtt->widget());
       QVariant vrefdata;
       vrefdata.setValue(static_cast<void*>(currentAtt));
       comboBox->setProperty("QtRefAtt", vrefdata);
