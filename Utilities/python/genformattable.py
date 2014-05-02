@@ -26,14 +26,23 @@ def process_file_element(scope, elem):
 
     varstring = '(none)'
     comment_start = value.find('!')
-    comment = None
+    comment_text = ''
     if comment_start > 0:
       comment = value[comment_start:]
+      comment_string = ', comment=\'%s\'' % comment
       varstring = value[var_start:comment_start].strip()
     else:
       varstring = value[var_start:].strip()
+
+    subitems_sting = ''
+
     #print tagname, opcode, varstring, comment
-    print '%-20s: %s \"%s\"  %s' % (tagname, opcode, varstring, comment)
+    #print '%-20s: %s \"%s\"  %s' % (tagname, opcode, varstring, comment)
+    fmt = '    fmt.(\'%s\', \'%s\'%s%s),' % \
+      (tagname, opcode, comment_string, subitems_sting)
+    print fmt
+    scope.output.write(fmt)
+    scope.output.write('\n')
 
 
 # ---------------------------------------------------------------------
