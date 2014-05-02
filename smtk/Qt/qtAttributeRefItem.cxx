@@ -576,16 +576,25 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
         {
         item->setValue(elementIdx, attPtr);
         }
-      else
+      else if(item->isSet(elementIdx))
         {
         item->unset(elementIdx);
         }
+      else
+        {
+        valChanged = false;
+        }
       }
     }
-  else
+  else if(item->isSet(elementIdx))
     {
     item->unset(elementIdx);
     }
+  else
+    {
+    valChanged = false;
+    }
+
   if(attPtr)
     {
     qtAttribute* currentAtt =
