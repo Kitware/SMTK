@@ -40,7 +40,8 @@ def get_base_definitions(defn, def_list):
   if base_def is None:
     return
 
-  def_list.append(base_def.type())
+  quoted = '\"%s\"' % base_def.type()
+  def_list.append(quoted)
   return get_base_definitions(base_def, def_list)
 
 
@@ -77,8 +78,62 @@ def list_items(parent, level, options):
 
 
 # ---------------------------------------------------------------------------
+def list_definition(manager, defn, level, options):
+  '''Lists one definition in indented-text format
+
+  '''
+  this_indent = options.indent * level
+  sublevel = level + 1
+  base_list = list()
+  get_base_definitions(defn, base_list)
+
+  if base_list:
+    base_string = ' : '.join(base_list)
+    print '%sAttDef \"%s\" : %s' % (this_indent, defn.type(), base_string)
+  else:
+    print '%sAttDef \"%s\"' % (this_indent, defn.type())
+
+  list_items(defn, sublevel, options)
+
+
+# ---------------------------------------------------------------------------
+def list_by_view(manager, view, level, options):
+  '''Lists definitions in indented-text format, organized by view
+
+  Works recursively
+  '''
+  this_indent = options.indent * level
+  sublevel = level + 1
+
+  print '%sVIEW \"%s\"' % (this_indent, view.title())
+
+  # Group view
+  if hasattr(view, 'numberOfSubViews'):
+    n = view.numberOfSubViews()
+    for i in range(n):
+      subview = view.subView(i)
+      concrete_subview = smtk.to_concrete(subview)
+      list_by_view(manager, concrete_subview, sublevel, options)
+
+  # Attribute view
+  elif hasattr(view, 'numberOfDefinitions'):
+    n = view.numberOfDefinitions()
+    for i in range(n):
+      defn = view.definition(i)
+      list_definition(manager, defn, sublevel, options)
+
+  # Instanced view
+  elif hasattr(view, 'numberOfInstances'):
+    n = view.numberOfInstances()
+    for i in range(n):
+      att = view.instance(i)
+      defn = att.definition()
+      list_definition(manager, defn, sublevel, options)
+
+
+# ---------------------------------------------------------------------------
 def list_definitions(manager, options):
-  '''Lists definitions in indented-text format
+  '''Lists all definitions in indented-text format
 
   '''
   base_list = manager.findBaseDefinitions()
@@ -91,6 +146,7 @@ def list_definitions(manager, options):
 
   def_list.sort(key=lambda d: d.type())
   for defn in def_list:
+    """
     base_list = list()
     get_base_definitions(defn, base_list)
     if base_list:
@@ -100,7 +156,8 @@ def list_definitions(manager, options):
       print defn.type()
 
     list_items(defn, 1, options)
-
+    """
+    list_definition(manager, defn, 1, options)
 
 # ---------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -108,11 +165,13 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--template_filename', required=True)
     parser.add_argument('-s', '--spaces_per_indent', type=int, \
       default=default_spaces_per_indent)
+    parser.add_argument('-v', '--list_by_view', action='store_true')
     args = parser.parse_args()
 
     # Construct options object
     options = type('Options', (object,), {})
     options.indent = ' ' * args.spaces_per_indent
+    options.list_by_view = args.list_by_view
 
     #  Load template file
     logger = smtk.util.Logger()
@@ -126,4 +185,8 @@ if __name__ == '__main__':
         sys.exit(-2)
 
     # List the output
-    list_definitions(manager, options)
+    if options.list_by_view:
+      root_view = manager.rootView()
+      list_by_view(manager, root_view, 0, options)
+    else:
+      list_definitions(manager, options)
