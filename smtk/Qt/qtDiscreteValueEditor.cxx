@@ -130,7 +130,7 @@ void qtDiscreteValueEditor::createWidget()
     combo->setToolTip(tooltip);
     }
   combo->addItems(discreteVals);
-
+  combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
   layout->addWidget(combo);
@@ -224,7 +224,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
     {
     this->Internals->ChildrenFrame = new QFrame(this);
     this->Internals->ChildrenFrame->setObjectName("ChildItemsFrame");
-    QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     QVBoxLayout* layout = new QVBoxLayout(this->Internals->ChildrenFrame);
     layout->setMargin(3);
     this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
