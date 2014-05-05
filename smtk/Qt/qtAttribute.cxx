@@ -106,10 +106,28 @@ void qtAttribute::createWidget()
     return;
     }
   this->clearItems();
+  int numShowItems = 0;
+  smtk::attribute::AttributePtr att = this->getObject();
+  std::size_t i, n = att->numberOfItems();
+  for (i = 0; i < n; i++)
+    {
+    if(this->Internals->View->uiManager()->passAdvancedCheck(
+        att->item(static_cast<int>(i))->definition()->advanceLevel()) &&
+      this->Internals->View->uiManager()->passItemCategoryCheck(
+        att->item(static_cast<int>(i))->definition()))
+      {
+      numShowItems++;
+      }
+    }
+  if(numShowItems == 0)
+    {
+    return;
+    }
 
   QFrame* attFrame = new QFrame(this->parentWidget());
   attFrame->setFrameShape(QFrame::Box);
   this->Widget = attFrame;
+
   QVBoxLayout* layout = new QVBoxLayout(this->Widget);
   layout->setMargin(3);
   this->Widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
