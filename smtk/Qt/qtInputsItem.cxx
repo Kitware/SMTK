@@ -58,9 +58,13 @@ class qtInputsItemInternals
 {
 public:
 
-  QPointer<QFrame> EntryFrame;
+  QPointer<QGridLayout> EntryLayout;
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
+
+  // for discrete items that with potential child widget
+  // <Enum-Combo, QPair<child-layout, child-Widget> >
+  QMap<QWidget*, QPair<QLayout*, QWidget*> >ChildrenMap;
 
   // for extensible items
   QMap<QToolButton*, QPair<QLayout*, QWidget*> > ExtensibleMap;
@@ -101,11 +105,11 @@ void qtInputsItem::createWidget()
     return;
     }
 
-  this->clearChildItems();
+  this->clearChildWidgets();
   this->updateUI();
 }
 //----------------------------------------------------------------------------
-void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
+void qtInputsItem::addInputEditor(int i)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
@@ -118,9 +122,16 @@ void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
     {
     return;
     }
+  QBoxLayout* childLayout = NULL;
+  if(item->isDiscrete())
+    {
+    childLayout = new QVBoxLayout;
+    childLayout->setContentsMargins(12, 3, 3, 0);
+    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    }
 
   QWidget* editBox = this->baseView()->uiManager()->createInputWidget(
-    item, i, this->Widget, this->baseView());
+    item, i, this->Widget, this->baseView(), childLayout);
   if(!editBox)
     {
     return;
@@ -134,7 +145,7 @@ void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
   editorLayout->setSpacing(3);
   if(item->isExtensible())
     {
-    QToolButton* minusButton = new QToolButton(this->Internals->EntryFrame);
+    QToolButton* minusButton = new QToolButton(this->Widget);
     QString iconName(":/icons/attribute/minus.png");
     minusButton->setFixedSize(QSize(12, 12));
     minusButton->setIcon(QIcon(iconName));
@@ -163,29 +174,38 @@ void qtInputsItem::addInputEditor(QBoxLayout* entrylayout, int i)
       }
     }
   editorLayout->addWidget(editBox);
-  // there could be conditional children, so we need another layout
-  // so that the combobox will stay TOP-left when there are multiple
-  // combo boxes.
-  if(item->isDiscrete())
-    {
-    QVBoxLayout* childLayout = new QVBoxLayout;
-    childLayout->setMargin(0);
-    childLayout->setSpacing(6);
 
-    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    childLayout->addLayout(editorLayout);
-    entrylayout->addLayout(childLayout);
-    }
-  else
+  // always going vertical for discrete and extensible items
+  if(this->Internals->VectorItemOrient == Qt::Vertical ||
+     item->isDiscrete() || item->isExtensible())
     {
-    entrylayout->addLayout(editorLayout);
+    int row = item->isDiscrete() ? 2*i : i;
+    // The "Add New Value" button is in first row, so take that into account
+    row = item->isExtensible() ? row+1 : row;
+    this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
+
+    // there could be conditional children, so we need another layout
+    // so that the combobox will stay TOP-left when there are multiple
+    // combo boxes.
+    if(item->isDiscrete() && childLayout)
+      {
+      this->Internals->EntryLayout->addLayout(childLayout, row+1, 0, 1, 2);
+      }
     }
+  else // going horizontal
+    {
+    this->Internals->EntryLayout->addLayout(editorLayout, 0, i+1);
+    }
+
+  QPair<QLayout*, QWidget*> pair;
+  pair.first = childLayout;
+  pair.second = NULL;
+  this->Internals->ChildrenMap[editBox] = pair;
   this->updateExtensibleState();
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::loadInputValues(
-  QBoxLayout* /*labellayout*/, QBoxLayout* entrylayout)
+void qtInputsItem::loadInputValues()
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
   if(!item)
@@ -204,7 +224,7 @@ void qtInputsItem::loadInputValues(
     if(!this->Internals->AddItemButton)
       {
       QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-      this->Internals->AddItemButton = new QToolButton(this->Internals->EntryFrame);
+      this->Internals->AddItemButton = new QToolButton(this->Widget);
       QString iconName(":/icons/attribute/plus.png");
       this->Internals->AddItemButton->setText("Add New Value");
       this->Internals->AddItemButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -214,22 +234,13 @@ void qtInputsItem::loadInputValues(
       this->Internals->AddItemButton->setSizePolicy(sizeFixedPolicy);
       connect(this->Internals->AddItemButton, SIGNAL(clicked()),
         this, SLOT(onAddNewValue()));
-      entrylayout->addWidget(this->Internals->AddItemButton);
+      this->Internals->EntryLayout->addWidget(this->Internals->AddItemButton, 0, 1);
       }
-    //clear mapping
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
-      {
-      delete this->Internals->ExtensibleMap.value(tButton).second;
-      delete this->Internals->ExtensibleMap.value(tButton).first;
-      delete tButton;
-      }
-    this->Internals->ExtensibleMap.clear();
-    this->Internals->MinusButtonIndices.clear();
     }
 
   for(int i = 0; i < n; i++)
     {
-    this->addInputEditor(entrylayout, i);
+    this->addInputEditor(i);
     }
 }
 
@@ -245,33 +256,14 @@ void qtInputsItem::updateUI()
     return;
     }
 
-  if(this->Internals->EntryFrame)
-    {
-    this->Widget->layout()->removeWidget(this->Internals->EntryFrame);
-    delete this->Internals->EntryFrame;
-    }
-
   this->Widget = new QFrame(this->parentWidget());
-  QGridLayout* layout = new QGridLayout(this->Widget);
-  layout->setMargin(0);
-  layout->setSpacing(0);
-  layout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
+  this->Internals->EntryLayout = new QGridLayout(this->Widget);
+  this->Internals->EntryLayout->setMargin(0);
+  this->Internals->EntryLayout->setSpacing(0);
+  this->Internals->EntryLayout->setAlignment( Qt::AlignLeft | Qt::AlignTop );
 
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-  this->Internals->EntryFrame = new QFrame(this->parentWidget());
-  this->Internals->EntryFrame->setObjectName("CheckAndEntryInputFrame");
-  QBoxLayout* entryLayout;
-  if(this->Internals->VectorItemOrient == Qt::Vertical || dataObj->isExtensible())
-    {
-    entryLayout = new QVBoxLayout(this->Internals->EntryFrame);
-    }
-  else
-    {
-    entryLayout = new QHBoxLayout(this->Internals->EntryFrame);
-    }
-
-  entryLayout->setMargin(0);
   QHBoxLayout* labelLayout = new QHBoxLayout();
   labelLayout->setMargin(0);
   labelLayout->setSpacing(0);
@@ -286,7 +278,7 @@ void qtInputsItem::updateUI()
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
-    this->Internals->EntryFrame->setEnabled(dataObj->isEnabled());
+    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
     labelLayout->addWidget(optionalCheck);
     }
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
@@ -328,19 +320,17 @@ void qtInputsItem::updateUI()
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
 
-  this->loadInputValues(labelLayout, entryLayout);
-
-  entryLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  this->loadInputValues();
 
   // we need this layout so that for items with conditionan children,
   // the label will line up at Top-left against the chilren's widgets.
-  QVBoxLayout* vTLlayout = new QVBoxLayout;
-  vTLlayout->setMargin(0);
-  vTLlayout->setSpacing(0);
-  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  vTLlayout->addLayout(labelLayout);
-  layout->addLayout(vTLlayout, 0, 0);
-  layout->addWidget(this->Internals->EntryFrame, 0, 1);
+//  QVBoxLayout* vTLlayout = new QVBoxLayout;
+//  vTLlayout->setMargin(0);
+//  vTLlayout->setSpacing(0);
+//  vTLlayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+//  vTLlayout->addLayout(labelLayout);
+  this->Internals->EntryLayout->addLayout(labelLayout, 0, 0);
+//  layout->addWidget(this->Internals->EntryFrame, 0, 1);
   if(this->parentWidget() && this->parentWidget()->layout())
     {
     this->parentWidget()->layout()->addWidget(this->Widget);
@@ -350,8 +340,34 @@ void qtInputsItem::updateUI()
 //----------------------------------------------------------------------------
 void qtInputsItem::setOutputOptional(int state)
 {
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  if(!item)
+    {
+    return;
+    }
   bool enable = state ? true : false;
-  this->Internals->EntryFrame->setEnabled(enable);
+  if(item->isExtensible())
+    {
+    if(this->Internals->AddItemButton)
+      {
+      this->Internals->AddItemButton->setEnabled(enable);
+      }
+    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+      {
+      tButton->setEnabled(enable);
+      }
+   }
+
+  foreach(QWidget* widget, this->Internals->ChildrenMap.keys())
+    {
+    if(this->Internals->ChildrenMap.value(widget).second)
+      {
+      this->Internals->ChildrenMap.value(widget).second->setEnabled(enable);
+      }
+    widget->setEnabled(enable);
+    }
+
+//  this->Internals->EntryFrame->setEnabled(enable);
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
@@ -369,11 +385,12 @@ void qtInputsItem::onAddNewValue()
     }
   if(item->setNumberOfValues(item->numberOfValues() + 1))
     {
-    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
-      this->Internals->EntryFrame->layout());
-    this->addInputEditor(entryLayout, static_cast<int>(item->numberOfValues()) - 1);
+//    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
+//      this->Internals->EntryFrame->layout());
+    this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
     }
 }
+
 //----------------------------------------------------------------------------
 void qtInputsItem::onRemoveValue()
 {
@@ -391,7 +408,16 @@ void qtInputsItem::onRemoveValue()
     return;
     }
 
-  delete this->Internals->ExtensibleMap.value(minusButton).second;
+  QWidget* widget = this->Internals->ExtensibleMap.value(minusButton).second;
+  if(this->Internals->ChildrenMap.value(widget).second)
+    {
+    delete this->Internals->ChildrenMap.value(widget).second;
+    }
+  if(this->Internals->ChildrenMap.value(widget).first)
+    {
+    delete this->Internals->ChildrenMap.value(widget).first;
+    }
+  delete widget;
   delete this->Internals->ExtensibleMap.value(minusButton).first;
   this->Internals->ExtensibleMap.remove(minusButton);
   this->Internals->MinusButtonIndices.removeOne(minusButton);
@@ -440,4 +466,42 @@ void qtInputsItem::updateExtensibleState()
     {
     tButton->setEnabled(!minReached);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtInputsItem::clearChildWidgets()
+{
+  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  if(!item)
+    {
+    return;
+    }
+
+  if(item->isExtensible())
+    {
+    //clear mapping
+    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+      {
+// will delete later from this->Internals->ChildrenMap
+//      delete this->Internals->ExtensibleMap.value(tButton).second;
+      delete this->Internals->ExtensibleMap.value(tButton).first;
+      delete tButton;
+      }
+    this->Internals->ExtensibleMap.clear();
+    this->Internals->MinusButtonIndices.clear();
+    }
+
+  foreach(QWidget* widget, this->Internals->ChildrenMap.keys())
+    {
+    if(this->Internals->ChildrenMap.value(widget).second)
+      {
+      delete this->Internals->ChildrenMap.value(widget).second;
+      }
+    if(this->Internals->ChildrenMap.value(widget).first)
+      {
+      delete this->Internals->ChildrenMap.value(widget).first;
+      }
+    delete widget;
+    }
+  this->Internals->ChildrenMap.clear();
 }

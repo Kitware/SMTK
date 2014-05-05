@@ -118,7 +118,7 @@ namespace smtk
 
     virtual QWidget* createInputWidget(smtk::attribute::ItemPtr,
                                        int elementIdx, QWidget* pWidget,
-                                       qtBaseView* bview);
+                                       qtBaseView* bview, QLayout* childLayout);
     virtual QWidget* createEditBox(smtk::attribute::ItemPtr,
                                    int elementIdx, QWidget* pWidget, qtBaseView* bview);
 //    virtual QWidget* createComboBox(smtk::attribute::ItemPtr,

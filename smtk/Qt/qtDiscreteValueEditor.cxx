@@ -43,14 +43,16 @@ class qtDiscreteValueEditorInternals
 {
 public:
   qtDiscreteValueEditorInternals(int elementIdx, QWidget* p,
-    smtk::attribute::ItemPtr dataObj, qtBaseView* bview) :
-    ElementIndex(elementIdx), ParentWidget(p), DataObject(dataObj), BaseView(bview)
+    smtk::attribute::ItemPtr dataObj, qtBaseView* bview, QLayout* childLayout) :
+    ElementIndex(elementIdx), ParentWidget(p), DataObject(dataObj),
+    BaseView(bview), ChildrenLayout(childLayout)
   {
   }
 
   int ElementIndex;
   QPointer<QComboBox> Combo;
   QPointer<QFrame> ChildrenFrame;
+  QPointer<QLayout> ChildrenLayout;
 
   smtk::attribute::WeakItemPtr DataObject;
   QPointer<QWidget> ParentWidget;
@@ -70,11 +72,12 @@ public:
 
 //----------------------------------------------------------------------------
 qtDiscreteValueEditor::qtDiscreteValueEditor(
-  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p, qtBaseView* bview) :
+  smtk::attribute::ItemPtr dataObj, int elementIdx, QWidget* p,
+   qtBaseView* bview, QLayout* childLayout) :
    QWidget(p)
 {
   this->Internals = new qtDiscreteValueEditorInternals(
-    elementIdx, p, dataObj, bview);
+    elementIdx, p, dataObj, bview, childLayout);
   this->createWidget();
 }
 
@@ -216,7 +219,14 @@ void qtDiscreteValueEditor::onInputValueChanged()
   // update children frame if necessary
   if(this->Internals->ChildrenFrame)
     {
-    this->layout()->removeWidget(this->Internals->ChildrenFrame);
+    if(this->Internals->ChildrenLayout)
+      {
+      this->Internals->ChildrenLayout->removeWidget(this->Internals->ChildrenFrame);
+      }
+    else
+      {
+      this->layout()->removeWidget(this->Internals->ChildrenFrame);
+      }
     delete this->Internals->ChildrenFrame;
     }
 
@@ -261,7 +271,14 @@ void qtDiscreteValueEditor::onInputValueChanged()
         }
       }
     this->Internals->BaseView->setFixedLabelWidth(currentLen);
-    this->layout()->addWidget(this->Internals->ChildrenFrame);
+    if(this->Internals->ChildrenLayout)
+      {
+      this->Internals->ChildrenLayout->addWidget(this->Internals->ChildrenFrame);
+      }
+    else
+      {
+      this->layout()->addWidget(this->Internals->ChildrenFrame);
+      }
     }
 //  emit this->widgetResized();
 }
