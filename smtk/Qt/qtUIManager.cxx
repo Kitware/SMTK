@@ -821,7 +821,7 @@ void qtUIManager::onComboIndexChanged()
 //----------------------------------------------------------------------------
 QWidget* qtUIManager::createInputWidget(
   smtk::attribute::ItemPtr attitem,int elementIdx, QWidget* pWidget,
-  qtBaseView* bview)
+  qtBaseView* bview, QLayout* childLayout)
 {
   smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(attitem);
   if(!item)
@@ -831,7 +831,8 @@ QWidget* qtUIManager::createInputWidget(
 
   return (item->allowsExpressions() /*&& item->isExpression(elementIdx)*/) ?
     this->createExpressionRefWidget(item,elementIdx,pWidget, bview) :
-    (item->isDiscrete() ? (new qtDiscreteValueEditor(item, elementIdx, pWidget, bview)) :
+    (item->isDiscrete() ? (new qtDiscreteValueEditor(
+      item, elementIdx, pWidget, bview, childLayout)) :
       this->createEditBox(item,elementIdx,pWidget, bview));
 }
 //----------------------------------------------------------------------------
@@ -1020,6 +1021,7 @@ QWidget* qtUIManager::createEditBox(
         lineEdit->setText(valText);
         inputWidget = lineEdit;
         }
+//      inputWidget->setMinimumWidth(100);
       inputWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       if(sDef->hasDefault())
         {
@@ -1040,6 +1042,7 @@ QWidget* qtUIManager::createEditBox(
     QVariant vobject;
     vobject.setValue(static_cast<void*>(attitem.get()));
     inputWidget->setProperty("AttItemObj", vobject);
+//    inputWidget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
 
     QVariant viewobject;
     viewobject.setValue(static_cast<void*>(bview));

@@ -40,7 +40,8 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtDiscreteValueEditor(smtk::attribute::ItemPtr, int elementIdx, QWidget* parent, qtBaseView* bview);
+      qtDiscreteValueEditor(smtk::attribute::ItemPtr, int elementIdx,
+        QWidget* parent, qtBaseView* bview, QLayout* childLayout);
       virtual ~qtDiscreteValueEditor();
 
     public slots:

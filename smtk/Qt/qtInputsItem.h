@@ -56,11 +56,11 @@ namespace smtk
 
     protected:
       virtual void createWidget();
-      virtual void loadInputValues(
-        QBoxLayout* labelLayout, QBoxLayout* entryLayout);
+      virtual void loadInputValues();
       virtual void updateUI();
-      virtual void addInputEditor(QBoxLayout* entrylayout, int i);
+      virtual void addInputEditor(int i);
       virtual void updateExtensibleState();
+      virtual void clearChildWidgets();
 
     private:
 
