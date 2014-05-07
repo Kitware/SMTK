@@ -54,11 +54,15 @@ endif()
 # on the platform, for boost::shared_ptr, as well as for filesystem support.
 #setup if we should use boost static libraries based on if we are
 #building static or shared. We need to match boosts library type to ours so
-#that we handle symbol visibility properly
-if(${BUILD_SHARED_LIBS})
-  set(Boost_USE_STATIC_LIBS OFF)
-else()
-  set(Boost_USE_STATIC_LIBS ON)
+#that we handle symbol visibility properly, plus at the same time we have
+#to understand that on some platforms or builds we will only have the static
+#libraries so we need to handle that when presented
+if(NOT DEFINED Boost_USE_STATIC_LIBS)
+  if(${BUILD_SHARED_LIBS})
+    set(Boost_USE_STATIC_LIBS OFF)
+  else()
+    set(Boost_USE_STATIC_LIBS ON)
+  endif()
 endif()
 
 #if boost is installed as a system library on a machine, we will never
