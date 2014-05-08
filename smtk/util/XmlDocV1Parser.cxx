@@ -1870,7 +1870,12 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
       return;
       }
     n = xatt.as_uint();
-    item->setNumberOfGroups(n);
+    if (!item->setNumberOfGroups(n))
+      {
+      smtkErrorMacro(this->m_logger,
+                     "Too many sub-groups for Group Item: " << item->name());
+      return;
+      }
     }
 
   if (!n) // There are no sub-groups for this item

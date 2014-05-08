@@ -221,7 +221,7 @@ bool GroupItem::setNumberOfGroups(std::size_t newSize)
     }
 
   std::size_t n = this->maxNumberOfGroups();
-  if (n && (newSize >= n))
+  if (n && (newSize > n))
     {
     return false; // greater than max number
     }

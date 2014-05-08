@@ -674,12 +674,7 @@ int main(int argc, char *argv[])
     std::cout << "Read in template - PASSED\n";
     }
 
-  status = checkManager(manager);
-  if (status < 0)
-    {
-    return status;
-    }
-
+  // Write output file *before* checking manager (checking changes manager)
   smtk::util::AttributeWriter writer;
   smtk::util::Logger logger1;
   if (writer.write(manager, outputFilename,logger1))
@@ -692,6 +687,14 @@ int main(int argc, char *argv[])
     {
     std::cout << "Wrote " << outputFilename << std::endl;
     }
+
+  // Check manager
+  status = checkManager(manager);
+  if (status < 0)
+    {
+    return status;
+    }
+
   std::cout << "Manager destroyed\n";
   }
 

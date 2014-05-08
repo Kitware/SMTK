@@ -829,16 +829,17 @@ void XmlV1StringWriter::processValueItem(pugi::xml_node &node,
 {
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   size_t i, n = item->numberOfValues();
-  if (!n)
-    {
-    return;
-    }
 
   // If the item can have variable number of values then store how many
   // values it has
   if (item->isExtensible())
     {
     node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
+    }
+
+  if (!n)
+    {
+    return;  // nothing else to be done
     }
 
   if (!item->isDiscrete())
@@ -1055,13 +1056,13 @@ void XmlV1StringWriter::processGroupItem(pugi::xml_node &node,
 
   // If the group can have variable number of subgroups then store how many
   //  it has
-  if (!numRequiredGroups)
+  if (item->isExtensible())
     {
     node.append_attribute("NumberOfGroups").set_value(static_cast<unsigned int>(n));
     }
 
   // Optimize for number of required groups = 1
-  if (numRequiredGroups == 1)
+  else if (numRequiredGroups == 1)
     {
     for (j = 0; j < m; j++)
       {
