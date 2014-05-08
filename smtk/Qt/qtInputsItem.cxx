@@ -199,7 +199,8 @@ void qtInputsItem::addInputEditor(int i)
 
   QPair<QLayout*, QWidget*> pair;
   pair.first = childLayout;
-  pair.second = NULL;
+  pair.second = (childLayout && childLayout->count()>0) ?
+    childLayout->itemAt(0)->widget() : NULL;
   this->Internals->ChildrenMap[editBox] = pair;
   this->updateExtensibleState();
 }
@@ -278,7 +279,6 @@ void qtInputsItem::updateUI()
     padding = optionalCheck->iconSize().width() + 3; // 6 is for layout spacing
     QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
       this, SLOT(setOutputOptional(int)));
-    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
     labelLayout->addWidget(optionalCheck);
     }
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
@@ -334,6 +334,10 @@ void qtInputsItem::updateUI()
   if(this->parentWidget() && this->parentWidget()->layout())
     {
     this->parentWidget()->layout()->addWidget(this->Widget);
+    }
+  if(dataObj->isOptional())
+    {
+    this->setOutputOptional(dataObj->isEnabled() ? 1 : 0);
     }
 }
 
