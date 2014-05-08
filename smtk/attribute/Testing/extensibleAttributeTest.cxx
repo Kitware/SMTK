@@ -459,29 +459,9 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
 }
 
 
-int main(int argc, char *argv[])
+int checkManager(smtk::attribute::Manager& manager)
 {
   int status = 0;
-  {
-  if (argc != 3)
-    {
-    std::cerr << "Usage: " << argv[0] << " ExtensibleTestTemplate OutputFileName\n";
-    return -1;
-    }
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
-  smtk::util::AttributeReader reader;
-  smtk::util::Logger logger;
-  if (reader.read(manager, argv[1], true, logger))
-    {
-    std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
-    std::cerr << logger.convertToString();
-    return -1;
-    }
-  else
-    {
-    std::cout << "Read in template - PASSED\n";
-    }
 
   std::cout << "Checking Extensible Value Items........\n";
   smtk::attribute::DefinitionPtr def = manager.findDefinition("Derived2");
@@ -663,16 +643,74 @@ int main(int argc, char *argv[])
     status =  -8;
     }
 
+  return status;
+}
+
+
+int main(int argc, char *argv[])
+{
+  int status = 0;
+
+  if (argc != 3)
+    {
+    std::cerr << "Usage: " << argv[0] << " ExtensibleTestTemplate OutputFileName\n";
+    return -1;
+    }
+  std::string outputFilename = argv[2];
+
+  {
+  smtk::attribute::Manager manager;
+  std::cout << "Manager Created\n";
+  smtk::util::AttributeReader reader;
+  smtk::util::Logger logger;
+  if (reader.read(manager, argv[1], true, logger))
+    {
+    std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
+    std::cerr << logger.convertToString();
+    return -1;
+    }
+  else
+    {
+    std::cout << "Read in template - PASSED\n";
+    }
+
+  status = checkManager(manager);
+  if (status < 0)
+    {
+    return status;
+    }
+
   smtk::util::AttributeWriter writer;
   smtk::util::Logger logger1;
-  if (writer.write(manager, argv[2],logger1))
+  if (writer.write(manager, outputFilename,logger1))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";
     std::cerr << logger1.convertToString();
     status = -1;
     }
-
+  else
+    {
+    std::cout << "Wrote " << outputFilename << std::endl;
+    }
   std::cout << "Manager destroyed\n";
   }
+
+  //Use separate scope to read attribute manager back in
+  {
+  smtk::attribute::Manager readbackManager;
+  std::cout << "Readback Manager Created\n";
+  smtk::util::AttributeReader reader2;
+  smtk::util::Logger logger2;
+  if (reader2.read(readbackManager, outputFilename, true, logger2))
+    {
+    std::cerr << "Errors encountered reading Attribute File: "
+              << outputFilename << "\n";
+    std::cerr << logger2.convertToString();
+    return -1;
+    }
+
+  status = checkManager(readbackManager);
+  }
+
   return status;
 }
