@@ -51,8 +51,15 @@ bool AttributeWriter::write(const smtk::attribute::Manager &manager,
   if(!logger.hasErrors())
 	{
 	std::ofstream outfile;
-	outfile.open(filename.c_str());
-	outfile << result;
+	outfile.open(filename.c_str(), std::ofstream::out | std::ofstream::trunc);
+        if (!outfile)
+          {
+          smtkErrorMacro(logger, "Error opening file for writing: " << filename);
+          }
+        else
+          {
+          outfile << result;
+          }
 	outfile.close();
 	}
   return logger.hasErrors();

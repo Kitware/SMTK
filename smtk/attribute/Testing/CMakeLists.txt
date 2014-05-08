@@ -30,8 +30,8 @@ add_test(basicAttributeDefinitionTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDe
 add_test(basicAttributeDerivationTest ${EXECUTABLE_OUTPUT_PATH}/basicAttributeDerivationTest)
 add_test(basicAttributeXMLWriterTest
 ${EXECUTABLE_OUTPUT_PATH}/basicAttributeXMLWriterTest
-  "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest.xml"
-  "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest1.xml")
+  "${CMAKE_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest.xml"
+  "${CMAKE_BINARY_DIR}/Testing/Temporary/basicAttributeXMLWriterTest1.xml")
 add_test(childrenItemsTest ${EXECUTABLE_OUTPUT_PATH}/childrenItemsTest dummy.sbi)
 add_test(expressintTest ${EXECUTABLE_OUTPUT_PATH}/expressionTest)
 add_test(expressionTest2 ${EXECUTABLE_OUTPUT_PATH}/expressionTest2)
@@ -47,5 +47,5 @@ if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
 add_test(extensibleAttributeTest
 ${EXECUTABLE_OUTPUT_PATH}/extensibleAttributeTest
    "${SMTK_DATA_DIR}/smtk/attribute/ExtensibleTemplateTest.xml"
-   "${CMAKE_CURRENT_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml")
+   "${CMAKE_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml")
 endif()
