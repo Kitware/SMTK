@@ -29,6 +29,7 @@ except ImportError:
     sys.exit(-1)
 
 
+# ---------------------------------------------------------------------
 def generate_model_items(manager, model_description):
     '''
     Constructs model based on input description
@@ -49,6 +50,7 @@ def generate_model_items(manager, model_description):
     return model
 
 
+# ---------------------------------------------------------------------
 def set_item_value(item, value, index=0):
     '''
     Sets value, casting to type as needed
@@ -65,6 +67,7 @@ def set_item_value(item, value, index=0):
     item.setValue(index, value)
 
 
+# ---------------------------------------------------------------------
 def set_item(item, item_description, refitem_list):
     '''
     Recursive method to set contents of Item instances
@@ -76,8 +79,26 @@ def set_item(item, item_description, refitem_list):
         item.setIsEnabled(enabled)
 
     if item.type() == smtk.attribute.Item.GROUP:
-        success = process_items(item, item_description, refitem_list)
-        return success
+        # Check for "groups" keyword, which indicates multiple groups
+        groups_description = item_description.get('groups')
+        if groups_description is None:
+            success = process_items(item, item_description, refitem_list)
+            return success
+        else:
+            # Groups description is list of "items"
+            n = len(groups_description)
+            if not item.setNumberOfGroups(n):
+                msg = 'Unabled to set number of groups to %d for item %s' % \
+                    (n, item.name())
+                print 'WARNING:', msg
+                return False
+            success = True
+
+            # Process each sub group
+            for i in range(n):
+                #print groups_description[i]
+                success &= process_items(item, groups_description[i], refitem_list, i)
+            return success
 
     if item.type() == smtk.attribute.Item.ATTRIBUTE_REF:
         # RefItem instances get set after all attributes have been created
@@ -117,6 +138,7 @@ def set_item(item, item_description, refitem_list):
             set_item_value(item, value)
 
 
+# ---------------------------------------------------------------------
 def process_children_items(item, item_description, refitem_list):
     '''Updates children items of current item
 
@@ -140,25 +162,30 @@ def process_children_items(item, item_description, refitem_list):
         set_item(concrete_child, child_description, refitem_list)
 
 
-def process_items(parent, parent_description, refitem_list):
+# ---------------------------------------------------------------------
+def process_items(parent, parent_description, refitem_list, group_index=None):
     '''
     Traverses all items contained by parent
     Note that parent may be either Attribute or GroupItem
     Returns boolean indicating success
     '''
     success = True
-
     debug_flag = False
-    if hasattr(parent, 'type') and parent.type() == 'NaturalTransport':
-        debug_flag = True
-        print 'Set debug_flag', debug_flag
 
     item_list = parent_description.get('items', list())
+    #if debug_flag:
+    #    #print 'item_list', item_list
     for item_description in item_list:
         item_name = item_description.get('name')
         if debug_flag:
             print 'debug item name', item_name
-        item = parent.find(item_name)
+        if group_index is None:
+            item = parent.find(item_name)
+        else:
+            #item = parent.find(group_index, item_name)
+            item = fetch_subgroup_item(parent, group_index, item_name)
+            if debug_flag:
+                print 'item:', item
         if item is None:
             print 'WARNING: no item %s for parent %s - skipping' % \
                 (item_name, parent.name())
@@ -173,6 +200,7 @@ def process_items(parent, parent_description, refitem_list):
     return success
 
 
+# ---------------------------------------------------------------------
 def fetch_attribute(manager, att_type, name, att_id):
     '''
     Retrieves or creates attribute as needed
@@ -227,6 +255,24 @@ def fetch_attribute(manager, att_type, name, att_id):
     return att
 
 
+# ---------------------------------------------------------------------
+def fetch_subgroup_item(group_item, group_index, item_name):
+  '''Finds item in one subgroup.
+
+  Returns None if not found.
+  This function is needed because GroupItem.find(size_t, std::string)
+  returns a const Item and we need a non-const item
+  '''
+  n = group_item.numberOfItemsPerGroup()
+  for i in range(n):
+    item = group_item.item(group_index, i)
+    if item.name() == item_name:
+      return item
+  # else
+  return None
+
+
+# ---------------------------------------------------------------------
 def generate_atts(manager, attributes_description, refitem_list):
     '''
     Constructs attributes based on input description
@@ -271,6 +317,7 @@ def generate_atts(manager, attributes_description, refitem_list):
     return count
 
 
+# ---------------------------------------------------------------------
 def generate_sim(manager, description):
     '''
     Generates smtk attribute manager
@@ -305,6 +352,7 @@ def generate_sim(manager, description):
     return count
 
 
+# ---------------------------------------------------------------------
 if __name__ == '__main__':
     epilog = 'Note: you must specify EITHER --yaml_filename OR --json_filename'
     parser = argparse.ArgumentParser(description=app_description, epilog=epilog)
