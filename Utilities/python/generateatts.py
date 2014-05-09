@@ -70,6 +70,7 @@ def set_item(item, item_description, refitem_list):
     Recursive method to set contents of Item instances
     Returns boolean indicating success
     '''
+    print 'Set item %s' % item.name()
     enabled = item_description.get('enabled')
     if enabled is not None:
         item.setIsEnabled(enabled)
@@ -81,7 +82,7 @@ def set_item(item, item_description, refitem_list):
     if item.type() == smtk.attribute.Item.ATTRIBUTE_REF:
         # RefItem instances get set after all attributes have been created
         refitem_list.append((item, item_description))
-        print 'refitem_list', refitem_list
+        #print 'refitem_list', refitem_list
         return True
 
     expression = item_description.get('expression')
@@ -99,6 +100,8 @@ def set_item(item, item_description, refitem_list):
     if discrete_index is not None:
         print 'Setting discrete index to %d' % discrete_index
         success = item.setDiscreteIndex(discrete_index)
+        # Discrete items can also have "children" items
+        process_children_items(item, item_description, refitem_list)
         return success
 
     value = item_description.get('value')
@@ -112,6 +115,29 @@ def set_item(item, item_description, refitem_list):
         else:
             item.setNumberOfValues(1)
             set_item_value(item, value)
+
+
+def process_children_items(item, item_description, refitem_list):
+    '''Updates children items of current item
+
+    Only discrete items can have children items
+    '''
+    children_description = item_description.get('items')
+    if children_description is None:
+        return True
+
+    child_item_map = item.childrenItems()
+    for child_description in children_description:
+        name = child_description.get('name')
+        if name is None:
+            print 'WARNING, child description has no name specified'
+            continue
+        child = child_item_map.get(name)
+        if child is None:
+            print 'WARNING, no child item with name \"%s\"' % name
+            continue
+        concrete_child = smtk.attribute.to_concrete(child)
+        set_item(concrete_child, child_description, refitem_list)
 
 
 def process_items(parent, parent_description, refitem_list):
@@ -142,7 +168,6 @@ def process_items(parent, parent_description, refitem_list):
                 success = False
             break
 
-        print 'Set item %s' % item.name()
         concrete_item = smtk.attribute.to_concrete(item)
         set_item(concrete_item, item_description, refitem_list)
     return success
