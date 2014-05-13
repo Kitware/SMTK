@@ -1859,21 +1859,30 @@ void XmlDocV1Parser::processGroupItem(pugi::xml_node &node,
   m = item->numberOfItemsPerGroup();
   if (item->isExtensible())
     {
-    // The node should have an attribute indicating how many groups are
-    // associated with the item
-    xatt = node.attribute("NumberOfGroups");
-    if (!xatt)
+    // If node has no children, then number of groups is zero
+    if (!node.first_child())
       {
-      smtkErrorMacro(this->m_logger,
-                     "XML Attribute NumberOfGroups is missing for Group Item: "
-                     << item->name());
-      return;
+      n = 0;
       }
-    n = xatt.as_uint();
+    else
+      {
+      // The node should have an attribute indicating how many groups are
+      // associated with the item
+      xatt = node.attribute("NumberOfGroups");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute NumberOfGroups is missing for Group Item: "
+                       << item->name());
+        return;
+        }
+      n = xatt.as_uint();
+      }
+
     if (!item->setNumberOfGroups(n))
       {
       smtkErrorMacro(this->m_logger,
-                     "Too many sub-groups for Group Item: " << item->name());
+                     "Invalid number of sub-groups for Group Item: " << item->name());
       return;
       }
     }
