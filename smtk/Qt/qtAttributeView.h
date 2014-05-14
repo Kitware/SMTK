@@ -81,6 +81,7 @@ namespace smtk
         const QModelIndex& topLeft, const QModelIndex& bottomRight);
       void propertyFilterChanged(
         const QModelIndex& topLeft, const QModelIndex& bottomRight);
+      virtual void childrenResized();
 
     signals:
       void numOfAttriubtesChanged();

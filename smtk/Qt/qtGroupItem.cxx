@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtAttribute.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtAttributeRefItem.h"
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -36,6 +37,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QPointer>
 #include <QMap>
 #include <QToolButton>
+#include <QTableWidget>
 
 using namespace smtk::attribute;
 
@@ -45,9 +47,10 @@ class qtGroupItemInternals
 public:
   QPointer<QFrame> ChildrensFrame;
   Qt::Orientation VectorItemOrient;
-  QMap<QToolButton*, QPair<QFrame*, QList<qtItem* > > > ExtensibleMap;
+  QMap<QToolButton*, QList<qtItem* > > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
+  QPointer<QTableWidget> ItemsTable;
 };
 
 //----------------------------------------------------------------------------
@@ -156,21 +159,32 @@ void qtGroupItem::updateItemData()
     {
     return;
     }
+
+  std::size_t i, n = item->numberOfGroups();
   if(item->isExtensible())
     {
     //clear mapping
     foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
       {
-      foreach(qtItem* qi, this->Internals->ExtensibleMap.value(tButton).second)
+      foreach(qtItem* qi, this->Internals->ExtensibleMap.value(tButton))
         {
         delete qi->widget();
         delete qi;
         }
-      delete this->Internals->ExtensibleMap.value(tButton).first;
+//      delete this->Internals->ExtensibleMap.value(tButton).first;
       delete tButton;
       }
     this->Internals->ExtensibleMap.clear();
     this->Internals->MinusButtonIndices.clear();
+    if(this->Internals->ItemsTable)
+      {
+      this->Internals->ItemsTable->blockSignals(true);
+      this->Internals->ItemsTable->clear();
+      this->Internals->ItemsTable->setRowCount(0);
+      this->Internals->ItemsTable->setColumnCount(0);
+      this->Internals->ItemsTable->blockSignals(false);
+      }
+
     // The new item button
     if(!this->Internals->AddItemButton)
       {
@@ -188,10 +202,17 @@ void qtGroupItem::updateItemData()
     this->Widget->layout()->setSpacing(3);
     }
 
-  std::size_t i, n = item->numberOfGroups();
   for(i = 0; i < n; i++)
     {
-    this->addSubGroup(static_cast<int>(i));
+    int subIdx = static_cast<int>(i);
+    if(item->isExtensible())
+      {
+      this->addItemsToTable(subIdx);
+      }
+    else
+      {
+      this->addSubGroup(subIdx);
+      }
     }
 }
 
@@ -205,7 +226,15 @@ void qtGroupItem::onAddSubGroup()
     }
   if(item->appendGroup())
     {
-    this->addSubGroup(static_cast<int>(item->numberOfGroups()) - 1);
+    int subIdx = static_cast<int>(item->numberOfGroups()) - 1;
+    if(item->isExtensible())
+      {
+      this->addItemsToTable(subIdx);
+      }
+    else
+      {
+      this->addSubGroup(subIdx);
+      }
     }
 }
 
@@ -252,44 +281,7 @@ void qtGroupItem::addSubGroup(int i)
       }
     }
   this->baseView()->setFixedLabelWidth(currentLen);
-
-  if(item->isExtensible())
-    {
-    QBoxLayout* layout = new QHBoxLayout();
-    layout->setMargin(0);
-    layout->setSpacing(3);
-    layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
-    QToolButton* minusButton = new QToolButton(this->Internals->ChildrensFrame);
-    QString iconName(":/icons/attribute/minus.png");
-    minusButton->setFixedSize(QSize(16, 16));
-    minusButton->setIcon(QIcon(iconName));
-    minusButton->setSizePolicy(sizeFixedPolicy);
-    minusButton->setToolTip("Remove sub group");
-    //QVariant vdata(static_cast<int>(i));
-    //minusButton->setProperty("SubgroupIndex", vdata);
-    connect(minusButton, SIGNAL(clicked()),
-      this, SLOT(onRemoveSubGroup()));
-    layout->addWidget(minusButton);
-    QFrame* lineFrame = new QFrame();
-    lineFrame->setFrameShape(QFrame::Panel);
-    lineFrame->setFrameShadow(QFrame::Sunken);
-    lineFrame->setLayout(subGrouplayout);
-    layout->addWidget(lineFrame);
-    //layout->addLayout(subGrouplayout);
-    frameLayout->addLayout(layout);
-    // frameLayout->addWidget(lineFrame);
-    QPair <QFrame*, QList<qtItem*> > pair;
-    pair.first = lineFrame;
-    pair.second = itemList;
-    this->Internals->ExtensibleMap[minusButton] = pair;
-    this->Internals->MinusButtonIndices.push_back(minusButton);
-    this->updateExtensibleState();
-    }
-  else
-    {
-    frameLayout->addLayout(subGrouplayout);
-    }
+  frameLayout->addLayout(subGrouplayout);
 }
 //----------------------------------------------------------------------------
 void qtGroupItem::onRemoveSubGroup()
@@ -308,17 +300,33 @@ void qtGroupItem::onRemoveSubGroup()
     return;
     }
 
-  foreach(qtItem* qi, this->Internals->ExtensibleMap.value(minusButton).second)
+  foreach(qtItem* qi, this->Internals->ExtensibleMap.value(minusButton))
     {
     delete qi->widget();
     delete qi;
     }
-  delete this->Internals->ExtensibleMap.value(minusButton).first;
+//  delete this->Internals->ExtensibleMap.value(minusButton).first;
   this->Internals->ExtensibleMap.remove(minusButton);
-  this->Internals->MinusButtonIndices.removeOne(minusButton);
-  delete minusButton;
 
   item->removeGroup(gIdx);
+  int rowIdx = -1, rmIdx = -1;
+  // normally rowIdx is same as gIdx, but we need to find
+  // explicitly since minusButton could be NULL in MinusButtonIndices
+  foreach(QToolButton* tb, this->Internals->MinusButtonIndices)
+    {
+    rowIdx = tb != NULL ? rowIdx + 1 : rowIdx;
+    if(tb == minusButton)
+      {
+      rmIdx = rowIdx;
+      break;
+      }
+    }
+  if(rmIdx >=0 && rmIdx < this->Internals->ItemsTable->rowCount())
+    {
+    this->Internals->ItemsTable->removeRow(rmIdx);
+    }
+  this->Internals->MinusButtonIndices.removeOne(minusButton);
+  delete minusButton;
   this->updateExtensibleState();
 }
 
@@ -340,4 +348,87 @@ void qtGroupItem::updateExtensibleState()
     {
     tButton->setEnabled(!minReached);
     }
+}
+
+//----------------------------------------------------------------------------
+void qtGroupItem::addItemsToTable(int i)
+{
+  smtk::attribute::GroupItemPtr item =dynamic_pointer_cast<GroupItem>(this->getObject());
+  if(!item || !item->isExtensible())
+    {
+    return;
+    }
+
+  std::size_t j, m = item->numberOfItemsPerGroup();
+  QBoxLayout* frameLayout = qobject_cast<QBoxLayout*>(
+    this->Internals->ChildrensFrame->layout());
+  if(!this->Internals->ItemsTable)
+    {
+    this->Internals->ItemsTable = new QTableWidget(this->Internals->ChildrensFrame);
+    this->Internals->ItemsTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //this->Internals->ItemsTable->setFixedHeight(120);
+    this->Internals->ItemsTable->setColumnCount(1); // for minus button
+    frameLayout->addWidget(this->Internals->ItemsTable);
+    }
+
+  this->Internals->ItemsTable->blockSignals(true);
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  QList<qtItem*> itemList;
+  int added = 0;
+  int numRows = this->Internals->ItemsTable->rowCount();
+  for (j = 0; j < m; j++)
+    {
+    smtk::attribute::ItemPtr attItem = item->item(i, static_cast<int>(j));
+    qtItem* childItem = qtAttribute::createItem(attItem, this->Widget,
+      this->baseView(), Qt::Vertical);
+    if(childItem)
+      {
+      if(added == 0)
+        {
+        this->Internals->ItemsTable->insertRow(numRows);
+        }
+      int numCols = this->Internals->ItemsTable->columnCount() - 1;
+      if(added >= numCols)
+        {
+        this->Internals->ItemsTable->insertColumn(numCols + 1);
+        std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
+        this->Internals->ItemsTable->setHorizontalHeaderItem(numCols + 1,
+          new QTableWidgetItem(strItemLabel.c_str()));
+        }
+      childItem->setLabelVisible(false);
+      qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(childItem);
+      if(arItem)
+        {
+        arItem->setAttributeWidgetVisible(false);
+        }
+      this->Internals->ItemsTable->setCellWidget(numRows, added+1, childItem->widget());
+      this->Internals->ItemsTable->setItem(numRows, added+1, new QTableWidgetItem());
+      itemList.push_back(childItem);
+      added++;
+      }
+    }
+  QToolButton* minusButton = NULL;
+  // if there are items
+  if(added > 0)
+    {
+    minusButton = new QToolButton(this->Internals->ChildrensFrame);
+    QString iconName(":/icons/attribute/minus.png");
+    minusButton->setFixedSize(QSize(16, 16));
+    minusButton->setIcon(QIcon(iconName));
+    minusButton->setSizePolicy(sizeFixedPolicy);
+    minusButton->setToolTip("Remove sub group");
+    //QVariant vdata(static_cast<int>(i));
+    //minusButton->setProperty("SubgroupIndex", vdata);
+    connect(minusButton, SIGNAL(clicked()),
+      this, SLOT(onRemoveSubGroup()));
+    this->Internals->ItemsTable->setCellWidget(numRows, 0, minusButton);
+
+    this->Internals->ExtensibleMap[minusButton] = itemList;
+    }
+  this->Internals->MinusButtonIndices.push_back(minusButton);
+  this->updateExtensibleState();
+
+  this->Internals->ItemsTable->blockSignals(false);
+  this->Internals->ItemsTable->resizeColumnsToContents();
+  this->Internals->ItemsTable->resizeRowsToContents();
 }

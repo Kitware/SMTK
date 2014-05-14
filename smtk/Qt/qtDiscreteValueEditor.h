@@ -43,6 +43,7 @@ namespace smtk
       qtDiscreteValueEditor(smtk::attribute::ItemPtr, int elementIdx,
         QWidget* parent, qtBaseView* bview, QLayout* childLayout);
       virtual ~qtDiscreteValueEditor();
+      virtual QSize sizeHint() const;
 
     public slots:
       void onInputValueChanged();

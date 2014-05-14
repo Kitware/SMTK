@@ -47,6 +47,8 @@ public:
     ElementIndex(elementIdx), ParentWidget(p), DataObject(dataObj),
     BaseView(bview), ChildrenLayout(childLayout)
   {
+    this->hintChildWidth = 0;
+    this->hintChildHeight = 0;
   }
 
   int ElementIndex;
@@ -58,6 +60,8 @@ public:
   QPointer<QWidget> ParentWidget;
   QList<smtk::attribute::qtItem*> ChildItems;
   QPointer<qtBaseView> BaseView;
+  int hintChildWidth;
+  int hintChildHeight;
 
   void clearChildItems()
   {
@@ -217,6 +221,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
     }
 
   // update children frame if necessary
+  this->Internals->hintChildWidth = 0;
+  this->Internals->hintChildHeight = 0;
   if(this->Internals->ChildrenFrame)
     {
     if(this->Internals->ChildrenLayout)
@@ -271,6 +277,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
         }
       }
     this->Internals->BaseView->setFixedLabelWidth(currentLen);
+    this->Internals->hintChildWidth = this->Internals->ChildrenFrame->width();
+    this->Internals->hintChildHeight = this->Internals->ChildrenFrame->height();
     if(this->Internals->ChildrenLayout)
       {
       this->Internals->ChildrenLayout->addWidget(this->Internals->ChildrenFrame);
@@ -280,5 +288,12 @@ void qtDiscreteValueEditor::onInputValueChanged()
       this->layout()->addWidget(this->Internals->ChildrenFrame);
       }
     }
-//  emit this->widgetResized();
+  this->Internals->BaseView->childrenResized();
+}
+
+//-----------------------------------------------------------------------------
+QSize qtDiscreteValueEditor::sizeHint() const
+{
+  return QSize(this->Internals->Combo->width(),
+    this->Internals->Combo->height() + this->Internals->hintChildHeight);
 }
