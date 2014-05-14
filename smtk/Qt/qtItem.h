@@ -88,7 +88,6 @@ namespace smtk
       
       bool passAdvancedCheck();
     signals:
-      void widgetResized();
 
     protected slots:
       virtual void updateItemData() {;}

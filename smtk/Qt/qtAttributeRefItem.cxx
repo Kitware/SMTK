@@ -206,12 +206,15 @@ void qtAttributeRefItem::setAttributesVisible(bool visible)
 {
   foreach(qtAttribute* qa, this->Internals->RefAtts.values())
     {
-    if(qa && qa->widget()->isVisible() != visible)
+    if(qa && qa->widget())
       {
       qa->widget()->setVisible(visible);
       }
     }
-  emit this->widgetResized();
+  if(this->Internals->UserSetAttVisibility)
+    {
+    this->baseView()->childrenResized();
+    }
 }
 //----------------------------------------------------------------------------
 void qtAttributeRefItem::onLaunchAttributeView()
@@ -398,6 +401,10 @@ void qtAttributeRefItem::updateAttWidgetState(qtAttribute* qa)
     bool bVisible = ( this->Internals->UserSetAttVisibility &&
       this->Internals->CollapseButton->arrowType() == Qt::DownArrow );
     qa->widget()->setVisible(bVisible);
+    if(this->Internals->UserSetAttVisibility)
+      {
+      this->baseView()->childrenResized();
+      }
     }
 }
 

@@ -487,8 +487,9 @@ void qtAttributeView::onListBoxSelectionChanged()
     }
 
   this->Internals->ValuesTable->blockSignals(false);
-  this->Internals->ValuesTable->resizeColumnsToContents();
   this->Internals->ValuesTable->resizeRowsToContents();
+  this->Internals->ValuesTable->resizeColumnsToContents();
+  this->Internals->ValuesTable->update();
 }
 
 //----------------------------------------------------------------------------
@@ -1182,6 +1183,11 @@ void qtAttributeView::addComparativeAttribute(
         {
         qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
         qItem->setLabelVisible(false);
+        qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
+        if(arItem)
+          {
+          arItem->setAttributeWidgetVisible(false);
+          }
         vtWidget->setCellWidget(row, col, qItem->widget());
         vtWidget->setItem(row, col, new QTableWidgetItem());
         break;
@@ -1301,6 +1307,11 @@ void qtAttributeView::addComparativeProperty(
         {
         qtItem* qItem = qtAttribute::createItem(attItem, NULL, this, Qt::Vertical);
         qItem->setLabelVisible(false);
+        qtAttributeRefItem* arItem = qobject_cast<qtAttributeRefItem*>(qItem);
+        if(arItem)
+          {
+          arItem->setAttributeWidgetVisible(false);
+          }
         vtWidget->setCellWidget(insertRow, col, qItem->widget());
         vtWidget->setItem(insertRow, col, new QTableWidgetItem());
         break;
@@ -1370,5 +1381,17 @@ void qtAttributeView::onListBoxClicked(QTableWidgetItem* item)
         selItem->setSelected(true);
         }
       }
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtAttributeView::childrenResized()
+{
+  if(this->Internals->ValuesTable->isVisible())
+    {
+    this->Internals->ValuesTable->resizeRowsToContents();
+    this->Internals->ValuesTable->resizeColumnsToContents();
+    this->Internals->ValuesTable->update();
+    this->Widget->update();
     }
 }
