@@ -84,6 +84,12 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
+  const char *getValueForXMLElement(smtk::util::UUID v)
+  {
+    return v.toString().c_str();
+  }
+
+//----------------------------------------------------------------------------
   template<typename ItemDefType>
   void processDerivedValueDef(pugi::xml_node &node,  ItemDefType idef)
   {
