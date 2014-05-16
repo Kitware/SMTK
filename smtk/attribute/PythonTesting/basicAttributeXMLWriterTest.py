@@ -47,6 +47,9 @@ if __name__ == '__main__':
     eitemdef = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Expression String')
     eitemdef2 = expDef.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'Aux String')
     eitemdef.setDefaultValue('sample')
+    eitemdef3 = expDef.addItemDefinitionStr( smtk.attribute.UUIDItemDefinition, 'Expression UUID')
+    eitemdef4 = expDef.addItemDefinitionStr( smtk.attribute.UUIDItemDefinition, 'Aux String')
+    eitemdef3.setDefaultValue(smtk.util.UUIDGenerator().random())
 
     base = manager.createDefinition('BaseDef')
     # Lets add some item definitions
@@ -91,6 +94,11 @@ if __name__ == '__main__':
     sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'StringItem2' )
     sitemdef.setDefaultValue('Default')
     sitemdef.addCategory('General')
+    uitemdef = def2.addItemDefinitionStr( smtk.attribute.UUIDItemDefinition, 'UUIDItem1' )
+    uitemdef.addCategory('Flow')
+    uitemdef = def2.addItemDefinitionStr( smtk.attribute.UUIDItemDefinition, 'UUIDItem2' )
+    uitemdef.setDefaultValue(smtk.util.UUIDGenerator().random())
+    uitemdef.addCategory('General')
     dirdef = def2.addItemDefinitionStr( smtk.attribute.DirectoryItemDefinition, 'DirectoryItem')
     dirdef.setShouldExist(True)
     dirdef.setShouldBeRelative(True)

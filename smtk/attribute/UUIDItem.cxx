@@ -47,5 +47,5 @@ UUIDItem::~UUIDItem()
 //----------------------------------------------------------------------------
 Item::Type UUIDItem::type() const
 {
-  return STRING;
+  return UUID;
 }
