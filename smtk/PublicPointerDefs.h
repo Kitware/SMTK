@@ -136,6 +136,8 @@ namespace smtk
     class Manager;
     class StringItem;
     class StringItemDefinition;
+    class UUIDItem;
+    class UUIDItemDefinition;
     class ValueItem;
     class ValueItemDefinition;
     class VoidItem;
@@ -240,6 +242,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::UUIDItem >                 UUIDItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::UUIDItemDefinition >       UUIDItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
 

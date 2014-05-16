@@ -229,6 +229,8 @@ std::string Item::type2String(Item::Type t)
       return "String";
     case VOID:
       return "Void";
+    case UUID:
+      return "UUID";
     default:
       return "";
     }
@@ -272,6 +274,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "Void")
     {
     return VOID;
+    }
+  if (s == "UUID")
+    {
+    return UUID;
     }
   return NUMBER_OF_TYPES;
 }

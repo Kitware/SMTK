@@ -113,6 +113,10 @@ namespace smtk
                              smtk::attribute::StringItemPtr item);
       void processStringDef(pugi::xml_node &node,
                             smtk::attribute::StringItemDefinitionPtr idef);
+      void processUUIDItem(pugi::xml_node &node,
+                           smtk::attribute::UUIDItemPtr item);
+      void processUUIDDef(pugi::xml_node &node,
+                          smtk::attribute::UUIDItemDefinitionPtr idef);
       void processValueItem(pugi::xml_node &node,
                              smtk::attribute::ValueItemPtr item);
       void processValueDef(pugi::xml_node &node,

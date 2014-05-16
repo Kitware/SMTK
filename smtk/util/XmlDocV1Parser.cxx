@@ -43,6 +43,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/UUIDItem.h"
+#include "smtk/attribute/UUIDItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -81,6 +83,12 @@ namespace {
   const char *getValueFromXMLElement(xml_node &node, std::string)
   {
     return node.text().get();
+  }
+
+//----------------------------------------------------------------------------
+  smtk::util::UUID getValueFromXMLElement(xml_node &node, smtk::util::UUID)
+  {
+    return smtk::util::UUID(std::string(node.text().get()));
   }
 
 //----------------------------------------------------------------------------
@@ -699,6 +707,10 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
         this->processStringDef(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::UUID:
+        idef = def->addItemDefinition<smtk::attribute::UUIDItemDefinition>(itemName);
+        this->processUUIDDef(node, smtk::dynamic_pointer_cast<smtk::attribute::UUIDItemDefinition>(idef));
+        break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
@@ -810,6 +822,15 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
     idef->setIsMultiline(true);
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
+    (node, idef, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processUUIDDef(pugi::xml_node &node,
+                                         attribute::UUIDItemDefinitionPtr idef)
+{
+  // First process the common value item def stuff
+  this->processValueDef(node, idef);
+  processDerivedValueDef<attribute::UUIDItemDefinitionPtr, smtk::util::UUID>
     (node, idef, this->m_logger);
 }
 //----------------------------------------------------------------------------
@@ -983,6 +1004,16 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
         if( (cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)) )
           {
           this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
+        break;
+      case smtk::attribute::Item::UUID:
+        if( (cidef = idef->addItemDefinition<smtk::attribute::UUIDItemDefinition>(citemName)) )
+          {
+          this->processUUIDDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::UUIDItemDefinition>(cidef));
           }
         else
           {
@@ -1331,6 +1362,17 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
           }
         this->processStringDef(child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::UUID:
+        idef = def->addItemDefinition<smtk::attribute::UUIDItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create String Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
+        this->processUUIDDef(child, smtk::dynamic_pointer_cast<smtk::attribute::UUIDItemDefinition>(idef));
+        break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         if (!idef)
@@ -1540,6 +1582,9 @@ void XmlDocV1Parser::processItem(xml_node &node,
       break;
     case smtk::attribute::Item::STRING:
       this->processStringItem(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item));
+      break;
+    case smtk::attribute::Item::UUID:
+      this->processUUIDItem(node, smtk::dynamic_pointer_cast<smtk::attribute::UUIDItem>(item));
       break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
@@ -1855,6 +1900,15 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
   this->processValueItem(node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr, std::string>
+    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processUUIDItem(pugi::xml_node &node,
+                                          attribute::UUIDItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
+  processDerivedValue<attribute::UUIDItemPtr, smtk::util::UUID>
     (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
 }
 //----------------------------------------------------------------------------

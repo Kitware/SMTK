@@ -20,6 +20,8 @@ set(attributeHeaders
   RefItemDefinition.h
   StringItem.h
   StringItemDefinition.h
+  UUIDItem.h
+  UUIDItemDefinition.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -48,6 +50,8 @@ set(attributeSrcs
   RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
+  UUIDItem.cxx
+  UUIDItemDefinition.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx

@@ -61,6 +61,7 @@ namespace smtk
         FILE,
         DIRECTORY,
         COLOR,
+        UUID,
         NUMBER_OF_TYPES
       };
 

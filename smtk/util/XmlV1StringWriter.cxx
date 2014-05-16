@@ -43,6 +43,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/UUIDItem.h"
+#include "smtk/attribute/UUIDItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Item.h"
@@ -517,6 +519,9 @@ XmlV1StringWriter::processItemDefinition(xml_node &node,
     case Item::STRING:
       this->processStringDef(node, smtk::dynamic_pointer_cast<StringItemDefinition>(idef));
       break;
+    case Item::UUID:
+      this->processUUIDDef(node, smtk::dynamic_pointer_cast<UUIDItemDefinition>(idef));
+      break;
     case Item::VOID:
       // Nothing to do!
       break;
@@ -557,6 +562,14 @@ void XmlV1StringWriter::processStringDef(pugi::xml_node &node,
     node.append_attribute("MultipleLines").set_value(true);
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr>(node, idef);
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processUUIDDef(pugi::xml_node& node,
+                                         attribute::UUIDItemDefinitionPtr idef)
+{
+  this->processValueDef(
+    node, smtk::dynamic_pointer_cast<ValueItemDefinition>(idef));
+  processDerivedValueDef<attribute::UUIDItemDefinitionPtr>(node, idef);
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processValueDef(pugi::xml_node &node,
@@ -862,6 +875,9 @@ void XmlV1StringWriter::processItem(xml_node &node,
     case Item::STRING:
       this->processStringItem(node, smtk::dynamic_pointer_cast<StringItem>(item));
       break;
+    case Item::UUID:
+      this->processUUIDItem(node, smtk::dynamic_pointer_cast<UUIDItem>(item));
+      break;
     case Item::VOID:
       // Nothing to do!
       break;
@@ -959,6 +975,14 @@ void XmlV1StringWriter::processStringItem(pugi::xml_node &node,
   this->processValueItem(node,
                          dynamic_pointer_cast<ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr>(node, item);
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::processUUIDItem(pugi::xml_node &node,
+                                          attribute::UUIDItemPtr item)
+{
+  this->processValueItem(node,
+                         dynamic_pointer_cast<ValueItem>(item));
+  processDerivedValue<attribute::UUIDItemPtr>(node, item);
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processRefItem(pugi::xml_node &node,
