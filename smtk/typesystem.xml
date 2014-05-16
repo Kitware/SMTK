@@ -737,6 +737,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::UUIDItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::UUIDItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
 
@@ -1497,6 +1499,39 @@
                       return-type="smtk::shared_ptr&lt;smtk::attribute::StringItemDefinition &gt;">
           <inject-code>
             %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::StringItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="UUIDItem">
+        <include file-name="smtk/attribute/UUIDItem.h" location="local" />
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::UUIDItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::UUIDItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </object-type>
+
+      <object-type name="UUIDItemDefinition">
+        <include file-name="smtk/attribute/UUIDItemDefinition.h" location="local" />
+        <modify-function signature="UUIDItemDefinition(const std::string &amp;)" access="private" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::UUIDItemDefinition &gt;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ItemDefinition &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
+                      static="yes"
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::UUIDItemDefinition &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::UUIDItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>

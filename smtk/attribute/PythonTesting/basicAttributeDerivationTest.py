@@ -8,7 +8,8 @@ Requires SMTKCorePython.so to be in module path
 import smtk
 
 itemNames = ["IntComp1", "IntComp2", "DoubleComp1",
-             "DoubleComp2", "StringComp1", "StringComp2"]
+             "DoubleComp2", "StringComp1", "StringComp2",
+             "UUIDComp1", "UUIDComp2"]
 
 if __name__ == '__main__':
     import sys
@@ -47,6 +48,17 @@ if __name__ == '__main__':
     scompdef2.setDefaultValue('Default')
     itemdef2 = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef2)
     def1.addItemDefinition(itemdef2)
+
+    def3 = manager.createDefinition('Derived3', 'Derived1')
+    # Lets add some item definitions
+    scompdef = smtk.attribute.UUIDItemDefinition.New(itemNames[6])
+    itemdef = smtk.attribute.UUIDItemDefinition.ToItemDefinition(scompdef)
+    def1.addItemDefinition(itemdef)
+    scompdef3 = smtk.attribute.UUIDItemDefinition.New(itemNames[7])
+    #   Make a default that is a null UUID:
+    scompdef3.setDefaultValue(smtk.util.UUIDGenerator().null())
+    itemdef3 = smtk.attribute.UUIDItemDefinition.ToItemDefinition(scompdef3)
+    def1.addItemDefinition(itemdef3)
 
     # Lets test out the find item position method
     pstatus = 0;
