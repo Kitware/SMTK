@@ -701,10 +701,26 @@ void XmlDocV1Parser::processItemDef(xml_node &node,
     idef->setIsOptional(xatt.as_bool());
     idef->setIsEnabledByDefault(node.attribute("IsEnabledByDefault").as_bool());
     }
+  // If using AdvanceLevel then we are setting
+  // both read and write
   xatt = node.attribute("AdvanceLevel");
   if (xatt)
     {
-    idef->setAdvanceLevel(xatt.as_int());
+    idef->setAdvanceLevel(0, xatt.as_int());
+    idef->setAdvanceLevel(1, xatt.as_int());
+    }
+  else
+    {
+    xatt = node.attribute("AdvanceReadLevel");
+    if (xatt)
+      {
+      idef->setAdvanceLevel(0, xatt.as_int());
+      }
+    xatt = node.attribute("AdvanceWriteLevel");
+    if (xatt)
+      {
+      idef->setAdvanceLevel(1, xatt.as_int());
+      }
     }
 
   child = node.child("BriefDescription");
@@ -1448,6 +1464,28 @@ void XmlDocV1Parser::processItem(xml_node &node,
       item->setIsEnabled(xatt.as_bool());
       }
     }
+  // If using AdvanceLevel then we are setting
+  // both read and write
+  xatt = node.attribute("AdvanceLevel");
+  if (xatt)
+    {
+    item->setAdvanceLevel(0, xatt.as_int());
+    item->setAdvanceLevel(1, xatt.as_int());
+    }
+  else
+    {
+    xatt = node.attribute("AdvanceReadLevel");
+    if (xatt)
+      {
+      item->setAdvanceLevel(0, xatt.as_int());
+      }
+    xatt = node.attribute("AdvanceWriteLevel");
+    if (xatt)
+      {
+      item->setAdvanceLevel(1, xatt.as_int());
+      }
+    }
+
   switch (item->type())
     {
     case smtk::attribute::Item::ATTRIBUTE_REF:

@@ -529,6 +529,8 @@
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
+    <modify-function signature="setAdvanceLevel(int,int)" remove="all"/>
+    <modify-function signature="unsetAdvanceLevel(int)" remove="all"/>
     <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
     <modify-function signature="reset()" remove="all"/>
     <modify-function signature="detachOwningItem()" remove="all"/>
@@ -540,6 +542,7 @@
 
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::ItemDefinition" >
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
+    <modify-function signature="setAdvanceLevel(int,int)" remove="all"/>
     <modify-function signature="setVersion(int)" remove="all"/>
     <modify-function signature="setBriefDescription(const std::string &amp;)" remove="all"/>
     <modify-function signature="setDetailedDescription(const std::string &amp;)" remove="all"/>
