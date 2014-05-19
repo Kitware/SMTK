@@ -62,8 +62,8 @@ public:
   int dimension(const smtk::util::UUID& ofEntity) const;
   std::string name(const smtk::util::UUID& ofEntity) const;
 
-  const Entity* findEntity(const smtk::util::UUID& uid) const;
-  Entity* findEntity(const smtk::util::UUID& uid);
+  const Entity* findEntity(const smtk::util::UUID& uid, bool tryBridges = true) const;
+  Entity* findEntity(const smtk::util::UUID& uid, bool tryBridges = true);
 
   virtual bool erase(const smtk::util::UUID& uid);
 

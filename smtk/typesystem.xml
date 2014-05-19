@@ -161,6 +161,7 @@
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::containedShellEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::UseEntity::shellEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::UseEntity::boundingShellEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::UseEntity::addShellEntities', unmatched parameter type 'T const&amp;'"/>
 
   <!-- we are not going to wrap std::[io]stream, so ignore -->
   <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>

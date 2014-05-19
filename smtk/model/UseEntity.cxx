@@ -67,6 +67,30 @@ int UseEntity::sense() const
   return -1;
 }
 
+/**\brief Set the higher-dimensional shell whose boundary this use participates in.
+  *
+  */
+UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
+{
+  if (this->m_storage)
+    this->m_storage->findOrAddIncludedShell(this->m_entity, shell.entity());
+  return *this;
+}
+
+/**\brief Add a lower-dimensional shell to this use.
+  *
+  * Each shell added should be a top-level shell for the given use;
+  * shells may contain other shells.
+  * However, currently this is not detected or enforced and the
+  * existing bridges do not properly nest shells.
+  */
+UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
+{
+  if (this->m_storage)
+    this->m_storage->findOrAddIncludedShell(this->m_entity, shell.entity());
+  return *this;
+}
+
 /*! \fn UseEntity::boundingShellEntities() const
  * \brief Return the shells whose boundary this entity-use participates in, in a container of the specified type.
  *
@@ -98,6 +122,12 @@ int UseEntity::sense() const
  *   typedef std::set<Loop> LoopSet;
  *   LoopSet uloops = u.shellEntities<LoopSet>();
  * </pre>
+ */
+
+/*! \fn UseEntity::addShellEntities(T& shellContainer)
+ * \brief Add the shells in the \a shellContainer to this entity-use (which form its boundary).
+ *
+ * This calls addShellEntity for each entry in \a shellContainer.
  */
 
   } // namespace model

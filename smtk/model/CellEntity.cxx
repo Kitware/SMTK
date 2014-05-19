@@ -70,6 +70,20 @@ CellEntities CellEntity::boundingCells() const
         tmp.push_back(*iit);
       }
     }
+  // FIXME: This should be: "else if (this->dimension() > 0)" once
+  //        the CGM bridge properly transcribes use entities.
+  if (cells.empty() && this->dimension() > 0)
+    { // Try harder... see if bordantEntities reveals anything
+    Cursors bdys = this->boundaryEntities(this->dimension() - 1);
+    Cursors::const_iterator it;
+    for (it = bdys.begin(); it != bdys.end(); ++it)
+      { // Only add valid cells
+      if (it->as<CellEntity>().isValid())
+        {
+        cells.insert(cells.end(), *it);
+        }
+      }
+    }
   return cells; // or CellEntities(cells.begin(), cells.end()); if cells is a set.
 }
 

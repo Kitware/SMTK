@@ -843,9 +843,9 @@ bool Storage::findOrAddIncludedShell(
   * Note that cell-uses may have relations to shells of 2 different dimensions.
   * This method should only be called when adding d-dimensional
   * use-records to a shell bridging dimensions (d, d+1).
-  * For example, when adding an edge-use to a loop and not
+  * For example, call this method when adding an edge-use to a loop and not
   * when setting the edge-use associated with a chain.
-  * Use the setUseForShell() method to do the latter.
+  * Use the findOrAddIncludedShell() method to do the latter.
   *
   * The reason for this is that d-shells must have exactly one parent
   * cell-use (or cell, for d=3), but may have many child cell-uses
