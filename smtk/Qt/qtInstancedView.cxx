@@ -160,11 +160,4 @@ void qtInstancedView::updateAttributeData()
         }
       }
     }
-
-}
-
-//----------------------------------------------------------------------------
-void qtInstancedView::showAdvanced(int /*checked*/)
-{
-
 }

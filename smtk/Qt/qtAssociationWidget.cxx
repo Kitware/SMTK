@@ -126,11 +126,6 @@ void qtAssociationWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtAssociationWidget::showAdvanced(int /*checked*/)
-{
-}
-
-//----------------------------------------------------------------------------
 void qtAssociationWidget::showDomainsAssociation(
   std::vector<smtk::model::GroupItemPtr>& theDomains,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)

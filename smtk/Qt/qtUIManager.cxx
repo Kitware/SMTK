@@ -211,6 +211,7 @@ qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
     this->DefaultValueColor.setRgbF(1.0, 1.0, 0.5);
     this->InvalidValueColor.setRgbF(1.0, 0.5, 0.5);
     }
+  this->m_currentAdvLevel = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -242,8 +243,23 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 
   this->RootView = new qtRootView(
     this->m_AttManager.rootView(), pWidget, this);
+  this->RootView->showAdvanceLevel(this->m_currentAdvLevel);
 
   this->findDefinitionsLongLabels();
+}
+//----------------------------------------------------------------------------
+void qtUIManager::setAdvanceLevel(int b)
+{
+  if(this->m_currentAdvLevel == b)
+    {
+    return;
+    }
+
+  this->m_currentAdvLevel = b;
+  if(this->RootView)
+    {
+    this->RootView->showAdvanceLevel(b);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -313,10 +329,9 @@ bool qtUIManager::categoryEnabled()
   return this->RootView ? this->RootView->categoryEnabled() : false;
 }
 //----------------------------------------------------------------------------
-bool qtUIManager::passAdvancedCheck(bool advanced)
+bool qtUIManager::passAdvancedCheck(int level)
 {
-  return (!advanced || !this->m_AttManager.rootView() ||
-    advanced == this->m_AttManager.rootView()->showAdvanced());
+  return (level <= this->advanceLevel());
 }
 //----------------------------------------------------------------------------
 bool qtUIManager::passAttributeCategoryCheck(

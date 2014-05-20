@@ -50,7 +50,6 @@ namespace smtk
       virtual ~qtAssociationWidget();
 
     public slots:
-      virtual void showAdvanced(int show);
       virtual void showEntityAssociation(smtk::attribute::AttributePtr theAtt);
       virtual void showAttributeAssociation(smtk::model::ItemPtr theEntiy,
                                             std::vector<smtk::attribute::DefinitionPtr>& attDefs);

@@ -89,13 +89,15 @@ namespace smtk
       bool categoryEnabled();
       void clearRoot();
 
-      bool passAdvancedCheck(bool advancedAtt);
+      bool passAdvancedCheck(int level);
       bool passAttributeCategoryCheck(smtk::attribute::ConstDefinitionPtr AttDef);
       bool passItemCategoryCheck(smtk::attribute::ConstItemDefinitionPtr ItemDef);
       bool passCategoryCheck(const std::set<std::string> & categories);
 
       const QFont& advancedFont()
         {return this->advFont;}
+      int advanceLevel() const
+      {return this->m_currentAdvLevel;}
 
       void setWidgetColor(QWidget *widget, const QColor &color);
       bool getExpressionArrayString(
@@ -150,6 +152,7 @@ namespace smtk
       void onLineEditFinished();
       void onInputValueChanged(QObject*);
       void onViewUIModified(smtk::attribute::qtBaseView*, smtk::attribute::ItemPtr);
+      void setAdvanceLevel(int b);
 
     signals:
       void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
@@ -175,6 +178,10 @@ namespace smtk
 
       smtk::attribute::Manager &m_AttManager;
       bool m_useInternalFileBrowser;
+
+      // current advance level to show advanced attributes/items
+      int m_currentAdvLevel;
+
       // map for <Definition, its longest item label>
       // The longest label is used as a hint when aligning all item labels
       QMap<smtk::attribute::DefinitionPtr, std::string> Def2LongLabel;

@@ -53,7 +53,6 @@ namespace smtk
       QList<qtBaseView*>& childViews() const;
 
     public slots:
-      virtual void showAdvanced(int show);
       virtual void updateUI();
 
     protected:

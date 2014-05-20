@@ -49,7 +49,6 @@ namespace smtk
       virtual ~qtReferencesWidget();
 
     public slots:
-      virtual void showAdvanced(int show);
       virtual void showAttributeReferences(smtk::attribute::AttributePtr att, QString& category);
       void onCurrentListSelectionChanged(QListWidgetItem * , QListWidgetItem * );
       void onAvailableListSelectionChanged(QListWidgetItem * , QListWidgetItem * );

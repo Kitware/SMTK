@@ -156,38 +156,6 @@ void qtGroupView::clearChildViews()
 }
 
 //----------------------------------------------------------------------------
-void qtGroupView::showAdvanced(int checked)
-{
-  smtk::view::GroupPtr gview =
-    smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
-
-  int currentTab = 0;
-  if(this->childViews().count() &&
-    gview->style() == smtk::view::Group::TABBED)
-    {
-    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
-    if(selfW)
-      {
-      currentTab = selfW->currentIndex();
-      }
-    }
-
-  foreach(qtBaseView* childView, this->Internals->ChildViews)
-    {
-    childView->showAdvanced(checked);
-    }
-
-  if(this->childViews().count() &&
-    gview->style() == smtk::view::Group::TABBED)
-    {
-    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
-    if(selfW)
-      {
-      selfW->setCurrentIndex(currentTab);
-      }
-    }
-}
-//----------------------------------------------------------------------------
 void qtGroupView::updateUI()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)

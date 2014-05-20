@@ -73,6 +73,10 @@ int main(int argc, char *argv[])
   manager.defineAnalysis("Constituent Transport", analysis);
   analysis.clear();
 
+  manager.addAdvanceLevel(0, "Level 0");
+  manager.addAdvanceLevel(1, "Level 1");
+  manager.addAdvanceLevel(2, "Level 2");
+
   // Lets create an attribute to represent an expression
   smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");

@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     }
 
   widget->show();
-  uiManager->rootView()->onShowAdvanced(0);
+//  uiManager->rootView()->showAdvanceLevel(0);
   int retcode = app->exec();
 
   if (argc > 2)

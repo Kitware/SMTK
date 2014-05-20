@@ -45,7 +45,6 @@ namespace smtk
       virtual ~qtInstancedView();
 
     public slots:
-      void showAdvanced(int show);
 
     protected:
       virtual void updateAttributeData();

@@ -49,12 +49,12 @@ namespace smtk
       void getChildView(smtk::view::Base::Type viewType,
         QList<qtBaseView*>& views);
       qtGroupView* getRootGroup();
-      bool showAdvanced();
+      int advanceLevel();
       bool categoryEnabled();
       std::string currentCategory();
 
     public slots:
-      virtual void onShowAdvanced(int show);
+      virtual void showAdvanceLevel(int level);
       virtual void updateViewUI(int currentTab);
       virtual void enableShowBy(int enable);
       virtual void onShowCategory();

@@ -66,7 +66,6 @@ namespace smtk
       this->updateAttributeData();
       this->updateModelAssociation();
       }
-      virtual void showAdvanced(int){;}
       virtual void updateModelAssociation() {;}
       virtual void valueChanged(smtk::attribute::ItemPtr);
       virtual void childrenResized(){;}

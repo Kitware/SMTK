@@ -99,11 +99,6 @@ void qtReferencesWidget::initWidget( )
 }
 
 //----------------------------------------------------------------------------
-void qtReferencesWidget::showAdvanced(int /*checked*/)
-{
-}
-
-//----------------------------------------------------------------------------
 void qtReferencesWidget::showAttributeReferences(
   smtk::attribute::AttributePtr att, QString& /*category*/)
 {

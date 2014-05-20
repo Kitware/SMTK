@@ -805,11 +805,6 @@ void qtSimpleExpressionView::clearFuncExpression()
 }
 
 //----------------------------------------------------------------------------
-void qtSimpleExpressionView::showAdvanced(int /*checked*/)
-{
-
-}
-//----------------------------------------------------------------------------
 void qtSimpleExpressionView::getAllDefinitions(
   QList<smtk::attribute::DefinitionPtr>& defs)
 {
