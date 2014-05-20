@@ -22,6 +22,9 @@ add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
 
 add_executable(unitOperator unitOperator.cxx)
 target_link_libraries(unitOperator SMTKCore SMTKCoreModelTesting)
+if (SMTK_BUILD_CGM)
+  target_link_libraries(unitOperator cgmSMTK)
+endif (SMTK_BUILD_CGM)
 add_test(unitOperator ${EXECUTABLE_OUTPUT_PATH}/unitOperator)
 
 add_executable(unitCursor unitCursor.cxx)

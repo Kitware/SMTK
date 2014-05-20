@@ -1,3 +1,5 @@
+#include "smtk/util/AutoInit.h"
+
 #include "smtk/model/Bridge.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
@@ -7,6 +9,8 @@
 
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
+
+#include "smtk/options.h"
 
 using namespace smtk::model;
 
@@ -62,6 +66,16 @@ int DidOperateWatcher(OperatorEventType event, const Operator& op, const Operato
   // increment the number of times the parameter was modified.
   (*reinterpret_cast<int*>(user))++;
   return 0;
+}
+
+void testBridgeList(Storage::Ptr storage)
+{
+  std::cout << "Default bridge is \"" << storage->bridgeForModel(smtk::util::UUID::null())->name() << "\"\n";
+  std::cout << "Available bridges\n";
+  StringList bridges = storage->bridges();
+  for (StringList::iterator it = bridges.begin(); it != bridges.end(); ++it)
+    std::cout << "  " << *it << "\n";
+  std::cout << "\n";
 }
 
 class TestOutcomeOperator : public Operator
@@ -258,6 +272,7 @@ int main()
 
   try {
 
+    testBridgeList(storage);
     testOperatorOutcomes(storage);
     testParameterChecks(storage);
     testBridgeAssociation(storage);

@@ -9,6 +9,7 @@
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/model/Bridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
@@ -142,6 +143,9 @@ public:
   std::string assignDefaultName(const smtk::util::UUID& uid);
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
+  static bool registerBridge(const std::string& bname, BridgeConstructor bctor);
+  static StringList bridges();
+
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
   smtk::shared_ptr<UUIDsToFloatData> m_floatData;
@@ -151,10 +155,13 @@ protected:
   smtk::shared_ptr<Bridge> m_defaultBridge;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
+  static BridgeConstructors* s_bridges;
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry);
+
+  static void cleanupBridges();
 };
 
   } // model namespace

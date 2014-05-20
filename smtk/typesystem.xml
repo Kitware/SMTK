@@ -240,6 +240,9 @@
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::op', unmatched return type 'smtk::model::OperatorPtr'"/>
 
+  <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::BridgeConstructor&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
+
 
   @EXTRA_TYPESYSTEMS@
 
