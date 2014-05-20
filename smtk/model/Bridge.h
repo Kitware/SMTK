@@ -19,6 +19,8 @@ class Bridge;
 class Cursor;
 class Operator;
 typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
+typedef smtk::shared_ptr<Bridge> (*BridgeConstructor)();
+typedef std::map<std::string,BridgeConstructor> BridgeConstructors;
 
 /**\brief Bit flags describing types of information bridged to Storage.
   *
@@ -54,6 +56,45 @@ enum BridgedInformation
 /// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
 typedef unsigned long BridgedInfoBits;
 
+/*\brief Declare that a class implements a bridge to a solid modeling kernel.
+ *
+ * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
+ * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
+ * Note that you must invoke this macro in the global namespace!
+ *
+ * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
+ */
+#define smtkImplementsModelingKernel(Comp, Cls) \
+  /* Adapt create() to return a base-class pointer */ \
+  static smtk::model::BridgePtr baseCreate() { \
+    return Cls ::create(); \
+  } \
+  /* Implement autoinit methods */ \
+  void smtk_##Comp##_bridge_AutoInit_Construct() { \
+    smtk::model::BRepModel::registerBridge( \
+      #Comp, /* Can't rely on bridgeName to be initialized yet */ \
+      baseCreate); \
+  } \
+  void smtk_##Comp##_bridge_AutoInit_Destruct() { \
+    smtk::model::BRepModel::registerBridge( \
+      Cls ::bridgeName, \
+      NULL); \
+  } \
+  /* Declare the component name */ \
+  std::string Cls ::bridgeName(#Comp)
+
+/*\brief Boilerplate for classes that bridge to a solid modeling kernel.
+ *
+ * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
+ * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
+ * Note that you must invoke this macro in a public section of your class declaration!
+ *
+ * You must also use the smtkImplementsModelingKernel macro in your bridge's implementation.
+ */
+#define smtkDeclareModelingKernel() \
+  static std::string bridgeName; \
+  virtual std::string name() const { return bridgeName; }
+
 /**\brief A base class for bridging modelers into SMTK.
   *
   * SMTK can act as a bridge between other (foreign) solid modelers
@@ -86,6 +127,7 @@ class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 {
 public:
   smtkTypeMacro(Bridge);
+  virtual std::string name() const;
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 

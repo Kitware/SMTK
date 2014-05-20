@@ -41,6 +41,7 @@ namespace cgmsmtk {
 class CGMSMTK_EXPORT Bridge : public smtk::model::Bridge
 {
 public:
+  smtkDeclareModelingKernel();
   typedef smtk::shared_ptr<Bridge> Ptr;
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
   static BridgePtr create();

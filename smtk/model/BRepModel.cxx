@@ -6,12 +6,22 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Storage.h"
 
+#include "smtk/util/AutoInit.h"
+
+#include <stdlib.h> // for atexit()
+
+// Force the native (default) bridge to be registered
+smtkComponentInitMacro(smtk_native_bridge);
+
 namespace smtk {
   namespace model {
 
 using smtk::util::UUID;
 using smtk::util::UUIDs;
 using smtk::util::UUIDArray;
+
+/// A map of all the bridges which may be instantiated (indexed by name).
+BridgeConstructors* BRepModel::s_bridges = NULL;
 
 /**\brief Construction requires a container for storage.
   *
@@ -1211,6 +1221,38 @@ std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, BitFlags entit
   std::string uidStr = uid.toString();
   name += uidStr.substr(uidStr.size() - 4);
   return name;
+}
+
+void BRepModel::cleanupBridges()
+{
+  delete BRepModel::s_bridges;
+}
+
+bool BRepModel::registerBridge(const std::string& bname, BridgeConstructor bctor)
+{
+  if (!BRepModel::s_bridges)
+    {
+    BRepModel::s_bridges = new BridgeConstructors;
+    atexit(cleanupBridges);
+    }
+  if (!bname.empty() && bctor)
+    {
+    (*BRepModel::s_bridges)[bname] = bctor;
+    return true;
+    }
+  else if (!bname.empty())
+    { // unregister the bridge of the given name.
+    BRepModel::s_bridges->erase(bname);
+    }
+  return false;
+}
+
+StringList BRepModel::bridges()
+{
+  StringList result;
+  for (BridgeConstructors::const_iterator it = s_bridges->begin(); it != s_bridges->end(); ++it)
+    result.push_back(it->first);
+  return result;
 }
 
 IntegerList& BRepModel::entityCounts(

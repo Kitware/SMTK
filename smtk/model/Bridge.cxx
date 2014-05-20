@@ -3,6 +3,16 @@
 namespace smtk {
   namespace model {
 
+/**\brief Return the name of the bridge type (i.e., the name of the modeling kernel).
+  *
+  * Subclasses override this method by using the smtkDeclareModelingKernel
+  * and smtkImplementsModelingKernel macros.
+  */
+std::string Bridge::name() const
+{
+  return "invalid";
+}
+
 /**\brief Transcribe an entity from a foreign modeler into SMTK Storage.
   *
   * On input, the \a entity will not be valid but if transcription is

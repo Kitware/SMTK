@@ -1,6 +1,7 @@
 #include "smtk/cgm/Bridge.h"
 #include "smtk/cgm/TDUUID.h"
 
+#include "smtk/util/AutoInit.h"
 #include "smtk/util/UUID.h"
 
 #include "smtk/model/Cursor.h"
@@ -601,3 +602,12 @@ void Bridge::colorPropFromIndex(
 
   } // namespace cgm
 } // namespace cgmsmtk
+
+smtkImplementsModelingKernel(cgm,cgmsmtk::cgm::Bridge);
+
+// Ensure that anything which links to this library
+// results in the bridge being registered (unless this
+// file is included in a static library, in which case
+// you must manually add the line below to your
+// executable's source).
+smtkComponentInitMacro(smtk_cgm_bridge);

@@ -16,6 +16,7 @@ public:
   smtkTypeMacro(DefaultBridge);
   smtkCreateMacro(Bridge);
   smtkSharedFromThisMacro(Bridge);
+  smtkDeclareModelingKernel();
 
 protected:
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
