@@ -30,7 +30,8 @@ using namespace smtk::attribute;
 ItemDefinition::ItemDefinition(const std::string &myName) : m_name(myName)
 {
   this->m_version = 0;
-  this->m_advanceLevel = 0;
+  this->m_advanceLevel[0] = 0;
+  this->m_advanceLevel[1] = 0;
   this->m_isOptional = false;
   this->m_isEnabledByDefault = false;
 }
@@ -64,7 +65,22 @@ void ItemDefinition::addCategory(const std::string &category)
 //----------------------------------------------------------------------------
 void ItemDefinition::removeCategory(const std::string &category)
 {
-this->m_categories.erase(category);
+  this->m_categories.erase(category);
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::setAdvanceLevel(int mode, int level)
+{
+  if ((mode < 0) || (mode > 1))
+    {
+    return;
+    }
+  this->m_advanceLevel[mode] = level;
+}
+//----------------------------------------------------------------------------
+void ItemDefinition::setAdvanceLevel(int level)
+{
+  this->m_advanceLevel[0] = level;
+  this->m_advanceLevel[1] = level;
 }
 //----------------------------------------------------------------------------
 

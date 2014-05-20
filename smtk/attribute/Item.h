@@ -101,6 +101,22 @@ namespace smtk
      bool isMemberOf(const std::string &category) const;
      bool isMemberOf(const std::vector<std::string> &categories) const;
 
+     //Get the item 's advance level:
+     //if mode is 1 then the write access level is returned;
+     //else the read access level is returned
+     //NOTE: if the advance level was not explicitly set then the item's
+     //definition's advance level is returned
+     int advanceLevel(int mode=0) const;
+     void setAdvanceLevel(int mode, int level);
+     // unsetAdvanceLevel causes the item to return its
+     // definition advance level information for the specified mode when calling
+     // the advanceLevel(mode) method
+     void unsetAdvanceLevel(int mode=0);
+     // Returns true if the item is returning its Definition's
+     // advance level information
+     bool usingDefinitionAdvanceLevel(int mode=0) const
+      {return (mode==1 ? this->m_usingDefAdvanceLevelInfo[1] : this->m_usingDefAdvanceLevelInfo[0]);}
+
      void setUserData(const std::string &key, smtk::util::UserDataPtr value)
        {this->m_userData[key] = value;}
      smtk::util::UserDataPtr userData(const std::string &key) const;
@@ -135,6 +151,8 @@ namespace smtk
      smtk::attribute::ConstItemDefinitionPtr m_definition;
      std::map<std::string, smtk::util::UserDataPtr > m_userData;
     private:
+     bool m_usingDefAdvanceLevelInfo[2];
+     int m_advanceLevel[2];
      
     };
 //----------------------------------------------------------------------------

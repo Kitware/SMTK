@@ -128,7 +128,8 @@ int main()
   ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("Gravity");
   ddef->setDefaultValue(1.272024e08);
   ddef->setUnits("m/hr^2");
-  ddef->setAdvanceLevel(1);
+  ddef->setAdvanceLevel(0, 1); //Set Read to require advance level 1 and write level 2
+  ddef->setAdvanceLevel(1, 2);
   ddef->setMinRange(0, false);
 
   ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("WaterSpecificHeat");

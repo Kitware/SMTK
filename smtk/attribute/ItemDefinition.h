@@ -97,10 +97,14 @@ namespace smtk
 
       virtual void removeCategory(const std::string &category);
 
-      int advanceLevel() const
-      {return this->m_advanceLevel;}
-      void setAdvanceLevel(int level)
-      {this->m_advanceLevel = level;}
+      //Get the item definition's advance level:
+      //if mode is 1 then the write access level is returned;
+      //else the read access level is returned
+      int advanceLevel(int mode=0) const
+      {return (mode==1 ?  this->m_advanceLevel[1] : this->m_advanceLevel[0]);}
+      void setAdvanceLevel(int mode, int level);
+      // Convinence Method that sets both read and write to the same value
+      void setAdvanceLevel(int level);
 
       const std::string &detailedDescription() const
       {return this->m_detailedDescription;}
@@ -127,12 +131,12 @@ namespace smtk
       bool m_isEnabledByDefault;
       std::string m_label;
       std::set<std::string> m_categories;
-      int m_advanceLevel;
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
       // constant value that should never be changed
       const std::string m_name;
+      int m_advanceLevel[2];
     };
   }
 }

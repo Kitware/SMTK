@@ -37,6 +37,9 @@ Item::Item(Attribute *owningAttribute, int itemPosition):
   m_attribute(owningAttribute), m_owningItem(NULL),
   m_position(itemPosition), m_isEnabled(true), m_definition()
 {
+  this->m_usingDefAdvanceLevelInfo[0] = true;
+  this->m_usingDefAdvanceLevelInfo[1] = true;
+  this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -45,6 +48,9 @@ Item::Item(Item *inOwningItem, int itemPosition, int inSubGroupPosition):
   m_position(itemPosition), m_subGroupPosition(inSubGroupPosition),
   m_isEnabled(true), m_definition()
 {
+  this->m_usingDefAdvanceLevelInfo[0] = true;
+  this->m_usingDefAdvanceLevelInfo[1] = true;
+  this->m_advanceLevel[0] = this->m_advanceLevel[1] = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -166,6 +172,39 @@ void Item::reset()
     {
     this->m_isEnabled = this->m_definition->isEnabledByDefault();
     }
+}
+//----------------------------------------------------------------------------
+void Item::setAdvanceLevel(int mode, int level)
+{
+  if ((mode < 0) || (mode > 1))
+    {
+    return;
+    }
+  this->m_usingDefAdvanceLevelInfo[mode] = false;
+  this->m_advanceLevel[mode] = level;
+}
+//----------------------------------------------------------------------------
+void Item::unsetAdvanceLevel(int mode)
+{
+  if ((mode < 0) || (mode > 1))
+    {
+    return;
+    }
+  this->m_usingDefAdvanceLevelInfo[mode] = true;
+}
+//----------------------------------------------------------------------------
+int Item::advanceLevel(int mode) const
+{
+  // Any invalid mode returns mode = 0
+  if ((mode < 0) || (mode > 1))
+    {
+    mode = 0;
+    }
+  if (this->m_definition && this->m_usingDefAdvanceLevelInfo[mode])
+    {
+    return this->m_definition->advanceLevel(mode);
+    }
+  return this->m_advanceLevel[mode];
 }
 //----------------------------------------------------------------------------
 std::string Item::type2String(Item::Type t)

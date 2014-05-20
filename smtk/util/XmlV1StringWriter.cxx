@@ -436,9 +436,25 @@ XmlV1StringWriter::processItemDefinition(xml_node &node,
     node.append_attribute("Optional").set_value("true");
     node.append_attribute("IsEnabledByDefault") = idef->isEnabledByDefault();
     }
-  if (idef->advanceLevel() != 0)
+  if (idef->advanceLevel(0) || idef->advanceLevel(1))
     {
-    node.append_attribute("AdvanceLevel") = idef->advanceLevel();
+    // OK - we have a non-zero advance level in either read or write
+    // if they are both set the same use the AdvanceLevel xml attribute
+    if (idef->advanceLevel(0) == idef->advanceLevel(1))
+      {
+      node.append_attribute("AdvanceLevel") = idef->advanceLevel(0);
+      }
+    else
+      {
+      if (idef->advanceLevel(0))
+        {
+        node.append_attribute("AdvanceReadLevel") = idef->advanceLevel(0);
+        }
+      if (idef->advanceLevel(1))
+        {
+        node.append_attribute("AdvanceWriteLevel") = idef->advanceLevel(1);
+        }
+      }
     }
   if (idef->numberOfCategories() && (idef->type() != Item::GROUP))
     {
@@ -791,6 +807,18 @@ void XmlV1StringWriter::processItem(xml_node &node,
     {
     node.append_attribute("Enabled").set_value(item->isEnabled());
     }
+
+  // Does the item have explicit advance level information
+  if (!item->usingDefinitionAdvanceLevel(0))
+    {
+    node.append_attribute("AdvanceReadLevel") = item->advanceLevel(0);
+    }
+
+  if (!item->usingDefinitionAdvanceLevel(1))
+    {
+    node.append_attribute("AdvanceWriteLevel") = item->advanceLevel(1);
+    }
+
   switch (item->type())
     {
     case Item::ATTRIBUTE_REF:
