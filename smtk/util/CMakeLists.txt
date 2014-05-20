@@ -17,6 +17,7 @@ set(utilSrcs
 set(utilHeaders
   AttributeReader.h
   AttributeWriter.h
+  AutoInit.h
   ExportSpec.h
   Logger.h
   Resource.h

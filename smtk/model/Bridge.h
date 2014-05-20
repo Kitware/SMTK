@@ -56,7 +56,7 @@ enum BridgedInformation
 /// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
 typedef unsigned long BridgedInfoBits;
 
-/*\brief Declare that a class implements a bridge to a solid modeling kernel.
+/**\brief Declare that a class implements a bridge to a solid modeling kernel.
  *
  * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
  * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
@@ -83,7 +83,7 @@ typedef unsigned long BridgedInfoBits;
   /* Declare the component name */ \
   std::string Cls ::bridgeName(#Comp)
 
-/*\brief Boilerplate for classes that bridge to a solid modeling kernel.
+/**\brief Boilerplate for classes that bridge to a solid modeling kernel.
  *
  * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
  * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
