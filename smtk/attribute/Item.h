@@ -150,9 +150,9 @@ namespace smtk
      mutable std::string m_tempString;
      smtk::attribute::ConstItemDefinitionPtr m_definition;
      std::map<std::string, smtk::util::UserDataPtr > m_userData;
+    private:
      bool m_usingDefAdvanceLevelInfo[2];
      int m_advanceLevel[2];
-    private:
      
     };
 //----------------------------------------------------------------------------

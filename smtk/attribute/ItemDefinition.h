@@ -131,12 +131,12 @@ namespace smtk
       bool m_isEnabledByDefault;
       std::string m_label;
       std::set<std::string> m_categories;
-      int m_advanceLevel[2];
       std::string m_detailedDescription;
       std::string m_briefDescription;
     private:
       // constant value that should never be changed
       const std::string m_name;
+      int m_advanceLevel[2];
     };
   }
 }
