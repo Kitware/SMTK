@@ -1,10 +1,10 @@
 #ifndef __smtk_model_OperatorResult_h
 #define __smtk_model_OperatorResult_h
 
-#include "smtk/util/SharedFromThis.h"
-//#include "smtk/SharedPtr.h"
+#include "smtk/model/Parameter.h"
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/util/SharedFromThis.h"
+#include "smtk/util/UUID.h"
 
 namespace smtk {
   namespace model {
@@ -33,8 +33,20 @@ public:
 
   OperatorOutcome outcome() const;
 
+  Parameters parameters() const;
+  const Parameter& parameter(const std::string& name) const;
+  Parameter parameter(const std::string& name);
+  virtual void setParameter(const Parameter& p);
+  bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasIntegerParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+  bool hasUUIDParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
+
 protected:
   OperatorOutcome m_outcome;
+  Parameters m_parameters;
+
+  bool checkParameterSize(int psize, int minSize, int maxSize) const;
 };
 
   } // model namespace
