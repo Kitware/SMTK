@@ -258,6 +258,7 @@ bool Operator::operator < (const Operator& other) const
   */
 Operator::Ptr Operator::cloneInternal(ConstPtr src)
 {
+  this->m_bridge = src->bridge();
   this->m_parameters = src->parameters();
   this->m_storage = src->storage();
   return shared_from_this();
