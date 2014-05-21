@@ -39,7 +39,7 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 {
   int ai = this->addCoords(a);
   int bi = this->addCoords(b);
-  this->m_conn.push_back(513); // Extension of three.js file format for an Edge cell.
+  this->m_conn.push_back(2);
   this->m_conn.push_back(ai);
   this->m_conn.push_back(bi);
   return *this;
@@ -66,7 +66,7 @@ Tessellation& Tessellation::addPoint(int ai)
 
 Tessellation& Tessellation::addLine(int ai, int bi)
 {
-  this->m_conn.push_back(513);
+  this->m_conn.push_back(2);
   this->m_conn.push_back(ai);
   this->m_conn.push_back(bi);
   return *this;
