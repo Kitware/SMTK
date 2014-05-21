@@ -65,6 +65,7 @@ public:
 
 protected:
   friend class Operator;
+  friend class OperatorResult;
 
   void setValidState(ParameterValidState s);
 
