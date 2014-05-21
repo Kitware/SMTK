@@ -84,13 +84,13 @@ const Operators& Bridge::operators() const
   return this->m_operators;
 }
 
-OperatorPtr Bridge::op(const std::string& opName) const
+OperatorPtr Bridge::op(const std::string& opName, StoragePtr storage) const
 {
   Operators::const_iterator it;
   for (it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
     {
     if ((*it)->name() == opName)
-      return *it;
+      return (*it)->clone()->setStorage(storage);
     }
   return OperatorPtr();
 }

@@ -135,7 +135,7 @@ public:
 
   StringList operatorNames() const;
   const Operators& operators() const;
-  OperatorPtr op(const std::string& opName) const;
+  OperatorPtr op(const std::string& opName, StoragePtr storage) const;
   virtual void addOperator(OperatorPtr op);
 
 protected:
