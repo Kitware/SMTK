@@ -24,6 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtOverlay.h"
 
 #include <QCheckBox>
 #include <QFrame>
@@ -299,6 +300,9 @@ void qtInputsItem::updateUI()
   label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+  
+//  qtOverlayFilter *filter = new qtOverlayFilter(this);
+//  label->installEventFilter(filter);
 
   // add in BriefDescription as tooltip if available
   const std::string strBriefDescription = itemDef->briefDescription();

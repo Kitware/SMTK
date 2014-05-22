@@ -358,7 +358,7 @@ void qtAttributeRefItem::createWidget()
   this->Internals->theLabel->setSizePolicy(sizeFixedPolicy);
   this->Internals->theLabel->setWordWrap(true);
   this->Internals->theLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  if(dataObj->definition()->advanceLevel() >0)
+  if(dataObj->advanceLevel() >0)
     {
     this->Internals->theLabel->setFont(
       this->baseView()->uiManager()->advancedFont());

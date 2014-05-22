@@ -85,6 +85,7 @@ void qtGroupView::createWidget( )
   else
     {
     QTabWidget *tab = new QTabWidget(this->parentWidget());
+//    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(refreshAdvanceLevelOverlay(int)));
     tab->setUsesScrollButtons( true );
     this->Widget = tab;
     }
@@ -163,6 +164,17 @@ void qtGroupView::updateUI()
     childView->updateUI();
     }
 }
+
+//----------------------------------------------------------------------------
+void qtGroupView::showAdvanceLevelOverlay(bool show)
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->showAdvanceLevelOverlay(show);
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
+}
+
 //----------------------------------------------------------------------------
 void qtGroupView::addTabEntry(qtBaseView* child)
 {

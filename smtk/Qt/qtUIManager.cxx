@@ -261,6 +261,26 @@ void qtUIManager::setAdvanceLevel(int b)
     this->RootView->showAdvanceLevel(b);
     }
 }
+//----------------------------------------------------------------------------
+void qtUIManager::initAdvanceLevels(QComboBox* combo)
+{
+  const std::map<int, std::string> &levels = this->m_AttManager.advanceLevels();
+  if(levels.size() == 0)
+    {
+    // for backward compatibility, we automatically add
+    // two levels which is implicitly supported in previous version
+    combo->addItem("General");
+    combo->addItem("Advanced");
+    }
+  else
+    {
+    std::map<int, std::string>::const_iterator ait;
+    for (ait = levels.begin(); ait != levels.end(); ++ait)
+      {
+      combo->addItem(ait->second.c_str());
+      }
+    }
+}
 
 //----------------------------------------------------------------------------
 // [Experimenta]: Generates widget for a single input view

@@ -98,6 +98,7 @@ namespace smtk
         {return this->advFont;}
       int advanceLevel() const
       {return this->m_currentAdvLevel;}
+      void initAdvanceLevels(QComboBox* combo);
 
       void setWidgetColor(QWidget *widget, const QColor &color);
       bool getExpressionArrayString(

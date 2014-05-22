@@ -87,11 +87,13 @@ namespace smtk
       virtual void setLabelVisible(bool) {;}
       
       bool passAdvancedCheck();
+      void showAdvanceLevelOverlay(bool);
+
     signals:
 
     protected slots:
       virtual void updateItemData() {;}
-
+      virtual void setAdvanceLevel(int level);
     protected:
       virtual void createWidget(){;}
       virtual qtBaseView* baseView();

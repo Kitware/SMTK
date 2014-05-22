@@ -161,3 +161,15 @@ void qtInstancedView::updateAttributeData()
       }
     }
 }
+//----------------------------------------------------------------------------
+void qtInstancedView::showAdvanceLevelOverlay(bool show)
+{
+  foreach(qtAttribute* att, this->Internals->AttInstances)
+    {
+    if(att->widget())
+      {
+      att->showAdvanceLevelOverlay(show);
+      }
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
+}

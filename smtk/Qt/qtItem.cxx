@@ -23,12 +23,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/Qt/qtBaseView.h"
+#include "smtk/Qt/qtOverlay.h"
+
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 
 #include <QPointer>
 #include <QLayout>
-#include <QWidget>
+#include <QComboBox>
 
 using namespace smtk::attribute;
 
@@ -50,6 +52,8 @@ public:
  QPointer<QWidget> ParentWidget;
  QList<smtk::attribute::qtItem*> ChildItems;
  QPointer<qtBaseView> BaseView;
+ QPointer<qtOverlayFilter> advOverlay;
+ QPointer<QComboBox> AdvLevelCombo;
 };
 
 
@@ -59,6 +63,7 @@ qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bvie
   this->Internals  = new qtItemInternals(dataObject, p, bview);
   this->Widget = NULL;
   this->IsLeafItem = false;
+
   //this->Internals->DataConnect = NULL;
   //this->createWidget();
 }
@@ -124,5 +129,45 @@ bool qtItem::passAdvancedCheck()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   return this->baseView()->uiManager()->passAdvancedCheck(
-    dataObj->definition()->advanceLevel());
+    dataObj->advanceLevel());
+}
+
+//----------------------------------------------------------------------------
+void qtItem::showAdvanceLevelOverlay(bool show)
+{
+  if(!this->widget())
+    {
+    return;
+    }
+  if(show && !this->Internals->advOverlay)
+    {
+    this->Internals->advOverlay = new qtOverlayFilter(this->widget(), this);
+    this->Internals->AdvLevelCombo = new QComboBox(
+        this->Internals->advOverlay->overlay());
+    this->Internals->advOverlay->overlay()->addOverlayWidget(
+      this->Internals->AdvLevelCombo);
+    this->baseView()->uiManager()->initAdvanceLevels(
+      this->Internals->AdvLevelCombo);
+    this->Internals->AdvLevelCombo->setCurrentIndex(
+      this->getObject()->advanceLevel(0));
+    QObject::connect(this->Internals->AdvLevelCombo,
+      SIGNAL(currentIndexChanged(int)), this, SLOT(setAdvanceLevel(int)));
+    this->widget()->installEventFilter(this->Internals->advOverlay);
+    }
+
+  if(this->Internals->advOverlay)
+    {
+    this->Internals->advOverlay->setActive(show);
+    }
+  if(show)
+    {
+    this->widget()->repaint();
+    }
+}
+
+//----------------------------------------------------------------------------
+void qtItem::setAdvanceLevel(int l)
+{
+  this->getObject()->setAdvanceLevel(0, l);
+  this->getObject()->setAdvanceLevel(1, l);
 }

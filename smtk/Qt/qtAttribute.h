@@ -54,6 +54,7 @@ namespace smtk
       virtual void addItem(qtItem*);
       virtual void clearItems();
       QList<qtItem*>& items() const;
+      virtual void showAdvanceLevelOverlay(bool show);
 
       // create all the items
       static qtItem* createItem(smtk::attribute::ItemPtr item, QWidget* p, qtBaseView* view,

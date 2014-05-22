@@ -997,7 +997,7 @@ void qtAttributeView::initSelectPropCombo(
     if(this->uiManager()->passItemCategoryCheck(
         attItem->definition()) &&
       this->uiManager()->passAdvancedCheck(
-      attItem->definition()->advanceLevel()))
+      attItem->advanceLevel()))
       {
       // No User data, not editable
       std::string strItemLabel = attItem->label().empty() ? attItem->name() : attItem->label();
@@ -1018,7 +1018,7 @@ void qtAttributeView::initSelectPropCombo(
       vdata.setValue(static_cast<void*>(attItem.get()));
       item->setData(vdata, Qt::UserRole);
       this->Internals->checkablePropComboModel->insertRow(row++, item);
-      if(attItem->definition()->advanceLevel())
+      if(attItem->advanceLevel())
         {
         item->setFont(this->uiManager()->advancedFont());
         }
@@ -1394,4 +1394,14 @@ void qtAttributeView::childrenResized()
     this->Internals->ValuesTable->update();
     this->Widget->update();
     }
+}
+//----------------------------------------------------------------------------
+void qtAttributeView::showAdvanceLevelOverlay(bool show)
+{
+  if(this->Internals->ViewByCombo->currentIndex() == VIEWBY_Attribute &&
+    this->Internals->CurrentAtt)
+    {
+    this->Internals->CurrentAtt->showAdvanceLevelOverlay(show);
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
 }

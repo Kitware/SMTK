@@ -58,6 +58,7 @@ namespace smtk
       virtual void updateViewUI(int currentTab);
       virtual void enableShowBy(int enable);
       virtual void onShowCategory();
+      virtual void showAdvanceLevelOverlay(bool);
 
     protected:
       virtual void createWidget( );

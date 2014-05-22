@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QTableWidget>
 #include <QScrollArea>
 #include <QComboBox>
+#include <QToolButton>
 
 using namespace smtk::attribute;
 
@@ -102,26 +103,21 @@ void qtRootView::createWidget( )
   //QHBoxLayout* advancedLayout = new QHBoxLayout();
   //advancedLayout->setMargin(10);
   this->Internals->AdvLevelCombo = new QComboBox(this->Widget);
-  const std::map<int, std::string> &levels = attMan->advanceLevels();
-  if(levels.size() == 0)
-    {
-    // for backward compatibility, we automatically add
-    // two levels which is implicitly supported in previous version
-    this->Internals->AdvLevelCombo->addItem("General");
-    this->Internals->AdvLevelCombo->addItem("Advanced");
-    }
-  else
-    {
-    std::map<int, std::string>::const_iterator ait;
-    for (ait = levels.begin(); ait != levels.end(); ++ait)
-      {
-      this->Internals->AdvLevelCombo->addItem(ait->second.c_str());
-      }  
-    }
+  this->uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
 
   QLabel* advLevelLabel = new QLabel("Show Level:");
 //  advLevelLabel->setFont(this->uiManager()->advancedFont());
   advLevelLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+  QToolButton* editButton = new QToolButton(this->Widget);
+  editButton->setCheckable(true);
+  QString resourceName(":/icons/attribute/edit.png");
+  editButton->setFixedSize(QSize(16, 16));
+  editButton->setIcon(QIcon(resourceName));
+  editButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  editButton->setToolTip("Toggle advance level overlay");
+  connect(editButton, SIGNAL(toggled(bool)),
+        this, SLOT(showAdvanceLevelOverlay(bool)));
 
   this->Internals->FilterByCheck = new QCheckBox(this->Widget);
   this->Internals->FilterByCheck->setText("Show by Category: ");
@@ -137,6 +133,7 @@ void qtRootView::createWidget( )
   QHBoxLayout* layout = new QHBoxLayout(this->Widget);
   layout->addWidget(advLevelLabel);
   layout->addWidget(this->Internals->AdvLevelCombo);
+  layout->addWidget(editButton);
   layout->addWidget(this->Internals->FilterByCheck);
   layout->addWidget(this->Internals->ShowCategoryCombo);
 
@@ -239,6 +236,10 @@ void qtRootView::showAdvanceLevel(int level)
     this->Internals->AdvLevelCombo->blockSignals(false);
     }
   this->uiManager()->setAdvanceLevel(level);
+  if(this->advanceLevelVisible())
+    {
+    this->showAdvanceLevelOverlay(true);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -322,3 +323,12 @@ std::string qtRootView::currentCategory()
     this->Internals->ShowCategoryCombo->currentText().toStdString() : "";
 }
 
+//----------------------------------------------------------------------------
+void qtRootView::showAdvanceLevelOverlay(bool show)
+{
+  if(this->Internals->TabGroup)
+    {
+    this->Internals->TabGroup->showAdvanceLevelOverlay(show);
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
+}

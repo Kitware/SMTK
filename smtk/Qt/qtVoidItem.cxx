@@ -90,7 +90,7 @@ void qtVoidItem::createWidget()
   QString txtLabel = dataObj->label().empty() ?
      dataObj->name().c_str() : dataObj->label().c_str();
 
-  if(dataObj->definition()->advanceLevel() >0)
+  if(dataObj->advanceLevel() >0)
     {
     optionalCheck->setFont(this->baseView()->uiManager()->advancedFont());
     }

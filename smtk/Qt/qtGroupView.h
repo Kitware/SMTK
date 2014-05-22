@@ -54,6 +54,7 @@ namespace smtk
 
     public slots:
       virtual void updateUI();
+      virtual void showAdvanceLevelOverlay(bool show);
 
     protected:
       virtual void createWidget( );
