@@ -1394,7 +1394,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttribute(xml_node &attNode)
 {
-  xml_node itemsNode, iNode, node;
+  xml_node itemsNode, assocsNode, iNode, node;
   std::string name, type;
   xml_attribute xatt;
   attribute::AttributePtr att;
@@ -1477,54 +1477,74 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
     }
 
   itemsNode = attNode.child("Items");
-  if (!itemsNode)
+  if (itemsNode)
     {
-    return;
-    }
-  // Process all of the items in the attribute w/r to the XML
-  // NOTE That the writer processes the items in order - lets assume
-  // that for speed and if that fails we can try to search for the correct
-  // xml node
-  n = static_cast<int>(att->numberOfItems());
-  for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
-       i++, iNode = iNode.next_sibling())
-    {
-    // See if the name of the item matches the name of node
-    xatt = iNode.attribute("Name");
-    if (!xatt)
+    // Process all of the items in the attribute w/r to the XML
+    // NOTE That the writer processes the items in order - lets assume
+    // that for speed and if that fails we can try to search for the correct
+    // xml node
+    n = static_cast<int>(att->numberOfItems());
+    for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
+      i++, iNode = iNode.next_sibling())
       {
-      smtkErrorMacro(this->m_logger,
-                     "Bad Item for Attribute : " << name
-                     << "- missing XML Attribute Name");
-      node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
-      }
-    else
-      {
-      // Is the ith xml node the same as the ith item of the attribute?
-      if (att->item(i)->name() == xatt.value())
+      // See if the name of the item matches the name of node
+      xatt = iNode.attribute("Name");
+      if (!xatt)
         {
-        node = iNode;
+        smtkErrorMacro(this->m_logger,
+          "Bad Item for Attribute : " << name
+          << "- missing XML Attribute Name");
+        node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
         }
       else
         {
-        node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+        // Is the ith xml node the same as the ith item of the attribute?
+        if (att->item(i)->name() == xatt.value())
+          {
+          node = iNode;
+          }
+        else
+          {
+          node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+          }
         }
+      if (!node)
+        {
+        smtkErrorMacro(this->m_logger,
+          "Can not locate XML Item node :" << att->item(i)->name()
+          << " for Attribute : " << name);
+        continue;
+        }
+      this->processItem(node, att->item(i));
       }
-    if (!node)
+    if (iNode || (i != n))
       {
       smtkErrorMacro(this->m_logger,
-                     "Can not locate XML Item node :" << att->item(i)->name()
-                     << " for Attribute : " << name);
-      continue;
+        "Number of Items does not match XML for Attribute : " << name);
       }
-    this->processItem(node, att->item(i));
     }
-  if (iNode || (i != n))
+
+  assocsNode = attNode.child("ModelEntities");
+  if (assocsNode)
     {
-    smtkErrorMacro(this->m_logger,
-                   "Number of Items does not match XML for Attribute : " << name);
+    n = static_cast<int>(att->numberOfItems());
+    for (i = 0, iNode = assocsNode.first_child(); (i < n) && iNode;
+      i++, iNode = iNode.next_sibling())
+      {
+      smtk::util::UUID uid(iNode.text().get());
+      if (uid.isNull())
+        {
+        smtkErrorMacro(this->m_logger,
+          "Could not convert UUID text \""
+          << iNode.text().get()
+          << "\" to a UUID. Skipping.");
+        continue;
+        }
+      att->associateEntity(uid);
+      }
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processItem(xml_node &node,
                                  smtk::attribute::ItemPtr item)

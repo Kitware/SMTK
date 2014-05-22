@@ -50,6 +50,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
 #include "smtk/model/Model.h"
+#include "smtk/model/Storage.h"
+#include "smtk/model/StringData.h"
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/Group.h"
@@ -834,6 +836,31 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
       itemNode = items.append_child();
       itemNode.set_name(Item::type2String(att->item(i)->type()).c_str());
       this->processItem(itemNode, att->item(i));
+      }
+    }
+  // Save associated model entities (if any)
+  smtk::util::UUIDs associatedEntities = att->associatedModelEntityIds();
+  if (!associatedEntities.empty())
+    {
+    xml_node assocsNode = node.append_child("ModelEntities");
+    smtk::util::UUIDs::const_iterator it;
+    smtk::model::StoragePtr storage = att->modelStorage();
+    for (it = associatedEntities.begin(); it != associatedEntities.end(); ++it)
+      {
+      xml_node assocNode = assocsNode.append_child("UUID");
+      // Save the entity name, but only if one exists.
+      // NB: Do not replace with a call to storage->name(*it),
+      //     even though it is much simpler, as that method
+      //     will generate a descriptive name if none exists.
+      smtk::model::UUIDWithStringProperties sprops = storage->stringPropertiesForEntity(*it);
+      smtk::model::PropertyNameWithStrings sprop;
+      if (
+        sprops != storage->stringProperties().end() &&
+        ((sprop = sprops->second.find("name")) != sprops->second.end()) &&
+        !sprop->second.empty())
+        assocNode.append_attribute("Name").set_value(sprop->second[0].c_str());
+      // Save the UUID as the text value of the UUID node:
+      assocNode.text().set(it->toString().c_str());
       }
     }
 }
