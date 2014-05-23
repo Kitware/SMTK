@@ -169,7 +169,6 @@ void qtItem::showAdvanceLevelOverlay(bool show)
 
     QObject::connect(this->Internals->AdvLevelCombo,
       SIGNAL(currentIndexChanged(int)), this, SLOT(setAdvanceLevel(int)));
-    this->widget()->installEventFilter(this->Internals->advOverlay);
     }
 
   if(this->Internals->advOverlay)
