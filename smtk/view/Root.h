@@ -65,11 +65,6 @@ namespace smtk
       void setAdvancedItalic(bool i)
       {this->m_advancedItalic = i;}
 
-      bool showAdvanced() const
-      {return this->m_showAdvanced;}
-      void setShowAdvanced(bool b)
-      {this->m_showAdvanced = b;}
-
       int maxValueLabelLength() const
       {return this->m_maxValueLabelLen;}
       void setMaxValueLabelLength(int l);
@@ -84,8 +79,6 @@ namespace smtk
       // advanced options are bold and not italic by default
       bool m_advancedBold;
       bool m_advancedItalic;
-      // option to show advanced attributes/items, default false
-      bool m_showAdvanced;
       // maximum length for the label of value item, in pixels
       int m_maxValueLabelLen;
       int m_minValueLabelLen;

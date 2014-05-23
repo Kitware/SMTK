@@ -35,6 +35,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QTableWidget>
 #include <QScrollArea>
 #include <QComboBox>
+#include <QToolButton>
 
 using namespace smtk::attribute;
 
@@ -43,7 +44,7 @@ class qtRootViewInternals
 {
 public:
 
-  QPointer<QCheckBox> AdvancedCheck;
+  QPointer<QComboBox> AdvLevelCombo;
   QPointer<qtGroupView> TabGroup;
   QPointer<QCheckBox> FilterByCheck;
   QPointer<QComboBox> ShowCategoryCombo;
@@ -57,7 +58,7 @@ public:
   }
   void clearWidgets()
   {
-    this->deleteWidget(this->AdvancedCheck);
+    this->deleteWidget(this->AdvLevelCombo);
     this->deleteWidget(this->ShowCategoryCombo);
     this->deleteWidget(this->FilterByCheck);
   }
@@ -96,22 +97,32 @@ void qtRootView::createWidget( )
     }
 
   this->Internals->clearWidgets();
+  const Manager* attMan = this->uiManager()->attManager();
 
   //first setup the advanced check box layout form
   //QHBoxLayout* advancedLayout = new QHBoxLayout();
   //advancedLayout->setMargin(10);
-  this->Internals->AdvancedCheck = new QCheckBox(this->Widget);
-  this->Internals->AdvancedCheck->setText("Show Advanced");
-  this->Internals->AdvancedCheck->setFont(
-    this->uiManager()->advancedFont());
-  smtk::view::RootPtr rview =
-    smtk::dynamic_pointer_cast<smtk::view::Root>(this->getObject());
-  this->Internals->AdvancedCheck->setChecked(rview->showAdvanced());
+  this->Internals->AdvLevelCombo = new QComboBox(this->Widget);
+  this->uiManager()->initAdvanceLevels(this->Internals->AdvLevelCombo);
+
+  QLabel* advLevelLabel = new QLabel("Show Level:");
+//  advLevelLabel->setFont(this->uiManager()->advancedFont());
+  advLevelLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+  QToolButton* editButton = new QToolButton(this->Widget);
+  editButton->setCheckable(true);
+  QString resourceName(":/icons/attribute/lock.png");
+  editButton->setFixedSize(QSize(20, 20));
+  editButton->setIcon(QIcon(resourceName));
+  editButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  editButton->setToolTip("Edit access level");
+  connect(editButton, SIGNAL(toggled(bool)),
+        this, SLOT(showAdvanceLevelOverlay(bool)));
 
   this->Internals->FilterByCheck = new QCheckBox(this->Widget);
   this->Internals->FilterByCheck->setText("Show by Category: ");
+  this->Internals->FilterByCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   this->Internals->ShowCategoryCombo = new QComboBox(this->Widget);
-  const Manager* attMan = this->uiManager()->attManager();
   std::set<std::string>::const_iterator it;
   const std::set<std::string> &cats = attMan->categories();
   for (it = cats.begin(); it != cats.end(); it++)
@@ -120,7 +131,9 @@ void qtRootView::createWidget( )
     }
   this->Internals->ShowCategoryCombo->setEnabled(false);
   QHBoxLayout* layout = new QHBoxLayout(this->Widget);
-  layout->addWidget(this->Internals->AdvancedCheck);
+  layout->addWidget(editButton);
+  layout->addWidget(advLevelLabel);
+  layout->addWidget(this->Internals->AdvLevelCombo);
   layout->addWidget(this->Internals->FilterByCheck);
   layout->addWidget(this->Internals->ShowCategoryCombo);
 
@@ -134,20 +147,17 @@ void qtRootView::createWidget( )
   parentlayout->setAlignment(Qt::AlignTop);
   parentlayout->addLayout(layout);
 
-  this->onShowAdvanced(this->showAdvanced());
-
-  QObject::connect(this->Internals->AdvancedCheck,
-    SIGNAL(stateChanged(int)), this, SLOT(onShowAdvanced(int)));
-
+  QObject::connect(this->Internals->AdvLevelCombo,
+    SIGNAL(currentIndexChanged(int)), this, SLOT(showAdvanceLevel(int)));
+  this->showAdvanceLevel(this->uiManager()->advanceLevel());
 }
 
 //----------------------------------------------------------------------------
-void qtRootView::onShowAdvanced(int checked)
+void qtRootView::showAdvanceLevel(int level)
 {
   // update Root for smtk::view
   smtk::view::RootPtr rview =
     smtk::dynamic_pointer_cast<smtk::view::Root>(this->getObject());
-  rview->setShowAdvanced(checked != 0);
 
   int currentTab = 0;
   if(this->Internals->TabGroup)
@@ -218,6 +228,18 @@ void qtRootView::onShowAdvanced(int checked)
     QObject::connect(selfW, SIGNAL(currentChanged(int)),
       this, SLOT(updateViewUI(int)));
     }
+
+  if(level != this->advanceLevel())
+    {
+    this->Internals->AdvLevelCombo->blockSignals(true);
+    this->Internals->AdvLevelCombo->setCurrentIndex(level);
+    this->Internals->AdvLevelCombo->blockSignals(false);
+    }
+  this->uiManager()->setAdvanceLevel(level);
+  if(this->advanceLevelVisible())
+    {
+    this->showAdvanceLevelOverlay(true);
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -285,9 +307,9 @@ void qtRootView::filterByCategory()
 }
 
 //----------------------------------------------------------------------------
-bool qtRootView::showAdvanced()
+int qtRootView::advanceLevel()
 {
-  return this->Internals->AdvancedCheck->isChecked();
+  return this->Internals->AdvLevelCombo->currentIndex();
 }
 //----------------------------------------------------------------------------
 bool qtRootView::categoryEnabled()
@@ -301,3 +323,12 @@ std::string qtRootView::currentCategory()
     this->Internals->ShowCategoryCombo->currentText().toStdString() : "";
 }
 
+//----------------------------------------------------------------------------
+void qtRootView::showAdvanceLevelOverlay(bool show)
+{
+  if(this->Internals->TabGroup)
+    {
+    this->Internals->TabGroup->showAdvanceLevelOverlay(show);
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
+}

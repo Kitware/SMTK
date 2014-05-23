@@ -214,6 +214,7 @@ void qtGroupItem::updateItemData()
       this->addSubGroup(subIdx);
       }
     }
+  this->qtItem::updateItemData();
 }
 
 //----------------------------------------------------------------------------

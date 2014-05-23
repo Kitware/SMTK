@@ -67,7 +67,6 @@ namespace smtk
       void onRemoveSelectedValues();
 
       virtual void createFunctionWithExpression();
-      void showAdvanced(int show);
 
     signals:
       void onCreateFunctionWithExpression(

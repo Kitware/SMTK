@@ -50,7 +50,7 @@ namespace smtk
       void setOutputOptional(int);
 
     protected slots:
-      virtual void updateItemData() {this->updateUI();}
+      virtual void updateItemData();
       virtual void onAddNewValue();
       virtual void onRemoveValue();
 

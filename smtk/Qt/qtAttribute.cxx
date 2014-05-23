@@ -112,7 +112,7 @@ void qtAttribute::createWidget()
   for (i = 0; i < n; i++)
     {
     if(this->Internals->View->uiManager()->passAdvancedCheck(
-        att->item(static_cast<int>(i))->definition()->advanceLevel()) &&
+        att->item(static_cast<int>(i))->advanceLevel()) &&
       this->Internals->View->uiManager()->passItemCategoryCheck(
         att->item(static_cast<int>(i))->definition()))
       {
@@ -163,6 +163,15 @@ void qtAttribute::clearItems()
 }
 
 //----------------------------------------------------------------------------
+void qtAttribute::showAdvanceLevelOverlay(bool show)
+{
+  for(int i=0; i < this->Internals->Items.count(); i++)
+    {
+    this->Internals->Items.value(i)->showAdvanceLevelOverlay(show);
+    }
+}
+
+//----------------------------------------------------------------------------
 void qtAttribute::updateItemsData()
 {
   this->clearItems();
@@ -199,7 +208,7 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
   qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {
   if(!bview->uiManager()->passAdvancedCheck(
-      item->definition()->advanceLevel()) ||
+      item->advanceLevel()) ||
     !bview->uiManager()->passItemCategoryCheck(
       item->definition()))
     {

@@ -96,6 +96,15 @@ namespace smtk
       const std::map<std::string, std::set<std::string> > &analyses() const
       {return this->m_analyses;}
 
+      void addAdvanceLevel(int level, std::string label, const double *l_color=0);
+      const std::map<int, std::string> &advanceLevels() const
+      {return this->m_advLevels;}
+      std::size_t numberOfAdvanceLevels() const
+      {return this->m_advLevels.size();}
+      // the color is expected in the format of double[4] - rgba
+      const double* advanceLevelColor(int level) const;
+      void setAdvanceLevelColor(int level, const double *l_color);
+
       // For Reader classes
       smtk::attribute::AttributePtr createAttribute(const std::string &name, const std::string &type,
                                           unsigned long id);
@@ -150,6 +159,11 @@ namespace smtk
 
       smtk::model::WeakModelPtr m_refModel;
       smtk::model::WeakStoragePtr m_refStorage;
+      // Advance levels, <int-level, <string-label, color[4]>
+      // higher level means more advanced.
+      std::map<int, std::string> m_advLevels;
+      std::map<int, std::vector<double> > m_advLevelColors;
+
     private:
     };
 //----------------------------------------------------------------------------

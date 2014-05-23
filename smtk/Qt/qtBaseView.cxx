@@ -63,6 +63,7 @@ qtBaseView::qtBaseView(smtk::view::BasePtr dataObject, QWidget* p,
 {
   this->Internals  = new qtBaseViewInternals(dataObject, p, uiman);
   this->Widget = NULL;
+  this->m_advOverlayVisible = false;
 }
 
 //----------------------------------------------------------------------------

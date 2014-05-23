@@ -390,6 +390,37 @@ void XmlDocV1Parser::process(xml_document &doc)
       this->m_manager.defineAnalysis(s, catagories);
       }
     }
+
+  // Process AdvanceLevel Info
+  node = amnode.child("AdvanceLevels");
+  if (node)
+    {
+    xml_node anode;
+    for (anode = node.first_child(); anode; anode = anode.next_sibling())
+      {
+      s = anode.attribute("Label").value();
+      int val = anode.text().as_int();
+      if(s.empty())
+        {
+        std::stringstream tmp;
+        tmp << "Level " << val;
+        s = tmp.str();
+        }
+      this->m_manager.addAdvanceLevel(val, s);
+
+      xml_attribute xatt = anode.attribute("Color");
+      if(xatt)
+        {
+        double color[4];
+        s = xatt.value();
+        if(!s.empty() && this->decodeColorInfo(s, color) == 0)
+          {
+          this->m_manager.setAdvanceLevelColor(val, color);
+          }
+        }
+      }
+    }
+
   this->processAttributeInformation(amnode);
   this->processViews(amnode);
   this->processModelInfo(amnode);

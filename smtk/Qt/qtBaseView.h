@@ -56,6 +56,8 @@ namespace smtk
         QList<smtk::attribute::DefinitionPtr>& defs);
       int fixedLabelWidth();
       bool setFixedLabelWidth(int w);
+      bool advanceLevelVisible()
+        { return m_advOverlayVisible; }
 
     signals:
       void modified(smtk::attribute::ItemPtr);
@@ -65,11 +67,13 @@ namespace smtk
       {
       this->updateAttributeData();
       this->updateModelAssociation();
+      this->showAdvanceLevelOverlay(m_advOverlayVisible);
       }
-      virtual void showAdvanced(int){;}
       virtual void updateModelAssociation() {;}
       virtual void valueChanged(smtk::attribute::ItemPtr);
       virtual void childrenResized(){;}
+      virtual void showAdvanceLevelOverlay(bool val)
+      { m_advOverlayVisible = val;}
 
     protected slots:
       virtual void updateAttributeData() {;}
@@ -81,6 +85,7 @@ namespace smtk
     private:
 
       qtBaseViewInternals *Internals;
+      bool m_advOverlayVisible;
 
     }; // class
   }; // namespace attribute

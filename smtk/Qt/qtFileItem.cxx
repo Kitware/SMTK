@@ -226,6 +226,7 @@ void qtFileItem::updateItemData()
 
 //  this->Widget->layout()->addWidget(this->Internals->EntryFrame);
   thisLayout->addWidget(this->Internals->EntryFrame, 0 , 1);
+  this->qtItem::updateItemData();
 }
 
 //----------------------------------------------------------------------------

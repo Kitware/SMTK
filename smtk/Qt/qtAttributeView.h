@@ -82,6 +82,7 @@ namespace smtk
       void propertyFilterChanged(
         const QModelIndex& topLeft, const QModelIndex& bottomRight);
       virtual void childrenResized();
+      virtual void showAdvanceLevelOverlay(bool show);
 
     signals:
       void numOfAttriubtesChanged();

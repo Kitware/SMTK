@@ -266,6 +266,26 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
         }
       }
     }
+
+  // Write out the advance levels information
+  if (this->m_manager.numberOfAdvanceLevels())
+    {
+    xml_node cnode, catNodes = this->m_pugi->root.append_child("AdvanceLevels");
+    std::map<int, std::string>::const_iterator it;
+    const std::map<int, std::string> &levels = this->m_manager.advanceLevels();
+    for (it = levels.begin(); it != levels.end(); it++)
+      {
+      xml_node anode = catNodes.append_child("Level");
+      anode.append_attribute("Label").set_value(it->second.c_str());
+      if(this->m_manager.advanceLevelColor(it->first))
+        {
+        anode.append_attribute("Color").set_value(
+          this->encodeColor(this->m_manager.advanceLevelColor(it->first)).c_str());
+        }
+      anode.text().set(getValueForXMLElement(it->first));
+      }
+    }
+
   if (this->m_includeDefinitions || this->m_includeInstances)
     {
     this->processAttributeInformation();

@@ -26,6 +26,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QCheckBox>
 #include <QSizePolicy>
+#include <QVBoxLayout>
+#include <QPointer>
 
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
@@ -36,7 +38,7 @@ using namespace smtk::attribute;
 class qtVoidItemInternals
 {
 public:
-
+  QPointer<QCheckBox> optionalCheck;
 };
 
 //----------------------------------------------------------------------------
@@ -66,8 +68,7 @@ void qtVoidItem::setLabelVisible(bool visible)
   QString txtLabel = dataObj->label().empty() ?
      dataObj->name().c_str() : dataObj->label().c_str();
 
-  QCheckBox* optionalCheck = qobject_cast<QCheckBox*>(this->Widget);
-  optionalCheck->setText(visible ? txtLabel : "");
+  this->Internals->optionalCheck->setText(visible ? txtLabel : "");
 }
 
 //----------------------------------------------------------------------------
@@ -82,15 +83,19 @@ void qtVoidItem::createWidget()
     }
 
   this->clearChildItems();
+  this->Widget = new QFrame(this->parentWidget());
+  new QVBoxLayout(this->Widget);
+  this->Widget->layout()->setMargin(0);
+  this->Widget->layout()->setSpacing(0);
 
-  QCheckBox* optionalCheck = new QCheckBox(this->parentWidget());
+  QCheckBox* optionalCheck = new QCheckBox(this->Widget);
   optionalCheck->setChecked(dataObj->definition()->isEnabledByDefault());
-  QSizePolicy sizeFixedPolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+  QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   optionalCheck->setSizePolicy(sizeFixedPolicy);
   QString txtLabel = dataObj->label().empty() ?
      dataObj->name().c_str() : dataObj->label().c_str();
 
-  if(dataObj->definition()->advanceLevel() >0)
+  if(dataObj->advanceLevel() >0)
     {
     optionalCheck->setFont(this->baseView()->uiManager()->advancedFont());
     }
@@ -102,9 +107,8 @@ void qtVoidItem::createWidget()
   optionalCheck->setText(txtLabel);
   QObject::connect(optionalCheck, SIGNAL(stateChanged(int)),
     this, SLOT(setOutputOptional(int)));
-
-  this->Widget = optionalCheck;
-
+  this->Internals->optionalCheck = optionalCheck;
+  this->Widget->layout()->addWidget(this->Internals->optionalCheck);
   this->updateItemData();
 }
 
@@ -112,12 +116,12 @@ void qtVoidItem::createWidget()
 void qtVoidItem::updateItemData()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->Widget)
+  if(!dataObj || !this->Internals->optionalCheck)
     {
     return;
     }
-  QCheckBox* optionalCheck = qobject_cast<QCheckBox*>(this->Widget);
-  optionalCheck->setChecked(dataObj->isEnabled());
+  this->Internals->optionalCheck->setChecked(dataObj->isEnabled());
+  this->qtItem::updateItemData();
 }
 //----------------------------------------------------------------------------
 void qtVoidItem::setOutputOptional(int state)

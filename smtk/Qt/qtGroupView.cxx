@@ -85,6 +85,7 @@ void qtGroupView::createWidget( )
   else
     {
     QTabWidget *tab = new QTabWidget(this->parentWidget());
+//    connect(tab, SIGNAL(currentChanged(int)), this, SLOT(refreshAdvanceLevelOverlay(int)));
     tab->setUsesScrollButtons( true );
     this->Widget = tab;
     }
@@ -156,38 +157,6 @@ void qtGroupView::clearChildViews()
 }
 
 //----------------------------------------------------------------------------
-void qtGroupView::showAdvanced(int checked)
-{
-  smtk::view::GroupPtr gview =
-    smtk::dynamic_pointer_cast<smtk::view::Group>(this->getObject());
-
-  int currentTab = 0;
-  if(this->childViews().count() &&
-    gview->style() == smtk::view::Group::TABBED)
-    {
-    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
-    if(selfW)
-      {
-      currentTab = selfW->currentIndex();
-      }
-    }
-
-  foreach(qtBaseView* childView, this->Internals->ChildViews)
-    {
-    childView->showAdvanced(checked);
-    }
-
-  if(this->childViews().count() &&
-    gview->style() == smtk::view::Group::TABBED)
-    {
-    QTabWidget* selfW = static_cast<QTabWidget*>(this->Widget);
-    if(selfW)
-      {
-      selfW->setCurrentIndex(currentTab);
-      }
-    }
-}
-//----------------------------------------------------------------------------
 void qtGroupView::updateUI()
 {
   foreach(qtBaseView* childView, this->Internals->ChildViews)
@@ -195,6 +164,17 @@ void qtGroupView::updateUI()
     childView->updateUI();
     }
 }
+
+//----------------------------------------------------------------------------
+void qtGroupView::showAdvanceLevelOverlay(bool show)
+{
+  foreach(qtBaseView* childView, this->Internals->ChildViews)
+    {
+    childView->showAdvanceLevelOverlay(show);
+    }
+  this->qtBaseView::showAdvanceLevelOverlay(show);
+}
+
 //----------------------------------------------------------------------------
 void qtGroupView::addTabEntry(qtBaseView* child)
 {
