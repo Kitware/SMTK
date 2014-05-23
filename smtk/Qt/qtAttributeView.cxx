@@ -938,6 +938,10 @@ void qtAttributeView::updateTableWithAttribute(
     {
     this->Internals->AttFrame->layout()->addWidget(
       this->Internals->CurrentAtt->widget());
+    if(this->advanceLevelVisible())
+      {
+      this->Internals->CurrentAtt->showAdvanceLevelOverlay(true);
+      }
     }
 }
 //----------------------------------------------------------------------------
@@ -1190,7 +1194,7 @@ void qtAttributeView::addComparativeAttribute(
           }
         vtWidget->setCellWidget(row, col, qItem->widget());
         vtWidget->setItem(row, col, new QTableWidgetItem());
-        break;
+       break;
         }
       }
     }

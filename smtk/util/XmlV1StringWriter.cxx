@@ -277,6 +277,11 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
       {
       xml_node anode = catNodes.append_child("Level");
       anode.append_attribute("Label").set_value(it->second.c_str());
+      if(this->m_manager.advanceLevelColor(it->first))
+        {
+        anode.append_attribute("Color").set_value(
+          this->encodeColor(this->m_manager.advanceLevelColor(it->first)).c_str());
+        }
       anode.text().set(getValueForXMLElement(it->first));
       }
     }

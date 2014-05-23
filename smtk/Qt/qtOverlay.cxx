@@ -15,6 +15,7 @@ qtOverlay::qtOverlay(QWidget * parent ) : QWidget(parent)
   new QHBoxLayout(this);
   this->layout()->setAlignment(Qt::AlignRight);
   this->layout()->setMargin(0);
+  this->m_overlayColor = QColor(80, 80, 255, 128);
 }
 
 void qtOverlay::addOverlayWidget(QWidget*w)
@@ -23,8 +24,12 @@ void qtOverlay::addOverlayWidget(QWidget*w)
     {
     w->setAttribute(Qt::WA_NoSystemBackground);
     w->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    w->setStyleSheet(
-      "QWidget { background-color: rgba(80, 80, 255, 128) }");
+    QString strStyle(" QWidget { background-color: rgba(");
+    strStyle.append(QString::number(this->m_overlayColor.red()) + ", ")
+            .append(QString::number(this->m_overlayColor.green()) + ", ")
+            .append(QString::number(this->m_overlayColor.blue()) + ", ")
+            .append(QString::number(this->m_overlayColor.alpha()) + ") } ");
+    w->setStyleSheet(w->styleSheet() + strStyle);
     this->layout()->addWidget(w);
     }
 }
@@ -32,7 +37,7 @@ void qtOverlay::addOverlayWidget(QWidget*w)
 void qtOverlay::paintEvent(QPaintEvent *)
 {
   QPainter p(this);
-  p.fillRect(rect(), QColor(80, 80, 255, 128));
+  p.fillRect(rect(), this->m_overlayColor);
 }
 
 //----------------------------------------------------------------------------

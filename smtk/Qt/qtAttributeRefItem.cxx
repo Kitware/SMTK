@@ -461,6 +461,7 @@ void qtAttributeRefItem::updateItemData()
       this->Internals->optionalCheck->setChecked(item->isEnabled());
       }
     }
+  this->qtItem::updateItemData();
 }
 
 //----------------------------------------------------------------------------

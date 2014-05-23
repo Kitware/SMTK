@@ -407,6 +407,17 @@ void XmlDocV1Parser::process(xml_document &doc)
         s = tmp.str();
         }
       this->m_manager.addAdvanceLevel(val, s);
+
+      xml_attribute xatt = anode.attribute("Color");
+      if(xatt)
+        {
+        double color[4];
+        s = xatt.value();
+        if(!s.empty() && this->decodeColorInfo(s, color) == 0)
+          {
+          this->m_manager.setAdvanceLevelColor(val, color);
+          }
+        }
       }
     }
 

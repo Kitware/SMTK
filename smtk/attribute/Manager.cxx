@@ -494,3 +494,31 @@ Manager::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
     }
 }
 //----------------------------------------------------------------------------
+void Manager::addAdvanceLevel(
+  int level, std::string label, const double *l_color)
+{
+  this->m_advLevels[level] = label;
+  this->setAdvanceLevelColor(level, l_color);
+}
+//----------------------------------------------------------------------------
+const double* Manager::advanceLevelColor(int level) const
+{
+  std::map<int, std::vector<double> >::const_iterator it =
+    this->m_advLevelColors.find(level);
+  if( it != this->m_advLevelColors.end() &&
+     it->second.size() == 4)
+    {
+    return &it->second[0];
+    }
+  return NULL;
+}
+//----------------------------------------------------------------------------
+void Manager::setAdvanceLevelColor(int level, const double *l_color)
+{
+  if(l_color && this->m_advLevels.find(level) != this->m_advLevels.end())
+    {
+    std::vector<double> acolor (l_color, l_color + 4);
+    this->m_advLevelColors[level] = acolor;
+    }
+}
+//----------------------------------------------------------------------------

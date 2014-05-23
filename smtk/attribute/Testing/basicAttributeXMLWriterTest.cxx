@@ -73,9 +73,12 @@ int main(int argc, char *argv[])
   manager.defineAnalysis("Constituent Transport", analysis);
   analysis.clear();
 
-  manager.addAdvanceLevel(0, "Level 0");
-  manager.addAdvanceLevel(1, "Level 1");
-  manager.addAdvanceLevel(2, "Level 2");
+  double lcolor1[] = {1.0, 1.0, 0.0, 0.1};
+  double lcolor2[] = {1.0, 0.0, 1.0, 0.2};
+  double lcolor3[] = {0.0, 1.0, 1.0, 0.3};
+  manager.addAdvanceLevel(0, "Level 0", lcolor1);
+  manager.addAdvanceLevel(1, "Level 1", lcolor2);
+  manager.addAdvanceLevel(2, "Level 2", lcolor3);
 
   // Lets create an attribute to represent an expression
   smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");

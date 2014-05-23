@@ -90,6 +90,15 @@ qtBaseView* qtItem::baseView()
 }
 
 //----------------------------------------------------------------------------
+void qtItem::updateItemData()
+{
+//  if(this->widget() && this->baseView()->advanceLevelVisible())
+//    {
+//    this->showAdvanceLevelOverlay(true);
+//    }
+}
+
+//----------------------------------------------------------------------------
 void qtItem::addChildItem(qtItem* child)
 {
   if(!this->Internals->ChildItems.contains(child))
@@ -148,8 +157,16 @@ void qtItem::showAdvanceLevelOverlay(bool show)
       this->Internals->AdvLevelCombo);
     this->baseView()->uiManager()->initAdvanceLevels(
       this->Internals->AdvLevelCombo);
-    this->Internals->AdvLevelCombo->setCurrentIndex(
-      this->getObject()->advanceLevel(0));
+    int mylevel = this->getObject()->advanceLevel(0);
+    this->Internals->AdvLevelCombo->setCurrentIndex(mylevel);
+    const double* rgba = this->baseView()->uiManager()->
+      attManager()->advanceLevelColor(mylevel);
+    if(rgba)
+      {
+      this->Internals->advOverlay->overlay()->setColor(
+        QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
+      }
+
     QObject::connect(this->Internals->AdvLevelCombo,
       SIGNAL(currentIndexChanged(int)), this, SLOT(setAdvanceLevel(int)));
     this->widget()->installEventFilter(this->Internals->advOverlay);
@@ -170,4 +187,15 @@ void qtItem::setAdvanceLevel(int l)
 {
   this->getObject()->setAdvanceLevel(0, l);
   this->getObject()->setAdvanceLevel(1, l);
+  if(this->Internals->advOverlay)
+    {
+    const double* rgba = this->baseView()->uiManager()->
+      attManager()->advanceLevelColor(l);
+    if(rgba)
+      {
+      this->Internals->advOverlay->overlay()->setColor(
+        QColor::fromRgbF(rgba[0], rgba[1], rgba[2], rgba[3]));
+      this->Internals->advOverlay->overlay()->repaint();
+      }
+    }
 }

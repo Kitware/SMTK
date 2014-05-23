@@ -13,9 +13,13 @@ namespace smtk
     public:
         qtOverlay(QWidget * parent = 0);
         void addOverlayWidget(QWidget*w);
+        void setColor(const QColor& ocolor)
+        { this->m_overlayColor = ocolor; }
+
     protected:
         void paintEvent(QPaintEvent *);
         QPointer<QWidget> m_overlayWidget;
+        QColor m_overlayColor;
     };
 
 

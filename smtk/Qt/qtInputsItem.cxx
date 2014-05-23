@@ -107,8 +107,16 @@ void qtInputsItem::createWidget()
     }
 
   this->clearChildWidgets();
-  this->updateUI();
+  this->updateItemData();
 }
+
+//----------------------------------------------------------------------------
+void qtInputsItem::updateItemData()
+{
+  this->updateUI();
+  this->qtItem::updateItemData();
+}
+
 //----------------------------------------------------------------------------
 void qtInputsItem::addInputEditor(int i)
 {
