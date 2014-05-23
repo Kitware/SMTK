@@ -111,11 +111,11 @@ void qtRootView::createWidget( )
 
   QToolButton* editButton = new QToolButton(this->Widget);
   editButton->setCheckable(true);
-  QString resourceName(":/icons/attribute/edit.png");
-  editButton->setFixedSize(QSize(16, 16));
+  QString resourceName(":/icons/attribute/lock.png");
+  editButton->setFixedSize(QSize(20, 20));
   editButton->setIcon(QIcon(resourceName));
   editButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-  editButton->setToolTip("Toggle advance level overlay");
+  editButton->setToolTip("Edit access level");
   connect(editButton, SIGNAL(toggled(bool)),
         this, SLOT(showAdvanceLevelOverlay(bool)));
 
@@ -131,9 +131,9 @@ void qtRootView::createWidget( )
     }
   this->Internals->ShowCategoryCombo->setEnabled(false);
   QHBoxLayout* layout = new QHBoxLayout(this->Widget);
+  layout->addWidget(editButton);
   layout->addWidget(advLevelLabel);
   layout->addWidget(this->Internals->AdvLevelCombo);
-  layout->addWidget(editButton);
   layout->addWidget(this->Internals->FilterByCheck);
   layout->addWidget(this->Internals->ShowCategoryCombo);
 
