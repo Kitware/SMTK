@@ -66,6 +66,7 @@ public:
 protected:
   friend class Operator;
   friend class OperatorResult;
+  friend class ImportJSON;
 
   void setValidState(ParameterValidState s);
 

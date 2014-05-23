@@ -38,6 +38,9 @@ public:
   static int forManagerFloatProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr model);
   static int forManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr model);
   static int forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr model);
+  static int forModelOperators(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
+  static int forOperators(Operators& ops, cJSON*);
+  static int forOperator(OperatorPtr op, cJSON*);
 };
 
   } // namespace model

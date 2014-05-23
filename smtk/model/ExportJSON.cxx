@@ -27,25 +27,41 @@ namespace {
       {
       cJSON* paramEntry = cJSON_CreateObject();
       cJSON_AddItemToArray(a, paramEntry);
-      cJSON_AddItemToObject(paramEntry, "name", cJSON_CreateString(it->name().c_str()));
+      cJSON_AddItemToObject(paramEntry, "name",
+        cJSON_CreateString(it->name().c_str()));
+      if (it->validState() != smtk::model::PARAMETER_UNKNOWN)
+        cJSON_AddBoolToObject(paramEntry, "v",
+          it->validState() == smtk::model::PARAMETER_VALIDATED);
       if (!it->floatValues().empty())
         cJSON_AddItemToObject(paramEntry, "f",
           cJSON_CreateDoubleArray(
-            const_cast<double*>(&it->floatValues()[0]), static_cast<unsigned int>(it->floatValues().size())));
+            const_cast<double*>(&it->floatValues()[0]),
+            static_cast<unsigned int>(it->floatValues().size())));
       if (!it->integerValues().empty())
         cJSON_AddItemToObject(paramEntry, "i",
           cJSON_CreateLongArray(
-            &it->integerValues()[0], static_cast<unsigned int>(it->integerValues().size())));
+            &it->integerValues()[0],
+            static_cast<unsigned int>(it->integerValues().size())));
       if (!it->stringValues().empty())
         cJSON_AddItemToObject(paramEntry, "s",
           cJSON_CreateStringArray(
-            &it->stringValues()[0], static_cast<unsigned int>(it->stringValues().size())));
+            &it->stringValues()[0],
+            static_cast<unsigned int>(it->stringValues().size())));
       if (!it->uuidValues().empty())
         cJSON_AddItemToObject(paramEntry, "u",
           cJSON_CreateUUIDArray(
-            &it->uuidValues()[0], static_cast<unsigned int>(it->uuidValues().size())));
+            &it->uuidValues()[0],
+            static_cast<unsigned int>(it->uuidValues().size())));
       }
     return a;
+    }
+
+  cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
+    {
+    cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
+    cJSON_AddItemToObject(opEntry, "parameters",
+      cJSON_CreateParameterArray(op->parameters()));
+    return opEntry;
     }
 
   cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
@@ -55,9 +71,7 @@ namespace {
       {
       cJSON* opEntry = cJSON_CreateObject();
       cJSON_AddItemToArray(a, opEntry);
-      cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString((*it)->name().c_str()));
-      cJSON_AddItemToObject(opEntry, "parameters",
-        cJSON_CreateParameterArray((*it)->parameters()));
+      cJSON_AddOperator(*it, opEntry);
       }
     return a;
     }
@@ -199,15 +213,7 @@ int ExportJSON::forManagerEntity(
         static_cast<unsigned int>(entry->second.relations().size())));
     }
   if (entry->second.entityFlags() & MODEL_ENTITY)
-    {
-    smtk::model::ModelEntity mod(model, entry->first);
-    smtk::model::Operators ops(mod.operators());
-    if (!ops.empty())
-      {
-      cJSON_AddItemToObject(entRec, "o",
-        cJSON_CreateOperatorArray(ops));
-      }
-    }
+    ExportJSON::forModelOperators(entry->first, entRec, model);
   return 1;
 }
 
@@ -347,6 +353,29 @@ int ExportJSON::forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* 
         &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
   return status;
+}
+
+int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, StoragePtr modelMgr)
+{
+  smtk::model::ModelEntity mod(modelMgr, uid);
+  smtk::model::Operators ops(mod.operators());
+  return ExportJSON::forOperators(ops, entRec);
+}
+
+int ExportJSON::forOperators(Operators& ops, cJSON* entRec)
+{
+  if (!ops.empty())
+    {
+    cJSON_AddItemToObject(entRec, "o",
+      cJSON_CreateOperatorArray(ops));
+    }
+  return 1;
+}
+
+int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
+{
+  cJSON_AddOperator(op, entRec);
+  return 1;
 }
 
   }

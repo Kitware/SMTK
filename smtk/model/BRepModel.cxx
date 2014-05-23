@@ -1247,12 +1247,48 @@ bool BRepModel::registerBridge(const std::string& bname, BridgeConstructor bctor
   return false;
 }
 
-StringList BRepModel::bridges()
+StringList BRepModel::bridgeNames()
 {
   StringList result;
   for (BridgeConstructors::const_iterator it = s_bridges->begin(); it != s_bridges->end(); ++it)
     result.push_back(it->first);
   return result;
+}
+
+/// Mark the start of a modeling session by registering the \a bridge with SMTK backing storage.
+bool BRepModel::registerBridgeSession(BridgePtr bridge)
+{
+  if (!bridge)
+    return false;
+
+  smtk::util::UUID sessId = bridge->sessionId();
+  if (sessId.isNull())
+    return false;
+
+  this->m_sessions[sessId] = bridge;
+  return true;
+}
+
+/// Mark the end of a modeling session by removing its \a bridge. This does not remove bridged entities.
+bool BRepModel::unregisterBridgeSession(BridgePtr bridge)
+{
+  if (!bridge)
+    return false;
+
+  smtk::util::UUID sessId = bridge->sessionId();
+  if (sessId.isNull())
+    return false;
+
+  return this->m_sessions.erase(sessId) ? true : false;
+}
+
+/// Find a bridge given its session UUID (or NULL).
+BridgePtr BRepModel::findBridgeSession(const smtk::util::UUID& sessId)
+{
+  UUIDsToBridges::iterator it = this->m_sessions.find(sessId);
+  if (it == this->m_sessions.end())
+    return BridgePtr();
+  return it->second;
 }
 
 IntegerList& BRepModel::entityCounts(

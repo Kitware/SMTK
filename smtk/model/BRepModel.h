@@ -144,7 +144,11 @@ public:
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
   static bool registerBridge(const std::string& bname, BridgeConstructor bctor);
-  static StringList bridges();
+  static StringList bridgeNames();
+
+  bool registerBridgeSession(BridgePtr session);
+  bool unregisterBridgeSession(BridgePtr session);
+  BridgePtr findBridgeSession(const smtk::util::UUID& sessionId);
 
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
@@ -153,6 +157,7 @@ protected:
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   UUIDsToBridges m_modelBridges;
   smtk::shared_ptr<Bridge> m_defaultBridge;
+  UUIDsToBridges m_sessions;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
   static BridgeConstructors* s_bridges;

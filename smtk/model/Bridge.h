@@ -128,6 +128,7 @@ class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 public:
   smtkTypeMacro(Bridge);
   virtual std::string name() const;
+  smtk::util::UUID sessionId() const;
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 
@@ -143,9 +144,12 @@ protected:
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
+  void setSessionId(const smtk::util::UUID& sessId);
+
   typedef std::map<smtk::model::Cursor,int> DanglingEntities;
   DanglingEntities m_dangling;
   Operators m_operators;
+  smtk::util::UUID m_sessionId;
 };
 
   } // namespace model
