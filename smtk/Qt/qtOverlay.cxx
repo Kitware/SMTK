@@ -47,15 +47,12 @@ qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parent) : QObject(
   m_overlay = new qtOverlay(onWidget->parentWidget());
   m_overlay->setGeometry(onWidget->geometry());
   m_overlayOn = onWidget;
+  onWidget->installEventFilter(this);
 }
 void qtOverlayFilter::setActive(bool val)
 {
   this->m_overlay->setVisible(val);
   this->m_Active = val;
-//  if(this->m_Active)
-//    {
-//    this->m_overlay->repaint();
-//    }
 }
 
 void qtOverlayFilter::addOverlayWidget(QWidget*w)
