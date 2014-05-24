@@ -1247,6 +1247,7 @@ bool BRepModel::registerBridge(const std::string& bname, BridgeConstructor bctor
   return false;
 }
 
+/// Return a list of the names of each bridge subclass whose constructor has been registered with SMTK.
 StringList BRepModel::bridgeNames()
 {
   StringList result;
@@ -1291,6 +1292,7 @@ BridgePtr BRepModel::findBridgeSession(const smtk::util::UUID& sessId)
   return it->second;
 }
 
+/// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.
 IntegerList& BRepModel::entityCounts(
   const smtk::util::UUID& modelId, BitFlags entityFlags)
 {
