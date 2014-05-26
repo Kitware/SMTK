@@ -34,6 +34,7 @@ set(modelSrcs
   Parameter.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
+  RemoteOperator.cxx
   Shell.cxx
   ShellEntity.cxx
   SimpleModelSubphrases.cxx
@@ -88,6 +89,7 @@ set(modelHeaders
   PropertyType.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
+  RemoteOperator.h
   Shell.h
   ShellEntity.h
   SimpleModelSubphrases.h

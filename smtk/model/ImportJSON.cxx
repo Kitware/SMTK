@@ -553,5 +553,83 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* d
   return status ? 0 : 1;
 }
 
+/**\brief Import JSON for an operator into an Operator instance.
+  *
+  * **Important**: Unlike other JSON import methods, this method
+  * creates a new instance of an Operator subclass, storing the result
+  * into \a op.
+  *
+  * If the JSON \a node contains a "sessionId" property,
+  * the storage manager \a context is searched for a Bridge with the
+  * matching UUID. If no matching Bridge exists, then
+  * a RemoteOperator is created on the default Bridge and
+  * its session ID set to the corresponding value.
+  * If no "sessionId" is present in \a node, then the method returns
+  * 0 (failure) and \a op is unchanged.
+  *
+  * If the JSON \a node has no "name" property (or has a
+  * name unknown to the Bridge), then the method returns 0 (failure).
+  *
+  * Finally, parameter values store in \a node's "param"
+  * data are converted into Parameter instances and attached to
+  * the Operator.
+  */
+int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
+{
+  cJSON* pnode;
+
+  std::string osess;
+  pnode = cJSON_GetObjectItem(node, "sessionId");
+  smtk::util::UUID sessionId;
+  if (
+    !pnode ||
+    !cJSON_GetStringValue(pnode, osess) ||
+    osess.empty() ||
+    (sessionId = smtk::util::UUID(osess)).isNull())
+    return 0;
+
+  BridgePtr bridge = context->findBridgeSession(sessionId);
+
+  std::string oname;
+  pnode = cJSON_GetObjectItem(node, "name");
+  if (!pnode || !cJSON_GetStringValue(pnode, oname))
+    return 0;
+
+  op = bridge->op(oname, context);
+  if (!op)
+    return 0;
+
+  cJSON* params = cJSON_GetObjectItem(node, "parameters");
+  if (params)
+    {
+    cJSON* param;
+    for (param = params->child; param; param = param->next)
+      {
+      Parameter pv;
+      FloatList fval;
+      StringList sval;
+      IntegerList ival;
+      pnode = cJSON_GetObjectItem(param, "v");
+      if (pnode)
+        switch (pnode->type)
+          {
+        case cJSON_True:  pv.setValidState(PARAMETER_VALIDATED); break;
+        case cJSON_False: pv.setValidState(PARAMETER_INVALID); break;
+        default:          pv.setValidState(PARAMETER_UNKNOWN); break;
+          }
+      pnode = cJSON_GetObjectItem(param, "f");
+      if (pnode && cJSON_GetRealArray(pnode, fval))
+        pv.setFloatValue(fval);
+      pnode = cJSON_GetObjectItem(param, "s");
+      if (pnode && cJSON_GetStringArray(pnode, sval))
+        pv.setStringValue(sval);
+      pnode = cJSON_GetObjectItem(param, "i");
+      if (pnode && cJSON_GetIntegerArray(pnode, ival))
+        pv.setIntegerValue(ival);
+      }
+    }
+  return 1;
+}
+
   }
 }

@@ -27,25 +27,41 @@ namespace {
       {
       cJSON* paramEntry = cJSON_CreateObject();
       cJSON_AddItemToArray(a, paramEntry);
-      cJSON_AddItemToObject(paramEntry, "name", cJSON_CreateString(it->name().c_str()));
+      cJSON_AddItemToObject(paramEntry, "name",
+        cJSON_CreateString(it->name().c_str()));
+      if (it->validState() != smtk::model::PARAMETER_UNKNOWN)
+        cJSON_AddBoolToObject(paramEntry, "v",
+          it->validState() == smtk::model::PARAMETER_VALIDATED);
       if (!it->floatValues().empty())
         cJSON_AddItemToObject(paramEntry, "f",
           cJSON_CreateDoubleArray(
-            const_cast<double*>(&it->floatValues()[0]), static_cast<unsigned int>(it->floatValues().size())));
+            const_cast<double*>(&it->floatValues()[0]),
+            static_cast<unsigned int>(it->floatValues().size())));
       if (!it->integerValues().empty())
         cJSON_AddItemToObject(paramEntry, "i",
           cJSON_CreateLongArray(
-            &it->integerValues()[0], static_cast<unsigned int>(it->integerValues().size())));
+            &it->integerValues()[0],
+            static_cast<unsigned int>(it->integerValues().size())));
       if (!it->stringValues().empty())
         cJSON_AddItemToObject(paramEntry, "s",
           cJSON_CreateStringArray(
-            &it->stringValues()[0], static_cast<unsigned int>(it->stringValues().size())));
+            &it->stringValues()[0],
+            static_cast<unsigned int>(it->stringValues().size())));
       if (!it->uuidValues().empty())
         cJSON_AddItemToObject(paramEntry, "u",
           cJSON_CreateUUIDArray(
-            &it->uuidValues()[0], static_cast<unsigned int>(it->uuidValues().size())));
+            &it->uuidValues()[0],
+            static_cast<unsigned int>(it->uuidValues().size())));
       }
     return a;
+    }
+
+  cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
+    {
+    cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
+    cJSON_AddItemToObject(opEntry, "parameters",
+      cJSON_CreateParameterArray(op->parameters()));
+    return opEntry;
     }
 
   cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
@@ -55,9 +71,7 @@ namespace {
       {
       cJSON* opEntry = cJSON_CreateObject();
       cJSON_AddItemToArray(a, opEntry);
-      cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString((*it)->name().c_str()));
-      cJSON_AddItemToObject(opEntry, "parameters",
-        cJSON_CreateParameterArray((*it)->parameters()));
+      cJSON_AddOperator(*it, opEntry);
       }
     return a;
     }
@@ -111,23 +125,26 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, ManagerPtr model)
+int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
 {
   int status = 0;
-  if (!json || !model)
+  if (!json || !modelMgr)
     {
     std::cerr << "Invalid arguments.\n";
     return status;
     }
 
   cJSON* body = cJSON_CreateObject();
+  cJSON* sess = cJSON_CreateObject();
   switch(json->type)
     {
   case cJSON_Object:
     cJSON_AddItemToObject(json, "topo", body);
+    cJSON_AddItemToObject(json, "sessions", sess);
     break;
   case cJSON_Array:
     cJSON_AddItemToArray(json, body);
+    cJSON_AddItemToArray(json, sess);
     break;
   case cJSON_NULL:
   case cJSON_Number:
@@ -140,47 +157,67 @@ int ExportJSON::fromModel(cJSON* json, ManagerPtr model)
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forManager(body, model);
+  status = ExportJSON::forManager(body, sess, modelMgr, sections);
 
   return status;
 }
 
-int ExportJSON::forManager(
-  cJSON* dict, ManagerPtr model)
+std::string ExportJSON::fromModel(ManagerPtr modelMgr, JSONFlags sections)
 {
-  if (!dict || !model)
+  cJSON* top = cJSON_CreateObject();
+  ExportJSON::fromModel(top, modelMgr, sections);
+  char* json = cJSON_Print(top);
+  std::string result(json);
+  free(json);
+  cJSON_Delete(top);
+  return result;
+}
+
+int ExportJSON::forManager(
+  cJSON* dict, cJSON* sess, ManagerPtr modelMgr, JSONFlags sections)
+{
+  if (!dict || !modelMgr)
     {
     return 0;
     }
   int status = 1;
   UUIDWithEntity it;
-  for (it = model->topology().begin(); it != model->topology().end(); ++it)
+
+  if (sections == JSON_NOTHING)
+    return status;
+
+  for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
     {
     cJSON* curChild = cJSON_CreateObject();
       {
       std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::forManagerEntity(it, curChild, model);
-    status &= ExportJSON::forManagerArrangement(
-      model->arrangements().find(it->first), curChild, model);
-    status &= ExportJSON::forManagerTessellation(it->first, curChild, model);
-    status &= ExportJSON::forManagerFloatProperties(it->first, curChild, model);
-    status &= ExportJSON::forManagerStringProperties(it->first, curChild, model);
-    status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, model);
+    if (sections & JSON_ENTITIES)
+      {
+      status &= ExportJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= ExportJSON::forManagerArrangement(
+        modelMgr->arrangements().find(it->first), curChild, modelMgr);
+      }
+    if (sections & JSON_TESSELLATIONS)
+      status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+    if (sections & JSON_PROPERTIES)
+      {
+      status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
+      status &= ExportJSON::forManagerStringProperties(it->first, curChild, modelMgr);
+      status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      }
+    }
+
+  if (sections & JSON_BRIDGES)
+    {
+    smtk::util::UUIDs bridgeSessions = modelMgr->bridgeSessions();
+    for (smtk::util::UUIDs::iterator it = bridgeSessions.begin(); it != bridgeSessions.end(); ++it)
+      {
+      status &= ExportJSON::forManagerBridgeSession(*it, sess, modelMgr);
+      }
     }
   return status;
-}
-
-std::string ExportJSON::fromModel(ManagerPtr model)
-{
-  cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModel(top, model);
-  char* json = cJSON_Print(top);
-  std::string result(json);
-  free(json);
-  cJSON_Delete(top);
-  return result;
 }
 
 int ExportJSON::forManagerEntity(
@@ -199,15 +236,7 @@ int ExportJSON::forManagerEntity(
         static_cast<unsigned int>(entry->second.relations().size())));
     }
   if (entry->second.entityFlags() & MODEL_ENTITY)
-    {
-    smtk::model::ModelEntity mod(model, entry->first);
-    smtk::model::Operators ops(mod.operators());
-    if (!ops.empty())
-      {
-      cJSON_AddItemToObject(entRec, "o",
-        cJSON_CreateOperatorArray(ops));
-      }
-    }
+    ExportJSON::forModelOperators(entry->first, entRec, model);
   return 1;
 }
 
@@ -347,6 +376,45 @@ int ExportJSON::forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* 
         &entry->second[0], static_cast<unsigned int>(entry->second.size())));
     }
   return status;
+}
+
+int ExportJSON::forManagerBridgeSession(const smtk::util::UUID& uid, cJSON* node, ManagerPtr modelMgr)
+{
+  int status = 1;
+  BridgePtr bridge = modelMgr->findBridgeSession(uid);
+  if (!bridge)
+    return status;
+
+  cJSON* sess = cJSON_CreateObject();
+  cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
+  cJSON_AddStringToObject(sess, "type", "bridge-session");
+  cJSON_AddStringToObject(sess, "name", bridge->name().c_str());
+  Operators bridgeOps = bridge->operators();
+  status &= ExportJSON::forOperators(bridgeOps, sess);
+  return status;
+}
+
+int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
+{
+  smtk::model::ModelEntity mod(modelMgr, uid);
+  smtk::model::Operators ops(mod.operators());
+  return ExportJSON::forOperators(ops, entRec);
+}
+
+int ExportJSON::forOperators(Operators& ops, cJSON* entRec)
+{
+  if (!ops.empty())
+    {
+    cJSON_AddItemToObject(entRec, "ops",
+      cJSON_CreateOperatorArray(ops));
+    }
+  return 1;
+}
+
+int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
+{
+  cJSON_AddOperator(op, entRec);
+  return 1;
 }
 
   }

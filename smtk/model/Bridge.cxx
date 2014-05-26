@@ -13,7 +13,23 @@ std::string Bridge::name() const
   return "invalid";
 }
 
-/**\brief Transcribe an entity from a foreign modeler into SMTK Manager.
+/**\brief Return the session ID for this instance of the bridge.
+  *
+  * Sessions are ephemeral and tied to a particular machine so
+  * they should generally not be serialized. However, when using
+  * JSON stringifications of operators to perform remote procedure
+  * calls (RPC), the session ID specifies which Bridge on which
+  * machine should actually invoke the operator.
+  *
+  * If this is NULL, it is an indication that you have obtained
+  * a forwarding bridge that is remote.
+  */
+smtk::util::UUID Bridge::sessionId() const
+{
+  return this->m_sessionId;
+}
+
+/**\brief Transcribe an entity from a foreign modeler into an SMTK storage Manager.
   *
   * On input, the \a entity will not be valid but if transcription is
   * successful, the \a requested records in the \a entity's Manager will
@@ -139,6 +155,14 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
   (void)flags;
   // Fail to transcribe anything:
   return 0;
+}
+
+/**\brief Set the session ID. Do not call this unless you are the Storage instance.
+  *
+  */
+void Bridge::setSessionId(const smtk::util::UUID& sessId)
+{
+  this->m_sessionId = sessId;
 }
 
   } // namespace model

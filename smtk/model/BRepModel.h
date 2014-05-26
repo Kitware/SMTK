@@ -1,20 +1,20 @@
 #ifndef __smtk_model_BRepModel_h
 #define __smtk_model_BRepModel_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/UUIDGenerator.h"
-#include "smtk/util/SharedFromThis.h"
-#include "smtk/util/SystemConfig.h"
-
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"
 #include "smtk/PublicPointerDefs.h"
+
 #include "smtk/model/Bridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/PropertyType.h"
 #include "smtk/model/StringData.h"
+
+#include "smtk/util/UUID.h"
+#include "smtk/util/UUIDGenerator.h"
+#include "smtk/util/SharedFromThis.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "smtk/options.h" // for SMTK_HASH_STORAGE
 #ifdef SMTK_HASH_STORAGE
@@ -144,7 +144,12 @@ public:
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
   static bool registerBridge(const std::string& bname, BridgeConstructor bctor);
-  static StringList bridges();
+  static StringList bridgeNames();
+
+  bool registerBridgeSession(BridgePtr session);
+  bool unregisterBridgeSession(BridgePtr session);
+  BridgePtr findBridgeSession(const smtk::util::UUID& sessionId);
+  smtk::util::UUIDs bridgeSessions() const;
 
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
@@ -153,6 +158,7 @@ protected:
   smtk::shared_ptr<UUIDsToIntegerData> m_integerData;
   UUIDsToBridges m_modelBridges;
   smtk::shared_ptr<Bridge> m_defaultBridge;
+  UUIDsToBridges m_sessions;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
   static BridgeConstructors* s_bridges;

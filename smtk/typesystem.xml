@@ -75,6 +75,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -242,6 +243,12 @@
 
   <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::BridgeConstructor&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperators', unmatched parameter type 'smtk::model::Operators&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
+
 
 
   @EXTRA_TYPESYSTEMS@
@@ -753,6 +760,10 @@
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="JSONFlags">
+        <include file-name="smtk/model/ExportJSON.h" location="local"/>
       </enum-type>
 
       <enum-type name="OperatorOutcome">

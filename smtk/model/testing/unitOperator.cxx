@@ -72,7 +72,7 @@ void testBridgeList(Manager::Ptr manager)
 {
   std::cout << "Default bridge is \"" << manager->bridgeForModel(smtk::util::UUID::null())->name() << "\"\n";
   std::cout << "Available bridges\n";
-  StringList bridges = manager->bridges();
+  StringList bridges = manager->bridgeNames();
   for (StringList::iterator it = bridges.begin(); it != bridges.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
