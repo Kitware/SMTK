@@ -560,7 +560,7 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* d
   * into \a op.
   *
   * If the JSON \a node contains a "sessionId" property,
-  * the Storage \a context is searched for a Bridge with the
+  * the storage manager \a context is searched for a Bridge with the
   * matching UUID. If no matching Bridge exists, then
   * a RemoteOperator is created on the default Bridge and
   * its session ID set to the corresponding value.
@@ -574,7 +574,7 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* d
   * data are converted into Parameter instances and attached to
   * the Operator.
   */
-int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, StoragePtr context)
+int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 {
   cJSON* pnode;
 

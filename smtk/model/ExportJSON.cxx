@@ -355,7 +355,7 @@ int ExportJSON::forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* 
   return status;
 }
 
-int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, StoragePtr modelMgr)
+int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
   smtk::model::ModelEntity mod(modelMgr, uid);
   smtk::model::Operators ops(mod.operators());

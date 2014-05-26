@@ -1,6 +1,7 @@
 #include "smtk/model/RemoteOperator.h"
+
+#include "smtk/model/Manager.h"
 #include "smtk/model/Parameter.h"
-#include "smtk/model/Storage.h"
 
 namespace smtk {
   namespace model {
