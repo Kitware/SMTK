@@ -212,9 +212,9 @@ int ExportJSON::forManager(
   if (sections & JSON_BRIDGES)
     {
     smtk::util::UUIDs bridgeSessions = modelMgr->bridgeSessions();
-    for (smtk::util::UUIDs::iterator it = bridgeSessions.begin(); it != bridgeSessions.end(); ++it)
+    for (smtk::util::UUIDs::iterator bit = bridgeSessions.begin(); bit != bridgeSessions.end(); ++bit)
       {
-      status &= ExportJSON::forManagerBridgeSession(*it, sess, modelMgr);
+      status &= ExportJSON::forManagerBridgeSession(*bit, sess, modelMgr);
       }
     }
   return status;

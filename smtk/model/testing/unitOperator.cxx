@@ -278,6 +278,7 @@ int main()
     testBridgeAssociation(manager);
 
   } catch (const std::string& msg) {
+    (void) msg; // Ignore the message; it's already been printed.
     std::cerr << "Exiting...\n";
     status = -1;
   }
