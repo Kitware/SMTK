@@ -49,7 +49,7 @@ public:
 
   virtual BridgedInfoBits allSupportedInformation() const;
 
-  static bool addStorageEntityToCGM(const smtk::model::Cursor& ent);
+  static bool addManagerEntityToCGM(const smtk::model::Cursor& ent);
 
 protected:
   friend class ImportSolid;
@@ -59,23 +59,23 @@ protected:
   virtual BridgedInfoBits transcribeInternal(
     const smtk::model::Cursor& entity, BridgedInfoBits requestedInfo);
 
-  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, RefEntity* refEnt, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, GroupingEntity* refEnt, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addCGMEntityToStorage(const smtk::model::Cursor& entity, SenseEntity* refEnt, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addCGMEntityToManager(const smtk::model::Cursor& entity, RefEntity* refEnt, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addCGMEntityToManager(const smtk::model::Cursor& entity, GroupingEntity* refEnt, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addCGMEntityToManager(const smtk::model::Cursor& entity, SenseEntity* refEnt, BridgedInfoBits requestedInfo);
 
-  BridgedInfoBits addBodyToStorage(const smtk::model::ModelEntity&, Body*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addVolumeUseToStorage(const smtk::model::VolumeUse&, CoVolume*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addFaceUseToStorage(const smtk::model::FaceUse&, CoFace*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addEdgeUseToStorage(const smtk::model::EdgeUse&, CoEdge*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addVertexUseToStorage(const smtk::model::VertexUse&, CoVertex*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addShellToStorage(const smtk::model::Shell&, ::Shell*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addLoopToStorage(const smtk::model::Loop&, ::Loop*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addChainToStorage(const smtk::model::Chain&, ::Chain*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addVolumeToStorage(const smtk::model::Volume&, RefVolume*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addFaceToStorage(const smtk::model::Face&, RefFace*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addEdgeToStorage(const smtk::model::Edge&, RefEdge*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addVertexToStorage(const smtk::model::Vertex&, RefVertex*, BridgedInfoBits requestedInfo);
-  BridgedInfoBits addGroupToStorage(const smtk::model::GroupEntity&, RefGroup*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addBodyToManager(const smtk::model::ModelEntity&, Body*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVolumeUseToManager(const smtk::model::VolumeUse&, CoVolume*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addFaceUseToManager(const smtk::model::FaceUse&, CoFace*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addEdgeUseToManager(const smtk::model::EdgeUse&, CoEdge*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVertexUseToManager(const smtk::model::VertexUse&, CoVertex*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addShellToManager(const smtk::model::Shell&, ::Shell*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addLoopToManager(const smtk::model::Loop&, ::Loop*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addChainToManager(const smtk::model::Chain&, ::Chain*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVolumeToManager(const smtk::model::Volume&, RefVolume*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addFaceToManager(const smtk::model::Face&, RefFace*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addEdgeToManager(const smtk::model::Edge&, RefEdge*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addVertexToManager(const smtk::model::Vertex&, RefVertex*, BridgedInfoBits requestedInfo);
+  BridgedInfoBits addGroupToManager(const smtk::model::GroupEntity&, RefGroup*, BridgedInfoBits requestedInfo);
 
   static void colorPropFromIndex(smtk::model::Cursor&, int);
 

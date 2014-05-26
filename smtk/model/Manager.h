@@ -1,5 +1,5 @@
-#ifndef __smtk_model_Storage_h
-#define __smtk_model_Storage_h
+#ifndef __smtk_model_Manager_h
+#define __smtk_model_Manager_h
 
 #include "smtk/model/BRepModel.h"
 
@@ -25,21 +25,21 @@ namespace smtk {
   * This adds information about arrangements and tessellations
   * of entities to its BRepModel base class.
   */
-class SMTKCORE_EXPORT Storage : public BRepModel
+class SMTKCORE_EXPORT Manager : public BRepModel
 {
 public:
   typedef UUIDsToTessellations::iterator tess_iter_type;
 
-  smtkTypeMacro(Storage);
-  smtkCreateMacro(Storage);
+  smtkTypeMacro(Manager);
+  smtkCreateMacro(Manager);
   smtkSharedFromThisMacro(BRepModel);
-  Storage();
-  Storage(
+  Manager();
+  Manager(
     shared_ptr<UUIDsToEntities> topology,
     shared_ptr<UUIDsToArrangements> arrangements,
     shared_ptr<UUIDsToTessellations> tess,
     shared_ptr<UUIDsToAttributeAssignments> attribs);
-  virtual ~Storage();
+  virtual ~Manager();
 
   UUIDsToArrangements& arrangements();
   const UUIDsToArrangements& arrangements() const;
@@ -166,15 +166,15 @@ public:
   InstanceEntity addInstance();
   InstanceEntity addInstance(const Cursor& instanceOf);
 
-  void observe(StorageEventType event, ConditionCallback functionHandle, void* callData);
-  void observe(StorageEventType event, OneToOneCallback functionHandle, void* callData);
-  void observe(StorageEventType event, OneToManyCallback functionHandle, void* callData);
-  void unobserve(StorageEventType event, ConditionCallback functionHandle, void* callData);
-  void unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData);
-  void unobserve(StorageEventType event, OneToManyCallback functionHandle, void* callData);
-  void trigger(StorageEventType event, const smtk::model::Cursor& src);
-  void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
-  void trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
+  void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
+  void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
+  void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData);
+  void unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
+  void unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData);
+  void trigger(ManagerEventType event, const smtk::model::Cursor& src);
+  void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
+  void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
 
 protected:
   friend class smtk::attribute::Manager;
@@ -192,4 +192,4 @@ protected:
   } // model namespace
 } // smtk namespace
 
-#endif // __smtk_model_Storage_h
+#endif // __smtk_model_Manager_h

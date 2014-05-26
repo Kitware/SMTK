@@ -323,7 +323,7 @@ namespace {
 };
 //----------------------------------------------------------------------------
 XmlDocV1Parser::XmlDocV1Parser(smtk::attribute::Manager &myManager):
-  m_manager(myManager), m_reportAsError(true)
+  m_reportAsError(true), m_manager(myManager)
 {
 }
 
@@ -806,6 +806,7 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
   this->processValueDef(node, idef);
   if( xml_attribute xatt = node.attribute("MultipleLines") )
     {
+    (void)xatt;
     idef->setIsMultiline(true);
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>

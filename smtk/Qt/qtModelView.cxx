@@ -6,7 +6,7 @@
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 
 #include "smtk/Qt/qtEntityItemDelegate.h"
@@ -83,7 +83,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       this->recursiveSelect(qmodel, sel, ids, ef);
       }
     Cursors entities;
-    Cursor::CursorsFromUUIDs(entities, qmodel->storage(), ids);
+    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), ids);
     std::cout << ids.size() << " ids, " << entities.size() << " entities\n";
 
     group.addEntities(entities);
@@ -241,7 +241,7 @@ DescriptivePhrasePtr qtModelView::currentItem() const
 void qtModelView::addGroup(BitFlags flag, const std::string& name)
 {
   QEntityItemModel* qmodel = this->getModel();
-  smtk::model::StoragePtr pstore = qmodel->storage();
+  smtk::model::ManagerPtr pstore = qmodel->manager();
   ModelEntities models;
   smtk::model::Cursor::CursorsFromUUIDs(
     models,
@@ -260,7 +260,7 @@ void qtModelView::addGroup(BitFlags flag, const std::string& name)
 void qtModelView::removeSelected()
 {
   QEntityItemModel* qmodel = this->getModel();
-  smtk::model::StoragePtr pstore = qmodel->storage();
+  smtk::model::ManagerPtr pstore = qmodel->manager();
   ModelEntities models;
   smtk::model::Cursor::CursorsFromUUIDs(
     models,

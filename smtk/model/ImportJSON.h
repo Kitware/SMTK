@@ -2,7 +2,7 @@
 #define __smtk_model_ImportJSON_h
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
-#include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/util/UUID.h"
 
@@ -11,7 +11,7 @@ struct cJSON;
 namespace smtk {
   namespace model {
 
-class Storage;
+class Manager;
 
 /**\brief Import an SMTK model from JSON data.
   *
@@ -23,14 +23,14 @@ class Storage;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int intoModel(const char* json, StoragePtr storage);
-  static int ofStorage(cJSON* body, StoragePtr storage);
-  static int ofStorageEntity(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
-  static int ofStorageArrangement(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
-  static int ofStorageTessellation(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
-  static int ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
-  static int ofStorageStringProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
-  static int ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON*, StoragePtr storage);
+  static int intoModel(const char* json, ManagerPtr manager);
+  static int ofManager(cJSON* body, ManagerPtr manager);
+  static int ofManagerEntity(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofManagerArrangement(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofManagerTessellation(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofManagerFloatProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
 };
 
   } // namespace model

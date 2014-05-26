@@ -5,7 +5,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/OperatorResult.h"
 #include "smtk/model/Parameter.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
@@ -68,11 +68,11 @@ int DidOperateWatcher(OperatorEventType event, const Operator& op, const Operato
   return 0;
 }
 
-void testBridgeList(Storage::Ptr storage)
+void testBridgeList(Manager::Ptr manager)
 {
-  std::cout << "Default bridge is \"" << storage->bridgeForModel(smtk::util::UUID::null())->name() << "\"\n";
+  std::cout << "Default bridge is \"" << manager->bridgeForModel(smtk::util::UUID::null())->name() << "\"\n";
   std::cout << "Available bridges\n";
-  StringList bridges = storage->bridges();
+  StringList bridges = manager->bridges();
   for (StringList::iterator it = bridges.begin(); it != bridges.end(); ++it)
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
@@ -116,12 +116,12 @@ protected:
     }
 };
 
-void testOperatorOutcomes(Storage::Ptr storage)
+void testOperatorOutcomes(Manager::Ptr manager)
 {
   TestOutcomeOperator::Ptr op = TestOutcomeOperator::create();
 
-  // Add the operator to the default bridge of our storage.
-  storage->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
+  // Add the operator to the default bridge of our manager.
+  manager->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
 
   int shouldCancel = 1;
   int parameterWasModified = 0;
@@ -205,12 +205,12 @@ protected:
     }
 };
 
-void testParameterChecks(Storage::Ptr storage)
+void testParameterChecks(Manager::Ptr manager)
 {
   TestParameterOperator::Ptr op = TestParameterOperator::create();
 
-  // Add the operator to the default bridge of our storage.
-  storage->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
+  // Add the operator to the default bridge of our manager.
+  manager->bridgeForModel(smtk::util::UUID::null())->addOperator(op);
 
   int parameterModifiedCount = 0;
   op->observe(PARAMETER_CHANGE, ParameterWatcher, &parameterModifiedCount);
@@ -241,10 +241,10 @@ void testParameterChecks(Storage::Ptr storage)
   std::cout << "--\n";
 }
 
-void testBridgeAssociation(Storage::Ptr storage)
+void testBridgeAssociation(Manager::Ptr manager)
 {
   // Test that operators added by previous tests still exist
-  ModelEntity model = storage->addModel(3, 3, "Model Airplane");
+  ModelEntity model = manager->addModel(3, 3, "Model Airplane");
   test(model.operators().size() == 2, "Expected 2 operators defined for the test model.");
 
   // Test op(name) method
@@ -252,11 +252,11 @@ void testBridgeAssociation(Storage::Ptr storage)
   test(op ? 1 : 0, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
 
   // Test Operator->Bridge association
-  test(op->bridge() == storage->bridgeForModel(smtk::util::UUID::null()),
+  test(op->bridge() == manager->bridgeForModel(smtk::util::UUID::null()),
     "Bad bridge reported by operator.");
 
-  // Test Operator->Storage association
-  test(op->storage() == storage, "Bad storage reported by operator.");
+  // Test Operator->Manager association
+  test(op->manager() == manager, "Bad manager reported by operator.");
 
   // Test operatorNames()
   StringList opNames = model.bridge()->operatorNames();
@@ -268,14 +268,14 @@ int main()
 {
   int status = 0;
 
-  Storage::Ptr storage = Storage::create();
+  Manager::Ptr manager = Manager::create();
 
   try {
 
-    testBridgeList(storage);
-    testOperatorOutcomes(storage);
-    testParameterChecks(storage);
-    testBridgeAssociation(storage);
+    testBridgeList(manager);
+    testOperatorOutcomes(manager);
+    testParameterChecks(manager);
+    testBridgeAssociation(manager);
 
   } catch (const std::string& msg) {
     std::cerr << "Exiting...\n";

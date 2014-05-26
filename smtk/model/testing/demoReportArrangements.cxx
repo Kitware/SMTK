@@ -2,7 +2,7 @@
 
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
@@ -34,7 +34,7 @@ smtk::model::BitFlags maskOrder[] = {
   USE_0D
 };
 
-void ReportEntity(StoragePtr sm, UUIDWithEntity& eit)
+void ReportEntity(ManagerPtr sm, UUIDWithEntity& eit)
 {
   UUIDWithArrangementDictionary ait;
   UUIDWithFloatProperties fpit;
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
 
   int status = 0;
   status |= ImportJSON::intoModel(data.c_str(), sm);

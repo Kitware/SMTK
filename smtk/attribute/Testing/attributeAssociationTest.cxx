@@ -4,22 +4,22 @@
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/model/Cursor.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
 #include "smtk/util/Testing/helpers.h"
 
 using namespace smtk::attribute;
-using namespace smtk::model;
 using namespace smtk::util;
+using namespace smtk;
 
 int main()
 {
   // ----
-  // I. First see how things work when Storage is not yet set.
-  Manager mgr;
+  // I. First see how things work when Manager is not yet set.
+  attribute::Manager mgr;
   test(
-    !mgr.refStorage(),
+    !mgr.refModelManager(),
     "Manager should not have model storage by default.");
 
   DefinitionPtr def = mgr.createDefinition("testDef");
@@ -42,19 +42,19 @@ int main()
 
   // ----
   // II. Now see how things work when the attribute manager has
-  //     a valid model storage pointer.
-  Storage::Ptr storage = Storage::create();
-  mgr.setRefStorage(storage);
+  //     a valid model modelMgr pointer.
+  model::Manager::Ptr modelMgr = model::Manager::create();
+  mgr.setRefModelManager(modelMgr);
   test(
-    mgr.refStorage() == storage,
-    "Could not set manager's model storage.");
+    mgr.refModelManager() == modelMgr,
+    "Could not set attribute manager's model-manager.");
 
   test(
-    att->modelStorage() == storage,
-    "Attribute's idea of model storage incorrect.");
+    att->modelManager() == modelMgr,
+    "Attribute's idea of model manager incorrect.");
 
-  Vertex v0 = storage->addVertex();
-  Vertex v1 = storage->addVertex();
+  smtk::model::Vertex v0 = modelMgr->addVertex();
+  smtk::model::Vertex v1 = modelMgr->addVertex();
   v0.attachAttribute(att->id());
   test(
     att->associatedModelEntityIds().count(v0.entity()) == 1,
@@ -77,18 +77,18 @@ int main()
     "Removing all attribute associations did not empty association list.");
 
   // ----
-  // III. Test corner cases when switch model storage on the manager.
-  Storage::Ptr auxStorage = Storage::create();
-  mgr.setRefStorage(auxStorage);
+  // III. Test corner cases when switch model managers on the attribute manager.
+  model::Manager::Ptr auxModelManager = model::Manager::create();
+  mgr.setRefModelManager(auxModelManager);
   test(
-    mgr.refStorage() == auxStorage,
-    "Attribute manager's storage not changed.");
+    mgr.refModelManager() == auxModelManager,
+    "Attribute manager's modelMgr not changed.");
   test(
-    auxStorage->attributeManager() == &mgr,
-    "Second storage's attribute manager not changed.");
+    auxModelManager->attributeManager() == &mgr,
+    "Second model manager's attribute manager not changed.");
   test(
-    storage->attributeManager() == NULL,
-    "Original storage's attribute manager not reset.");
+    modelMgr->attributeManager() == NULL,
+    "Original model manager's attribute manager not reset.");
 
   return 0;
 }

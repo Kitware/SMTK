@@ -2,7 +2,7 @@
 #include "smtk/cgm/TDUUID.h"
 
 #include "smtk/model/Cursor.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "CGMApp.hpp"
 #include "CubitCompat.hpp"

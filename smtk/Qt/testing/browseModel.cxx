@@ -3,7 +3,7 @@
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
 
 
-  smtk::model::StoragePtr model = smtk::model::Storage::create();
+  smtk::model::ManagerPtr model = smtk::model::Manager::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
   model->assignDefaultNames();
 
@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
       ->setup(cursors)
       ->setDelegate( // set the subphrase generator:
         smtk::model::SimpleModelSubphrases::create()));
-  test(cursors.empty() || qmodel->storage() == model,
-    "Failed to obtain Storage from QEntityItemModel.");
+  test(cursors.empty() || qmodel->manager() == model,
+    "Failed to obtain Manager from QEntityItemModel.");
 
   // Enable user sorting.
   view->tree()->setSortingEnabled(true);

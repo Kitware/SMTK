@@ -6,7 +6,7 @@
 #include "smtk/PublicPointerDefs.h"
 
 
-/**\brief A VTK filter that provides polydata for an SMTK storage instance.
+/**\brief A VTK filter that provides polydata for an SMTK model manager instance.
   *
   */
 class VTKSMTK_EXPORT vtkModelSource : public vtkPolyDataAlgorithm
@@ -18,8 +18,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkPolyData);
 
-  smtk::model::StoragePtr GetModel();
-  void SetModel(smtk::model::StoragePtr);
+  smtk::model::ManagerPtr GetModel();
+  void SetModel(smtk::model::ManagerPtr);
 
   void Dirty();
 
@@ -28,7 +28,7 @@ protected:
   virtual ~vtkModelSource();
 
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly, smtk::model::StoragePtr model);
+    vtkPolyData* poly, smtk::model::ManagerPtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -41,7 +41,7 @@ protected:
   void SetCachedOutput(vtkPolyData*);
 
   // Instance storage:
-  smtk::model::StoragePtr Model;
+  smtk::model::ManagerPtr Model;
   vtkPolyData* CachedOutput;
 
 private:

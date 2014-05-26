@@ -3,7 +3,7 @@
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
@@ -14,33 +14,33 @@ Cursor::Cursor()
 {
 }
 
-/// Construct a cursor referencing a given \a entity residing in the given \a storage.
-Cursor::Cursor(StoragePtr inStorage, const smtk::util::UUID& inEntity)
-  : m_storage(inStorage), m_entity(inEntity)
+/// Construct a cursor referencing a given \a entity residing in the given \a inManager.
+Cursor::Cursor(ManagerPtr inManager, const smtk::util::UUID& inEntity)
+  : m_manager(inManager), m_entity(inEntity)
 {
 }
 
-/// Change the underlying storage the cursor references.
-bool Cursor::setStorage(StoragePtr inStorage)
+/// Change the underlying manager the cursor references.
+bool Cursor::setManager(ManagerPtr inManager)
 {
-  if (inStorage == this->m_storage)
+  if (inManager == this->m_manager)
     {
     return false;
     }
-  this->m_storage = inStorage;
+  this->m_manager = inManager;
   return true;
 }
 
-/// Return the underlying storage the cursor references.
-StoragePtr Cursor::storage()
+/// Return the underlying manager the cursor references.
+ManagerPtr Cursor::manager()
 {
-  return this->m_storage;
+  return this->m_manager;
 }
 
-/// Return the underlying storage the cursor references.
-const StoragePtr Cursor::storage() const
+/// Return the underlying manager the cursor references.
+const ManagerPtr Cursor::manager() const
 {
-  return this->m_storage;
+  return this->m_manager;
 }
 
 /// Change the UUID of the entity the cursor references.
@@ -68,9 +68,9 @@ const smtk::util::UUID& Cursor::entity() const
   */
 int Cursor::dimension() const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_storage->findEntity(this->m_entity);
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->dimension();
@@ -87,9 +87,9 @@ int Cursor::dimension() const
   */
 int Cursor::dimensionBits() const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_storage->findEntity(this->m_entity);
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->dimensionBits();
@@ -101,9 +101,9 @@ int Cursor::dimensionBits() const
 /// Return the bit vector describing the entity's type. \sa isVector, isEdge, ...
 BitFlags Cursor::entityFlags() const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    Entity* entRec = this->m_storage->findEntity(this->m_entity);
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
     if (entRec)
       {
       return entRec->entityFlags();
@@ -118,7 +118,7 @@ BitFlags Cursor::entityFlags() const
   */
 std::string Cursor::flagSummary(int form) const
 {
-  Entity* ent = this->m_storage->findEntity(this->m_entity);
+  Entity* ent = this->m_manager->findEntity(this->m_entity);
   if (ent)
     {
     return ent->flagSummary(form);
@@ -135,7 +135,7 @@ std::string Cursor::flagSummary(int form) const
   */
 std::string Cursor::name() const
 {
-  return this->m_storage->name(this->m_entity);
+  return this->m_manager->name(this->m_entity);
 }
 
 /** Assign a name to an entity.
@@ -211,7 +211,7 @@ void Cursor::setColor(double red, double green, double blue, double alpha)
   this->setColor(rgba);
 }
 
-/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+/**\brief Return whether the cursor is pointing to valid manager that contains the UUID of the entity.
   *
   * Subclasses should not override this method. It is a convenience
   * which makes the shiboken wrapper more functional.
@@ -221,7 +221,7 @@ bool Cursor::isValid() const
   return this->isValid(NULL);
 }
 
-/**\brief Return whether the cursor is pointing to valid storage that contains the UUID of the entity.
+/**\brief Return whether the cursor is pointing to valid manager that contains the UUID of the entity.
   *
   * Subclasses override this and additionally return whether the entity is of
   * a type that matches the Cursor subclass. For example, it is possible to
@@ -233,10 +233,10 @@ bool Cursor::isValid() const
   */
 bool Cursor::isValid(Entity** entityRecord) const
 {
-  bool status = this->m_storage && !this->m_entity.isNull();
+  bool status = this->m_manager && !this->m_entity.isNull();
   if (status)
     {
-    Entity* rec = this->m_storage->findEntity(this->m_entity);
+    Entity* rec = this->m_manager->findEntity(this->m_entity);
     status = rec ? true : false;
     if (status && entityRecord)
       {
@@ -255,7 +255,7 @@ bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangemen
     {
     arr = NULL;
     if (
-      (arr = this->m_storage->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
+      (arr = this->m_manager->hasArrangementsOfKindForEntity(this->m_entity, k)) &&
       !arr->empty())
       {
       return true;
@@ -267,11 +267,11 @@ bool Cursor::checkForArrangements(ArrangementKind k, Entity*& entRec, Arrangemen
 Cursors Cursor::bordantEntities(int ofDimension) const
 {
   Cursors result;
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_storage->bordantEntities(
+    smtk::util::UUIDs uids = this->m_manager->bordantEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_storage, uids);
+    CursorsFromUUIDs(result, this->m_manager, uids);
     }
   return result;
 }
@@ -279,11 +279,11 @@ Cursors Cursor::bordantEntities(int ofDimension) const
 Cursors Cursor::boundaryEntities(int ofDimension) const
 {
   Cursors result;
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_storage->boundaryEntities(
+    smtk::util::UUIDs uids = this->m_manager->boundaryEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_storage, uids);
+    CursorsFromUUIDs(result, this->m_manager, uids);
     }
   return result;
 }
@@ -291,11 +291,11 @@ Cursors Cursor::boundaryEntities(int ofDimension) const
 Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
 {
   Cursors result;
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_storage->lowerDimensionalBoundaries(
+    smtk::util::UUIDs uids = this->m_manager->lowerDimensionalBoundaries(
       this->m_entity, lowerDimension);
-    CursorsFromUUIDs(result, this->m_storage, uids);
+    CursorsFromUUIDs(result, this->m_manager, uids);
     }
   return result;
 }
@@ -303,11 +303,11 @@ Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
 Cursors Cursor::higherDimensionalBordants(int higherDimension)
 {
   Cursors result;
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_storage->higherDimensionalBordants(
+    smtk::util::UUIDs uids = this->m_manager->higherDimensionalBordants(
       this->m_entity, higherDimension);
-    CursorsFromUUIDs(result, this->m_storage, uids);
+    CursorsFromUUIDs(result, this->m_manager, uids);
     }
   return result;
 }
@@ -315,11 +315,11 @@ Cursors Cursor::higherDimensionalBordants(int higherDimension)
 Cursors Cursor::adjacentEntities(int ofDimension)
 {
   Cursors result;
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_storage->adjacentEntities(
+    smtk::util::UUIDs uids = this->m_manager->adjacentEntities(
       this->m_entity, ofDimension);
-    CursorsFromUUIDs(result, this->m_storage, uids);
+    CursorsFromUUIDs(result, this->m_manager, uids);
     }
   return result;
 }
@@ -328,13 +328,13 @@ Cursors Cursor::adjacentEntities(int ofDimension)
 Cursor& Cursor::addRawRelation(const Cursor& ent)
 {
   if (
-    this->m_storage &&
+    this->m_manager &&
     !this->m_entity.isNull() &&
-    this->m_storage == ent.storage() &&
+    this->m_manager == ent.manager() &&
     !ent.entity().isNull() &&
     ent.entity() != this->m_entity)
     {
-    Entity* entRec = this->m_storage->findEntity(this->m_entity);
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
     if (entRec)
       {
       entRec->appendRelation(ent.entity());
@@ -348,10 +348,10 @@ Cursor& Cursor::addRawRelation(const Cursor& ent)
   */
 const Tessellation* Cursor::hasTessellation() const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    UUIDsToTessellations::const_iterator it = this->m_storage->tessellations().find(this->m_entity);
-    if (it != this->m_storage->tessellations().end())
+    UUIDsToTessellations::const_iterator it = this->m_manager->tessellations().find(this->m_entity);
+    if (it != this->m_manager->tessellations().end())
       return &it->second;
     }
   return NULL;
@@ -366,8 +366,8 @@ const Tessellation* Cursor::hasTessellation() const
 bool Cursor::hasAttributes() const
 {
   UUIDsToAttributeAssignments::const_iterator it =
-    this->m_storage->attributeAssignments().find(this->m_entity);
-  if (it != this->m_storage->attributeAssignments().end())
+    this->m_manager->attributeAssignments().find(this->m_entity);
+  if (it != this->m_manager->attributeAssignments().end())
     {
     return it->second.attributes().empty() ? false : true;
     }
@@ -378,77 +378,77 @@ bool Cursor::hasAttributes() const
   */
 bool Cursor::hasAttribute(int attribId) const
 {
-  return this->m_storage->hasAttribute(attribId, this->m_entity);
+  return this->m_manager->hasAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 bool Cursor::attachAttribute(int attribId)
 {
-  return this->m_storage->attachAttribute(attribId, this->m_entity);
+  return this->m_manager->attachAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 bool Cursor::detachAttribute(int attribId, bool reverse)
 {
-  return this->m_storage->detachAttribute(attribId, this->m_entity, reverse);
+  return this->m_manager->detachAttribute(attribId, this->m_entity, reverse);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
 AttributeAssignments& Cursor::attributes()
 {
-  return this->m_storage->attributeAssignments()[this->m_entity];
+  return this->m_manager->attributeAssignments()[this->m_entity];
 }
 /**\brief Does the cursor have any attributes associated with it?
   */
 AttributeSet Cursor::attributes() const
 {
-  return this->m_storage->attributeAssignments()[this->m_entity].attributes();
+  return this->m_manager->attributeAssignments()[this->m_entity].attributes();
 }
 ///@}
 
 void Cursor::setFloatProperty(const std::string& propName, smtk::model::Float propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setFloatProperty(this->m_entity, propName, propValue);
+    this->m_manager->setFloatProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setFloatProperty(this->m_entity, propName, propValue);
+    this->m_manager->setFloatProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::FloatList const& Cursor::floatProperty(const std::string& propName) const
 {
-  return this->m_storage->floatProperty(this->m_entity, propName);
+  return this->m_manager->floatProperty(this->m_entity, propName);
 }
 
 smtk::model::FloatList& Cursor::floatProperty(const std::string& propName)
 {
-  return this->m_storage->floatProperty(this->m_entity, propName);
+  return this->m_manager->floatProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasFloatProperty(const std::string& propName) const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->hasFloatProperty(this->m_entity, propName);
+    return this->m_manager->hasFloatProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeFloatProperty(const std::string& propName)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->removeFloatProperty(this->m_entity, propName);
+    return this->m_manager->removeFloatProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -461,8 +461,8 @@ bool Cursor::removeFloatProperty(const std::string& propName)
 bool Cursor::hasFloatProperties() const
 {
   return
-    this->m_storage->floatProperties().find(this->m_entity)
-    == this->m_storage->floatProperties().end() ?
+    this->m_manager->floatProperties().find(this->m_entity)
+    == this->m_manager->floatProperties().end() ?
     false : true;
 }
 
@@ -483,55 +483,55 @@ std::set<std::string> Cursor::floatPropertyNames() const
 
 FloatData& Cursor::floatProperties()
 {
-  return this->m_storage->floatProperties().find(this->m_entity)->second;
+  return this->m_manager->floatProperties().find(this->m_entity)->second;
 }
 
 FloatData const& Cursor::floatProperties() const
 {
-  return this->m_storage->floatProperties().find(this->m_entity)->second;
+  return this->m_manager->floatProperties().find(this->m_entity)->second;
 }
 
 
 void Cursor::setStringProperty(const std::string& propName, const smtk::model::String& propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setStringProperty(this->m_entity, propName, propValue);
+    this->m_manager->setStringProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setStringProperty(const std::string& propName, const smtk::model::StringList& propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setStringProperty(this->m_entity, propName, propValue);
+    this->m_manager->setStringProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::StringList const& Cursor::stringProperty(const std::string& propName) const
 {
-  return this->m_storage->stringProperty(this->m_entity, propName);
+  return this->m_manager->stringProperty(this->m_entity, propName);
 }
 
 smtk::model::StringList& Cursor::stringProperty(const std::string& propName)
 {
-  return this->m_storage->stringProperty(this->m_entity, propName);
+  return this->m_manager->stringProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasStringProperty(const std::string& propName) const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->hasStringProperty(this->m_entity, propName);
+    return this->m_manager->hasStringProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeStringProperty(const std::string& propName)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->removeStringProperty(this->m_entity, propName);
+    return this->m_manager->removeStringProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -544,8 +544,8 @@ bool Cursor::removeStringProperty(const std::string& propName)
 bool Cursor::hasStringProperties() const
 {
   return
-    this->m_storage->stringProperties().find(this->m_entity)
-    == this->m_storage->stringProperties().end() ?
+    this->m_manager->stringProperties().find(this->m_entity)
+    == this->m_manager->stringProperties().end() ?
     false : true;
 }
 
@@ -566,55 +566,55 @@ std::set<std::string> Cursor::stringPropertyNames() const
 
 StringData& Cursor::stringProperties()
 {
-  return this->m_storage->stringProperties().find(this->m_entity)->second;
+  return this->m_manager->stringProperties().find(this->m_entity)->second;
 }
 
 StringData const& Cursor::stringProperties() const
 {
-  return this->m_storage->stringProperties().find(this->m_entity)->second;
+  return this->m_manager->stringProperties().find(this->m_entity)->second;
 }
 
 
 void Cursor::setIntegerProperty(const std::string& propName, smtk::model::Integer propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setIntegerProperty(this->m_entity, propName, propValue);
+    this->m_manager->setIntegerProperty(this->m_entity, propName, propValue);
     }
 }
 
 void Cursor::setIntegerProperty(const std::string& propName, const smtk::model::IntegerList& propValue)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    this->m_storage->setIntegerProperty(this->m_entity, propName, propValue);
+    this->m_manager->setIntegerProperty(this->m_entity, propName, propValue);
     }
 }
 
 smtk::model::IntegerList const& Cursor::integerProperty(const std::string& propName) const
 {
-  return this->m_storage->integerProperty(this->m_entity, propName);
+  return this->m_manager->integerProperty(this->m_entity, propName);
 }
 
 smtk::model::IntegerList& Cursor::integerProperty(const std::string& propName)
 {
-  return this->m_storage->integerProperty(this->m_entity, propName);
+  return this->m_manager->integerProperty(this->m_entity, propName);
 }
 
 bool Cursor::hasIntegerProperty(const std::string& propName) const
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->hasIntegerProperty(this->m_entity, propName);
+    return this->m_manager->hasIntegerProperty(this->m_entity, propName);
     }
   return false;
 }
 
 bool Cursor::removeIntegerProperty(const std::string& propName)
 {
-  if (this->m_storage && !this->m_entity.isNull())
+  if (this->m_manager && !this->m_entity.isNull())
     {
-    return this->m_storage->removeIntegerProperty(this->m_entity, propName);
+    return this->m_manager->removeIntegerProperty(this->m_entity, propName);
     }
   return false;
 }
@@ -627,8 +627,8 @@ bool Cursor::removeIntegerProperty(const std::string& propName)
 bool Cursor::hasIntegerProperties() const
 {
   return
-    this->m_storage->integerProperties().find(this->m_entity)
-    == this->m_storage->integerProperties().end() ?
+    this->m_manager->integerProperties().find(this->m_entity)
+    == this->m_manager->integerProperties().end() ?
     false : true;
 }
 
@@ -649,19 +649,19 @@ std::set<std::string> Cursor::integerPropertyNames() const
 
 IntegerData& Cursor::integerProperties()
 {
-  return this->m_storage->integerProperties().find(this->m_entity)->second;
+  return this->m_manager->integerProperties().find(this->m_entity)->second;
 }
 
 IntegerData const& Cursor::integerProperties() const
 {
-  return this->m_storage->integerProperties().find(this->m_entity)->second;
+  return this->m_manager->integerProperties().find(this->m_entity)->second;
 }
 
 /// Return the number of arrangements of the given kind \a k.
 int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
 {
   const Arrangements* arr =
-    this->m_storage->hasArrangementsOfKindForEntity(
+    this->m_manager->hasArrangementsOfKindForEntity(
       this->m_entity, k);
   return arr ? static_cast<int>(arr->size()) : 0;
 }
@@ -669,13 +669,13 @@ int Cursor::numberOfArrangementsOfKind(ArrangementKind k) const
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 Arrangement* Cursor::findArrangement(ArrangementKind k, int i)
 {
-  return this->m_storage->findArrangement(this->m_entity, k, i);
+  return this->m_manager->findArrangement(this->m_entity, k, i);
 }
 
 /// Return the \a i-th arrangement of kind \a k (or NULL).
 const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
 {
-  return this->m_storage->findArrangement(this->m_entity, k, i);
+  return this->m_manager->findArrangement(this->m_entity, k, i);
 }
 
 /**\brief Return the relation specified by the \a offset into the specified arrangement.
@@ -684,7 +684,7 @@ const Arrangement* Cursor::findArrangement(ArrangementKind k, int i) const
 Cursor Cursor::relationFromArrangement(
   ArrangementKind k, int arrangementIndex, int offset) const
 {
-  const Entity* ent = this->m_storage->findEntity(this->m_entity);
+  const Entity* ent = this->m_manager->findEntity(this->m_entity);
   if (ent)
     {
     const Arrangement* arr = this->findArrangement(k, arrangementIndex);
@@ -693,7 +693,7 @@ Cursor Cursor::relationFromArrangement(
       int idx = arr->details()[offset];
       return idx < 0 ?
         Cursor() :
-        Cursor(this->m_storage, ent->relations()[idx]);
+        Cursor(this->m_manager, ent->relations()[idx]);
       }
     }
   return Cursor();
@@ -706,13 +706,13 @@ Cursor Cursor::relationFromArrangement(
   */
 Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
 {
-  //StorageEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
-  StorageEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
+  //ManagerEventType event = std::make_pair(ADD_EVENT, INVALID_RELATIONSHIP);
+  ManagerEventType event = std::make_pair(ADD_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, INCLUDES, thingToEmbed);
     CursorArrangementOps::findOrAddSimpleRelationship(thingToEmbed, EMBEDDED_IN, *this);
-    this->m_storage->trigger(event, *this, thingToEmbed);
+    this->m_manager->trigger(event, *this, thingToEmbed);
     }
   return *this;
 }
@@ -724,14 +724,14 @@ Cursor& Cursor::embedEntity(const Cursor& thingToEmbed)
   */
 Cursor& Cursor::unembedEntity(const Cursor& thingToEmbed)
 {
-  StorageEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
+  ManagerEventType event = std::make_pair(DEL_EVENT, this->embeddingRelationType(thingToEmbed));
   if (event.second != INVALID_RELATIONSHIP)
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, INCLUDES, thingToEmbed);
     if (aidx >= 0)
       {
-      this->m_storage->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
-      this->m_storage->trigger(event, *this, thingToEmbed);
+      this->m_manager->unarrangeEntity(this->m_entity, EMBEDDED_IN, aidx);
+      this->m_manager->trigger(event, *this, thingToEmbed);
       }
     }
   return *this;
@@ -758,7 +758,7 @@ Cursor Cursor::embeddedIn() const
 bool Cursor::operator == (const Cursor& other) const
 {
   return (
-    (this->m_storage == other.m_storage) &&
+    (this->m_manager == other.m_manager) &&
     (this->m_entity == other.m_entity)) ?
     true :
     false;
@@ -767,20 +767,20 @@ bool Cursor::operator == (const Cursor& other) const
 /// A comparator provided so that cursors may be included in ordered sets.
 bool Cursor::operator < (const Cursor& other) const
 {
-  if (this->m_storage < other.m_storage)
+  if (this->m_manager < other.m_manager)
     {
     return true;
     }
-  else if (other.m_storage < this->m_storage)
+  else if (other.m_manager < this->m_manager)
     {
     return false;
     }
   return this->m_entity < other.m_entity;
 }
 
-StorageEventRelationType Cursor::embeddingRelationType(const Cursor& embedded) const
+ManagerEventRelationType Cursor::embeddingRelationType(const Cursor& embedded) const
 {
-  StorageEventRelationType reln = INVALID_RELATIONSHIP;
+  ManagerEventRelationType reln = INVALID_RELATIONSHIP;
 
   switch (this->entityFlags() & ENTITY_MASK)
     {
@@ -816,8 +816,8 @@ std::ostream& operator << (std::ostream& os, const Cursor& c)
   return os;
 }
 
-/*! \fn template<typename S, typename T> void Cursor::CursorsFromUUIDs(S& result, StoragePtr storage, const T& uids)
- *\brief Convert a set of UUIDs into a set of cursors referencing the same \a storage.
+/*! \fn template<typename S, typename T> void Cursor::CursorsFromUUIDs(S& result, ManagerPtr mgr, const T& uids)
+ *\brief Convert a set of UUIDs into a set of cursors referencing the same \a mgr.
  */
 
 /*! \fn template<typename T> Cursor::embedEntities(const T& container)

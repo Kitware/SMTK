@@ -3,7 +3,7 @@
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 namespace smtk {
   namespace model {
@@ -35,11 +35,11 @@ int CursorArrangementOps::findOrAddSimpleRelationship(
   int relidx = CursorArrangementOps::findSimpleRelationship(a, k, b);
   if (relidx < 0)
     {
-    Entity* ent = a.storage()->findEntity(a.entity());
+    Entity* ent = a.manager()->findEntity(a.entity());
     if (ent)
       {
       int offset = ent->findOrAppendRelation(b.entity());
-      relidx = a.storage()->arrangeEntity(
+      relidx = a.manager()->arrangeEntity(
         a.entity(), k, Arrangement::SimpleIndex(offset));
       }
     else

@@ -2,7 +2,7 @@
 
 #include "smtk/model/Edge.h"
 #include "smtk/model/FaceUse.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
 
@@ -39,7 +39,7 @@ smtk::model::Volumes Face::volumes() const
   */
 FaceUse Face::negativeUse() const
 {
-  std::set<int> arr = this->m_storage->findCellHasUsesWithOrientation(
+  std::set<int> arr = this->m_manager->findCellHasUsesWithOrientation(
     this->m_entity, NEGATIVE);
   return arr.empty() ?
     FaceUse() :
@@ -52,7 +52,7 @@ FaceUse Face::negativeUse() const
   */
 FaceUse Face::positiveUse() const
 {
-  std::set<int> arr = this->m_storage->findCellHasUsesWithOrientation(
+  std::set<int> arr = this->m_manager->findCellHasUsesWithOrientation(
     this->m_entity, POSITIVE);
   return arr.empty() ?
     FaceUse() :

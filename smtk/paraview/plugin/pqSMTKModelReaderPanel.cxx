@@ -12,7 +12,7 @@
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
@@ -109,7 +109,7 @@ void pqSMTKModelReaderPanel::onDataUpdated()
   // QMessageBox::warning(NULL, "JSON Model",  json.c_str());
   smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY | smtk::model::GROUP_ENTITY;
 
-  smtk::model::StoragePtr model = smtk::model::Storage::create();
+  smtk::model::ManagerPtr model = smtk::model::Manager::create();
   smtk::model::ImportJSON::intoModel(json.c_str(), model);
   model->assignDefaultNames();
 

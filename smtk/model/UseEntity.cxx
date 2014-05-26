@@ -1,7 +1,7 @@
 #include "smtk/model/UseEntity.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
 #include "smtk/model/CursorArrangementOps.h"
 
@@ -29,8 +29,8 @@ Orientation UseEntity::orientation() const
   // that arrangement's orientation.
 
   // Find the cell for this use record.
-  Entity* ent = this->m_storage->findEntity(this->m_entity);
-  const Arrangement* arr = this->m_storage->findArrangement(
+  Entity* ent = this->m_manager->findEntity(this->m_entity);
+  const Arrangement* arr = this->m_manager->findArrangement(
     this->m_entity, HAS_CELL, 0);
   if (ent && arr)
     {
@@ -38,12 +38,12 @@ Orientation UseEntity::orientation() const
     arr->IndexAndSenseFromUseHasCell(idx, esense);
     smtk::util::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
-    int arrIdx = this->m_storage->findCellHasUseWithSense(cellId, esense);
+    int arrIdx = this->m_manager->findCellHasUseWithSense(cellId, esense);
     if (arrIdx >= 0)
       {
       // Now find the orientation of that use of the cell:
       Orientation orient;
-      this->m_storage->findArrangement(cellId, HAS_USE, arrIdx)
+      this->m_manager->findArrangement(cellId, HAS_USE, arrIdx)
         ->IndexSenseAndOrientationFromCellHasUse(idx, esense, orient);
       return orient;
       }
@@ -55,8 +55,8 @@ Orientation UseEntity::orientation() const
 int UseEntity::sense() const
 {
   // Find the cell for this use record.
-  Entity* ent = this->m_storage->findEntity(this->m_entity);
-  const Arrangement* arr = this->m_storage->findArrangement(
+  Entity* ent = this->m_manager->findEntity(this->m_entity);
+  const Arrangement* arr = this->m_manager->findArrangement(
     this->m_entity, HAS_CELL, 0);
   if (ent && arr)
     {
@@ -72,8 +72,8 @@ int UseEntity::sense() const
   */
 UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
 {
-  if (this->m_storage)
-    this->m_storage->findOrAddIncludedShell(this->m_entity, shell.entity());
+  if (this->m_manager)
+    this->m_manager->findOrAddIncludedShell(this->m_entity, shell.entity());
   return *this;
 }
 
@@ -86,8 +86,8 @@ UseEntity& UseEntity::setBoundingShellEntity(const ShellEntity& shell)
   */
 UseEntity& UseEntity::addShellEntity(const ShellEntity& shell)
 {
-  if (this->m_storage)
-    this->m_storage->findOrAddIncludedShell(this->m_entity, shell.entity());
+  if (this->m_manager)
+    this->m_manager->findOrAddIncludedShell(this->m_entity, shell.entity());
   return *this;
 }
 

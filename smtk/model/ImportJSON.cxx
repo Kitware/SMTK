@@ -1,6 +1,6 @@
 #include "smtk/model/ImportJSON.h"
 
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
@@ -284,16 +284,16 @@ namespace smtk {
 
 using smtk::util::UUID;
 
-/**\brief Create records in \a storage given a string containing \a json data.
+/**\brief Create records in the \a manager given a string containing \a json data.
   *
-  * The top level JSON object must be a dictionary with key "type" set to "Storage"
+  * The top level JSON object must be a dictionary with key "type" set to "Manager"
   * and key "topo" set to a dictionary of UUIDs with matching entries.
   */
 int ImportJSON::intoModel(
-  const char* json, StoragePtr storage)
+  const char* json, ManagerPtr manager)
 {
   int status = 0;
-  if (!json || !json[0] || !storage)
+  if (!json || !json[0] || !manager)
     {
     std::cerr << "Invalid arguments.\n";
     return status;
@@ -324,26 +324,26 @@ int ImportJSON::intoModel(
     }
 
   cJSON* mtyp = cJSON_GetObjectItem(root, "type");
-  if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"Storage"))
+  if (mtyp && mtyp->type == cJSON_String && mtyp->valuestring && !strcmp(mtyp->valuestring,"Manager"))
     {
     cJSON* body = cJSON_GetObjectItem(root, "topo");
-    status = ImportJSON::ofStorage(body, storage);
+    status = ImportJSON::ofManager(body, manager);
     }
 
   cJSON_Delete(root);
   return status;
 }
 
-/**\brief Create records in \a storage from a JSON dictionary, \a dict.
+/**\brief Create records in the \a manager from a JSON dictionary, \a dict.
   *
   * The dictionary must have keys that are valid UUID strings and
   * values that describe entity, tessellation, arrangement, and/or
   * properties associated with the UUID.
   */
-int ImportJSON::ofStorage(
-  cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManager(
+  cJSON* dict, ManagerPtr manager)
 {
-  if (!dict || !storage)
+  if (!dict || !manager)
     {
     return 0;
     }
@@ -361,12 +361,12 @@ int ImportJSON::ofStorage(
       std::cerr << "Skipping malformed UUID: " << curChild->string << "\n";
       continue;
       }
-    status &= ImportJSON::ofStorageEntity(uid, curChild, storage);
-    status &= ImportJSON::ofStorageArrangement(uid, curChild, storage);
-    status &= ImportJSON::ofStorageTessellation(uid, curChild, storage);
-    status &= ImportJSON::ofStorageFloatProperties(uid, curChild, storage);
-    status &= ImportJSON::ofStorageStringProperties(uid, curChild, storage);
-    status &= ImportJSON::ofStorageIntegerProperties(uid, curChild, storage);
+    status &= ImportJSON::ofManagerEntity(uid, curChild, manager);
+    status &= ImportJSON::ofManagerArrangement(uid, curChild, manager);
+    status &= ImportJSON::ofManagerTessellation(uid, curChild, manager);
+    status &= ImportJSON::ofManagerFloatProperties(uid, curChild, manager);
+    status &= ImportJSON::ofManagerStringProperties(uid, curChild, manager);
+    status &= ImportJSON::ofManagerIntegerProperties(uid, curChild, manager);
     }
   return status;
 }
@@ -374,10 +374,10 @@ int ImportJSON::ofStorage(
 /**\brief Create an entity record from a JSON \a cellRec.
   *
   * The \a uid is the UUID corresponding to \a cellRec and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageEntity(
-  const UUID& uid, cJSON* cellRec, StoragePtr storage)
+int ImportJSON::ofManagerEntity(
+  const UUID& uid, cJSON* cellRec, ManagerPtr manager)
 {
   long dim = 0;
   long entityFlags = 0;
@@ -386,7 +386,7 @@ int ImportJSON::ofStorageEntity(
   status |= cJSON_GetObjectIntegerValue(cellRec, "e", entityFlags);
   if (status == 0)
     {
-    UUIDWithEntity iter = storage->setEntityOfTypeAndDimension(uid, entityFlags, dim);
+    UUIDWithEntity iter = manager->setEntityOfTypeAndDimension(uid, entityFlags, dim);
     // Ignore status from these as they need not be present:
     cJSON_GetObjectUUIDArray(cellRec, "r", iter->second.relations());
     }
@@ -396,10 +396,10 @@ int ImportJSON::ofStorageEntity(
 /**\brief Create entity arrangement records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageArrangement(
-  const UUID& uid, cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManagerArrangement(
+  const UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   cJSON* arrNode = cJSON_GetObjectItem(dict, "a");
   if (!arrNode)
@@ -419,7 +419,7 @@ int ImportJSON::ofStorageArrangement(
     if (arrangements && arrangements->type == cJSON_Array)
       {
       // First, erase any pre-existing arrangements to avoid duplicates.
-      storage->arrangementsOfKindForEntity(uid, k).clear();
+      manager->arrangementsOfKindForEntity(uid, k).clear();
       // Now insert arrangements from the JSON object
       for (cJSON* arr = arrangements->child; arr; arr = arr->next)
         {
@@ -428,7 +428,7 @@ int ImportJSON::ofStorageArrangement(
           Arrangement a;
           if (cJSON_GetArrangement(arr, a) > 0)
             {
-            storage->arrangeEntity(uid, k, a);
+            manager->arrangeEntity(uid, k, a);
             }
           }
         }
@@ -440,10 +440,10 @@ int ImportJSON::ofStorageArrangement(
 /**\brief Create an entity tessellation record from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageTessellation(
-  const UUID& uid, cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManagerTessellation(
+  const UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   cJSON* tessNode = cJSON_GetObjectItem(dict, "t");
   if (!tessNode)
@@ -458,11 +458,11 @@ int ImportJSON::ofStorageTessellation(
   // We should fetch the metadata->formatVersion and verify it,
   // but I don't think it makes any difference to the fields
   // we rely on... yet.
-  UUIDsToTessellations::iterator tessIt = storage->tessellations().find(uid);
-  if (tessIt == storage->tessellations().end())
+  UUIDsToTessellations::iterator tessIt = manager->tessellations().find(uid);
+  if (tessIt == manager->tessellations().end())
     {
     Tessellation blank;
-    tessIt = storage->tessellations().insert(
+    tessIt = manager->tessellations().insert(
       std::pair<UUID,Tessellation>(uid, blank)).first;
     }
   int numVerts = cJSON_GetTessellationCoords(
@@ -478,9 +478,9 @@ int ImportJSON::ofStorageTessellation(
 /**\brief Create entity floating-point-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManagerFloatProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* floatNode = cJSON_GetObjectItem(dict, "f");
@@ -496,7 +496,7 @@ int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dic
       }
     FloatList propVal;
     cJSON_GetRealArray(floatProp, propVal);
-    storage->setFloatProperty(uid, floatProp->string, propVal);
+    manager->setFloatProperty(uid, floatProp->string, propVal);
     }
   return status ? 0 : 1;
 }
@@ -504,9 +504,9 @@ int ImportJSON::ofStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dic
 /**\brief Create entity string-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManagerStringProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* stringNode = cJSON_GetObjectItem(dict, "s");
@@ -522,7 +522,7 @@ int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* di
       }
     StringList propVal;
     cJSON_GetStringArray(stringProp, propVal);
-    storage->setStringProperty(uid, stringProp->string, propVal);
+    manager->setStringProperty(uid, stringProp->string, propVal);
     }
   return status ? 0 : 1;
 }
@@ -530,9 +530,9 @@ int ImportJSON::ofStorageStringProperties(const smtk::util::UUID& uid, cJSON* di
 /**\brief Create entity integer-property records from a JSON \a dict.
   *
   * The \a uid is the UUID corresponding to \a dict and
-  * the resulting record will be inserted into \a storage.
+  * the resulting record will be inserted into \a manager.
   */
-int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr storage)
+int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr manager)
 {
   int status = 0;
   cJSON* integerNode = cJSON_GetObjectItem(dict, "i");
@@ -548,7 +548,7 @@ int ImportJSON::ofStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* d
       }
     IntegerList propVal;
     cJSON_GetIntegerArray(integerProp, propVal);
-    storage->setIntegerProperty(uid, integerProp->string, propVal);
+    manager->setIntegerProperty(uid, integerProp->string, propVal);
     }
   return status ? 0 : 1;
 }

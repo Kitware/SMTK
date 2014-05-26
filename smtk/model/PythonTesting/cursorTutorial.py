@@ -7,7 +7,7 @@ airfoilFile = sys.argv[1] if len(sys.argv) > 2 else 'airFoilSolidModel.json'
 import smtk
 from uuid import *
 
-sm = smtk.model.Storage.create()
+sm = smtk.model.Manager.create()
 airfoil     = sm.addGroup(smtk.model.MODEL_DOMAIN   | smtk.model.DIMENSION_3, 'airfoil')
 environment = sm.addGroup(smtk.model.MODEL_DOMAIN   | smtk.model.DIMENSION_3, 'environment')
 inlet       = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'inlet')

@@ -16,9 +16,9 @@ target_link_libraries(demoReportArrangements SMTKCore SMTKCoreModelTesting)
 ################################################################################
 # Tests
 ################################################################################
-add_executable(unitStorage unitStorage.cxx)
-target_link_libraries(unitStorage SMTKCore SMTKCoreModelTesting)
-add_test(unitStorage ${EXECUTABLE_OUTPUT_PATH}/unitStorage)
+add_executable(unitManager unitManager.cxx)
+target_link_libraries(unitManager SMTKCore SMTKCoreModelTesting)
+add_test(unitManager ${EXECUTABLE_OUTPUT_PATH}/unitManager)
 
 add_executable(unitOperator unitOperator.cxx)
 target_link_libraries(unitOperator SMTKCore SMTKCoreModelTesting)

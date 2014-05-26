@@ -314,7 +314,7 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   * accumulate relations from multiple arrangements into a single array
   * for later processing.
   *
-  * This method and smtk::model::Storage::findDualArrangements() are
+  * This method and smtk::model::Manager::findDualArrangements() are
   * the two main methods which determine how arrangements should be
   * interpreted in context without any prior constraints on the
   * context. (Other methods create and interpret arrangements in

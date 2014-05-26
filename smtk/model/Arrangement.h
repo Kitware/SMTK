@@ -186,17 +186,17 @@ public:
   int index;                 //!< The index of the arrangement.
 };
 
-/// A vector of Arrangements is associated to each Storage entity.
+/// A vector of Arrangements is associated to each Manager entity.
 typedef std::vector<Arrangement> Arrangements;
 /// A map holding Arrangements of different ArrangementKinds.
 typedef std::map<ArrangementKind,Arrangements> KindsToArrangements;
 #ifdef SMTK_HASH_STORAGE
-/// Each Storage entity's UUID is mapped to a vector of Arrangment instances.
+/// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
 typedef google::sparse_hash_map<smtk::util::UUID,KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
 typedef google::sparse_hash_map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
 #else
-/// Each Storage entity's UUID is mapped to a vector of Arrangment instances.
+/// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
 typedef std::map<smtk::util::UUID,KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
 typedef std::map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;

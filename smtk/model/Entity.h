@@ -19,7 +19,7 @@ namespace smtk {
 
 /**\brief A solid model entity, defined by a type and relations to other entities.
   *
-  * A solid model is an smtk::model::Storage instance that maps UUIDs to
+  * A solid model is an smtk::model::Manager instance that maps UUIDs to
   * to records of various types. Every entity (topological cell, geometric,
   * group, submodel, or scene-graph instance) must have an Entity record
   * describing the type of the entity and relating it to other entities.

@@ -18,8 +18,8 @@ if __name__ == '__main__':
   import sys
   status = 0
   try:
-    store = smtk.model.Storage.create()
-    # Add some models to storage:
+    store = smtk.model.Manager.create()
+    # Add some models to the model manager:
     model = store.addModel(3, 3, 'Test Model')
     # Create a model as if we were importing it (i.e., UUIDs already assigned).
     # This tests the methods created for use by Bridge subclasses.
@@ -56,8 +56,8 @@ if __name__ == '__main__':
     shell1 = store.setShell(uids[16], voluse)
     loop1 = store.setLoop(uids[17], face1use)
     loop2 = store.setLoop(uids[18], face2use)
-    # One can call storage.setXXX(shellEntityId, parentUse) or equivalently
-    # call parentUse.setBoundingShellEntity(storage.insertXXX(shellEntityId)).
+    # One can call store.setXXX(shellEntityId, parentUse) or equivalently
+    # call parentUse.setBoundingShellEntity(store.insertXXX(shellEntityId)).
     # We demonstrate/test both below:
     chain1 = store.setChain(uids[19], edge1use1)
     chain2 = store.setChain(uids[20], edge2use1)

@@ -3,11 +3,11 @@
 
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
 #include "smtk/util/SystemConfig.h" // For type macros.
-#include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/PublicPointerDefs.h" // For ManagerPtr
 #include "smtk/model/Arrangement.h" // for ArrangementKind and Arrangements types
 #include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
-#include "smtk/model/Events.h" // for StorageEventRelationType type
+#include "smtk/model/Events.h" // for ManagerEventRelationType type
 #include "smtk/model/FloatData.h" // for Float, FloatData, ...
 #include "smtk/model/IntegerData.h" // for Integer, IntegerData, ...
 #include "smtk/model/PropertyType.h" // for PropertyType
@@ -25,8 +25,8 @@
   thisclass () {} \
   thisclass (const Cursor& other) \
     : superclass(other) {} \
-  thisclass (StoragePtr inStorage, const smtk::util::UUID& entityId) \
-    : superclass(inStorage, entityId) {} \
+  thisclass (ManagerPtr inManager, const smtk::util::UUID& entityId) \
+    : superclass(inManager, entityId) {} \
   bool isValid() const { return this->Cursor::isValid(); } \
   virtual bool isValid(Entity** entRec) const \
     { \
@@ -50,26 +50,26 @@ typedef std::set<Cursor> Cursors;
 typedef std::vector<Cursor> CursorArray;
 class Tessellation;
 
-/**\brief A lightweight cursor pointing to a model entity's storage.
+/**\brief A lightweight cursor pointing to a model entity's manager.
   *
-  * This class exposes methods from multiple pieces of storage
-  * that are all associated with a given entity.
-  * See BRepModel, Storage, Entity, EntityTypeBits, and other
+  * This class exposes methods from multiple members of the model
+  * manager that are all associated with a given entity.
+  * See BRepModel, Manager, Entity, EntityTypeBits, and other
   * headers for documentation on the methods in this class.
   *
   * It is a convenience class only and new functionality added to
-  * Storage and other smtk::model classes should not rely on it.
+  * Manager and other smtk::model classes should not rely on it.
   */
 class SMTKCORE_EXPORT Cursor
 {
 public:
   SMTK_BASE_TYPE(Cursor);
   Cursor();
-  Cursor(StoragePtr storage, const smtk::util::UUID& entityId);
+  Cursor(ManagerPtr manager, const smtk::util::UUID& entityId);
 
-  bool setStorage(StoragePtr storage);
-  StoragePtr storage();
-  const StoragePtr storage() const;
+  bool setManager(ManagerPtr manager);
+  ManagerPtr manager();
+  const ManagerPtr manager() const;
 
   bool setEntity(const smtk::util::UUID& entityId);
   const smtk::util::UUID& entity() const;
@@ -123,7 +123,7 @@ public:
 
   template<typename S, typename T>
   static void CursorsFromUUIDs(
-    S& result, StoragePtr, const T& uids);
+    S& result, ManagerPtr, const T& uids);
 
   Cursors bordantEntities(int ofDimension = -2) const;
   Cursors boundaryEntities(int ofDimension = -2) const;
@@ -196,24 +196,24 @@ public:
   bool operator < (const Cursor& other) const;
 
 protected:
-  StoragePtr m_storage;
+  ManagerPtr m_manager;
   smtk::util::UUID m_entity;
 
   // When embedding/unembedding, this method determines the relationship type
   // based on the entities involved.
-  StorageEventRelationType embeddingRelationType(const Cursor& embedded) const;
+  ManagerEventRelationType embeddingRelationType(const Cursor& embedded) const;
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
 
 template<typename S, typename T>
 void Cursor::CursorsFromUUIDs(
-  S& result, StoragePtr storage, const T& uids)
+  S& result, ManagerPtr mgr, const T& uids)
 {
   typename S::size_type expected = 1;
   for (typename T::const_iterator it = uids.begin(); it != uids.end(); ++it, ++expected)
     {
-    typename S::value_type entry(storage, *it);
+    typename S::value_type entry(mgr, *it);
     if (entry.isValid())
       {
       result.insert(result.end(), entry);

@@ -135,7 +135,7 @@ namespace smtk
       {this->m_appliesToInteriorNodes = appliesValue;}
 
       smtk::attribute::Manager *manager() const;
-      smtk::model::StoragePtr modelStorage() const;
+      smtk::model::ManagerPtr modelManager() const;
 
       void setUserData(const std::string &key, smtk::util::UserDataPtr value)
        {this->m_userData[key] = value;}
@@ -206,13 +206,13 @@ namespace smtk
     template<typename T> T Attribute::associatedModelEntities() const
     {
       T result;
-      smtk::model::StoragePtr storage = this->modelStorage();
-      if (!storage) { // No attached storage means we cannot make cursors.
+      smtk::model::ManagerPtr manager = this->modelManager();
+      if (!manager) { // No attached manager means we cannot make cursors.
         return result;
       }
       smtk::util::UUIDs::const_iterator it;
       for (it = this->m_modelEntities.begin(); it != this->m_modelEntities.end(); ++it) {
-        typename T::value_type entry(storage, *it);
+        typename T::value_type entry(manager, *it);
         if (entry.isValid()) {
           result.insert(result.end(), entry);
         }

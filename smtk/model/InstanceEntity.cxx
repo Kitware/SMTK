@@ -1,7 +1,7 @@
 #include "smtk/model/InstanceEntity.h"
 
 #include "smtk/model/CursorArrangementOps.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
 
 namespace smtk {

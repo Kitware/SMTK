@@ -4,7 +4,7 @@
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 
 #include <QtCore/QDir>
@@ -79,7 +79,7 @@ static bool UpdateSubphrases(QEntityItemModel* qmodel, const QModelIndex& qidx, 
 }
 
 // Callback function, invoked when a new arrangement is added to an entity.
-static int entityModified(StorageEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
+static int entityModified(ManagerEventType, const smtk::model::Cursor& ent, const smtk::model::Cursor&, void* callData)
 {
   QEntityItemModel* qmodel = static_cast<QEntityItemModel*>(callData);
   if (!qmodel)
@@ -271,7 +271,7 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& own
   int maxPos = position + rows;
   for (int row = position; row < maxPos; ++row)
     {
-    smtk::util::UUID uid = this->m_storage->addEntityOfTypeAndDimension(smtk::model::INVALID, -1);
+    smtk::util::UUID uid = this->m_manager->addEntityOfTypeAndDimension(smtk::model::INVALID, -1);
     this->m_phrases.insert(this->m_phrases.begin() + row, uid);
     this->m_reverse[uid] = row;
     }
@@ -343,7 +343,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
     break;
   case 1:
       {
-      smtk::model::SortByEntityFlags comparator(this->m_storage);
+      smtk::model::SortByEntityFlags comparator(this->m_manager);
       std::multiset<smtk::util::UUID,smtk::model::SortByEntityFlags>
         sorter(comparator);
       this->sortDataWithContainer(sorter, order);
@@ -357,7 +357,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
         smtk::model::StringList,
         &smtk::model::BRepModel::stringProperty,
         &smtk::model::BRepModel::hasStringProperty> comparator(
-          this->m_storage, "name");
+          this->m_manager, "name");
       std::multiset<
         smtk::util::UUID,
         smtk::model::SortByEntityProperty<
@@ -398,7 +398,7 @@ Qt::ItemFlags QEntityItemModel::flags(const QModelIndex& idx) const
   return itemFlags;
 }
 
-static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx, StoragePtr& storage)
+static bool FindManager(const QEntityItemModel* qmodel, const QModelIndex& qidx, ManagerPtr& manager)
 {
   DescriptivePhrasePtr phrase = qmodel->getItem(qidx);
   if (phrase)
@@ -406,26 +406,26 @@ static bool FindStorage(const QEntityItemModel* qmodel, const QModelIndex& qidx,
     Cursor related = phrase->relatedEntity();
     if (related.isValid())
       {
-      storage = related.storage();
-      if (storage)
+      manager = related.manager();
+      if (manager)
         return true;
       }
     }
   return false;
 }
 
-/**\brief Return the first smtk::model::Storage instance presented by this model.
+/**\brief Return the first smtk::model::Manager instance presented by this model.
   *
   * Note that it is possible for a QEntityItemModel to present information
-  * on entities from multiple Storage instances.
+  * on entities from multiple Manager instances.
   * However, in this case, external updates to the selection must either be
-  * made via Cursor instances (which couple UUIDs with Storage instances) or
+  * made via Cursor instances (which couple UUIDs with Manager instances) or
   * there will be breakage.
   */
-smtk::model::StoragePtr QEntityItemModel::storage() const
+smtk::model::ManagerPtr QEntityItemModel::manager() const
 {
-  StoragePtr store;
-  this->foreach_phrase(FindStorage, store, QModelIndex(), false);
+  ManagerPtr store;
+  this->foreach_phrase(FindManager, store, QModelIndex(), false);
   return store;
 }
 
@@ -503,8 +503,8 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
       this->m_reverse[*si] = i;
       / *
       std::cout << i << "  " << *si << "  " <<
-        (this->m_storage->hasStringProperty(*si, "name") ?
-         this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+        (this->m_manager->hasStringProperty(*si, "name") ?
+         this->m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
          * /
       }
     }
@@ -517,8 +517,8 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
       this->m_reverse[*si] = i;
       / *
       std::cout << i << "  " << *si << "  " <<
-        (this->m_storage->hasStringProperty(*si, "name") ?
-         this->m_storage->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
+        (this->m_manager->hasStringProperty(*si, "name") ?
+         this->m_manager->stringProperty(*si, "name")[0].c_str() : "--") << "\n";
          * /
       }
     }
@@ -569,7 +569,7 @@ void QEntityItemModel::subphrasesUpdated(const QModelIndex& qidx)
 
 void QEntityItemModel::updateObserver()
 {
-  StoragePtr store = this->storage();
+  ManagerPtr store = this->manager();
   if (store)
     {
     store->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &entityModified, this);

@@ -4,7 +4,7 @@
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/ShellEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
 #include <deque>
@@ -18,10 +18,10 @@ namespace smtk {
   */
 ModelEntity CellEntity::model() const
 {
-  StoragePtr store = this->storage();
+  ManagerPtr mgr = this->manager();
   return ModelEntity(
-    store,
-    store->modelOwningEntity(this->entity()));
+    mgr,
+    mgr->modelOwningEntity(this->entity()));
 }
 
 /**\brief Report the toplevel shell records associated with the cell.

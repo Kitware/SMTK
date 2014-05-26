@@ -1,5 +1,5 @@
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/testing/helpers.h"
@@ -17,7 +17,7 @@ static int subgroups = 0;
 static int subcells = 0;
 static int submodels = 0;
 
-int entityStorageEvent(StorageEventType evt, const smtk::model::Cursor&, void*)
+int entityManagerEvent(ManagerEventType evt, const smtk::model::Cursor&, void*)
 {
   if (evt.first == ADD_EVENT)
     ++entCount;
@@ -26,7 +26,7 @@ int entityStorageEvent(StorageEventType evt, const smtk::model::Cursor&, void*)
   return 0;
 }
 
-int addEntityToModel(StorageEventType evt, const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
+int addEntityToModel(ManagerEventType evt, const smtk::model::Cursor& src, const smtk::model::Cursor& related, void*)
 {
   if (evt.first == ADD_EVENT)
     {
@@ -47,8 +47,8 @@ int main(int argc, char* argv[])
 {
   (void)argc;
   (void)argv;
-  StoragePtr sm = Storage::create();
-  sm->observe(std::make_pair(ANY_EVENT,ENTITY_ENTRY), &entityStorageEvent, NULL);
+  ManagerPtr sm = Manager::create();
+  sm->observe(std::make_pair(ANY_EVENT,ENTITY_ENTRY), &entityManagerEvent, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_FREE_CELL), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_GROUP), &addEntityToModel, NULL);
   sm->observe(std::make_pair(ANY_EVENT,MODEL_INCLUDES_MODEL), &addEntityToModel, NULL);

@@ -96,7 +96,7 @@ namespace smtk
     typedef std::vector<Shell> Shells;
     class ShellEntity;
     typedef std::vector<ShellEntity> ShellEntities;
-    class Storage;
+    class Manager;
     class SimpleModelSubphrases;
     class SubphraseGenerator;
     class ModelDomainItem;
@@ -181,8 +181,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
     typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
     typedef std::set< smtk::model::OperatorPtr >                   Operators;
-    typedef smtk::shared_ptr< smtk::model::Storage >               StoragePtr;
-    typedef smtk::weak_ptr< smtk::model::Storage >                 WeakStoragePtr;
+    typedef smtk::shared_ptr< smtk::model::Manager >               ManagerPtr;
+    typedef smtk::weak_ptr< smtk::model::Manager >                 WeakManagerPtr;
     typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;
     typedef smtk::weak_ptr< smtk::model::Item >                    WeakItemPtr;
     typedef smtk::shared_ptr< smtk::model::GroupItem >             GroupItemPtr;

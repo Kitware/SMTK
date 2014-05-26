@@ -1,6 +1,6 @@
 #include "smtk/model/ExportJSON.h"
 
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
@@ -111,7 +111,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, StoragePtr model)
+int ExportJSON::fromModel(cJSON* json, ManagerPtr model)
 {
   int status = 0;
   if (!json || !model)
@@ -138,15 +138,15 @@ int ExportJSON::fromModel(cJSON* json, StoragePtr model)
     break;
     }
 
-  cJSON* mtyp = cJSON_CreateString("Storage");
+  cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forStorage(body, model);
+  status = ExportJSON::forManager(body, model);
 
   return status;
 }
 
-int ExportJSON::forStorage(
-  cJSON* dict, StoragePtr model)
+int ExportJSON::forManager(
+  cJSON* dict, ManagerPtr model)
 {
   if (!dict || !model)
     {
@@ -161,18 +161,18 @@ int ExportJSON::forStorage(
       std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::forStorageEntity(it, curChild, model);
-    status &= ExportJSON::forStorageArrangement(
+    status &= ExportJSON::forManagerEntity(it, curChild, model);
+    status &= ExportJSON::forManagerArrangement(
       model->arrangements().find(it->first), curChild, model);
-    status &= ExportJSON::forStorageTessellation(it->first, curChild, model);
-    status &= ExportJSON::forStorageFloatProperties(it->first, curChild, model);
-    status &= ExportJSON::forStorageStringProperties(it->first, curChild, model);
-    status &= ExportJSON::forStorageIntegerProperties(it->first, curChild, model);
+    status &= ExportJSON::forManagerTessellation(it->first, curChild, model);
+    status &= ExportJSON::forManagerFloatProperties(it->first, curChild, model);
+    status &= ExportJSON::forManagerStringProperties(it->first, curChild, model);
+    status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, model);
     }
   return status;
 }
 
-std::string ExportJSON::fromModel(StoragePtr model)
+std::string ExportJSON::fromModel(ManagerPtr model)
 {
   cJSON* top = cJSON_CreateObject();
   ExportJSON::fromModel(top, model);
@@ -183,8 +183,8 @@ std::string ExportJSON::fromModel(StoragePtr model)
   return result;
 }
 
-int ExportJSON::forStorageEntity(
-  UUIDWithEntity& entry, cJSON* entRec, StoragePtr model)
+int ExportJSON::forManagerEntity(
+  UUIDWithEntity& entry, cJSON* entRec, ManagerPtr model)
 {
   (void)model;
   cJSON* ent = cJSON_CreateNumber(entry->second.entityFlags());
@@ -211,8 +211,8 @@ int ExportJSON::forStorageEntity(
   return 1;
 }
 
-int ExportJSON::forStorageArrangement(
-  const UUIDWithArrangementDictionary& entry, cJSON* dict, StoragePtr model)
+int ExportJSON::forManagerArrangement(
+  const UUIDWithArrangementDictionary& entry, cJSON* dict, ManagerPtr model)
 {
   if (entry == model->arrangements().end())
     {
@@ -242,8 +242,8 @@ int ExportJSON::forStorageArrangement(
   return 1;
 }
 
-int ExportJSON::forStorageTessellation(
-  const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+int ExportJSON::forManagerTessellation(
+  const smtk::util::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   UUIDWithTessellation tessIt = model->tessellations().find(uid);
   if (
@@ -277,7 +277,7 @@ int ExportJSON::forStorageTessellation(
   return 1;
 }
 
-int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+int ExportJSON::forManagerFloatProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithFloatProperties entIt = model->floatProperties().find(uid);
@@ -301,7 +301,7 @@ int ExportJSON::forStorageFloatProperties(const smtk::util::UUID& uid, cJSON* di
   return status;
 }
 
-int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+int ExportJSON::forManagerStringProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithStringProperties entIt = model->stringProperties().find(uid);
@@ -325,7 +325,7 @@ int ExportJSON::forStorageStringProperties(const smtk::util::UUID& uid, cJSON* d
   return status;
 }
 
-int ExportJSON::forStorageIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, StoragePtr model)
+int ExportJSON::forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* dict, ManagerPtr model)
 {
   int status = 1;
   UUIDWithIntegerProperties entIt = model->integerProperties().find(uid);

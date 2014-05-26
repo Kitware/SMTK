@@ -2,13 +2,13 @@
 #define __smtk_cgm_ImportSolid_h
 
 #include "smtk/cgmSMTKExports.h" // for CGMSMTK_EXPORT
-#include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/util/UUID.h"
 
 namespace smtk {
   namespace model {
-    class Storage;
+    class Manager;
   }
 }
 
@@ -21,10 +21,10 @@ namespace cgmsmtk {
 class CGMSMTK_EXPORT ImportSolid
 {
 public:
-  static smtk::util::UUIDArray fromFilenameIntoStorage(
+  static smtk::util::UUIDArray fromFilenameIntoManager(
     const std::string& filename,
     const std::string& filetype,
-    smtk::model::StoragePtr storage);
+    smtk::model::ManagerPtr manager);
 };
 
   } // namespace cgm

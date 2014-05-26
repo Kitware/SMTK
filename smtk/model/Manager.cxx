@@ -1,4 +1,4 @@
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
@@ -35,7 +35,7 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
-Storage::Storage() :
+Manager::Manager() :
   BRepModel(shared_ptr<UUIDsToEntities>(new UUIDsToEntities)),
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
@@ -44,7 +44,7 @@ Storage::Storage() :
 {
 }
 
-Storage::Storage(
+Manager::Manager(
   shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements,
   shared_ptr<UUIDsToTessellations> tess,
@@ -56,42 +56,42 @@ Storage::Storage(
 {
 }
 
-Storage::~Storage()
+Manager::~Manager()
 {
   this->setAttributeManager(NULL);
 }
 
-UUIDsToArrangements& Storage::arrangements()
+UUIDsToArrangements& Manager::arrangements()
 {
   return *this->m_arrangements.get();
 }
 
-const UUIDsToArrangements& Storage::arrangements() const
+const UUIDsToArrangements& Manager::arrangements() const
 {
   return *this->m_arrangements.get();
 }
 
-UUIDsToTessellations& Storage::tessellations()
+UUIDsToTessellations& Manager::tessellations()
 {
   return *this->m_tessellations.get();
 }
 
-const UUIDsToTessellations& Storage::tessellations() const
+const UUIDsToTessellations& Manager::tessellations() const
 {
   return *this->m_tessellations.get();
 }
 
-UUIDsToAttributeAssignments& Storage::attributeAssignments()
+UUIDsToAttributeAssignments& Manager::attributeAssignments()
 {
   return *this->m_attributeAssignments;
 }
 
-const UUIDsToAttributeAssignments& Storage::attributeAssignments() const
+const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 {
   return *this->m_attributeAssignments;
 }
 
-/**\brief Remove an entity from storage.
+/**\brief Remove an entity from the manager.
   *
   * This overrides BRepModel::erase() in order to ensure that all
   * Arrangements referencing \a uid are also removed. (BRepModel
@@ -105,7 +105,7 @@ const UUIDsToAttributeAssignments& Storage::attributeAssignments() const
   * boundary). The application is expected to perform further
   * operations to keep the model valid.
   */
-bool Storage::erase(const smtk::util::UUID& uid)
+bool Manager::erase(const smtk::util::UUID& uid)
 {
   Entity* ent = this->findEntity(uid);
   UUIDWithArrangementDictionary ad = this->m_arrangements->find(uid);
@@ -129,33 +129,32 @@ bool Storage::erase(const smtk::util::UUID& uid)
 /**\brief Set the attribute manager.
   *
   * This is an error if the manager already has a non-null
-  * reference to a different model storage instance.
+  * reference to a different model manager instance.
   *
-  * If this storage is associated with a different manager,
-  * that manager is detached (its storage reference set to
-  * null) and all attribute associations in the storage
+  * If this manager is associated with a different attribute manager,
+  * that attribute manager is detached (its model manager reference
+  * set to null) and all attribute associations in the model manager
   * are erased.
-  * This is not an error, but a warning message will be
-  * generated.
+  * This is not an error, but a warning message will be generated.
   *
   * On error, false is returned, an error message is generated,
   * and no change is made to the attribute manager.
   */
-bool Storage::setAttributeManager(smtk::attribute::Manager* mgr, bool reverse)
+bool Manager::setAttributeManager(smtk::attribute::Manager* attMgr, bool reverse)
 {
-  if (mgr)
+  if (attMgr)
     {
-    Storage* mgrStorage = mgr->refStorage().get();
-    if (mgrStorage && mgrStorage != this)
+    smtk::model::Manager* attMgrModelMgr = attMgr->refModelManager().get();
+    if (attMgrModelMgr && attMgrModelMgr != this)
       {
       return false;
       }
     }
-  if (this->m_attributeManager && this->m_attributeManager != mgr)
+  if (this->m_attributeManager && this->m_attributeManager != attMgr)
     {
     // Only warn when (a) the new manager is non-NULL and (b) we
     // have at least 1 attribute association.
-    if (!this->m_attributeAssignments->empty() && mgr)
+    if (!this->m_attributeAssignments->empty() && attMgr)
       {
       std::cout
         << "WARNING: Changing attribute managers.\n"
@@ -163,24 +162,24 @@ bool Storage::setAttributeManager(smtk::attribute::Manager* mgr, bool reverse)
       this->m_attributeAssignments->clear();
       }
     if (reverse)
-      this->m_attributeManager->setRefStorage(StoragePtr());
+      this->m_attributeManager->setRefModelManager(ManagerPtr());
     }
-  this->m_attributeManager = mgr;
+  this->m_attributeManager = attMgr;
   if (this->m_attributeManager && reverse)
-    this->m_attributeManager->setRefStorage(shared_from_this());
+    this->m_attributeManager->setRefModelManager(shared_from_this());
   return true;
 }
 
-/**\brief Return the attribute manager associated with this storage.
+/**\brief Return the attribute manager associated with this model manager.
   *
   */
-smtk::attribute::Manager* Storage::attributeManager() const
+smtk::attribute::Manager* Manager::attributeManager() const
 {
   return this->m_attributeManager;
 }
 
 
-Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tessellation& geom)
+Manager::tess_iter_type Manager::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
   if (cellId.isNull())
     {
@@ -204,7 +203,7 @@ Storage::tess_iter_type Storage::setTessellation(const UUID& cellId, const Tesse
   * Otherwise, it should be positive and refer to a pre-existing arrangement to be replaced.
   * The actual \a index location used is returned.
   */
-int Storage::arrangeEntity(const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
+int Manager::arrangeEntity(const UUID& entityId, ArrangementKind kind, const Arrangement& arr, int index)
 {
   UUIDsToArrangements::iterator cit = this->m_arrangements->find(entityId);
   if (cit == this->m_arrangements->end())
@@ -257,7 +256,7 @@ int Storage::arrangeEntity(const UUID& entityId, ArrangementKind kind, const Arr
   * The caller is expected to perform further operations to keep
   * the model valid.
   */
-int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
+int Manager::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
 {
   int result = 0;
   bool canRemoveEntity = false;
@@ -319,7 +318,7 @@ int Storage::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
   * Since this actually requires a lookup, you may pass in a pointer \a arr to an array of arrangements;
   * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
   */
-Arrangements* Storage::hasArrangementsOfKindForEntity(
+Arrangements* Manager::hasArrangementsOfKindForEntity(
   const smtk::util::UUID& entity, ArrangementKind kind)
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
@@ -336,7 +335,7 @@ Arrangements* Storage::hasArrangementsOfKindForEntity(
 
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
-const Arrangements* Storage::hasArrangementsOfKindForEntity(
+const Arrangements* Manager::hasArrangementsOfKindForEntity(
   const smtk::util::UUID& entity, ArrangementKind kind) const
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
@@ -358,7 +357,7 @@ const Arrangements* Storage::hasArrangementsOfKindForEntity(
   * new relationships, you should not use this method without first calling
   * hasArrangementsOfKindForEntity() to determine whether the array already exists.
   */
-Arrangements& Storage::arrangementsOfKindForEntity(
+Arrangements& Manager::arrangementsOfKindForEntity(
   const smtk::util::UUID& entity,
   ArrangementKind kind)
 {
@@ -369,7 +368,7 @@ Arrangements& Storage::arrangementsOfKindForEntity(
   *
   * This version does not allow the arrangement to be altered.
   */
-const Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, int index) const
+const Arrangement* Manager::findArrangement(const UUID& cellId, ArrangementKind kind, int index) const
 {
   if (cellId.isNull() || index < 0)
     {
@@ -399,7 +398,7 @@ const Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind 
   *
   * This version allows the arrangement to be altered.
   */
-Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
+Arrangement* Manager::findArrangement(const UUID& cellId, ArrangementKind kind, int index)
 {
   if (cellId.isNull() || index < 0)
     {
@@ -429,7 +428,7 @@ Arrangement* Storage::findArrangement(const UUID& cellId, ArrangementKind kind, 
   *
   * This method returns the index upon success and a negative number upon failure.
   */
-int Storage::findArrangementInvolvingEntity(
+int Manager::findArrangementInvolvingEntity(
   const smtk::util::UUID& entityId, ArrangementKind kind,
   const smtk::util::UUID& involvedEntity) const
 {
@@ -477,7 +476,7 @@ int Storage::findArrangementInvolvingEntity(
   * context. (Other methods create and interpret arrangements in
   * specific circumstances where the context is known.)
   */
-bool Storage::findDualArrangements(
+bool Manager::findDualArrangements(
     const smtk::util::UUID& entityId, ArrangementKind kind, int index,
     ArrangementReferences& duals) const
 {
@@ -585,7 +584,7 @@ bool Storage::findDualArrangements(
   * them to discover all the sense numbers.
   * There should be no duplicate senses for any given cell.
   */
-int Storage::findCellHasUseWithSense(
+int Manager::findCellHasUseWithSense(
   const smtk::util::UUID& cellId, int sense) const
 {
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
@@ -611,7 +610,7 @@ int Storage::findCellHasUseWithSense(
   *
   * The indices of the matching arrangements are returned.
   */
-std::set<int> Storage::findCellHasUsesWithOrientation(
+std::set<int> Manager::findCellHasUsesWithOrientation(
   const smtk::util::UUID& cellId, Orientation orient) const
 {
   std::set<int> result;
@@ -637,7 +636,7 @@ std::set<int> Storage::findCellHasUsesWithOrientation(
 /**\brief Return the UUID of a use record for the
   * given \a cell and \a sense, or NULL if it does not exist.
   */
-smtk::util::UUID Storage::cellHasUseOfSenseAndOrientation(
+smtk::util::UUID Manager::cellHasUseOfSenseAndOrientation(
   const smtk::util::UUID& cell, int sense, Orientation orient) const
 {
   const smtk::model::Arrangements* arr;
@@ -662,7 +661,7 @@ smtk::util::UUID Storage::cellHasUseOfSenseAndOrientation(
   * creating one if it does not exist or replacing it if \a replacement is non-NULL.
   *
   */
-smtk::util::UUID Storage::findCreateOrReplaceCellUseOfSenseAndOrientation(
+smtk::util::UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   const smtk::util::UUID& cell, int sense, Orientation orient,
   const smtk::util::UUID& replacement)
 {
@@ -743,7 +742,7 @@ smtk::util::UUID Storage::findCreateOrReplaceCellUseOfSenseAndOrientation(
   * These relationships define a hierarchy that enumerate the oriented boundary of
   * the top-level cell-use.
   */
-smtk::util::UUIDs Storage::useOrShellIncludesShells(
+smtk::util::UUIDs Manager::useOrShellIncludesShells(
   const smtk::util::UUID& cellUseOrShell) const
 {
   smtk::util::UUIDs shells;
@@ -777,7 +776,7 @@ smtk::util::UUIDs Storage::useOrShellIncludesShells(
   * Shells may also include other shells of the same dimensionality representing voids
   * or material within voids for odd or even depths from the parent cell-use, respectively.
   */
-smtk::util::UUID Storage::createIncludedShell(const smtk::util::UUID& useOrShell)
+smtk::util::UUID Manager::createIncludedShell(const smtk::util::UUID& useOrShell)
 {
   Entity* entity = this->findEntity(useOrShell);
   if (!entity)
@@ -811,7 +810,7 @@ smtk::util::UUID Storage::createIncludedShell(const smtk::util::UUID& useOrShell
   * Returns true when adding the shell was necessary.
   * Returns false if either entity does not exist or the shell was already owned by the parent.
   */
-bool Storage::findOrAddIncludedShell(
+bool Manager::findOrAddIncludedShell(
   const smtk::util::UUID& parentUseOrShell,
   const smtk::util::UUID& shellToInclude)
 {
@@ -854,7 +853,7 @@ bool Storage::findOrAddIncludedShell(
   * is employed depending on the dimension so that the distinction can be made
   * easily.
   */
-bool Storage::findOrAddUseToShell(
+bool Manager::findOrAddUseToShell(
   const smtk::util::UUID& shell, const smtk::util::UUID& use)
 {
   Entity* shellEnt;
@@ -960,7 +959,7 @@ bool Storage::findOrAddUseToShell(
   * Thus, the \a inclusion must have a dimension less-than
   * or equal to the \a cell.
   */
-bool Storage::findOrAddInclusionToCellOrModel(
+bool Manager::findOrAddInclusionToCellOrModel(
   const smtk::util::UUID& cell, const smtk::util::UUID& inclusion)
 {
   Entity* cellEnt;
@@ -1013,7 +1012,7 @@ bool Storage::findOrAddInclusionToCellOrModel(
   * Returns true when the entity was successfully added (or already existed)
   * and false upon failure (such as when \a grp or \a ent are invalid).
   */
-bool Storage::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent)
+bool Manager::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent)
 {
   GroupEntity group(shared_from_this(), grp);
   Cursor member(shared_from_this(), ent);
@@ -1034,7 +1033,7 @@ bool Storage::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::ut
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
-bool Storage::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
+bool Manager::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
 {
   UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
   if (it == this->m_attributeAssignments->end())
@@ -1050,7 +1049,7 @@ bool Storage::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Storage::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
+bool Manager::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
 {
   bool allowed = true;
   if (this->m_attributeManager)
@@ -1067,7 +1066,7 @@ bool Storage::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse)
+bool Manager::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -1093,8 +1092,8 @@ bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
         {
         smtk::attribute::AttributePtr attrib =
           this->m_attributeManager->findAttribute(attribId);
-        // FIXME: Should we check that the manager's refStorage
-        //        is this Storage instance?
+        // FIXME: Should we check that the manager's refManager
+        //        is this Manager instance?
         if (attrib)
           {
           attrib->disassociateEntity(fromEntity, false);
@@ -1105,70 +1104,70 @@ bool Storage::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
   return didRemove;
 }
 
-/// Add a vertex to storage (without any relationships) at the given \a uid.
-Vertex Storage::insertVertex(const smtk::util::UUID& uid)
+/// Add a vertex to the manager (without any relationships) at the given \a uid.
+Vertex Manager::insertVertex(const smtk::util::UUID& uid)
 {
   return Vertex(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 0)->first);
 }
 
-/// Add an edge to storage (without any relationships) at the given \a uid.
-Edge Storage::insertEdge(const smtk::util::UUID& uid)
+/// Add an edge to the manager (without any relationships) at the given \a uid.
+Edge Manager::insertEdge(const smtk::util::UUID& uid)
 {
   return Edge(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 1)->first);
 }
 
-/// Add a face to storage (without any relationships) at the given \a uid.
-Face Storage::insertFace(const smtk::util::UUID& uid)
+/// Add a face to the manager (without any relationships) at the given \a uid.
+Face Manager::insertFace(const smtk::util::UUID& uid)
 {
   return Face(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 2)->first);
 }
 
-/// Add a volume to storage (without any relationships) at the given \a uid.
-Volume Storage::insertVolume(const smtk::util::UUID& uid)
+/// Add a volume to the manager (without any relationships) at the given \a uid.
+Volume Manager::insertVolume(const smtk::util::UUID& uid)
 {
   return Volume(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, CELL_ENTITY, 3)->first);
 }
 
-/// Add an edge to storage (without any relationships)
-Vertex Storage::addVertex()
+/// Add an edge to the manager (without any relationships)
+Vertex Manager::addVertex()
 {
   return Vertex(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(CELL_ENTITY, 0));
 }
 
-/// Add an edge to storage (without any relationships)
-Edge Storage::addEdge()
+/// Add an edge to the manager (without any relationships)
+Edge Manager::addEdge()
 {
   return Edge(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(CELL_ENTITY, 1));
 }
 
-/**\brief Add a face to storage (without any relationships)
+/**\brief Add a face to the manager (without any relationships)
   *
   * While this method does not add any relations, it
   * does create two HAS_USE arrangements to hold
   * FaceUse instances (assuming the BRepModel may be
-  * downcast to a Storage instance).
+  * downcast to a Manager instance).
   */
-Face Storage::addFace()
+Face Manager::addFace()
 {
   return Face(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(CELL_ENTITY, 2));
 }
 
-/// Add a volume to storage (without any relationships)
-Volume Storage::addVolume()
+/// Add a volume to the manager (without any relationships)
+Volume Manager::addVolume()
 {
   return Volume(
     shared_from_this(),
@@ -1176,7 +1175,7 @@ Volume Storage::addVolume()
 }
 
 /// Insert a VertexUse at the specified \a uid.
-VertexUse Storage::insertVertexUse(const smtk::util::UUID& uid)
+VertexUse Manager::insertVertexUse(const smtk::util::UUID& uid)
 {
   return VertexUse(
     shared_from_this(),
@@ -1184,7 +1183,7 @@ VertexUse Storage::insertVertexUse(const smtk::util::UUID& uid)
 }
 
 /// Create a VertexUse with the specified \a uid and replace \a src's VertexUse.
-VertexUse Storage::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense)
+VertexUse Manager::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense)
 {
   VertexUse vertUse = this->insertVertexUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1193,7 +1192,7 @@ VertexUse Storage::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, 
 }
 
 /// Insert a EdgeUse at the specified \a uid.
-EdgeUse Storage::insertEdgeUse(const smtk::util::UUID& uid)
+EdgeUse Manager::insertEdgeUse(const smtk::util::UUID& uid)
 {
   return EdgeUse(
     shared_from_this(),
@@ -1201,7 +1200,7 @@ EdgeUse Storage::insertEdgeUse(const smtk::util::UUID& uid)
 }
 
 /// Create a EdgeUse with the specified \a uid and replace \a src's EdgeUse.
-EdgeUse Storage::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o)
+EdgeUse Manager::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o)
 {
   EdgeUse edgeUse = this->insertEdgeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1210,7 +1209,7 @@ EdgeUse Storage::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int se
 }
 
 /// Insert a FaceUse at the specified \a uid.
-FaceUse Storage::insertFaceUse(const smtk::util::UUID& uid)
+FaceUse Manager::insertFaceUse(const smtk::util::UUID& uid)
 {
   return FaceUse(
     shared_from_this(),
@@ -1218,7 +1217,7 @@ FaceUse Storage::insertFaceUse(const smtk::util::UUID& uid)
 }
 
 /// Create a FaceUse with the specified \a uid and replace \a src's FaceUse.
-FaceUse Storage::setFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o)
+FaceUse Manager::setFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o)
 {
   FaceUse faceUse = this->insertFaceUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1227,7 +1226,7 @@ FaceUse Storage::setFaceUse(const smtk::util::UUID& uid, const Face& src, int se
 }
 
 /// Insert a VolumeUse at the specified \a uid.
-VolumeUse Storage::insertVolumeUse(const smtk::util::UUID& uid)
+VolumeUse Manager::insertVolumeUse(const smtk::util::UUID& uid)
 {
   return VolumeUse(
     shared_from_this(),
@@ -1235,7 +1234,7 @@ VolumeUse Storage::insertVolumeUse(const smtk::util::UUID& uid)
 }
 
 /// Create a VolumeUse with the specified \a uid and replace \a src's VolumeUse.
-VolumeUse Storage::setVolumeUse(const smtk::util::UUID& uid, const Volume& src)
+VolumeUse Manager::setVolumeUse(const smtk::util::UUID& uid, const Volume& src)
 {
   VolumeUse volUse = this->insertVolumeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1243,104 +1242,104 @@ VolumeUse Storage::setVolumeUse(const smtk::util::UUID& uid, const Volume& src)
   return volUse;
 }
 
-/// Add a vertex-use to storage (without any relationships)
-VertexUse Storage::addVertexUse()
+/// Add a vertex-use to the manager (without any relationships)
+VertexUse Manager::addVertexUse()
 {
   return VertexUse(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(USE_ENTITY, 0));
 }
 
-/// Find or add a vertex-use to storage with a relationship back to a vertex.
-VertexUse Storage::addVertexUse(const Vertex& src, int sense)
+/// Find or add a vertex-use to the manager with a relationship back to a vertex.
+VertexUse Manager::addVertexUse(const Vertex& src, int sense)
 {
-  if (src.isValid() && src.storage().get() == this)
+  if (src.isValid() && src.manager().get() == this)
     {
     return VertexUse(
-      src.storage(),
+      src.manager(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, POSITIVE));
     }
-  return VertexUse(); // invalid vertex use if source vertex was invalid or from different storage.
+  return VertexUse(); // invalid vertex use if source vertex was invalid or from a different manager.
 }
 
-/// Add an edge-use to storage (without any relationships)
-EdgeUse Storage::addEdgeUse()
+/// Add an edge-use to the manager (without any relationships)
+EdgeUse Manager::addEdgeUse()
 {
   return EdgeUse(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(USE_ENTITY, 1));
 }
 
-/// Find or add a edge-use to storage with a relationship back to a edge.
-EdgeUse Storage::addEdgeUse(const Edge& src, int sense, Orientation orient)
+/// Find or add a edge-use to the manager with a relationship back to a edge.
+EdgeUse Manager::addEdgeUse(const Edge& src, int sense, Orientation orient)
 {
-  if (src.isValid() && src.storage().get() == this)
+  if (src.isValid() && src.manager().get() == this)
     {
     return EdgeUse(
-      src.storage(),
+      src.manager(),
       this->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
     }
-  return EdgeUse(); // invalid edge use if source edge was invalid or from different storage.
+  return EdgeUse(); // invalid edge use if source edge was invalid or from a different manager.
 }
 
-/// Add a face-use to storage (without any relationships)
-FaceUse Storage::addFaceUse()
+/// Add a face-use to the manager (without any relationships)
+FaceUse Manager::addFaceUse()
 {
   return FaceUse(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(USE_ENTITY, 2));
 }
 
-/// Find or add a face-use to storage with a relationship back to a face.
-FaceUse Storage::addFaceUse(const Face& src, int sense, Orientation orient)
+/// Find or add a face-use to the manager with a relationship back to a face.
+FaceUse Manager::addFaceUse(const Face& src, int sense, Orientation orient)
 {
-  if (src.isValid() && src.storage().get() == this)
+  if (src.isValid() && src.manager().get() == this)
     {
     return FaceUse(
-      src.storage(),
-      src.storage()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
+      src.manager(),
+      src.manager()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), sense, orient));
     }
-  return FaceUse(); // invalid face use if source face was invalid or from different storage.
+  return FaceUse(); // invalid face use if source face was invalid or from a different manager.
 }
 
-/// Add a volume-use to storage (without any relationships)
-VolumeUse Storage::addVolumeUse()
+/// Add a volume-use to the manager (without any relationships)
+VolumeUse Manager::addVolumeUse()
 {
   return VolumeUse(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(USE_ENTITY, 3));
 }
 
-/// Find or add a volume-use to storage with a relationship back to a volume.
-VolumeUse Storage::addVolumeUse(const Volume& src)
+/// Find or add a volume-use to the manager with a relationship back to a volume.
+VolumeUse Manager::addVolumeUse(const Volume& src)
 {
-  if (src.isValid() && src.storage().get() == this)
+  if (src.isValid() && src.manager().get() == this)
     {
     return VolumeUse(
-      src.storage(),
-      src.storage()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
+      src.manager(),
+      src.manager()->findCreateOrReplaceCellUseOfSenseAndOrientation(src.entity(), 0, POSITIVE));
     }
-  return VolumeUse(); // invalid volume use if source volume was invalid or from different storage.
+  return VolumeUse(); // invalid volume use if source volume was invalid or from a different manager.
 }
 
 /// Insert a Chain at the specified \a uid.
-Chain Storage::insertChain(const smtk::util::UUID& uid)
+Chain Manager::insertChain(const smtk::util::UUID& uid)
 {
   return Chain(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1)->first);
 }
 
-/// Find or add a chain to storage with a relationship back to its owning edge-use.
-Chain Storage::setChain(const smtk::util::UUID& uid, const EdgeUse& use)
+/// Find or add a chain to the manager with a relationship back to its owning edge-use.
+Chain Manager::setChain(const smtk::util::UUID& uid, const EdgeUse& use)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return chain;
 }
 
-/// Find or add a chain to storage with a relationship back to its owning chain.
-Chain Storage::setChain(const smtk::util::UUID& uid, const Chain& parent)
+/// Find or add a chain to the manager with a relationship back to its owning chain.
+Chain Manager::setChain(const smtk::util::UUID& uid, const Chain& parent)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1349,23 +1348,23 @@ Chain Storage::setChain(const smtk::util::UUID& uid, const Chain& parent)
 
 
 /// Insert a Loop at the specified \a uid.
-Loop Storage::insertLoop(const smtk::util::UUID& uid)
+Loop Manager::insertLoop(const smtk::util::UUID& uid)
 {
   return Loop(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1)->first);
 }
 
-/// Find or add a chain to storage with a relationship back to its owning face-use.
-Loop Storage::setLoop(const smtk::util::UUID& uid, const FaceUse& use)
+/// Find or add a chain to the manager with a relationship back to its owning face-use.
+Loop Manager::setLoop(const smtk::util::UUID& uid, const FaceUse& use)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return loop;
 }
 
-/// Find or add a chain to storage with a relationship back to its owning loop.
-Loop Storage::setLoop(const smtk::util::UUID& uid, const Loop& parent)
+/// Find or add a chain to the manager with a relationship back to its owning loop.
+Loop Manager::setLoop(const smtk::util::UUID& uid, const Loop& parent)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1374,23 +1373,23 @@ Loop Storage::setLoop(const smtk::util::UUID& uid, const Loop& parent)
 
 
 /// Insert a Shell at the specified \a uid.
-Shell Storage::insertShell(const smtk::util::UUID& uid)
+Shell Manager::insertShell(const smtk::util::UUID& uid)
 {
   return Shell(
     shared_from_this(),
     this->setEntityOfTypeAndDimension(uid, SHELL_ENTITY | DIMENSION_2 | DIMENSION_3, -1)->first);
 }
 
-/// Find or add a chain to storage with a relationship back to its owning volume-use.
-Shell Storage::setShell(const smtk::util::UUID& uid, const VolumeUse& use)
+/// Find or add a chain to the manager with a relationship back to its owning volume-use.
+Shell Manager::setShell(const smtk::util::UUID& uid, const VolumeUse& use)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
   return shell;
 }
 
-/// Find or add a chain to storage with a relationship back to its owning shell.
-Shell Storage::setShell(const smtk::util::UUID& uid, const Shell& parent)
+/// Find or add a chain to the manager with a relationship back to its owning shell.
+Shell Manager::setShell(const smtk::util::UUID& uid, const Shell& parent)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1398,72 +1397,72 @@ Shell Storage::setShell(const smtk::util::UUID& uid, const Shell& parent)
 }
 
 
-/// Add a 0/1-d shell (a vertex chain) to storage (without any relationships)
-Chain Storage::addChain()
+/// Add a 0/1-d shell (a vertex chain) to the manager (without any relationships)
+Chain Manager::addChain()
 {
   return Chain(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_0 | DIMENSION_1, -1));
 }
 
-/// Add a 0/1-d shell (a vertex chain) to storage with a relation to its edge use
-Chain Storage::addChain(const EdgeUse& eu)
+/// Add a 0/1-d shell (a vertex chain) to the manager with a relation to its edge use
+Chain Manager::addChain(const EdgeUse& eu)
 {
-  if (eu.isValid() && eu.storage().get() == this)
+  if (eu.isValid() && eu.manager().get() == this)
     {
     return Chain(
-      eu.storage(),
-      eu.storage()->createIncludedShell(eu.entity()));
+      eu.manager(),
+      eu.manager()->createIncludedShell(eu.entity()));
     }
   return Chain();
 }
 
-/// Add a 0/1-d shell (a vertex chain) to storage with a relation to its edge use
-Chain Storage::addChain(const Chain& c)
+/// Add a 0/1-d shell (a vertex chain) to the manager with a relation to its edge use
+Chain Manager::addChain(const Chain& c)
 {
-  if (c.isValid() && c.storage().get() == this)
+  if (c.isValid() && c.manager().get() == this)
     {
     return Chain(
-      c.storage(),
-      c.storage()->createIncludedShell(c.entity()));
+      c.manager(),
+      c.manager()->createIncludedShell(c.entity()));
     }
   return Chain();
 }
 
-/// Add a 1/2-d shell (an edge loop) to storage (without any relationships)
-Loop Storage::addLoop()
+/// Add a 1/2-d shell (an edge loop) to the manager (without any relationships)
+Loop Manager::addLoop()
 {
   return Loop(
     shared_from_this(),
     this->addEntityOfTypeAndDimension(SHELL_ENTITY | DIMENSION_1 | DIMENSION_2, -1));
 }
 
-/// Add a 1/2-d shell (an edge loop) to storage with a relation to its parent face use
-Loop Storage::addLoop(const FaceUse& fu)
+/// Add a 1/2-d shell (an edge loop) to the manager with a relation to its parent face use
+Loop Manager::addLoop(const FaceUse& fu)
 {
-  if (fu.isValid() && fu.storage().get() == this)
+  if (fu.isValid() && fu.manager().get() == this)
     {
     return Loop(
-      fu.storage(),
-      fu.storage()->createIncludedShell(fu.entity()));
+      fu.manager(),
+      fu.manager()->createIncludedShell(fu.entity()));
     }
   return Loop();
 }
 
-/// Add a 1/2-d shell (an edge loop) to storage with a relation to its parent loop
-Loop Storage::addLoop(const Loop& lp)
+/// Add a 1/2-d shell (an edge loop) to the manager with a relation to its parent loop
+Loop Manager::addLoop(const Loop& lp)
 {
-  if (lp.isValid() && lp.storage().get() == this)
+  if (lp.isValid() && lp.manager().get() == this)
     {
     return Loop(
-      lp.storage(),
-      lp.storage()->createIncludedShell(lp.entity()));
+      lp.manager(),
+      lp.manager()->createIncludedShell(lp.entity()));
     }
   return Loop();
 }
 
-/// Add a 2/3-d shell (a face-shell) to storage (without any relationships)
-Shell Storage::addShell()
+/// Add a 2/3-d shell (a face-shell) to the manager (without any relationships)
+Shell Manager::addShell()
 {
   return Shell(
     shared_from_this(),
@@ -1471,7 +1470,7 @@ Shell Storage::addShell()
 }
 
 /// A convenience method to find or create a volume use for the volume plus a shell.
-Shell Storage::addShell(const Volume& v)
+Shell Manager::addShell(const Volume& v)
 {
   VolumeUse vu;
   if (!v.uses<VolumeUses>().empty())
@@ -1485,19 +1484,19 @@ Shell Storage::addShell(const Volume& v)
   return this->addShell(vu);
 }
 
-/// Add a 2/3-d shell (an face shell) to storage with a relation to its volume
-Shell Storage::addShell(const VolumeUse& v)
+/// Add a 2/3-d shell (an face shell) to the manager with a relation to its volume
+Shell Manager::addShell(const VolumeUse& v)
 {
-  if (v.isValid() && v.storage().get() == this)
+  if (v.isValid() && v.manager().get() == this)
     {
     return Shell(
-      v.storage(),
-      v.storage()->createIncludedShell(v.entity()));
+      v.manager(),
+      v.manager()->createIncludedShell(v.entity()));
     }
   return Shell();
 }
 
-/**\brief Add an entity group to storage (without any relationships).
+/**\brief Add an entity group to the manager (without any relationships).
   *
   * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
   * This is an easy way to constrain the dimension of entities allowed to be members
@@ -1506,7 +1505,7 @@ Shell Storage::addShell(const VolumeUse& v)
   * You may also specify a \a name for the group. If \a name is empty, then no
   * name is assigned.
   */
-GroupEntity Storage::insertGroup(
+GroupEntity Manager::insertGroup(
   const smtk::util::UUID& uid, int extraFlags, const std::string& groupName)
 {
   UUIDWithEntity result =
@@ -1521,13 +1520,13 @@ GroupEntity Storage::insertGroup(
 }
 
 /// Add a group, creating a new UUID in the process. \sa insertGroup().
-GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
+GroupEntity Manager::addGroup(int extraFlags, const std::string& groupName)
 {
   smtk::util::UUID uid = this->unusedUUID();
   return this->insertGroup(uid, extraFlags, groupName);
 }
 
-/**\brief Add a model to storage.
+/**\brief Add a model to the manager.
   *
   * The model will have the specified \a embeddingDim set as an integer property
   * named "embedding dimension." This is the dimension of the space in which
@@ -1545,7 +1544,7 @@ GroupEntity Storage::addGroup(int extraFlags, const std::string& groupName)
   * model). Any entities related to the model (directly or indirectly via topological
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
-ModelEntity Storage::insertModel(
+ModelEntity Manager::insertModel(
   const smtk::util::UUID& uid,
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
@@ -1568,33 +1567,33 @@ ModelEntity Storage::insertModel(
 }
 
 /// Add a model, creating a new UUID at the time. \sa insertModel().
-ModelEntity Storage::addModel(
+ModelEntity Manager::addModel(
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
   smtk::util::UUID uid = this->unusedUUID();
   return this->insertModel(uid, parametricDim, embeddingDim, modelName);
 }
 
-/**\brief Add an instance to storage.
+/**\brief Add an instance of some model entity to the manager.
   *
-  * An instance is a reference to some other item in storage.
+  * An instance is a reference to some other item in the manager.
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-InstanceEntity Storage::addInstance()
+InstanceEntity Manager::addInstance()
 {
   smtk::util::UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
   return InstanceEntity(shared_from_this(), uid);
 }
 
-/**\brief Add an instance of the given prototype to storage.
+/**\brief Add an instance with the given prototype to the manager.
   *
   * The prototype \a object (the parent of the instance)
-  * is a reference to some other item in storage.
+  * is a reference to some other item in the manager.
   * Any entity may be instanced, but generally models are instanced
   * as part of a scene graph.
   */
-InstanceEntity Storage::addInstance(const Cursor& object)
+InstanceEntity Manager::addInstance(const Cursor& object)
 {
   if (object.isValid())
     {
@@ -1608,8 +1607,8 @@ InstanceEntity Storage::addInstance(const Cursor& object)
   return InstanceEntity();
 }
 
-/// Request notification from this storage instance when \a event occurs.
-void Storage::observe(StorageEventType event, ConditionCallback functionHandle, void* callData)
+/// Request notification from this manager instance when \a event occurs.
+void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1617,7 +1616,7 @@ void Storage::observe(StorageEventType event, ConditionCallback functionHandle, 
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->observe(event, functionHandle, callData);
       }
 
@@ -1629,8 +1628,8 @@ void Storage::observe(StorageEventType event, ConditionCallback functionHandle, 
       ConditionObserver(functionHandle, callData)));
 }
 
-/// Request notification from this storage instance when \a event occurs.
-void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, void* callData)
+/// Request notification from this manager instance when \a event occurs.
+void Manager::observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1638,7 +1637,7 @@ void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, v
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->observe(event, functionHandle, callData);
       }
 
@@ -1650,8 +1649,8 @@ void Storage::observe(StorageEventType event, OneToOneCallback functionHandle, v
       OneToOneObserver(functionHandle, callData)));
 }
 
-/// Request notification from this storage instance when \a event occurs.
-void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, void* callData)
+/// Request notification from this manager instance when \a event occurs.
+void Manager::observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1659,7 +1658,7 @@ void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, 
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->observe(event, functionHandle, callData);
       }
 
@@ -1671,8 +1670,8 @@ void Storage::observe(StorageEventType event, OneToManyCallback functionHandle, 
       OneToManyObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this storage instance when \a event occurs.
-void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle, void* callData)
+/// Decline further notification from this manager instance when \a event occurs.
+void Manager::unobserve(ManagerEventType event, ConditionCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1680,7 +1679,7 @@ void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
       }
 
@@ -1692,8 +1691,8 @@ void Storage::unobserve(StorageEventType event, ConditionCallback functionHandle
       ConditionObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this storage instance when \a event occurs.
-void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle, void* callData)
+/// Decline further notification from this manager instance when \a event occurs.
+void Manager::unobserve(ManagerEventType event, OneToOneCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1701,7 +1700,7 @@ void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle,
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
       }
 
@@ -1713,8 +1712,8 @@ void Storage::unobserve(StorageEventType event, OneToOneCallback functionHandle,
       OneToOneObserver(functionHandle, callData)));
 }
 
-/// Decline further notification from this storage instance when \a event occurs.
-void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle, void* callData)
+/// Decline further notification from this manager instance when \a event occurs.
+void Manager::unobserve(ManagerEventType event, OneToManyCallback functionHandle, void* callData)
 {
   if (event.first == ANY_EVENT)
     {
@@ -1722,7 +1721,7 @@ void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle
     int iend = static_cast<int>(ANY_EVENT);
     for (i = static_cast<int>(ADD_EVENT); i != iend; ++i)
       {
-      event.first = static_cast<StorageEventChangeType>(i);
+      event.first = static_cast<ManagerEventChangeType>(i);
       this->unobserve(event, functionHandle, callData);
       }
 
@@ -1734,8 +1733,8 @@ void Storage::unobserve(StorageEventType event, OneToManyCallback functionHandle
       OneToManyObserver(functionHandle, callData)));
 }
 
-/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
-void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src)
+/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src)
 {
   std::set<ConditionTrigger>::const_iterator begin =
     this->m_conditionTriggers.lower_bound(
@@ -1743,14 +1742,14 @@ void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src)
         ConditionObserver(NULL, NULL)));
   std::set<ConditionTrigger>::const_iterator end =
     this->m_conditionTriggers.upper_bound(
-      ConditionTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+      ConditionTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
         ConditionObserver(NULL, NULL)));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
 
-/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
-void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related)
+/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related)
 {
   std::set<OneToOneTrigger>::const_iterator begin =
     this->m_oneToOneTriggers.lower_bound(
@@ -1758,14 +1757,14 @@ void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, co
         OneToOneObserver(NULL, NULL)));
   std::set<OneToOneTrigger>::const_iterator end =
     this->m_oneToOneTriggers.upper_bound(
-      OneToOneTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+      OneToOneTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
         OneToOneObserver(NULL, NULL)));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
 
-/// Called by this Storage instance or Cursor instances referencing it when \a event occurs.
-void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
+/// Called by this Manager instance or Cursor instances referencing it when \a event occurs.
+void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related)
 {
   std::set<OneToManyTrigger>::const_iterator begin =
     this->m_oneToManyTriggers.lower_bound(
@@ -1773,7 +1772,7 @@ void Storage::trigger(StorageEventType event, const smtk::model::Cursor& src, co
         OneToManyObserver(NULL, NULL)));
   std::set<OneToManyTrigger>::const_iterator end =
     this->m_oneToManyTriggers.upper_bound(
-      OneToManyTrigger(std::make_pair(event.first,static_cast<StorageEventRelationType>(event.second + 1)),
+      OneToManyTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
         OneToManyObserver(NULL, NULL)));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);

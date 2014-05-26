@@ -4,22 +4,22 @@
   @EXTRA_TYPESYSTEMS@
 
   <!-- Ignore methods that refer directly to CGM pointers -->
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addGroupToStorage', unmatched parameter type 'RefGroup*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeToStorage', unmatched parameter type 'RefEdge*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexUseToStorage', unmatched parameter type 'CoVertex*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'GroupingEntity*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'RefEntity*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addBodyToStorage', unmatched parameter type 'Body*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addChainToStorage', unmatched parameter type 'Chain*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeUseToStorage', unmatched parameter type 'CoEdge*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexToStorage', unmatched parameter type 'RefVertex*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceToStorage', unmatched parameter type 'RefFace*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addLoopToStorage', unmatched parameter type 'Loop*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeToStorage', unmatched parameter type 'RefVolume*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToStorage', unmatched parameter type 'SenseEntity*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceUseToStorage', unmatched parameter type 'CoFace*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeUseToStorage', unmatched parameter type 'CoVolume*'"/>
-  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addShellToStorage', unmatched parameter type 'Shell*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addGroupToManager', unmatched parameter type 'RefGroup*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeToManager', unmatched parameter type 'RefEdge*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexUseToManager', unmatched parameter type 'CoVertex*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'GroupingEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addBodyToManager', unmatched parameter type 'Body*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addChainToManager', unmatched parameter type 'Chain*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addEdgeUseToManager', unmatched parameter type 'CoEdge*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVertexToManager', unmatched parameter type 'RefVertex*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceToManager', unmatched parameter type 'RefFace*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addLoopToManager', unmatched parameter type 'Loop*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeToManager', unmatched parameter type 'RefVolume*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'SenseEntity*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addFaceUseToManager', unmatched parameter type 'CoFace*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addShellToManager', unmatched parameter type 'Shell*'"/>
 
   <!-- ignore shared_from_this base class-->
   <!--
@@ -67,19 +67,19 @@
        specified), making it not only undesirable but impossible
        to wrap CGM pointers.
     -->
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addBodyToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVolumeUseToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addFaceUseToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addEdgeUseToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVertexUseToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addShellToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addLoopToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addChainToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVolumeToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addFaceToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addEdgeToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVertexToStorage"/>
-  <rejection class="cgmsmtk::cgm::Bridge" function-name="addGroupToStorage"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addBodyToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVolumeUseToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addFaceUseToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addEdgeUseToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVertexUseToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addShellToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addLoopToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addChainToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVolumeToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addFaceToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addEdgeToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addVertexToManager"/>
+  <rejection class="cgmsmtk::cgm::Bridge" function-name="addGroupToManager"/>
 
   @EXTRA_OBJECTS@
 

@@ -2,7 +2,7 @@
 #define __smtk_model_testing_helpers_h
 
 #include "smtk/util/UUID.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include <ostream>
 
@@ -10,7 +10,7 @@ namespace smtk {
   namespace model {
     namespace testing {
 
-smtk::util::UUIDArray createTet(smtk::model::StoragePtr sm);
+smtk::util::UUIDArray createTet(smtk::model::ManagerPtr sm);
 
 /// Report an integer as a hexadecimal value.
 class hexconst

@@ -1,7 +1,7 @@
 #include "smtk/model/GroupEntity.h"
 
 #include "smtk/model/CellEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
 
 namespace smtk {
@@ -26,11 +26,11 @@ Cursor GroupEntity::parent() const
   */
 GroupEntity& GroupEntity::addEntity(const Cursor& thing)
 {
-  this->m_storage->findOrAddEntityToGroup(this->entity(), thing.entity());
-  this->m_storage->trigger(
+  this->m_manager->findOrAddEntityToGroup(this->entity(), thing.entity());
+  this->m_manager->trigger(
     std::make_pair(ADD_EVENT,GROUP_SUPERSET_OF_ENTITY),
     *this,
-    Cursor(this->m_storage, thing.entity()));
+    Cursor(this->m_manager, thing.entity()));
 
   return *this;
 }
@@ -45,17 +45,17 @@ bool GroupEntity::removeEntity(const Cursor& thing)
 {
   if (this->isValid() && !thing.entity().isNull())
     {
-    int aidx = this->m_storage->findArrangementInvolvingEntity(
+    int aidx = this->m_manager->findArrangementInvolvingEntity(
       this->m_entity, SUPERSET_OF, thing.entity());
 
     // FIXME: This really belongs inside unarrangeEntity().
     // But there we have no access to thing.entity() until too late.
-    if (this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_storage->trigger(
+      this->m_manager->trigger(
         std::make_pair(DEL_EVENT,GROUP_SUPERSET_OF_ENTITY),
         *this,
-        Cursor(this->m_storage, thing.entity()));
+        Cursor(this->m_manager, thing.entity()));
 
       return true;
       }

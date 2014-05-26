@@ -42,7 +42,7 @@ void prindent(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
 
 int main(int argc, char* argv[])
 {
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
   if (argc > 2)
     maxIndent = atol(argv[2]);
 
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
     }
   else
     {
-    std::cerr << "No model entities in storage\n";
+    std::cerr << "No model entities in the model manager.\n";
     }
   return 0;
 }

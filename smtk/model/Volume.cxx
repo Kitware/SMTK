@@ -2,7 +2,7 @@
 
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Face.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Volume.h"
@@ -46,7 +46,7 @@ Volume& Volume::setVolumeUse(const VolumeUse& volUse)
 {
   if (volUse.isValid() && this->isValid())
     {
-    this->m_storage->findCreateOrReplaceCellUseOfSenseAndOrientation(
+    this->m_manager->findCreateOrReplaceCellUseOfSenseAndOrientation(
       this->m_entity, 0, POSITIVE, volUse.entity());
     }
   return *this;

@@ -12,16 +12,16 @@
 namespace smtk {
   namespace model {
 
-/**\brief Adapt an smtk::model::Storage instance into a hierarchical Qt model.
+/**\brief Adapt an smtk::model::Manager instance into a hierarchical Qt model.
   *
   * This is done by generating instances of smtk::model::DescriptivePhrase
-  * subclasses to portray the entities in storage both in terms of their
-  * inherent attributes and their relations to other entities.
+  * subclasses to portray the entities in the model manager both in terms of
+  * their inherent attributes and their relations to other entities.
   *
   * By calling setPhrases() on the model, you identify the toplevel
   * description you wish to present; it may cover any subset of
-  * an underlying storage model and may even describe entities from different
-  * storage models.
+  * an underlying model manager and may even describe entities from different
+  * model managers.
   *
   * You may also call setPhraseFilter() on the model with a filter.
   * The filter is used to alter the available subphrases of each
@@ -67,7 +67,7 @@ public:
     this->updateObserver();
     }
 
-  smtk::model::StoragePtr storage() const;
+  smtk::model::ManagerPtr manager() const;
 
   void setDeleteOnRemoval(bool del)
     {
