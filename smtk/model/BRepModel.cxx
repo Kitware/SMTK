@@ -1292,6 +1292,24 @@ BridgePtr BRepModel::findBridgeSession(const smtk::util::UUID& sessId)
   return it->second;
 }
 
+/**\brief Return a list of bridge session IDs.
+  *
+  * The identifiers are used by remote SMTK sessions to link models and operators
+  * to specific modeling sessions on the process where the data has been loaded.
+  *
+  * These can be passed to BRepModel::findBridgeSession() to retrieve the Bridge.
+  */
+smtk::util::UUIDs BRepModel::bridgeSessions() const
+{
+  UUIDs result;
+  UUIDsToBridges::const_iterator it;
+  for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
+    {
+    result.insert(it->first);
+    }
+  return result;
+}
+
 /// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.
 IntegerList& BRepModel::entityCounts(
   const smtk::util::UUID& modelId, BitFlags entityFlags)

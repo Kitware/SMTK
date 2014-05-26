@@ -75,6 +75,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -759,6 +760,10 @@
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="JSONFlags">
+        <include file-name="smtk/model/ExportJSON.h" location="local"/>
       </enum-type>
 
       <enum-type name="OperatorOutcome">

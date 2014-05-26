@@ -125,23 +125,26 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, ManagerPtr model)
+int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
 {
   int status = 0;
-  if (!json || !model)
+  if (!json || !modelMgr)
     {
     std::cerr << "Invalid arguments.\n";
     return status;
     }
 
   cJSON* body = cJSON_CreateObject();
+  cJSON* sess = cJSON_CreateObject();
   switch(json->type)
     {
   case cJSON_Object:
     cJSON_AddItemToObject(json, "topo", body);
+    cJSON_AddItemToObject(json, "sessions", sess);
     break;
   case cJSON_Array:
     cJSON_AddItemToArray(json, body);
+    cJSON_AddItemToArray(json, sess);
     break;
   case cJSON_NULL:
   case cJSON_Number:
@@ -154,47 +157,67 @@ int ExportJSON::fromModel(cJSON* json, ManagerPtr model)
 
   cJSON* mtyp = cJSON_CreateString("Manager");
   cJSON_AddItemToObject(json, "type", mtyp);
-  status = ExportJSON::forManager(body, model);
+  status = ExportJSON::forManager(body, sess, modelMgr, sections);
 
   return status;
 }
 
-int ExportJSON::forManager(
-  cJSON* dict, ManagerPtr model)
+std::string ExportJSON::fromModel(ManagerPtr modelMgr, JSONFlags sections)
 {
-  if (!dict || !model)
+  cJSON* top = cJSON_CreateObject();
+  ExportJSON::fromModel(top, modelMgr, sections);
+  char* json = cJSON_Print(top);
+  std::string result(json);
+  free(json);
+  cJSON_Delete(top);
+  return result;
+}
+
+int ExportJSON::forManager(
+  cJSON* dict, cJSON* sess, ManagerPtr modelMgr, JSONFlags sections)
+{
+  if (!dict || !modelMgr)
     {
     return 0;
     }
   int status = 1;
   UUIDWithEntity it;
-  for (it = model->topology().begin(); it != model->topology().end(); ++it)
+
+  if (sections == JSON_NOTHING)
+    return status;
+
+  for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
     {
     cJSON* curChild = cJSON_CreateObject();
       {
       std::string suid = it->first.toString();
       cJSON_AddItemToObject(dict, suid.c_str(), curChild);
       }
-    status &= ExportJSON::forManagerEntity(it, curChild, model);
-    status &= ExportJSON::forManagerArrangement(
-      model->arrangements().find(it->first), curChild, model);
-    status &= ExportJSON::forManagerTessellation(it->first, curChild, model);
-    status &= ExportJSON::forManagerFloatProperties(it->first, curChild, model);
-    status &= ExportJSON::forManagerStringProperties(it->first, curChild, model);
-    status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, model);
+    if (sections & JSON_ENTITIES)
+      {
+      status &= ExportJSON::forManagerEntity(it, curChild, modelMgr);
+      status &= ExportJSON::forManagerArrangement(
+        modelMgr->arrangements().find(it->first), curChild, modelMgr);
+      }
+    if (sections & JSON_TESSELLATIONS)
+      status &= ExportJSON::forManagerTessellation(it->first, curChild, modelMgr);
+    if (sections & JSON_PROPERTIES)
+      {
+      status &= ExportJSON::forManagerFloatProperties(it->first, curChild, modelMgr);
+      status &= ExportJSON::forManagerStringProperties(it->first, curChild, modelMgr);
+      status &= ExportJSON::forManagerIntegerProperties(it->first, curChild, modelMgr);
+      }
+    }
+
+  if (sections & JSON_BRIDGES)
+    {
+    smtk::util::UUIDs bridgeSessions = modelMgr->bridgeSessions();
+    for (smtk::util::UUIDs::iterator it = bridgeSessions.begin(); it != bridgeSessions.end(); ++it)
+      {
+      status &= ExportJSON::forManagerBridgeSession(*it, sess, modelMgr);
+      }
     }
   return status;
-}
-
-std::string ExportJSON::fromModel(ManagerPtr model)
-{
-  cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModel(top, model);
-  char* json = cJSON_Print(top);
-  std::string result(json);
-  free(json);
-  cJSON_Delete(top);
-  return result;
 }
 
 int ExportJSON::forManagerEntity(
@@ -355,6 +378,22 @@ int ExportJSON::forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* 
   return status;
 }
 
+int ExportJSON::forManagerBridgeSession(const smtk::util::UUID& uid, cJSON* node, ManagerPtr modelMgr)
+{
+  int status = 1;
+  BridgePtr bridge = modelMgr->findBridgeSession(uid);
+  if (!bridge)
+    return status;
+
+  cJSON* sess = cJSON_CreateObject();
+  cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
+  cJSON_AddStringToObject(sess, "type", "bridge-session");
+  cJSON_AddStringToObject(sess, "name", bridge->name().c_str());
+  Operators bridgeOps = bridge->operators();
+  status &= ExportJSON::forOperators(bridgeOps, sess);
+  return status;
+}
+
 int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
   smtk::model::ModelEntity mod(modelMgr, uid);
@@ -366,7 +405,7 @@ int ExportJSON::forOperators(Operators& ops, cJSON* entRec)
 {
   if (!ops.empty())
     {
-    cJSON_AddItemToObject(entRec, "o",
+    cJSON_AddItemToObject(entRec, "ops",
       cJSON_CreateOperatorArray(ops));
     }
   return 1;

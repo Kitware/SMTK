@@ -1,20 +1,20 @@
 #ifndef __smtk_model_BRepModel_h
 #define __smtk_model_BRepModel_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/UUIDGenerator.h"
-#include "smtk/util/SharedFromThis.h"
-#include "smtk/util/SystemConfig.h"
-
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SharedPtr.h"
 #include "smtk/PublicPointerDefs.h"
+
 #include "smtk/model/Bridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/PropertyType.h"
 #include "smtk/model/StringData.h"
+
+#include "smtk/util/UUID.h"
+#include "smtk/util/UUIDGenerator.h"
+#include "smtk/util/SharedFromThis.h"
+#include "smtk/util/SystemConfig.h"
 
 #include "smtk/options.h" // for SMTK_HASH_STORAGE
 #ifdef SMTK_HASH_STORAGE
@@ -149,6 +149,7 @@ public:
   bool registerBridgeSession(BridgePtr session);
   bool unregisterBridgeSession(BridgePtr session);
   BridgePtr findBridgeSession(const smtk::util::UUID& sessionId);
+  smtk::util::UUIDs bridgeSessions() const;
 
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
