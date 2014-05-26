@@ -206,13 +206,13 @@ namespace smtk
     template<typename T> T Attribute::associatedModelEntities() const
     {
       T result;
-      smtk::model::ManagerPtr manager = this->modelManager();
-      if (!manager) { // No attached manager means we cannot make cursors.
+      smtk::model::ManagerPtr modelMgr = this->modelManager();
+      if (!modelMgr) { // No attached manager means we cannot make cursors.
         return result;
       }
       smtk::util::UUIDs::const_iterator it;
       for (it = this->m_modelEntities.begin(); it != this->m_modelEntities.end(); ++it) {
-        typename T::value_type entry(manager, *it);
+        typename T::value_type entry(modelMgr, *it);
         if (entry.isValid()) {
           result.insert(result.end(), entry);
         }
