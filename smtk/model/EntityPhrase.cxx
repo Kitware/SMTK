@@ -7,7 +7,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/ShellEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
 namespace smtk {
@@ -51,7 +51,7 @@ bool EntityPhrase::setTitle(const std::string& newTitle)
       {
       this->m_entity.removeStringProperty("name");
       // Don't let name be a blank... assign a default.
-      this->m_entity.storage()->assignDefaultName(
+      this->m_entity.manager()->assignDefaultName(
         this->m_entity.entity());
       }
     return true;
@@ -106,14 +106,14 @@ void EntityPhrase::setMutability(int whatsMutable)
 }
 
 DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
-  smtk::model::StoragePtr storage, const smtk::util::UUIDs& uids)
+  smtk::model::ManagerPtr manager, const smtk::util::UUIDs& uids)
 {
   DescriptivePhrases result;
   smtk::util::UUIDs::const_iterator it;
   for (it = uids.begin(); it != uids.end(); ++it)
     {
     result.push_back(
-      EntityPhrase::create()->setup(Cursor(storage, *it)));
+      EntityPhrase::create()->setup(Cursor(manager, *it)));
     }
   return result;
 }

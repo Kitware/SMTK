@@ -1,5 +1,5 @@
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
 #include "vtkActor.h"
@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
 
   int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (! status)

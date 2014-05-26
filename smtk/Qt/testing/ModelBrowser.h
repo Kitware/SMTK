@@ -26,7 +26,7 @@ public:
   QTreeView* tree() const;
 
   void setup(
-    smtk::model::StoragePtr s,
+    smtk::model::ManagerPtr s,
     smtk::model::QEntityItemModel* qm,
     smtk::model::QEntityItemDelegate* qd,
     smtk::model::DescriptivePhrasePtr root);
@@ -40,7 +40,7 @@ public slots:
 protected:
   class Internals;
   Internals* m_p;
-  smtk::model::StoragePtr m_storage;
+  smtk::model::ManagerPtr m_manager;
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
 };

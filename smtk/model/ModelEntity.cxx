@@ -3,7 +3,7 @@
 #include "smtk/model/Bridge.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/GroupEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Arrangement.h"
 
 namespace smtk {
@@ -56,7 +56,7 @@ ModelEntity& ModelEntity::addGroup(const GroupEntity& g)
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, g);
     CursorArrangementOps::findOrAddSimpleRelationship(g, SUBSET_OF, *this);
-    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+    this->m_manager->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_GROUP), *this, g);
     }
   return *this;
 }
@@ -66,9 +66,9 @@ ModelEntity& ModelEntity::removeGroup(const GroupEntity& g)
   if (this->isValid() && g.isValid())
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, g);
-    if (aidx >= 0 && this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_storage->trigger(StorageEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
+      this->m_manager->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), *this, g);
       }
     }
   return *this;
@@ -76,32 +76,32 @@ ModelEntity& ModelEntity::removeGroup(const GroupEntity& g)
 
 ModelEntity& ModelEntity::addSubmodel(const ModelEntity& m)
 {
-  if (this->isValid() && m.isValid() && m.storage() == this->storage() && m.entity() != this->entity())
+  if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
     CursorArrangementOps::findOrAddSimpleRelationship(*this, SUPERSET_OF, m);
     CursorArrangementOps::findOrAddSimpleRelationship(m, SUBSET_OF, *this);
-    this->m_storage->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+    this->m_manager->trigger(std::make_pair(ADD_EVENT, MODEL_INCLUDES_MODEL), *this, m);
     }
   return *this;
 }
 
 ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
 {
-  if (this->isValid() && m.isValid() && m.storage() == this->storage() && m.entity() != this->entity())
+  if (this->isValid() && m.isValid() && m.manager() == this->manager() && m.entity() != this->entity())
     {
     int aidx = CursorArrangementOps::findSimpleRelationship(*this, SUPERSET_OF, m);
-    if (aidx >= 0 && this->m_storage->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
+    if (aidx >= 0 && this->m_manager->unarrangeEntity(this->m_entity, SUPERSET_OF, aidx) > 0)
       {
-      this->m_storage->trigger(StorageEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
+      this->m_manager->trigger(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), *this, m);
       }
     }
   return *this;
 }
 
-/// Return an operator of the given \a opname with its Storage set to this model's.
+/// Return an operator of the given \a opname with its Manager set to this model's.
 OperatorPtr ModelEntity::op(const std::string& opname) const
 {
-  return this->bridge()->op(opname, this->m_storage);
+  return this->bridge()->op(opname, this->m_manager);
 }
 
 /// Return a set of the operators available for this model.
@@ -115,7 +115,7 @@ Operators ModelEntity::operators() const
     it != br->operators().end();
     ++it)
     {
-    ops.insert((*it)->clone()->setStorage(this->m_storage));
+    ops.insert((*it)->clone()->setManager(this->m_manager));
     }
   return ops;
 }
@@ -128,7 +128,7 @@ StringList ModelEntity::operatorNames() const
 
 BridgePtr ModelEntity::bridge() const
 {
-  return this->m_storage->bridgeForModel(this->m_entity);
+  return this->m_manager->bridgeForModel(this->m_entity);
 }
 
   } // namespace model

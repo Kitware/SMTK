@@ -13,16 +13,16 @@ std::string Bridge::name() const
   return "invalid";
 }
 
-/**\brief Transcribe an entity from a foreign modeler into SMTK Storage.
+/**\brief Transcribe an entity from a foreign modeler into SMTK Manager.
   *
   * On input, the \a entity will not be valid but if transcription is
-  * successful, the \a requested records in the \a entity's Storage will
+  * successful, the \a requested records in the \a entity's Manager will
   * be valid. If \a requested includes BRIDGE_ENTITY_TYPE, then
   * \a entity.isValid() should return true after this call.
   *
   * Only honor requests for entity IDs listed as dangling unless
   * \a onlyDangling is false (default is true).
-  * This prevents expensive requests by Storage instances over many Bridges.
+  * This prevents expensive requests by Manager instances over many Bridges.
   *
   * The return value is 0 upon failure and non-zero upon success.
   * Failure occurs when any \a requested bits of information that
@@ -84,13 +84,13 @@ const Operators& Bridge::operators() const
   return this->m_operators;
 }
 
-OperatorPtr Bridge::op(const std::string& opName, StoragePtr storage) const
+OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
 {
   Operators::const_iterator it;
   for (it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
     {
     if ((*it)->name() == opName)
-      return (*it)->clone()->setStorage(storage);
+      return (*it)->clone()->setManager(manager);
     }
   return OperatorPtr();
 }
@@ -108,15 +108,15 @@ void Bridge::addOperator(OperatorPtr oper)
 /**\brief Mark an entity, \a ent, as partially transcribed.
   *
   * Subclasses should call this method when a UUID has been assigned
-  * to a model entity but ent.storage() has not yet been populated with
+  * to a model entity but ent.manager() has not yet been populated with
   * all of the information about the entity. The information which *is*
-  * \a present in ent.storage() should be passed but will default to
+  * \a present in ent.manager() should be passed but will default to
   * zero (i.e., the UUID exists in some other entity's relations but
-  * has no records in storage itself).
+  * has no records in manager itself).
   *
   * The entity is added to the list of dangling entities and will be
   * removed from the list when a call to \a transcribeInternal indicates
-  * that Bridge::allSupportedInformation() is now present in storage.
+  * that Bridge::allSupportedInformation() is now present in manager.
   */
 void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
 {

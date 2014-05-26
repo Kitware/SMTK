@@ -1,7 +1,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/OperatorResult.h"
 #include "smtk/model/Parameter.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 namespace smtk {
   namespace model {
@@ -206,24 +206,25 @@ int Operator::trigger(OperatorEventType event, const OperatorResult& result)
   return 0;
 }
 
-/// Return the storage associated with this operator (or a "null"/invalid shared-pointer).
-StoragePtr Operator::storage() const
+/// Return the manager associated with this operator (or a "null"/invalid shared-pointer).
+ManagerPtr Operator::manager() const
 {
-  return this->m_storage;
+  return this->m_manager;
 }
 
-/** Set the storage which will initiate the operation.
+/** Set the manager which initiated the operation.
   *
-  * If a Bridge subclass manages multiple Storage instances,
-  * it is responsible for notifying all of them of any changes.
-  * This \a storage is merely the location holding any
+  * If a Bridge subclass manages transcription for multiple
+  * model Manager instances, it is responsible for notifying
+  * all of them of any changes.
+  * This \a manager is merely the location holding any
   * entities referenced by parameters of the operation.
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setStorage(StoragePtr s)
+Operator::Ptr Operator::setManager(ManagerPtr s)
 {
-  this->m_storage = s;
+  this->m_manager = s;
   return shared_from_this();
 }
 
@@ -260,7 +261,7 @@ Operator::Ptr Operator::cloneInternal(ConstPtr src)
 {
   this->m_bridge = src->bridge();
   this->m_parameters = src->parameters();
-  this->m_storage = src->storage();
+  this->m_manager = src->manager();
   return shared_from_this();
 }
 

@@ -8,7 +8,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include <QtGui/QPushButton>
 #include <QtGui/QTreeView>
@@ -54,12 +54,12 @@ QTreeView* ModelBrowser::tree() const
 }
 
 void ModelBrowser::setup(
-  smtk::model::StoragePtr storage,
+  smtk::model::ManagerPtr manager,
   smtk::model::QEntityItemModel* qmodel,
   smtk::model::QEntityItemDelegate* qdelegate,
   smtk::model::DescriptivePhrasePtr root)
 {
-  this->m_storage = storage;
+  this->m_manager = manager;
   qmodel->setRoot(root);
   this->m_p->modelTree->setModel(qmodel); // Must come after qmodel->setRoot()!
   this->m_p->modelTree->setItemDelegate(qdelegate);
@@ -73,12 +73,12 @@ void ModelBrowser::setup(
 
 void ModelBrowser::addGroup()
 {
-  GroupEntity newGroup = this->m_storage->addGroup(0, "New Group");
+  GroupEntity newGroup = this->m_manager->addGroup(0, "New Group");
   ModelEntities models;
   smtk::model::Cursor::CursorsFromUUIDs(
     models,
-    this->m_storage,
-    this->m_storage->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
+    this->m_manager,
+    this->m_manager->entitiesMatchingFlags(smtk::model::MODEL_ENTITY));
   if (!models.empty())
     {
     models.begin()->addGroup(newGroup);
@@ -94,7 +94,7 @@ void ModelBrowser::addToGroup()
   Cursor item;
   GroupEntities groups;
   Cursor::CursorsFromUUIDs(
-    groups, this->m_storage, this->m_storage->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
+    groups, this->m_manager, this->m_manager->entitiesMatchingFlags(smtk::model::GROUP_ENTITY));
   if (groups.empty())
     return;
 

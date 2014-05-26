@@ -1,6 +1,6 @@
 #include "smtk/paraview/vtk/vtkModelRepresentation.h"
 
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
 
 #include "vtkActor.h"

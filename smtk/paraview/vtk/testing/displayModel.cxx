@@ -1,5 +1,5 @@
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/paraview/vtk/vtkModelRepresentation.h"
 #include "smtk/paraview/vtk/vtkModelSource.h"
 #include "smtk/paraview/vtk/vtkModelView.h"
@@ -142,7 +142,7 @@ public:
             {
             cout
               << indent << *it << "  "
-              << (this->Storage ? this->Storage->name(smtk::util::UUID(*it)) : "--")
+              << (this->Manager ? this->Manager->name(smtk::util::UUID(*it)) : "--")
               << "\n";
             }
           }
@@ -207,9 +207,9 @@ public:
     this->Representation = rep;
     }
 
-  void SetStorage(smtk::model::StoragePtr sm)
+  void SetManager(smtk::model::ManagerPtr sm)
     {
-    this->Storage = sm;
+    this->Manager = sm;
     }
 
   void SwitchInteractors()
@@ -239,7 +239,7 @@ protected:
   vtkSmartPointer<vtkRenderWindowInteractor> SelectionInteractor;
   vtkSmartPointer<vtkRenderWindow> RenderWindow;
   vtkSmartPointer<vtkModelRepresentation> Representation;
-  smtk::model::StoragePtr Storage;
+  smtk::model::ManagerPtr Manager;
 };
 
 int main(int argc, char* argv[])
@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>(file)),
     (std::istreambuf_iterator<char>()));
 
-  StoragePtr sm = smtk::model::Storage::create();
+  ManagerPtr sm = smtk::model::Manager::create();
 
   int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (! status)
@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
       hlp->SetCameraInteractor(iac);
       hlp->SetRenderWindow(view->GetRenderWindow());
       hlp->SetRepresentation(rep.GetPointer());
-      hlp->SetStorage(sm);
+      hlp->SetManager(sm);
       }
 
     view->Render();

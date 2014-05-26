@@ -30,7 +30,7 @@ public:
         std::vector<int>::iterator it;
         for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
           {
-          return T(c.storage(), relations[*it]);
+          return T(c.manager(), relations[*it]);
           }
         }
       }
@@ -54,26 +54,26 @@ public:
       case HAS_USE:
         if (isCellEntity(entRec->entityFlags()))
           {
-          appendAllCellHasUseRelations(c.storage(), entRec, arr, result);
+          appendAllCellHasUseRelations(c.manager(), entRec, arr, result);
           return;
           }
         else if (isShellEntity(entRec->entityFlags()))
           {
-          appendAllShellHasUseRelations(c.storage(), entRec, arr, result);
+          appendAllShellHasUseRelations(c.manager(), entRec, arr, result);
           return;
           }
         break;
       case HAS_CELL:
         if (isUseEntity(entRec->entityFlags()))
           {
-          appendAllUseHasCellRelations(c.storage(), entRec, arr, result);
+          appendAllUseHasCellRelations(c.manager(), entRec, arr, result);
           return;
           }
         break;
       default:
         break;
         }
-      appendAllSimpleRelations(c.storage(), entRec, arr, result);
+      appendAllSimpleRelations(c.manager(), entRec, arr, result);
       }
     }
 
@@ -81,7 +81,7 @@ public:
     */
   template<typename T>
   static void appendAllUseHasCellRelations(
-    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
     smtk::util::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -92,7 +92,7 @@ public:
         arrIt->IndexAndSenseFromUseHasCell(relIdx, relSense) &&
         relIdx >= 0)
         {
-        typename T::value_type entry(storage, relations[relIdx]);
+        typename T::value_type entry(manager, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
         }
@@ -100,7 +100,7 @@ public:
     }
   template<typename T>
   static void appendAllCellHasUseRelations(
-    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
     smtk::util::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -112,7 +112,7 @@ public:
         arrIt->IndexSenseAndOrientationFromCellHasUse(relIdx, relSense, relOrient) &&
         relIdx >= 0)
         {
-        typename T::value_type entry(storage, relations[relIdx]);
+        typename T::value_type entry(manager, relations[relIdx]);
         if (entry.isValid())
           result.insert(result.end(), entry);
         }
@@ -120,7 +120,7 @@ public:
     }
   template<typename T>
   static void appendAllShellHasUseRelations(
-    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
     smtk::util::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -131,7 +131,7 @@ public:
       arrIt->IndexRangeFromShellHasUse(i0, i1);
       for (int i = i0; i < i1; ++i)
         {
-        typename T::value_type entry(storage, relations[i]);
+        typename T::value_type entry(manager, relations[i]);
         if (entry.isValid())
           result.insert(result.end(), entry);
         }
@@ -139,7 +139,7 @@ public:
     }
   template<typename T>
   static void appendAllSimpleRelations(
-    StoragePtr storage, Entity* entRec, Arrangements* arr, T& result)
+    ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
     smtk::util::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
@@ -148,7 +148,7 @@ public:
       for (it = arrIt->details().begin(); it != arrIt->details().end(); ++it)
         {
         if (*it < 0) continue; // Ignore invalid indices
-        typename T::value_type entry(storage, relations[*it]);
+        typename T::value_type entry(manager, relations[*it]);
         if (entry.isValid())
           {
           result.insert(result.end(), entry);

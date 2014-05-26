@@ -31,7 +31,7 @@ namespace smtk {
 
   /**\brief Represent geometric and topological models of simulation domains.
     *
-    * The Storage class holds records defining one or more geometric-
+    * The Manager class holds records defining one or more geometric-
     * and/or topological-domain decompositions;
     * it maps smtk::util::UUID values to Entity, Arrangement, and
     * Tessellation instances.
@@ -39,7 +39,7 @@ namespace smtk {
     * (Vertex, Edge, Face, Volume, VertexUse, EdgeUse, FaceUse, VolumeUse,
     * Chain, Loop, Shell, GroupEntity, ModelEntity, and InstanceEntity)
     * to access this information.
-    * Cursor is a base class for traversing records in Storage
+    * Cursor is a base class for traversing records in Manager
     * and provides some capability for modifying the model.
     * Attributes may be defined on any record in storage by virtue of the
     * fact that all records in storage are named by their UUID.
@@ -54,7 +54,7 @@ namespace smtk {
     * perhaps only geometric cells of a particular dimension will be shown.
     * The SubphraseGenerator class is what determines the particular
     * hierarchy, and a subclass will generally be written for each
-    * context in which model Storage should be presented.
+    * context in which model Manager should be presented.
     *
     * If built with VTK, several classes beginning with "vtk" are available
     * for rendering and interacting with model entities which have

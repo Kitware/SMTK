@@ -2,7 +2,7 @@
 #include "smtk/model/EdgeUse.h"
 
 #include "smtk/model/Vertex.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
@@ -10,7 +10,7 @@ namespace smtk {
 
 /**\brief Return all the uses of this edge.
   *
-  * Note that while creating an edge in a Storage instance will
+  * Note that while creating an edge in a Manager instance will
   * create 2 "empty" arrangements to reference EdgeUse relations,
   * those arrangements will not by default point to valid
   * edge uses (i.e., creating an edge does not create a pair
@@ -53,8 +53,8 @@ smtk::util::Vector3d Edge::coordinates() const
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      this->m_storage->tessellations().find(this->m_entity);
-    if (tessRec != this->m_storage->tessellations().end())
+      this->m_manager->tessellations().find(this->m_entity);
+    if (tessRec != this->m_manager->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {

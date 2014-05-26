@@ -15,7 +15,7 @@
 #include "smtk/model/Face.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/Vertex.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Shell.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/Loop.h"
@@ -71,7 +71,7 @@ smtk::model::BridgedInfoBits Bridge::allSupportedInformation() const
   *
   * This is not a complete implementation.
   */
-bool Bridge::addStorageEntityToCGM(const smtk::model::Cursor& ent)
+bool Bridge::addManagerEntityToCGM(const smtk::model::Cursor& ent)
 {
   (void)ent;
   return true;
@@ -87,19 +87,19 @@ smtk::model::BridgedInfoBits Bridge::transcribeInternal(
   ToolDataUser* tdu = TDUUID::findEntityById(cursor.entity());
   RefEntity* ent = dynamic_cast<RefEntity*>(tdu);
   if (ent)
-    return this->addCGMEntityToStorage(cursor, ent, requestedInfo);
+    return this->addCGMEntityToManager(cursor, ent, requestedInfo);
   /* Wishful thinking: GroupingEntity and SenseEntity do not inherit ToolDataUser
   GroupingEntity* grp = dynamic_cast<GroupingEntity*>(tdu);
   if (grp)
-    return this->addCGMEntityToStorage(cursor, grp, requestedInfo);
+    return this->addCGMEntityToManager(cursor, grp, requestedInfo);
   SenseEntity* sns = dynamic_cast<SenseEntity*>(tdu);
   if (sns)
-    return this->addCGMEntityToStorage(cursor, sns, requestedInfo);
+    return this->addCGMEntityToManager(cursor, sns, requestedInfo);
   */
   return 0;
 }
 
-smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
+smtk::model::BridgedInfoBits Bridge::addCGMEntityToManager(
   const smtk::model::Cursor& cursor, RefEntity* ent, BridgedInfoBits requestedInfo)
 {
   DagType dagType = ent->dag_type();
@@ -110,35 +110,35 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
     case DagType::BasicTopologyEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToStorage(cursor, dynamic_cast<RefVolume*>(ent), requestedInfo);
-      case 2: return this->addFaceToStorage(cursor, dynamic_cast<RefFace*>(ent), requestedInfo);
-      case 1: return this->addEdgeToStorage(cursor, dynamic_cast<RefEdge*>(ent), requestedInfo);
-      case 0: return this->addVertexToStorage(cursor, dynamic_cast<RefVertex*>(ent), requestedInfo);
+      case 3: return this->addVolumeToManager(cursor, dynamic_cast<RefVolume*>(ent), requestedInfo);
+      case 2: return this->addFaceToManager(cursor, dynamic_cast<RefFace*>(ent), requestedInfo);
+      case 1: return this->addEdgeToManager(cursor, dynamic_cast<RefEdge*>(ent), requestedInfo);
+      case 0: return this->addVertexToManager(cursor, dynamic_cast<RefVertex*>(ent), requestedInfo);
         }
       break;
     case DagType::SenseEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToStorage(cursor, dynamic_cast<CoVolume*>(ent), requestedInfo);
-      case 2: return this->addFaceUseToStorage(cursor, dynamic_cast<CoFace*>(ent), requestedInfo);
-      case 1: return this->addEdgeUseToStorage(cursor, dynamic_cast<CoEdge*>(ent), requestedInfo);
-      case 0: return this->addVertexUseToStorage(cursor, dynamic_cast<CoVertex*>(ent), requestedInfo);
+      case 3: return this->addVolumeUseToManager(cursor, dynamic_cast<CoVolume*>(ent), requestedInfo);
+      case 2: return this->addFaceUseToManager(cursor, dynamic_cast<CoFace*>(ent), requestedInfo);
+      case 1: return this->addEdgeUseToManager(cursor, dynamic_cast<CoEdge*>(ent), requestedInfo);
+      case 0: return this->addVertexUseToManager(cursor, dynamic_cast<CoVertex*>(ent), requestedInfo);
         }
       break;
     case DagType::GroupingEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addBodyToStorage(cursor, dynamic_cast<Body*>(ent), requestedInfo);
-      case 2: return this->addShellToStorage(cursor, dynamic_cast<Shell*>(ent), requestedInfo);
-      case 1: return this->addLoopToStorage(cursor, dynamic_cast<Loop*>(ent), requestedInfo);
-      case 0: return this->addChainToStorage(cursor, dynamic_cast<Chain*>(ent), requestedInfo);
+      case 3: return this->addBodyToManager(cursor, dynamic_cast<Body*>(ent), requestedInfo);
+      case 2: return this->addShellToManager(cursor, dynamic_cast<Shell*>(ent), requestedInfo);
+      case 1: return this->addLoopToManager(cursor, dynamic_cast<Loop*>(ent), requestedInfo);
+      case 0: return this->addChainToManager(cursor, dynamic_cast<Chain*>(ent), requestedInfo);
         }
       break;
       }
     }
   // Might be a RefGroup
   RefGroup* grp = dynamic_cast<RefGroup*>(ent);
-  if (grp) return this->addGroupToStorage(cursor, grp, requestedInfo);
+  if (grp) return this->addGroupToManager(cursor, grp, requestedInfo);
 
   // Nothing we know about
   std::cerr
@@ -148,7 +148,7 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
   return 0;
 }
 
-smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
+smtk::model::BridgedInfoBits Bridge::addCGMEntityToManager(
   const smtk::model::Cursor& cursor, GroupingEntity* grp, BridgedInfoBits requestedInfo)
 {
   DagType dagType = grp->dag_type();
@@ -159,35 +159,35 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
     case DagType::BasicTopologyEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToStorage(cursor, dynamic_cast<RefVolume*>(grp), requestedInfo);
-      case 2: return this->addFaceToStorage(cursor, dynamic_cast<RefFace*>(grp), requestedInfo);
-      case 1: return this->addEdgeToStorage(cursor, dynamic_cast<RefEdge*>(grp), requestedInfo);
-      case 0: return this->addVertexToStorage(cursor, dynamic_cast<RefVertex*>(grp), requestedInfo);
+      case 3: return this->addVolumeToManager(cursor, dynamic_cast<RefVolume*>(grp), requestedInfo);
+      case 2: return this->addFaceToManager(cursor, dynamic_cast<RefFace*>(grp), requestedInfo);
+      case 1: return this->addEdgeToManager(cursor, dynamic_cast<RefEdge*>(grp), requestedInfo);
+      case 0: return this->addVertexToManager(cursor, dynamic_cast<RefVertex*>(grp), requestedInfo);
         }
       break;
     case DagType::SenseEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToStorage(cursor, dynamic_cast<CoVolume*>(grp), requestedInfo);
-      case 2: return this->addFaceUseToStorage(cursor, dynamic_cast<CoFace*>(grp), requestedInfo);
-      case 1: return this->addEdgeUseToStorage(cursor, dynamic_cast<CoEdge*>(grp), requestedInfo);
-      case 0: return this->addVertexUseToStorage(cursor, dynamic_cast<CoVertex*>(grp), requestedInfo);
+      case 3: return this->addVolumeUseToManager(cursor, dynamic_cast<CoVolume*>(grp), requestedInfo);
+      case 2: return this->addFaceUseToManager(cursor, dynamic_cast<CoFace*>(grp), requestedInfo);
+      case 1: return this->addEdgeUseToManager(cursor, dynamic_cast<CoEdge*>(grp), requestedInfo);
+      case 0: return this->addVertexUseToManager(cursor, dynamic_cast<CoVertex*>(grp), requestedInfo);
         }
       break;
     case DagType::GroupingEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addBodyToStorage(cursor, dynamic_cast<Body*>(grp), requestedInfo);
-      case 2: return this->addShellToStorage(cursor, dynamic_cast<Shell*>(grp), requestedInfo);
-      case 1: return this->addLoopToStorage(cursor, dynamic_cast<Loop*>(grp), requestedInfo);
-      case 0: return this->addChainToStorage(cursor, dynamic_cast<Chain*>(grp), requestedInfo);
+      case 3: return this->addBodyToManager(cursor, dynamic_cast<Body*>(grp), requestedInfo);
+      case 2: return this->addShellToManager(cursor, dynamic_cast<Shell*>(grp), requestedInfo);
+      case 1: return this->addLoopToManager(cursor, dynamic_cast<Loop*>(grp), requestedInfo);
+      case 0: return this->addChainToManager(cursor, dynamic_cast<Chain*>(grp), requestedInfo);
         }
       break;
       }
     }
   // Might be a RefGroup
   RefGroup* refGroup = dynamic_cast<RefGroup*>(grp);
-  if (refGroup) return this->addGroupToStorage(cursor, refGroup, requestedInfo);
+  if (refGroup) return this->addGroupToManager(cursor, refGroup, requestedInfo);
 
   // Nothing we know about
   std::cerr
@@ -197,7 +197,7 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
   return 0;
 }
 
-smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
+smtk::model::BridgedInfoBits Bridge::addCGMEntityToManager(
   const smtk::model::Cursor& cursor, SenseEntity* sns, BridgedInfoBits requestedInfo)
 {
   DagType dagType = sns->dag_type();
@@ -208,35 +208,35 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
     case DagType::BasicTopologyEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeToStorage(cursor, dynamic_cast<RefVolume*>(sns), requestedInfo);
-      case 2: return this->addFaceToStorage(cursor, dynamic_cast<RefFace*>(sns), requestedInfo);
-      case 1: return this->addEdgeToStorage(cursor, dynamic_cast<RefEdge*>(sns), requestedInfo);
-      case 0: return this->addVertexToStorage(cursor, dynamic_cast<RefVertex*>(sns), requestedInfo);
+      case 3: return this->addVolumeToManager(cursor, dynamic_cast<RefVolume*>(sns), requestedInfo);
+      case 2: return this->addFaceToManager(cursor, dynamic_cast<RefFace*>(sns), requestedInfo);
+      case 1: return this->addEdgeToManager(cursor, dynamic_cast<RefEdge*>(sns), requestedInfo);
+      case 0: return this->addVertexToManager(cursor, dynamic_cast<RefVertex*>(sns), requestedInfo);
         }
       break;
     case DagType::SenseEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addVolumeUseToStorage(cursor, dynamic_cast<CoVolume*>(sns), requestedInfo);
-      case 2: return this->addFaceUseToStorage(cursor, dynamic_cast<CoFace*>(sns), requestedInfo);
-      case 1: return this->addEdgeUseToStorage(cursor, dynamic_cast<CoEdge*>(sns), requestedInfo);
-      case 0: return this->addVertexUseToStorage(cursor, dynamic_cast<CoVertex*>(sns), requestedInfo);
+      case 3: return this->addVolumeUseToManager(cursor, dynamic_cast<CoVolume*>(sns), requestedInfo);
+      case 2: return this->addFaceUseToManager(cursor, dynamic_cast<CoFace*>(sns), requestedInfo);
+      case 1: return this->addEdgeUseToManager(cursor, dynamic_cast<CoEdge*>(sns), requestedInfo);
+      case 0: return this->addVertexUseToManager(cursor, dynamic_cast<CoVertex*>(sns), requestedInfo);
         }
       break;
     case DagType::GroupingEntity_TYPE:
       switch (dagType.dimension())
         {
-      case 3: return this->addBodyToStorage(cursor, dynamic_cast<Body*>(sns), requestedInfo);
-      case 2: return this->addShellToStorage(cursor, dynamic_cast<Shell*>(sns), requestedInfo);
-      case 1: return this->addLoopToStorage(cursor, dynamic_cast<Loop*>(sns), requestedInfo);
-      case 0: return this->addChainToStorage(cursor, dynamic_cast<Chain*>(sns), requestedInfo);
+      case 3: return this->addBodyToManager(cursor, dynamic_cast<Body*>(sns), requestedInfo);
+      case 2: return this->addShellToManager(cursor, dynamic_cast<Shell*>(sns), requestedInfo);
+      case 1: return this->addLoopToManager(cursor, dynamic_cast<Loop*>(sns), requestedInfo);
+      case 0: return this->addChainToManager(cursor, dynamic_cast<Chain*>(sns), requestedInfo);
         }
       break;
       }
     }
   // Might be a RefGroup
   RefGroup* grp = dynamic_cast<RefGroup*>(sns);
-  if (grp) return this->addGroupToStorage(cursor, grp, requestedInfo);
+  if (grp) return this->addGroupToManager(cursor, grp, requestedInfo);
 
   // Nothing we know about
   std::cerr
@@ -246,8 +246,8 @@ smtk::model::BridgedInfoBits Bridge::addCGMEntityToStorage(
   return 0;
 }
 
-/// Given a CGM \a body tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addBodyToStorage(
+/// Given a CGM \a body tagged with \a uid, create a record in \a modelManager for it.
+smtk::model::BridgedInfoBits Bridge::addBodyToManager(
   const smtk::model::ModelEntity& cursor,
   Body* body,
   BridgedInfoBits requestedInfo)
@@ -256,7 +256,7 @@ smtk::model::BridgedInfoBits Bridge::addBodyToStorage(
   if (body)
     {
     Cursor mutableCursor(cursor);
-    mutableCursor.storage()->insertModel(cursor.entity(), 3, 3, body->entity_name().c_str());
+    mutableCursor.manager()->insertModel(cursor.entity(), 3, 3, body->entity_name().c_str());
     actual |= smtk::model::BRIDGE_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
@@ -273,13 +273,13 @@ smtk::model::BridgedInfoBits Bridge::addBodyToStorage(
       for (int i = 0; i < children.size(); ++i)
         {
         RefEntity* child = children.get_and_step();
-        smtk::model::Cursor childCursor(mutableCursor.storage(), TDUUID::ofEntity(child)->entityId());
+        smtk::model::Cursor childCursor(mutableCursor.manager(), TDUUID::ofEntity(child)->entityId());
         this->declareDanglingEntity(mutableCursor,
           this->transcribeInternal(childCursor, smtk::model::BRIDGE_ENTITY_TYPE));
         //std::cout << "  " << child << "   " << childCursor.entity() << "\n";
         if (!childCursor.entity().isNull())
           {
-          cursor.storage()->findOrAddInclusionToCellOrModel(
+          cursor.manager()->findOrAddInclusionToCellOrModel(
             cursor.entity(), childCursor.entity());
           }
         }
@@ -306,8 +306,8 @@ smtk::model::BridgedInfoBits Bridge::addBodyToStorage(
   return actual;
 }
 
-/// Given a CGM \a coVolume tagged with \a cursor's UUID, create a record in \a cursor's storage for it.
-smtk::model::BridgedInfoBits Bridge::addVolumeUseToStorage(
+/// Given a CGM \a coVolume tagged with \a cursor's UUID, create a record in \a cursor's manager for it.
+smtk::model::BridgedInfoBits Bridge::addVolumeUseToManager(
   const smtk::model::VolumeUse& cursor,
   CoVolume* coVolume,
   BridgedInfoBits requestedInfo)
@@ -316,7 +316,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeUseToStorage(
   if (coVolume)
     {
     smtk::model::VolumeUse mutableCursor(cursor);
-    mutableCursor.storage()->insertVolumeUse(cursor.entity());
+    mutableCursor.manager()->insertVolumeUse(cursor.entity());
     actual |= smtk::model::BRIDGE_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
@@ -343,8 +343,8 @@ smtk::model::BridgedInfoBits Bridge::addVolumeUseToStorage(
   return actual;
 }
 
-/// Given a CGM \a coFace tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addFaceUseToStorage(
+/// Given a CGM \a coFace tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addFaceUseToManager(
   const smtk::model::FaceUse& cursor,
   CoFace* coFace,
   BridgedInfoBits requestedInfo)
@@ -361,8 +361,8 @@ smtk::model::BridgedInfoBits Bridge::addFaceUseToStorage(
   return actual;
 }
 
-/// Given a CGM \a coEdge tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addEdgeUseToStorage(
+/// Given a CGM \a coEdge tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addEdgeUseToManager(
   const smtk::model::EdgeUse& cursor,
   CoEdge* coEdge,
   BridgedInfoBits requestedInfo)
@@ -379,8 +379,8 @@ smtk::model::BridgedInfoBits Bridge::addEdgeUseToStorage(
   return actual;
 }
 
-/// Given a CGM \a coVertex tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addVertexUseToStorage(
+/// Given a CGM \a coVertex tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addVertexUseToManager(
   const smtk::model::VertexUse& cursor,
   CoVertex* coVertex,
   BridgedInfoBits requestedInfo)
@@ -397,8 +397,8 @@ smtk::model::BridgedInfoBits Bridge::addVertexUseToStorage(
   return actual;
 }
 
-/// Given a CGM \a shell tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addShellToStorage(
+/// Given a CGM \a shell tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addShellToManager(
   const smtk::model::Shell& cursor,
   Shell* shell,
   BridgedInfoBits requestedInfo)
@@ -415,8 +415,8 @@ smtk::model::BridgedInfoBits Bridge::addShellToStorage(
   return actual;
 }
 
-/// Given a CGM \a loop tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addLoopToStorage(
+/// Given a CGM \a loop tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addLoopToManager(
   const smtk::model::Loop& cursor,
   Loop* loop,
   BridgedInfoBits requestedInfo)
@@ -433,8 +433,8 @@ smtk::model::BridgedInfoBits Bridge::addLoopToStorage(
   return actual;
 }
 
-/// Given a CGM \a chain tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addChainToStorage(
+/// Given a CGM \a chain tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addChainToManager(
   const smtk::model::Chain& cursor,
   Chain* chain,
   BridgedInfoBits requestedInfo)
@@ -451,8 +451,8 @@ smtk::model::BridgedInfoBits Bridge::addChainToStorage(
   return actual;
 }
 
-/// Given a CGM \a refVolume tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addVolumeToStorage(
+/// Given a CGM \a refVolume tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
   const smtk::model::Volume& cursor,
   RefVolume* refVolume,
   BridgedInfoBits requestedInfo)
@@ -462,7 +462,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToStorage(
   if (refVolume)
     {
     smtk::model::Volume mutableCursor(cursor);
-    mutableCursor.storage()->insertVolume(cursor.entity());
+    mutableCursor.manager()->insertVolume(cursor.entity());
     actual |= smtk::model::BRIDGE_ENTITY_TYPE;
 
     if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
@@ -491,8 +491,8 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToStorage(
   return actual;
 }
 
-/// Given a CGM \a refFace tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addFaceToStorage(
+/// Given a CGM \a refFace tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addFaceToManager(
   const smtk::model::Face& cursor,
   RefFace* refFace,
   BridgedInfoBits requestedInfo)
@@ -509,8 +509,8 @@ smtk::model::BridgedInfoBits Bridge::addFaceToStorage(
   return actual;
 }
 
-/// Given a CGM \a refEdge tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addEdgeToStorage(
+/// Given a CGM \a refEdge tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addEdgeToManager(
   const smtk::model::Edge& cursor,
   RefEdge* refEdge,
   BridgedInfoBits requestedInfo)
@@ -527,8 +527,8 @@ smtk::model::BridgedInfoBits Bridge::addEdgeToStorage(
   return actual;
 }
 
-/// Given a CGM \a refVertex tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addVertexToStorage(
+/// Given a CGM \a refVertex tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addVertexToManager(
   const smtk::model::Vertex& cursor,
   RefVertex* refVertex,
   BridgedInfoBits requestedInfo)
@@ -545,8 +545,8 @@ smtk::model::BridgedInfoBits Bridge::addVertexToStorage(
   return actual;
 }
 
-/// Given a CGM \a refGroup tagged with \a uid, create a record in \a storage for it.
-smtk::model::BridgedInfoBits Bridge::addGroupToStorage(
+/// Given a CGM \a refGroup tagged with \a uid, create a record in \a manager for it.
+smtk::model::BridgedInfoBits Bridge::addGroupToManager(
   const smtk::model::GroupEntity& cursor,
   RefGroup* refGroup,
   BridgedInfoBits requestedInfo)

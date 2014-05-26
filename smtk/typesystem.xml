@@ -14,7 +14,7 @@
 
   <!-- Suppressed because they are memory varables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
-  <suppress-warning text="skipping field 'Manager::m_refStorage' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Storage&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_refManager' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
   <suppress-warning text="skipping field 'RefItem::m_values' with unmatched type 'std::vector&lt;attribute::WeakAttributePtr&gt;'"/>
@@ -46,7 +46,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::setTessellation', unmatched return type 'smtk::model::Storage::tess_iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::setTessellation', unmatched return type 'smtk::model::Manager::tess_iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntity', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
@@ -59,32 +59,32 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageEntity', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageArrangement', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorage', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorage', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageFloatProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageFloatProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofStorageIntegerProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forStorageIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::removeEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::elideEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_topology' with unmatched type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::Storage', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
-  <suppress-warning text="skipping field 'Storage::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::Manager', unmatched parameter type 'shared_ptr&lt;UUIDsToEntities&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_tessellations' with unmatched type 'shared_ptr&lt;UUIDsToTessellations&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
-  <suppress-warning text="skipping field 'Storage::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,BridgePtr&gt;'"/>
 
@@ -103,7 +103,7 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties const'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::integerPropertiesForEntity', unmatched return type 'smtk::model::UUIDWithIntegerProperties'"/>
 
-  <suppress-warning text="skipping field 'Storage::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
 
   <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
   <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
@@ -171,8 +171,8 @@
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Bridge' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Storage::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
 
   <!-- TODO: Fix or categorize these warnings -->
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::addEntityProperties', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
@@ -220,17 +220,17 @@
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::usesOfShell', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::boundingShellsOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::childrenOfEntityList', unmatched parameter type 'smtk::model::EntityListPhrase::Ptr'"/>
-  <suppress-warning text="skipping field 'Storage::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
-  <suppress-warning text="skipping field 'Storage::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
-  <suppress-warning text="skipping field 'Storage::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
+  <suppress-warning text="skipping field 'Manager::m_conditionTriggers' with unmatched type 'std::set&lt;ConditionTrigger&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_oneToOneTriggers' with unmatched type 'std::set&lt;OneToOneTrigger&gt;'"/>
+  <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_defaultBridge' with unmatched type 'smtk::shared_ptr&lt;Bridge&gt;'"/>
   <suppress-warning text="skipping field 'Bridge::m_operators' with unmatched type 'std::set&lt;smtk::model::OperatorPtr&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Storage::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Storage::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::addOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::op', unmatched return type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::operators', unmatched return type 'smtk::model::Operators const&amp;'"/>
@@ -566,7 +566,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::Storage">
+  <value-type template="smtk::shared_ptr" args="smtk::model::Manager">
     <modify-function signature="arrangeEntity(smtk::util::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE result = %CPPSELF->get()->arrangeEntity(%1,%2,*%3,%4);
@@ -577,7 +577,7 @@
       static="NO"
       return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
       <inject-code>
-        smtk::model::Storage::tess_iter_type i = %CPPSELF-&gt;get()-&gt;setTessellation(%1, %2);
+        smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;get()-&gt;setTessellation(%1, %2);
         %RETURN_TYPE %0 = *i;
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
@@ -995,14 +995,14 @@
         </add-function>
       </object-type>
 
-      <object-type name="Storage">
-        <include file-name="smtk/model/Storage.h" location="local"/>
+      <object-type name="Manager">
+        <include file-name="smtk/model/Manager.h" location="local"/>
 
         <add-function signature="create()"
           static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::model::Storage&gt;">
+          return-type="smtk::shared_ptr&lt;smtk::model::Manager&gt;">
           <inject-code>
-            %RETURN_TYPE %0 = smtk::model::Storage::create();
+            %RETURN_TYPE %0 = smtk::model::Manager::create();
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1010,7 +1010,7 @@
           static="NO"
           return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
           <inject-code>
-            smtk::model::Storage::tess_iter_type i = %CPPSELF-&gt;setTessellation(%1, %2);
+            smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;setTessellation(%1, %2);
             %RETURN_TYPE %0 = *i;
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
@@ -1065,11 +1065,11 @@
         </add-function>
       </object-type>
 
-      <enum-type name="StorageEventChangeType">
+      <enum-type name="ManagerEventChangeType">
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
-      <enum-type name="StorageEventRelationType">
+      <enum-type name="ManagerEventRelationType">
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
@@ -1738,9 +1738,9 @@
 
   </namespace-type>
 
-  <rejection class="smtk::model::Storage" function-name="trigger"/>
-  <rejection class="smtk::model::Storage" function-name="observe"/>
-  <rejection class="smtk::model::Storage" function-name="unobserve"/>
+  <rejection class="smtk::model::Manager" function-name="trigger"/>
+  <rejection class="smtk::model::Manager" function-name="observe"/>
+  <rejection class="smtk::model::Manager" function-name="unobserve"/>
 
   @EXTRA_OBJECTS@
 

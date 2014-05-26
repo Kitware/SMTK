@@ -9,7 +9,7 @@
 #include "smtk/model/Chain.h"
 #include "smtk/model/Loop.h"
 #include "smtk/model/Shell.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "smtk/model/testing/helpers.h"
 
@@ -29,7 +29,7 @@ namespace smtk {
   namespace model {
     namespace testing {
 
-UUIDArray createTet(smtk::model::StoragePtr sm)
+UUIDArray createTet(smtk::model::ManagerPtr sm)
 {
   static const double x[][3] = {
       { 0., 0., 0. },

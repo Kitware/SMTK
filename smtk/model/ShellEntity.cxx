@@ -4,7 +4,7 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Entity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 
 namespace smtk {
@@ -52,8 +52,8 @@ ShellEntity ShellEntity::containingShellEntity() const
 /// Add the (lower-dimensional) use as a child of the shell.
 ShellEntity& ShellEntity::addUse(const UseEntity& use)
 {
-  if (this->m_storage)
-    this->m_storage->findOrAddUseToShell(this->m_entity, use.entity());
+  if (this->m_manager)
+    this->m_manager->findOrAddUseToShell(this->m_entity, use.entity());
   return *this;
 }
 

@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Item.h"
 #include <iostream>
@@ -131,19 +131,19 @@ Manager *Attribute::manager() const
   return this->m_definition->manager();
 }
 //----------------------------------------------------------------------------
-/**\brief Return the model Storage instance whose entities may have attributes.
+/**\brief Return the model Manager instance whose entities may have attributes.
   *
-  * This returns a shared pointer to smtk::model::Storage, which may be
-  * null if no storage is referenced by the attribute manager (or if the
+  * This returns a shared pointer to smtk::model::Manager, which may be
+  * null if no manager is referenced by the attribute manager (or if the
   * attribute definition does not reference a valid manager).
   */
-smtk::model::StoragePtr Attribute::modelStorage() const
+smtk::model::ManagerPtr Attribute::modelManager() const
 {
-  smtk::model::StoragePtr result;
-  Manager* mgr = this->manager();
-  if (mgr)
+  smtk::model::ManagerPtr result;
+  smtk::attribute::Manager* attMgr = this->manager();
+  if (attMgr)
     {
-    result = mgr->refStorage();
+    result = attMgr->refModelManager();
     }
   return result;
 }
@@ -202,9 +202,9 @@ void Attribute::removeAllAssociations()
   this->m_entities.clear();
 
   // new-style model entities
-  smtk::model::StoragePtr storage;
+  smtk::model::ManagerPtr manager;
   unsigned long attribId = this->id();
-  if (storage)
+  if (manager)
     {
     smtk::util::UUIDs::const_iterator mit;
     for (
@@ -212,7 +212,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      storage->detachAttribute(attribId, *mit, false);
+      manager->detachAttribute(attribId, *mit, false);
       }
     }
   this->m_modelEntities.clear();
@@ -267,9 +267,9 @@ bool Attribute::associateEntity(const smtk::util::UUID& entity)
   // TODO: Verify that entity may be associated with this attribute.
   //       If it may not, then we should return false.
   this->m_modelEntities.insert(entity);
-  smtk::model::StoragePtr storage = this->modelStorage();
-  if (storage)
-    storage->attachAttribute(this->id(), entity);
+  smtk::model::ManagerPtr manager = this->modelManager();
+  if (manager)
+    manager->attachAttribute(this->id(), entity);
   return true; // Entity may be and is now associated.
 }
 //----------------------------------------------------------------------------
@@ -287,10 +287,10 @@ void Attribute::disassociateEntity(const smtk::util::UUID& entity, bool reverse)
   this->m_modelEntities.erase(entity);
   if(reverse)
     {
-    smtk::model::StoragePtr storage = this->modelStorage();
-    if (storage)
+    smtk::model::ManagerPtr manager = this->modelManager();
+    if (manager)
       {
-      storage->detachAttribute(this->id(), entity, false);
+      manager->detachAttribute(this->id(), entity, false);
       }
     }
 }

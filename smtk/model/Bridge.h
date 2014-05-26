@@ -22,7 +22,7 @@ typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
 typedef smtk::shared_ptr<Bridge> (*BridgeConstructor)();
 typedef std::map<std::string,BridgeConstructor> BridgeConstructors;
 
-/**\brief Bit flags describing types of information bridged to Storage.
+/**\brief Bit flags describing types of information bridged to Manager.
   *
   * Bridge classes should provide individual translation for
   * each piece of information, but are allowed to transcribe
@@ -35,7 +35,7 @@ typedef std::map<std::string,BridgeConstructor> BridgeConstructors;
   */
 enum BridgedInformation
 {
-  // Basic types of information in smtk::model::Storage
+  // Basic types of information in smtk::model::Manager
   BRIDGE_ENTITY_TYPE            = 0x00000001, //!< Transcribe the Entity type.
   BRIDGE_ENTITY_RELATIONS       = 0x00000002, //!< Transcribe the Entity relationship vector.
   BRIDGE_ARRANGEMENTS           = 0x00000004, //!< Arrangement information for the relationships.
@@ -102,24 +102,24 @@ typedef unsigned long BridgedInfoBits;
   * Either the bridge or the foreign modeler must provide techniques
   * for attaching UUIDs to foreign model entities and for obtaining
   * notification when foreign model entities are modified or
-  * destroyed. In extreme cases, SMTK Storage must be reset after
+  * destroyed. In extreme cases, SMTK Manager must be reset after
   * each modeling operation to guarantee a consistent model.
   *
   * Bridges may provide SMTK with Operators that can be used to
   * modify models in storage.
   *
   * Register an instance of a Bridge subclass to a
-  * model with Storage::bridgeModel(). Then, when an
+  * model with Manager::bridgeModel(). Then, when an
   * entity cannot be resolved from a UUID created by
   * the bridge, the \a transcribe method will be invoked
   * to request that the bridge add an entry.
   *
   * This class is not intended for external use.
   * Public methods are intended for invocation by the
-  * Storage instance which owns the bridge.
+  * Manager instance which owns the bridge.
   * Protected methods are either called internally or
   * by subclasses in order to track UUIDs for which there
-  * is only partial information in Storage.
+  * is only partial information in Manager.
   *
   * \sa smtk::model::BridgedInformation smtk::model::Operator
   */
@@ -135,7 +135,7 @@ public:
 
   StringList operatorNames() const;
   const Operators& operators() const;
-  OperatorPtr op(const std::string& opName, StoragePtr storage) const;
+  OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
   virtual void addOperator(OperatorPtr op);
 
 protected:

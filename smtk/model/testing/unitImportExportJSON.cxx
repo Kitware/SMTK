@@ -1,6 +1,6 @@
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/util/Testing/helpers.h"
 
 #include "cJSON.h"
@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     (std::istreambuf_iterator<char>()));
   cJSON* json = cJSON_CreateObject();
 
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
 
   int status = 0;
   status |= ImportJSON::intoModel(data.c_str(), sm);
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   json = cJSON_CreateObject();
-  StoragePtr sm2 = Storage::create();
+  ManagerPtr sm2 = Manager::create();
 
   status |= ImportJSON::intoModel(exported, sm2);
   status |= ExportJSON::fromModel(json, sm2);

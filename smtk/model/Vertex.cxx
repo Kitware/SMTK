@@ -1,7 +1,7 @@
 #include "smtk/model/Vertex.h"
 
 #include "smtk/model/Edge.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
@@ -25,8 +25,8 @@ smtk::util::Vector3d Vertex::coordinates() const
   if (this->isValid())
     {
     UUIDWithTessellation tessRec =
-      this->m_storage->tessellations().find(this->m_entity);
-    if (tessRec != this->m_storage->tessellations().end())
+      this->m_manager->tessellations().find(this->m_entity);
+    if (tessRec != this->m_manager->tessellations().end())
       {
       if (!tessRec->second.coords().empty())
         {

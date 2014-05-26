@@ -39,14 +39,14 @@ public:
 
   /// Set/get the model (used for selection masking). This is really a hack.
   //@{
-  virtual void SetModel(smtk::model::StoragePtr model)
+  virtual void SetModel(smtk::model::ManagerPtr model)
     {
     if (this->Model == model)
       return;
     this->Model = model;
     this->Modified();
     }
-  smtk::model::StoragePtr GetModel()
+  smtk::model::ManagerPtr GetModel()
     { return this->Model; }
   //@}
 
@@ -85,7 +85,7 @@ protected:
   vtkPolyDataMapper* Mapper;
   vtkActor* Actor;
   int SelectionMask;
-  smtk::model::StoragePtr Model;
+  smtk::model::ManagerPtr Model;
 
 private:
   vtkModelRepresentation(const vtkModelRepresentation&); // Not implemented.

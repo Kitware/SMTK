@@ -5,7 +5,7 @@
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/IntegerData.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 #include "smtk/Qt/qtEntityItemDelegate.h"
 #include "smtk/Qt/qtEntityItemModel.h"

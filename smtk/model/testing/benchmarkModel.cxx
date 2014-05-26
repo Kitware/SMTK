@@ -1,4 +1,4 @@
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/testing/helpers.h"
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
   Timer t;
   double deltaT;
 
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
   // ### Benchmark JSON import ###
     {
-    StoragePtr sm2 = Storage::create();
+    ManagerPtr sm2 = Manager::create();
     t.mark();
     ImportJSON::intoModel(json.c_str(), sm2);
     deltaT = t.elapsed();

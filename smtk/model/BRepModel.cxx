@@ -4,7 +4,7 @@
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "smtk/util/AutoInit.h"
 
@@ -25,7 +25,7 @@ BridgeConstructors* BRepModel::s_bridges = NULL;
 
 /**\brief Construction requires a container for storage.
   *
-  * Storage is kept separate so that it can easily be serialized and deserialized.
+  * Manager is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel() :
   m_topology(new UUIDsToEntities),
@@ -40,7 +40,7 @@ BRepModel::BRepModel() :
 
 /**\brief Construction requires a container for storage.
   *
-  * Storage is kept separate so that it can easily be serialized and deserialized.
+  * Manager is kept separate so that it can easily be serialized and deserialized.
   */
 BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
   m_topology(topo),
@@ -100,7 +100,7 @@ BRepModel::iter_type BRepModel::insertEntity(Entity& c)
   * Some checking and initialization is performed based on \a entityFlags and \a dim,
   * as described below.
   *
-  * If the BRepModel may be cast to a Storage instance and an entity
+  * If the BRepModel may be cast to a Manager instance and an entity
   * is expected to have a known, fixed number of arrangements of some sort,
   * those are created here so that cursors may always rely on their existence
   * even in the absence of the related UUIDs appearing in the entity's relations.
@@ -128,7 +128,7 @@ BRepModel::iter_type BRepModel::setEntityOfTypeAndDimension(const UUID& uid, Bit
 
   if (result.second)
     {
-    Storage* store = dynamic_cast<Storage*>(this);
+    Manager* store = dynamic_cast<Manager*>(this);
     if (store)
       store->trigger(std::make_pair(ADD_EVENT, ENTITY_ENTRY),
         Cursor(store->shared_from_this(), uid));
@@ -491,7 +491,7 @@ UUIDs BRepModel::entitiesOfDimension(int dim)
   * Note that even the const version of this method may invalidate other
   * pointers to Entity records since it may ask a Bridge instance to fetch
   * a dangling UUID (one marked as existing but un-transcribed) and insert
-  * the Entity into Storage. If it is important that Entity pointers remain
+  * the Entity into Manager. If it is important that Entity pointers remain
   * valid, call with the second argument (\a tryBridges) set to false.
   */
 //@{
@@ -504,7 +504,7 @@ const Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges) const
     // We use an evil const-cast here because we are working under the fiction
     // that fetching an entity that exists (even if it hasn't been transcribed
     // yet) does not affect storage.
-    StoragePtr store = smtk::dynamic_pointer_cast<Storage>(
+    ManagerPtr store = smtk::dynamic_pointer_cast<Manager>(
       const_cast<BRepModel*>(this)->shared_from_this());
     if (tryBridges && store)
       {
@@ -529,7 +529,7 @@ Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges)
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it == this->m_topology->end())
     { // Not in storage... is it in any bridge's dangling entity list?
-    StoragePtr store = smtk::dynamic_pointer_cast<Storage>(
+    ManagerPtr store = smtk::dynamic_pointer_cast<Manager>(
       const_cast<BRepModel*>(this)->shared_from_this());
     if (tryBridges && store)
       {
@@ -562,7 +562,7 @@ bool BRepModel::erase(const smtk::util::UUID& uid)
 
   bool isModel = isModelEntity(ent->second.entityFlags());
 
-  Storage* store = dynamic_cast<Storage*>(this);
+  Manager* store = dynamic_cast<Manager*>(this);
   if (store)
     store->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
       Cursor(store->shared_from_this(), uid));
@@ -652,7 +652,7 @@ void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
   *
   * This will append \a groupId to each entity in \a uids.
   * Note that this does **not** add the proper Arrangement information
-  * that Storage::findOrAddEntityToGroup() does, since BRepModel
+  * that Manager::findOrAddEntityToGroup() does, since BRepModel
   * does not store Arrangement information.
   */
 void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
@@ -1021,12 +1021,12 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
       // For models, life is tricky. Without arrangement information, we cannot
       // know whether a related model is a child or a parent. Two models might
       // point to each other, which could throw us into an infinite loop. So,
-      // we attempt to cast ourselves to Storage and identify a parent model.
+      // we attempt to cast ourselves to Manager and identify a parent model.
         {
         // Although const_pointer_cast is evil, changing the cursor classes
         // to accept any type of shared_ptr<X/X const> is more evil.
-        StoragePtr store =
-          smtk::dynamic_pointer_cast<Storage>(
+        ManagerPtr store =
+          smtk::dynamic_pointer_cast<Manager>(
             smtk::const_pointer_cast<BRepModel>(
               shared_from_this()));
         if (store)
@@ -1286,7 +1286,7 @@ void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
 {
   if ((entry.second.entityFlags() & CELL_2D) == CELL_2D)
     {
-    Storage* store = dynamic_cast<Storage*>(this);
+    Manager* store = dynamic_cast<Manager*>(this);
     if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_USE))
       {
       // Create arrangements to hold face-uses:
@@ -1296,7 +1296,7 @@ void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
     }
   else if (entry.second.entityFlags() & USE_ENTITY)
     {
-    Storage* store = dynamic_cast<Storage*>(this);
+    Manager* store = dynamic_cast<Manager*>(this);
     if (store && !store->hasArrangementsOfKindForEntity(entry.first, HAS_SHELL))
       {
       // Create arrangement to hold parent shell:

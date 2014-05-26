@@ -1,7 +1,7 @@
 #include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
 #include "smtk/model/Cursor.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/util/UUID.h"
@@ -55,7 +55,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelMultiBlockSource::SetModel(smtk::model::StoragePtr model)
+void vtkModelMultiBlockSource::SetModel(smtk::model::ManagerPtr model)
 {
   if (this->Model == model)
     {
@@ -66,7 +66,7 @@ void vtkModelMultiBlockSource::SetModel(smtk::model::StoragePtr model)
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::StoragePtr vtkModelMultiBlockSource::GetModel()
+smtk::model::ManagerPtr vtkModelMultiBlockSource::GetModel()
 {
   return this->Model;
 }
@@ -264,7 +264,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
-  vtkMultiBlockDataSet* mbds, smtk::model::StoragePtr model)
+  vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model)
 {
   mbds->SetNumberOfBlocks(model->tessellations().size());
   vtkIdType i;

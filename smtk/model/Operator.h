@@ -50,8 +50,8 @@ public:
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
 
-  StoragePtr storage() const;
-  Ptr setStorage(StoragePtr s);
+  ManagerPtr manager() const;
+  Ptr setManager(ManagerPtr s);
 
   BridgePtr bridge() const;
   Ptr setBridge(BridgePtr b);
@@ -60,7 +60,7 @@ public:
 
 protected:
   Parameters m_parameters;
-  StoragePtr m_storage;
+  ManagerPtr m_manager;
   BridgePtr m_bridge;
   std::set<ParameterChangeObserver> m_parameterChangeTriggers;
   std::set<WillOperateObserver> m_willOperateTriggers;

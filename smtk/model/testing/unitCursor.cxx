@@ -12,7 +12,7 @@
 #include "smtk/model/Loop.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Shell.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 #include "smtk/model/VertexUse.h"
@@ -34,7 +34,7 @@ static int numberOfFreeCellsRemoved = 0;
 static int numberOfSubmodelsRemoved = 0;
 static int numberOfGroupsRemoved = 0;
 
-int didRemove(StorageEventType event, const Cursor&, const Cursor&, void*)
+int didRemove(ManagerEventType event, const Cursor&, const Cursor&, void*)
 {
   switch (event.second)
     {
@@ -49,7 +49,7 @@ int didRemove(StorageEventType event, const Cursor&, const Cursor&, void*)
 
 void testComplexVertexChain()
 {
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
   Vertices verts;
   VertexUses vu;
   for (int i = 0; i < 6; ++i)
@@ -99,11 +99,11 @@ int main(int argc, char* argv[])
 
   try
     {
-    StoragePtr sm = Storage::create();
-    sm->observe(StorageEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
-    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
-    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
-    sm->observe(StorageEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
+    ManagerPtr sm = Manager::create();
+    sm->observe(ManagerEventType(DEL_EVENT, CELL_INCLUDES_CELL), didRemove, NULL);
+    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_FREE_CELL), didRemove, NULL);
+    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_GROUP), didRemove, NULL);
+    sm->observe(ManagerEventType(DEL_EVENT, MODEL_INCLUDES_MODEL), didRemove, NULL);
 
     UUIDArray uids = createTet(sm);
 

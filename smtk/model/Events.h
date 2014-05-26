@@ -8,7 +8,7 @@
 namespace smtk {
   namespace model {
 
-/**\brief Enumerate the types of changes storage has.
+/**\brief Enumerate the types of changes a model manager undergoes.
   *
   * The change type serves as a modifier to the relationship.
   * Not all relationships support all of the modifiers.
@@ -19,7 +19,7 @@ namespace smtk {
   * an smtk::model::Entity record can be modified).
   *
   * Events that affect arrangements but do not otherwise
-  * affect storage are typically reported with
+  * affect a model manager are typically reported with
   * ADD_EVENT notifications generated before addition
   * and DEL_EVENT notifications after removal.
   * The rationale is that (1) observers should have
@@ -27,7 +27,7 @@ namespace smtk {
   * configuration while the event type specifies enough
   * information to infer the simpler configuration and
   * (2) observers may wish to perform other operations
-  * after removal to maintain the consistency of Storage.
+  * after removal to maintain the consistency of Manager.
   *
   * Events that add new smtk::model::Entity, smtk::model::Tessellation,
   * smtk::model::FloatData, smtk::model::StringData, or
@@ -38,21 +38,21 @@ namespace smtk {
   * access the objects being affected (after they are added
   * or before they are removed).
   *
-  * @sa StorageEventRelationType
+  * @sa ManagerEventRelationType
   */
-enum StorageEventChangeType
+enum ManagerEventChangeType
 {
   ADD_EVENT,  //!< The event is a relationship being added.
   MOD_EVENT,  //!< The event is a relationship being modified.
   DEL_EVENT,  //!< The event is a relationship being removed.
 
-  ANY_EVENT   //!< All change types (used when calling Storage::observe).
+  ANY_EVENT   //!< All change types (used when calling Manager::observe).
 };
 
-/**\brief Enumerate the types of relationships which may cause storage events.
+/**\brief Enumerate the types of relationships which may cause model manager events.
   *
   * This enumerates relationships that may be observed changing,
-  * along with the StorageEventChangeType.
+  * along with the ManagerEventChangeType.
   *
   * For events involving multiple entities,
   * the name of the relationship specifies the order in which
@@ -61,15 +61,15 @@ enum StorageEventChangeType
   * Likewise CELL_INCLUDES_CELL will always provide the higher-dimensional
   * parent cell before the lower-dimensional, embedded child cell.
   *
-  * @sa StorageEventChangeType
+  * @sa ManagerEventChangeType
   */
-enum StorageEventRelationType
+enum ManagerEventRelationType
 {
   // smtk::model::Entity record existential changes (additions, removals, but not modifications):
-  ENTITY_ENTRY,                 //!< An entity entry has been added to (ADD_EVENT) or removed from (DEL_EVENT) storage.
+  ENTITY_ENTRY,                 //!< An entity entry has been added to (ADD_EVENT) or removed from (DEL_EVENT) the manager.
 
   // smtk::model::Tessellation record changes (added, removed, modified).
-  TESSELLATION_ENTRY,           //!< An entity is being provided or stripped of a tessellation in storage.
+  TESSELLATION_ENTRY,           //!< An entity is being provided or stripped of a tessellation in the manager.
 
   // smtk::model::{Float,String,Integer}Data changes (added, removed, modified)
   ENTITY_HAS_PROPERTY,          //!< The entity has a property entry being added, modified, or removed.
@@ -97,35 +97,35 @@ enum StorageEventRelationType
   INVALID_RELATIONSHIP          //!< The event is invalid. Used internally. This must be the last enum.
 };
 
-/**\brief A notification of a storage event.
+/**\brief A notification of a model manager event.
   *
   * All events have both a change type and a relationship type.
   */
-typedef std::pair<StorageEventChangeType, StorageEventRelationType> StorageEventType;
+typedef std::pair<ManagerEventChangeType, ManagerEventRelationType> ManagerEventType;
 
 /// Callbacks for changes in the condition of an entity. WARNING: Likely to change in future releases.
 typedef int (*ConditionCallback)(
-  StorageEventType, const smtk::model::Cursor&, void*);
+  ManagerEventType, const smtk::model::Cursor&, void*);
 /// An observer of an entity-condition-change (i.e., addition, update or removal) event.
 typedef std::pair<ConditionCallback,void*> ConditionObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<StorageEventType,ConditionObserver> ConditionTrigger;
+typedef std::pair<ManagerEventType,ConditionObserver> ConditionTrigger;
 
 /// Callbacks for one-to-one relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToOneCallback)(
-  StorageEventType, const smtk::model::Cursor&, const smtk::model::Cursor&, void*);
+  ManagerEventType, const smtk::model::Cursor&, const smtk::model::Cursor&, void*);
 /// An observer of a one-to-one relationship-event.
 typedef std::pair<OneToOneCallback,void*> OneToOneObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<StorageEventType,OneToOneObserver> OneToOneTrigger;
+typedef std::pair<ManagerEventType,OneToOneObserver> OneToOneTrigger;
 
 /// Callbacks for one-to-many relationships between entities. WARNING: Likely to change in future releases.
 typedef int (*OneToManyCallback)(
-  StorageEventType, const smtk::model::Cursor&, const smtk::model::CursorArray&, void*);
+  ManagerEventType, const smtk::model::Cursor&, const smtk::model::CursorArray&, void*);
 /// An observer of a one-to-many relationship-event.
 typedef std::pair<OneToManyCallback,void*> OneToManyObserver;
 /// A trigger entry for an event-observer pair.
-typedef std::pair<StorageEventType,OneToManyObserver> OneToManyTrigger;
+typedef std::pair<ManagerEventType,OneToManyObserver> OneToManyTrigger;
 
 /**\brief Enumerate events that an operator may encounter.
   *

@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkSMTKModelReader.h"
 
 #include "smtk/model/ImportJSON.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 #include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
 
 #include "vtkInformation.h"
@@ -93,7 +93,7 @@ int vtkSMTKModelReader::RequestData(
     (std::istreambuf_iterator<char>()));
 
 //vtkErrorMacro( << "json model (data): " << data.c_str());
-  StoragePtr sm = Storage::create();
+  ManagerPtr sm = Manager::create();
 
   int status = ! ImportJSON::intoModel(data.c_str(), sm);
   if (status)

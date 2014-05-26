@@ -37,7 +37,7 @@ set(modelSrcs
   Shell.cxx
   ShellEntity.cxx
   SimpleModelSubphrases.cxx
-  Storage.cxx
+  Manager.cxx
   SubphraseGenerator.cxx
   ModelDomainItem.cxx
   Tessellation.cxx
@@ -91,7 +91,7 @@ set(modelHeaders
   Shell.h
   ShellEntity.h
   SimpleModelSubphrases.h
-  Storage.h
+  Manager.h
   SubphraseGenerator.h
   ModelDomainItem.h
   StringData.h

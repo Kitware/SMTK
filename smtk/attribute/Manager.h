@@ -131,9 +131,9 @@ namespace smtk
       void setRefModel(smtk::model::ModelPtr refmodel )
         {this->m_refModel = refmodel;}
 
-      smtk::model::StoragePtr refStorage() const
-        {return this->m_refStorage.lock();}
-      void setRefStorage(smtk::model::StoragePtr refstorage);
+      smtk::model::ManagerPtr refModelManager() const
+        {return this->m_refModelMgr.lock();}
+      void setRefModelManager(smtk::model::ManagerPtr refModelMgr);
 
       bool hasAttributes()
         {return this->m_attributes.size()>0; }
@@ -158,7 +158,7 @@ namespace smtk
       smtk::view::RootPtr m_rootView;
 
       smtk::model::WeakModelPtr m_refModel;
-      smtk::model::WeakStoragePtr m_refStorage;
+      smtk::model::WeakManagerPtr m_refModelMgr;
       // Advance levels, <int-level, <string-label, color[4]>
       // higher level means more advanced.
       std::map<int, std::string> m_advLevels;

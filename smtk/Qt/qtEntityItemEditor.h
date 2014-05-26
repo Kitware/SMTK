@@ -9,7 +9,7 @@ class QLineEdit;
 namespace smtk {
   namespace model {
 
-/**\brief Allow user edits to an smtk::model::Storage instance via QEntityItemModel.
+/**\brief Allow user edits to an smtk::model::Manager instance via QEntityItemModel.
   *
   */
 class QTSMTK_EXPORT QEntityItemEditor : public QWidget

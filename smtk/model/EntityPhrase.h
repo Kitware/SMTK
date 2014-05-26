@@ -28,7 +28,7 @@ public:
 
   void setMutability(int whatsMutable);
 
-  static DescriptivePhrases PhrasesFromUUIDs(smtk::model::StoragePtr, const smtk::util::UUIDs&);
+  static DescriptivePhrases PhrasesFromUUIDs(smtk::model::ManagerPtr, const smtk::util::UUIDs&);
 
 protected:
   EntityPhrase();

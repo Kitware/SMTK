@@ -2,13 +2,13 @@
 #define __smtk_cgm_ExportSolid_h
 
 #include "smtk/cgmSMTKExports.h" // for CGMSMTK_EXPORT
-#include "smtk/PublicPointerDefs.h" // For StoragePtr
+#include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/util/UUID.h"
 
 namespace smtk {
   namespace model {
-    class Storage;
+    class Manager;
   }
 }
 

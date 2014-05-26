@@ -9,10 +9,10 @@
 
 class vtkPolyData;
 
-/**\brief A VTK source for exposing model geometry in SMTK Storage as multiblock data.
+/**\brief A VTK source for exposing model geometry in SMTK Manager as multiblock data.
   *
   * This filter generates a single block per UUID, for every UUID
-  * in model storage with a tessellation entry.
+  * in model manager with a tessellation entry.
   */
 class VTKSMTK_EXPORT vtkModelMultiBlockSource : public vtkMultiBlockDataSetAlgorithm
 {
@@ -23,8 +23,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
 
-  smtk::model::StoragePtr GetModel();
-  void SetModel(smtk::model::StoragePtr);
+  smtk::model::ManagerPtr GetModel();
+  void SetModel(smtk::model::ManagerPtr);
 
   void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
   void Dirty();
@@ -39,7 +39,7 @@ protected:
   void GenerateRepresentationFromModelEntity(
     vtkPolyData* poly, const smtk::model::Cursor& entity);
   void GenerateRepresentationFromModel(
-    vtkMultiBlockDataSet* mbds, smtk::model::StoragePtr model);
+    vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -52,7 +52,7 @@ protected:
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
   // Instance storage:
-  smtk::model::StoragePtr Model;
+  smtk::model::ManagerPtr Model;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 

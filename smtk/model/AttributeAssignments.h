@@ -38,12 +38,12 @@ protected:
 };
 
 #ifdef SMTK_HASH_STORAGE
-/// Each Storage entity's UUID is mapped to a set of assigned attribute IDs.
+/// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
 typedef google::sparse_hash_map<smtk::util::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
 typedef google::sparse_hash_map<smtk::util::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;
 #else
-/// Each Storage entity's UUID is mapped to a set of assigned attribute IDs.
+/// Each Manager entity's UUID is mapped to a set of assigned attribute IDs.
 typedef std::map<smtk::util::UUID,AttributeAssignments> UUIDsToAttributeAssignments;
 /// An iterator referencing a (UUID,AttributeAssignments)-tuple.
 typedef std::map<smtk::util::UUID,AttributeAssignments>::iterator UUIDWithAttributeAssignments;

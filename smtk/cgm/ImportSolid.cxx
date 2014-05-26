@@ -8,7 +8,7 @@
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/model/Storage.h"
+#include "smtk/model/Manager.h"
 
 #include "smtk/util/UUID.h"
 
@@ -33,10 +33,10 @@ using namespace smtk::model;
 namespace cgmsmtk {
   namespace cgm {
 
-smtk::util::UUIDArray ImportSolid::fromFilenameIntoStorage(
+smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   const std::string& filename,
   const std::string& filetype,
-  smtk::model::StoragePtr storage)
+  smtk::model::ManagerPtr manager)
 {
   smtk::util::UUIDArray result;
   cgmsmtk::cgm::CAUUID::registerWithAttributeManager();
@@ -81,12 +81,12 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoStorage(
     RefEntity* entry = imported.get_and_step();
     cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
     smtk::util::UUID entId = refId->entityId();
-    Cursor smtkEntry(storage, entId);
+    Cursor smtkEntry(manager, entId);
     if (bridge->transcribe(smtkEntry, BRIDGE_EVERYTHING, false))
       result.push_back(smtkEntry.entity());
     }
   // FIXME: Until this is implemented, Bridge will be deleted upon exit:
-  //storage->addBridge(bridge);
+  //manager->addBridge(bridge);
   imported.reset();
 
   return result;
