@@ -202,9 +202,9 @@ void Attribute::removeAllAssociations()
   this->m_entities.clear();
 
   // new-style model entities
-  smtk::model::ManagerPtr manager;
+  smtk::model::ManagerPtr modelMgr;
   unsigned long attribId = this->id();
-  if (manager)
+  if (modelMgr)
     {
     smtk::util::UUIDs::const_iterator mit;
     for (
@@ -212,7 +212,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      manager->detachAttribute(attribId, *mit, false);
+      modelMgr->detachAttribute(attribId, *mit, false);
       }
     }
   this->m_modelEntities.clear();
@@ -267,9 +267,9 @@ bool Attribute::associateEntity(const smtk::util::UUID& entity)
   // TODO: Verify that entity may be associated with this attribute.
   //       If it may not, then we should return false.
   this->m_modelEntities.insert(entity);
-  smtk::model::ManagerPtr manager = this->modelManager();
-  if (manager)
-    manager->attachAttribute(this->id(), entity);
+  smtk::model::ManagerPtr modelMgr = this->modelManager();
+  if (modelMgr)
+    modelMgr->attachAttribute(this->id(), entity);
   return true; // Entity may be and is now associated.
 }
 //----------------------------------------------------------------------------
@@ -287,10 +287,10 @@ void Attribute::disassociateEntity(const smtk::util::UUID& entity, bool reverse)
   this->m_modelEntities.erase(entity);
   if(reverse)
     {
-    smtk::model::ManagerPtr manager = this->modelManager();
-    if (manager)
+    smtk::model::ManagerPtr modelMgr = this->modelManager();
+    if (modelMgr)
       {
-      manager->detachAttribute(this->id(), entity, false);
+      modelMgr->detachAttribute(this->id(), entity, false);
       }
     }
 }
