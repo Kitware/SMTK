@@ -54,12 +54,12 @@ public:
   int ElementIndex;
   QPointer<QComboBox> Combo;
   QPointer<QFrame> ChildrenFrame;
-  QPointer<QLayout> ChildrenLayout;
 
-  smtk::attribute::WeakItemPtr DataObject;
   QPointer<QWidget> ParentWidget;
+  smtk::attribute::WeakItemPtr DataObject;
   QList<smtk::attribute::qtItem*> ChildItems;
   QPointer<qtBaseView> BaseView;
+  QPointer<QLayout> ChildrenLayout;
   int hintChildWidth;
   int hintChildHeight;
 
@@ -99,8 +99,8 @@ void qtDiscreteValueEditor::createWidget()
     return;
     }
   this->Internals->clearChildItems();
-  QBoxLayout* layout = new QVBoxLayout(this);
-  layout->setMargin(0);
+  QBoxLayout* wlayout = new QVBoxLayout(this);
+  wlayout->setMargin(0);
 //  this->Widget = new QFrame(this->Internals->ParentWidget);
 
   smtk::attribute::ValueItemPtr item =smtk::dynamic_pointer_cast<ValueItem>(
@@ -140,7 +140,7 @@ void qtDiscreteValueEditor::createWidget()
   combo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QObject::connect(combo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onInputValueChanged()), Qt::QueuedConnection);
-  layout->addWidget(combo);
+  wlayout->addWidget(combo);
   this->Internals->Combo = combo;
   this->updateItemData();
   this->onInputValueChanged();

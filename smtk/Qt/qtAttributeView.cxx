@@ -83,7 +83,7 @@ void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOption
 }
 
 qtAttSelectCombo::qtAttSelectCombo(QWidget* pw, const QString& displayExt) :
-  QComboBox(pw), m_displayTextExt(displayExt), m_displayItem(NULL)
+  QComboBox(pw), m_displayItem(NULL), m_displayTextExt(displayExt)
 {
 }
 void qtAttSelectCombo::init()
@@ -91,22 +91,22 @@ void qtAttSelectCombo::init()
   this->m_displayItem = new QStandardItem;
   this->m_displayItem->setFlags(Qt::ItemIsEnabled);
   this->m_displayItem->setText("0 " + m_displayTextExt);
-  QStandardItemModel* model = qobject_cast<QStandardItemModel*>(this->model());
-  if(model)
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  if(itemModel)
     {
-    model->insertRow(0, this->m_displayItem);
+    itemModel->insertRow(0, this->m_displayItem);
     }
 }
 
 void qtAttSelectCombo::updateText()
 {
   int numSel = 0;
-  QStandardItemModel* model = qobject_cast<QStandardItemModel*>(this->model());
-  if(model)
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  if(itemModel)
     {
     for(int row=1; row<this->count(); row++)
       {
-      if(model->item(row)->checkState() == Qt::Checked)
+      if(itemModel->item(row)->checkState() == Qt::Checked)
         {
         numSel++;
         }
@@ -569,12 +569,12 @@ void qtAttributeView::updateTableWithProperties()
     QStandardItem* current = this->Internals->checkablePropComboModel->item(r);
     if(current && current->checkState() == Qt::Checked)
       {
-      Item* rawPtr =
+      Item* irawPtr =
         static_cast<Item*>(current->data(Qt::UserRole).value<void *>());
-      if(rawPtr)
+      if(irawPtr)
         {
         smtk::attribute::ItemPtr attItem =
-          rawPtr ? rawPtr->pointer() : smtk::attribute::ItemPtr();
+          irawPtr ? irawPtr->pointer() : smtk::attribute::ItemPtr();
         smtk::attribute::AttributePtr att = attItem->attribute();
         this->addComparativeProperty(current, att->definition());
         }
