@@ -1323,7 +1323,6 @@ void qtUIManager::findDefinitionLongLabel(
 {
   QList<smtk::attribute::ItemDefinitionPtr> itemDefs;
   int i, n = def->numberOfItemDefinitions();
-  bool hasOptionalItem = false;
   for (i = 0; i < n; i++)
     {
     itemDefs.push_back(def->itemDefinition(i));

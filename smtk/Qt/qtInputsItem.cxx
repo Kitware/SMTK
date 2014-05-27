@@ -374,13 +374,13 @@ void qtInputsItem::setOutputOptional(int state)
       }
    }
 
-  foreach(QWidget* widget, this->Internals->ChildrenMap.keys())
+  foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {
-    if(this->Internals->ChildrenMap.value(widget).second)
+    if(this->Internals->ChildrenMap.value(cwidget).second)
       {
-      this->Internals->ChildrenMap.value(widget).second->setEnabled(enable);
+      this->Internals->ChildrenMap.value(cwidget).second->setEnabled(enable);
       }
-    widget->setEnabled(enable);
+    cwidget->setEnabled(enable);
     }
 
 //  this->Internals->EntryFrame->setEnabled(enable);
@@ -507,17 +507,17 @@ void qtInputsItem::clearChildWidgets()
     this->Internals->MinusButtonIndices.clear();
     }
 
-  foreach(QWidget* widget, this->Internals->ChildrenMap.keys())
+  foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
     {
-    if(this->Internals->ChildrenMap.value(widget).second)
+    if(this->Internals->ChildrenMap.value(cwidget).second)
       {
-      delete this->Internals->ChildrenMap.value(widget).second;
+      delete this->Internals->ChildrenMap.value(cwidget).second;
       }
-    if(this->Internals->ChildrenMap.value(widget).first)
+    if(this->Internals->ChildrenMap.value(cwidget).first)
       {
-      delete this->Internals->ChildrenMap.value(widget).first;
+      delete this->Internals->ChildrenMap.value(cwidget).first;
       }
-    delete widget;
+    delete cwidget;
     }
   this->Internals->ChildrenMap.clear();
 }

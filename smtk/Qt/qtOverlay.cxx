@@ -8,7 +8,7 @@
 
 using namespace smtk::attribute;
 
-qtOverlay::qtOverlay(QWidget * parent ) : QWidget(parent)
+qtOverlay::qtOverlay(QWidget * parentW ) : QWidget(parentW)
 {
   setAttribute(Qt::WA_NoSystemBackground);
   //setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -41,7 +41,7 @@ void qtOverlay::paintEvent(QPaintEvent *)
 }
 
 //----------------------------------------------------------------------------
-qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parent) : QObject(parent)
+qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject(parentO)
 {
   m_Active = true;
   m_overlay = new qtOverlay(onWidget->parentWidget());

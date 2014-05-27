@@ -180,7 +180,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
   while(includeStack.size())
     {
     pugi::xml_document doc1;
-    pugi::xml_parse_result presult = doc1.load_file(includeStack.back().c_str());
+    doc1.load_file(includeStack.back().c_str());
     std::cout << "Processing Include File: " << includeStack.back().c_str() << "\n";
     Internal_parseXmlDoc(manager, doc1, reportAsError, logger);
     if (logger.hasErrors())
