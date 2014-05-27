@@ -56,7 +56,7 @@ namespace smtk
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
-      void initializeView(QWidget* pWidget, smtk::view::BasePtr base,
+      qtBaseView* initializeView(QWidget* pWidget, smtk::view::BasePtr base,
         bool useInternalFileBrowser=true);
       smtk::attribute::Manager* attManager() const
         {return &this->m_AttManager;}
@@ -168,6 +168,7 @@ namespace smtk
       void processBasicView(qtBaseView* v);
 
       qtBaseView* createView(smtk::view::BasePtr smtkView, QWidget *pWidget);
+      virtual void internalInitialize();
 
    private:
       qtRootView* RootView;
