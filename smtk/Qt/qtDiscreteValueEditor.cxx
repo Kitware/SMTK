@@ -241,8 +241,8 @@ void qtDiscreteValueEditor::onInputValueChanged()
     this->Internals->ChildrenFrame = new QFrame(this);
     this->Internals->ChildrenFrame->setObjectName("ChildItemsFrame");
     QSizePolicy sizeFixedPolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    QVBoxLayout* layout = new QVBoxLayout(this->Internals->ChildrenFrame);
-    layout->setMargin(3);
+    QVBoxLayout* clayout = new QVBoxLayout(this->Internals->ChildrenFrame);
+    clayout->setMargin(3);
     this->Internals->ChildrenFrame->setSizePolicy(sizeFixedPolicy);
     this->Internals->ChildrenFrame->setFrameShape(QFrame::Box);
 
@@ -272,7 +272,7 @@ void qtDiscreteValueEditor::onInputValueChanged()
         this->Internals->ChildrenFrame, this->Internals->BaseView);
       if(childItem)
         {
-        layout->addWidget(childItem->widget());
+        clayout->addWidget(childItem->widget());
         this->Internals->ChildItems.push_back(childItem);
         }
       }

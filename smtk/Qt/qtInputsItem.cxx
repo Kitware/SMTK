@@ -424,16 +424,16 @@ void qtInputsItem::onRemoveValue()
     return;
     }
 
-  QWidget* widget = this->Internals->ExtensibleMap.value(minusButton).second;
-  if(this->Internals->ChildrenMap.value(widget).second)
+  QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
+  if(this->Internals->ChildrenMap.value(childwidget).second)
     {
-    delete this->Internals->ChildrenMap.value(widget).second;
+    delete this->Internals->ChildrenMap.value(childwidget).second;
     }
-  if(this->Internals->ChildrenMap.value(widget).first)
+  if(this->Internals->ChildrenMap.value(childwidget).first)
     {
-    delete this->Internals->ChildrenMap.value(widget).first;
+    delete this->Internals->ChildrenMap.value(childwidget).first;
     }
-  delete widget;
+  delete childwidget;
   delete this->Internals->ExtensibleMap.value(minusButton).first;
   this->Internals->ExtensibleMap.remove(minusButton);
   this->Internals->MinusButtonIndices.removeOne(minusButton);
