@@ -181,7 +181,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     if(!foundLevel && levels.size() > 0)
       {
       levels.insert(mylevel);
-      std::set<int>::const_iterator it = levels.upper_bound(mylevel);
+      std::set<int>::iterator it = levels.upper_bound(mylevel);
       mylevel = it == levels.end() ? *(--it) : *it;
       int idx = std::distance(levels.begin(), it) - 1;
       this->Internals->AdvLevelCombo->setCurrentIndex(idx);
