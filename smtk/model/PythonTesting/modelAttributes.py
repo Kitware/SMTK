@@ -113,6 +113,10 @@ def generate_attributes(scope):
       (att_name, face_id))
     att.associateEntity(face_id)
 
+    # Save attribute name and model entity (uuid) for checking later
+    meta = (att.name(), face_id)
+    scope.att_data.append(meta)
+
   # Generate boundary groups, hard-code to specific model edges
   flags = smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_1
   left_edges = scope.store.addGroup(flags, 'left_edges')
@@ -137,6 +141,8 @@ def generate_attributes(scope):
   logging.debug('Associate attribute \"%s\" to boundary group %s' % \
     (left_att.name(), left_edges.name()))
   ok = left_att.associateEntity(left_edges.entity())
+  meta = (left_att.name(), left_edges.entity())
+  scope.att_data.append(meta)
 
   defn = manager.findDefinition('Pressure')
   right_att = manager.createAttribute('rightBC', defn)
@@ -146,6 +152,8 @@ def generate_attributes(scope):
   logging.debug('Associate attribute \"%s\" to boundary group %s' % \
     (right_att.name(), right_edges.name()))
   ok = right_att.associateEntity(right_edges.entity())
+  meta = (right_att.name(), right_edges.entity())
+  scope.att_data.append(meta)
 
   return manager
 
@@ -158,36 +166,22 @@ def check_attributes(scope, manager):
   '''
   error_count = 0  # return value
 
-  # Get material attributes and sort by name
-  att_list = manager.findAttributes('Material')
-  att_list.sort(key=lambda att: att.name())
-  for i, att in enumerate(att_list):
-    face_id = uuid.UUID(scope.face_list[i])
-    if not att.isEntityAssociated(face_id):
-      logging.error('Missing association between attribute %s and face %s') % \
-        (att.name(), scope.face_list[i])
-      error_count += 1
-
-  # Check BC attributes (name, type, model entity)
-  info = [
-    ('leftBC', 'Velocity', 'left_edges'),
-    ('rightBC', 'Pressure', 'right_edges')
-  ]
-  for t in info:
-    att_name, att_type, ent_name = t
+  for t in scope.att_data:
+    att_name, entity_uuid = t
+    #logging.debug('att_name %s, uuid %s' % t)
     att = manager.findAttribute(att_name)
     if not att:
       logging.error('Missing attribute %s' % att_name)
       error_count += 1
-    if att.type() != att_type:
-      logging.error('Wrong attribute type')
-      error_cout += 1
     entity_id_set = att.associatedModelEntityIds()
     if not entity_id_set:
       logging.error('Missing model entity on attribute %s' % att_name)
       error_count += 1
+
     entity_ids = list(entity_id_set)
-    if scope.store.name(entity_ids[0]) != ent_name:
+    entity_id = entity_ids[0]
+    # Compare uuid strings
+    if entity_id.hex != entity_uuid.hex:
       logging.error('Unexpected model entity %s on attribute %s' % \
         (entity_ids[0], att_name))
       error_count += 1
@@ -228,6 +222,7 @@ if __name__ == '__main__':
   load_xref(scope, model_folder)
 
   # Build attributes and write to file
+  scope.att_data = list()
   manager = generate_attributes(scope)
   logging.info('Writing %s' % SBI_FILENAME)
   writer = smtk.util.AttributeWriter()
