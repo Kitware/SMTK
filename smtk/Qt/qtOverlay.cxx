@@ -1,4 +1,4 @@
-#include "qtOverlay.h"
+#include "smtk/Qt/qtOverlay.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>
