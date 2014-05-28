@@ -158,7 +158,15 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     this->baseView()->uiManager()->initAdvanceLevels(
       this->Internals->AdvLevelCombo);
     int mylevel = this->getObject()->advanceLevel(0);
-    this->Internals->AdvLevelCombo->setCurrentIndex(mylevel);
+    for(int i=0; i<this->Internals->AdvLevelCombo->count(); i++)
+      {
+      int level = this->Internals->AdvLevelCombo->itemData(i).toInt();
+      if(level == mylevel)
+        {
+        this->Internals->AdvLevelCombo->setCurrentIndex(i);
+        break;
+        }
+      }
     const double* rgba = this->baseView()->uiManager()->
       attManager()->advanceLevelColor(mylevel);
     if(rgba)
@@ -168,7 +176,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
       }
 
     QObject::connect(this->Internals->AdvLevelCombo,
-      SIGNAL(currentIndexChanged(int)), this, SLOT(setAdvanceLevel(int)));
+      SIGNAL(currentIndexChanged(int)), this, SLOT(onAdvanceLevelChanged(int)));
     }
 
   if(this->Internals->advOverlay)
@@ -179,6 +187,13 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     {
     this->widget()->repaint();
     }
+}
+
+//----------------------------------------------------------------------------
+void qtItem::onAdvanceLevelChanged(int levelIdx)
+{
+  int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toInt();
+  this->setAdvanceLevel(level);
 }
 
 //----------------------------------------------------------------------------
