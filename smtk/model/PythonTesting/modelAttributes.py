@@ -128,6 +128,25 @@ def generate_attributes(scope):
   scope.store.addToGroup(right_edges.entity(), uuid_list)
 
   # Create boundary condition attributes
+  defn = manager.findDefinition('Velocity')
+  left_att = manager.createAttribute('leftBC', defn)
+  item = left_att.item(0)
+  concrete_item = smtk.attribute.to_concrete(item)
+  concrete_item.setValue(0, 3.14159)
+  concrete_item.setValue(1, 2.71828)
+  logging.debug('Associate attribute \"%s\" to boundary group %s' % \
+    (left_att.name(), left_edges.name()))
+  ok = left_att.associateEntity(left_edges.entity())
+
+  defn = manager.findDefinition('Pressure')
+  right_att = manager.createAttribute('rightBC', defn)
+  item = left_att.item(0)
+  concrete_item = smtk.attribute.to_concrete(item)
+  concrete_item.setValue(0, 14.1)
+  logging.debug('Associate attribute \"%s\" to boundary group %s' % \
+    (right_att.name(), right_edges.name()))
+  ok = right_att.associateEntity(right_edges.entity())
+
   return manager
 
 
@@ -148,6 +167,32 @@ def check_attributes(scope, manager):
       logging.error('Missing association between attribute %s and face %s') % \
         (att.name(), scope.face_list[i])
       error_count += 1
+
+  # Check BC attributes (name, type, model entity)
+  info = [
+    ('leftBC', 'Velocity', 'left_edges'),
+    ('rightBC', 'Pressure', 'right_edges')
+  ]
+  for t in info:
+    att_name, att_type, ent_name = t
+    att = manager.findAttribute(att_name)
+    if not att:
+      logging.error('Missing attribute %s' % att_name)
+      error_count += 1
+    if att.type() != att_type:
+      logging.error('Wrong attribute type')
+      error_cout += 1
+    entity_id_set = att.associatedModelEntityIds()
+    if not entity_id_set:
+      logging.error('Missing model entity on attribute %s' % att_name)
+      error_count += 1
+    entity_ids = list(entity_id_set)
+    if scope.store.name(entity_ids[0]) != ent_name:
+      logging.error('Unexpected model entity %s on attribute %s' % \
+        (entity_ids[0], att_name))
+      error_count += 1
+
+  logging.debug('check_attributes error_count %d' % error_count)
   return error_count
 
 
