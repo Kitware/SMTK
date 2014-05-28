@@ -164,15 +164,18 @@ void qtGroupItem::updateItemData()
   if(item->isExtensible())
     {
     //clear mapping
-    foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
+    QMapIterator<QToolButton*, QList<qtItem* > > mit(this->Internals->ExtensibleMap);
+    while(mit.hasNext())
       {
-      foreach(qtItem* qi, this->Internals->ExtensibleMap.value(tButton))
+      mit.next();
+      QListIterator<qtItem* > lit(mit.value());
+      while(lit.hasNext())
         {
-        delete qi->widget();
-        delete qi;
+        qtItem* tmpItem = lit.next();
+        delete tmpItem->widget();
+        delete tmpItem;
         }
-//      delete this->Internals->ExtensibleMap.value(tButton).first;
-      delete tButton;
+      delete mit.key();
       }
     this->Internals->ExtensibleMap.clear();
     this->Internals->MinusButtonIndices.clear();

@@ -409,7 +409,7 @@ namespace smtk
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
         {
-        DataT dummy;
+        DataT dummy = DataT();
         return dummy;
         }
 

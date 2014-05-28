@@ -9,7 +9,10 @@ namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT  qtOverlay : public QWidget {
+    class QTSMTK_EXPORT  qtOverlay : public QWidget
+    {
+      Q_OBJECT
+
     public:
         qtOverlay(QWidget * parent = 0);
         void addOverlayWidget(QWidget*w);
@@ -24,7 +27,10 @@ namespace smtk
 
 
  //----------------------------------------------------------------------------
-   class QTSMTK_EXPORT  qtOverlayFilter : public QObject {
+    class QTSMTK_EXPORT  qtOverlayFilter : public QObject
+    {
+      Q_OBJECT
+
     public:
        // onWidget is what the overlay will be covering
         qtOverlayFilter(QWidget* onWidget, QObject * parent = 0);
