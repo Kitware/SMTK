@@ -233,8 +233,16 @@ if __name__ == '__main__':
     logging.error(logger.convertToString())
     sys.exit(5)
 
-  # Delete attributes and reload from file
+  # Delete model & attributes
+  del scope.store
   del manager
+
+  # Re-import model
+  test_store = smtk.model.Storage.create()
+  ok = smtk.model.ImportJSON.intoModel(json_string, test_store)
+  scope.store = test_store
+
+  # Re-read attribute file
   logging.info('Reading back %s' % SBI_FILENAME)
   test_manager = smtk.attribute.Manager()
   reader = smtk.util.AttributeReader()
