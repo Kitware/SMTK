@@ -631,5 +631,25 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   return 1;
 }
 
+int ImportJSON::getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::util::UUID>& uids)
+{
+  return cJSON_GetUUIDArray(uidRec, uids);
+}
+
+int ImportJSON::getStringArrayFromJSON(cJSON* arrayNode, std::vector<std::string>& text)
+{
+  return cJSON_GetStringArray(arrayNode, text);
+}
+
+int ImportJSON::getIntegerArrayFromJSON(cJSON* arrayNode, std::vector<long>& values)
+{
+  return cJSON_GetIntegerArray(arrayNode, values);
+}
+
+int ImportJSON::getRealArrayFromJSON(cJSON* arrayNode, std::vector<double>& values)
+{
+  return cJSON_GetRealArray(arrayNode, values);
+}
+
   }
 }

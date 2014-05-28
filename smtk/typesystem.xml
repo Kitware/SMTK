@@ -59,23 +59,27 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
