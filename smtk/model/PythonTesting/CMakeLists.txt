@@ -4,6 +4,11 @@ set(smtkModelPythonTests
   cursorTutorial
 )
 
+# Additional tests that require SMTK_DATA_DIR
+set(smtkModelPythonDataTests
+  modelAttributes
+)
+
 find_package( PythonInterp 2.7 )
 
 if( PYTHONINTERP_FOUND )
@@ -27,6 +32,21 @@ if( PYTHONINTERP_FOUND )
         ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
     )
   endforeach()
+
+  if (SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
+    foreach (test ${smtkModelPythonDataTests})
+      add_test(${test}Py
+               ${PYTHON_EXECUTABLE}
+               ${CMAKE_CURRENT_SOURCE_DIR}/${test}.py
+               ${SMTK_DATA_DIR})
+      set_tests_properties(${test}Py
+        PROPERTIES
+          ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}"
+      )
+    endforeach()
+  endif()
+
+
 else()
   message("could not find python interp")
 endif()
