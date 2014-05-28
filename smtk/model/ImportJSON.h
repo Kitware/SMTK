@@ -32,6 +32,12 @@ public:
   static int ofManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context);
+
+  // Low-level helpers:
+  static int getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::util::UUID>& uids);
+  static int getStringArrayFromJSON(cJSON* arrayNode, std::vector<std::string>& text);
+  static int getIntegerArrayFromJSON(cJSON* arrayNode, std::vector<long>& values);
+  static int getRealArrayFromJSON(cJSON* arrayNode, std::vector<double>& values);
 };
 
   } // namespace model
