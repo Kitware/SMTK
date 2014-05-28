@@ -264,7 +264,8 @@ void qtUIManager::internalInitialize()
       {
       minLevel = std::min(minLevel, ait->first);
       }
-    this->m_currentAdvLevel = minLevel;
+    // this->m_currentAdvLevel can not be lower than the minLevel
+    this->m_currentAdvLevel = std::max(minLevel, this->m_currentAdvLevel);
     }
 }
 

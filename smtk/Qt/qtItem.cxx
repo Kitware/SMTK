@@ -158,14 +158,33 @@ void qtItem::showAdvanceLevelOverlay(bool show)
     this->baseView()->uiManager()->initAdvanceLevels(
       this->Internals->AdvLevelCombo);
     int mylevel = this->getObject()->advanceLevel(0);
+    bool foundLevel = false;
+    std::set<int> levels;
     for(int i=0; i<this->Internals->AdvLevelCombo->count(); i++)
       {
       int level = this->Internals->AdvLevelCombo->itemData(i).toInt();
       if(level == mylevel)
         {
         this->Internals->AdvLevelCombo->setCurrentIndex(i);
+        foundLevel = true;
         break;
         }
+      levels.insert(level);
+      }
+    // in case the advanceLevel is not one of the "AdvanceLevels" specified in xml,
+    // we use the lowest level that is more than mylevel.
+    // for example, levels 100, 200, 300.
+    // mylevel 50 will use level 100
+    // mylevel 150 will use level 200
+    // my level 250 will use level 300
+    // my level 350 will not be visible at all
+    if(!foundLevel && levels.size() > 0)
+      {
+      levels.insert(mylevel);
+      std::set<int>::const_iterator it = levels.upper_bound(mylevel);
+      mylevel = it == levels.end() ? *(--it) : *it;
+      int idx = std::distance(levels.begin(), it) - 1;
+      this->Internals->AdvLevelCombo->setCurrentIndex(idx);
       }
     const double* rgba = this->baseView()->uiManager()->
       attManager()->advanceLevelColor(mylevel);
