@@ -51,6 +51,11 @@ qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject
 }
 void qtOverlayFilter::setActive(bool val)
 {
+  if (m_overlay && m_overlayOn)
+    {
+    m_overlay->setGeometry(m_overlayOn->geometry());
+    }
+
   this->m_overlay->setVisible(val);
   this->m_Active = val;
 }
@@ -83,7 +88,12 @@ bool qtOverlayFilter::eventFilter(QObject * obj, QEvent * ev)
       m_overlay->setGeometry(w->geometry());
       m_overlayOn = w;
       }
-    m_overlay->show();
+    if (m_overlay && m_overlayOn == w)
+      {
+      m_overlay->setGeometry(w->geometry());
+      m_overlay->show();
+//      m_overlay->repaint();
+      }
     }
   else if (ev->type() == QEvent::Resize)
     {

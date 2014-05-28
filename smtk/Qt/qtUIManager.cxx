@@ -251,6 +251,21 @@ void qtUIManager::internalInitialize()
   dcolor = rs->invalidColor();
   this->InvalidValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
   this->findDefinitionsLongLabels();
+
+  // initialize initial advance level
+  const std::map<int, std::string> &levels = this->m_AttManager.advanceLevels();
+  if(levels.size() > 0)
+    {
+    // use the minimum enum value as initial advance level
+    std::map<int, std::string>::const_iterator ait = levels.begin();
+    int minLevel = ait->first;
+    ait++;
+    for (; ait != levels.end(); ++ait)
+      {
+      minLevel = std::min(minLevel, ait->first);
+      }
+    this->m_currentAdvLevel = minLevel;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -275,15 +290,15 @@ void qtUIManager::initAdvanceLevels(QComboBox* combo)
     {
     // for backward compatibility, we automatically add
     // two levels which is implicitly supported in previous version
-    combo->addItem("General");
-    combo->addItem("Advanced");
+    combo->addItem("General", 0);
+    combo->addItem("Advanced", 1);
     }
   else
     {
     std::map<int, std::string>::const_iterator ait;
     for (ait = levels.begin(); ait != levels.end(); ++ait)
       {
-      combo->addItem(ait->second.c_str());
+      combo->addItem(ait->second.c_str(), ait->first);
       }
     }
 }

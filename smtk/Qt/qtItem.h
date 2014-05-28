@@ -93,10 +93,12 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      virtual void setAdvanceLevel(int level);
-    protected:
+      virtual void onAdvanceLevelChanged(int levelIdx);
+
+   protected:
       virtual void createWidget() {;}
       virtual qtBaseView* baseView();
+      virtual void setAdvanceLevel(int level);
 
       QWidget* Widget;
       bool IsLeafItem;

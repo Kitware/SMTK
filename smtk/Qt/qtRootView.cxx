@@ -148,8 +148,15 @@ void qtRootView::createWidget( )
   parentlayout->addLayout(layout);
 
   QObject::connect(this->Internals->AdvLevelCombo,
-    SIGNAL(currentIndexChanged(int)), this, SLOT(showAdvanceLevel(int)));
+    SIGNAL(currentIndexChanged(int)), this, SLOT(onAdvanceLevelChanged(int)));
   this->showAdvanceLevel(this->uiManager()->advanceLevel());
+}
+
+//----------------------------------------------------------------------------
+void qtRootView::onAdvanceLevelChanged(int levelIdx)
+{
+  int level = this->Internals->AdvLevelCombo->itemData(levelIdx).toInt();
+  this->showAdvanceLevel(level);
 }
 
 //----------------------------------------------------------------------------
@@ -232,7 +239,15 @@ void qtRootView::showAdvanceLevel(int level)
   if(level != this->advanceLevel())
     {
     this->Internals->AdvLevelCombo->blockSignals(true);
-    this->Internals->AdvLevelCombo->setCurrentIndex(level);
+    for(int i=0; i<this->Internals->AdvLevelCombo->count(); i++)
+      {
+      int l = this->Internals->AdvLevelCombo->itemData(i).toInt();
+      if(level == l)
+        {
+        this->Internals->AdvLevelCombo->setCurrentIndex(i);
+        break;
+        }
+      }
     this->Internals->AdvLevelCombo->blockSignals(false);
     }
   this->uiManager()->setAdvanceLevel(level);

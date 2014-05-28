@@ -60,6 +60,9 @@ namespace smtk
       virtual void onShowCategory();
       virtual void showAdvanceLevelOverlay(bool);
 
+    protected slots:
+      virtual void onAdvanceLevelChanged(int levelIdx);
+
     protected:
       virtual void createWidget( );
       virtual void initRootTabGroup( );
