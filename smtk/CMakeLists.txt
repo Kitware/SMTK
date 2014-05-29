@@ -26,6 +26,7 @@ if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
   set_target_properties(SMTKCore PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()
 
+# On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
   set_target_properties(SMTKCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
@@ -64,7 +65,7 @@ if(SMTK_BUILD_QT)
 
   add_library(QtSMTK ${qtsmtk_srcs})
 
-  #specify the install directory for this library
+  # On Mac OS X, set the directory included as part of the installed library's path:
   set_target_properties(QtSMTK PROPERTIES
                         INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 
@@ -132,6 +133,10 @@ if (SMTK_BUILD_CGM)
   # Add compile definitions and include directories
   set_property(TARGET cgmSMTK APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
   set_property(TARGET cgmSMTK APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
+  # On Mac OS X, set the directory included as part of the installed library's path:
+  if (BUILD_SHARED_LIBS)
+    set_target_properties(cgmSMTK PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  endif()
 
   #install the library and exports the library when used from a build tree
   smtk_install_library(cgmSMTK DEPENDS SMTKCore)
