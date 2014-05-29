@@ -66,6 +66,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
@@ -78,8 +79,12 @@
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -249,9 +254,7 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperators', unmatched parameter type 'smtk::model::Operators&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
 
 
 

@@ -417,5 +417,20 @@ int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
   return 1;
 }
 
+cJSON* ExportJSON::createStringArray(std::vector<std::string>& arr)
+{
+  return cJSON_CreateStringArray(&arr[0], static_cast<unsigned>(arr.size()));
+}
+
+cJSON* ExportJSON::createUUIDArray(std::vector<smtk::util::UUID>& arr)
+{
+  return cJSON_CreateUUIDArray(&arr[0], static_cast<unsigned>(arr.size()));
+}
+
+cJSON* ExportJSON::createIntegerArray(std::vector<long>& arr)
+{
+  return cJSON_CreateLongArray(&arr[0], static_cast<unsigned>(arr.size()));
+}
+
   }
 }

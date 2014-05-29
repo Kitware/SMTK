@@ -55,6 +55,11 @@ public:
   static int forModelOperators(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
   static int forOperators(Operators& ops, cJSON*);
   static int forOperator(OperatorPtr op, cJSON*);
+
+  // Low-level helpers:
+  static cJSON* createStringArray(std::vector<std::string>& arr);
+  static cJSON* createUUIDArray(std::vector<smtk::util::UUID>& arr);
+  static cJSON* createIntegerArray(std::vector<long>& arr);
 };
 
   } // namespace model
