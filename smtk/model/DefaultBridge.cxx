@@ -17,4 +17,8 @@ BridgedInfoBits DefaultBridge::transcribeInternal(const Cursor& entity, BridgedI
   } // namespace model
 } // namespace smtk
 
-smtkImplementsModelingKernel(native,smtk::model::DefaultBridge);
+static const char* DefaultBridgeFileTypes[] = {
+  ".json",
+  NULL
+};
+smtkImplementsModelingKernel(native,DefaultBridgeFileTypes,smtk::model::DefaultBridge);

@@ -1228,7 +1228,7 @@ void BRepModel::cleanupBridges()
   delete BRepModel::s_bridges;
 }
 
-bool BRepModel::registerBridge(const std::string& bname, BridgeConstructor bctor)
+bool BRepModel::registerBridge(const std::string& bname, const StringList& fileTypes, BridgeConstructor bctor)
 {
   if (!BRepModel::s_bridges)
     {
@@ -1237,12 +1237,16 @@ bool BRepModel::registerBridge(const std::string& bname, BridgeConstructor bctor
     }
   if (!bname.empty() && bctor)
     {
-    (*BRepModel::s_bridges)[bname] = bctor;
+    StaticBridgeInfo entry(fileTypes, bctor);
+    (*BRepModel::s_bridges)[bname] = entry;
     return true;
     }
   else if (!bname.empty())
     { // unregister the bridge of the given name.
     BRepModel::s_bridges->erase(bname);
+    // FIXME: We should ensure that no registered Bridge sessions are of type bname.
+    //        Presumably, by deleting all such sessions and removing their entities
+    //        from storage.
     }
   return false;
 }
@@ -1253,6 +1257,30 @@ StringList BRepModel::bridgeNames()
   StringList result;
   for (BridgeConstructors::const_iterator it = s_bridges->begin(); it != s_bridges->end(); ++it)
     result.push_back(it->first);
+  return result;
+}
+
+/// Return the list of file types this bridge can read (currently: a list of file extensions).
+StringList BRepModel::bridgeFileTypes(const std::string& bname)
+{
+  BridgeConstructors::const_iterator it = s_bridges->find(bname);
+  if (it != s_bridges->end())
+    return it->second.first;
+  StringList result;
+  return result;
+}
+
+/**\brief Return a function to construct a Bridge instance given its class-specific name. Or NULL if you pass an invalid name.
+  *
+  * After calling the constructor, you most probably want to call
+  * registerBridgeSession with the new bridge's UUID.
+  */
+BridgeConstructor BRepModel::bridgeConstructor(const std::string& bname)
+{
+  BridgeConstructor result = NULL;
+  BridgeConstructors::const_iterator it = s_bridges->find(bname);
+  if (it != s_bridges->end())
+    result = it->second.second;
   return result;
 }
 

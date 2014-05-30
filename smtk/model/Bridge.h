@@ -20,7 +20,8 @@ class Cursor;
 class Operator;
 typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
 typedef smtk::shared_ptr<Bridge> (*BridgeConstructor)();
-typedef std::map<std::string,BridgeConstructor> BridgeConstructors;
+typedef std::pair<smtk::model::StringList,BridgeConstructor> StaticBridgeInfo;
+typedef std::map<std::string,StaticBridgeInfo> BridgeConstructors;
 
 /**\brief Bit flags describing types of information bridged to Manager.
   *
@@ -63,21 +64,37 @@ typedef unsigned long BridgedInfoBits;
  * Note that you must invoke this macro in the global namespace!
  *
  * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
+ *
+ * This macro takes 3 arguments:
+ *
+ * \a Comp      - A "short" name for the bridge. This is used as part of several function
+ *                names, so it must be a valid variable name and should *not* be in quotes.
+ * \a FileTypes - a pointer to a NULL-terminated array of strings containing file types
+ *                that the bridge supports. Each type may be followed by a parentetical
+ *                description of the file type, e.g., { "*.json (Native SMTK model)", NULL }.
+ * \a Cls       - The name of the bridge class. The class must have a static method named
+ *                "create" that constructs and instance and returns a shared pointer to it.
  */
-#define smtkImplementsModelingKernel(Comp, Cls) \
+#define smtkImplementsModelingKernel(Comp, FileTypes, Cls) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::BridgePtr baseCreate() { \
     return Cls ::create(); \
   } \
   /* Implement autoinit methods */ \
   void smtk_##Comp##_bridge_AutoInit_Construct() { \
+    std::vector<std::string> fileTypes; \
+    for (const char** ft = FileTypes; *ft; ++ft) \
+      if (*ft[0]) \
+        fileTypes.push_back(*ft); \
     smtk::model::BRepModel::registerBridge( \
       #Comp, /* Can't rely on bridgeName to be initialized yet */ \
+      fileTypes, \
       baseCreate); \
   } \
   void smtk_##Comp##_bridge_AutoInit_Destruct() { \
     smtk::model::BRepModel::registerBridge( \
       Cls ::bridgeName, \
+      std::vector<std::string>(), \
       NULL); \
   } \
   /* Declare the component name */ \
