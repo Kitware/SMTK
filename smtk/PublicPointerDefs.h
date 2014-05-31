@@ -62,6 +62,7 @@ namespace smtk
     class Cursor;
     typedef std::set<Cursor> Cursors;
     typedef std::vector<Cursor> CursorArray;
+    class DefaultBridge;
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<Edge> Edges;
@@ -169,6 +170,7 @@ namespace smtk
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
     typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
+    typedef smtk::shared_ptr< smtk::model::DefaultBridge >         DefaultBridgePtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;

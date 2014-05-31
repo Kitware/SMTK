@@ -36,6 +36,7 @@ public:
   Parameters parameters() const;
   const Parameter& parameter(const std::string& name) const;
   Parameter parameter(const std::string& name);
+  virtual void setParameters(const Parameters& p);
   virtual void setParameter(const Parameter& p);
   bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
   bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;

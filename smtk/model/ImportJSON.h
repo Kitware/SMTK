@@ -31,6 +31,7 @@ public:
   static int ofManagerFloatProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
+  static int ofRemoteBridgeSession(cJSON*, DefaultBridgePtr destBridge, ManagerPtr context);
   static int ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context);
 
   // Low-level helpers:

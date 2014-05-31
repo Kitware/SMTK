@@ -67,7 +67,10 @@ OperatorPtr DefaultBridge::op(const std::string& opName, ManagerPtr manager) con
     RemoteOperatorPtr rop = RemoteOperator::create();
     rop->setName(opName);
     rop->setManager(manager);
-    rop->setBridge(const_cast<DefaultBridge*>(this));
+    // Naughty, but necessary so we can pretend that the
+    // operator existed all along.
+    DefaultBridge* self = const_cast<DefaultBridge*>(this);
+    rop->setBridge(self);
     oper = rop;
     }
   return oper;

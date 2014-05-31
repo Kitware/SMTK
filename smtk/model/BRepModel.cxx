@@ -35,6 +35,7 @@ BRepModel::BRepModel() :
   m_defaultBridge(DefaultBridge::create()),
   m_modelCount(1)
 {
+  this->registerBridgeSession(this->m_defaultBridge);
   // TODO: throw() when topology == NULL?
 }
 
@@ -49,10 +50,14 @@ BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
   m_integerData(new UUIDsToIntegerData),
   m_defaultBridge(DefaultBridge::create()),
   m_modelCount(1)
-    { } // TODO: throw() when topology == NULL?
+{
+  this->registerBridgeSession(this->m_defaultBridge);
+  // TODO: throw() when topology == NULL?
+}
 
 BRepModel::~BRepModel()
 {
+  this->unregisterBridgeSession(this->m_defaultBridge);
 }
 
 UUIDsToEntities& BRepModel::topology()

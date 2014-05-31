@@ -66,6 +66,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>

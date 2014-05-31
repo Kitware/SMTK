@@ -46,6 +46,20 @@ Parameter Operator::parameter(const std::string& pname)
   return Parameter();
 }
 
+/**\brief Set all of the parameters to those given.
+  *
+  * This clears the entire set of current parameters and
+  * then adds each parameter from the set \a p.
+  */
+void Operator::setParameters(const Parameters& p)
+{
+  this->m_parameters.clear();
+  Parameters::const_iterator it;
+  for (it = p.begin(); it != p.end(); ++it)
+    {
+    this->setParameter(*it);
+    }
+}
 
 /**\brief Set the value of a parameter to \a p.
   *
@@ -120,6 +134,14 @@ OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::I
   return shared_from_this();
 }
 ///@}
+
+OperatorPtr Operator::removeParameter(const std::string& name)
+{
+  Parameters::iterator it = this->m_parameters.find(Parameter(name));
+  if (it != this->m_parameters.end())
+    this->m_parameters.erase(it);
+  return shared_from_this();
+}
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
 bool Operator::hasFloatParameter(const std::string& pname, int minSize, int maxSize, bool validate) const

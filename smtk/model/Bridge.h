@@ -157,6 +157,8 @@ public:
   virtual void addOperator(OperatorPtr op);
 
 protected:
+  Bridge();
+
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
