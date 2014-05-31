@@ -143,8 +143,10 @@ public:
   std::string assignDefaultName(const smtk::util::UUID& uid);
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
-  static bool registerBridge(const std::string& bname, BridgeConstructor bctor);
+  static bool registerBridge(const std::string& bname, const StringList& fileTypes, BridgeConstructor bctor);
   static StringList bridgeNames();
+  static StringList bridgeFileTypes(const std::string& bname);
+  static BridgeConstructor bridgeConstructor(const std::string& bname);
 
   bool registerBridgeSession(BridgePtr session);
   bool unregisterBridgeSession(BridgePtr session);

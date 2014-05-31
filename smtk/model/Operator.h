@@ -32,7 +32,15 @@ public:
   Parameters parameters() const;
   const Parameter& parameter(const std::string& name) const;
   Parameter parameter(const std::string& name);
+  virtual void setParameters(const Parameters& p);
   virtual void setParameter(const Parameter& p);
+  OperatorPtr setParameter(const std::string& name, smtk::model::Float val);
+  OperatorPtr setParameter(const std::string& name, const smtk::model::FloatList& val);
+  OperatorPtr setParameter(const std::string& name, const smtk::model::String& val);
+  OperatorPtr setParameter(const std::string& name, const smtk::model::StringList& val);
+  OperatorPtr setParameter(const std::string& name, smtk::model::Integer val);
+  OperatorPtr setParameter(const std::string& name, const smtk::model::IntegerList& val);
+  OperatorPtr removeParameter(const std::string& name);
   bool hasFloatParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
   bool hasStringParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
   bool hasIntegerParameter(const std::string& name, int minSize = 1, int maxSize = -1, bool validate = true) const;
@@ -53,15 +61,15 @@ public:
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
 
-  BridgePtr bridge() const;
-  Ptr setBridge(BridgePtr b);
+  Bridge* bridge() const;
+  Ptr setBridge(Bridge* b);
 
   bool operator < (const Operator& other) const;
 
 protected:
   Parameters m_parameters;
   ManagerPtr m_manager;
-  BridgePtr m_bridge;
+  Bridge* m_bridge;
   std::set<ParameterChangeObserver> m_parameterChangeTriggers;
   std::set<WillOperateObserver> m_willOperateTriggers;
   std::set<DidOperateObserver> m_didOperateTriggers;

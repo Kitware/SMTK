@@ -39,6 +39,7 @@ public:
   Parameter(const std::string& name, const smtk::util::UUIDArray& val);
 
   std::string name() const;
+  void setName(const std::string nm) { this->m_name = nm; }
   ParameterValidState validState() const;
 
   FloatList& floatValues() { return this->m_floatVals; }

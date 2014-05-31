@@ -31,6 +31,9 @@ add_executable(unitCursor unitCursor.cxx)
 target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)
 add_test(unitCursor ${EXECUTABLE_OUTPUT_PATH}/unitCursor)
 
+add_executable(unitDefaultBridge unitDefaultBridge.cxx)
+target_link_libraries(unitDefaultBridge SMTKCore SMTKCoreModelTesting)
+
 add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
 target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)
 

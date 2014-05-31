@@ -62,6 +62,7 @@ namespace smtk
     class Cursor;
     typedef std::set<Cursor> Cursors;
     typedef std::vector<Cursor> CursorArray;
+    class DefaultBridge;
     class DescriptivePhrase;
     class Edge;
     typedef std::vector<Edge> Edges;
@@ -92,6 +93,7 @@ namespace smtk
     class Parameter;
     class PropertyValuePhrase;
     class PropertyListPhrase;
+    class RemoteOperator;
     class Shell;
     typedef std::vector<Shell> Shells;
     class ShellEntity;
@@ -168,6 +170,7 @@ namespace smtk
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
     typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
+    typedef smtk::shared_ptr< smtk::model::DefaultBridge >         DefaultBridgePtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;
@@ -176,13 +179,14 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::PropertyListPhrase >    PropertyListPhrasePtr;
     typedef smtk::shared_ptr< smtk::model::SimpleModelSubphrases > SimpleModelSubphrasesPtr;
     typedef smtk::shared_ptr< smtk::model::SubphraseGenerator >    SubphraseGeneratorPtr;
+    typedef smtk::shared_ptr< smtk::model::Manager >               ManagerPtr;
+    typedef smtk::weak_ptr< smtk::model::Manager >                 WeakManagerPtr;
     typedef smtk::shared_ptr< smtk::model::Model >                 ModelPtr;
     typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
     typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
     typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
     typedef std::set< smtk::model::OperatorPtr >                   Operators;
-    typedef smtk::shared_ptr< smtk::model::Manager >               ManagerPtr;
-    typedef smtk::weak_ptr< smtk::model::Manager >                 WeakManagerPtr;
+    typedef smtk::shared_ptr< smtk::model::RemoteOperator >        RemoteOperatorPtr;
     typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;
     typedef smtk::weak_ptr< smtk::model::Item >                    WeakItemPtr;
     typedef smtk::shared_ptr< smtk::model::GroupItem >             GroupItemPtr;

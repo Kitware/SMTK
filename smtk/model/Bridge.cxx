@@ -3,6 +3,12 @@
 namespace smtk {
   namespace model {
 
+/// Default constructor. This assigns a random session ID to each Bridge instance.
+Bridge::Bridge()
+  : m_sessionId(smtk::util::UUID::random())
+{
+}
+
 /**\brief Return the name of the bridge type (i.e., the name of the modeling kernel).
   *
   * Subclasses override this method by using the smtkDeclareModelingKernel
@@ -20,9 +26,6 @@ std::string Bridge::name() const
   * JSON stringifications of operators to perform remote procedure
   * calls (RPC), the session ID specifies which Bridge on which
   * machine should actually invoke the operator.
-  *
-  * If this is NULL, it is an indication that you have obtained
-  * a forwarding bridge that is remote.
   */
 smtk::util::UUID Bridge::sessionId() const
 {
@@ -115,10 +118,14 @@ OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
   *
   * Subclasses of Bridge should call this method in their
   * constructors to indicate which modeling operations they will support.
+  *
+  * Note that Operators store a pointer to the bridge, not a
+  * shared pointer, to avoid a reference loop (and allow
+  * addOperator to be called inside the constructor).
   */
 void Bridge::addOperator(OperatorPtr oper)
 {
-  this->m_operators.insert(oper->clone()->setBridge(shared_from_this()));
+  this->m_operators.insert(oper->clone()->setBridge(this));
 }
 
 /**\brief Mark an entity, \a ent, as partially transcribed.
@@ -157,8 +164,11 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
   return 0;
 }
 
-/**\brief Set the session ID. Do not call this unless you are the Storage instance.
+/**\brief Set the session ID.
   *
+  * Do not call this unless you are preparing the bridge
+  * to be a remote mirror of a modeling session (for, e.g.,
+  * client-server operation).
   */
 void Bridge::setSessionId(const smtk::util::UUID& sessId)
 {

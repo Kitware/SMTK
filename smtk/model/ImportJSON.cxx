@@ -1,9 +1,10 @@
 #include "smtk/model/ImportJSON.h"
 
-#include "smtk/model/Manager.h"
-#include "smtk/model/Entity.h"
-#include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/DefaultBridge.h"
+#include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Tessellation.h"
 
 #include "cJSON.h"
 
@@ -553,6 +554,55 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* d
   return status ? 0 : 1;
 }
 
+/**\brief Import JSON holding a bridge session into a local bridge.
+  *
+  * You are responsible for providing the \a destBridge instance
+  * into which the \a node's session will be placed.
+  * You must also provide a valid model manager, and \a destBridge
+  * will be registered with \a context after its session ID has
+  * been assigned.
+  * The \a destBridge must be of a proper type for your application
+  * (i.e., be able to forward requests for data and operations).
+  */
+int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, ManagerPtr context)
+{
+  int status = 0;
+  cJSON* opsObj;
+  cJSON* nameObj;
+  if (
+    !node ||
+    node->type != cJSON_Object ||
+    // Does the node have a valid bridge session ID?
+    !node->string ||
+    !node->string[0] ||
+    // Does the node have fields "name" and "ops" (for "operators") of type String and Array?
+    !(nameObj = cJSON_GetObjectItem(node, "name")) ||
+    nameObj->type != cJSON_String ||
+    !nameObj->valuestring ||
+    !nameObj->valuestring[0] ||
+    !(opsObj = cJSON_GetObjectItem(node, "ops")) ||
+    opsObj->type != cJSON_Array)
+    return status;
+
+  destBridge->backsRemoteBridge(
+    nameObj->valuestring, smtk::util::UUID(node->string));
+  // We must call registerBridgeSession be done before importing operators
+  // or the bridge won't be asked to create operators.
+  context->registerBridgeSession(destBridge);
+  OperatorPtr remoteOp;
+  cJSON* opObj;
+  destBridge->setImportingOperators(true);
+  for (opObj = opsObj->child; opObj; opObj = opObj->next)
+    {
+    cJSON_AddItemToObject(opObj, "sessionId", cJSON_CreateString(node->string));
+    status |=ImportJSON::ofOperator(opObj, remoteOp, context);
+    destBridge->addOperator(remoteOp);
+    }
+  destBridge->setImportingOperators(false);
+
+  return status;
+}
+
 /**\brief Import JSON for an operator into an Operator instance.
   *
   * **Important**: Unlike other JSON import methods, this method
@@ -583,19 +633,27 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   smtk::util::UUID sessionId;
   if (
     !pnode ||
-    !cJSON_GetStringValue(pnode, osess) ||
+    cJSON_GetStringValue(pnode, osess) ||
     osess.empty() ||
     (sessionId = smtk::util::UUID(osess)).isNull())
     return 0;
 
-  BridgePtr bridge = context->findBridgeSession(sessionId);
+  BridgePtr bridge;
+  DefaultBridge::Ptr defBridge;
+  if (context)
+    {
+    bridge = context->findBridgeSession(sessionId);
+    defBridge = smtk::dynamic_pointer_cast<DefaultBridge>(bridge);
+    }
 
   std::string oname;
   pnode = cJSON_GetObjectItem(node, "name");
-  if (!pnode || !cJSON_GetStringValue(pnode, oname))
+  if (!pnode || cJSON_GetStringValue(pnode, oname))
     return 0;
 
+  if (defBridge) defBridge->setImportingOperators(true);
   op = bridge->op(oname, context);
+  if (defBridge) defBridge->setImportingOperators(false);
   if (!op)
     return 0;
 
@@ -609,6 +667,11 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
       FloatList fval;
       StringList sval;
       IntegerList ival;
+      std::string pname;
+      pnode = cJSON_GetObjectItem(param, "name");
+      if (!pnode || cJSON_GetStringValue(pnode, pname))
+        continue;
+      pv.setName(pname);
       pnode = cJSON_GetObjectItem(param, "v");
       if (pnode)
         switch (pnode->type)
@@ -626,6 +689,8 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
       pnode = cJSON_GetObjectItem(param, "i");
       if (pnode && cJSON_GetIntegerArray(pnode, ival))
         pv.setIntegerValue(ival);
+
+      op->setParameter(pv);
       }
     }
   return 1;

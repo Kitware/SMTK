@@ -46,8 +46,31 @@ Parameter Operator::parameter(const std::string& pname)
   return Parameter();
 }
 
+/**\brief Set all of the parameters to those given.
+  *
+  * This clears the entire set of current parameters and
+  * then adds each parameter from the set \a p.
+  */
+void Operator::setParameters(const Parameters& p)
+{
+  this->m_parameters.clear();
+  Parameters::const_iterator it;
+  for (it = p.begin(); it != p.end(); ++it)
+    {
+    this->setParameter(*it);
+    }
+}
 
-/// Set the value of a parameter to \a p. Note that unexpected parameters will be ignored by most operators.
+/**\brief Set the value of a parameter to \a p.
+  *
+  * Note that unexpected parameters will be ignored by most operators.
+  *
+  * This method does *not* return a shared pointer to the Operator.
+  * For this reason, your should use this variant of setParameter
+  * inside your Operator subclass's constructor.
+  * (You may not call shared_from_this() from within a constructor,
+  * making it impossible to return a shared pointer during construction.)
+  */
 void Operator::setParameter(const Parameter& p)
 {
   Parameters::const_iterator old = this->m_parameters.find(p);
@@ -61,6 +84,63 @@ void Operator::setParameter(const Parameter& p)
     this->trigger(PARAMETER_CHANGE, Parameter(), p);
     }
   this->m_parameters.insert(p);
+}
+
+/** @name Parameter convenience methods.
+  *
+  * These methods all call Operator::setParameter(const Parameter&)
+  * but will create a parameter instance for you given its name
+  * and value.
+  * These methods also return a shared pointer to the Operator
+  * instance so that you can chain calls to setParameter together
+  * when setting several parameters.
+  *
+  * These are not templated to make Python-wrapping easier.
+  */
+///@{
+OperatorPtr Operator::setParameter(const std::string& name, smtk::model::Float val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+
+OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::FloatList& val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+
+OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::String& val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+
+OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::StringList& val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+
+OperatorPtr Operator::setParameter(const std::string& name, smtk::model::Integer val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+
+OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::IntegerList& val)
+{
+  this->setParameter(Parameter(name, val));
+  return shared_from_this();
+}
+///@}
+
+OperatorPtr Operator::removeParameter(const std::string& name)
+{
+  Parameters::iterator it = this->m_parameters.find(Parameter(name));
+  if (it != this->m_parameters.end())
+    this->m_parameters.erase(it);
+  return shared_from_this();
 }
 
 /// Check whether a parameter of the given name exists and has an acceptable number of entries.
@@ -229,7 +309,7 @@ Operator::Ptr Operator::setManager(ManagerPtr s)
 }
 
 /// Return the bridge associated with this operator (or a "null"/invalid shared-pointer).
-BridgePtr Operator::bridge() const
+Bridge* Operator::bridge() const
 {
   return this->m_bridge;
 }
@@ -238,7 +318,7 @@ BridgePtr Operator::bridge() const
   *
   * The return value is a shared pointer to this operator.
   */
-Operator::Ptr Operator::setBridge(BridgePtr b)
+Operator::Ptr Operator::setBridge(Bridge* b)
 {
   this->m_bridge = b;
   return shared_from_this();

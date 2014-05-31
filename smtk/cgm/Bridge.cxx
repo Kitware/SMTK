@@ -603,7 +603,20 @@ void Bridge::colorPropFromIndex(
   } // namespace cgm
 } // namespace cgmsmtk
 
-smtkImplementsModelingKernel(cgm,cgmsmtk::cgm::Bridge);
+static const char* CGMFileTypes[] = {
+  ".sat (Standard ACIS Text)",
+  ".step (Standard for the Exchange of Product model data)",
+  ".stp (Standard for the Exchange of Product model data)",
+  ".iges (Initial Graphics Exchange Specification)",
+  ".igs (Initial Graphics Exchange Specification)",
+  ".brep (OpenCascade Boundary Representation)",
+  ".occ (OpenCascade Boundary Representation)",
+  ".stl (STereoLithography file)",
+  ".off (Object File Format)",
+  ".cholla (Cholla facet file)",
+  NULL
+};
+smtkImplementsModelingKernel(cgm,CGMFileTypes,cgmsmtk::cgm::Bridge);
 
 // Ensure that anything which links to this library
 // results in the bridge being registered (unless this

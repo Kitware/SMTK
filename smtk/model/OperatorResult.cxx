@@ -43,6 +43,20 @@ Parameter OperatorResult::parameter(const std::string& pname)
   return Parameter();
 }
 
+/**\brief Set all of the parameters to those given.
+  *
+  * This clears the entire set of current parameters and
+  * then adds each parameter from the set \a p.
+  */
+void OperatorResult::setParameters(const Parameters& p)
+{
+  this->m_parameters.clear();
+  Parameters::const_iterator it;
+  for (it = p.begin(); it != p.end(); ++it)
+    {
+    this->setParameter(*it);
+    }
+}
 
 /// Set the value of a parameter to \a p.
 void OperatorResult::setParameter(const Parameter& p)

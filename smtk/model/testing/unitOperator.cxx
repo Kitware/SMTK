@@ -252,7 +252,7 @@ void testBridgeAssociation(Manager::Ptr manager)
   test(op ? 1 : 0, "ModelEntity::op(\"ParameterTest\") returned a \"null\" shared pointer.");
 
   // Test Operator->Bridge association
-  test(op->bridge() == manager->bridgeForModel(smtk::util::UUID::null()),
+  test(op->bridge() == manager->bridgeForModel(smtk::util::UUID::null()).get(),
     "Bad bridge reported by operator.");
 
   // Test Operator->Manager association
