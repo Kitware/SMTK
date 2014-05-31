@@ -98,46 +98,46 @@ void Operator::setParameter(const Parameter& p)
   * These are not templated to make Python-wrapping easier.
   */
 ///@{
-OperatorPtr Operator::setParameter(const std::string& name, smtk::model::Float val)
+OperatorPtr Operator::setParameter(const std::string& pname, smtk::model::Float val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 
-OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::FloatList& val)
+OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::FloatList& val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 
-OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::String& val)
+OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::String& val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 
-OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::StringList& val)
+OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::StringList& val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 
-OperatorPtr Operator::setParameter(const std::string& name, smtk::model::Integer val)
+OperatorPtr Operator::setParameter(const std::string& pname, smtk::model::Integer val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 
-OperatorPtr Operator::setParameter(const std::string& name, const smtk::model::IntegerList& val)
+OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::IntegerList& val)
 {
-  this->setParameter(Parameter(name, val));
+  this->setParameter(Parameter(pname, val));
   return shared_from_this();
 }
 ///@}
 
-OperatorPtr Operator::removeParameter(const std::string& name)
+OperatorPtr Operator::removeParameter(const std::string& pname)
 {
-  Parameters::iterator it = this->m_parameters.find(Parameter(name));
+  Parameters::iterator it = this->m_parameters.find(Parameter(pname));
   if (it != this->m_parameters.end())
     this->m_parameters.erase(it);
   return shared_from_this();
