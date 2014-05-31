@@ -115,19 +115,19 @@ protected:
     {
     return remoteBridge->transcribe(Cursor(remoteModel, entity.entity()), flags);
     }
-  virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr op)
+  virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr oper)
     {
-    OperatorPtr remOp = remoteBridge->op(op->name(), remoteModel);
-    remOp->setParameters(op->parameters());
+    OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
+    remOp->setParameters(oper->parameters());
     OperatorResult result(remOp->ableToOperate() ? OPERATION_SUCCEEDED : OPERATION_FAILED);
     result.setParameters(remOp->parameters());
     return result;
     }
-  virtual OperatorResult operateDelegate(RemoteOperatorPtr op)
+  virtual OperatorResult operateDelegate(RemoteOperatorPtr oper)
     {
-    printParams(op->parameters(), "local input");
-    OperatorPtr remOp = remoteBridge->op(op->name(), remoteModel);
-    remOp->setParameters(op->parameters());
+    printParams(oper->parameters(), "local input");
+    OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
+    remOp->setParameters(oper->parameters());
     OperatorResult result = remOp->operate();
     printParams(result.parameters(), "local output");
     return result;
