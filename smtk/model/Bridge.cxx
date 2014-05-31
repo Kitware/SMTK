@@ -115,10 +115,14 @@ OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
   *
   * Subclasses of Bridge should call this method in their
   * constructors to indicate which modeling operations they will support.
+  *
+  * Note that Operators store a pointer to the bridge, not a
+  * shared pointer, to avoid a reference loop (and allow
+  * addOperator to be called inside the constructor).
   */
 void Bridge::addOperator(OperatorPtr oper)
 {
-  this->m_operators.insert(oper->clone()->setBridge(shared_from_this()));
+  this->m_operators.insert(oper->clone()->setBridge(this));
 }
 
 /**\brief Mark an entity, \a ent, as partially transcribed.

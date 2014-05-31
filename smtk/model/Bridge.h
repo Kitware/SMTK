@@ -153,7 +153,7 @@ public:
 
   StringList operatorNames() const;
   const Operators& operators() const;
-  OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
+  virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
   virtual void addOperator(OperatorPtr op);
 
 protected:

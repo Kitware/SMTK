@@ -1,9 +1,10 @@
 #include "smtk/model/ImportJSON.h"
 
-#include "smtk/model/Manager.h"
-#include "smtk/model/Entity.h"
-#include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/DefaultBridge.h"
+#include "smtk/model/Entity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/Tessellation.h"
 
 #include "cJSON.h"
 
@@ -589,13 +590,16 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
     return 0;
 
   BridgePtr bridge = context->findBridgeSession(sessionId);
+  DefaultBridge::Ptr defBridge = smtk::dynamic_pointer_cast<DefaultBridge>(bridge);
 
   std::string oname;
   pnode = cJSON_GetObjectItem(node, "name");
   if (!pnode || !cJSON_GetStringValue(pnode, oname))
     return 0;
 
+  if (defBridge) defBridge->setImportingOperators(true);
   op = bridge->op(oname, context);
+  if (defBridge) defBridge->setImportingOperators(false);
   if (!op)
     return 0;
 
@@ -626,6 +630,8 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
       pnode = cJSON_GetObjectItem(param, "i");
       if (pnode && cJSON_GetIntegerArray(pnode, ival))
         pv.setIntegerValue(ival);
+
+      op->setParameter(pv);
       }
     }
   return 1;
