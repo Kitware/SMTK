@@ -14,6 +14,7 @@ namespace smtk {
   namespace model {
 
 class Manager;
+class OperatorResult;
 
 /**\brief Indicate what data should be exported to JSON.
   *
@@ -55,6 +56,7 @@ public:
   static int forModelOperators(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
   static int forOperators(Operators& ops, cJSON*);
   static int forOperator(OperatorPtr op, cJSON*);
+  static int forOperatorResult(const OperatorResult& res, cJSON*);
 
   // Low-level helpers:
   static cJSON* createStringArray(std::vector<std::string>& arr);

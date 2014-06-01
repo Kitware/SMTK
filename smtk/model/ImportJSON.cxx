@@ -4,6 +4,7 @@
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/OperatorResult.h"
 #include "smtk/model/Tessellation.h"
 
 #include "cJSON.h"
@@ -284,6 +285,49 @@ namespace smtk {
   namespace model {
 
 using smtk::util::UUID;
+
+template<typename T>
+int cJSON_GetObjectParameters(cJSON* node, T obj)
+{
+  cJSON* pnode;
+  cJSON* params = cJSON_GetObjectItem(node, "parameters");
+  if (params)
+    {
+    cJSON* param;
+    for (param = params->child; param; param = param->next)
+      {
+      Parameter pv;
+      FloatList fval;
+      StringList sval;
+      IntegerList ival;
+      std::string pname;
+      pnode = cJSON_GetObjectItem(param, "name");
+      if (!pnode || cJSON_GetStringValue(pnode, pname))
+        continue;
+      pv.setName(pname);
+      pnode = cJSON_GetObjectItem(param, "v");
+      if (pnode)
+        switch (pnode->type)
+          {
+        case cJSON_True:  pv.setValidState(PARAMETER_VALIDATED); break;
+        case cJSON_False: pv.setValidState(PARAMETER_INVALID); break;
+        default:          pv.setValidState(PARAMETER_UNKNOWN); break;
+          }
+      pnode = cJSON_GetObjectItem(param, "f");
+      if (pnode && cJSON_GetRealArray(pnode, fval))
+        pv.setFloatValue(fval);
+      pnode = cJSON_GetObjectItem(param, "s");
+      if (pnode && cJSON_GetStringArray(pnode, sval))
+        pv.setStringValue(sval);
+      pnode = cJSON_GetObjectItem(param, "i");
+      if (pnode && cJSON_GetIntegerArray(pnode, ival))
+        pv.setIntegerValue(ival);
+
+      obj->setParameter(pv);
+      }
+    }
+  return 1;
+}
 
 /**\brief Create records in the \a manager given a string containing \a json data.
   *
@@ -657,42 +701,19 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   if (!op)
     return 0;
 
-  cJSON* params = cJSON_GetObjectItem(node, "parameters");
-  if (params)
-    {
-    cJSON* param;
-    for (param = params->child; param; param = param->next)
-      {
-      Parameter pv;
-      FloatList fval;
-      StringList sval;
-      IntegerList ival;
-      std::string pname;
-      pnode = cJSON_GetObjectItem(param, "name");
-      if (!pnode || cJSON_GetStringValue(pnode, pname))
-        continue;
-      pv.setName(pname);
-      pnode = cJSON_GetObjectItem(param, "v");
-      if (pnode)
-        switch (pnode->type)
-          {
-        case cJSON_True:  pv.setValidState(PARAMETER_VALIDATED); break;
-        case cJSON_False: pv.setValidState(PARAMETER_INVALID); break;
-        default:          pv.setValidState(PARAMETER_UNKNOWN); break;
-          }
-      pnode = cJSON_GetObjectItem(param, "f");
-      if (pnode && cJSON_GetRealArray(pnode, fval))
-        pv.setFloatValue(fval);
-      pnode = cJSON_GetObjectItem(param, "s");
-      if (pnode && cJSON_GetStringArray(pnode, sval))
-        pv.setStringValue(sval);
-      pnode = cJSON_GetObjectItem(param, "i");
-      if (pnode && cJSON_GetIntegerArray(pnode, ival))
-        pv.setIntegerValue(ival);
+  cJSON_GetObjectParameters(node, op);
+  return 1;
+}
 
-      op->setParameter(pv);
-      }
-    }
+int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& result)
+{
+  Integer ocInt;
+  cJSON* pnode = cJSON_GetObjectItem(node, "outcome");
+  if (!pnode || cJSON_GetIntegerValue(pnode, ocInt))
+    return 0;
+  result.setOutcome(static_cast<OperatorOutcome>(ocInt));
+
+  cJSON_GetObjectParameters(node, &result);
   return 1;
 }
 

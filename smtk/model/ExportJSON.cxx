@@ -4,6 +4,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
+#include "smtk/model/OperatorResult.h"
 #include "smtk/model/Parameter.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
@@ -62,6 +63,14 @@ namespace {
     cJSON_AddItemToObject(opEntry, "parameters",
       cJSON_CreateParameterArray(op->parameters()));
     return opEntry;
+    }
+
+  cJSON* cJSON_AddOperatorResult(const smtk::model::OperatorResult& res, cJSON* node)
+    {
+    cJSON_AddItemToObject(node, "outcome", cJSON_CreateNumber(res.outcome()));
+    cJSON_AddItemToObject(node, "parameters",
+      cJSON_CreateParameterArray(res.parameters()));
+    return node;
     }
 
   cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
@@ -414,6 +423,12 @@ int ExportJSON::forOperators(Operators& ops, cJSON* entRec)
 int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
 {
   cJSON_AddOperator(op, entRec);
+  return 1;
+}
+
+int ExportJSON::forOperatorResult(const OperatorResult& res, cJSON* entRec)
+{
+  cJSON_AddOperatorResult(res, entRec);
   return 1;
 }
 

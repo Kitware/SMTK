@@ -13,9 +13,21 @@ OperatorResult::OperatorResult(OperatorOutcome oc)
 {
 }
 
+/**\brief Return the outcome (status) of an Operator.
+  *
+  * The outcome indicates whether the operator was improperly
+  * prepared (UNABLE_TO_OPERATE), failed to execute, was
+  * canceled by an observer, or succeeded.
+  */
 OperatorOutcome OperatorResult::outcome() const
 {
   return this->m_outcome;
+}
+
+/// Do not call this. It is for use by I/O classes such as ImportJSON.
+void OperatorResult::setOutcome(OperatorOutcome oc)
+{
+  this->m_outcome = oc;
 }
 
 /// Return a copy of this result's parameters.
