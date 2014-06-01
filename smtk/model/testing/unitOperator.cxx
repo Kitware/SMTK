@@ -161,6 +161,19 @@ void testOperatorOutcomes(Manager::Ptr manager)
 
   op->unobserve(DID_OPERATE, DidOperateWatcher, &numberOfFailedOperations);
   op->unobserve(PARAMETER_CHANGE, ParameterWatcher, &parameterWasModified);
+
+  // Test some simple methods of OperatorResult
+  OperatorResult res(OPERATION_CANCELED);
+  Parameters params;
+  params.insert(Parameter("error", String("Foo!")));
+  res.setParameters(params);
+  test(res.parameters().size() == 1, "Expected exactly one parameter.");
+  test(res.hasStringParameter("error"), "Expected a string parameter named \"error\".");
+  test(!res.hasFloatParameter("error"), "Did not expect a float parameter.");
+  test(!res.hasIntegerParameter("error"), "Did not expect an integer parameter.");
+  test(res.outcome() == OPERATION_CANCELED, "Expected outcome: OPERATION_CANCELED.");
+  res.setOutcome(OPERATION_FAILED);
+  test(res.outcome() == OPERATION_FAILED, "Expected outcome: OPERATION_FAILED.");
 }
 
 class TestParameterOperator : public Operator

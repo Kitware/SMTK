@@ -32,6 +32,7 @@ public:
   OperatorResult(OperatorOutcome oc);
 
   OperatorOutcome outcome() const;
+  virtual void setOutcome(OperatorOutcome oc);
 
   Parameters parameters() const;
   const Parameter& parameter(const std::string& name) const;
