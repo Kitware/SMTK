@@ -1,6 +1,7 @@
 #ifndef __smtk_model_Parameter_h
 #define __smtk_model_Parameter_h
 
+#include "smtk/SharedPtr.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/FloatData.h"
 #include "smtk/model/StringData.h"
@@ -9,9 +10,14 @@
 #include <set>
 #include <string>
 
+struct cJSON;
+
 namespace smtk {
   namespace model {
 
+class Operator;
+typedef smtk::shared_ptr<Operator> OperatorPtr;
+class OperatorResult;
 class Parameter;
 typedef std::set<Parameter> Parameters;
 
@@ -68,6 +74,7 @@ protected:
   friend class Operator;
   friend class OperatorResult;
   friend class ImportJSON;
+  template<typename T> friend int cJSON_GetObjectParameters(cJSON*, T);
 
   void setValidState(ParameterValidState s);
 
