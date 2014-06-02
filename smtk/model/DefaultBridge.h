@@ -34,7 +34,7 @@ class ImportJSON;
   * See the unitDefaultBridge test for an example of how
   * forwarding works.
   */
-class DefaultBridge : public Bridge
+class SMTKCORE_EXPORT DefaultBridge : public Bridge
 {
 public:
   smtkTypeMacro(DefaultBridge);
