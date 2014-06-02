@@ -22,6 +22,7 @@ typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
 typedef smtk::shared_ptr<Bridge> (*BridgeConstructor)();
 typedef std::pair<smtk::model::StringList,BridgeConstructor> StaticBridgeInfo;
 typedef std::map<std::string,StaticBridgeInfo> BridgeConstructors;
+typedef std::map<smtk::model::Cursor,int> DanglingEntities;
 
 /**\brief Bit flags describing types of information bridged to Manager.
   *
@@ -156,16 +157,19 @@ public:
   virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
   virtual void addOperator(OperatorPtr op);
 
-protected:
-  Bridge();
-
+  const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
+
+protected:
+  friend class ExportJSON;
+  friend class ImportJSON;
+
+  Bridge();
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   void setSessionId(const smtk::util::UUID& sessId);
 
-  typedef std::map<smtk::model::Cursor,int> DanglingEntities;
   DanglingEntities m_dangling;
   Operators m_operators;
   smtk::util::UUID m_sessionId;
