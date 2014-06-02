@@ -717,6 +717,44 @@ int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& result)
   return 1;
 }
 
+int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
+{
+  if (!node || !context)
+    return 0;
+  cJSON* danglers = cJSON_GetObjectItem(node, "danglingEntities");
+  if (!danglers || danglers->type != cJSON_Object)
+    return 0;
+
+  cJSON* sessId = cJSON_GetObjectItem(danglers, "sessionId");
+  if (!sessId || sessId->type != cJSON_String || !sessId->valuestring || !sessId->valuestring[0])
+    return 0;
+
+  smtk::util::UUID bridgeSessionId(sessId->valuestring);
+  if (bridgeSessionId.isNull())
+    return 0;
+  BridgePtr bridge = context->findBridgeSession(bridgeSessionId);
+  if (!bridge)
+    return 0;
+
+  cJSON* darray = cJSON_GetObjectItem(danglers, "entities");
+  if (!darray || darray->type != cJSON_Object || !darray->child)
+    return 0;
+
+  cJSON* entry;
+  for (entry = darray->child; entry; entry = entry->next)
+    {
+    if (!entry->string || !entry->string[0] || entry->type != cJSON_Number)
+      continue;
+    smtk::util::UUID entityId(entry->string);
+    if (entityId.isNull())
+      continue;
+    smtk::model::Cursor c(context, entityId);
+    bridge->declareDanglingEntity(c, static_cast<BridgedInfoBits>(entry->valueint));
+    }
+
+  return 1;
+}
+
 int ImportJSON::getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::util::UUID>& uids)
 {
   return cJSON_GetUUIDArray(uidRec, uids);

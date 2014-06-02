@@ -35,6 +35,7 @@ public:
   static int ofRemoteBridgeSession(cJSON*, DefaultBridgePtr destBridge, ManagerPtr context);
   static int ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context);
   static int ofOperatorResult(cJSON* node, OperatorResult& op);
+  static int ofDanglingEntities(cJSON* node, ManagerPtr context);
 
   // Low-level helpers:
   static int getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::util::UUID>& uids);

@@ -57,6 +57,7 @@ public:
   static int forOperators(Operators& ops, cJSON*);
   static int forOperator(OperatorPtr op, cJSON*);
   static int forOperatorResult(const OperatorResult& res, cJSON*);
+  static int forDanglingEntities(const smtk::util::UUID& bridgeSessionId, cJSON* node, ManagerPtr modelMgr);
 
   // Low-level helpers:
   static cJSON* createStringArray(std::vector<std::string>& arr);

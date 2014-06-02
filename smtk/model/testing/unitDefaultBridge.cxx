@@ -19,6 +19,9 @@
 #include "cJSON.h"
 
 using namespace smtk::model;
+using smtk::util::UUID;
+using smtk::util::UUIDs;
+using smtk::util::UUIDGenerator;
 
 template<typename T>
 static void printVec(const std::vector<T>& v, const char* typeName, char sep = '\0')
@@ -110,6 +113,31 @@ public:
   smtk::model::Manager::Ptr remoteModel;
   smtk::model::Bridge::Ptr remoteBridge;
 
+  void addSomeRemoteDanglers(const UUIDs& danglers)
+    {
+    UUIDs::const_iterator it;
+    for (it = danglers.begin(); it != danglers.end(); ++it)
+      {
+      this->remoteBridge->declareDanglingEntity(
+        smtk::model::Cursor(this->remoteModel, *it),
+        smtk::model::BRIDGE_NOTHING);
+      }
+    }
+
+  bool checkLocalDanglers(const UUIDs& danglers, smtk::model::ManagerPtr modelMgr)
+    {
+    UUIDs::const_iterator it;
+    for (it = danglers.begin(); it != danglers.end(); ++it)
+      {
+      smtk::model::DanglingEntities::const_iterator cit =
+        this->m_dangling.find(
+          smtk::model::Cursor(modelMgr, *it));
+      if (cit == this->m_dangling.end())
+        return false;
+      }
+    return true;
+    }
+
 protected:
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
     {
@@ -165,6 +193,7 @@ int main()
     // ... and import the session locally to a new bridge object.
     TestForwardingBridge::Ptr localBridge = TestForwardingBridge::create();
     localBridge->remoteBridge = remoteBridge;
+    localBridge->remoteModel = remoteMgr;
     ImportJSON::ofRemoteBridgeSession(sessJSON->child, localBridge, localMgr);
 
     // Run the local operator.
@@ -189,6 +218,19 @@ int main()
     localResult = localOp->operate();
 
     test(localResult.outcome() == UNABLE_TO_OPERATE, "Operation should have been unable to execute.");
+
+    // Test transferring remote dangling entity list to local bridge.
+    // (As a precursor to a full implementation of TestForwardingBridge::transcribeInternal)
+    UUIDGenerator ugen;
+    UUIDs danglers;
+    for (int i = 0; i < 8; ++i)
+      danglers.insert(ugen.random());
+    localBridge->addSomeRemoteDanglers(danglers);
+    cJSON* jsonDanglers = cJSON_CreateObject();
+    smtk::model::ExportJSON::forDanglingEntities(remoteBridge->sessionId(), jsonDanglers, remoteMgr);
+    //std::cout << "\n\n\n" << cJSON_Print(jsonDanglers) << "\n\n\n";
+    smtk::model::ImportJSON::ofDanglingEntities(jsonDanglers, localMgr);
+    test(localBridge->checkLocalDanglers(danglers, localMgr), "All generated danglers should have been serialized.");
 
   } catch (const std::string& msg) {
     (void) msg; // Ignore the message; it's already been printed.

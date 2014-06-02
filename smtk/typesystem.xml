@@ -59,6 +59,7 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
@@ -73,6 +74,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>

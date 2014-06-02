@@ -128,6 +128,12 @@ void Bridge::addOperator(OperatorPtr oper)
   this->m_operators.insert(oper->clone()->setBridge(this));
 }
 
+/// Return the map from dangling cursors to bits describing their partial transcription state.
+const DanglingEntities& Bridge::danglingEntities() const
+{
+  return this->m_dangling;
+}
+
 /**\brief Mark an entity, \a ent, as partially transcribed.
   *
   * Subclasses should call this method when a UUID has been assigned

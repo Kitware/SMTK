@@ -432,6 +432,29 @@ int ExportJSON::forOperatorResult(const OperatorResult& res, cJSON* entRec)
   return 1;
 }
 
+/// Serialize a bridge's list of dangling entities held in the given \a modelMgr.
+int ExportJSON::forDanglingEntities(const smtk::util::UUID& bridgeSessionId, cJSON* node, ManagerPtr modelMgr)
+{
+  if (!modelMgr || !node || node->type != cJSON_Object)
+    return 0;
+  BridgePtr bridge = modelMgr->findBridgeSession(bridgeSessionId);
+  if (!bridge)
+    return 0;
+
+  cJSON* danglers = cJSON_CreateObject();
+  cJSON* darray = cJSON_CreateObject();
+  cJSON_AddItemToObject(node, "danglingEntities", danglers);
+  cJSON_AddItemToObject(danglers, "sessionId", cJSON_CreateString(bridgeSessionId.toString().c_str()));
+  cJSON_AddItemToObject(danglers, "entities", darray);
+  DanglingEntities::const_iterator it;
+  for (it = bridge->danglingEntities().begin(); it != bridge->danglingEntities().end(); ++it)
+    {
+    if (it->first.manager() == modelMgr)
+      cJSON_AddItemToObject(darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
+    }
+  return 1;
+}
+
 cJSON* ExportJSON::createStringArray(std::vector<std::string>& arr)
 {
   return cJSON_CreateStringArray(&arr[0], static_cast<unsigned>(arr.size()));
