@@ -23,8 +23,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkMultiBlockDataSet);
 
-  smtk::model::ManagerPtr GetModel();
-  void SetModel(smtk::model::ManagerPtr);
+  smtk::model::ManagerPtr GetModelManager();
+  void SetModelManager(smtk::model::ManagerPtr);
 
   void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
   void Dirty();
@@ -51,8 +51,8 @@ protected:
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
-  // Instance storage:
-  smtk::model::ManagerPtr Model;
+  // Instance model Manager:
+  smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 
