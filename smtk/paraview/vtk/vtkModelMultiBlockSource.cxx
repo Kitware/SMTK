@@ -50,25 +50,25 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Model: " << this->Model.get() << "\n";
+  os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelMultiBlockSource::SetModel(smtk::model::ManagerPtr model)
+void vtkModelMultiBlockSource::SetModelManager(smtk::model::ManagerPtr model)
 {
-  if (this->Model == model)
+  if (this->ModelMgr == model)
     {
     return;
     }
-  this->Model = model;
+  this->ModelMgr = model;
   this->Modified();
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::ManagerPtr vtkModelMultiBlockSource::GetModel()
+smtk::model::ManagerPtr vtkModelMultiBlockSource::GetModelManager()
 {
-  return this->Model;
+  return this->ModelMgr;
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
@@ -295,7 +295,7 @@ int vtkModelMultiBlockSource::RequestData(
     return 0;
     }
 
-  if (!this->Model)
+  if (!this->ModelMgr)
     {
     vtkErrorMacro("No input model");
     return 0;
@@ -304,7 +304,7 @@ int vtkModelMultiBlockSource::RequestData(
   if (!this->CachedOutput)
     { // Populate a polydata with tessellation information from the model.
     vtkNew<vtkMultiBlockDataSet> rep;
-    this->GenerateRepresentationFromModel(rep.GetPointer(), this->Model);
+    this->GenerateRepresentationFromModel(rep.GetPointer(), this->ModelMgr);
     this->SetCachedOutput(rep.GetPointer());
     }
   output->ShallowCopy(this->CachedOutput);

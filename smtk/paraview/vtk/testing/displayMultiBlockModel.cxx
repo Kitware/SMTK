@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     vtkNew<vtkCompositePolyDataMapper> map;
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
-    src->SetModel(sm);
+    src->SetModelManager(sm);
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
 
