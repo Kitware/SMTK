@@ -277,7 +277,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
     // Set the block name to the entity UUID.
     mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
     this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
-    this->UUID2BlockIdMap[cursor.name()] = static_cast<unsigned int>(i);
+    this->UUID2BlockIdMap[cursor.entity().toString()] = static_cast<unsigned int>(i);
     }
 }
 
