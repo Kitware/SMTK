@@ -557,19 +557,25 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
   smtk::attribute::DefinitionPtr sourceBaseDef = sourceDef->baseDefinition();
   if (sourceBaseDef)
     {
-    if (!this->copyDefinitionImpl(sourceBaseDef))
+    // Check if base definition of this type already exists in this manager
+    std::string baseTypeName = sourceBaseDef->type();
+    if (!this->findDefinition(baseTypeName))
       {
-      return false;
+      //  If not found, copy it
+      if (!this->copyDefinitionImpl(sourceBaseDef))
+        {
+        return false;
+        }
       }
 
-    // Retrieve (copied) base definition and create new def
-    std::string baseTypeName = sourceBaseDef->type();
+    // Retrieve base definition and create new def
     smtk::attribute::DefinitionPtr newBaseDef =
       this->findDefinition(baseTypeName);
     newDef = this->createDefinition(typeName, newBaseDef);
     }
   else
     {
+    // No base definition
     newDef = this->createDefinition(typeName);
     }
 
