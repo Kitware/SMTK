@@ -33,6 +33,7 @@ enum EntityTypeBits
   CLOSED               = 0x00800000, //!< A bit indicating that the entity should be regarded as a closed set (esp. groups)
   MODEL_BOUNDARY       = 0x01000000, //!< The entity is part of a boundary (esp. partition groups, indicating boundary conditions)
   MODEL_DOMAIN         = 0x02000000, //!< The entity is part of the model domain (esp. groups)
+  HOMOGENOUS_GROUP     = 0x04000000, //!< The group(s) must contain entities of the same type.
   // Specific bit-combinations of interest (just combinations of the above):
   ANY_DIMENSION        = 0x000000ff, //!< Mask to extract the dimensionality of an entity.
   ENTITY_MASK          = 0x00003f00, //!< Mask to extract the type of an entity. Exactly one bit should be set for any valid entity.
