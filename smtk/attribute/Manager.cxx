@@ -522,3 +522,79 @@ void Manager::setAdvanceLevelColor(int level, const double *l_color)
     }
 }
 //----------------------------------------------------------------------------
+// Copies attribute defintion into this manager
+// Returns smart pointer (will be empty if operation unsuccessful)
+smtk::attribute::DefinitionPtr
+Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef)
+{
+  // Call internal copy method
+  if (this->copyDefinitionImpl(sourceDef))
+    {
+    smtk::attribute::DefinitionPtr newDef =
+      this->findDefinition(sourceDef->type());
+    return newDef;
+    }
+  // else return empty smart pointer
+  return smtk::attribute::DefinitionPtr();
+}
+//----------------------------------------------------------------------------
+// Copies attribute defintion into this manager, returning true if successful
+bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
+{
+  bool ok = true;
+
+  // Check for type conflict
+  std::string typeName = sourceDef->type();
+  if (this->findDefinition(typeName))
+    {
+    std::cerr << "WARNING: Will not overwrite attribute definition "
+              << typeName << std::endl;
+    return false;
+    }
+
+  // Check if input definition has a base definition
+  smtk::attribute::DefinitionPtr newDef;
+  smtk::attribute::DefinitionPtr sourceBaseDef = sourceDef->baseDefinition();
+  if (sourceBaseDef)
+    {
+    if (!this->copyDefinitionImpl(sourceBaseDef))
+      {
+      return false;
+      }
+
+    // Retrieve (copied) base definition and create new def
+    std::string baseTypeName = sourceBaseDef->type();
+    smtk::attribute::DefinitionPtr newBaseDef =
+      this->findDefinition(baseTypeName);
+    newDef = this->createDefinition(typeName, newBaseDef);
+    }
+  else
+    {
+    newDef = this->createDefinition(typeName);
+    }
+
+  // Set contents of new definition (defer categories)
+  newDef->setLabel(sourceDef->label());
+  newDef->setVersion(sourceDef->version());
+  newDef->setIsAbstract(sourceDef->isAbstract());
+  newDef->setAdvanceLevel(sourceDef->advanceLevel());
+  newDef->setIsUnique(sourceDef->isUnique());
+  newDef->setIsNodal(sourceDef->isNodal());
+  if (sourceDef->isNotApplicableColorSet())
+    {
+    newDef->setNotApplicableColor(sourceDef->notApplicableColor());
+    }
+  if (sourceDef->isDefaultColorSet())
+    {
+    newDef->setDefaultColor(sourceDef->defaultColor());
+    }
+  newDef->setAssociationMask(sourceDef->associationMask());
+
+  // Set contents of item definitions
+  // todo
+
+  // Update categories
+  newDef->setCategories();
+
+  return true;
+}
