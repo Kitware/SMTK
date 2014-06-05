@@ -103,10 +103,3 @@ void ItemDefinition::copyTo(ItemDefinition *def) const
   def->setBriefDescription(m_briefDescription);
 }
 //----------------------------------------------------------------------------
-
-// Temporary until all subclasses implemented - then make it pure virtual
-smtk::attribute::ItemDefinitionPtr
-smtk::attribute::ItemDefinition::createCopy() const
-{
-  return smtk::attribute::ItemDefinitionPtr();
-}

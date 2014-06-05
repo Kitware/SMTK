@@ -131,3 +131,33 @@ std::string RefItemDefinition::valueLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::RefItemDefinition::createCopy() const
+{
+  std::size_t i;
+
+  smtk::attribute::RefItemDefinition *instance = new
+    smtk::attribute::RefItemDefinition(this->name());
+  ItemDefinition::copyTo(instance);
+
+  // TODO attributeDefinition
+  std::cerr << "Cannot initialize RefItemDefinition, name "
+            << this->name() << std::endl;
+  instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
+
+  // Labels
+  if (m_useCommonLabel)
+    {
+    instance->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (i=0; i<m_valueLabels.size(); ++i)
+      {
+      instance->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  return smtk::attribute::RefItemDefinitionPtr(instance);
+}
+//----------------------------------------------------------------------------

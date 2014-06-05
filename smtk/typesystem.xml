@@ -168,6 +168,12 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
 
+ <!-- ignore shadowing/hiding of ItemDefinition::copyTo() because it is intentional -->
+ <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and StringItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
+ <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and ValueItemDefinitionTemplate::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
+ <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and DoubleItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
+ <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and IntItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
+
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::CellEntity::inclusions', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::CellEntity::uses', unmatched return type 'T'"/>
