@@ -50,7 +50,8 @@ namespace smtk
       virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const;
-      virtual smtk::attribute::ItemDefinitionPtr createCopy() const;
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       VoidItemDefinition(const std::string &myName);
     private:

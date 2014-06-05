@@ -598,6 +598,7 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
   newDef->setAssociationMask(sourceDef->associationMask());
 
   // Copy new item definitions only (i.e., not inherited item defs)
+  smtk::attribute::ItemDefinition::CopyInfo info(this);
   for (std::size_t i = sourceDef->itemOffset();
        i < sourceDef->numberOfItemDefinitions();
        ++i)
@@ -605,7 +606,7 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
     smtk::attribute::ItemDefinitionPtr sourceItemDef =
       sourceDef->itemDefinition(i);
     smtk::attribute::ItemDefinitionPtr newItemDef =
-      sourceItemDef->createCopy();
+      sourceItemDef->createCopy(info);
     if (newItemDef)
       {
       newDef->addItemDefinition(newItemDef);
@@ -614,6 +615,7 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
 
   // Update categories
   newDef->setCategories();
+  this->updateCategories();
 
   return true;
 }

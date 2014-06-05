@@ -127,7 +127,8 @@ void FileItemDefinition::setDefaultValue(const std::string& val)
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::FileItemDefinition::createCopy() const
+smtk::attribute::FileItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 

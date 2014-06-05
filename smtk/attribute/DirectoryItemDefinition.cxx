@@ -123,7 +123,8 @@ std::string DirectoryItemDefinition::valueLabel(std::size_t element) const
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::DirectoryItemDefinition::createCopy() const
+smtk::attribute::DirectoryItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::DirectoryItemDefinition *instance = new
     smtk::attribute::DirectoryItemDefinition(this->name());

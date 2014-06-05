@@ -201,7 +201,8 @@ void GroupItemDefinition::setIsExtensible(bool mode)
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::GroupItemDefinition::createCopy() const
+smtk::attribute::GroupItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 

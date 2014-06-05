@@ -48,7 +48,8 @@ namespace smtk
                                                 int position,
                                                 int subGroupPosition) const;
 
-      virtual smtk::attribute::ItemDefinitionPtr createCopy() const;
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       IntItemDefinition(const std::string &myName);
 

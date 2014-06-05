@@ -75,7 +75,8 @@ namespace smtk
       void setShouldBeRelative(bool val)
       {this->m_shouldBeRelative = val;}
 
-      virtual smtk::attribute::ItemDefinitionPtr createCopy() const;
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       DirectoryItemDefinition(const std::string &myName);
       bool m_shouldExist;

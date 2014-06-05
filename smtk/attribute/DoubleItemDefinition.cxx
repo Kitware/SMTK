@@ -61,7 +61,8 @@ DoubleItemDefinition::buildItem(Item *owningItem,
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::DoubleItemDefinition::createCopy() const
+smtk::attribute::DoubleItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::DoubleItemDefinition *instance = new
     smtk::attribute::DoubleItemDefinition(this->name());

@@ -132,7 +132,8 @@ std::string RefItemDefinition::valueLabel(std::size_t element) const
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::RefItemDefinition::createCopy() const
+smtk::attribute::RefItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 

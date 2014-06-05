@@ -61,7 +61,8 @@ IntItemDefinition::buildItem(Item *owningItem,
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::IntItemDefinition::createCopy() const
+smtk::attribute::IntItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::IntItemDefinition *instance = new
     smtk::attribute::IntItemDefinition(this->name());

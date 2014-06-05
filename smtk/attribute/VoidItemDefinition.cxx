@@ -64,7 +64,8 @@ Item::Type VoidItemDefinition::type() const
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ItemDefinitionPtr
-smtk::attribute::VoidItemDefinition::createCopy() const
+smtk::attribute::VoidItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::VoidItemDefinition *instance = new
     smtk::attribute::VoidItemDefinition(this->name());

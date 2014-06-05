@@ -121,7 +121,15 @@ namespace smtk
       virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const = 0;
-      virtual smtk::attribute::ItemDefinitionPtr createCopy() const = 0;
+      // Temp structure used for copying definitions
+      struct CopyInfo
+      {
+        const smtk::attribute::Manager& Manager;
+        std::vector<smtk::attribute::ItemDefinitionPtr> UnresolvedRefItems;
+        CopyInfo(const smtk::attribute::Manager *mgr) : Manager(*mgr) {}
+      };
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const = 0;
     protected:
       // The constructor must have the value for m_name passed
       // in because that should never change.

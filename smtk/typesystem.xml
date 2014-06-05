@@ -1396,6 +1396,7 @@
 
       <object-type name="ItemDefinition">
         <include file-name="smtk/attribute/ItemDefinition.h" location="local" />
+        <object-type name="CopyInfo" />
         <modify-function signature="ItemDefinition(const std::string &amp;)" >
           <inject-code>
             PyErr_Format(PyExc_RuntimeError, "Do not call XItemDefinitions Constructor.  Please use XItemDefinitions.New(STRING).");
