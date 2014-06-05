@@ -34,6 +34,9 @@ if __name__ == '__main__':
     print
     sys.exit(-1)
 
+  logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))
+  logging.debug('PYTHONPATH = %s' % os.environ.get('PYTHONPATH'))
+
   # Define scope object to store shared data
   ScopeType = type('Scope', (object,), dict())
   scope = ScopeType()

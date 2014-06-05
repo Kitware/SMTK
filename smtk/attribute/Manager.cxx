@@ -25,6 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/ItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Root.h"
 #include <iostream>
@@ -605,7 +606,10 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef)
       sourceDef->itemDefinition(i);
     smtk::attribute::ItemDefinitionPtr newItemDef =
       sourceItemDef->createCopy();
-    newDef->addItemDefinition(newItemDef);
+    if (newItemDef)
+      {
+      newDef->addItemDefinition(newItemDef);
+      }
     }
 
   // Update categories

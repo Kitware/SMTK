@@ -84,3 +84,9 @@ void ItemDefinition::setAdvanceLevel(int level)
 }
 //----------------------------------------------------------------------------
 
+// Temporary until all subclasses implemented - then make it pure virtual
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::ItemDefinition::createCopy() const
+{
+  return smtk::attribute::ItemDefinitionPtr();
+}

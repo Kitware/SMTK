@@ -121,6 +121,7 @@ namespace smtk
       virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const = 0;
+      virtual smtk::attribute::ItemDefinitionPtr createCopy() const;
     protected:
       // The constructor must have the value for m_name passed
       // in because that should never change.
