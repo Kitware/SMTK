@@ -199,3 +199,39 @@ void GroupItemDefinition::setIsExtensible(bool mode)
     this->setCommonSubGroupLabel("");
     }
 }
+//----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::GroupItemDefinition::createCopy() const
+{
+  std::size_t i;
+
+  smtk::attribute::GroupItemDefinition *instance = new
+    smtk::attribute::GroupItemDefinition(this->name());
+  ItemDefinition::copyTo(instance);
+
+  // Copy item definitions
+  for (i=0; i < m_itemDefs.size(); ++i)
+    {
+    instance->addItemDefinition(m_itemDefs[i]);
+    }
+
+  instance->setIsExtensible(m_isExtensible);
+  instance->setNumberOfRequiredGroups(m_numberOfRequiredGroups);
+  instance->setMaxNumberOfGroups(m_maxNumberOfGroups);
+
+  // Labels
+  if (m_useCommonLabel)
+    {
+    instance->setCommonSubGroupLabel(m_labels[0]);
+    }
+  else if (this->hasSubGroupLabels())
+    {
+    for (i=0; i<m_labels.size(); ++i)
+      {
+      instance->setSubGroupLabel(i, m_labels[i]);
+      }
+    }
+
+  return smtk::attribute::GroupItemDefinitionPtr(instance);
+}
+//----------------------------------------------------------------------------

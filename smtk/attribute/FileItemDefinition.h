@@ -85,6 +85,7 @@ namespace smtk
       bool hasDefault() const
       {return m_hasDefault;}
 
+      virtual smtk::attribute::ItemDefinitionPtr createCopy() const;
     protected:
       FileItemDefinition(const std::string &myName);
       bool m_shouldExist;

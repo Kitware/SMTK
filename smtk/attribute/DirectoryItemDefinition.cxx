@@ -122,3 +122,31 @@ std::string DirectoryItemDefinition::valueLabel(std::size_t element) const
   return ""; // If we threw execeptions this method could return const string &
 }
 //----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::DirectoryItemDefinition::createCopy() const
+{
+  smtk::attribute::DirectoryItemDefinition *instance = new
+    smtk::attribute::DirectoryItemDefinition(this->name());
+  ItemDefinition::copyTo(instance);
+
+  instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
+
+  // Add label(s)
+  if (m_useCommonLabel)
+    {
+    instance->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (std::size_t i=0; i<m_valueLabels.size(); ++i)
+      {
+      instance->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  instance->setShouldExist(m_shouldExist);
+  instance->setShouldBeRelative(m_shouldBeRelative);
+
+  return smtk::attribute::DirectoryItemDefinitionPtr(instance);
+}
+//----------------------------------------------------------------------------
