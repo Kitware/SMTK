@@ -60,13 +60,12 @@ DoubleItemDefinition::buildItem(Item *owningItem,
                                                 subGroupPosition));
 }
 //----------------------------------------------------------------------------
-// Temporary until all subclasses implemented - then make it pure virtual
 smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DoubleItemDefinition::createCopy() const
 {
-  smtk::attribute::DoubleItemDefinitionPtr newDef =
-    smtk::attribute::DoubleItemDefinition::New(this->name());
-  //ValueItemDefinitionTemplate<double>::copyTo(newDef);
-  return newDef;
+  smtk::attribute::DoubleItemDefinition *instance = new
+    smtk::attribute::DoubleItemDefinition(this->name());
+  ValueItemDefinitionTemplate<double>::copyTo(instance);
+  return smtk::attribute::DoubleItemDefinitionPtr(instance);
 }
 //----------------------------------------------------------------------------
