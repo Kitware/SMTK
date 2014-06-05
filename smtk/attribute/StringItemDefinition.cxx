@@ -60,3 +60,12 @@ StringItemDefinition::buildItem(Item *owningItem,
                                                 subGroupPosition));
 }
 //----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::StringItemDefinition::createCopy() const
+{
+  smtk::attribute::StringItemDefinition *instance = new
+    smtk::attribute::StringItemDefinition(this->name());
+  ValueItemDefinitionTemplate<std::string>::copyTo(instance);
+  return smtk::attribute::StringItemDefinitionPtr(instance);
+}
+//----------------------------------------------------------------------------

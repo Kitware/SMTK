@@ -246,6 +246,8 @@ namespace smtk
     void ValueItemDefinitionTemplate<DataT>::
     copyTo(ValueItemDefinition *def) const
     {
+    ValueItemDefinition::copyTo(def);
+
     // Cast to template instance pointer
     ValueItemDefinitionTemplate<DataT> *vdef =
       dynamic_cast<ValueItemDefinitionTemplate<DataT>* >(def);
@@ -263,6 +265,20 @@ namespace smtk
     if (m_maxRangeSet)
       {
       vdef->setMaxRange(m_maxRange, m_maxRangeInclusive);
+      }
+
+    if (this->isDiscrete())
+      {
+      // Copy values & labels
+      DataT value;
+      std::string label;
+      for (std::size_t i=0; i<m_discreteValues.size(); ++i)
+        {
+        value = m_discreteValues[i];
+        label = m_discreteValueEnums[i];
+        vdef->addDiscreteValue(value, label);
+        }
+      vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
       }
     }
 

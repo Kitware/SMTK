@@ -253,3 +253,66 @@ void ValueItemDefinition::setIsExtensible(bool mode)
     this->setCommonValueLabel("");
     }
 }
+//----------------------------------------------------------------------------
+void ValueItemDefinition::copyTo(ValueItemDefinition *def) const
+{
+  std::size_t i;
+
+  ItemDefinition::copyTo(def);
+
+  if (m_units != "")
+    {
+    def->setUnits(m_units);
+    }
+
+  if (this->allowsExpressions())
+    {
+    def->setExpressionDefinition(this->expressionDefinition());
+    }
+
+  def->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  def->setMaxNumberOfValues(m_maxNumberOfValues);
+  def->setIsExtensible(m_isExtensible);
+
+  // Add label(s)
+  if (m_useCommonLabel)
+    {
+    def->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (i=0; i<m_valueLabels.size(); ++i)
+      {
+      def->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  // Add children item definitions
+  if (m_itemDefs.size() > 0)
+    {
+    std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator
+      itemDefMapIter = m_itemDefs.begin();
+    for (; itemDefMapIter != m_itemDefs.end(); itemDefMapIter++)
+      {
+      def->addChildItemDefinition(itemDefMapIter->second);
+      }
+    }
+
+  // Add condition items
+  if (m_valueToItemAssociations.size() > 0)
+    {
+    std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
+      m_valueToItemAssociations.begin();
+    std::string value;
+    std::vector<std::string>::const_iterator itemIter;
+    for (; mapIter != m_valueToItemAssociations.end(); mapIter++)
+      {
+      value = mapIter->first;
+      itemIter = mapIter->second.begin();
+      for (; itemIter != mapIter->second.end(); itemIter++)
+        {
+        def->addConditionalItem(value, *itemIter);
+        }
+      }
+    }
+}

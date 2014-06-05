@@ -83,6 +83,26 @@ void ItemDefinition::setAdvanceLevel(int level)
   this->m_advanceLevel[1] = level;
 }
 //----------------------------------------------------------------------------
+void ItemDefinition::copyTo(ItemDefinition *def) const
+{
+  def->setLabel(m_label);
+  def->setVersion(m_version);
+  def->setIsOptional(m_isOptional);
+  def->setIsEnabledByDefault(m_isEnabledByDefault);
+
+  std::set<std::string>::const_iterator categoryIter = m_categories.begin();
+  for (; categoryIter != m_categories.end(); categoryIter++)
+    {
+    def->addCategory(*categoryIter);
+    }
+
+  def->setAdvanceLevel(0, m_advanceLevel[0]);
+  def->setAdvanceLevel(1, m_advanceLevel[1]);
+
+  def->setDetailedDescription(m_detailedDescription);
+  def->setBriefDescription(m_briefDescription);
+}
+//----------------------------------------------------------------------------
 
 // Temporary until all subclasses implemented - then make it pure virtual
 smtk::attribute::ItemDefinitionPtr
