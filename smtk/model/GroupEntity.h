@@ -25,6 +25,19 @@ public:
   template<typename T> GroupEntity& addEntities(const T& container);
 
   bool removeEntity(const Cursor& entity);
+
+  Cursor findFirstNonGroupMember();
+
+  virtual bool meetsMembershipConstraints(
+    const Cursor& prospectiveMember);
+
+protected:
+  friend class smtk::attribute::ModelEntityItemDefinition;
+
+  bool meetsMembershipConstraintsInternal(
+    const Cursor& prospectiveMember,
+    BitFlags& typeMask,
+    bool mustBeHomogenous);
 };
 
 template<typename T>

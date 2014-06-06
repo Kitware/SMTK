@@ -16,12 +16,12 @@ set(attributeHeaders
   Item.h
   ItemDefinition.h
   Manager.h
+  ModelEntityItem.h
+  ModelEntityItemDefinition.h
   RefItem.h
   RefItemDefinition.h
   StringItem.h
   StringItemDefinition.h
-  UUIDItem.h
-  UUIDItemDefinition.h
   ValueItem.h
   ValueItemDefinition.h
   ValueItemDefinitionTemplate.h
@@ -46,12 +46,12 @@ set(attributeSrcs
   Item.cxx
   ItemDefinition.cxx
   Manager.cxx
+  ModelEntityItem.cxx
+  ModelEntityItemDefinition.cxx
   RefItem.cxx
   RefItemDefinition.cxx
   StringItem.cxx
   StringItemDefinition.cxx
-  UUIDItem.cxx
-  UUIDItemDefinition.cxx
   ValueItem.cxx
   ValueItemDefinition.cxx
   VoidItem.cxx

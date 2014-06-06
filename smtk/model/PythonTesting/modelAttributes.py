@@ -85,7 +85,7 @@ def generate_attributes(scope):
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
   manager = smtk.attribute.Manager()
-  #manager.setRefStorage(scope.store)
+  #manager.setRefModelManager(scope.store)
   reader = smtk.util.AttributeReader()
   logger = smtk.util.Logger()
   err = reader.read(manager, att_path, logger)
@@ -95,7 +95,7 @@ def generate_attributes(scope):
     sys.exit(4)
 
   # Create material attribute & associate to model face
-  manager.setRefStorage(scope.store)
+  manager.setRefModelManager(scope.store)
   defn = manager.findDefinition('Material')
   value = 1.01
   for i,face in enumerate(scope.face_list, start=1):
@@ -215,7 +215,7 @@ if __name__ == '__main__':
   if json_string is None:
     logging.error('Unable to load input file')
     sys.exit(2)
-  scope.store = smtk.model.Storage.create()
+  scope.store = smtk.model.Manager.create()
   ok = smtk.model.ImportJSON.intoModel(json_string, scope.store)
 
   # Load cross-reference file
@@ -238,7 +238,7 @@ if __name__ == '__main__':
   del manager
 
   # Re-import model
-  test_store = smtk.model.Storage.create()
+  test_store = smtk.model.Manager.create()
   ok = smtk.model.ImportJSON.intoModel(json_string, test_store)
   scope.store = test_store
 
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     sys.exit(6)
 
   # Set model and verify attributes
-  test_manager.setRefStorage(scope.store)
+  test_manager.setRefModelManager(scope.store)
   error_count = check_attributes(scope, test_manager)
   if error_count > 0:
     sys.exit(7)

@@ -263,6 +263,11 @@
   <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
 
 
+  <suppress-warning text="template argument 'smtk::attribute::UUIDItemDefinition' of 'shared_ptr&lt; smtk::attribute::UUIDItemDefinition &gt;' is not known; not adding redirections"/>
+  <suppress-warning text="template argument 'smtk::attribute::UUIDItem' of 'shared_ptr&lt; smtk::attribute::UUIDItem &gt;' is not known; not adding redirections"/>
+  <suppress-warning text="type 'smtk::attribute::UUIDItem' is specified in typesystem, but not defined. This could potentially lead to compilation errors."/>
+  <suppress-warning text="type 'smtk::attribute::UUIDItemDefinition' is specified in typesystem, but not defined. This could potentially lead to compilation errors."/>
+
 
   @EXTRA_TYPESYSTEMS@
 
@@ -737,8 +742,8 @@
   <value-type template="smtk::shared_ptr" args="smtk::attribute::IntItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::StringItemDefinition" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::UUIDItem" />
-  <value-type template="smtk::shared_ptr" args="smtk::attribute::UUIDItemDefinition" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItem" />
+  <value-type template="smtk::shared_ptr" args="smtk::attribute::ModelEntityItemDefinition" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItem" />
   <value-type template="smtk::shared_ptr" args="smtk::attribute::VoidItemDefinition" />
 
@@ -1504,22 +1509,22 @@
         </add-function>
       </object-type>
 
-      <object-type name="UUIDItem">
-        <include file-name="smtk/attribute/UUIDItem.h" location="local" />
+      <object-type name="ModelEntityItem">
+        <include file-name="smtk/attribute/ModelEntityItem.h" location="local" />
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"
                       static="yes"
-                      return-type="smtk::shared_ptr&lt;smtk::attribute::UUIDItem &gt;">
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ModelEntityItem &gt;">
           <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::UUIDItem &gt;(%1);
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ModelEntityItem &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
       </object-type>
 
-      <object-type name="UUIDItemDefinition">
-        <include file-name="smtk/attribute/UUIDItemDefinition.h" location="local" />
-        <modify-function signature="UUIDItemDefinition(const std::string &amp;)" access="private" />
-        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::UUIDItemDefinition &gt;)"
+      <object-type name="ModelEntityItemDefinition">
+        <include file-name="smtk/attribute/ModelEntityItemDefinition.h" location="local" />
+        <modify-function signature="ModelEntityItemDefinition(const std::string &amp;)" access="private" />
+        <add-function signature="ToItemDefinition(const smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition &gt;)"
                       static="yes"
                       return-type="smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt;">
           <inject-code>
@@ -1529,9 +1534,9 @@
         </add-function>
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::ItemDefinition &gt; &amp;)"
                       static="yes"
-                      return-type="smtk::shared_ptr&lt;smtk::attribute::UUIDItemDefinition &gt;">
+                      return-type="smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition &gt;">
           <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::UUIDItemDefinition &gt;(%1);
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::attribute::ModelEntityItemDefinition &gt;(%1);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>

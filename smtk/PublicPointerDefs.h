@@ -51,29 +51,29 @@ namespace smtk
   {
     class Arrangement;
     class ArrangementReference;
-    typedef std::vector<ArrangementReference> ArrangementReferences;
+    typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
     class AttributeListPhrase;
-    typedef std::vector<Arrangement> Arrangements;
+    typedef std::vector<smtk::model::Arrangement> Arrangements;
     class BRepModel;
     class Bridge;
     class CellEntity;
     class Chain;
-    typedef std::vector<Chain> Chains;
+    typedef std::vector<smtk::model::Chain> Chains;
     class Cursor;
-    typedef std::set<Cursor> Cursors;
-    typedef std::vector<Cursor> CursorArray;
+    typedef std::set<smtk::model::Cursor> Cursors;
+    typedef std::vector<smtk::model::Cursor> CursorArray;
     class DefaultBridge;
     class DescriptivePhrase;
     class Edge;
-    typedef std::vector<Edge> Edges;
+    typedef std::vector<smtk::model::Edge> Edges;
     class EdgeUse;
-    typedef std::vector<EdgeUse> EdgeUses;
+    typedef std::vector<smtk::model::EdgeUse> EdgeUses;
     class EntityPhrase;
     class EntityListPhrase;
     class Face;
-    typedef std::vector<Face> Faces;
+    typedef std::vector<smtk::model::Face> Faces;
     class FaceUse;
-    typedef std::vector<FaceUse> FaceUses;
+    typedef std::vector<smtk::model::FaceUse> FaceUses;
     class ExportJSON;
     class GridInfo;
     class GridInfo2D;
@@ -84,7 +84,7 @@ namespace smtk
     class Item;
     class ImportJSON;
     class Loop;
-    typedef std::vector<Loop> Loops;
+    typedef std::vector<smtk::model::Loop> Loops;
     class Entity;
     class Model;
     class ModelEntity;
@@ -95,24 +95,24 @@ namespace smtk
     class PropertyListPhrase;
     class RemoteOperator;
     class Shell;
-    typedef std::vector<Shell> Shells;
+    typedef std::vector<smtk::model::Shell> Shells;
     class ShellEntity;
-    typedef std::vector<ShellEntity> ShellEntities;
+    typedef std::vector<smtk::model::ShellEntity> ShellEntities;
     class Manager;
     class SimpleModelSubphrases;
     class SubphraseGenerator;
     class ModelDomainItem;
     class Tessellation;
     class UseEntity;
-    typedef std::vector<UseEntity> UseEntities;
+    typedef std::vector<smtk::model::UseEntity> UseEntities;
     class Vertex;
-    typedef std::vector<Vertex> Vertices;
+    typedef std::vector<smtk::model::Vertex> Vertices;
     class VertexUse;
-    typedef std::vector<VertexUse> VertexUses;
+    typedef std::vector<smtk::model::VertexUse> VertexUses;
     class Volume;
-    typedef std::vector<Volume> Volumes;
+    typedef std::vector<smtk::model::Volume> Volumes;
     class VolumeUse;
-    typedef std::vector<VolumeUse> VolumeUses;
+    typedef std::vector<smtk::model::VolumeUse> VolumeUses;
   }
 
   namespace attribute
@@ -134,10 +134,10 @@ namespace smtk
     class Item;
     class ItemDefinition;
     class Manager;
+    class ModelEntityItem;
+    class ModelEntityItemDefinition;
     class StringItem;
     class StringItemDefinition;
-    class UUIDItem;
-    class UUIDItemDefinition;
     class ValueItem;
     class ValueItemDefinition;
     class VoidItem;
@@ -242,8 +242,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::IntItemDefinition >        IntItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItem >               StringItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::StringItemDefinition >     StringItemDefinitionPtr;
-    typedef smtk::shared_ptr< smtk::attribute::UUIDItem >                 UUIDItemPtr;
-    typedef smtk::shared_ptr< smtk::attribute::UUIDItemDefinition >       UUIDItemDefinitionPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ModelEntityItem >          ModelEntityItemPtr;
+    typedef smtk::shared_ptr< smtk::attribute::ModelEntityItemDefinition > ModelEntityItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
 

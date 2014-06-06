@@ -46,9 +46,11 @@ namespace smtk {
   namespace model {
 
 class Cursor;
-typedef std::set<Cursor> Cursors;
-typedef std::vector<Cursor> CursorArray;
+class ModelEntity;
 class Tessellation;
+// Use full names including namespace to make Shiboken less unhappy:
+typedef std::set<smtk::model::Cursor> Cursors;
+typedef std::vector<smtk::model::Cursor> CursorArray;
 
 /**\brief A lightweight cursor pointing to a model entity's manager.
   *
@@ -191,6 +193,8 @@ public:
   template<typename T> Cursor& unembedEntities(const T& container);
 
   template<typename T> T instances() const;
+
+  ModelEntity owningModel() const;
 
   bool operator == (const Cursor& other) const;
   bool operator < (const Cursor& other) const;
