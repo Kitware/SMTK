@@ -144,37 +144,38 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   smtk::attribute::RefItemDefinition *instance = new
     smtk::attribute::RefItemDefinition(this->name());
   ItemDefinition::copyTo(instance);
+  smtk::attribute::RefItemDefinitionPtr newRef(instance);
 
   // Set attributeDefinition (if possible)
   std::string type = this->attributeDefinition()->type();
   smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(type);
   if (def)
     {
-    instance->setAttributeDefinition(def);
+    newRef->setAttributeDefinition(def);
     }
   else
     {
     std::cout << "Adding definition \"" << type
               << "\" to copy-definition queue"
               << std::endl;
-    info.UnresolvedRefItems.push(std::make_pair(type, instance));
+    info.UnresolvedRefItems.push(std::make_pair(type, newRef));
     }
 
-  instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  newRef->setNumberOfRequiredValues(m_numberOfRequiredValues);
 
   // Labels
   if (m_useCommonLabel)
     {
-    instance->setCommonValueLabel(m_valueLabels[0]);
+    newRef->setCommonValueLabel(m_valueLabels[0]);
     }
   else if (this->hasValueLabels())
     {
     for (i=0; i<m_valueLabels.size(); ++i)
       {
-      instance->setValueLabel(i, m_valueLabels[i]);
+      newRef->setValueLabel(i, m_valueLabels[i]);
       }
     }
 
-  return smtk::attribute::RefItemDefinitionPtr(instance);
+  return newRef;
 }
 //----------------------------------------------------------------------------

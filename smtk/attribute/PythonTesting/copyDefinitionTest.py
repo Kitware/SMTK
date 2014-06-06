@@ -21,8 +21,8 @@ except ImportError:
 
 logging.basicConfig(level=logging.DEBUG)
 
-SBT_FILENAME   = 'Basic2DFluid.sbt'
-SBI_FILENAME   = 'Basic2DFluid.sbi'
+SBT_FILENAME   = 'copyDefinitionTest.sbt'
+SBI_FILENAME   = 'copyDefinitionTest.sbi'
 
 # ---------------------------------------------------------------------
 if __name__ == '__main__':
@@ -62,23 +62,21 @@ if __name__ == '__main__':
   # Instantiate 2nd manager
   test_manager = smtk.attribute.Manager()
 
-  # Copy Pressure definition, which should also copy base definition
-  pressure_def = input_manager.findDefinition('Pressure')
-  test_manager.copyDefinition(pressure_def)
-  for def_type in ['Pressure', 'BoundaryCondition']:
+  # Copy SecondConcrete definition, which should copy alot of stuff
+  source_def = input_manager.findDefinition('SecondConcrete')
+  test_manager.copyDefinition(source_def)
+  expected_types = [
+    'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
+    'FirstConcrete'  # , 'PolyLinearFunction'
+  ]
+  for def_type in expected_types:
     defn = test_manager.findDefinition(def_type)
     if defn is None:
       logging.error('Expected %s definition, found None' % def_type)
       err_count += 1
 
-  # Copy Velocity definition, which should reuse base definition
-  def_type = 'Velocity'
-  velocity_def = input_manager.findDefinition(def_type)
-  test_manager.copyDefinition(velocity_def)
-  defn = test_manager.findDefinition(def_type)
-  if defn is None:
-    logging.error('Expected %s definition, found None' % def_type)
-    err_count += 1
+  # Note there is ALOT more that could & should be verified here
+  logging.debug('Writing manager')
 
   # Write data out FYI
   writer = smtk.util.AttributeWriter()
