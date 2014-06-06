@@ -109,7 +109,7 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::Cursor& c) const
     // all match the criteria. Also, if the HOMOGENOUS_GROUP bit is set,
     // require all entries to have the same entity type flag as the first.
     smtk::model::BitFlags typeMask = this->m_membershipMask;
-    bool mustBeHomogenous = typeMask & smtk::model::HOMOGENOUS_GROUP;
+    bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
     if (
       !c.as<model::GroupEntity>().meetsMembershipConstraintsInternal(
         c, typeMask, mustBeHomogenous))
