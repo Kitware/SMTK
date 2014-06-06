@@ -24,7 +24,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItem.h"
+
+#include <queue>
 
 using namespace smtk::attribute;
 
@@ -141,9 +145,21 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
     smtk::attribute::RefItemDefinition(this->name());
   ItemDefinition::copyTo(instance);
 
-  // TODO attributeDefinition
-  std::cerr << "Cannot initialize RefItemDefinition, name "
-            << this->name() << std::endl;
+  // Set attributeDefinition (if possible)
+  std::string type = this->attributeDefinition()->type();
+  smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(type);
+  if (def)
+    {
+    instance->setAttributeDefinition(def);
+    }
+  else
+    {
+    std::cout << "Adding definition \"" << type
+              << "\" to copy-definition queue"
+              << std::endl;
+    info.UnresolvedRefItems.push(std::make_pair(type, instance));
+    }
+
   instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
 
   // Labels

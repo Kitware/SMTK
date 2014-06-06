@@ -28,6 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_Manager_h
 
 #include "smtk/util/Resource.h"    // base class
+#include "smtk/attribute/ItemDefinition.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -149,7 +150,8 @@ namespace smtk
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;
       void internalFindAttributes(attribute::DefinitionPtr def,
                                   std::vector<smtk::attribute::AttributePtr> &result) const;
-      bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef);
+      bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
+                              smtk::attribute::ItemDefinition::CopyInfo& info);
 
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;

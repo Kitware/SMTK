@@ -34,8 +34,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/attribute/Item.h" // Needed for Item Types
 
+#include <queue>
 #include <string>
 #include <set>
+#include <utility>
 #include <vector>
 
 namespace smtk
@@ -51,6 +53,16 @@ namespace smtk
       friend class smtk::attribute::GroupItemDefinition;
       friend class smtk::attribute::ValueItemDefinition;
     public:
+      // Temp structure used for copying definitions
+      struct CopyInfo
+      {
+        // Reference to manager that is getting modified ("to")
+        const smtk::attribute::Manager& ToManager;
+        // List of RefItemDefinitions that reference types not currently in this manager
+        std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
+        CopyInfo(const smtk::attribute::Manager *mgr) : ToManager(*mgr) {}
+      };
+
       virtual ~ItemDefinition();
       const std::string &name() const
       { return this->m_name; }
@@ -121,13 +133,6 @@ namespace smtk
       virtual smtk::attribute::ItemPtr buildItem(Item *owningItem,
                                                 int position,
                                                 int subGroupPosition) const = 0;
-      // Temp structure used for copying definitions
-      struct CopyInfo
-      {
-        const smtk::attribute::Manager& Manager;
-        std::vector<smtk::attribute::ItemDefinitionPtr> UnresolvedRefItems;
-        CopyInfo(const smtk::attribute::Manager *mgr) : Manager(*mgr) {}
-      };
       virtual smtk::attribute::ItemDefinitionPtr
         createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const = 0;
     protected:
