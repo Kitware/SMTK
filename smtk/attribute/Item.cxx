@@ -229,6 +229,8 @@ std::string Item::type2String(Item::Type t)
       return "String";
     case VOID:
       return "Void";
+    case MODEL_ENTITY:
+      return "MODEL_ENTITY";
     default:
       return "";
     }
@@ -272,6 +274,10 @@ Item::Type Item::string2Type(const std::string &s)
   if (s == "Void")
     {
     return VOID;
+    }
+  if (s == "MODEL_ENTITY")
+    {
+    return MODEL_ENTITY;
     }
   return NUMBER_OF_TYPES;
 }

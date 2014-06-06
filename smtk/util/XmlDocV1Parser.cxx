@@ -43,12 +43,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+#include "smtk/model/Cursor.h"
 #include "smtk/model/Item.h"
 #include "smtk/model/GroupItem.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/Model.h"
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
@@ -699,6 +703,10 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
         idef = def->addItemDefinition<smtk::attribute::StringItemDefinition>(itemName);
         this->processStringDef(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::MODEL_ENTITY:
+        idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
+        this->processModelEntityDef(node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
+        break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         this->processItemDef(node, idef);
@@ -811,6 +819,58 @@ void XmlDocV1Parser::processStringDef(pugi::xml_node &node,
     }
   processDerivedValueDef<attribute::StringItemDefinitionPtr, std::string>
     (node, idef, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
+                                         attribute::ModelEntityItemDefinitionPtr idef)
+{
+  xml_node labels, mmask, child;
+  xml_attribute xatt;
+  int i;
+  this->processItemDef(node, idef);
+
+  mmask = node.child("MembershipMask");
+  if (mmask)
+    {
+    idef->setMembershipMask(mmask.text().as_uint());
+    }
+
+  xatt = node.attribute("NumberOfRequiredValues");
+  if (xatt)
+    {
+    idef->setNumberOfRequiredValues(xatt.as_int());
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Missing XML Attribute NumberOfRequiredValues for Item Definition : "
+                   << idef->name());
+    }
+
+  // Lets see if there are labels
+  if(node.child("Labels"))
+    {
+    smtkErrorMacro(this->m_logger,
+                   "Labels has been changed to ComponentLabels : "
+                   << idef->name());
+    }
+  labels = node.child("ComponentLabels");
+  if (labels)
+    {
+    // Are we using a common label?
+    xatt = labels.attribute("CommonLabel");
+    if (xatt)
+      {
+      idef->setCommonValueLabel(xatt.value());
+      }
+    else
+      {
+      for (child = labels.first_child(), i = 0; child; child = child.next_sibling(), i++)
+        {
+        idef->setValueLabel(i, child.value());
+        }
+      }
+    }
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
@@ -983,6 +1043,16 @@ void XmlDocV1Parser::processValueDef(pugi::xml_node &node,
         if( (cidef = idef->addItemDefinition<smtk::attribute::StringItemDefinition>(citemName)) )
           {
           this->processStringDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(cidef));
+          }
+        else
+          {
+          smtkErrorMacro(this->m_logger, "Item definition " << citemName << " already exists");
+          }
+        break;
+      case smtk::attribute::Item::MODEL_ENTITY:
+        if( (cidef = idef->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(citemName)) )
+          {
+          this->processModelEntityDef(cinode, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(cidef));
           }
         else
           {
@@ -1331,6 +1401,17 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
           }
         this->processStringDef(child, smtk::dynamic_pointer_cast<smtk::attribute::StringItemDefinition>(idef));
         break;
+      case smtk::attribute::Item::MODEL_ENTITY:
+        idef = def->addItemDefinition<smtk::attribute::ModelEntityItemDefinition>(itemName);
+        if (!idef)
+          {
+          smtkErrorMacro(this->m_logger,
+                         "Failed to create String Item definition Type: " << child.name()
+                         << " needed to create Group Definition: " << def->name());
+          continue;
+          }
+        this->processModelEntityDef(child, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(idef));
+        break;
       case smtk::attribute::Item::VOID:
         idef = def->addItemDefinition<smtk::attribute::VoidItemDefinition>(itemName);
         if (!idef)
@@ -1352,7 +1433,7 @@ void XmlDocV1Parser::processGroupDef(pugi::xml_node &node,
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processAttribute(xml_node &attNode)
 {
-  xml_node itemsNode, iNode, node;
+  xml_node itemsNode, assocsNode, iNode, node;
   std::string name, type;
   xml_attribute xatt;
   attribute::AttributePtr att;
@@ -1435,54 +1516,74 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
     }
 
   itemsNode = attNode.child("Items");
-  if (!itemsNode)
+  if (itemsNode)
     {
-    return;
-    }
-  // Process all of the items in the attribute w/r to the XML
-  // NOTE That the writer processes the items in order - lets assume
-  // that for speed and if that fails we can try to search for the correct
-  // xml node
-  n = static_cast<int>(att->numberOfItems());
-  for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
-       i++, iNode = iNode.next_sibling())
-    {
-    // See if the name of the item matches the name of node
-    xatt = iNode.attribute("Name");
-    if (!xatt)
+    // Process all of the items in the attribute w/r to the XML
+    // NOTE That the writer processes the items in order - lets assume
+    // that for speed and if that fails we can try to search for the correct
+    // xml node
+    n = static_cast<int>(att->numberOfItems());
+    for (i = 0, iNode = itemsNode.first_child(); (i < n) && iNode;
+      i++, iNode = iNode.next_sibling())
       {
-      smtkErrorMacro(this->m_logger,
-                     "Bad Item for Attribute : " << name
-                     << "- missing XML Attribute Name");
-      node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
-      }
-    else
-      {
-      // Is the ith xml node the same as the ith item of the attribute?
-      if (att->item(i)->name() == xatt.value())
+      // See if the name of the item matches the name of node
+      xatt = iNode.attribute("Name");
+      if (!xatt)
         {
-        node = iNode;
+        smtkErrorMacro(this->m_logger,
+          "Bad Item for Attribute : " << name
+          << "- missing XML Attribute Name");
+        node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
         }
       else
         {
-        node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+        // Is the ith xml node the same as the ith item of the attribute?
+        if (att->item(i)->name() == xatt.value())
+          {
+          node = iNode;
+          }
+        else
+          {
+          node = itemsNode.find_child_by_attribute("Name", att->item(i)->name().c_str());
+          }
         }
+      if (!node)
+        {
+        smtkErrorMacro(this->m_logger,
+          "Can not locate XML Item node :" << att->item(i)->name()
+          << " for Attribute : " << name);
+        continue;
+        }
+      this->processItem(node, att->item(i));
       }
-    if (!node)
+    if (iNode || (i != n))
       {
       smtkErrorMacro(this->m_logger,
-                     "Can not locate XML Item node :" << att->item(i)->name()
-                     << " for Attribute : " << name);
-      continue;
+        "Number of Items does not match XML for Attribute : " << name);
       }
-    this->processItem(node, att->item(i));
     }
-  if (iNode || (i != n))
+
+  assocsNode = attNode.child("ModelEntities");
+  if (assocsNode)
     {
-    smtkErrorMacro(this->m_logger,
-                   "Number of Items does not match XML for Attribute : " << name);
+    n = static_cast<int>(att->numberOfItems());
+    for (i = 0, iNode = assocsNode.first_child(); (i < n) && iNode;
+      i++, iNode = iNode.next_sibling())
+      {
+      smtk::util::UUID uid(iNode.text().get());
+      if (uid.isNull())
+        {
+        smtkErrorMacro(this->m_logger,
+          "Could not convert UUID text \""
+          << iNode.text().get()
+          << "\" to a UUID. Skipping.");
+        continue;
+        }
+      att->associateEntity(uid);
+      }
     }
 }
+
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processItem(xml_node &node,
                                  smtk::attribute::ItemPtr item)
@@ -1540,6 +1641,9 @@ void XmlDocV1Parser::processItem(xml_node &node,
       break;
     case smtk::attribute::Item::STRING:
       this->processStringItem(node, smtk::dynamic_pointer_cast<smtk::attribute::StringItem>(item));
+      break;
+    case smtk::attribute::Item::MODEL_ENTITY:
+      this->processModelEntityItem(node, smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(item));
       break;
     case smtk::attribute::Item::VOID:
       // Nothing to do!
@@ -1856,6 +1960,76 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr, std::string>
     (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
+                                          attribute::ModelEntityItemPtr item)
+{
+  xml_attribute xatt;
+  xml_node valsNode;
+  std::size_t i, n = item->numberOfValues();
+  smtk::util::UUID uid;
+  smtk::model::ManagerPtr mmgr = this->m_manager.refModelManager();
+  xml_node val;
+  std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  std::string attName;
+  AttRefInfo info;
+  if (!numRequiredVals)
+    {
+    // The node should have an attribute indicating how many values are
+    // associated with the item
+    xatt = node.attribute("NumberOfValues");
+    if (!xatt)
+      {
+      smtkErrorMacro(this->m_logger,
+                     "XML Attribute NumberOfValues is missing for Item: "
+                     << item->name());
+      return;
+      }
+    n = xatt.as_uint();
+    item->setNumberOfValues(n);
+    }
+
+  if (!n)
+    {
+    return;
+    }
+  valsNode = node.child("Values");
+  if (valsNode)
+    {
+    for (val = valsNode.child("Val"); val; val = val.next_sibling("Val"))
+      {
+      xatt = val.attribute("Ith");
+      if (!xatt)
+        {
+        smtkErrorMacro(this->m_logger,
+                       "XML Attribute Ith is missing for Item: " << item->name());
+        continue;
+        }
+      i = xatt.as_uint();
+      if (i >= n)
+        {
+        smtkErrorMacro(this->m_logger, "XML Attribute Ith = " << i
+                       << " is out of range for Item: " << item->name());
+        continue;
+        }
+      uid = smtk::util::UUID(val.text().get());
+      item->setValue(static_cast<int>(i), smtk::model::Cursor(mmgr, uid));
+      }
+    }
+  else if (numRequiredVals == 1)
+    {
+    val = node.child("Val");
+    if (val)
+      {
+      uid = smtk::util::UUID(val.text().get());
+      item->setValue(smtk::model::Cursor(mmgr, uid));
+      }
+    }
+  else
+    {
+    smtkErrorMacro(this->m_logger, "XML Node Values is missing for Item: " << item->name());
+    }
 }
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::processFileItem(pugi::xml_node &node,

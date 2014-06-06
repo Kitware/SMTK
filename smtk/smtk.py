@@ -131,6 +131,7 @@ IntItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 ItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 RefItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 StringItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
+ModelEntityItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 ValueItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 VoidItemDefinitionPtr.addItemDefinitionStr = addItemDefinition
 

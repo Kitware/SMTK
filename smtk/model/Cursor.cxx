@@ -4,6 +4,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
 namespace smtk {
@@ -752,6 +753,24 @@ bool Cursor::isEmbedded(Cursor& ent) const
 Cursor Cursor::embeddedIn() const
 {
   return CursorArrangementOps::firstRelation<Cursor>(*this, EMBEDDED_IN);
+}
+
+/**\brief Return the ModelEntity which owns this entity.
+  *
+  * A ModelEntity is analogous to a body in some kernels,
+  * a lump in others, or a group of regions in yet others.
+  * In SMTK, models are the objects that get associated with
+  * bridges to other kernels, so determining the owning
+  * model is important for discovering which modeling operations
+  * (including reading and writing to/from disk) are possible.
+  *
+  * Note that the returned model may be invalid.
+  */
+ModelEntity Cursor::owningModel() const
+{
+  return ModelEntity(
+    this->m_manager,
+    this->m_manager->modelOwningEntity(this->m_entity));
 }
 
 /// A comparator provided so that cursors may be included in ordered sets.

@@ -61,6 +61,7 @@ namespace smtk
         FILE,
         DIRECTORY,
         COLOR,
+        MODEL_ENTITY,
         NUMBER_OF_TYPES
       };
 

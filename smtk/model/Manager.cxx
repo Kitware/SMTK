@@ -1499,7 +1499,7 @@ Shell Manager::addShell(const VolumeUse& v)
 /**\brief Add an entity group to the manager (without any relationships).
   *
   * Any non-zero bits set in \a extraFlags are OR'd with entityFlags() of the group.
-  * This is an easy way to constrain the dimension of entities allowed to be members
+  * This is an easy way to constrain the entities allowed to be members
   * of the group.
   *
   * You may also specify a \a name for the group. If \a name is empty, then no
