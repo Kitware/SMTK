@@ -24,7 +24,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItem.h"
+
+#include <queue>
 
 using namespace smtk::attribute;
 
@@ -129,5 +133,48 @@ std::string RefItemDefinition::valueLabel(std::size_t element) const
     return this->m_valueLabels[element];
     }
   return ""; // If we threw execeptions this method could return const string &
+}
+//----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::RefItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+{
+  std::size_t i;
+
+  smtk::attribute::RefItemDefinitionPtr newRef =
+    smtk::attribute::RefItemDefinition::New(this->name());
+  ItemDefinition::copyTo(newRef);
+
+  // Set attributeDefinition (if possible)
+  std::string type = this->attributeDefinition()->type();
+  smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(type);
+  if (def)
+    {
+    newRef->setAttributeDefinition(def);
+    }
+  else
+    {
+    std::cout << "Adding definition \"" << type
+              << "\" to copy-definition queue"
+              << std::endl;
+    info.UnresolvedRefItems.push(std::make_pair(type, newRef));
+    }
+
+  newRef->setNumberOfRequiredValues(m_numberOfRequiredValues);
+
+  // Labels
+  if (m_useCommonLabel)
+    {
+    newRef->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (i=0; i<m_valueLabels.size(); ++i)
+      {
+      newRef->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  return newRef;
 }
 //----------------------------------------------------------------------------

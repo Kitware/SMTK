@@ -23,12 +23,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <algorithm>
 
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 
-using namespace smtk::attribute; 
+#include <iostream>
+
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 ValueItemDefinition::ValueItemDefinition(const std::string &myName):
@@ -251,5 +255,84 @@ void ValueItemDefinition::setIsExtensible(bool mode)
     // Need to clear individual labels - can only use common label with
     // extensible values
     this->setCommonValueLabel("");
+    }
+}
+//----------------------------------------------------------------------------
+void ValueItemDefinition::
+copyTo(ValueItemDefinitionPtr def,
+       smtk::attribute::ItemDefinition::CopyInfo& info) const
+{
+  std::size_t i;
+
+  ItemDefinition::copyTo(def);
+
+  if (m_units != "")
+    {
+    def->setUnits(m_units);
+    }
+
+  if (this->allowsExpressions())
+    {
+    // Set expression definition (if possible)
+    std::string type = this->expressionDefinition()->type();
+    smtk::attribute::DefinitionPtr exp = info.ToManager.findDefinition(type);
+    if (exp)
+      {
+      def->setExpressionDefinition(exp);
+      }
+    else
+      {
+      std::cout << "Adding definition \"" << type
+                << "\" to copy-expression queue"
+                << std::endl;
+
+      info.UnresolvedExpItems.push(std::make_pair(type, def));
+      }
+    }
+
+  def->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  def->setMaxNumberOfValues(m_maxNumberOfValues);
+  def->setIsExtensible(m_isExtensible);
+
+  // Add label(s)
+  if (m_useCommonLabel)
+    {
+    def->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (i=0; i<m_valueLabels.size(); ++i)
+      {
+      def->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  // Add children item definitions
+  if (m_itemDefs.size() > 0)
+    {
+    std::map<std::string, smtk::attribute::ItemDefinitionPtr>::const_iterator
+      itemDefMapIter = m_itemDefs.begin();
+    for (; itemDefMapIter != m_itemDefs.end(); itemDefMapIter++)
+      {
+      def->addChildItemDefinition(itemDefMapIter->second);
+      }
+    }
+
+  // Add condition items
+  if (m_valueToItemAssociations.size() > 0)
+    {
+    std::map<std::string, std::vector<std::string> >::const_iterator mapIter =
+      m_valueToItemAssociations.begin();
+    std::string value;
+    std::vector<std::string>::const_iterator itemIter;
+    for (; mapIter != m_valueToItemAssociations.end(); mapIter++)
+      {
+      value = mapIter->first;
+      itemIter = mapIter->second.begin();
+      for (; itemIter != mapIter->second.end(); itemIter++)
+        {
+        def->addConditionalItem(value, *itemIter);
+        }
+      }
     }
 }

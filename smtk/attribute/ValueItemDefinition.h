@@ -183,6 +183,8 @@ namespace smtk
       std::vector<std::string> conditionalItems(const std::string &enumValue) const;
 
     protected:
+      void copyTo(ValueItemDefinitionPtr def,
+                  smtk::attribute::ItemDefinition::CopyInfo& info) const;
 
       bool m_hasDefault;
       bool m_useCommonLabel;

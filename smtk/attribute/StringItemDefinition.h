@@ -51,6 +51,9 @@ namespace smtk
       { return this->m_multiline;}
       void setIsMultiline(bool val)
       {this->m_multiline = val;}
+
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       StringItemDefinition(const std::string &myName);
       bool m_multiline;

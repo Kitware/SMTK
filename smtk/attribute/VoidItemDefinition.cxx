@@ -63,3 +63,13 @@ Item::Type VoidItemDefinition::type() const
   return Item::VOID;
 }
 //----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::VoidItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+{
+  smtk::attribute::VoidItemDefinitionPtr instance =
+    smtk::attribute::VoidItemDefinition::New(this->name());
+  ItemDefinition::copyTo(instance);
+  return instance;
+}
+//----------------------------------------------------------------------------

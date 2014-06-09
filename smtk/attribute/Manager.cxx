@@ -25,6 +25,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Root.h"
 #include <iostream>
@@ -522,3 +524,193 @@ void Manager::setAdvanceLevelColor(int level, const double *l_color)
     }
 }
 //----------------------------------------------------------------------------
+// Copies attribute defintion into this manager
+// Returns smart pointer (will be empty if operation unsuccessful)
+// If definition contains RefItemDefinition instances, might have to
+// copy additional definitions for their targets.
+smtk::attribute::DefinitionPtr
+Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef)
+{
+  // Returns defintion
+  smtk::attribute::DefinitionPtr newDef = smtk::attribute::DefinitionPtr();
+
+  // Call internal copy method
+  smtk::attribute::ItemDefinition::CopyInfo info(this);
+  if (this->copyDefinitionImpl(sourceDef, info))
+    {
+    newDef = this->findDefinition(sourceDef->type());
+
+    // Process any unresolved ref & exp items
+    while (!info.UnresolvedRefItems.empty() || !info.UnresolvedExpItems.empty())
+      {
+      // Process ref items first
+      while (!info.UnresolvedRefItems.empty())
+        {
+        // Check if type has been created (copied) already
+        std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
+          info.UnresolvedRefItems.front();
+        std::string type = frontDef.first;
+        smtk::attribute::DefinitionPtr def = this->findDefinition(type);
+        if (def)
+          {
+          smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
+          smtk::attribute::RefItemDefinitionPtr refItemDef =
+            smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(nextItemDef);
+          refItemDef->setAttributeDefinition(def);
+          info.UnresolvedRefItems.pop();
+          }
+        else
+          {
+          // Need to copy definition, first find it in the input manager
+          std::cout << "Copying \"" << type << "\" definition" << std::endl;
+          smtk::attribute::DefinitionPtr nextDef =
+            sourceDef->manager()->findDefinition(type);
+          // Definition missing only if source manager is invalid, but check anyway
+          if (!nextDef)
+            {
+            std::cerr << "ERROR: Unable to find source definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          // Copy definition
+          if (!this->copyDefinitionImpl(nextDef, info))
+            {
+            std::cerr << "ERROR: Unable to copy definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          }
+        } // while (unresolved references)
+
+      // Process exp items second
+      while (!info.UnresolvedExpItems.empty())
+        {
+        // Check if type has been created (copied) already
+        std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
+          info.UnresolvedExpItems.front();
+        std::string type = frontDef.first;
+        smtk::attribute::DefinitionPtr def = this->findDefinition(type);
+        if (def)
+          {
+          smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
+          smtk::attribute::ValueItemDefinitionPtr valItemDef =
+            smtk::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(nextItemDef);
+          valItemDef->setExpressionDefinition(def);
+          info.UnresolvedExpItems.pop();
+          }
+        else
+          {
+          // Need to copy definition, first find it in the input manager
+          std::cout << "Copying \"" << type << "\" definition" << std::endl;
+          smtk::attribute::DefinitionPtr nextDef =
+            sourceDef->manager()->findDefinition(type);
+          // Definition missing only if source manager is invalid, but check anyway
+          if (!nextDef)
+            {
+            std::cerr << "ERROR: Unable to find source definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          // Copy definition
+          if (!this->copyDefinitionImpl(nextDef, info))
+            {
+            std::cerr << "ERROR: Unable to copy definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          }
+        } // while (expressions)
+
+      }  // while (references or expressions)
+    }  // if (this->copyDefinition())
+
+  return newDef;
+}
+//----------------------------------------------------------------------------
+// Copies attribute defintion into this manager, returning true if successful
+bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
+                                 smtk::attribute::ItemDefinition::CopyInfo& info)
+{
+  bool ok = true;
+
+  // Check for type conflict
+  std::string typeName = sourceDef->type();
+  if (this->findDefinition(typeName))
+    {
+    std::cerr << "WARNING: Will not overwrite attribute definition "
+              << typeName << std::endl;
+    return false;
+    }
+
+  // Check if input definition has a base definition
+  smtk::attribute::DefinitionPtr newDef;
+  smtk::attribute::DefinitionPtr sourceBaseDef = sourceDef->baseDefinition();
+  if (sourceBaseDef)
+    {
+    // Check if base definition of this type already exists in this manager
+    std::string baseTypeName = sourceBaseDef->type();
+    if (!this->findDefinition(baseTypeName))
+      {
+      //  If not found, copy it
+      if (!this->copyDefinitionImpl(sourceBaseDef, info))
+        {
+        return false;
+        }
+      }
+
+    // Retrieve base definition and create new def
+    smtk::attribute::DefinitionPtr newBaseDef =
+      this->findDefinition(baseTypeName);
+    newDef = this->createDefinition(typeName, newBaseDef);
+    }
+  else
+    {
+    // No base definition
+    newDef = this->createDefinition(typeName);
+    }
+
+  // Set contents of new definition (defer categories)
+  newDef->setLabel(sourceDef->label());
+  newDef->setVersion(sourceDef->version());
+  newDef->setIsAbstract(sourceDef->isAbstract());
+  newDef->setAdvanceLevel(sourceDef->advanceLevel());
+  newDef->setIsUnique(sourceDef->isUnique());
+  newDef->setIsNodal(sourceDef->isNodal());
+  if (sourceDef->isNotApplicableColorSet())
+    {
+    newDef->setNotApplicableColor(sourceDef->notApplicableColor());
+    }
+  if (sourceDef->isDefaultColorSet())
+    {
+    newDef->setDefaultColor(sourceDef->defaultColor());
+    }
+  newDef->setAssociationMask(sourceDef->associationMask());
+
+  // Copy new item definitions only (i.e., not inherited item defs)
+  for (std::size_t i = sourceDef->itemOffset();
+       i < sourceDef->numberOfItemDefinitions();
+       ++i)
+    {
+    smtk::attribute::ItemDefinitionPtr sourceItemDef =
+      sourceDef->itemDefinition(i);
+    smtk::attribute::ItemDefinitionPtr newItemDef =
+      sourceItemDef->createCopy(info);
+    if (newItemDef)
+      {
+      newDef->addItemDefinition(newItemDef);
+      }
+    }
+
+  // Update categories
+  newDef->setCategories();
+
+  // TODO Update CopyInfo to include set of categories in new attribute(s)
+  // For now, use brute force to update
+  this->updateCategories();
+
+  return true;
+}

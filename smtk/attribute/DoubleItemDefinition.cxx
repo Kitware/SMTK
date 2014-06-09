@@ -59,3 +59,15 @@ DoubleItemDefinition::buildItem(Item *owningItem,
                                                 itemPosition,
                                                 subGroupPosition));
 }
+//----------------------------------------------------------------------------
+smtk::attribute::ItemDefinitionPtr
+smtk::attribute::DoubleItemDefinition::
+createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
+{
+  smtk::attribute::DoubleItemDefinitionPtr newDef =
+    smtk::attribute::DoubleItemDefinition::New(this->name());
+
+  ValueItemDefinitionTemplate<double>::copyTo(newDef, info);
+  return newDef;
+}
+//----------------------------------------------------------------------------

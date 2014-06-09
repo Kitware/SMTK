@@ -73,6 +73,8 @@ namespace smtk
       {return this->m_useCommonLabel;}
 
       std::string valueLabel(std::size_t element) const;
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       RefItemDefinition(const std::string &myName);
       smtk::attribute::WeakDefinitionPtr m_definition;

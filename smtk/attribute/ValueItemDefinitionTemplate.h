@@ -72,6 +72,8 @@ namespace smtk
       bool isValueValid(const DataT &val) const;
     protected:
       ValueItemDefinitionTemplate(const std::string &myname);
+      void copyTo(ValueItemDefinitionPtr def,
+        smtk::attribute::ItemDefinition::CopyInfo& info) const;
       DataT m_defaultValue;
       DataT m_minRange;
       bool m_minRangeSet;
@@ -235,7 +237,54 @@ namespace smtk
         }
       return true;
     }
-  }
-}
+
+//----------------------------------------------------------------------------
+// Copies my contents to input definition
+// Input argument is ValueItemDefinition shared pointer, which must be
+// cast to (raw) ValueItemTemplateDefinition pointer.
+    template<typename DataT>
+    void ValueItemDefinitionTemplate<DataT>::
+      copyTo(ValueItemDefinitionPtr def,
+      smtk::attribute::ItemDefinition::CopyInfo& info) const
+    {
+    ValueItemDefinition::copyTo(def, info);
+
+    // Get raw pointer and cast to ValueItemDefinitionTemplate*
+    ValueItemDefinition *rawDef = def.get();
+    ValueItemDefinitionTemplate<DataT> *vdef =
+      dynamic_cast<ValueItemDefinitionTemplate<DataT>* >(rawDef);
+
+    if (this->hasDefault())
+      {
+      vdef->setDefaultValue(m_defaultValue);
+      }
+
+    if (m_minRangeSet)
+      {
+      vdef->setMinRange(m_minRange, m_minRangeInclusive);
+      }
+
+    if (m_maxRangeSet)
+      {
+      vdef->setMaxRange(m_maxRange, m_maxRangeInclusive);
+      }
+
+    if (this->isDiscrete())
+      {
+      // Copy values & labels
+      DataT value;
+      std::string label;
+      for (std::size_t i=0; i<m_discreteValues.size(); ++i)
+        {
+        value = m_discreteValues[i];
+        label = m_discreteValueEnums[i];
+        vdef->addDiscreteValue(value, label);
+        }
+      vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
+      }
+    }
+
+  } // namespace attribute
+} // namespace smtk
 
 #endif /* __smtk_attribute_ValueItemDefinitionTemplate_h */

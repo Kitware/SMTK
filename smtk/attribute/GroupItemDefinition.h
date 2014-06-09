@@ -116,6 +116,8 @@ namespace smtk
       virtual void addCategory(const std::string &category);
       virtual void removeCategory(const std::string &category);
 
+      virtual smtk::attribute::ItemDefinitionPtr
+        createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
     protected:
       GroupItemDefinition(const std::string &myname);
       virtual void updateCategories();
