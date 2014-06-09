@@ -72,7 +72,8 @@ namespace smtk
       bool isValueValid(const DataT &val) const;
     protected:
       ValueItemDefinitionTemplate(const std::string &myname);
-      void copyTo(ValueItemDefinition *def) const;
+      void copyTo(ValueItemDefinition *def,
+        smtk::attribute::ItemDefinition::CopyInfo& info) const;
       DataT m_defaultValue;
       DataT m_minRange;
       bool m_minRangeSet;
@@ -244,9 +245,10 @@ namespace smtk
 // Otherwise Shiboken cannot seem to parse correctly
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::
-    copyTo(ValueItemDefinition *def) const
+      copyTo(ValueItemDefinition *def,
+      smtk::attribute::ItemDefinition::CopyInfo& info) const
     {
-    ValueItemDefinition::copyTo(def);
+    ValueItemDefinition::copyTo(def, info);
 
     // Cast to template instance pointer
     ValueItemDefinitionTemplate<DataT> *vdef =

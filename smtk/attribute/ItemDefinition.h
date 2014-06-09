@@ -58,6 +58,8 @@ namespace smtk
       {
         // Reference to manager that is getting modified ("to")
         const smtk::attribute::Manager& ToManager;
+        // List of ValueItemDefinitions that reference expressions not currently in this manager
+        std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
         // List of RefItemDefinitions that reference types not currently in this manager
         std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
         CopyInfo(const smtk::attribute::Manager *mgr) : ToManager(*mgr) {}

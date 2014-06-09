@@ -26,6 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Root.h"
 #include <iostream>
@@ -539,46 +540,93 @@ Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef)
     {
     newDef = this->findDefinition(sourceDef->type());
 
-    // Process any unresolved ref items
-    while (!info.UnresolvedRefItems.empty())
+    // Process any unresolved ref & exp items
+    while (!info.UnresolvedRefItems.empty() || !info.UnresolvedExpItems.empty())
       {
-      // Check if type has been created (copied) already
-      std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
-        info.UnresolvedRefItems.front();
-      std::string type = frontDef.first;
-      smtk::attribute::DefinitionPtr def = this->findDefinition(type);
-      if (def)
+      // Process ref items first
+      while (!info.UnresolvedRefItems.empty())
         {
-        smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
-        smtk::attribute::RefItemDefinitionPtr refItemDef =
-          smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(nextItemDef);
-        refItemDef->setAttributeDefinition(def);
-        info.UnresolvedRefItems.pop();
-        }
-      else
+        // Check if type has been created (copied) already
+        std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
+          info.UnresolvedRefItems.front();
+        std::string type = frontDef.first;
+        smtk::attribute::DefinitionPtr def = this->findDefinition(type);
+        if (def)
+          {
+          smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
+          smtk::attribute::RefItemDefinitionPtr refItemDef =
+            smtk::dynamic_pointer_cast<smtk::attribute::RefItemDefinition>(nextItemDef);
+          refItemDef->setAttributeDefinition(def);
+          info.UnresolvedRefItems.pop();
+          }
+        else
+          {
+          // Need to copy definition, first find it in the input manager
+          std::cout << "Copying \"" << type << "\" definition" << std::endl;
+          smtk::attribute::DefinitionPtr nextDef =
+            sourceDef->manager()->findDefinition(type);
+          // Definition missing only if source manager is invalid, but check anyway
+          if (!nextDef)
+            {
+            std::cerr << "ERROR: Unable to find source definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          // Copy definition
+          if (!this->copyDefinitionImpl(nextDef, info))
+            {
+            std::cerr << "ERROR: Unable to copy definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          }
+        } // while (unresolved references)
+
+      // Process exp items second
+      while (!info.UnresolvedExpItems.empty())
         {
-        // Need to copy definition, first find it in the input manager
-        smtk::attribute::DefinitionPtr nextDef =
-          sourceDef->manager()->findDefinition(type);
-        // Definition missing only if source manager is invalid, but check anyway
-        if (!nextDef)
+        // Check if type has been created (copied) already
+        std::pair<std::string, smtk::attribute::ItemDefinitionPtr>& frontDef =
+          info.UnresolvedExpItems.front();
+        std::string type = frontDef.first;
+        smtk::attribute::DefinitionPtr def = this->findDefinition(type);
+        if (def)
           {
-          std::cerr << "ERROR: Unable to find source definition " << type
-                    << " -- copy operation incomplete" << std::endl;
-          return newDef;
+          smtk::attribute::ItemDefinitionPtr nextItemDef = frontDef.second;
+          smtk::attribute::ValueItemDefinitionPtr valItemDef =
+            smtk::dynamic_pointer_cast<smtk::attribute::ValueItemDefinition>(nextItemDef);
+          valItemDef->setExpressionDefinition(def);
+          info.UnresolvedExpItems.pop();
           }
-
-        // Copy definition
-        if (!this->copyDefinitionImpl(nextDef, info))
+        else
           {
-          std::cerr << "ERROR: Unable to copy definition " << type
-                    << " -- copy operation incomplete" << std::endl;
-          return newDef;
-          }
+          // Need to copy definition, first find it in the input manager
+          std::cout << "Copying \"" << type << "\" definition" << std::endl;
+          smtk::attribute::DefinitionPtr nextDef =
+            sourceDef->manager()->findDefinition(type);
+          // Definition missing only if source manager is invalid, but check anyway
+          if (!nextDef)
+            {
+            std::cerr << "ERROR: Unable to find source definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
 
-        }
-      } // while
-    }
+          // Copy definition
+          if (!this->copyDefinitionImpl(nextDef, info))
+            {
+            std::cerr << "ERROR: Unable to copy definition " << type
+                      << " -- copy operation incomplete" << std::endl;
+            return newDef;
+            }
+
+          }
+        } // while (expressions)
+
+      }  // while (references or expressions)
+    }  // if (this->copyDefinition())
 
   return newDef;
 }

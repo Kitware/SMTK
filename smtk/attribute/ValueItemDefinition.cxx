@@ -23,12 +23,16 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <algorithm>
 
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 
-using namespace smtk::attribute; 
+#include <iostream>
+
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
 ValueItemDefinition::ValueItemDefinition(const std::string &myName):
@@ -254,7 +258,9 @@ void ValueItemDefinition::setIsExtensible(bool mode)
     }
 }
 //----------------------------------------------------------------------------
-void ValueItemDefinition::copyTo(ValueItemDefinition *def) const
+void ValueItemDefinition::
+copyTo(ValueItemDefinition *def,
+       smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 
@@ -267,7 +273,21 @@ void ValueItemDefinition::copyTo(ValueItemDefinition *def) const
 
   if (this->allowsExpressions())
     {
-    def->setExpressionDefinition(this->expressionDefinition());
+    // Set expression definition (if possible)
+    std::string type = this->expressionDefinition()->type();
+    smtk::attribute::DefinitionPtr exp = info.ToManager.findDefinition(type);
+    if (exp)
+      {
+      def->setExpressionDefinition(exp);
+      }
+    else
+      {
+      std::cout << "Adding definition \"" << type
+                << "\" to copy-expression queue"
+                << std::endl;
+
+      //info.UnresolvedExpItems.push(std::make_pair(type, sp));
+      }
     }
 
   def->setNumberOfRequiredValues(m_numberOfRequiredValues);

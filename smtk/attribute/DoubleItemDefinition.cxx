@@ -66,7 +66,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::DoubleItemDefinition *instance = new
     smtk::attribute::DoubleItemDefinition(this->name());
-  ValueItemDefinitionTemplate<double>::copyTo(instance);
+  ValueItemDefinitionTemplate<double>::copyTo(instance, info);
   return smtk::attribute::DoubleItemDefinitionPtr(instance);
 }
 //----------------------------------------------------------------------------

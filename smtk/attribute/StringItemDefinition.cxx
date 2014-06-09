@@ -66,7 +66,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   smtk::attribute::StringItemDefinition *instance = new
     smtk::attribute::StringItemDefinition(this->name());
-  ValueItemDefinitionTemplate<std::string>::copyTo(instance);
+  ValueItemDefinitionTemplate<std::string>::copyTo(instance, info);
   return smtk::attribute::StringItemDefinitionPtr(instance);
 }
 //----------------------------------------------------------------------------
