@@ -206,8 +206,8 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 
-  smtk::attribute::GroupItemDefinition *instance = new
-    smtk::attribute::GroupItemDefinition(this->name());
+  smtk::attribute::GroupItemDefinitionPtr instance =
+    smtk::attribute::GroupItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
   // Copy item definitions
@@ -233,6 +233,6 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
       }
     }
 
-  return smtk::attribute::GroupItemDefinitionPtr(instance);
+  return instance;
 }
 //----------------------------------------------------------------------------

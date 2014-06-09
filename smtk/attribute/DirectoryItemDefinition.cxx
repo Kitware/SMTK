@@ -126,8 +126,8 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DirectoryItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
-  smtk::attribute::DirectoryItemDefinition *instance = new
-    smtk::attribute::DirectoryItemDefinition(this->name());
+  smtk::attribute::DirectoryItemDefinitionPtr instance =
+    smtk::attribute::DirectoryItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
   instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
@@ -148,6 +148,6 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   instance->setShouldExist(m_shouldExist);
   instance->setShouldBeRelative(m_shouldBeRelative);
 
-  return smtk::attribute::DirectoryItemDefinitionPtr(instance);
+  return instance;
 }
 //----------------------------------------------------------------------------

@@ -141,7 +141,7 @@ namespace smtk
       // The constructor must have the value for m_name passed
       // in because that should never change.
       ItemDefinition(const std::string &myname);
-      void copyTo(ItemDefinition *def) const;
+      void copyTo(ItemDefinitionPtr def) const;
       virtual void updateCategories();
       int m_version;
       bool m_isOptional;

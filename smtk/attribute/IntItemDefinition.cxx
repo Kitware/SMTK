@@ -64,9 +64,10 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::IntItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
-  smtk::attribute::IntItemDefinition *instance = new
-    smtk::attribute::IntItemDefinition(this->name());
-  ValueItemDefinitionTemplate<int>::copyTo(instance, info);
-  return smtk::attribute::IntItemDefinitionPtr(instance);
+  smtk::attribute::IntItemDefinitionPtr newDef =
+    smtk::attribute::IntItemDefinition::New(this->name());
+
+  ValueItemDefinitionTemplate<int>::copyTo(newDef, info);
+  return newDef;
 }
 //----------------------------------------------------------------------------

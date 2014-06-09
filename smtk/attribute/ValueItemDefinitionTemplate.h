@@ -72,7 +72,7 @@ namespace smtk
       bool isValueValid(const DataT &val) const;
     protected:
       ValueItemDefinitionTemplate(const std::string &myname);
-      void copyTo(ValueItemDefinition *def,
+      void copyTo(ValueItemDefinitionPtr def,
         smtk::attribute::ItemDefinition::CopyInfo& info) const;
       DataT m_defaultValue;
       DataT m_minRange;
@@ -240,19 +240,19 @@ namespace smtk
 
 //----------------------------------------------------------------------------
 // Copies my contents to input definition
-// Input argument must be ValueItemDefinition raw pointer, which is
-// internally cast to ValueItemDefinition<> pointer.
-// Otherwise Shiboken cannot seem to parse correctly
+// Input argument is ValueItemDefinition shared pointer, which must be
+// cast to (raw) ValueItemTemplateDefinition pointer.
     template<typename DataT>
     void ValueItemDefinitionTemplate<DataT>::
-      copyTo(ValueItemDefinition *def,
+      copyTo(ValueItemDefinitionPtr def,
       smtk::attribute::ItemDefinition::CopyInfo& info) const
     {
     ValueItemDefinition::copyTo(def, info);
 
-    // Cast to template instance pointer
+    // Get raw pointer and cast to ValueItemDefinitionTemplate*
+    ValueItemDefinition *rawDef = def.get();
     ValueItemDefinitionTemplate<DataT> *vdef =
-      dynamic_cast<ValueItemDefinitionTemplate<DataT>* >(def);
+      dynamic_cast<ValueItemDefinitionTemplate<DataT>* >(rawDef);
 
     if (this->hasDefault())
       {

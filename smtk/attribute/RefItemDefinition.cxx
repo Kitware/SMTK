@@ -141,10 +141,9 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 
-  smtk::attribute::RefItemDefinition *instance = new
-    smtk::attribute::RefItemDefinition(this->name());
-  ItemDefinition::copyTo(instance);
-  smtk::attribute::RefItemDefinitionPtr newRef(instance);
+  smtk::attribute::RefItemDefinitionPtr newRef =
+    smtk::attribute::RefItemDefinition::New(this->name());
+  ItemDefinition::copyTo(newRef);
 
   // Set attributeDefinition (if possible)
   std::string type = this->attributeDefinition()->type();

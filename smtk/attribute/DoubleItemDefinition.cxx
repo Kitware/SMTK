@@ -64,9 +64,10 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DoubleItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
-  smtk::attribute::DoubleItemDefinition *instance = new
-    smtk::attribute::DoubleItemDefinition(this->name());
-  ValueItemDefinitionTemplate<double>::copyTo(instance, info);
-  return smtk::attribute::DoubleItemDefinitionPtr(instance);
+  smtk::attribute::DoubleItemDefinitionPtr newDef =
+    smtk::attribute::DoubleItemDefinition::New(this->name());
+
+  ValueItemDefinitionTemplate<double>::copyTo(newDef, info);
+  return newDef;
 }
 //----------------------------------------------------------------------------

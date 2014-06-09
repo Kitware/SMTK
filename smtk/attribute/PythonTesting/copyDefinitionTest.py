@@ -67,7 +67,7 @@ if __name__ == '__main__':
   test_manager.copyDefinition(source_def)
   expected_types = [
     'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
-    'FirstConcrete'  # , 'PolyLinearFunction'
+    'FirstConcrete', 'PolyLinearFunction'
   ]
   for def_type in expected_types:
     defn = test_manager.findDefinition(def_type)

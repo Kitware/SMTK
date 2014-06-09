@@ -132,8 +132,8 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
 
-  smtk::attribute::FileItemDefinition *instance = new
-    smtk::attribute::FileItemDefinition(this->name());
+  smtk::attribute::FileItemDefinitionPtr instance =
+    smtk::attribute::FileItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);
 
   instance->setNumberOfRequiredValues(m_numberOfRequiredValues);
@@ -160,6 +160,6 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
     instance->setDefaultValue(m_defaultValue);
     }
 
-  return smtk::attribute::FileItemDefinitionPtr(instance);
+  return instance;
 }
 //----------------------------------------------------------------------------

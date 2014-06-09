@@ -259,7 +259,7 @@ void ValueItemDefinition::setIsExtensible(bool mode)
 }
 //----------------------------------------------------------------------------
 void ValueItemDefinition::
-copyTo(ValueItemDefinition *def,
+copyTo(ValueItemDefinitionPtr def,
        smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
   std::size_t i;
@@ -286,7 +286,7 @@ copyTo(ValueItemDefinition *def,
                 << "\" to copy-expression queue"
                 << std::endl;
 
-      //info.UnresolvedExpItems.push(std::make_pair(type, sp));
+      info.UnresolvedExpItems.push(std::make_pair(type, def));
       }
     }
 

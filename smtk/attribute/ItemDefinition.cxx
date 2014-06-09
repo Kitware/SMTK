@@ -83,7 +83,7 @@ void ItemDefinition::setAdvanceLevel(int level)
   this->m_advanceLevel[1] = level;
 }
 //----------------------------------------------------------------------------
-void ItemDefinition::copyTo(ItemDefinition *def) const
+void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 {
   def->setLabel(m_label);
   def->setVersion(m_version);
