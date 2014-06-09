@@ -202,3 +202,31 @@ bool ModelEntityItemDefinition::usingCommonLabel() const
 {
   return this->m_useCommonLabel;
 }
+
+/// Builds and returns copy of self
+ItemDefinitionPtr
+ModelEntityItemDefinition::
+createCopy(ItemDefinition::CopyInfo& info) const
+{
+  std::size_t i;
+
+  smtk::attribute::ModelEntityItemDefinitionPtr newDef =
+    smtk::attribute::ModelEntityItemDefinition::New(this->name());
+  ItemDefinition::copyTo(newDef);
+
+  newDef->setMembershipMask(m_membershipMask);
+  newDef->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  if (m_useCommonLabel)
+    {
+    newDef->setCommonValueLabel(m_valueLabels[0]);
+    }
+  else if (this->hasValueLabels())
+    {
+    for (i=0; i<m_valueLabels.size(); ++i)
+      {
+      newDef->setValueLabel(i, m_valueLabels[i]);
+      }
+    }
+
+  return newDef;
+}
