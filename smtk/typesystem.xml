@@ -168,11 +168,13 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
 
- <!-- ignore shadowing/hiding of ItemDefinition::copyTo() because it is intentional -->
- <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and StringItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
- <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and ValueItemDefinitionTemplate::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
- <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and DoubleItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
- <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const and IntItemDefinition::copyTo(smtk::attribute::ValueItemDefinition * def) const" />
+  <!-- ignore shadowing/hiding of ItemDefinition::copyTo() because it is intentional -->
+  <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
+  <suppress-warning text="skipping field 'CopyInfo::UnresolvedExpItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and DoubleItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and StringItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and ValueItemDefinitionTemplate::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
+  <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and IntItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
 
   <!-- ignore templated cast for now. -->
   <suppress-warning text="skipping function 'smtk::model::CellEntity::inclusions', unmatched return type 'T'"/>
