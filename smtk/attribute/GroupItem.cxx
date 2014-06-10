@@ -275,3 +275,24 @@ smtk::attribute::ConstItemPtr GroupItem::find(std::size_t element, const std::st
   return this->m_items[element][static_cast<std::size_t>(i)];
 }
 //----------------------------------------------------------------------------
+void GroupItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  Item::copyFrom(sourceItem, info);
+
+  // Cast input pointer to GroupItem
+  GroupItemPtr sourceGroupItem = dynamic_pointer_cast<GroupItem>(sourceItem);
+
+  // Update children (items)
+  this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
+  for (std::size_t i=0; i<sourceGroupItem->numberOfGroups(); ++i)
+    {
+    for (std::size_t j=0; j<sourceGroupItem->numberOfItemsPerGroup(); ++j)
+      {
+      ItemPtr sourceChildItem = sourceGroupItem->item(i, j);
+      ItemPtr childItem = this->item(i, j);
+      childItem->copyFrom(sourceChildItem, info);
+      }
+    }
+}
+//----------------------------------------------------------------------------

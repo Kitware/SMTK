@@ -66,6 +66,8 @@ namespace smtk
       smtk::attribute::ConstItemPtr find(std::size_t element, const std::string &name) const;
 
       virtual void reset();
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
     protected:
       GroupItem(Attribute *owningAttribute, int itemPosition);
       GroupItem(Item *owningItem, int myPosition, int mySubGroupPosition);
