@@ -83,14 +83,6 @@ void ItemDefinition::setAdvanceLevel(int level)
   this->m_advanceLevel[1] = level;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ItemDefinitionPtr
-ItemDefinition::
-createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
-{
-  std::cerr << "ERROR - not able to copy definition of type "
-            << this->type() << std::endl;
-}
-//----------------------------------------------------------------------------
 void ItemDefinition::copyTo(ItemDefinitionPtr def) const
 {
   def->setLabel(m_label);

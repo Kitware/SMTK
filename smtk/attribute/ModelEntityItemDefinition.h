@@ -64,6 +64,9 @@ public:
   void setValueLabel(std::size_t element, const std::string &elabel);
   void setCommonValueLabel(const std::string &elabel);
   bool usingCommonLabel() const;
+
+  virtual smtk::attribute::ItemDefinitionPtr
+    createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const;
 protected:
   ModelEntityItemDefinition(const std::string& myName);
 
