@@ -714,3 +714,29 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
 
   return true;
 }
+//----------------------------------------------------------------------------
+// Copies attribute into this manager
+// Returns smart pointer (will be empty if operation unsuccessful)
+// If definition contains RefItem or ExpressionType instances, might also
+// copy additional attributes from the source attribute manager.
+smtk::attribute::AttributePtr
+Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
+{
+  // Returns attribute pointer
+  smtk::attribute::AttributePtr newAtt = smtk::attribute::AttributePtr();
+
+  // Check if attribute already exists
+  std::string name = sourceAtt->name();
+  if (this->findAttribute(name))
+    {
+    std::cout << "WARNING: Manager contains attribute with name \"" << name
+              << "\" -- not copying." << std::endl;
+    return newAtt;
+    }
+
+  // Copy attribute definition if needed
+  this->copyDefinition(sourceAtt->definition());
+
+  return newAtt;
+}
+//----------------------------------------------------------------------------

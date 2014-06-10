@@ -145,6 +145,7 @@ namespace smtk
 
       // Copies definition from another manager
       smtk::attribute::DefinitionPtr copyDefinition(const smtk::attribute::DefinitionPtr def);
+      smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;
