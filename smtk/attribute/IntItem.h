@@ -43,6 +43,8 @@ namespace smtk
     public:
       virtual ~IntItem();
       virtual Item::Type type() const;
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
     protected:
       IntItem(Attribute *owningAttribute, int itemPosition);
       IntItem(Item *owningItem, int myPosition, int mySubGroupPosition);

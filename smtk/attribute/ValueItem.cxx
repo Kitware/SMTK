@@ -302,9 +302,8 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
-  std::size_t i;
   // Update values
-  for (i=0; i<sourceValueItem->numberOfValues(); ++i)
+  for (std::size_t i=0; i<sourceValueItem->numberOfValues(); ++i)
     {
     if (!sourceValueItem->isSet(i))
       {
