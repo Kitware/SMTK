@@ -1,7 +1,7 @@
 """
 Test smtk.attribute.Manager.copyDefinition() method
 
-Uses Basic2DFluid.sbt in the SMTKTestData repo.
+Uses copyDefinitionTest.sbt in the SMTKTestData repo.
 """
 
 import logging
@@ -37,18 +37,12 @@ if __name__ == '__main__':
   logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))
   logging.debug('PYTHONPATH = %s' % os.environ.get('PYTHONPATH'))
 
-  # Define scope object to store shared data
-  ScopeType = type('Scope', (object,), dict())
-  scope = ScopeType()
-  smtk_test_data = sys.argv[1]
-  model_folder = os.path.join(smtk_test_data, 'smtk')
-
   # Load attribute file into manager
-  att_folder = os.path.join(model_folder, 'attribute')
+  smtk_test_data = sys.argv[1]
+  att_folder = os.path.join(smtk_test_data, 'smtk', 'attribute')
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
   input_manager = smtk.attribute.Manager()
-  #manager.setRefStorage(scope.store)
   reader = smtk.util.AttributeReader()
   logger = smtk.util.Logger()
   err = reader.read(input_manager, att_path, logger)
