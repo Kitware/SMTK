@@ -737,6 +737,67 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
   // Copy attribute definition if needed
   this->copyDefinition(sourceAtt->definition());
 
+  // Call internal copy method
+  smtk::attribute::Item::CopyInfo copyInfo;
+  bool ok = this->copyAttributeImpl(sourceAtt, copyInfo);
+  if (ok)
+    {
+    newAtt = this->findAttribute(name);
+    }
+
   return newAtt;
+}
+//----------------------------------------------------------------------------
+// Copies attribute defintion into this manager, returning true if successful
+// Note: Any model associations are *not* copied
+bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
+                                 smtk::attribute::Item::CopyInfo& info)
+{
+  bool ok = true;
+
+  // Check if attribute already exists
+  std::string name = sourceAtt->name();
+  if (this->findAttribute(name))
+    {
+    std::cout << "WARNING: Manager contains attribute with name \"" << name
+              << "\" -- not copying." << std::endl;
+    return false;
+    }
+
+  // Get definition
+  smtk::attribute::DefinitionPtr def = this->findDefinition(sourceAtt->type());
+  if (!def)
+    {
+    std::cerr << "Unabled to find attribute definition \""
+              << sourceAtt->type() << "\"" << std::endl;
+    return false;
+    }
+
+  // Create attribute
+  smtk::attribute::AttributePtr newAtt =
+    this->createAttribute(name, def);
+
+  // Copy properties
+  if (sourceAtt->isColorSet())
+    {
+    newAtt->setColor(sourceAtt->color());
+    }
+  bool bstate = sourceAtt->appliesToBoundaryNodes();
+  newAtt->setAppliesToBoundaryNodes(bstate);
+  bool istate = sourceAtt->appliesToInteriorNodes();
+  newAtt->setAppliesToInteriorNodes(istate);
+
+  // Copy/update items
+  for (std::size_t i=0; i<sourceAtt->numberOfItems(); ++i)
+    {
+    smtk::attribute::ItemPtr sourceItem = sourceAtt->item(i);
+    smtk::attribute::ItemPtr newItem = newAtt->item(i);
+    newItem->copyFrom(sourceItem, info);
+    }
+
+  // TODO what are references? references to me?
+  // TODO what about m_userData?
+
+  return ok;
 }
 //----------------------------------------------------------------------------

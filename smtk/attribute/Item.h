@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include <map>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -63,6 +64,15 @@ namespace smtk
         COLOR,
         MODEL_ENTITY,
         NUMBER_OF_TYPES
+      };
+
+      // Temp structure used for copying definitions
+      struct CopyInfo
+      {
+        // List of ValueItem instances that reference expression not currently in this manager
+        std::queue<std::pair<std::string, smtk::attribute::ItemPtr> > UnresolvedExpItems;
+        // List of RefItem instances that reference attribute not currently in this manager
+        std::queue<std::pair<std::string, smtk::attribute::ItemPtr> > UnresolvedRefItems;
       };
 
      virtual ~Item();
@@ -136,6 +146,10 @@ namespace smtk
      void detachOwningItem()
      {this->m_owningItem = NULL;}
 
+     // Used by Manager::copyAttribute()
+     virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                           smtk::attribute::Item::CopyInfo& info);
+
      static std::string type2String(Item::Type t);
      static Item::Type string2Type(const std::string &s);
 
@@ -154,7 +168,6 @@ namespace smtk
     private:
      bool m_usingDefAdvanceLevelInfo[2];
      int m_advanceLevel[2];
-     
     };
 //----------------------------------------------------------------------------
     inline smtk::util::UserDataPtr Item::userData(const std::string &key) const

@@ -153,6 +153,8 @@ namespace smtk
                                   std::vector<smtk::attribute::AttributePtr> &result) const;
       bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
                               smtk::attribute::ItemDefinition::CopyInfo& info);
+      bool copyAttributeImpl(const smtk::attribute::AttributePtr sourceAtt,
+                             smtk::attribute::Item::CopyInfo& info);
 
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;
