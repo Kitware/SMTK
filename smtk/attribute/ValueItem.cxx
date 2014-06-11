@@ -23,9 +23,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItemDefinition.h"
 
 #include <iostream>
 
@@ -302,6 +304,9 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
+  // Get reference to attribute manager
+  Manager *manager = this->attribute()->manager();
+
   // Update values
   for (std::size_t i=0; i<sourceValueItem->numberOfValues(); ++i)
     {
@@ -311,8 +316,19 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       }
     else if (sourceValueItem->isExpression(i))
       {
-      // TODO Handle expression
-      std::cout << "TODO Handle expression" << std::endl;
+      std::string name = sourceValueItem->expression(i)->name();
+      AttributePtr att = manager->findAttribute(name);
+      if (att)
+        {
+        this->setExpression(i, att);
+        }
+      else
+        {
+        std::cout << "Adding  \"" << name
+                  << "\" to copy-expression queue"
+                  << std::endl;
+        info.UnresolvedExpItems.push(std::make_pair(name, this->pointer()));
+        }
       }
     else if (sourceValueItem->isDiscrete())
       {

@@ -25,7 +25,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Root.h"
@@ -738,12 +740,94 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
   this->copyDefinition(sourceAtt->definition());
 
   // Call internal copy method
-  smtk::attribute::Item::CopyInfo copyInfo;
-  bool ok = this->copyAttributeImpl(sourceAtt, copyInfo);
+  smtk::attribute::Item::CopyInfo info;
+  bool ok = this->copyAttributeImpl(sourceAtt, info);
   if (ok)
     {
     newAtt = this->findAttribute(name);
-    }
+
+    // Process unresolved ref & exp items
+    while (!info.UnresolvedRefItems.empty() || !info.UnresolvedExpItems.empty())
+      {
+      // Process ref items first
+      while (!info.UnresolvedRefItems.empty())
+        {
+        // Check if att has been created (copied) already
+        std::pair<std::string, ItemPtr>& frontAtt =
+          info.UnresolvedRefItems.front();
+        std::string name = frontAtt.first;
+        AttributePtr att = this->findAttribute(name);
+        if (att)
+          {
+          ItemPtr nextItem = frontAtt.second;
+          RefItemPtr refItem = smtk::dynamic_pointer_cast<RefItem>(nextItem);
+          refItem->setValue(att);
+          info.UnresolvedRefItems.pop();
+          }
+        else
+          {
+          // Need to copy attrobite, first find it in the input manager
+          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          // Attribute missing only if source manager is invalid, but check anyway
+          if (!nextAtt)
+            {
+            std::cerr << "ERROR: Unable to find source attribute " << name
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+
+          // Copy attribute
+          if (!this->copyAttributeImpl(nextAtt, info))
+            {
+            std::cerr << "ERROR: Unable to copy attribute " << att
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+          }
+        }  // while (ref items)
+
+      // Process expressions next
+      while (!info.UnresolvedExpItems.empty())
+        {
+        // Check if att has been copied already
+        std::pair<std::string, ItemPtr>& frontAtt =
+          info.UnresolvedExpItems.front();
+        std::string name = frontAtt.first;
+        AttributePtr att = this->findAttribute(name);
+        if (att)
+          {
+          ItemPtr nextItem = frontAtt.second;
+          ValueItemPtr valItem =
+            smtk::dynamic_pointer_cast<ValueItem>(nextItem);
+          valItem->setExpression(att);
+          info.UnresolvedExpItems.pop();
+          }
+        else
+          {
+          // Need to copy attribute, first find it in input manager
+          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          // Attribute missing only if source manager is invalid, but check anyway
+          if (!nextAtt)
+            {
+            std::cerr << "ERROR: Unable to find source attribute " << name
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+
+          // Copy attribute
+          if (!this->copyAttributeImpl(nextAtt, info))
+            {
+            std::cerr << "ERROR: Unable to copy attribute " << att
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+          }
+        }  // while (exp items)
+
+      }  // while (ref || exp items)
+    } // if (ok)
 
   return newAtt;
 }
