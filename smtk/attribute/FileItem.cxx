@@ -234,7 +234,7 @@ void FileItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   Item::copyFrom(sourceItem, info);
 
   FileItemPtr sourceFileItem =
-    dynamic_pointer_cast<FileItem>(sourceItem);
+    smtk::dynamic_pointer_cast<FileItem>(sourceItem);
 
   for (std::size_t i=0; i<sourceFileItem->numberOfValues(); ++i)
     {

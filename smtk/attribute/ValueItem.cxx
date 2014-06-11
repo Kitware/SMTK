@@ -300,7 +300,8 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   Item::copyFrom(sourceItem, info);
 
   // Cast input pointer to ValueItem
-  ValueItemPtr sourceValueItem = dynamic_pointer_cast<ValueItem>(sourceItem);
+  ValueItemPtr sourceValueItem =
+    smtk::dynamic_pointer_cast<ValueItem>(sourceItem);
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 

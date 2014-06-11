@@ -257,7 +257,7 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   Item::copyFrom(sourceItem, info);
 
   // Cast input pointer to RefItem
-  RefItemPtr sourceRefItem = dynamic_pointer_cast<RefItem>(sourceItem);
+  RefItemPtr sourceRefItem = smtk::dynamic_pointer_cast<RefItem>(sourceItem);
 
   // Get reference to attribute manager
   Manager *manager = this->attribute()->manager();

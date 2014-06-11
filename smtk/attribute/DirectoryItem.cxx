@@ -225,7 +225,7 @@ void DirectoryItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   Item::copyFrom(sourceItem, info);
 
   DirectoryItemPtr sourceDirItem =
-    dynamic_pointer_cast<DirectoryItem>(sourceItem);
+    smtk::dynamic_pointer_cast<DirectoryItem>(sourceItem);
 
   for (std::size_t i=0; i<sourceDirItem->numberOfValues(); ++i)
     {

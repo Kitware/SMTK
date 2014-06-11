@@ -281,7 +281,8 @@ void GroupItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   Item::copyFrom(sourceItem, info);
 
   // Cast input pointer to GroupItem
-  GroupItemPtr sourceGroupItem = dynamic_pointer_cast<GroupItem>(sourceItem);
+  GroupItemPtr sourceGroupItem =
+    smtk::dynamic_pointer_cast<GroupItem>(sourceItem);
 
   // Update children (items)
   this->setNumberOfGroups(sourceGroupItem->numberOfGroups());
