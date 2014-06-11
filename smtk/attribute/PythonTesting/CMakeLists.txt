@@ -3,6 +3,7 @@ find_package( PythonInterp 2.7 )
 # Additional tests that require SMTK_DATA_DIR
 set(smtkModelPythonDataTests
   copyDefinitionTest
+  copyAttributeTest
 )
 
 

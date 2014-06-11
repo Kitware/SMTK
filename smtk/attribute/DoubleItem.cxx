@@ -51,3 +51,10 @@ Item::Type DoubleItem::type() const
 {
   return DOUBLE;
 }
+//----------------------------------------------------------------------------
+void DoubleItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  ValueItemTemplate<double>::copyFrom(sourceItem, info);
+}
+//----------------------------------------------------------------------------

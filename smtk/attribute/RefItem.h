@@ -64,6 +64,8 @@ namespace smtk
       virtual bool isSet(std::size_t element=0) const
       {return this->m_values[element].lock().get() != NULL;}
       virtual void unset(std::size_t element=0);
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
 
     protected:
       RefItem(Attribute *owningAttribute, int itemPosition);

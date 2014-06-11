@@ -204,3 +204,29 @@ void ModelEntityItem::unset(std::size_t i)
 {
   this->setValue(i, smtk::model::Cursor());
 }
+
+/// Assigns contents to be same as source item
+void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  Item::copyFrom(sourceItem, info);
+
+  // Cast input pointer to ModelEntityItem
+  ModelEntityItemPtr sourceModelEntityItem =
+    smtk::dynamic_pointer_cast<ModelEntityItem>(sourceItem);
+
+  // Update values
+  // Only set values if both att managers are using the same model
+  this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
+  for (std::size_t i=0; i<sourceModelEntityItem->numberOfValues(); ++i)
+    {
+    if (sourceModelEntityItem->isSet(i) && info.IsSameModel)
+      {
+      smtk::model::Cursor value = sourceModelEntityItem->value(i);
+      this->setValue(i, value);
+      }
+    else
+      {
+      this->unset(i);
+      }
+    }
+}

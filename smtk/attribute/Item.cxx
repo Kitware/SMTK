@@ -207,6 +207,19 @@ int Item::advanceLevel(int mode) const
   return this->m_advanceLevel[mode];
 }
 //----------------------------------------------------------------------------
+void Item::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  m_isEnabled = sourceItem->isEnabled();
+  for (unsigned i=0; i<2; ++i)
+    {
+    if (!sourceItem->usingDefinitionAdvanceLevel(i))
+      {
+      this->setAdvanceLevel(i, sourceItem->advanceLevel(i));
+      }
+    }  // for
+}
+//----------------------------------------------------------------------------
 std::string Item::type2String(Item::Type t)
 {
   switch (t)

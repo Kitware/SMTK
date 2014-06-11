@@ -64,7 +64,8 @@ namespace smtk
       virtual bool isUsingDefault(std::size_t element) const;
       virtual bool isUsingDefault() const;
       DataT defaultValue() const;
-
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
       ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);
@@ -495,8 +496,32 @@ namespace smtk
         }
       return false;
     }
-  }
-}
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    void
+    ValueItemTemplate<DataT>::
+    copyFrom(const smtk::attribute::ItemPtr sourceItem,
+             smtk::attribute::Item::CopyInfo& info)
+      {
+      ValueItem::copyFrom(sourceItem, info);
 
+      // Cast input pointer to ValueItemTemplate
+      ValueItemTemplate<DataT> *sourceValueItemTemplate =
+        dynamic_cast<ValueItemTemplate<DataT> *>(sourceItem.get());
+
+      // Update values
+      for (std::size_t i=0; i<sourceValueItemTemplate->numberOfValues(); ++i)
+        {
+        if (sourceValueItemTemplate->isSet(i) &&
+            !sourceValueItemTemplate->isExpression(i) &&
+            !sourceValueItemTemplate->isDiscrete())
+          {
+          this->setValue(i, sourceValueItemTemplate->value(i));
+          }
+        } // for
+    }
+
+  }  // namespace attribute
+}  // namespace smtk
 
 #endif /* __smtk_attribute_ValueItemTemplate_h */

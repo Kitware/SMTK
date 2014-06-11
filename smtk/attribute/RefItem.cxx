@@ -23,6 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
@@ -248,5 +249,44 @@ RefItem::reset()
     this->unset(i);
     }
   Item::reset();
+}
+//----------------------------------------------------------------------------
+void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  Item::copyFrom(sourceItem, info);
+
+  // Cast input pointer to RefItem
+  RefItemPtr sourceRefItem = smtk::dynamic_pointer_cast<RefItem>(sourceItem);
+
+  // Get reference to attribute manager
+  Manager *manager = this->attribute()->manager();
+
+  // Update values, copying as practical
+  this->setNumberOfValues(sourceRefItem->numberOfValues());
+  for (std::size_t i=0; i<sourceRefItem->numberOfValues(); ++i)
+    {
+    if (sourceRefItem->isSet(i))
+      {
+      std::string name = sourceRefItem->value()->name();
+      AttributePtr att = manager->findAttribute(name);
+      if (att)
+        {
+        this->setValue(i, att);
+        }
+      else
+        {
+        std::cout << "Adding  \"" << name
+                  << "\" to copy-attribute queue"
+                  << std::endl;
+        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        info.UnresolvedRefItems.push(itemInfo);
+        }
+      }
+    else
+      {
+      this->unset(i);
+      }
+    }
 }
 //----------------------------------------------------------------------------

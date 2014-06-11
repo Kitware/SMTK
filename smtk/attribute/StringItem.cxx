@@ -50,3 +50,10 @@ Item::Type StringItem::type() const
 {
   return STRING;
 }
+//----------------------------------------------------------------------------
+void StringItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  ValueItemTemplate<std::string>::copyFrom(sourceItem, info);
+}
+//----------------------------------------------------------------------------

@@ -50,3 +50,10 @@ Item::Type IntItem::type() const
 {
   return INT;
 }
+//----------------------------------------------------------------------------
+void IntItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  ValueItemTemplate<int>::copyFrom(sourceItem, info);
+}
+//----------------------------------------------------------------------------

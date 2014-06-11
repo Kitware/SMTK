@@ -228,3 +228,24 @@ FileItem::reset()
     }
 }
 //----------------------------------------------------------------------------
+void FileItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  Item::copyFrom(sourceItem, info);
+
+  FileItemPtr sourceFileItem =
+    smtk::dynamic_pointer_cast<FileItem>(sourceItem);
+
+  for (std::size_t i=0; i<sourceFileItem->numberOfValues(); ++i)
+    {
+    if (sourceFileItem->isSet(i))
+      {
+      this->setValue(i, sourceFileItem->value(i));
+      }
+    else
+      {
+      this->unset(i);
+      }
+    }
+}
+//----------------------------------------------------------------------------

@@ -65,6 +65,8 @@ namespace smtk
       {return this->m_isSet[element];}
       virtual void unset(std::size_t element=0)
       {this->m_isSet[element] = false;}
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
 
     protected:
       DirectoryItem(Attribute *owningAttribute, int itemPosition);

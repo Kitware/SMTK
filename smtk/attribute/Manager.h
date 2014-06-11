@@ -145,6 +145,10 @@ namespace smtk
 
       // Copies definition from another manager
       smtk::attribute::DefinitionPtr copyDefinition(const smtk::attribute::DefinitionPtr def);
+      // Copies attribute from another manager
+      // Note: does *not* copy model associations. If needed, a method can be added to
+      // Attribute for copying associations.
+      smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;
@@ -152,6 +156,8 @@ namespace smtk
                                   std::vector<smtk::attribute::AttributePtr> &result) const;
       bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
                               smtk::attribute::ItemDefinition::CopyInfo& info);
+      bool copyAttributeImpl(const smtk::attribute::AttributePtr sourceAtt,
+                             smtk::attribute::Item::CopyInfo& info);
 
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;

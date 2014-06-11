@@ -23,9 +23,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Manager.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItemDefinition.h"
+
+#include <iostream>
 
 using namespace smtk::attribute;
 
@@ -287,6 +291,69 @@ void ValueItem::updateActiveChildrenItems()
   for (i = 0; i < n; i++)
     {
     this->m_activeChildrenItems.push_back(this->m_childrenItems[citems[i]]);
+    }
+}
+//----------------------------------------------------------------------------
+void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  Item::copyFrom(sourceItem, info);
+
+  // Cast input pointer to ValueItem
+  ValueItemPtr sourceValueItem =
+    smtk::dynamic_pointer_cast<ValueItem>(sourceItem);
+
+  this->setNumberOfValues(sourceValueItem->numberOfValues());
+
+  // Get reference to attribute manager
+  Manager *manager = this->attribute()->manager();
+
+  // Update values
+  for (std::size_t i=0; i<sourceValueItem->numberOfValues(); ++i)
+    {
+    if (!sourceValueItem->isSet(i))
+      {
+      this->unset(i);
+      }
+    else if (sourceValueItem->isExpression(i))
+      {
+      std::string name = sourceValueItem->expression(i)->name();
+      AttributePtr att = manager->findAttribute(name);
+      if (att)
+        {
+        this->setExpression(i, att);
+        }
+      else
+        {
+        std::cout << "Adding  \"" << name
+                  << "\" to copy-expression queue"
+                  << std::endl;
+        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        info.UnresolvedExpItems.push(itemInfo);
+        }
+      }
+    else if (sourceValueItem->isDiscrete())
+      {
+      this->setDiscreteIndex(i, sourceValueItem->discreteIndex(i));
+      }
+    } // for
+
+  // Update children items
+  std::map<std::string, smtk::attribute::ItemPtr>::const_iterator sourceIter =
+    sourceValueItem->m_childrenItems.begin();
+  std::map<std::string, smtk::attribute::ItemPtr>::const_iterator newIter;
+  for (; sourceIter != sourceValueItem->m_childrenItems.end(); sourceIter++)
+    {
+    ItemPtr sourceChild = sourceIter->second;
+    newIter = m_childrenItems.find(sourceIter->first);
+    if (newIter == m_childrenItems.end())
+      {
+      std::cerr << "Could not find child item \"" << sourceIter->first
+                << "\" -- cannot copy" << std::endl;
+      continue;
+      }
+    ItemPtr newChild = newIter->second;
+    newChild->copyFrom(sourceChild, info);
     }
 }
 //----------------------------------------------------------------------------

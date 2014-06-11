@@ -43,6 +43,8 @@ namespace smtk
     public:
       virtual ~DoubleItem();
       virtual Item::Type type() const;
+      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                            smtk::attribute::Item::CopyInfo& info);
     protected:
       DoubleItem(Attribute *owningAttribute, int itemPosition);
       DoubleItem(Item *owningItem, int myPosition, int mySubGroupPosition);

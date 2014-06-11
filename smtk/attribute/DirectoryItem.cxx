@@ -219,3 +219,24 @@ DirectoryItem::reset()
     }
 }
 //----------------------------------------------------------------------------
+void DirectoryItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
+{
+  // Assigns my contents to be same as sourceItem
+  Item::copyFrom(sourceItem, info);
+
+  DirectoryItemPtr sourceDirItem =
+    smtk::dynamic_pointer_cast<DirectoryItem>(sourceItem);
+
+  for (std::size_t i=0; i<sourceDirItem->numberOfValues(); ++i)
+    {
+    if (sourceDirItem->isSet(i))
+      {
+      this->setValue(i, sourceDirItem->value(i));
+      }
+    else
+      {
+      this->unset(i);
+      }
+    }
+}
+//----------------------------------------------------------------------------

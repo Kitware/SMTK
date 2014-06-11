@@ -113,6 +113,9 @@ namespace smtk
         return this->m_activeChildrenItems[static_cast<std::size_t>(i)];
       }
 
+     // Used by Manager::copyAttribute()
+     virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                           smtk::attribute::Item::CopyInfo& info);
     protected:
       ValueItem(Attribute *owningAttribute, int itemPosition);
       ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);

@@ -71,7 +71,8 @@ public:
   virtual std::string valueAsString(std::size_t element) const;
   virtual bool isSet(std::size_t element = 0) const;
   virtual void unset(std::size_t element = 0);
-
+  virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
+                        smtk::attribute::Item::CopyInfo& info);
 
 protected:
   ModelEntityItem(Attribute *owningAttribute, int itemPosition);

@@ -25,7 +25,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Root.h"
@@ -714,3 +716,172 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
 
   return true;
 }
+//----------------------------------------------------------------------------
+// Copies attribute into this manager
+// Returns smart pointer (will be empty if operation unsuccessful)
+// If definition contains RefItem or ExpressionType instances, might also
+// copy additional attributes from the source attribute manager.
+smtk::attribute::AttributePtr
+Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
+{
+  // Returns attribute pointer
+  smtk::attribute::AttributePtr newAtt = smtk::attribute::AttributePtr();
+
+  // Check if attribute already exists
+  std::string name = sourceAtt->name();
+  if (this->findAttribute(name))
+    {
+    std::cout << "WARNING: Manager contains attribute with name \"" << name
+              << "\" -- not copying." << std::endl;
+    return newAtt;
+    }
+
+  // Copy attribute definition if needed
+  this->copyDefinition(sourceAtt->definition());
+
+  // Call internal copy method
+  smtk::attribute::Item::CopyInfo info;
+  smtk::model::ManagerPtr thisModel = this->refModelManager();
+  smtk::model::ManagerPtr thatModel = sourceAtt->manager()->refModelManager();
+  info.IsSameModel = thisModel && (thisModel == thatModel);
+  bool ok = this->copyAttributeImpl(sourceAtt, info);
+  if (ok)
+    {
+    newAtt = this->findAttribute(name);
+
+    // Process unresolved ref & exp items
+    while (!info.UnresolvedRefItems.empty() || !info.UnresolvedExpItems.empty())
+      {
+      // Process ref items first
+      while (!info.UnresolvedRefItems.empty())
+        {
+        // Check if att has been created (copied) already
+        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedRefItems.front();
+        std::string name = itemInfo.AttributeName;
+        AttributePtr att = this->findAttribute(name);
+        if (att)
+          {
+          RefItemPtr refItem =
+            smtk::dynamic_pointer_cast<RefItem>(itemInfo.UnresolvedItem);
+          refItem->setValue(itemInfo.Index, att);
+          info.UnresolvedRefItems.pop();
+          }
+        else
+          {
+          // Need to copy attrobite, first find it in the input manager
+          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          // Attribute missing only if source manager is invalid, but check anyway
+          if (!nextAtt)
+            {
+            std::cerr << "ERROR: Unable to find source attribute " << name
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+
+          // Copy attribute
+          if (!this->copyAttributeImpl(nextAtt, info))
+            {
+            std::cerr << "ERROR: Unable to copy attribute " << att
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+          }
+        }  // while (ref items)
+
+      // Process expressions next
+      while (!info.UnresolvedExpItems.empty())
+        {
+        // Check if att has been copied already
+        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedExpItems.front();
+        std::string name = itemInfo.AttributeName;
+        AttributePtr att = this->findAttribute(name);
+        if (att)
+          {
+          ValueItemPtr valItem =
+            smtk::dynamic_pointer_cast<ValueItem>(itemInfo.UnresolvedItem);
+          valItem->setExpression(itemInfo.Index, att);
+          info.UnresolvedExpItems.pop();
+          }
+        else
+          {
+          // Need to copy attribute, first find it in input manager
+          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          // Attribute missing only if source manager is invalid, but check anyway
+          if (!nextAtt)
+            {
+            std::cerr << "ERROR: Unable to find source attribute " << name
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+
+          // Copy attribute
+          if (!this->copyAttributeImpl(nextAtt, info))
+            {
+            std::cerr << "ERROR: Unable to copy attribute " << att
+                      << " -- copy operation incomplete" << std::endl;
+            return newAtt;
+            }
+          }
+        }  // while (exp items)
+
+      }  // while (ref || exp items)
+    } // if (ok)
+
+  return newAtt;
+}
+//----------------------------------------------------------------------------
+// Copies attribute defintion into this manager, returning true if successful
+// Note: Any model associations are *not* copied
+bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
+                                 smtk::attribute::Item::CopyInfo& info)
+{
+  bool ok = true;
+
+  // Check if attribute already exists
+  std::string name = sourceAtt->name();
+  if (this->findAttribute(name))
+    {
+    std::cout << "WARNING: Manager contains attribute with name \"" << name
+              << "\" -- not copying." << std::endl;
+    return false;
+    }
+
+  // Get definition
+  smtk::attribute::DefinitionPtr def = this->findDefinition(sourceAtt->type());
+  if (!def)
+    {
+    std::cerr << "Unabled to find attribute definition \""
+              << sourceAtt->type() << "\"" << std::endl;
+    return false;
+    }
+
+  // Create attribute
+  smtk::attribute::AttributePtr newAtt =
+    this->createAttribute(name, def);
+
+  // Copy properties
+  if (sourceAtt->isColorSet())
+    {
+    newAtt->setColor(sourceAtt->color());
+    }
+  bool bstate = sourceAtt->appliesToBoundaryNodes();
+  newAtt->setAppliesToBoundaryNodes(bstate);
+  bool istate = sourceAtt->appliesToInteriorNodes();
+  newAtt->setAppliesToInteriorNodes(istate);
+
+  // Copy/update items
+  for (std::size_t i=0; i<sourceAtt->numberOfItems(); ++i)
+    {
+    smtk::attribute::ItemPtr sourceItem = sourceAtt->item(i);
+    smtk::attribute::ItemPtr newItem = newAtt->item(i);
+    newItem->copyFrom(sourceItem, info);
+    }
+
+  // TODO what are references? references to me?
+  // TODO what about m_userData?
+
+  return ok;
+}
+//----------------------------------------------------------------------------
