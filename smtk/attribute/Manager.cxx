@@ -756,15 +756,14 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
       while (!info.UnresolvedRefItems.empty())
         {
         // Check if att has been created (copied) already
-        std::pair<std::string, ItemPtr>& frontAtt =
-          info.UnresolvedRefItems.front();
-        std::string name = frontAtt.first;
+        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedRefItems.front();
+        std::string name = itemInfo.AttributeName;
         AttributePtr att = this->findAttribute(name);
         if (att)
           {
-          ItemPtr nextItem = frontAtt.second;
-          RefItemPtr refItem = smtk::dynamic_pointer_cast<RefItem>(nextItem);
-          refItem->setValue(att);
+          RefItemPtr refItem =
+            smtk::dynamic_pointer_cast<RefItem>(itemInfo.UnresolvedItem);
+          refItem->setValue(itemInfo.Index, att);
           info.UnresolvedRefItems.pop();
           }
         else
@@ -794,16 +793,14 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
       while (!info.UnresolvedExpItems.empty())
         {
         // Check if att has been copied already
-        std::pair<std::string, ItemPtr>& frontAtt =
-          info.UnresolvedExpItems.front();
-        std::string name = frontAtt.first;
+        Item::UnresolvedItemInfo& itemInfo = info.UnresolvedExpItems.front();
+        std::string name = itemInfo.AttributeName;
         AttributePtr att = this->findAttribute(name);
         if (att)
           {
-          ItemPtr nextItem = frontAtt.second;
           ValueItemPtr valItem =
-            smtk::dynamic_pointer_cast<ValueItem>(nextItem);
-          valItem->setExpression(att);
+            smtk::dynamic_pointer_cast<ValueItem>(itemInfo.UnresolvedItem);
+          valItem->setExpression(itemInfo.Index, att);
           info.UnresolvedExpItems.pop();
           }
         else

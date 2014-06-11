@@ -279,7 +279,8 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
         std::cout << "Adding  \"" << name
                   << "\" to copy-attribute queue"
                   << std::endl;
-        info.UnresolvedRefItems.push(std::make_pair(name, this->pointer()));
+        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        info.UnresolvedRefItems.push(itemInfo);
         }
       }
     else

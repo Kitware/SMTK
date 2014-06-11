@@ -328,7 +328,8 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
         std::cout << "Adding  \"" << name
                   << "\" to copy-expression queue"
                   << std::endl;
-        info.UnresolvedExpItems.push(std::make_pair(name, this->pointer()));
+        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        info.UnresolvedExpItems.push(itemInfo);
         }
       }
     else if (sourceValueItem->isDiscrete())

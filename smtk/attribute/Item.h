@@ -66,16 +66,28 @@ namespace smtk
         NUMBER_OF_TYPES
       };
 
-      // Temp structure used for copying attributes
+      // Temp structures used for copying attributes
+      struct UnresolvedItemInfo
+      {
+        const std::string AttributeName;
+        ItemPtr UnresolvedItem;
+        const int Index;  // which value of the UnresolvedItem
+
+        // Constructor
+        UnresolvedItemInfo(std::string name, ItemPtr item, int index)
+        : AttributeName(name), UnresolvedItem(item), Index(index)
+        {
+        }
+      };
       struct CopyInfo
       {
         // Indicates if both managers are attached to same model
         // Only set for smtk model (not used w/cmb models)
         bool IsSameModel;
         // List of ValueItem instances that reference expression not currently in this manager
-        std::queue<std::pair<std::string, smtk::attribute::ItemPtr> > UnresolvedExpItems;
+        std::queue<UnresolvedItemInfo> UnresolvedExpItems;
         // List of RefItem instances that reference attribute not currently in this manager
-        std::queue<std::pair<std::string, smtk::attribute::ItemPtr> > UnresolvedRefItems;
+        std::queue<UnresolvedItemInfo> UnresolvedRefItems;
       };
 
      virtual ~Item();
