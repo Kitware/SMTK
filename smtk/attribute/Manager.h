@@ -145,6 +145,9 @@ namespace smtk
 
       // Copies definition from another manager
       smtk::attribute::DefinitionPtr copyDefinition(const smtk::attribute::DefinitionPtr def);
+      // Copies attribute from another manager
+      // Note: does *not* copy model associations. If needed, a method can be added to
+      // Attribute for copying associations.
       smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,

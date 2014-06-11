@@ -66,7 +66,7 @@ namespace smtk
         NUMBER_OF_TYPES
       };
 
-      // Temp structure used for copying definitions
+      // Temp structure used for copying attributes
       struct CopyInfo
       {
         // Indicates if both managers are attached to same model

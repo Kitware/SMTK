@@ -75,7 +75,13 @@ if __name__ == '__main__':
       logging.error('Expected %s definition, found None' % def_type)
       err_count += 1
 
-  #TODO expected_atttypes = []
+  expected_atttypes = ['FirstConcrete', 'SecondConcrete', 'PolyLinearFunction']
+  for att_type in expected_atttypes:
+    att_list = test_manager.findAttributes(att_type)
+    if len(att_list) != 1:
+      logging.error('Expected %s attribute, found %d' %
+        (att_type, len(att_list)))
+      err_count += 1
 
   # Note there is ALOT more that could & should be verified here
   logging.debug('Writing manager')
