@@ -69,6 +69,9 @@ namespace smtk
       // Temp structure used for copying definitions
       struct CopyInfo
       {
+        // Indicates if both managers are attached to same model
+        // Only set for smtk model (not used w/cmb models)
+        bool IsSameModel;
         // List of ValueItem instances that reference expression not currently in this manager
         std::queue<std::pair<std::string, smtk::attribute::ItemPtr> > UnresolvedExpItems;
         // List of RefItem instances that reference attribute not currently in this manager

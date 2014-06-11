@@ -741,6 +741,9 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
 
   // Call internal copy method
   smtk::attribute::Item::CopyInfo info;
+  smtk::model::ManagerPtr thisModel = this->refModelManager();
+  smtk::model::ManagerPtr thatModel = sourceAtt->manager()->refModelManager();
+  info.IsSameModel = thisModel && (thisModel == thatModel);
   bool ok = this->copyAttributeImpl(sourceAtt, info);
   if (ok)
     {
