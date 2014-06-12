@@ -48,6 +48,8 @@ public:
   QPointer<qtGroupView> TabGroup;
   QPointer<QCheckBox> FilterByCheck;
   QPointer<QComboBox> ShowCategoryCombo;
+  QPointer<QLabel> AdvLevelLabel;
+  QPointer<QToolButton> AdvLevelEditButton;
 
   void deleteWidget(QWidget* w)
   {
@@ -61,6 +63,8 @@ public:
     this->deleteWidget(this->AdvLevelCombo);
     this->deleteWidget(this->ShowCategoryCombo);
     this->deleteWidget(this->FilterByCheck);
+    this->deleteWidget(this->AdvLevelEditButton);
+    this->deleteWidget(this->AdvLevelLabel);
   }
 };
 
@@ -118,6 +122,8 @@ void qtRootView::createWidget( )
   editButton->setToolTip("Edit access level");
   connect(editButton, SIGNAL(toggled(bool)),
         this, SLOT(showAdvanceLevelOverlay(bool)));
+  this->Internals->AdvLevelLabel = advLevelLabel;
+  this->Internals->AdvLevelEditButton = editButton;
 
   this->Internals->FilterByCheck = new QCheckBox(this->Widget);
   this->Internals->FilterByCheck->setText("Show by Category: ");
