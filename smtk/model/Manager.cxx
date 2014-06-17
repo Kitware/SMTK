@@ -117,12 +117,13 @@ bool Manager::erase(const smtk::util::UUID& uid)
     {
     ak = ad->second.begin();
     if (ak == ad->second.end())
-     break;
+      break;
     Arrangements::size_type aidx = ak->second.size();
     for (; aidx > 0; --aidx)
-      this->unarrangeEntity(uid, ak->first, aidx - 1, false);
+      this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
+    ad = this->m_arrangements->find(uid); // iterator may be invalidated by unarrangeEntity.
     }
-  while (1);
+  while (ad != this->m_arrangements->end());
   return this->BRepModel::erase(uid);
 }
 
@@ -1739,11 +1740,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src)
   std::set<ConditionTrigger>::const_iterator begin =
     this->m_conditionTriggers.lower_bound(
       ConditionTrigger(event,
-        ConditionObserver(NULL, NULL)));
+        ConditionObserver(ConditionCallback(), (void*)NULL)));
   std::set<ConditionTrigger>::const_iterator end =
     this->m_conditionTriggers.upper_bound(
       ConditionTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        ConditionObserver(NULL, NULL)));
+        ConditionObserver(ConditionCallback(), (void*)NULL)));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
@@ -1754,11 +1755,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
   std::set<OneToOneTrigger>::const_iterator begin =
     this->m_oneToOneTriggers.lower_bound(
       OneToOneTrigger(event,
-        OneToOneObserver(NULL, NULL)));
+        OneToOneObserver(OneToOneCallback(), (void*)NULL)));
   std::set<OneToOneTrigger>::const_iterator end =
     this->m_oneToOneTriggers.upper_bound(
       OneToOneTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        OneToOneObserver(NULL, NULL)));
+        OneToOneObserver(OneToOneCallback(), (void*)NULL)));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -1769,11 +1770,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
   std::set<OneToManyTrigger>::const_iterator begin =
     this->m_oneToManyTriggers.lower_bound(
       OneToManyTrigger(event,
-        OneToManyObserver(NULL, NULL)));
+        OneToManyObserver(OneToManyCallback(), (void*)NULL)));
   std::set<OneToManyTrigger>::const_iterator end =
     this->m_oneToManyTriggers.upper_bound(
       OneToManyTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        OneToManyObserver(NULL, NULL)));
+        OneToManyObserver(OneToManyCallback(), (void*)NULL)));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
