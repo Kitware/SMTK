@@ -1740,11 +1740,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src)
   std::set<ConditionTrigger>::const_iterator begin =
     this->m_conditionTriggers.lower_bound(
       ConditionTrigger(event,
-        ConditionObserver(ConditionCallback(), (void*)NULL)));
+        ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
   std::set<ConditionTrigger>::const_iterator end =
     this->m_conditionTriggers.upper_bound(
       ConditionTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        ConditionObserver(ConditionCallback(), (void*)NULL)));
+        ConditionObserver(ConditionCallback(), static_cast<void*>(NULL))));
   for (std::set<ConditionTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, it->second.second);
 }
@@ -1755,11 +1755,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
   std::set<OneToOneTrigger>::const_iterator begin =
     this->m_oneToOneTriggers.lower_bound(
       OneToOneTrigger(event,
-        OneToOneObserver(OneToOneCallback(), (void*)NULL)));
+        OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
   std::set<OneToOneTrigger>::const_iterator end =
     this->m_oneToOneTriggers.upper_bound(
       OneToOneTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        OneToOneObserver(OneToOneCallback(), (void*)NULL)));
+        OneToOneObserver(OneToOneCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToOneTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
@@ -1770,11 +1770,11 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
   std::set<OneToManyTrigger>::const_iterator begin =
     this->m_oneToManyTriggers.lower_bound(
       OneToManyTrigger(event,
-        OneToManyObserver(OneToManyCallback(), (void*)NULL)));
+        OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   std::set<OneToManyTrigger>::const_iterator end =
     this->m_oneToManyTriggers.upper_bound(
       OneToManyTrigger(std::make_pair(event.first,static_cast<ManagerEventRelationType>(event.second + 1)),
-        OneToManyObserver(OneToManyCallback(), (void*)NULL)));
+        OneToManyObserver(OneToManyCallback(), static_cast<void*>(NULL))));
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
