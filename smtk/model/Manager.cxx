@@ -117,12 +117,13 @@ bool Manager::erase(const smtk::util::UUID& uid)
     {
     ak = ad->second.begin();
     if (ak == ad->second.end())
-     break;
+      break;
     Arrangements::size_type aidx = ak->second.size();
     for (; aidx > 0; --aidx)
-      this->unarrangeEntity(uid, ak->first, aidx - 1, false);
+      this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
+    ad = this->m_arrangements->find(uid); // iterator may be invalidated by unarrangeEntity.
     }
-  while (1);
+  while (ad != this->m_arrangements->end());
   return this->BRepModel::erase(uid);
 }
 
