@@ -1,6 +1,7 @@
 #ifndef __smtk_model_AttributeAssignments_h
 #define __smtk_model_AttributeAssignments_h
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/util/UUID.h"
 
 #include "smtk/options.h" // for SMTK_HASH_STORAGE
@@ -14,11 +15,8 @@
 namespace smtk {
   namespace model {
 
-/// A type for attribute identifiers.
-typedef unsigned long AttributeId;
-
 /// A set of attribute identifiers.
-typedef std::set<AttributeId> AttributeSet;
+typedef std::set<smtk::attribute::AttributeId> AttributeSet;
 
 /**\brief Store a list of attributes assigned to solid model entities.
   *
@@ -26,9 +24,9 @@ typedef std::set<AttributeId> AttributeSet;
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  bool attachAttribute(AttributeId attribId);
-  bool detachAttribute(AttributeId attribId);
-  bool isAssociated(AttributeId attribId) const;
+  bool attachAttribute(smtk::attribute::AttributeId attribId);
+  bool detachAttribute(smtk::attribute::AttributeId attribId);
+  bool isAssociated(smtk::attribute::AttributeId attribId) const;
 
   AttributeSet& attributes() { return this->m_attributes; }
   const AttributeSet& attributes() const { return this->m_attributes; }

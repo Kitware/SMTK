@@ -74,7 +74,7 @@ public:
     this->m_deleteOnRemoval = del;
     }
 
-  static QIcon lookupIconForEntityFlags(unsigned long flags);
+  static QIcon lookupIconForEntityFlags(smtk::model::BitFlags flags);
 
   DescriptivePhrasePtr getItem(const QModelIndex& idx) const;
 

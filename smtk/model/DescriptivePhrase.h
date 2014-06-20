@@ -3,7 +3,7 @@
 
 #include "smtk/util/SharedFromThis.h"
 #include "smtk/model/Cursor.h"
-#include "smtk/model/AttributeAssignments.h" // for AttributeId
+#include "smtk/attribute/Attribute.h" // for AttributeId
 
 #include <string>
 #include <vector>
@@ -87,7 +87,7 @@ public:
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
-  virtual AttributeId relatedAttributeId() const               { return static_cast<AttributeId>(-1); }
+  virtual smtk::attribute::AttributeId relatedAttributeId() const { return static_cast<smtk::attribute::AttributeId>(-1); }
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
 

@@ -67,7 +67,7 @@ namespace smtk
       smtk::attribute::AttributePtr createAttribute(const std::string &name, attribute::DefinitionPtr def);
       bool removeAttribute(smtk::attribute::AttributePtr att);
       smtk::attribute::AttributePtr findAttribute(const std::string &name) const;
-      smtk::attribute::AttributePtr findAttribute(unsigned long id) const;
+      smtk::attribute::AttributePtr findAttribute(smtk::attribute::AttributeId id) const;
       void findAttributes(const std::string &type, std::vector<smtk::attribute::AttributePtr> &result) const;
       void findAttributes(smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr> &result) const;
       smtk::attribute::DefinitionPtr findDefinition(const std::string &type) const;
@@ -108,10 +108,10 @@ namespace smtk
 
       // For Reader classes
       smtk::attribute::AttributePtr createAttribute(const std::string &name, const std::string &type,
-                                          unsigned long id);
+                                          smtk::attribute::AttributeId id);
      smtk::attribute::AttributePtr createAttribute(const std::string &name, attribute::DefinitionPtr def,
-                                          unsigned long id);
-     unsigned long nextId() const
+                                          smtk::attribute::AttributeId id);
+     smtk::attribute::AttributeId nextId() const
      {return this->m_nextAttributeId;}
 
      // Sets the next attribute id counter to be the bigger than the largest used by its attributes
@@ -162,12 +162,12 @@ namespace smtk
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;
       std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
-      std::map<unsigned long, smtk::attribute::AttributePtr> m_attributeIdMap;
+      std::map<smtk::attribute::AttributeId, smtk::attribute::AttributePtr> m_attributeIdMap;
       std::map<smtk::attribute::DefinitionPtr,
         smtk::attribute::WeakDefinitionPtrSet > m_derivedDefInfo;
       std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
-      unsigned long m_nextAttributeId;
+      smtk::attribute::AttributeId m_nextAttributeId;
       smtk::view::RootPtr m_rootView;
 
       smtk::model::WeakModelPtr m_refModel;
@@ -187,9 +187,9 @@ namespace smtk
       return (it == this->m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline smtk::attribute::AttributePtr Manager::findAttribute(unsigned long attId) const
+    inline smtk::attribute::AttributePtr Manager::findAttribute(smtk::attribute::AttributeId attId) const
     {
-      std::map<unsigned long, AttributePtr>::const_iterator it;
+      std::map<smtk::attribute::AttributeId, AttributePtr>::const_iterator it;
       it = this->m_attributeIdMap.find(attId);
       return (it == this->m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
     }

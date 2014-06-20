@@ -46,6 +46,7 @@ namespace smtk
     class RefItem;
     class Item;
     class Manager;
+    typedef unsigned long AttributeId;
 
     class SMTKCORE_EXPORT Attribute
     {
@@ -55,7 +56,7 @@ namespace smtk
     public:
       static smtk::attribute::AttributePtr New(const std::string &myName,
                                     smtk::attribute::DefinitionPtr myDefinition,
-                                    unsigned long myId)
+                                    smtk::attribute::AttributeId myId)
       { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
@@ -63,7 +64,7 @@ namespace smtk
       const std::string &name() const
       { return this->m_name;}
 
-      unsigned long id() const
+      smtk::attribute::AttributeId id() const
       { return this->m_id;}
 
       const std::string &type() const;
@@ -138,19 +139,19 @@ namespace smtk
       smtk::model::ManagerPtr modelManager() const;
 
       void setUserData(const std::string &key, smtk::util::UserDataPtr value)
-       {this->m_userData[key] = value;}
-     smtk::util::UserDataPtr userData(const std::string &key) const;
-     void clearUserData(const std::string &key)
-     {this->m_userData.erase(key);}
-     void clearAllUserData()
-     {this->m_userData.clear();}
+        {this->m_userData[key] = value;}
+      smtk::util::UserDataPtr userData(const std::string &key) const;
+      void clearUserData(const std::string &key)
+        {this->m_userData.erase(key);}
+      void clearAllUserData()
+        {this->m_userData.clear();}
 
       bool isAboutToBeDeleted() const
-      {return this->m_aboutToBeDeleted;}
+        {return this->m_aboutToBeDeleted;}
 
     protected:
       Attribute(const std::string &myName,
-                smtk::attribute::DefinitionPtr myDefinition, unsigned long myId);
+                smtk::attribute::DefinitionPtr myDefinition, smtk::attribute::AttributeId myId);
 
       void removeAllItems();
       void addItem(smtk::attribute::ItemPtr iPtr)
@@ -168,7 +169,7 @@ namespace smtk
         {this->m_references.erase(attRefItem);}
       std::string m_name;
       std::vector<smtk::attribute::ItemPtr> m_items;
-      unsigned long m_id;
+      smtk::attribute::AttributeId m_id;
       smtk::attribute::DefinitionPtr m_definition;
       std::set<smtk::model::ItemPtr> m_entities;
       smtk::util::UUIDs m_modelEntities;
