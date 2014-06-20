@@ -243,7 +243,7 @@ std::string Item::type2String(Item::Type t)
     case VOID:
       return "Void";
     case MODEL_ENTITY:
-      return "MODEL_ENTITY";
+      return "ModelEntity";
     default:
       return "";
     }
