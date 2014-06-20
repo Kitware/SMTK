@@ -14,7 +14,6 @@ namespace smtk {
   namespace model {
 
 class Manager;
-class OperatorResult;
 
 /**\brief Indicate what data should be exported to JSON.
   *
@@ -53,10 +52,11 @@ public:
   static int forManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
   static int forManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
   static int forManagerBridgeSession(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
-  static int forModelOperators(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
-  static int forOperators(Operators& ops, cJSON*);
+  //static int forModelOperators(const smtk::util::UUID& uid, cJSON*, ManagerPtr modelMgr);
+  static int forOperatorDefinitions(smtk::attribute::Manager* opMgr, cJSON*);
+  static int forOperator(OperatorSpecification op, cJSON*);
   static int forOperator(OperatorPtr op, cJSON*);
-  static int forOperatorResult(const OperatorResult& res, cJSON*);
+  static int forOperatorResult(OperatorResult res, cJSON*);
   static int forDanglingEntities(const smtk::util::UUID& bridgeSessionId, cJSON* node, ManagerPtr modelMgr);
 
   // Low-level helpers:

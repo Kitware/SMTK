@@ -41,6 +41,7 @@ namespace smtk
       public ItemDefinition
     {
     public:
+      smtkTypeMacro(FileItemDefinition);
       static smtk::attribute::FileItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::FileItemDefinitionPtr(new FileItemDefinition(myName));}
 

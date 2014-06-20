@@ -21,6 +21,11 @@
   <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
   <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::addShellToManager', unmatched parameter type 'Shell*'"/>
 
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping field 'Bridge::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
+  <suppress-warning text="skipping function 'cgmsmtk::cgm::Bridge::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+
   <!-- ignore shared_from_this base class-->
   <!--
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>

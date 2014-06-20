@@ -4,10 +4,15 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
-#include "smtk/model/OperatorResult.h"
-#include "smtk/model/Parameter.h"
 #include "smtk/model/Tessellation.h"
 #include "smtk/model/Arrangement.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
+
+#include "smtk/util/AttributeWriter.h"
+#include "smtk/util/Logger.h"
 
 #include "cJSON.h"
 
@@ -21,58 +26,51 @@ namespace {
   cJSON* cJSON_CreateStringArray(const std::string* strings, unsigned count);
   cJSON* cJSON_CreateUUIDArray(const smtk::util::UUID* uids, unsigned count);
 
-  cJSON* cJSON_CreateParameterArray(const smtk::model::Parameters& params)
+  cJSON* cJSON_AddAttributeSpec(
+    cJSON* opEntry,
+    const char* tagName, // tag holding name of attribute
+    const char* xmlTagName, // tag holding XML for attribute
+    smtk::attribute::AttributePtr spec)
     {
-    cJSON* a = cJSON_CreateArray();
-    for (smtk::model::Parameters::const_iterator it = params.begin(); it != params.end(); ++it)
+    if (spec)
       {
-      cJSON* paramEntry = cJSON_CreateObject();
-      cJSON_AddItemToArray(a, paramEntry);
-      cJSON_AddItemToObject(paramEntry, "name",
-        cJSON_CreateString(it->name().c_str()));
-      if (it->validState() != smtk::model::PARAMETER_UNKNOWN)
-        cJSON_AddBoolToObject(paramEntry, "v",
-          it->validState() == smtk::model::PARAMETER_VALIDATED);
-      if (!it->floatValues().empty())
-        cJSON_AddItemToObject(paramEntry, "f",
-          cJSON_CreateDoubleArray(
-            const_cast<double*>(&it->floatValues()[0]),
-            static_cast<unsigned int>(it->floatValues().size())));
-      if (!it->integerValues().empty())
-        cJSON_AddItemToObject(paramEntry, "i",
-          cJSON_CreateLongArray(
-            &it->integerValues()[0],
-            static_cast<unsigned int>(it->integerValues().size())));
-      if (!it->stringValues().empty())
-        cJSON_AddItemToObject(paramEntry, "s",
-          cJSON_CreateStringArray(
-            &it->stringValues()[0],
-            static_cast<unsigned int>(it->stringValues().size())));
-      if (!it->uuidValues().empty())
-        cJSON_AddItemToObject(paramEntry, "u",
-          cJSON_CreateUUIDArray(
-            &it->uuidValues()[0],
-            static_cast<unsigned int>(it->uuidValues().size())));
+      smtk::attribute::Manager tmpMgr;
+      tmpMgr.copyAttribute(spec);
+      smtk::util::Logger log;
+      smtk::util::AttributeWriter wri;
+      wri.includeDefinitions(false);
+      wri.includeInstances(true);
+      wri.includeModelInformation(false);
+      wri.includeViews(false);
+      std::string xml;
+      bool err = wri.writeContents(tmpMgr, xml, log, true);
+      if (!err)
+        {
+        cJSON_AddItemToObject(opEntry, tagName,
+          cJSON_CreateString(spec->name().c_str()));
+        cJSON_AddItemToObject(opEntry, xmlTagName,
+          cJSON_CreateString(xml.c_str()));
+        }
       }
-    return a;
+    return opEntry;
     }
 
   cJSON* cJSON_AddOperator(smtk::model::OperatorPtr op, cJSON* opEntry)
     {
     cJSON_AddItemToObject(opEntry, "name", cJSON_CreateString(op->name().c_str()));
+    smtk::attribute::AttributePtr spec = op->specification();
+    if (spec)
+      {
+      cJSON_AddAttributeSpec(opEntry, "spec", "specXML", spec);
+      }
+    /*
     cJSON_AddItemToObject(opEntry, "parameters",
       cJSON_CreateParameterArray(op->parameters()));
+      */
     return opEntry;
     }
 
-  cJSON* cJSON_AddOperatorResult(const smtk::model::OperatorResult& res, cJSON* node)
-    {
-    cJSON_AddItemToObject(node, "outcome", cJSON_CreateNumber(res.outcome()));
-    cJSON_AddItemToObject(node, "parameters",
-      cJSON_CreateParameterArray(res.parameters()));
-    return node;
-    }
-
+  /*
   cJSON* cJSON_CreateOperatorArray(const smtk::model::Operators& ops)
     {
     cJSON* a = cJSON_CreateArray();
@@ -84,6 +82,7 @@ namespace {
       }
     return a;
     }
+    */
 
   cJSON* cJSON_CreateUUIDArray(const smtk::util::UUID* uids, unsigned count)
     {
@@ -244,8 +243,10 @@ int ExportJSON::forManagerEntity(
         &entry->second.relations()[0],
         static_cast<unsigned int>(entry->second.relations().size())));
     }
+  /*
   if (entry->second.entityFlags() & MODEL_ENTITY)
     ExportJSON::forModelOperators(entry->first, entRec, model);
+    */
   return 1;
 }
 
@@ -398,25 +399,46 @@ int ExportJSON::forManagerBridgeSession(const smtk::util::UUID& uid, cJSON* node
   cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
   cJSON_AddStringToObject(sess, "type", "bridge-session");
   cJSON_AddStringToObject(sess, "name", bridge->name().c_str());
-  Operators bridgeOps = bridge->operators();
-  status &= ExportJSON::forOperators(bridgeOps, sess);
+  status &= ExportJSON::forOperatorDefinitions(bridge->operatorManager(), sess);
   return status;
 }
 
+/*
 int ExportJSON::forModelOperators(const smtk::util::UUID& uid, cJSON* entRec, ManagerPtr modelMgr)
 {
   smtk::model::ModelEntity mod(modelMgr, uid);
   smtk::model::Operators ops(mod.operators());
-  return ExportJSON::forOperators(ops, entRec);
+  cJSON_AddItemToObject(entRec, "ops",
+    cJSON_CreateOperatorArray(ops));
+  return 1; // ExportJSON::forOperators(ops, entRec);
 }
+*/
 
-int ExportJSON::forOperators(Operators& ops, cJSON* entRec)
+int ExportJSON::forOperatorDefinitions(smtk::attribute::Manager* opMgr, cJSON* entRec)
 {
+  smtk::util::Logger log;
+  smtk::util::AttributeWriter wri;
+  wri.includeDefinitions(true);
+  wri.includeInstances(false);
+  wri.includeModelInformation(false);
+  wri.includeViews(false);
+  std::string xml;
+  bool err = wri.writeContents(*opMgr, xml, log, true);
+  if (!err)
+    {
+    cJSON_AddItemToObject(entRec, "ops",
+      cJSON_CreateString(xml.c_str()));
+    }
+  /*
+  std::vector<smtk::attribute::DefinitionPtr> ops;
+  opMgr.derivedDefinitions(
+    opMgr.findDefinition("operator"), ops);
   if (!ops.empty())
     {
     cJSON_AddItemToObject(entRec, "ops",
       cJSON_CreateOperatorArray(ops));
     }
+    */
   return 1;
 }
 
@@ -426,9 +448,15 @@ int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
   return 1;
 }
 
-int ExportJSON::forOperatorResult(const OperatorResult& res, cJSON* entRec)
+int ExportJSON::forOperator(smtk::attribute::AttributePtr op, cJSON* entRec)
 {
-  cJSON_AddOperatorResult(res, entRec);
+  cJSON_AddAttributeSpec(entRec, "spec", "specXML", op);
+  return 1;
+}
+
+int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
+{
+  cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
   return 1;
 }
 

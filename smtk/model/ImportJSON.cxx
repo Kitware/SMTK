@@ -4,8 +4,15 @@
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/OperatorResult.h"
+#include "smtk/model/RemoteOperator.h"
 #include "smtk/model/Tessellation.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
+
+#include "smtk/util/AttributeReader.h"
+#include "smtk/util/Logger.h"
 
 #include "cJSON.h"
 
@@ -287,46 +294,40 @@ namespace smtk {
 using smtk::util::UUID;
 
 template<typename T>
-int cJSON_GetObjectParameters(cJSON* node, T obj)
+int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::Manager* mgr, const char* attName, const char* attXML)
 {
-  cJSON* pnode;
-  cJSON* params = cJSON_GetObjectItem(node, "parameters");
-  if (params)
+  cJSON* params = cJSON_GetObjectItem(node, attXML);
+  cJSON* opspec = cJSON_GetObjectItem(node, attName);
+  if (
+    params && params->type == cJSON_String && params->valuestring && params->valuestring[0] &&
+    opspec && opspec->type == cJSON_String && opspec->valuestring && opspec->valuestring[0])
     {
-    cJSON* param;
-    for (param = params->child; param; param = param->next)
+    smtk::util::Logger log;
+    smtk::util::AttributeReader rdr;
+    rdr.setReportDuplicateDefinitionsAsErrors(false);
+    if (
+      rdr.readContents(
+        *mgr,
+        params->valuestring, strlen(params->valuestring),
+        log))
       {
-      Parameter pv;
-      FloatList fval;
-      StringList sval;
-      IntegerList ival;
-      std::string pname;
-      pnode = cJSON_GetObjectItem(param, "name");
-      if (!pnode || cJSON_GetStringValue(pnode, pname))
-        continue;
-      pv.setName(pname);
-      pnode = cJSON_GetObjectItem(param, "v");
-      if (pnode)
-        switch (pnode->type)
-          {
-        case cJSON_True:  pv.setValidState(PARAMETER_VALIDATED); break;
-        case cJSON_False: pv.setValidState(PARAMETER_INVALID); break;
-        default:          pv.setValidState(PARAMETER_UNKNOWN); break;
-          }
-      pnode = cJSON_GetObjectItem(param, "f");
-      if (pnode && cJSON_GetRealArray(pnode, fval))
-        pv.setFloatValue(fval);
-      pnode = cJSON_GetObjectItem(param, "s");
-      if (pnode && cJSON_GetStringArray(pnode, sval))
-        pv.setStringValue(sval);
-      pnode = cJSON_GetObjectItem(param, "i");
-      if (pnode && cJSON_GetIntegerArray(pnode, ival))
-        pv.setIntegerValue(ival);
-
-      obj->setParameter(pv);
+      std::cerr
+        << "Error. Log follows:\n---\n"
+        << log.convertToString()
+        << "\n---\n";
+      throw std::string("Could not parse operator parameter XML.");
       }
+    if (log.numberOfRecords())
+      {
+      std::cout << "  " << log.convertToString() << "\n";
+      }
+
+    // Now link the loaded XML to the operator instance by searching
+    // the operatorManager for its name.
+    obj = mgr->findAttribute(opspec->valuestring);
+    return !!obj;
     }
-  return 1;
+  return 0;
 }
 
 /**\brief Create records in the \a manager given a string containing \a json data.
@@ -619,31 +620,58 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
     // Does the node have a valid bridge session ID?
     !node->string ||
     !node->string[0] ||
-    // Does the node have fields "name" and "ops" (for "operators") of type String and Array?
+    // Does the node have fields "name" and "ops" (for "operators") of type String?
     !(nameObj = cJSON_GetObjectItem(node, "name")) ||
     nameObj->type != cJSON_String ||
     !nameObj->valuestring ||
     !nameObj->valuestring[0] ||
     !(opsObj = cJSON_GetObjectItem(node, "ops")) ||
-    opsObj->type != cJSON_Array)
+    opsObj->type != cJSON_String ||
+    !opsObj->valuestring ||
+    !opsObj->valuestring[0])
     return status;
 
   destBridge->backsRemoteBridge(
     nameObj->valuestring, smtk::util::UUID(node->string));
-  // We must call registerBridgeSession be done before importing operators
-  // or the bridge won't be asked to create operators.
-  context->registerBridgeSession(destBridge);
-  OperatorPtr remoteOp;
-  cJSON* opObj;
-  destBridge->setImportingOperators(true);
-  for (opObj = opsObj->child; opObj; opObj = opObj->next)
-    {
-    cJSON_AddItemToObject(opObj, "sessionId", cJSON_CreateString(node->string));
-    status |=ImportJSON::ofOperator(opObj, remoteOp, context);
-    destBridge->addOperator(remoteOp);
-    }
-  destBridge->setImportingOperators(false);
 
+  // Import the XML definitions of the serialized bridge session
+  // into the destination bridge's operatorManager():
+  smtk::util::Logger log;
+  smtk::util::AttributeReader rdr;
+  rdr.setReportDuplicateDefinitionsAsErrors(false);
+  if (
+    rdr.readContents(
+      *destBridge->operatorManager(),
+      opsObj->valuestring, strlen(opsObj->valuestring),
+      log))
+    {
+    std::cerr
+      << "Error. Log follows:\n---\n"
+      << log.convertToString()
+      << "\n---\n";
+    throw std::string("Could not parse operator XML.");
+    }
+  if (log.numberOfRecords())
+    {
+    std::cout << "  " << log.convertToString() << "\n";
+    }
+
+  // Register the bridge session with the model manager:
+  context->registerBridgeSession(destBridge);
+
+  // Now register the RemoteOperator constructor with each
+  // operator in the bridge session.
+  // NB: This registers the constructor with the entire
+  //     bridge class, not just the destBridge instance.
+  //     If destBridge is a DefaultBridge (and not a subclass
+  //     of it), then be aware that this may override non-RemoteOperator
+  //     constructors with RemoteOperator constructors for operators
+  //     of the same name.
+  StringList opNames = destBridge->operatorNames();
+  for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
+    {
+    destBridge->registerOperator(*it, NULL, RemoteOperator::baseCreate);
+    }
   return status;
 }
 
@@ -664,9 +692,8 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
   * If the JSON \a node has no "name" property (or has a
   * name unknown to the Bridge), then the method returns 0 (failure).
   *
-  * Finally, parameter values store in \a node's "param"
-  * data are converted into Parameter instances and attached to
-  * the Operator.
+  * Finally, parameter values stored in \a node's "param"
+  * string (as XML) are read into the operator's attribute manager.
   */
 int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
 {
@@ -701,20 +728,21 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   if (!op)
     return 0;
 
-  cJSON_GetObjectParameters(node, op);
+  // If the operator has a specification, use it.
+  // It is not an error to pass an unspecified operator.
+  OperatorSpecification spec;
+  if (
+    cJSON_GetObjectParameters(
+      node, spec, op->bridge()->operatorManager(), "spec", "specXML"))
+    {
+    op->setSpecification(spec);
+    }
   return 1;
 }
 
-int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& result)
+int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::Manager* opMgr)
 {
-  Integer ocInt;
-  cJSON* pnode = cJSON_GetObjectItem(node, "outcome");
-  if (!pnode || cJSON_GetIntegerValue(pnode, ocInt))
-    return 0;
-  result.setOutcome(static_cast<OperatorOutcome>(ocInt));
-
-  cJSON_GetObjectParameters(node, &result);
-  return 1;
+  return cJSON_GetObjectParameters(node, resOut, opMgr, "result", "resultXML");
 }
 
 int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)

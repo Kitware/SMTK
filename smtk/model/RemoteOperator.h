@@ -4,6 +4,8 @@
 #include "smtk/util/SharedFromThis.h"
 #include "smtk/model/Operator.h"
 
+#include <string>
+
 namespace smtk {
   namespace model {
 
@@ -32,21 +34,21 @@ public:
   smtkTypeMacro(RemoteOperator);
   smtkCreateMacro(RemoteOperator);
   smtkSharedFromThisMacro(Operator);
+  // NB. We do not call smtkDeclareModelOperator() because we override name():
+  static std::string operatorName;
+  static smtk::model::OperatorPtr baseCreate();
 
   virtual std::string name() const;
+  virtual std::string className() const;
   virtual bool ableToOperate();
 
-  virtual OperatorPtr clone() const
-    { return create()->cloneInternal(shared_from_this()); }
-
 protected:
-  friend class ImportJSON;
+  friend class Bridge;
   friend class DefaultBridge;
 
   Ptr setName(const std::string& opName);
 
   virtual OperatorResult operateInternal();
-  virtual OperatorPtr cloneInternal(Operator::ConstPtr);
 
   std::string m_name;
 };

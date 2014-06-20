@@ -104,6 +104,7 @@ OperatorPtr ModelEntity::op(const std::string& opname) const
   return this->bridge()->op(opname, this->m_manager);
 }
 
+/*
 /// Return a set of the operators available for this model.
 Operators ModelEntity::operators() const
 {
@@ -119,6 +120,7 @@ Operators ModelEntity::operators() const
     }
   return ops;
 }
+*/
 
 /// Return the names of all the operators which can be applied to this model.
 StringList ModelEntity::operatorNames() const

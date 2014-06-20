@@ -39,6 +39,7 @@ namespace smtk
     {
       friend class GroupItemDefinition;
     public:
+      smtkTypeMacro(GroupItem);
       virtual ~GroupItem();
       virtual Item::Type type() const;
       std::size_t numberOfRequiredGroups() const;

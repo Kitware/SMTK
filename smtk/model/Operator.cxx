@@ -1,214 +1,67 @@
 #include "smtk/model/Operator.h"
-#include "smtk/model/OperatorResult.h"
-#include "smtk/model/Parameter.h"
 #include "smtk/model/Manager.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/StringItem.h"
+
+#include "smtk/util/UUID.h"
+
+#include <sstream>
+
+using smtk::attribute::IntItem;
+using smtk::attribute::IntItemPtr;
 
 namespace smtk {
   namespace model {
 
+/// Constructor. Initialize the bridge to a NULL pointer.
+Operator::Operator()
+{
+  this->m_bridge = NULL;
+}
+
+/// Destructor. Removes its specification() from the bridge's operator manager.
+Operator::~Operator()
+{
+  if (this->m_bridge)
+    {
+    if (this->m_specification)
+      this->bridge()->operatorManager()->removeAttribute(
+        this->m_specification);
+    }
+}
+
+/**\brief Perform the solid modeling operation the subclass implements.
+  *
+  * This method first tests whether the operation is well-defined by
+  * invoking ableToOperate(). If it returns true, then the
+  * operateInternal() method (implemented by subclasses) is invoked.
+  *
+  * You may register callbacks to observe how the operation is
+  * proceeding: you can be signaled when the operation is about
+  * to be executed and just after it does execute. Neither will
+  * be called if the ableToOperate method returns false.
+  */
 OperatorResult Operator::operate()
 {
-  OperatorResult result(UNABLE_TO_OPERATE); // state = could not operate
+  OperatorResult result;
   if (this->ableToOperate())
     {
-    result = OperatorResult(OPERATION_CANCELED);
     if (!this->trigger(WILL_OPERATE))
-      {
       result = this->operateInternal();
-      }
+    else
+      result = this->createResult(OPERATION_CANCELED);
     this->trigger(DID_OPERATE, result);
     }
-  return result;
-}
-
-/// Return a copy of this operator's parameters.
-Parameters Operator::parameters() const
-{
-  return this->m_parameters;
-}
-
-/// Return the parameter of the given name (or an invalid, uninitialized parameter if it does not exist)
-const Parameter& Operator::parameter(const std::string& pname) const
-{
-  static const Parameter invalid;
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    return *it;
-  return invalid;
-}
-
-/// Return the parameter of the given name (or an invalid, uninitialized parameter if it does not exist)
-Parameter Operator::parameter(const std::string& pname)
-{
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    return *it;
-  return Parameter();
-}
-
-/**\brief Set all of the parameters to those given.
-  *
-  * This clears the entire set of current parameters and
-  * then adds each parameter from the set \a p.
-  */
-void Operator::setParameters(const Parameters& p)
-{
-  this->m_parameters.clear();
-  Parameters::const_iterator it;
-  for (it = p.begin(); it != p.end(); ++it)
-    {
-    this->setParameter(*it);
-    }
-}
-
-/**\brief Set the value of a parameter to \a p.
-  *
-  * Note that unexpected parameters will be ignored by most operators.
-  *
-  * This method does *not* return a shared pointer to the Operator.
-  * For this reason, your should use this variant of setParameter
-  * inside your Operator subclass's constructor.
-  * (You may not call shared_from_this() from within a constructor,
-  * making it impossible to return a shared pointer during construction.)
-  */
-void Operator::setParameter(const Parameter& p)
-{
-  Parameters::const_iterator old = this->m_parameters.find(p);
-  if (old != this->m_parameters.end())
-    {
-    this->trigger(PARAMETER_CHANGE, *old, p);
-    this->m_parameters.erase(*old);
-    }
   else
-    {
-    this->trigger(PARAMETER_CHANGE, Parameter(), p);
-    }
-  this->m_parameters.insert(p);
-}
-
-/** @name Parameter convenience methods.
-  *
-  * These methods all call Operator::setParameter(const Parameter&)
-  * but will create a parameter instance for you given its name
-  * and value.
-  * These methods also return a shared pointer to the Operator
-  * instance so that you can chain calls to setParameter together
-  * when setting several parameters.
-  *
-  * These are not templated to make Python-wrapping easier.
-  */
-///@{
-OperatorPtr Operator::setParameter(const std::string& pname, smtk::model::Float val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-
-OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::FloatList& val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-
-OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::String& val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-
-OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::StringList& val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-
-OperatorPtr Operator::setParameter(const std::string& pname, smtk::model::Integer val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-
-OperatorPtr Operator::setParameter(const std::string& pname, const smtk::model::IntegerList& val)
-{
-  this->setParameter(Parameter(pname, val));
-  return shared_from_this();
-}
-///@}
-
-OperatorPtr Operator::removeParameter(const std::string& pname)
-{
-  Parameters::iterator it = this->m_parameters.find(Parameter(pname));
-  if (it != this->m_parameters.end())
-    this->m_parameters.erase(it);
-  return shared_from_this();
-}
-
-/// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasFloatParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
-{
-  bool ok = false;
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    {
-    int psize = static_cast<int>(it->floatValues().size());
-    ok = this->checkParameterSize(psize, minSize, maxSize);
-    if (validate)
-      const_cast<Parameter&>(*it).setValidState(ok ? PARAMETER_VALIDATED : PARAMETER_INVALID);
-    }
-  return ok; // Failed to find parameter
-}
-
-/// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasStringParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
-{
-  bool ok = false;
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    {
-    int psize = static_cast<int>(it->stringValues().size());
-    ok = this->checkParameterSize(psize, minSize, maxSize);
-    if (validate)
-      const_cast<Parameter&>(*it).setValidState(ok ? PARAMETER_VALIDATED : PARAMETER_INVALID);
-    }
-  return ok; // Failed to find parameter
-}
-
-/// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasIntegerParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
-{
-  bool ok = false;
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    {
-    int psize = static_cast<int>(it->integerValues().size());
-    ok = this->checkParameterSize(psize, minSize, maxSize);
-    if (validate)
-      const_cast<Parameter&>(*it).setValidState(ok ? PARAMETER_VALIDATED : PARAMETER_INVALID);
-    }
-  return ok; // Failed to find parameter
-}
-
-/// Check whether a parameter of the given name exists and has an acceptable number of entries.
-bool Operator::hasUUIDParameter(const std::string& pname, int minSize, int maxSize, bool validate) const
-{
-  bool ok = false;
-  Parameters::const_iterator it;
-  if ((it = this->m_parameters.find(Parameter(pname))) != this->m_parameters.end())
-    {
-    int psize = static_cast<int>(it->uuidValues().size());
-    ok = this->checkParameterSize(psize, minSize, maxSize);
-    if (validate)
-      const_cast<Parameter&>(*it).setValidState(ok ? PARAMETER_VALIDATED : PARAMETER_INVALID);
-    }
-  return ok; // Failed to find parameter
-}
-
-/// Add an observer to parameter changes of this operator.
-void Operator::observe(OperatorEventType event, ParameterChangeCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_parameterChangeTriggers.insert(
-    std::make_pair(functionHandle, callData));
+    result = this->createResult(UNABLE_TO_OPERATE);
+  return result;
 }
 
 /// Add an observer of WILL_OPERATE events on this operator.
@@ -227,14 +80,6 @@ void Operator::observe(OperatorEventType event, DidOperateCallback functionHandl
     std::make_pair(functionHandle, callData));
 }
 
-/// Remove an existing parameter-change observer. The \a callData must match the value passed to Operator::observe().
-void Operator::unobserve(OperatorEventType event, ParameterChangeCallback functionHandle, void* callData)
-{
-  (void)event;
-  this->m_parameterChangeTriggers.erase(
-    std::make_pair(functionHandle, callData));
-}
-
 /// Remove an existing WILL_OPERATE observer. The \a callData must match the value passed to Operator::observe().
 void Operator::unobserve(OperatorEventType event, WillOperateCallback functionHandle, void* callData)
 {
@@ -249,15 +94,6 @@ void Operator::unobserve(OperatorEventType event, DidOperateCallback functionHan
   (void)event;
   this->m_didOperateTriggers.erase(
     std::make_pair(functionHandle, callData));
-}
-
-/// Invoke all parameter-change observer callbacks. The return value is always 0 (this may change in future releases).
-int Operator::trigger(OperatorEventType event, const Parameter& oldVal, const Parameter& newVal)
-{
-  std::set<ParameterChangeObserver>::const_iterator it;
-  for (it = this->m_parameterChangeTriggers.begin(); it != this->m_parameterChangeTriggers.end(); ++it)
-    (*it->first)(event, *this, oldVal, newVal, it->second);
-  return 0;
 }
 
 /**\brief Invoke all WILL_OPERATE observer callbacks.
@@ -324,63 +160,132 @@ Operator::Ptr Operator::setBridge(Bridge* b)
   return shared_from_this();
 }
 
+/**\brief Return the definition of this operation and its parameters.
+  *
+  * The OperatorDefinition is a typedef to smtk::attribute::Definition
+  * so that applications can automatically-generate a user interface
+  * for accepting parameter values.
+  *
+  * However, be aware that the attribute manager used for this
+  * specification is owned by the SMTK's model manager and
+  * operators are not required to have a valid manager() at all times.
+  * This method will return a null pointer if there is no manager.
+  * Otherwise, it will ask the bridge and model manager for its
+  * definition.
+  */
+OperatorDefinition Operator::definition() const
+{
+  Manager::Ptr mgr = this->manager();
+  Bridge* brg = this->bridge();
+  if (!mgr || !brg)
+    return attribute::DefinitionPtr();
+
+  return brg->operatorManager()->findDefinition(this->name());
+}
+
+/**\brief Return the specification (if any exists) of this operator.
+  *
+  * The specification of an operator includes values for each of
+  * the operator's parameters as necessary to carry out the operation.
+  * These values are encoded in an attribute whose definition is
+  * provided by the operator (see smtk::model::Operator::definition()).
+  * Note that OperatorSpecification is a typedef of
+  * smtk::attribute::AttributePtr.
+  *
+  * The specification is initially a null attribute pointer.
+  * You can create one by calling ensureSpecification().
+  * If the operator is invoked without a specification, one
+  * is created (holding default values).
+  */
+OperatorSpecification Operator::specification() const
+{
+  return this->m_specification;
+}
+
+/**\brief Set the specification of the operator's parameters.
+  *
+  * The attribute, if non-NULL, should match the definition()
+  * of the operator.
+  */
+bool Operator::setSpecification(attribute::AttributePtr spec)
+{
+  if (spec == this->m_specification)
+    return false;
+
+  if (spec)
+    if (!spec->isA(this->definition()))
+      return false;
+
+  this->m_specification = spec;
+  return true;
+}
+
+/**\brief Ensure that a specification exists for this operator.
+  *
+  * Returns true when a specification was created or already existed
+  * and false upon error (e.g., when the bridge was not set or
+  * no definition exists for this operator's name).
+  */
+bool Operator::ensureSpecification()
+{
+  if (this->m_specification)
+    return true;
+
+  if (!this->m_bridge)
+    return false;
+
+  smtk::attribute::AttributePtr spec =
+    this->m_bridge->operatorManager()->createAttribute(this->name());
+  if (!spec)
+    return false;
+  return this->setSpecification(spec);
+}
+
+/**\brief Create an attribute representing this operator's result type.
+  *
+  * The default \a outcome is UNABLE_TO_OPERATE.
+  */
+OperatorResult Operator::createResult(OperatorOutcome outcome)
+{
+  std::ostringstream rname;
+  rname << "result(" << this->name() << ")";
+  OperatorResult result =
+    this->bridge()->operatorManager()->createAttribute(rname.str());
+  IntItemPtr outcomeItem =
+    smtk::dynamic_pointer_cast<IntItem>(
+      result->find("outcome"));
+  outcomeItem->setValue(outcome);
+  return result;
+}
+
 /// A comparator so that Operators may be placed in ordered sets.
 bool Operator::operator < (const Operator& other) const
 {
   return this->name() < other.name();
 }
 
-/**\brief Copy information from another Operator instance.
-  *
-  * Subclasses should override this method if they
-  * contain any non-static members.
-  *
-  * The return value is a shared pointer to this instance.
-  */
-Operator::Ptr Operator::cloneInternal(ConstPtr src)
+std::string outcomeAsString(int oc)
 {
-  this->m_bridge = src->bridge();
-  this->m_parameters = src->parameters();
-  this->m_manager = src->manager();
-  return shared_from_this();
+  switch (oc)
+    {
+  case UNABLE_TO_OPERATE:   return "unable to operate";
+  case OPERATION_CANCELED:  return "operation canceled";
+  case OPERATION_FAILED:    return "operation failed";
+  case OPERATION_SUCCEEDED: return "operation succeeded";
+  case OUTCOME_UNKNOWN:     break;
+    }
+  return "outcome unknown";
 }
 
-/// A method used to verify that parameters have the proper number of entries.
-bool Operator::checkParameterSize(int psize, int minSize, int maxSize) const
+OperatorOutcome stringToOutcome(const std::string& oc)
 {
-  bool ok = false;
-  if (minSize < 1)
-    {
-    ok = maxSize < minSize ?
-      true : // Any size OK by caller.
-      psize <= maxSize; // only max size specified
-    }
-  else if (psize >= minSize)
-    {
-    ok = maxSize < minSize ?
-      true : // No maximum
-      psize <= maxSize; // both min size and max size checked.
-    }
-  else
-    {
-    ok = false; // Failed min size check
-    }
-  return ok;
-}
+  if (oc == "unable to operate")   return UNABLE_TO_OPERATE;
+  if (oc == "operation canceled")  return OPERATION_CANCELED;
+  if (oc == "operation failed")    return OPERATION_FAILED;
+  if (oc == "operation succeeded") return OPERATION_SUCCEEDED;
 
-/*! \fn Operator::clone() const
- * \brief Create a copy of this Operator.
- *
- * Subclasses must implement this method.
- * Inside their implementation, they should call
- * Operator::cloneInternal to copy base-class data.
- * If your subclass uses smtkCreateMacro and has no
- * storage, then this implementation should suffice:
- * <pre>
- *   virtual Operator::Ptr clone() const
- *     { return create()->cloneInternal(shared_from_this()); }
- * </pre>
- */
+  return OUTCOME_UNKNOWN;
+}
 
   } // model namespace
 } // smtk namespace

@@ -1,12 +1,22 @@
 #include "smtk/model/DefaultBridge.h"
 
-#include "smtk/util/AutoInit.h"
 #include "smtk/model/BRepModel.h"
-#include "smtk/model/OperatorResult.h"
 #include "smtk/model/RemoteOperator.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
+
+#include "smtk/util/AutoInit.h"
 
 namespace smtk {
   namespace model {
+
+/// Default constructor. Initializes statically-registered operators.
+DefaultBridge::DefaultBridge()
+{
+  this->m_importingOperators = false;
+  this->initializeOperatorManager(DefaultBridge::s_operators);
+}
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.
 BridgedInfoBits DefaultBridge::transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
@@ -91,9 +101,12 @@ OperatorPtr DefaultBridge::op(const std::string& opName, ManagerPtr manager) con
   * The DefaultBridge implementation does nothing.
   * Subclasses must override this method.
   */
-OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr)
+OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr op)
 {
-  return OperatorResult();
+  if (!op)
+    return OperatorResult();
+
+  return op->createResult(UNABLE_TO_OPERATE);
 }
 
 /**\brief A delegate for the RemoteOperator::operate() method.
@@ -101,9 +114,12 @@ OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr)
   * The DefaultBridge implementation does nothing.
   * Subclasses must override this method.
   */
-OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr)
+OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr op)
 {
-  return OperatorResult();
+  if (!op)
+    return OperatorResult();
+
+  return op->createResult(OPERATION_FAILED);
 }
 ///@}
 

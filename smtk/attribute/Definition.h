@@ -32,6 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/util/SharedFromThis.h" // For smtkTypeMacro.
 #include <map>
 #include <string>
 #include <set>
@@ -53,6 +54,7 @@ namespace smtk
     class SMTKCORE_EXPORT Definition
     {
     public:
+      smtkTypeMacro(Definition);
       virtual ~Definition();
 
       // Description:

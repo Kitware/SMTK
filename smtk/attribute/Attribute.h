@@ -100,6 +100,30 @@ namespace smtk
       std::size_t numberOfItems() const
       {return this->m_items.size();}
 
+      smtk::attribute::IntItemPtr findInt(const std::string &name);
+      smtk::attribute::ConstIntItemPtr findInt(const std::string &name) const;
+
+      smtk::attribute::DoubleItemPtr findDouble(const std::string &name);
+      smtk::attribute::ConstDoubleItemPtr findDouble(const std::string &name) const;
+
+      smtk::attribute::StringItemPtr findString(const std::string &name);
+      smtk::attribute::ConstStringItemPtr findString(const std::string &name) const;
+
+      smtk::attribute::FileItemPtr findFile(const std::string &name);
+      smtk::attribute::ConstFileItemPtr findFile(const std::string &name) const;
+
+      smtk::attribute::DirectoryItemPtr findDirectory(const std::string &name);
+      smtk::attribute::ConstDirectoryItemPtr findDirectory(const std::string &name) const;
+
+      smtk::attribute::GroupItemPtr findGroup(const std::string &name);
+      smtk::attribute::ConstGroupItemPtr findGroup(const std::string &name) const;
+
+      smtk::attribute::RefItemPtr findRef(const std::string &name);
+      smtk::attribute::ConstRefItemPtr findRef(const std::string &name) const;
+
+      smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string &name);
+      smtk::attribute::ConstModelEntityItemPtr findModelEntity(const std::string &name) const;
+
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
       // These methods are for the old model storage:
@@ -134,6 +158,8 @@ namespace smtk
       {return this->m_appliesToInteriorNodes;}
       void setAppliesToInteriorNodes(bool appliesValue)
       {this->m_appliesToInteriorNodes = appliesValue;}
+
+      bool isValid();
 
       smtk::attribute::Manager *manager() const;
       smtk::model::ManagerPtr modelManager() const;

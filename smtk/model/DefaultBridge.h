@@ -52,6 +52,8 @@ protected:
   friend class RemoteOperator;
   friend class ImportJSON;
 
+  DefaultBridge();
+
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr op);

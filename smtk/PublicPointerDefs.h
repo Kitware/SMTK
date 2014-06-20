@@ -89,7 +89,6 @@ namespace smtk
     class Model;
     class ModelEntity;
     class Operator;
-    class OperatorResult;
     class Parameter;
     class PropertyValuePhrase;
     class PropertyListPhrase;
@@ -207,6 +206,11 @@ namespace smtk
 
     // definition of the mask type for model entities. enum is in smtk/model/Item.h
     typedef unsigned long                                      MaskType;
+
+    // Model-related typedefs (dependent on attribute classes)
+    typedef smtk::shared_ptr< smtk::attribute::Definition >    OperatorDefinition;
+    typedef smtk::shared_ptr< smtk::attribute::Attribute >     OperatorSpecification;
+    typedef smtk::shared_ptr< smtk::attribute::Attribute >     OperatorResult;
   };
 
   namespace attribute
@@ -247,6 +251,25 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::ModelEntityItemDefinition > ModelEntityItemDefinitionPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItem >                 VoidItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::VoidItemDefinition >       VoidItemDefinitionPtr;
+
+    typedef smtk::shared_ptr< const smtk::attribute::DirectoryItem >             ConstDirectoryItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::DirectoryItemDefinition >   ConstDirectoryItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::DoubleItem >                ConstDoubleItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::DoubleItemDefinition >      ConstDoubleItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::FileItem >                  ConstFileItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::FileItemDefinition >        ConstFileItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::GroupItem >                 ConstGroupItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::GroupItemDefinition >       ConstGroupItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::IntItem >                   ConstIntItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::IntItemDefinition >         ConstIntItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::StringItem >                ConstStringItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::StringItemDefinition >      ConstStringItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::ModelEntityItem >           ConstModelEntityItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::ModelEntityItemDefinition > ConstModelEntityItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::VoidItem >                  ConstVoidItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::VoidItemDefinition >        ConstVoidItemDefinitionPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::RefItem >                   ConstRefItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::RefItemDefinition >         ConstRefItemDefinitionPtr;
 
     // Note used by SMTK but added for completeness
     typedef smtk::shared_ptr< smtk::attribute::Manager >   ManagerPtr;

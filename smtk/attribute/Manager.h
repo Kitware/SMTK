@@ -36,6 +36,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <set>
 #include <string>
 #include <vector>
+#include <iostream>
 
 
 namespace smtk

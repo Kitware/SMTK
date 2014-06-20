@@ -290,7 +290,7 @@ Item::Type Item::string2Type(const std::string &s)
     {
     return VOID;
     }
-  if (s == "MODEL_ENTITY")
+  if (s == "ModelEntity")
     {
     return MODEL_ENTITY;
     }

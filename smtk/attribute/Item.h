@@ -29,6 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/util/SharedFromThis.h"
 #include <map>
 #include <queue>
 #include <string>
@@ -47,6 +48,7 @@ namespace smtk
 
     class SMTKCORE_EXPORT Item
     {
+      smtkTypeMacro(Item);
       friend class Definition;
       friend class GroupItemDefinition;
       friend class ValueItemDefinition;

@@ -55,6 +55,7 @@ namespace smtk
       public smtk::attribute::ItemDefinition
     {
     public:
+      smtkTypeMacro(ValueItemDefinition);
       ValueItemDefinition(const std::string &myname);
       virtual ~ValueItemDefinition();
 

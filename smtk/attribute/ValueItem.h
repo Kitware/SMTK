@@ -41,6 +41,7 @@ namespace smtk
     class SMTKCORE_EXPORT ValueItem : public smtk::attribute::Item
     {
     public:
+      smtkTypeMacro(ValueItem);
       friend class ValueItemDefinition;
 
       virtual ~ValueItem();

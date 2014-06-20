@@ -197,6 +197,14 @@ mark_as_advanced(
   EXECUTABLE_OUTPUT_PATH
   LIBRARY_OUTPUT_PATH)
 
+# Install rules for SMTK macros usable by external packages:
+install(
+  FILES
+    ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
+  DESTINATION
+    lib/cmake/SMTK
+)
 
 ################################################################################
 # Build third party libraries

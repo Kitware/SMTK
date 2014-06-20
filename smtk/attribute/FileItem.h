@@ -42,6 +42,7 @@ namespace smtk
     {
     friend class FileItemDefinition;
     public:
+      smtkTypeMacro(FileItem);
       virtual ~FileItem();
       virtual Item::Type type() const;
       bool shouldBeRelative() const;

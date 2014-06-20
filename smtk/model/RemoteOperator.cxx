@@ -2,8 +2,12 @@
 
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/Manager.h"
-#include "smtk/model/Parameter.h"
-#include "smtk/model/OperatorResult.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
+
+using smtk::attribute::IntItem;
+using smtk::attribute::IntItemPtr;
 
 namespace smtk {
   namespace model {
@@ -23,11 +27,6 @@ RemoteOperator::Ptr RemoteOperator::setName(const std::string& opName)
 
 /**\brief Call the bridge's delegate method to see if the
   *       remote process can perform the operation.
-  *
-  * Since the actual ableToOperate method on the remote process may
-  * alter the parameter values, the delegate returns an OperatorResult
-  * instance that contains possibly-updated Parameter values obtained
-  * remotely. Those replace the local values.
   */
 bool RemoteOperator::ableToOperate()
 {
@@ -36,25 +35,31 @@ bool RemoteOperator::ableToOperate()
     return false;
 
   OperatorResult result = fwdBridge->ableToOperateDelegate(shared_from_this());
-  this->m_parameters = result.parameters();
-  return result.outcome() == OPERATION_SUCCEEDED ? true : false;
+  //std::cout << "RemoteOp result is " << result->name() << " type " << result->type() << "\n";
+  if (result)
+    {
+    IntItemPtr outcome = result->findInt("outcome");
+    //std::cout << "  outcome is " << (outcome ? "defined" : "null") << " value " << (outcome ? outcome->value() : -1) << "\n";
+    return (outcome && outcome->isSet() && outcome->value() == OPERATION_SUCCEEDED) ? true : false;
+    }
+  return false;
 }
 
 OperatorResult RemoteOperator::operateInternal()
 {
   DefaultBridge* fwdBridge = dynamic_cast<DefaultBridge*>(this->bridge());
   if (!fwdBridge)
-    return OperatorResult(OPERATION_FAILED);
+    return this->createResult(OPERATION_FAILED);
 
   return fwdBridge->operateDelegate(shared_from_this());
 }
 
-/// A method to clone this instance so it may be attached to a different bridge.
-Operator::Ptr RemoteOperator::cloneInternal(Operator::ConstPtr src)
-{
-  this->setName(src->name());
-  return this->Operator::cloneInternal(src);
-}
-
   } // model namespace
 } // smtk namespace
+
+smtkImplementsModelOperator(
+  smtk::model::RemoteOperator,
+  RemoteOperator,
+  "remote op",
+  NULL /* no XML specification */,
+  smtk::model::DefaultBridge);

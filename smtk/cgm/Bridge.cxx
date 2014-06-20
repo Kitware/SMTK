@@ -617,10 +617,3 @@ static const char* CGMFileTypes[] = {
   NULL
 };
 smtkImplementsModelingKernel(cgm,CGMFileTypes,cgmsmtk::cgm::Bridge);
-
-// Ensure that anything which links to this library
-// results in the bridge being registered (unless this
-// file is included in a static library, in which case
-// you must manually add the line below to your
-// executable's source).
-smtkComponentInitMacro(smtk_cgm_bridge);

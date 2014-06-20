@@ -136,7 +136,7 @@ std::string Cursor::flagSummary(int form) const
   */
 std::string Cursor::name() const
 {
-  return this->m_manager->name(this->m_entity);
+  return this->m_manager ? this->m_manager->name(this->m_entity) : "(null model)";
 }
 
 /** Assign a name to an entity.

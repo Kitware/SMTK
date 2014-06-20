@@ -37,6 +37,7 @@ namespace smtk
       public ValueItemDefinitionTemplate<std::string>
     {
     public:
+      smtkTypeMacro(StringItemDefinition);
       static smtk::attribute::StringItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::StringItemDefinitionPtr(new StringItemDefinition(myName));}
 

@@ -43,7 +43,7 @@ public:
   template<typename T> ModelEntity& removeSubmodels(const T& container);
 
   OperatorPtr op(const std::string& operatorName) const;
-  Operators operators() const;
+  //Operators operators() const;
   StringList operatorNames() const;
 
   BridgePtr bridge() const;

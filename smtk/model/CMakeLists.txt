@@ -30,8 +30,6 @@ set(modelSrcs
   Model.cxx
   ModelEntity.cxx
   Operator.cxx
-  OperatorResult.cxx
-  Parameter.cxx
   PropertyListPhrase.cxx
   PropertyValuePhrase.cxx
   RemoteOperator.cxx
@@ -84,8 +82,6 @@ set(modelHeaders
   Model.h
   ModelEntity.h
   Operator.h
-  OperatorResult.h
-  Parameter.h
   PropertyType.h
   PropertyListPhrase.h
   PropertyValuePhrase.h
