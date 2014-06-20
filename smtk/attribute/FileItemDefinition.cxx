@@ -130,6 +130,8 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::FileItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
+  (void)info;
+
   std::size_t i;
 
   smtk::attribute::FileItemDefinitionPtr instance =

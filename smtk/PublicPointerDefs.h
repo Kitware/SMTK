@@ -118,6 +118,7 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
+    typedef unsigned long AttributeId;
     class RefItem;
     class RefItemDefinition;
     class Definition;

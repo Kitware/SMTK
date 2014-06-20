@@ -1,5 +1,7 @@
 #include "smtk/model/AttributeAssignments.h"
 
+using smtk::attribute::AttributeId;
+
 namespace smtk {
  namespace model {
 

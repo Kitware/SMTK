@@ -126,6 +126,7 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::DirectoryItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
+  (void)info;
   smtk::attribute::DirectoryItemDefinitionPtr instance =
     smtk::attribute::DirectoryItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);

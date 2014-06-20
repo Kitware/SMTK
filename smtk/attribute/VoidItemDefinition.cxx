@@ -67,6 +67,8 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::VoidItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
+  (void)info;
+
   smtk::attribute::VoidItemDefinitionPtr instance =
     smtk::attribute::VoidItemDefinition::New(this->name());
   ItemDefinition::copyTo(instance);

@@ -180,7 +180,7 @@ void Manager::recomputeNextAttributeID()
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
                                              smtk::attribute::DefinitionPtr def,
-                                             unsigned long id)
+                                             smtk::attribute::AttributeId id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
@@ -198,7 +198,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
                                              const std::string &typeName,
-                                             unsigned long id)
+                                             smtk::attribute::AttributeId id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);

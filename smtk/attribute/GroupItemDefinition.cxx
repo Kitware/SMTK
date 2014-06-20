@@ -204,6 +204,8 @@ smtk::attribute::ItemDefinitionPtr
 smtk::attribute::GroupItemDefinition::
 createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
 {
+  (void)info;
+
   std::size_t i;
 
   smtk::attribute::GroupItemDefinitionPtr instance =

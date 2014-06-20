@@ -1438,7 +1438,7 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
   xml_attribute xatt;
   attribute::AttributePtr att;
   attribute::DefinitionPtr def;
-  unsigned long id;
+  smtk::attribute::AttributeId id;
   int i, n;
 
   xatt = attNode.attribute("Name");

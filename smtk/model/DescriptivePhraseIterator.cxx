@@ -276,7 +276,7 @@ Cursor DescriptivePhraseIterator::relatedEntity() const
   return Cursor();
 }
 
-int DescriptivePhraseIterator::relatedAttributeId() const
+smtk::attribute::AttributeId DescriptivePhraseIterator::relatedAttributeId() const
 {
   return 0;
 }

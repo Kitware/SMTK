@@ -429,7 +429,7 @@ smtk::model::ManagerPtr QEntityItemModel::manager() const
   return store;
 }
 
-QIcon QEntityItemModel::lookupIconForEntityFlags(unsigned long flags)
+QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
 {
   std::ostringstream resourceName;
   resourceName << ":/icons/entityTypes/";

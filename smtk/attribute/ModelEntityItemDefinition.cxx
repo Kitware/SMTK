@@ -208,6 +208,7 @@ ItemDefinitionPtr
 ModelEntityItemDefinition::
 createCopy(ItemDefinition::CopyInfo& info) const
 {
+  (void)info;
   std::size_t i;
 
   smtk::attribute::ModelEntityItemDefinitionPtr newDef =

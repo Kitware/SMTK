@@ -53,7 +53,7 @@ public:
   int numberOfSubphrases() const;
   smtk::util::UUID relatedEntityId() const;
   Cursor relatedEntity() const;
-  int relatedAttributeId() const;
+  smtk::attribute::AttributeId relatedAttributeId() const;
   std::string relatedPropertyName() const;
   PropertyType relatedPropertyType() const;
 
