@@ -209,6 +209,8 @@ int Item::advanceLevel(int mode) const
 //----------------------------------------------------------------------------
 void Item::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 {
+  (void)info;
+
   // Assigns my contents to be same as sourceItem
   m_isEnabled = sourceItem->isEnabled();
   for (unsigned i=0; i<2; ++i)
