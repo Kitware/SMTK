@@ -34,6 +34,7 @@ namespace smtk
     public:
        // onWidget is what the overlay will be covering
         qtOverlayFilter(QWidget* onWidget, QObject * parent = 0);
+        virtual ~qtOverlayFilter();
         qtOverlay* overlay() { return m_overlay; }
         void setActive(bool val);
         bool active(){return m_Active;}

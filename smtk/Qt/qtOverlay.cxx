@@ -49,6 +49,12 @@ qtOverlayFilter::qtOverlayFilter(QWidget* onWidget, QObject * parentO) : QObject
   m_overlayOn = onWidget;
   onWidget->installEventFilter(this);
 }
+//----------------------------------------------------------------------------
+qtOverlayFilter::~qtOverlayFilter()
+{
+  delete this->m_overlay;
+}
+
 void qtOverlayFilter::setActive(bool val)
 {
   if (m_overlay && m_overlayOn)
