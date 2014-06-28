@@ -757,8 +757,8 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
         {
         // Check if att has been created (copied) already
         Item::UnresolvedItemInfo& itemInfo = info.UnresolvedRefItems.front();
-        std::string name = itemInfo.AttributeName;
-        AttributePtr att = this->findAttribute(name);
+        std::string attName = itemInfo.AttributeName;
+        AttributePtr att = this->findAttribute(attName);
         if (att)
           {
           RefItemPtr refItem =
@@ -769,12 +769,12 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
         else
           {
           // Need to copy attrobite, first find it in the input manager
-          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(attName);
           // Attribute missing only if source manager is invalid, but check anyway
           if (!nextAtt)
             {
-            std::cerr << "ERROR: Unable to find source attribute " << name
+            std::cerr << "ERROR: Unable to find source attribute " << attName
                       << " -- copy operation incomplete" << std::endl;
             return newAtt;
             }
@@ -794,8 +794,8 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
         {
         // Check if att has been copied already
         Item::UnresolvedItemInfo& itemInfo = info.UnresolvedExpItems.front();
-        std::string name = itemInfo.AttributeName;
-        AttributePtr att = this->findAttribute(name);
+        std::string attName = itemInfo.AttributeName;
+        AttributePtr att = this->findAttribute(attName);
         if (att)
           {
           ValueItemPtr valItem =
@@ -806,12 +806,12 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
         else
           {
           // Need to copy attribute, first find it in input manager
-          std::cout << "Copying \"" << name << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(name);
+          std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
+          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(attName);
           // Attribute missing only if source manager is invalid, but check anyway
           if (!nextAtt)
             {
-            std::cerr << "ERROR: Unable to find source attribute " << name
+            std::cerr << "ERROR: Unable to find source attribute " << attName
                       << " -- copy operation incomplete" << std::endl;
             return newAtt;
             }

@@ -350,7 +350,7 @@ void XmlDocV1Parser::process(xml_document &doc)
   // Get the attribute manager node
   amnode = doc.child("SMTK_AttributeManager");
 
-  // Get the category information
+  // Get the category information, starting with current set
   std::set<std::string> secCatagories = m_manager.categories();
   std::string s;
   node = amnode.child("Categories");
