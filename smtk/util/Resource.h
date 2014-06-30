@@ -19,8 +19,9 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME smtkResource.h - Abstract base class for CMB resources
+// .NAME smtkResource.h - Abstract base class for SMTK resources
 // .SECTION Description
+//   An SMTK resource is one of: attribute manager, model, mesh
 // .SECTION See Also
 
 #ifndef __smtk_util_Resource_h

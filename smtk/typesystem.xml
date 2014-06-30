@@ -777,6 +777,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::view::Root" />
   <value-type template="smtk::shared_ptr" args="smtk::view::SimpleExpression" />
 
+  <value-type template="smtk::shared_ptr" args="smtk::util::Resource" />
   <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
 
   <namespace-type name="smtk">
@@ -1674,6 +1675,15 @@
         <include file-name="smtk/util/Resource.h" location="local" />
         <enum-type name="Type" />
       </object-type>
+
+      <!-- TODO Get ResourceSet wrappers to compile (Shiboken bug?) -->
+      <!--
+      <object-type name="ResourceSet">
+        <include file-name="smtk/util/ResourceSet.h" location="local" />
+        <enum-type name="ResourceState" />
+        <enum-type name="ResourceRole" />
+      </object-type>
+      -->
 
       <object-type name="UserData">
         <include file-name="smtk/util/UserData.h" location="local" />
