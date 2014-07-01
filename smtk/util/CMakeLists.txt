@@ -8,6 +8,7 @@ set(utilSrcs
   Logger.cxx
   Resource.cxx
   ResourceSet.cxx
+  ResourceSetWriter.cxx
   UserData.cxx
   UUID.cxx
   UUIDGenerator.cxx
@@ -23,6 +24,7 @@ set(utilHeaders
   Logger.h
   Resource.h
   ResourceSet.h
+  ResourceSetWriter.h
   SharedFromThis.h
   UserData.h
   UUID.h

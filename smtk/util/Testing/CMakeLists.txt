@@ -1,13 +1,27 @@
 smtk_public_headers(helpers.h)
 
-add_executable(loggerTest loggerTest.cxx)
-target_link_libraries(loggerTest SMTKCore)
-add_test(loggerTest ${EXECUTABLE_OUTPUT_PATH}/loggerTest)
+set(UtilTests
+  loggerTest
+  unitUUID
+  ResourceSetTest
+)
 
-add_executable(unitUUID unitUUID.cxx)
-target_link_libraries(unitUUID SMTKCore)
-add_test(unitUUID ${EXECUTABLE_OUTPUT_PATH}/unitUUID)
+foreach (test ${UtilTests})
+  add_executable(${test}  ${test}.cxx)
+  target_link_libraries(${test} SMTKCore)
+  add_test(${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
+endforeach()
 
-add_executable(ResourceSetTest ResourceSetTest.cxx)
-target_link_libraries(ResourceSetTest SMTKCore)
-add_test(ResourceSetTest ${EXECUTABLE_OUTPUT_PATH}/ResourceSetTest)
+
+# ResourceSetWriterTest uses input files in SMTKTestData
+if (SMTK_DATA_DIR)
+  set(writer_test ResourceSetWriterTest)
+  add_executable(${writer_test}  ${writer_test}.cxx)
+  target_link_libraries(${writer_test} SMTKCore ${Boost_LIBRARIES})
+  add_test(${writer_test}
+    ${EXECUTABLE_OUTPUT_PATH}/${writer_test}
+    ${SMTK_DATA_DIR}/smtk/attribute/Basic2DFluid.sbt
+    ${SMTK_DATA_DIR}/smtk/attribute/copyAttributeTest.sbi
+    writer_output.crf
+  )
+endif()
