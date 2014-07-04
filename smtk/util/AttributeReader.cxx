@@ -62,20 +62,19 @@ std::string Internal_getDirectory(const std::string &fname,
   return fname;
 }
 //----------------------------------------------------------------------------
-bool Internal_scanIncludes(pugi::xml_document& doc,
+bool Internal_scanIncludes(pugi::xml_node& root,
                            std::vector<std::string> &includeStack,
                            const std::set<std::string> &activeIncludes,
                            const std::vector<std::string> &spaths,
                            Logger &logger)
 {
-  // Lets get the include section
-  pugi::xml_node root = doc.child("SMTK_AttributeManager");
   if (!root)
     {
-    smtkErrorMacro(logger, "Can not find root node: SMTK_AttributeManager");
+    smtkErrorMacro(logger, "Root node is missing: SMTK_AttributeManager");
     return true;
     }
 
+  // Lets get the include section
   pugi::xml_node includesNode = root.child("Includes");
   if (!includesNode)
     {
@@ -111,7 +110,15 @@ bool Internal_scanIncludes(pugi::xml_document& doc,
       }
     std::set<std::string> newSet = activeIncludes;
     newSet.insert(fname);
-    if (Internal_scanIncludes(doc1, includeStack, newSet, spaths, logger))
+    pugi::xml_node root1 = doc1.child("SMTK_AttributeManager");
+    if (!root1)
+      {
+      smtkErrorMacro(logger,
+                     "Cannot find root node (SMTK_AttributeManager) in file "
+                     << fname);
+      return true;
+      }
+    if (Internal_scanIncludes(root1, includeStack, newSet, spaths, logger))
       {
       smtkErrorMacro(logger, "Problem processing " << fname );
       return true;
@@ -122,18 +129,17 @@ bool Internal_scanIncludes(pugi::xml_document& doc,
   return false; // everything is ok!
 }
 //----------------------------------------------------------------------------
-void Internal_parseXmlDoc(smtk::attribute::Manager &manager,
-                          pugi::xml_document& doc, bool reportAsError,
-                          Logger &logger)
+void Internal_parseXml(smtk::attribute::Manager &manager,
+                       pugi::xml_node& root, bool reportAsError,
+                       Logger &logger)
 {
-  // Lets get the version of the Attribute File Format
-  pugi::xml_node root = doc.child("SMTK_AttributeManager");
   if (!root)
     {
-    smtkErrorMacro(logger, "Can not find root node: SMTK_AttributeManager");
+    smtkErrorMacro(logger, "Root node is missing: SMTK_AttributeManager");
     return;
     }
 
+  // Lets get the version of the Attribute File Format
   pugi::xml_attribute xatt = root.attribute("Version");
   if (!xatt)
     {
@@ -149,18 +155,24 @@ void Internal_parseXmlDoc(smtk::attribute::Manager &manager,
     }
   XmlDocV1Parser theReader(manager);
   theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
-  theReader.process(doc);
+  theReader.process(root);
   logger.append(theReader.messageLog());
 }
 
 //----------------------------------------------------------------------------
 void Internal_readAttributes(smtk::attribute::Manager &manager,
                              const std::string &initialFileName,
-                             pugi::xml_document& doc,
+                             pugi::xml_node& root,
                              const std::vector<std::string> &spaths,
                              bool reportAsError,
                              Logger &logger)
 {
+  if (!root)
+    {
+    smtkErrorMacro(logger, "Root node is missing: SMTK_AttributeManager");
+    return;
+    }
+
   // First lets process the include files
   std::vector<std::string> includeStack;
   std::set<std::string> activeIncludes;
@@ -169,7 +181,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
     {
     activeIncludes.insert(initialFileName);
     }
-  if (Internal_scanIncludes(doc, includeStack, activeIncludes, spaths, logger))
+  if (Internal_scanIncludes(root, includeStack, activeIncludes, spaths, logger))
     {
     smtkErrorMacro(logger, "Problem occured traversing includes!");
     return;
@@ -182,7 +194,14 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
     pugi::xml_document doc1;
     doc1.load_file(includeStack.back().c_str());
     std::cout << "Processing Include File: " << includeStack.back().c_str() << "\n";
-    Internal_parseXmlDoc(manager, doc1, reportAsError, logger);
+    pugi::xml_node root1 = doc1.child("SMTK_AttributeManager");
+    if (!root1)
+      {
+      smtkErrorMacro(logger, "Root node (SMTK_AttributeManager) is missing from "
+                     << includeStack.back());
+      return;
+      }
+    Internal_parseXml(manager, root1, reportAsError, logger);
     if (logger.hasErrors())
       {
       return;
@@ -190,7 +209,7 @@ void Internal_readAttributes(smtk::attribute::Manager &manager,
     includeStack.pop_back();
     }
   // Finally process the initial doc
-  Internal_parseXmlDoc(manager, doc, reportAsError, logger);
+  Internal_parseXml(manager, root, reportAsError, logger);
 }
 }  // namespace
 
@@ -209,6 +228,17 @@ bool AttributeReader::read(smtk::attribute::Manager &manager,
     smtkErrorMacro(logger, presult.description());
     return true;
     }
+
+  // Get root element
+  pugi::xml_node root = doc.child("SMTK_AttributeManager");
+  if (!root)
+    {
+    smtkErrorMacro(logger,
+                   "Cannot find root node (SMTK_AttributeManager) in file "
+                   << filename);
+    return true;
+    }
+
   if (includePath)
     {
     // Add the path to the file as a search path
@@ -216,12 +246,12 @@ bool AttributeReader::read(smtk::attribute::Manager &manager,
     std::vector<std::string> newSPaths(1, p.parent_path().string());
     newSPaths.insert(newSPaths.end(), this->m_searchPaths.begin(),
                      this->m_searchPaths.end());
-    Internal_readAttributes(manager, filename, doc, newSPaths,
+    Internal_readAttributes(manager, filename, root, newSPaths,
                             this->m_reportAsError, logger);
     }
   else
     {
-    Internal_readAttributes(manager, filename, doc, this->m_searchPaths,
+    Internal_readAttributes(manager, filename, root, this->m_searchPaths,
                             this->m_reportAsError, logger);
     }
   return logger.hasErrors();
@@ -252,8 +282,27 @@ bool AttributeReader::readContents(smtk::attribute::Manager &manager,
     smtkErrorMacro(logger, presult.description());
     return true;
     }
-  Internal_readAttributes(manager, "", doc, this->m_searchPaths,
-                          this->m_reportAsError, logger);
+
+  // Get root element
+  pugi::xml_node root = doc.child("SMTK_AttributeManager");
+  return this->readContents(manager, root, logger);
+}
+
+//----------------------------------------------------------------------------
+bool AttributeReader::readContents(smtk::attribute::Manager &manager,
+                                   pugi::xml_node& root,
+                                   Logger &logger)
+{
+  logger.reset();
+  if (root)
+    {
+    Internal_readAttributes(manager, "", root, this->m_searchPaths,
+                            this->m_reportAsError, logger);
+    }
+  else
+    {
+    smtkErrorMacro(logger, "Can not find root node: SMTK_AttributeManager");
+    }
   return logger.hasErrors();
 }
 

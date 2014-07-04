@@ -338,6 +338,13 @@ XmlDocV1Parser::~XmlDocV1Parser()
 //----------------------------------------------------------------------------
 void XmlDocV1Parser::process(xml_document &doc)
 {
+  // Get the attribute manager node
+  xml_node amnode = doc.child("SMTK_AttributeManager");
+  this->process(amnode);
+}
+//----------------------------------------------------------------------------
+void XmlDocV1Parser::process(xml_node &amnode)
+{
   // Reset the message log
   this->m_logger.reset();
   // Clear the vectors for dealing with attribute references
@@ -346,9 +353,14 @@ void XmlDocV1Parser::process(xml_document &doc)
   this->m_itemExpressionInfo.clear();
   this->m_attRefInfo.clear();
   this->m_logger.reset();
-  xml_node amnode, node, cnode;
-  // Get the attribute manager node
-  amnode = doc.child("SMTK_AttributeManager");
+  xml_node node, cnode;
+
+  // Check that there is content
+  if (amnode.empty())
+    {
+    smtkWarningMacro(m_logger, "Missing SMTK_AttributeManager element");
+    return;
+    }
 
   // Get the category information, starting with current set
   std::set<std::string> secCatagories = m_manager.categories();
@@ -373,7 +385,7 @@ void XmlDocV1Parser::process(xml_document &doc)
       }
     }
 
-  // Process Analsis Info
+  // Process Analysis Info
   std::set<std::string> catagories;
   node = amnode.child("Analyses");
   if (node)

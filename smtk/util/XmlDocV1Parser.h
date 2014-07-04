@@ -69,6 +69,7 @@ namespace smtk
       XmlDocV1Parser(smtk::attribute::Manager &manager);
       virtual ~XmlDocV1Parser();
       void process(pugi::xml_document &doc);
+      void process(pugi::xml_node &rootNode);
       static void convertStringToXML(std::string &str);
       const smtk::util::Logger &messageLog() const
       {return this->m_logger;}
