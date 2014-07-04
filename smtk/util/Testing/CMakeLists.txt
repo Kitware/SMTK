@@ -24,4 +24,13 @@ if (SMTK_DATA_DIR)
     ${SMTK_DATA_DIR}/smtk/attribute/copyAttributeTest.sbi
     writer_output.crf
   )
+
+  set(reader_test ResourceSetReaderTest)
+  add_executable(${reader_test}  ${reader_test}.cxx)
+  target_link_libraries(${reader_test} SMTKCore ${Boost_LIBRARIES})
+  add_test(${reader_test}
+    ${EXECUTABLE_OUTPUT_PATH}/${reader_test}
+    ${SMTK_DATA_DIR}/smtk/attribute/resourceTest/resources.xml
+    2
+  )
 endif()
