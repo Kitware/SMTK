@@ -19,45 +19,36 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME smtkResource.h - Abstract base class for SMTK resources
+// .NAME ResourceSetWriter.h - Writer for SMTK resource files
 // .SECTION Description
-//   An SMTK resource is one of: attribute manager, model, mesh
 // .SECTION See Also
 
-#ifndef __smtk_util_Resource_h
-#define __smtk_util_Resource_h
-
+#ifndef __ResourceSetWriter_h
+#define __ResourceSetWriter_h
 
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/util/Logger.h"
+#include "smtk/util/ResourceSet.h"
+#include "smtk/util/SystemConfig.h"
+#include "smtk/PublicPointerDefs.h"
+
 #include <string>
 
+namespace smtk {
+  namespace util {
 
-namespace smtk
+class SMTKCORE_EXPORT ResourceSetWriter
 {
-  namespace util
-  {
-    class SMTKCORE_EXPORT Resource
-    {
-    public:
-      /// Identifies resource type
-      enum Type
-      {
-        ATTRIBUTE = 0,
-        MODEL,        // future
-        MESH,         // future
-        NUMBER_OF_TYPES
-      };
+ public:
+  bool writeFile(std::string filename, const ResourceSet& resources,
+                 smtk::util::Logger& logger, bool writeLinkedFiles = true);
+  bool writeString(std::string& content, const ResourceSet& resources,
+                   smtk::util::Logger& logger, bool writeLinkedFiles = true);
 
-      virtual Resource::Type resourceType() const = 0;
+ protected:
+};
 
-      static std::string type2String(Resource::Type t);
-      static Resource::Type string2Type(const std::string &s);
+  }  // namespace util
+}  // namespace smtk
 
-    protected:
-      Resource();
-      virtual ~Resource();
-    };
-  }
-}
-
-#endif  /* __smtk_util_Resource_h */
+#endif /* __ResourceSetWriter_h */

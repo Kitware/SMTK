@@ -50,6 +50,9 @@ namespace smtk
       virtual ~XmlV1StringWriter();
       std::string convertToString(smtk::util::Logger &logger,
                                   bool no_declaration = false);
+      void generateXml(pugi::xml_node& parent_node,
+                       smtk::util::Logger &logger,
+                       bool createRoot = true);
       const smtk::util::Logger &messageLog() const
       {return this->m_logger;}
 
@@ -152,8 +155,6 @@ namespace smtk
       // Keep pugi headers out of public headers:
       struct PugiPrivate;
       PugiPrivate *m_pugi;
-
-      pugi::xml_document &getPugiDoc();
 
       smtk::util::Logger  m_logger;
     private:

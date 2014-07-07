@@ -7,6 +7,9 @@ set(utilSrcs
   ExportSpec.cxx
   Logger.cxx
   Resource.cxx
+  ResourceSet.cxx
+  ResourceSetReader.cxx
+  ResourceSetWriter.cxx
   UserData.cxx
   UUID.cxx
   UUIDGenerator.cxx
@@ -21,6 +24,9 @@ set(utilHeaders
   ExportSpec.h
   Logger.h
   Resource.h
+  ResourceSet.h
+  ResourceSetReader.h
+  ResourceSetWriter.h
   SharedFromThis.h
   UserData.h
   UUID.h

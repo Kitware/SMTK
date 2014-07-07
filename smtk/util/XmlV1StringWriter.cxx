@@ -213,30 +213,68 @@ namespace {
 
 struct XmlV1StringWriter::PugiPrivate
 {
-  xml_document doc;
-  xml_node root;
+  xml_node& root;
+  PugiPrivate(xml_node& parent_node): root(parent_node) {}
 };
 
 //----------------------------------------------------------------------------
 XmlV1StringWriter::XmlV1StringWriter(const attribute::Manager &myManager):
 m_manager(myManager), m_includeDefinitions(true), m_includeInstances(true),
-m_includeModelInformation(true), m_includeViews(true), m_pugi(new PugiPrivate)
+m_includeModelInformation(true), m_includeViews(true), m_pugi(0)
 {
-  this->m_pugi->doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
-  this->m_pugi->root = this->m_pugi->doc.append_child("SMTK_AttributeManager");
-  this->m_pugi->root.append_attribute("Version").set_value(1);
 }
 
 //----------------------------------------------------------------------------
 XmlV1StringWriter::~XmlV1StringWriter()
 {
+  delete m_pugi;
 }
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::convertToString(Logger &logger,
                                                bool no_declaration)
 {
+  // Initialize the xml document
+  xml_document doc;
+  doc.append_child(node_comment).set_value("Created by XmlV1StringWriter");
+  xml_node root = doc.append_child("SMTK_AttributeManager");
+  root.append_attribute("Version").set_value(1);
+
+  // Generate the element tree
+  this->generateXml(root, logger, false);
+
+  // Serialize the result
+  std::stringstream oss;
+  unsigned int flags = pugi::format_indent;
+  if (no_declaration)
+    {
+    flags |= pugi::format_no_declaration;
+    }
+  doc.save(oss, "  ", flags);
+  std::string result = oss.str();
+  return result;
+}
+//----------------------------------------------------------------------------
+void XmlV1StringWriter::generateXml(pugi::xml_node& parent_node,
+                                    Logger& logger,
+                                    bool createRoot)
+{
   // Reset the message log
   this->m_logger.reset();
+
+  if (createRoot)
+    {
+    // This option is used to insert an attribute manager
+    // into an existing xml document (for writing resource files).
+    xml_node root = parent_node.append_child("SMTK_AttributeManager");
+    root.append_attribute("Version").set_value(1);
+    m_pugi = new PugiPrivate(root);
+    }
+  else
+    {
+    // This option is used when writing a single attribute manager,
+    // and the root node has already been created by the caller.
+    m_pugi = new PugiPrivate(parent_node);
+    }
 
   this->m_pugi->root.append_child(node_comment)
     .set_value("**********  Category and Analysis Information ***********");
@@ -302,16 +340,8 @@ std::string XmlV1StringWriter::convertToString(Logger &logger,
     {
     this->processModelInfo();
     }
-  std::stringstream oss;
-  unsigned int flags = pugi::format_indent;
-  if (no_declaration)
-    {
-    flags |= pugi::format_no_declaration;
-    }
-  this->m_pugi->doc.save(oss, "  ", flags);
-  std::string result = oss.str();
+
   logger = this->m_logger;
-  return result;
 }
 //----------------------------------------------------------------------------
 void XmlV1StringWriter::processAttributeInformation()
@@ -1446,13 +1476,6 @@ std::string XmlV1StringWriter::encodeColor(const double *c)
   std::string result = oss.str();
   return result;
 }
-
-//----------------------------------------------------------------------------
-pugi::xml_document &smtk::util::XmlV1StringWriter::getPugiDoc()
-{
-  return this->m_pugi->doc;
-}
-
 //----------------------------------------------------------------------------
 std::string XmlV1StringWriter::encodeModelEntityMask(smtk::model::MaskType m)
 {

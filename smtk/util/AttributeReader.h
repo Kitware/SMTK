@@ -32,6 +32,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <string>
 #include <vector>
 
+namespace pugi {
+class xml_node;
+}
+
+
 namespace smtk
 {
   namespace attribute
@@ -63,6 +68,10 @@ namespace smtk
                         const char *contents,
                         std::size_t length,
                         smtk::util::Logger &logger);
+
+      bool readContents(smtk::attribute::Manager &manager,
+                        pugi::xml_node& rootNode,
+                        smtk::util::Logger& logger);
 
       void setSearchPaths(const std::vector<std::string> &paths)
       { this->m_searchPaths = paths;}
