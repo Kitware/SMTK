@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SMTK_AttributeManager Version="1">
+  <Definitions>
+    <!-- +1+ -->
+    <AttDef Type="counter" BaseType="operator">
+      <ItemDefinitions>
+        <ModelEntity Name="model" NumberOfRequiredValues="1"/>
+        <Int Name="count groups" NumberOfRequiredValues="1">
+          <DefaultValue>0</DefaultValue>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+    <!-- -1- -->
+    <!-- +2+ -->
+    <!-- Result -->
+    <AttDef Type="result(counter)" BaseType="result">
+      <ItemDefinitions>
+        <Int Name="count" NumberOfRequiredValues="1">
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+    <!-- -2- -->
+  </Definitions>
+</SMTK_AttributeManager>

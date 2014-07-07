@@ -5,7 +5,6 @@
 # This also generates documentation for third-party libraries
 # cJSON and sparsehash which is referenced by SMTK's documentation.
 #
-find_package(Doxygen)
 if(DOXYGEN_FOUND)
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cjson.doxyfile.in
@@ -52,3 +51,5 @@ if(DOXYGEN_FOUND)
     COMMENT "Generating SMTK API documentation with Doxygen" VERBATIM
   )
 endif(DOXYGEN_FOUND)
+
+add_subdirectory(tutorials)

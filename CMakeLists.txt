@@ -36,6 +36,10 @@ option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
 mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
+# Find Doxygen and Docutils (optional, for building documentation)
+find_package(Doxygen)
+find_package(Docutils)
+
 ################################################################################
 # Testing Related Settings
 ################################################################################
@@ -213,12 +217,6 @@ install(
 add_subdirectory(ThirdParty)
 
 ################################################################################
-# Build documentation
-################################################################################
-
-add_subdirectory(doc)
-
-################################################################################
 # Include Dirs Settings
 ################################################################################
 
@@ -247,5 +245,13 @@ endif()
 # Finally build smtk
 ################################################################################
 
-#Build the actual code
 add_subdirectory(smtk)
+
+################################################################################
+# Build documentation
+# This also includes tutorials and other documentation that has its
+# source checked against SMTK libraries, so it must come after those
+# targets have been declared.
+################################################################################
+
+add_subdirectory(doc)
