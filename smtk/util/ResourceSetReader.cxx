@@ -64,8 +64,8 @@ readFile(std::string filename,
   // Set linkStartPath for any linked resources
   boost::filesystem::path path(filename);
   path.remove_filename();
-  std::cout << "path \"" << path.native() << "\"" << std::endl;
-  resources.setLinkStartPath(path.native());
+  std::cout << "path \"" << path.string() << "\"" << std::endl;
+  resources.setLinkStartPath(path.string());
 
   // Parse string
   return this->readString(content, resources, logger, loadLinkedFiles);
@@ -319,8 +319,8 @@ buildIncludePath(const ResourceSet& resources,
       resources.linkStartPath() != "")
     {
     boost::filesystem::path outputPath(resources.linkStartPath());
-    outputPath /= inputPath;
-    path = outputPath.c_str();
+    outputPath /= inputPath;  // (concatenate)
+    path = outputPath.string();
     }
 
   return path;
