@@ -317,18 +317,18 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       }
     else if (sourceValueItem->isExpression(i))
       {
-      std::string name = sourceValueItem->expression(i)->name();
-      AttributePtr att = manager->findAttribute(name);
+      std::string nameStr = sourceValueItem->expression(i)->name();
+      AttributePtr att = manager->findAttribute(nameStr);
       if (att)
         {
         this->setExpression(i, att);
         }
       else
         {
-        std::cout << "Adding  \"" << name
+        std::cout << "Adding  \"" << nameStr
                   << "\" to copy-expression queue"
                   << std::endl;
-        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        Item::UnresolvedItemInfo itemInfo(nameStr, this->pointer(), i);
         info.UnresolvedExpItems.push(itemInfo);
         }
       }

@@ -420,42 +420,42 @@ smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
 }
 //-----------------------------------------------------------------------------
-smtk::attribute::IntItemPtr Attribute::findInt(const std::string &name)
-{ return smtk::dynamic_pointer_cast<IntItem>(this->find(name)); }
-smtk::attribute::ConstIntItemPtr Attribute::findInt(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const IntItem>(this->find(name)); }
+smtk::attribute::IntItemPtr Attribute::findInt(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<IntItem>(this->find(nameStr)); }
+smtk::attribute::ConstIntItemPtr Attribute::findInt(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const IntItem>(this->find(nameStr)); }
 
-smtk::attribute::DoubleItemPtr Attribute::findDouble(const std::string &name)
-{ return smtk::dynamic_pointer_cast<DoubleItem>(this->find(name)); }
-smtk::attribute::ConstDoubleItemPtr Attribute::findDouble(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const DoubleItem>(this->find(name)); }
+smtk::attribute::DoubleItemPtr Attribute::findDouble(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<DoubleItem>(this->find(nameStr)); }
+smtk::attribute::ConstDoubleItemPtr Attribute::findDouble(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const DoubleItem>(this->find(nameStr)); }
 
-smtk::attribute::StringItemPtr Attribute::findString(const std::string &name)
-{ return smtk::dynamic_pointer_cast<StringItem>(this->find(name)); }
-smtk::attribute::ConstStringItemPtr Attribute::findString(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const StringItem>(this->find(name)); }
+smtk::attribute::StringItemPtr Attribute::findString(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<StringItem>(this->find(nameStr)); }
+smtk::attribute::ConstStringItemPtr Attribute::findString(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const StringItem>(this->find(nameStr)); }
 
-smtk::attribute::FileItemPtr Attribute::findFile(const std::string &name)
-{ return smtk::dynamic_pointer_cast<FileItem>(this->find(name)); }
-smtk::attribute::ConstFileItemPtr Attribute::findFile(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const FileItem>(this->find(name)); }
+smtk::attribute::FileItemPtr Attribute::findFile(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<FileItem>(this->find(nameStr)); }
+smtk::attribute::ConstFileItemPtr Attribute::findFile(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const FileItem>(this->find(nameStr)); }
 
-smtk::attribute::DirectoryItemPtr Attribute::findDirectory(const std::string &name)
-{ return smtk::dynamic_pointer_cast<DirectoryItem>(this->find(name)); }
-smtk::attribute::ConstDirectoryItemPtr Attribute::findDirectory(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const DirectoryItem>(this->find(name)); }
+smtk::attribute::DirectoryItemPtr Attribute::findDirectory(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<DirectoryItem>(this->find(nameStr)); }
+smtk::attribute::ConstDirectoryItemPtr Attribute::findDirectory(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const DirectoryItem>(this->find(nameStr)); }
 
-smtk::attribute::GroupItemPtr Attribute::findGroup(const std::string &name)
-{ return smtk::dynamic_pointer_cast<GroupItem>(this->find(name)); }
-smtk::attribute::ConstGroupItemPtr Attribute::findGroup(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const GroupItem>(this->find(name)); }
+smtk::attribute::GroupItemPtr Attribute::findGroup(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<GroupItem>(this->find(nameStr)); }
+smtk::attribute::ConstGroupItemPtr Attribute::findGroup(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const GroupItem>(this->find(nameStr)); }
 
-smtk::attribute::RefItemPtr Attribute::findRef(const std::string &name)
-{ return smtk::dynamic_pointer_cast<RefItem>(this->find(name)); }
-smtk::attribute::ConstRefItemPtr Attribute::findRef(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const RefItem>(this->find(name)); }
+smtk::attribute::RefItemPtr Attribute::findRef(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<RefItem>(this->find(nameStr)); }
+smtk::attribute::ConstRefItemPtr Attribute::findRef(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const RefItem>(this->find(nameStr)); }
 
-smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string &name)
-{ return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(name)); }
-smtk::attribute::ConstModelEntityItemPtr Attribute::findModelEntity(const std::string &name) const
-{ return smtk::dynamic_pointer_cast<const ModelEntityItem>(this->find(name)); }
+smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string &nameStr)
+{ return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(nameStr)); }
+smtk::attribute::ConstModelEntityItemPtr Attribute::findModelEntity(const std::string &nameStr) const
+{ return smtk::dynamic_pointer_cast<const ModelEntityItem>(this->find(nameStr)); }
