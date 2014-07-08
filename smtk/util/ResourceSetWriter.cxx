@@ -22,7 +22,7 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "ResourceSetWriter.h"
 #define PUGIXML_HEADER_ONLY
-#include "pugixml-1.2/src/pugixml.hpp"
+#include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/Manager.h"
 #include "smtk/util/AttributeWriter.h"
 #include "smtk/util/XmlV1StringWriter.h"
