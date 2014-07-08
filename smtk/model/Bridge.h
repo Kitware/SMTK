@@ -5,7 +5,8 @@
 #include "smtk/util/SharedFromThis.h"
 #include "smtk/util/SystemConfig.h"
 
-#include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
+#include "smtk/attribute/Manager.h"
+
 #include "smtk/SharedPtr.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -59,23 +60,23 @@ enum BridgedInformation
 typedef unsigned long BridgedInfoBits;
 
 /**\brief Declare that a class implements a bridge to a solid modeling kernel.
- *
- * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
- * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
- * Note that you must invoke this macro in the global namespace!
- *
- * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
- *
- * This macro takes 3 arguments:
- *
- * \a Comp      - A "short" name for the bridge. This is used as part of several function
- *                names, so it must be a valid variable name and should *not* be in quotes.
- * \a FileTypes - a pointer to a NULL-terminated array of strings containing file types
- *                that the bridge supports. Each type may be followed by a parentetical
- *                description of the file type, e.g., { "*.json (Native SMTK model)", NULL }.
- * \a Cls       - The name of the bridge class. The class must have a static method named
- *                "create" that constructs and instance and returns a shared pointer to it.
- */
+  *
+  * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
+  * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
+  * Note that you must invoke this macro in the global namespace!
+  *
+  * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
+  *
+  * This macro takes 3 arguments:
+  *
+  * \a Comp      - A "short" name for the bridge. This is used as part of several function
+  *                names, so it must be a valid variable name and should *not* be in quotes.
+  * \a FileTypes - A pointer to a NULL-terminated array of strings containing file types
+  *                that the bridge supports. Each type may be followed by a parentetical
+  *                description of the file type, e.g., { "*.json (Native SMTK model)", NULL }.
+  * \a Cls       - The name of the bridge class. The class must have a static method named
+  *                "create" that constructs and instance and returns a shared pointer to it.
+  */
 #define smtkImplementsModelingKernel(Comp, FileTypes, Cls) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::BridgePtr baseCreate() { \
@@ -98,8 +99,61 @@ typedef unsigned long BridgedInfoBits;
       std::vector<std::string>(), \
       NULL); \
   } \
-  /* Declare the component name */ \
-  std::string Cls ::bridgeName(#Comp)
+  /**\brief Declare the component name */ \
+  std::string Cls ::bridgeName(#Comp); \
+  /**\brief Declare the class name */ \
+  std::string Cls ::className() const { return #Cls ; }; \
+  /**\brief Declare the map of operator constructors */ \
+  smtk::model::OperatorConstructors* Cls ::s_operators = NULL; \
+  /**\brief Virtual method to allow operators to register themselves with us */ \
+  bool Cls ::registerOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor) \
+  { \
+    return Cls ::registerStaticOperator(opName, opDescrXML, opCtor); \
+  } \
+  /**\brief Allow operators to register themselves with us */ \
+  bool Cls ::registerStaticOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor) \
+  { \
+  if (!Cls ::s_operators) \
+    { \
+    Cls ::s_operators = new smtk::model::OperatorConstructors; \
+    atexit(Cls ::cleanupOperators); \
+    } \
+  if (!opName.empty() && opCtor) \
+    { \
+    smtk::model::StaticOperatorInfo entry(opDescrXML ? opDescrXML : "",opCtor); \
+    (* Cls ::s_operators)[opName] = entry; \
+    return true; \
+    } \
+  else if (!opName.empty()) \
+    { /* unregister the operator of the given name. */ \
+    Cls ::s_operators->erase(opName); \
+    /* FIXME: We should ensure that no operator instances of this type are in */ \
+    /*        existence before allowing "unregistration" to proceed. */ \
+    } \
+  return false; \
+  } \
+  /**\brief Find an operator constructor in this subclass' static list. */ \
+  smtk::model::OperatorConstructor Cls ::findOperatorConstructor( \
+    const std::string& opName) const \
+  { \
+    return this->findOperatorConstructorInternal(opName, Cls ::s_operators); \
+  } \
+  /**\brief Find an XML description of an operator in this subclass' static list. */ \
+  std::string Cls ::findOperatorXML(const std::string& opName) const \
+  { \
+    return this->findOperatorXMLInternal(opName, Cls ::s_operators); \
+  } \
+  /**\brief Called to delete registered operator map at exit. */ \
+  void Cls ::cleanupOperators() \
+  { \
+    delete Cls ::s_operators; \
+    Cls ::s_operators = NULL; \
+  } \
+  smtkComponentInitMacro(smtk_ ##Comp## _bridge);
 
 /**\brief Boilerplate for classes that bridge to a solid modeling kernel.
  *
@@ -111,7 +165,21 @@ typedef unsigned long BridgedInfoBits;
  */
 #define smtkDeclareModelingKernel() \
   static std::string bridgeName; \
-  virtual std::string name() const { return bridgeName; }
+  virtual std::string name() const { return bridgeName; } \
+  virtual std::string className() const; \
+protected: \
+  static void cleanupOperators(); \
+  static smtk::model::OperatorConstructors* s_operators; \
+public: \
+  virtual bool registerOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor); \
+  static bool registerStaticOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor); \
+  virtual std::string findOperatorXML(const std::string& opName) const; \
+  virtual smtk::model::OperatorConstructor findOperatorConstructor( \
+    const std::string& opName) const;
 
 /**\brief A base class for bridging modelers into SMTK.
   *
@@ -120,11 +188,17 @@ typedef unsigned long BridgedInfoBits;
   * Either the bridge or the foreign modeler must provide techniques
   * for attaching UUIDs to foreign model entities and for obtaining
   * notification when foreign model entities are modified or
-  * destroyed. In extreme cases, SMTK Manager must be reset after
+  * destroyed. In extreme cases, the SMTK model manager must be reset after
   * each modeling operation to guarantee a consistent model.
   *
   * Bridges may provide SMTK with Operators that can be used to
   * modify models in storage.
+  * Operators have two parts: (1) a concrete subclass of smtk::model::Operator
+  * that implements the modeling operation using the "foreign" modeling
+  * kernel, and (2) a pair of smtk::attribute::Definition instances that
+  * define the structure of operator parameters and results.
+  * The latter Definition instances are kept inside an attribute manager
+  * owned by the Bridge; you can access it with smtk::Bridge::operatorManager().
   *
   * Register an instance of a Bridge subclass to a
   * model with Manager::bridgeModel(). Then, when an
@@ -146,6 +220,7 @@ class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 public:
   smtkTypeMacro(Bridge);
   virtual std::string name() const;
+  virtual std::string className() const { return "Bridge"; }
   smtk::util::UUID sessionId() const;
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
@@ -153,26 +228,37 @@ public:
   virtual BridgedInfoBits allSupportedInformation() const;
 
   StringList operatorNames() const;
-  const Operators& operators() const;
   virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
-  virtual void addOperator(OperatorPtr op);
 
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
+
+  smtk::attribute::Manager* operatorManager();
+  const smtk::attribute::Manager* operatorManager() const;
+
+  virtual OperatorConstructor findOperatorConstructor(const std::string&) const
+    { return OperatorConstructor(); }
+  virtual std::string findOperatorXML(const std::string&) const
+    { return std::string(); }
 
 protected:
   friend class ExportJSON;
   friend class ImportJSON;
 
   Bridge();
+  virtual ~Bridge();
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   void setSessionId(const smtk::util::UUID& sessId);
 
+  void initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass = false);
+  virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
+  virtual std::string findOperatorXMLInternal(const std::string&, const OperatorConstructors* opList) const;
+
   DanglingEntities m_dangling;
-  Operators m_operators;
   smtk::util::UUID m_sessionId;
+  smtk::attribute::Manager* m_operatorMgr;
 };
 
   } // namespace model

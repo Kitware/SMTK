@@ -41,6 +41,7 @@ namespace smtk
     {
       friend class StringItemDefinition;
     public:
+      smtkTypeMacro(StringItem);
       virtual ~StringItem();
       virtual Item::Type type() const;
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,

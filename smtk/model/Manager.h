@@ -52,6 +52,9 @@ public:
 
   smtk::attribute::Manager* attributeManager() const;
 
+  template<typename Collection>
+  Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
+
   virtual bool erase(const smtk::util::UUID& uid);
 
   tess_iter_type setTessellation(const smtk::util::UUID& cellId, const Tessellation& geom);
@@ -188,6 +191,20 @@ protected:
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::attribute::Manager* m_attributeManager;
 };
+
+template<typename Collection>
+Collection Manager::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)
+{
+  smtk::util::UUIDs matches = this->entitiesMatchingFlags(mask, exactMatch);
+  Collection collection;
+  for (smtk::util::UUIDs::iterator it = matches.begin(); it != matches.end(); ++it)
+    {
+    typename Collection::value_type entry(shared_from_this(), *it);
+    if (entry.isValid())
+      collection.insert(collection.end(), entry);
+    }
+  return collection;
+}
 
   } // model namespace
 } // smtk namespace

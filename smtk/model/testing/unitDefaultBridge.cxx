@@ -1,4 +1,13 @@
-#include "smtk/util/AutoInit.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/DirectoryItem.h"
+#include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Bridge.h"
 #include "smtk/model/DefaultBridge.h"
@@ -6,10 +15,10 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
-#include "smtk/model/OperatorResult.h"
-#include "smtk/model/Parameter.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/Manager.h"
+
+#include "smtk/util/AutoInit.h"
 
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
@@ -18,97 +27,100 @@
 
 #include "cJSON.h"
 
+#include "unitForwardingOperator_xml.h"
+
 using namespace smtk::model;
 using smtk::util::UUID;
 using smtk::util::UUIDs;
 using smtk::util::UUIDGenerator;
+using smtk::model::FloatList;
+using smtk::model::StringList;
+using smtk::model::IntegerList;
 
-template<typename T>
-static void printVec(const std::vector<T>& v, const char* typeName, char sep = '\0')
+namespace {
+
+template<class T>
+void printItem(typename T::Ptr item, const std::string& tname)
 {
-  if (v.empty()) return;
-  std::cout << " " << typeName << "(" << v.size() << "): [";
-  std::cout << " " << v[0];
-  if (sep)
-    for (typename std::vector<T>::size_type i = 1; i < v.size(); ++i)
-      std::cout << sep << " " << v[i];
-  else
-    for (typename std::vector<T>::size_type i = 1; i < v.size(); ++i)
-      std::cout << " " << v[i];
+  std::cout << (item->name().empty() ? "(null)" : item->name()) << ":";
+  std::size_t ne = item->numberOfValues();
+  std::cout << " " << tname << " (" << ne << ") [";
+  for (std::size_t e = 0; e < ne; ++e)
+    {
+    std::cout << " " << item->value(e);
+    }
   std::cout << " ]";
 }
 
-static void printParam(const Parameter& param)
+template<>
+void printItem<smtk::attribute::GroupItem>(smtk::attribute::GroupItem::Ptr item, const std::string& tname)
 {
-  std::cout << (param.name().empty() ? "(null)" : param.name()) << ":";
-  printVec(param.integerValues(), "i");
-  printVec(param.floatValues(), "f");
-  printVec(param.stringValues(), "s");
-  printVec(param.uuidValues(), "u");
+  std::cout << (item->name().empty() ? "(null)" : item->name()) << ":";
+  std::cout << " " << tname << " ";
 }
 
-static void printParams(const Parameters& params, const std::string& msg)
+template<>
+void printItem<smtk::attribute::VoidItem>(smtk::attribute::VoidItem::Ptr item, const std::string& tname)
+{
+  std::cout << (item->name().empty() ? "(null)" : item->name()) << ":";
+  std::cout << " " << tname << " ";
+}
+
+} // anonymous namespace
+
+#define smtkAttributeItemTypeCase(ENUM, CLASSNAME, ENTRYTYPE, ITEM, CODE) \
+  case smtk::attribute::Item:: ENUM : \
+    { \
+    smtk::attribute:: CLASSNAME ::Ptr typedItem = \
+      smtk::dynamic_pointer_cast<smtk::attribute:: CLASSNAME >( ITEM ); \
+    std::string enumName( # ENUM ); \
+    typedef smtk::attribute:: CLASSNAME ItemTType; \
+    if (typedItem) \
+      { \
+      CODE; \
+      } \
+    } \
+    break
+
+#define smtkAttributeItemTypeSwitch(CODE) \
+    smtkAttributeItemTypeCase(INT,IntItem,int,item,CODE); \
+    smtkAttributeItemTypeCase(DOUBLE,DoubleItem,double,item,CODE); \
+    smtkAttributeItemTypeCase(STRING,StringItem,std::string,item,CODE); \
+    smtkAttributeItemTypeCase(FILE,StringItem,std::string,item,CODE); \
+    smtkAttributeItemTypeCase(DIRECTORY,StringItem,std::string,item,CODE); \
+    smtkAttributeItemTypeCase(ATTRIBUTE_REF,RefItem,smtk::attribute::AttributePtr,item,CODE); \
+    smtkAttributeItemTypeCase(MODEL_ENTITY,ModelEntityItem,smtk::model::Cursor,item,CODE); \
+    smtkAttributeItemTypeCase(GROUP,GroupItem,smtk::attribute::ItemPtr,item,CODE); \
+    smtkAttributeItemTypeCase(VOID,VoidItem,void,item,CODE); \
+    default: \
+     break; \
+
+static void printParams(smtk::attribute::AttributePtr attr, const std::string& msg)
 {
   std::cout << msg << "\n";
-  Parameters::const_iterator it;
-  for (it = params.begin(); it != params.end(); ++it)
+  std::size_t ni = attr->numberOfItems();
+  for (std::size_t i = 0; i < ni; ++i)
     {
     std::cout << "  ";
-    printParam(*it);
+    smtk::attribute::ItemPtr item = attr->item(i);
+    switch (item->type())
+      {
+      smtkAttributeItemTypeSwitch(printItem<ItemTType>(typedItem, enumName));
+      }
     std::cout << "\n";
     }
 }
 
-class TestForwardingOperator : public Operator
-{
-public:
-  smtkTypeMacro(TestForwardingOperator);
-  smtkCreateMacro(TestForwardingOperator);
-  smtkSharedFromThisMacro(Operator);
-
-  TestForwardingOperator()
-    {
-    this->setParameter(Parameter("addToCount", Integer(0)));
-    }
-  virtual std::string name() const { return "forwarding operator"; }
-  virtual bool ableToOperate()
-    {
-    return this->hasIntegerParameter("addToCount", 1, 1, true);
-    }
-  virtual OperatorPtr clone() const
-    { return create()->cloneInternal(shared_from_this()); }
-
-protected:
-  virtual OperatorResult operateInternal()
-    {
-    printParams(this->parameters(), "actual input");
-    this->s_state +=
-      this->parameter("addToCount").integerValues()[0];
-    OperatorResult result(OPERATION_SUCCEEDED);
-    result.setParameter(Parameter("state",this->s_state));
-    printParams(result.parameters(), "actual output");
-    return result;
-    }
-
-  // Note that any state to be preserved between
-  // invocations of the operator must be kept in
-  // smtk::model::Manager or class static. This is
-  // because the operator is cloned from a master
-  // each time it is requested and the clone is
-  // not given a chance to update the master held
-  // by the Bridge after it has executed.
-  static Integer s_state;
-};
-
-Integer TestForwardingOperator::s_state = 1;
-
+// Implement a forwarding bridge that does no communication.
+// Instead, it just copies operator parameters _to_ a "remote"
+// bridge and results back _from_ the "remote" bridge.
 class TestForwardingBridge : public smtk::model::DefaultBridge
 {
 public:
-  smtkTypeMacro(TestForwardingBridge);
-  smtkCreateMacro(TestForwardingBridge);
-  smtkSharedFromThisMacro(Bridge);
-  //smtkDeclareModelingKernel();
+  smtkTypeMacro(TestForwardingBridge); // Provides typedefs for Ptr, SelfType, ...
+  smtkCreateMacro(TestForwardingBridge); // Provides static create() method
+  smtkSharedFromThisMacro(Bridge); // Provides shared_from_this() method
+  smtkDeclareModelingKernel(); // Declares name() and utility methods/members.
 
   smtk::model::Manager::Ptr remoteModel;
   smtk::model::Bridge::Ptr remoteBridge;
@@ -139,28 +151,117 @@ public:
     }
 
 protected:
+  TestForwardingBridge()
+    {
+    this->initializeOperatorManager(TestForwardingBridge::s_operators);
+    }
+
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
     {
     return remoteBridge->transcribe(Cursor(remoteModel, entity.entity()), flags);
     }
+
   virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr oper)
     {
     OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
-    remOp->setParameters(oper->parameters());
-    OperatorResult result(remOp->ableToOperate() ? OPERATION_SUCCEEDED : OPERATION_FAILED);
-    result.setParameters(remOp->parameters());
+    remOp->setSpecification(remoteBridge->operatorManager()->copyAttribute(oper->specification()));
+    OperatorResult result =
+      remOp->createResult(remOp->ableToOperate() ? OPERATION_SUCCEEDED : OPERATION_FAILED);
+    // FIXME: How should the remote operator provide validated parameters?
+    //        Should Operator::ableToOperate() return an OperatorResult instead of bool?
     return result;
     }
-  virtual OperatorResult operateDelegate(RemoteOperatorPtr oper)
+
+  virtual OperatorResult operateDelegate(RemoteOperatorPtr localOp)
     {
-    printParams(oper->parameters(), "local input");
-    OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
-    remOp->setParameters(oper->parameters());
-    OperatorResult result = remOp->operate();
-    printParams(result.parameters(), "local output");
-    return result;
+    printParams(localOp->specification(), "local input");
+    OperatorPtr remOp = remoteBridge->op(localOp->name(), remoteModel);
+    remOp->setSpecification(remoteBridge->operatorManager()->copyAttribute(localOp->specification()));
+    OperatorResult remResult = remOp->operate();
+    OperatorResult localResult = this->operatorManager()->copyAttribute(remResult);
+
+    // Kill remote operator and result.
+    remOp->bridge()->operatorManager()->removeAttribute(remOp->specification());
+    remResult->manager()->removeAttribute(remResult);
+
+    printParams(localResult, "local output");
+    return localResult;
     }
 };
+const char* noFileTypes[] = {
+  NULL
+};
+smtkImplementsModelingKernel(forwarding, noFileTypes, TestForwardingBridge);
+
+class TestForwardingOperator : public Operator
+{
+public:
+  smtkTypeMacro(TestForwardingOperator);
+  smtkCreateMacro(TestForwardingOperator);
+  smtkSharedFromThisMacro(Operator);
+  smtkDeclareModelOperator();
+
+
+  virtual bool ableToOperate()
+    {
+    if (!this->ensureSpecification())
+      return false;
+
+    if (!this->specification()->isValid())
+      return false;
+
+    if (!this->specification()->find("addToCount")->isEnabled())
+      {
+      return false;
+      }
+
+    return true;
+    }
+
+protected:
+  TestForwardingOperator() { }
+
+  virtual OperatorResult operateInternal()
+    {
+    printParams(this->specification(), "actual input");
+
+    OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
+    this->s_state += this->specification()->findInt("addToCount")->value();
+    result->findInt("state")->setValue(this->s_state);
+
+    printParams(result, "actual output");
+    return result;
+    }
+
+  // Note that any state to be preserved between
+  // invocations of the operator must be kept in
+  // smtk::model::Manager or class static. This is
+  // because the operator is created by the bridge
+  // each time it is requested.
+  static Integer s_state;
+};
+smtkImplementsModelOperator(
+  TestForwardingOperator, forwarding,
+  "forwarding operator", unitForwardingOperator_xml,
+  smtk::model::DefaultBridge); //TestForwardingBridge);
+
+Integer TestForwardingOperator::s_state = 1;
+
+void printBridgeOperatorNames(BridgePtr br, const std::string& msg)
+{
+  StringList opNames = br->operatorNames();
+  StringList::const_iterator it;
+  std::cout << "Bridge \"" << br->name() << "\" [" << br->className() << ", " << msg << "] operators:\n";
+  for (it = opNames.begin(); it != opNames.end(); ++it)
+    {
+    smtk::model::OperatorPtr op = br->op(*it, smtk::model::ManagerPtr());
+    std::cout
+      << "  " << *it
+      << " [" << op->className() << "]"
+      << "\n";
+    }
+  std::cout << "\n";
+}
 
 // Test remote bridging: create 2 model::Manager instances,
 // add a native operator to manager A's "native" bridge,
@@ -177,14 +278,12 @@ int main()
   try {
 
     // Create the managers
-    Manager::Ptr remoteMgr = Manager::create();
-    Manager::Ptr localMgr = Manager::create();
+    smtk::model::Manager::Ptr remoteMgr = smtk::model::Manager::create();
+    smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
 
-    // Create the native operator
-    TestForwardingOperator::Ptr nativeOp = TestForwardingOperator::create();
-    // Add the operator to the default bridge of the "remote" manager.
+    // The default bridge of the "remote" manager:
     Bridge::Ptr remoteBridge = remoteMgr->bridgeForModel(smtk::util::UUID::null());
-    remoteBridge->addOperator(nativeOp);
+    printBridgeOperatorNames(remoteBridge, "remote");
 
     // Now we want to mirror the remote manager locally.
     // Serialize the "remote" bridge session:
@@ -194,30 +293,57 @@ int main()
     TestForwardingBridge::Ptr localBridge = TestForwardingBridge::create();
     localBridge->remoteBridge = remoteBridge;
     localBridge->remoteModel = remoteMgr;
+    test(localBridge->operatorNames().size() == 0, "Forwarding bridge should have no operators by default.");
+    printBridgeOperatorNames(localBridge, "local, pre-import");
     ImportJSON::ofRemoteBridgeSession(sessJSON->child, localBridge, localMgr);
+    printBridgeOperatorNames(localBridge, "local, post-import");
+    test(localBridge->operatorNames().size() == remoteBridge->operatorNames().size(),
+      "Forwarding bridge operator count should match remote bridge after import.");
 
     // Run the local operator.
     // Examine the remote version to verify the operation was forwarded.
     OperatorPtr localOp = localBridge->op("forwarding operator", localMgr);
-    localOp->setParameter("addToCount", Integer(2));
+    test(
+      smtk::dynamic_pointer_cast<smtk::model::RemoteOperator>(localOp) ?
+      true : false, "Local forwarding operator was not an instance of RemoteOperator.");
+    test(
+      localOp->className() == "smtk::model::RemoteOperator",
+      "Local operator did not return expected className() \"smtk::model::RemoteOperator\"");
+    test(
+      !localOp->specification(),
+      "Local operator had a default specification. Expected a null shared pointer.");
+    localOp->ensureSpecification();
+    test(
+      !!localOp->specification(),
+      "Local operator's ensureSpecification did not work.");
+    localOp->specification()->findInt("addToCount")->setValue(2);
+    test(
+      localOp->specification()->findInt("addToCount")->value() == 2,
+      "Setting a valid parameter had no effect.");
     OperatorResult localResult = localOp->operate();
 
-    test(localResult.outcome() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
-    test(localResult.parameter("state").integerValues()[0] == 3, "Operation should have yielded state == 3.");
+    test(localResult->findInt("outcome")->value() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
+    test(localResult->findInt("state")->value() == 3, "Operation should have yielded state == 3.");
 
-    std::cout << "\n\n\n";
+    std::cout << "\n---\n\n";
 
     // Rerun the local operator.
-    localResult = localOp->setParameter("addToCount", Integer(8))->operate();
-
-    test(localResult.outcome() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
-    test(localResult.parameter("state").integerValues()[0] == 11, "Operation should have yielded state == 11.");
-
-    // Rerun the local operator but with an improper input (lacking a required parameter)
-    localOp->removeParameter("addToCount");
+    localOp->specification()->findInt("addToCount")->setValue(8);
     localResult = localOp->operate();
 
-    test(localResult.outcome() == UNABLE_TO_OPERATE, "Operation should have been unable to execute.");
+    test(localResult->findInt("outcome")->value() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
+    test(localResult->findInt("state")->value() == 11, "Operation should have yielded state == 11.");
+
+    // Rerun the local operator but with an "improper" input (disabling a parameter that really
+    // shouldn't be optional is a surrogate for situations where an operator may be unable to run)
+    // This also tests the setParameterEnabled method.
+    test(localOp->specification()->find("addToCount")->isOptional(), "Expected optional \"addToCount\".");
+
+    localOp->specification()->findInt("addToCount")->setIsEnabled(false);
+    test(!localOp->specification()->find("addToCount")->isEnabled(), "Did not disable \"addToCount\".");
+    localResult = localOp->operate();
+
+    test(localResult->findInt("outcome")->value() == UNABLE_TO_OPERATE, "Operator should have been unable to execute.");
 
     // Test transferring remote dangling entity list to local bridge.
     // (As a precursor to a full implementation of TestForwardingBridge::transcribeInternal)

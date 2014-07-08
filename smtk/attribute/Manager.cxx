@@ -637,8 +637,6 @@ Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef)
 bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
                                  smtk::attribute::ItemDefinition::CopyInfo& info)
 {
-  bool ok = true;
-
   // Check for type conflict
   std::string typeName = sourceDef->type();
   if (this->findDefinition(typeName))

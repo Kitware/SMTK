@@ -19,6 +19,7 @@ class SMTKCORE_EXPORT SimpleModelSubphrases : public SubphraseGenerator
 public:
   smtkTypeMacro(SimpleModelSubphrases);
   smtkSharedPtrCreateMacro(SubphraseGenerator);
+  virtual ~SimpleModelSubphrases() { }
 
   virtual DescriptivePhrases subphrases(DescriptivePhrase::Ptr src);
   virtual bool shouldOmitProperty(

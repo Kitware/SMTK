@@ -895,7 +895,7 @@ void XmlV1StringWriter::processAttribute(xml_node &attributes,
     smtk::model::ManagerPtr storage = att->modelManager();
     for (it = associatedEntities.begin(); it != associatedEntities.end(); ++it)
       {
-      xml_node assocNode = assocsNode.append_child("MODEL_ENTITY");
+      xml_node assocNode = assocsNode.append_child("ModelEntity");
       // Save the entity name, but only if one exists.
       // NB: Do not replace with a call to storage->name(*it),
       //     even though it is much simpler, as that method

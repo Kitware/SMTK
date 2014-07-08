@@ -132,16 +132,9 @@ typedef std::pair<ManagerEventType,OneToManyObserver> OneToManyTrigger;
   */
 enum OperatorEventType
 {
-  PARAMETER_CHANGE,   //!< A parameter has been modified
   WILL_OPERATE,       //!< The operation will commence if no observers cancel it.
   DID_OPERATE         //!< The operation has completed or been canceled.
 };
-
-/// Callbacks for operator PARAMETER_CHANGE events.
-typedef int (*ParameterChangeCallback)(
-  OperatorEventType event, const Operator& op, const Parameter& oldValue, const Parameter& newValue, void* user);
-/// An observer of PARAMETER_CHANGE events binds a callback and opaque, user-provided data.
-typedef std::pair<ParameterChangeCallback,void*> ParameterChangeObserver;
 
 /// Callbacks for WILL_OPERATE events provide access to the operator. Returning non-zero values cancel the operation.
 typedef int (*WillOperateCallback)(
@@ -151,7 +144,7 @@ typedef std::pair<WillOperateCallback,void*> WillOperateObserver;
 
 /// Callbacks for DID_OPERATE events provide access to the operator and the results of the operation. Return values are ignored.
 typedef int (*DidOperateCallback)(
-  OperatorEventType event, const Operator& op, const OperatorResult& r, void* user);
+  OperatorEventType event, const Operator& op, OperatorResult r, void* user);
 /// An observer of DID_OPERATE events binds a callback and opaque, user-provided data.
 typedef std::pair<DidOperateCallback,void*> DidOperateObserver;
 

@@ -98,6 +98,7 @@ function(smtk_prepend_string prefix result)
   set(${result} ${newNames} PARENT_SCOPE)
 endfunction(smtk_prepend_string)
 
+include(SMTKOperatorXML)
 
 # Builds source groups for the smtk files so that they show up nicely in
 # Visual Studio.

@@ -37,6 +37,7 @@ namespace smtk
       public ValueItemDefinitionTemplate<double>
     {
     public:
+      smtkTypeMacro(DoubleItemDefinition);
       static smtk::attribute::DoubleItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::DoubleItemDefinitionPtr(new DoubleItemDefinition(myName));}
 

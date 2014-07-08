@@ -12,7 +12,6 @@ namespace smtk {
   namespace model {
 
 class Manager;
-class OperatorResult;
 
 /**\brief Import an SMTK model from JSON data.
   *
@@ -34,7 +33,7 @@ public:
   static int ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofRemoteBridgeSession(cJSON*, DefaultBridgePtr destBridge, ManagerPtr context);
   static int ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context);
-  static int ofOperatorResult(cJSON* node, OperatorResult& op);
+  static int ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::Manager* opMgr);
   static int ofDanglingEntities(cJSON* node, ManagerPtr context);
 
   // Low-level helpers:

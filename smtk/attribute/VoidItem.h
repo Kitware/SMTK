@@ -41,6 +41,7 @@ namespace smtk
     {
     friend class VoidItemDefinition;
     public:
+      smtkTypeMacro(VoidItem);
       virtual ~VoidItem();
       virtual Item::Type type() const;
 

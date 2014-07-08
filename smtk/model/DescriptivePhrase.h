@@ -63,6 +63,8 @@ class SMTKCORE_EXPORT DescriptivePhrase : smtkEnableSharedPtr(DescriptivePhrase)
 {
 public:
   smtkTypeMacro(DescriptivePhrase);
+  virtual ~DescriptivePhrase() { }
+
   Ptr setup(DescriptivePhraseType phraseType, Ptr parent = Ptr());
   Ptr setDelegate(SubphraseGeneratorPtr delegate);
 

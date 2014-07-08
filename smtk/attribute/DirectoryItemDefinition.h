@@ -41,6 +41,7 @@ namespace smtk
       public ItemDefinition
     {
     public:
+      smtkTypeMacro(DirectoryItemDefinition);
       static smtk::attribute::DirectoryItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::DirectoryItemDefinitionPtr(new DirectoryItemDefinition(myName));}
 

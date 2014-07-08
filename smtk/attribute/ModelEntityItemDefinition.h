@@ -39,6 +39,7 @@ namespace smtk
 class SMTKCORE_EXPORT ModelEntityItemDefinition : public ItemDefinition
 {
 public:
+  smtkTypeMacro(ModelEntityItemDefinition);
   static smtk::attribute::ModelEntityItemDefinitionPtr New(const std::string& sname)
     { return smtk::attribute::ModelEntityItemDefinitionPtr(new ModelEntityItemDefinition(sname));}
 

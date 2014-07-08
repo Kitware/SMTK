@@ -32,7 +32,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/attribute/Item.h" // Needed for Item Types
+#include "smtk/util/SharedFromThis.h" // For smtkTypeMacro.
+#include "smtk/attribute/Item.h" // For Item Types.
 
 #include <queue>
 #include <string>
@@ -53,6 +54,7 @@ namespace smtk
       friend class smtk::attribute::GroupItemDefinition;
       friend class smtk::attribute::ValueItemDefinition;
     public:
+      smtkTypeMacro(ItemDefinition);
       // Temp structure used for copying definitions
       struct CopyInfo
       {

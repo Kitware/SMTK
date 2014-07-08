@@ -41,6 +41,7 @@ namespace smtk
       public ItemDefinition
     {
     public:
+      smtkTypeMacro(RefItemDefinition);
       static smtk::attribute::RefItemDefinitionPtr New(const std::string &myName)
       { return smtk::attribute::RefItemDefinitionPtr(new RefItemDefinition(myName));}
 

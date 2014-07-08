@@ -281,6 +281,11 @@ function(sbk_wrap_library NAME)
     ${SHIBOKEN_LIBRARY}
     ${_extra_link_libraries}
   )
+  # Avoid generating warnings from generated code.
+  if (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set_target_properties(${_pyname} PROPERTIES COMPILE_FLAGS " -Wno-cast-qual -Wno-missing-field-initializers -Wno-unused-function -Wno-unused-parameter -Wno-overloaded-virtual")
+  endif()
+
 
   INSTALL(TARGETS ${_pyname} RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 

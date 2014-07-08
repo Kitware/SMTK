@@ -44,6 +44,7 @@ namespace smtk
       friend class RefItemDefinition;
       friend class ValueItemDefinition;
     public:
+      smtkTypeMacro(RefItem);
       virtual ~RefItem();
       virtual Item::Type type() const;
       std::size_t numberOfValues() const

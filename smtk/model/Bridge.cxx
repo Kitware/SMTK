@@ -1,12 +1,33 @@
 #include "smtk/model/Bridge.h"
 
+#include "smtk/model/RemoteOperator.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/Manager.h"
+
+#include "smtk/util/AttributeReader.h"
+#include "smtk/util/Logger.h"
+
+using smtk::attribute::Definition;
+using smtk::attribute::IntItemDefinition;
+using smtk::attribute::RefItemDefinition;
+
 namespace smtk {
   namespace model {
 
 /// Default constructor. This assigns a random session ID to each Bridge instance.
 Bridge::Bridge()
-  : m_sessionId(smtk::util::UUID::random())
+  : m_sessionId(smtk::util::UUID::random()), m_operatorMgr(NULL)
 {
+}
+
+/// Destructor. We must delete the attribute manager that tracks operator definitions.
+Bridge::~Bridge()
+{
+  delete this->m_operatorMgr;
 }
 
 /**\brief Return the name of the bridge type (i.e., the name of the modeling kernel).
@@ -89,43 +110,39 @@ BridgedInfoBits Bridge::allSupportedInformation() const
 /// Return a list of names of solid-model operators available.
 StringList Bridge::operatorNames() const
 {
-  StringList result;
-  for (Operators::const_iterator it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
-    {
-    result.push_back((*it)->name());
-    }
-  return result;
-}
+  std::vector<smtk::attribute::DefinitionPtr> ops;
+  this->m_operatorMgr->derivedDefinitions(
+    this->m_operatorMgr->findDefinition("operator"), ops);
 
-/// Return the list of solid-model operators available.
-const Operators& Bridge::operators() const
-{
-  return this->m_operators;
+  StringList nameList;
+  std::vector<smtk::attribute::DefinitionPtr>::iterator it;
+  for (it = ops.begin(); it != ops.end(); ++it)
+    nameList.push_back((*it)->type());
+  return nameList;
 }
 
 OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
 {
-  Operators::const_iterator it;
-  for (it = this->m_operators.begin(); it != this->m_operators.end(); ++it)
-    {
-    if ((*it)->name() == opName)
-      return (*it)->clone()->setManager(manager);
-    }
-  return OperatorPtr();
-}
+  OperatorPtr oper;
+  if (opName.empty())
+    return oper;
 
-/**\brief Add a solid-model operator to this bridge.
-  *
-  * Subclasses of Bridge should call this method in their
-  * constructors to indicate which modeling operations they will support.
-  *
-  * Note that Operators store a pointer to the bridge, not a
-  * shared pointer, to avoid a reference loop (and allow
-  * addOperator to be called inside the constructor).
-  */
-void Bridge::addOperator(OperatorPtr oper)
-{
-  this->m_operators.insert(oper->clone()->setBridge(this));
+  OperatorConstructor ctor = this->findOperatorConstructor(opName);
+  if (!ctor)
+    return oper;
+
+  oper = ctor();
+  if (!oper)
+    return oper;
+
+  oper->setBridge(const_cast<Bridge*>(this));
+  oper->setManager(manager);
+
+  RemoteOperator::Ptr remoteOp = smtk::dynamic_pointer_cast<RemoteOperator>(oper);
+  if (remoteOp)
+    remoteOp->setName(opName);
+
+  return oper;
 }
 
 /// Return the map from dangling cursors to bits describing their partial transcription state.
@@ -153,6 +170,23 @@ void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
     this->m_dangling[ent] = present;
 }
 
+/** @name Operator Manager
+  *\brief Return this bridge's internal attribute manager, used to describe operators.
+  *
+  * Each operator should have a definition of the same name held in this manager.
+  */
+///@{
+smtk::attribute::Manager* Bridge::operatorManager()
+{
+  return this->m_operatorMgr;
+}
+
+const smtk::attribute::Manager* Bridge::operatorManager() const
+{
+  return this->m_operatorMgr;
+}
+///@}
+
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
   *
   * Subclasses must override this method.
@@ -179,6 +213,106 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
 void Bridge::setSessionId(const smtk::util::UUID& sessId)
 {
   this->m_sessionId = sessId;
+}
+
+/**\brief Subclasses must call this method from within their constructors.
+  *
+  * Each subclass has (by virtue of invoking the smtkDeclareModelOperator
+  * and smtkImplementsModelOperator macros) a static map from operator
+  * names to constructors and XML descriptions. That map is named
+  * s_operators and should be passed to this method in the constructor
+  * of the subclass (since the base class does not have access to the map).
+  *
+  * This method traverses the XML descriptions and imports each into
+  * the bridge's attribute manager.
+  */
+void Bridge::initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass)
+{
+  // Subclasses may already have initialized
+  if (this->m_operatorMgr && !inheritSubclass)
+    {
+    delete this->m_operatorMgr;
+    this->m_operatorMgr = NULL;
+    }
+
+  if (!this->m_operatorMgr)
+    {
+    this->m_operatorMgr = new smtk::attribute::Manager;
+
+    // Create the "base" definitions that all operators and results will inherit.
+    this->m_operatorMgr->createDefinition("operator");
+    Definition::Ptr defn = this->m_operatorMgr->createDefinition("result");
+    IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
+    RefItemDefinition::Ptr paramsDefn = RefItemDefinition::New("validated parameters");
+    outcomeDefn->setNumberOfRequiredValues(1);
+    outcomeDefn->setIsOptional(false);
+    paramsDefn->setIsOptional(true);
+    defn->addItemDefinition(outcomeDefn);
+    defn->addItemDefinition(paramsDefn);
+    }
+
+  if (!opList) return;
+
+  smtk::util::Logger log;
+  smtk::util::AttributeReader rdr;
+  OperatorConstructors::const_iterator it;
+  bool ok = true;
+  for (it = opList->begin(); it != opList->end(); ++it)
+    {
+    if (it->second.first.empty())
+      continue;
+
+    ok &= !rdr.readContents(
+      *this->m_operatorMgr,
+      it->second.first.c_str(), it->second.first.size(),
+      log);
+    }
+  if (!ok)
+    {
+    std::cerr
+      << "Error. Log follows:\n---\n"
+      << log.convertToString()
+      << "\n---\n";
+    }
+}
+
+/**\brief A convenience method used by subclass findOperatorXML methods.
+  */
+std::string Bridge::findOperatorXMLInternal(
+  const std::string& opName,
+  const OperatorConstructors* opList) const
+{
+  std::string xml;
+  if (!opList)
+    { // No operators registered.
+    return xml;
+    }
+  smtk::model::OperatorConstructors::const_iterator it =
+    opList->find(opName);
+  if (it == opList->end())
+    { // No matching operator.
+    return xml;
+    }
+  return it->second.first;
+}
+
+/**\brief A convenience method used by subclass findOperatorConstructor methods.
+  */
+OperatorConstructor Bridge::findOperatorConstructorInternal(
+  const std::string& opName,
+  const OperatorConstructors* opList) const
+{
+  if (!opList)
+    { // No operators registered.
+    return smtk::model::OperatorConstructor();
+    }
+  smtk::model::OperatorConstructors::const_iterator it =
+    opList->find(opName);
+  if (it == opList->end())
+    { // No matching operator.
+    return smtk::model::OperatorConstructor();
+    }
+  return it->second.second;
 }
 
   } // namespace model

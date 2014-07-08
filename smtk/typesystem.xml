@@ -12,7 +12,7 @@
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
 
-  <!-- Suppressed because they are memory varables-->
+  <!-- Suppressed because they are memory variables-->
   <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_refModelMgr' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
@@ -39,6 +39,7 @@
   <suppress-warning text="skipping function 'smtk::model::Cursor::unembedEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::Manager::entitiesMatchingFlagsAs', unmatched return type 'Collection'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
@@ -168,7 +169,7 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
 
-  <!-- ignore sundries warnings associated with attribute/definition copy methods -->
+  <!-- ignore sundry warnings associated with attribute/definition copy methods -->
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedExpItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
   <suppress-warning text="Shadowing: ValueItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const and DoubleItemDefinition::copyTo(smtk::shared_ptr&lt; smtk::attribute::ValueItemDefinition &gt; def, smtk::attribute::ItemDefinition::CopyInfo &amp; info) const" />
@@ -269,7 +270,7 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::addOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::op', unmatched return type 'smtk::model::OperatorPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::operators', unmatched return type 'smtk::model::Operators const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::operators', unmatched return type 'smtk::model::Operators'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityPhrase::SelfType&gt;'"/>
@@ -279,7 +280,6 @@
   <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::StaticBridgeInfo&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::bridgeConstructor', unmatched return type 'smtk::model::BridgeConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperators', unmatched parameter type 'smtk::model::Operators&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
 
@@ -288,6 +288,21 @@
   <suppress-warning text="template argument 'smtk::attribute::UUIDItem' of 'shared_ptr&lt; smtk::attribute::UUIDItem &gt;' is not known; not adding redirections"/>
   <suppress-warning text="type 'smtk::attribute::UUIDItem' is specified in typesystem, but not defined. This could potentially lead to compilation errors."/>
   <suppress-warning text="type 'smtk::attribute::UUIDItemDefinition' is specified in typesystem, but not defined. This could potentially lead to compilation errors."/>
+
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findInt', unmatched return type 'smtk::attribute::ConstIntItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findRef', unmatched return type 'smtk::attribute::ConstRefItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findFile', unmatched return type 'smtk::attribute::ConstFileItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDirectory', unmatched return type 'smtk::attribute::ConstDirectoryItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperatorResult', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperatorDefinitions', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDouble', unmatched return type 'smtk::attribute::ConstDoubleItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Bridge::initializeOperatorManager', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
 
 
   @EXTRA_TYPESYSTEMS@
@@ -808,16 +823,12 @@
         <include file-name="smtk/model/ExportJSON.h" location="local"/>
       </enum-type>
 
-      <enum-type name="OperatorOutcome">
-        <include file-name="smtk/model/OperatorResult.h" location="local"/>
-      </enum-type>
-
-      <enum-type name="ParameterValidState">
-        <include file-name="smtk/model/Parameter.h" location="local"/>
-      </enum-type>
-
       <enum-type name="OperatorEventType">
         <include file-name="smtk/model/Events.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="OperatorOutcome">
+        <include file-name="smtk/model/Operator.h" location="local"/>
       </enum-type>
 
       <object-type name="AttributeAssignments">

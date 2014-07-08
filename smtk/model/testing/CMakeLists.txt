@@ -21,6 +21,7 @@ target_link_libraries(unitManager SMTKCore SMTKCoreModelTesting)
 add_test(unitManager ${EXECUTABLE_OUTPUT_PATH}/unitManager)
 
 add_executable(unitOperator unitOperator.cxx)
+smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperator.sbt" unitOperatorXML)
 target_link_libraries(unitOperator SMTKCore SMTKCoreModelTesting)
 if (SMTK_BUILD_CGM)
   target_link_libraries(unitOperator cgmSMTK)
@@ -32,7 +33,9 @@ target_link_libraries(unitCursor SMTKCore SMTKCoreModelTesting)
 add_test(unitCursor ${EXECUTABLE_OUTPUT_PATH}/unitCursor)
 
 add_executable(unitDefaultBridge unitDefaultBridge.cxx)
+smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitForwardingOperator.sbt" unitOperatorXML)
 target_link_libraries(unitDefaultBridge SMTKCore SMTKCoreModelTesting)
+add_test(unitDefaultBridge ${EXECUTABLE_OUTPUT_PATH}/unitDefaultBridge)
 
 add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
 target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)

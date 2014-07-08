@@ -23,10 +23,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/RefItem.h"
+#include "smtk/attribute/ValueItem.h"
+#include "smtk/attribute/GroupItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/StringItem.h"
+#include "smtk/attribute/FileItem.h"
+#include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
+
 #include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Item.h"
@@ -125,6 +134,105 @@ bool Attribute::isMemberOf(const std::vector<std::string> &categories) const
 {
   return this->m_definition->isMemberOf(categories);
 }
+
+namespace {
+
+template<typename T>
+bool isInvalid(T itemPtr)
+{
+  if (!itemPtr)
+    return true;
+  std::size_t actual = itemPtr->numberOfValues();
+  std::size_t minNum = itemPtr->numberOfRequiredValues();
+  if (
+    actual < minNum ||
+    (minNum && actual > minNum))
+    return true;
+
+  for (std::size_t i = 0; i < actual; ++i)
+    if (!itemPtr->isSet(i))
+      return true;
+  return false;
+}
+
+template<>
+bool isInvalid<ValueItemPtr>(ValueItemPtr itemPtr)
+{
+  if (!itemPtr)
+    return true;
+  std::size_t actual = itemPtr->numberOfValues();
+  std::size_t minNum = itemPtr->numberOfRequiredValues();
+  std::size_t maxNum = itemPtr->maxNumberOfValues();
+  if (
+    actual < minNum ||
+    actual > maxNum ||
+    (maxNum == 0 && actual > minNum && !itemPtr->isExtensible()))
+    return true;
+
+  for (std::size_t i = 0; i < actual; ++i)
+    if (!itemPtr->isSet(i))
+      return true;
+  return false;
+}
+
+}
+
+/**\brief Validate the attribute against its definition.
+  *
+  * This method will only return true when every (required) item in the
+  * attribute is set and considered a valid value by its definition.
+  * This can be used to ensure that an attribute is in a good state
+  * before using it to perform some operation.
+  */
+bool Attribute::isValid()
+{
+  std::vector<smtk::attribute::ItemPtr> items;
+  this->references(items);
+  std::vector<smtk::attribute::ItemPtr>::iterator it;
+  for (it = items.begin(); it != items.end(); ++it)
+    {
+    switch ((*it)->type())
+      {
+    case Item::ATTRIBUTE_REF:
+        {
+        smtk::attribute::RefItemPtr ri =
+          smtk::dynamic_pointer_cast<smtk::attribute::RefItem>(*it);
+        if (isInvalid(ri))
+          return false;
+        }
+      break;
+    case Item::MODEL_ENTITY:
+        {
+        smtk::attribute::ModelEntityItemPtr mei =
+          smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(*it);
+        if (isInvalid(mei))
+          return false;
+        }
+      break;
+    case Item::GROUP:
+      break;
+    case Item::VOID:
+      break;
+    case Item::DOUBLE:
+    case Item::INT:
+    case Item::STRING:
+    case Item::FILE:
+    case Item::DIRECTORY:
+    case Item::COLOR:
+        {
+        smtk::attribute::ValueItemPtr vi =
+          smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(*it);
+        if (isInvalid(vi))
+          return false;
+        }
+      break;
+    default:
+      break;
+      }
+    }
+  return true;
+}
+
 //----------------------------------------------------------------------------
 Manager *Attribute::manager() const
 {
@@ -312,3 +420,42 @@ smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
   return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
 }
 //-----------------------------------------------------------------------------
+smtk::attribute::IntItemPtr Attribute::findInt(const std::string &name)
+{ return smtk::dynamic_pointer_cast<IntItem>(this->find(name)); }
+smtk::attribute::ConstIntItemPtr Attribute::findInt(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const IntItem>(this->find(name)); }
+
+smtk::attribute::DoubleItemPtr Attribute::findDouble(const std::string &name)
+{ return smtk::dynamic_pointer_cast<DoubleItem>(this->find(name)); }
+smtk::attribute::ConstDoubleItemPtr Attribute::findDouble(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const DoubleItem>(this->find(name)); }
+
+smtk::attribute::StringItemPtr Attribute::findString(const std::string &name)
+{ return smtk::dynamic_pointer_cast<StringItem>(this->find(name)); }
+smtk::attribute::ConstStringItemPtr Attribute::findString(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const StringItem>(this->find(name)); }
+
+smtk::attribute::FileItemPtr Attribute::findFile(const std::string &name)
+{ return smtk::dynamic_pointer_cast<FileItem>(this->find(name)); }
+smtk::attribute::ConstFileItemPtr Attribute::findFile(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const FileItem>(this->find(name)); }
+
+smtk::attribute::DirectoryItemPtr Attribute::findDirectory(const std::string &name)
+{ return smtk::dynamic_pointer_cast<DirectoryItem>(this->find(name)); }
+smtk::attribute::ConstDirectoryItemPtr Attribute::findDirectory(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const DirectoryItem>(this->find(name)); }
+
+smtk::attribute::GroupItemPtr Attribute::findGroup(const std::string &name)
+{ return smtk::dynamic_pointer_cast<GroupItem>(this->find(name)); }
+smtk::attribute::ConstGroupItemPtr Attribute::findGroup(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const GroupItem>(this->find(name)); }
+
+smtk::attribute::RefItemPtr Attribute::findRef(const std::string &name)
+{ return smtk::dynamic_pointer_cast<RefItem>(this->find(name)); }
+smtk::attribute::ConstRefItemPtr Attribute::findRef(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const RefItem>(this->find(name)); }
+
+smtk::attribute::ModelEntityItemPtr Attribute::findModelEntity(const std::string &name)
+{ return smtk::dynamic_pointer_cast<ModelEntityItem>(this->find(name)); }
+smtk::attribute::ConstModelEntityItemPtr Attribute::findModelEntity(const std::string &name) const
+{ return smtk::dynamic_pointer_cast<const ModelEntityItem>(this->find(name)); }

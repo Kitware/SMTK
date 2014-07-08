@@ -54,6 +54,7 @@ class SMTKCORE_EXPORT ModelEntityItem : public Item
 {
 friend class ModelEntityItemDefinition;
 public:
+  smtkTypeMacro(ModelEntityItem);
   virtual ~ModelEntityItem();
   virtual Item::Type type() const;
 
