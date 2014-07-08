@@ -101,12 +101,12 @@ OperatorPtr DefaultBridge::op(const std::string& opName, ManagerPtr manager) con
   * The DefaultBridge implementation does nothing.
   * Subclasses must override this method.
   */
-OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr op)
+OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr oper)
 {
-  if (!op)
+  if (!oper)
     return OperatorResult();
 
-  return op->createResult(UNABLE_TO_OPERATE);
+  return oper->createResult(UNABLE_TO_OPERATE);
 }
 
 /**\brief A delegate for the RemoteOperator::operate() method.
@@ -114,12 +114,12 @@ OperatorResult DefaultBridge::ableToOperateDelegate(RemoteOperatorPtr op)
   * The DefaultBridge implementation does nothing.
   * Subclasses must override this method.
   */
-OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr op)
+OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr oper)
 {
-  if (!op)
+  if (!oper)
     return OperatorResult();
 
-  return op->createResult(OPERATION_FAILED);
+  return oper->createResult(OPERATION_FAILED);
 }
 ///@}
 

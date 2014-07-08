@@ -273,12 +273,12 @@ namespace smtk
       {
       // Copy values & labels
       DataT value;
-      std::string label;
+      std::string labelStr;
       for (std::size_t i=0; i<m_discreteValues.size(); ++i)
         {
         value = m_discreteValues[i];
-        label = m_discreteValueEnums[i];
-        vdef->addDiscreteValue(value, label);
+        labelStr = m_discreteValueEnums[i];
+        vdef->addDiscreteValue(value, labelStr);
         }
       vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
       }
