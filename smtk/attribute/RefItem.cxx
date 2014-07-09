@@ -268,18 +268,18 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     {
     if (sourceRefItem->isSet(i))
       {
-      std::string name = sourceRefItem->value()->name();
-      AttributePtr att = manager->findAttribute(name);
+      std::string nameStr = sourceRefItem->value()->name();
+      AttributePtr att = manager->findAttribute(nameStr);
       if (att)
         {
         this->setValue(i, att);
         }
       else
         {
-        std::cout << "Adding  \"" << name
+        std::cout << "Adding  \"" << nameStr
                   << "\" to copy-attribute queue"
                   << std::endl;
-        Item::UnresolvedItemInfo itemInfo(name, this->pointer(), i);
+        Item::UnresolvedItemInfo itemInfo(nameStr, this->pointer(), i);
         info.UnresolvedRefItems.push(itemInfo);
         }
       }

@@ -221,8 +221,8 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     {
     if (sourceModelEntityItem->isSet(i) && info.IsSameModel)
       {
-      smtk::model::Cursor value = sourceModelEntityItem->value(i);
-      this->setValue(i, value);
+      smtk::model::Cursor val = sourceModelEntityItem->value(i);
+      this->setValue(i, val);
       }
     else
       {
