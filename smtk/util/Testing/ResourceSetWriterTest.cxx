@@ -64,7 +64,7 @@ int main(int argc, const char* argv[])
   std::string link;
   smtk::util::ResourceSet::ResourceRole role;
 
-  for (unsigned i=1; i<argc-1; ++i)
+  for (int i=1; i<argc-1; ++i)
     {
     const char *input_path = argv[i];
 

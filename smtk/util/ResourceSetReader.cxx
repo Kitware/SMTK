@@ -267,6 +267,7 @@ readIncludedManager(const pugi::xml_node& element,
                     std::string& path,
                     smtk::util::Logger& logger)
 {
+  (void)element;
   // // Make sure path exists
   if (!boost::filesystem::exists(path))
     {

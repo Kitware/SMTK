@@ -274,19 +274,19 @@ copyTo(ValueItemDefinitionPtr def,
   if (this->allowsExpressions())
     {
     // Set expression definition (if possible)
-    std::string type = this->expressionDefinition()->type();
-    smtk::attribute::DefinitionPtr exp = info.ToManager.findDefinition(type);
+    std::string typeStr = this->expressionDefinition()->type();
+    smtk::attribute::DefinitionPtr exp = info.ToManager.findDefinition(typeStr);
     if (exp)
       {
       def->setExpressionDefinition(exp);
       }
     else
       {
-      std::cout << "Adding definition \"" << type
+      std::cout << "Adding definition \"" << typeStr
                 << "\" to copy-expression queue"
                 << std::endl;
 
-      info.UnresolvedExpItems.push(std::make_pair(type, def));
+      info.UnresolvedExpItems.push(std::make_pair(typeStr, def));
       }
     }
 
