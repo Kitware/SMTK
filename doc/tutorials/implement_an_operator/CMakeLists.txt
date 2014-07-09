@@ -29,5 +29,6 @@ endif()
 
 
 if (RST2HTML_EXECUTABLE)
-  smtk_add_doc(implement_an_operator)
+  smtk_add_doc(implement_an_operator
+    DESTINATION share/doc/SMTK/tutorials/implement_an_operator)
 endif()
