@@ -110,25 +110,25 @@ if (RST2HTML_EXECUTABLE)
         COMPONENT Development)
     endif()
   endfunction()
+
+  set(SMTK_USERGUIDE_DOCS
+    userguide-model.rst
+    userguide-attribute.rst
+  )
+
+  set(SMTK_USERGUIDE_FIGS
+    figures/forwarding-bridge.svg
+    figures/cursor-classes-with-inheritance.svg
+  )
+
+  # Add the top-level reStructuredText file.
+  # All others are included by it.
+  smtk_add_doc(userguide
+    DEPENDS ${SMTK_USERGUIDE_DOCS}
+    FIGURES ${SMTK_USERGUIDE_FIGS}
+    DESTINATION share/doc/SMTK/userguide
+  )
 endif()
-
-set(SMTK_USERGUIDE_DOCS
-  userguide-model.rst
-  userguide-attribute.rst
-)
-
-set(SMTK_USERGUIDE_FIGS
-  figures/forwarding-bridge.svg
-  figures/cursor-classes-with-inheritance.svg
-)
-
-# Add the top-level reStructuredText file.
-# All others are included by it.
-smtk_add_doc(userguide
-  DEPENDS ${SMTK_USERGUIDE_DOCS}
-  FIGURES ${SMTK_USERGUIDE_FIGS}
-  DESTINATION share/doc/SMTK/userguide
-)
 
 ## Tutorial Documentation
 #
