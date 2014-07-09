@@ -150,9 +150,9 @@ writeString(std::string& content,
   content = oss.str();
 
   // Write for dev use
-  std::cout << "\n";
-  document.save(std::cout, "  ");
-  std::cout << "\n" << std::endl;
+  //std::cout << "\n";
+  //document.save(std::cout, "  ");
+  //std::cout << "\n" << std::endl;
 
   return logger.hasErrors();
 }
