@@ -261,11 +261,12 @@ void XmlV1StringWriter::generateXml(pugi::xml_node& parent_node,
   // Reset the message log
   this->m_logger.reset();
 
+  xml_node root;
   if (createRoot)
     {
     // This option is used to insert an attribute manager
     // into an existing xml document (for writing resource files).
-    xml_node root = parent_node.append_child("SMTK_AttributeManager");
+    root = parent_node.append_child("SMTK_AttributeManager");
     root.append_attribute("Version").set_value(1);
     m_pugi = new PugiPrivate(root);
     }
