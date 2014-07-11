@@ -1,10 +1,10 @@
 project(SimBuilderMesh)
 
 include_directories(
-  ${CMBModel_SOURCE_DIR}
-  ${vtkDiscreteModel_SOURCE_DIR}/Model
-  ${vtkCmbDiscreteModel_INCLUDE_DIRS}
-  ${vtkDiscreteModel_INCLUDE_DIRS}
+#   ${CMBModel_SOURCE_DIR}
+#   ${vtkDiscreteModel_SOURCE_DIR}/Model
+#   ${vtkCmbDiscreteModel_INCLUDE_DIRS}
+#   ${vtkDiscreteModel_INCLUDE_DIRS}
   ${vtkCMBFiltering_INCLUDE_DIRS}
   ${vtkCMBGraphics_INCLUDE_DIRS}
   ${vtkCMBIO_INCLUDE_DIRS}
@@ -85,6 +85,11 @@ target_link_libraries(SimBuilderMesh_Plugin
     vtkDiscreteModelCS
     vtkFiltersCoreCS
 )
+
+target_include_directories(SimBuilderMesh_Plugin
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 cmb_install_plugin(SimBuilderMesh_Plugin)
 
