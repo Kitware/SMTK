@@ -11,6 +11,8 @@
 #include "smtk/model/Shell.h"
 #include "smtk/model/Manager.h"
 
+#include "smtk/model/DescriptivePhrase.h"
+
 #include "smtk/model/testing/helpers.h"
 
 #include <iomanip>
@@ -323,6 +325,28 @@ double Timer::elapsed()
   double result = 1e-3 * (other.m_mark - this->P->m_mark);
 #endif
   return result;
+}
+
+static int maxIndent = 20;
+
+void printPhrase(std::ostream& os, int indent, DescriptivePhrase::Ptr p)
+{
+  // Do not descend too far, as infinite recursion is possible,
+  // even with the SimpleSubphraseGenerator
+  if (indent > maxIndent)
+    return;
+
+  os << std::string(indent, ' ') << p->title() << "  (" << p->subtitle() << ")";
+  FloatList rgba = p->relatedColor();
+  if (rgba[3] >= 0.)
+    os << " rgba(" << rgba[0] << "," << rgba[1] << "," << rgba[2] << "," << rgba[3] << ")";
+  os << "\n";
+  DescriptivePhrases sub = p->subphrases();
+  indent += 2;
+  for (DescriptivePhrases::iterator it = sub.begin(); it != sub.end(); ++it)
+    {
+    printPhrase(os, indent, *it);
+    }
 }
 
     } // namespace testing
