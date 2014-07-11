@@ -119,10 +119,13 @@ BitFlags Cursor::entityFlags() const
   */
 std::string Cursor::flagSummary(int form) const
 {
-  Entity* ent = this->m_manager->findEntity(this->m_entity);
-  if (ent)
+  if (this->m_manager)
     {
-    return ent->flagSummary(form);
+    Entity* ent = this->m_manager->findEntity(this->m_entity);
+    if (ent)
+      {
+      return ent->flagSummary(form);
+      }
     }
   return Entity::flagSummary(INVALID, form);
 }
