@@ -1061,6 +1061,7 @@
 
       <object-type name="Manager">
         <include file-name="smtk/model/Manager.h" location="local"/>
+        <enum-type name="CopyOptions" />
 
         <add-function signature="create()"
           static="yes"

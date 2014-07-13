@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
+#include "smtk/util/UUID.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -531,7 +532,8 @@ void Manager::setAdvanceLevelColor(int level, const double *l_color)
 // If definition contains RefItemDefinition instances, might have to
 // copy additional definitions for their targets.
 smtk::attribute::DefinitionPtr
-Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef)
+Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
+                        unsigned int /*options*/)
 {
   // Returns defintion
   smtk::attribute::DefinitionPtr newDef = smtk::attribute::DefinitionPtr();
@@ -720,7 +722,8 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
 // If definition contains RefItem or ExpressionType instances, might also
 // copy additional attributes from the source attribute manager.
 smtk::attribute::AttributePtr
-Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
+Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
+                       unsigned int options)
 {
   // Returns attribute pointer
   smtk::attribute::AttributePtr newAtt = smtk::attribute::AttributePtr();
@@ -742,7 +745,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
   smtk::model::ManagerPtr thisModel = this->refModelManager();
   smtk::model::ManagerPtr thatModel = sourceAtt->manager()->refModelManager();
   info.IsSameModel = thisModel && (thisModel == thatModel);
-  bool ok = this->copyAttributeImpl(sourceAtt, info);
+  bool ok = this->copyAttributeImpl(sourceAtt, info, options);
   if (ok)
     {
     newAtt = this->findAttribute(name);
@@ -778,7 +781,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
             }
 
           // Copy attribute
-          if (!this->copyAttributeImpl(nextAtt, info))
+          if (!this->copyAttributeImpl(nextAtt, info, options))
             {
             std::cerr << "ERROR: Unable to copy attribute " << att
                       << " -- copy operation incomplete" << std::endl;
@@ -815,7 +818,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
             }
 
           // Copy attribute
-          if (!this->copyAttributeImpl(nextAtt, info))
+          if (!this->copyAttributeImpl(nextAtt, info, options))
             {
             std::cerr << "ERROR: Unable to copy attribute " << att
                       << " -- copy operation incomplete" << std::endl;
@@ -825,6 +828,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
         }  // while (exp items)
 
       }  // while (ref || exp items)
+
     } // if (ok)
 
   return newAtt;
@@ -833,7 +837,8 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt)
 // Copies attribute defintion into this manager, returning true if successful
 // Note: Any model associations are *not* copied
 bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
-                                 smtk::attribute::Item::CopyInfo& info)
+                                smtk::attribute::Item::CopyInfo& info,
+                                unsigned options)
 {
   bool ok = true;
 
@@ -877,7 +882,23 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
     newItem->copyFrom(sourceItem, info);
     }
 
-  // TODO what are references? references to me?
+  // Copy model association (implemented for "new" smtk model storage only)
+  if (newAtt && (options & COPY_ASSOCIATIONS == COPY_ASSOCIATIONS))
+    {
+    // Only copy if model managers are the same
+    smtk::model::ManagerPtr sourceModel = sourceAtt->modelManager();
+    if (sourceModel && sourceModel == this->refModelManager())
+      {
+      smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
+      smtk::util::UUIDs::const_iterator it;
+      for (it=uuidSet.begin(); it != uuidSet.end(); it++)
+        {
+        newAtt->associateEntity(*it);
+        }
+      }
+    }
+
+
   // TODO what about m_userData?
 
   return ok;
