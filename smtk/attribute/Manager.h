@@ -53,6 +53,10 @@ namespace smtk
     class SMTKCORE_EXPORT Manager : public smtk::util::Resource
     {
     public:
+      enum CopyOptions
+      {
+        COPY_ASSOCIATIONS = 0x00000001
+      };
 
       Manager();
       virtual ~Manager();
@@ -145,11 +149,15 @@ namespace smtk
       void updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def);
 
       // Copies definition from another manager
-      smtk::attribute::DefinitionPtr copyDefinition(const smtk::attribute::DefinitionPtr def);
+      smtk::attribute::DefinitionPtr
+        copyDefinition(const smtk::attribute::DefinitionPtr def,
+                       unsigned int options=0);
       // Copies attribute from another manager
       // Note: does *not* copy model associations. If needed, a method can be added to
       // Attribute for copying associations.
-      smtk::attribute::AttributePtr copyAttribute(const smtk::attribute::AttributePtr att);
+      smtk::attribute::AttributePtr
+        copyAttribute(const smtk::attribute::AttributePtr att,
+                      unsigned int options=0);
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;
@@ -158,7 +166,8 @@ namespace smtk
       bool copyDefinitionImpl(const smtk::attribute::DefinitionPtr sourceDef,
                               smtk::attribute::ItemDefinition::CopyInfo& info);
       bool copyAttributeImpl(const smtk::attribute::AttributePtr sourceAtt,
-                             smtk::attribute::Item::CopyInfo& info);
+                             smtk::attribute::Item::CopyInfo& info,
+                             unsigned options);
 
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;

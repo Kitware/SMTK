@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
   # Copy SecondConcrete definition, which should copy alot of stuff
   source_def = input_manager.findDefinition('SecondConcrete')
-  test_manager.copyDefinition(source_def)
+  test_manager.copyDefinition(source_def, 0)
   expected_types = [
     'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
     'FirstConcrete', 'PolyLinearFunction'

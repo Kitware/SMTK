@@ -75,7 +75,8 @@ attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attrib
                         attribute.Item.VOID: (attribute.VoidItem, attribute.VoidItemDefinition),
                         attribute.Item.FILE: (attribute.FileItem, attribute.FileItemDefinition),
                         attribute.Item.DIRECTORY: (attribute.DirectoryItem, attribute.DirectoryItemDefinition),
-                        attribute.Item.COLOR: (None, None)
+                        attribute.Item.COLOR: (None, None),
+                        attribute.Item.MODEL_ENTITY: (attribute.ModelEntityItem, attribute.ModelEntityItemDefinition)
                       }
 
 @staticmethod
