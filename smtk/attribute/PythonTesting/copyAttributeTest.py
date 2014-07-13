@@ -104,6 +104,16 @@ if __name__ == '__main__':
   vertex_id = uuid.UUID(vertex15)
   second_concrete.associateEntity(vertex_id)
 
+
+  # Also test model entity item
+  item = second_concrete.find('ModelFace')
+  model_entity_item = smtk.attribute.to_concrete(item)
+  face26 = '0bbc9685-e506-4fe7-b52f-ae52888d744b'
+  face_id = uuid.UUID(face26)
+  cursor = smtk.model.Cursor(model_manager, face_id)
+  model_entity_item.setValue(0, cursor)
+
+
   #
   # Instantiate 2nd/test manager
   #
