@@ -882,22 +882,17 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
     newItem->copyFrom(sourceItem, info);
     }
 
-  // Copy model association (implemented for "new" smtk model storage only)
-  if (newAtt && (options & COPY_ASSOCIATIONS == COPY_ASSOCIATIONS))
+  // Copy model associations (implemented for "new" smtk model storage only)
+  // But only if the models are the same
+  if (info.IsSameModel && (options & COPY_ASSOCIATIONS == COPY_ASSOCIATIONS))
     {
-    // Only copy if model managers are the same
-    smtk::model::ManagerPtr sourceModel = sourceAtt->modelManager();
-    if (sourceModel && sourceModel == this->refModelManager())
+    smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
+    smtk::util::UUIDs::const_iterator it;
+    for (it=uuidSet.begin(); it != uuidSet.end(); it++)
       {
-      smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
-      smtk::util::UUIDs::const_iterator it;
-      for (it=uuidSet.begin(); it != uuidSet.end(); it++)
-        {
-        newAtt->associateEntity(*it);
-        }
+      newAtt->associateEntity(*it);
       }
     }
-
 
   // TODO what about m_userData?
 
