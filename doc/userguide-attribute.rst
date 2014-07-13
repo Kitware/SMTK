@@ -21,19 +21,18 @@ group and classify simulation data.
 and edit simulation data.
 Using standard windows components (buttons, text boxes,
 selection lists, etc.), users can enter all of the detailed
-data needed to generate a desired simulation input.
-The user-interface panels are automatically produced
+data needed to specify a desired simulation.
+These user-interface panels are automatically produced
 by SMTK at runtime, based on the XML file(s) provided to the system.
 
 
 3. An API for accessing the simulation data produced by end users.
-Once an end-user has completed specifying the simulation data,
-simulation-specific software can be used to traverse that data
+Once an end-user has completed specifying the simulation,
+application software can be used to traverse that data
 and generate the simulation input files.
 The native SMTK API is C++, and python bindings are also included.
 In practice, python scripts are typically used to access the
-simulation data and generate the simulation input files,
-since no compiling is required.
+simulation data and generate the simulation input files.
 
 .. system reads in a set of *definitions* specifying the data that
 .. are relevant to each application.
@@ -54,26 +53,28 @@ Example Workflow
 ~~~~~~~~~~~~~~~~
 SMTK can be used in a broad range of scientific and engineering
 simulation applications.
-In physics-based applications, for example,
-structural mechanics, computational fluid dynamics, and
-electromagnetic modeling, simulations are often performed relative
-to a geometric model, which may have been created via
-computer-aided design, or computationally constructed or
-reconstructed from empirical data.
-A discretization process is typically performed with the geometric
+In physics-based applications, such as
+structural mechanics, computational fluid dynamics (CFD), and
+electromagnetic (EM) modeling, simulations are often performed relative
+to a geometric model. This model may be created using
+computer-aided design (CAD), or computationally
+constructed/reconstructed from empirical data.
+In either case, a
+discretization process is typically performed with the
 model to generate geometric input suitable for the simulation code,
-for example, in the form of a finite element or finite volume mesh.
-From there, the non-geometric inputs to the simulation code must
-be generated, that is, the boundary conditions, material properties,
+often in the form of a finite element or finite volume mesh.
+To complete the simulation inputs, the non-geometric inputs are
+generated to enumerate the specific boundary conditions, material properties,
 solver parameters, etc.
 
-With SMTK, the process of generating this non-geometric input data
-can be automated, providing benefits in reuse and error reduction.
+With SMTK, the process of generating simulation input data
+can be automated, providing the
+dual benefits of work-product reuse and error reduction.
 Once the simulation-specific data are defined in an XML *template*,
 domain experts or other end users can create the simulation data, or
 *attribute data*, for specific problems using the SMTK user
 interface panels.
-Then a simulation-specific python script can be used to traverse
+Then simulation-specific python scripts can be used to traverse
 the attribute data and write the simulation input files.
 
 Next:
