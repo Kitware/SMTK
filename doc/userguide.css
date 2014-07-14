@@ -934,3 +934,9 @@ ul.auto-toc {
 .code .pygments-vg { color: #bb60d5 } /* Name.Variable.Global */
 .code .pygments-vi { color: #bb60d5 } /* Name.Variable.Instance */
 .code .pygments-il { color: #40a070 } /* Literal.Number.Integer.Long */
+
+
+.smaller-text {
+  font-size: smaller !important;
+  line-height: 1.1   !important;
+}

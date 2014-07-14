@@ -82,6 +82,54 @@ Next:
 * XML file example
 * UI screenshot(s)
 
+.. class:: smaller-text
+.. code:: xml
+
+  <Definitions>
+    <AttDef Type="Example1" Label="Example 1" BaseType="" Version="0"
+            Unique="true" Associations="">
+      <ItemDefinitions>
+        <String Name="ExampleString" Label="String item:" Version="0"
+                NumberOfRequiredValues="1">
+          <BriefDescription>Enter some string of import</BriefDescription>
+          <DefaultValue>Yellow denotes default value</DefaultValue>
+        </String>
+        <Int Name="ExampleInteger" Label="Integer item:" Version="0"
+             NumberOfRequiredValues="1">
+          <BriefDescription>For some integer value</BriefDescription>
+          <DefaultValue>42</DefaultValue>
+        </Int>
+        <Double Name="ExampleDouble" Label="Double item:" Version="0"
+                NumberOfRequiredValues="1">
+          <BriefDescription>For floating-point precision values</BriefDescription>
+          <DefaultValue>3.14159</DefaultValue>
+        </Double>
+        <Double Name="ExampleVector" Label="Double item w/3 values:" Version="0"
+                NumberOfRequiredValues="3">
+          <BriefDescription>Number of components is set to 3</BriefDescription>
+          <ComponentLabels>
+            <Label>x</Label>
+            <Label>y</Label>
+            <Label>z</Label>
+          </ComponentLabels>
+          <DefaultValue>0</DefaultValue>
+        </Double>
+        <String Name="SecondString" Label="Another string item:" Version="0"
+                NumberOfRequiredValues="1">
+          <BriefDescription>Enter some string of import</BriefDescription>
+          <DefaultValue>whatever</DefaultValue>
+        </String>
+      </ItemDefinitions>
+    </AttDef>
+
+    <!-- Remaining content not shown -->
+
+.. Wish I could align code & image horizontally
+
+.. image:: figures/ExampleAttributePanel.png
+   :align: center
+   :width: 80%
+
 
 
 Attribute Types

@@ -119,6 +119,7 @@ if (RST2HTML_EXECUTABLE)
   set(SMTK_USERGUIDE_FIGS
     figures/forwarding-bridge.svg
     figures/cursor-classes-with-inheritance.svg
+    figures/ExampleAttributePanel.png
   )
 
   # Add the top-level reStructuredText file.
