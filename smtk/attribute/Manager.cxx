@@ -884,7 +884,7 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
 
   // Copy model associations (implemented for "new" smtk model storage only)
   // But only if the models are the same
-  if (info.IsSameModel && (options & COPY_ASSOCIATIONS == COPY_ASSOCIATIONS))
+  if (info.IsSameModel && ((options & COPY_ASSOCIATIONS) == COPY_ASSOCIATIONS))
     {
     smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
     smtk::util::UUIDs::const_iterator it;

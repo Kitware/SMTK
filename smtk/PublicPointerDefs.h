@@ -89,7 +89,6 @@ namespace smtk
     class Model;
     class ModelEntity;
     class Operator;
-    class Parameter;
     class PropertyValuePhrase;
     class PropertyListPhrase;
     class RemoteOperator;
