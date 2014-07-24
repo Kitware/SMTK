@@ -38,7 +38,7 @@ mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
 # Find Doxygen and Docutils (optional, for building documentation)
 find_package(Doxygen)
-find_package(Docutils)
+find_package(Docutils 0.9)
 
 ################################################################################
 # Testing Related Settings
