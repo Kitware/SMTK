@@ -74,6 +74,11 @@ find_package_handle_standard_args(Docutils
         DOCUTILS_VERSION
 )
 
+# If Docutils version fails, explicitly unset RST2HTML_EXECUTABLE
+if(NOT ${DOCUTILS_FOUND})
+    unset(RST2HTML_EXECUTABLE CACHE)
+endif()
+
 mark_as_advanced(
     RST2HTML_EXECUTABLE
 )
