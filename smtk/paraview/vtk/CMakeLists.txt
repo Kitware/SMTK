@@ -34,6 +34,8 @@ endif()
 link_libraries(
   ${VTK_MODULES}
   vtkInteractionStyle
+  vtkRenderingContext2D
+  vtkRenderingContextOpenGL
   vtkRenderingOpenGL
   vtkRenderingMatplotlib
   vtkRenderingVolumeOpenGL

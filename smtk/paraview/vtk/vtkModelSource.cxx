@@ -20,14 +20,9 @@
 #include "vtkStringArray.h"
 
 using namespace smtk::model;
-vtkInstantiatorNewMacro(vtkModelSource);
 
+vtkStandardNewMacro(vtkModelSource);
 vtkCxxSetObjectMacro(vtkModelSource,CachedOutput,vtkPolyData);
-
-vtkModelSource* vtkModelSource::New()
-{
-  VTK_STANDARD_NEW_BODY(vtkModelSource);
-}
 
 vtkModelSource::vtkModelSource()
 {

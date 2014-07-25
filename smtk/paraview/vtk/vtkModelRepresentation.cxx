@@ -26,17 +26,12 @@
 #include "vtkViewTheme.h"
 
 using namespace smtk::model;
-vtkInstantiatorNewMacro(vtkModelRepresentation);
 
+vtkStandardNewMacro(vtkModelRepresentation);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Actor,vtkActor);
 vtkCxxSetObjectMacro(vtkModelRepresentation,ApplyColors,vtkApplyColors);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Mapper,vtkPolyDataMapper);
 vtkCxxSetObjectMacro(vtkModelRepresentation,Transform,vtkTransformFilter);
-
-vtkModelRepresentation* vtkModelRepresentation::New()
-{
-  VTK_STANDARD_NEW_BODY(vtkModelRepresentation);
-}
 
 vtkModelRepresentation::vtkModelRepresentation()
 {

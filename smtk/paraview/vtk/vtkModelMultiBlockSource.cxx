@@ -22,14 +22,9 @@
 #include "vtkStringArray.h"
 
 using namespace smtk::model;
-vtkInstantiatorNewMacro(vtkModelMultiBlockSource);
 
+vtkStandardNewMacro(vtkModelMultiBlockSource);
 vtkCxxSetObjectMacro(vtkModelMultiBlockSource,CachedOutput,vtkMultiBlockDataSet);
-
-vtkModelMultiBlockSource* vtkModelMultiBlockSource::New()
-{
-  VTK_STANDARD_NEW_BODY(vtkModelMultiBlockSource);
-}
 
 vtkModelMultiBlockSource::vtkModelMultiBlockSource()
 {

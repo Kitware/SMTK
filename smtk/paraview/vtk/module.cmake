@@ -3,8 +3,9 @@ vtk_module(vtkSMTK
     vtkCommonCore
     vtkCommonDataModel
     vtkCommonExecutionModel
+    vtkRenderingContext2D
+    vtkRenderingContextOpenGL
     vtkRenderingCore
-    vtkRenderingOpenGL
     vtkRenderingFreeType
     vtkInteractionStyle
     vtkViewsCore
@@ -17,6 +18,8 @@ vtk_module(vtkSMTK
     vtkRenderingFreeTypeOpenGL
   TEST_DEPENDS
     vtkInteractionStyle
+    vtkRenderingContext2D
+    vtkRenderingContextOpenGL
     vtkRenderingOpenGL
     vtkRenderingMatplotlib
     vtkRenderingVolumeOpenGL

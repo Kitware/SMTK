@@ -2,13 +2,7 @@
 
 #include "vtkObjectFactory.h"
 
-vtkInstantiatorNewMacro(vtkModelView);
-
-
-vtkModelView* vtkModelView::New()
-{
-  VTK_STANDARD_NEW_BODY(vtkModelView);
-}
+vtkStandardNewMacro(vtkModelView);
 
 vtkModelView::vtkModelView()
 {
