@@ -56,7 +56,7 @@ protected:
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
-  virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr op);
+  virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
   virtual OperatorResult operateDelegate(RemoteOperatorPtr op);
 
   void setImportingOperators(bool isImporting);

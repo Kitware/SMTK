@@ -258,6 +258,28 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   return result;
 }
 
+/**\brief Remove an attribute from the operator's manager.
+  *
+  * This is a convenience method to remove an operator's result
+  * when you are done examining it.
+  *
+  * When operating in client-server mode, it is possible for
+  * result instances on the client and server to have name
+  * collisions unless you manage their lifespans by removing
+  * them as they are consumed by your application.
+  */
+void Operator::eraseResult(OperatorResult res)
+{
+  Bridge* brdg;
+  smtk::attribute::Manager* mgr;
+  if (
+    !res ||
+    !(brdg = this->bridge()) ||
+    !(mgr = brdg->operatorManager()))
+    return;
+  mgr->removeAttribute(res);
+}
+
 /// A comparator so that Operators may be placed in ordered sets.
 bool Operator::operator < (const Operator& other) const
 {

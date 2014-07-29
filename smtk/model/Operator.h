@@ -147,6 +147,7 @@ public:
   bool ensureSpecification();
 
   OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
+  void eraseResult(OperatorResult res);
 
   bool operator < (const Operator& other) const;
 
