@@ -35,6 +35,7 @@ namespace {
     if (spec)
       {
       smtk::attribute::Manager tmpMgr;
+      tmpMgr.setRefModelManager(spec->modelManager());
       tmpMgr.copyAttribute(spec);
       smtk::util::Logger log;
       smtk::util::AttributeWriter wri;
@@ -450,12 +451,14 @@ int ExportJSON::forOperator(OperatorPtr op, cJSON* entRec)
 
 int ExportJSON::forOperator(smtk::attribute::AttributePtr op, cJSON* entRec)
 {
+  cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(op->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "spec", "specXML", op);
   return 1;
 }
 
 int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
+  cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
   return 1;
 }

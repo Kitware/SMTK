@@ -34,15 +34,7 @@ bool RemoteOperator::ableToOperate()
   if (!fwdBridge)
     return false;
 
-  OperatorResult result = fwdBridge->ableToOperateDelegate(shared_from_this());
-  //std::cout << "RemoteOp result is " << result->name() << " type " << result->type() << "\n";
-  if (result)
-    {
-    IntItemPtr outcome = result->findInt("outcome");
-    //std::cout << "  outcome is " << (outcome ? "defined" : "null") << " value " << (outcome ? outcome->value() : -1) << "\n";
-    return (outcome && outcome->isSet() && outcome->value() == OPERATION_SUCCEEDED) ? true : false;
-    }
-  return false;
+  return fwdBridge->ableToOperateDelegate(shared_from_this());
 }
 
 OperatorResult RemoteOperator::operateInternal()

@@ -246,6 +246,7 @@ void Bridge::initializeOperatorManager(const OperatorConstructors* opList, bool 
     RefItemDefinition::Ptr paramsDefn = RefItemDefinition::New("validated parameters");
     outcomeDefn->setNumberOfRequiredValues(1);
     outcomeDefn->setIsOptional(false);
+    paramsDefn->setNumberOfRequiredValues(1);
     paramsDefn->setIsOptional(true);
     defn->addItemDefinition(outcomeDefn);
     defn->addItemDefinition(paramsDefn);

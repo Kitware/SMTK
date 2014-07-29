@@ -98,6 +98,8 @@ void printItem<smtk::attribute::VoidItem>(smtk::attribute::VoidItem::Ptr item, c
 static void printParams(smtk::attribute::AttributePtr attr, const std::string& msg)
 {
   std::cout << msg << "\n";
+  if (!attr)
+    return;
   std::size_t ni = attr->numberOfItems();
   for (std::size_t i = 0; i < ni; ++i)
     {
@@ -161,15 +163,11 @@ protected:
     return remoteBridge->transcribe(Cursor(remoteModel, entity.entity()), flags);
     }
 
-  virtual OperatorResult ableToOperateDelegate(RemoteOperatorPtr oper)
+  virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)
     {
     OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
     remOp->setSpecification(remoteBridge->operatorManager()->copyAttribute(oper->specification()));
-    OperatorResult result =
-      remOp->createResult(remOp->ableToOperate() ? OPERATION_SUCCEEDED : OPERATION_FAILED);
-    // FIXME: How should the remote operator provide validated parameters?
-    //        Should Operator::ableToOperate() return an OperatorResult instead of bool?
-    return result;
+    return remOp->ableToOperate();
     }
 
   virtual OperatorResult operateDelegate(RemoteOperatorPtr localOp)
@@ -324,6 +322,7 @@ int main()
 
     test(localResult->findInt("outcome")->value() == OPERATION_SUCCEEDED, "Operation should have succeeded.");
     test(localResult->findInt("state")->value() == 3, "Operation should have yielded state == 3.");
+    localOp->eraseResult(localResult);
 
     std::cout << "\n---\n\n";
 
