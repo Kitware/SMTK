@@ -80,7 +80,7 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
-  const char *getValueForXMLElement(std::string v)
+  const char *getValueForXMLElement(const std::string& v)
   {
     return v.c_str();
   }
