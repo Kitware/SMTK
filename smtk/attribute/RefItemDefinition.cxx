@@ -146,18 +146,21 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   ItemDefinition::copyTo(newRef);
 
   // Set attributeDefinition (if possible)
-  std::string typeStr = this->attributeDefinition()->type();
-  smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(typeStr);
-  if (def)
+  if (this->attributeDefinition())
     {
-    newRef->setAttributeDefinition(def);
-    }
-  else
-    {
-    std::cout << "Adding definition \"" << typeStr
-              << "\" to copy-definition queue"
-              << std::endl;
-    info.UnresolvedRefItems.push(std::make_pair(typeStr, newRef));
+    std::string typeStr = this->attributeDefinition()->type();
+    smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(typeStr);
+    if (def)
+      {
+      newRef->setAttributeDefinition(def);
+      }
+    else
+      {
+      std::cout << "Adding definition \"" << typeStr
+        << "\" to copy-definition queue"
+        << std::endl;
+      info.UnresolvedRefItems.push(std::make_pair(typeStr, newRef));
+      }
     }
 
   newRef->setNumberOfRequiredValues(m_numberOfRequiredValues);
