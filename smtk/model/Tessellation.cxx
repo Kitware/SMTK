@@ -28,10 +28,14 @@ Tessellation& Tessellation::addCoords(double x, double y, double z)
 Tessellation& Tessellation::addPoint(double* a)
 {
   int ai = this->addCoords(a);
+  // Uncomment the below to use the modified three.js viewer.
+  // Leave commented to make the VTK sources work.
+  /*
   std::vector<int> pconn;
   pconn.push_back(512); // Extension of three.js file format for "Vertex" glyph
   pconn.push_back(ai);
   this->m_conn.push_back(ai);
+  */
   return *this;
 }
 
