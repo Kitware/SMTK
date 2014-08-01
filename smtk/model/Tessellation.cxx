@@ -28,6 +28,7 @@ Tessellation& Tessellation::addCoords(double x, double y, double z)
 Tessellation& Tessellation::addPoint(double* a)
 {
   int ai = this->addCoords(a);
+  (void)ai;
   // Uncomment the below to use the modified three.js viewer.
   // Leave commented to make the VTK sources work.
   /*
