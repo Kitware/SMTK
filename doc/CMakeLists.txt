@@ -59,6 +59,12 @@ endif(DOXYGEN_FOUND)
 # If we have rst2html, create the user's guide for SMTK
 # as an HTML document.
 
+if (WIN32)
+  find_package(PythonInterp 2.7 REQUIRED)
+  message("PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}")
+  set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
+endif()
+
 # Define a macro for processing reStructuredText files
 # if docutils were found.
 if (RST2HTML_EXECUTABLE)
@@ -90,7 +96,7 @@ if (RST2HTML_EXECUTABLE)
         ${SMTK_SOURCE_DIR}/doc/userguide.css
         ${rst_DEPENDS}
         ${figureList}
-      COMMAND ${RST2HTML_EXECUTABLE}
+      COMMAND ${PYTHON_WINDOWS_ONLY} ${RST2HTML_EXECUTABLE}
       ARGS
         --stylesheet=${SMTK_SOURCE_DIR}/doc/userguide.css
         ${CMAKE_CURRENT_SOURCE_DIR}/${rstFile}.rst

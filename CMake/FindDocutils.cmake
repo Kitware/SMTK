@@ -32,6 +32,12 @@
 
 find_package(PackageHandleStandardArgs)
 
+if (WIN32)
+  find_package(PythonInterp 2.7 REQUIRED)
+  #message("PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}")
+  set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
+endif()
+
 find_program( RST2HTML_EXECUTABLE
     NAMES
         rst2html.py
@@ -45,7 +51,9 @@ if (RST2HTML_EXECUTABLE)
     set(DOCUTILS_FOUND "YES")
 
     # find the version
-    execute_process( COMMAND ${RST2HTML_EXECUTABLE} --version OUTPUT_VARIABLE VERSION_STRING )
+    #message("RST2HTML_EXECUTABLE: ${RST2HTML_EXECUTABLE}")
+    execute_process( COMMAND ${PYTHON_WINDOWS_ONLY}  ${RST2HTML_EXECUTABLE} --version phony.rst OUTPUT_VARIABLE VERSION_STRING )
+    #message("VERSION_STRING \"${VERSION_STRING}\"")
 
     # ex : rst2html (Docutils 0.6 [release], Python 2.6.6, on linux2)
     string(REGEX MATCHALL "([^\ ]+\ |[^\ ]+$)" VERSION_TOKENS "${VERSION_STRING}")
@@ -58,6 +66,7 @@ if (RST2HTML_EXECUTABLE)
     string(REGEX REPLACE "^[ \t]+" "" VERSION_STRING ${VERSION_STRING})
 
     set(DOCUTILS_VERSION ${VERSION_STRING})
+    #message("VERSION_STRING ${VERSION_STRING}")
 
 else()
 
