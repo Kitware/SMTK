@@ -1,5 +1,12 @@
+*********************
 SMTK Attribute System
----------------------
+*********************
+
+General Description
+===================
+
+Background
+----------
 
 SMTK's first major component is its attribute modeling system,
 which provides a way to model and represent non-geomtric
@@ -48,9 +55,13 @@ simulation data and generate the simulation input files.
 .. Since the simulation data are unique/specific to individual
 .. problem and sovler domains,
 
+Key Concepts
+------------
+
 
 Example Workflow
-~~~~~~~~~~~~~~~~
+----------------
+
 SMTK can be used in a broad range of scientific and engineering
 simulation applications.
 In physics-based applications, such as
@@ -131,18 +142,74 @@ Next:
    :width: 80%
 
 
+Template File Syntax (Reference)
+================================
 
-Attribute Types
-~~~~~~~~~~~~~~~
+File Layout
+-----------
 
-User Interface Panels
-~~~~~~~~~~~~~~~~~~~~~
+Advance Level Section <AdvanceLevel>?
+-------------------------------------
+tbd
 
-Attribute Definitions
-~~~~~~~~~~~~~~~~~~~~~
+Analysis Section <Analysis>
+---------------------------
+tbd
 
-File Syntax (Reference)
-~~~~~~~~~~~~~~~~~~~~~~~
+Attribute Section <Attributes>
+------------------------------
+tbd
 
-API (reference)
-~~~~~~~~~~~~~~~
+Category Section <Categories>
+-----------------------------
+tbd
+
+Definitions Section <Definitions>
+---------------------------------
+
+AttDef Element <AttDef>
+^^^^^^^^^^^^^^^^^^^^^^^
+
+XML attributes
+""""""""""""""
+
+Children elements
+"""""""""""""""""
+
+Item Definitions
+^^^^^^^^^^^^^^^^
+
+Double Item Definition <Double>
+"""""""""""""""""""""""""""""""
+
+XML attributes
+~~~~~~~~~~~~~~
+
+Children elements
+~~~~~~~~~~~~~~~~~
+
+File Item Definition <File>
+"""""""""""""""""""""""""""
+tbd
+
+Group Item Definition <Group>
+"""""""""""""""""""""""""""""
+tbd
+
+Integer Item Definition <Int>
+"""""""""""""""""""""""""""""
+tbd
+
+String Item Definition <String>
+"""""""""""""""""""""""""""""""
+tbd
+
+Void Item Definition <Void>
+""""""""""""""""""""""""""
+tbd
+
+
+
+RootView Section <RootView>
+---------------------------
+tbd
