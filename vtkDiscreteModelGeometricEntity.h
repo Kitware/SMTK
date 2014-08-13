@@ -104,7 +104,7 @@ protected:
   friend class vtkCmbMeshToModelWriter;
   friend class vtkGenerateSimpleModelOperator;
   friend class CmbGeologyBuilderCore;
-  friend class CmbSceneBuilderCore;
+  friend class pqCMBSceneBuilderMainWindowCore;
 //ETX
 
   // Description:

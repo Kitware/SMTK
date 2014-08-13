@@ -255,7 +255,7 @@ protected:
   friend class vtkCMBModelBuilder;
   friend class vtkDiscreteModelEdge;
   friend class vtkGenerateSimpleModelOperator;
-  friend class CmbSceneBuilderCore;
+  friend class pqCMBSceneBuilderMainWindowCore;
   friend class CmbGeologyBuilderCore;
   friend class vtkCmbMapToCmbModel;
   friend class vtkCmbIncorporateMeshOperator;
