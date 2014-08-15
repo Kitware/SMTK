@@ -1,29 +1,43 @@
+set (__groupdeps)
+set (__dependencies)
+
+# We must test whether each of the targets below exist
+# because they are required when built into VTK or ParaView
+# but may not be present, especially since the OpenGL2
+# backend became available.
+foreach(target
+    vtkInteractionStyle
+    vtkRenderingContext2D
+    vtkRenderingContextOpenGL
+    vtkRenderingOpenGL
+    vtkRenderingMatplotlib
+    vtkRenderingVolumeOpenGL
+    vtkRenderingFreeTypeOpenGL
+)
+  if (TARGET ${target})
+    list(APPEND __dependencies ${target})
+  endif()
+endforeach()
+
+if (VTK_RENDERING_BACKEND STREQUAL "OpenGL" OR NOT VTK_RENDERING_BACKEND)
+  set(__groupdeps GROUPS Rendering)
+endif()
+
 vtk_module(vtkSMTK
+  ${__groupdeps}
   DEPENDS
     vtkCommonCore
     vtkCommonDataModel
     vtkCommonExecutionModel
-    vtkRenderingContext2D
-    vtkRenderingContextOpenGL
     vtkRenderingCore
-    vtkRenderingFreeType
     vtkInteractionStyle
     vtkViewsCore
     vtkViewsInfovis
     vtkIOXML
     vtkIOLegacy
-    vtkRenderingOpenGL
-    vtkRenderingMatplotlib
-    vtkRenderingVolumeOpenGL
-    vtkRenderingFreeTypeOpenGL
+    ${__dependencies}
   TEST_DEPENDS
-    vtkInteractionStyle
-    vtkRenderingContext2D
-    vtkRenderingContextOpenGL
-    vtkRenderingOpenGL
-    vtkRenderingMatplotlib
-    vtkRenderingVolumeOpenGL
-    vtkRenderingFreeTypeOpenGL
     vtkTestingRendering
+    ${__dependencies}
   EXCLUDE_FROM_WRAP_HIERARCHY
 )
