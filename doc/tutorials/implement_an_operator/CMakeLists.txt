@@ -18,15 +18,19 @@ smtk_operator_xml(
 # Make sure we can include the resulting file:
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # -- 1 --
-add_executable(implement_an_operator implement_an_operator.cxx)
-target_link_libraries(implement_an_operator SMTKCore SMTKCoreModelTesting)
-if (SMTK_BUILD_CGM)
-  target_link_libraries(implement_an_operator cgmSMTK)
-endif (SMTK_BUILD_CGM)
-if (SMTK_ENABLE_TESTING)
-  add_test(tut-implement_an_operator ${EXECUTABLE_OUTPUT_PATH}/implement_an_operator)
-endif()
 
+# Testing must be enabled to build this tutorial
+# because it depends on SMTKCoreModelTesting.
+if (SMTK_ENABLE_TESTING)
+  add_executable(implement_an_operator implement_an_operator.cxx)
+  target_link_libraries(implement_an_operator SMTKCore SMTKCoreModelTesting)
+  if (SMTK_BUILD_CGM)
+    target_link_libraries(implement_an_operator cgmSMTK)
+  endif (SMTK_BUILD_CGM)
+  if (SMTK_ENABLE_TESTING)
+    add_test(tut-implement_an_operator ${EXECUTABLE_OUTPUT_PATH}/implement_an_operator)
+  endif()
+endif()
 
 if (RST2HTML_EXECUTABLE)
   smtk_add_doc(implement_an_operator
