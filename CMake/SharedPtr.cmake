@@ -1,4 +1,3 @@
-
 #this function will define a parent scope
 #variable with the name of variable you pass in
 #if you need to find boost it will also define
@@ -52,4 +51,3 @@ function(determineSharedPtrType type incType)
   set(${incType} ${INCLUDE_RESULT} PARENT_SCOPE)
 
 endfunction(determineSharedPtrType)
-

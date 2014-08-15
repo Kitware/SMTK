@@ -17,6 +17,9 @@ include(CMake/SMTKMacros.cmake)
 # Include mechanism for determining shared and weak pointer support
 include(CMake/SharedPtr.cmake)
 
+# Include mechanism for determining function and bind support
+include(CMake/Function.cmake)
+
 # Include mechanism for determining how to specialize hash<X>()
 include(CMake/FindHashFunctor.cmake)
 
@@ -141,6 +144,19 @@ endif()
 if(SMTK_BUILD_PYTHON_WRAPPINGS)
   include(UseShiboken)
 endif()
+
+################################################################################
+# Determine function
+################################################################################
+determineFunctionType(FUNCTION_NAMESPACE FUNCTION_TYPE_HEADERS)
+
+configure_file(
+  ${PROJECT_SOURCE_DIR}/CMake/Function.h.in
+  ${PROJECT_BINARY_DIR}/smtk/Function.h
+  @ONLY)
+
+install (FILES ${PROJECT_BINARY_DIR}/smtk/Function.h
+  DESTINATION include/smtk)
 
 ################################################################################
 # Determine shared_ptr
