@@ -49,15 +49,19 @@ endfunction(smtk_add_header_test)
 # into the include folder
 function(smtk_public_headers)
   smtk_get_kit_name(name dir_prefix)
-  smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
   install (FILES ${ARGN} DESTINATION include/${dir_prefix})
+  if (SMTK_ENABLE_TESTING)
+    smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
+  endif()
 endfunction(smtk_public_headers)
 
 # Declare a list of header files.  Will make sure the header files get
 # compiled and show up in an IDE.
 function(smtk_private_headers)
   smtk_get_kit_name(name dir_prefix)
-  smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
+  if (SMTK_ENABLE_TESTING)
+    smtk_add_header_test("${name}" "${dir_prefix}" ${ARGN})
+  endif()
 endfunction(smtk_private_headers)
 
 # Declare a library as needed to be installed
