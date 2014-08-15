@@ -1,11 +1,12 @@
+**********************
 Overview of SMTK Model
-----------------------
+**********************
 
 SMTK's second major component is its geometric modeling system,
 which provides bridges to multiple solid modeling kernels.
 
 Model Entities
-~~~~~~~~~~~~~~
+==============
 
 The model manager is the only place where model topology and geometry are stored.
 However, there are cursor-like classes, all derived from :cxx:`smtk::model::Cursor`,
@@ -21,7 +22,7 @@ the simuation pipline.
    classes at both ends provide accessors).
 
 Remote models
-~~~~~~~~~~~~~
+=============
 
 For many reasons (e.g., incompatible library dependencies, licensing issues, distributed processing),
 it is often necessary for the modeling kernel to live in a different process than other portions of
