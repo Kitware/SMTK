@@ -31,8 +31,12 @@ endif()
 
 # Link *everything* in this directory to VTK modules
 # This is required for the TestBuild targets.
-link_libraries(
-  ${VTK_MODULES}
+# We must test whether each of the targets below exist
+# because they are required when built into VTK but
+# may not be present, especially since the OpenGL2
+# backend became available.
+set(SMTK_VTK_TARGET_LIST)
+foreach(target
   vtkInteractionStyle
   vtkRenderingContext2D
   vtkRenderingContextOpenGL
@@ -40,6 +44,14 @@ link_libraries(
   vtkRenderingMatplotlib
   vtkRenderingVolumeOpenGL
   vtkRenderingFreeTypeOpenGL
+)
+  if (TARGET ${target})
+    list(APPEND SMTK_VTK_TARGET_LIST ${target})
+  endif()
+endforeach()
+link_libraries(
+  ${VTK_MODULES}
+  ${SMTK_VTK_TARGET_LIST}
 )
 #install the headers
 smtk_public_headers(${VTKLibHeaders})
