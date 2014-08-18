@@ -107,11 +107,11 @@ endif()
 ################################################################################
 
 if(SMTK_BUILD_ParaView)
+  # Find the package here so environment variables are set, but
+  # be careful not to include the PARAVIEW_USE_FILE until inside
+  # a subdirectory that requires it; otherwise the list of include
+  # paths can become too long for some platforms.
   find_package(ParaView REQUIRED)
-  include("${PARAVIEW_USE_FILE}")
-  include(ParaViewPlugins)
-  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-  set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 endif()
 
 
@@ -252,10 +252,10 @@ include_directories(
 ################################################################################
 # Cannot prepare ParaView/VTK modules until the include directories
 # have been set or they will be unable to find SMTK, Boost, etc.
-if(SMTK_BUILD_ParaView)
-  pv_setup_module_environment("SMTK")
-  pv_process_modules()
-endif()
+#if(SMTK_BUILD_ParaView)
+#  pv_setup_module_environment("SMTK")
+#  pv_process_modules()
+#endif()
 
 ################################################################################
 # Finally build smtk
