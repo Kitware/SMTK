@@ -19,6 +19,15 @@ CellEntities ModelEntity::cells() const
 {
   CellEntities result;
   CursorArrangementOps::appendAllRelations(*this, INCLUDES, result);
+  if (result.empty())
+    { // We may have a "simple" model that has no arrangements but does have relations.
+    for (UUIDWithEntity it = this->m_manager->topology().begin(); it != this->m_manager->topology().end(); ++it)
+      {
+      CellEntity cell(this->m_manager, it->first);
+      if (cell.isValid())
+        result.push_back(cell);
+      }
+    }
   return result;
 }
 

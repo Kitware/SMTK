@@ -22,7 +22,6 @@ public:
   SMTK_CURSOR_CLASS(CellEntity,Cursor,isCellEntity);
 
   ModelEntity model() const;
-  ShellEntities shellEntities() const;
   CellEntities boundingCells() const;
 
   template<typename T> T inclusions() const;

@@ -1,5 +1,6 @@
 #include "smtk/model/BRepModel.h"
 
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/DefaultBridge.h"
@@ -7,8 +8,6 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/util/AutoInit.h"
-
-#include <stdlib.h> // for atexit()
 
 // Force the native (default) bridge to be registered
 smtkComponentInitMacro(smtk_native_bridge);
@@ -19,9 +18,6 @@ namespace smtk {
 using smtk::util::UUID;
 using smtk::util::UUIDs;
 using smtk::util::UUIDArray;
-
-/// A map of all the bridges which may be instantiated (indexed by name).
-BridgeConstructors* BRepModel::s_bridges = NULL;
 
 /**\brief Construction requires a container for storage.
   *
@@ -1228,64 +1224,41 @@ std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, BitFlags entit
   return name;
 }
 
-void BRepModel::cleanupBridges()
-{
-  delete BRepModel::s_bridges;
-}
-
-bool BRepModel::registerBridge(const std::string& bname, const StringList& fileTypes, BridgeConstructor bctor)
-{
-  if (!BRepModel::s_bridges)
-    {
-    BRepModel::s_bridges = new BridgeConstructors;
-    atexit(cleanupBridges);
-    }
-  if (!bname.empty() && bctor)
-    {
-    StaticBridgeInfo entry(fileTypes, bctor);
-    (*BRepModel::s_bridges)[bname] = entry;
-    return true;
-    }
-  else if (!bname.empty())
-    { // unregister the bridge of the given name.
-    BRepModel::s_bridges->erase(bname);
-    // FIXME: We should ensure that no registered Bridge sessions are of type bname.
-    //        Presumably, by deleting all such sessions and removing their entities
-    //        from storage.
-    }
-  return false;
-}
-
 /// Return a list of the names of each bridge subclass whose constructor has been registered with SMTK.
 StringList BRepModel::bridgeNames()
 {
-  StringList result;
-  for (BridgeConstructors::const_iterator it = s_bridges->begin(); it != s_bridges->end(); ++it)
-    result.push_back(it->first);
-  return result;
+  return BridgeRegistrar::bridgeNames();
 }
 
 /// Return the list of file types this bridge can read (currently: a list of file extensions).
 StringList BRepModel::bridgeFileTypes(const std::string& bname)
 {
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
-    return it->second.first;
-  StringList result;
-  return result;
+  return BridgeRegistrar::bridgeFileTypes(bname);
 }
 
-/**\brief Return a function to construct a Bridge instance given its class-specific name. Or NULL if you pass an invalid name.
+/**\brief Create a bridge given the type of bridge to construct.
   *
-  * After calling the constructor, you most probably want to call
-  * registerBridgeSession with the new bridge's UUID.
   */
-BridgeConstructor BRepModel::bridgeConstructor(const std::string& bname)
+BridgePtr BRepModel::createBridge(const std::string& bname)
 {
-  BridgeConstructor result = NULL;
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
-    result = it->second.second;
+  return BridgeRegistrar::createBridge(bname);
+}
+
+/**\brief Create a bridge, optionally forcing a session ID and/or
+  *       registering it with this manager instance.
+  *
+  */
+BridgePtr BRepModel::createAndRegisterBridge(
+  const std::string& bname,
+  const smtk::util::UUID& bridgeSessionId)
+{
+  BridgePtr result = BRepModel::createBridge(bname);
+  if (result)
+    {
+    if (bridgeSessionId)
+      result->setSessionId(bridgeSessionId);
+    this->registerBridgeSession(result);
+    }
   return result;
 }
 

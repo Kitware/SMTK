@@ -225,7 +225,6 @@ void SimpleModelSubphrases::childrenOfEntity(
       }
     else if (cent.isValid())
       {
-      this->toplevelShellsOfCell(phr, cent, result);
       if (!this->m_abridgeUses)
         this->usesOfCell(phr, cent, result);
       else

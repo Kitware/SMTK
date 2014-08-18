@@ -68,6 +68,7 @@
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofLocalBridgeSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperatorResult', unmatched parameter type 'cJSON*'"/>
@@ -262,6 +263,7 @@
   <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
   <suppress-warning text="skipping function 'smtk::util::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
+  <suppress-warning text="skipping function 'smtk::model::Bridge::createIODelegate', unmatched return type 'smtk::model::BridgeIOPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>

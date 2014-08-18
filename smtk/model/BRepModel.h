@@ -143,10 +143,12 @@ public:
   std::string assignDefaultName(const smtk::util::UUID& uid);
   static std::string shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags);
 
-  static bool registerBridge(const std::string& bname, const StringList& fileTypes, BridgeConstructor bctor);
   static StringList bridgeNames();
   static StringList bridgeFileTypes(const std::string& bname);
-  static BridgeConstructor bridgeConstructor(const std::string& bname);
+  static BridgePtr createBridge(const std::string& bname);
+  BridgePtr createAndRegisterBridge(
+    const std::string& bname,
+    const smtk::util::UUID& bridgeSessionId = smtk::util::UUID::null());
 
   bool registerBridgeSession(BridgePtr session);
   bool unregisterBridgeSession(BridgePtr session);
@@ -163,13 +165,10 @@ protected:
   UUIDsToBridges m_sessions;
   smtk::util::UUIDGenerator m_uuidGenerator;
   int m_modelCount;
-  static BridgeConstructors* s_bridges;
 
   std::string assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::util::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry);
-
-  static void cleanupBridges();
 };
 
   } // model namespace

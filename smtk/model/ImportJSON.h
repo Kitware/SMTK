@@ -32,6 +32,7 @@ public:
   static int ofManagerStringProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON*, ManagerPtr manager);
   static int ofRemoteBridgeSession(cJSON*, DefaultBridgePtr destBridge, ManagerPtr context);
+  static int ofLocalBridgeSession(cJSON*, ManagerPtr context);
   static int ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context);
   static int ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::Manager* opMgr);
   static int ofDanglingEntities(cJSON* node, ManagerPtr context);

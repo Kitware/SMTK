@@ -1,6 +1,8 @@
 #include "smtk/model/ImportJSON.h"
 
 #include "smtk/model/Arrangement.h"
+#include "smtk/model/BridgeRegistrar.h"
+#include "smtk/model/BridgeIOJSON.h"
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
@@ -601,6 +603,9 @@ int ImportJSON::ofManagerIntegerProperties(const smtk::util::UUID& uid, cJSON* d
 
 /**\brief Import JSON holding a bridge session into a local bridge.
   *
+  * The bridge described by \a node will be mirrored by the
+  * \a destBridge you specify.
+  *
   * You are responsible for providing the \a destBridge instance
   * into which the \a node's session will be placed.
   * You must also provide a valid model manager, and \a destBridge
@@ -671,6 +676,101 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
   for (StringList::iterator it = opNames.begin(); it != opNames.end(); ++it)
     {
     destBridge->registerOperator(*it, NULL, RemoteOperator::baseCreate);
+    }
+
+  // Import additional state if the bridge can accept it.
+  // Note that this is tricky because createIODelegate is
+  // being called on a *remote* bridge (i.e., subclass of
+  // DefaultBridge, not Bridge) while the JSON is created
+  // by a delegate obtained by calling createIODelegate
+  // on a *local* bridge (i.e., likely a direct subclass
+  // of Bridge).
+  BridgeIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<BridgeIOJSON>(
+      destBridge->createIODelegate("json"));
+  if (delegate)
+    {
+    delegate->importJSON(context, node);
+    }
+  return status;
+}
+
+/**\brief Create a local bridge and import JSON from a bridge session.
+  *
+  * The bridge described by \a node will be mirrored by a newly-created
+  * bridge (whose type is specified by \a node) and attached to the
+  * model manager \a context you specify.
+  *
+  * You must provide a valid model manager, \a context, to which the
+  * restored session will be registered.
+  * Note that \a context must *already* contain the SMTK entity records
+  * for the bridge session!
+  * In particular, ModelEntity entries in \a context will be used to
+  * determine the URLs for the modeling kernel's native representations.
+  *
+  * Note that it may not be possible to create an instance of the
+  * given bridge type -- either because support has not been compiled
+  * into SMTK or because the URL is locally inaccessible.
+  * (An example of latter is calling this method on a machine different
+  * from the source machine so that the original files are unavailable.)
+  * In these cases, 0 will be returned.
+  * 1 will be returned on success.
+  *
+  * Note that it is up to individual bridge subclasses to
+  * provide mechanisms for loading kernel-native models while
+  * preserving UUIDs. The expected design pattern is for each bridge
+  * to provide a BridgeIOJSON delegate class that reads kernel-specific
+  * keys in the bridge session. These keys will specify the list
+  * of models associated with the bridge session. The delegate can
+  * then query the \a context for URLs and either directly load
+  * the URL or use the "read" operator for the bridge to load the URL.
+  * Since "read" operators usually insert new entries into \a context,
+  * special care must be taken to avoid that behavior when importing
+  * a bridge session.
+  */
+int ImportJSON::ofLocalBridgeSession(cJSON* node, ManagerPtr context)
+{
+  int status = 0;
+  cJSON* opsObj;
+  cJSON* nameObj;
+  if (
+    !node ||
+    node->type != cJSON_Object ||
+    // Does the node have a valid bridge session ID?
+    !node->string ||
+    !node->string[0] ||
+    // Does the node have fields "name" and "ops" (for "operators") of type String?
+    !(nameObj = cJSON_GetObjectItem(node, "name")) ||
+    nameObj->type != cJSON_String ||
+    !nameObj->valuestring ||
+    !nameObj->valuestring[0] ||
+    !(opsObj = cJSON_GetObjectItem(node, "ops")) ||
+    opsObj->type != cJSON_String ||
+    !opsObj->valuestring ||
+    !opsObj->valuestring[0])
+    return status;
+
+  Bridge::Ptr bridge =
+    context->createAndRegisterBridge(
+      nameObj->valuestring,
+      smtk::util::UUID(node->string));
+  if (!bridge)
+    return status;
+
+  // Ignore the XML definitions of the serialized bridge session;
+  // recreating the bridge will recreate the attribute definitions.
+  (void)opsObj;
+
+  // Import additional state.
+  // Bridges may use this to determine which model entities
+  // in the \a context are associated with the new bridge
+  // and load the corresponding native-kernel model files.
+  BridgeIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<BridgeIOJSON>(
+      bridge->createIODelegate("json"));
+  if (delegate)
+    {
+    status = delegate->importJSON(context, node);
     }
   return status;
 }

@@ -23,6 +23,7 @@ public:
 
   Edges edges() const;
 
+  double* coordinates() const;
   //smtk::util::Vector3d coordinates() const;
 };
 

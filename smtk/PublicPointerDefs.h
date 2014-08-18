@@ -56,6 +56,8 @@ namespace smtk
     typedef std::vector<smtk::model::Arrangement> Arrangements;
     class BRepModel;
     class Bridge;
+    class BridgeIO;
+    class BridgeIOJSON;
     class CellEntity;
     class Chain;
     typedef std::vector<smtk::model::Chain> Chains;
@@ -172,6 +174,8 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
     typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
     typedef smtk::shared_ptr< smtk::model::DefaultBridge >         DefaultBridgePtr;
+    typedef smtk::shared_ptr< smtk::model::BridgeIO >              BridgeIOPtr;
+    typedef smtk::shared_ptr< smtk::model::BridgeIOJSON >          BridgeIOJSONPtr;
     typedef smtk::shared_ptr< smtk::model::DescriptivePhrase >     DescriptivePhrasePtr;
     typedef smtk::weak_ptr< smtk::model::DescriptivePhrase >       WeakDescriptivePhrasePtr;
     typedef smtk::shared_ptr< smtk::model::EntityPhrase >          EntityPhrasePtr;

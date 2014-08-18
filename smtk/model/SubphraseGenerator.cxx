@@ -144,13 +144,6 @@ void SubphraseGenerator::toplevelShellsOfUse(
 }
 
 
-void SubphraseGenerator::toplevelShellsOfCell(
-  DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
-{
-  ShellEntities toplevelShells = ent.shellEntities();
-  addEntityPhrases(toplevelShells, src, this->directLimit(), result);
-}
-
 void SubphraseGenerator::usesOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {

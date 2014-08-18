@@ -7,6 +7,8 @@ set(CGMLibSrcs
   Engines.cxx
   ExportSolid.cxx
   ImportSolid.cxx
+  Operator.cxx
+  ReadOperator.cxx
   TDUUID.cxx
 )
 
@@ -16,8 +18,17 @@ set(CGMLibHeaders
   Engines.h
   ExportSolid.h
   ImportSolid.h
+  Operator.h
+  ReadOperator.h
   TDUUID.h
 )
+
+# Operators which have XML descriptions in separate files
+# need to have it encoded as a string in a header.
+# We do not need the path to the generated header (appended
+# to cgmOperatorXML) since the operators themselves include
+# the header in their implementations.
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
 
 # Install the headers
 smtk_public_headers(${CGMLibHeaders})

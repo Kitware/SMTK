@@ -10,6 +10,7 @@
 #include "smtk/SharedPtr.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Operator.h"
 
@@ -20,9 +21,6 @@ class Bridge;
 class Cursor;
 class Operator;
 typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
-typedef smtk::shared_ptr<Bridge> (*BridgeConstructor)();
-typedef std::pair<smtk::model::StringList,BridgeConstructor> StaticBridgeInfo;
-typedef std::map<std::string,StaticBridgeInfo> BridgeConstructors;
 typedef std::map<smtk::model::Cursor,int> DanglingEntities;
 
 /**\brief Bit flags describing types of information bridged to Manager.
@@ -63,6 +61,7 @@ typedef unsigned long BridgedInfoBits;
   *
   * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
   * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
+  *
   * Note that you must invoke this macro in the global namespace!
   *
   * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
@@ -88,13 +87,13 @@ typedef unsigned long BridgedInfoBits;
     for (const char** ft = FileTypes; *ft; ++ft) \
       if (*ft[0]) \
         fileTypes.push_back(*ft); \
-    smtk::model::BRepModel::registerBridge( \
+    smtk::model::BridgeRegistrar::registerBridge( \
       #Comp, /* Can't rely on bridgeName to be initialized yet */ \
       fileTypes, \
       baseCreate); \
   } \
   void smtk_##Comp##_bridge_AutoInit_Destruct() { \
-    smtk::model::BRepModel::registerBridge( \
+    smtk::model::BridgeRegistrar::registerBridge( \
       Cls ::bridgeName, \
       std::vector<std::string>(), \
       NULL); \
@@ -244,6 +243,7 @@ public:
 protected:
   friend class ExportJSON;
   friend class ImportJSON;
+  friend class BRepModel;
 
   Bridge();
   virtual ~Bridge();
@@ -255,6 +255,8 @@ protected:
   void initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass = false);
   virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(const std::string&, const OperatorConstructors* opList) const;
+
+  virtual BridgeIOPtr createIODelegate(const std::string& format);
 
   DanglingEntities m_dangling;
   smtk::util::UUID m_sessionId;

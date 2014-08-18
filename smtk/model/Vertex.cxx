@@ -19,6 +19,23 @@ smtk::model::Edges Vertex::edges() const
   return result;
 }
 
+double* Vertex::coordinates() const
+{
+  if (this->isValid())
+    {
+    UUIDWithTessellation tessRec =
+      this->m_manager->tessellations().find(this->m_entity);
+    if (tessRec != this->m_manager->tessellations().end())
+      {
+      if (!tessRec->second.coords().empty())
+        {
+        return &tessRec->second.coords()[0];
+        }
+      }
+    }
+  return NULL;
+}
+
 /*
 smtk::util::Vector3d Vertex::coordinates() const
 {

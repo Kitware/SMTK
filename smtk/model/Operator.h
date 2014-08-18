@@ -10,6 +10,8 @@
 #include "smtk/util/AutoInit.h"
 #include "smtk/util/SharedFromThis.h"
 
+#include <string>
+
 namespace smtk {
   namespace model {
 

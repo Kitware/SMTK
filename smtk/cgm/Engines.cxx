@@ -2,6 +2,10 @@
 
 #include "smtk/cgm/CAUUID.h"
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#endif
 #include "DLIList.hpp"
 #include "FacetModifyEngine.hpp"
 #include "GeometryHealerTool.hpp"
@@ -14,6 +18,9 @@
 
 #ifdef HAVE_OCC
 #  include "OCCModifyEngine.hpp"
+#endif
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
 #endif
 
 #include <algorithm>

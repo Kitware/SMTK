@@ -32,6 +32,7 @@ option(Smtk_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
+option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
 option(SMTK_USE_SYSTEM_SPARSEHASH "Use the system-installed sparsehash?" OFF)
@@ -122,6 +123,14 @@ endif()
 if(SMTK_BUILD_CGM)
   find_package(CGM REQUIRED)
 endif(SMTK_BUILD_CGM)
+
+################################################################################
+# Remus related settings
+################################################################################
+
+if (SMTK_ENABLE_REMUS)
+  find_package(Remus REQUIRED)
+endif()
 
 ################################################################################
 # Sparsehash Related Settings

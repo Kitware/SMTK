@@ -27,12 +27,20 @@ class ImportJSON;
   * as OpenCascade or ACIS, this makes them the place where requests must
   * be forwarded if they are going to be.
   *
+  * By default this bridge will create instances of RemoteOperator
+  * when asked for an Operator.
+  * The RemoteOperator class calls virtual methods on DefaultBridge
+  * in order to perform operations remotely (i.e., DefaultBridge acts
+  * as a delegate for operators.)
   * Subclasses which inherit DefaultBridge in order to provide request
   * forwarding must implement transcribeInternal, ableToOperateDelegate,
   * and operateDelegate methods.
   *
   * See the unitDefaultBridge test for an example of how
   * forwarding works.
+  *
+  * See the Remus remote bridge for an implementation that can
+  * forward requests to Remus workers.
   */
 class SMTKCORE_EXPORT DefaultBridge : public Bridge
 {

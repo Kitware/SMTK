@@ -7,6 +7,11 @@
 #include "vtkXMLPolyDataReader.h"
 
 #include "smtk/options.h" // for CGM_HAVE_VERSION_H
+
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#endif
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
@@ -26,6 +31,9 @@
 #include "BodySM.hpp"
 #include "RefFace.hpp"
 #include "RefVertex.hpp"
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include <iostream>
 

@@ -766,7 +766,9 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   smtk::attribute::Item::CopyInfo info;
   smtk::model::ManagerPtr thisModel = this->refModelManager();
   smtk::model::ManagerPtr thatModel = sourceAtt->manager()->refModelManager();
-  info.IsSameModel = thisModel && (thisModel == thatModel);
+  info.IsSameModel =
+    (thisModel && (thisModel == thatModel)) ||
+    (options & FORCE_COPY_ASSOCIATIONS);
   bool ok = this->copyAttributeImpl(sourceAtt, info, options);
   if (ok)
     {
@@ -791,7 +793,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
           }
         else
           {
-          // Need to copy attrobite, first find it in the input manager
+          // Need to copy attribute, first find it in the input manager
           std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
           AttributePtr nextAtt = sourceAtt->manager()->findAttribute(attName);
           // Attribute missing only if source manager is invalid, but check anyway
