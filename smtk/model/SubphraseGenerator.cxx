@@ -17,6 +17,8 @@
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/PropertyValuePhrase.h"
 
+#include <algorithm>
+
 namespace smtk {
   namespace model {
 
@@ -160,7 +162,13 @@ void SubphraseGenerator::inclusionsOfCell(
   DescriptivePhrase::Ptr src, const CellEntity& ent, DescriptivePhrases& result)
 {
   Cursors inclusions = ent.inclusions<Cursors>();
-  addEntityPhrases(inclusions, src, this->directLimit(), result);
+  CellEntities boundingCells = ent.boundingCells();
+  Cursors strictInclusions;
+  std::set_difference(
+    inclusions.begin(), inclusions.end(),
+    boundingCells.begin(), boundingCells.end(),
+    std::inserter(strictInclusions, strictInclusions.end()));
+  addEntityPhrases(strictInclusions, src, this->directLimit(), result);
 }
 
 void SubphraseGenerator::boundingCellsOfCell(
