@@ -1,7 +1,7 @@
 #ifndef __smtk_model_Operator_h
 #define __smtk_model_Operator_h
 
-#include "smtk/Function.h" // for smtk::function<>
+//#include "smtk/Function.h" // for smtk::function<>
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SMTKCoreExports.h"
 
@@ -13,7 +13,8 @@
 namespace smtk {
   namespace model {
 
-typedef smtk::function<smtk::model::OperatorPtr()> OperatorConstructor;
+//typedef smtk::function<smtk::model::OperatorPtr()> OperatorConstructor;
+typedef smtk::model::OperatorPtr (*OperatorConstructor)();
 typedef std::pair<std::string,OperatorConstructor> StaticOperatorInfo;
 typedef std::map<std::string,StaticOperatorInfo> OperatorConstructors;
 
