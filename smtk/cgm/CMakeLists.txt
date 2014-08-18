@@ -47,6 +47,7 @@ target_link_libraries(facet-convert
 )
 
 if (SMTK_BUILD_ParaView)
+  include("${PARAVIEW_USE_FILE}")
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
     SMTKCore
