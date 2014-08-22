@@ -7,7 +7,7 @@
 //   Please see the file Copyright.txt in the root directory of
 //   VTKEdge for further information.
 //
-//   Alternatively, you may see: 
+//   Alternatively, you may see:
 //
 //   http://www.vtkedge.org/vtkedge/project/license.html
 //

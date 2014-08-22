@@ -22,7 +22,7 @@ PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME vtkDiscreteModelRegion - 
+// .NAME vtkDiscreteModelRegion -
 // .SECTION Description
 
 #ifndef __vtkDiscreteModelRegion_h
