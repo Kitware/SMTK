@@ -131,11 +131,11 @@ double vtkCmbModelEdgeMesh::GetActualLength()
   for(faces->Begin(); !faces->IsAtEnd(); faces->Next())
     {
     face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    faceMesh = 
+    faceMesh =
       vtkCmbModelFaceMesh::SafeDownCast(
                                         this->GetMasterMesh()->
                                         GetModelEntityMesh(face));
-    actualLength = 
+    actualLength =
       vtkCmbMesh::CombineMeshLengths(actualLength,
                                      faceMesh->GetActualLength());
     hadFaces = true;
@@ -146,7 +146,7 @@ double vtkCmbModelEdgeMesh::GetActualLength()
     // We need to combine the actual length with global setting.
     // If the edge had faces this would have been done in the above loop
     // (several times infact)
-    actualLength = 
+    actualLength =
       vtkCmbMesh::CombineMeshLengths(actualLength,
                                      this->GetMasterMesh()->GetGlobalLength());
     }
