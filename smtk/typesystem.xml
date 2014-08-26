@@ -1048,6 +1048,14 @@
 
       <object-type name="GroupItem">
         <include file-name="smtk/model/GroupItem.h" location="local"/>
+        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::model::Item &gt;)"
+          static="yes"
+          return-type="smtk::shared_ptr&lt;smtk::model::GroupItem &gt;">
+          <inject-code>
+            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::model::GroupItem &gt;(%1);
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
       </object-type>
 
       <object-type name="ModelDomainItem">
