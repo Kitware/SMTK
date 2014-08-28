@@ -217,7 +217,7 @@ namespace {
     xml_attribute xatt;
     xml_node valsNode;
     std::size_t i, n = item->numberOfValues();
-    xml_node val;
+    xml_node val, noVal;
     std::size_t  numRequiredVals = item->numberOfRequiredValues();
     std::string nodeName, expName;
     attribute::AttributePtr expAtt;
@@ -294,8 +294,9 @@ namespace {
       }
     else if ((numRequiredVals == 1) && !item->isExtensible())
       {
-      // Lets see if the value is set
-      if (node.text())
+      // Lets see if there is an unset val element
+      noVal = node.child("UnsetVal");
+      if (!noVal)
         {
         // Is this an exapression?
         xatt = node.attribute("Expression");

@@ -144,6 +144,8 @@ int main()
   ddef->setAdvanceLevel(1);
   ddef->setMinRange(0, false);
 
+  ddef = globalsDef->addItemDefinition<attribute::DoubleItemDefinitionPtr>("SomethingWithNoValue");
+
   // Lets add some Views
 
   view::RootPtr root = manager.rootView();

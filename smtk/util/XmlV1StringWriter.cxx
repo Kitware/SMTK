@@ -182,6 +182,10 @@ namespace {
           node.text().set(getValueForXMLElement(item->value()));
           }
         }
+      else //This is an unset value
+        {
+        node.append_child("UnsetVal");
+        }
       return;
       }
     xml_node val, values = node.append_child("Values");
