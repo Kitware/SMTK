@@ -56,7 +56,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkVector.h>
 #include <vtksys/SystemTools.hxx>
 
-#include "vtkERDCMeshWriter.h"
+#include "vtkCMBMeshWriter.h"
 #include "CmbFaceMeshHelper.h"
 
 using namespace CmbFaceMesherClasses;
@@ -406,7 +406,7 @@ void vtkCmbMeshGridRepresentationServer::WriteMeshToFile()
   vtkNew<vtkTrivialProducer> tvp;
   tvp->SetOutput(this->Representation);
 
-  vtkNew<vtkERDCMeshWriter> writer;
+  vtkNew<vtkCMBMeshWriter> writer;
   writer->SetInputConnection(tvp->GetOutputPort());
   writer->SetFileName(this->GetGridFileName());
 
@@ -418,8 +418,8 @@ void vtkCmbMeshGridRepresentationServer::WriteMeshToFile()
       vtkDataObject::FIELD_ASSOCIATION_CELLS,"ModelId");
     }
 
-  writer->SetFileFormat(vtkERDCMeshWriter::XMS);
-  writer->SetMeshDimension(vtkERDCMeshWriter::MESH2D);
+  writer->SetFileFormat(vtkCMBMeshWriter::XMS);
+  writer->SetMeshDimension(vtkCMBMeshWriter::MESH2D);
   writer->SetValidateDimension(true);
   writer->SetWriteMetaInfo(true);
   writer->SetFloatPrecision(6);
