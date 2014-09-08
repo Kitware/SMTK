@@ -114,10 +114,10 @@ protected:
   friend class vtkCMBParserBase;
   friend class vtkDiscreteModelFace;
   friend class vtkDiscreteModelWrapper;
-  friend class vtkCmbMapToCmbModel;
+  friend class vtkCMBMapToCMBModel;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;
-  friend class vtkCmbMeshToModelWriter;
+  friend class vtkCMBMeshToModelWriter;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;
   friend class vtkCreateModelEdgesOperator;

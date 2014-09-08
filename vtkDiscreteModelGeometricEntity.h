@@ -101,7 +101,7 @@ protected:
   friend class vtkDiscreteModelWrapper;
   friend class vtkCMBModelStateOperator;
   friend class vtkCMBModelBuilder;
-  friend class vtkCmbMeshToModelWriter;
+  friend class vtkCMBMeshToModelWriter;
   friend class vtkGenerateSimpleModelOperator;
   friend class pqCMBGeologyBuilderMainWindowCore;
   friend class pqCMBSceneBuilderMainWindowCore;

@@ -28,14 +28,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // This class is just a shell around vtkDiscreteModel, which
 // is the real "Model" that contains all the model related APIs.
-// The main reason to have this class is that we need a new vtkCmbModelMapper to take
+// The main reason to have this class is that we need a new vtkCMBModelMapper to take
 // a model as input and handle the rendering of the model as a whole, instead of having
 // a mapper for each geometric model entities. Since vtkDiscreteModel is not a vtkDataObject,
 // so we have to have this new class, which is derived from vtkDataOject,
 // so that it can be used by the mapper as input.
 //
 // .SECTION See Also
-// vtkDiscreteModel, vtkCmbModelMapper
+// vtkDiscreteModel, vtkCMBModelMapper
 
 #ifndef __vtkDiscreteModelWrapper_h
 #define __vtkDiscreteModelWrapper_h
@@ -175,11 +175,11 @@ protected:
   // This is protected on purpose
   void SetModel(vtkDiscreteModel* model);
 
-  friend class vtkCmbModelRepresentation;
-  friend class vtkCmbModelSelectionSource;
+  friend class vtkCMBModelRepresentation;
+  friend class vtkCMBModelSelectionSource;
   friend class vtkModelEntityOperator;
-  friend class vtkCmbModelSource;
-  friend class vtkCmbModelMapper;
+  friend class vtkCMBModelSource;
+  friend class vtkCMBModelMapper;
 
   vtkDiscreteModel* Model;
   vtkStringArray* SerializedModel;

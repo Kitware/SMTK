@@ -207,7 +207,7 @@ public:
   friend class vtkEnclosingModelEntityOperator;
   friend class vtkCMBPolyDataProvider;
   friend class vtkCMBXMLBCSWriter;
-  friend class vtkCmbMeshServerJobSubmitter;
+  friend class vtkCMBMeshServerJobSubmitter;
   friend class vtkDiscreteModelEdge;
 private:
   //verifies that Data is valid.

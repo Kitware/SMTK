@@ -84,7 +84,7 @@ public:
 protected:
 //BTX
   friend class vtkDiscreteModel;
-  friend class vtkCmbMapToCmbModel;
+  friend class vtkCMBMapToCMBModel;
   friend class vtkModelBCGridRepresentation;
 //ETX
   vtkDiscreteModelFace();
@@ -107,7 +107,7 @@ protected:
   void SplitEdges(vtkDiscreteModelFace* newModelFace, FaceEdgeSplitInfo& splitInfo);
 
   friend class vtkSelectionSplitOperator;
-  friend class vtkCmbIncorporateMeshOperator;
+  friend class vtkCMBIncorporateMeshOperator;
 
   virtual vtkModelEntity* GetThisModelEntity();
   virtual bool Destroy();

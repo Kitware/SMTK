@@ -78,7 +78,7 @@ protected:
   friend class vtkModelEdge;
   friend class vtkXMLModelReader;
   friend class vtkDiscreteModelWrapper;
-  friend class vtkCmbMapToCmbModel;
+  friend class vtkCMBMapToCMBModel;
 //ETX
 
 
