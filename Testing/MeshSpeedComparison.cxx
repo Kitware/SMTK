@@ -23,12 +23,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-
-#include <vtkCmbMeshServer.h>
+#include <vtkCMBMeshServer.h>
 #include <vtkDiscreteModel.h>
-#include <vtkCmbModelEdgeMesh.h>
-#include <vtkCmbModelEntityMesh.h>
-#include <vtkCmbModelFaceMesh.h>
+#include <vtkCMBModelEdgeMesh.h>
+#include <vtkCMBModelEntityMesh.h>
+#include <vtkCMBModelFaceMesh.h>
 #include <vtkCMBModelReadOperator.h>
 #include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
@@ -40,8 +39,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <vtkSmartPointer.h>
 #include <vtkTimerLog.h>
 
-#include "vtkCmbMapReader.h"
-#include "vtkCmbTriangleMesher.h"
+#include "vtkCMBMapReader.h"
+#include "vtkCMBTriangleMesher.h"
 
 // This tests the events for the SimBuilder Mesh.
 
@@ -66,8 +65,13 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
     return 1;
     }
 
+<<<<<<< HEAD
   vtkSmartPointer<vtkCmbMesh> mesh =
     vtkSmartPointer<vtkCmbMesh>::New();
+=======
+  vtkSmartPointer<vtkCMBMeshServer> mesh =
+    vtkSmartPointer<vtkCMBMeshServer>::New();
+>>>>>>> 4206794... Rename Cmb to CMB in all files and classes.
   mesh->Initialize(model);
   mesh->SetGlobalLength(Length);
 
@@ -76,7 +80,7 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   for(edgesIter->Begin();!edgesIter->IsAtEnd();edgesIter->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edgesIter->GetCurrentItem());
-    /*vtkCmbModelEdgeMesh* edgeMesh = */vtkCmbModelEdgeMesh::SafeDownCast(
+    /*vtkCMBModelEdgeMesh* edgeMesh = */vtkCMBModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(edge));
     }
 
@@ -89,7 +93,7 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
   for(facesIter->Begin();!facesIter->IsAtEnd();facesIter->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(facesIter->GetCurrentItem());
-    /*vtkCmbModelFaceMesh* faceMesh = */vtkCmbModelFaceMesh::SafeDownCast(
+    /*vtkCMBModelFaceMesh* faceMesh = */vtkCMBModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
     }
   //end timing
@@ -102,12 +106,12 @@ double TimeSimMesher(const char* fileName, double Length, double MinAngle)
 
 double TimeMapMesher(const char* fileName, double Length, double MinAngle)
 {
-  vtkSmartPointer<vtkCmbMapReader> reader = vtkSmartPointer<vtkCmbMapReader>::New();
+  vtkSmartPointer<vtkCMBMapReader> reader = vtkSmartPointer<vtkCMBMapReader>::New();
   reader->SetFileName(fileName);
   reader->Update();
 
   double maxArea = 0.5 * Length * Length;
-  vtkSmartPointer<vtkCmbTriangleMesher> mesher = vtkSmartPointer<vtkCmbTriangleMesher>::New();
+  vtkSmartPointer<vtkCMBTriangleMesher> mesher = vtkSmartPointer<vtkCMBTriangleMesher>::New();
   mesher->SetInputConnection(reader->GetOutputPort());
   mesher->SetPreserveBoundaries(true);
   mesher->SetMaxArea(maxArea);

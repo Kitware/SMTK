@@ -23,11 +23,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include <vtkCmbMeshServer.h>
+#include <vtkCMBMeshServer.h>
 #include <vtkDiscreteModel.h>
-#include <vtkCmbModelEdgeMeshServer.h>
-#include <vtkCmbModelEntityMesh.h>
-#include <vtkCmbModelFaceMesh.h>
+#include <vtkCMBModelEdgeMeshServer.h>
+#include <vtkCMBModelEntityMesh.h>
+#include <vtkCMBModelFaceMeshServer.h>
 #include <vtkCMBModelReadOperator.h>
 #include <vtkDiscreteModelWrapper.h>
 #include <vtkEdgeSplitOperator.h>
@@ -57,8 +57,13 @@ int Check2DModel(const char* fileName)
     return 1;
     }
 
+<<<<<<< HEAD
   vtkSmartPointer<vtkCmbMesh> mesh =
     vtkSmartPointer<vtkCmbMesh>::New();
+=======
+  vtkSmartPointer<vtkCMBMeshServer> mesh =
+    vtkSmartPointer<vtkCMBMeshServer>::New();
+>>>>>>> 4206794... Rename Cmb to CMB in all files and classes.
   mesh->Initialize(model);
   mesh->SetGlobalLength(100.);
 
@@ -67,7 +72,7 @@ int Check2DModel(const char* fileName)
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    vtkCMBModelEdgeMesh* edgeMesh = vtkCMBModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(edge));
     edgeMesh->BuildModelEntityMesh(false);
     }
@@ -75,7 +80,7 @@ int Check2DModel(const char* fileName)
   for(edges->Begin();!edges->IsAtEnd();edges->Next())
     {
     vtkModelEdge* edge = vtkModelEdge::SafeDownCast(edges->GetCurrentItem());
-    vtkCmbModelEdgeMesh* edgeMesh = vtkCmbModelEdgeMesh::SafeDownCast(
+    vtkCMBModelEdgeMesh* edgeMesh = vtkCMBModelEdgeMesh::SafeDownCast(
       mesh->GetModelEntityMesh(edge));
     if(edgeMesh->GetLength() != 0.)
       {
@@ -97,7 +102,7 @@ int Check2DModel(const char* fileName)
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+    vtkCMBModelFaceMesh* faceMesh = vtkCMBModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
     faceMesh->BuildModelEntityMesh(false);
     }
@@ -105,7 +110,7 @@ int Check2DModel(const char* fileName)
   for(faces->Begin();!faces->IsAtEnd();faces->Next())
     {
     vtkModelFace* face = vtkModelFace::SafeDownCast(faces->GetCurrentItem());
-    vtkCmbModelFaceMesh* faceMesh = vtkCmbModelFaceMesh::SafeDownCast(
+    vtkCMBModelFaceMesh* faceMesh = vtkCMBModelFaceMesh::SafeDownCast(
       mesh->GetModelEntityMesh(face));
     if(faceMesh->GetLength() != 0. || faceMesh->GetMinimumAngle() != 0.)
       {

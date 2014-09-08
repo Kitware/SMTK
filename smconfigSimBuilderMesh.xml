@@ -1,7 +1,7 @@
 <ServerManagerConfiguration>
   <ProxyGroup name="CMBSimBuilderMeshGroup">
 
-    <Proxy name="CMBMeshWrapper" class="vtkCmbMeshWrapper">
+    <Proxy name="CMBMeshWrapper" class="vtkCMBMeshWrapper">
       <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
         <ProxyGroupDomain name="groups">
           <Group name="CMBModelGroup"/>
@@ -31,7 +31,7 @@
       </DoubleVectorProperty>
     </Proxy>
 
-    <SourceProxy name="MeshPolyDataProvider" class="vtkCmbMeshPolyDataProvider">
+    <SourceProxy name="MeshPolyDataProvider" class="vtkCMBMeshPolyDataProvider">
       <ProxyProperty name="MeshWrapper" command="SetMeshWrapper">
         <ProxyGroupDomain name="groups">
           <Group name="CMBSimBuilderMeshGroup"/>
@@ -66,7 +66,7 @@
       </IntVectorProperty>
     </SourceProxy>
 
-  <OperatorProxy name="CmbMeshGridRepresentationOperator" class="vtkCmbMeshGridRepresentationOperator">
+  <OperatorProxy name="CmbMeshGridRepresentationOperator" class="vtkCMBMeshGridRepresentationOperator">
       <IntVectorProperty
          name="OperateSucceeded"
          command="GetOperateSucceeded"
@@ -113,7 +113,7 @@
     <!-- End of CmbMeshGridRepresentationOperator -->
     </OperatorProxy>
 
-    <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCmbModelEdgeMeshOperator">
+    <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCMBModelEdgeMeshOperator">
       <IdTypeVectorProperty
          name="Id"
          command="SetId"
@@ -167,7 +167,7 @@
       <!-- End of ModelEdgeMeshOperator -->
     </OperatorProxy>
 
-    <OperatorProxy name="ModelFaceMeshOperator" class="vtkCmbModelFaceMeshOperator">
+    <OperatorProxy name="ModelFaceMeshOperator" class="vtkCMBModelFaceMeshOperator">
       <IdTypeVectorProperty
          name="Id"
          command="SetId"
@@ -242,7 +242,7 @@
       <!-- End of ModelFaceMeshOperator -->
     </OperatorProxy>
 
-    <SourceProxy name="MeshToModelWriter" class="vtkCmbMeshToModelWriter"
+    <SourceProxy name="MeshToModelWriter" class="vtkCMBMeshToModelWriter"
       label="The bcs file writer">
       <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
         <ProxyGroupDomain name="groups">
@@ -261,7 +261,7 @@
       </StringVectorProperty>
       <!-- End of MeshToModelWriter -->
     </SourceProxy>
-    <OperatorProxy name="MeshToModelReadOperator" class="vtkCmbMeshToModelReadOperator">
+    <OperatorProxy name="MeshToModelReadOperator" class="vtkCMBMeshToModelReadOperator">
       <StringVectorProperty name="FileName"
         command="SetFileName"
         number_of_elements="1">

@@ -18,35 +18,35 @@ if(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
 endif(MSVC_VERSION EQUAL 1400 OR MSVC_VERSION GREATER 1400 OR MSVC10)
 
 set(vtkMeshFiles
-  vtkCmbMesh.cxx
-  vtkCmbMeshClient.cxx
-  vtkCmbMeshServer.cxx
-  vtkCmbMeshGridRepresentationClient.cxx
-  vtkCmbMeshGridRepresentationServer.cxx
-  vtkCmbModelEdgeMesh.cxx
-  vtkCmbModelEdgeMeshClient.cxx
-  vtkCmbModelEdgeMeshServer.cxx
-  vtkCmbModelEntityMesh.cxx
-  vtkCmbModelFaceMesh.cxx
-  vtkCmbModelFaceMeshClient.cxx
-  vtkCmbModelFaceMeshServer.cxx
-  vtkCmbModelVertexMesh.cxx
+  vtkCMBMesh.cxx
+  vtkCMBMeshClient.cxx
+  vtkCMBMeshServer.cxx
+  vtkCMBMeshGridRepresentationClient.cxx
+  vtkCMBMeshGridRepresentationServer.cxx
+  vtkCMBModelEdgeMesh.cxx
+  vtkCMBModelEdgeMeshClient.cxx
+  vtkCMBModelEdgeMeshServer.cxx
+  vtkCMBModelEntityMesh.cxx
+  vtkCMBModelFaceMesh.cxx
+  vtkCMBModelFaceMeshClient.cxx
+  vtkCMBModelFaceMeshServer.cxx
+  vtkCMBModelVertexMesh.cxx
 )
 set(CMBProxyFiles
-  vtkCmbMeshPolyDataProvider.cxx
-  vtkCmbMeshWrapper.cxx
-  vtkCmbMeshGridRepresentationOperator.cxx
-  vtkCmbModelEdgeMeshOperator.cxx
-  vtkCmbModelFaceMeshOperator.cxx
-  vtkCmbMeshToModelWriter.cxx
-  vtkCmbMeshToModelReader.cxx
-  vtkCmbMeshToModelReadOperator.cxx
+  vtkCMBMeshPolyDataProvider.cxx
+  vtkCMBMeshWrapper.cxx
+  vtkCMBMeshGridRepresentationOperator.cxx
+  vtkCMBModelEdgeMeshOperator.cxx
+  vtkCMBModelFaceMeshOperator.cxx
+  vtkCMBMeshToModelWriter.cxx
+  vtkCMBMeshToModelReader.cxx
+  vtkCMBMeshToModelReadOperator.cxx
 )
 set_source_files_properties(
-  vtkCmbMesh
-  vtkCmbModelEdgeMesh
-  vtkCmbModelEntityMesh
-  vtkCmbModelFaceMesh
+  vtkCMBMesh
+  vtkCMBModelEdgeMesh
+  vtkCMBModelEntityMesh
+  vtkCMBModelFaceMesh
   ABSTRACT
 )
 
@@ -64,7 +64,7 @@ add_paraview_plugin(SimBuilderMesh_Plugin "1.0"
   SERVER_SOURCES ${vtkMeshFiles}
 )
 
-# Linking against vtkCmbDiscreteModelCS is because vtkCmbMeshWrapper::SetModelWrapper()
+# Linking against vtkCmbDiscreteModelCS is because vtkCMBMeshWrapper::SetModelWrapper()
 target_link_libraries(SimBuilderMesh_Plugin
   LINK_PUBLIC
     vtkCMBFiltering
