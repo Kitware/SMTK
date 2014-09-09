@@ -247,8 +247,6 @@ namespace smtk
       copyTo(ValueItemDefinitionPtr def,
       smtk::attribute::ItemDefinition::CopyInfo& info) const
     {
-    ValueItemDefinition::copyTo(def, info);
-
     // Get raw pointer and cast to ValueItemDefinitionTemplate*
     ValueItemDefinition *rawDef = def.get();
     ValueItemDefinitionTemplate<DataT> *vdef =
@@ -282,6 +280,9 @@ namespace smtk
         }
       vdef->setDefaultDiscreteIndex(m_defaultDiscreteIndex);
       }
+
+    // Copy superclass *after* our stuff, so that discrete values are set up
+    ValueItemDefinition::copyTo(def, info);
     }
 
   } // namespace attribute
