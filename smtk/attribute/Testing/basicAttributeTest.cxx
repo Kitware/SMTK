@@ -82,6 +82,38 @@ int main()
     status++;
     }
 
+  std::vector<smtk::attribute::AttributePtr> atts;
+  std::vector<smtk::attribute::DefinitionPtr> defs;
+
+  // Check to see how many atts and defs are in the manager
+  manager.definitions(defs);
+  manager.attributes(atts);
+
+  if (defs.size() != 1)
+    {
+    std::cout << "Incorrect number of definitions reported - definitions returned: "
+              << defs.size() << " but should have returned 1\n";
+     status++;
+    }
+  else if (defs[0] != def)  // Is testDef in the list?
+    {
+    std::cout << "testDef is not in the list!\n";
+    ++status;
+    }
+
+  if (atts.size() != 1)
+    {
+    std::cout << "Incorrect number of attributes reported - attributes returned: "
+              << atts.size() << " but should have returned 1\n";
+    status++;
+    }
+  else if (atts[0] != att)  // Is testAtt in the list?
+    {
+    std::cout << "testAtt is not in the list!\n";
+    ++status;
+    }
+
+
   if (att)
     {
     if( att->id() != 0 )
