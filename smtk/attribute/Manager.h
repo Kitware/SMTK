@@ -158,6 +158,12 @@ namespace smtk
       smtk::attribute::AttributePtr
         copyAttribute(const smtk::attribute::AttributePtr att,
                       unsigned int options=0);
+
+      //Get a list of all definitions in the manager
+      void definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const;
+      //Get a list of all attributes in the manager
+      void attributes(std::vector<smtk::attribute::AttributePtr> &result) const;
+
     protected:
       void internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def, bool onlyConcrete,
                                              std::vector<smtk::attribute::DefinitionPtr> &result) const;

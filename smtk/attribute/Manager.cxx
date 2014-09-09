@@ -177,6 +177,28 @@ void Manager::recomputeNextAttributeID()
     }
 }
 //----------------------------------------------------------------------------
+void Manager::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
+{
+  std::map<std::string, DefinitionPtr>::const_iterator it;
+  result.resize(this->m_definitions.size());
+  int i;
+  for (it = this->m_definitions.begin(), i = 0; it != this->m_definitions.end(); it++, i++)
+    {
+    result[i] = it->second;
+    }
+}
+//----------------------------------------------------------------------------
+void Manager::attributes(std::vector<smtk::attribute::AttributePtr> &result) const
+{
+  std::map<std::string, AttributePtr>::const_iterator it;
+  result.resize(this->m_attributes.size());
+  int i;
+  for (it = this->m_attributes.begin(), i = 0; it != this->m_attributes.end(); it++, i++)
+    {
+    result[i] = it->second;
+    }
+}
+//----------------------------------------------------------------------------
 // For Reader classes
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
