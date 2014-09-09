@@ -69,6 +69,32 @@ if __name__ == '__main__':
       logging.error('Expected %s definition, found None' % def_type)
       err_count += 1
 
+  # Add explicit test for conditional children
+  defn = test_manager.findDefinition('SecondConcrete')
+  if defn:
+    i = defn.findItemPosition('ConditionalSelectionList')
+    item = defn.itemDefinition(i)
+    if item:
+      string_item = smtk.attribute.to_concrete(item)
+
+      list_one = string_item.conditionalItems('One')
+      if len(list_one) != 1:
+        msg = 'Expected \"One\" enum to have 1 conditional item, found ' % \
+          len(list_one)
+        logging.error(msg)
+        err_count += 1
+
+      list_two = string_item.conditionalItems('Two')
+      if len(list_two) != 2:
+        msg = 'Expected \"Two\" enum to have 2 conditional items, found ' % \
+          len(list_one)
+        logging.error(msg)
+        err_count += 1
+    else:
+      logging.error('Did not find ConditionalSelectionList item')
+      err_count += 1
+
+
   # Note there is ALOT more that could & should be verified here
   logging.debug('Writing manager')
 
