@@ -215,7 +215,8 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   // Copy item definitions
   for (i=0; i < m_itemDefs.size(); ++i)
     {
-    instance->addItemDefinition(m_itemDefs[i]);
+    smtk::attribute::ItemDefinitionPtr itemDef = m_itemDefs[i]->createCopy(info);
+    instance->addItemDefinition(itemDef);
     }
 
   instance->setIsExtensible(m_isExtensible);
