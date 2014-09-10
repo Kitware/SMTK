@@ -1,5 +1,6 @@
 #include "smtk/model/Bridge.h"
 
+#include "smtk/model/BridgeIO.h"
 #include "smtk/model/RemoteOperator.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -314,6 +315,24 @@ OperatorConstructor Bridge::findOperatorConstructorInternal(
     return smtk::model::OperatorConstructor();
     }
   return it->second.second;
+}
+
+/**\brief Subclasses may override this method to export additional state.
+  *
+  * Importers (e.g., ImportJSON) and exporters (e.g., ExportJSON) will
+  * call this method to obtain a bridge I/O class instance specific to
+  * the given \a format. If a valid BridgeIO shared-pointer is
+  * returned, it will be dynamically cast to a format-specific subclass
+  * and given the opportunity to provide additional information to be
+  * imported/exported to/from the bridge.
+  *
+  * This default implementation is provided since most bridges will
+  * not need additional state.
+  */
+BridgeIOPtr Bridge::createIODelegate(const std::string& format)
+{
+  (void)format;
+  return BridgeIOPtr();
 }
 
   } // namespace model

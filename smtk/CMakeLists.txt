@@ -136,6 +136,49 @@ if (SMTK_BUILD_CGM)
   smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 endif(SMTK_BUILD_CGM)
 
+# This must come *after* all targets that implement bridges.
+if (SMTK_ENABLE_REMUS)
+
+  add_subdirectory(remote)
+  smtk_source_group(remote)
+
+  get_directory_property(RemoteLibSrcs DIRECTORY remote DEFINITION RemoteLibSrcs)
+  smtk_prepend_string("remote" RemoteLibSrcs ${RemoteLibSrcs})
+  get_directory_property(RemoteLibHeaders DIRECTORY remote DEFINITION RemoteLibHeaders)
+  smtk_prepend_string("remote" RemoteLibHeaders ${RemoteLibHeaders})
+
+  source_group("remote_Source" FILES ${RemoteLibSrcs} ${RemoteLibUIs})
+  source_group("remote_Header" FILES ${RemoteLibHeaders})
+
+  set(remotesmtk_headers ${RemoteLibHeaders})
+  set(remotesmtk_srcs ${RemoteLibSrcs})
+
+  add_library(SMTKRemote ${remotesmtk_srcs})
+
+  #set SMTKRemote to publicly link to SMTKCore and privately to Remus
+  target_link_libraries(SMTKRemote
+    LINK_PUBLIC
+      SMTKCore
+    LINK_PRIVATE
+      RemusCommon
+      RemusClient
+    )
+  smtk_export_header(SMTKRemote SMTKRemoteExports.h)
+
+  # Add compile definitions and include directories
+  #set_property(TARGET SMTKRemote APPEND PROPERTY COMPILE_FLAGS ${REMUS_DEFINES})
+  set_property(TARGET SMTKRemote APPEND PROPERTY INCLUDE_DIRECTORIES ${REMUS_INCLUDE_DIRS})
+
+  # On Mac OS X, set the directory included as part of the installed library's path:
+  if (BUILD_SHARED_LIBS)
+    set_target_properties(SMTKRemote PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  endif()
+
+  #install the library and exports the library when used from a build tree
+  smtk_install_library(SMTKRemote DEPENDS SMTKCore)
+endif(SMTK_ENABLE_REMUS)
+
+
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location

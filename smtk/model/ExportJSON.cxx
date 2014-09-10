@@ -1,5 +1,6 @@
 #include "smtk/model/ExportJSON.h"
 
+#include "smtk/model/BridgeIOJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/ModelEntity.h"
@@ -36,7 +37,8 @@ namespace {
       {
       smtk::attribute::Manager tmpMgr;
       tmpMgr.setRefModelManager(spec->modelManager());
-      tmpMgr.copyAttribute(spec);
+      tmpMgr.copyAttribute(
+        spec, smtk::attribute::Manager::FORCE_COPY_ASSOCIATIONS);
       smtk::util::Logger log;
       smtk::util::AttributeWriter wri;
       wri.includeDefinitions(false);
@@ -400,6 +402,11 @@ int ExportJSON::forManagerBridgeSession(const smtk::util::UUID& uid, cJSON* node
   cJSON_AddItemToObject(node, uid.toString().c_str(), sess);
   cJSON_AddStringToObject(sess, "type", "bridge-session");
   cJSON_AddStringToObject(sess, "name", bridge->name().c_str());
+  BridgeIOJSONPtr delegate =
+    smtk::dynamic_pointer_cast<BridgeIOJSON>(
+      bridge->createIODelegate("json"));
+  if (delegate)
+    status &= delegate->exportJSON(modelMgr, sess);
   status &= ExportJSON::forOperatorDefinitions(bridge->operatorManager(), sess);
   return status;
 }

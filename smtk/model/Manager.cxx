@@ -35,6 +35,12 @@ using namespace smtk::util;
 namespace smtk {
   namespace model {
 
+/**@name Constructors and destructors.
+  *\brief Model manager instances should always be created using the static create() method.
+  *
+  */
+//@{
+/// Create a default, empty model manager.
 Manager::Manager() :
   BRepModel(shared_ptr<UUIDsToEntities>(new UUIDsToEntities)),
   m_arrangements(new UUIDsToArrangements),
@@ -44,6 +50,7 @@ Manager::Manager() :
 {
 }
 
+/// Create a model manager using the given storage instances.
 Manager::Manager(
   shared_ptr<UUIDsToEntities> inTopology,
   shared_ptr<UUIDsToArrangements> inArrangements,
@@ -56,11 +63,18 @@ Manager::Manager(
 {
 }
 
+/// Destroying a model manager requires us to release the default attribute manager..
 Manager::~Manager()
 {
   this->setAttributeManager(NULL);
 }
+//@}
 
+/**@name Direct member access.
+  *\brief These methods provide direct access to the class's storage.
+  *
+  */
+//@{
 UUIDsToArrangements& Manager::arrangements()
 {
   return *this->m_arrangements.get();
@@ -90,6 +104,7 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 {
   return *this->m_attributeAssignments;
 }
+//@}
 
 /**\brief Remove an entity from the manager.
   *
@@ -1031,6 +1046,10 @@ bool Manager::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::ut
   return count > 0 ? true :false;
 }
 
+/**@name Attribute association
+  *\brief Associate and disassociate attribute values to entities.
+  */
+//@{
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
@@ -1104,7 +1123,24 @@ bool Manager::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
     }
   return didRemove;
 }
+//@}
 
+/**@name Unbacked entity insertion methods
+  *\brief Methods to insert entities into the local storage independent of a bridge.
+  *
+  * The methods that start with "add" will generate a UUID for you and return
+  * a cursor to the new entity.
+  * Methods that start with "insert" accept a UUID and will return a cursor to
+  * the new entity (or the existing entity if it matches the entity type being
+  * created). If you specify a UUID in use by an entity of a different type, an
+  * invalid cursor will be returned.
+  * Finally, methods that start with "set" will either modify an existing entity
+  * or create a new one as required. The "set" methods are used to modify arrangements
+  * that may have been created as part of constructing other entities (e.g., calling
+  * addFace() creates arrangements for 2 face-uses; you can then use setFaceUse to
+  * replace any existing use records with the one you specify).
+  */
+//@{
 /// Add a vertex to the manager (without any relationships) at the given \a uid.
 Vertex Manager::insertVertex(const smtk::util::UUID& uid)
 {
@@ -1607,7 +1643,22 @@ InstanceEntity Manager::addInstance(const Cursor& object)
     }
   return InstanceEntity();
 }
+//@}
 
+/**@name Callback methods
+  *\brief These methods provide observers with a way to register
+  *       and receive notifications of modeling events.
+  *
+  * Events have 1 of 3 different signatures based on the type of event:
+  *
+  * + When a single entity is modified independently of changes to others,
+  *   a ConditionCallback is invoked.
+  * + When a one-to-one relationship between two entities is affected,
+  *   a OneToOneCallback is invoked.
+  * + When a one-to-many (or a many-to-one) relationship between entities
+  *   is affected, a OneToManyCallback is invoked.
+  */
+//@{
 /// Request notification from this manager instance when \a event occurs.
 void Manager::observe(ManagerEventType event, ConditionCallback functionHandle, void* callData)
 {
@@ -1778,6 +1829,7 @@ void Manager::trigger(ManagerEventType event, const smtk::model::Cursor& src, co
   for (std::set<OneToManyTrigger>::const_iterator it = begin; it != end; ++it)
     (*it->second.first)(it->first, src, related, it->second.second);
 }
+//@}
 
   } // namespace model
 } //namespace smtk

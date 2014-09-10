@@ -1,5 +1,6 @@
 #include "smtk/model/DefaultBridge.h"
 
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/BRepModel.h"
 #include "smtk/model/RemoteOperator.h"
 
@@ -38,10 +39,6 @@ BridgedInfoBits DefaultBridge::transcribeInternal(const Cursor& entity, BridgedI
   * the remote bridge.
   * Subclasses are responsible for overriding transcribeInternal() to
   * fetch records from the remote session's model manager on demand.
-  *
-  * It is most likely, in addition to subclassing this bridge to
-  * use your application's client-server communication mechanism,
-  * you will also wish to subclass RemoteOperator.
   */
 void DefaultBridge::backsRemoteBridge(
   const std::string& remoteBridgeName,

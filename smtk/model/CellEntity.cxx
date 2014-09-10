@@ -24,18 +24,6 @@ ModelEntity CellEntity::model() const
     mgr->modelOwningEntity(this->entity()));
 }
 
-/**\brief Report the toplevel shell records associated with the cell.
-  *
-  * The uses can be used to discover lower-dimensional cells that
-  * form the boundary of this cell.
-  */
-ShellEntities CellEntity::shellEntities() const
-{
-  ShellEntities result;
-  CursorArrangementOps::appendAllRelations(*this, HAS_SHELL, result);
-  return result;
-}
-
 /**\brief Report all of the lower-dimensional cells bounding this cell.
   *
   * The bounding cells are obtained by traversing all of the shells of

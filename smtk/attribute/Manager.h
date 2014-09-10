@@ -55,7 +55,8 @@ namespace smtk
     public:
       enum CopyOptions
       {
-        COPY_ASSOCIATIONS = 0x00000001
+        COPY_ASSOCIATIONS       = 0x00000001, //!< Should associations and model-entity items be copied if models match?
+        FORCE_COPY_ASSOCIATIONS = 0x00000003  //!< Should associations and model-entity items *always* be copied?
       };
 
       Manager();

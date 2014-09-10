@@ -42,7 +42,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QVBoxLayout>
 #include <QWidget>
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#endif
 #include <boost/lexical_cast.hpp>
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include <iostream>
 

@@ -11,6 +11,11 @@
 #include "stdio.h"
 
 #include "smtk/options.h" // for CGM_HAVE_VERSION_H
+
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wunused-parameter"
+#endif
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
@@ -38,6 +43,9 @@
 #include "Shell.hpp"
 #include "Loop.hpp"
 #include "Chain.hpp"
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
