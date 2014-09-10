@@ -79,15 +79,15 @@ if __name__ == '__main__':
 
       list_one = string_item.conditionalItems('One')
       if len(list_one) != 1:
-        msg = 'Expected \"One\" enum to have 1 conditional item, found ' % \
+        msg = 'Expected \"One\" enum to have 1 conditional item, found %d' % \
           len(list_one)
         logging.error(msg)
         err_count += 1
 
       list_two = string_item.conditionalItems('Two')
-      if len(list_two) != 2:
-        msg = 'Expected \"Two\" enum to have 2 conditional items, found ' % \
-          len(list_one)
+      if len(list_two) != 3:
+        msg = 'Expected \"Two\" enum to have 3 conditional items, found %d' % \
+          len(list_two)
         logging.error(msg)
         err_count += 1
     else:

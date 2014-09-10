@@ -314,7 +314,9 @@ copyTo(ValueItemDefinitionPtr def,
       itemDefMapIter = m_itemDefs.begin();
     for (; itemDefMapIter != m_itemDefs.end(); itemDefMapIter++)
       {
-      def->addChildItemDefinition(itemDefMapIter->second);
+      smtk::attribute::ItemDefinitionPtr itemDef =
+        itemDefMapIter->second->createCopy(info);
+      def->addChildItemDefinition(itemDef);
       }
     }
 
