@@ -153,6 +153,11 @@ namespace smtk
       virtual std::string
       sideSetClassification(int modelEntityId, ApiStatus& status) = 0;
 
+      /// Returns set of grid point id pairs representing the grid edges
+      //  for an input bounddary group id.
+      //  For interim use exporting 2D grids for AdH output.
+      virtual std::vector<std::pair<int, int> >
+      edgeGridItems(int boundaryGroupId, ApiStatus& status) = 0;
 
       GridInfo();
       virtual ~GridInfo();
