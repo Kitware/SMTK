@@ -118,8 +118,9 @@ if (RST2HTML_EXECUTABLE)
   endfunction()
 
   set(SMTK_USERGUIDE_DOCS
-    userguide-model.rst
     userguide-attribute.rst
+    userguide-model.rst
+    userguide-overview.rst
   )
 
   set(SMTK_USERGUIDE_FIGS

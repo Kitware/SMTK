@@ -1,6 +1,6 @@
-*********************
-SMTK Attribute System
-*********************
+**********************
+SMTK' Attribute System
+**********************
 
 General Description
 ===================
@@ -9,7 +9,7 @@ Background
 ----------
 
 SMTK's first major component is its attribute modeling system,
-which provides a way to model and represent non-geomtric
+which provides a way to model and represent non-geometric
 simulation data such as material properties, boundary conditions,
 and solver parameters.
 The attribute system has three main features:
@@ -58,6 +58,46 @@ simulation data and generate the simulation input files.
 Key Concepts
 ------------
 
+The attribute system is composed of classes whose instances perform
+the following functions:
+
+Attribute
+  instances represent a dictionary of named values.
+  The values are all subclasses of the Item class.
+  The entries that may appear in an attribute's dictionary
+  are constrained by the attribute's Definition.
+
+Definition
+  instances hold the set of possible key-value pairs that
+  must be present in Attribute instances that reference them.
+  A definition may inherit another definition as a base type.
+  For instance, deflection, temperature, and voltage boundary
+  condition definitions might all inherit a Dirichlet boundary
+  condition definition. Even when the base class provides
+  no requirements, this is useful for fetching attributes that
+  meet a specific condition.
+
+Item
+  instances hold values in an attribute key-value pair.
+  The particular subclass of Item determines the type
+  of storage used to hold the value (e.g. Int, Double, String,
+  RefItem, ModelEntityItem).
+  Each item references an ItemDefinition that constrains the
+  values that may be held in storage, in much the same way
+  that an Attribute has a Definition.
+
+ItemDefinition
+  instances constrain the number of values that an Item
+  instance may contain as well as the particular values that
+  are considered valid.
+  For example, an ItemDefinition for temperature could
+  specify that temperature is a scalar (i.e., only a single
+  value may be held in the Item), that it is a floating point
+  value, and that it must be positive.
+
+Manager
+  instances hold collections of attributes associated with a
+  particular purpose such as defining a simulation's input deck.
 
 Example Workflow
 ----------------
