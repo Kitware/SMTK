@@ -38,6 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <QMap>
 #include <QToolButton>
 #include <QTableWidget>
+#include <QCoreApplication>
 
 using namespace smtk::attribute;
 
@@ -239,6 +240,7 @@ void qtGroupItem::onAddSubGroup()
       {
       this->addSubGroup(subIdx);
       }
+    emit this->widgetSizeChanged();
     }
 }
 
@@ -286,6 +288,7 @@ void qtGroupItem::addSubGroup(int i)
     }
   this->baseView()->setFixedLabelWidth(currentLen);
   frameLayout->addLayout(subGrouplayout);
+  this->onChildWidgetSizeChanged();
 }
 //----------------------------------------------------------------------------
 void qtGroupItem::onRemoveSubGroup()
@@ -408,6 +411,8 @@ void qtGroupItem::addItemsToTable(int i)
       this->Internals->ItemsTable->setCellWidget(numRows, added+1, childItem->widget());
       this->Internals->ItemsTable->setItem(numRows, added+1, new QTableWidgetItem());
       itemList.push_back(childItem);
+      connect(childItem, SIGNAL(widgetSizeChanged()),
+        this, SLOT(onChildWidgetSizeChanged()));
       added++;
       }
     }
@@ -433,6 +438,16 @@ void qtGroupItem::addItemsToTable(int i)
   this->updateExtensibleState();
 
   this->Internals->ItemsTable->blockSignals(false);
-  this->Internals->ItemsTable->resizeColumnsToContents();
-  this->Internals->ItemsTable->resizeRowsToContents();
+  this->onChildWidgetSizeChanged();
+}
+
+//----------------------------------------------------------------------------
+void qtGroupItem::onChildWidgetSizeChanged()
+{
+  if(this->Internals->ItemsTable)
+    {
+    this->Internals->ItemsTable->resizeColumnsToContents();
+    QCoreApplication::processEvents();
+    this->Internals->ItemsTable->resizeRowsToContents();
+    }
 }

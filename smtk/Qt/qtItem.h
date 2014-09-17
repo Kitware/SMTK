@@ -90,10 +90,12 @@ namespace smtk
       void showAdvanceLevelOverlay(bool);
 
     signals:
+       void widgetSizeChanged();
 
     protected slots:
       virtual void updateItemData();
       virtual void onAdvanceLevelChanged(int levelIdx);
+      virtual void onChildWidgetSizeChanged(){;}
 
    protected:
       virtual void createWidget() {;}
