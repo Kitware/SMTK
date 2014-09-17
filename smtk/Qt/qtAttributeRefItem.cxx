@@ -623,9 +623,12 @@ void qtAttributeRefItem::refreshUI(QComboBox* comboBox)
       this->baseView()->setFixedLabelWidth(tmpLen);
       currentAtt = new qtAttribute(attPtr, this->Widget, this->baseView());
       this->baseView()->setFixedLabelWidth(currentLen);
-      QBoxLayout* mylayout =
-        static_cast<QBoxLayout*>(comboBox->property("MyLayout").value<void *>());
-      mylayout->addWidget(currentAtt->widget());
+      if(currentAtt->widget())
+        {
+        QBoxLayout* mylayout =
+          static_cast<QBoxLayout*>(comboBox->property("MyLayout").value<void *>());
+        mylayout->addWidget(currentAtt->widget());
+        }
       QVariant vrefdata;
       vrefdata.setValue(static_cast<void*>(currentAtt));
       comboBox->setProperty("QtRefAtt", vrefdata);
