@@ -133,11 +133,6 @@ namespace smtk
       smtk::view::RootPtr rootView() const
       {return this->m_rootView;}
 
-      smtk::model::ModelPtr refModel() const
-        {return this->m_refModel.lock();}
-      void setRefModel(smtk::model::ModelPtr refmodel )
-        {this->m_refModel = refmodel;}
-
       smtk::model::ManagerPtr refModelManager() const
         {return this->m_refModelMgr.lock();}
       void setRefModelManager(smtk::model::ManagerPtr refModelMgr);
@@ -187,7 +182,6 @@ namespace smtk
       smtk::attribute::AttributeId m_nextAttributeId;
       smtk::view::RootPtr m_rootView;
 
-      smtk::model::WeakModelPtr m_refModel;
       smtk::model::WeakManagerPtr m_refModelMgr;
       // Advance levels, <int-level, <string-label, color[4]>
       // higher level means more advanced.
