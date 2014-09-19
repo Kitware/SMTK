@@ -25,7 +25,6 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/Manager.h"
 #include "smtk/util/AttributeReader.h"
-#include "smtk/util/XmlDocV1Parser.h"
 
 #include "boost/filesystem.hpp"
 #include <fstream>

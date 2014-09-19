@@ -25,7 +25,7 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "pugixml-1.2/src/pugixml.cpp"
 #include "smtk/attribute/Manager.h"
 #include "smtk/util/AttributeWriter.h"
-#include "smtk/util/XmlV1StringWriter.h"
+#include "smtk/util/XmlV2StringWriter.h"
 
 #include <fstream>
 #include <iostream>
@@ -101,12 +101,12 @@ writeString(std::string& content,
 
     if ("" == link && ResourceSet::LOADED == state)
       {
-      // Use XmlV1StringWriter to generate xml for this attribute manager
+      // Use XmlV2StringWriter to generate xml for this attribute manager
       smtk::util::ResourcePtr resource;
       ok = resources.get(id, resource);
       smtk::attribute::Manager *manager =
         dynamic_cast<smtk::attribute::Manager *>(resource.get());
-      XmlV1StringWriter xmlWriter(*manager);
+      XmlV2StringWriter xmlWriter(*manager);
       xmlWriter.generateXml(resourceElement, logger);
       }
     else if (link != "")

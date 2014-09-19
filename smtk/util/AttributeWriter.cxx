@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 
 #include "smtk/util/AttributeWriter.h"
-#include "smtk/util/XmlV1StringWriter.h"
+#include "smtk/util/XmlV2StringWriter.h"
 #include "smtk/util/Logger.h"
 #include <fstream>
 
@@ -41,7 +41,7 @@ bool AttributeWriter::write(const smtk::attribute::Manager &manager,
                             Logger &logger)
 {
   logger.reset();
-  XmlV1StringWriter theWriter(manager);
+  XmlV2StringWriter theWriter(manager);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);
@@ -72,7 +72,7 @@ bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
                                     bool no_declaration)
 {
   logger.reset();
-  XmlV1StringWriter theWriter(manager);
+  XmlV2StringWriter theWriter(manager);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);

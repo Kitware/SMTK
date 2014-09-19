@@ -23,7 +23,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/util/AttributeReader.h"
 #include "smtk/util/Logger.h"
-#include "smtk/util/XmlDocV1Parser.h"
+#include "smtk/util/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
 #include "pugixml-1.2/src/pugixml.cpp"
 #include <algorithm>
@@ -153,7 +153,7 @@ void Internal_parseXml(smtk::attribute::Manager &manager,
     smtkErrorMacro(logger, "Unsupported Attribute Version: " << versionNum);
     return;
     }
-  XmlDocV1Parser theReader(manager);
+  XmlDocV2Parser theReader(manager);
   theReader.setReportDuplicateDefinitionsAsErrors(reportAsError);
   theReader.process(root);
   logger.append(theReader.messageLog());
