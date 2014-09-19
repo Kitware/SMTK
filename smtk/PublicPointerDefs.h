@@ -328,12 +328,6 @@ namespace smtk
     typedef std::set< attribute::WeakItemPtr  >           WeakItemPtrSet;
   };
 
-  namespace model
-  {
-    typedef std::set< model::WeakItemPtr  >               WeakItemPtrSet;
-    typedef std::set< model::WeakModelPtr  >              WeakModelPtrSet;
-  };
-
   namespace view
   {
     typedef std::set< view::WeakBasePtr  >              WeakBasePtrSet;

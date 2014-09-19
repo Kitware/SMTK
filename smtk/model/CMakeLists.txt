@@ -22,14 +22,11 @@ set(modelSrcs
   ExportJSON.cxx
   Face.cxx
   FaceUse.cxx
-  GroupItem.cxx
   GroupEntity.cxx
   GridInfo.cxx
   ImportJSON.cxx
-  Item.cxx
   InstanceEntity.cxx
   Loop.cxx
-  Model.cxx
   ModelEntity.cxx
   Operator.cxx
   PropertyListPhrase.cxx
@@ -40,7 +37,6 @@ set(modelSrcs
   SimpleModelSubphrases.cxx
   Manager.cxx
   SubphraseGenerator.cxx
-  ModelDomainItem.cxx
   Tessellation.cxx
   UseEntity.cxx
   Vertex.cxx
@@ -78,13 +74,10 @@ set(modelHeaders
   FloatData.h
   GridInfo.h
   GroupEntity.h
-  GroupItem.h
   ImportJSON.h
   InstanceEntity.h
   IntegerData.h
-  Item.h
   Loop.h
-  Model.h
   ModelEntity.h
   Operator.h
   PropertyType.h
@@ -96,7 +89,6 @@ set(modelHeaders
   SimpleModelSubphrases.h
   Manager.h
   SubphraseGenerator.h
-  ModelDomainItem.h
   StringData.h
   Tessellation.h
   UseEntity.h
