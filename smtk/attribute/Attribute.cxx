@@ -38,11 +38,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
-#include "smtk/model/Item.h"
 #include <iostream>
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 //----------------------------------------------------------------------------
-Attribute::Attribute(const std::string &myName, 
+Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition,
                      unsigned long myId):
   m_name(myName), m_id(myId), m_definition(myDefinition),
@@ -67,7 +66,6 @@ Attribute::~Attribute()
       }
     }
   this->removeAllItems();
-  this->removeAllAssociations();
  }
 //----------------------------------------------------------------------------
 void Attribute::removeAllItems()
@@ -266,49 +264,12 @@ smtk::attribute::AttributePtr Attribute::pointer() const
   return smtk::attribute::AttributePtr();
 }
 //----------------------------------------------------------------------------
-void Attribute::associateEntity(smtk::model::ItemPtr entity)
-{
-  if (this->isEntityAssociated(entity))
-    {
-    // Nothing to be done
-    return;
-    }
-  this->m_entities.insert(entity);
-  entity->attachAttribute(this->pointer());
-}
-//----------------------------------------------------------------------------
-void Attribute::disassociateEntity(smtk::model::ItemPtr entity, bool reverse)
-{
-  if (!this->isEntityAssociated(entity))
-    {
-    // Nothing to be done
-    return;
-    }
-
-  if (this->m_entities.erase(entity))
-    {
-    if(reverse)
-      {
-      entity->detachAttribute(this->pointer());
-      }
-    }
-}
-//----------------------------------------------------------------------------
 /**\brief Remove all associations of this attribute with model entities.
   *
   * Note that this removes both new- and old-style associations.
   */
 void Attribute::removeAllAssociations()
 {
-  // old-style model entities
-  std::set<smtk::model::ItemPtr>::const_iterator it =
-    this->associatedEntities();
-  for (; it != this->m_entities.end(); it++)
-    {
-    (*it)->detachAttribute(this->pointer(), false);
-    }
-  this->m_entities.clear();
-
   // new-style model entities
   smtk::model::ManagerPtr modelMgr;
   unsigned long attribId = this->id();
