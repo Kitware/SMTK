@@ -28,7 +28,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/model/Item.h" // for model entity enum
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -108,37 +107,37 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 //----------------------------------------------------------------------------
 bool Definition::associatesWithVertex() const
 {
-  return ((this->m_associationMask & smtk::model::Item::VERTEX) != 0);
+  return smtk::model::isVertex(this->m_associationMask);
 }
 //----------------------------------------------------------------------------
 bool Definition::associatesWithEdge() const
 {
-  return ((this->m_associationMask & smtk::model::Item::EDGE) != 0);
+  return smtk::model::isEdge(this->m_associationMask);
 }
 //----------------------------------------------------------------------------
 bool Definition::associatesWithFace() const
 {
-  return ((this->m_associationMask & smtk::model::Item::FACE) != 0);
+  return smtk::model::isFace(this->m_associationMask);
 }
 //----------------------------------------------------------------------------
-bool Definition::associatesWithRegion() const
+bool Definition::associatesWithVolume() const
 {
-  return ((this->m_associationMask & smtk::model::Item::REGION) != 0);
+  return smtk::model::isVolume(this->m_associationMask);
 }
 //----------------------------------------------------------------------------
 bool Definition::associatesWithModel() const
 {
-  return ((this->m_associationMask & smtk::model::Item::MODEL_DOMAIN) != 0);
+  return smtk::model::isModelEntity(this->m_associationMask);
 }
 //----------------------------------------------------------------------------
 bool Definition::associatesWithGroup() const
 {
-  return ((this->m_associationMask & smtk::model::Item::GROUP) != 0);
+  return smtk::model::isGroupEntity(this->m_associationMask);
 }
 
 //----------------------------------------------------------------------------
 bool
-Definition::canBeAssociated(smtk::model::ItemPtr /*entity*/,
+Definition::canBeAssociated(smtk::model::Cursor /*entity*/,
                             std::vector<Attribute *>* /*inConflicts*/) const
 {
   // TO DO - Need to pull in Model Entity class to do this

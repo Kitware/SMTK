@@ -33,6 +33,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/util/SharedFromThis.h" // For smtkTypeMacro.
+#include "smtk/model/EntityTypeBits.h" // for BitFlags type
+#include "smtk/model/Cursor.h" //for Cursor version of canBeAssociated
+
 #include <map>
 #include <string>
 #include <set>
@@ -157,26 +160,28 @@ namespace smtk
       // Description:
       // Mask is the ability to specify what type of model entities
       // that the attribute can be associated with.
-      smtk::model::MaskType associationMask() const
+      smtk::model::BitFlags associationMask() const
       {return this->m_associationMask;}
-      void setAssociationMask(smtk::model::MaskType mask)
+      void setAssociationMask(smtk::model::BitFlags mask)
       {this->m_associationMask = mask;}
       bool associatesWithVertex() const;
       bool associatesWithEdge() const;
       bool associatesWithFace() const;
-      bool associatesWithRegion() const;
+      bool associatesWithVolume() const;
       bool associatesWithModel() const;
       bool associatesWithGroup() const;
-      bool canBeAssociated(smtk::model::MaskType maskType) const
+      bool canBeAssociated(smtk::model::BitFlags maskType) const
       { return (maskType == (maskType & this->m_associationMask));}
       // In this case we need to process BCS and DS specially
       // We look at the model's dimension and based on that return
       // the appropriate associatesWith method
       // Conflicts will contain a list of attributes that prevent an attribute
       // of this type from being associated
-      bool canBeAssociated(smtk::model::ItemPtr entity,
+      bool canBeAssociated(smtk::model::Cursor entity,
                            std::vector<smtk::attribute::Attribute *>*conflicts) const;
+
       bool conflicts(smtk::attribute::DefinitionPtr definition) const;
+
       std::size_t numberOfItemDefinitions() const
       {return this->m_itemDefs.size() + this->m_baseItemOffset;}
 
@@ -265,7 +270,7 @@ namespace smtk
       bool m_isRequired;
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;
-      smtk::model::MaskType m_associationMask;
+      smtk::model::BitFlags m_associationMask;
 
       std::string m_detailedDescription;
       std::string m_briefDescription;

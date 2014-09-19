@@ -81,14 +81,11 @@ namespace smtk
     class GridInfo2D;
     class GridInfo3D;
     class GroupEntity;
-    class GroupItem;
     class InstanceEntity;
-    class Item;
     class ImportJSON;
     class Loop;
     typedef std::vector<smtk::model::Loop> Loops;
     class Entity;
-    class Model;
     class ModelEntity;
     class Operator;
     class PropertyValuePhrase;
@@ -101,7 +98,6 @@ namespace smtk
     class Manager;
     class SimpleModelSubphrases;
     class SubphraseGenerator;
-    class ModelDomainItem;
     class Tessellation;
     class UseEntity;
     typedef std::vector<smtk::model::UseEntity> UseEntities;
@@ -186,15 +182,10 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::SubphraseGenerator >    SubphraseGeneratorPtr;
     typedef smtk::shared_ptr< smtk::model::Manager >               ManagerPtr;
     typedef smtk::weak_ptr< smtk::model::Manager >                 WeakManagerPtr;
-    typedef smtk::shared_ptr< smtk::model::Model >                 ModelPtr;
-    typedef smtk::weak_ptr< smtk::model::Model >                   WeakModelPtr;
     typedef smtk::shared_ptr< smtk::model::Operator >              OperatorPtr;
     typedef smtk::weak_ptr< smtk::model::Operator >                WeakOperatorPtr;
     typedef std::set< smtk::model::OperatorPtr >                   Operators;
     typedef smtk::shared_ptr< smtk::model::RemoteOperator >        RemoteOperatorPtr;
-    typedef smtk::shared_ptr< smtk::model::Item >                  ItemPtr;
-    typedef smtk::weak_ptr< smtk::model::Item >                    WeakItemPtr;
-    typedef smtk::shared_ptr< smtk::model::GroupItem >             GroupItemPtr;
     typedef smtk::shared_ptr< smtk::model::Entity >                EntityPtr;
     typedef smtk::weak_ptr< smtk::model::Entity >                  WeakEntityPtr;
     typedef smtk::shared_ptr< smtk::model::Arrangement >           ArrangementPtr;
@@ -206,9 +197,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::model::GridInfo >          GridInfoPtr;
     typedef smtk::shared_ptr< smtk::model::GridInfo2D >        GridInfo2DPtr;
     typedef smtk::shared_ptr< smtk::model::GridInfo3D >        GridInfo3DPtr;
-
-    // definition of the mask type for model entities. enum is in smtk/model/Item.h
-    typedef unsigned long                                      MaskType;
 
     // Model-related typedefs (dependent on attribute classes)
     typedef smtk::shared_ptr< smtk::attribute::Definition >    OperatorDefinition;
