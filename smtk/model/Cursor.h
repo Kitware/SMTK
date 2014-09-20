@@ -1,5 +1,6 @@
 #ifndef __smtk_model_Cursor_h
 #define __smtk_model_Cursor_h
+/*! \file */
 
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
 #include "smtk/util/SystemConfig.h" // For type macros.

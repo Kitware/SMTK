@@ -678,6 +678,7 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/paraview/pvvtk" \
   "@SMTK_SOURCE_DIR@/smtk/paraview/vtk" \
   "@SMTK_SOURCE_DIR@/smtk/Qt" \
+  "@SMTK_SOURCE_DIR@/smtk/remote" \
   "@SMTK_SOURCE_DIR@/smtk/util" \
   "@SMTK_SOURCE_DIR@/smtk/util/Testing" \
   "@SMTK_SOURCE_DIR@/smtk/view" \
@@ -690,6 +691,7 @@ INPUT                  = \
   "@SMTK_BINARY_DIR@/smtk/paraview/pvvtk" \
   "@SMTK_BINARY_DIR@/smtk/paraview/vtk" \
   "@SMTK_BINARY_DIR@/smtk/Qt" \
+  "@SMTK_BINARY_DIR@/smtk/remote" \
   "@SMTK_BINARY_DIR@/smtk/util" \
   "@SMTK_BINARY_DIR@/smtk/view" \
 
@@ -1487,7 +1489,7 @@ MAN_LINKS              = NO
 # generate an XML file that captures the structure of
 # the code including all documentation.
 
-GENERATE_XML           = NO
+GENERATE_XML           = YES
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put.
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
@@ -1723,8 +1725,10 @@ SKIP_FUNCTION_MACROS   = YES
 # doxygen is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = \
-  "@SMTK_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html" \
-  "@SMTK_BINARY_DIR@/doc/reference/sparsehash.tags = @SMTK_BINARY_DIR@/doc/reference/sparsehash/html"
+  "@SMTK_BINARY_DIR@/doc/reference/cjson.tags = @SMTK_BINARY_DIR@/doc/reference/cjson/html"
+
+# This causes segfaults in doxygen 1.8.8:
+#  "@SMTK_BINARY_DIR@/doc/reference/sparsehash.tags = @SMTK_BINARY_DIR@/doc/reference/sparsehash/html"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.

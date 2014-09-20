@@ -11,7 +11,7 @@ Key Concepts
 Like the attribute system, the model system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
-Manager
+:smtk:`Manager <smtk::model::Manager>`
   instances that contain model topology and geometry.
   All of the model entities such as faces, edges, and vertices are
   assigned a UUID by SMTK.
@@ -19,7 +19,7 @@ Manager
   model entities, their properties, their arrangement with other entities,
   their ties to the attribute system, and their tessellations.
 
-Bridge
+:smtk:`Bridge <smtk::model::Bridge>`
   instances relate entries in a model Manager to a solid modeling kernel.
   You can think of the entities in a model Manager as being "backed" by
   a solid modeling kernel; the bridge provides a way to synchronize
@@ -28,7 +28,7 @@ Bridge
   (e.g., a single Manager may contain some models back by an ACIS
   modeling kernel bridge and some backed by OpenCascade bridge).
 
-Operator
+:smtk:`Operator <smtk::model::Operator>`
   instances represent modeling operations that a modeling kernel
   provides for marking up, modifying, or even generating modeling entities
   from scratch.
@@ -43,7 +43,7 @@ Operator
   Other operands (e.g., the geometric path along which to sweep a set of edges)
   are stored as key-value Items in the specification.
 
-Cursor
+:smtk:`Cursor <smtk::model::Cursor>`
   instances are lightweight references into a model Manager's storage
   that represent a single entity (e.g., a vertex, edge, face, or volume)
   and provide methods for easily accessing related entities, properties,
@@ -55,7 +55,7 @@ Cursor
   GroupEntity, UseEntity, Loop, Shell, and so on. These are discussed
   in detail in `Model Entities`_ below.
 
-DescriptivePhrase
+:smtk:`DescriptivePhrase <smtk::model::DescriptivePhrase>`
   instances provide a uniform way to present model entities and the information
   associated with those entities to users.
   There are several subclasses of this class that present an entity,
@@ -63,7 +63,7 @@ DescriptivePhrase
   Each phrase may have 1 parent and multiple children;
   thus, phrases can be arranged into a tree structure.
 
-SubphraseGenerator
+:smtk:`SubphraseGenerator <smtk::model::SubphraseGenerator>`
   instances accept a DescriptivePhrase instance and enumerate its children.
   This functionality is separated from the DescriptivePhrase class so that
   different user-interface components can use the same set of phrases but
@@ -77,9 +77,9 @@ SubphraseGenerator
 Model Entities
 ==============
 
-As mentioned above, the model :cxx:`Manager` class is the only place where
+As mentioned above, the model :smtk:`Manager <smtk::model::Manager>` class is the only place where
 model topology and geometry are stored in SMTK.
-However, there are cursor-like classes, all derived from :cxx:`smtk::model::Cursor`,
+However, there are cursor-like classes, all derived from :smtk:`smtk::model::Cursor`,
 that provide easier access to model traversal.
 These classes are organized like so:
 

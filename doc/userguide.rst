@@ -2,11 +2,13 @@
 SMTK User's Guide
 =================
 
-.. contents::
+.. include:: userguide-overview.rst
+
+.. toctree::
+   :maxdepth: 2
+
+   userguide-attribute.rst
+   userguide-model.rst
 
 .. role:: cxx(code)
    :language: c++
-
-.. include:: userguide-overview.rst
-.. include:: userguide-attribute.rst
-.. include:: userguide-model.rst

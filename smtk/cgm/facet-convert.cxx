@@ -1,5 +1,5 @@
 /**
- * \file facet-convert.cpp
+ * \file facet-convert.cxx
  *
  * \brief Generate an SMTK topology-only version of a faceted solid (a.k.a. discrete or non-parametric) model.
  */
