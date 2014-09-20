@@ -19,7 +19,7 @@ Key Concepts
 The attribute system is composed of C++ classes,
 also accessible in Python, whose instances perform the following functions:
 
-Attribute
+:smtk:`Attribute`
   instances represent a dictionary of named values.
   The values are all subclasses of the Item class.
   The entries that may appear in an attribute's dictionary
@@ -28,7 +28,7 @@ Attribute
   may optionally be attached to (or *associated with* in SMTK's parlance)
   a set of geometric model entities from SMTK's geometric modeling system.
 
-Definition
+:smtk:`Definition`
   instances hold the set of possible key-value pairs that
   must be present in Attribute instances that reference them.
   A definition may inherit another definition as a base type.
@@ -38,7 +38,7 @@ Definition
   no requirements, this is useful for fetching attributes that
   meet a specific condition.
 
-Item
+:smtk:`Item <smtk::attribute::Item>`
   instances hold values in an attribute key-value pair.
   The particular subclass of Item determines the type
   of storage used to hold the value (e.g. Int, Double, String,
@@ -47,7 +47,7 @@ Item
   values that may be held in storage, in much the same way
   that an Attribute has a Definition.
 
-ItemDefinition
+:smtk:`ItemDefinition`
   instances constrain the number of values that an Item
   instance may contain as well as the particular values that
   are considered valid.
@@ -56,7 +56,7 @@ ItemDefinition
   value may be held in the Item), that it is a floating point
   value, and that it must be positive.
 
-Manager
+:smtk:`Manager <smtk::attribute::Manager>`
   instances hold collections of attributes associated with a
   particular purpose such as defining a simulation's input deck.
 
@@ -146,8 +146,7 @@ Next:
 * XML file example
 * UI screenshot(s)
 
-.. class:: smaller-text
-.. code:: xml
+.. code-block:: xml
 
   <Definitions>
     <AttDef Type="Example1" Label="Example 1" BaseType="" Version="0"
@@ -190,9 +189,12 @@ Next:
 
 .. Wish I could align code & image horizontally
 
-.. image:: figures/ExampleAttributePanel.png
+.. figure:: figures/ExampleAttributePanel.*
    :align: center
-   :width: 80%
+
+   The XML above is used to generate this user interface.
+   The fields with yellow backgrounds show default values
+   and white backgrounds indicate modified values.
 
 
 Template File Syntax (Reference)
