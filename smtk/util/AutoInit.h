@@ -1,5 +1,6 @@
 #ifndef __smtk_util_AutoInit_h
 #define __smtk_util_AutoInit_h
+/*! \file */
 
 // This file contains macros used to initialize components of SMTK
 // that may defined in separate libraries but which need to be

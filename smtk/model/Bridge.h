@@ -1,5 +1,6 @@
 #ifndef __smtk_model_Bridge_h
 #define __smtk_model_Bridge_h
+/*! \file */
 
 #include "smtk/util/UUID.h"
 #include "smtk/util/SharedFromThis.h"

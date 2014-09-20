@@ -40,9 +40,9 @@ option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
 mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
-# Find Doxygen and Docutils (optional, for building documentation)
+# Find Doxygen and Sphinx (optional, for building documentation)
 find_package(Doxygen)
-find_package(Docutils 0.9)
+find_package(Sphinx)
 
 ################################################################################
 # Testing Related Settings

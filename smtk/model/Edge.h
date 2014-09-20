@@ -15,7 +15,7 @@ class Vertex;
 typedef std::vector<EdgeUse> EdgeUses;
 typedef std::vector<Vertex> Vertices;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A cursor subclass that provides methods specific to 1-d edge cells.
   *
   */
 class SMTKCORE_EXPORT Edge : public CellEntity

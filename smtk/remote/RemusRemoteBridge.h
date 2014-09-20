@@ -1,5 +1,6 @@
 #ifndef __smtk_model_RemusRemoteBridge_h
 #define __smtk_model_RemusRemoteBridge_h
+/*! \file */
 
 #include "smtk/SMTKRemoteExports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
@@ -8,6 +9,40 @@
 #include "remus/client/Client.h" // for m_remusClient
 #include "remus/common/MeshRegistrar.h" // for RemusModelBridgeType
 #include "remus/worker/ServerConnection.h" // for m_remusConn
+
+/**\brief Call this macro in your bridge's implementation file to register it as a remus worker.
+  *
+  * This macro declares a new struct derived from remus::meshtypes::MeshTypeBase
+  * corresponding to the specific modeling kernel. This struct must have a
+  * unique uint16_t integer, \a RemusId, associated with it. See remus/common/MeshTypes.h
+  * for the basic integer types and be aware that other SMTK modeling kernels
+  * must not collide. We recommend using the uint16_t hash of your bridge
+  * name (plus 101 if it is lower, as Remus reserves 0--100; or plus 1 if it
+  * collides with a pre-existing kernel).
+  *
+  * The \a BridgeName argument must be identical to what you pass to the
+  * smtkImplementsModelingKernel macro.
+  *
+  * The \a BridgePrep is a function that should be invoked before the
+  * the constructor function of the given \a BridgeName is called.
+  * If you do not need a function invoked, then pass an empty value for the argument.
+  * \a BridgePrep is used to set the default modeling kernel on several backends,
+  * including CGM.
+  *
+  * The \a QualComp argument should include additional runtime requirements
+  * on the component.
+  */
+#define smtkRegisterBridgeWithRemus(BridgeName, BridgePrep, CompString, QualComp) \
+  struct smtk ##QualComp## RemusRemoteBridgeType : smtk::model::RemusModelTypeBase \
+    { \
+    static boost::shared_ptr<remus::meshtypes::MeshTypeBase> create() \
+      { return boost::shared_ptr<remus::meshtypes::MeshTypeBase>(new smtk ##QualComp## RemusRemoteBridgeType()); } \
+    virtual std::string name() const { return CompString ; } \
+    virtual std::string bridgeName() const { return BridgeName ; } \
+    virtual void bridgePrep() const { (void)0; BridgePrep ; } \
+    }; \
+  static remus::common::MeshRegistrar smtk ##QualComp## RemusTag( \
+    (smtk ##QualComp## RemusRemoteBridgeType()) ); \
 
 namespace smtk {
   namespace model {
@@ -47,40 +82,6 @@ struct RemusModelTypeBase : remus::meshtypes::MeshTypeBase
 
 /// Shorthand for the class objects used to obtain remus workers.
 typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
-
-/**\brief Call this macro in your bridge's implementation file to register it as a remus worker.
-  *
-  * This macro declares a new struct derived from remus::meshtypes::MeshTypeBase
-  * corresponding to the specific modeling kernel. This struct must have a
-  * unique uint16_t integer, \a RemusId, associated with it. See remus/common/MeshTypes.h
-  * for the basic integer types and be aware that other SMTK modeling kernels
-  * must not collide. We recommend using the uint16_t hash of your bridge
-  * name (plus 101 if it is lower, as Remus reserves 0--100; or plus 1 if it
-  * collides with a pre-existing kernel).
-  *
-  * The \a BridgeName argument must be identical to what you pass to the
-  * smtkImplementsModelingKernel macro.
-  *
-  * The \a BridgePrep is a function that should be invoked before the
-  * the constructor function of the given \a BridgeName is called.
-  * If you do not need a function invoked, then pass an empty value for the argument.
-  * \a BridgePrep is used to set the default modeling kernel on several backends,
-  * including CGM.
-  *
-  * The \a QualComp argument should include additional runtime requirements
-  * on the component.
-  */
-#define smtkRegisterBridgeWithRemus(BridgeName, BridgePrep, CompString, QualComp) \
-  struct smtk ##QualComp## RemusRemoteBridgeType : smtk::model::RemusModelTypeBase \
-    { \
-    static boost::shared_ptr<remus::meshtypes::MeshTypeBase> create() \
-      { return boost::shared_ptr<remus::meshtypes::MeshTypeBase>(new smtk ##QualComp## RemusRemoteBridgeType()); } \
-    virtual std::string name() const { return CompString ; } \
-    virtual std::string bridgeName() const { return BridgeName ; } \
-    virtual void bridgePrep() const { (void)0; BridgePrep ; } \
-    }; \
-  static remus::common::MeshRegistrar smtk ##QualComp## RemusTag( \
-    (smtk ##QualComp## RemusRemoteBridgeType()) ); \
 
 /**\brief A bridge that forwards operation requests to a Remus worker.
   *

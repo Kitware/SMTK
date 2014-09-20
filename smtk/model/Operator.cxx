@@ -37,6 +37,14 @@ Operator::~Operator()
     }
 }
 
+/*! \fn Operator::ableToOperate()
+ * \brief Return whether the operator's inputs are well-defined.
+ *
+ * This returns true when the Operator considers its inputs to
+ * be valid and false otherwise.
+ * Subclasses must implement this method.
+ */
+
 /**\brief Perform the solid modeling operation the subclass implements.
   *
   * This method first tests whether the operation is well-defined by
@@ -286,6 +294,7 @@ bool Operator::operator < (const Operator& other) const
   return this->name() < other.name();
 }
 
+/// Return a string summarizing the outcome of an operation.
 std::string outcomeAsString(int oc)
 {
   switch (oc)
@@ -299,6 +308,7 @@ std::string outcomeAsString(int oc)
   return "outcome unknown";
 }
 
+/// Given a string summarizing the outcome of an operation, return an enumerant.
 OperatorOutcome stringToOutcome(const std::string& oc)
 {
   if (oc == "unable to operate")   return UNABLE_TO_OPERATE;
@@ -308,6 +318,12 @@ OperatorOutcome stringToOutcome(const std::string& oc)
 
   return OUTCOME_UNKNOWN;
 }
+
+/*! \fn Operator::operateInternal()
+ * \brief Perform the requested operation on this operator's specification.
+ *
+ * Subclasses must implement this method.
+ */
 
   } // model namespace
 } // smtk namespace

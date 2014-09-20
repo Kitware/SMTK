@@ -14,7 +14,7 @@ class Shell;
 typedef std::vector<Face> Faces;
 typedef std::vector<Shell> Shells;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A cursor subclass that provides methods specific to 3-d volume cells.
   *
   */
 class SMTKCORE_EXPORT Volume : public CellEntity
