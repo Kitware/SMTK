@@ -5,7 +5,15 @@ SMTK is a library which provides a way to specify attributes
 like mesh sizing functions) that describe a physical simulation
 on a geometric domain, as well as high-level access to model
 geometry (through various solid model and mesh tools) for the
-purpose of linking attributes to geometric models.
+purpose of linking attributes to geometric models of the
+simulation domain.
+
+## Documentation
+
+To read more about how to use SMTK see the
+
++ [user's guide (**FIXME**)](http://smtk.org/doc/user/index.html) and
++ [reference documentation (**FIXME**)](http://smtk.org/doc/reference/smtk/index.xhtml)
 
 ## Building SMTK
 
@@ -19,11 +27,28 @@ We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 
 You may optionally provide
 
++ [Python](http://python.org) version 2.7.3 or newer and
+  [Shiboken](http://github.com/OpenGeoscience/shiboken) from the smtk-head branch,
+  for Python wrappings of SMTK's C++ classes;
 + [Qt](http://qt-project.org) version 4.8 or newer,
-+ [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer, and
-+ [VTK](http://vtk.org) version 6.0 or newer
+  for widgets to interact with attributes and models;
++ [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer,
+  built with
+  [OpenCascade](http://opencascade.org/) or
+  [Cubit](http://cubit.sandia.gov/),
+  for importing CAD models;
+  and
++ [ParaView](http://paraview.org) version 4.1 or newer,
+  for graphical presentation and selection of geometric models.
 
-for additional functionality.
+If you want to build the documentation you will need
+
++ [Doxygen](http://doxygen.org/) version 1.8 or newer,
++ [Graphviz](http://graphviz.org/) version 2 or newer,
++ [Sphinx](http://sphinx-doc.org/) version 1.2 or newer,
++ [breathe](http://breathe.readthedocs.org/en/latest/) version 3.1 or newer,
++ [doxylink](https://pypi.python.org/pypi/sphinxcontrib-doxylink) version 1.3 or newer, and
++ optionally [rtd-theme](https://docs.readthedocs.org/en/latest/theme.html) for a much-improved appearance.
 
 You may wish to obtain the test-data repository for SMTK in order
 to run tests which require input datasets; run:
@@ -67,3 +92,11 @@ in a good state, it will generate project files (either Makefiles, Ninja build
 files, or an IDE project) either automatically (if you manually re-run `cmake`)
 or at your request (when running `cmake-gui` or `ccmake`).
 You may then build and install SMTK using the generated project files.
+
+The documentation is not built by default, but
+CMake exposes targets named `doc` and `doc-userguide`
+that you can build.
+The `doc` target builds the doxygen reference documentation
+which appears in `/build/SMTK/doc/reference/smtk/html/index.xhtml`
+while the `doc-userguide` target builds the user's guide and
+tutorials which appear in `/build/SMTK/doc/user/html/index.html`.

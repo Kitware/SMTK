@@ -52,6 +52,26 @@ public:
 
   smtk::attribute::Manager* attributeManager() const;
 
+  CursorArray findEntitiesByProperty(const std::string& pname, Integer pval);
+  CursorArray findEntitiesByProperty(const std::string& pname, Float pval);
+  CursorArray findEntitiesByProperty(const std::string& pname, const std::string& pval);
+  CursorArray findEntitiesByProperty(const std::string& pname, const IntegerList& pval);
+  CursorArray findEntitiesByProperty(const std::string& pname, const FloatList& pval);
+  CursorArray findEntitiesByProperty(const std::string& pname, const StringList& pval);
+  CursorArray findEntitiesOfType(BitFlags flags, bool exactMatch = true);
+
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, Integer pval);
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval);
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, Float pval);
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval);
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, const std::string& pval);
+  template<typename Collection>
+  Collection findEntitiesByPropertyAs(const std::string& pname, const StringList& pval);
   template<typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
@@ -191,6 +211,132 @@ protected:
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::attribute::Manager* m_attributeManager;
 };
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
+{
+  Collection collection;
+  UUIDWithIntegerProperties pit;
+  for (pit = this->m_integerData->begin(); pit != this->m_integerData->end(); ++pit)
+    {
+    PropertyNameWithIntegers it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
+{
+  Collection collection;
+  UUIDWithIntegerProperties pit;
+  for (pit = this->m_integerData->begin(); pit != this->m_integerData->end(); ++pit)
+    {
+    PropertyNameWithIntegers it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pval)
+{
+  Collection collection;
+  UUIDWithFloatProperties pit;
+  for (pit = this->m_floatData->begin(); pit != this->m_floatData->end(); ++pit)
+    {
+    PropertyNameWithFloats it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
+{
+  Collection collection;
+  UUIDWithFloatProperties pit;
+  for (pit = this->m_floatData->begin(); pit != this->m_floatData->end(); ++pit)
+    {
+    PropertyNameWithFloats it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
+{
+  Collection collection;
+  UUIDWithStringProperties pit;
+  for (pit = this->m_stringData->begin(); pit != this->m_stringData->end(); ++pit)
+    {
+    PropertyNameWithStrings it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second.size() == 1 && it->second[0] == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
+
+template<typename Collection>
+Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
+{
+  Collection collection;
+  UUIDWithStringProperties pit;
+  for (pit = this->m_stringData->begin(); pit != this->m_stringData->end(); ++pit)
+    {
+    PropertyNameWithStrings it;
+    for (it = pit->second.begin(); it != pit->second.end(); ++it)
+      {
+      if (it->first == pname && it->second == pval)
+        {
+        typename Collection::value_type entry(shared_from_this(), pit->first);
+        if (entry.isValid())
+          collection.insert(collection.end(), entry);
+        }
+      }
+    }
+  return collection;
+}
 
 template<typename Collection>
 Collection Manager::entitiesMatchingFlagsAs(BitFlags mask, bool exactMatch)

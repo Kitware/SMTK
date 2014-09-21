@@ -10,7 +10,7 @@ Contents:
    :maxdepth: 2
 
    userguide.rst
-   tutorials/implement_an_operator/implement_an_operator.rst
+   tutorials/index.rst
 
 
 ##################
