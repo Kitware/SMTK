@@ -130,9 +130,9 @@ if (SPHINX_FOUND)
 
   set(SMTK_USERGUIDE_DOCS
     index.rst
+    userguide.rst
     userguide-attribute.rst
     userguide-model.rst
-    userguide-overview.rst
   )
   if (DOXYGEN_FOUND)
     # Need doxygen docs built if possible
