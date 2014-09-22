@@ -113,6 +113,7 @@ if groups and len(groups):
 # VII. Loop over conditions of interest and create
 #      an input deck for each.
 # ++ 7 ++
+# FIXME: Actually put this inside a loop that exports input decks.
 matProp.findDouble('viscosity').setValue(1.002e-3) # [Pa * s]
 
 fluidIC.findDouble('temperature').setValue(25) # [C]
