@@ -13,7 +13,6 @@
   <suppress-warning text="namespace 'std' does not have a type entry"/>
 
   <!-- Suppressed because they are memory variables-->
-  <suppress-warning text="skipping field 'Manager::m_refModel' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Model&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_refModelMgr' with unmatched type 'smtk::weak_ptr&lt;smtk::model::Manager&gt;'"/>
   <suppress-warning text="skipping field 'Item::m_definition' with unmatched type 'smtk::shared_ptr&lt;const smtk::attribute::ItemDefinition&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_derivedDefInfo' with unmatched type 'std::map&lt;smtk::attribute::DefinitionPtr,smtk::attribute::WeakDefinitionPtrSet&gt;'"/>
@@ -45,8 +44,6 @@
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Item::endAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedEntities', unmatched return type 'std::set&lt;smtk::model::ItemPtr&gt;::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::model::Model::beginItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
-  <suppress-warning text="skipping function 'smtk::model::Model::endItemIterator', unmatched return type 'smtk::model::Model::const_iterator'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::setTessellation', unmatched return type 'smtk::model::Manager::tess_iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntity', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'smtk::model::BRepModel::iter_type'"/>
@@ -578,7 +575,7 @@
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
-    <modify-function signature="setAssociationMask(unsigned long)" remove="all"/>
+    <modify-function signature="setAssociationMask(unsigned int)" remove="all"/>
     <modify-function signature="setDefaultColor(const double *)" remove="all"/>
     <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>
     <modify-function signature="unsetNotApplicableColor()" remove="all"/>
@@ -625,8 +622,6 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::DescriptivePhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::Item"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::Model"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Manager">
@@ -723,7 +718,6 @@
 
   </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::SubphraseGenerator"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::GroupItem"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
@@ -1043,44 +1037,8 @@
         <modify-function signature="addTriangle(double*, double*, double*)" remove="all"/>
       </object-type>
 
-      <object-type name="Item">
-        <include file-name="smtk/model/Item.h" location="local"/>
-        <enum-type name="Type"/>
-      </object-type>
-
-      <object-type name="GroupItem">
-        <include file-name="smtk/model/GroupItem.h" location="local"/>
-        <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::model::Item &gt;)"
-          static="yes"
-          return-type="smtk::shared_ptr&lt;smtk::model::GroupItem &gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = smtk::dynamic_pointer_cast&lt;smtk::model::GroupItem &gt;(%1);
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
-      <object-type name="ModelDomainItem">
-        <include file-name="smtk/model/ModelDomainItem.h" location="local"/>
-      </object-type>
-
-      <object-type name="Model">
-        <include file-name="smtk/model/Model.h" location="local"/>
-        <enum-type name="ModelEntityNodalTypes"/>
-        <!-- Add static New() method, for internal use only -->
-        <add-function signature="New()"
-            static="yes"
-            return-type = "smtk::shared_ptr&lt;smtk::model::Model&gt;">
-          <inject-code>
-            %RETURN_TYPE %0 = %RETURN_TYPE(new smtk::model::Model());
-            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
-          </inject-code>
-        </add-function>
-      </object-type>
-
       <object-type name="Manager">
         <include file-name="smtk/model/Manager.h" location="local"/>
-        <enum-type name="CopyOptions" />
 
         <add-function signature="create()"
           static="yes"
@@ -1460,6 +1418,7 @@
 
       <object-type name="Manager">
         <include file-name="smtk/attribute/Manager.h" location="local" />
+        <enum-type name="CopyOptions" />
         <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
           static="yes"
           return-type="smtk::attribute::Manager *">
