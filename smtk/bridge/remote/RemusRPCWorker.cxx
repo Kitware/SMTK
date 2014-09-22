@@ -1,5 +1,5 @@
-#include "smtk/remote/RemusRPCWorker.h"
-#include "smtk/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusRPCWorker.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/ImportJSON.h"
@@ -19,7 +19,8 @@
 using namespace remus::proto;
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 RemusRPCWorker::RemusRPCWorker()
 {
@@ -314,5 +315,6 @@ void RemusRPCWorker::generateError(cJSON* err, const std::string& errMsg, const 
   cJSON_AddItemToObject(result, "id", cJSON_CreateString(reqId.c_str()));
 }
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk

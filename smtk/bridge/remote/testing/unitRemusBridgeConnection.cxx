@@ -1,5 +1,5 @@
-#include "smtk/remote/RemusBridgeConnection.h"
-#include "smtk/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusBridgeConnection.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/model/Manager.h"
 

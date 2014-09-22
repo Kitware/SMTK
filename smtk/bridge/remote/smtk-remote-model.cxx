@@ -1,7 +1,7 @@
 // Implement an SMTK remote model worker.
 // Steal code from CMB's vtkModelManagerWrapper.
-#include "smtk/remote/RemusRemoteBridge.h"
-#include "smtk/remote/RemusRPCWorker.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusRPCWorker.h"
 
 #include "remus/worker/Worker.h"
 
@@ -18,11 +18,11 @@ smtkComponentInitMacro(smtk_cgm_read_operator);
 // FIXME: Use conditionals to enable these only when the underlying CGM library supports them:
 //        At worst, this source could depend on list-cgm-engines, which provides a list.
 //        At best, FindCGM could provide CMake variables to be included in smtk/options.h.in.
-#include "smtk/cgm/Engines.h"
-smtkRegisterBridgeWithRemus("cgm", cgmsmtk::cgm::Engines::setDefault("ACIS"),  "smtk::model[cgm{ACIS}]", CGM_ACIS);
-smtkRegisterBridgeWithRemus("cgm", cgmsmtk::cgm::Engines::setDefault("cubit"), "smtk::model[cgm{Cubit}]", CGM_Cubit);
-smtkRegisterBridgeWithRemus("cgm", cgmsmtk::cgm::Engines::setDefault("OCC"),   "smtk::model[cgm{OpenCascade}]", CGM_OpenCascade);
-smtkRegisterBridgeWithRemus("cgm", cgmsmtk::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
+#include "smtk/bridge/cgm/Engines.h"
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("ACIS"),  "smtk::model[cgm{ACIS}]", CGM_ACIS);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("cubit"), "smtk::model[cgm{Cubit}]", CGM_Cubit);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("OCC"),   "smtk::model[cgm{OpenCascade}]", CGM_OpenCascade);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
 #endif // SMTK_BUILD_CGM
 
 int usage(

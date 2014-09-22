@@ -1,4 +1,4 @@
-#include "smtk/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/options.h"
 

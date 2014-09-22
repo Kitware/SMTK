@@ -1,13 +1,13 @@
-#include "smtk/remote/RemusBridgeConnections.h"
-
-#include "smtk/remote/RemusBridgeConnection.h"
+#include "smtk/bridge/remote/RemusBridgeConnections.h"
+#include "smtk/bridge/remote/RemusBridgeConnection.h"
 
 #include "remus/client/ServerConnection.h"
 
 #include <map>
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 //typedef smtk::shared_ptr<remus::client::ServerConnection> ClientConnectionType;
 typedef smtk::shared_ptr<smtk::model::RemusBridgeConnection> ClientConnectionType;
@@ -70,5 +70,6 @@ RemusBridgeConnection::Ptr RemusBridgeConnections::connectToServer(const std::st
   return conn;
 }
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk

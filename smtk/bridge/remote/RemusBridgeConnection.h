@@ -1,5 +1,5 @@
-#ifndef __smtk_remote_RemusBridgeConnection_h
-#define __smtk_remote_RemusBridgeConnection_h
+#ifndef __smtk_bridge_remote_RemusBridgeConnection_h
+#define __smtk_bridge_remote_RemusBridgeConnection_h
 
 #include "smtk/SMTKRemoteExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -19,7 +19,8 @@
 #include <string>
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 class RemusRemoteBridge;
 
@@ -83,7 +84,8 @@ protected:
   std::map<smtk::util::UUID,std::string> m_remoteBridgeSessionIds;
 };
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_remote_RemusBridgeConnection_h
+#endif // __smtk_bridge_remote_RemusBridgeConnection_h

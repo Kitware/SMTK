@@ -1,8 +1,7 @@
-#include "smtk/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusBridgeConnection.h"
 
 #include "smtk/options.h"
-
-#include "smtk/remote/RemusBridgeConnection.h"
 
 #ifdef SMTK_BUILD_CGM
 #  include "smtk/cgm/Engines.h"
@@ -22,7 +21,8 @@
 #include "cJSON.h"
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 RemusRemoteBridge::RemusRemoteBridge()
 {
@@ -291,7 +291,8 @@ void RemusRemoteBridge::cleanupOperators()
 }
 */
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
 
 const char* remusRemoteNoFileTypes[] = { NULL };

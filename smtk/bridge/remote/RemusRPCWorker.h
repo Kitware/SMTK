@@ -1,5 +1,5 @@
-#ifndef __smtk_remote_RemusRPCWorker_h
-#define __smtk_remote_RemusRPCWorker_h
+#ifndef __smtk_bridge_remote_RemusRPCWorker_h
+#define __smtk_bridge_remote_RemusRPCWorker_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/util/SharedFromThis.h"
@@ -10,7 +10,8 @@
 struct cJSON;
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 /**\brief A Remus worker that performs model operations using JSON-RPC.
   *
@@ -51,7 +52,8 @@ private:
   void operator = (const RemusRPCWorker&); // Not implemented.
 };
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_remote_RemusRPCWorker_h
+#endif // __smtk_bridge_remote_RemusRPCWorker_h

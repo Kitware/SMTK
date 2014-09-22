@@ -97,88 +97,6 @@ if(SMTK_BUILD_ParaView)
   #smtk_export_header(pvSMTK pvSMTKExports.h)
 endif()
 
-if (SMTK_BUILD_CGM)
-
-  add_subdirectory(cgm)
-  smtk_source_group(cgm)
-
-  get_directory_property(CGMLibSrcs DIRECTORY cgm DEFINITION CGMLibSrcs)
-  smtk_prepend_string("cgm" CGMLibSrcs ${CGMLibSrcs})
-  get_directory_property(CGMLibHeaders DIRECTORY cgm DEFINITION CGMLibHeaders)
-  smtk_prepend_string("cgm" CGMLibHeaders ${CGMLibHeaders})
-
-  source_group("cgm_Source" FILES ${CGMLibSrcs} ${CGMLibUIs})
-  source_group("cgm_Header" FILES ${CGMLibHeaders})
-
-  set(cgmsmtk_headers ${CGMLibHeaders})
-  set(cgmsmtk_srcs ${CGMLibSrcs})
-
-  add_library(cgmSMTK ${cgmsmtk_srcs})
-
-  #set cgmSMTK to publicly link to SMTKCore and CGM
-  target_link_libraries(cgmSMTK
-    LINK_PUBLIC
-      SMTKCore
-    LINK_PRIVATE
-      ${CGM_LIBRARIES}
-    )
-  smtk_export_header(cgmSMTK cgmSMTKExports.h)
-
-  # Add compile definitions and include directories
-  set_property(TARGET cgmSMTK APPEND PROPERTY COMPILE_FLAGS ${CGM_DEFINES})
-  set_property(TARGET cgmSMTK APPEND PROPERTY INCLUDE_DIRECTORIES ${CGM_INCLUDE_DIRS})
-  # On Mac OS X, set the directory included as part of the installed library's path:
-  if (BUILD_SHARED_LIBS)
-    set_target_properties(cgmSMTK PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-  endif()
-
-  #install the library and exports the library when used from a build tree
-  smtk_install_library(cgmSMTK DEPENDS SMTKCore)
-endif(SMTK_BUILD_CGM)
-
-# This must come *after* all targets that implement bridges.
-if (SMTK_ENABLE_REMUS)
-
-  add_subdirectory(remote)
-  smtk_source_group(remote)
-
-  get_directory_property(RemoteLibSrcs DIRECTORY remote DEFINITION RemoteLibSrcs)
-  smtk_prepend_string("remote" RemoteLibSrcs ${RemoteLibSrcs})
-  get_directory_property(RemoteLibHeaders DIRECTORY remote DEFINITION RemoteLibHeaders)
-  smtk_prepend_string("remote" RemoteLibHeaders ${RemoteLibHeaders})
-
-  source_group("remote_Source" FILES ${RemoteLibSrcs} ${RemoteLibUIs})
-  source_group("remote_Header" FILES ${RemoteLibHeaders})
-
-  set(remotesmtk_headers ${RemoteLibHeaders})
-  set(remotesmtk_srcs ${RemoteLibSrcs})
-
-  add_library(SMTKRemote ${remotesmtk_srcs})
-
-  #set SMTKRemote to publicly link to SMTKCore and privately to Remus
-  target_link_libraries(SMTKRemote
-    LINK_PUBLIC
-      SMTKCore
-    LINK_PRIVATE
-      RemusCommon
-      RemusClient
-    )
-  smtk_export_header(SMTKRemote SMTKRemoteExports.h)
-
-  # Add compile definitions and include directories
-  #set_property(TARGET SMTKRemote APPEND PROPERTY COMPILE_FLAGS ${REMUS_DEFINES})
-  set_property(TARGET SMTKRemote APPEND PROPERTY INCLUDE_DIRECTORIES ${REMUS_INCLUDE_DIRS})
-
-  # On Mac OS X, set the directory included as part of the installed library's path:
-  if (BUILD_SHARED_LIBS)
-    set_target_properties(SMTKRemote PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-  endif()
-
-  #install the library and exports the library when used from a build tree
-  smtk_install_library(SMTKRemote DEPENDS SMTKCore)
-endif(SMTK_ENABLE_REMUS)
-
-
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location
@@ -226,40 +144,11 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
                 set(SHIBOKEN_LIBRARY \"${CMAKE_INSTALL_PREFIX}/lib/${SHIBOKEN_LIBRARY_NAME}\")
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk.py ${CMAKE_INSTALL_PREFIX}/python/smtk.py )" )
-
-  # Now handle wrapping dependent libraries
-  if (SMTK_BUILD_CGM)
-    set(smtk_cgm_headers ${cgmsmtk_headers})
-    sbk_wrap_library(cgmSMTK
-      GENERATOR_ARGS --avoid-protected-hack
-      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-      LOCAL_INCLUDE_DIRECTORIES
-        ${CMAKE_CURRENT_SOURCE_DIR}/attribute
-        ${CMAKE_CURRENT_SOURCE_DIR}/cgm
-        ${CMAKE_CURRENT_SOURCE_DIR}/model
-        ${CMAKE_CURRENT_SOURCE_DIR}/util
-        ${CMAKE_CURRENT_SOURCE_DIR}/view
-        ${CMAKE_CURRENT_SOURCE_DIR}/vtk
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-      TYPESYSTEM typesystem_cgm.xml
-      HEADERS ${smtk_cgm_headers}
-      DEPENDS SMTKCore
-    )
-  target_include_directories(cgmSMTKPython
-    PRIVATE ${CGM_INCLUDE_DIRS})
-
-    configure_file(
-      "${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py"
-      "${SMTK_BINARY_DIR}/cgmsmtk.py"
-      @ONLY
-    )
-
-    #todo we need to install this file in such a way that it can resolve
-    #the location of shiboken, which is going to mean running fixup bundle
-    #on the mac, and than fixing up the cgmsmtk.py package script
-
-    install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
-                  configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py ${CMAKE_INSTALL_PREFIX}/python/cgmsmtk.py )" )
-  endif()
 endif()
+
+################################################################################
+# Build model bridges
+# Now that the main components of smtk have been built we can build the custom
+# model bridges that the user has enabled
+################################################################################
+add_subdirectory(bridge)

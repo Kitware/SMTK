@@ -1,5 +1,5 @@
-#ifndef __smtk_model_RemusRemoteBridge_h
-#define __smtk_model_RemusRemoteBridge_h
+#ifndef __smtk_bridge_remote_RemusRemoteBridge_h
+#define __smtk_bridge_remote_RemusRemoteBridge_h
 
 #include "smtk/SMTKRemoteExports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
@@ -10,7 +10,8 @@
 #include "remus/worker/ServerConnection.h" // for m_remusConn
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 class RemusBridgeConnection; // A Remus client-server connection specifically for smtk::models.
 
@@ -132,7 +133,8 @@ protected:
   static void cleanupBridgeTypes();
 };
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_model_RemusRemoteBridge_h
+#endif // __smtk_bridge_remote_RemusRemoteBridge_h

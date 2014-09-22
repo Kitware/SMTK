@@ -1,5 +1,5 @@
-#ifndef __smtk_remote_RemusBridgeConnections_h
-#define __smtk_remote_RemusBridgeConnections_h
+#ifndef __smtk_bridge_remote_RemusBridgeConnections_h
+#define __smtk_bridge_remote_RemusBridgeConnections_h
 
 #include "smtk/SMTKRemoteExports.h"
 #include "smtk/util/SharedFromThis.h"
@@ -7,7 +7,8 @@
 #include <string>
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 class RemusBridgeConnection;
 
@@ -40,7 +41,8 @@ protected:
   Internal* m_data;
 };
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_remote_RemusBridgeConnections_h
+#endif // __smtk_bridge_remote_RemusBridgeConnections_h

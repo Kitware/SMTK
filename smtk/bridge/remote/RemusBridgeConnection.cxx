@@ -1,6 +1,5 @@
-#include "smtk/remote/RemusBridgeConnection.h"
-
-#include "smtk/remote/RemusRemoteBridge.h"
+#include "smtk/bridge/remote/RemusBridgeConnection.h"
+#include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
@@ -22,7 +21,8 @@
 using smtk::util::UUID;
 
 namespace smtk {
-  namespace model {
+  namespace bridge {
+    namespace remote {
 
 RemusBridgeConnection::RemusBridgeConnection()
 {
@@ -492,5 +492,6 @@ bool RemusBridgeConnection::findRequirementsForRemusType(remus::proto::JobRequir
   return true;
 }
 
-  } // namespace model
+    } // namespace remote
+  } // namespace bridge
 } // namespace smtk
