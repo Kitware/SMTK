@@ -50,6 +50,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/VoidItem.h"
 #include "smtk/attribute/VoidItemDefinition.h"
 #include "smtk/model/Cursor.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
@@ -2506,13 +2507,11 @@ void XmlDocV2Parser::processBasicView(xml_node &node,
 void XmlDocV2Parser::processModelInfo(xml_node &root)
 {
   xml_node modelInfo = root.child("ModelInfo");
-  smtk::model::ModelPtr refModel = this->m_manager.refModel();
-  if ( modelInfo && refModel)
+  smtk::model::ManagerPtr manager = this->m_manager.refModelManager();
+  if ( modelInfo && manager)
     {
     std::string name;
     smtk::model::BitFlags mask;
-    int gid;
-    smtk::model::GroupItemPtr modelGroup;
     xml_node gnode;
     for (gnode = modelInfo.child("GroupItem"); gnode; gnode = gnode.next_sibling("GroupItem"))
       {
@@ -2523,7 +2522,7 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
         smtkErrorMacro(this->m_logger, "Model Group is missing XML Attribute Id");
         continue;
         }
-      gid = xatt.as_int();
+      smtk::util::UUID gid( std::string(xatt.as_string()) );
       xatt = gnode.attribute("Mask");
       if(!xatt)
         {
@@ -2533,8 +2532,9 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
       mask = xatt.as_int();
       xatt = gnode.attribute("Name");
       name = xatt ? xatt.value() : "noname-group";
-      modelGroup = refModel->createModelGroup(name, gid, mask);
-      if(modelGroup)
+
+      smtk::model::GroupEntity group = manager->insertGroup(gid,mask,name);
+      if(group.isValid())
         {
         xml_node anode;
         for (anode = gnode.child("Attribute"); anode; anode = anode.next_sibling("Attribute"))
@@ -2548,7 +2548,7 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
           name = xatt.value();
           if(smtk::attribute::AttributePtr att = this->m_manager.findAttribute(name))
             {
-            modelGroup->attachAttribute(att);
+            group.attachAttribute(att->id());
             }
           else
             {
@@ -2614,6 +2614,5 @@ XmlDocV2Parser::decodeModelEntityMask(const std::string &s)
                        << s[i] << " is not supported");
       }
     }
-  return m;
+  return flags;
 }
-//----------------------------------------------------------------------------

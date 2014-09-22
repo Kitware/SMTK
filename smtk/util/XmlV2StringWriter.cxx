@@ -47,6 +47,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
+#include "smtk/model/Cursor.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 #include "smtk/view/Attribute.h"
@@ -1436,7 +1438,46 @@ void XmlV2StringWriter::processBasicView(xml_node &node,
 void XmlV2StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_pugi->root.append_child("ModelInfo");
-  smtk::model::ModelPtr refModel = this->m_manager.refModel();
+  smtk::model::ManagerPtr refManager = this->m_manager.refModelManager();
+  if(refManager)
+  {
+    smtk::model::GroupEntities ge =
+        refManager->entitiesMatchingFlagsAs<smtk::model::GroupEntities>(
+                                                    smtk::model::GROUP_ENTITY);
+
+    typedef smtk::model::GroupEntities::const_iterator group_iter;
+    for(group_iter itemIt = ge.begin(); itemIt != ge.end(); ++itemIt)
+      {
+        xml_node gnode = modelInfo.append_child("GroupItem");
+        //create some local string, as Id as string is a temp object
+        const std::string group_uuid = itemIt->entity().toString();
+        const std::string group_name = itemIt->name();
+        const smtk::model::BitFlags group_flags = itemIt->entityFlags();
+
+        gnode.append_attribute("Id").set_value( group_uuid.c_str() );
+        gnode.append_attribute("Name").set_value( group_name.c_str() );
+        gnode.append_attribute("Mask").set_value( group_flags );
+
+        // associated attributes
+        smtk::model::AttributeSet atts = itemIt->attributes();
+        typedef smtk::model::AttributeSet::const_iterator a_iter;
+        for(a_iter i = atts.begin(); i != atts.end(); ++i)
+          {
+          xml_node anode = gnode.append_child("Attribute");
+
+          //we need to look up the attribute as the cursor only holds a reference
+          //to the attributes id
+          smtk::attribute::AttributePtr att =
+                                        this->m_manager.findAttribute( (*i) );
+          if(att)
+            {
+            anode.append_attribute("Name").set_value( att->name().c_str());
+            }
+          }
+      }
+  }
+//Old code below used to create new method, remove once new version is verified
+/*
   if ( refModel && refModel->numberOfItems())
     {
     typedef smtk::model::Model::const_iterator c_iter;
@@ -1469,6 +1510,8 @@ void XmlV2StringWriter::processModelInfo()
         }
       }
     }
+*/
+
 }
 //----------------------------------------------------------------------------
 std::string XmlV2StringWriter::encodeColor(const double *c)
