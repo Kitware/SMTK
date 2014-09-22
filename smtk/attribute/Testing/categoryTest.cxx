@@ -31,7 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/util/Logger.h"
-#include "smtk/util/XmlV1StringWriter.h"
+#include "smtk/util/XmlV2StringWriter.h"
 
 #include <iostream>
 
@@ -172,7 +172,7 @@ int main()
       }
     }
   smtk::util::Logger logger;
-  smtk::util::XmlV1StringWriter writer(manager);
+  smtk::util::XmlV2StringWriter writer(manager);
   std::cout << writer.convertToString(logger) << std::endl;
   if (logger.hasErrors())
     {
