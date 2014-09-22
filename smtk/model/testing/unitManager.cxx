@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
   test(search2.size() == 1 && search2.begin()->entity() == uids[0], "search2 i2vals");
   search2 = sm->findEntitiesByProperty("velocity", v3);
   test(search2.size() == 1 && search2.begin()->entity() == uids[0], "search2 i2vals");
-  search2 = sm->findEntitiesByProperty("velocity", (Integer)42);
+  search2 = sm->findEntitiesByProperty("velocity", static_cast<Integer>(42));
   test(search2.size() == 1 && search2.begin()->entity() == uids[21], "search2 42");
   search2 = sm->findEntitiesByProperty("velocity", 42.03125);
   test(search2.size() == 1 && search2.begin()->entity() == uids[21], "search2 42.03125");
