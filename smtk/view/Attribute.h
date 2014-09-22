@@ -30,6 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/view/Base.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/model/EntityTypeBits.h"
 #include <string>
 #include <vector>
 
@@ -52,9 +53,9 @@ namespace smtk
       { return this->m_definitions.size();}
       smtk::attribute::DefinitionPtr definition(std::size_t ith) const
       {return this->m_definitions[ith];}
-      smtk::model::MaskType modelEntityMask() const
+      smtk::model::BitFlags modelEntityMask() const
       {return this->m_modelEntityMask;}
-      void setModelEntityMask(smtk::model::MaskType mask)
+      void setModelEntityMask(smtk::model::BitFlags mask)
       {this->m_modelEntityMask = mask;}
       bool okToCreateModelEntities() const
       { return this->m_okToCreateModelEntities;}
@@ -63,7 +64,7 @@ namespace smtk
 
     protected:
       std::vector<smtk::attribute::DefinitionPtr> m_definitions;
-      smtk::model::MaskType m_modelEntityMask;
+      smtk::model::BitFlags m_modelEntityMask;
       bool m_okToCreateModelEntities;
 
     private:
