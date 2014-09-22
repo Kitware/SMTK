@@ -34,10 +34,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
-#include "smtk/model/Item.h" // needed for Item enum
+#include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/util/Logger.h"
-#include "smtk/util/XmlV1StringWriter.h"
-#include "smtk/util/XmlDocV1Parser.h"
+#include "smtk/util/XmlV2StringWriter.h"
+#include "smtk/util/XmlDocV2Parser.h"
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/ModelEntity.h"
@@ -60,9 +60,9 @@ int main()
   // Lets create some attribute Definitions
   attribute::DefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
   attribute::DefinitionPtr materialDef = manager.createDefinition("Material");
-  materialDef->setAssociationMask(smtk::model::Item::REGION); // belongs on regions for 3D problem
+  materialDef->setAssociationMask(smtk::model::VOLUME); // belongs on regions for 3D problem
   attribute::DefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
-  boundaryConditionsDef->setAssociationMask(smtk::model::Item::FACE); // belongs on boundaries for 3D problem
+  boundaryConditionsDef->setAssociationMask(smtk::model::FACE); // belongs on boundaries for 3D problem
   attribute::DefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
   attribute::DefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
   attribute::DefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
@@ -155,16 +155,16 @@ int main()
   view::AttributePtr attSec;
   attSec = root->addSubView<view::AttributePtr>("Materials");
   attSec->addDefinition(materialDef);
-  attSec->setModelEntityMask(smtk::model::Item::REGION);
+  attSec->setModelEntityMask(smtk::model::VOLUME);
   attSec->setOkToCreateModelEntities(true);
   view::ModelEntityPtr modSec;
   modSec = root->addSubView<view::ModelEntityPtr>("Domains");
-  modSec->setModelEntityMask(smtk::model::Item::REGION); // Look at domains only for 3D
+  modSec->setModelEntityMask(smtk::model::VOLUME); // Look at domains only for 3D
   modSec->setDefinition(materialDef); // use tabled view focusing on Material Attributes
   attSec = root->addSubView<view::AttributePtr>("BoundaryConditions");
   attSec->addDefinition(boundaryConditionsDef);
   modSec = root->addSubView<view::ModelEntityPtr>("Boundary View");
-  modSec->setModelEntityMask(smtk::model::Item::FACE); // Look at 3D boundary entities only
+  modSec->setModelEntityMask(smtk::model::FACE); // Look at 3D boundary entities only
 
   manager.updateCategories();
   attribute::AttributePtr att = manager.createAttribute("TimeInformation", timeParamDef);
@@ -175,7 +175,7 @@ int main()
   iSec = root->addSubView<view::InstancedPtr>("Global Parameters");
   iSec->addInstance(att);
   smtk::util::Logger logger;
-  smtk::util::XmlV1StringWriter writer(manager);
+  smtk::util::XmlV2StringWriter writer(manager);
   std::string result = writer.convertToString(logger);
   std::cout << result << std::endl;
   if (logger.hasErrors())
@@ -188,7 +188,7 @@ int main()
   pugi::xml_document doc;
   doc.load(test);
   attribute::Manager manager1;
-  smtk::util::XmlDocV1Parser reader(manager1);
+  smtk::util::XmlDocV2Parser reader(manager1);
   reader.process(doc);
   if (reader.messageLog().hasErrors())
     {
@@ -197,7 +197,7 @@ int main()
     status = -1;
     }
 
-  smtk::util::XmlV1StringWriter writer1(manager1);
+  smtk::util::XmlV2StringWriter writer1(manager1);
   std::cout << "Manager 1:\n";
   result = writer1.convertToString(logger);
   std::cout << result << std::endl;
