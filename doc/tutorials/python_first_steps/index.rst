@@ -11,7 +11,7 @@ To demonstrate the basic workflow in Python, we'll cover how to:
 
 * create attribute and model managers;
 * create an attribute system to hold simulation information;
-* populate the attribute system with definitions for a deal.II program;
+* populate the attribute system with definitions for a particular simulation run;
 * generate an ensemble of input decks whose attributes use these definitions
   with different values as part of a sensitivity study;
 * load a geometric model that has side sets used to hold boundary conditions;
@@ -19,8 +19,9 @@ To demonstrate the basic workflow in Python, we'll cover how to:
 * write an input deck for each entry in the ensemble.
 
 Our running example will be a fluid mechanics problem where
-we run the ensemble to study the sensitivity of pump work
-to viscosity and inlet velocity at our expected operating state.
+we run an ensemble of simulations to characterize the sensitivity
+of pump work to viscosity and inlet velocity at our expected
+operating conditions.
 
 Setup
 =====
@@ -32,6 +33,8 @@ The first part of our script imports SMTK and creates managers:
    :end-before: # -- 1 --
    :linenos:
 
+This will almost always be the first thing your Python scripts do.
+
 Problem Definition
 ==================
 
@@ -42,7 +45,7 @@ Everything in this entire section is usually replaced by creating an XML file
 describing the problem definition.
 However, the purpose of this tutorial is to demonstrate how to
 implement your simulation workflow in Python and there can be times when
-you wish to programmatically create a problem definition, or *template* file.
+you wish to programmatically create a *problem definition*, or *template* file.
 
 The first thing we do is create attribute :smtk:`Definitions <Definition>`
 for the basic types of simulation inputs we must provide:
