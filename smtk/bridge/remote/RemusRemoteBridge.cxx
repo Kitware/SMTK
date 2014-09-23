@@ -4,7 +4,7 @@
 #include "smtk/options.h"
 
 #ifdef SMTK_BUILD_CGM
-#  include "smtk/cgm/Engines.h"
+#  include "smtk/bridge/cgm/Engines.h"
 #endif
 
 #include "smtk/model/Cursor.h"

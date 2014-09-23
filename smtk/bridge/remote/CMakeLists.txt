@@ -29,6 +29,11 @@ target_include_directories(SMTKRemote
   PUBLIC
   ${REMUS_INCLUDE_DIRS}
   )
+
+if (SMTK_BUILD_CGM)
+  target_include_directories(SMTKRemote PRIVATE ${CGM_INCLUDE_DIRS})
+endif()
+
 smtk_export_header(SMTKRemote SMTKRemoteExports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
@@ -66,9 +71,9 @@ target_link_libraries(smtk-remote-model
   RemusWorker
 )
 target_include_directories(smtk-remote-model PRIVATE ${REMUS_INCLUDE_DIRS})
-
 if (SMTK_BUILD_CGM)
   target_link_libraries(smtk-remote-model cgmSMTK)
+  target_include_directories(smtk-remote-model PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
 if (SMTK_ENABLE_TESTING)
