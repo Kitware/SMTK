@@ -126,27 +126,17 @@ namespace smtk
 
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
-      // These methods are for the old model storage:
-      std::size_t numberOfAssociatedEntities() const
-      { return this->m_entities.size();}
-      bool isEntityAssociated(smtk::model::ItemPtr entity) const
-      { return (this->m_entities.find(entity) != this->m_entities.end());}
-      std::set<smtk::model::ItemPtr> associatedEntitiesSet() const
-      {return this->m_entities;}
-      std::set<smtk::model::ItemPtr>::const_iterator associatedEntities() const
-      {return this->m_entities.begin();}
-      void associateEntity(smtk::model::ItemPtr entity);
-      void disassociateEntity(smtk::model::ItemPtr entity, bool reverse=true);
-      void removeAllAssociations();
-
-      // These methods are for the new model storage:
       bool isEntityAssociated(const smtk::util::UUID& entity) const;
       bool isEntityAssociated(const smtk::model::Cursor& cursor) const;
+
       smtk::util::UUIDs associatedModelEntityIds() const
       {return this->m_modelEntities;}
       template<typename T> T associatedModelEntities() const;
+
       bool associateEntity(const smtk::util::UUID& entity);
+
       void disassociateEntity(const smtk::util::UUID& entity, bool reverse = true);
+      void removeAllAssociations();
 
       // These methods only applies to Attributes whose
       // definition returns true for isNodal()
@@ -197,7 +187,6 @@ namespace smtk
       std::vector<smtk::attribute::ItemPtr> m_items;
       smtk::attribute::AttributeId m_id;
       smtk::attribute::DefinitionPtr m_definition;
-      std::set<smtk::model::ItemPtr> m_entities;
       smtk::util::UUIDs m_modelEntities;
       std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;
       bool m_appliesToBoundaryNodes;

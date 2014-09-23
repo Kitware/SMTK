@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
-#include "smtk/model/Model.h"
+#include "smtk/model/Manager.h"
 #include "smtk/Qt/qtRootView.h"
 #include "smtk/Qt/qtUIManager.h"
 #include "smtk/util/AttributeReader.h"
@@ -116,10 +116,7 @@ int main(int argc, char *argv[])
       }
     }
 
-  // Instantiate (empty) model
-  smtk::model::ModelPtr model =
-    smtk::model::ModelPtr(new smtk::model::Model());
-  manager.setRefModel(model);
+  smtk::model::ManagerPtr modelManager = manager.refModelManager();
 
   // Instantiate Qt application
   QApplication *app = new QApplication(argc, argv);

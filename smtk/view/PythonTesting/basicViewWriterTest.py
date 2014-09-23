@@ -53,9 +53,9 @@ if __name__ == '__main__':
     if materialDef is None:
       print "could not create materialDef"
       sys.exit( -1 )
-    materialDef.setAssociationMask(smtk.model.Item.REGION) #belongs on 3D domains
+    materialDef.setAssociationMask(smtk.model.VOLUME) #belongs on 3D domains
     boundaryConditionsDef = manager.createDefinition("BoundaryCondition")
-    boundaryConditionsDef.setAssociationMask(smtk.model.Item.FACE); #belongs on 3D boundaries
+    boundaryConditionsDef.setAssociationMask(smtk.model.FACE); #belongs on 3D boundaries
     specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition")
     if specifiedHeadDef is None:
       print "Could not create SpecifiedHead"
@@ -157,15 +157,15 @@ if __name__ == '__main__':
     expSec.setDefinition(funcDef)
     attSec = addSubView( root, smtk.view.Attribute, "Materials")
     attSec.addDefinition(materialDef)
-    attSec.setModelEntityMask(smtk.model.Item.REGION)
+    attSec.setModelEntityMask(smtk.model.VOLUME)
     attSec.setOkToCreateModelEntities(True)
     modSec = addSubView(root, smtk.view.ModelEntity, "Domains")
-    modSec.setModelEntityMask(smtk.model.Item.REGION) # Look at 3D domains only
+    modSec.setModelEntityMask(smtk.model.VOLUME) # Look at 3D domains only
     modSec.setDefinition(materialDef) # use tabled view focusing on Material Attributes
     attSec = addSubView(root, smtk.view.Attribute, "BoundaryConditions")
     attSec.addDefinition(boundaryConditionsDef)
     modSec = addSubView(root, smtk.view.ModelEntity, "Boundary View")
-    modSec.setModelEntityMask(smtk.model.Item.FACE) # Look at 3d boundary entities only
+    modSec.setModelEntityMask(smtk.model.FACE) # Look at 3d boundary entities only
 
     manager.updateCategories()
     att = manager.createAttribute("TimeInformation", timeParamDef)
@@ -174,20 +174,20 @@ if __name__ == '__main__':
     att = manager.createAttribute("Globals", globalsDef)
     iSec = addSubView(root, smtk.view.Instanced, "Global Parameters")
     iSec.addInstance(att)
-#    writer = smtk.attribute.XmlV1StringWriter(manager)
+#    writer = smtk.attribute.XmlV2StringWriter(manager)
 #    result = writer.convertToString()
 #    print result
     #test(result)
     #doc = smtk.pugi.xml_document
     #doc.load(test)
     #manager1 = smtk.attribute.Manager()
-    #reader = smtk.attribute.XmlDocV1Parser(manager1)
+    #reader = smtk.attribute.XmlDocV2Parser(manager1)
     #reader.process(doc)
     #readErrors = reader.errorStatus()
     #if readErrors is not "":
       #print "READ ERRORS ENCOUNTERED!!!"
       #print readErrors
-    #writer1 = smtk.attribute.XmlV1StringWriter(manager1)
+    #writer1 = smtk.attribute.XmlV2StringWriter(manager1)
     #print << "Manager 1:"
     #result = writer1.convertToString()
     #print result

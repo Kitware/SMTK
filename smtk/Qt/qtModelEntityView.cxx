@@ -186,19 +186,6 @@ bool qtModelEntityView::isRegionDomain()
     {
     return false;
     }
-/*
-  Manager *attManager = this->uiManager()->attManager();
-  smtk::model::MaskType mask = mview->modelEntityMask();
-  if(mask & smtk::model::Item::REGION)
-    {
-    return true;
-    }
-  attribute::DefinitionPtr attDef = mview->definition();
-  if(attDef && attDef->associatesWithRegion())
-    {
-    return true;
-    }
-*/
   return false;
 }
 

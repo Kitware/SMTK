@@ -36,7 +36,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
-#include "smtk/model/Item.h" // just needed for enum
 #include "smtk/util/AttributeWriter.h"
 #include "smtk/util/AttributeReader.h"
 #include "smtk/util/Logger.h"

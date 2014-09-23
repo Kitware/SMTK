@@ -157,16 +157,6 @@ int main()
       std::cout << "wrong default color values: " <<tcol[0] << " " << tcol[1] << " " << tcol[2] << ' ' << tcol[3] << std::endl;
       status++;
       }
-    if (att->numberOfAssociatedEntities() != 0)
-      {
-      std::cout << "Should not have associated entities.\n";
-      status++;
-      }
-    if ( att->associatedEntitiesSet().size() !=0 )
-      {
-      std::cout << "Should not have associated entities.\n";
-      status++;
-      }
     if ( att->associatedModelEntityIds().size() !=0 )
       {
       std::cout << "Should not have associated entity IDs.\n";

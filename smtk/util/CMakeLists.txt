@@ -13,8 +13,8 @@ set(utilSrcs
   UserData.cxx
   UUID.cxx
   UUIDGenerator.cxx
-  XmlDocV1Parser.cxx
-  XmlV1StringWriter.cxx
+  XmlDocV2Parser.cxx
+  XmlV2StringWriter.cxx
   )
 
 set(utilHeaders
@@ -31,8 +31,8 @@ set(utilHeaders
   UserData.h
   UUID.h
   UUIDGenerator.h
-  XmlDocV1Parser.h
-  XmlV1StringWriter.h
+  XmlDocV2Parser.h
+  XmlV2StringWriter.h
   SystemConfig.h
   )
 
