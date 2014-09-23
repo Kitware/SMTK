@@ -41,7 +41,7 @@ int usage(
   // II. List available modeling kernels.
   std::cout << "Valid modelKernel values are:\n";
   StringList allKernels =
-    smtk::model::RemusRemoteBridge::availableTypeNames();
+    smtk::bridge::remote::RemusRemoteBridge::availableTypeNames();
   for (StringList::iterator kit = allKernels.begin(); kit != allKernels.end(); ++kit)
     if (*kit != "smtk::model[native]") // Do not allow "native" unbacked models, for now.
       std::cout << "  " << *kit << "\n";
@@ -55,6 +55,7 @@ int usage(
 
 int main(int argc, char* argv[])
 {
+  using namespace smtk::bridge;
   if (argc < 3)
     return usage(argc, argv);
 
@@ -70,11 +71,11 @@ int main(int argc, char* argv[])
 
   // Every worker shares the same output type ("smtk::model[native]")
   // since that is the wire format SMTK uses:
-  RemusModelBridgeType native =
-    smtk::model::RemusRemoteBridge::findAvailableType("smtk::model[native]");
+  remote::RemusModelBridgeType native =
+    remote::RemusRemoteBridge::findAvailableType("smtk::model[native]");
 
-  RemusModelBridgeType other =
-    smtk::model::RemusRemoteBridge::findAvailableType(kernel);
+  remote::RemusModelBridgeType other =
+    remote::RemusRemoteBridge::findAvailableType(kernel);
   if (!other)
     {
     return usage(argc, argv, "modelingKernel \"" + kernel + "\" was unknown.", 1);
@@ -92,7 +93,7 @@ int main(int argc, char* argv[])
   JobRequirements requirements = make_JobRequirements(io_type, "smtk::model", "");
   remus::Worker* w = new remus::Worker(requirements,connection);
 
-  RemusRPCWorker::Ptr smtkWorker = RemusRPCWorker::create();
+  remote::RemusRPCWorker::Ptr smtkWorker = remote::RemusRPCWorker::create();
   while (true)
     {
     std::cerr << "Waiting for job\n";

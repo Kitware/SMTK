@@ -9,9 +9,7 @@ namespace smtk {
   namespace bridge {
     namespace remote {
 
-//typedef smtk::shared_ptr<remus::client::ServerConnection> ClientConnectionType;
-typedef smtk::shared_ptr<smtk::model::RemusBridgeConnection> ClientConnectionType;
-//typedef std::vector<ClientConnectionType> ConnectionArrayType;
+typedef smtk::shared_ptr<smtk::bridge::remote::RemusBridgeConnection> ClientConnectionType;
 
 struct RemusServerDetails
 {

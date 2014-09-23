@@ -49,6 +49,7 @@ target_link_libraries(smtk-model-server
   RemusCommon
   RemusServer
 )
+target_include_directories(smtk-model-server PRIVATE ${REMUS_INCLUDE_DIRS})
 
 # Add a worker that links to each modeling kernel we bridge
 add_executable(smtk-remote-model
@@ -64,18 +65,16 @@ target_link_libraries(smtk-remote-model
   RemusClient
   RemusWorker
 )
+target_include_directories(smtk-remote-model PRIVATE ${REMUS_INCLUDE_DIRS})
 
 if (SMTK_BUILD_CGM)
   target_link_libraries(smtk-remote-model cgmSMTK)
 endif()
 
 if (SMTK_ENABLE_TESTING)
-
   # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_smtk_bridge_remote
-    LINK_PRIVATE
-      RemusCommon
-    )
+  target_link_libraries(TestBuild_smtk_bridge_remote LINK_PRIVATE RemusCommon)
+  target_include_directories(TestBuild_smtk_bridge_remote PRIVATE ${REMUS_INCLUDE_DIRS})
 
   add_subdirectory(testing)
 endif()

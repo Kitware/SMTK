@@ -149,7 +149,7 @@ void RemusRPCWorker::processJob(
           {
           remusType->bridgePrep();
           smtk::model::BridgeConstructor bctor =
-            BridgeRegistrar::bridgeConstructor(remusType->bridgeName());
+            smtk::model::BridgeRegistrar::bridgeConstructor(remusType->bridgeName());
           if (!bctor)
             {
             this->generateError(result,

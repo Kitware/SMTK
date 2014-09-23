@@ -10,6 +10,7 @@
 #include "smtk/util/UUID.h"
 
 using namespace smtk::model;
+using namespace smtk::bridge::remote;
 
 int main(int argc, char* argv[])
 {

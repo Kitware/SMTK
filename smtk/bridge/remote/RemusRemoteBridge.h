@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_remote_RemusRemoteBridge_h
 #define __smtk_bridge_remote_RemusRemoteBridge_h
 
-#include "smtk/SMTKRemoteExports.h" // for export macro
+#include "smtk/bridge/remote/SMTKRemoteExports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
 #include "smtk/model/DefaultBridge.h"
 
@@ -72,7 +72,7 @@ typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
   * on the component.
   */
 #define smtkRegisterBridgeWithRemus(BridgeName, BridgePrep, CompString, QualComp) \
-  struct smtk ##QualComp## RemusRemoteBridgeType : smtk::model::RemusModelTypeBase \
+  struct smtk ##QualComp## RemusRemoteBridgeType : smtk::bridge::remote::RemusModelTypeBase \
     { \
     static boost::shared_ptr<remus::meshtypes::MeshTypeBase> create() \
       { return boost::shared_ptr<remus::meshtypes::MeshTypeBase>(new smtk ##QualComp## RemusRemoteBridgeType()); } \
@@ -97,7 +97,7 @@ typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
   * instead it uses Remus for this.
   * For a protocol, it uses JSON-RPC v2.
   */
-class SMTKREMOTE_EXPORT RemusRemoteBridge : public DefaultBridge
+class SMTKREMOTE_EXPORT RemusRemoteBridge : public smtk::model::DefaultBridge
 {
 public:
   smtkTypeMacro(RemusRemoteBridge);
@@ -112,7 +112,7 @@ public:
 
   static RemusModelBridgeType findAvailableType(
     const std::string& bridgeType);
-  static StringList availableTypeNames();
+  static smtk::model::StringList availableTypeNames();
 
 protected:
   friend class RemoteOperator;
@@ -120,10 +120,12 @@ protected:
 
   RemusRemoteBridge();
 
-  virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
+  virtual smtk::model::BridgedInfoBits transcribeInternal(
+        const smtk::model::Cursor& entity, smtk::model::BridgedInfoBits flags);
 
-  virtual bool ableToOperateDelegate(RemoteOperatorPtr op);
-  virtual OperatorResult operateDelegate(RemoteOperatorPtr op);
+  virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
+  virtual smtk::model::OperatorResult operateDelegate(
+                                            smtk::model::RemoteOperatorPtr op);
 
   RemusBridgeConnection* m_remusConn;
   smtk::shared_ptr<remus::client::Client> m_remusClient;

@@ -281,12 +281,3 @@ add_subdirectory(smtk)
 ################################################################################
 
 add_subdirectory(doc)
-
-
-################################################################################
-# Build model bridges
-# Now that the main components of smtk have been built we can build the custom
-# model bridges that the user has enabled
-################################################################################
-
-add_subdirectory(bridges)

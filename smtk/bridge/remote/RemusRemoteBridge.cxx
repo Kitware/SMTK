@@ -71,9 +71,9 @@ RemusModelBridgeType RemusRemoteBridge::findAvailableType(
 }
 
 /// Return a list of the registered bridge types
-StringList RemusRemoteBridge::availableTypeNames()
+smtk::model::StringList RemusRemoteBridge::availableTypeNames()
 {
-  StringList atypes;
+  smtk::model::StringList atypes;
   std::set<boost::shared_ptr<remus::meshtypes::MeshTypeBase> > allTypes
     = remus::common::MeshRegistrar::allRegisteredTypes();
 
@@ -199,7 +199,7 @@ smtk::model::OperatorResult RemusRemoteBridge::operateDelegate(
 }
 
 // NB: We do not invoke
-// smtkImplementsModelingKernel(remus_remote,remusRemoteNoFileTypes,smtk::model::RemusRemoteBridge);
+// smtkImplementsModelingKernel(remus_remote,remusRemoteNoFileTypes,smtk::bridge::remote::RemusRemoteBridge);
 // because each instance of the bridge may advertise different capabilities.
 // Instead, when setup() is called with a pointer to a remus server, we query it to discover
 // different bridges we can back and register each of them with a combined bridge name.
@@ -232,7 +232,7 @@ void smtk_remus_remote_bridge_AutoInit_Destruct()
 std::string RemusRemoteBridge::bridgeName("remus_remote");
 
 / **\brief Declare the class name * /
-std::string RemusRemoteBridge::className() const { return "smtk::model::RemusRemoteBridge"; };
+std::string RemusRemoteBridge::className() const { return "smtk::bridge::remote::RemusRemoteBridge"; };
 
 / **\brief Declare the map of operator constructors * /
 smtk::model::OperatorConstructors* RemusRemoteBridge::s_operators = NULL;
@@ -296,7 +296,7 @@ void RemusRemoteBridge::cleanupOperators()
 } // namespace smtk
 
 const char* remusRemoteNoFileTypes[] = { NULL };
-smtkImplementsModelingKernel(remus_remote,remusRemoteNoFileTypes,smtk::model::RemusRemoteBridge);
+smtkImplementsModelingKernel(remus_remote,remusRemoteNoFileTypes,smtk::bridge::remote::RemusRemoteBridge);
 
 smtkRegisterBridgeWithRemus("native", ,"smtk::model[native]", Native);
 #if 0 // ifdef SMTK_BUILD_CGM

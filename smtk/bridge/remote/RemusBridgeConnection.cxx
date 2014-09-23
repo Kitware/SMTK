@@ -117,7 +117,9 @@ smtk::util::UUID RemusBridgeConnection::beginBridgeSession(const std::string& br
   RemusRemoteBridge::Ptr bridge = RemusRemoteBridge::create();
   bridge->setup(this, jreq);
   // The ImportJSON registers this bridge with the model manager.
-  if (ImportJSON::ofRemoteBridgeSession(bridgeIdObj, bridge, this->m_modelMgr))
+  if (smtk::model::ImportJSON::ofRemoteBridgeSession(bridgeIdObj,
+                                                     bridge,
+                                                     this->m_modelMgr) )
     {
     // Failure.
     }
@@ -146,7 +148,7 @@ bool RemusBridgeConnection::endBridgeSession(const smtk::util::UUID& bridgeSessi
     return false;
 
   // Unhook our local cmbForwardingBridge representing the remote.
-  Bridge::Ptr bridgeBase = this->m_modelMgr->findBridgeSession(bridgeSessionId);
+  smtk::model::Bridge::Ptr bridgeBase = this->m_modelMgr->findBridgeSession(bridgeSessionId);
   RemusRemoteBridge::Ptr bridge = smtk::dynamic_pointer_cast<RemusRemoteBridge>(bridgeBase);
   if (bridge)
     {
@@ -263,18 +265,18 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
   if (!bridge)
     {
     std::cerr << "Could not find or create bridge of type \"" << actualBridgeName << "\"\n";
-    return OperatorResult();
+    return smtk::model::OperatorResult();
     }
   std::cout << "Found bridge " << bridge->sessionId() << " (" << actualBridgeName << ")\n";
 
-  OperatorPtr readOp = bridge->op("read", this->m_modelMgr);
+  smtk::model::OperatorPtr readOp = bridge->op("read", this->m_modelMgr);
   if (!readOp)
     {
     std::cerr
       << "Could not create read operator for bridge"
       << " \"" << actualBridgeName << "\""
       << " (" << bridge->sessionId() << ")\n";
-    return OperatorResult();
+    return smtk::model::OperatorResult();
     }
 
   readOp->ensureSpecification();
@@ -288,14 +290,14 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
 
   // NB: leaky; for debug only.
   cJSON* json = cJSON_CreateObject();
-  ExportJSON::forOperator(readOp, json);
+  smtk::model::ExportJSON::forOperator(readOp, json);
   std::cout << "Found operator " << readOp->className() << " -- " << (readOp->specification()->isValid() ? "V" : "I") << " -- " << cJSON_Print(json) << ")\n";
 
-  OperatorResult result = readOp->operate();
+  smtk::model::OperatorResult result = readOp->operate();
 
   // NB: leaky; for debug only.
   json = cJSON_CreateObject();
-  ExportJSON::forOperatorResult(result, json);
+  smtk::model::ExportJSON::forOperatorResult(result, json);
   std::cout << "Result " << cJSON_Print(json) << "\n";
 
   // Fetch affected models
@@ -350,7 +352,7 @@ smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
 void RemusBridgeConnection::fetchWholeModel(const smtk::util::UUID& modelId)
 {
   // Find bridge from modelId, then job requirements from bridge.
-  Bridge::Ptr bridgeBase = this->m_modelMgr->bridgeForModel(modelId);
+  smtk::model::Bridge::Ptr bridgeBase = this->m_modelMgr->bridgeForModel(modelId);
   RemusRemoteBridge::Ptr bridge = smtk::dynamic_pointer_cast<RemusRemoteBridge>(bridgeBase);
   if (!bridge)
     return;
@@ -365,7 +367,7 @@ void RemusBridgeConnection::fetchWholeModel(const smtk::util::UUID& modelId)
     (model = cJSON_GetObjectItem(response, "result")) &&
     model->type == cJSON_Object &&
     (topo = cJSON_GetObjectItem(model, "topo")))
-    ImportJSON::ofManager(topo, this->m_modelMgr);
+    smtk::model::ImportJSON::ofManager(topo, this->m_modelMgr);
   cJSON_Delete(response);
 }
 
@@ -460,7 +462,7 @@ RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeForRemusType(
     {
     if (bit->second == rtype)
       {
-      Bridge::Ptr bridgeBase = this->m_modelMgr->findBridgeSession(bit->first);
+      smtk::model::Bridge::Ptr bridgeBase = this->m_modelMgr->findBridgeSession(bit->first);
       bridge = smtk::dynamic_pointer_cast<RemusRemoteBridge>(bridgeBase);
       if (bridge)
         {

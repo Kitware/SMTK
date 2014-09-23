@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
   (void)argc;
   (void)argv;
 
-  StringList typeNames = smtk::model::RemusRemoteBridge::availableTypeNames();
+  StringList typeNames = smtk::bridge::remote::RemusRemoteBridge::availableTypeNames();
   for (StringList::const_iterator it = typeNames.begin(); it != typeNames.end(); ++it)
     {
     std::cout
