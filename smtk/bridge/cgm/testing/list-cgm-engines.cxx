@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-using namespace cgmsmtk::cgm;
+using namespace smtk::bridge::cgm;
 
 typedef std::vector<std::string> StringArray;
 

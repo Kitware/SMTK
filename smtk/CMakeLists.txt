@@ -146,6 +146,7 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk.py ${CMAKE_INSTALL_PREFIX}/python/smtk.py )" )
 endif()
 
+
 ################################################################################
 # Build model bridges
 # Now that the main components of smtk have been built we can build the custom
