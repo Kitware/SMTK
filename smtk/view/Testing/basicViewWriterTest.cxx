@@ -44,8 +44,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
 #define PUGIXML_HEADER_ONLY
-#include "pugixml-1.2/src/pugixml.hpp"
-#include "pugixml-1.2/src/pugixml.cpp"
+#include "pugixml/src/pugixml.hpp"
+#include "pugixml/src/pugixml.cpp"
 
 #include <iostream>
 #include <sstream>
