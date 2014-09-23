@@ -276,20 +276,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
   };
 
-  //bridge relates pointer classes
-  namespace bridge
-    {
-    namespace cgm
-      {
-      class Bridge;
-      typedef smtk::shared_ptr<smtk::bridge::cgm::Bridge> BridgePtr;
-      class ImportSolid;
-      class Engines;
-      class ExportSolid;
-      }
-    }
-
-
 #ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers
   //since sets of weak pointers can be dangerous.

@@ -79,7 +79,7 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
   CGMApp::instance()->startup(targs.size(), const_cast<char**>(&targs[0]));
 #endif
 
-  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
+  smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   CubitStatus s = InitCGMA::initialize_cgma(
     engine.empty() ? "OCC" : engine.c_str());
   cgmaInitialized = (s == CUBIT_SUCCESS ? true : false);

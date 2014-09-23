@@ -2,6 +2,7 @@
 #define __smtk_bridge_cgm_Bridge_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/PointerDefs.h"
 #include "smtk/model/Bridge.h"
 
 class Body;

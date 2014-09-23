@@ -56,7 +56,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   std::string filename = filenameItem->value();
   std::string filetype = filetypeItem->value();
 
-  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
+  smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   std::string engine = "OCC";
   if (filetype.empty())
     { // Try to infer file type
@@ -106,7 +106,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   for (int i = 0; i < ne; ++i)
     {
     RefEntity* entry = imported.get_and_step();
-    smtk::bridge::cgmTDUUID* refId = smtk::bridge::cgmTDUUID::ofEntity(entry, true);
+    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::util::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
@@ -122,8 +122,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgmReadOperator,
+  smtk::bridge::cgm::ReadOperator,
   cgm_read,
   "read",
   ReadOperator_xml,
-  smtk::bridge::cgmBridge);
+  smtk::bridge::cgm::Bridge);

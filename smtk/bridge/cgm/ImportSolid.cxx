@@ -40,7 +40,7 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   smtk::model::ManagerPtr manager)
 {
   smtk::util::UUIDArray result;
-  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
+  smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
@@ -80,7 +80,7 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   for (int i = 0; i < ne; ++i)
     {
     RefEntity* entry = imported.get_and_step();
-    smtk::bridge::cgmTDUUID* refId = smtk::bridge::cgmTDUUID::ofEntity(entry, true);
+    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
     smtk::util::UUID entId = refId->entityId();
     Cursor smtkEntry(manager, entId);
     if (bridge->transcribe(smtkEntry, BRIDGE_EVERYTHING, false))

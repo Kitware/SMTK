@@ -619,4 +619,4 @@ static const char* CGMFileTypes[] = {
   ".cholla (Cholla facet file)",
   NULL
 };
-smtkImplementsModelingKernel(cgm,CGMFileTypes,smtk::bridge::cgmBridge);
+smtkImplementsModelingKernel(cgm,CGMFileTypes,smtk::bridge::cgm::Bridge);
