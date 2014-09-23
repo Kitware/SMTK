@@ -1,9 +1,9 @@
-#include "smtk/cgm/ReadOperator.h"
+#include "smtk/bridge/cgm/ReadOperator.h"
 
-#include "smtk/cgm/Bridge.h"
-#include "smtk/cgm/CAUUID.h"
-#include "smtk/cgm/Engines.h"
-#include "smtk/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/Engines.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -24,10 +24,11 @@
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
 
-#include "smtk/cgm/ReadOperator_xml.h"
+#include "smtk/bridge/cgm/ReadOperator_xml.h"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 // local helper
 static bool hasEnding(const std::string& fullString, const std::string& ending)
@@ -55,7 +56,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   std::string filename = filenameItem->value();
   std::string filetype = filetypeItem->value();
 
-  cgmsmtk::cgm::CAUUID::registerWithAttributeManager();
+  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
   std::string engine = "OCC";
   if (filetype.empty())
     { // Try to infer file type
@@ -105,7 +106,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   for (int i = 0; i < ne; ++i)
     {
     RefEntity* entry = imported.get_and_step();
-    cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::bridge::cgmTDUUID* refId = smtk::bridge::cgmTDUUID::ofEntity(entry, true);
     smtk::util::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
@@ -116,12 +117,13 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   return result;
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
 smtkImplementsModelOperator(
-  cgmsmtk::cgm::ReadOperator,
+  smtk::bridge::cgmReadOperator,
   cgm_read,
   "read",
   ReadOperator_xml,
-  cgmsmtk::cgm::Bridge);
+  smtk::bridge::cgmBridge);

@@ -1,14 +1,16 @@
-#include "smtk/cgm/Operator.h"
-#include "smtk/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Operator.h"
+#include "smtk/bridge/cgm/Bridge.h"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /// Return a shared pointer to the bridge backing a CGM operator.
 Bridge* Operator::cgmBridge()
 {
-  return dynamic_cast<cgmsmtk::cgm::Bridge*>(this->bridge());
+  return dynamic_cast<smtk::bridge::cgmBridge*>(this->bridge());
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

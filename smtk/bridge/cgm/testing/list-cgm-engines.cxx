@@ -1,4 +1,4 @@
-#include "smtk/cgm/Engines.h"
+#include "smtk/bridge/cgm/Engines.h"
 
 #include <algorithm>
 #include <iostream>

@@ -1,5 +1,5 @@
-#include "smtk/cgm/TDUUID.h"
-#include "smtk/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/CAUUID.h"
 
 #include "CubitAttrib.hpp"
 #include "CubitAttribUser.hpp"
@@ -7,8 +7,9 @@
 
 #include <sstream>
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 UUIDToCGMRef TDUUID::s_reverseLookup;
 smtk::util::UUIDGenerator TDUUID::s_uuidGenerator;
@@ -139,5 +140,6 @@ void TDUUID::checkForCollision(ToolDataUser* entity, const smtk::util::UUID& uid
     }
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

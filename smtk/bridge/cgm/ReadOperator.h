@@ -1,10 +1,11 @@
-#ifndef __smtk_cgm_ReadOperator_h
-#define __smtk_cgm_ReadOperator_h
+#ifndef __smtk_bridge_cgm_ReadOperator_h
+#define __smtk_bridge_cgm_ReadOperator_h
 
-#include "smtk/cgm/Operator.h"
+#include "smtk/bridge/cgm/Operator.h"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 class CGMSMTK_EXPORT ReadOperator : public Operator
 {
@@ -20,7 +21,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
-#endif // __smtk_cgm_ReadOperator_h
+#endif // __smtk_bridge_cgm_ReadOperator_h

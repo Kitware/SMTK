@@ -1,5 +1,5 @@
-#include "smtk/cgm/Bridge.h"
-#include "smtk/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/util/AutoInit.h"
 #include "smtk/util/UUID.h"
@@ -38,8 +38,9 @@
 
 using smtk::model::Cursor;
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /// Default constructor.
 Bridge::Bridge()
@@ -601,8 +602,9 @@ void Bridge::colorPropFromIndex(
     }
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
 static const char* CGMFileTypes[] = {
   ".sat (Standard ACIS Text)",
@@ -617,4 +619,4 @@ static const char* CGMFileTypes[] = {
   ".cholla (Cholla facet file)",
   NULL
 };
-smtkImplementsModelingKernel(cgm,CGMFileTypes,cgmsmtk::cgm::Bridge);
+smtkImplementsModelingKernel(cgm,CGMFileTypes,smtk::bridge::cgmBridge);

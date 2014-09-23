@@ -1,5 +1,5 @@
-#ifndef __smtk_cgm_TDUUID_h
-#define __smtk_cgm_TDUUID_h
+#ifndef __smtk_bridge_cgm_TDUUID_h
+#define __smtk_bridge_cgm_TDUUID_h
 
 #include "ToolData.hpp"
 
@@ -7,7 +7,7 @@
 #include "CubitGeomConfigure.h"
 
 #include "smtk/options.h"
-#include "smtk/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/util/UUIDGenerator.h"
 
 #ifdef SMTK_HASH_STORAGE
@@ -16,8 +16,9 @@
 #  include <map>
 #endif // SMTK_HASH_STORAGE
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 #ifdef SMTK_HASH_STORAGE
 /// Map UUIDs to CGM entity pointers
@@ -50,7 +51,7 @@ protected:
   static void checkForCollision(ToolDataUser* entity, const smtk::util::UUID& uid);
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
-
-#endif // __smtk_cgm_TDUUID_h
+    } // namespace cgm
+  } //namespace bridge
+} // namespace smtk
+#endif // __smtk_bridge_cgm_TDUUID_h

@@ -1,11 +1,12 @@
-#ifndef __smtk_cgm_Operator_h
-#define __smtk_cgm_Operator_h
+#ifndef __smtk_bridge_cgm_Operator_h
+#define __smtk_bridge_cgm_Operator_h
 
-#include "smtk/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/model/Operator.h"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 class Bridge;
 
@@ -21,7 +22,8 @@ protected:
   Bridge* cgmBridge();
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
-#endif // __smtk_cgm_Operator_h
+#endif // __smtk_bridge_cgm_Operator_h

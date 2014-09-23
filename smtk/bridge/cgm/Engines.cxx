@@ -1,6 +1,6 @@
-#include "smtk/cgm/Engines.h"
+#include "smtk/bridge/cgm/Engines.h"
 
-#include "smtk/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/CAUUID.h"
 
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push
@@ -25,8 +25,9 @@
 
 #include <algorithm>
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 static bool cgmaInitialized = false;
 /* We keep these around because there are no headers for the Cubit(ACIS)
@@ -78,7 +79,7 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
   CGMApp::instance()->startup(targs.size(), const_cast<char**>(&targs[0]));
 #endif
 
-  cgmsmtk::cgm::CAUUID::registerWithAttributeManager();
+  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
   CubitStatus s = InitCGMA::initialize_cgma(
     engine.empty() ? "OCC" : engine.c_str());
   cgmaInitialized = (s == CUBIT_SUCCESS ? true : false);
@@ -233,5 +234,6 @@ bool Engines::shutdown()
   return true;
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

@@ -1,5 +1,5 @@
-#include "smtk/cgm/CAUUID.h"
-#include "smtk/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
 #include "CGMApp.hpp"
 #include "CubitAttribManager.hpp"
@@ -8,8 +8,9 @@
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /**\brief Register the CAUUID attribute type with the attribute manager.
   *
@@ -215,5 +216,6 @@ CubitAttrib* CAUUID::creator(RefEntity* entity, CubitSimpleAttrib* p_csa)
 }
 #endif
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

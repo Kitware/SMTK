@@ -1,5 +1,5 @@
-#include "smtk/cgm/ExportSolid.h"
-#include "smtk/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/ExportSolid.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
@@ -9,8 +9,9 @@
 #include "CubitAttribManager.hpp"
 #include "RefEntity.hpp"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /**\brief Export the specified entities to the given file.
   *
@@ -46,5 +47,6 @@ int ExportSolid::entitiesToFileOfNameAndType(
   return s == CUBIT_SUCCESS ? 0 : 1;
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

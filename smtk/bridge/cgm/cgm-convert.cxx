@@ -44,8 +44,8 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/util/UUID.h"
 #include "smtk/model/ExportJSON.h"
-#include "smtk/cgm/TDUUID.h"
-#include "smtk/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/CAUUID.h"
 #include "cJSON.h"
 
 #include <map>
@@ -100,7 +100,7 @@ void AddEntitiesToBody(
     {
     // First, create a cell for the given entity:
     E* entry = entities.get_and_step();
-    cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::bridge::cgmTDUUID* refId = smtk::bridge::cgmTDUUID::ofEntity(entry, true);
     smtk::model::UUIDWithEntity cell = manager->setCellOfDimension(refId->entityId(), entry->dimension());
     int cgmId = TDUniqueId::get_unique_id(entry);
     // Now, if owningBodyId is non-NULL (because the entity is a "free" member
@@ -540,7 +540,7 @@ int main (int argc, char **argv)
   CubitObserver::init_static_observers();
   CGMApp::instance()->startup( argc, argv );
 #endif
-  cgmsmtk::cgm::CAUUID::registerWithAttributeManager();
+  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
   const char* engine = ENGINE;
   if (argc > 2)
     { // Choose the engine to use based on the file type.

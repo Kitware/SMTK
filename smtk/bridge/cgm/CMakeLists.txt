@@ -21,8 +21,6 @@ set(CGMLibHeaders
   TDUUID.h
 )
 
-smtk_public_headers(${CGMLibHeaders})
-
 add_definitions(${CGM_DEFINES})
 
 add_library(cgmSMTK ${CGMLibSrcs})
@@ -95,23 +93,13 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
 smtk_public_headers(${CGMLibHeaders})
 
 # Utility programs using CGM:
-add_executable(cgm-convert
-  cgm-convert.cxx
-)
-target_link_libraries(cgm-convert
-  SMTKCore
-  cgmSMTK
-  ${CGM_LIBRARIES}
-)
+add_executable(cgm-convert cgm-convert.cxx)
+target_link_libraries(cgm-convert SMTKCore cgmSMTK ${CGM_LIBRARIES})
+target_include_directories(cgm-convert PUBLIC ${CGM_INCLUDE_DIRS})
 
-add_executable(facet-convert
-  facet-convert.cxx
-)
-target_link_libraries(facet-convert
-  SMTKCore
-  ${CGM_LIBRARIES}
-)
-target_include_directories(convert PUBLIC ${CGM_INCLUDE_DIRS})
+add_executable(facet-convert facet-convert.cxx)
+target_link_libraries(facet-convert SMTKCore ${CGM_LIBRARIES})
+target_include_directories(facet-convert PUBLIC ${CGM_INCLUDE_DIRS})
 
 if (SMTK_BUILD_ParaView)
   include("${PARAVIEW_USE_FILE}")
@@ -127,7 +115,7 @@ endif()
 
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
-  target_link_libraries(TestBuild_bridges_cgm LINK_PRIVATE ${CGM_LIBRARIES})
-  target_include_directories(TestBuild_bridges_cgm PUBLIC ${CGM_INCLUDE_DIRS})
+  target_link_libraries(TestBuild_smtk_bridge_cgm LINK_PRIVATE ${CGM_LIBRARIES})
+  target_include_directories(TestBuild_smtk_bridge_cgm PUBLIC ${CGM_INCLUDE_DIRS})
   add_subdirectory(testing)
 endif()

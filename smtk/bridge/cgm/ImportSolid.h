@@ -1,7 +1,7 @@
-#ifndef __smtk_cgm_ImportSolid_h
-#define __smtk_cgm_ImportSolid_h
+#ifndef __smtk_bridge_cgm_ImportSolid_h
+#define __smtk_bridge_cgm_ImportSolid_h
 
-#include "smtk/cgmSMTKExports.h" // for CGMSMTK_EXPORT
+#include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
 #include "smtk/util/UUID.h"
@@ -12,8 +12,9 @@ namespace smtk {
   }
 }
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /**\brief Load a solid model using CGM.
   *
@@ -27,7 +28,8 @@ public:
     smtk::model::ManagerPtr manager);
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
-#endif // __smtk_cgm_ImportSolid_h
+#endif // __smtk_bridge_cgm_ImportSolid_h

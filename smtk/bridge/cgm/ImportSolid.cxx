@@ -1,9 +1,9 @@
-#include "smtk/cgm/ImportSolid.h"
+#include "smtk/bridge/cgm/ImportSolid.h"
 
-#include "smtk/cgm/Bridge.h"
-#include "smtk/cgm/CAUUID.h"
-#include "smtk/cgm/Engines.h"
-#include "smtk/cgm/TDUUID.h"
+#include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/CAUUID.h"
+#include "smtk/bridge/cgm/Engines.h"
+#include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/GroupEntity.h"
@@ -30,8 +30,9 @@
 
 using namespace smtk::model;
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   const std::string& filename,
@@ -39,7 +40,7 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   smtk::model::ManagerPtr manager)
 {
   smtk::util::UUIDArray result;
-  cgmsmtk::cgm::CAUUID::registerWithAttributeManager();
+  smtk::bridge::cgmCAUUID::registerWithAttributeManager();
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
@@ -79,7 +80,7 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   for (int i = 0; i < ne; ++i)
     {
     RefEntity* entry = imported.get_and_step();
-    cgmsmtk::cgm::TDUUID* refId = cgmsmtk::cgm::TDUUID::ofEntity(entry, true);
+    smtk::bridge::cgmTDUUID* refId = smtk::bridge::cgmTDUUID::ofEntity(entry, true);
     smtk::util::UUID entId = refId->entityId();
     Cursor smtkEntry(manager, entId);
     if (bridge->transcribe(smtkEntry, BRIDGE_EVERYTHING, false))
@@ -92,5 +93,6 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
   return result;
 }
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk

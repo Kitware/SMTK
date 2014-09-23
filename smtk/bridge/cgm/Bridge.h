@@ -1,7 +1,7 @@
-#ifndef __smtk_cgm_Bridge_h
-#define __smtk_cgm_Bridge_h
+#ifndef __smtk_bridge_cgm_Bridge_h
+#define __smtk_bridge_cgm_Bridge_h
 
-#include "smtk/cgmSMTKExports.h"
+#include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/model/Bridge.h"
 
 class Body;
@@ -21,8 +21,9 @@ class RefEntity;
 class SenseEntity;
 class GroupingEntity;
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /**\brief Methods that handle translation between CGM and SMTK instances.
   *
@@ -84,7 +85,8 @@ private:
   void operator = (const Bridge&); // Not implemented.
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
-#endif // __smtk_cgm_Bridge_h
+#endif // __smtk_bridge_cgm_Bridge_h

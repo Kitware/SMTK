@@ -1,16 +1,17 @@
-#ifndef __smtk_cgm_CAUUID_h
-#define __smtk_cgm_CAUUID_h
+#ifndef __smtk_bridge_cgm_CAUUID_h
+#define __smtk_bridge_cgm_CAUUID_h
 
 #include "smtk/options.h" // for CGM_HAVE_VERSION_H
-#include "smtk/cgmSMTKExports.h" // for CGMSMTK_EXPORT
+#include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"
 #endif
 #include "CubitAttrib.hpp"
 #include "smtk/util/UUID.h"
 
-namespace cgmsmtk {
-  namespace cgm {
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
 
 /// An extension of the CubitAttributeType enum
 enum CubitAttributeTypeExtensions
@@ -61,7 +62,8 @@ protected:
   smtk::util::UUID m_entityId;
 };
 
-  } // namespace cgm
-} // namespace cgmsmtk
+} // namespace cgm
+  } //namespace bridge
+} // namespace smtk
 
-#endif // __smtk_cgm_CAUUID_h
+#endif // __smtk_bridge_cgm_CAUUID_h
