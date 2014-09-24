@@ -1,7 +1,7 @@
 #ifndef __smtk_vtk_ModelView_h
 #define __smtk_vtk_ModelView_h
 
-#include "smtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "vtkRenderView.h"
 
 /**\brief A vtkView subclass for displaying SMTK model geometry.

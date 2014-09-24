@@ -1,9 +1,9 @@
+
 if(SMTK_BUILD_ParaView)
   # Only include the ParaView use-file in subdirectories
   # that require ParaView include paths. Otherwise, command
   # lines get too long on some platforms.
   include("${PARAVIEW_USE_FILE}")
-  include(ParaViewPlugins)
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
@@ -14,5 +14,3 @@ if(SMTK_BUILD_ParaView)
   pv_setup_module_environment("SMTK")
   pv_process_modules()
 endif()
-
-# add_subdirectory(plugin)

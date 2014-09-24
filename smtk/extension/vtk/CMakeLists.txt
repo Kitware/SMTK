@@ -19,10 +19,20 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS ${VTK_DEFINITIONS})
 set(vtkSMTK_NO_HeaderTest 1)
 
 vtk_module_library(vtkSMTK ${VTKLibSrcs})
+
 target_link_libraries(vtkSMTK
   LINK_PUBLIC
     SMTKCore
 )
+
+#has to be after the vtk_module_library
+smtk_export_header(vtkSMTK vtkSMTKExports.h)
+
+target_include_directories(vtkSMTK
+  PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
   set_target_properties(vtkSMTK PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
@@ -49,6 +59,7 @@ foreach(target
     list(APPEND SMTK_VTK_TARGET_LIST ${target})
   endif()
 endforeach()
+
 link_libraries(
   ${VTK_MODULES}
   ${SMTK_VTK_TARGET_LIST}

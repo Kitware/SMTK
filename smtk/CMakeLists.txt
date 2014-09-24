@@ -87,15 +87,8 @@ if(SMTK_BUILD_QT)
 
 endif()
 
-#add the ParaView code
-if(SMTK_BUILD_ParaView)
-  add_subdirectory(paraview)
-
-  # We need to generate the export macro in this directory,
-  # even if the library is not built here.
-  smtk_export_header(vtkSMTK vtkSMTKExports.h)
-  #smtk_export_header(pvSMTK pvSMTKExports.h)
-endif()
+#add the extensions code
+add_subdirectory(extension)
 
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 

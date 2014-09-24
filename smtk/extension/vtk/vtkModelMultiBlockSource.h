@@ -1,7 +1,7 @@
 #ifndef __smtk_vtk_ModelMultiBlockSource_h
 #define __smtk_vtk_ModelMultiBlockSource_h
 
-#include "smtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
 #include "smtk/PublicPointerDefs.h"
 

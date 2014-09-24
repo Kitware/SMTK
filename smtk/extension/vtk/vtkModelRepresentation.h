@@ -1,7 +1,7 @@
 #ifndef __smtk_vtk_ModelRepresentation_h
 #define __smtk_vtk_ModelRepresentation_h
 
-#include "smtk/vtkSMTKExports.h"
+#include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "vtkRenderedRepresentation.h"
