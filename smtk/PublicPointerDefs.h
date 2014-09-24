@@ -304,14 +304,6 @@ namespace smtk
       smtk::owner_less< attribute::WeakItemPtr > >   WeakItemPtrSet;
   };
 
-  namespace model
-  {
-    typedef std::set< WeakItemPtr,
-      smtk::owner_less<WeakItemPtr > >        WeakItemPtrSet;
-    typedef std::set< WeakModelPtr,
-      smtk::owner_less<WeakModelPtr > >       WeakModelPtrSet;
-  };
-
   namespace view
   {
     typedef std::set< view::WeakBasePtr,
