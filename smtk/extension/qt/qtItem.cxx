@@ -59,7 +59,7 @@ public:
 
 //----------------------------------------------------------------------------
 qtItem::qtItem(smtk::attribute::ItemPtr dataObject, QWidget* p, qtBaseView* bview)
-{ 
+{
   this->Internals  = new qtItemInternals(dataObject, p, bview);
   this->Widget = NULL;
   this->IsLeafItem = false;
@@ -110,7 +110,7 @@ void qtItem::addChildItem(qtItem* child)
 QList<qtItem*>& qtItem::childItems() const
 {
   return this->Internals->ChildItems;
-} 
+}
 //----------------------------------------------------------------------------
 void qtItem::clearChildItems()
 {

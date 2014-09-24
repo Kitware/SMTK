@@ -75,7 +75,7 @@ public:
 //----------------------------------------------------------------------------
 qtAttribute::qtAttribute(smtk::attribute::AttributePtr dataObject, QWidget* p,
    qtBaseView* view)
-{ 
+{
   this->Internals  = new qtAttributeInternals(dataObject, p, view);
   this->Widget = NULL;
   //this->Internals->DataConnect = NULL;
@@ -150,7 +150,7 @@ void qtAttribute::addItem(qtItem* child)
 QList<qtItem*>& qtAttribute::items() const
 {
   return this->Internals->Items;
-} 
+}
 
 //----------------------------------------------------------------------------
 void qtAttribute::clearItems()

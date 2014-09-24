@@ -147,7 +147,7 @@ void qtRootView::createWidget( )
     SIGNAL(stateChanged(int)), this, SLOT(enableShowBy(int)));
   QObject::connect(this->Internals->ShowCategoryCombo,
     SIGNAL(currentIndexChanged(int)), this, SLOT(onShowCategory()));
-  
+
   QVBoxLayout* parentlayout = static_cast<QVBoxLayout*> (
     this->parentWidget()->layout());
   parentlayout->setAlignment(Qt::AlignTop);

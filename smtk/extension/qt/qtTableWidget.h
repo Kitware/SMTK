@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 //  1.  Automatic size hints based on contents
 //  2.  A check box added in a header if items have check boxes
 //  3.  Navigation through columns of top level items on Tab.
-//  4.  Signal emitted when user navigates beyond end of the table giving an 
+//  4.  Signal emitted when user navigates beyond end of the table giving an
 //      opportunity to the lister to grow the table.
 //  5.  Customized Drag-n-Drop
 // .SECTION Caveats
@@ -46,9 +46,9 @@ class QKeyEvent;
 class QTSMTK_EXPORT qtTableWidget : public QTableWidget
 {
   Q_OBJECT
-  
+
 public:
-  
+
   qtTableWidget(QWidget* p = NULL);
   ~qtTableWidget();
 
@@ -60,11 +60,10 @@ public slots:
 
 signals:
   void keyPressed(QKeyEvent*);
-  
+
 protected slots:
   virtual void keyPressEvent(QKeyEvent*);
 
 };
 
 #endif // !_qtTableWidget_h
-

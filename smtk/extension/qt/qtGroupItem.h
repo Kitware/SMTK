@@ -19,43 +19,47 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtVoidItem - a qt item for Void type attribute items
+// .NAME qtGroupItem - an Expression item
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtVoidItem_h
-#define __smtk_attribute_qtVoidItem_h
+#ifndef __smtk_attribute_qtGroupItem_h
+#define __smtk_attribute_qtGroupItem_h
 
 #include "smtk/Qt/qtItem.h"
 
-class qtVoidItemInternals;
+class qtGroupItemInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtVoidItem : public qtItem
+    class QTSMTK_EXPORT qtGroupItem : public qtItem
     {
       Q_OBJECT
 
-    public:         
-      qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
-      virtual ~qtVoidItem();
+    public:
+      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
+                  Qt::Orientation enVectorItemOrient = Qt::Horizontal);
+      virtual ~qtGroupItem();
       virtual void setLabelVisible(bool);
-
-    public slots:
-      void setOutputOptional(int);
 
     protected slots:
       virtual void updateItemData();
+      virtual void setEnabledState(bool checked);
+      virtual void onAddSubGroup();
+      virtual void onRemoveSubGroup();
+      virtual void onChildWidgetSizeChanged();
 
     protected:
       virtual void createWidget();
-      
-    private:
+      virtual void addSubGroup(int i);
+      virtual void updateExtensibleState();
+      virtual void addItemsToTable(int i);
 
-      qtVoidItemInternals *Internals;
+    private:
+      qtGroupItemInternals *Internals;
 
     }; // class
   }; // namespace attribute

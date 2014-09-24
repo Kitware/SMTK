@@ -19,7 +19,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtItem - an abstract class that encapsulates a single piece of data 
+// .NAME qtItem - an abstract class that encapsulates a single piece of data
 // .SECTION Description
 
 #ifndef __smtk_attribute_qtItem_h
@@ -68,15 +68,15 @@ namespace smtk
     {
       Q_OBJECT
 
-    public:         
+    public:
       qtItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
-      virtual ~qtItem();  
-      
+      virtual ~qtItem();
+
       smtk::attribute::ItemPtr getObject();
       QWidget* widget()
       {return this->Widget;}
       QWidget* parentWidget();
-      
+
       virtual void addChildItem(qtItem*);
       virtual void clearChildItems();
       QList<qtItem*>& childItems() const;
@@ -85,7 +85,7 @@ namespace smtk
         {return this->IsLeafItem;}
 
       virtual void setLabelVisible(bool) {;}
-      
+
       bool passAdvancedCheck();
       void showAdvanceLevelOverlay(bool);
 

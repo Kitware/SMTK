@@ -117,8 +117,8 @@ void qtReferencesWidget::showAttributeReferences(
       {
       this->addAttributeRefListItem(
         this->Internals->CurrentList,refs[i]);
-      } 
-    } 
+      }
+    }
   this->Internals->CurrentList->blockSignals(false);
   this->Internals->AvailableList->blockSignals(false);
 }
@@ -145,7 +145,7 @@ smtk::attribute::AttributePtr qtReferencesWidget::getSelectedAttribute(
 smtk::attribute::AttributePtr qtReferencesWidget::getAttributeFromItem(
   QListWidgetItem * item)
 {
-  Attribute* rawPtr = item ? 
+  Attribute* rawPtr = item ?
     static_cast<Attribute*>(item->data(Qt::UserRole).value<void *>()) : NULL;
   return rawPtr ? rawPtr->pointer() : smtk::attribute::AttributePtr();
 }

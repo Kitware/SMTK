@@ -19,31 +19,29 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtInputsItem - an analysis type item
+// .NAME qtVoidItem - a qt item for Void type attribute items
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtInputsItem_h
-#define __smtk_attribute_qtInputsItem_h
+#ifndef __smtk_attribute_qtVoidItem_h
+#define __smtk_attribute_qtVoidItem_h
 
 #include "smtk/Qt/qtItem.h"
 
-class qtInputsItemInternals;
-class QBoxLayout;
+class qtVoidItemInternals;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtInputsItem : public qtItem
+    class QTSMTK_EXPORT qtVoidItem : public qtItem
     {
       Q_OBJECT
 
-    public:         
-      qtInputsItem(smtk::attribute::ItemPtr, QWidget* p,
-        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
-      virtual ~qtInputsItem();  
+    public:
+      qtVoidItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview);
+      virtual ~qtVoidItem();
       virtual void setLabelVisible(bool);
 
     public slots:
@@ -51,23 +49,17 @@ namespace smtk
 
     protected slots:
       virtual void updateItemData();
-      virtual void onAddNewValue();
-      virtual void onRemoveValue();
 
     protected:
       virtual void createWidget();
-      virtual void loadInputValues();
-      virtual void updateUI();
-      virtual void addInputEditor(int i);
-      virtual void updateExtensibleState();
-      virtual void clearChildWidgets();
 
     private:
 
-      qtInputsItemInternals *Internals;
+      qtVoidItemInternals *Internals;
 
     }; // class
   }; // namespace attribute
 }; // namespace smtk
+
 
 #endif

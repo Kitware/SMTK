@@ -19,7 +19,7 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtAttribute - a class that encapsulates the UI of an Attribute 
+// .NAME qtAttribute - a class that encapsulates the UI of an Attribute
 // .SECTION Description
 
 #ifndef __smtk_attribute_qtAttribute_h
@@ -42,9 +42,9 @@ namespace smtk
     {
       Q_OBJECT
 
-    public:         
+    public:
       qtAttribute(smtk::attribute::AttributePtr, QWidget* parent, qtBaseView* view);
-      virtual ~qtAttribute();  
+      virtual ~qtAttribute();
 
       smtk::attribute::AttributePtr getObject();
       QWidget* widget()
@@ -74,7 +74,7 @@ namespace smtk
 
     protected slots:
       virtual void updateItemsData();
-      
+
     protected:
       virtual void createWidget();
 
@@ -82,7 +82,7 @@ namespace smtk
     private:
 
       qtAttributeInternals *Internals;
-      
+
     }; // class
   }; // namespace attribute
 }; // namespace smtk

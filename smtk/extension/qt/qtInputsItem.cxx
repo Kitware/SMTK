@@ -146,7 +146,7 @@ void qtInputsItem::addInputEditor(int i)
     return;
     }
 
-  const ValueItemDefinition *itemDef = 
+  const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(item->definition().get());
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
@@ -291,7 +291,7 @@ void qtInputsItem::updateUI()
     labelLayout->addWidget(optionalCheck);
     }
   smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
-  const ValueItemDefinition *itemDef = 
+  const ValueItemDefinition *itemDef =
     dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
 
   QString labelText;
@@ -308,7 +308,7 @@ void qtInputsItem::updateUI()
   label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-  
+
 //  qtOverlayFilter *filter = new qtOverlayFilter(this);
 //  label->installEventFilter(filter);
 

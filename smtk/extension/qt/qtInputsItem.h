@@ -19,51 +19,55 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-// .NAME qtGroupItem - an Expression item
+// .NAME qtInputsItem - an analysis type item
 // .SECTION Description
 // .SECTION See Also
 // qtItem
 
-#ifndef __smtk_attribute_qtGroupItem_h
-#define __smtk_attribute_qtGroupItem_h
+#ifndef __smtk_attribute_qtInputsItem_h
+#define __smtk_attribute_qtInputsItem_h
 
 #include "smtk/Qt/qtItem.h"
 
-class qtGroupItemInternals;
+class qtInputsItemInternals;
+class QBoxLayout;
 
 namespace smtk
 {
   namespace attribute
   {
-    class QTSMTK_EXPORT qtGroupItem : public qtItem
+    class QTSMTK_EXPORT qtInputsItem : public qtItem
     {
       Q_OBJECT
 
-    public:         
-      qtGroupItem(smtk::attribute::ItemPtr, QWidget* parent, qtBaseView* bview,
-                  Qt::Orientation enVectorItemOrient = Qt::Horizontal);
-      virtual ~qtGroupItem();  
+    public:
+      qtInputsItem(smtk::attribute::ItemPtr, QWidget* p,
+        qtBaseView* bview, Qt::Orientation enumOrient = Qt::Horizontal);
+      virtual ~qtInputsItem();
       virtual void setLabelVisible(bool);
+
+    public slots:
+      void setOutputOptional(int);
 
     protected slots:
       virtual void updateItemData();
-      virtual void setEnabledState(bool checked);
-      virtual void onAddSubGroup();
-      virtual void onRemoveSubGroup();
-      virtual void onChildWidgetSizeChanged();
+      virtual void onAddNewValue();
+      virtual void onRemoveValue();
 
     protected:
       virtual void createWidget();
-      virtual void addSubGroup(int i);
+      virtual void loadInputValues();
+      virtual void updateUI();
+      virtual void addInputEditor(int i);
       virtual void updateExtensibleState();
-      virtual void addItemsToTable(int i);
+      virtual void clearChildWidgets();
 
     private:
-      qtGroupItemInternals *Internals;
+
+      qtInputsItemInternals *Internals;
 
     }; // class
   }; // namespace attribute
 }; // namespace smtk
-
 
 #endif
