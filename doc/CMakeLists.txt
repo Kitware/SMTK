@@ -133,6 +133,7 @@ if (SPHINX_FOUND)
     userguide.rst
     userguide-attribute.rst
     userguide-model.rst
+    userguide-contributing.rst
   )
   if (DOXYGEN_FOUND)
     # Need doxygen docs built if possible

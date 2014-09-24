@@ -36,6 +36,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
+    'sphinx.ext.todo',
+    'sphinxcontrib.actdiag',
     'sphinxcontrib.doxylink',
     'breathe'
 ]
@@ -107,6 +109,19 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
+
+# -- Action diagram configuration -----------------------------------------
+
+actdiag_antialias = True
+
+actdiag_html_image_format = 'SVG'
+actdiag_latex_image_format = 'PDF'
+
+# -- To-do list configuration ---------------------------------------------
+
+# When True, ..todo:: and ..todolist:: produce output, else they produce
+# nothing. The default is False.
+todo_include_todos = True
 
 # -- Doxylink configuration -----------------------------------------------
 

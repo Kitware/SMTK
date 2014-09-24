@@ -1,3 +1,5 @@
+.. _smtk-attribute-sys:
+
 ***********************
 SMTK's Attribute System
 ***********************
@@ -205,19 +207,27 @@ File Layout
 
 Advance Level Section <AdvanceLevel>?
 -------------------------------------
-tbd
+.. todo::
+
+  Describe "advanced" selections
 
 Analysis Section <Analysis>
 ---------------------------
-tbd
+.. todo::
+
+   Describe analyses and how they are serialized
 
 Attribute Section <Attributes>
 ------------------------------
-tbd
+.. todo::
+
+   Describe attributes and how they are serialized
 
 Category Section <Categories>
 -----------------------------
-tbd
+.. todo::
+
+   Describe categories and how they are serialized
 
 Definitions Section <Definitions>
 ---------------------------------
@@ -245,26 +255,54 @@ Children elements
 
 File Item Definition <File>
 """""""""""""""""""""""""""
-tbd
+.. todo::
+
+   Describe file items and how they are serialized
 
 Group Item Definition <Group>
 """""""""""""""""""""""""""""
-tbd
+.. todo::
+
+   Describe group items and how they are serialized
 
 Integer Item Definition <Int>
 """""""""""""""""""""""""""""
-tbd
+.. todo::
+
+   Describe integer items and how they are serialized
 
 String Item Definition <String>
 """""""""""""""""""""""""""""""
-tbd
+.. todo::
+
+   Describe string items and how they are serialized
+
+Ref Item Definition <Ref>
+"""""""""""""""""""""""""
+.. todo::
+
+   Describe attribute reference items and how they are serialized
+
+Model Entity Item Definition <ModelEntity>
+""""""""""""""""""""""""""""""""""""""""""
+
+A :smtk:`ModelEntityItem`, which appears in XML as a <ModelEntity> is an
+item belonging to an attribute stored as a UUID that refers to an
+SMTK model entity.
+These model entities may be regions, faces, edges, vertices, or even
+higher-level conceptual entities such as models, groups, or instances (used
+in modeling scene graphs and assemblies).
 
 Void Item Definition <Void>
 """""""""""""""""""""""""""
-tbd
+.. todo::
+
+   Describe "void" items and how they are serialized
 
 
 
 RootView Section <RootView>
 ---------------------------
-tbd
+.. todo::
+
+   Describe root views and how they are serialized
