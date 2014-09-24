@@ -35,6 +35,7 @@ simulation domain.
 
    userguide-attribute.rst
    userguide-model.rst
+   userguide-contributing.rst
 
 .. role:: cxx(code)
    :language: c++

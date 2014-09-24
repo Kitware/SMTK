@@ -4,10 +4,13 @@ SMTK: Simulation Modeling Tool Kit
 
 .. highlight:: c++
 
+.. role:: cxx(code)
+   :language: c++
+
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    userguide.rst
    tutorials/index.rst

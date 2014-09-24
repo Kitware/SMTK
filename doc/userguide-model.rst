@@ -1,3 +1,5 @@
+.. _smtk-model-sys:
+
 *****************************
 SMTK's Geometric Model System
 *****************************
@@ -92,6 +94,28 @@ These classes are organized like so:
 Each relationship shown in the figure above has a corresponding
 method in the cursor subclasses for accessing the related entities.
 
+Bridges
+=======
+
+As mentioned above, :smtk:`Bridges <Bridge>` link, or *back* SMTK model entities
+to a solid-modeling kernel's representation of those model entities.
+Not all of the model entities in a model manager need to be backed by the same bridge;
+SMTK can track models from ACIS and OpenCascade in the same model manager.
+However, in general you cannot perform modeling operations using entities from different bridges.
+
+Bridges (1) transcribe modeling-kernel entities into SMTK’s storage and
+(2) keep a list of :smtk:`Operators <Operator>` that can be used to modify the model.
+As part of the transcription process, bridges track which entities have been incompletely transcribed,
+allowing partial, on-demand transcription.
+SMTK’s existing bridges (to CGM and CMB’s discrete modeler) use the attribute systems
+those modelers provide to hold SMTK-generated universal, unique IDs (UUIDs) for each model entity;
+modeling-kernel bridges may also provide a list of UUIDs in an unambiguous traversal order
+if UUIDs cannot be stored in a model file.
+
+When a model operation is performed,
+— depending on how much information the modeling kernel provides about affected model entities —
+entities in SMTK’s storage are partially or totally marked as dirty and retranscribed on demand.
+
 Remote models
 =============
 
@@ -99,7 +123,67 @@ For many reasons (e.g., incompatible library dependencies, licensing issues, dis
 it is often necessary for the modeling kernel to live in a different process than other portions of
 the simuation pipline.
 
+SMTK allows this by implementing special bridge and operator classes
+that serialize operators and send them to a remote process
+where the usual bridge for that type of model entity exists.
+The usual bridge then performs the operation and sends the results
+back to the originating process, as diagrammed below.
+
+All bridge classes that will forward operators to other bridges must
+inherit from the :smtk:`DefaultBridge` class instead of :smtk:`Bridge`.
+The DefaultBridge class always creates :smtk:`RemoteOperator` instances
+when asked for an operator by name;
+the RemoteOperator class delegates its ableToOperate and operate methods
+to the DefaultBridge instance which instantiated it.
+
 .. figure:: figures/forwarding-bridge.svg
 
    The CMB client-server model uses SMTK's RemoteOperator and DefaultBridge classes to
    forward operations from the client to the server (and results back to the client).
+
+If you want to use this functionality in your application,
+the action diagram below illustrates the sequence of events that
+take place.
+
+.. actdiag::
+  :caption: An action diagram of how operators are forwarded from your
+            application to a model worker for the appropriate modeling kernel.
+
+  actdiag {
+
+    request_op -> instantiate_op -> prepare_op ->
+    apply_op1 -> serialize_op -> deserialize_op ->
+    apply_op2 -> serialize_result -> deserialize_result ->
+    update_manager -> present_result
+
+    lane app {
+      label = "Your Application"
+      request_op [label="Request operator\n by name"]
+      prepare_op [label="Prepare operator\n attribute values"]
+      apply_op1 [label="Apply operator"]
+      present_result [label="Present result\nof operation"]
+    }
+    lane bridge {
+      label = "Forwarding Bridge"
+      instantiate_op [label = "Instantiate an\n operator attribute"]
+      serialize_op [label = "Serialize operator\n attribute"]
+      deserialize_result [label = "Serialize operator\n result"]
+      update_manager [label = "Update model manager\n as required"]
+    }
+    lane server {
+      label = "Server Bridge"
+      deserialize_op [label = "Deserialize operator\n attribute"]
+      apply_op2 [label = "Run operation in\n modeling kernel"]
+      serialize_result [label = "Serialize operator\n result"]
+    }
+  }
+
+Remote operators behave identically to their actual counterparts,
+so your application does not need special logic to deal with entities
+from remote bridges.
+However, your application must help SMTK discover remote processes
+that are available for solid modeling.
+
+.. todo::
+
+  Discuss Remus and ParaView client/server bridges

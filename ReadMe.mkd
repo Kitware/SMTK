@@ -46,8 +46,10 @@ If you want to build the documentation you will need
 + [Doxygen](http://doxygen.org/) version 1.8 or newer,
 + [Graphviz](http://graphviz.org/) version 2 or newer,
 + [Sphinx](http://sphinx-doc.org/) version 1.2 or newer,
++ [Pygments](http://pygments.org/) version 1.6 or newer,
 + [breathe](http://breathe.readthedocs.org/en/latest/) version 3.1 or newer,
-+ [doxylink](https://pypi.python.org/pypi/sphinxcontrib-doxylink) version 1.3 or newer, and
++ [doxylink](https://pypi.python.org/pypi/sphinxcontrib-doxylink) version 1.3 or newer,
++ [actdiag](https://pypi.python.org/pypi/sphinxcontrib-actdiag) version 1.0 or newer, and
 + optionally [sphinx_rtd_theme](https://docs.readthedocs.org/en/latest/theme.html) for a much-improved appearance.
 
 You may wish to obtain the test-data repository for SMTK in order
