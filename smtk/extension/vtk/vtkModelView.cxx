@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtk/vtkModelView.h"
+#include "smtk/extension/vtk/vtkModelView.h"
 
 #include "vtkObjectFactory.h"
 

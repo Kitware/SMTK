@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtk/vtkModelRepresentation.h"
+#include "smtk/extension/vtk/vtkModelRepresentation.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"

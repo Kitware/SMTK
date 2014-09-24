@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtk/vtkModelSource.h"
+#include "smtk/extension/vtk/vtkModelSource.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"

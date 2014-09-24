@@ -1,4 +1,4 @@
-#include "smtk/paraview/vtk/vtkModelMultiBlockSource.h"
+#include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"

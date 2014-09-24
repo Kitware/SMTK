@@ -2,15 +2,14 @@ add_executable(displayModel MACOSX_BUNDLE displayModel.cxx)
 target_link_libraries(displayModel
   SMTKCore
   vtkSMTK
-  ${VTK_MODULES}
   vtkTestingRendering
+  ${SMTK_VTK_TARGET_LIST}
 )
 
 add_executable(displayMultiBlockModel MACOSX_BUNDLE displayMultiBlockModel.cxx)
 target_link_libraries(displayMultiBlockModel
   SMTKCore
   vtkSMTK
-  ${VTK_MODULES}
   vtkTestingRendering
 )
 

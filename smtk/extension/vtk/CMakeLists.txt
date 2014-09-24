@@ -47,28 +47,27 @@ endif()
 # backend became available.
 set(SMTK_VTK_TARGET_LIST)
 foreach(target
-  vtkInteractionStyle
-  vtkRenderingContext2D
-  vtkRenderingContextOpenGL
-  vtkRenderingOpenGL
-  vtkRenderingMatplotlib
-  vtkRenderingVolumeOpenGL
-  vtkRenderingFreeTypeOpenGL
-)
+        vtkInteractionStyle
+        vtkRenderingContext2D
+        vtkRenderingContextOpenGL
+        vtkRenderingOpenGL
+        vtkRenderingMatplotlib
+        vtkRenderingVolumeOpenGL
+        vtkRenderingFreeTypeOpenGL
+        )
   if (TARGET ${target})
     list(APPEND SMTK_VTK_TARGET_LIST ${target})
   endif()
 endforeach()
 
-link_libraries(
-  ${VTK_MODULES}
-  ${SMTK_VTK_TARGET_LIST}
-)
+target_link_libraries(vtkSMTK PUBLIC ${SMTK_VTK_TARGET_LIST})
+
 #install the headers
 smtk_public_headers(${VTKLibHeaders})
 # ... and make header compilation tests link properly:
 smtk_install_library(vtkSMTK)
 
 if (SMTK_ENABLE_TESTING)
+  target_link_libraries(TestBuild_smtk_extension_vtk PUBLIC ${SMTK_VTK_TARGET_LIST})
   add_subdirectory(testing)
 endif()

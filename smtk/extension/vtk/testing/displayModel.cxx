@@ -1,8 +1,8 @@
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Manager.h"
-#include "smtk/paraview/vtk/vtkModelRepresentation.h"
-#include "smtk/paraview/vtk/vtkModelSource.h"
-#include "smtk/paraview/vtk/vtkModelView.h"
+#include "smtk/extension/vtk/vtkModelRepresentation.h"
+#include "smtk/extension/vtk/vtkModelSource.h"
+#include "smtk/extension/vtk/vtkModelView.h"
 
 #include "vtkAnnotationLink.h"
 #include "vtkCommand.h"
