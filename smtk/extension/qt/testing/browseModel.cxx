@@ -1,5 +1,5 @@
-#include "smtk/Qt/qtEntityItemDelegate.h"
-#include "smtk/Qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/ExportJSON.h"
@@ -10,7 +10,7 @@
 #include "smtk/util/Testing/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
-#include "smtk/Qt/testing/ModelBrowser.h"
+#include "smtk/extension/qt/testing/ModelBrowser.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>

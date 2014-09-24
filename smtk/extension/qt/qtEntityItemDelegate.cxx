@@ -1,7 +1,7 @@
-#include "smtk/Qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/Qt/qtEntityItemModel.h"
-#include "smtk/Qt/qtEntityItemEditor.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtEntityItemEditor.h"
 
 #include <QApplication>
 #include <QPainter>

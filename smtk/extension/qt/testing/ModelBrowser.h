@@ -1,5 +1,5 @@
-#ifndef __smtk_Qt_testing_ModelBrowser_h
-#define __smtk_Qt_testing_ModelBrowser_h
+#ifndef __smtk_extension_qt_testing_ModelBrowser_h
+#define __smtk_extension_qt_testing_ModelBrowser_h
 
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/GroupEntity.h"
@@ -45,4 +45,4 @@ protected:
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
 };
 
-#endif // __smtk_Qt_testing_ModelBrowser_h
+#endif // __smtk_extension_qt_testing_ModelBrowser_h

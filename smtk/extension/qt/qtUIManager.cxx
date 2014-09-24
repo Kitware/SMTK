@@ -12,18 +12,18 @@
 
 =========================================================================*/
 
-#include "smtk/Qt/qtUIManager.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
-#include "smtk/Qt/qtItem.h"
-#include "smtk/Qt/qtFileItem.h"
-#include "smtk/Qt/qtGroupView.h"
-#include "smtk/Qt/qtRootView.h"
-#include "smtk/Qt/qtInputsItem.h"
-#include "smtk/Qt/qtAttributeView.h"
-#include "smtk/Qt/qtInstancedView.h"
-//#include "smtk/Qt/qtModelEntityView.h"
-#include "smtk/Qt/qtSimpleExpressionView.h"
-#include "smtk/Qt/qtDiscreteValueEditor.h"
+#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtFileItem.h"
+#include "smtk/extension/qt/qtGroupView.h"
+#include "smtk/extension/qt/qtRootView.h"
+#include "smtk/extension/qt/qtInputsItem.h"
+#include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtInstancedView.h"
+//#include "smtk/extension/qt/qtModelEntityView.h"
+#include "smtk/extension/qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/qtDiscreteValueEditor.h"
 
 #include <QTableWidget>
 #include <QLayout>

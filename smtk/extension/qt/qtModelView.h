@@ -27,8 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define _qtModelView_h
 
 #include <QTreeView>
-#include "smtk/QtSMTKExports.h"
-#include "smtk/Qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/util/UUID.h"
 
 class QDropEvent;

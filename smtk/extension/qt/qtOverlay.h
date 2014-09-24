@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QPointer>
-#include "smtk/QtSMTKExports.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
 
 namespace smtk
 {

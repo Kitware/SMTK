@@ -19,15 +19,15 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "smtk/Qt/qtAttribute.h"
+#include "smtk/extension/qt/qtAttribute.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtGroupItem.h"
-#include "smtk/Qt/qtInputsItem.h"
-#include "smtk/Qt/qtFileItem.h"
-#include "smtk/Qt/qtAttributeRefItem.h"
-#include "smtk/Qt/qtVoidItem.h"
-#include "smtk/Qt/qtBaseView.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtGroupItem.h"
+#include "smtk/extension/qt/qtInputsItem.h"
+#include "smtk/extension/qt/qtFileItem.h"
+#include "smtk/extension/qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtVoidItem.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"

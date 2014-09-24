@@ -20,12 +20,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtAttributeRefItem.h"
 
-#include "smtk/Qt/qtAttribute.h"
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtAttributeView.h"
-#include "smtk/Qt/qtNewAttributeWidget.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtAttributeView.h"
+#include "smtk/extension/qt/qtNewAttributeWidget.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"

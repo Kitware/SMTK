@@ -20,10 +20,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtFileItem.h"
+#include "smtk/extension/qt/qtFileItem.h"
 
-#include "smtk/Qt/qtBaseView.h"
-#include "smtk/Qt/qtUIManager.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/DirectoryItemDefinition.h"
 #include "smtk/attribute/FileItem.h"

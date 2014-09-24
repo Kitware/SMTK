@@ -19,9 +19,9 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "smtk/Qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
-#include "smtk/Qt/qtUIManager.h"
+#include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Manager.h"
 

@@ -41,7 +41,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_qtFileItem_h
 #define __smtk_attribute_qtFileItem_h
 
-#include "smtk/Qt/qtItem.h"
+#include "smtk/extension/qt/qtItem.h"
 
 class qtFileItemInternals;
 

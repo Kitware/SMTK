@@ -20,13 +20,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtModelEntityView.h"
+#include "smtk/extension/qt/qtModelEntityView.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtTableWidget.h"
-#include "smtk/Qt/qtAttribute.h"
-#include "smtk/Qt/qtItem.h"
-#include "smtk/Qt/qtAssociationWidget.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtItem.h"
+#include "smtk/extension/qt/qtAssociationWidget.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

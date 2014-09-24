@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_attribute_qtAssociationWidget_h
 
 #include <QWidget>
-#include "smtk/QtSMTKExports.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/ModelEntity.h"

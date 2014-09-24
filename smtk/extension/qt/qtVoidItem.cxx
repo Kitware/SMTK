@@ -20,9 +20,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtVoidItem.h"
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtBaseView.h"
+#include "smtk/extension/qt/qtVoidItem.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 #include <QCheckBox>
 #include <QSizePolicy>

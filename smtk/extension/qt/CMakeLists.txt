@@ -71,6 +71,38 @@ set(QAttrLibHeaders
 #install the headers
 smtk_public_headers(${QAttrLibHeaders})
 
+qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibHeaders})
+qt4_wrap_ui(QtSMTK_UI_BUILT_SOURCES ${QAttrLibUIs})
+qt4_add_resources(RCS_RESOURCES qtEntityItemModelIcons.qrc qtAttributeIcons.qrc)
+
+source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
+source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${QtSMTK_UI_BUILT_SOURCES} ${RCS_RESOURCES})
+source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
+
+add_library(QtSMTK
+            ${QAttrLibSrcs}
+            ${MOC_BUILT_SOURCES}
+            ${QtSMTK_UI_BUILT_SOURCES}
+            ${RCS_RESOURCES}
+            )
+
+# On Mac OS X, set the directory included as part of the installed library's path:
+set_target_properties(QtSMTK PROPERTIES
+                      INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+
+#we need to add the location of the moc files to the include dir for qtsmtk
+target_include_directories(QtSMTK PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+#set QtSMTK to link to qtGUI and include dirs
+qt4_use_modules(QtSMTK LINK_PUBLIC Core Gui)
+
+#set QtSMTK to publicly link to SMTKCore
+target_link_libraries(QtSMTK LINK_PUBLIC SMTKCore)
+smtk_export_header(QtSMTK QtSMTKExports.h)
+
+#install the library and exports the library when used from a build tree
+smtk_install_library(QtSMTK DEPENDS SMTKCore)
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
 endif()

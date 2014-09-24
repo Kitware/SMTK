@@ -1,4 +1,10 @@
 
+#add the Qt GUI code if enabled
+if(SMTK_BUILD_QT)
+  add_subdirectory(qt)
+endif()
+
+
 if(SMTK_BUILD_ParaView)
   # Only include the ParaView use-file in subdirectories
   # that require ParaView include paths. Otherwise, command

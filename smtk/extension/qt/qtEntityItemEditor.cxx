@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtEntityItemEditor.h"
+#include "smtk/extension/qt/qtEntityItemEditor.h"
 
 #include <QtGui/QLineEdit>
 #include <QtGui/QHBoxLayout>

@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =========================================================================*/
 
 // self includes
-#include "smtk/Qt/qtColorButton.h"
+#include "smtk/extension/qt/qtColorButton.h"
 
 // Qt includes
 #include <QColorDialog>

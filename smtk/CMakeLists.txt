@@ -34,62 +34,9 @@ endif()
 #install the library and exports the library when used from a build tree
 smtk_install_library(SMTKCore DEPENDS cJSON)
 
-#add the Qt GUI code
-if(SMTK_BUILD_QT)
-
-  add_subdirectory(Qt)
-
-  #we should at some point roll this into smtk_source_group
-  get_directory_property(QAttrLibSrcs DIRECTORY Qt DEFINITION QAttrLibSrcs)
-  smtk_prepend_string("Qt" QAttrLibSrcs ${QAttrLibSrcs})
-  get_directory_property(QAttrLibHeaders DIRECTORY Qt DEFINITION QAttrLibHeaders)
-  smtk_prepend_string("Qt" QAttrLibHeaders ${QAttrLibHeaders})
-  get_directory_property(QAttrLibUIs DIRECTORY Qt DEFINITION QAttrLibUIs)
-  smtk_prepend_string("Qt" QAttrLibUIs ${QAttrLibUIs})
-
-  qt4_wrap_cpp(MOC_BUILT_SOURCES ${QAttrLibHeaders})
-  qt4_wrap_ui(UI_BUILT_SOURCES ${QAttrLibUIs})
-  qt4_add_resources(RCS_RESOURCES Qt/qtEntityItemModelIcons.qrc Qt/qtAttributeIcons.qrc)
-
-  source_group("Qt_Source" FILES ${QAttrLibSrcs} ${QAttrLibUIs})
-  source_group("Qt_Generated" FILES ${MOC_BUILT_SOURCES} ${UI_BUILT_SOURCES} ${RCS_RESOURCES})
-  source_group("Qt_Header" FILES ${QAttrLibMocHeaders})
-
-  set(qtsmtk_headers ${QAttrLibHeaders})
-  set(qtsmtk_srcs
-   ${QAttrLibSrcs}
-   ${MOC_BUILT_SOURCES}
-   ${UI_BUILT_SOURCES}
-   ${RCS_RESOURCES}
-   )
-
-  add_library(QtSMTK ${qtsmtk_srcs})
-
-  # On Mac OS X, set the directory included as part of the installed library's path:
-  set_target_properties(QtSMTK PROPERTIES
-                        INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-
-  #we need to add the location of the moc files to the include dir for qtsmtk
-  target_include_directories(QtSMTK PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-
-  #set QtSMTK to link to qtGUI and include dirs
-  qt4_use_modules(QtSMTK LINK_PUBLIC Core Gui)
-
-  #set QtSMTK to publicly link to SMTKCore
-  target_link_libraries(QtSMTK LINK_PUBLIC SMTKCore)
-  smtk_export_header(QtSMTK QtSMTKExports.h)
-
-  #install the library and exports the library when used from a build tree
-  smtk_install_library(QtSMTK DEPENDS SMTKCore)
-
-  add_executable(qtAttributePreview Qt/qtAttributePreview.cxx)
-  target_link_libraries(qtAttributePreview LINK_PUBLIC QtSMTK)
-
-endif()
-
-#add the extensions code
-add_subdirectory(extension)
-
+################################################################################
+# setup install rules
+################################################################################
 install(FILES PublicPointerDefs.h DESTINATION include/smtk)
 
 #setup the exports for the library when used from an installed location
@@ -139,6 +86,12 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/smtk.py ${CMAKE_INSTALL_PREFIX}/python/smtk.py )" )
 endif()
 
+################################################################################
+# Build smtk extensions
+#add libraries that extend other projects to have support for SMTK
+#for example extension/vtk allows you to show smtk models in vtk
+################################################################################
+add_subdirectory(extension)
 
 ################################################################################
 # Build model bridges

@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtModelView.h"
+#include "smtk/extension/qt/qtModelView.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/DescriptivePhrase.h"
@@ -9,7 +9,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
 
-#include "smtk/Qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 

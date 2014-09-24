@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_qtVoidItem_h
 #define __smtk_attribute_qtVoidItem_h
 
-#include "smtk/Qt/qtItem.h"
+#include "smtk/extension/qt/qtItem.h"
 
 class qtVoidItemInternals;
 

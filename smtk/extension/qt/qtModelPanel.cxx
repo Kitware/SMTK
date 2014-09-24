@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtModelPanel.h"
+#include "smtk/extension/qt/qtModelPanel.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/FloatData.h"
@@ -7,9 +7,9 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
-#include "smtk/Qt/qtEntityItemDelegate.h"
-#include "smtk/Qt/qtEntityItemModel.h"
-#include "smtk/Qt/qtModelView.h"
+#include "smtk/extension/qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtModelView.h"
 
 #include <QPointer>
 

@@ -1,8 +1,8 @@
-#include "smtk/Qt/testing/ModelBrowser.h"
-#include "smtk/Qt/qtEntityItemModel.h"
-#include "smtk/Qt/qtEntityItemDelegate.h"
+#include "smtk/extension/qt/testing/ModelBrowser.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/Qt/testing/ui_ModelBrowser.h"
+#include "smtk/extension/qt/testing/ui_ModelBrowser.h"
 
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/ModelEntity.h"

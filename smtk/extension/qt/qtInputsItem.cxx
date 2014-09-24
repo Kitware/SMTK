@@ -20,11 +20,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtInputsItem.h"
+#include "smtk/extension/qt/qtInputsItem.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtBaseView.h"
-#include "smtk/Qt/qtOverlay.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtOverlay.h"
 
 #include <QCheckBox>
 #include <QFrame>

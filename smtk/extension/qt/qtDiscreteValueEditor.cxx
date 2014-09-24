@@ -20,7 +20,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtDiscreteValueEditor.h"
+#include "smtk/extension/qt/qtDiscreteValueEditor.h"
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -32,9 +32,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/Qt/qtAttribute.h"
-#include "smtk/Qt/qtBaseView.h"
-#include "smtk/Qt/qtUIManager.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 using namespace smtk::attribute;
 

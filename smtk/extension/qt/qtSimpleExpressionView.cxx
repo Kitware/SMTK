@@ -20,11 +20,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtSimpleExpressionView.h"
+#include "smtk/extension/qt/qtSimpleExpressionView.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtTableWidget.h"
-#include "smtk/Qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtAttribute.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

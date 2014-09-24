@@ -20,11 +20,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtInstancedView.h"
+#include "smtk/extension/qt/qtInstancedView.h"
 
 #include "smtk/attribute/Attribute.h"
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/Root.h"
 

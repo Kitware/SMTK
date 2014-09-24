@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef pq_ColorChooserButton_h
 #define pq_ColorChooserButton_h
 
-#include "smtk/Qt/qtItem.h"
+#include "smtk/extension/qt/qtItem.h"
 
 #include <QToolButton>
 #include <QColor>

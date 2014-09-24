@@ -20,9 +20,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtGroupView.h"
+#include "smtk/extension/qt/qtGroupView.h"
 
-#include "smtk/Qt/qtUIManager.h"
+#include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/Base.h"
 #include "smtk/view/Group.h"

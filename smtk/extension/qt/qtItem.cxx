@@ -19,11 +19,11 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
-#include "smtk/Qt/qtItem.h"
+#include "smtk/extension/qt/qtItem.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtBaseView.h"
-#include "smtk/Qt/qtOverlay.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtOverlay.h"
 
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"

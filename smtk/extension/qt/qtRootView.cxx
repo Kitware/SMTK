@@ -20,10 +20,10 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtRootView.h"
+#include "smtk/extension/qt/qtRootView.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtGroupView.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtGroupView.h"
 #include "smtk/view/Root.h"
 
 #include <QFrame>

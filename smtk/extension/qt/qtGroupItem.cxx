@@ -20,12 +20,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtGroupItem.h"
+#include "smtk/extension/qt/qtGroupItem.h"
 
-#include "smtk/Qt/qtUIManager.h"
-#include "smtk/Qt/qtAttribute.h"
-#include "smtk/Qt/qtBaseView.h"
-#include "smtk/Qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtUIManager.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtBaseView.h"
+#include "smtk/extension/qt/qtAttributeRefItem.h"
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"

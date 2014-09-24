@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include <QDialog>
 
-#include "smtk/QtSMTKExports.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
 
 namespace smtk

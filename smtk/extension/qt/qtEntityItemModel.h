@@ -4,9 +4,8 @@
 #include "QAbstractItemModel"
 #include "QIcon"
 
-#include "smtk/QtSMTKExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/QtSMTKExports.h" // For EXPORT macro.
+#include "smtk/extension/qt/QtSMTKExports.h" // For EXPORT macro.
 #include "smtk/model/DescriptivePhrase.h"
 
 namespace smtk {

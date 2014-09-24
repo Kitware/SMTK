@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_qtSimpleExpressionView_h
 #define __smtk_attribute_qtSimpleExpressionView_h
 
-#include "smtk/Qt/qtBaseView.h"
+#include "smtk/extension/qt/qtBaseView.h"
 
 #include <vector>
 

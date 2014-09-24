@@ -39,7 +39,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define _qtTableWidget_h
 
 #include <QTableWidget>
-#include "smtk/QtSMTKExports.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
 
 class QKeyEvent;
 

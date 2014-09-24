@@ -1,13 +1,26 @@
-qt4_wrap_ui(UI_BUILT_SOURCES ModelBrowser.ui)
+
+#add in the browseModel test executable
+qt4_wrap_ui(browseModel_UI_BUILT_SOURCES ModelBrowser.ui)
+
+message(STATUS "UI_BUILT_SOURCES ${UI_BUILT_SOURCES}")
 add_executable(browseModel MACOSX_BUNDLE
   browseModel.cxx
   ModelBrowser.cxx
-  ${UI_BUILT_SOURCES})
+  ${browseModel_UI_BUILT_SOURCES})
+
 set_target_properties(
   browseModel PROPERTIES AUTOMOC TRUE
   INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/bin")
+
 qt4_use_modules(browseModel Core Gui)
+
 target_link_libraries(browseModel SMTKCore SMTKCoreModelTesting QtSMTK)
+
+#add in the attribute preview executable
+add_executable(qtAttributePreview qtAttributePreview.cxx)
+target_link_libraries(qtAttributePreview LINK_PUBLIC QtSMTK)
+
+
 if (NOT WIN32 AND SMTK_DATA_DIR AND EXISTS ${SMTK_DATA_DIR}/ReadMe.mkd)
   add_test(
     NAME browseModel

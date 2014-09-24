@@ -1,7 +1,7 @@
 #ifndef __smtk_qt_QEntityItemEditor_h
 #define __smtk_qt_QEntityItemEditor_h
 
-#include "smtk/QtSMTKExports.h"
+#include "smtk/extension/qt/QtSMTKExports.h"
 #include <QtGui/QWidget>
 
 class QLineEdit;

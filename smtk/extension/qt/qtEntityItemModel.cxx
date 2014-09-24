@@ -1,4 +1,4 @@
-#include "smtk/Qt/qtEntityItemModel.h"
+#include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityPhrase.h"

@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#include "smtk/Qt/qtTableWidget.h"
+#include "smtk/extension/qt/qtTableWidget.h"
 
 #include <QKeyEvent>
 #include <QHeaderView>
