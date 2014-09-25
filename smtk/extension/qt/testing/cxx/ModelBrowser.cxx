@@ -1,4 +1,4 @@
-#include "smtk/extension/qt/testing/ModelBrowser.h"
+#include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 

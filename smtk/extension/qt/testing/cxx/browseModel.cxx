@@ -7,10 +7,10 @@
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
-#include "smtk/util/Testing/helpers.h"
+#include "smtk/util/testing/cxx/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
-#include "smtk/extension/qt/testing/ModelBrowser.h"
+#include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
