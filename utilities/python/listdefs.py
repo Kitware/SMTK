@@ -7,7 +7,7 @@ At some point, might get expanded to also list out attributes.
 For future reference, to run from template directory
   LD_LIBRARY_PATH=/media/ssd/sim/cmb_core/build/CMBSuperBuild/install/lib \
   /media/ssd/sim/cmb_core/build/CMBSuperBuild/install/bin/pvpython \
-  /media/ssd/sim/cmb_core/git/SMTK/Utilities/python/listdefs.py \
+  /media/ssd/sim/cmb_core/git/SMTK/utilities/python/listdefs.py \
   -t GEOTACS_Template_3.0.sbt
 """
 

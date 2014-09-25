@@ -11,11 +11,11 @@ git config rebase.stat true
 git config branch.master.rebase true
 git config push.default tracking
 
-Utilities/GitSetup/setup-user && echo &&
-Utilities/GitSetup/setup-hooks && echo &&
-Utilities/GitSetup/SetupGitAliases.sh && echo &&
-Utilities/GitSetup/setup-stage && echo &&
-(Utilities/GitSetup/setup-ssh ||
+utilities/GitSetup/setup-user && echo &&
+utilities/GitSetup/setup-hooks && echo &&
+utilities/GitSetup/SetupGitAliases.sh && echo &&
+utilities/GitSetup/setup-stage && echo &&
+(utilities/GitSetup/setup-ssh ||
  echo 'Failed to setup SSH.  Run this again to retry.') && echo &&
-Utilities/GitSetup/tips ||
+utilities/GitSetup/tips ||
 exit $?
