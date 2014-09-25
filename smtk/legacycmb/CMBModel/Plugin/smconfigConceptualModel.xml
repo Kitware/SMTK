@@ -1,0 +1,1770 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="CMBModelGroup">
+
+    <ModelManagerProxy name="ModelManager" class="vtkModelManagerWrapper">
+
+      <StringVectorProperty
+        name="JSONRequest"
+        command="SetJSONRequest"
+        number_of_elements="1">
+      </StringVectorProperty>
+      <Property
+        name="ProcessJSON"
+        command="ProcessJSONRequest">
+      </Property>
+      <StringVectorProperty
+        name="JSONResponse"
+        command="GetJSONResponse"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleStringInformationHelper />
+      </StringVectorProperty>
+
+    </ModelManagerProxy>
+
+    <SourceProxy name="smtkJsonModelReader"
+       class="vtkSMTKJsonModelReader"
+       label="SMTK JSON Model Reader">
+      <Documentation
+        short_help="Read a smtk model JSON file."
+        long_help="Read a JSON smtk model file, and create a multiblock as output.">
+      </Documentation>
+
+      <StringVectorProperty name="FileName"
+         command="SetFileName"
+         number_of_elements="1"
+         animateabl="0">
+        <FileListDomain name="files"/>
+        <Documentation>
+          This property specifies the file name for the reader.
+        </Documentation>
+      </StringVectorProperty>
+
+      <StringVectorProperty command="GetJSONModel"
+                            information_only="1"
+                            name="JSONModel">
+        <SimpleStringInformationHelper />
+      </StringVectorProperty>
+
+      <Hints>
+        <ReaderFactory extensions="json"
+                       file_description="SMTK Model Files" />
+      </Hints>
+
+    </SourceProxy>
+
+
+    <DataSourceProxy name="CmbModelSelectionSource"
+      class="vtkCMBModelSelectionSource">
+
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper for the algorithm to convert selection.
+        </Documentation>
+      </ProxyProperty>
+
+      <IdTypeVectorProperty
+        name="SelectedEntityIds"
+        command="AddSelectedEntityId"
+        clean_command="RemoveAllSelectedEntityIds"
+        repeat_command="1"
+        number_of_elements_per_command="1">
+        <Documentation>
+          The list of SelectedEntityIds that will be added to the selection produced by the
+          selection source.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <!-- End of CmbModelSelectionSource -->
+    </DataSourceProxy>
+
+    <Proxy name="CMBModelWrapper" class="vtkDiscreteModelWrapper">
+      <StringVectorProperty
+        name="ModelSerialization"
+        command="SerializeModel"
+        information_only="1">
+        <StringArrayHelper />
+      </StringVectorProperty>
+      <Property
+        name="ResetModel"
+        command="ResetModel">
+      </Property>
+      <StringVectorProperty
+        name="SerializedModel"
+        command="SetSerializedModel"
+        information_only="1">
+        <StringArrayHelper />
+      </StringVectorProperty>
+      <StringVectorProperty name="AnalysisGridFileNameInfo"
+        command="GetAnalysisGridFileName"
+        repeat_command="0"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0">
+        <SimpleStringInformationHelper/>
+      </StringVectorProperty>
+    </Proxy>
+
+    <SourceProxy name="PolyDataProvider" class="vtkCMBPolyDataProvider">
+     <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+       <ProxyGroupDomain name="groups">
+         <Group name="CMBModelGroup"/>
+       </ProxyGroupDomain>
+       <Documentation>
+         Sets the Model Wrapper for the algorithm to get the polydata from.
+       </Documentation>
+     </ProxyProperty>
+     <IdTypeVectorProperty
+        name="EntityId"
+        command="SetEntityId"
+       number_of_elements="1"
+       default_values="none" >
+       <Documentation>
+         Set the Id of the model entity to be accessed.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IntVectorProperty
+        name="ItemType"
+        command="SetItemType"
+       number_of_elements="1"
+       default_values="none">
+       <Documentation>
+         Set the Id of the model entity to be accessed.
+       </Documentation>
+     </IntVectorProperty>
+     <IntVectorProperty name="CreateEdgePointVerts"
+       command="SetCreateEdgePointVerts"
+       number_of_elements="1"
+       default_values="0" >
+       <BooleanDomain name="bool"/>
+     </IntVectorProperty>
+    </SourceProxy>
+
+    <SourceProxy name="SeedGrow" class="vtkSeedGrowSelectionFilter"
+      label="Given a seed cell and an angle, grow a selection as polydata output">
+
+     <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+       <ProxyGroupDomain name="groups">
+         <Group name="CMBModelGroup"/>
+       </ProxyGroupDomain>
+       <Documentation>
+         Sets the Model Wrapper for the algorithm to get the polydata from.
+       </Documentation>
+     </ProxyProperty>
+
+      <InputProperty name="Selection"
+          command="SetSelectionConnection"
+          clean_command="RemoveAllSelectionsInputs">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkSelection"/>
+        </DataTypeDomain>
+        <Documentation>
+          The input that provides the selection object.
+        </Documentation>
+      </InputProperty>
+
+      <IdTypeVectorProperty
+         name="FaceCellId"
+         command="SetFaceCellId"
+         number_of_elements="2"
+         label="Cell and Model Face ID"
+         default_values="0 0">
+        <Documentation>
+          The cellId of the picked cell in the model face as the seed to grow.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <DoubleVectorProperty
+         name="FeatureAngle"
+         label="Feature Angle"
+         command="SetFeatureAngle"
+         number_of_elements="1"
+         default_values="70.0" >
+        <Documentation>
+          The feature angle that will be used to split model faces.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <IdTypeVectorProperty name="GrowFaceIds"
+         command="SetGrowFaceIds"
+         clean_command="RemoveAllGrowFaceIds"
+         number_of_elements="2"
+         argument_is_array="1"
+         default_values="0 -1"
+         label="Face Ids">
+        <Documentation>
+          All the model face Ids that will be grown upon.
+        </Documentation>
+      </IdTypeVectorProperty>
+
+      <IntVectorProperty name="GrowMode"
+                         command="SetGrowMode"
+                         number_of_elements="1"
+                         default_values="0">
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="NORMAL" />
+          <Entry value="1" text="MERGE" />
+          <Entry value="2" text="REMOVE" />
+        </EnumerationDomain>
+      </IntVectorProperty>
+
+      <!-- End of SeedGrowSelection -->
+    </SourceProxy>
+
+    <OperatorProxy name="CMBModelReadOperator" class="vtkCMBModelReadOperator">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of CMBModelReadOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="GenerateSimpleModelOperator" class="vtkGenerateSimpleModelOperator">
+      <IntVectorProperty
+          name="OperateSucceeded"
+          command="GetOperateSucceeded"
+          number_of_elements="1"
+          information_only="1"
+          default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of GenerateSimpleModelOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="CmbModelPointsOperator" class="vtkCMBModelPointsOperator">
+      <ProxyProperty name="ModelPointsInput"
+        command="SetModelPointsInput"
+        number_of_elements="1">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPointSet"/>
+        </DataTypeDomain>
+        <Documentation>
+          The pointset that will be set to model's master poly
+        </Documentation>
+      </ProxyProperty>
+      <ProxyProperty name="ModelPointDataInput"
+        command="SetModelPointDataInput"
+        number_of_elements="1">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkDataSet"/>
+        </DataTypeDomain>
+        <Documentation>
+          The dataset's point data will be set to point data of model entities' polydata
+        </Documentation>
+      </ProxyProperty>
+
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CMBModelReadOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="CMBModelWriter" class="vtkCMBModelWriterBase">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="Version"
+        command="SetVersion"
+       number_of_elements="1"
+       default_values="2">
+       <Documentation>
+         Set the version of the file to be written.
+       </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of CMBModelWriter -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ADHExporter" class="vtkADHExporterOperator">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+       <StringVectorProperty name="ClientText"
+        command="SetClientText"
+        number_of_elements="1">
+        <Documentation>
+          The text generated on the client.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+
+      <IdTypeVectorProperty
+	       name="ApplyNodalBC"
+	       command="AddAppliedNodalBC"
+         clean_command="RemoveAllAppliedNodalBCs"
+         repeat_command="1"
+         number_of_elements_per_command="3">
+	      <Documentation>
+          Add a nodal BC by ADH bc index and vtkCMBModelEntityGroup unique persistent Id and its nodal group type (all, boudary, or interior).
+	      </Documentation>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+	 name="ApplyElementBC"
+	 command="AddAppliedElementBC"
+         clean_command="RemoveAllAppliedElementBCs"
+         repeat_command="1"
+         number_of_elements_per_command="2">
+	<Documentation>
+          Add a face/edge BC by ADH bc index and vtkCMBModelEntityGroup unique persistent Id.
+	</Documentation>
+      </IdTypeVectorProperty>
+      <!-- End of ADHExporter -->
+    </OperatorProxy>
+
+
+
+
+
+
+    <OperatorProxy name="PythonExporter" class="vtkPythonExporter">
+      <StringVectorProperty name="Script"
+                            command="SetScript"
+                            number_of_elements="1">
+        <Documentation>
+          Set the Python script to run on the server.
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+          name="OperateSucceeded"
+          command="GetOperateSucceeded"
+          number_of_elements="1"
+          information_only="1"
+          default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of PythonExporter -->
+    </OperatorProxy>
+
+
+
+
+
+
+
+
+
+
+
+    <OperatorProxy name="CmbImportBCFileOperator" class="vtkCMBImportBCFileOperator">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the bc file to import from.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of CmbImportBCFileOperator -->
+    </OperatorProxy>
+    <OperatorProxy name="GeoTransformOperator"
+    class="vtkGeoTransformOperator"
+    label="Lat-Long Transformer">
+      <Documentation
+        short_help="Convert from Lat-Lont to XYZ">
+        long_help="Convert from Lat-Lont to XYZ"
+      </Documentation>
+
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+
+      <IntVectorProperty name="ConvertFromLatLongToXYZ"
+        command="SetConvertFromLatLongToXYZ"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+      <!--
+      <IntVectorProperty
+        name="AbortExecute"
+        command="SetAbortExecute"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+        <Documentation>
+          vtkAlgorithm::SetAbortExecute()
+        </Documentation>
+      </IntVectorProperty>
+-->
+      <!-- End of GeoTransformFilter -->
+    </OperatorProxy>
+
+    <OperatorProxy name="CMBModelBuilder" class="vtkCMBModelBuilder">
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CMBModelBuilder -->
+    </OperatorProxy>
+
+    <OperatorProxy name="vtkCMBMapToCMBModel" class="vtkCMBMapToCMBModel">
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CmbMapToCmbModel -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelEntityOperator" class="vtkModelEntityOperator">
+     <IdTypeVectorProperty
+        name="Id"
+        command="SetId"
+       number_of_elements="1"
+       default_values="none">
+       <Documentation>
+         Set the unique persistent id to specify what entity to operate on.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IntVectorProperty
+        name="ItemType"
+        command="SetItemType"
+       number_of_elements="1"
+       default_values="none">
+       <Documentation>
+         Set the entity type of the model entity to be searched for (optional).
+       </Documentation>
+     </IntVectorProperty>
+     <IntVectorProperty
+        name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+      default_values="none">
+       <Documentation>
+         Set the visibility of the model entity.
+       </Documentation>
+     </IntVectorProperty>
+     <IntVectorProperty
+        name="Pickable"
+        command="SetPickable"
+        number_of_elements="1"
+      default_values="none">
+       <Documentation>
+         Set the Pickable of the model entity.
+       </Documentation>
+     </IntVectorProperty>
+     <IntVectorProperty
+        name="ShowTexture"
+        command="SetShowTexture"
+        number_of_elements="1"
+      default_values="none">
+       <Documentation>
+         Set the ShowTexture of the model entity.
+       </Documentation>
+     </IntVectorProperty>
+     <DoubleVectorProperty
+        name="RGBA"
+        command="SetRGBA"
+        number_of_elements="4"
+       default_values="none">
+       <Documentation>
+         The RGBA values for the model entity.
+       </Documentation>
+     </DoubleVectorProperty>
+
+      <DoubleVectorProperty
+         name="RepresentationRGBA"
+         command="SetRepresentationRGBA"
+         number_of_elements="4"
+        default_values="none">
+        <Documentation>
+          The Representation RGBA values for the model entity.
+        </Documentation>
+      </DoubleVectorProperty>
+
+      <StringVectorProperty name="UserName"
+        command="SetUserName"
+        number_of_elements="1">
+        <Documentation>
+          The name to set for the model entity.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of ModelEntityOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="MergeOperator" class="vtkMergeOperator">
+     <IdTypeVectorProperty
+        name="TargetId"
+        command="SetTargetId"
+        number_of_elements="1"
+        default_values="-1">
+       <Documentation>
+         Set the unique persistent id of the merge operation target.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IdTypeVectorProperty
+        name="SourceId"
+        command="SetSourceId"
+        number_of_elements="1"
+        default_values="-1">
+       <Documentation>
+         Set the unique persistent id of the merge operation source.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IdTypeVectorProperty
+        name="LowerDimensionalIds"
+        command="AddLowerDimensionalId"
+        clean_command="RemoveAllLowerDimensionalIds"
+        repeat_command="1"
+        number_of_elements_per_command="1">
+       <Documentation>
+         Set the ids of the lower dimensional entities to be removed.
+       </Documentation>
+     </IdTypeVectorProperty>
+
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of MergeOperator -->
+    </OperatorProxy>
+
+
+    <OperatorProxy name="MaterialOperator" class="vtkMaterialOperator">
+     <IdTypeVectorProperty
+        name="Id"
+        command="SetId"
+       number_of_elements="1"
+       default_values="-1">
+       <Documentation>
+         Set the unique persistent id to specify what material to operate on.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IntVectorProperty
+        name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+      default_values="1">
+       <Documentation>
+         Set the visibility of the material.
+       </Documentation>
+     </IntVectorProperty>
+     <DoubleVectorProperty
+        name="RGBA"
+        command="SetRGBA"
+        number_of_elements="4"
+       default_values="1 1 1 1">
+       <Documentation>
+         The RGBA values for the material.
+       </Documentation>
+     </DoubleVectorProperty>
+
+      <StringVectorProperty name="UserName"
+        command="SetUserName"
+        number_of_elements="1">
+        <Documentation>
+          The name to set for the material.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <IdTypeVectorProperty
+        name="AddModelGeometricEntity"
+        command="AddModelGeometricEntity"
+        clean_command="ClearGeometricEntitiesToAdd"
+        repeat_command="1"
+        number_of_elements_per_command="1" >
+       <Documentation>
+         Add in a model geometric entity to be added to this material.
+       </Documentation>
+       </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="BuiltEntityId"
+        command="GetBuiltMaterialId"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIdTypeInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IdTypeVectorProperty>
+      <IntVectorProperty
+        name="DestroySucceeded"
+        command="GetDestroySucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of MaterialOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelEntityGroupOperator"
+       class="vtkModelEntityGroupOperator">
+     <IdTypeVectorProperty
+        name="Id"
+        command="SetId"
+       number_of_elements="1"
+       default_values="-1">
+       <Documentation>
+         Set the unique persistent id to specify what model entity group to operate on.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IntVectorProperty
+        name="Visibility"
+        command="SetVisibility"
+        number_of_elements="1"
+      default_values="1">
+       <Documentation>
+         Set the visibility of the model entity group.
+       </Documentation>
+     </IntVectorProperty>
+     <DoubleVectorProperty
+        name="RGBA"
+        command="SetRGBA"
+        number_of_elements="4"
+       default_values="1 1 1 1">
+       <Documentation>
+         The RGBA values for the model entity group.
+       </Documentation>
+     </DoubleVectorProperty>
+
+      <StringVectorProperty name="UserName"
+        command="SetUserName"
+        number_of_elements="1">
+        <Documentation>
+          The name to set for the model entity group.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <IdTypeVectorProperty
+        name="AddModelEntity"
+        command="AddModelEntity"
+        clean_command="ClearEntitiesToAdd"
+        repeat_command="1"
+        number_of_elements_per_command="1" >
+       <Documentation>
+         Add in a vtkCMBModelEntity to be added to this group.
+       </Documentation>
+       </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="RemoveModelEntity"
+        command="RemoveModelEntity"
+        clean_command="ClearEntitiesToRemove"
+        repeat_command="1"
+        number_of_elements_per_command="1" >
+       <Documentation>
+         Add in a vtkCMBModelEntity to be removed from this group.
+       </Documentation>
+       </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="BuiltEntityId"
+        command="GetBuiltModelEntityGroupId"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIdTypeInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IdTypeVectorProperty>
+      <IntVectorProperty
+        name="DestroySucceeded"
+        command="GetDestroySucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+       <IntVectorProperty
+          name="BuildEnityType"
+          command="SetBuildEnityType"
+          number_of_elements="1"
+          default_values="none">
+         <Documentation>
+           Set the EnityType that new built group will contain.
+         </Documentation>
+       </IntVectorProperty>
+      <!-- End of ModelEntityGroupOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelEdgeOperator"
+       class="vtkModelEdgeOperator">
+      <IdTypeVectorProperty
+         name="Id"
+         command="SetId"
+        number_of_elements="1"
+        default_values="-1">
+        <Documentation>
+          Set the unique persistent id to specify what model edge to operate on.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <IntVectorProperty name="LineResolution"
+                         command="SetLineResolution"
+                         number_of_elements="1"
+                         default_values="1">
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="ItemType"
+         command="SetItemType"
+        number_of_elements="1"
+        default_values="none">
+        <Documentation>
+          Set the entity type of the model entity to be searched for (optional).
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of ModelEdgeOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="SplitOperator" class="vtkSplitOperator">
+     <DoubleVectorProperty
+        name="FeatureAngle"
+        command="SetFeatureAngle"
+        number_of_elements="1"
+       default_values="70">
+       <Documentation>
+         Set the angle criteria for the model face to be split with.
+       </Documentation>
+     </DoubleVectorProperty>
+     <IdTypeVectorProperty
+        name="Id"
+        command="SetId"
+        number_of_elements="1"
+      default_values="none">
+       <Documentation>
+         Set the unique persistent id of the model face to operate on.
+       </Documentation>
+     </IdTypeVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <IdTypeVectorProperty
+        name="CreatedModelFaceIDs"
+        command="GetCreatedModelFaceIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty name="CurrentNewFaceId"
+        command="SetCurrentNewFaceId"
+        number_of_elements="1"
+        default_values="none" >
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="SplitEdgeVertIds"
+        command="GetSplitEdgeVertIds"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="CreatedModelEdgeVertIDs"
+        command="GetCreatedModelEdgeVertIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="FaceEdgeLoopIDs"
+        command="GetFaceEdgeLoopIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <!-- End of SplitOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="CreateModelEdges" class="vtkCreateModelEdgesOperator">
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <!-- End of CreateModelEdgesOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="EdgeSplitOperator" class="vtkEdgeSplitOperator">
+     <IdTypeVectorProperty
+        name="PointId"
+        command="SetPointId"
+        number_of_elements="1"
+        default_values="none">
+       <Documentation>
+         Set the Id of the point to split the model edge at.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IdTypeVectorProperty
+        name="EdgeId"
+        command="SetEdgeId"
+        number_of_elements="1"
+        default_values="none">
+       <Documentation>
+         Set the unique persistent id of the model edge to operate on.
+       </Documentation>
+     </IdTypeVectorProperty>
+     <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+     </IntVectorProperty>
+     <IdTypeVectorProperty
+        name="CreatedModelEdgeID"
+        command="GetCreatedModelEdgeId"
+        number_of_elements="1"
+        information_only="1"
+        default_values="-1">
+       <SimpleIdTypeInformationHelper/>
+     </IdTypeVectorProperty>
+     <IdTypeVectorProperty
+        name="CreatedModelVertexID"
+        command="GetCreatedModelVertexId"
+        number_of_elements="1"
+        information_only="1"
+        default_values="-1">
+       <SimpleIdTypeInformationHelper/>
+     </IdTypeVectorProperty>
+     <!-- End of EdgeSplitOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="SelectionSplitOperator" class="vtkSelectionSplitOperator">
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+       <SimpleIntInformationHelper/>
+       <Documentation>
+         Return if the operation on the server was successful.
+       </Documentation>
+       </IntVectorProperty>
+      <IdTypeVectorProperty
+        name="ModifiedPairIDs"
+        command="GetModifiedPairIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="CompletelySelectedIDs"
+        command="GetCompletelySelectedIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty name="CurrentExistingFaceId"
+        command="SetCurrentExistingFaceId"
+        number_of_elements="1"
+        default_values="none" >
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="SplitEdgeVertIds"
+        command="GetSplitEdgeVertIds"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="CreatedModelEdgeVertIDs"
+        command="GetCreatedModelEdgeVertIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+      <IdTypeVectorProperty
+        name="FaceEdgeLoopIDs"
+        command="GetFaceEdgeLoopIDs"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <!-- End of SelectionSplitOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="CMBModelStateOperator" class="vtkCMBModelStateOperator">
+      <StringVectorProperty
+        name="SerializedModelString"
+        command="GetSerializedModelString"
+        information_only="1">
+        <StringArrayHelper />
+      </StringVectorProperty>
+      <IntVectorProperty
+         name="OperatorMode"
+         command="SetOperatorMode"
+         number_of_elements="1"
+         default_values="0">
+        <EnumerationDomain name="enum">
+          <Entry value="0" text="SAVE_STATE" />
+          <Entry value="1" text="LOAD_STATE" />
+        </EnumerationDomain>
+        <Documentation>
+          Set the OperatorMode of this operator.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CMBModelStateOperator -->
+    </OperatorProxy>
+
+    <SourceProxy name="XMLBCSWriter" class="vtkCMBXMLBCSWriter"
+      label="The bcs file writer">
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper for the algorithm to get the polydata from.
+        </Documentation>
+      </ProxyProperty>
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <!-- End of XMLBCSWriter -->
+    </SourceProxy>
+
+    <OperatorProxy name="CMBModelOmicronMeshInputWriter" class="vtkCMBModelOmicronMeshInputWriterBase">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty name="GeometryFileName"
+        command="SetGeometryFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the geometry file to write into the mesh input file.
+        </Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty name="TetGenOptions"
+        command="SetTetGenOptions"
+        number_of_elements="1">
+        <Documentation>
+          The TetGen options to be used.
+        </Documentation>
+      </StringVectorProperty>
+      <DoubleVectorProperty
+         name="VolumeConstraint"
+         command="SetVolumeConstraint"
+         number_of_elements="1"
+        default_values="0.001">
+        <Documentation>
+          Set the volume constraint to write to the mesh input file.
+        </Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of CMBModelOmicronMeshInputWriter -->
+    </OperatorProxy>
+
+    <OperatorProxy name="MeshServerJobSubmitter" class="vtkCMBMeshServerJobSubmitter">
+      <StringVectorProperty name="Endpoint"
+        command="SetEndpoint"
+        number_of_elements="1">
+        <Documentation>
+          The endpoint of the remus server that we need to connect too
+        </Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty name="Submission"
+        command="SetSubmission"
+        number_of_elements="1">
+        <Documentation>
+          The serialized remus::proto::Submission to be sent to the worker.
+        </Documentation>
+      </StringVectorProperty>
+
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+
+      <StringVectorProperty
+        name="LastSubmittedJob"
+        command="GetLastSubmittedJob"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleStringInformationHelper/>
+        <Documentation>
+          Return a serialized remus::proto::Job for the last job submitted.
+        </Documentation>
+      </StringVectorProperty>
+      <!-- End of CMBModelOmicronMeshInputWriter -->
+    </OperatorProxy>
+    <!-- End of CMBModelGroup -->
+  </ProxyGroup>
+
+  <ProxyGroup name="filters">
+    <SourceProxy name="MergeDuplicateCells" class="vtkMergeDuplicateCells"
+      label="Merge duplicate cells Filter">
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          This property specifies the input to the MergeDuplicateCells filter.
+        </Documentation>
+      </InputProperty>
+      <StringVectorProperty
+        name="RegionArrayName"
+        command="SetModelRegionArrayName"
+        animateable="0"
+        number_of_elements="1">
+        <Documentation>
+          The name of the CellData array used to determine region classification
+        </Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty
+        name="ModelFaceArrayName"
+        command="SetModelFaceArrayName"
+        animateable="0"
+        number_of_elements="1">
+        <Documentation>
+          The name of the CellData array used to determine model face classification
+        </Documentation>
+      </StringVectorProperty>
+      <!-- End of MergeDuplicateCells -->
+    </SourceProxy>
+
+    <SourceProxy name="MasterPolyDataNormals" class="vtkMasterPolyDataNormals"
+      label="Orders polys individually for each region such that normals point out">
+      <InputProperty
+         name="Input"
+         command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          This property specifies the input to the MasterPolyDataNormals filter.
+        </Documentation>
+      </InputProperty>
+      <!-- End of MergeDuplicateCells -->
+    </SourceProxy>
+
+    <SourceProxy name="AppendSolids"
+                 class="vtkAppendSolids"
+                 label="Append Solids">
+      <InputProperty
+        name="Input"
+        command="AddInputConnection"
+        clean_command="RemoveAllInputs"
+        multiple_input="1">
+        <ProxyGroupDomain name="groups">
+          <Group name="sources"/>
+          <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+          Take solids and append them, setting each input to have differnt id (in cell data).
+        </Documentation>
+      </InputProperty>
+
+      <StringVectorProperty
+        name="RegionArrayName"
+        command="SetRegionArrayName"
+        animateable="0"
+        number_of_elements="1">
+        <Documentation>
+          The name of the CellData array used to determine region classification
+        </Documentation>
+      </StringVectorProperty>
+
+      <!-- End of AppendSolids -->
+    </SourceProxy>
+  </ProxyGroup>
+
+  <ProxyGroup name="sources">
+    <DataSourceProxy name="CMBModelSource"
+      class="vtkCMBModelSource">
+      <ProxyProperty name="ModelWrapper" command="SetSource">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <!--
+          <ExposedProperties>
+            <Property name="ModelSerialization" />
+            <Property name="ResetModel" />
+          </ExposedProperties>
+  -->
+        <Documentation>
+          Sets the Model Wrapper for the model source.
+        </Documentation>
+      </ProxyProperty>
+      <!-- End of CMBModelSource -->
+    </DataSourceProxy>
+
+  </ProxyGroup>
+
+  <ProxyGroup name="representations">
+
+    <PVRepresentationProxy name="PVModelRepresentation"
+                          class="vtkPVCompositeRepresentation"
+                          processes="client|renderserver|dataserver"
+                          si_class="vtkSIModelRepresentationProxy">
+      <Documentation>
+        Representation to show cmb model.
+      </Documentation>
+
+      <InputProperty name="Input" command="SetInputConnection">
+        <DataTypeDomain name="input_type" composite_data_supported="1">
+          <DataType value="vtkDataSet"/>
+        </DataTypeDomain>
+        <Documentation>
+          Set the input to the representation.
+        </Documentation>
+      </InputProperty>
+
+      <IntVectorProperty command="SetVisibility"
+                         default_values="1"
+                         name="Visibility"
+                         number_of_elements="1"
+                         panel_visibility="never">
+        <BooleanDomain name="bool" />
+        <Documentation>Set the visibility for this
+        representation.</Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty command="SetForceUseCache"
+                         default_values="0"
+                         is_internal="1"
+                         name="ForceUseCache"
+                         number_of_elements="1">
+        <BooleanDomain name="bool" />
+        <Documentation>Typically UseCache and CacheKey are updated by the View
+        and representations cache based on what the view tells it. However in
+        some cases we may want to force a representation to cache irrespective
+        of the view (e.g. comparative views). In which case these ivars can up
+        set. If ForcedCacheKey is true, it overrides UseCache and CacheKey.
+        Instead, ForcedCacheKey is used.</Documentation>
+      </IntVectorProperty>
+      <DoubleVectorProperty command="SetForcedCacheKey"
+                            default_values="none"
+                            is_internal="1"
+                            name="ForcedCacheKey"
+                            number_of_elements="1">
+        <DoubleRangeDomain name="range" />
+        <Documentation>Typically UseCache and CacheKey are updated by the View
+        and representations cache based on what the view tells it. However in
+        some cases we may want to force a representation to cache irrespective
+        of the view (e.g. comparative views). In which case these ivars can up
+        set. If ForcedCacheKey is true, it overrides UseCache and CacheKey.
+        Instead, ForcedCacheKey is used.</Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty command="SetSelectionVisibility"
+                         default_values="1"
+                         name="SelectionVisibility"
+                         number_of_elements="1"
+                         panel_visibility="never">
+        <BooleanDomain name="bool" />
+        <Documentation>Set the visibility for the selection, if
+        any.</Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty command="SetCubeAxesVisibility"
+                         default_values="0"
+                         name="CubeAxesVisibility"
+                         number_of_elements="1"
+                         panel_visibility="never">
+        <BooleanDomain name="bool" />
+        <Documentation>Set the visibility for the cube axes.</Documentation>
+      </IntVectorProperty>
+
+
+      <StringVectorProperty command="GetRepresentationTypes"
+                            information_only="1"
+                            name="RepresentationTypesInfo"
+                            si_class="vtkSIDataArrayProperty">
+        <Documentation>Property that lists the available representation types.
+        This is used by the domain for "Representation" to setup the list of
+        types available correctly.</Documentation>
+      </StringVectorProperty>
+      <StringVectorProperty command="SetActiveRepresentation"
+                            default_values="Surface"
+                            name="Representation"
+                            number_of_elements="1"
+                            panel_visibility="default"
+                            panel_widget="display_representation_selector" >
+        <Documentation>Choose the type for the representation.</Documentation>
+        <RepresentationTypeDomain name="list">
+          <RequiredProperties>
+            <Property function="StringList"
+                      name="RepresentationTypesInfo" />
+            <Property function="Input"
+                      name="Input" />
+          </RequiredProperties>
+        </RepresentationTypeDomain>
+      </StringVectorProperty>
+<!--
+      <StringVectorProperty command="SetCellFieldDataArrayName"
+                            default_values="vtkOriginalCellIds"
+                            name="SelectionCellFieldDataArrayName"
+                            number_of_elements="1"
+                            panel_visibility="never">
+        <ArrayListDomain input_domain_name="input_array_cell"
+                         name="array_list">
+          <RequiredProperties>
+            <Property function="Input" name="Input" />
+          </RequiredProperties>
+        </ArrayListDomain>
+      </StringVectorProperty>
+      <StringVectorProperty command="SetPointFieldDataArrayName"
+                            default_values="vtkOriginalPointIds"
+                            name="SelectionPointFieldDataArrayName"
+                            number_of_elements="1"
+                            panel_visibility="never">
+        <ArrayListDomain input_domain_name="input_array_point"
+                         name="array_list">
+          <RequiredProperties>
+            <Property function="Input" name="Input" />
+          </RequiredProperties>
+        </ArrayListDomain>
+      </StringVectorProperty>
+-->
+      <RepresentationType
+        subproxy="OutlineRepresentation" text="Outline"/>
+      <RepresentationType
+        subproxy="ModelRepresentation" text="Points" subtype="Points" />
+      <RepresentationType
+        subproxy="ModelRepresentation" text="Wireframe" subtype="Wireframe" />
+      <RepresentationType
+        subproxy="ModelRepresentation" text="Surface" subtype="Surface" />
+      <RepresentationType
+        subproxy="ModelRepresentation" text="Surface With Edges" subtype="Surface With Edges" />
+
+      <SubProxy>
+        <Proxy name="ModelRepresentation"
+          proxygroup="representations"
+          proxyname="CmbModelRepresentation">
+        </Proxy>
+        <ExposedProperties>
+          <Property name="ShowEdgePoints" panel_visibility="never" />
+          <Property name="ModelWrapper" panel_visibility="never" />
+          <Property name="LastSelectedEntityIds" panel_visibility="never" />
+          <Property name="SelectedEntityIds" panel_visibility="never" />
+<!--
+          <Property name="Color" />
+          <Property name="BackfaceAmbientColor" />
+          <Property name="BackfaceDiffuseColor" />
+          <Property name="BackfaceOpacity" />
+          <Property name="BackfaceRepresentation" />
+-->
+          <PropertyGroup panel_visibility="default"
+                         panel_widget="ColorEditor"
+                         label="Coloring" >
+            <Property name="Ambient" />
+            <Property name="AmbientColor" />
+            <Property name="ColorArrayName" />
+            <Property name="Diffuse" />
+            <Property name="DiffuseColor" />
+            <Property name="LookupTable" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Scalar Coloring">
+            <Property name="MapScalars"
+                      panel_visibility="advanced" />
+            <Property name="InterpolateScalarsBeforeMapping"
+                      panel_visibility="advanced" />
+          </PropertyGroup>
+
+          <Property name="LargeTextureInput" />
+          <PropertyGroup label="Styling">
+            <Property name="Opacity"
+                      panel_visibility="default" />
+            <Property name="PointSize"
+                      panel_visibility="advanced"
+                      panel_visibility_default_for_representation="points" />
+            <Property name="LineWidth"
+                      panel_visibility="advanced"
+                      panel_visibility_default_for_representation="wireframe" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Lighting">
+            <Property name="Interpolation"
+                      panel_visibility="advanced" />
+            <Property name="Specular"
+                      panel_visibility="default" />
+            <Property name="SpecularColor"
+                      panel_widget="color_selector"
+                      panel_visibility="advanced" />
+            <Property name="SpecularPower"
+                      panel_visibility="advanced" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Edge Styling">
+            <Property name="EdgeColor"
+                      panel_widget="color_selector_with_palette"
+                      panel_visibility="advanced"
+                      panel_visibility_default_for_representation="Surface With Edges" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Backface Styling">
+            <Property name="BackfaceRepresentation"
+                      panel_visibility="advanced" />
+            <Property name="BackfaceAmbientColor"
+                      panel_widget="color_selector"
+                      panel_visibility="advanced" />
+            <Property name="BackfaceDiffuseColor"
+                      panel_widget="color_selector"
+                      panel_visibility="advanced" />
+            <Property name="BackfaceOpacity"
+                      panel_visibility="advanced" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Transforming">
+            <Property name="Position"
+                      panel_visibility="advanced" />
+            <Property name="Scale"
+                      panel_visibility="advanced" />
+            <Property name="Orientation"
+                      panel_visibility="advanced" />
+            <Property name="Origin"
+                      panel_visibility="advanced" />
+          </PropertyGroup>
+
+          <PropertyGroup label="Miscellaneous">
+            <Property name="Pickable"
+                      panel_visibility="advanced" />
+            <Property name="StaticMode"
+                      panel_visibility="never" />
+            <Property name="SuppressLOD"
+                      panel_visibility="never" />
+            <Property name="Texture"
+                      panel_visibility="advanced" />
+            <Property name="UserTransform"
+                      panel_visibility="never" />
+            <Property name="NonlinearSubdivisionLevel"
+                      panel_visibility="advanced" />
+            <Property name="BlockVisibility"
+                      panel_visibility="never" />
+            <Property name="BlockColor"
+                      panel_visibility="never" />
+            <Property name="BlockOpacity"
+                      panel_visibility="never" />
+          </PropertyGroup>
+
+         </ExposedProperties>
+      </SubProxy>
+
+      <SubProxy>
+        <Proxy name="CubeAxesRepresentation"
+          proxygroup="representations"
+          proxyname="CubeAxesRepresentation">
+        </Proxy>
+        <ExposedProperties>
+          <PropertyGroup label="Cube Axes"
+                         panel_visibility="default"
+                         panel_widget="CubeAxes">
+            <Property exposed_name="CubeAxesColor"
+                      name="Color" />
+            <Property exposed_name="CubeAxesCornerOffset"
+                      name="CornerOffset" />
+            <Property exposed_name="CubeAxesFlyMode"
+                      name="FlyMode" />
+            <Property exposed_name="CubeAxesInertia"
+                      name="Inertia" />
+            <Property exposed_name="CubeAxesTickLocation"
+                      name="TickLocation" />
+            <Property exposed_name="CubeAxesXAxisMinorTickVisibility"
+                      name="XAxisMinorTickVisibility" />
+            <Property exposed_name="CubeAxesXAxisTickVisibility"
+                      name="XAxisTickVisibility" />
+            <Property exposed_name="CubeAxesXAxisVisibility"
+                      name="XAxisVisibility" />
+            <Property exposed_name="CubeAxesXGridLines"
+                      name="XGridLines" />
+            <Property exposed_name="CubeAxesXTitle"
+                      name="XTitle" />
+            <Property exposed_name="CubeAxesUseDefaultXTitle"
+                      name="UseDefaultXTitle" />
+            <Property exposed_name="CubeAxesYAxisMinorTickVisibility"
+                      name="YAxisMinorTickVisibility" />
+            <Property exposed_name="CubeAxesYAxisTickVisibility"
+                      name="YAxisTickVisibility" />
+            <Property exposed_name="CubeAxesYAxisVisibility"
+                      name="YAxisVisibility" />
+            <Property exposed_name="CubeAxesYGridLines"
+                      name="YGridLines" />
+            <Property exposed_name="CubeAxesYTitle"
+                      name="YTitle" />
+            <Property exposed_name="CubeAxesUseDefaultYTitle"
+                      name="UseDefaultYTitle" />
+            <Property exposed_name="CubeAxesZAxisMinorTickVisibility"
+                      name="ZAxisMinorTickVisibility" />
+            <Property exposed_name="CubeAxesZAxisTickVisibility"
+                      name="ZAxisTickVisibility" />
+            <Property exposed_name="CubeAxesZAxisVisibility"
+                      name="ZAxisVisibility" />
+            <Property exposed_name="CubeAxesZGridLines"
+                      name="ZGridLines" />
+            <Property exposed_name="CubeAxesZTitle"
+                      name="ZTitle" />
+            <Property exposed_name="CubeAxesUseDefaultZTitle"
+                      name="UseDefaultZTitle" />
+            <Property exposed_name="CubeAxesGridLineLocation"
+                      name="GridLineLocation" />
+            <Property name="DataBounds" />
+            <Property name="CustomBounds" />
+            <Property name="CustomBoundsActive" />
+            <Property name="OriginalBoundsRangeActive" />
+            <Property name="CustomRange" />
+            <Property name="CustomRangeActive" />
+            <Property name="UseAxesOrigin" />
+            <Property name="AxesOrigin" />
+            <Property exposed_name="CubeAxesXLabelFormat"
+                      name="XLabelFormat" />
+            <Property exposed_name="CubeAxesYLabelFormat"
+                      name="YLabelFormat" />
+            <Property exposed_name="CubeAxesZLabelFormat"
+                      name="ZLabelFormat" />
+            <Property name="StickyAxes" />
+            <Property name="CenterStickyAxes" />
+          </PropertyGroup>
+        </ExposedProperties>
+        <ShareProperties subproxy="ModelRepresentation">
+          <Exception name="Input" />
+          <Exception name="Visibility" />
+        </ShareProperties>
+      </SubProxy>
+
+      <SubProxy>
+        <Proxy name="SelectionRepresentation"
+          proxygroup="representations"
+          proxyname="SelectionRepresentation" />
+        <ShareProperties subproxy="ModelRepresentation">
+          <Exception name="Input" />
+          <Exception name="Visibility" />
+          <Exception name="Representation" />
+          <Exception name="Color" />
+          <Exception name="LineWidth" />
+          <Exception name="Opacity" />
+          <Exception name="PointSize" />
+        </ShareProperties>
+        <ExposedProperties>
+          <Property exposed_name="SelectionColor" name="Color" panel_visibility="never" />
+          <Property exposed_name="SelectionOpacity" name="Opacity" panel_visibility="never" />
+          <Property exposed_name="SelectionUseOutline" name="UseOutline" panel_visibility="never" />
+          <Property exposed_name="SelectionRepresentation" name="Representation" panel_visibility="never" />
+          <Property exposed_name="SelectionPointSize" name="PointSize" panel_visibility="never" />
+          <Property exposed_name="SelectionLineWidth" name="LineWidth" panel_visibility="never" />
+          <Property exposed_name="SelectionCellLabelVisibility" name="CellLabelVisibility" panel_visibility="never"/>
+          <PropertyGroup label="Cell Label Font" panel_visibility="never" panel_widget="FontEditor">
+            <Property exposed_name="SelectionCellLabelBold" name="CellLabelBold" function="Bold"/>
+            <Property exposed_name="SelectionCellLabelColor" name="CellLabelColor" function="Color"/>
+            <Property exposed_name="SelectionCellLabelFontFamily" name="CellLabelFontFamily" function="Family"/>
+            <Property exposed_name="SelectionCellLabelFontSize" name="CellLabelFontSize" function="Size"/>
+            <Property exposed_name="SelectionCellLabelFormat" name="CellLabelFormat" />
+            <Property exposed_name="SelectionCellLabelItalic" name="CellLabelItalic" function="Italics"/>
+            <Property exposed_name="SelectionCellLabelJustification" name="CellLabelJustification" />
+            <Property exposed_name="SelectionCellLabelOpacity" name="CellLabelOpacity" function="Opacity"/>
+            <Property exposed_name="SelectionCellLabelShadow" name="CellLabelShadow" function="Shadow"/>
+          </PropertyGroup>
+          <Property exposed_name="SelectionPointLabelVisibility" name="PointLabelVisibility" panel_visibility="never"/>
+          <PropertyGroup label="Point Label Font" panel_visibility="never" panel_widget="FontEditor">
+            <Property exposed_name="SelectionPointLabelBold" name="PointLabelBold" function="Bold"/>
+            <Property exposed_name="SelectionPointLabelColor" name="PointLabelColor" function="Color"/>
+            <Property exposed_name="SelectionPointLabelFontFamily" name="PointLabelFontFamily" function="Family"/>
+            <Property exposed_name="SelectionPointLabelFontSize" name="PointLabelFontSize" function="Size"/>
+            <Property exposed_name="SelectionPointLabelFormat" name="PointLabelFormat"/>
+            <Property exposed_name="SelectionPointLabelItalic" name="PointLabelItalic" function="Italics"/>
+            <Property exposed_name="SelectionPointLabelJustification" name="PointLabelJustification"/>
+            <Property exposed_name="SelectionPointLabelOpacity" name="PointLabelOpacity" function="Opacity"/>
+            <Property exposed_name="SelectionPointLabelShadow" name="PointLabelShadow" function="Shadow"/>
+          </PropertyGroup>
+        </ExposedProperties>
+      </SubProxy>
+
+      <SubProxy>
+        <Proxy name="OutlineRepresentation"
+          proxygroup="representations" proxyname="OutlineRepresentation">
+        </Proxy>
+        <ShareProperties subproxy="ModelRepresentation">
+          <Exception name="Input" />
+          <Exception name="Visibility" />
+        </ShareProperties>
+      </SubProxy>
+
+      <!-- End of PVModelRepresentation -->
+    </PVRepresentationProxy>
+
+    <RepresentationProxy name="CmbModelRepresentation"
+                          class="vtkCMBModelRepresentation"
+                          processes="client|renderserver|dataserver"
+                          base_proxygroup="representations"
+                          base_proxyname="SurfaceRepresentation" >
+      <Documentation>
+        Representation to show the cmb model Representation in a vtkPVRenderView.
+      </Documentation>
+
+      <InputProperty name="LargeTextureInput" command="SetInputConnection"
+        port_index="1" clean_command="RemoveLargeTextureInput"
+        label="Large Texture Input">
+        <Documentation>
+          Specify the source objects.
+        </Documentation>
+        <DataTypeDomain name="input_type">
+          <DataType value="vtkImageData" />
+        </DataTypeDomain>
+      </InputProperty>
+
+      <IdTypeVectorProperty
+        name="LastSelectedEntityIds"
+        command="GetLastSelectedEntityIds"
+         number_of_elements="1"
+         information_only="1"
+        default_values="-1">
+        <IdTypeArrayInformationHelper/>
+      </IdTypeVectorProperty>
+
+      <IdTypeVectorProperty
+        name="SelectedEntityIds"
+        command="AddSelectedEntityId"
+        clean_command="RemoveAllSelectedEntityIds"
+        repeat_command="1"
+        number_of_elements_per_command="1">
+        <Documentation>
+          Current SelectedEntityIds in the model representation
+        </Documentation>
+      </IdTypeVectorProperty>
+
+      <ProxyProperty name="ModelWrapper" command="SetCMBModel">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper for the algorithm to convert selection.
+        </Documentation>
+      </ProxyProperty>
+
+      <IntVectorProperty name="ShowEdgePoints"
+        command="SetShowEdgePoints"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+
+      <!-- End of CmbModelRepresentation -->
+    </RepresentationProxy>
+  </ProxyGroup>
+</ServerManagerConfiguration>
