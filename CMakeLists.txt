@@ -27,7 +27,7 @@ include(CMake/FindHashFunctor.cmake)
 # Options that the user controls
 ################################################################################
 option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
-option(Smtk_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
+option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
@@ -76,7 +76,7 @@ endif()
 #if boost is installed as a system library on a machine, we will never
 #be able to set the superbuild to use the custom boost version. The solution
 #is that when doing a system
-set(Boost_NO_SYSTEM_PATHS ${Smtk_NO_SYSTEM_BOOST})
+set(Boost_NO_SYSTEM_PATHS ${SMTK_NO_SYSTEM_BOOST})
 
 # List of Boost features used:
 # * Filesystem
