@@ -3,7 +3,7 @@
 
 #include "smtk/model/CellEntity.h"
 
-//#include "smtk/util/Eigen.h" // For Vector3d
+//#include "smtk/common/Eigen.h" // For Vector3d
 
 #include <vector>
 
@@ -24,7 +24,7 @@ public:
   Edges edges() const;
 
   double* coordinates() const;
-  //smtk::util::Vector3d coordinates() const;
+  //smtk::common::Vector3d coordinates() const;
 };
 
 typedef std::vector<Vertex> Vertices;

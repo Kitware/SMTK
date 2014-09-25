@@ -54,7 +54,7 @@ if __name__ == '__main__':
     logging.error('Unable to load input file %s' % model_path)
     sys.exit(-3)
   model_manager = smtk.model.Manager.create()
-  ok = smtk.model.ImportJSON.intoModel(json_string, model_manager)
+  ok = smtk.io.ImportJSON.intoModel(json_string, model_manager)
   if not ok:
       logging.error("Unable to create model from contents of %s" % model_path)
       sys.exit(-4)
@@ -68,8 +68,8 @@ if __name__ == '__main__':
   input_manager = smtk.attribute.Manager()
   input_manager.setRefModelManager(model_manager)
 
-  reader = smtk.util.AttributeReader()
-  logger = smtk.util.Logger()
+  reader = smtk.io.AttributeReader()
+  logger = smtk.io.Logger()
   err = reader.read(input_manager, att_path, logger)
   if err:
     logging.error("Unable to load template file")
@@ -148,7 +148,7 @@ if __name__ == '__main__':
   logging.debug('Writing manager')
 
   # Write data out FYI
-  writer = smtk.util.AttributeWriter()
+  writer = smtk.io.AttributeWriter()
   err = writer.write(test_manager, OUTPUT_FILENAME, logger)
   if err:
     logging.error("Unable to write output file")

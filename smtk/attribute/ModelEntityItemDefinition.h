@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_ModelEntityItemDefinition_h
 #define __smtk_attribute_ModelEntityItemDefinition_h
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/model/EntityTypeBits.h" // for smtk::model::BitFlags
 

@@ -2,7 +2,7 @@
 #define __smtk_bridge_remote_RemusBridgeConnections_h
 
 #include "smtk/bridge/remote/SMTKRemoteExports.h"
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 
 #include <string>
 

@@ -1,8 +1,9 @@
 #ifndef __smtk_model_IntegerData_h
 #define __smtk_model_IntegerData_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
+
+#include "smtk/common/UUID.h"
 
 #include "sparsehash/sparse_hash_map"
 
@@ -15,7 +16,7 @@ namespace smtk {
     typedef long Integer;
     typedef std::vector<long> IntegerList;
     typedef google::sparse_hash_map<std::string,IntegerList> IntegerData;
-    typedef google::sparse_hash_map<smtk::util::UUID,IntegerData> UUIDsToIntegerData;
+    typedef google::sparse_hash_map<smtk::common::UUID,IntegerData> UUIDsToIntegerData;
 
     typedef UUIDsToIntegerData::iterator UUIDWithIntegerProperties;
     typedef IntegerData::iterator PropertyNameWithIntegers;

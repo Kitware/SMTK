@@ -1,8 +1,8 @@
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
-#include "smtk/model/ImportJSON.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
+#include "smtk/io/ExportJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -18,7 +18,7 @@
 
 #include "cJSON.h"
 
-using smtk::util::UUID;
+using smtk::common::UUID;
 
 namespace smtk {
   namespace bridge {
@@ -65,15 +65,15 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
 /**\brief Start a worker of a particular type, or revive a particular session ID.
   *
   */
-smtk::util::UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
+UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
 {
   (void) this->bridgeNames(); // ensure that we've fetched the bridge names from the server.
   if (this->m_remoteBridgeNames.find(bridgeName) == this->m_remoteBridgeNames.end())
-    return smtk::util::UUID::null();
+    return UUID::null();
 
   remus::proto::JobRequirements jreq;
   if (!this->findRequirementsForRemusType(jreq, bridgeName))
-    return smtk::util::UUID::null();
+    return UUID::null();
 
   //FIXME: Sanitize bridgeName!
   std::string reqStr =
@@ -110,16 +110,15 @@ smtk::util::UUID RemusBridgeConnection::beginBridgeSession(const std::string& br
       // TODO: See if result has "error" key and report it.
       if (result)
         cJSON_Delete(result);
-      return smtk::util::UUID::null();
+      return UUID::null();
       }
 
   // OK, construct a special "forwarding" bridge locally.
   RemusRemoteBridge::Ptr bridge = RemusRemoteBridge::create();
   bridge->setup(this, jreq);
   // The ImportJSON registers this bridge with the model manager.
-  if (smtk::model::ImportJSON::ofRemoteBridgeSession(bridgeIdObj,
-                                                     bridge,
-                                                     this->m_modelMgr) )
+  if (smtk::io::ImportJSON::ofRemoteBridgeSession(
+      bridgeIdObj, bridge, this->m_modelMgr))
     {
     // Failure.
     }
@@ -140,9 +139,9 @@ smtk::util::UUID RemusBridgeConnection::beginBridgeSession(const std::string& br
 /**\brief Shut down the worker with the given \a bridgeSessionId.
   *
   */
-bool RemusBridgeConnection::endBridgeSession(const smtk::util::UUID& bridgeSessionId)
+bool RemusBridgeConnection::endBridgeSession(const UUID& bridgeSessionId)
 {
-  std::map<smtk::util::UUID,std::string>::iterator it =
+  std::map<UUID,std::string>::iterator it =
     this->m_remoteBridgeSessionIds.find(bridgeSessionId);
   if (it == this->m_remoteBridgeSessionIds.end())
     return false;
@@ -207,7 +206,7 @@ std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
     return std::vector<std::string>();
     }
 
-  smtk::model::ImportJSON::getStringArrayFromJSON(sarr, resultVec);
+  smtk::io::ImportJSON::getStringArrayFromJSON(sarr, resultVec);
   cJSON_Delete(result);
   return resultVec;
 }
@@ -257,7 +256,7 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
   RemusRemoteBridge::Ptr bridge = this->findBridgeForRemusType(actualBridgeName);
   if (!bridge)
     { // No existing bridge of that type. Create a new remote session.
-    smtk::util::UUID bridgeId = this->beginBridgeSession(actualBridgeName);
+    UUID bridgeId = this->beginBridgeSession(actualBridgeName);
     bridge =
       smtk::dynamic_pointer_cast<RemusRemoteBridge>(
         this->m_modelMgr->findBridgeSession(bridgeId));
@@ -290,14 +289,14 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
 
   // NB: leaky; for debug only.
   cJSON* json = cJSON_CreateObject();
-  smtk::model::ExportJSON::forOperator(readOp, json);
+  smtk::io::ExportJSON::forOperator(readOp, json);
   std::cout << "Found operator " << readOp->className() << " -- " << (readOp->specification()->isValid() ? "V" : "I") << " -- " << cJSON_Print(json) << ")\n";
 
   smtk::model::OperatorResult result = readOp->operate();
 
   // NB: leaky; for debug only.
   json = cJSON_CreateObject();
-  smtk::model::ExportJSON::forOperatorResult(result, json);
+  smtk::io::ExportJSON::forOperatorResult(result, json);
   std::cout << "Result " << cJSON_Print(json) << "\n";
 
   // Fetch affected models
@@ -320,7 +319,7 @@ std::vector<std::string> RemusBridgeConnection::operatorNames(const std::string&
   return result;
 }
 
-std::vector<std::string> RemusBridgeConnection::operatorNames(const smtk::util::UUID& bridgeSessionId)
+std::vector<std::string> RemusBridgeConnection::operatorNames(const UUID& bridgeSessionId)
 {
   (void)bridgeSessionId;
   std::vector<std::string> result;
@@ -328,7 +327,7 @@ std::vector<std::string> RemusBridgeConnection::operatorNames(const smtk::util::
 }
 
 smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
-  const smtk::util::UUID& bridgeOrModel, const std::string& opName)
+  const UUID& bridgeOrModel, const std::string& opName)
 {
   (void)opName;
   (void)bridgeOrModel;
@@ -349,7 +348,7 @@ smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
   *
   * Warning: This will overwrite this->m_modelMgr.
   */
-void RemusBridgeConnection::fetchWholeModel(const smtk::util::UUID& modelId)
+void RemusBridgeConnection::fetchWholeModel(const UUID& modelId)
 {
   // Find bridge from modelId, then job requirements from bridge.
   smtk::model::Bridge::Ptr bridgeBase = this->m_modelMgr->bridgeForModel(modelId);
@@ -367,7 +366,7 @@ void RemusBridgeConnection::fetchWholeModel(const smtk::util::UUID& modelId)
     (model = cJSON_GetObjectItem(response, "result")) &&
     model->type == cJSON_Object &&
     (topo = cJSON_GetObjectItem(model, "topo")))
-    smtk::model::ImportJSON::ofManager(topo, this->m_modelMgr);
+    smtk::io::ImportJSON::ofManager(topo, this->m_modelMgr);
   cJSON_Delete(response);
 }
 
@@ -457,7 +456,7 @@ RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeForRemusType(
   const std::string& rtype)
 {
   RemusRemoteBridge::Ptr bridge;
-  std::map<smtk::util::UUID,std::string>::const_iterator bit;
+  std::map<UUID,std::string>::const_iterator bit;
   for (bit = this->m_remoteBridgeSessionIds.begin(); bit != this->m_remoteBridgeSessionIds.end(); ++bit)
     {
     if (bit->second == rtype)

@@ -30,7 +30,7 @@
 //#include <boost/variant.hpp>
 
 using namespace std;
-using namespace smtk::util;
+using namespace smtk::common;
 
 namespace smtk {
   namespace model {
@@ -120,7 +120,7 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
   * boundary). The application is expected to perform further
   * operations to keep the model valid.
   */
-bool Manager::erase(const smtk::util::UUID& uid)
+bool Manager::erase(const UUID& uid)
 {
   Entity* ent = this->findEntity(uid);
   UUIDWithArrangementDictionary ad = this->m_arrangements->find(uid);
@@ -353,7 +353,7 @@ int Manager::arrangeEntity(const UUID& entityId, ArrangementKind kind, const Arr
   * The caller is expected to perform further operations to keep
   * the model valid.
   */
-int Manager::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
+int Manager::unarrangeEntity(const UUID& entityId, ArrangementKind k, int index, bool removeIfLast)
 {
   int result = 0;
   bool canRemoveEntity = false;
@@ -416,7 +416,7 @@ int Manager::unarrangeEntity(const smtk::util::UUID& entityId, ArrangementKind k
   * if true is returned, the pointer will be aimed at the existing array. Otherwise, \a arr will be unchanged.
   */
 Arrangements* Manager::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind)
+  const UUID& entity, ArrangementKind kind)
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -433,7 +433,7 @@ Arrangements* Manager::hasArrangementsOfKindForEntity(
 /**\brief This is a const version of hasArrangementsOfKindForEntity().
   */
 const Arrangements* Manager::hasArrangementsOfKindForEntity(
-  const smtk::util::UUID& entity, ArrangementKind kind) const
+  const UUID& entity, ArrangementKind kind) const
 {
   UUIDWithArrangementDictionary cellEntry = this->m_arrangements->find(entity);
   if (cellEntry != this->m_arrangements->end())
@@ -455,7 +455,7 @@ const Arrangements* Manager::hasArrangementsOfKindForEntity(
   * hasArrangementsOfKindForEntity() to determine whether the array already exists.
   */
 Arrangements& Manager::arrangementsOfKindForEntity(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   ArrangementKind kind)
 {
   return (*this->m_arrangements)[entity][kind];
@@ -526,8 +526,8 @@ Arrangement* Manager::findArrangement(const UUID& cellId, ArrangementKind kind, 
   * This method returns the index upon success and a negative number upon failure.
   */
 int Manager::findArrangementInvolvingEntity(
-  const smtk::util::UUID& entityId, ArrangementKind kind,
-  const smtk::util::UUID& involvedEntity) const
+  const UUID& entityId, ArrangementKind kind,
+  const UUID& involvedEntity) const
 {
   const Entity* src = this->findEntity(entityId);
   if (!src)
@@ -539,10 +539,10 @@ int Manager::findArrangementInvolvingEntity(
 
   Arrangements::const_iterator it;
   int idx = 0;
-  smtk::util::UUIDArray rels;
+  UUIDArray rels;
   for (it = arr->begin(); it != arr->end(); ++it, ++idx, rels.clear())
     if (it->relations(rels, src, kind))
-      for (smtk::util::UUIDArray::iterator rit = rels.begin(); rit != rels.end(); ++rit)
+      for (UUIDArray::iterator rit = rels.begin(); rit != rels.end(); ++rit)
         if (*rit == involvedEntity)
           return idx;
 
@@ -574,7 +574,7 @@ int Manager::findArrangementInvolvingEntity(
   * specific circumstances where the context is known.)
   */
 bool Manager::findDualArrangements(
-    const smtk::util::UUID& entityId, ArrangementKind kind, int index,
+    const UUID& entityId, ArrangementKind kind, int index,
     ArrangementReferences& duals) const
 {
   if (index < 0)
@@ -592,7 +592,7 @@ bool Manager::findDualArrangements(
   int sense;
   Orientation orient;
 
-  smtk::util::UUID dualEntityId;
+  UUID dualEntityId;
   ArrangementKind dualKind;
   int dualIndex;
   int relStart, relEnd;
@@ -682,7 +682,7 @@ bool Manager::findDualArrangements(
   * There should be no duplicate senses for any given cell.
   */
 int Manager::findCellHasUseWithSense(
-  const smtk::util::UUID& cellId, int sense) const
+  const UUID& cellId, int sense) const
 {
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
   if (arrs)
@@ -708,7 +708,7 @@ int Manager::findCellHasUseWithSense(
   * The indices of the matching arrangements are returned.
   */
 std::set<int> Manager::findCellHasUsesWithOrientation(
-  const smtk::util::UUID& cellId, Orientation orient) const
+  const UUID& cellId, Orientation orient) const
 {
   std::set<int> result;
   const Arrangements* arrs = this->hasArrangementsOfKindForEntity(cellId, HAS_USE);
@@ -733,8 +733,8 @@ std::set<int> Manager::findCellHasUsesWithOrientation(
 /**\brief Return the UUID of a use record for the
   * given \a cell and \a sense, or NULL if it does not exist.
   */
-smtk::util::UUID Manager::cellHasUseOfSenseAndOrientation(
-  const smtk::util::UUID& cell, int sense, Orientation orient) const
+UUID Manager::cellHasUseOfSenseAndOrientation(
+  const UUID& cell, int sense, Orientation orient) const
 {
   const smtk::model::Arrangements* arr;
   if ((arr = this->hasArrangementsOfKindForEntity(cell, HAS_USE)) && !arr->empty())
@@ -751,21 +751,21 @@ smtk::util::UUID Manager::cellHasUseOfSenseAndOrientation(
         }
       }
     }
-  return smtk::util::UUID::null();
+  return UUID::null();
 }
 
 /**\brief Find a use record for the given \a cell and \a sense,
   * creating one if it does not exist or replacing it if \a replacement is non-NULL.
   *
   */
-smtk::util::UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
-  const smtk::util::UUID& cell, int sense, Orientation orient,
-  const smtk::util::UUID& replacement)
+UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
+  const UUID& cell, int sense, Orientation orient,
+  const UUID& replacement)
 {
   Entity* entity = this->findEntity(cell);
   if (!entity)
     {
-    return smtk::util::UUID::null();
+    return UUID::null();
     }
   smtk::model::Arrangements& arr(
     this->arrangementsOfKindForEntity(cell, HAS_USE));
@@ -839,14 +839,14 @@ smtk::util::UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
   * These relationships define a hierarchy that enumerate the oriented boundary of
   * the top-level cell-use.
   */
-smtk::util::UUIDs Manager::useOrShellIncludesShells(
-  const smtk::util::UUID& cellUseOrShell) const
+UUIDs Manager::useOrShellIncludesShells(
+  const UUID& cellUseOrShell) const
 {
-  smtk::util::UUIDs shells;
+  UUIDs shells;
   const Entity* ent = this->findEntity(cellUseOrShell);
   if (ent && (ent->entityFlags() & (USE_ENTITY | SHELL_ENTITY)))
     {
-    const smtk::util::UUIDArray& rels(ent->relations());
+    const UUIDArray& rels(ent->relations());
     const smtk::model::Arrangements* arr;
     if ((arr = this->hasArrangementsOfKindForEntity(cellUseOrShell, INCLUDES)) && !arr->empty())
       {
@@ -873,12 +873,12 @@ smtk::util::UUIDs Manager::useOrShellIncludesShells(
   * Shells may also include other shells of the same dimensionality representing voids
   * or material within voids for odd or even depths from the parent cell-use, respectively.
   */
-smtk::util::UUID Manager::createIncludedShell(const smtk::util::UUID& useOrShell)
+UUID Manager::createIncludedShell(const UUID& useOrShell)
 {
   Entity* entity = this->findEntity(useOrShell);
   if (!entity)
     {
-    return smtk::util::UUID::null();
+    return UUID::null();
     }
   int shellDim =
     (entity->entityFlags() & USE_ENTITY || entity->entityFlags() & CELL_ENTITY) ?
@@ -908,8 +908,8 @@ smtk::util::UUID Manager::createIncludedShell(const smtk::util::UUID& useOrShell
   * Returns false if either entity does not exist or the shell was already owned by the parent.
   */
 bool Manager::findOrAddIncludedShell(
-  const smtk::util::UUID& parentUseOrShell,
-  const smtk::util::UUID& shellToInclude)
+  const UUID& parentUseOrShell,
+  const UUID& shellToInclude)
 {
   Entity* parEnt = this->findEntity(parentUseOrShell);
   Entity* shlEnt = this->findEntity(shellToInclude);
@@ -951,7 +951,7 @@ bool Manager::findOrAddIncludedShell(
   * easily.
   */
 bool Manager::findOrAddUseToShell(
-  const smtk::util::UUID& shell, const smtk::util::UUID& use)
+  const UUID& shell, const UUID& use)
 {
   Entity* shellEnt;
   Entity* useEnt;
@@ -1057,7 +1057,7 @@ bool Manager::findOrAddUseToShell(
   * or equal to the \a cell.
   */
 bool Manager::findOrAddInclusionToCellOrModel(
-  const smtk::util::UUID& cell, const smtk::util::UUID& inclusion)
+  const UUID& cell, const UUID& inclusion)
 {
   Entity* cellEnt;
   Entity* incEnt;
@@ -1109,7 +1109,7 @@ bool Manager::findOrAddInclusionToCellOrModel(
   * Returns true when the entity was successfully added (or already existed)
   * and false upon failure (such as when \a grp or \a ent are invalid).
   */
-bool Manager::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::util::UUID& ent)
+bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 {
   GroupEntity group(shared_from_this(), grp);
   Cursor member(shared_from_this(), ent);
@@ -1134,7 +1134,7 @@ bool Manager::findOrAddEntityToGroup(const smtk::util::UUID& grp, const smtk::ut
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
-bool Manager::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
+bool Manager::hasAttribute(int attribId, const UUID& toEntity)
 {
   UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
   if (it == this->m_attributeAssignments->end())
@@ -1150,7 +1150,7 @@ bool Manager::hasAttribute(int attribId, const smtk::util::UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
+bool Manager::attachAttribute(int attribId, const UUID& toEntity)
 {
   bool allowed = true;
   if (this->m_attributeManager)
@@ -1167,7 +1167,7 @@ bool Manager::attachAttribute(int attribId, const smtk::util::UUID& toEntity)
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, bool reverse)
+bool Manager::detachAttribute(int attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -1223,7 +1223,7 @@ bool Manager::detachAttribute(int attribId, const smtk::util::UUID& fromEntity, 
   */
 //@{
 /// Add a vertex to the manager (without any relationships) at the given \a uid.
-Vertex Manager::insertVertex(const smtk::util::UUID& uid)
+Vertex Manager::insertVertex(const UUID& uid)
 {
   return Vertex(
     shared_from_this(),
@@ -1231,7 +1231,7 @@ Vertex Manager::insertVertex(const smtk::util::UUID& uid)
 }
 
 /// Add an edge to the manager (without any relationships) at the given \a uid.
-Edge Manager::insertEdge(const smtk::util::UUID& uid)
+Edge Manager::insertEdge(const UUID& uid)
 {
   return Edge(
     shared_from_this(),
@@ -1239,7 +1239,7 @@ Edge Manager::insertEdge(const smtk::util::UUID& uid)
 }
 
 /// Add a face to the manager (without any relationships) at the given \a uid.
-Face Manager::insertFace(const smtk::util::UUID& uid)
+Face Manager::insertFace(const UUID& uid)
 {
   return Face(
     shared_from_this(),
@@ -1247,7 +1247,7 @@ Face Manager::insertFace(const smtk::util::UUID& uid)
 }
 
 /// Add a volume to the manager (without any relationships) at the given \a uid.
-Volume Manager::insertVolume(const smtk::util::UUID& uid)
+Volume Manager::insertVolume(const UUID& uid)
 {
   return Volume(
     shared_from_this(),
@@ -1293,7 +1293,7 @@ Volume Manager::addVolume()
 }
 
 /// Insert a VertexUse at the specified \a uid.
-VertexUse Manager::insertVertexUse(const smtk::util::UUID& uid)
+VertexUse Manager::insertVertexUse(const UUID& uid)
 {
   return VertexUse(
     shared_from_this(),
@@ -1301,7 +1301,7 @@ VertexUse Manager::insertVertexUse(const smtk::util::UUID& uid)
 }
 
 /// Create a VertexUse with the specified \a uid and replace \a src's VertexUse.
-VertexUse Manager::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, int sense)
+VertexUse Manager::setVertexUse(const UUID& uid, const Vertex& src, int sense)
 {
   VertexUse vertUse = this->insertVertexUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1310,7 +1310,7 @@ VertexUse Manager::setVertexUse(const smtk::util::UUID& uid, const Vertex& src, 
 }
 
 /// Insert a EdgeUse at the specified \a uid.
-EdgeUse Manager::insertEdgeUse(const smtk::util::UUID& uid)
+EdgeUse Manager::insertEdgeUse(const UUID& uid)
 {
   return EdgeUse(
     shared_from_this(),
@@ -1318,7 +1318,7 @@ EdgeUse Manager::insertEdgeUse(const smtk::util::UUID& uid)
 }
 
 /// Create a EdgeUse with the specified \a uid and replace \a src's EdgeUse.
-EdgeUse Manager::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int sense, Orientation o)
+EdgeUse Manager::setEdgeUse(const UUID& uid, const Edge& src, int sense, Orientation o)
 {
   EdgeUse edgeUse = this->insertEdgeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1327,7 +1327,7 @@ EdgeUse Manager::setEdgeUse(const smtk::util::UUID& uid, const Edge& src, int se
 }
 
 /// Insert a FaceUse at the specified \a uid.
-FaceUse Manager::insertFaceUse(const smtk::util::UUID& uid)
+FaceUse Manager::insertFaceUse(const UUID& uid)
 {
   return FaceUse(
     shared_from_this(),
@@ -1335,7 +1335,7 @@ FaceUse Manager::insertFaceUse(const smtk::util::UUID& uid)
 }
 
 /// Create a FaceUse with the specified \a uid and replace \a src's FaceUse.
-FaceUse Manager::setFaceUse(const smtk::util::UUID& uid, const Face& src, int sense, Orientation o)
+FaceUse Manager::setFaceUse(const UUID& uid, const Face& src, int sense, Orientation o)
 {
   FaceUse faceUse = this->insertFaceUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1344,7 +1344,7 @@ FaceUse Manager::setFaceUse(const smtk::util::UUID& uid, const Face& src, int se
 }
 
 /// Insert a VolumeUse at the specified \a uid.
-VolumeUse Manager::insertVolumeUse(const smtk::util::UUID& uid)
+VolumeUse Manager::insertVolumeUse(const UUID& uid)
 {
   return VolumeUse(
     shared_from_this(),
@@ -1352,7 +1352,7 @@ VolumeUse Manager::insertVolumeUse(const smtk::util::UUID& uid)
 }
 
 /// Create a VolumeUse with the specified \a uid and replace \a src's VolumeUse.
-VolumeUse Manager::setVolumeUse(const smtk::util::UUID& uid, const Volume& src)
+VolumeUse Manager::setVolumeUse(const UUID& uid, const Volume& src)
 {
   VolumeUse volUse = this->insertVolumeUse(uid);
   this->findCreateOrReplaceCellUseOfSenseAndOrientation(
@@ -1441,7 +1441,7 @@ VolumeUse Manager::addVolumeUse(const Volume& src)
 }
 
 /// Insert a Chain at the specified \a uid.
-Chain Manager::insertChain(const smtk::util::UUID& uid)
+Chain Manager::insertChain(const UUID& uid)
 {
   return Chain(
     shared_from_this(),
@@ -1449,7 +1449,7 @@ Chain Manager::insertChain(const smtk::util::UUID& uid)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning edge-use.
-Chain Manager::setChain(const smtk::util::UUID& uid, const EdgeUse& use)
+Chain Manager::setChain(const UUID& uid, const EdgeUse& use)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
@@ -1457,7 +1457,7 @@ Chain Manager::setChain(const smtk::util::UUID& uid, const EdgeUse& use)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning chain.
-Chain Manager::setChain(const smtk::util::UUID& uid, const Chain& parent)
+Chain Manager::setChain(const UUID& uid, const Chain& parent)
 {
   Chain chain = this->insertChain(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1466,7 +1466,7 @@ Chain Manager::setChain(const smtk::util::UUID& uid, const Chain& parent)
 
 
 /// Insert a Loop at the specified \a uid.
-Loop Manager::insertLoop(const smtk::util::UUID& uid)
+Loop Manager::insertLoop(const UUID& uid)
 {
   return Loop(
     shared_from_this(),
@@ -1474,7 +1474,7 @@ Loop Manager::insertLoop(const smtk::util::UUID& uid)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning face-use.
-Loop Manager::setLoop(const smtk::util::UUID& uid, const FaceUse& use)
+Loop Manager::setLoop(const UUID& uid, const FaceUse& use)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
@@ -1482,7 +1482,7 @@ Loop Manager::setLoop(const smtk::util::UUID& uid, const FaceUse& use)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning loop.
-Loop Manager::setLoop(const smtk::util::UUID& uid, const Loop& parent)
+Loop Manager::setLoop(const UUID& uid, const Loop& parent)
 {
   Loop loop = this->insertLoop(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1491,7 +1491,7 @@ Loop Manager::setLoop(const smtk::util::UUID& uid, const Loop& parent)
 
 
 /// Insert a Shell at the specified \a uid.
-Shell Manager::insertShell(const smtk::util::UUID& uid)
+Shell Manager::insertShell(const UUID& uid)
 {
   return Shell(
     shared_from_this(),
@@ -1499,7 +1499,7 @@ Shell Manager::insertShell(const smtk::util::UUID& uid)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning volume-use.
-Shell Manager::setShell(const smtk::util::UUID& uid, const VolumeUse& use)
+Shell Manager::setShell(const UUID& uid, const VolumeUse& use)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(use.entity(), uid);
@@ -1507,7 +1507,7 @@ Shell Manager::setShell(const smtk::util::UUID& uid, const VolumeUse& use)
 }
 
 /// Find or add a chain to the manager with a relationship back to its owning shell.
-Shell Manager::setShell(const smtk::util::UUID& uid, const Shell& parent)
+Shell Manager::setShell(const UUID& uid, const Shell& parent)
 {
   Shell shell = this->insertShell(uid);
   this->findOrAddIncludedShell(parent.entity(), uid);
@@ -1624,7 +1624,7 @@ Shell Manager::addShell(const VolumeUse& v)
   * name is assigned.
   */
 GroupEntity Manager::insertGroup(
-  const smtk::util::UUID& uid, int extraFlags, const std::string& groupName)
+  const UUID& uid, int extraFlags, const std::string& groupName)
 {
   UUIDWithEntity result =
     this->setEntityOfTypeAndDimension(uid, GROUP_ENTITY | extraFlags, -1);
@@ -1640,7 +1640,7 @@ GroupEntity Manager::insertGroup(
 /// Add a group, creating a new UUID in the process. \sa insertGroup().
 GroupEntity Manager::addGroup(int extraFlags, const std::string& groupName)
 {
-  smtk::util::UUID uid = this->unusedUUID();
+  UUID uid = this->unusedUUID();
   return this->insertGroup(uid, extraFlags, groupName);
 }
 
@@ -1663,7 +1663,7 @@ GroupEntity Manager::addGroup(int extraFlags, const std::string& groupName)
   * relationships) may have these numbers assigned as names by calling assignDefaultNames().
   */
 ModelEntity Manager::insertModel(
-  const smtk::util::UUID& uid,
+  const UUID& uid,
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
   UUIDWithEntity result =
@@ -1688,7 +1688,7 @@ ModelEntity Manager::insertModel(
 ModelEntity Manager::addModel(
   int parametricDim, int embeddingDim, const std::string& modelName)
 {
-  smtk::util::UUID uid = this->unusedUUID();
+  UUID uid = this->unusedUUID();
   return this->insertModel(uid, parametricDim, embeddingDim, modelName);
 }
 
@@ -1700,7 +1700,7 @@ ModelEntity Manager::addModel(
   */
 InstanceEntity Manager::addInstance()
 {
-  smtk::util::UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
+  UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
   return InstanceEntity(shared_from_this(), uid);
 }
 
@@ -1715,7 +1715,7 @@ InstanceEntity Manager::addInstance(const Cursor& object)
 {
   if (object.isValid())
     {
-    smtk::util::UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
+    UUID uid = this->addEntityOfTypeAndDimension(INSTANCE_ENTITY, -1);
     int iidx = this->findEntity(object.entity())->findOrAppendRelation(uid);
     int oidx = this->findEntity(uid)->findOrAppendRelation(object.entity());
     this->arrangeEntity(uid, INSTANCE_OF, Arrangement::InstanceInstanceOfWithIndex(oidx));

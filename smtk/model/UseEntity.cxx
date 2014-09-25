@@ -36,7 +36,7 @@ Orientation UseEntity::orientation() const
     {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
-    smtk::util::UUID cellId = ent->relations()[idx];
+    smtk::common::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
     int arrIdx = this->m_manager->findCellHasUseWithSense(cellId, esense);
     if (arrIdx >= 0)

@@ -7,7 +7,7 @@
 #  include "cgm_version.h"
 #endif
 #include "CubitAttrib.hpp"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 namespace smtk {
   namespace bridge {
@@ -48,7 +48,7 @@ public:
   virtual CubitSimpleAttrib* cubit_simple_attrib();
 #endif
 
-  smtk::util::UUID entityId() const;
+  smtk::common::UUID entityId() const;
 
   static CubitStatus actuate_all();
 
@@ -59,7 +59,7 @@ protected:
   static CubitAttrib* creator(RefEntity*, CubitSimpleAttrib*);
 #endif
 
-  smtk::util::UUID m_entityId;
+  smtk::common::UUID m_entityId;
 };
 
 } // namespace cgm

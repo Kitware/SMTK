@@ -19,12 +19,10 @@ set(modelSrcs
   Entity.cxx
   EntityListPhrase.cxx
   EntityPhrase.cxx
-  ExportJSON.cxx
   Face.cxx
   FaceUse.cxx
   GroupEntity.cxx
   GridInfo.cxx
-  ImportJSON.cxx
   InstanceEntity.cxx
   Loop.cxx
   ModelEntity.cxx
@@ -68,13 +66,11 @@ set(modelHeaders
   EntityPhrase.h
   EntityTypeBits.h
   Events.h
-  ExportJSON.h
   Face.h
   FaceUse.h
   FloatData.h
   GridInfo.h
   GroupEntity.h
-  ImportJSON.h
   InstanceEntity.h
   IntegerData.h
   Loop.h

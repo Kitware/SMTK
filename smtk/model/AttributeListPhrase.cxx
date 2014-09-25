@@ -43,7 +43,7 @@ std::string AttributeListPhrase::subtitle()
   return std::string();
 }
 
-smtk::util::UUID AttributeListPhrase::relatedEntityId() const
+smtk::common::UUID AttributeListPhrase::relatedEntityId() const
 {
   return this->m_entity.entity();
 }

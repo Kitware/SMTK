@@ -10,7 +10,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include "CGMApp.hpp"
 #include "DagType.hpp"
@@ -34,12 +34,12 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
+smtk::common::UUIDArray ImportSolid::fromFilenameIntoManager(
   const std::string& filename,
   const std::string& filetype,
   smtk::model::ManagerPtr manager)
 {
-  smtk::util::UUIDArray result;
+  smtk::common::UUIDArray result;
   smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   std::string engine = "OCC";
   if (filetype == "FACET_TYPE") engine = "FACET";
@@ -81,7 +81,7 @@ smtk::util::UUIDArray ImportSolid::fromFilenameIntoManager(
     {
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
-    smtk::util::UUID entId = refId->entityId();
+    smtk::common::UUID entId = refId->entityId();
     Cursor smtkEntry(manager, entId);
     if (bridge->transcribe(smtkEntry, BRIDGE_EVERYTHING, false))
       result.push_back(smtkEntry.entity());

@@ -320,7 +320,7 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   * context. (Other methods create and interpret arrangements in
   * specific circumstances where the context is known.)
   */
-bool Arrangement::relations(smtk::util::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
+bool Arrangement::relations(smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
 {
   if (!ent) return false;
   switch (ent->entityFlags() & ENTITY_MASK)

@@ -22,7 +22,7 @@
 
 using smtk::shared_ptr;
 using namespace smtk::model;
-using namespace smtk::util;
+using namespace smtk::common;
 
 int main(int argc, char* argv[])
 {

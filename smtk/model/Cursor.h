@@ -3,8 +3,11 @@
 /*! \file */
 
 #include "smtk/SMTKCoreExports.h" // For EXPORT macro.
-#include "smtk/util/SystemConfig.h" // For type macros.
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
+#include "smtk/SystemConfig.h" // For type macros.
+
+#include "smtk/common/UUID.h"
+
 #include "smtk/model/Arrangement.h" // for ArrangementKind and Arrangements types
 #include "smtk/model/AttributeAssignments.h" // for BitFlags type
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
@@ -13,8 +16,6 @@
 #include "smtk/model/IntegerData.h" // for Integer, IntegerData, ...
 #include "smtk/model/PropertyType.h" // for PropertyType
 #include "smtk/model/StringData.h" // for String, StringData, ...
-
-#include "smtk/util/UUID.h"
 
 #include <iostream>
 #include <set>
@@ -26,7 +27,7 @@
   thisclass () {} \
   thisclass (const Cursor& other) \
     : superclass(other) {} \
-  thisclass (ManagerPtr inManager, const smtk::util::UUID& entityId) \
+  thisclass (ManagerPtr inManager, const smtk::common::UUID& entityId) \
     : superclass(inManager, entityId) {} \
   bool isValid() const { return this->Cursor::isValid(); } \
   virtual bool isValid(Entity** entRec) const \
@@ -68,14 +69,14 @@ class SMTKCORE_EXPORT Cursor
 public:
   SMTK_BASE_TYPE(Cursor);
   Cursor();
-  Cursor(ManagerPtr manager, const smtk::util::UUID& entityId);
+  Cursor(ManagerPtr manager, const smtk::common::UUID& entityId);
 
   bool setManager(ManagerPtr manager);
   ManagerPtr manager();
   const ManagerPtr manager() const;
 
-  bool setEntity(const smtk::util::UUID& entityId);
-  const smtk::util::UUID& entity() const;
+  bool setEntity(const smtk::common::UUID& entityId);
+  const smtk::common::UUID& entity() const;
 
   int dimension() const;
   int dimensionBits() const;
@@ -202,7 +203,7 @@ public:
 
 protected:
   ManagerPtr m_manager;
-  smtk::util::UUID m_entity;
+  smtk::common::UUID m_entity;
 
   // When embedding/unembedding, this method determines the relationship type
   // based on the entities involved.

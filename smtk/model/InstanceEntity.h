@@ -16,8 +16,8 @@ public:
 
   Cursor prototype() const;
 
-  // InstanceEntity& setTransform(const smtk::util::Matrix4d&);
-  // smtk::util::Matrix4d transform() const;
+  // InstanceEntity& setTransform(const smtk::common::Matrix4d&);
+  // smtk::common::Matrix4d transform() const;
 };
 
 typedef std::vector<InstanceEntity> InstanceEntities;

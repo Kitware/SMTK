@@ -4,12 +4,12 @@
 
 //#include "smtk/Function.h" // for smtk::function<>
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/AutoInit.h"
 
 #include "smtk/model/Events.h"
 
-#include "smtk/util/AutoInit.h"
-#include "smtk/util/SharedFromThis.h"
 
 #include <string>
 

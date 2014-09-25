@@ -4,9 +4,8 @@
 #include "smtk/model/Bridge.h"
 
 namespace smtk {
+  namespace io { class ImportJSON; }
   namespace model {
-
-class ImportJSON;
 
 /**\brief A bridge that does no transcription.
   *
@@ -52,7 +51,7 @@ public:
 
   void backsRemoteBridge(
     const std::string& remoteBridgeName,
-    const smtk::util::UUID& bridgeSessionId);
+    const smtk::common::UUID& bridgeSessionId);
   virtual std::string remoteName() const;
   virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
 
@@ -70,7 +69,6 @@ protected:
   void setImportingOperators(bool isImporting);
 
   std::string m_remoteBridgeName;
-  bool m_importingOperators;
 };
 
   } // namespace model

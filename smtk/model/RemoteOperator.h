@@ -1,7 +1,7 @@
 #ifndef __smtk_model_RemoteOperator_h
 #define __smtk_model_RemoteOperator_h
 
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/model/Operator.h"
 
 #include <string>

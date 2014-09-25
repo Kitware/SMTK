@@ -223,7 +223,7 @@ vtkSelection* vtkModelRepresentation::ConvertSelection(vtkView* view, vtkSelecti
           vtkIdType jj = 0;
           for (vtkIdType ii = 0; ii < uuids->GetNumberOfValues(); ++ii)
             {
-            smtk::util::UUID uid(uuids->GetValue(ii));
+            smtk::common::UUID uid(uuids->GetValue(ii));
             smtk::model::Entity* entity = this->Model->findEntity(uid);
             bool keepId = true;
             if (entity && (entity->entityFlags() & this->SelectionMask) == 0)

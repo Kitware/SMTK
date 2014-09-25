@@ -9,8 +9,8 @@ using namespace smtk::model;
 using namespace remus::meshtypes;
 using namespace remus::proto;
 
+#include "smtk/AutoInit.h"
 #include "smtk/options.h"
-#include "smtk/util/AutoInit.h"
 
 #ifdef SMTK_BUILD_CGM
 smtkComponentInitMacro(smtk_cgm_bridge);

@@ -4,7 +4,7 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"

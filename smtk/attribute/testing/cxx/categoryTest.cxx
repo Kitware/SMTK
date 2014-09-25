@@ -30,8 +30,9 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/DoubleItemDefinition.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/util/Logger.h"
-#include "smtk/util/XmlV2StringWriter.h"
+
+#include "smtk/io/Logger.h"
+#include "smtk/io/XmlV2StringWriter.h"
 
 #include <iostream>
 
@@ -171,8 +172,8 @@ int main()
         }
       }
     }
-  smtk::util::Logger logger;
-  smtk::util::XmlV2StringWriter writer(manager);
+  smtk::io::Logger logger;
+  smtk::io::XmlV2StringWriter writer(manager);
   std::cout << writer.convertToString(logger) << std::endl;
   if (logger.hasErrors())
     {

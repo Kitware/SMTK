@@ -1,3 +1,9 @@
+#include "smtk/options.h"
+#include "smtk/AutoInit.h"
+
+#include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -11,31 +17,21 @@
 
 #include "smtk/model/Bridge.h"
 #include "smtk/model/DefaultBridge.h"
-#include "smtk/model/ExportJSON.h"
-#include "smtk/model/ImportJSON.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/util/AutoInit.h"
-
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
-
-#include "smtk/options.h"
 
 #include "cJSON.h"
 
 #include "unitForwardingOperator_xml.h"
 
+using namespace smtk::common;
 using namespace smtk::model;
-using smtk::util::UUID;
-using smtk::util::UUIDs;
-using smtk::util::UUIDGenerator;
-using smtk::model::FloatList;
-using smtk::model::StringList;
-using smtk::model::IntegerList;
+using namespace smtk::io;
 
 namespace {
 
@@ -280,7 +276,7 @@ int main()
     smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
 
     // The default bridge of the "remote" manager:
-    Bridge::Ptr remoteBridge = remoteMgr->bridgeForModel(smtk::util::UUID::null());
+    Bridge::Ptr remoteBridge = remoteMgr->bridgeForModel(UUID::null());
     printBridgeOperatorNames(remoteBridge, "remote");
 
     // Now we want to mirror the remote manager locally.
@@ -352,9 +348,9 @@ int main()
       danglers.insert(ugen.random());
     localBridge->addSomeRemoteDanglers(danglers);
     cJSON* jsonDanglers = cJSON_CreateObject();
-    smtk::model::ExportJSON::forDanglingEntities(remoteBridge->sessionId(), jsonDanglers, remoteMgr);
+    smtk::io::ExportJSON::forDanglingEntities(remoteBridge->sessionId(), jsonDanglers, remoteMgr);
     //std::cout << "\n\n\n" << cJSON_Print(jsonDanglers) << "\n\n\n";
-    smtk::model::ImportJSON::ofDanglingEntities(jsonDanglers, localMgr);
+    smtk::io::ImportJSON::ofDanglingEntities(jsonDanglers, localMgr);
     test(localBridge->checkLocalDanglers(danglers, localMgr), "All generated danglers should have been serialized.");
 
   } catch (const std::string& msg) {

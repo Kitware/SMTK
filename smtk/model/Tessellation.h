@@ -1,8 +1,8 @@
 #ifndef __smtk_model_Tessellation_h
 #define __smtk_model_Tessellation_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
+#include "smtk/common/UUID.h"
 
 #include "sparsehash/sparse_hash_map"
 
@@ -53,8 +53,8 @@ protected:
   std::vector<int> m_conn;
 };
 
-typedef google::sparse_hash_map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
-typedef google::sparse_hash_map<smtk::util::UUID,Tessellation>::iterator UUIDWithTessellation;
+typedef google::sparse_hash_map<smtk::common::UUID,Tessellation> UUIDsToTessellations;
+typedef google::sparse_hash_map<smtk::common::UUID,Tessellation>::iterator UUIDWithTessellation;
 
   } // model namespace
 } // smtk namespace

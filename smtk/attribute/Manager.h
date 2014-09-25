@@ -27,7 +27,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_Manager_h
 #define __smtk_attribute_Manager_h
 
-#include "smtk/util/Resource.h"    // base class
+#include "smtk/common/Resource.h"    // base class
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -50,7 +50,7 @@ namespace smtk
   {
     class Attribute;
     class Definition;
-    class SMTKCORE_EXPORT Manager : public smtk::util::Resource
+    class SMTKCORE_EXPORT Manager : public smtk::common::Resource
     {
     public:
       enum CopyOptions
@@ -62,7 +62,7 @@ namespace smtk
       Manager();
       virtual ~Manager();
 
-      virtual smtk::util::Resource::Type resourceType() const;
+      virtual smtk::common::Resource::Type resourceType() const;
 
       smtk::attribute::DefinitionPtr createDefinition(const std::string &typeName,
                                                     const std::string &baseTypeName = "");

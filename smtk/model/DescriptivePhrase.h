@@ -1,7 +1,7 @@
 #ifndef __smtk_model_DescriptivePhrase_h
 #define __smtk_model_DescriptivePhrase_h
 
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/attribute/Attribute.h" // for AttributeId
 
@@ -87,7 +87,7 @@ public:
   int indexInParent() const;
 
   virtual Cursor relatedEntity() const                         { return Cursor(); }
-  virtual smtk::util::UUID relatedEntityId() const             { return this->relatedEntity().entity(); }
+  virtual smtk::common::UUID relatedEntityId() const           { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
   virtual smtk::attribute::AttributeId relatedAttributeId() const { return static_cast<smtk::attribute::AttributeId>(-1); }
   virtual std::string relatedPropertyName() const              { return std::string(); }

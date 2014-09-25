@@ -24,18 +24,22 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
-#include "smtk/model/Manager.h"
 #include "smtk/extension/qt/qtRootView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/util/AttributeReader.h"
-#include "smtk/util/AttributeWriter.h"
-#include "smtk/util/Logger.h"
+
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
+
 #include "smtk/view/Base.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/Root.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
+
+#include "smtk/model/Manager.h"
 
 #include <QApplication>
 #include <QFrame>
@@ -69,8 +73,8 @@ int main(int argc, char *argv[])
   smtk::attribute::Manager manager;
   char *inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
-  smtk::util::AttributeReader reader;
-  smtk::util::Logger inputLogger;
+  smtk::io::AttributeReader reader;
+  smtk::io::Logger inputLogger;
   bool  err = reader.read(manager, inputPath, true, inputLogger);
   if (err)
     {
@@ -232,8 +236,8 @@ int main(int argc, char *argv[])
     {
     char *outputPath = argv[2];
     std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
-    smtk::util::AttributeWriter writer;
-    smtk::util::Logger outputLogger;
+    smtk::io::AttributeWriter writer;
+    smtk::io::Logger outputLogger;
     bool  outputErr = writer.write(manager, outputPath, outputLogger);
     if (outputErr)
       {

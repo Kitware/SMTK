@@ -57,38 +57,38 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofLocalBridgeSession', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::ofOperatorResult', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerArrangement', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerEntity', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperatorResult', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::getStringArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::getUUIDArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerEntity', unmatched parameter type 'smtk::model::UUIDWithEntity&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerFloatProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerIntegerProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -100,11 +100,11 @@
   <suppress-warning text="skipping function 'smtk::model::BRepModel::BRepModel', unmatched parameter type 'shared_ptr&lt;smtk::model::BRepModel::storage_type&gt;'"/>
   <suppress-warning text="skipping field 'Manager::m_arrangements' with unmatched type 'shared_ptr&lt;UUIDsToArrangements&gt;'"/>
   <suppress-warning text="skipping field 'UUIDGenerator::P' with unmatched type 'Internal'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,BridgePtr&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::common::UUID,BridgePtr&gt;'"/>
 
   <!-- do not support input or output streams-->
-  <suppress-warning text="skipping function 'smtk::util::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::util::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::common::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
 
   <!-- do not support model property data (yet)-->
   <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>
@@ -259,11 +259,11 @@
   <suppress-warning text="skipping field 'Manager::m_oneToManyTriggers' with unmatched type 'std::set&lt;OneToManyTrigger&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::unobserve', unmatched parameter type 'smtk::model::OneToOneCallback'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_parent' with unmatched type 'smtk::weak_ptr&lt;smtk::model::DescriptivePhrase&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::util::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
+  <suppress-warning text="skipping function 'smtk::io::AttributeReader::readContents', unmatched parameter type 'pugi::xml_node&amp;'" />
   <suppress-warning text="skipping function 'smtk::model::Bridge::createIODelegate', unmatched return type 'smtk::model::BridgeIOPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
-  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_defaultBridge' with unmatched type 'smtk::shared_ptr&lt;Bridge&gt;'"/>
   <suppress-warning text="skipping field 'Bridge::m_operators' with unmatched type 'std::set&lt;smtk::model::OperatorPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
@@ -279,8 +279,8 @@
   <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::StaticBridgeInfo&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::bridgeConstructor', unmatched return type 'smtk::model::BridgeConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
-  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::util::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
+  <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
 
 
   <suppress-warning text="template argument 'smtk::attribute::UUIDItemDefinition' of 'shared_ptr&lt; smtk::attribute::UUIDItemDefinition &gt;' is not known; not adding redirections"/>
@@ -294,10 +294,10 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDirectory', unmatched return type 'smtk::attribute::ConstDirectoryItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperatorResult', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperatorDefinitions', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorDefinitions', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDouble', unmatched return type 'smtk::attribute::ConstDoubleItemPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::initializeOperatorManager', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
@@ -324,8 +324,8 @@
 
   <primitive-type name="std::size_t"/>
   <primitive-type name="std::string"/>
-  <primitive-type name="smtk::util::UUID" target-lang-api-name="PyObject">
-    <include file-name="smtk/util/UUID.h" location="global"/>
+  <primitive-type name="smtk::common::UUID" target-lang-api-name="PyObject">
+    <include file-name="smtk/common/UUID.h" location="global"/>
 
     <conversion-rule>
       <native-to-target>
@@ -595,7 +595,7 @@
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Item">
     <modify-function signature="setAdvanceLevel(int,int)" remove="all"/>
     <modify-function signature="unsetAdvanceLevel(int)" remove="all"/>
-    <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::util::UserData &gt; )"  remove="all"/>
+    <modify-function signature="setUserData(const std::string &amp;, smtk::shared_ptr&lt; smtk::simulation::UserData &gt; )"  remove="all"/>
     <modify-function signature="reset()" remove="all"/>
     <modify-function signature="detachOwningItem()" remove="all"/>
     <modify-function signature="detachOwningAttribute()" remove="all"/>
@@ -625,15 +625,15 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Manager">
-    <modify-function signature="arrangeEntity(smtk::util::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
+    <modify-function signature="arrangeEntity(smtk::common::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE result = %CPPSELF->get()->arrangeEntity(%1,%2,*%3,%4);
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](result);
       </inject-code>
     </modify-function>
-    <add-function signature="setTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
+    <add-function signature="setTessellation(smtk::common::UUID&amp;,smtk::model::Tessellation&amp;)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Tessellation&gt;">
       <inject-code>
         smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;get()-&gt;setTessellation(%1, %2);
         %RETURN_TYPE %0 = *i;
@@ -642,7 +642,7 @@
     </add-function>
     <!--
     <add-function signature="topology()"
-      return-type="google::sparse_hash_map&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="google::sparse_hash_map&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = %CPPSELF-&gt;get()-&gt;topology();
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -651,7 +651,7 @@
     -->
     <add-function signature="insertEntityOfTypeAndDimension(int, int)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;insertEntityOfTypeAndDimension(%1,%2));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -659,23 +659,23 @@
     </add-function>
     <add-function signature="insertEntity(smtk::model::Entity&amp;)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;insertEntity(%1));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
-    <add-function signature="setEntityOfTypeAndDimension(const smtk::util::UUID&amp;, int, int)"
+    <add-function signature="setEntityOfTypeAndDimension(const smtk::common::UUID&amp;, int, int)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;setEntityOfTypeAndDimension(%1,%2,%3));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
-    <add-function signature="setEntity(const smtk::util::UUID&amp;, smtk::model::Entity&amp;)"
+    <add-function signature="setEntity(const smtk::common::UUID&amp;, smtk::model::Entity&amp;)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;setEntity(%1,%2));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -683,15 +683,15 @@
     </add-function>
     <add-function signature="insertCellOfDimension(int)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;insertCellOfDimension(%1));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
       </inject-code>
     </add-function>
-    <add-function signature="setCellOfDimension(const smtk::util::UUID&amp;, int)"
+    <add-function signature="setCellOfDimension(const smtk::common::UUID&amp;, int)"
       static="NO"
-      return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+      return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
       <inject-code class="target" position="beginning">
         %RETURN_TYPE %0 = *(%CPPSELF-&gt;get()-&gt;setCellOfDimension(%1,%2));
         %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -798,10 +798,30 @@
   <value-type template="smtk::shared_ptr" args="smtk::view::Root" />
   <value-type template="smtk::shared_ptr" args="smtk::view::SimpleExpression" />
 
-  <value-type template="smtk::shared_ptr" args="smtk::util::Resource" />
-  <value-type template="smtk::shared_ptr" args="smtk::util::UserData" />
+  <value-type template="smtk::shared_ptr" args="smtk::common::Resource" />
+  <value-type template="smtk::shared_ptr" args="smtk::simulation::UserData" />
 
   <namespace-type name="smtk">
+    <namespace-type name="common">
+      <object-type name="Resource">
+        <include file-name="smtk/common/Resource.h" location="local" />
+        <enum-type name="Type" />
+      </object-type>
+
+      <!-- TODO Get ResourceSet wrappers to compile (Shiboken bug?) -->
+      <!--
+      <object-type name="ResourceSet">
+        <include file-name="smtk/common/ResourceSet.h" location="local" />
+        <enum-type name="ResourceState" />
+        <enum-type name="ResourceRole" />
+      </object-type>
+      -->
+
+      <object-type name="UUIDGenerator">
+        <include file-name="smtk/common/UUIDGenerator.h" location="local"/>
+      </object-type>
+    </namespace-type>
+
     <namespace-type name="model">
       <!-- setup the model classes -->
       <object-type name="BRepModel">
@@ -822,10 +842,6 @@
 
       <enum-type name="ArrangementKind">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
-      </enum-type>
-
-      <enum-type name="JSONFlags">
-        <include file-name="smtk/model/ExportJSON.h" location="local"/>
       </enum-type>
 
       <enum-type name="OperatorEventType">
@@ -995,14 +1011,6 @@
         <include file-name="smtk/model/Entity.h" location="local"/>
       </object-type>
 
-      <object-type name="ExportJSON">
-        <include file-name="smtk/model/ExportJSON.h" location="local"/>
-      </object-type>
-
-      <object-type name="ImportJSON">
-        <include file-name="smtk/model/ImportJSON.h" location="local"/>
-      </object-type>
-
       <object-type name="Arrangement">
         <include file-name="smtk/model/Arrangement.h" location="local"/>
         <modify-function signature="IndexSenseAndOrientationFromCellHasUse(int&amp;, int&amp;, smtk::model::Orientation&amp;) const">
@@ -1048,9 +1056,9 @@
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <add-function signature="setTessellation(smtk::util::UUID&amp;,smtk::model::Tessellation&amp;)"
+        <add-function signature="setTessellation(smtk::common::UUID&amp;,smtk::model::Tessellation&amp;)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Tessellation&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Tessellation&gt;">
           <inject-code>
             smtk::model::Manager::tess_iter_type i = %CPPSELF-&gt;setTessellation(%1, %2);
             %RETURN_TYPE %0 = *i;
@@ -1059,7 +1067,7 @@
         </add-function>
         <add-function signature="insertEntityOfTypeAndDimension(int, int)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;insertEntityOfTypeAndDimension(%1,%2));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -1067,23 +1075,23 @@
         </add-function>
         <add-function signature="insertEntity(smtk::model::Entity&amp;)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;insertEntity(%1));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <add-function signature="setEntityOfTypeAndDimension(const smtk::util::UUID&amp;, int, int)"
+        <add-function signature="setEntityOfTypeAndDimension(const smtk::common::UUID&amp;, int, int)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;setEntityOfTypeAndDimension(%1,%2,%3));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <add-function signature="setEntity(const smtk::util::UUID&amp;, smtk::model::Entity&amp;)"
+        <add-function signature="setEntity(const smtk::common::UUID&amp;, smtk::model::Entity&amp;)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;setEntity(%1,%2));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -1091,15 +1099,15 @@
         </add-function>
         <add-function signature="insertCellOfDimension(int)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;insertCellOfDimension(%1));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
-        <add-function signature="setCellOfDimension(const smtk::util::UUID&amp;, int)"
+        <add-function signature="setCellOfDimension(const smtk::common::UUID&amp;, int)"
           static="NO"
-          return-type="std::pair&lt;smtk::util::UUID,smtk::model::Entity&gt;">
+          return-type="std::pair&lt;smtk::common::UUID,smtk::model::Entity&gt;">
           <inject-code class="target" position="beginning">
             %RETURN_TYPE %0 = *(%CPPSELF-&gt;setCellOfDimension(%1,%2));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
@@ -1626,62 +1634,58 @@
 
     </namespace-type>
 
-    <namespace-type name="util">
-      <!-- setup the util classes -->
+    <namespace-type name="io">
+      <!-- setup the io classes -->
       <object-type name="AttributeReader">
-        <include file-name="smtk/util/AttributeReader.h" location="local"/>
+        <include file-name="smtk/io/AttributeReader.h" location="local"/>
       </object-type>
 
       <object-type name="AttributeWriter">
-        <include file-name="smtk/util/AttributeWriter.h" location="local"/>
+        <include file-name="smtk/io/AttributeWriter.h" location="local"/>
       </object-type>
 
+      <object-type name="ExportJSON">
+        <include file-name="smtk/io/ExportJSON.h" location="local"/>
+      </object-type>
+
+      <object-type name="ImportJSON">
+        <include file-name="smtk/io/ImportJSON.h" location="local"/>
+      </object-type>
+
+      <enum-type name="JSONFlags">
+        <include file-name="smtk/io/ExportJSON.h" location="local"/>
+      </enum-type>
+
+      <object-type name="Logger">
+        <include file-name="smtk/io/Logger.h" location="local"/>
+        <enum-type name="Severity"/>
+        <object-type name="Record" />
+      </object-type>
+    </namespace-type>
+
+    <namespace-type name="simulation">
       <object-type name="ExportSpec">
-        <include file-name="smtk/util/ExportSpec.h" location="local"/>
+        <include file-name="smtk/simulation/ExportSpec.h" location="local"/>
         <modify-function signature="clear()" access="private" />
         <modify-function signature="setSimulationAttributes(smtk::attribute::Manager*)" access="private" />
         <modify-function signature="setExportAttributes(smtk::attribute::Manager*)" access="private" />
         <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
         <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
           static="yes"
-          return-type="smtk::util::ExportSpec *">
+          return-type="smtk::simulation::ExportSpec *">
           <inject-code>
             unsigned long tadd;
             std::stringstream ss;
             ss &lt;&lt; std::hex &lt;&lt; %1;
             ss &gt;&gt; tadd;
-            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::util::ExportSpec * &gt;(tadd);
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::simulation::ExportSpec * &gt;(tadd);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
       </object-type>
 
-      <object-type name="Logger">
-        <include file-name="smtk/util/Logger.h" location="local"/>
-        <enum-type name="Severity"/>
-        <object-type name="Record" />
-      </object-type>
-
-      <object-type name="Resource">
-        <include file-name="smtk/util/Resource.h" location="local" />
-        <enum-type name="Type" />
-      </object-type>
-
-      <!-- TODO Get ResourceSet wrappers to compile (Shiboken bug?) -->
-      <!--
-      <object-type name="ResourceSet">
-        <include file-name="smtk/util/ResourceSet.h" location="local" />
-        <enum-type name="ResourceState" />
-        <enum-type name="ResourceRole" />
-      </object-type>
-      -->
-
       <object-type name="UserData">
-        <include file-name="smtk/util/UserData.h" location="local" />
-      </object-type>
-
-      <object-type name="UUIDGenerator">
-        <include file-name="smtk/util/UUIDGenerator.h" location="local"/>
+        <include file-name="smtk/simulation/UserData.h" location="local" />
       </object-type>
     </namespace-type>
 

@@ -27,7 +27,7 @@
 
 using smtk::shared_ptr;
 using namespace smtk::model;
-using namespace smtk::util;
+using namespace smtk::common;
 
 void applyPublicationTheme(vtkModelView* view)
 {
@@ -142,7 +142,7 @@ public:
             {
             cout
               << indent << *it << "  "
-              << (this->Manager ? this->Manager->name(smtk::util::UUID(*it)) : "--")
+              << (this->Manager ? this->Manager->name(smtk::common::UUID(*it)) : "--")
               << "\n";
             }
           }

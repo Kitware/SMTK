@@ -1,6 +1,6 @@
 #include "smtk/model/Manager.h"
-#include "smtk/model/ExportJSON.h"
-#include "smtk/model/ImportJSON.h"
+#include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include "cJSON.h"
@@ -8,9 +8,10 @@
 #include <iostream>
 #include <fstream>
 
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 
 int main(int argc, char* argv[])
 {

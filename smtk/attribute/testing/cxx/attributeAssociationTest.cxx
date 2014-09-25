@@ -7,10 +7,10 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 
 using namespace smtk::attribute;
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk;
 
 int main()

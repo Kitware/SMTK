@@ -28,75 +28,21 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_PublicPointerDefs_h
 
 #include "smtk/SharedPtr.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
 #include <map>
 #include <set>
 #include <vector>
 
 namespace smtk
 {
-  namespace model
+  namespace common
   {
-    class Arrangement;
-    class ArrangementReference;
-    typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
-    class AttributeListPhrase;
-    typedef std::vector<smtk::model::Arrangement> Arrangements;
-    class BRepModel;
-    class Bridge;
-    class BridgeIO;
-    class BridgeIOJSON;
-    class CellEntity;
-    class Chain;
-    typedef std::vector<smtk::model::Chain> Chains;
-    class Cursor;
-    typedef std::set<smtk::model::Cursor> Cursors;
-    typedef std::vector<smtk::model::Cursor> CursorArray;
-    class DefaultBridge;
-    class DescriptivePhrase;
-    class Edge;
-    typedef std::vector<smtk::model::Edge> Edges;
-    class EdgeUse;
-    typedef std::vector<smtk::model::EdgeUse> EdgeUses;
-    class EntityPhrase;
-    class EntityListPhrase;
-    class Face;
-    typedef std::vector<smtk::model::Face> Faces;
-    class FaceUse;
-    typedef std::vector<smtk::model::FaceUse> FaceUses;
-    class ExportJSON;
-    class GridInfo;
-    class GridInfo2D;
-    class GridInfo3D;
-    class GroupEntity;
-    class InstanceEntity;
-    class ImportJSON;
-    class Loop;
-    typedef std::vector<smtk::model::Loop> Loops;
-    class Entity;
-    class ModelEntity;
-    class Operator;
-    class PropertyValuePhrase;
-    class PropertyListPhrase;
-    class RemoteOperator;
-    class Shell;
-    typedef std::vector<smtk::model::Shell> Shells;
-    class ShellEntity;
-    typedef std::vector<smtk::model::ShellEntity> ShellEntities;
-    class Manager;
-    class SimpleModelSubphrases;
-    class SubphraseGenerator;
-    class Tessellation;
-    class UseEntity;
-    typedef std::vector<smtk::model::UseEntity> UseEntities;
-    class Vertex;
-    typedef std::vector<smtk::model::Vertex> Vertices;
-    class VertexUse;
-    typedef std::vector<smtk::model::VertexUse> VertexUses;
-    class Volume;
-    typedef std::vector<smtk::model::Volume> Volumes;
-    class VolumeUse;
-    typedef std::vector<smtk::model::VolumeUse> VolumeUses;
+    class Resource;
+    class ResourceSet;
+    class UUID;
+    class UUIDGenerator;
+    typedef std::set<UUID> UUIDs;
+    typedef std::vector<UUID> UUIDArray;
   }
 
   namespace attribute
@@ -129,14 +75,78 @@ namespace smtk
     class VoidItemDefinition;
   }
 
-  namespace util
+  namespace model
   {
-    class Resource;
+    class Arrangement;
+    class ArrangementReference;
+    typedef std::vector<smtk::model::ArrangementReference> ArrangementReferences;
+    class AttributeListPhrase;
+    typedef std::vector<smtk::model::Arrangement> Arrangements;
+    class BRepModel;
+    class Bridge;
+    class BridgeIO;
+    class BridgeIOJSON;
+    class CellEntity;
+    class Chain;
+    typedef std::vector<smtk::model::Chain> Chains;
+    class Cursor;
+    typedef std::set<smtk::model::Cursor> Cursors;
+    typedef std::vector<smtk::model::Cursor> CursorArray;
+    class DefaultBridge;
+    class DescriptivePhrase;
+    class Edge;
+    typedef std::vector<smtk::model::Edge> Edges;
+    class EdgeUse;
+    typedef std::vector<smtk::model::EdgeUse> EdgeUses;
+    class EntityPhrase;
+    class EntityListPhrase;
+    class Face;
+    typedef std::vector<smtk::model::Face> Faces;
+    class FaceUse;
+    typedef std::vector<smtk::model::FaceUse> FaceUses;
+    class GridInfo;
+    class GridInfo2D;
+    class GridInfo3D;
+    class GroupEntity;
+    class InstanceEntity;
+    class Loop;
+    typedef std::vector<smtk::model::Loop> Loops;
+    class Entity;
+    class ModelEntity;
+    class Operator;
+    class PropertyValuePhrase;
+    class PropertyListPhrase;
+    class RemoteOperator;
+    class Shell;
+    typedef std::vector<smtk::model::Shell> Shells;
+    class ShellEntity;
+    typedef std::vector<smtk::model::ShellEntity> ShellEntities;
+    class Manager;
+    class SimpleModelSubphrases;
+    class SubphraseGenerator;
+    class Tessellation;
+    class UseEntity;
+    typedef std::vector<smtk::model::UseEntity> UseEntities;
+    class Vertex;
+    typedef std::vector<smtk::model::Vertex> Vertices;
+    class VertexUse;
+    typedef std::vector<smtk::model::VertexUse> VertexUses;
+    class Volume;
+    typedef std::vector<smtk::model::Volume> Volumes;
+    class VolumeUse;
+    typedef std::vector<smtk::model::VolumeUse> VolumeUses;
+  }
+
+  namespace simulation
+  {
+    class ExportSpec;
     class UserData;
-    class UUID;
-    class UUIDGenerator;
-    typedef std::set<UUID> UUIDs;
-    typedef std::vector<UUID> UUIDArray;
+  }
+
+  namespace io
+  {
+    class ExportJSON;
+    class ImportJSON;
   }
 
   namespace view
@@ -148,6 +158,11 @@ namespace smtk
     class ModelEntity;
     class Root;
     class SimpleExpression;
+  }
+
+  namespace common
+  {
+    typedef smtk::shared_ptr< smtk::common::Resource > ResourcePtr;
   };
 
   //Shiboken requires that we use fully qualified namespaces for all
@@ -156,7 +171,7 @@ namespace smtk
   {
     // Model Related Pointer Classes
     typedef smtk::shared_ptr< smtk::model::Bridge >                BridgePtr;
-    typedef std::map<smtk::util::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
+    typedef std::map<smtk::common::UUID, smtk::shared_ptr< smtk::model::Bridge > > UUIDsToBridges;
     typedef smtk::shared_ptr< smtk::model::DefaultBridge >         DefaultBridgePtr;
     typedef smtk::shared_ptr< smtk::model::BridgeIO >              BridgeIOPtr;
     typedef smtk::shared_ptr< smtk::model::BridgeIOJSON >          BridgeIOJSONPtr;
@@ -254,13 +269,11 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::Manager >   ManagerPtr;
   };
 
-
-
-  namespace util
+  namespace simulation
   {
     //custom user data classes
-    typedef smtk::shared_ptr< smtk::util::Resource > ResourcePtr;
-    typedef smtk::shared_ptr< smtk::util::UserData > UserDataPtr;
+    typedef smtk::shared_ptr< smtk::simulation::ExportSpec > ExportSpecPtr;
+    typedef smtk::shared_ptr< smtk::simulation::UserData > UserDataPtr;
   };
 
   namespace view

@@ -44,7 +44,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
-  namespace util { class UUID; }
+  namespace common { class UUID; }
   namespace attribute
   {
 

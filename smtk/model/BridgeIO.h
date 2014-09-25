@@ -3,7 +3,7 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 
 namespace smtk {
   namespace model {

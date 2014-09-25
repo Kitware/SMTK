@@ -26,10 +26,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef _qtModelView_h
 #define _qtModelView_h
 
-#include <QTreeView>
 #include "smtk/extension/qt/QtSMTKExports.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
-#include "smtk/util/UUID.h"
+
+#include "smtk/common/UUID.h"
+
+#include <QTreeView>
 
 class QDropEvent;
 
@@ -56,7 +58,7 @@ public slots:
   virtual void removeSelected();
 
 signals:
-  void entitiesSelected(const smtk::util::UUIDs& ids);
+  void entitiesSelected(const smtk::common::UUIDs& ids);
 
 protected:
 
@@ -75,12 +77,12 @@ protected:
   virtual void selectionHelper(
   QEntityItemModel* qmodel,
     const QModelIndex& parent,
-    const smtk::util::UUIDs& selEntities,
+    const smtk::common::UUIDs& selEntities,
     QItemSelection& selItems);
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
   void recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::util::UUIDs& ids, BitFlags entityFlags);
+    smtk::common::UUIDs& ids, BitFlags entityFlags);
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
 };

@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_bridge_cgm_PointerDefs_h
 
 #include "smtk/SharedPtr.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
 
 namespace smtk
 {  //bridge relates pointer classes

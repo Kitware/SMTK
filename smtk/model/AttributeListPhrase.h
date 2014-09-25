@@ -28,7 +28,7 @@ public:
   virtual std::string title();
   virtual std::string subtitle();
 
-  virtual smtk::util::UUID relatedEntityId() const;
+  virtual smtk::common::UUID relatedEntityId() const;
   virtual Cursor relatedEntity() const;
 
 protected:

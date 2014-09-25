@@ -26,7 +26,7 @@ def __import_shared_ptrs__():
   def __make_clean_name(name,obj):
 
     #known classes with the same name between the modules
-    known_clashes = ("Item")
+    known_clashes = ("Manager", "Item")
 
     #split the name so we will have
     #[shared_ptr, smtk, model/atribute, name]
@@ -62,9 +62,11 @@ import shiboken
 _temp = __import__('SMTKCorePython', globals(), locals(), [], -1)
 __import_shared_ptrs__()
 
-model = _temp.smtk.model
+common = _temp.smtk.common
 attribute = _temp.smtk.attribute
-util = _temp.smtk.util
+model = _temp.smtk.model
+simulation = _temp.smtk.simulation
+io = _temp.smtk.io
 view = _temp.smtk.view
 
 attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attribute.RefItemDefinition),
@@ -143,25 +145,25 @@ def _Debug( self, message ):
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(io.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
 
 def _Error( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(io.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
 
 def _Warn( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(util.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(io.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
 
-util.Logger.addDebug = _Debug
-util.Logger.addWarning = _Warn
-util.Logger.addError = _Error
+io.Logger.addDebug = _Debug
+io.Logger.addWarning = _Warn
+io.Logger.addError = _Error
 
 del _Debug
 del _Warn
