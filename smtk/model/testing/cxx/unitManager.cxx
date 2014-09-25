@@ -4,7 +4,7 @@
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/model/testing/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 #include <smtk/util/testing/cxx/helpers.h>
 
 #include "cJSON.h"

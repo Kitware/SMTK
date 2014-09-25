@@ -69,11 +69,6 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/smtk.py"
                  "${SMTK_BINARY_DIR}/smtk.py" @ONLY)
 
-  if(SMTK_ENABLE_TESTING)
-    get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
-    add_subdirectory(model/PythonTesting)
-  endif(SMTK_ENABLE_TESTING)
-
   #todo we need to install this file in such a way that it can resolve
   #the location of shiboken, which is going to mean running fixup bundle
   #on the mac, and than fixing up the smtk.py package script

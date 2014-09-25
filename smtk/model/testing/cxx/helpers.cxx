@@ -13,7 +13,7 @@
 
 #include "smtk/model/DescriptivePhrase.h"
 
-#include "smtk/model/testing/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include <iomanip>
 

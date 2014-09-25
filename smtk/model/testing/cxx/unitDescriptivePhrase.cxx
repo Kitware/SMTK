@@ -5,7 +5,7 @@
 
 #include "smtk/model/ImportJSON.h"
 
-#include "smtk/model/testing/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include <fstream>
 #include <iostream>

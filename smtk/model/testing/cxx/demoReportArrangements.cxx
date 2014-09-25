@@ -7,7 +7,7 @@
 #include "smtk/model/UseEntity.h"
 #include "smtk/model/Vertex.h"
 
-#include "smtk/model/testing/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include <fstream>
 #include <string>

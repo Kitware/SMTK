@@ -13,7 +13,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/util/testing/cxx/helpers.h"
-#include "smtk/model/testing/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include "smtk/options.h"
 
