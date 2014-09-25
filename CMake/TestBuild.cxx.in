@@ -1,6 +1,0 @@
-#include <@dir_prefix@/@header@>
-
-int testBuild_@headername@()
-{
-  return 0;
-}
