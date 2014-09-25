@@ -143,8 +143,8 @@ if (SMTK_USE_SYSTEM_SPARSEHASH)
   pkg_check_modules(SPARSEHASH ${SYSTEM_SPARSEHASH_REQUIRED} libsparsehash)
 else()
   set(SPARSEHASH_INCLUDE_DIRS
-    "${SMTK_SOURCE_DIR}/ThirdParty"
-    "${SMTK_BINARY_DIR}/ThirdParty")
+    "${SMTK_SOURCE_DIR}/thirdparty"
+    "${SMTK_BINARY_DIR}/thirdparty")
 endif()
 
 ################################################################################
@@ -239,7 +239,7 @@ install(
 # Build third party libraries
 ################################################################################
 
-add_subdirectory(ThirdParty)
+add_subdirectory(thirdparty)
 
 ################################################################################
 # Include Dirs Settings
@@ -252,8 +252,8 @@ include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
   "${SPARSEHASH_INCLUDE_DIRS}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/cJSON"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/pugixml"
+  "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cJSON"
+  "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/pugixml"
   "${Boost_INCLUDE_DIRS}"
 )
 

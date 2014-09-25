@@ -369,8 +369,8 @@ if __name__ == '__main__':
         print
         print 'Sorry, cannot run because python yaml module was not found.'
         print 'Either install PyYaml or set PYTHONPATH to include PyYaml.'
-        print 'Note that PyYaml is available in the SMTK ThirdParty folder.'
-        print 'e.g. \"export PYTHONPATH=/path-to-SMTK/ThirdParty/PyYaml\"'
+        print 'Note that PyYaml is available in the SMTK thirdparty folder.'
+        print 'e.g. \"export PYTHONPATH=/path-to-SMTK/thirdparty/PyYaml\"'
         print
         sys.exit(-2)
 

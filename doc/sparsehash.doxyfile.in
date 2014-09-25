@@ -669,15 +669,15 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/dense_hash_map" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/dense_hash_set" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/sparse_hash_map" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/sparse_hash_set" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/sparsetable" \
-  "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash/internal" \
-  "@SMTK_BINARY_DIR@/ThirdParty/sparsehash" \
-  "@SMTK_BINARY_DIR@/ThirdParty/sparsehash/internal"
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/dense_hash_map" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/dense_hash_set" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/sparse_hash_map" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/sparse_hash_set" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/sparsetable" \
+  "@SMTK_SOURCE_DIR@/thirdparty/sparsehash/internal" \
+  "@SMTK_BINARY_DIR@/thirdparty/sparsehash" \
+  "@SMTK_BINARY_DIR@/thirdparty/sparsehash/internal"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
