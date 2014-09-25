@@ -106,7 +106,7 @@
         This is a simple example of saving XML document to file (<a href="../samples/save_file.cpp" target="_top">samples/save_file.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// save document to file
 </span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Saving result: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">save_file</span><span class="special">(</span><span class="string">"save_file_output.xml"</span><span class="special">)</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
@@ -153,7 +153,7 @@
         This is a simple example of saving XML document to standard output (<a href="../samples/save_stream.cpp" target="_top">samples/save_stream.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// save document to standard output
 </span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Document:\n"</span><span class="special">;</span>
@@ -203,7 +203,7 @@
         read the sample code for more complex examples:
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">xml_string_writer</span><span class="special">:</span> <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_writer</span>
 <span class="special">{</span>
@@ -246,7 +246,7 @@
         illustrates the difference:
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// get a test document
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span> <span class="identifier">doc</span><span class="special">;</span>
@@ -374,7 +374,7 @@
         This is an example that shows the outputs of different output options (<a href="../samples/save_options.cpp" target="_top">samples/save_options.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// get a test document
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span> <span class="identifier">doc</span><span class="special">;</span>
@@ -493,7 +493,7 @@
         This is an example that shows how to create a custom declaration node (<a href="../samples/save_declaration.cpp" target="_top">samples/save_declaration.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// get a test document
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span> <span class="identifier">doc</span><span class="special">;</span>
@@ -505,7 +505,7 @@
 <span class="identifier">decl</span><span class="special">.</span><span class="identifier">append_attribute</span><span class="special">(</span><span class="string">"encoding"</span><span class="special">)</span> <span class="special">=</span> <span class="string">"UTF-8"</span><span class="special">;</span>
 <span class="identifier">decl</span><span class="special">.</span><span class="identifier">append_attribute</span><span class="special">(</span><span class="string">"standalone"</span><span class="special">)</span> <span class="special">=</span> <span class="string">"no"</span><span class="special">;</span>
 
-<span class="comment">// &lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt; 
+<span class="comment">// &lt;?xml version="1.0" encoding="UTF-8" standalone="no"?&gt;
 </span><span class="comment">// &lt;foo bar="baz"&gt;
 </span><span class="comment">//         &lt;call&gt;hey&lt;/call&gt;
 </span><span class="comment">// &lt;/foo&gt;

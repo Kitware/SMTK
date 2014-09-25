@@ -96,7 +96,7 @@
         This is an example of setting node name and value (<a href="../samples/modify_base.cpp" target="_top">samples/modify_base.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">node</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"node"</span><span class="special">);</span>
 
@@ -193,7 +193,7 @@
         This is an example of setting attribute name and value (<a href="../samples/modify_base.cpp" target="_top">samples/modify_base.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_attribute</span> <span class="identifier">attr</span> <span class="special">=</span> <span class="identifier">node</span><span class="special">.</span><span class="identifier">attribute</span><span class="special">(</span><span class="string">"id"</span><span class="special">);</span>
 
@@ -311,7 +311,7 @@
         This is an example of adding new attributes/nodes to the document (<a href="../samples/modify_add.cpp" target="_top">samples/modify_add.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// add node with some name
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">node</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">append_child</span><span class="special">(</span><span class="string">"node"</span><span class="special">);</span>
@@ -388,7 +388,7 @@
         This is an example of removing attributes/nodes from the document (<a href="../samples/modify_remove.cpp" target="_top">samples/modify_remove.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// remove description node with the whole subtree
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">node</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"node"</span><span class="special">);</span>
@@ -471,7 +471,7 @@
         object to modify text contents (<a href="../samples/text.cpp" target="_top">samples/text.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// change project version
 </span><span class="identifier">project</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"version"</span><span class="special">).</span><span class="identifier">text</span><span class="special">()</span> <span class="special">=</span> <span class="number">1.2</span><span class="special">;</span>
@@ -551,7 +551,7 @@
         node cloning and usage of other document modification functions:
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">bool</span> <span class="identifier">load_preprocess</span><span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span><span class="special">&amp;</span> <span class="identifier">doc</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">path</span><span class="special">);</span>
 
@@ -597,7 +597,7 @@
 <span class="keyword">bool</span> <span class="identifier">load_preprocess</span><span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span><span class="special">&amp;</span> <span class="identifier">doc</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">path</span><span class="special">)</span>
 <span class="special">{</span>
     <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_parse_result</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">load_file</span><span class="special">(</span><span class="identifier">path</span><span class="special">,</span> <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">parse_default</span> <span class="special">|</span> <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">parse_pi</span><span class="special">);</span> <span class="comment">// for &lt;?include?&gt;
-</span>    
+</span>
     <span class="keyword">return</span> <span class="identifier">result</span> <span class="special">?</span> <span class="identifier">preprocess</span><span class="special">(</span><span class="identifier">doc</span><span class="special">)</span> <span class="special">:</span> <span class="keyword">false</span><span class="special">;</span>
 <span class="special">}</span>
 </pre>

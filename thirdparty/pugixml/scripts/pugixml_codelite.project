@@ -19,7 +19,7 @@
         <BuildCommand></BuildCommand>
         <SingleFileCommand></SingleFileCommand>
         <MakefileGenerationCommand></MakefileGenerationCommand>
-        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <thirdpartyToolName>None</thirdpartyToolName>
         <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
@@ -40,7 +40,7 @@
         <BuildCommand></BuildCommand>
         <SingleFileCommand></SingleFileCommand>
         <MakefileGenerationCommand></MakefileGenerationCommand>
-        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <thirdpartyToolName>None</thirdpartyToolName>
         <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>

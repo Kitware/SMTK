@@ -100,7 +100,7 @@
         This is an example of loading XML document from file (<a href="../samples/load_file.cpp" target="_top">samples/load_file.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span> <span class="identifier">doc</span><span class="special">;</span>
 
@@ -183,7 +183,7 @@
         (<a href="../samples/load_memory.cpp" target="_top">samples/load_memory.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">const</span> <span class="keyword">char</span> <span class="identifier">source</span><span class="special">[]</span> <span class="special">=</span> <span class="string">"&lt;mesh name='sphere'&gt;&lt;bounds&gt;0 0 1 1&lt;/bounds&gt;&lt;/mesh&gt;"</span><span class="special">;</span>
 <span class="identifier">size_t</span> <span class="identifier">size</span> <span class="special">=</span> <span class="keyword">sizeof</span><span class="special">(</span><span class="identifier">source</span><span class="special">);</span>
@@ -191,7 +191,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// You can use load_buffer to load document from immutable memory block:
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_parse_result</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">load_buffer</span><span class="special">(</span><span class="identifier">source</span><span class="special">,</span> <span class="identifier">size</span><span class="special">);</span>
@@ -199,7 +199,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// You can use load_buffer_inplace to load document from mutable memory block; the block's lifetime must exceed that of document
 </span><span class="keyword">char</span><span class="special">*</span> <span class="identifier">buffer</span> <span class="special">=</span> <span class="keyword">new</span> <span class="keyword">char</span><span class="special">[</span><span class="identifier">size</span><span class="special">];</span>
@@ -214,7 +214,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// You can use load_buffer_inplace_own to load document from mutable memory block and to pass the ownership of this block
 </span><span class="comment">// The block has to be allocated via pugixml allocation function - using i.e. operator new here is incorrect
@@ -227,7 +227,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// You can use load to load document from null-terminated strings, for example literals:
 </span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_parse_result</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">load</span><span class="special">(</span><span class="string">"&lt;mesh name='sphere'&gt;&lt;bounds&gt;0 0 1 1&lt;/bounds&gt;&lt;/mesh&gt;"</span><span class="special">);</span>
@@ -275,7 +275,7 @@
         the sample code for more complex examples involving wide streams and locales:
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">ifstream</span> <span class="identifier">stream</span><span class="special">(</span><span class="string">"weekly-utf-8.xml"</span><span class="special">);</span>
 <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_parse_result</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">load</span><span class="special">(</span><span class="identifier">stream</span><span class="special">);</span>
@@ -433,7 +433,7 @@
         This is an example of handling loading errors (<a href="../samples/load_error_handling.cpp" target="_top">samples/load_error_handling.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_document</span> <span class="identifier">doc</span><span class="special">;</span>
 <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_parse_result</span> <span class="identifier">result</span> <span class="special">=</span> <span class="identifier">doc</span><span class="special">.</span><span class="identifier">load</span><span class="special">(</span><span class="identifier">source</span><span class="special">);</span>
@@ -657,7 +657,7 @@
         This is an example of using different parsing options (<a href="../samples/load_options.cpp" target="_top">samples/load_options.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">source</span> <span class="special">=</span> <span class="string">"&lt;!--comment--&gt;&lt;node&gt;&amp;lt;&lt;/node&gt;"</span><span class="special">;</span>
 

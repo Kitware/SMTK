@@ -123,7 +123,7 @@
         all attributes like this (<a href="../samples/traverse_base.cpp" target="_top">samples/traverse_base.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">for</span> <span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">tool</span> <span class="special">=</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">first_child</span><span class="special">();</span> <span class="identifier">tool</span><span class="special">;</span> <span class="identifier">tool</span> <span class="special">=</span> <span class="identifier">tool</span><span class="special">.</span><span class="identifier">next_sibling</span><span class="special">())</span>
 <span class="special">{</span>
@@ -292,7 +292,7 @@
         ones (<a href="../samples/traverse_base.cpp" target="_top">samples/traverse_base.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">for</span> <span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">tool</span> <span class="special">=</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"Tool"</span><span class="special">);</span> <span class="identifier">tool</span><span class="special">;</span> <span class="identifier">tool</span> <span class="special">=</span> <span class="identifier">tool</span><span class="special">.</span><span class="identifier">next_sibling</span><span class="special">(</span><span class="string">"Tool"</span><span class="special">))</span>
 <span class="special">{</span>
@@ -357,7 +357,7 @@
         This is an example of using these functions (<a href="../samples/traverse_base.cpp" target="_top">samples/traverse_base.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Tool for *.dae generation: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">find_child_by_attribute</span><span class="special">(</span><span class="string">"Tool"</span><span class="special">,</span> <span class="string">"OutputFileMasks"</span><span class="special">,</span> <span class="string">"*.dae"</span><span class="special">).</span><span class="identifier">attribute</span><span class="special">(</span><span class="string">"Filename"</span><span class="special">).</span><span class="identifier">value</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="string">"\n"</span><span class="special">;</span>
 
@@ -397,7 +397,7 @@
         This is an example of using these functions (<a href="../samples/traverse_rangefor.cpp" target="_top">samples/traverse_rangefor.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">for</span> <span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">tool</span><span class="special">:</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">children</span><span class="special">(</span><span class="string">"Tool"</span><span class="special">))</span>
 <span class="special">{</span>
@@ -474,7 +474,7 @@
         Here is an example of using iterators for document traversal (<a href="../samples/traverse_iter.cpp" target="_top">samples/traverse_iter.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">for</span> <span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node_iterator</span> <span class="identifier">it</span> <span class="special">=</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">begin</span><span class="special">();</span> <span class="identifier">it</span> <span class="special">!=</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">end</span><span class="special">();</span> <span class="special">++</span><span class="identifier">it</span><span class="special">)</span>
 <span class="special">{</span>
@@ -571,7 +571,7 @@
         This is an example of traversing tree hierarchy with xml_tree_walker (<a href="../samples/traverse_walker.cpp" target="_top">samples/traverse_walker.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">struct</span> <span class="identifier">simple_walker</span><span class="special">:</span> <span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_tree_walker</span>
 <span class="special">{</span>
@@ -588,7 +588,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">simple_walker</span> <span class="identifier">walker</span><span class="special">;</span>
 <span class="identifier">doc</span><span class="special">.</span><span class="identifier">traverse</span><span class="special">(</span><span class="identifier">walker</span><span class="special">);</span>
@@ -648,7 +648,7 @@
         This is an example of using predicate-based functions (<a href="../samples/traverse_predicate.cpp" target="_top">samples/traverse_predicate.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="keyword">bool</span> <span class="identifier">small_timeout</span><span class="special">(</span><span class="identifier">pugi</span><span class="special">::</span><span class="identifier">xml_node</span> <span class="identifier">node</span><span class="special">)</span>
 <span class="special">{</span>
@@ -671,7 +671,7 @@
 <p>
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="comment">// Find child via predicate (looks for direct children only)
 </span><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="identifier">tools</span><span class="special">.</span><span class="identifier">find_child</span><span class="special">(</span><span class="identifier">allow_remote_predicate</span><span class="special">()).</span><span class="identifier">attribute</span><span class="special">(</span><span class="string">"Filename"</span><span class="special">).</span><span class="identifier">value</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
@@ -773,7 +773,7 @@
         object (<a href="../samples/text.cpp" target="_top">samples/text.cpp</a>):
       </p>
 <p>
-        
+
 </p>
 <pre class="programlisting"><span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Project name: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">project</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"name"</span><span class="special">).</span><span class="identifier">text</span><span class="special">().</span><span class="identifier">get</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
 <span class="identifier">std</span><span class="special">::</span><span class="identifier">cout</span> <span class="special">&lt;&lt;</span> <span class="string">"Project version: "</span> <span class="special">&lt;&lt;</span> <span class="identifier">project</span><span class="special">.</span><span class="identifier">child</span><span class="special">(</span><span class="string">"version"</span><span class="special">).</span><span class="identifier">text</span><span class="special">().</span><span class="identifier">as_double</span><span class="special">()</span> <span class="special">&lt;&lt;</span> <span class="identifier">std</span><span class="special">::</span><span class="identifier">endl</span><span class="special">;</span>
