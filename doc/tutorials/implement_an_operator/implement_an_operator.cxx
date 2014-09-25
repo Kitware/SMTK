@@ -15,7 +15,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/util/Testing/helpers.h"
+#include "smtk/util/testing/cxx/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
 #include "smtk/options.h"

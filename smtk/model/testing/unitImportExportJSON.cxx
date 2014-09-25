@@ -1,7 +1,7 @@
 #include "smtk/model/ExportJSON.h"
 #include "smtk/model/ImportJSON.h"
 #include "smtk/model/Manager.h"
-#include "smtk/util/Testing/helpers.h"
+#include "smtk/util/testing/cxx/helpers.h"
 
 #include "cJSON.h"
 

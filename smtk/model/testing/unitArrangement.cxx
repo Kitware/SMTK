@@ -1,6 +1,6 @@
 #include "smtk/model/Arrangement.h"
 
-#include "smtk/util/Testing/helpers.h"
+#include "smtk/util/testing/cxx/helpers.h"
 
 using namespace smtk::util;
 using namespace smtk::model;

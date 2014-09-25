@@ -18,7 +18,7 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/util/Testing/helpers.h"
+#include "smtk/util/testing/cxx/helpers.h"
 #include "smtk/model/testing/helpers.h"
 
 #include <fstream>
