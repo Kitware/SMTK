@@ -29,8 +29,3 @@ if (SMTK_ENABLE_TESTING)
   endif (SMTK_BUILD_CGM)
   add_test(tut-implement_an_operator ${EXECUTABLE_OUTPUT_PATH}/implement_an_operator)
 endif()
-
-if (RST2HTML_EXECUTABLE)
-  smtk_add_doc(implement_an_operator
-    DESTINATION share/doc/SMTK/tutorials/implement_an_operator)
-endif()

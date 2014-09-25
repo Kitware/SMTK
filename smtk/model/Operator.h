@@ -1,5 +1,6 @@
 #ifndef __smtk_model_Operator_h
 #define __smtk_model_Operator_h
+/*! \file */
 
 //#include "smtk/Function.h" // for smtk::function<>
 #include "smtk/PublicPointerDefs.h"

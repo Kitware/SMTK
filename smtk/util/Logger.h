@@ -20,18 +20,17 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 PROVIDE
 MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME Logger.h -
-// .SECTION Description
-// .SECTION See Also
-
 #ifndef __smtk_util_Logger_h
 #define __smtk_util_Logger_h
+/*! \file */
+
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/util/SystemConfig.h"
 #include <string>
 #include <sstream>
 #include <vector>
 
+/// Write the expression \a x (which may use the "<<" operator) to \a logger as an error message.
 #define smtkErrorMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -39,6 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
+/// Write the expression \a x (which may use the "<<" operator) to \a logger as a warning message.
 #define smtkWarningMacro(logger, x) do {                \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -46,17 +46,23 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
+/// Write the expression \a x (which may use the "<<" operator) to \a logger as a debug message.
 #define smtkDebugMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
   logger.addRecord(smtk::util::Logger::DEBUG,           \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
+///@}
 
 namespace smtk
 {
   namespace util
   {
+
+    /**\brief Log messages for later presentation to a user or a file.
+      *
+      */
     class SMTKCORE_EXPORT Logger
     {
     public:

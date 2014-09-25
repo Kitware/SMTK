@@ -194,7 +194,88 @@ smtk::attribute::Manager* Manager::attributeManager() const
   return this->m_attributeManager;
 }
 
+/**@name Find entities by their property values.
+  *\brief Look for entities that have a given property defined and whose value matches one provided.
+  *
+  * The non-templated variants returning CursorArray can be wrapped and used in Python
+  * while the templated variants are more useful in C++.
+  */
+//@{
+/// Find entities with an integer property named \a pname whose value is the single value \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, Integer pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
 
+/// Find entities with a floating-point property named \a pname whose value is the single value \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, Float pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
+
+/// Find entities with a string property named \a pname whose value is the single value \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, const std::string& pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
+
+/// Find entities with an integer property named \a pname whose every value matches the array \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, const IntegerList& pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
+
+/// Find entities with a floating-point property named \a pname whose every value matches the array \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, const FloatList& pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
+
+/// Find entities with a string property named \a pname whose every value matches the array \a pval.
+CursorArray Manager::findEntitiesByProperty(const std::string& pname, const StringList& pval)
+{
+  return this->findEntitiesByPropertyAs<CursorArray>(pname, pval);
+}
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Integer pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const IntegerList& pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, Float pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const FloatList& pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const std::string& pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+
+/*! \fn template<typename Collection> Collection Manager::findEntitiesByPropertyAs(const std::string& pname, const StringList& pval)
+ * \brief Return entities with a property named \a pname whose values match the given \a pval.
+ */
+//@}
+
+/**\brief Find entities whose type matches the given \a flags.
+  *
+  * This version can be wrapped and used in Python.
+  * It is not named entitiesMatchingFlags (to mirror the
+  * templated entitiesMatchingFlagsAs<T>) because our base
+  * class, BRepModel, provides another method of the same
+  * name that returns UUIDs rather than CursorArray.
+  */
+CursorArray Manager::findEntitiesOfType(BitFlags flags, bool exactMatch)
+{
+  return this->entitiesMatchingFlagsAs<CursorArray>(flags, exactMatch);
+}
+
+/// Set the tessellation information for a given \a cellId.
 Manager::tess_iter_type Manager::setTessellation(const UUID& cellId, const Tessellation& geom)
 {
   if (cellId.isNull())

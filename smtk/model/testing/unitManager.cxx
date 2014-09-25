@@ -2,6 +2,8 @@
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/ExportJSON.h"
+#include "smtk/model/Volume.h"
+
 #include "smtk/model/testing/helpers.h"
 #include <smtk/util/Testing/helpers.h>
 
@@ -95,6 +97,40 @@ int main(int argc, char* argv[])
   test(sm->stringProperty(uids[0], "velocity").size() == 3); // Test multi-entry length.
   test(sm->stringProperty(uids[21], "velocity").size() == 0); // Test missing entry length.
   test(sm->stringProperty(uids[21], "name").size() == 1); // Test length of reset property.
+  double d3vals[] = { 1.0, 0.0, 2.0 };
+  int i2vals[] = { 100, 200 };
+  FloatList v3(d3vals, d3vals + 3);
+  IntegerList v2(i2vals, i2vals + 2);
+  sm->setFloatProperty(uids[0], "velocity", v3);
+  sm->setIntegerProperty(uids[0], "velocity", v2);
+  sm->setFloatProperty(uids[21], "velocity", 42.03125);
+  sm->setIntegerProperty(uids[21], "velocity", 42);
+
+  // Test finding entities by property
+  Volumes search1 = sm->findEntitiesByPropertyAs<Volumes>("name", "Tetrahedron");
+  test(!search1.empty() && search1.begin()->name() == "Tetrahedron");
+  StringList ijfumbler;
+  ijfumbler.push_back("Ignatius");
+  ijfumbler.push_back("Jeremiah");
+  ijfumbler.push_back("Fumblemumbler");
+  search1.begin()->setStringProperty("name", ijfumbler);
+  search1 = sm->findEntitiesByPropertyAs<Volumes>("name", ijfumbler);
+  test(!search1.empty() && search1.begin()->stringProperty("name") == ijfumbler);
+  search1.begin()->setStringProperty("name", "Tetrahedron");
+
+  CursorArray search2;
+  search2 = sm->findEntitiesByProperty("velocity", v2);
+  test(search2.size() == 1 && search2.begin()->entity() == uids[0], "search2 i2vals");
+  search2 = sm->findEntitiesByProperty("velocity", v3);
+  test(search2.size() == 1 && search2.begin()->entity() == uids[0], "search2 i2vals");
+  search2 = sm->findEntitiesByProperty("velocity", static_cast<Integer>(42));
+  test(search2.size() == 1 && search2.begin()->entity() == uids[21], "search2 42");
+  search2 = sm->findEntitiesByProperty("velocity", 42.03125);
+  test(search2.size() == 1 && search2.begin()->entity() == uids[21], "search2 42.03125");
+
+  // Test Cursors-return version of entitiesMatchingFlagsAs<T>
+  search2 = sm->findEntitiesOfType(smtk::model::VOLUME, true);
+  test(search2.size() == 1 && search2.begin()->entity() == uids[21]);
 
   // Test addModel
   UUIDArray::size_type modelStart = uids.size();

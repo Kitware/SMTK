@@ -1,5 +1,5 @@
 /**
- * \file smtk-convert.cpp
+ * \file cgm-convert.cxx
  *
  * \brief Generate an SMTK topology-only version of a solid model and attach
  *        tessellations of model faces.

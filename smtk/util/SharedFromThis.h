@@ -1,5 +1,8 @@
 #ifndef __smtk_util_SharedFromThis_h
 #define __smtk_util_SharedFromThis_h
+/*! \file SharedFromThis.h
+ *  \brief Macros for dealing with shared-pointer classes.
+ */
 
 #include "smtk/SharedPtr.h"
 

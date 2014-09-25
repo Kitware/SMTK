@@ -17,7 +17,7 @@ typedef std::vector<Edge> Edges;
 typedef std::vector<FaceUse> FaceUses;
 typedef std::vector<Volume> Volumes;
 
-/**\brief A cursor subclass that provides methods specific to 0-d vertex cells.
+/**\brief A cursor subclass that provides methods specific to 2-d face cells.
   *
   */
 class SMTKCORE_EXPORT Face : public CellEntity
