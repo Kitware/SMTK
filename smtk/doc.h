@@ -85,6 +85,22 @@ namespace smtk {
   namespace io {
   }
 
+  /**\brief Bridges to solid modeling kernels.
+    *
+    */
+  namespace bridge {
+    /**\brief A bridge to the Common Geometry Module (Argonne).
+      *
+      */
+    namespace cgm {
+    }
+    /**\brief A forwarding bridge that uses Remus.
+      *
+      */
+    namespace remote {
+    }
+  }
+
   /**\brief Representations of SMTK components in user interfaces.
     *
     */

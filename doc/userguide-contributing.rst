@@ -28,19 +28,25 @@ With that in mind:
 
 * smtk — this directory contains all of the source code for SMTK libraries and tests
 
+  * common — source for classes used throughout the SMTKCore library
   * attribute — source for :ref:`smtk-attribute-sys` in the SMTKCore library
   * model — source for :ref:`smtk-model-sys` in the SMTKCore library
-  * bridges — source for additional libraries that bridge solid modeling kernels into SMTK
-  * Qt — source for Qt-based widgets that allow presentation and editing of SMTK models and attributes
-  * extensions
+  * simulation — aids to exporting simulation input decks in the SMTKCore library
+  * io — file and string I/O in the SMTKCore library, a mix of XML and JSON
+  * view — source for providing views of attributes and models in the SMTKCore library
+  * bridge — source for additional libraries that bridge solid modeling kernels into SMTK
+  * extensions — source for additional libraries that expose SMTK to other software
 
-    * vtk — source for displaying tessellations of model faces, edges, and vertices using VTK_
+    * qt — widgets that allow presentation and editing of SMTK models and attributes
+    * vtk — VTK_ sources for displaying tessellations of model faces, edges, and vertices
 
 * thirdparty
 
   * cJSON — used to serialize geometric model information
   * pugiXML — used to serialize attribute systems
   * sparsehash — an alternative to using :cxx:`std::map` to store maps from UUIDs to entity and property records in SMTK models.
+
+* utilities — scripts to aid in the development of SMTK
 
 
 Inside :file:`smtk/`, subdirectories, there are :file:`testing/` and :file:`pythonTesting` directories
