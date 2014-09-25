@@ -20,21 +20,21 @@ if __name__ == '__main__':
     else:
       print "ERROR: Definition testDef not created"
       status = -1
-    
+
     att = manager.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()
     else:
       print "ERROR: 1st Attribute not created"
       status = -1
-    
+
     att = manager.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()
     else:
       print "ERROR: 2nd Attribute not created"
       status = -1
-    
+
     att = manager.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()

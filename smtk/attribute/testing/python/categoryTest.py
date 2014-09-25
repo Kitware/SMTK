@@ -11,17 +11,17 @@ if __name__ == '__main__':
     import sys
 
     status = 0
-    
+
     manager = smtk.attribute.Manager()
     print 'Manager created'
-    
+
     expDef = manager.createDefinition("ExpDef");
     expDef.setBriefDescription("Sample Expression");
     expDef.setDetailedDescription("Sample Expression for testing\nThere is not much here!");
     eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
     eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Aux String")
     eitemdef.setDefaultValue("sample")
-    
+
     base = manager.createDefinition("BaseDef")
     #Lets add some item definitions
     iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem1");
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem2");
     iitemdef.setDefaultValue(10);
     iitemdef.addCategory("Heat");
-    
+
     def1 = manager.createDefinition("Derived1", "BaseDef");
     # Lets add some item definitions
     ditemdef = def1.addItemDefinitionStr( smtk.attribute.DoubleItemDefinition, "DoubleItem1")
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     ditemdef = def1.addItemDefinitionStr( smtk.attribute.DoubleItemDefinition, "DoubleItem2")
     ditemdef.setDefaultValue(-35.2);
     ditemdef.addCategory("Constituent");
-    
+
     def2 = manager.createDefinition("Derived2", "Derived1");
     # Lets add some item definitions
     sitemdef = def2.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem1");
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     sitemdef = def2.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem2");
     sitemdef.setDefaultValue("Default");
     sitemdef.addCategory("General");
-    
+
     # Process Categories
     manager.updateCategories();
     # Lets see what categories the attribute definitions think they are
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     else:
       print "ERROR: Attribute testAtt not created";
       status = -1;
-      
+
     # Find the expression enabled item
     item = att.item(2);
     vitem = smtk.attribute.ValueItem.CastTo(item);
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     else:
       print "ERROR: Can not set expression on %s"%vitem.name()
       status = -1;
-  
+
     n = att.numberOfItems();
     print "Items of testAtt:\n";
     for i in range(0,n,1):

@@ -117,7 +117,7 @@ if __name__ == '__main__':
     aritemdef = attrefdef.addItemDefinitionStr( smtk.attribute.RefItemDefinition, 'BaseDefItem' )
     aritemdef.setCommonValueLabel('A reference to another attribute')
     aritemdef.setAttributeDefinition(base)
-  
+
     # Process Categories
     manager.updateCategories()
     # Lets test creating an attribute by passing in the expression definition explicitly

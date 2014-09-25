@@ -42,7 +42,7 @@ int main()
       std::cout << "ERROR: Definition testDef not created\n";
       status = -1;
       }
-    
+
     smtk::attribute::AttributePtr att = manager.createAttribute("testDef");
     if (att)
       {
@@ -53,7 +53,7 @@ int main()
       std::cout << "ERROR: 1st Attribute not created\n";
       status = -1;
       }
-    
+
     att = manager.createAttribute("testDef");
     if (att)
       {
@@ -64,7 +64,7 @@ int main()
       std::cout << "ERROR: 2nd Attribute not created\n";
       status = -1;
       }
-    
+
     att = manager.createAttribute("testDef");
     if (att)
       {

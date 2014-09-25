@@ -1,7 +1,7 @@
 """
   Manual port of SMTK/smtk/attribute/Testing/expressionTest.cxx
   For verifying python-shiboken wrappers
-  
+
   Requires SMTKCorePython.so to be in module path
   """
 
@@ -9,18 +9,18 @@ import smtk
 
 if __name__ == '__main__':
   import sys
-  
+
   status = 0
-  
+
   manager = smtk.attribute.Manager()
   print 'Manager created'
-  
+
   # Lets create an attribute to represent an expression
   expDef = manager.createDefinition("ExpDef")
   eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
   eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Aux String")
   eitemdef.setDefaultValue("sample")
-  
+
   base = manager.createDefinition("BaseDef")
   #Lets add some item definitions
   iitemdef = base.addItemDefinitionStr( smtk.attribute.IntItemDefinition, "IntItem1")
@@ -44,7 +44,7 @@ if __name__ == '__main__':
   sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, "StringItem1")
   sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, "StringItem2")
   sitemdef.setDefaultValue("Default")
-  
+
   # Lets test creating an attribute by passing in the expression definition explicitly
   expAtt = manager.createAttribute("Exp1", expDef)
   att = manager.createAttribute("testAtt", "Derived2")
@@ -77,5 +77,5 @@ if __name__ == '__main__':
 
   del manager
   print 'Manager destroyed'
-  
+
   sys.exit(status)
