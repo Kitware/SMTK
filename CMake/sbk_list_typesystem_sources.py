@@ -61,7 +61,11 @@ class typesystem_parser(xml.sax.ContentHandler):
 
     elif name == 'namespace-type':
       self.current_namespace.append(attrs['name'])
-      self.printWrapperFiles(self.current_namespace)
+      generate = True
+      if ('generate' in attrs):
+        generate = (attrs['generate'].lower() == "yes")
+      if(generate):
+        self.printWrapperFiles(self.current_namespace)
 
     elif name in class_types:
       self.current_namespace.append(typeName(attrs))

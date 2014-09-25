@@ -33,18 +33,6 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <set>
 #include <vector>
 
-namespace cgmsmtk
-{
-  namespace cgm
-  {
-    class Bridge;
-    typedef smtk::shared_ptr<cgmsmtk::cgm::Bridge> BridgePtr;
-    class ImportSolid;
-    class Engines;
-    class ExportSolid;
-  }
-}
-
 namespace smtk
 {
   namespace model
@@ -287,7 +275,6 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::view::Root>              RootPtr;
     typedef smtk::shared_ptr< smtk::view::SimpleExpression>  SimpleExpressionPtr;
   };
-
 
 #ifdef smtk_has_owner_less
   //special map and set typedefs for better safety with sets of weak pointers

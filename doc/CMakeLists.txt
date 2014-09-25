@@ -30,7 +30,7 @@ if(DOXYGEN_FOUND)
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/cjson.doxyfile
     DEPENDS
       ${CMAKE_CURRENT_BINARY_DIR}/cjson.doxyfile
-      ${SMTK_SOURCE_DIR}/ThirdParty/cJSON/cJSON.h
+      ${SMTK_SOURCE_DIR}/thirdparty/cJSON/cJSON.h
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/reference"
     COMMENT "Generating cJSON API documentation with Doxygen" VERBATIM
     )

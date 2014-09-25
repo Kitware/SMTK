@@ -24,7 +24,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/util/XmlV1StringWriter.h"
 #define PUGIXML_HEADER_ONLY
-#include "pugixml-1.2/src/pugixml.cpp"
+#include "pugixml/src/pugixml.cpp"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"

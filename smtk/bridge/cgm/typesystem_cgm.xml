@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore methods that refer directly to CGM pointers -->
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addGroupToManager', unmatched parameter type 'RefGroup*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addEdgeToManager', unmatched parameter type 'RefEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVertexUseToManager', unmatched parameter type 'CoVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'GroupingEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addBodyToManager', unmatched parameter type 'Body*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addChainToManager', unmatched parameter type 'Chain*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addEdgeUseToManager', unmatched parameter type 'CoEdge*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVertexToManager', unmatched parameter type 'RefVertex*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addFaceToManager', unmatched parameter type 'RefFace*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addLoopToManager', unmatched parameter type 'Loop*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVolumeToManager', unmatched parameter type 'RefVolume*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addCGMEntityToManager', unmatched parameter type 'SenseEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addFaceUseToManager', unmatched parameter type 'CoFace*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addShellToManager', unmatched parameter type 'Shell*'"/>
+
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
+  <suppress-warning text="skipping field 'Bridge::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+
+  <!-- Additional objects to be wrapped when building with CGM -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="bridge" generate = "no">
+      <namespace-type name="cgm" generate = "yes">
+        <enum-type name="CubitAttributeTypeExtensions">
+          <include file-name="smtk/bridge/cgm/CAUUID.h" location="local"/>
+        </enum-type>
+
+        <object-type name="Bridge">
+          <include file-name="smtk/bridge/cgm/Bridge.h" location="local"/>
+        </object-type>
+
+        <object-type name="ImportSolid">
+          <include file-name="smtk/bridge/cgm/ImportSolid.h" location="local"/>
+        </object-type>
+
+        <object-type name="Engines">
+          <include file-name="smtk/bridge/cgm/Engines.h" location="local"/>
+        </object-type>
+
+        <object-type name="ExportSolid">
+          <include file-name="smtk/bridge/cgm/ExportSolid.h" location="local"/>
+        </object-type>
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::cgm::Bridge">
+  </value-type>
+
+  <!-- Don't wrap methods that take pointers to CGM classes.
+       Shiboken improperly scopes classnames in argument
+       lists (e.g., it assumes smtk::model::Shell when ::Shell is
+       specified), making it not only undesirable but impossible
+       to wrap CGM pointers.
+    -->
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addBodyToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVolumeUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addFaceUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addEdgeUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVertexUseToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addShellToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addLoopToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addChainToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVolumeToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addFaceToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addEdgeToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addVertexToManager"/>
+  <rejection class="smtk::bridge::cgm::Bridge" function-name="addGroupToManager"/>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

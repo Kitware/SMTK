@@ -5,7 +5,7 @@
 
   <!-- Ignore some namespaces -->
   <suppress-warning text="namespace 'boost' does not have a type entry"/>
-	<suppress-warning text="namespace 'cgmsmtk' does not have a type entry"/>
+  <suppress-warning text="namespace 'cgmsmtk' does not have a type entry"/>
   <suppress-warning text="namespace 'google' does not have a type entry"/>
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>

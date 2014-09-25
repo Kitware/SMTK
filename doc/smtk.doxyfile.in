@@ -1596,10 +1596,10 @@ SEARCH_INCLUDES        = YES
 # the preprocessor.
 
 INCLUDE_PATH           = \
-        "@SMTK_SOURCE_DIR@/ThirdParty/cJSON" \
-        "@SMTK_SOURCE_DIR@/ThirdParty/sparsehash" \
-        "@SMTK_BINARY_DIR@/ThirdParty/cJSON" \
-        "@SMTK_BINARY_DIR@/ThirdParty/sparsehash"
+        "@SMTK_SOURCE_DIR@/thirdparty/cJSON" \
+        "@SMTK_SOURCE_DIR@/thirdparty/sparsehash" \
+        "@SMTK_BINARY_DIR@/thirdparty/cJSON" \
+        "@SMTK_BINARY_DIR@/thirdparty/sparsehash"
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the

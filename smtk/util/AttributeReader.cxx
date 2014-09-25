@@ -25,7 +25,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/util/Logger.h"
 #include "smtk/util/XmlDocV2Parser.h"
 #define PUGIXML_HEADER_ONLY
-#include "pugixml-1.2/src/pugixml.cpp"
+#include "pugixml/src/pugixml.cpp"
 #include <algorithm>
 #include <iostream>
 #include <set>
