@@ -25,7 +25,7 @@ Any prefix (with trailing '/') may be chosen so long as it is used
 consistently within a project through the rest of these instructions:
 
  $ git merge -s ours --no-commit setup
- $ git read-tree -u --prefix=utilities/GitSetup/ setup
+ $ git read-tree -u --prefix=utilities/gitsetup/ setup
 
 Commit the merge with an informative message:
 
@@ -33,7 +33,7 @@ Commit the merge with an informative message:
  ------------------------------------------------------------------------
  Merge branch 'setup'
 
- Add utilities/GitSetup/ directory using subtree merge from
+ Add utilities/gitsetup/ directory using subtree merge from
  the general GitSetup repository "setup" branch.
  ------------------------------------------------------------------------
 
@@ -46,12 +46,12 @@ Add a "config" file next to the scripts with desired configuration
 (optionally copy and modify "config.sample").  For example, to
 configure the "setup-hooks" script:
 
- $ git config -f utilities/GitSetup/config hooks.url "$url"
+ $ git config -f utilities/gitsetup/config hooks.url "$url"
 
 where "$url" is the project repository publishing the "hooks" branch.
 When finished, add and commit the configuration file:
 
- $ git add utilities/GitSetup/config
+ $ git add utilities/gitsetup/config
  $ git commit
 
 
@@ -67,9 +67,9 @@ GitSetup repository:
 
 Merge the "setup" branch into the subtree:
 
- $ git merge -X subtree=Utilities/GitSetup setup
+ $ git merge -X subtree=utilities/gitsetup setup
 
-where "Utilities/GitSetup" is the same prefix used during the import
+where "utilities/gitsetup" is the same prefix used during the import
 setup, but without a trailing '/'.
 
 
