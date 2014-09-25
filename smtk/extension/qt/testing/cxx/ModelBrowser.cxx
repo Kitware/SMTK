@@ -2,7 +2,7 @@
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/extension/qt/testing/ui_ModelBrowser.h"
+#include "smtk/extension/qt/testing/cxx/ui_ModelBrowser.h"
 
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/ModelEntity.h"
