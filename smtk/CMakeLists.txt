@@ -72,7 +72,6 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
   if(SMTK_ENABLE_TESTING)
     get_filename_component(SHIBOKEN_LIBRARY_PATH ${SHIBOKEN_LIBRARY} PATH)
     add_subdirectory(model/PythonTesting)
-    add_subdirectory(view/PythonTesting)
   endif(SMTK_ENABLE_TESTING)
 
   #todo we need to install this file in such a way that it can resolve
