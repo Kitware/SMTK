@@ -19,6 +19,8 @@
 #include "remus/worker/ServerConnection.h" // for m_remusConn
 
 namespace smtk {
+  namespace io { class ImportJSON; }
+  namespace model { class RemoteOperator; }
   namespace bridge {
     namespace remote {
 
@@ -124,8 +126,8 @@ public:
   static smtk::model::StringList availableTypeNames();
 
 protected:
-  friend class RemoteOperator;
-  friend class ImportJSON;
+  friend class model::RemoteOperator;
+  friend class io::ImportJSON;
 
   RemusRemoteBridge();
 

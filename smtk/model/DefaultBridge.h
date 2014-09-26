@@ -13,7 +13,6 @@
 #include "smtk/model/Bridge.h"
 
 namespace smtk {
-  namespace io { class ImportJSON; }
   namespace model {
 
 /**\brief A bridge that does no transcription.
@@ -66,7 +65,7 @@ public:
 
 protected:
   friend class RemoteOperator;
-  friend class ImportJSON;
+  friend class io::ImportJSON;
 
   DefaultBridge();
 
