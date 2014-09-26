@@ -233,7 +233,7 @@ int DescriptivePhraseIterator::numberOfSubphrases() const
   return 0;
 }
 
-smtk::util::UUID DescriptivePhraseIterator::relatedEntityId() const
+smtk::common::UUID DescriptivePhraseIterator::relatedEntityId() const
 {
   return this->relatedEntity().entity();
 }

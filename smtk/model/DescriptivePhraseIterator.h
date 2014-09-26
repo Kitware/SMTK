@@ -51,7 +51,7 @@ public:
   std::string phrase() const;
   DescriptivePhraseType phraseType() const;
   int numberOfSubphrases() const;
-  smtk::util::UUID relatedEntityId() const;
+  smtk::common::UUID relatedEntityId() const;
   Cursor relatedEntity() const;
   smtk::attribute::AttributeId relatedAttributeId() const;
   std::string relatedPropertyName() const;

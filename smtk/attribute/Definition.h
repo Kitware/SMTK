@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/SharedFromThis.h" // For smtkTypeMacro.
+#include "smtk/SharedFromThis.h" // For smtkTypeMacro.
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
 #include "smtk/model/Cursor.h" //for Cursor version of canBeAssociated
 

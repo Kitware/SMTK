@@ -10,18 +10,18 @@ if __name__ == '__main__':
     status = 0
 
     # Create smtk model with 1 group item
-    model = smtk.model.Model.New()
-    mask = smtk.model.Item.FACE | smtk.model.Item.GROUP  # 36
-    group_item = model.createModelGroup('TopFaceBCS', 37, mask)
+    mmgr = smtk.model.Manager.create()
+    mask = smtk.model.FACE | smtk.model.GROUP_ENTITY
+    group_item = mmgr.addGroup(mask, 'TopFaceBCS')
 
     # Create attribute manager with 1 def
     manager = smtk.attribute.Manager()
-    manager.setRefModel(model)
+    manager.setRefModelManager(mmgr)
     defn = manager.createDefinition('testdef')
     defn.setAssociationMask(mask)
 
     # Create attribute and associate to group item
     att = manager.createAttribute('testatt', defn)
-    att.associateEntity(group_item)
+    att.associateEntity(group_item.entity())
 
     sys.exit(status)

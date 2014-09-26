@@ -24,7 +24,7 @@ public:
     Arrangements* arr;
     if (c.checkForArrangements(k, entRec, arr))
       {
-      smtk::util::UUIDArray const& relations(entRec->relations());
+      smtk::common::UUIDArray const& relations(entRec->relations());
       for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
         {
         std::vector<int>::iterator it;
@@ -83,7 +83,7 @@ public:
   static void appendAllUseHasCellRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
-    smtk::util::UUIDArray const& relations(entRec->relations());
+    smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
       {
       // Use HAS_CELL arrangements are specified as [relIdx, sense] tuples.
@@ -102,7 +102,7 @@ public:
   static void appendAllCellHasUseRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
-    smtk::util::UUIDArray const& relations(entRec->relations());
+    smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
       {
       // Cell HAS_USE arrangements are specified as [relIdx, sense, orientation] tuples.
@@ -122,7 +122,7 @@ public:
   static void appendAllShellHasUseRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
-    smtk::util::UUIDArray const& relations(entRec->relations());
+    smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
       {
       // Shell HAS_USE arrangements are specified as [min,max[ offset-ranges,
@@ -141,7 +141,7 @@ public:
   static void appendAllSimpleRelations(
     ManagerPtr manager, Entity* entRec, Arrangements* arr, T& result)
     {
-    smtk::util::UUIDArray const& relations(entRec->relations());
+    smtk::common::UUIDArray const& relations(entRec->relations());
     for (Arrangements::iterator arrIt = arr->begin(); arrIt != arr->end(); ++arrIt)
       {
       std::vector<int>::iterator it;

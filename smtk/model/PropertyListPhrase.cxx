@@ -55,7 +55,7 @@ std::string PropertyListPhrase::subtitle()
   return std::string();
 }
 
-smtk::util::UUID PropertyListPhrase::relatedEntityId() const
+smtk::common::UUID PropertyListPhrase::relatedEntityId() const
 {
   return this->m_entity.entity();
 }

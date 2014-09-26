@@ -2,15 +2,14 @@
 #include "smtk/model/EntityTypeBits.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
-#include "smtk/model/ImportJSON.h"
 #include "smtk/model/IntegerData.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 
 #include <iostream>
 #include <sstream>
 
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 

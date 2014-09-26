@@ -79,7 +79,7 @@ public:
 
   QPointer<QComboBox> NodalDropDown;
   WeakAttributePtr CurrentAtt;
-  smtk::util::UUID CurrentModelGroup;
+  smtk::common::UUID CurrentModelGroup;
   QPointer<qtBaseView> View;
 };
 
@@ -145,7 +145,7 @@ void qtAssociationWidget::showDomainsAssociation(
   this->Internals->boundaryGroup->setVisible(false);
 
   this->Internals->CurrentAtt = smtk::attribute::AttributePtr();
-  this->Internals->CurrentModelGroup = smtk::util::UUID();
+  this->Internals->CurrentModelGroup = smtk::common::UUID();
 
   this->Internals->DomainMaterialTable->blockSignals(true);
   this->Internals->DomainMaterialTable->setRowCount(0);
@@ -265,7 +265,7 @@ void qtAssociationWidget::showEntityAssociation(
   this->Internals->boundaryGroup->setVisible(true);
 
   this->Internals->CurrentAtt = theAtt;
-  this->Internals->CurrentModelGroup = smtk::util::UUID();
+  this->Internals->CurrentModelGroup = smtk::common::UUID();
 
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
@@ -491,7 +491,7 @@ smtk::model::ModelEntity qtAssociationWidget::getModelItem(
   if(item)
     {
     QVariant var = item->data(Qt::UserRole);
-    smtk::util::UUID uid( var.toString().toStdString() );
+    smtk::common::UUID uid( var.toString().toStdString() );
     smtk::attribute::Manager *attManager = this->Internals->View->uiManager()->attManager();
     if(attManager)
       {
@@ -768,7 +768,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
     return;
     }
   QString domainStr = combo->property("DomainEntityObj").toString();
-  smtk::util::UUID uid( domainStr.toStdString() );
+  smtk::common::UUID uid( domainStr.toStdString() );
   smtk::model::GroupEntity domainItem(modelManager,uid);
   if(!domainItem.isValid())
     {

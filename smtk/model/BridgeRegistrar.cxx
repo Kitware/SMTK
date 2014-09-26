@@ -4,9 +4,7 @@
 
 #include <stdlib.h> // for atexit()
 
-using smtk::util::UUID;
-using smtk::util::UUIDs;
-using smtk::util::UUIDArray;
+using namespace smtk::common;
 
 namespace smtk {
   namespace model {

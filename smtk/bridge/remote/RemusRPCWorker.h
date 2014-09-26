@@ -2,7 +2,7 @@
 #define __smtk_bridge_remote_RemusRPCWorker_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 
 #include "remus/worker/Worker.h"
 #include "remus/worker/Job.h"

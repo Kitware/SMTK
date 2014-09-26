@@ -106,10 +106,10 @@ void EntityPhrase::setMutability(int whatsMutable)
 }
 
 DescriptivePhrases EntityPhrase::PhrasesFromUUIDs(
-  smtk::model::ManagerPtr manager, const smtk::util::UUIDs& uids)
+  smtk::model::ManagerPtr manager, const smtk::common::UUIDs& uids)
 {
   DescriptivePhrases result;
-  smtk::util::UUIDs::const_iterator it;
+  smtk::common::UUIDs::const_iterator it;
   for (it = uids.begin(); it != uids.end(); ++it)
     {
     result.push_back(

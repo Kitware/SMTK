@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #define __smtk_model_GridInfo_h
 
 #include "smtk/SMTKCoreExports.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
 
 #include <string>
 #include <vector>
@@ -40,7 +40,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 namespace smtk
 {
-  namespace util
+  namespace io
   {
     class Logger;
   }
@@ -66,7 +66,7 @@ namespace smtk
       {
         ApiReturnType       returnType;
         std::string         errorMessage;
-        smtk::util::Logger *logger;
+        smtk::io::Logger *logger;
 
         ApiStatus() : logger(0) {}
       };

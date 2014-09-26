@@ -4,7 +4,7 @@
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 namespace smtk {
   namespace model {

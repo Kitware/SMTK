@@ -1,8 +1,9 @@
 #ifndef __smtk_model_FloatData_h
 #define __smtk_model_FloatData_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
+
+#include "smtk/common/UUID.h"
 
 #include "sparsehash/sparse_hash_map"
 
@@ -15,7 +16,7 @@ namespace smtk {
     typedef double Float;
     typedef std::vector<Float> FloatList;
     typedef google::sparse_hash_map<std::string,FloatList> FloatData;
-    typedef google::sparse_hash_map<smtk::util::UUID,FloatData> UUIDsToFloatData;
+    typedef google::sparse_hash_map<smtk::common::UUID,FloatData> UUIDsToFloatData;
 
     typedef UUIDsToFloatData::iterator UUIDWithFloatProperties;
     typedef FloatData::iterator PropertyNameWithFloats;

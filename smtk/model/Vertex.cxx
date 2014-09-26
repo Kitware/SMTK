@@ -37,7 +37,7 @@ double* Vertex::coordinates() const
 }
 
 /*
-smtk::util::Vector3d Vertex::coordinates() const
+smtk::common::Vector3d Vertex::coordinates() const
 {
   if (this->isValid())
     {
@@ -48,11 +48,11 @@ smtk::util::Vector3d Vertex::coordinates() const
       if (!tessRec->second.coords().empty())
         {
         double* coords = &tessRec->second.coords()[0];
-        return smtk::util::Vector3d(coords[0], coords[1], coords[2]);
+        return smtk::common::Vector3d(coords[0], coords[1], coords[2]);
         }
       }
     }
-  return smtk::util::Vector3d().setConstant(std::numeric_limits<double>::quiet_NaN());
+  return smtk::common::Vector3d().setConstant(std::numeric_limits<double>::quiet_NaN());
 }
 */
 

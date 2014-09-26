@@ -1,6 +1,7 @@
-#include "smtk/util/AttributeReader.h"
-#include "smtk/util/AutoInit.h"
-#include "smtk/util/Logger.h"
+#include "smtk/AutoInit.h"
+
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/Logger.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -12,7 +13,7 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include "smtk/options.h"
@@ -66,7 +67,7 @@ void testBridgeList(Manager::Ptr manager)
 {
   std::cout
     << "Default bridge is \""
-    << manager->bridgeForModel(smtk::util::UUID::null())->name()
+    << manager->bridgeForModel(smtk::common::UUID::null())->name()
     << "\"\n";
   std::cout << "Available bridges\n";
   StringList bridges = manager->bridgeNames();
@@ -119,9 +120,9 @@ void testImportOperators(Manager::Ptr manager)
 {
   // Add operator descriptions to the default bridge of our manager.
   smtk::model::BridgePtr bridge =
-    manager->bridgeForModel(smtk::util::UUID::null());
-  smtk::util::Logger log;
-  smtk::util::AttributeReader rdr;
+    manager->bridgeForModel(smtk::common::UUID::null());
+  smtk::io::Logger log;
+  smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (rdr.readContents(
     *bridge->operatorManager(), unitOutcomeOperator_xml, sizeof(unitOutcomeOperator_xml), log))
@@ -159,7 +160,7 @@ void testImportOperators(Manager::Ptr manager)
 void testOperatorOutcomes(Manager::Ptr manager)
 {
   TestOutcomeOperator::Ptr op = smtk::dynamic_pointer_cast<TestOutcomeOperator>(
-    manager->bridgeForModel(smtk::util::UUID::null())->op("outcome test", manager));
+    manager->bridgeForModel(smtk::common::UUID::null())->op("outcome test", manager));
 
   int shouldCancel = 1;
   int numberOfFailedOperations = 0;
@@ -211,7 +212,7 @@ void testBridgeAssociation(Manager::Ptr manager)
   test(op ? 1 : 0, "ModelEntity::op(\"outcome test\") returned a \"null\" shared pointer.");
 
   // Test Operator->Bridge association
-  test(op->bridge() == manager->bridgeForModel(smtk::util::UUID::null()).get(),
+  test(op->bridge() == manager->bridgeForModel(smtk::common::UUID::null()).get(),
     "Bad bridge reported by operator.");
 
   // Test Operator->Manager association

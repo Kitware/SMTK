@@ -62,7 +62,7 @@ smtk::model::QEntityItemModel* qtModelView::getModel() const
 void qtModelView::dropEvent(QDropEvent* dEvent)
 {
   smtk::model::QEntityItemModel* qmodel = this->getModel();
-  smtk::util::UUIDs ids;
+  smtk::common::UUIDs ids;
 
   // depends on the QModelIndex we dropped on, the selected
   // entities will be filtered accordingly based on what type of entities
@@ -137,7 +137,7 @@ void qtModelView::selectionChanged (
     return;
     }
   QTreeView::selectionChanged(selected, deselected);
-  smtk::util::UUIDs ids;
+  smtk::common::UUIDs ids;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
     this->recursiveSelect(qmodel, sel, ids, CELL_ENTITY);
@@ -149,7 +149,7 @@ void qtModelView::selectionChanged (
 //----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::util::UUIDs& ids, BitFlags entityFlags)
+    smtk::common::UUIDs& ids, BitFlags entityFlags)
 {
   DescriptivePhrasePtr dPhrase = qmodel->getItem(sel);
   if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) == entityFlags &&
@@ -168,10 +168,10 @@ void qtModelView::selectEntities(const QList<std::string>& selIds)
   smtk::model::QEntityItemModel* qmodel =
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
   // Convert selection to UUIDs for faster membership checks:
-  smtk::util::UUIDs selEntities;
+  smtk::common::UUIDs selEntities;
   foreach(std::string strId, selIds)
     {
-    smtk::util::UUID uid = smtk::util::UUID(strId);
+    smtk::common::UUID uid = smtk::common::UUID(strId);
     if (!uid.isNull())
       selEntities.insert(uid);
     }
@@ -209,7 +209,7 @@ void qtModelView::expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx)
 void qtModelView::selectionHelper(
   QEntityItemModel* qmodel,
   const QModelIndex& parentIdx,
-  const smtk::util::UUIDs& selEntities,
+  const smtk::common::UUIDs& selEntities,
   QItemSelection& selItems)
 {
   // For all the children of this index, see if

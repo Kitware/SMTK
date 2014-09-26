@@ -107,7 +107,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     {
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
-    smtk::util::UUID entId = refId->entityId();
+    smtk::common::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
       resultModels->setValue(i, smtkEntry);

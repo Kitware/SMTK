@@ -7,17 +7,15 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Manager.h"
 
-#include "smtk/util/AutoInit.h"
+#include "smtk/AutoInit.h"
 
 // Force the native (default) bridge to be registered
 smtkComponentInitMacro(smtk_native_bridge);
 
+using namespace smtk::common;
+
 namespace smtk {
   namespace model {
-
-using smtk::util::UUID;
-using smtk::util::UUIDs;
-using smtk::util::UUIDArray;
 
 /**\brief Construction requires a container for storage.
   *
@@ -69,7 +67,7 @@ const UUIDsToEntities& BRepModel::topology() const
 /// Entity construction
 //@{
 /// Return a currently-unused UUID (guaranteed not to collide if inserted immediately).
-smtk::util::UUID BRepModel::unusedUUID()
+UUID BRepModel::unusedUUID()
 {
   UUID actual;
   do
@@ -222,7 +220,7 @@ UUID BRepModel::addCellOfDimensionWithUUID(const UUID& uid, int dim)
 /// Queries on entities belonging to the solid.
 //@{
 /// Return the type of entity that the link represents.
-BitFlags BRepModel::type(const smtk::util::UUID& ofEntity) const
+BitFlags BRepModel::type(const UUID& ofEntity) const
 {
   UUIDsToEntities::iterator it = this->m_topology->find(ofEntity);
   return (it == this->m_topology->end() ? INVALID : it->second.entityFlags());
@@ -263,7 +261,7 @@ std::string BRepModel::name(const UUID& ofEntity) const
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimension) const
+UUIDs BRepModel::bordantEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
   UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
@@ -298,7 +296,7 @@ UUIDs BRepModel::bordantEntities(const smtk::util::UUID& ofEntity, int ofDimensi
   *
   * \sa HigherDimensionalBoundaries
   */
-UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDimension) const
+UUIDs BRepModel::bordantEntities(const UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -314,7 +312,7 @@ UUIDs BRepModel::bordantEntities(const smtk::util::UUIDs& ofEntities, int ofDime
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimension) const
+UUIDs BRepModel::boundaryEntities(const UUID& ofEntity, int ofDimension) const
 {
   UUIDs result;
   UUIDsToEntities::const_iterator it = this->m_topology->find(ofEntity);
@@ -349,7 +347,7 @@ UUIDs BRepModel::boundaryEntities(const smtk::util::UUID& ofEntity, int ofDimens
   *
   * \sa LowerDimensionalBoundaries
   */
-UUIDs BRepModel::boundaryEntities(const smtk::util::UUIDs& ofEntities, int ofDimension) const
+UUIDs BRepModel::boundaryEntities(const UUIDs& ofEntities, int ofDimension) const
 {
   UUIDs result;
   std::insert_iterator<UUIDs> inserter(result, result.begin());
@@ -555,7 +553,7 @@ Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges)
   *
   * Returns true upon success, false when the entity did not exist.
   */
-bool BRepModel::erase(const smtk::util::UUID& uid)
+bool BRepModel::erase(const UUID& uid)
 {
   UUIDWithEntity ent = this->m_topology->find(uid);
   if (ent == this->m_topology->end())
@@ -627,7 +625,7 @@ void BRepModel::elideEntityReferences(const UUIDWithEntity& c)
         {
         if (*rit == c->first)
           { // TODO: Notify *bit of imminent elision?
-          *rit = smtk::util::UUID::null();
+          *rit = UUID::null();
           }
         }
       }
@@ -656,7 +654,7 @@ void BRepModel::removeEntityReferences(const UUIDWithEntity& c)
   * that Manager::findOrAddEntityToGroup() does, since BRepModel
   * does not store Arrangement information.
   */
-void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
+void BRepModel::addToGroup(const UUID& groupId, const UUIDs& uids)
 {
   UUIDWithEntity result = this->m_topology->find(groupId);
   if (result == this->m_topology->end())
@@ -676,7 +674,7 @@ void BRepModel::addToGroup(const smtk::util::UUID& groupId, const UUIDs& uids)
   */
 ///@{
 void BRepModel::setFloatProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   smtk::model::Float propValue)
 {
@@ -686,7 +684,7 @@ void BRepModel::setFloatProperty(
 }
 
 void BRepModel::setFloatProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   const smtk::model::FloatList& propValue)
 {
@@ -697,7 +695,7 @@ void BRepModel::setFloatProperty(
 }
 
 smtk::model::FloatList const& BRepModel::floatProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -709,7 +707,7 @@ smtk::model::FloatList const& BRepModel::floatProperty(
 }
 
 smtk::model::FloatList& BRepModel::floatProperty(
-  const smtk::util::UUID& entity, const std::string& propName)
+  const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -721,7 +719,7 @@ smtk::model::FloatList& BRepModel::floatProperty(
 }
 
 bool BRepModel::hasFloatProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   UUIDsToFloatData::const_iterator uit = this->m_floatData->find(entity);
   if (uit == this->m_floatData->end())
@@ -734,7 +732,7 @@ bool BRepModel::hasFloatProperty(
 }
 
 bool BRepModel::removeFloatProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName)
 {
   UUIDsToFloatData::iterator uit = this->m_floatData->find(entity);
@@ -751,18 +749,18 @@ bool BRepModel::removeFloatProperty(
   return true;
 }
 
-const UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const smtk::util::UUID& entity) const
+const UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const UUID& entity) const
 {
   return this->m_floatData->find(entity);
 }
 
-UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const smtk::util::UUID& entity)
+UUIDWithFloatProperties BRepModel::floatPropertiesForEntity(const UUID& entity)
 {
   return this->m_floatData->find(entity);
 }
 
 void BRepModel::setStringProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   const smtk::model::String& propValue)
 {
@@ -772,7 +770,7 @@ void BRepModel::setStringProperty(
 }
 
 void BRepModel::setStringProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   const smtk::model::StringList& propValue)
 {
@@ -783,7 +781,7 @@ void BRepModel::setStringProperty(
 }
 
 smtk::model::StringList const& BRepModel::stringProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -795,7 +793,7 @@ smtk::model::StringList const& BRepModel::stringProperty(
 }
 
 smtk::model::StringList& BRepModel::stringProperty(
-  const smtk::util::UUID& entity, const std::string& propName)
+  const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -807,7 +805,7 @@ smtk::model::StringList& BRepModel::stringProperty(
 }
 
 bool BRepModel::hasStringProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   UUIDsToStringData::const_iterator uit = this->m_stringData->find(entity);
   if (uit == this->m_stringData->end())
@@ -820,7 +818,7 @@ bool BRepModel::hasStringProperty(
 }
 
 bool BRepModel::removeStringProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName)
 {
   UUIDsToStringData::iterator uit = this->m_stringData->find(entity);
@@ -837,18 +835,18 @@ bool BRepModel::removeStringProperty(
   return true;
 }
 
-const UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const smtk::util::UUID& entity) const
+const UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const UUID& entity) const
 {
   return this->m_stringData->find(entity);
 }
 
-UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const smtk::util::UUID& entity)
+UUIDWithStringProperties BRepModel::stringPropertiesForEntity(const UUID& entity)
 {
   return this->m_stringData->find(entity);
 }
 
 void BRepModel::setIntegerProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   smtk::model::Integer propValue)
 {
@@ -858,7 +856,7 @@ void BRepModel::setIntegerProperty(
 }
 
 void BRepModel::setIntegerProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName,
   const smtk::model::IntegerList& propValue)
 {
@@ -869,7 +867,7 @@ void BRepModel::setIntegerProperty(
 }
 
 smtk::model::IntegerList const& BRepModel::integerProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   if (!entity.isNull())
     {
@@ -881,7 +879,7 @@ smtk::model::IntegerList const& BRepModel::integerProperty(
 }
 
 smtk::model::IntegerList& BRepModel::integerProperty(
-  const smtk::util::UUID& entity, const std::string& propName)
+  const UUID& entity, const std::string& propName)
 {
   if (!entity.isNull())
     {
@@ -893,7 +891,7 @@ smtk::model::IntegerList& BRepModel::integerProperty(
 }
 
 bool BRepModel::hasIntegerProperty(
-  const smtk::util::UUID& entity, const std::string& propName) const
+  const UUID& entity, const std::string& propName) const
 {
   UUIDsToIntegerData::const_iterator uit = this->m_integerData->find(entity);
   if (uit == this->m_integerData->end())
@@ -906,7 +904,7 @@ bool BRepModel::hasIntegerProperty(
 }
 
 bool BRepModel::removeIntegerProperty(
-  const smtk::util::UUID& entity,
+  const UUID& entity,
   const std::string& propName)
 {
   UUIDsToIntegerData::iterator uit = this->m_integerData->find(entity);
@@ -923,21 +921,21 @@ bool BRepModel::removeIntegerProperty(
   return true;
 }
 
-const UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util::UUID& entity) const
+const UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const UUID& entity) const
 {
   return this->m_integerData->find(entity);
 }
 
-UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const smtk::util::UUID& entity)
+UUIDWithIntegerProperties BRepModel::integerPropertiesForEntity(const UUID& entity)
 {
   return this->m_integerData->find(entity);
 }
 ///@}
 
 /// Attempt to find a model owning the given entity.
-smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
+UUID BRepModel::modelOwningEntity(const UUID& ent) const
 {
-  smtk::util::UUID uid(ent);
+  UUID uid(ent);
   UUIDsToEntities::const_iterator it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
     {
@@ -949,7 +947,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
       // Assume the first relationship that is a group or model is our owner.
       // Keep going up parent groups until we hit the top.
       for (
-        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
+        UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
@@ -970,7 +968,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
     case INSTANCE_ENTITY:
       // Look for any relationship. We assume the first one is our prototype.
       for (
-        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
+        UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
@@ -987,7 +985,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
     case SHELL_ENTITY:
       // Loop for a relationship to a use.
       for (
-        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
+        UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
@@ -1004,7 +1002,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
     case USE_ENTITY:
       // Look for a relationship to a cell
       for (
-        smtk::model::UUIDArray::const_iterator sit = it->second.relations().begin();
+        UUIDArray::const_iterator sit = it->second.relations().begin();
         sit != it->second.relations().end();
         ++sit)
         {
@@ -1036,10 +1034,10 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
           CursorArrangementOps::appendAllRelations(ModelEntity(store,ent), EMBEDDED_IN, parents);
           if (!parents.empty())
             return parents[0].entity();
-          return smtk::util::UUID::null();
+          return UUID::null();
           }
         // We failed to cast ourselves up. BRepModels may not have hierarchies of models.
-        return smtk::util::UUID::null();
+        return UUID::null();
         }
       break;
     // Remaining types should all have a direct relationship with a model if they are free:
@@ -1051,15 +1049,15 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
     // If none exists, look for relationships with higher-dimensional entities
     // and check *them* for models.
     int dim;
-    smtk::util::UUIDs uids;
+    UUIDs uids;
     uids.insert(it->first);
     for (dim = it->second.dimension(); dim >= 0 && dim < 4; ++dim)
       {
-      for (smtk::util::UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
+      for (UUIDs::iterator uit = uids.begin(); uit != uids.end(); ++uit)
         {
         const Entity* bordEnt = this->findEntity(*uit);
         if (!bordEnt) continue;
-        for (smtk::util::UUIDArray::const_iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
+        for (UUIDArray::const_iterator rit = bordEnt->relations().begin(); rit != bordEnt->relations().end(); ++rit)
           {
           const Entity* relEnt = this->findEntity(*rit);
           if (relEnt && relEnt != bordEnt && (relEnt->entityFlags() & MODEL_ENTITY))
@@ -1072,7 +1070,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
       uids = this->bordantEntities(uids, dim + 1);
       }
     }
-  return smtk::util::UUID::null();
+  return UUID::null();
 }
 
 /**\brief Return a bridge associated with the given model.
@@ -1083,7 +1081,7 @@ smtk::util::UUID BRepModel::modelOwningEntity(const smtk::util::UUID& ent) const
   *
   * \sa Bridge
   */
-BridgePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
+BridgePtr BRepModel::bridgeForModel(const UUID& uid) const
 {
   // See if the passed entity has a bridge.
   UUIDsToBridges::const_iterator it = this->m_modelBridges.find(uid);
@@ -1092,7 +1090,7 @@ BridgePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
 
   // Nope? OK, see if we can go up a tree of models to find a
   // parent that does have a bridge.
-  smtk::util::UUID entry(uid);
+  UUID entry(uid);
   while (
     (entry = this->modelOwningEntity(entry)) &&
     ((it = this->m_modelBridges.find(entry)) == this->m_modelBridges.end()))
@@ -1115,7 +1113,7 @@ BridgePtr BRepModel::bridgeForModel(const smtk::util::UUID& uid) const
   * \sa Bridge
   */
 void BRepModel::setBridgeForModel(
-  BridgePtr bridge, const smtk::util::UUID& uid)
+  BridgePtr bridge, const UUID& uid)
 {
   this->m_modelBridges[uid] = bridge;
 }
@@ -1141,7 +1139,7 @@ void BRepModel::assignDefaultNames()
     }
 }
 
-std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
+std::string BRepModel::assignDefaultName(const UUID& uid)
 {
   UUIDWithEntity it = this->m_topology->find(uid);
   if (it != this->m_topology->end())
@@ -1151,7 +1149,7 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid)
   return std::string();
 }
 
-std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags entityFlags)
+std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
 {
   // If this entity is a model, give it a top-level name
   // (even if it is a submodel of some other model -- for brevity).
@@ -1186,7 +1184,7 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags e
     }
   // Otherwise, use the "owning" model as part of the default name
   // for the entity. First, get the name of the entity's owner:
-  smtk::util::UUID owner(
+  UUID owner(
     this->modelOwningEntity(uid));
   std::string ownerName;
   if (owner)
@@ -1215,7 +1213,7 @@ std::string BRepModel::assignDefaultName(const smtk::util::UUID& uid, BitFlags e
   return defaultName;
 }
 
-std::string BRepModel::shortUUIDName(const smtk::util::UUID& uid, BitFlags entityFlags)
+std::string BRepModel::shortUUIDName(const UUID& uid, BitFlags entityFlags)
 {
   std::string name = Entity::flagSummaryHelper(entityFlags);
   name += "..";
@@ -1250,7 +1248,7 @@ BridgePtr BRepModel::createBridge(const std::string& bname)
   */
 BridgePtr BRepModel::createAndRegisterBridge(
   const std::string& bname,
-  const smtk::util::UUID& bridgeSessionId)
+  const UUID& bridgeSessionId)
 {
   BridgePtr result = BRepModel::createBridge(bname);
   if (result)
@@ -1268,7 +1266,7 @@ bool BRepModel::registerBridgeSession(BridgePtr bridge)
   if (!bridge)
     return false;
 
-  smtk::util::UUID sessId = bridge->sessionId();
+  UUID sessId = bridge->sessionId();
   if (sessId.isNull())
     return false;
 
@@ -1282,7 +1280,7 @@ bool BRepModel::unregisterBridgeSession(BridgePtr bridge)
   if (!bridge)
     return false;
 
-  smtk::util::UUID sessId = bridge->sessionId();
+  UUID sessId = bridge->sessionId();
   if (sessId.isNull())
     return false;
 
@@ -1290,7 +1288,7 @@ bool BRepModel::unregisterBridgeSession(BridgePtr bridge)
 }
 
 /// Find a bridge given its session UUID (or NULL).
-BridgePtr BRepModel::findBridgeSession(const smtk::util::UUID& sessId)
+BridgePtr BRepModel::findBridgeSession(const UUID& sessId)
 {
   UUIDsToBridges::iterator it = this->m_sessions.find(sessId);
   if (it == this->m_sessions.end())
@@ -1305,7 +1303,7 @@ BridgePtr BRepModel::findBridgeSession(const smtk::util::UUID& sessId)
   *
   * These can be passed to BRepModel::findBridgeSession() to retrieve the Bridge.
   */
-smtk::util::UUIDs BRepModel::bridgeSessions() const
+UUIDs BRepModel::bridgeSessions() const
 {
   UUIDs result;
   UUIDsToBridges::const_iterator it;
@@ -1318,7 +1316,7 @@ smtk::util::UUIDs BRepModel::bridgeSessions() const
 
 /// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.
 IntegerList& BRepModel::entityCounts(
-  const smtk::util::UUID& modelId, BitFlags entityFlags)
+  const UUID& modelId, BitFlags entityFlags)
 {
   switch (entityFlags & ENTITY_MASK)
     {
@@ -1344,7 +1342,7 @@ IntegerList& BRepModel::entityCounts(
   *
   * This is an internal method invoked by setEntity and SetEntityOfTypeAndDimension.
   */
-void BRepModel::prepareForEntity(std::pair<smtk::util::UUID,Entity>& entry)
+void BRepModel::prepareForEntity(std::pair<UUID,Entity>& entry)
 {
   if ((entry.second.entityFlags() & CELL_2D) == CELL_2D)
     {

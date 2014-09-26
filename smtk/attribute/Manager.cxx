@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -55,10 +55,10 @@ Manager::~Manager()
  }
 
 //----------------------------------------------------------------------------
-smtk::util::Resource::Type
+smtk::common::Resource::Type
 Manager::resourceType() const
 {
-  return smtk::util::Resource::ATTRIBUTE;
+  return smtk::common::Resource::ATTRIBUTE;
 }
 
 //----------------------------------------------------------------------------
@@ -910,8 +910,8 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
   // But only if the models are the same
   if (info.IsSameModel && ((options & COPY_ASSOCIATIONS) == COPY_ASSOCIATIONS))
     {
-    smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
-    smtk::util::UUIDs::const_iterator it;
+    smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
+    smtk::common::UUIDs::const_iterator it;
     for (it=uuidSet.begin(); it != uuidSet.end(); it++)
       {
       newAtt->associateEntity(*it);

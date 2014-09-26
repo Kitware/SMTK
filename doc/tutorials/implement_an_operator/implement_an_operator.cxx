@@ -1,7 +1,8 @@
 #include "implement_an_operator.h"
 
-#include "smtk/util/AutoInit.h"
-#include "smtk/util/UUID.h"
+#include "smtk/AutoInit.h"
+
+#include "smtk/common/UUID.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
@@ -15,7 +16,7 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include "smtk/options.h"
@@ -26,10 +27,9 @@
 #include "implement_an_operator_xml.h"
 // -- 1 --
 
+using namespace smtk::common;
 using namespace smtk::model;
 using smtk::attribute::IntItem;
-using smtk::util::UUID;
-using smtk::util::UUIDArray;
 
 namespace ex {
 
@@ -85,7 +85,7 @@ void testOperator(ModelEntity model)
 {
   // Get the default bridge for our model manager:
   smtk::model::BridgePtr bridge =
-    model.manager()->bridgeForModel(smtk::util::UUID::null());
+    model.manager()->bridgeForModel(UUID::null());
 
   // Ask the bridge to create an operator:
   ex::CounterOperator::Ptr op =

@@ -10,7 +10,7 @@
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/StringItem.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include <sstream>
 

@@ -35,9 +35,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/util/AttributeWriter.h"
-#include "smtk/util/Logger.h"
+
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 
 #include <iostream>
 
@@ -184,8 +186,8 @@ int main(int argc, char *argv[])
   // Find the expression enabled item
   item = att->item(2);
   vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
-  smtk::util::AttributeWriter writer;
-  smtk::util::Logger logger;
+  smtk::io::AttributeWriter writer;
+  smtk::io::Logger logger;
   if (writer.write(manager, argv[1],logger))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";

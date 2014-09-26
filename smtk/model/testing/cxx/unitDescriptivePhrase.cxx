@@ -3,7 +3,7 @@
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
-#include "smtk/model/ImportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
 
@@ -14,9 +14,10 @@
 #include <stdlib.h>
 
 using smtk::shared_ptr;
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 
 int main(int argc, char* argv[])
 {

@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 using namespace smtk::attribute;
 

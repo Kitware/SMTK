@@ -43,8 +43,8 @@ if __name__ == '__main__':
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
   input_manager = smtk.attribute.Manager()
-  reader = smtk.util.AttributeReader()
-  logger = smtk.util.Logger()
+  reader = smtk.io.AttributeReader()
+  logger = smtk.io.Logger()
   err = reader.read(input_manager, att_path, logger)
   if err:
     logging.error("Unable to load template file")
@@ -99,7 +99,7 @@ if __name__ == '__main__':
   logging.debug('Writing manager')
 
   # Write data out FYI
-  writer = smtk.util.AttributeWriter()
+  writer = smtk.io.AttributeWriter()
   err = writer.write(test_manager, SBI_FILENAME, logger)
   if err:
     logging.error("Unable to write output file")

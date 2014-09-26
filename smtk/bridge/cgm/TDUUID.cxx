@@ -12,7 +12,7 @@ namespace smtk {
     namespace cgm {
 
 UUIDToCGMRef TDUUID::s_reverseLookup;
-smtk::util::UUIDGenerator TDUUID::s_uuidGenerator;
+smtk::common::UUIDGenerator TDUUID::s_uuidGenerator;
 
 /**\brief Attach an SMTK UUID (\a uid) to the CGM \a entity.
   *
@@ -23,7 +23,7 @@ smtk::util::UUIDGenerator TDUUID::s_uuidGenerator;
   * one that is not already in use (according to s_reverseLookup)
   * will be assigned to the \a entity.
   */
-TDUUID::TDUUID(ToolDataUser* entity, const smtk::util::UUID& uid)
+TDUUID::TDUUID(ToolDataUser* entity, const smtk::common::UUID& uid)
   : m_entityId(uid)
 {
   if (this->m_entityId.isNull())
@@ -64,7 +64,7 @@ TDUUID::~TDUUID()
 }
 
 /// Return the SMTK UUID associated with this ToolData (attached to a CGM entity).
-smtk::util::UUID TDUUID::entityId() const
+smtk::common::UUID TDUUID::entityId() const
 {
   return this->m_entityId;
 }
@@ -90,7 +90,7 @@ ToolData* TDUUID::merge(ToolDataUser* other_td_user)
 }
 
 /// Find the CGM entity associated with the given \a uid. May return NULL.
-ToolDataUser* TDUUID::findEntityById(const smtk::util::UUID& uid)
+ToolDataUser* TDUUID::findEntityById(const smtk::common::UUID& uid)
 {
   UUIDToCGMRef::const_iterator it = TDUUID::s_reverseLookup.find(uid);
   return it == TDUUID::s_reverseLookup.end() ? NULL : it->second;
@@ -125,7 +125,7 @@ TDUUID* TDUUID::ofEntity(ToolDataUser* entity, bool createNew)
 /**\brief Throw an exception if the UUID already exists in the reverse lookup.
   *
   */
-void TDUUID::checkForCollision(ToolDataUser* entity, const smtk::util::UUID& uid)
+void TDUUID::checkForCollision(ToolDataUser* entity, const smtk::common::UUID& uid)
 {
   UUIDToCGMRef::const_iterator it = TDUUID::s_reverseLookup.find(uid);
   // See if either the entity already has the same TDUUID or there's a collision.

@@ -2,17 +2,18 @@
 #define __smtk_model_Entity_h
 
 #include "smtk/SMTKCoreExports.h" // for SMTKCORE_EXPORT macro
+#include "smtk/SystemConfig.h"
+
+#include "smtk/common/UUID.h"
+
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
 #include "smtk/model/IntegerData.h" // for IntegerList
-#include "smtk/util/SystemConfig.h"
 
 #include <map>
 #include <set>
 #include <string>
 #include <sstream>
 #include <vector>
-
-#include "smtk/util/UUID.h"
 
 namespace smtk {
   namespace model {
@@ -40,14 +41,14 @@ public:
   BitFlags entityFlags() const;
   bool setEntityFlags(BitFlags flags);
 
-  smtk::util::UUIDArray& relations();
-  const smtk::util::UUIDArray& relations() const;
+  smtk::common::UUIDArray& relations();
+  const smtk::common::UUIDArray& relations() const;
 
-  int appendRelation(const smtk::util::UUID& b);
-  Entity& pushRelation(const smtk::util::UUID& b);
-  Entity& removeRelation(const smtk::util::UUID& b);
+  int appendRelation(const smtk::common::UUID& b);
+  Entity& pushRelation(const smtk::common::UUID& b);
+  Entity& removeRelation(const smtk::common::UUID& b);
 
-  int findOrAppendRelation(const smtk::util::UUID& r);
+  int findOrAppendRelation(const smtk::common::UUID& r);
 
   std::string flagSummary(int form = 0) const
     { return Entity::flagSummary(this->entityFlags(), form); }
@@ -62,12 +63,12 @@ public:
 
 protected:
   BitFlags m_entityFlags;
-  smtk::util::UUIDArray m_relations;
+  smtk::common::UUIDArray m_relations;
 private:
 };
 
 /// An abbreviation for the record type used by maps of Entity records.
-typedef std::pair<smtk::util::UUID,Entity> UUIDEntityPair;
+typedef std::pair<smtk::common::UUID,Entity> UUIDEntityPair;
 
   } // namespace model
 } // namespace smtk

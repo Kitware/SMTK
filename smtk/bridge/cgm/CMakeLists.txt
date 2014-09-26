@@ -86,11 +86,13 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
     LOCAL_INCLUDE_DIRECTORIES
+      ${SMTK_SOURCE_DIR}/smtk/common
       ${SMTK_SOURCE_DIR}/smtk/attribute
+      ${SMTK_SOURCE_DIR}/smtk/model
       ${SMTK_SOURCE_DIR}/smtk/bridge
       ${SMTK_SOURCE_DIR}/smtk/bridge/cgm
-      ${SMTK_SOURCE_DIR}/smtk/model
-      ${SMTK_SOURCE_DIR}/smtk/util
+      ${SMTK_SOURCE_DIR}/smtk/simulation
+      ${SMTK_SOURCE_DIR}/smtk/io
       ${SMTK_SOURCE_DIR}/smtk/view
       ${SMTK_SOURCE_DIR}/smtk
       ${SMTK_BINARY_DIR}/smtk

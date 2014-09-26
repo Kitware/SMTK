@@ -40,9 +40,6 @@ add_test(unitDefaultBridge ${EXECUTABLE_OUTPUT_PATH}/unitDefaultBridge)
 add_executable(unitDescriptivePhrase unitDescriptivePhrase.cxx)
 target_link_libraries(unitDescriptivePhrase SMTKCore SMTKCoreModelTesting)
 
-add_executable(unitImportExportJSON unitImportExportJSON.cxx)
-target_link_libraries(unitImportExportJSON SMTKCore)
-
 add_executable(unitArrangement unitArrangement.cxx)
 target_link_libraries(unitArrangement SMTKCore)
 add_test(unitArrangement ${EXECUTABLE_OUTPUT_PATH}/unitArrangement)

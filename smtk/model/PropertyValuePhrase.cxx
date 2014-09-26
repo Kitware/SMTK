@@ -104,7 +104,7 @@ std::string PropertyValuePhrase::subtitle()
   return message.str();
 }
 
-smtk::util::UUID PropertyValuePhrase::relatedEntityId() const
+smtk::common::UUID PropertyValuePhrase::relatedEntityId() const
 {
   return this->relatedEntity().entity();
 }

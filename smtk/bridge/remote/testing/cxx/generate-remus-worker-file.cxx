@@ -2,7 +2,7 @@
 
 #include "smtk/options.h"
 
-#include "smtk/util/AutoInit.h"
+#include "smtk/AutoInit.h"
 
 #ifdef SMTK_USE_CGM
 // If CGM is included in the build, ensure that it is loaded
