@@ -18,7 +18,14 @@
 #include "smtk/model/Entity.h"
 
 #ifdef SMTK_HASH_STORAGE
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (push)
+#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
+#  endif
 #  include "sparsehash/sparse_hash_map"
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (pop)
+#  endif
 #endif // SMTK_HASH_STORAGE
 
 #include <map>

@@ -14,7 +14,18 @@
 
 #include "smtk/common/UUID.h"
 
-#include "sparsehash/sparse_hash_map"
+#ifdef SMTK_HASH_STORAGE
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (push)
+#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
+#  endif
+#  include "sparsehash/sparse_hash_map"
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (pop)
+#  endif
+#else // SMTK_HASH_STORAGE
+#  include <map>
+#endif // SMTK_HASH_STORAGE
 
 #include <string>
 #include <vector>
@@ -24,8 +35,13 @@ namespace smtk {
 
     typedef std::string String;
     typedef std::vector<String> StringList;
+#ifdef SMTK_HASH_STORAGE
     typedef google::sparse_hash_map<std::string,StringList> StringData;
     typedef google::sparse_hash_map<smtk::common::UUID,StringData> UUIDsToStringData;
+#else // SMTK_HASH_STORAGE
+    typedef std::map<std::string,StringList> StringData;
+    typedef std::map<smtk::common::UUID,StringData> UUIDsToStringData;
+#endif // SMTK_HASH_STORAGE
 
     typedef UUIDsToStringData::iterator UUIDWithStringProperties;
     typedef StringData::iterator PropertyNameWithStrings;

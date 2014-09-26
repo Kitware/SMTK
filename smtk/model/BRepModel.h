@@ -27,7 +27,14 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #ifdef SMTK_HASH_STORAGE
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (push)
+#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
+#  endif
 #  include "sparsehash/sparse_hash_map"
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (pop)
+#  endif
 #else
 #  include <map>
 #endif
