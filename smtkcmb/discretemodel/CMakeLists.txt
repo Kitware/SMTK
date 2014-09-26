@@ -1,4 +1,4 @@
-PROJECT(DiscreteModel)
+PROJECT(SMTKDiscreteModel)
 
 # The configured header file used to pass CMake settings to the source code.
 configure_file(
@@ -169,12 +169,12 @@ set(_module_src
   vtkDiscreteModelWrapper.cxx
 )
 
-set(vtkDiscreteModel_NO_HeaderTest 1)
-vtk_module_library(vtkDiscreteModel ${_module_src})
+set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
+vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
 
-target_link_libraries(vtkDiscreteModel LINK_PRIVATE ${UUID_LIBS})
+target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 
-target_include_directories(vtkDiscreteModel PUBLIC
+target_include_directories(vtkSMTKDiscreteModel PUBLIC
   ${PROJECT_SOURCE_DIR}
   ${PROJECT_SOURCE_DIR}/Serialize
   ${PROJECT_SOURCE_DIR}/Model

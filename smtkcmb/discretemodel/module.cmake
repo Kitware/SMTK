@@ -1,4 +1,4 @@
-vtk_module(vtkDiscreteModel
+vtk_module(vtkSMTKDiscreteModel
   GROUPS
    CmbCore
   DEPENDS
