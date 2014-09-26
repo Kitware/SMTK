@@ -23,8 +23,8 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __ResourceSetReader_h
-#define __ResourceSetReader_h
+#ifndef __smtk_io_ResourceSetReader_h
+#define __smtk_io_ResourceSetReader_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -71,4 +71,4 @@ class SMTKCORE_EXPORT ResourceSetReader
   }  // namespace io
 }  // namespace smtk
 
-#endif /* __ResourceSetReader_h */
+#endif // __smtk_io_ResourceSetReader_h

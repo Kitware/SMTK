@@ -1,5 +1,5 @@
-#ifndef __smtk_model_ImportJSON_h
-#define __smtk_model_ImportJSON_h
+#ifndef __smtk_io_ImportJSON_h
+#define __smtk_io_ImportJSON_h
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
@@ -45,4 +45,4 @@ public:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_ImportJSON_h
+#endif // __smtk_io_ImportJSON_h

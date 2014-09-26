@@ -1,5 +1,5 @@
-#ifndef __smtk_model_ExportJSON_h
-#define __smtk_model_ExportJSON_h
+#ifndef __smtk_io_ExportJSON_h
+#define __smtk_io_ExportJSON_h
 
 #include "smtk/SMTKCoreExports.h" // For SMTKCORE_EXPORT macro.
 #include "smtk/SystemConfig.h"
@@ -66,4 +66,4 @@ public:
   } // namespace model
 } // namespace smtk
 
-#endif // __smtk_model_ExportJSON_h
+#endif // __smtk_io_ExportJSON_h

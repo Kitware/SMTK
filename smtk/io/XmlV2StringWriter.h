@@ -24,8 +24,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __smtk_attribute_XmlV2StringWriter_h
-#define __smtk_attribute_XmlV2StringWriter_h
+#ifndef __smtk_io_XmlV2StringWriter_h
+#define __smtk_io_XmlV2StringWriter_h
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
@@ -169,4 +169,4 @@ namespace smtk
 }
 
 
-#endif /* __smtk_attribute_XmlV2StringWriter_h */
+#endif // __smtk_io_XmlV2StringWriter_h

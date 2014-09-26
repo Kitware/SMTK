@@ -23,8 +23,8 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // .SECTION See Also
 
-#ifndef __ResourceSetWriter_h
-#define __ResourceSetWriter_h
+#ifndef __smtk_io_ResourceSetWriter_h
+#define __smtk_io_ResourceSetWriter_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -53,4 +53,4 @@ class SMTKCORE_EXPORT ResourceSetWriter
   }  // namespace io
 }  // namespace smtk
 
-#endif /* __ResourceSetWriter_h */
+#endif // __smtk_io_ResourceSetWriter_h

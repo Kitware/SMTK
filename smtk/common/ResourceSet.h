@@ -19,12 +19,8 @@ PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
 "AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
 PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 =========================================================================*/
-// .NAME ResourceSet.h - Container for SMTK resources
-// .SECTION Description
-// .SECTION See Also
-
-#ifndef __ResourceSet_h
-#define __ResourceSet_h
+#ifndef __smtk_common_ResourceSet_h
+#define __smtk_common_ResourceSet_h
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/SystemConfig.h"
@@ -41,6 +37,13 @@ namespace smtk {
 
 struct ResourceWrapper;  // defined in ResourceSet.cxx
 
+/**\brief A container for SMTK resources.
+  *
+  * A resource set provides methods for tracking the
+  * type and location of resources used to prepare a
+  * simulation input deck; and for loading the resources
+  * as required when the input deck is being processed.
+  */
 class SMTKCORE_EXPORT ResourceSet
 {
  public:
@@ -106,4 +109,4 @@ class SMTKCORE_EXPORT ResourceSet
   }  // namespace common
 }  // namespace smtk
 
-#endif  /* __ResourceSet_h */
+#endif  // __smtk_common_ResourceSet_h
