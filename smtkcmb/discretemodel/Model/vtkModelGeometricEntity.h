@@ -28,12 +28,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // server/client, respectively in the GEOMETRIC() vtkInformationObjectBaseKey.
 // Use a SafeDownCast() to determine which one.
 
-#ifndef __vtkModelGeometricEntity_h
-#define __vtkModelGeometricEntity_h
+#ifndef __smtkcmb_vtkModelGeometricEntity_h
+#define __smtkcmb_vtkModelGeometricEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkIdList;
 class vtkProperty;

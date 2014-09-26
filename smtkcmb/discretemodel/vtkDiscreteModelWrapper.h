@@ -37,14 +37,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION See Also
 // vtkDiscreteModel, vtkCMBModelMapper
 
-#ifndef __vtkDiscreteModelWrapper_h
-#define __vtkDiscreteModelWrapper_h
+#ifndef __smtkcmb_vtkDiscreteModelWrapper_h
+#define __smtkcmb_vtkDiscreteModelWrapper_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDataObjectTree.h"
 #include "vtkSmartPointer.h"
 #include "vtkWeakPointer.h"
-#include "cmbSystemConfig.h"
+
 #include <map>
 #include <vector>
 #include <set>

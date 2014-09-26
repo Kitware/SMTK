@@ -36,13 +36,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // that are adjacent to an internal model face (i.e. a model
 // face that is adjacent to 2 model regions).
 
-#ifndef __vtkModelBCGridRepresentation_h
-#define __vtkModelBCGridRepresentation_h
+#ifndef __smtkcmb_vtkModelBCGridRepresentation_h
+#define __smtkcmb_vtkModelBCGridRepresentation_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
 #include "vtkSmartPointer.h"
-#include "cmbSystemConfig.h"
+
 #include <map>
 #include <set>
 

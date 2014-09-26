@@ -25,12 +25,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelFaceUse -
 // .SECTION Description
 
-#ifndef __vtkModelFaceUse_h
-#define __vtkModelFaceUse_h
+#ifndef __smtkcmb_vtkModelFaceUse_h
+#define __smtkcmb_vtkModelFaceUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkModelEdgeUse;
 class vtkModelFace;

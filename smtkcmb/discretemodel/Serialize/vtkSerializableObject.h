@@ -85,12 +85,12 @@
 // The serializer also supports versioning. You can get the version of the
 // archive being written or read using vtkSerializer::GetArchiveVersion()
 
-#ifndef __vtkSerializableObject_h
-#define __vtkSerializableObject_h
+#ifndef __smtkcmb_vtkSerializableObject_h
+#define __smtkcmb_vtkSerializableObject_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkSerializer;
 

@@ -27,13 +27,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Query on mesh point ids to see what model vertex it represents.
 // Can also add new model vertices to the DiscerteModel
 
-#ifndef __ModelVertexClassification_H
-#define __ModelVertexClassification_H
+#ifndef __smtkcmb_ModelVertexClassification_H
+#define __smtkcmb_ModelVertexClassification_H
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType
 #include <map> //need to store the set of point ids
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;

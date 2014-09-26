@@ -25,12 +25,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelLoopUse - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __vtkModelLoopUse_h
-#define __vtkModelLoopUse_h
+#ifndef __smtkcmb_vtkModelLoopUse_h
+#define __smtkcmb_vtkModelLoopUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkModelEdgeUse;
 class vtkModelFace;

@@ -31,12 +31,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // the faceuse.  outerloop directions are opposite (e.g. eu1+, eu2-, eu3+
 // for faceuse1 will have eu1-, eu3-, eu2+).
 
-#ifndef __vtkModelFace_h
-#define __vtkModelFace_h
+#ifndef __smtkcmb_vtkModelFace_h
+#define __smtkcmb_vtkModelFace_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
-#include "cmbSystemConfig.h"
+
 
 #include <set>
 #include <vector>

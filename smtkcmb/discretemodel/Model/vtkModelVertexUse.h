@@ -25,12 +25,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelVertexUse - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __vtkModelVertexUse_h
-#define __vtkModelVertexUse_h
+#ifndef __smtkcmb_vtkModelVertexUse_h
+#define __smtkcmb_vtkModelVertexUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkModelEdgeUse;
 class vtkModelVertex;

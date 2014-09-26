@@ -30,12 +30,12 @@
 // .SECTION See Also
 // vtkSerializer vtkXMLArchiveWriter
 
-#ifndef __vtkXMLModelReader_h
-#define __vtkXMLModelReader_h
+#ifndef __smtkcmb_vtkXMLModelReader_h
+#define __smtkcmb_vtkXMLModelReader_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
-#include "cmbSystemConfig.h"
+
 
 //BTX
 class vtkDiscreteModel;

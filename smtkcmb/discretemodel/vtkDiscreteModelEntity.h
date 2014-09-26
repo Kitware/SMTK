@@ -25,12 +25,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkDiscreteModelEntity -
 // .SECTION Description
 
-#ifndef __vtkDiscreteModelEntity_h
-#define __vtkDiscreteModelEntity_h
+#ifndef __smtkcmb_vtkDiscreteModelEntity_h
+#define __smtkcmb_vtkDiscreteModelEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModelEntityGroup;
 class vtkModelEntity;

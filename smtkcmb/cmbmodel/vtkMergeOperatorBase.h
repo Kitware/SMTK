@@ -29,12 +29,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // (e.g. color, BCS/ModelEntityGroup associations) will not be changed.
 
 
-#ifndef __vtkMergeOperatorBase_h
-#define __vtkMergeOperatorBase_h
+#ifndef __smtkcmb_vtkMergeOperatorBase_h
+#define __smtkcmb_vtkMergeOperatorBase_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;

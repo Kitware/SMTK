@@ -22,13 +22,13 @@
 // .SECTION Description
 // This is used by vtkModelXMLParser to represent an XML document starting
 // at the root element.
-#ifndef __vtkXMLElement_h
-#define __vtkXMLElement_h
+#ifndef __smtkcmb_vtkXMLElement_h
+#define __smtkcmb_vtkXMLElement_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" // needed for vtkStdString.
-#include "cmbSystemConfig.h"
+
 
 class vtkCollection;
 class vtkModelXMLParser;

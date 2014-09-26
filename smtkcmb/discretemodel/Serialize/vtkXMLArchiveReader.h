@@ -36,12 +36,12 @@
 // .SECTION See Also
 // vtkSerializer vtkXMLArchiveWriter
 
-#ifndef __vtkXMLArchiveReader_h
-#define __vtkXMLArchiveReader_h
+#ifndef __smtkcmb_vtkXMLArchiveReader_h
+#define __smtkcmb_vtkXMLArchiveReader_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
-#include "cmbSystemConfig.h"
+
 
 //BTX
 class vtkXMLElement;

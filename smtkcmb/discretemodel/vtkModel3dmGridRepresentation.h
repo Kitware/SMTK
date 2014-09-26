@@ -33,12 +33,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // It also assumes that the boundary mesh is either lines, tris, or quads.
 // Currently it does not handle floating edges.
 
-#ifndef __vtkModel3dmGridRepresentation_h
-#define __vtkModel3dmGridRepresentation_h
+#ifndef __smtkcmb_vtkModel3dmGridRepresentation_h
+#define __smtkcmb_vtkModel3dmGridRepresentation_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkIdTypeArray;
 class vtkCharArray;

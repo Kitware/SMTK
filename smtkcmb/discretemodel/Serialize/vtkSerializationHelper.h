@@ -29,12 +29,12 @@
 // .SECTION See Also
 // vtkSerializationHelperMap
 
-#ifndef __vtkSerializationHelper_h
-#define __vtkSerializationHelper_h
+#ifndef __smtkcmb_vtkSerializationHelper_h
+#define __smtkcmb_vtkSerializationHelper_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkSerializer;
 

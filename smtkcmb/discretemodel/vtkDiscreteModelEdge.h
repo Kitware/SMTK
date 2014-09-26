@@ -25,13 +25,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkDiscreteModelEdge - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __vtkDiscreteModelEdge_h
-#define __vtkDiscreteModelEdge_h
+#ifndef __smtkcmb_vtkDiscreteModelEdge_h
+#define __smtkcmb_vtkDiscreteModelEdge_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelEdge.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkModelEdgeUse;
 class vtkModelItemIterator;

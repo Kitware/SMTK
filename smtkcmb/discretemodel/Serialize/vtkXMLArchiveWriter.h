@@ -58,12 +58,12 @@
 // .SECTION See Also
 // vtkSerializer
 
-#ifndef __vtkXMLArchiveWriter_h
-#define __vtkXMLArchiveWriter_h
+#ifndef __smtkcmb_vtkXMLArchiveWriter_h
+#define __smtkcmb_vtkXMLArchiveWriter_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializer.h"
-#include "cmbSystemConfig.h"
+
 
 #include <vector> // Vector of smart pointers
 #include "vtkSmartPointer.h" // Vector of smart pointers

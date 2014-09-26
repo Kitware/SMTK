@@ -47,12 +47,12 @@
 // </ConceptualModel>
 // \endcode
 
-#ifndef __vtkXMLModelWriter_h
-#define __vtkXMLModelWriter_h
+#ifndef __smtkcmb_vtkXMLModelWriter_h
+#define __smtkcmb_vtkXMLModelWriter_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
-#include "cmbSystemConfig.h"
+
 
 #include <vector> // Vector of smart pointers
 #include <vtksys/ios/sstream>

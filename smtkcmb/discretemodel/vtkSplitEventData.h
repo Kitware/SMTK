@@ -32,11 +32,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // (e.g. split based on angle) then the event will be triggered
 // multiple times.
 
-#ifndef __vtkSplitEventData_h
-#define __vtkSplitEventData_h
+#ifndef __smtkcmb_vtkSplitEventData_h
+#define __smtkcmb_vtkSplitEventData_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
-#include "cmbSystemConfig.h"
+
 #include "vtkObject.h"
 
 class vtkIdList;

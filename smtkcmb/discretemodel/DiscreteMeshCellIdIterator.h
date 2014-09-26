@@ -23,12 +23,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 =========================================================================*/
 
-#ifndef __DiscreteMeshCellIdIterator_h
-#define __DiscreteMeshCellIdIterator_h
+#ifndef __smtkcmb_DiscreteMeshCellIdIterator_h
+#define __smtkcmb_DiscreteMeshCellIdIterator_h
 
 #include <iterator> //needed for custom iterator
 #include <vtkType.h> //needed for vtkIdType
-#include "cmbSystemConfig.h"
+
 
 namespace detail
 {

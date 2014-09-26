@@ -27,12 +27,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Front end for the readers.  Reads in a vtkPolyData and then figures
 // out how to parse that vtkPolyData.
 
-#ifndef __vtkCMBModelReader_h
-#define __vtkCMBModelReader_h
+#ifndef __smtkcmb_vtkCMBModelReader_h
+#define __smtkcmb_vtkCMBModelReader_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
+
 
 class VTKSMTKCMBMODEL_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
 {

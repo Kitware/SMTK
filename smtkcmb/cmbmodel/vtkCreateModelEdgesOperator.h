@@ -26,13 +26,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Operator to create model edges on the server for a model that contains model regions
 
-#ifndef __vtkCreateModelEdgesOperator_h
-#define __vtkCreateModelEdgesOperator_h
+#ifndef __smtkcmb_vtkCreateModelEdgesOperator_h
+#define __smtkcmb_vtkCreateModelEdgesOperator_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 #include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
-#include "cmbSystemConfig.h"
+
 
 class vtkIdTypeArray;
 class vtkDiscreteModelWrapper;

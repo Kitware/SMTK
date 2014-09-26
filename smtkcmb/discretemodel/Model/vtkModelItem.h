@@ -28,12 +28,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // for storing associations to other model entities and iterating
 // over the associated objects.
 
-#ifndef __vtkModelItem_h
-#define __vtkModelItem_h
+#ifndef __smtkcmb_vtkModelItem_h
+#define __smtkcmb_vtkModelItem_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "../Serialize/vtkSerializableObject.h"
-#include "cmbSystemConfig.h"
+
 
 struct vtkModelItemInternals;
 class vtkIdList;

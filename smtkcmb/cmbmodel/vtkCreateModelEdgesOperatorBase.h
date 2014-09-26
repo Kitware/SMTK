@@ -26,12 +26,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Operator to extract the model edges of a model that also consists of model regions
 
-#ifndef __vtkCreateModelEdgesOperatorBase_h
-#define __vtkCreateModelEdgesOperatorBase_h
+#ifndef __smtkcmb_vtkCreateModelEdgesOperatorBase_h
+#define __smtkcmb_vtkCreateModelEdgesOperatorBase_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 

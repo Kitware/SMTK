@@ -27,11 +27,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Helper class with functions for setting and getting a user name
 // for a vtkModelEntity.
 
-#ifndef __vtkModelUserName_h
-#define __vtkModelUserName_h
+#ifndef __smtkcmb_vtkModelUserName_h
+#define __smtkcmb_vtkModelUserName_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
-#include "cmbSystemConfig.h"
+
 #include "vtkObject.h"
 
 class vtkInformationStringKey;

@@ -25,13 +25,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkDiscreteModelVertex - CMB specific model vertex class.
 // .SECTION Description
 
-#ifndef __vtkDiscreteModelVertex_h
-#define __vtkDiscreteModelVertex_h
+#ifndef __smtkcmb_vtkDiscreteModelVertex_h
+#define __smtkcmb_vtkDiscreteModelVertex_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelVertex.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkInformationIdTypeKey;
 

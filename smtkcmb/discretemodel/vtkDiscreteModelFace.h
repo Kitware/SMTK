@@ -25,14 +25,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkDiscreteModelFace - A model face based on a polydata representation.
 // .SECTION Description
 
-#ifndef __vtkDiscreteModelFace_h
-#define __vtkDiscreteModelFace_h
+#ifndef __smtkcmb_vtkDiscreteModelFace_h
+#define __smtkcmb_vtkDiscreteModelFace_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "ModelEdgeHelper.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModelEdge;
 class vtkDiscreteModelFaceUse;

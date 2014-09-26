@@ -27,8 +27,8 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // The implementation of a mesh that can represent 2D/3D or mixed type
 // models.
 
-#ifndef __DISCRETEMESH_H
-#define __DISCRETEMESH_H
+#ifndef __smtkcmb_DISCRETEMESH_H
+#define __smtkcmb_DISCRETEMESH_H
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 
@@ -38,7 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkStdString.h"  // needed for FileName
 #include <vector> //needed for Face and FaceIds;
 #include <map> //needed for the edge storage
-#include "cmbSystemConfig.h"
+
 
 class vtkCell;
 class vtkCellLocator;

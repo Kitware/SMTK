@@ -26,13 +26,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Parse a vtkPolyData that was read in from a CMB version 1 file.
 
-#ifndef __vtkCMBParserV2_h
-#define __vtkCMBParserV2_h
+#ifndef __smtkcmb_vtkCMBParserV2_h
+#define __smtkcmb_vtkCMBParserV2_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 class vtkModelEntity;

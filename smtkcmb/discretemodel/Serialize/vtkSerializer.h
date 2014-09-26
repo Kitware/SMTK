@@ -35,12 +35,12 @@
 // .SECTION See Also
 // vtkSerializableObject vtkSerializationHelper vtkSerializationHelperMap
 
-#ifndef __vtkSerializer_h
-#define __vtkSerializer_h
+#ifndef __smtkcmb_vtkSerializer_h
+#define __smtkcmb_vtkSerializer_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 #include "vtkSmartPointer.h" // For collections
 #include <vector> // For vectors

@@ -38,12 +38,12 @@
 // ConvertBinaryUUIDToString.
 // Note: The MAC address code comes from gdcm (see the copyright above).
 
-#ifndef __vtkUUID_h
-#define __vtkUUID_h
+#ifndef __smtkcmb_vtkUUID_h
+#define __smtkcmb_vtkUUID_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class VTKSMTKDISCRETEMODEL_EXPORT vtkUUID : public vtkObject
 {

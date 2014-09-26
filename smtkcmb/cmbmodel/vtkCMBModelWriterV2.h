@@ -40,13 +40,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // number of model entities in last model entity group
 // the Ids of the model entities in the last group
 
-#ifndef __vtkCMBModelWriterV2_h
-#define __vtkCMBModelWriterV2_h
+#ifndef __smtkcmb_vtkCMBModelWriterV2_h
+#define __smtkcmb_vtkCMBModelWriterV2_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include <vector>
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 class vtkCMBModelWriterBase;

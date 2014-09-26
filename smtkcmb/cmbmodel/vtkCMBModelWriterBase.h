@@ -29,12 +29,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // information included in the field data.  It writes out the current
 // version unless specified otherwise.
 
-#ifndef __vtkCMBModelWriterBase_h
-#define __vtkCMBModelWriterBase_h
+#ifndef __smtkcmb_vtkCMBModelWriterBase_h
+#define __smtkcmb_vtkCMBModelWriterBase_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModelWrapper;
 class vtkPolyData;

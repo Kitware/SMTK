@@ -26,13 +26,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Operator to split a model face given an angle.
 
-#ifndef __vtkSplitOperatorBase_h
-#define __vtkSplitOperatorBase_h
+#ifndef __smtkcmb_vtkSplitOperatorBase_h
+#define __smtkcmb_vtkSplitOperatorBase_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "ModelEdgeHelper.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModel;
 class vtkIdTypeArray;

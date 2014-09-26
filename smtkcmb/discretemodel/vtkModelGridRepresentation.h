@@ -28,11 +28,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // to keep track of mapping grid objects from the geometry grid to the
 // analysis grid.
 
-#ifndef __vtkModelGridRepresentation_h
-#define __vtkModelGridRepresentation_h
+#ifndef __smtkcmb_vtkModelGridRepresentation_h
+#define __smtkcmb_vtkModelGridRepresentation_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
-#include "cmbSystemConfig.h"
+
 #include <vtkObject.h>
 
 class vtkDiscreteModel;

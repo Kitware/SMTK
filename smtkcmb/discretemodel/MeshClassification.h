@@ -1,9 +1,9 @@
-#ifndef __MESHCLASSIFICATION_H
-#define __MESHCLASSIFICATION_H
+#ifndef __smtkcmb_MESHCLASSIFICATION_H
+#define __smtkcmb_MESHCLASSIFICATION_H
 
 #include "vtkType.h"
 #include <vector> //needed for vector
-#include "cmbSystemConfig.h"
+
 
 template<class EntityType>
 class MeshClassification

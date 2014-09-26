@@ -27,12 +27,12 @@
 // .SECTION See Also
 // vtkSerializationHelperMap vtkSerializationHelper
 
-#ifndef __vtkRenderingSerializationHelper_h
-#define __vtkRenderingSerializationHelper_h
+#ifndef __smtkcmb_vtkRenderingSerializationHelper_h
+#define __smtkcmb_vtkRenderingSerializationHelper_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkCamera;
 class vtkSerializer;

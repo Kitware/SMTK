@@ -30,12 +30,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // of the SourceEntity and TargetEntity and will be destroyed during
 // the merge operation.
 
-#ifndef __vtkMergeEventData_h
-#define __vtkMergeEventData_h
+#ifndef __smtkcmb_vtkMergeEventData_h
+#define __smtkcmb_vtkMergeEventData_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkIdTypeArray;
 class vtkDiscreteModelGeometricEntity;

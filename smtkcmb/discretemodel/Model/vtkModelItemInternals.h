@@ -26,7 +26,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <list>
 
 #include <vtkSmartPointer.h>
-#include "cmbSystemConfig.h"
+
 
 //BTX
 struct vtkModelItemInternals

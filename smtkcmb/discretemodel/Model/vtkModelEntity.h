@@ -30,12 +30,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // (e.g. UserName) but has to make sure to add the InformationKey
 // in the Serialize Reader.
 
-#ifndef __vtkModelEntity_h
-#define __vtkModelEntity_h
+#ifndef __smtkcmb_vtkModelEntity_h
+#define __smtkcmb_vtkModelEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkInformationDoubleVectorKey;
 class vtkInformationIdTypeKey;

@@ -25,15 +25,15 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME MODELEDGEHELPER - Helper Classes for creating model edges
 // .SECTION Description
 // Includes NewModelEdgeInfo and LoopInfo
-#ifndef __MODELEDGEHELPER_H
-#define __MODELEDGEHELPER_H
+#ifndef __smtkcmb_MODELEDGEHELPER_H
+#define __smtkcmb_MODELEDGEHELPER_H
 
 #include <vtkIdList.h>
 #include <vtksys/MD5.h>
 
 #include "vtkIdTypeArray.h"
 #include "vtkSmartPointer.h"
-#include "cmbSystemConfig.h"
+
 
 #include <algorithm>
 #include <map>

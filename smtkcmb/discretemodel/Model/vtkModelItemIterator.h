@@ -37,12 +37,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // Note that the iterator must be deleted when the user is done
 // using it to avoid a memory leak.
 
-#ifndef __vtkModelItemIterator_h
-#define __vtkModelItemIterator_h
+#ifndef __smtkcmb_vtkModelItemIterator_h
+#define __smtkcmb_vtkModelItemIterator_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
+
 
 //BTX
 class vtkModelItem;

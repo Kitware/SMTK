@@ -25,11 +25,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelMaterial -
 // .SECTION Description
 
-#ifndef __vtkModelMaterial_h
-#define __vtkModelMaterial_h
+#ifndef __smtkcmb_vtkModelMaterial_h
+#define __smtkcmb_vtkModelMaterial_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
-#include "cmbSystemConfig.h"
+
 #include "vtkModelEntity.h"
 
 class vtkInformationStringKey;

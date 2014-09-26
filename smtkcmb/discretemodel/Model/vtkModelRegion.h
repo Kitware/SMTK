@@ -25,12 +25,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkModelRegion - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __vtkModelRegion_h
-#define __vtkModelRegion_h
+#ifndef __smtkcmb_vtkModelRegion_h
+#define __smtkcmb_vtkModelRegion_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkIdList;
 class vtkModelItemIterator;

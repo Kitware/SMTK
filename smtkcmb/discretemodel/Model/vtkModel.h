@@ -42,12 +42,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // in a valid state.  Lower dimensional entities will have their
 // boundary modified event triggered before higher dimensional entities.
 
-#ifndef __vtkModel_h
-#define __vtkModel_h
+#ifndef __smtkcmb_vtkModel_h
+#define __smtkcmb_vtkModel_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
-#include "cmbSystemConfig.h"
+
 #include <vector>
 
 class vtkModelGeometricEntity;

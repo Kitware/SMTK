@@ -31,12 +31,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // vtkDiscreteModelWrapper to access the model on the server from the
 // client.
 
-#ifndef __vtkDiscreteModel_h
-#define __vtkDiscreteModel_h
+#ifndef __smtkcmb_vtkDiscreteModel_h
+#define __smtkcmb_vtkDiscreteModel_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkCharArray;
 class vtkModelGridRepresentation;

@@ -25,13 +25,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .NAME vtkDiscreteModelRegion -
 // .SECTION Description
 
-#ifndef __vtkDiscreteModelRegion_h
-#define __vtkDiscreteModelRegion_h
+#ifndef __smtkcmb_vtkDiscreteModelRegion_h
+#define __smtkcmb_vtkDiscreteModelRegion_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelRegion.h"
 #include "vtkDiscreteModelGeometricEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkInformationStringKey;
 

@@ -29,12 +29,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // model edge use that is in the opposite direction (i.e. they combine
 // to be a model edge use pair).
 
-#ifndef __vtkModelEdgeUse_h
-#define __vtkModelEdgeUse_h
+#ifndef __smtkcmb_vtkModelEdgeUse_h
+#define __smtkcmb_vtkModelEdgeUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkInformationIntegerKey;
 class vtkInformationKey;

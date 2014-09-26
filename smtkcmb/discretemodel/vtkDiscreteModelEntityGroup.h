@@ -29,12 +29,12 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // types storing an association to this.  Note that a vtkModelEntity can
 // belong to multiple vtkDiscreteModelEntityGroups (including none at all).
 
-#ifndef __vtkDiscreteModelEntityGroup_h
-#define __vtkDiscreteModelEntityGroup_h
+#ifndef __smtkcmb_vtkDiscreteModelEntityGroup_h
+#define __smtkcmb_vtkDiscreteModelEntityGroup_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
-#include "cmbSystemConfig.h"
+
 
 class vtkDiscreteModelEntity;
 

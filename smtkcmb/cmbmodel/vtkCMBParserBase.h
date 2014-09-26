@@ -26,14 +26,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 // .SECTION Description
 // Abstract base class for parsing a vtkPolyData to create a vtkDiscreteModel.
 
-#ifndef __vtkCMBParserBase_h
-#define __vtkCMBParserBase_h
+#ifndef __smtkcmb_vtkCMBParserBase_h
+#define __smtkcmb_vtkCMBParserBase_h
 
 #include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification
-#include "cmbSystemConfig.h"
+
 
 class vtkCharArray;
 class vtkDiscreteModel;
