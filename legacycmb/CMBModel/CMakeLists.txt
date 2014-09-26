@@ -7,11 +7,6 @@ set(CMAKE_MODULE_PATH "${SMTK_ROOT_DIR}/lib/cmake/SMTK" ${CMAKE_MODULE_PATH})
 include(SMTKOperatorXML)
 
 SET(CmbModelFiles
-  Bridge.cxx
-  MergeOperator.cxx
-  ReadOperator.cxx
-  SplitFaceOperator.cxx
-  CreateEdgesOperator.cxx
   vtkCMBModelWriterV2.cxx
   vtkCMBModelWriterV4.cxx
   vtkCMBModelWriterV5.cxx
@@ -22,7 +17,6 @@ SET(CmbModelFiles
   vtkCMBModelOmicronMeshInputWriter.cxx
   vtkEnclosingModelEntityOperator.cxx
   vtkCMBModelActor.cxx
-  cmbForwardingBridge.cxx
 )
 
 SET(CMBOperationFiles
@@ -77,8 +71,6 @@ SET(CMBOperationFiles
   #vtkCmbModelDeliveryFilter.cxx
   #vtkCmbModelSelectionConverter.cxx
   vtkCMBMeshServerJobSubmitter.cxx
-  vtkModelManagerWrapper.cxx
-  vtkSMModelManagerProxy.cxx
 )
 
 if(PARAVIEW_ENABLE_PYTHON)

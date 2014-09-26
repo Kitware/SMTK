@@ -10,10 +10,6 @@ vtk_module(vtkCmbDiscreteModel
    CmbCore
   DEPENDS
    vtkDiscreteModel
-   vtkCMBMeshing
-   vtkCMBGeneral
-   vtkCMBGraphics
-   vtkCMBIO
    vtkPVServerManagerCore
    vtkPVClientServerCoreRendering
    vtkPVVTKExtensionsRendering

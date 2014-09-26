@@ -45,7 +45,6 @@ add_paraview_plugin(CMBModel_Plugin "1.0"
     vtkPVModelGeometryInformation.cxx
     vtkSIModelRepresentationProxy.cxx
     vtkPVCMBModelInformation.cxx
-    vtkPVSMTKModelInformation.cxx
   GUI_SOURCES
     ${Plugin_Src_Files}
     ${IFACE_SRCS}
