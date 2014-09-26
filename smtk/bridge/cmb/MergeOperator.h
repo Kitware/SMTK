@@ -1,12 +1,13 @@
-#ifndef __cmbsmtk_cmb_MergeOperator_h
-#define __cmbsmtk_cmb_MergeOperator_h
+#ifndef __smtk_bridge_cmb_MergeOperator_h
+#define __smtk_bridge_cmb_MergeOperator_h
 
 #include "smtk/model/Operator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
 
-namespace cmbsmtk {
-  namespace cmb {
+namespace smtk {
+  namespace bridge {
+    namespace cmb {
 
 class Bridge;
 
@@ -19,7 +20,7 @@ class Bridge;
   *
   * The source and target must be adjacent and have the same parametric dimension.
   */
-class VTKCMBDISCRETEMODEL_EXPORT MergeOperator : public smtk::model::Operator
+class SMTKCMBBRIDGE_EXPORT MergeOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(MergeOperator);
@@ -38,7 +39,9 @@ protected:
   vtkNew<vtkMergeOperator> m_op;
 };
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
 
-#endif // __cmbsmtk_cmb_MergeOperator_h
+} // namespace smtk
+
+#endif // __smtk_bridge_cmb_MergeOperator_h

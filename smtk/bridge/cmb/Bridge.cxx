@@ -56,8 +56,9 @@
 #include "vtkPolyData.h"
 #include "vtkUnsignedIntArray.h"
 
-namespace cmbsmtk {
-  namespace cmb {
+namespace smtk {
+  namespace bridge {
+    namespace cmb {
 
 /// Track which models are tracked by which bridges.
 std::map<vtkDiscreteModel*,Bridge::WeakPtr> Bridge::s_modelsToBridges;
@@ -1148,8 +1149,10 @@ smtk::model::Vertex Bridge::addVertexToManager(
   return smtk::model::Vertex();
 }
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+
+} // namespace smtk
 
 static const char* CMBFileTypes[] = {
   ".cmb (Conceptual Model Builder)",

@@ -1,12 +1,13 @@
-#ifndef __cmbsmtk_cmb_ReadOperator_h
-#define __cmbsmtk_cmb_ReadOperator_h
+#ifndef __smtk_bridge_cmb_ReadOperator_h
+#define __smtk_bridge_cmb_ReadOperator_h
 
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"
 
-namespace cmbsmtk {
-  namespace cmb {
+namespace smtk {
+  namespace bridge {
+    namespace cmb {
 
 class Bridge;
 
@@ -15,7 +16,7 @@ class Bridge;
   * This requires the file to be of type/extension "cmb" (which
   * is really just a VTK XML polydata file).
   */
-class VTKCMBDISCRETEMODEL_EXPORT ReadOperator : public smtk::model::Operator
+class SMTKCMBBRIDGE_EXPORT ReadOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
@@ -33,7 +34,8 @@ protected:
   vtkNew<vtkCMBModelReadOperator> m_op;
 };
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+} // namespace smtk
 
-#endif // __cmbsmtk_cmb_ReadOperator_h
+#endif // __smtk_bridge_cmb_ReadOperator_h

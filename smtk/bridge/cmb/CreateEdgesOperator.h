@@ -1,16 +1,17 @@
-#ifndef __cmbsmtk_cmb_CreateEdgesOperator_h
-#define __cmbsmtk_cmb_CreateEdgesOperator_h
+#ifndef __smtk_bridge_cmb_CreateEdgesOperator_h
+#define __smtk_bridge_cmb_CreateEdgesOperator_h
 
 #include "smtk/model/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"
 
-namespace cmbsmtk {
-  namespace cmb {
+namespace smtk {
+  namespace bridge {
+    namespace cmb {
 
 class Bridge;
 
-class VTKCMBDISCRETEMODEL_EXPORT CreateEdgesOperator : public smtk::model::Operator
+class SMTKCMBBRIDGE_EXPORT CreateEdgesOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(CreateEdgesOperator);
@@ -28,7 +29,8 @@ protected:
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+} // namespace smtk
 
-#endif // __cmbsmtk_cmb_CreateEdgesOperator_h
+#endif // __smtk_bridge_cmb_CreateEdgesOperator_h

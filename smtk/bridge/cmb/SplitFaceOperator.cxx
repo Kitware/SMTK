@@ -20,7 +20,9 @@
 
 using namespace smtk::model;
 
-namespace cmbsmtk {
+namespace smtk {
+  namespace bridge {
+
   namespace cmb {
 
 SplitFaceOperator::SplitFaceOperator()
@@ -115,8 +117,10 @@ int SplitFaceOperator::fetchCMBFaceId() const
   return -1;
 }
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+
+} // namespace smtk
 
 smtkImplementsModelOperator(
   cmbsmtk::cmb::SplitFaceOperator,

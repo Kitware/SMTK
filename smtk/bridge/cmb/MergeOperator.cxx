@@ -14,7 +14,9 @@
 
 using namespace smtk::model;
 
-namespace cmbsmtk {
+namespace smtk {
+  namespace bridge {
+
   namespace cmb {
 
 MergeOperator::MergeOperator()
@@ -86,8 +88,10 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
   return -1;
 }
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+
+} // namespace smtk
 
 smtkImplementsModelOperator(
   cmbsmtk::cmb::MergeOperator,

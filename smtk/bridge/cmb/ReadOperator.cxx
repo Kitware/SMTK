@@ -19,7 +19,9 @@
 
 using namespace smtk::model;
 
-namespace cmbsmtk {
+namespace smtk {
+  namespace bridge {
+
   namespace cmb {
 
 ReadOperator::ReadOperator()
@@ -68,8 +70,10 @@ Bridge* ReadOperator::cmbBridge() const
   return dynamic_cast<Bridge*>(this->bridge());
 }
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
+
+} // namespace smtk
 
 smtkImplementsModelOperator(
   cmbsmtk::cmb::ReadOperator,

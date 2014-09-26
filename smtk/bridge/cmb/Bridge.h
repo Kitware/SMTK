@@ -1,5 +1,5 @@
-#ifndef __smtk_cmb_Bridge_h
-#define __smtk_cmb_Bridge_h
+#ifndef __smtk_bridge_cmb_Bridge_h
+#define __smtk_bridge_cmb_Bridge_h
 
 #include "vtkCmbDiscreteModelModule.h"
 #include "smtk/PublicPointerDefs.h"
@@ -45,7 +45,9 @@ namespace smtk {
   }
 }
 
-namespace cmbsmtk {
+namespace smtk {
+  namespace bridge {
+
   namespace cmb {
 
 class vtkItemWatcherCommand;
@@ -70,7 +72,7 @@ class vtkItemWatcherCommand;
   *     For each top-level vtkDiscreteModelWrapper in the list, it calls
   *     CMB's "write" operator on the model.
   */
-class VTKCMBDISCRETEMODEL_EXPORT Bridge : public smtk::model::Bridge
+class SMTKCMBBRIDGE_EXPORT Bridge : public smtk::model::Bridge
 {
 public:
   smtkTypeMacro(Bridge);
@@ -160,7 +162,9 @@ protected:
   static std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::util::UUID> s_modelRefsToIds;
 };
 
-  } // namespace cmb
-} // namespace cmbsmtk
+    } // namespace cmb
+  } // namespace bridge
 
-#endif // __smtk_cmb_Bridge_h
+} // namespace smtk
+
+#endif // __smtk_bridge_cmb_Bridge_h
