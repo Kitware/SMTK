@@ -1,10 +1,10 @@
 ADD_EXECUTABLE(CMBSerializationTest CMBSerializationTest.cxx)
 TARGET_LINK_LIBRARIES(CMBSerializationTest vtkSMTKCMBModel)
-add_short_test(ModelBuilderSerializationTest ${EXECUTABLE_OUTPUT_PATH}/CMBSerializationTest)
+add_test(ModelBuilderSerializationTest ${EXECUTABLE_OUTPUT_PATH}/CMBSerializationTest)
 
 ADD_EXECUTABLE(CMB2DModelTopologyTest CMB2DModelTopologyTest.cxx)
 TARGET_LINK_LIBRARIES(CMB2DModelTopologyTest vtkSMTKCMBModel)
-add_short_test(ModelBuilder2DModelTopologyTest ${EXECUTABLE_OUTPUT_PATH}/CMB2DModelTopologyTest)
+add_test(ModelBuilder2DModelTopologyTest ${EXECUTABLE_OUTPUT_PATH}/CMB2DModelTopologyTest)
 
 # ADD_EXECUTABLE(CMBParserV4Test CMBParserV4Test.cxx)
 # TARGET_LINK_LIBRARIES(CMBParserV4Test vtkSMTKCMBModel)
