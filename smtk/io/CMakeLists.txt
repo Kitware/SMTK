@@ -7,7 +7,9 @@ set(ioSrcs
   Logger.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
+  #XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
+  #XmlV1StringWriter.cxx
   XmlV2StringWriter.cxx
 )
 
@@ -19,7 +21,9 @@ set(ioHeaders
   Logger.h
   ResourceSetReader.h
   ResourceSetWriter.h
+  #XmlDocV1Parser.h
   XmlDocV2Parser.h
+  #XmlV1StringWriter.h
   XmlV2StringWriter.h
 )
 
