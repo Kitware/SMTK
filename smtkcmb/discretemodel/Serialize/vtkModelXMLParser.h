@@ -25,13 +25,13 @@
 #ifndef __vtkModelXMLParser_h
 #define __vtkModelXMLParser_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"
 #include "cmbSystemConfig.h"
 
 class vtkXMLElement;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelXMLParser : public vtkXMLParser
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelXMLParser : public vtkXMLParser
 {
 public:
   vtkTypeMacro(vtkModelXMLParser,vtkXMLParser);

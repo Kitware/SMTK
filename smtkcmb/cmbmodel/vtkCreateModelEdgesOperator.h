@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCreateModelEdgesOperator_h
 #define __vtkCreateModelEdgesOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 #include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
 #include "cmbSystemConfig.h"
@@ -40,7 +40,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelEdge;
 class vtkPolyData;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCreateModelEdgesOperator :
+class VTKSMTKCMBMODEL_EXPORT vtkCreateModelEdgesOperator :
   public vtkCreateModelEdgesOperatorBase
 {
 public:

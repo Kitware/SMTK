@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __ModelVertexClassification_H
 #define __ModelVertexClassification_H
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType
 #include <map> //need to store the set of point ids
 #include "cmbSystemConfig.h"
@@ -38,7 +38,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class vtkDiscreteModel;
 class vtkDiscreteModelVertex;
 
-class VTKDISCRETEMODEL_EXPORT ModelVertexClassification
+class VTKSMTKDISCRETEMODEL_EXPORT ModelVertexClassification
 {
 public:
   ModelVertexClassification(vtkDiscreteModel* model);

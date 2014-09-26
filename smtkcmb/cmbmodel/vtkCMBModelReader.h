@@ -30,11 +30,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCMBModelReader_h
 #define __vtkCMBModelReader_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkPolyDataAlgorithm.h"
 #include "cmbSystemConfig.h"
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
+class VTKSMTKCMBMODEL_EXPORT vtkCMBModelReader : public vtkPolyDataAlgorithm
 {
 public:
   static vtkCMBModelReader * New();

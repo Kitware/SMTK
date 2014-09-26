@@ -88,13 +88,13 @@
 #ifndef __vtkSerializableObject_h
 #define __vtkSerializableObject_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
 class vtkSerializer;
 
-class VTKDISCRETEMODEL_EXPORT vtkSerializableObject : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializableObject : public vtkObject
 {
 public:
   static vtkSerializableObject *New();

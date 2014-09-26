@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelEntity_h
 #define __vtkDiscreteModelEntity_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -36,7 +36,7 @@ class vtkDiscreteModelEntityGroup;
 class vtkModelEntity;
 class vtkModelItemIterator;
 
-class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelEntity
+class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelEntity
 {
 public:
   void PrintSelf(ostream& os, vtkIndent indent);

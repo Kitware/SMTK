@@ -28,14 +28,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelRegion_h
 #define __vtkDiscreteModelRegion_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelRegion.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "cmbSystemConfig.h"
 
 class vtkInformationStringKey;
 
-class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelRegion : public vtkModelRegion,
+class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelRegion : public vtkModelRegion,
   public vtkDiscreteModelGeometricEntity
 {
 public:

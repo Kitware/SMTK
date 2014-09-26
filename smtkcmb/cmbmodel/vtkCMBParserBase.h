@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCMBParserBase_h
 #define __vtkCMBParserBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification
@@ -45,7 +45,7 @@ class vtkModel;
 class vtkModelEntity;
 class vtkPolyData;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBParserBase : public vtkObject
+class VTKSMTKCMBMODEL_EXPORT vtkCMBParserBase : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCMBParserBase,vtkObject);

@@ -32,13 +32,13 @@
 #ifndef __vtkSerializationHelper_h
 #define __vtkSerializationHelper_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
 class vtkSerializer;
 
-class VTKDISCRETEMODEL_EXPORT vtkSerializationHelper : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelper : public vtkObject
 {
 public:
   vtkTypeMacro(vtkSerializationHelper,vtkObject);

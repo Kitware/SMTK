@@ -31,14 +31,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelGeometricEntity_h
 #define __vtkModelGeometricEntity_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"
 #include "cmbSystemConfig.h"
 
 class vtkIdList;
 class vtkProperty;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelGeometricEntity : public vtkModelEntity
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGeometricEntity : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelGeometricEntity,vtkModelEntity);

@@ -50,7 +50,7 @@
 #ifndef __vtkXMLModelWriter_h
 #define __vtkXMLModelWriter_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"
 #include "cmbSystemConfig.h"
 
@@ -64,7 +64,7 @@ class vtkXMLElement;
 class vtkSerializableObject;
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
+class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLModelWriter : public vtkSerializer
 {
 public:
   static vtkXMLModelWriter *New();

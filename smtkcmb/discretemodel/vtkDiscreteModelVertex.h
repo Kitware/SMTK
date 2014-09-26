@@ -28,14 +28,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelVertex_h
 #define __vtkDiscreteModelVertex_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelVertex.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "cmbSystemConfig.h"
 
 class vtkInformationIdTypeKey;
 
-class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
+class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelVertex : public vtkModelVertex
 {
 public:
   vtkTypeMacro(vtkDiscreteModelVertex,vtkModelVertex);

@@ -42,7 +42,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItemGenericIterator_h
 #define __vtkModelItemGenericIterator_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItemIterator.h"
 #include "cmbSystemConfig.h"
 
@@ -51,7 +51,7 @@ class vtkModelItem;
 struct vtkModelItemGenericIteratorInternals;
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemGenericIterator : public vtkModelItemIterator
 {
 public:
   static vtkModelItemGenericIterator *New();

@@ -33,7 +33,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelEntity_h
 #define __vtkModelEntity_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"
 #include "cmbSystemConfig.h"
 
@@ -46,7 +46,7 @@ class vtkInformationStringKey;
 class vtkModel;
 class vtkProperty;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelEntity : public vtkModelItem
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelEntity : public vtkModelItem
 {
 public:
   vtkTypeMacro(vtkModelEntity,vtkModelItem);

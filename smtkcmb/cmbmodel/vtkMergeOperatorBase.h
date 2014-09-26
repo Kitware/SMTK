@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkMergeOperatorBase_h
 #define __vtkMergeOperatorBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -40,7 +40,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;
 class vtkIdTypeArray;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMergeOperatorBase : public vtkObject
+class VTKSMTKCMBMODEL_EXPORT vtkMergeOperatorBase : public vtkObject
 {
 public:
   static vtkMergeOperatorBase * New();

@@ -31,7 +31,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelGridRepresentation_h
 #define __vtkModelGridRepresentation_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "cmbSystemConfig.h"
 #include <vtkObject.h>
 
@@ -39,7 +39,7 @@ class vtkDiscreteModel;
 class vtkIdList;
 class vtkIdTypeArray;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelGridRepresentation : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelGridRepresentation : public vtkObject
 {
 public:
   vtkTypeMacro(vtkModelGridRepresentation,vtkObject);

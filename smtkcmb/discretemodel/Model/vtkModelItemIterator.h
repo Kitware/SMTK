@@ -40,7 +40,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelItemIterator_h
 #define __vtkModelItemIterator_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -48,7 +48,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 class vtkModelItem;
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelItemIterator : public vtkObject
 {
 public:
   vtkTypeMacro(vtkModelItemIterator,vtkObject);

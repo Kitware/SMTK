@@ -32,7 +32,7 @@
 #ifndef __vtkInformationKeyMap_h
 #define __vtkInformationKeyMap_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -42,7 +42,7 @@
 class vtkInformationKey;
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkInformationKeyMap : public vtkObject
 {
 public:
   static vtkInformationKeyMap *New();

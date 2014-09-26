@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCMBParserV5_h
 #define __vtkCMBParserV5_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 #include "cmbSystemConfig.h"
@@ -45,7 +45,7 @@ namespace cmbsmtk {
   }
 }
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
+class VTKSMTKCMBMODEL_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV5* New();

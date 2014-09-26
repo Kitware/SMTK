@@ -30,14 +30,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelUserName_h
 #define __vtkModelUserName_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "cmbSystemConfig.h"
 #include "vtkObject.h"
 
 class vtkInformationStringKey;
 class vtkModelEntity;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelUserName : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelUserName : public vtkObject
 {
 public:
   static vtkModelUserName *New();

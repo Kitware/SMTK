@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __DISCRETEMESH_H
 #define __DISCRETEMESH_H
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 
 #include "DiscreteMeshCellIdIterator.h" //needed for iterator
 #include "vtkType.h" //needed for vtkIdType
@@ -70,7 +70,7 @@ class vtkCMBXMLBCSWriter;
 //we mangle the id spaces, so that all negative ids
 //that are passed in represent edges, while all postive represent faces
 
-class VTKDISCRETEMODEL_EXPORT DiscreteMesh
+class VTKSMTKDISCRETEMODEL_EXPORT DiscreteMesh
 {
 public:
   enum DataType{ FACE_DATA=0, EDGE_DATA=1, BOTH_DATA=2};

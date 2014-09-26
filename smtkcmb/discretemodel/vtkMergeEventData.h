@@ -33,14 +33,14 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkMergeEventData_h
 #define __vtkMergeEventData_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
 class vtkIdTypeArray;
 class vtkDiscreteModelGeometricEntity;
 
-class VTKDISCRETEMODEL_EXPORT vtkMergeEventData : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkMergeEventData : public vtkObject
 {
 public:
   static vtkMergeEventData * New();

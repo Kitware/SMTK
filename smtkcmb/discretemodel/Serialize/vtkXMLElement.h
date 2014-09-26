@@ -25,7 +25,7 @@
 #ifndef __vtkXMLElement_h
 #define __vtkXMLElement_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "vtkStdString.h" // needed for vtkStdString.
 #include "cmbSystemConfig.h"
@@ -37,7 +37,7 @@ class vtkModelXMLParser;
 struct vtkXMLElementInternals;
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkXMLElement : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkXMLElement : public vtkObject
 {
 public:
   vtkTypeMacro(vtkXMLElement,vtkObject);

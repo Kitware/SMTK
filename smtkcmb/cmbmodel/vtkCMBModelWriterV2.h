@@ -43,7 +43,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCMBModelWriterV2_h
 #define __vtkCMBModelWriterV2_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include <vector>
 #include "cmbSystemConfig.h"
@@ -54,7 +54,7 @@ class vtkModelEntity;
 class vtkModelItem;
 class vtkPolyData;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelWriterV2 : public vtkObject
+class VTKSMTKCMBMODEL_EXPORT vtkCMBModelWriterV2 : public vtkObject
 {
 public:
   static vtkCMBModelWriterV2 * New();

@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCMBModelWriterBase_h
 #define __vtkCMBModelWriterBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -40,7 +40,7 @@ class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelWriterBase : public vtkObject
+class VTKSMTKCMBMODEL_EXPORT vtkCMBModelWriterBase : public vtkObject
 {
 public:
   static vtkCMBModelWriterBase * New();

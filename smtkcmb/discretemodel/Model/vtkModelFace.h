@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelFace_h
 #define __vtkModelFace_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"
 #include "cmbSystemConfig.h"
 
@@ -49,7 +49,7 @@ class vtkModelItemIterator;
 class vtkModelLoopUse;
 class vtkModelRegion;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelFace : public vtkModelGeometricEntity
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelFace : public vtkModelGeometricEntity
 {
 public:
   vtkTypeMacro(vtkModelFace,vtkModelGeometricEntity);

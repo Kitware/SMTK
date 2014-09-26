@@ -38,7 +38,7 @@
 #ifndef __vtkSerializationHelperMap_h
 #define __vtkSerializationHelperMap_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
@@ -46,7 +46,7 @@ class vtkSerializationHelper;
 class vtkSerializer;
 class vtkXMLElement;
 
-class VTKDISCRETEMODEL_EXPORT vtkSerializationHelperMap : public vtkObject
+class VTKSMTKDISCRETEMODEL_EXPORT vtkSerializationHelperMap : public vtkObject
 {
 public:
   static vtkSerializationHelperMap *New();

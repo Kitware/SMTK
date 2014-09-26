@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkModelMaterial_h
 #define __vtkModelMaterial_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "cmbSystemConfig.h"
 #include "vtkModelEntity.h"
 
@@ -36,7 +36,7 @@ class vtkInformationStringKey;
 class vtkModelGeometricEntity;
 class vtkModelItemIterator;
 
-class VTKDISCRETEMODEL_EXPORT vtkModelMaterial : public vtkModelEntity
+class VTKSMTKDISCRETEMODEL_EXPORT vtkModelMaterial : public vtkModelEntity
 {
 public:
   vtkTypeMacro(vtkModelMaterial,vtkModelEntity);

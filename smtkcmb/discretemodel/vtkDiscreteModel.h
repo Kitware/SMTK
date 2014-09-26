@@ -34,7 +34,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModel_h
 #define __vtkDiscreteModel_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"
 #include "cmbSystemConfig.h"
 
@@ -84,7 +84,7 @@ enum DiscreteModelEventIds {
 };
 //ETX
 
-class VTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
+class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModel : public vtkModel
 {
 public:
   typedef MeshClassification< vtkDiscreteModelGeometricEntity >

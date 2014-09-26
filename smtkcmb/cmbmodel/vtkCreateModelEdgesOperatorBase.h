@@ -29,13 +29,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkCreateModelEdgesOperatorBase_h
 #define __vtkCreateModelEdgesOperatorBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "vtkSMTKCMBModelModule" // For export macro
 #include "vtkObject.h"
 #include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
+class VTKSMTKCMBMODEL_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
 {
 public:
   static vtkCreateModelEdgesOperatorBase * New();

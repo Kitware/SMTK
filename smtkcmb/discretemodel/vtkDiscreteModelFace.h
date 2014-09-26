@@ -28,7 +28,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __vtkDiscreteModelFace_h
 #define __vtkDiscreteModelFace_h
 
-#include "vtkDiscreteModelModule.h" // For export macro
+#include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelFace.h"
 #include "vtkDiscreteModelGeometricEntity.h"
 #include "ModelEdgeHelper.h"
@@ -42,7 +42,7 @@ class vtkIdTypeArray;
 class vtkBitArray;
 class vtkPolyData;
 
-class VTKDISCRETEMODEL_EXPORT vtkDiscreteModelFace : public vtkModelFace,
+class VTKSMTKDISCRETEMODEL_EXPORT vtkDiscreteModelFace : public vtkModelFace,
   public vtkDiscreteModelGeometricEntity
 {
 public:
