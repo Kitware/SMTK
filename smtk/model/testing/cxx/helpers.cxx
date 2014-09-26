@@ -35,6 +35,8 @@
 
 using namespace smtk::common;
 using namespace smtk::model;
+using smtk::common::UUID;
+using smtk::common::UUIDArray;
 
 namespace smtk {
   namespace model {
