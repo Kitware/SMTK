@@ -21,6 +21,7 @@ set(FILES_TO_CHECK
   *.h
   *.h.in
   *.cxx
+  *.py
   )
 
 if (NOT SMTK_SOURCE_DIR)
@@ -88,7 +89,13 @@ endfunction()
 
 # Check the given file for the appropriate copyright statement.
 function(check_copyright filename)
-  set(comment_prefix "//")
+  get_filename_component(file_ext "${filename}" EXT)
+
+  if(file_ext STREQUAL ".py")
+    set(comment_prefix "#")
+  else()
+    set(comment_prefix "//")
+  endif()
 
   # Read in the first 2000 characters of the file and split into lines.
   # This is roughly equivalent to the file STRINGS command except that we
