@@ -27,6 +27,7 @@
 
 #include "cJSON.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #if defined(_WIN32) && !defined(__CYGWIN__)

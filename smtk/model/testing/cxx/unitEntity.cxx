@@ -18,6 +18,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <assert.h>
+
 using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
