@@ -184,11 +184,12 @@ readString(const std::string& content,
         resources.addResourceInfo(id, type, role, ResourceSet::NOT_LOADED, link);
         }
       }
-    else if (childTagName == "SMTK_AttributeManager")
+    else if (childTagName == "SMTK_AttributeManager" ||
+             childTagName == "SMTK_AttributeSystem")
       {
       //std::cout << "  Embedded\n";
       std::string path = resources.linkStartPath();
-      if (readEmbeddedManager(childElement, r, path, logger))
+      if (readEmbeddedAttSystem(childElement, r, path, logger))
         {
         resources.addResource(r, id, "", role);
         }
@@ -215,10 +216,10 @@ readString(const std::string& content,
 //----------------------------------------------------------------------------
 bool
 ResourceSetReader::
-readEmbeddedManager(pugi::xml_node& element,
-                    smtk::common::ResourcePtr& resource,
-                    std::string& linkStartPath,
-                    smtk::io::Logger& logger)
+readEmbeddedAttSystem(pugi::xml_node& element,
+                      smtk::common::ResourcePtr& resource,
+                      std::string& linkStartPath,
+                      smtk::io::Logger& logger)
 {
   // Initialize attribute system
   smtk::attribute::System *system = NULL;

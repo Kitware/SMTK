@@ -44,10 +44,10 @@ class SMTKCORE_EXPORT ResourceSetReader
 
  protected:
 
-  bool readEmbeddedManager(pugi::xml_node& element,
-                           smtk::common::ResourcePtr& resource,
-                           std::string& linkStartPath,
-                           smtk::io::Logger& logger);
+  bool readEmbeddedAttSystem(pugi::xml_node& element,
+                             smtk::common::ResourcePtr& resource,
+                             std::string& linkStartPath,
+                             smtk::io::Logger& logger);
   bool readIncludedManager(const pugi::xml_node& element,
                            smtk::common::ResourcePtr& resource,
                            std::string& path,
