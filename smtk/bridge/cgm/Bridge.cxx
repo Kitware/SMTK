@@ -55,7 +55,7 @@ namespace smtk {
 /// Default constructor.
 Bridge::Bridge()
 {
-  this->initializeOperatorManager(Bridge::s_operators);
+  this->initializeOperatorSystem(Bridge::s_operators);
 }
 
 /// Virtual destructor. Here because Bridge overrides virtual methods from Bridge.
