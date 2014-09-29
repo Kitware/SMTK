@@ -55,7 +55,7 @@ OperatorResult ReadOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
-  smtk::util::UUID modelId = this->cmbBridge()->trackModel(
+  smtk::common::UUID modelId = this->cmbBridge()->trackModel(
     mod.GetPointer(), fname, this->manager());
   smtk::model::Cursor modelEntity(this->manager(), modelId);
 

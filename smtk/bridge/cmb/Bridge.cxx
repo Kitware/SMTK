@@ -1,6 +1,6 @@
 #include "Bridge.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 #include "smtk/util/AutoInit.h"
 
 #include "smtk/model/Cursor.h"
@@ -63,9 +63,9 @@ namespace smtk {
 /// Track which models are tracked by which bridges.
 std::map<vtkDiscreteModel*,Bridge::WeakPtr> Bridge::s_modelsToBridges;
 /// Associate UUIDs to vtkDiscreteModelWrapper instances.
-std::map<smtk::util::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > Bridge::s_modelIdsToRefs;
+std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > Bridge::s_modelIdsToRefs;
 /// Associate vtkDiscreteModelWrapper instances to UUIDs.
-std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::util::UUID> Bridge::s_modelRefsToIds;
+std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> Bridge::s_modelRefsToIds;
 
 // Local helper to uniquely determine an integer "sense" for pairs of edge uses of an edge.
 // FIXME: This really should assign the integer so that the pairs form a single cycle.
@@ -115,7 +115,7 @@ public:
     vtkObject* caller, unsigned long eventId, void* callData)
     {
     (void)eventId;
-    smtk::util::UUID uid = bridge->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
+    smtk::common::UUID uid = bridge->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
     vtkModelItem* item = bridge->entityForUUID(uid);
     std::cout << "Item " << item << " deleted. Was " << uid << "\n";
     }
@@ -149,7 +149,7 @@ smtk::model::BridgedInfoBits Bridge::allSupportedInformation() const
   *
   */
 smtk::model::Cursor Bridge::addCMBEntityToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   smtk::model::ManagerPtr manager,
   int relDepth)
 {
@@ -167,15 +167,15 @@ void Bridge::assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArra
     { // Assign UUIDs to entities from the input array
     if (
       vuid &&
-      vuid->GetNumberOfComponents() * sizeof(unsigned int) == smtk::util::UUID::size() &&
+      vuid->GetNumberOfComponents() * sizeof(unsigned int) == smtk::common::UUID::size() &&
       vuid->GetNumberOfTuples() == static_cast<vtkIdType>(ents.size()))
       {
-      smtk::util::UUID::const_iterator raw =
-        reinterpret_cast<smtk::util::UUID::const_iterator>(vuid->GetPointer(0));
+      smtk::common::UUID::const_iterator raw =
+        reinterpret_cast<smtk::common::UUID::const_iterator>(vuid->GetPointer(0));
       int i;
-      for (i = 0, it = ents.begin(); it != ents.end(); ++it, i += smtk::util::UUID::size())
+      for (i = 0, it = ents.begin(); it != ents.end(); ++it, i += smtk::common::UUID::size())
         {
-        smtk::util::UUID eid(raw + i, raw + i + smtk::util::UUID::size());
+        smtk::common::UUID eid(raw + i, raw + i + smtk::common::UUID::size());
         if (!eid.isNull())
           this->assignUUIDToEntity(eid, *it);
         //std::cout << "item " << *it << " (" << (*it)->GetClassName() << ")" << " UUID " << eid << " " << (i/16) << "\n";
@@ -195,7 +195,7 @@ void Bridge::assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArra
     int i = 0;
     for (it = ents.begin(); it != ents.end(); ++it, ++i)
       {
-      smtk::util::UUID entId =
+      smtk::common::UUID entId =
         this->findOrSetEntityUUID(*it);
       (void)entId;
       //std::cout << "item " << *it << " (" << (*it)->GetClassName() << ")" << " UUID " << entId << " " << i << "\n";
@@ -215,23 +215,23 @@ vtkUnsignedIntArray* Bridge::retrieveUUIDs(
     return NULL;
 
   vtkUnsignedIntArray* vuid = vtkUnsignedIntArray::New();
-  vuid->SetNumberOfComponents(smtk::util::UUID::size() / sizeof(unsigned int));
+  vuid->SetNumberOfComponents(smtk::common::UUID::size() / sizeof(unsigned int));
   vuid->SetNumberOfTuples(static_cast<vtkIdType>(ents.size()));
   int* ptr = reinterpret_cast<int*>(vuid->GetPointer(0));
-  smtk::util::UUID::iterator uptr =
-    reinterpret_cast<smtk::util::UUID::iterator>(ptr);
+  smtk::common::UUID::iterator uptr =
+    reinterpret_cast<smtk::common::UUID::iterator>(ptr);
   std::vector<vtkModelItem*>::const_iterator it;
   for (it = ents.begin(); it != ents.end(); ++it)
     {
-    smtk::util::UUID eid = bridge->findOrSetEntityUUID(*it);
-    smtk::util::UUID::iterator eidit;
+    smtk::common::UUID eid = bridge->findOrSetEntityUUID(*it);
+    smtk::common::UUID::iterator eidit;
     for (eidit = eid.begin(); eidit != eid.end(); ++eidit, ++uptr)
       *uptr = *eidit;
     }
   return vuid;
 }
 
-smtk::util::UUID Bridge::ImportEntitiesFromFileNameIntoManager(
+smtk::common::UUID Bridge::ImportEntitiesFromFileNameIntoManager(
   const std::string& filename,
   const std::string& filetype,
   smtk::model::ManagerPtr manager)
@@ -242,7 +242,7 @@ smtk::util::UUID Bridge::ImportEntitiesFromFileNameIntoManager(
   if (filetype != "cmb")
     {
     std::cerr << "Unsupported file type \"" << filetype << "\" (not \"cmb\").\n";
-    return smtk::util::UUID::null();
+    return smtk::common::UUID::null();
     }
 
   vtkNew<vtkDiscreteModelWrapper> mod;
@@ -252,7 +252,7 @@ smtk::util::UUID Bridge::ImportEntitiesFromFileNameIntoManager(
   if (!rdr->GetOperateSucceeded())
     {
     std::cerr << "Could not read file \"" << filename << "\".\n";
-    return smtk::util::UUID::null();
+    return smtk::common::UUID::null();
     }
   return this->trackModel(mod.GetPointer(), filename, manager);
 }
@@ -298,9 +298,9 @@ int Bridge::ExportEntitiesToFileOfNameAndType(
   return 0;
 }
 
-vtkDiscreteModelWrapper* Bridge::findModel(const smtk::util::UUID& uid) const
+vtkDiscreteModelWrapper* Bridge::findModel(const smtk::common::UUID& uid) const
 {
-  std::map<smtk::util::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> >::const_iterator it;
+  std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> >::const_iterator it;
   if ((it = Bridge::s_modelIdsToRefs.find(uid)) != Bridge::s_modelIdsToRefs.end())
     return it->second.GetPointer();
   return NULL;
@@ -317,16 +317,16 @@ smtk::model::BridgedInfoBits Bridge::transcribeInternal(
   return 0;
 }
 
-smtk::util::UUID Bridge::trackModel(
+smtk::common::UUID Bridge::trackModel(
   vtkDiscreteModelWrapper* mod, const std::string& url,
   smtk::model::ManagerPtr manager)
 {
   vtkDiscreteModel* dmod = mod->GetModel();
   if (!dmod)
-    return smtk::util::UUID::null();
+    return smtk::common::UUID::null();
 
   // Add or obtain the model's UUID
-  smtk::util::UUID mid = this->findOrSetEntityUUID(dmod);
+  smtk::common::UUID mid = this->findOrSetEntityUUID(dmod);
   // Track the model (keep a strong reference to it)
   // by UUID as well as the inverse map for quick reference:
   Bridge::s_modelIdsToRefs[mid] = mod;
@@ -344,7 +344,7 @@ smtk::util::UUID Bridge::trackModel(
 }
 
 bool Bridge::assignUUIDToEntity(
-  const smtk::util::UUID& itemId, vtkModelItem* item)
+  const smtk::common::UUID& itemId, vtkModelItem* item)
 {
   if (!item || itemId.isNull())
     return false;
@@ -357,23 +357,23 @@ bool Bridge::assignUUIDToEntity(
   return true;
 }
 
-smtk::util::UUID Bridge::findOrSetEntityUUID(vtkModelItem* item)
+smtk::common::UUID Bridge::findOrSetEntityUUID(vtkModelItem* item)
 {
   vtkInformation* mp = item->GetProperties();
   return this->findOrSetEntityUUID(mp);
 }
 
-smtk::util::UUID Bridge::findOrSetEntityUUID(vtkInformation* mp)
+smtk::common::UUID Bridge::findOrSetEntityUUID(vtkInformation* mp)
 {
-  smtk::util::UUID mid;
+  smtk::common::UUID mid;
   // Use COMPOSITE_INDICES() to hold a UUID.
   if (mp->Has(vtkCompositeDataPipeline::COMPOSITE_INDICES()))
     {
     int rawUUID[16/sizeof(int)];
     mp->Get(vtkCompositeDataPipeline::COMPOSITE_INDICES(), rawUUID);
-    smtk::util::UUID::const_iterator rawAddr =
-      reinterpret_cast<const smtk::util::UUID::iterator>(&rawUUID[0]);
-    mid = smtk::util::UUID(rawAddr, rawAddr + smtk::util::UUID::size());
+    smtk::common::UUID::const_iterator rawAddr =
+      reinterpret_cast<const smtk::common::UUID::iterator>(&rawUUID[0]);
+    mid = smtk::common::UUID(rawAddr, rawAddr + smtk::common::UUID::size());
     }
   else
     {
@@ -388,12 +388,12 @@ smtk::util::UUID Bridge::findOrSetEntityUUID(vtkInformation* mp)
 // vtkDiscreteModel* Bridge::owningModel(vtkModelItem* e);
 
 /// Obtain the mapping from a UUID to a model entity.
-vtkModelItem* Bridge::entityForUUID(const smtk::util::UUID& uid)
+vtkModelItem* Bridge::entityForUUID(const smtk::common::UUID& uid)
 {
   if (uid.isNull())
     return NULL;
 
-  std::map<smtk::util::UUID,vtkModelItem*>::const_iterator iref =
+  std::map<smtk::common::UUID,vtkModelItem*>::const_iterator iref =
     this->m_itemsToRefs.find(uid);
   if (iref == this->m_itemsToRefs.end())
     return NULL;
@@ -402,7 +402,7 @@ vtkModelItem* Bridge::entityForUUID(const smtk::util::UUID& uid)
 }
 
 smtk::model::Cursor Bridge::addCMBEntityToManager(
-  const smtk::util::UUID& uid, vtkModelItem* ent, smtk::model::ManagerPtr manager, int relDepth)
+  const smtk::common::UUID& uid, vtkModelItem* ent, smtk::model::ManagerPtr manager, int relDepth)
 {
   this->assignUUIDToEntity(uid, ent);
   vtkModel* modelEntity = dynamic_cast<vtkModel*>(ent);
@@ -635,7 +635,7 @@ bool Bridge::addProperties(
 
 /// Given a CMB \a body tagged with \a uid, create a record in \a manager for it.
 smtk::model::ModelEntity Bridge::addBodyToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModel* body,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -700,7 +700,7 @@ smtk::model::ModelEntity Bridge::addBodyToManager(
 
 /// Given a CMB \a group tagged with \a uid, create a record in \a manager for it.
 smtk::model::GroupEntity Bridge::addGroupToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkDiscreteModelEntityGroup* group,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -736,7 +736,7 @@ smtk::model::GroupEntity Bridge::addGroupToManager(
 
 /// Given a CMB \a material tagged with \a uid, create a record in \a manager for it.
 smtk::model::GroupEntity Bridge::addMaterialToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelMaterial* material,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -774,7 +774,7 @@ smtk::model::GroupEntity Bridge::addMaterialToManager(
 
 /// Given a CMB \a coFace tagged with \a uid, create a record in \a manager for it.
 smtk::model::FaceUse Bridge::addFaceUseToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelFaceUse* coFace,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -809,7 +809,7 @@ smtk::model::FaceUse Bridge::addFaceUseToManager(
       vtkModelShellUse* shellUse = coFace->GetModelShellUse();
       if (shellUse)
         {
-        smtk::util::UUID shellId = this->findOrSetEntityUUID(shellUse);
+        smtk::common::UUID shellId = this->findOrSetEntityUUID(shellUse);
         this->addCMBEntityToManager(matchingFace.entity(), coFace->GetModelFace(), manager, relDepth - 1);
         this->addCMBEntityToManager(shellId, shellUse, manager, relDepth - 1);
         vtkModelItemIterator* loopIt = coFace->NewLoopUseIterator();
@@ -817,7 +817,7 @@ smtk::model::FaceUse Bridge::addFaceUseToManager(
         for (loopIt->Begin(); !loopIt->IsAtEnd(); loopIt->Next())
           {
           vtkModelItem* loop = loopIt->GetCurrentItem();
-          smtk::util::UUID loopId = this->findOrSetEntityUUID(loop);
+          smtk::common::UUID loopId = this->findOrSetEntityUUID(loop);
           this->addCMBEntityToManager(loopId, loop, manager, relDepth - 1);
           loops.push_back(smtk::model::Loop(manager, loopId));
           }
@@ -839,7 +839,7 @@ smtk::model::FaceUse Bridge::addFaceUseToManager(
 
 /// Given a CMB \a coEdge tagged with \a uid, create a record in \a manager for it.
 smtk::model::EdgeUse Bridge::addEdgeUseToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelEdgeUse* coEdge,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -872,7 +872,7 @@ smtk::model::EdgeUse Bridge::addEdgeUseToManager(
         std::cout << "Edge use " << uid << " loop use " << loopUse << "\n";
         if (loopUse)
           {
-          smtk::util::UUID luid = this->findOrSetEntityUUID(loopUse);
+          smtk::common::UUID luid = this->findOrSetEntityUUID(loopUse);
           smtk::model::Loop lpu = this->addLoopToManager(luid, loopUse, manager, relDepth - 1);
           }
 
@@ -890,7 +890,7 @@ smtk::model::EdgeUse Bridge::addEdgeUseToManager(
 
 /// Given a CMB \a coVertex tagged with \a uid, create a record in \a manager for it.
 smtk::model::VertexUse Bridge::addVertexUseToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelVertexUse* coVertex,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -914,7 +914,7 @@ smtk::model::VertexUse Bridge::addVertexUseToManager(
 
 /// Given a CMB \a shell tagged with \a uid, create a record in \a manager for it.
 smtk::model::Shell Bridge::addShellToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelShellUse* shell,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -968,7 +968,7 @@ static vtkModelFaceUse* locateLoopInFace(
 
 /// Given a CMB \a loop tagged with \a uid, create a record in \a manager for it.
 smtk::model::Loop Bridge::addLoopToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelLoopUse* refLoop,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -979,7 +979,7 @@ smtk::model::Loop Bridge::addLoopToManager(
     smtk::model::BridgedInfoBits translated = smtk::model::BRIDGE_NOTHING;
     // Insert the loop, which means inserting the face use and face regardless of relDepth,
     // because the loop's orientation and nesting must be arranged relative to them.
-    smtk::util::UUID fid = this->findOrSetEntityUUID(refFace);
+    smtk::common::UUID fid = this->findOrSetEntityUUID(refFace);
     this->addFaceToManager(fid, refFace, manager, relDepth - 1);
     // Find the face *use* this loop belongs to and transcribe it.
     // Note that loop may be the child of a face use OR another loop (which we must then transcribe).
@@ -987,12 +987,12 @@ smtk::model::Loop Bridge::addLoopToManager(
     int faceUseOrientation = -1;
     vtkModelFaceUse* refFaceUse = locateLoopInFace(refLoop, faceUseOrientation, refLoopParent);
     if (!refFaceUse || faceUseOrientation < 0) return smtk::model::Loop();
-    smtk::util::UUID fuid = this->findOrSetEntityUUID(refFaceUse);
+    smtk::common::UUID fuid = this->findOrSetEntityUUID(refFaceUse);
     smtk::model::FaceUse faceUse = this->addFaceUseToManager(fid, refFaceUse, manager, 0);
     smtk::model::Loop loop;
     if (refLoopParent)
       {
-      smtk::util::UUID pluid = this->findOrSetEntityUUID(refLoopParent);
+      smtk::common::UUID pluid = this->findOrSetEntityUUID(refLoopParent);
       smtk::model::Loop parentLoop = this->addLoopToManager(pluid, refLoopParent, manager, 0);
       loop = manager->setLoop(uid, parentLoop);
       }
@@ -1008,7 +1008,7 @@ smtk::model::Loop Bridge::addLoopToManager(
       for (int i = 0; i < neu; ++i)
         {
         vtkModelEdgeUse* eu = refLoop->GetModelEdgeUse(i);
-        smtk::util::UUID euid = this->findOrSetEntityUUID(eu);
+        smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
         this->addEdgeUseToManager(euid, eu, manager, relDepth - 1);
         }
       }
@@ -1023,7 +1023,7 @@ smtk::model::Loop Bridge::addLoopToManager(
 
 /// Given a CMB \a refVolume tagged with \a uid, create a record in \a manager for it.
 smtk::model::Volume Bridge::addVolumeToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelRegion* refVolume,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -1049,7 +1049,7 @@ smtk::model::Volume Bridge::addVolumeToManager(
 
 /// Given a CMB \a refFace tagged with \a uid, create a record in \a manager for it.
 smtk::model::Face Bridge::addFaceToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelFace* refFace,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -1067,7 +1067,7 @@ smtk::model::Face Bridge::addFaceToManager(
         fu = refFace->GetModelFaceUse(i); // 0 = negative, 1 = positive
         if (fu)
           {
-          smtk::util::UUID fuid = this->findOrSetEntityUUID(fu);
+          smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
           this->addFaceUseToManager(fuid, fu, manager, relDepth - 1);
           // Now, since we are the "higher" end of the relationship,
           // arrange the use wrt ourself:
@@ -1092,7 +1092,7 @@ smtk::model::Face Bridge::addFaceToManager(
 
 /// Given a CMB \a refEdge tagged with \a uid, create a record in \a manager for it.
 smtk::model::Edge Bridge::addEdgeToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelEdge* refEdge,
   smtk::model::ManagerPtr manager,
   int relDepth)
@@ -1108,7 +1108,7 @@ smtk::model::Edge Bridge::addEdgeToManager(
       for (int i = 0; i < neu; ++i)
         {
         vtkModelEdgeUse* eu = refEdge->GetModelEdgeUse(i);
-        smtk::util::UUID euid = this->findOrSetEntityUUID(eu);
+        smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
         this->addEdgeUseToManager(euid, eu, manager, relDepth - 1);
         }
       // Add geometry, if any.
@@ -1125,7 +1125,7 @@ smtk::model::Edge Bridge::addEdgeToManager(
 
 /// Given a CMB \a refVertex tagged with \a uid, create a record in \a manager for it.
 smtk::model::Vertex Bridge::addVertexToManager(
-  const smtk::util::UUID& uid,
+  const smtk::common::UUID& uid,
   vtkModelVertex* refVertex,
   smtk::model::ManagerPtr manager,
   int relDepth)

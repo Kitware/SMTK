@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkSplitOperator_h
 #define __smtkcmb_vtkSplitOperator_h
 
-#include "vtkSMTKCMBModelModule" // For export macro
+#include "vtkSMTKCMBModelModule.h" // For export macro
 #include "vtkSplitOperatorBase.h"
 
 

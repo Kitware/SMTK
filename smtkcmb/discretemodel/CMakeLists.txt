@@ -152,6 +152,63 @@ SET_SOURCE_FILES_PROPERTIES(
   ABSTRACT
 )
 
+SET(DiscreteModelHeaders
+  Serialize/vtkSerializableObject.h
+  Serialize/vtkSerializationHelper.h
+  Serialize/vtkSerializationHelperMap.h
+  Serialize/vtkSerializer.h
+  Serialize/vtkModelXMLParser.h
+  Serialize/vtkCommonSerializationHelper.h
+  Serialize/vtkInformationKeyMap.h
+  Serialize/vtkRenderingSerializationHelper.h
+  Serialize/vtkXMLArchiveReader.h
+  Serialize/vtkXMLArchiveWriter.h
+  Serialize/vtkXMLElement.h
+  Model/vtkModelItem.h
+  Model/vtkModelItemIterator.h
+  Model/vtkModelItemGenericIterator.h
+  Model/vtkModelItemListIterator.h
+  Model/vtkModel.h
+  Model/vtkModelEntity.h
+  Model/vtkModelGeometricEntity.h
+  Model/vtkModelVertex.h
+  Model/vtkModelVertexUse.h
+  Model/vtkModelEdge.h
+  Model/vtkModelEdgeUse.h
+  Model/vtkModelLoopUse.h
+  Model/vtkModelFace.h
+  Model/vtkModelFaceUse.h
+  Model/vtkModelShellUse.h
+  Model/vtkModelRegion.h
+  Model/vtkUUID.h
+
+  DiscreteMesh.h
+  DiscreteMeshCellIdIterator.h
+  MeshClassification.h
+  ModelEdgeHelper.h
+  ModelVertexClassification.h
+  vtkModel3dmGridRepresentation.h
+  vtkModel3dm2DGridRepresentation.h
+  vtkModelBCGridRepresentation.h
+  vtkModelGridRepresentation.h
+  vtkModelGeneratedGridRepresentation.h
+  vtkDiscreteModel.h
+  vtkModelMaterial.h
+  vtkDiscreteModelEdge.h
+  vtkDiscreteModelEntity.h
+  vtkDiscreteModelEntityGroup.h
+  vtkDiscreteModelFace.h
+  vtkDiscreteModelGeometricEntity.h
+  vtkDiscreteModelRegion.h
+  vtkDiscreteModelVertex.h
+  vtkDiscreteModelWrapper.h
+  vtkModelUserName.h
+  vtkXMLModelReader.h
+  vtkXMLModelWriter.h
+  vtkMergeEventData.h
+  vtkSplitEventData.h
+)
+
 # Disable manifests for plugins on Windows so that they do not need to resolve their dependencies.
 if (MSVC)
    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
@@ -171,6 +228,17 @@ set(_module_src
 
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
+
+#install the headers
+smtk_public_headers(${DiscreteModelHeaders})
+# ... and make header compilation tests link properly:
+# smtk_install_library(vtkSMTKDiscreteModel)
+  install(TARGETS vtkSMTKDiscreteModel
+ #   EXPORT SMTK-targets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+  )
 
 target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 

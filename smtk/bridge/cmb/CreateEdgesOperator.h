@@ -1,6 +1,7 @@
 #ifndef __smtk_bridge_cmb_CreateEdgesOperator_h
 #define __smtk_bridge_cmb_CreateEdgesOperator_h
 
+#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"

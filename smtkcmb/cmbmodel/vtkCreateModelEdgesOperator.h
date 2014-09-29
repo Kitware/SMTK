@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkCreateModelEdgesOperator_h
 #define __smtkcmb_vtkCreateModelEdgesOperator_h
 
-#include "vtkSMTKCMBModelModule" // For export macro
+#include "vtkSMTKCMBModelModule.h" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 #include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
 

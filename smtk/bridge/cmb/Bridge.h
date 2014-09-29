@@ -1,12 +1,12 @@
 #ifndef __smtk_bridge_cmb_Bridge_h
 #define __smtk_bridge_cmb_Bridge_h
 
-#include "vtkCmbDiscreteModelModule.h"
+#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Bridge.h"
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/UUIDGenerator.h"
+#include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 
 #include "vtkSmartPointer.h"
 
@@ -87,14 +87,14 @@ public:
   virtual BridgedInfoBits allSupportedInformation() const;
 
   smtk::model::Cursor addCMBEntityToManager(
-    const smtk::util::UUID& entity, smtk::model::ManagerPtr storage, int relDepth = 1);
+    const smtk::common::UUID& entity, smtk::model::ManagerPtr storage, int relDepth = 1);
 
   void assignUUIDs(const std::vector<vtkModelItem*>& ents, vtkAbstractArray* uuidArray);
 
   static vtkUnsignedIntArray* retrieveUUIDs(
     vtkDiscreteModel* model, const std::vector<vtkModelItem*>& ents);
 
-  smtk::util::UUID ImportEntitiesFromFileNameIntoManager(
+  smtk::common::UUID ImportEntitiesFromFileNameIntoManager(
     const std::string& filename,
     const std::string& filetype,
     smtk::model::ManagerPtr storage);
@@ -104,7 +104,7 @@ public:
     const std::string& filename,
     const std::string& filetype);
 
-  vtkDiscreteModelWrapper* findModel(const smtk::util::UUID& uid) const;
+  vtkDiscreteModelWrapper* findModel(const smtk::common::UUID& uid) const;
 
 protected:
   friend class vtkItemWatcherCommand;
@@ -117,32 +117,32 @@ protected:
   virtual BridgedInfoBits transcribeInternal(
         const smtk::model::Cursor& entity, BridgedInfoBits requestedInfo);
 
-  smtk::util::UUID trackModel(
+  smtk::common::UUID trackModel(
     vtkDiscreteModelWrapper* mod, const std::string& url,
     smtk::model::ManagerPtr storage);
   bool assignUUIDToEntity(
-    const smtk::util::UUID& itemId, vtkModelItem* item);
-  smtk::util::UUID findOrSetEntityUUID(vtkModelItem* item);
-  smtk::util::UUID findOrSetEntityUUID(vtkInformation* itemProperties);
+    const smtk::common::UUID& itemId, vtkModelItem* item);
+  smtk::common::UUID findOrSetEntityUUID(vtkModelItem* item);
+  smtk::common::UUID findOrSetEntityUUID(vtkInformation* itemProperties);
 
   //static vtkDiscreteModel* owningModel(vtkModelItem* e);
-  vtkModelItem* entityForUUID(const smtk::util::UUID& uid);
+  vtkModelItem* entityForUUID(const smtk::common::UUID& uid);
 
   smtk::model::Cursor addCMBEntityToManager(
-    const smtk::util::UUID& entity, vtkModelItem* refEnt, smtk::model::ManagerPtr storage, int relDepth = 1);
+    const smtk::common::UUID& entity, vtkModelItem* refEnt, smtk::model::ManagerPtr storage, int relDepth = 1);
 
-  smtk::model::ModelEntity addBodyToManager(const smtk::util::UUID&, vtkModel*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::GroupEntity addGroupToManager(const smtk::util::UUID&, vtkDiscreteModelEntityGroup*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::GroupEntity addMaterialToManager(const smtk::util::UUID&, vtkModelMaterial*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::FaceUse addFaceUseToManager(const smtk::util::UUID&, vtkModelFaceUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::EdgeUse addEdgeUseToManager(const smtk::util::UUID&, vtkModelEdgeUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::VertexUse addVertexUseToManager(const smtk::util::UUID&, vtkModelVertexUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Shell addShellToManager(const smtk::util::UUID&, vtkModelShellUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Loop addLoopToManager(const smtk::util::UUID&, vtkModelLoopUse*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Volume addVolumeToManager(const smtk::util::UUID&, vtkModelRegion*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Face addFaceToManager(const smtk::util::UUID&, vtkModelFace*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Edge addEdgeToManager(const smtk::util::UUID&, vtkModelEdge*, smtk::model::ManagerPtr, int relDepth = 1);
-  smtk::model::Vertex addVertexToManager(const smtk::util::UUID&, vtkModelVertex*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::ModelEntity addBodyToManager(const smtk::common::UUID&, vtkModel*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::GroupEntity addGroupToManager(const smtk::common::UUID&, vtkDiscreteModelEntityGroup*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::GroupEntity addMaterialToManager(const smtk::common::UUID&, vtkModelMaterial*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::FaceUse addFaceUseToManager(const smtk::common::UUID&, vtkModelFaceUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::EdgeUse addEdgeUseToManager(const smtk::common::UUID&, vtkModelEdgeUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::VertexUse addVertexUseToManager(const smtk::common::UUID&, vtkModelVertexUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Shell addShellToManager(const smtk::common::UUID&, vtkModelShellUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Loop addLoopToManager(const smtk::common::UUID&, vtkModelLoopUse*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Volume addVolumeToManager(const smtk::common::UUID&, vtkModelRegion*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Face addFaceToManager(const smtk::common::UUID&, vtkModelFace*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Edge addEdgeToManager(const smtk::common::UUID&, vtkModelEdge*, smtk::model::ManagerPtr, int relDepth = 1);
+  smtk::model::Vertex addVertexToManager(const smtk::common::UUID&, vtkModelVertex*, smtk::model::ManagerPtr, int relDepth = 1);
 
   template<class P, typename H>
   void addEntities(P& parent, vtkModelItemIterator* it, const H& method, int relDepth);
@@ -154,12 +154,12 @@ protected:
   bool addProperties(smtk::model::Cursor& cellOut, vtkModelItem* cellIn, smtk::model::BitFlags props = 0xff);
 
   vtkItemWatcherCommand* m_itemWatcher;
-  smtk::util::UUIDGenerator m_idGenerator;
-  std::map<smtk::util::UUID,vtkModelItem*> m_itemsToRefs;
+  smtk::common::UUIDGenerator m_idGenerator;
+  std::map<smtk::common::UUID,vtkModelItem*> m_itemsToRefs;
 
   static std::map<vtkDiscreteModel*,WeakPtr> s_modelsToBridges;
-  static std::map<smtk::util::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > s_modelIdsToRefs;
-  static std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::util::UUID> s_modelRefsToIds;
+  static std::map<smtk::common::UUID,vtkSmartPointer<vtkDiscreteModelWrapper> > s_modelIdsToRefs;
+  static std::map<vtkSmartPointer<vtkDiscreteModelWrapper>, smtk::common::UUID> s_modelRefsToIds;
 };
 
     } // namespace cmb

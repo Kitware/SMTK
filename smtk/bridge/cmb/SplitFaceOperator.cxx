@@ -71,7 +71,7 @@ OperatorResult SplitFaceOperator::operateInternal()
     smtk::model::ManagerPtr store = this->manager();
 
     // First, get rid of the old face that we split.
-    smtk::util::UUID faceUUID =
+    smtk::common::UUID faceUUID =
       this->specification()->findModelEntity("face to split")->value().entity();
     store->erase(faceUUID);
 
