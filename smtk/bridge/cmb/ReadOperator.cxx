@@ -76,8 +76,8 @@ Bridge* ReadOperator::cmbBridge() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  cmbsmtk::cmb::ReadOperator,
+  smtk::bridge::cmb::ReadOperator,
   cmb_read,
   "read",
   ReadOperator_xml,
-  cmbsmtk::cmb::Bridge);
+  smtk::bridge::cmb::Bridge);

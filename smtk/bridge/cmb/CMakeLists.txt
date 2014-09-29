@@ -63,5 +63,5 @@ endif()
 
 
 if (SMTK_ENABLE_TESTING)
-  add_subdirectory(testing)
+#  add_subdirectory(testing)
 endif()

@@ -30,7 +30,7 @@ bool MergeOperator::ableToOperate()
   return
     this->ensureSpecification() &&
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<ModelEntity>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:
     this->cmbBridge()->findModel(model.entity()) &&
     // The source and target cells must be valid:
@@ -94,8 +94,8 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  cmbsmtk::cmb::MergeOperator,
+  smtk::bridge::cmb::MergeOperator,
   cmb_merge,
   "merge",
   MergeOperator_xml,
-  cmbsmtk::cmb::Bridge);
+  smtk::bridge::cmb::Bridge);

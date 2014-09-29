@@ -35,7 +35,7 @@ bool SplitFaceOperator::ableToOperate()
   return
     this->ensureSpecification() &&
     // The SMTK model must be valid
-    (model = this->specification()->findModelEntity("model")->value().as<ModelEntity>()).isValid() &&
+    (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:
     this->cmbBridge()->findModel(model.entity()) &&
     // The CMB face to split must be valid
@@ -123,8 +123,8 @@ int SplitFaceOperator::fetchCMBFaceId() const
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  cmbsmtk::cmb::SplitFaceOperator,
+  smtk::bridge::cmb::SplitFaceOperator,
   cmb_split_face,
   "split face",
   SplitFaceOperator_xml,
-  cmbsmtk::cmb::Bridge);
+  smtk::bridge::cmb::Bridge);

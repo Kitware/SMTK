@@ -1,7 +1,7 @@
 #include "Bridge.h"
 
 #include "smtk/common/UUID.h"
-#include "smtk/util/AutoInit.h"
+#include "smtk/AutoInit.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
@@ -20,7 +20,7 @@
 #include "smtk/model/Loop.h"
 
 #include "vtkCMBModelReadOperator.h"
-#include "vtkCMBModelWriterV5.h"
+//#include "vtkCMBModelWriterV5.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
@@ -281,6 +281,7 @@ int Bridge::ExportEntitiesToFileOfNameAndType(
   if (refsOut.size() <= 0)
     return 1;
 
+/*
   vtkNew<vtkCMBModelWriterV5> wri;
   wri->SetDataModeToAscii(); // for debugging only
   std::set<vtkDiscreteModel*>::size_type nfiles = refsOut.size();
@@ -295,6 +296,8 @@ int Bridge::ExportEntitiesToFileOfNameAndType(
     wri->Write(*mit);
     std::cout << "Wrote " << fname.str() << "\n";
     }
+    */
+
   return 0;
 }
 
@@ -1159,7 +1162,7 @@ static const char* CMBFileTypes[] = {
   NULL
 };
 
-smtkImplementsModelingKernel(cmb,CMBFileTypes,cmbsmtk::cmb::Bridge);
+smtkImplementsModelingKernel(cmb,CMBFileTypes,smtk::bridge::cmb::Bridge);
 
 // Force these operators to be registered whenever the bridge is used:
 smtkComponentInitMacro(smtk_cmb_read_operator);

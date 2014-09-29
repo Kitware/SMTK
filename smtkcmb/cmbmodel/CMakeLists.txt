@@ -1,14 +1,14 @@
 project(SMTKCMBModel)
 
 SET(CmbModelFiles
-  vtkCMBModelWriterV2.cxx
-  vtkCMBModelWriterV4.cxx
-  vtkCMBModelWriterV5.cxx
-  vtkCMBModelWriterBase.cxx
+#  vtkCMBModelWriterV2.cxx
+#  vtkCMBModelWriterV4.cxx
+#  vtkCMBModelWriterV5.cxx
+#  vtkCMBModelWriterBase.cxx
   vtkCMBParserBase.cxx
   vtkCMBParserV2.cxx
   vtkCMBParserV4.cxx
-  vtkCMBParserV5.cxx
+#  vtkCMBParserV5.cxx
   vtkCMBModelReader.cxx
 )
 
@@ -23,14 +23,14 @@ SET(CMBOperationFiles
 )
 
 SET(CmbModelHeaders
-  vtkCMBModelWriterV2.h
-  vtkCMBModelWriterV4.h
-  vtkCMBModelWriterV5.h
-  vtkCMBModelWriterBase.h
+#  vtkCMBModelWriterV2.h
+#  vtkCMBModelWriterV4.h
+#  vtkCMBModelWriterV5.h
+#  vtkCMBModelWriterBase.h
   vtkCMBParserBase.h
   vtkCMBParserV2.h
   vtkCMBParserV4.h
-  vtkCMBParserV5.h
+#  vtkCMBParserV5.h
   vtkCMBModelReader.h
 
   vtkMergeOperator.h
@@ -79,7 +79,8 @@ target_link_libraries(vtkSMTKCMBModel
                       LINK_PUBLIC
                       SMTKCore
                       vtkSMTKDiscreteModel
-                      RemusClient)
+                      )
+                      #RemusClient)
 
 target_include_directories(vtkSMTKCMBModel
   PUBLIC
