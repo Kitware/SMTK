@@ -78,7 +78,7 @@ def list_items(parent, level, options):
 
 
 # ---------------------------------------------------------------------------
-def list_definition(manager, defn, level, options):
+def list_definition(system, defn, level, options):
   '''Lists one definition in indented-text format
 
   '''
@@ -97,7 +97,7 @@ def list_definition(manager, defn, level, options):
 
 
 # ---------------------------------------------------------------------------
-def list_by_view(manager, view, level, options):
+def list_by_view(system, view, level, options):
   '''Lists definitions in indented-text format, organized by view
 
   Works recursively
@@ -113,14 +113,14 @@ def list_by_view(manager, view, level, options):
     for i in range(n):
       subview = view.subView(i)
       concrete_subview = smtk.to_concrete(subview)
-      list_by_view(manager, concrete_subview, sublevel, options)
+      list_by_view(system, concrete_subview, sublevel, options)
 
   # Attribute view
   elif hasattr(view, 'numberOfDefinitions'):
     n = view.numberOfDefinitions()
     for i in range(n):
       defn = view.definition(i)
-      list_definition(manager, defn, sublevel, options)
+      list_definition(system, defn, sublevel, options)
 
   # Instanced view
   elif hasattr(view, 'numberOfInstances'):
@@ -128,20 +128,20 @@ def list_by_view(manager, view, level, options):
     for i in range(n):
       att = view.instance(i)
       defn = att.definition()
-      list_definition(manager, defn, sublevel, options)
+      list_definition(system, defn, sublevel, options)
 
 
 # ---------------------------------------------------------------------------
-def list_definitions(manager, options):
+def list_definitions(system, options):
   '''Lists all definitions in indented-text format
 
   '''
-  base_list = manager.findBaseDefinitions()
+  base_list = system.findBaseDefinitions()
   #print base_list
 
   def_list = list()
   for defn in base_list:
-    derived_list = manager.findAllDerivedDefinitions(defn, True)
+    derived_list = system.findAllDerivedDefinitions(defn, True)
     def_list.extend(derived_list)
 
   def_list.sort(key=lambda d: d.type())
@@ -157,7 +157,7 @@ def list_definitions(manager, options):
 
     list_items(defn, 1, options)
     """
-    list_definition(manager, defn, 1, options)
+    list_definition(system, defn, 1, options)
 
 # ---------------------------------------------------------------------------
 if __name__ == '__main__':
@@ -176,9 +176,9 @@ if __name__ == '__main__':
     #  Load template file
     logger = smtk.util.Logger()
     print 'Loading template file %s' % args.template_filename
-    manager = smtk.attribute.Manager()
+    system = smtk.attribute.System()
     reader = smtk.util.AttributeReader()
-    err = reader.read(manager, args.template_filename, logger)
+    err = reader.read(system, args.template_filename, logger)
     if err:
         print 'Abort: Could not load template file'
         print logger.convertToString()
@@ -186,7 +186,7 @@ if __name__ == '__main__':
 
     # List the output
     if options.list_by_view:
-      root_view = manager.rootView()
-      list_by_view(manager, root_view, 0, options)
+      root_view = system.rootView()
+      list_by_view(system, root_view, 0, options)
     else:
-      list_definitions(manager, options)
+      list_definitions(system, options)

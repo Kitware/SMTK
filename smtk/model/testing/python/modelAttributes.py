@@ -87,7 +87,7 @@ def load_xref(scope, folder=None):
 
 # ---------------------------------------------------------------------
 def generate_attributes(scope):
-  '''Builds and returns attribute manager
+  '''Builds and returns attribute system
 
   Also adds boundary groups to the model
   '''
@@ -95,23 +95,23 @@ def generate_attributes(scope):
   att_folder = os.path.join(model_folder, 'attribute')
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
-  manager = smtk.attribute.Manager()
-  #manager.setRefModelManager(scope.store)
+  system = smtk.attribute.System()
+  #system.setRefModelManager(scope.store)
   reader = smtk.io.AttributeReader()
   logger = smtk.io.Logger()
-  err = reader.read(manager, att_path, logger)
+  err = reader.read(system, att_path, logger)
   if err:
     logging.error("Unable to load template file")
     logging.error(logger.convertToString())
     sys.exit(4)
 
   # Create material attribute & associate to model face
-  manager.setRefModelManager(scope.store)
-  defn = manager.findDefinition('Material')
+  system.setRefModelManager(scope.store)
+  defn = system.findDefinition('Material')
   value = 1.01
   for i,face in enumerate(scope.face_list, start=1):
     att_name = 'material %d' % i
-    att = manager.createAttribute(att_name, defn)
+    att = system.createAttribute(att_name, defn)
 
     for item_name in ['Density', 'Viscosity']:
       item = att.find(item_name)
@@ -143,8 +143,8 @@ def generate_attributes(scope):
   scope.store.addToGroup(right_edges.entity(), uuid_list)
 
   # Create boundary condition attributes
-  defn = manager.findDefinition('Velocity')
-  left_att = manager.createAttribute('leftBC', defn)
+  defn = system.findDefinition('Velocity')
+  left_att = system.createAttribute('leftBC', defn)
   item = left_att.item(0)
   concrete_item = smtk.attribute.to_concrete(item)
   concrete_item.setValue(0, 3.14159)
@@ -155,8 +155,8 @@ def generate_attributes(scope):
   meta = (left_att.name(), left_edges.entity())
   scope.att_data.append(meta)
 
-  defn = manager.findDefinition('Pressure')
-  right_att = manager.createAttribute('rightBC', defn)
+  defn = system.findDefinition('Pressure')
+  right_att = system.createAttribute('rightBC', defn)
   item = left_att.item(0)
   concrete_item = smtk.attribute.to_concrete(item)
   concrete_item.setValue(0, 14.1)
@@ -166,11 +166,11 @@ def generate_attributes(scope):
   meta = (right_att.name(), right_edges.entity())
   scope.att_data.append(meta)
 
-  return manager
+  return system
 
 
 # ---------------------------------------------------------------------
-def check_attributes(scope, manager):
+def check_attributes(scope, system):
   '''Checks for attributes and associations
 
   Returns number of errors found
@@ -180,7 +180,7 @@ def check_attributes(scope, manager):
   for t in scope.att_data:
     att_name, entity_uuid = t
     #logging.debug('att_name %s, uuid %s' % t)
-    att = manager.findAttribute(att_name)
+    att = system.findAttribute(att_name)
     if not att:
       logging.error('Missing attribute %s' % att_name)
       error_count += 1
@@ -234,11 +234,11 @@ if __name__ == '__main__':
 
   # Build attributes and write to file
   scope.att_data = list()
-  manager = generate_attributes(scope)
+  system = generate_attributes(scope)
   logging.info('Writing %s' % SBI_FILENAME)
   writer = smtk.io.AttributeWriter()
   logger = smtk.io.Logger()
-  err = writer.write(manager, SBI_FILENAME, logger)
+  err = writer.write(system, SBI_FILENAME, logger)
   if err:
     logging.error('Unable to write attribute file')
     logging.error(logger.convertToString())
@@ -246,7 +246,7 @@ if __name__ == '__main__':
 
   # Delete model & attributes
   del scope.store
-  del manager
+  del system
 
   # Re-import model
   test_store = smtk.model.Manager.create()
@@ -255,17 +255,17 @@ if __name__ == '__main__':
 
   # Re-read attribute file
   logging.info('Reading back %s' % SBI_FILENAME)
-  test_manager = smtk.attribute.Manager()
+  test_system = smtk.attribute.System()
   reader = smtk.io.AttributeReader()
-  err = reader.read(test_manager, SBI_FILENAME, logger)
+  err = reader.read(test_system, SBI_FILENAME, logger)
   if err:
     logging.error("Unable to read attribute file")
     logging.error(logger.convertToString())
     sys.exit(6)
 
   # Set model and verify attributes
-  test_manager.setRefModelManager(scope.store)
-  error_count = check_attributes(scope, test_manager)
+  test_system.setRefModelManager(scope.store)
+  error_count = check_attributes(scope, test_system)
   if error_count > 0:
     sys.exit(7)
 

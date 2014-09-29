@@ -30,12 +30,12 @@ except ImportError:
 
 
 # ---------------------------------------------------------------------
-def generate_model_items(manager, model_description):
+def generate_model_items(system, model_description):
     '''
     Constructs model based on input description
     '''
     print 'Generating model items'
-    model = manager.refModel()
+    model = system.refModel()
     for item_description in model_description:
         group = item_description.get('group')
         name = item_description.get('name')
@@ -108,7 +108,7 @@ def set_item(item, item_description, refitem_list):
 
     expression = item_description.get('expression')
     if expression is not None:
-        exp = manager.findAttribute(expression)
+        exp = system.findAttribute(expression)
         if exp is None:
             print 'Could not find expression named %s' % expression
             return False
@@ -190,7 +190,7 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
             print 'WARNING: no item %s for parent %s - skipping' % \
                 (item_name, parent.name())
             if isinstance(parent, smtk.attribute.Attribute):
-                manager.removeAttribute(name)
+                system.removeAttribute(name)
                 count -= 1
                 success = False
             break
@@ -201,14 +201,14 @@ def process_items(parent, parent_description, refitem_list, group_index=None):
 
 
 # ---------------------------------------------------------------------
-def fetch_attribute(manager, att_type, name, att_id):
+def fetch_attribute(system, att_type, name, att_id):
     '''
     Retrieves or creates attribute as needed
     '''
     att = None   # return value
 
     # First check that Definition exists
-    defn = manager.findDefinition(att_type)
+    defn = system.findDefinition(att_type)
     if defn is None:
         print 'WARNING: no attribute definition for %s type' % \
             att_type + ' - skipping'
@@ -216,10 +216,10 @@ def fetch_attribute(manager, att_type, name, att_id):
 
     if name is not None:
         # Check for attribute with given name
-        att = manager.findAttribute(name)
+        att = system.findAttribute(name)
     else:
         # Check for single attribute instance
-        att_list = manager.findAttributes(att_type)
+        att_list = system.findAttributes(att_type)
         if len(att_list) == 1:
             #print 'Found single attribute type \"%s\"' % att_type
             att = att_list[0]
@@ -228,21 +228,21 @@ def fetch_attribute(manager, att_type, name, att_id):
         print 'Creating %s attribute' % att_type
         if att_id is not None:
             # First check that id not already in use
-            test_id_att = manager.findAttribute(att_id)
+            test_id_att = system.findAttribute(att_id)
             if test_id_att is not None:
                 print 'Cannot generate attribute %s with id %d' % \
                     (name, att_id) + \
                     ' because id is already in use.'
                 if name is None:
-                    att = manager.createAttribute(att_type)
+                    att = system.createAttribute(att_type)
                 else:
-                    att = manager.createAttribute(name, att_type)
+                    att = system.createAttribute(name, att_type)
             else:
-                att = manager.createAttribute(name, att_type, att_id)
+                att = system.createAttribute(name, att_type, att_id)
         elif name is None:
-            att = manager.createAttribute(att_type)
+            att = system.createAttribute(att_type)
         else:
-            att = manager.createAttribute(name, att_type)
+            att = system.createAttribute(name, att_type)
 
         if att is None:
             print 'WARNING: Manager did not create attribute of type %s -skipping' % \
@@ -273,14 +273,14 @@ def fetch_subgroup_item(group_item, group_index, item_name):
 
 
 # ---------------------------------------------------------------------
-def generate_atts(manager, attributes_description, refitem_list):
+def generate_atts(system, attributes_description, refitem_list):
     '''
     Constructs attributes based on input description
     Returns number of attributes that got created
     '''
     print 'Generating attributes'
     count = 0
-    model = manager.refModel()
+    model = system.refModel()
     for att_description in attributes_description:
         att_type = att_description.get('att')
         name = att_description.get('name')
@@ -295,7 +295,7 @@ def generate_atts(manager, attributes_description, refitem_list):
         """
 
         # Attribute may have been automatically instanced
-        att = fetch_attribute(manager, att_type, name, att_id)
+        att = fetch_attribute(system, att_type, name, att_id)
         if att is None:
             continue
 
@@ -318,23 +318,23 @@ def generate_atts(manager, attributes_description, refitem_list):
 
 
 # ---------------------------------------------------------------------
-def generate_sim(manager, description):
+def generate_sim(system, description):
     '''
-    Generates smtk attribute manager
+    Generates smtk attribute system
     Returns number of attributes that got created
     '''
     count = 0
     model = None
     model_description = description.get('model')
     if model_description is not None:
-        generate_model_items(manager, model_description)
+        generate_model_items(system, model_description)
 
     att_description = description.get('attributes')
     if att_description is None:
         print 'WARNING: no attributes found in input description'
     else:
         refitem_list = list()
-        count = generate_atts(manager, att_description, refitem_list)
+        count = generate_atts(system, att_description, refitem_list)
 
         # Process RefItem instances after all attributes created:
         #print 'refitem_list', refitem_list
@@ -344,7 +344,7 @@ def generate_sim(manager, description):
                 print 'WARNING: no attributeref specified for', item.name()
                 continue
 
-            att = manager.findAttribute(attname)
+            att = system.findAttribute(attname)
             refitem = smtk.attribute.to_concrete(item)
             print 'Setting RefItem %s to %s' % (refitem.name(), attname)
             refitem.setValue(att)
@@ -378,15 +378,15 @@ if __name__ == '__main__':
     #  Load template file
     logger = smtk.util.Logger()
     print 'Loading template file %s' % args.template_filename
-    manager = smtk.attribute.Manager()
+    system = smtk.attribute.System()
     reader = smtk.util.AttributeReader()
-    err = reader.read(manager, args.template_filename, logger)
+    err = reader.read(system, args.template_filename, logger)
     if err:
         print 'Abort: Could not load template file'
         print logger.convertToString()
         sys.exit(-3)
     model = smtk.model.Model.New()
-    manager.setRefModel(model)
+    system.setRefModel(model)
 
     # Load json input
     sim_description = None
@@ -424,7 +424,7 @@ if __name__ == '__main__':
             sys.exit(-4)
 
     # Generate the attributes
-    count = generate_sim(manager, sim_description)
+    count = generate_sim(system, sim_description)
     print 'Number of attributes created or updated: %d' % count
 
     # Write output
@@ -434,7 +434,7 @@ if __name__ == '__main__':
         print 'Writing output file %s' % args.sim_filename
         writer = smtk.util.AttributeWriter()
         logger.reset()
-        err = writer.write(manager, args.sim_filename, logger)
+        err = writer.write(system, args.sim_filename, logger)
         if err:
             print 'Error writing output file'
 
