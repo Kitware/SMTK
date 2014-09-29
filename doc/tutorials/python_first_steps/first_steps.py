@@ -7,14 +7,12 @@ modelFileName = sys.argv[-1]
 # ++ 1 ++
 import smtk
 
-amgr = smtk.attribute.Manager()
+asys = smtk.attribute.System()
 mmgr = smtk.model.Manager.create()
 
 # Connect the managers:
-amgr.setRefModelManager(mmgr)
+asys.setRefModelManager(mmgr)
 
-# FIXME: create an attribute system here.
-asys = amgr
 # -- 1 --
 
 # II. Basic attribute definitions
