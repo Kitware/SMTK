@@ -9,15 +9,16 @@
 //=========================================================================
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
-#include "smtk/options.h"
+#include "smtk/Options.h"
 
+// ++ UserGuide/Model/1 ++
 #include "smtk/AutoInit.h"
 
 #ifdef SMTK_USE_CGM
 // If CGM is included in the build, ensure that it is loaded
-// (and thus registered with the remus remote bridge).
 smtkComponentInitMacro(smtk_cgm_bridge);
 #endif // SMTK_USE_CGM
+// -- UserGuide/Model/1 --
 
 using namespace smtk::model;
 

@@ -20,8 +20,27 @@
 namespace smtk {
   namespace model {
 
+/// A (generic) function-pointer to construct a bridge instance.
 typedef smtk::function<BridgePtr()> BridgeConstructor;
-typedef std::pair<smtk::model::StringList,BridgeConstructor> StaticBridgeInfo;
+
+/// A record associating bridge information with a constructor method.
+struct StaticBridgeInfo {
+  std::string Name;
+  BridgeConstructor Constructor;
+  StringList Tags;
+  StringList FileTypes;
+
+  StaticBridgeInfo() { }
+  StaticBridgeInfo(
+    const std::string& bname,
+    BridgeConstructor bctor,
+    const StringList& btags = StringList(),
+    const StringList& btype = StringList())
+    : Name(bname), Constructor(bctor), Tags(btags), FileTypes(btype)
+    { }
+};
+
+/// A map of bridge names to constructors.
 typedef std::map<std::string,StaticBridgeInfo> BridgeConstructors;
 
 /**\brief A static class for holding information about bridges to modeling kernels.
@@ -34,9 +53,14 @@ typedef std::map<std::string,StaticBridgeInfo> BridgeConstructors;
 class SMTKCORE_EXPORT BridgeRegistrar
 {
 public:
-  static bool registerBridge(const std::string& bname, const StringList& fileTypes, BridgeConstructor bctor);
+  static bool registerBridge(
+    const std::string& bname,
+    const StringList& fileTypes,
+    const StringList& tags,
+    BridgeConstructor bctor);
   static StringList bridgeNames();
   static StringList bridgeFileTypes(const std::string& bname);
+  static StringList bridgeTags(const std::string& bname);
   static BridgeConstructor bridgeConstructor(const std::string& bname);
   static BridgePtr createBridge(const std::string& bname);
 

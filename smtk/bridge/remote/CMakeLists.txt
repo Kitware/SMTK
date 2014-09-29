@@ -3,12 +3,14 @@ set(RemoteLibSrcs
   RemusBridgeConnection.cxx
   RemusBridgeConnections.cxx
   RemusRemoteBridge.cxx
+  RemusStaticBridgeInfo.cxx
 )
 
 set(RemoteLibHeaders
   RemusBridgeConnection.h
   RemusBridgeConnections.h
   RemusRemoteBridge.h
+  RemusStaticBridgeInfo.h
 )
 
 add_library(SMTKRemote ${RemoteLibSrcs})

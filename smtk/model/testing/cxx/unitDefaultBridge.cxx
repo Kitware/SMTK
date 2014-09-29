@@ -194,7 +194,10 @@ protected:
 const char* noFileTypes[] = {
   NULL
 };
-smtkImplementsModelingKernel(forwarding, noFileTypes, TestForwardingBridge);
+const char* noTags[] = {
+  NULL
+};
+smtkImplementsModelingKernel(forwarding, noFileTypes, noTags, TestForwardingBridge);
 
 class TestForwardingOperator : public Operator
 {

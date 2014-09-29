@@ -10,9 +10,14 @@
 #ifndef __smtk_bridge_remote_RemusRemoteBridge_h
 #define __smtk_bridge_remote_RemusRemoteBridge_h
 
+#ifndef SHIBOKEN_SKIP
+#  include "smtk/model/BridgeRegistrar.h"
+#  include "smtk/bridge/remote/RemusStaticBridgeInfo.h"
+#endif // SHIBOKEN_SKIP
 #include "smtk/bridge/remote/SMTKRemoteExports.h" // for export macro
 #include "smtk/SharedPtr.h" // for export macro
 #include "smtk/model/DefaultBridge.h"
+#include "smtk/model/StringData.h"
 
 #include "remus/client/Client.h" // for m_remusClient
 #include "remus/common/MeshRegistrar.h" // for RemusModelBridgeType
@@ -63,15 +68,20 @@ typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
 /**\brief Call this macro in your bridge's implementation file to register it as a remus worker.
   *
   * This macro declares a new struct derived from remus::meshtypes::MeshTypeBase
-  * corresponding to the specific modeling kernel. This struct must have a
-  * unique uint16_t integer, \a RemusId, associated with it. See remus/common/MeshTypes.h
-  * for the basic integer types and be aware that other SMTK modeling kernels
-  * must not collide. We recommend using the uint16_t hash of your bridge
-  * name (plus 101 if it is lower, as Remus reserves 0--100; or plus 1 if it
-  * collides with a pre-existing kernel).
+  * corresponding to the specific modeling kernel. This struct must provide a
+  * unique name.
+  *
+  * The \a CompString argument specifies the Remus-unique service name
+  * (such as "smtk::model[cgm{ACIS}]@tcp://foo.com:50505").
+  * This is not used to construct a bridge but is used to disambiguate
+  * bridges of the same type running on different hosts, exposing a
+  * different modeling kernel, registered with a different Remus server,
+  * or providing access to a different filesystem.
   *
   * The \a BridgeName argument must be identical to what you pass to the
-  * smtkImplementsModelingKernel macro.
+  * smtkImplementsModelingKernel macro. This is not the name that Remus will
+  * use to identify the bridge; it is the name used to create the bridge that
+  * will back the RemusRemoteBridge instance.
   *
   * The \a BridgePrep is a function that should be invoked before the
   * the constructor function of the given \a BridgeName is called.
@@ -83,10 +93,14 @@ typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
   * on the component.
   */
 #define smtkRegisterBridgeWithRemus(BridgeName, BridgePrep, CompString, QualComp) \
-  struct smtk ##QualComp## RemusRemoteBridgeType : smtk::bridge::remote::RemusModelTypeBase \
+  struct smtk ##QualComp## RemusRemoteBridgeType : \
+    smtk::bridge::remote::RemusModelTypeBase \
     { \
     static boost::shared_ptr<remus::meshtypes::MeshTypeBase> create() \
-      { return boost::shared_ptr<remus::meshtypes::MeshTypeBase>(new smtk ##QualComp## RemusRemoteBridgeType()); } \
+      { \
+      return boost::shared_ptr<remus::meshtypes::MeshTypeBase>( \
+        new smtk ##QualComp## RemusRemoteBridgeType()); \
+      } \
     virtual std::string name() const { return CompString ; } \
     virtual std::string bridgeName() const { return BridgeName ; } \
     virtual void bridgePrep() const { (void)0; BridgePrep ; } \
@@ -128,20 +142,33 @@ public:
 protected:
   friend class model::RemoteOperator;
   friend class io::ImportJSON;
+  friend class RemusBridgeConnection;
 
   RemusRemoteBridge();
 
   virtual smtk::model::BridgedInfoBits transcribeInternal(
-        const smtk::model::Cursor& entity, smtk::model::BridgedInfoBits flags);
+    const smtk::model::Cursor& entity, smtk::model::BridgedInfoBits flags);
 
   virtual bool ableToOperateDelegate(smtk::model::RemoteOperatorPtr op);
   virtual smtk::model::OperatorResult operateDelegate(
-                                            smtk::model::RemoteOperatorPtr op);
+    smtk::model::RemoteOperatorPtr op);
+
+#ifndef SHIBOKEN_SKIP
+  static RemusStaticBridgeInfo createFunctor(
+    RemusBridgeConnectionPtr remusConn,
+    const remus::proto::JobRequirements& jobReq,
+    const std::string& meshType);
+#endif // SHIBOKEN_SKIP
+  static bool registerBridgedOperator(
+    const std::string& bridgeName, const std::string& opName,
+    const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
 
   RemusBridgeConnection* m_remusConn;
   smtk::shared_ptr<remus::client::Client> m_remusClient;
   std::string m_remusWorkerName;
   remus::proto::JobRequirements m_remusWorkerReqs;
+
+  static std::map<std::string,RemusStaticBridgeInfo>* s_remotes;
 
   static void cleanupBridgeTypes();
 };

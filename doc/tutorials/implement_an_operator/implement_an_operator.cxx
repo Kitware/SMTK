@@ -19,7 +19,7 @@
 #include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
-#include "smtk/options.h"
+#include "smtk/Options.h"
 
 // ++ 1 ++
 // Include the encoded XML describing the operator class.

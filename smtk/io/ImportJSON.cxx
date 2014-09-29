@@ -16,6 +16,7 @@
 #include "smtk/model/Entity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
+#include "smtk/model/StringData.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -889,6 +890,48 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
     }
 
   return 1;
+}
+
+std::string ImportJSON::bridgeNameFromTagData(cJSON* tagData)
+{
+  std::ostringstream bname;
+  bname << "smtk::model[";
+  std::string kernel;
+  cJSON* kernelJSON = cJSON_GetObjectItem(tagData, "modelingKernel");
+  if (kernelJSON)
+    cJSON_GetStringValue(kernelJSON, kernel);
+  bname << (kernel.empty() ? "native" : kernel);
+  cJSON* enginesJSON;
+  if ((enginesJSON = cJSON_GetObjectItem(tagData, "engines")))
+    {
+    StringList engines;
+    ImportJSON::getStringArrayFromJSON(enginesJSON, engines);
+    StringList::const_iterator it = engines.begin();
+    if (it != engines.end())
+      {
+      bname << "{" << *it;
+      for (++it; it != engines.end(); ++it)
+        bname << "," << *it;
+      bname << "}";
+      }
+    }
+  bname << "]";
+  std::string server;
+  cJSON* serverJSON = cJSON_GetObjectItem(tagData, "server");
+  if (serverJSON)
+    cJSON_GetStringValue(serverJSON, server);
+  if (!server.empty())
+    bname << "@" << server;
+  return bname.str();
+}
+
+smtk::model::StringList ImportJSON::bridgeFileTypesFromTagData(cJSON* tagData)
+{
+  StringList fileTypes;
+  cJSON* fileTypesJSON;
+  if ((fileTypesJSON = cJSON_GetObjectItem(tagData, "fileTypes")))
+    ImportJSON::getStringArrayFromJSON(fileTypesJSON, fileTypes);
+  return fileTypes;
 }
 
 int ImportJSON::getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::common::UUID>& uids)

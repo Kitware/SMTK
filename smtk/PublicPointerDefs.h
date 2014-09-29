@@ -123,6 +123,22 @@ namespace smtk
     typedef std::vector<smtk::model::VolumeUse> VolumeUses;
   }
 
+  namespace bridge
+  {
+    // These classes are in the SMTKRemote library, which
+    // is only built when SMTK_ENABLE_REMUS is ON. However,
+    // we do not #ifdef these declarations since that would
+    // introduce a dependency on a generated header that
+    // could cause frequent recompilation.
+    namespace remote
+    {
+      class RemusRemoteBridge;
+      class RemusBridgeConnection;
+      class RemusBridgeConnections;
+      class RemusRPCWorker;
+    }
+  }
+
   namespace simulation
   {
     class ExportSpec;
@@ -255,6 +271,16 @@ namespace smtk
     typedef smtk::shared_ptr< smtk::attribute::System >   SystemPtr;
   };
 
+  namespace bridge
+  {
+    namespace remote
+    {
+      typedef smtk::shared_ptr< RemusRemoteBridge >          RemusRemoteBridgePtr;
+      typedef smtk::shared_ptr< RemusBridgeConnection >      RemusBridgeConnectionPtr;
+      typedef smtk::shared_ptr< RemusBridgeConnections >     RemusBridgeConnectionsPtr;
+      typedef smtk::shared_ptr< RemusRPCWorker >             RemusRPCWorkerPtr;
+    }
+  }
   namespace simulation
   {
     //custom user data classes

@@ -86,7 +86,7 @@ typedef unsigned long BridgedInfoBits;
   * \a Cls       - The name of the bridge class. The class must have a static method named
   *                "create" that constructs and instance and returns a shared pointer to it.
   */
-#define smtkImplementsModelingKernel(Comp, FileTypes, Cls) \
+#define smtkImplementsModelingKernel(Comp, FileTypes, Tags, Cls) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::BridgePtr baseCreate() { \
     return Cls ::create(); \
@@ -97,14 +97,20 @@ typedef unsigned long BridgedInfoBits;
     for (const char** ft = FileTypes; *ft; ++ft) \
       if (*ft[0]) \
         fileTypes.push_back(*ft); \
+    std::vector<std::string> tags; \
+    for (const char** tg = Tags; *tg; ++tg) \
+      if (*tg[0]) \
+        tags.push_back(*tg); \
     smtk::model::BridgeRegistrar::registerBridge( \
       #Comp, /* Can't rely on bridgeName to be initialized yet */ \
       fileTypes, \
+      tags, \
       baseCreate); \
   } \
   void smtk_##Comp##_bridge_AutoInit_Destruct() { \
     smtk::model::BridgeRegistrar::registerBridge( \
       Cls ::bridgeName, \
+      std::vector<std::string>(), \
       std::vector<std::string>(), \
       NULL); \
   } \

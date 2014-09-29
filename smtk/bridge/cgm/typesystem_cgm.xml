@@ -3,6 +3,9 @@
 
   @EXTRA_TYPESYSTEMS@
 
+  <!-- Ignore Shiboken notice that CGM lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
   <!-- Ignore methods that refer directly to CGM pointers -->
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addGroupToManager', unmatched parameter type 'RefGroup*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addEdgeToManager', unmatched parameter type 'RefEdge*'"/>
@@ -25,6 +28,17 @@
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping field 'Bridge::s_operators' with unmatched type 'std::map&lt;std::string,smtk::model::StaticOperatorInfo&gt;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerStaticOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
+
+  <!-- Ignore CGM-specific enums -->
+  <suppress-warning text="enum 'CubitEventType' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'ObserverType' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitSense' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitStatus' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'FirmnessType' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitEntityRelation' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitPointContainment' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitAssocDataType' does not have a type entry or is not an enum"/>
+  <suppress-warning text="enum 'CubitFacetboolOp' does not have a type entry or is not an enum"/>
 
   <!-- Additional objects to be wrapped when building with CGM -->
   <namespace-type name="smtk" generate = "no">

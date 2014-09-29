@@ -10,7 +10,7 @@
 #ifndef __smtk_bridge_cgm_CAUUID_h
 #define __smtk_bridge_cgm_CAUUID_h
 
-#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#include "smtk/Options.h" // for CGM_HAVE_VERSION_H
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #ifdef CGM_HAVE_VERSION_H
 #  include "cgm_version.h"

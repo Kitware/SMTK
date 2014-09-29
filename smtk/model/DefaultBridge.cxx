@@ -133,4 +133,11 @@ static const char* DefaultBridgeFileTypes[] = {
   ".json",
   NULL
 };
-smtkImplementsModelingKernel(native,DefaultBridgeFileTypes,smtk::model::DefaultBridge);
+static const char* DefaultHasNoTags[] = {
+  NULL
+};
+smtkImplementsModelingKernel(
+  native,
+  DefaultBridgeFileTypes,
+  DefaultHasNoTags,
+  smtk::model::DefaultBridge);

@@ -28,6 +28,9 @@
 #include "cJSON.h"
 
 using smtk::common::UUID;
+using namespace smtk::common;
+using namespace smtk::model;
+using namespace smtk::io;
 
 namespace smtk {
   namespace bridge {
@@ -62,8 +65,31 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
     remus::common::MeshIOTypeSet mtypes = this->m_client->supportedIOTypes();
     remus::common::MeshIOTypeSet::const_iterator mit;
     for (mit = mtypes.begin(); mit != mtypes.end(); ++mit)
+      {
       if (mit->outputType() == "smtk::model[native]") // TODO: Eliminate this magic string?
-        this->m_remoteBridgeNames.insert(mit->inputType());
+        {
+        if (this->m_remoteBridgeNames.insert(mit->inputType()).second)
+          { // Obtain the solid-modeling kernel "requirements", including the file types and operators.
+          remus::proto::JobRequirementsSet kernelInfos = this->m_client->retrieveRequirements(*mit);
+          if (kernelInfos.size() <= 0)
+            {
+            continue;
+            }
+          else if (kernelInfos.size() > 1)
+            {
+            std::cerr
+              << "Error. Bridge name " << mit->inputType()
+              << " has multiple requirements. Using first.\n";
+            }
+          const remus::proto::JobRequirements& kernelInfo(*kernelInfos.begin());
+          RemusStaticBridgeInfo binfo =
+            RemusRemoteBridge::createFunctor(
+              shared_from_this(), kernelInfo, mit->inputType());
+          smtk::model::BridgeRegistrar::registerBridge(
+            binfo.name(), binfo.fileTypes(), binfo.tags(), binfo);
+          }
+        }
+      }
     }
   resultVec = std::vector<std::string>(
     this->m_remoteBridgeNames.begin(), this->m_remoteBridgeNames.end());
@@ -174,6 +200,16 @@ bool RemusBridgeConnection::endBridgeSession(const UUID& bridgeSessionId)
   // Now remove the entry from the proxy's list of sessions.
   this->m_remoteBridgeSessionIds.erase(it);
   return true;
+}
+
+/**\brief Obtain a RemusRemoteBridge given its session ID.
+  *
+  */
+RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeSession(
+  const smtk::common::UUID& bridgeSessionId)
+{
+  Bridge::Ptr sess = this->m_modelMgr->findBridgeSession(bridgeSessionId);
+  return smtk::dynamic_pointer_cast<RemusRemoteBridge>(sess);
 }
 
 /**\brief Return a list of file types supported by a particular bridge.
@@ -454,6 +490,12 @@ void RemusBridgeConnection::jsonRPCNotification(const std::string& note, const r
   cJSON* result = cJSON_Parse(jres.data().c_str());
   return result;
   */
+}
+
+/// Return the Remus connection object this class owns.
+remus::client::ServerConnection RemusBridgeConnection::connection()
+{
+  return this->m_conn;
 }
 
 /**\brief Given a Remus-style worker name (e.g., "smtk[cgm{OpenCascade}]"),

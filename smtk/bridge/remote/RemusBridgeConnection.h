@@ -41,7 +41,7 @@ class RemusRemoteBridge;
   * process, it will respond to the JSON-RPC requests
   * instances of this class issue.
   */
-class SMTKREMOTE_EXPORT RemusBridgeConnection
+class SMTKREMOTE_EXPORT RemusBridgeConnection : smtkEnableSharedPtr(RemusBridgeConnection)
 {
 public:
   smtkTypeMacro(RemusBridgeConnection);
@@ -54,6 +54,8 @@ public:
 
   smtk::common::UUID beginBridgeSession(const std::string& bridgeName);
   bool endBridgeSession(const smtk::common::UUID& bridgeSessionId);
+  RemusRemoteBridgePtr findBridgeSession(
+    const smtk::common::UUID& bridgeSessionId);
 
   std::vector<std::string> supportedFileTypes(
     const std::string& bridgeName = std::string());
@@ -80,11 +82,14 @@ public:
   void jsonRPCNotification(cJSON* req, const remus::proto::JobRequirements& jreq);
   void jsonRPCNotification(const std::string& req, const remus::proto::JobRequirements& jreq);
 
+  remus::client::ServerConnection connection();
+
 protected:
   RemusBridgeConnection();
 
   smtk::shared_ptr<RemusRemoteBridge> findBridgeForRemusType(const std::string& rtype);
   bool findRequirementsForRemusType(remus::proto::JobRequirements& jreq, const std::string& rtype);
+  std::string createNameFromTags(cJSON* tags);
 
   remus::client::ServerConnection m_conn;
   smtk::shared_ptr<remus::client::Client> m_client;
