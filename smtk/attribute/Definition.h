@@ -11,7 +11,7 @@
 // .SECTION Description
 // Stores all of the necessary information for a definition of a
 // single attribute. Attributes should be created through
-// Manager::createAttribute().
+// System::createAttribute().
 // .SECTION See Also
 
 #ifndef __smtk_attribute_Definition_h
@@ -39,7 +39,7 @@ namespace smtk
   {
     class Attribute;
     class ItemDefinition;
-    class Manager;
+    class System;
 
     class SMTKCORE_EXPORT Definition
     {
@@ -49,12 +49,12 @@ namespace smtk
 
       // Description:
       // The type is the identifier that is used to access the
-      // attribute definition through the Manager. It should never change.
+      // attribute definition through the System. It should never change.
       const std::string &type() const
       { return this->m_type;}
 
-      smtk::attribute::Manager *manager() const
-      {return this->m_manager;}
+      smtk::attribute::System *system() const
+      {return this->m_system;}
 
       // The label is what can be displayed in an application.  Unlike the type
       // which is constant w/r to the definition, an application can change the label
@@ -216,7 +216,7 @@ namespace smtk
       void buildAttribute(smtk::attribute::Attribute *attribute) const;
 
       //This method resets the definition item offset - this is used by the
-      // manager when a definition is modified
+      // system when a definition is modified
       void resetItemOffset();
       std::size_t itemOffset() const
       {return this->m_baseItemOffset;}
@@ -224,13 +224,13 @@ namespace smtk
       // Return the public pointer for this definition.
       smtk::attribute::DefinitionPtr pointer() const;
     protected:
-      friend class smtk::attribute::Manager;
-      // AttributeDefinitions can only be created by an attribute manager
+      friend class smtk::attribute::System;
+      // AttributeDefinitions can only be created by an attribute system
       Definition(const std::string &myType, smtk::attribute::DefinitionPtr myBaseDef,
-                 smtk::attribute::Manager *myManager);
+                 smtk::attribute::System *mySystem);
 
-      void clearManager()
-      { this->m_manager = NULL;}
+      void clearSystem()
+      { this->m_system = NULL;}
 
       void setCategories();
 
@@ -238,7 +238,7 @@ namespace smtk
       // definition's items have been changed
       void updateDerivedDefinitions();
 
-      smtk::attribute::Manager *m_manager;
+      smtk::attribute::System *m_system;
       int m_version;
       bool m_isAbstract;
       smtk::attribute::DefinitionPtr m_baseDefinition;

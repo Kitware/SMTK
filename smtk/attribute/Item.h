@@ -70,12 +70,12 @@ namespace smtk
       };
       struct CopyInfo
       {
-        // Indicates if both managers are attached to same model
+        // Indicates if both systems are attached to same model
         // Only set for smtk model (not used w/cmb models)
         bool IsSameModel;
-        // List of ValueItem instances that reference expression not currently in this manager
+        // List of ValueItem instances that reference expression not currently in this system
         std::queue<UnresolvedItemInfo> UnresolvedExpItems;
-        // List of RefItem instances that reference attribute not currently in this manager
+        // List of RefItem instances that reference attribute not currently in this system
         std::queue<UnresolvedItemInfo> UnresolvedRefItems;
       };
 
@@ -150,7 +150,7 @@ namespace smtk
      void detachOwningItem()
      {this->m_owningItem = NULL;}
 
-     // Used by Manager::copyAttribute()
+     // Used by System::copyAttribute()
      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                            smtk::attribute::Item::CopyInfo& info);
 

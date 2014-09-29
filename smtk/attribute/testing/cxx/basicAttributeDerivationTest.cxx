@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -38,21 +38,21 @@ int main()
   typedef smtk::attribute::ValueItem ValueComp;
   typedef smtk::attribute::Item AttComp;
 
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
-  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
+  smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
   // Lets add some item definitions
   base->addItemDefinition<IntCompDef>(itemNames[0]);
   smtk::attribute::IntItemDefinitionPtr icompdef2 = base->addItemDefinition<IntCompDef>(itemNames[1]);
   icompdef2->setDefaultValue(10);
 
-  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   def1->addItemDefinition<DoubleCompDef>(itemNames[2]);
   smtk::attribute::DoubleItemDefinitionPtr dcompdef2 = def1->addItemDefinition<DoubleCompDef>(itemNames[3]);
   dcompdef2->setDefaultValue(-35.2);
 
-  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   def2->addItemDefinition<StringCompDef>(itemNames[4]);
   smtk::attribute::StringItemDefinitionPtr scompdef2 = def2->addItemDefinition<StringCompDef>(itemNames[5]);
@@ -103,7 +103,7 @@ int main()
     }
 
 
-  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "Derived2");
   if (att)
     {
     std::cout << "Attribute testAtt created\n";
@@ -153,7 +153,7 @@ int main()
         }
       }
     }
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
   return status;
 }

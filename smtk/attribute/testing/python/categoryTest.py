@@ -23,17 +23,17 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print 'Manager created'
+    system = smtk.attribute.System()
+    print 'System created'
 
-    expDef = manager.createDefinition("ExpDef");
+    expDef = system.createDefinition("ExpDef");
     expDef.setBriefDescription("Sample Expression");
     expDef.setDetailedDescription("Sample Expression for testing\nThere is not much here!");
     eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
     eitemdef2 = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Aux String")
     eitemdef.setDefaultValue("sample")
 
-    base = manager.createDefinition("BaseDef")
+    base = system.createDefinition("BaseDef")
     #Lets add some item definitions
     iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem1");
     iitemdef.addCategory("Flow")
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     iitemdef.setDefaultValue(10);
     iitemdef.addCategory("Heat");
 
-    def1 = manager.createDefinition("Derived1", "BaseDef");
+    def1 = system.createDefinition("Derived1", "BaseDef");
     # Lets add some item definitions
     ditemdef = def1.addItemDefinitionStr( smtk.attribute.DoubleItemDefinition, "DoubleItem1")
     # Allow this one to hold an expression
@@ -55,7 +55,7 @@ if __name__ == '__main__':
     ditemdef.setDefaultValue(-35.2);
     ditemdef.addCategory("Constituent");
 
-    def2 = manager.createDefinition("Derived2", "Derived1");
+    def2 = system.createDefinition("Derived2", "Derived1");
     # Lets add some item definitions
     sitemdef = def2.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem1");
     sitemdef.addCategory("Flow");
@@ -64,7 +64,7 @@ if __name__ == '__main__':
     sitemdef.addCategory("General");
 
     # Process Categories
-    manager.updateCategories();
+    system.updateCategories();
     # Lets see what categories the attribute definitions think they are
     if expDef.numberOfCategories() != 0:
       categories = expDef.categories();
@@ -81,8 +81,8 @@ if __name__ == '__main__':
     else:
       print "ERROR: Def2 has no categories!";
     # Lets test creating an attribute by passing in the expression definition explicitly
-    expAtt = manager.createAttribute("Exp1", expDef);
-    att = manager.createAttribute("testAtt", "Derived2");
+    expAtt = system.createAttribute("Exp1", expDef);
+    att = system.createAttribute("testAtt", "Derived2");
     if att is not None:
       print "Attribute testAtt created"
     else:
@@ -110,10 +110,10 @@ if __name__ == '__main__':
           print "\t\tusing Expression: %s"%vitem.expression(0).name();
         else:
           print "\t\tValue = %s"%vitem.valueAsString();
-#    writer = smtk.attribute.XmlV1StringWriter(manager);
+#    writer = smtk.attribute.XmlV1StringWriter(system);
 #    print writer.convertToString();
 
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

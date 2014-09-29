@@ -32,13 +32,13 @@ namespace smtk
   {
     class RefItem;
     class Item;
-    class Manager;
+    class System;
     typedef unsigned long AttributeId;
 
     class SMTKCORE_EXPORT Attribute
     {
       friend class smtk::attribute::Definition;
-      friend class smtk::attribute::Manager;
+      friend class smtk::attribute::System;
       friend class smtk::attribute::RefItem;
     public:
       static smtk::attribute::AttributePtr New(const std::string &myName,
@@ -47,7 +47,7 @@ namespace smtk
       { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
-      // NOTE: To rename an attribute use the manager!
+      // NOTE: To rename an attribute use the system!
       const std::string &name() const
       { return this->m_name;}
 
@@ -140,7 +140,7 @@ namespace smtk
 
       bool isValid();
 
-      smtk::attribute::Manager *manager() const;
+      smtk::attribute::System *system() const;
       smtk::model::ManagerPtr modelManager() const;
 
       void setUserData(const std::string &key, smtk::simulation::UserDataPtr value)

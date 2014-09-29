@@ -18,7 +18,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -58,7 +58,7 @@ namespace smtk
     class SMTKCORE_EXPORT XmlDocV2Parser
     {
     public:
-      XmlDocV2Parser(smtk::attribute::Manager &manager);
+      XmlDocV2Parser(smtk::attribute::System &system);
       virtual ~XmlDocV2Parser();
       void process(pugi::xml_document &doc);
       void process(pugi::xml_node &rootNode);
@@ -141,7 +141,7 @@ namespace smtk
       smtk::model::BitFlags decodeModelEntityMask(const std::string &s);
       static int decodeColorInfo(const std::string &s, double *color);
       bool m_reportAsError;
-      smtk::attribute::Manager &m_manager;
+      smtk::attribute::System &m_system;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
       std::vector<AttRefDefInfo> m_attRefDefInfo;
       std::vector<ItemExpressionInfo> m_itemExpressionInfo;

@@ -89,7 +89,7 @@ namespace smtk
                                                   const smtk::model::ModelEntities &assignedIds);
 
       QList<smtk::attribute::DefinitionPtr> processDefUniqueness(const smtk::model::ModelEntity& theEntity,
-                                                                 smtk::attribute::Manager* attManager);
+                                                                 smtk::attribute::System* attSystem);
 
     private:
       qtAssociationWidgetInternals *Internals;

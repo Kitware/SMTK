@@ -13,7 +13,7 @@
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/XmlV2StringWriter.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
@@ -94,12 +94,12 @@ writeString(std::string& content,
 
     if ("" == link && ResourceSet::LOADED == state)
       {
-      // Use XmlV2StringWriter to generate xml for this attribute manager
+      // Use XmlV2StringWriter to generate xml for this attribute system
       smtk::common::ResourcePtr resource;
       ok = resources.get(id, resource);
-      smtk::attribute::Manager *manager =
-        dynamic_cast<smtk::attribute::Manager *>(resource.get());
-      XmlV2StringWriter xmlWriter(*manager);
+      smtk::attribute::System *system =
+        dynamic_cast<smtk::attribute::System *>(resource.get());
+      XmlV2StringWriter xmlWriter(*system);
       xmlWriter.generateXml(resourceElement, logger);
       }
     else if (link != "")
@@ -113,10 +113,10 @@ writeString(std::string& content,
         {
         smtk::common::ResourcePtr resource;
         ok = resources.get(id, resource);
-        smtk::attribute::Manager *manager =
-          dynamic_cast<smtk::attribute::Manager *>(resource.get());
+        smtk::attribute::System *system =
+          dynamic_cast<smtk::attribute::System *>(resource.get());
         AttributeWriter attWriter;
-        bool hasErr = attWriter.write(*manager, link, logger);
+        bool hasErr = attWriter.write(*system, link, logger);
         ok = !hasErr;
         if (ok)
           {

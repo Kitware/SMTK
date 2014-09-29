@@ -14,7 +14,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include <iostream>
 
 using namespace smtk::attribute;
@@ -24,9 +24,9 @@ double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 //----------------------------------------------------------------------------
 Definition::Definition(const std::string &myType,
                                          smtk::attribute::DefinitionPtr myBaseDef,
-                                         Manager *myManager)
+                                         System *mySystem)
 {
-  this->m_manager = myManager;
+  this->m_system = mySystem;
   this->m_baseDefinition = myBaseDef;
   this->m_type = myType;
   this->m_version = 0;
@@ -85,7 +85,7 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
 
   // Get the most "basic" definition that is unique
    smtk::attribute::ConstDefinitionPtr baseDef =
-     this->m_manager->findIsUniqueBaseClass(def);
+     this->m_system->findIsUniqueBaseClass(def);
   // See if the other definition is derived from this base definition.
   // If it is not then we know there is no conflict
   return def->isA(baseDef);
@@ -196,7 +196,7 @@ void Definition::updateDerivedDefinitions()
   DefinitionPtr def = this->pointer();
   if (def)
     {
-    this->m_manager->updateDerivedDefinitionIndexOffsets(def);
+    this->m_system->updateDerivedDefinitionIndexOffsets(def);
     }
 }
 //----------------------------------------------------------------------------
@@ -221,7 +221,7 @@ void Definition::setCategories()
 //----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr Definition::pointer() const
 {
-  Manager *m = this->manager();
+  System *m = this->system();
   if (m)
     {
     return m->findDefinition(this->m_type);

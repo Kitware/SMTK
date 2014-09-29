@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -23,17 +23,17 @@ int main()
 {
   int status = 0;
   {
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
   // Lets create an attribute to represent an expression
-  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");
   smtk::attribute::StringItemDefinitionPtr eitemdef =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinitionPtr>("Expression String");
   smtk::attribute::StringItemDefinitionPtr eitemdef2 =
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::attribute::DoubleItemDefinitionPtr ditemdef =
     base->addItemDefinition<smtk::attribute::DoubleItemDefinitionPtr>("DoubleItem1");
@@ -41,11 +41,11 @@ int main()
   ditemdef->setExpressionDefinition(expDef);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::attribute::AttributePtr expAtt1 = manager.createAttribute("Exp1", expDef);
-  smtk::attribute::AttributePtr expAtt2 = manager.createAttribute("Exp2", expDef);
-  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt1", "BaseDef");
-  smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt2", "BaseDef");
-  smtk::attribute::AttributePtr att2 = manager.createAttribute("testAtt3", "BaseDef");
+  smtk::attribute::AttributePtr expAtt1 = system.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr expAtt2 = system.createAttribute("Exp2", expDef);
+  smtk::attribute::AttributePtr att = system.createAttribute("testAtt1", "BaseDef");
+  smtk::attribute::AttributePtr att1 = system.createAttribute("testAtt2", "BaseDef");
+  smtk::attribute::AttributePtr att2 = system.createAttribute("testAtt3", "BaseDef");
 
 
   smtk::attribute::ValueItemPtr vitem;
@@ -73,7 +73,7 @@ int main()
               << "\n";
     }
 
-  manager.removeAttribute(att1);
+  system.removeAttribute(att1);
   att1.reset(); // Should delete att1
   std::cout << "testAtt1 deleted\n";
   expAtt1->references(refs);
@@ -112,7 +112,7 @@ int main()
     }
 
 
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
   return status;
 }

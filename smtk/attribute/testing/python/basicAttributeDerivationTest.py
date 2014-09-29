@@ -27,9 +27,9 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print 'Manager created'
-    base = manager.createDefinition("BaseDef");
+    system = smtk.attribute.System()
+    print 'System created'
+    base = system.createDefinition("BaseDef");
 
     #Lets add some item definitions
     icompdef = smtk.attribute.IntItemDefinition.New(itemNames[0])
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.IntItemDefinition.ToItemDefinition(icompdef2)
     base.addItemDefinition(itemdef2);
 
-    def1 = manager.createDefinition('Derived1', 'BaseDef')
+    def1 = system.createDefinition('Derived1', 'BaseDef')
     # Lets add some item definitions
     dcompdef = smtk.attribute.DoubleItemDefinition.New(itemNames[2])
     itemdef = smtk.attribute.DoubleItemDefinition.ToItemDefinition(dcompdef)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.DoubleItemDefinition.ToItemDefinition(dcompdef2)
     def1.addItemDefinition(itemdef2)
 
-    def2 = manager.createDefinition('Derived2', 'Derived1')
+    def2 = system.createDefinition('Derived2', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.StringItemDefinition.New(itemNames[4])
     itemdef = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     itemdef2 = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef2)
     def1.addItemDefinition(itemdef2)
 
-    def3 = manager.createDefinition('Derived3', 'Derived1')
+    def3 = system.createDefinition('Derived3', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.ModelEntityItemDefinition.New(itemNames[6])
     scompdef.setMembershipMask(smtk.model.FACE)
@@ -97,7 +97,7 @@ if __name__ == '__main__':
       print "Insertion Position Test Failed!\n"
       status = -1
 
-    att = manager.createAttribute('testAtt', 'Derived2')
+    att = system.createAttribute('testAtt', 'Derived2')
     if not att is None:
         print 'Attribute testAtt created'
     else:
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     # Now test setting entity-valued attribute-items
     # I. Create a model manager and add some entities to it:
     mmgr = smtk.model.Manager.create()
-    manager.setRefModelManager(mmgr)
+    system.setRefModelManager(mmgr)
     mdl = mmgr.addModel(3,3,'TestModel')
     edg = mmgr.addEdge()
     fac = mmgr.addFace()
@@ -145,8 +145,8 @@ if __name__ == '__main__':
     gr0.addEntity(fac)
     gr1.addEntity(edg)
 
-    # II. Have the attribute manager create an attribute with model-entity
-    att = manager.createAttribute('testMEAtt', 'Derived3')
+    # II. Have the attribute system create an attribute with model-entity
+    att = system.createAttribute('testMEAtt', 'Derived3')
     if not att is None:
         print 'Attribute testMEAtt created'
     else:
@@ -203,7 +203,7 @@ if __name__ == '__main__':
             print comp
     # ======
 
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

@@ -10,7 +10,7 @@
 
 
 #include "smtk/attribute/RefItem.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
@@ -246,8 +246,8 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
   // Cast input pointer to RefItem
   RefItemPtr sourceRefItem = smtk::dynamic_pointer_cast<RefItem>(sourceItem);
 
-  // Get reference to attribute manager
-  Manager *manager = this->attribute()->manager();
+  // Get reference to attribute system
+  System *system = this->attribute()->system();
 
   // Update values, copying as practical
   this->setNumberOfValues(sourceRefItem->numberOfValues());
@@ -256,7 +256,7 @@ void RefItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     if (sourceRefItem->isSet(i))
       {
       std::string nameStr = sourceRefItem->value()->name();
-      AttributePtr att = manager->findAttribute(nameStr);
+      AttributePtr att = system->findAttribute(nameStr);
       if (att)
         {
         this->setValue(i, att);

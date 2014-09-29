@@ -160,7 +160,7 @@ public:
 protected:
   TestForwardingBridge()
     {
-    this->initializeOperatorManager(TestForwardingBridge::s_operators);
+    this->initializeOperatorSystem(TestForwardingBridge::s_operators);
     }
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags)
@@ -171,7 +171,7 @@ protected:
   virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)
     {
     OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
-    remOp->setSpecification(remoteBridge->operatorManager()->copyAttribute(oper->specification()));
+    remOp->setSpecification(remoteBridge->operatorSystem()->copyAttribute(oper->specification()));
     return remOp->ableToOperate();
     }
 
@@ -179,13 +179,13 @@ protected:
     {
     printParams(localOp->specification(), "local input");
     OperatorPtr remOp = remoteBridge->op(localOp->name(), remoteModel);
-    remOp->setSpecification(remoteBridge->operatorManager()->copyAttribute(localOp->specification()));
+    remOp->setSpecification(remoteBridge->operatorSystem()->copyAttribute(localOp->specification()));
     OperatorResult remResult = remOp->operate();
-    OperatorResult localResult = this->operatorManager()->copyAttribute(remResult);
+    OperatorResult localResult = this->operatorSystem()->copyAttribute(remResult);
 
     // Kill remote operator and result.
-    remOp->bridge()->operatorManager()->removeAttribute(remOp->specification());
-    remResult->manager()->removeAttribute(remResult);
+    remOp->bridge()->operatorSystem()->removeAttribute(remOp->specification());
+    remResult->system()->removeAttribute(remResult);
 
     printParams(localResult, "local output");
     return localResult;

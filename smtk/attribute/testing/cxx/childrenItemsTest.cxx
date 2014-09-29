@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/RefItemDefinition.h"
@@ -39,31 +39,31 @@ int main(int argc, char *argv[])
     std::cerr << "Usage: " << argv[0] << " filename\n";
     return -1;
     }
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
   // Lets add some analyses
   std::set<std::string> analysis;
   analysis.insert("Flow");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("CFD Flow", analysis);
+  system.defineAnalysis("CFD Flow", analysis);
   analysis.clear();
 
   analysis.insert("Flow");
   analysis.insert("Heat");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+  system.defineAnalysis("CFD Flow with Heat Transfer", analysis);
   analysis.clear();
 
   analysis.insert("Constituent");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("Constituent Transport", analysis);
+  system.defineAnalysis("Constituent Transport", analysis);
   analysis.clear();
 
   // Lets create an attribute to represent an expression
-  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");
   expDef->setBriefDescription("Sample Expression");
   expDef->setDetailedDescription("Sample Expression for testing\nThere is not much here!");
   smtk::attribute::StringItemDefinitionPtr eitemdef =
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     expDef->addItemDefinition<smtk::attribute::StringItemDefinition>("Aux String");
   eitemdef->setDefaultValue("sample");
 
-  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef =
     base->addItemDefinition<smtk::attribute::IntItemDefinitionPtr>("TEMPORAL");
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   iitemdef->setDefaultValue(10);
   iitemdef->addCategory("Heat");
 
-  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
   def1->setAssociationMask(smtk::model::MODEL_ENTITY); // belongs on model
    // Lets add some item definitions
   smtk::attribute::DoubleItemDefinitionPtr ditemdef =
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
   vdef->setLabel("Option 1");
 
 
-  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
   def2->setAssociationMask(smtk::model::VOLUME);
    // Lets add some item definitions
   smtk::attribute::StringItemDefinitionPtr sitemdef =
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
   sitemdef->addCategory("Flow");
 
   // Add in a Attribute definition with a reference to another attribute
-  smtk::attribute::DefinitionPtr attrefdef = manager.createDefinition("AttributeReferenceDef");
+  smtk::attribute::DefinitionPtr attrefdef = system.createDefinition("AttributeReferenceDef");
   smtk::attribute::RefItemDefinitionPtr aritemdef =
     attrefdef->addItemDefinition<smtk::attribute::RefItemDefinitionPtr>("BaseDefItem");
   aritemdef->setNumberOfRequiredValues(1);
@@ -162,10 +162,10 @@ int main(int argc, char *argv[])
   aritemdef->setAttributeDefinition(base);
 
   // Process Categories
-  manager.updateCategories();
+  system.updateCategories();
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
-  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = system.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "Derived2");
   if (!att)
     {
     std::cout << "ERROR: Attribute testAtt not created\n";
@@ -233,13 +233,13 @@ int main(int argc, char *argv[])
   item = att->item(2);
   vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
   smtk::io::AttributeWriter writer;
-  if (writer.write(manager, argv[1],logger))
+  if (writer.write(system, argv[1],logger))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";
     std::cerr << logger.convertToString();
     status = -1;
     }
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
   return status;
 }

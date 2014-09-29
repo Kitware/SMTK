@@ -22,7 +22,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class Manager;
+    class System;
   };
 
   namespace io
@@ -33,14 +33,14 @@ namespace smtk
     public:
       AttributeWriter();
       // Returns true if there was a problem with writing the file
-      bool write(const smtk::attribute::Manager &manager,
+      bool write(const smtk::attribute::System &system,
                  const std::string &filename,
                  smtk::io::Logger &logger);
-      bool writeContents(const smtk::attribute::Manager &manager,
+      bool writeContents(const smtk::attribute::System &system,
                          std::string &filecontents,
                          smtk::io::Logger &logger,
                          bool no_declaration = false);
-      //Control which sections of the attribute manager should be writtern out
+      //Control which sections of the attribute system should be writtern out
       // By Default all sections are processed.  These are advance options!!
       // If val is false then defintions will not be saved
       void includeDefinitions(bool val)

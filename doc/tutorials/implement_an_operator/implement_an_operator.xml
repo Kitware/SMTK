@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<SMTK_AttributeManager Version="1">
+<SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- +1+ -->
     <AttDef Type="counter" BaseType="operator">
@@ -21,4 +21,4 @@
     </AttDef>
     <!-- -2- -->
   </Definitions>
-</SMTK_AttributeManager>
+</SMTK_AttributeSystem>

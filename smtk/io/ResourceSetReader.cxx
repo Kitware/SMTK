@@ -15,7 +15,7 @@
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.cpp"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "boost/filesystem.hpp"
 
@@ -220,22 +220,22 @@ readEmbeddedManager(pugi::xml_node& element,
                     std::string& linkStartPath,
                     smtk::io::Logger& logger)
 {
-  // Initialize attribute manager
-  smtk::attribute::Manager *manager = NULL;
+  // Initialize attribute system
+  smtk::attribute::System *system = NULL;
   // If input resource is empty, create attribute manager
   if (resource)
     {
-    manager = dynamic_cast<smtk::attribute::Manager *>(resource.get());
+    system = dynamic_cast<smtk::attribute::System *>(resource.get());
     }
   else
     {
-    manager = new smtk::attribute::Manager();
-    resource = smtk::common::ResourcePtr(manager);
+    system = new smtk::attribute::System();
+    resource = smtk::common::ResourcePtr(system);
     }
 
-  if (!manager)
+  if (!system)
     {
-    smtkErrorMacro(logger, "Failed to initialize attribute manager");
+    smtkErrorMacro(logger, "Failed to initialize attribute system");
     return false;
     }
 
@@ -247,7 +247,7 @@ readEmbeddedManager(pugi::xml_node& element,
     searchPaths.push_back(linkStartPath);
     reader.setSearchPaths(searchPaths);
     }
-  reader.readContents(*manager, element, logger);
+  reader.readContents(*system, element, logger);
   return !logger.hasErrors();
 }
 
@@ -270,27 +270,27 @@ readIncludedManager(const pugi::xml_node& element,
     return false;
     }
 
-  // Initialize attribute manager
-  smtk::attribute::Manager *manager = NULL;
+  // Initialize attribute system
+  smtk::attribute::System *system = NULL;
   // If input resource is empty, create attribute manager
   if (resource)
     {
-    manager = dynamic_cast<smtk::attribute::Manager *>(resource.get());
+    system = dynamic_cast<smtk::attribute::System *>(resource.get());
     }
   else
     {
-    manager = new smtk::attribute::Manager();
-    resource = smtk::common::ResourcePtr(manager);
+    system = new smtk::attribute::System();
+    resource = smtk::common::ResourcePtr(system);
     }
 
-  if (!manager)
+  if (!system)
     {
-    smtkErrorMacro(logger, "Failed to initialize attribute manager");
+    smtkErrorMacro(logger, "Failed to initialize attribute system");
     return false;
     }
 
   smtk::io::AttributeReader reader;
-  bool hasErr = reader.read(*manager, path, true, logger);
+  bool hasErr = reader.read(*system, path, true, logger);
   if (hasErr)
     {
     return false;

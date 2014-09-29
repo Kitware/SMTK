@@ -19,7 +19,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 
@@ -146,7 +146,7 @@ void qtAssociationWidget::showDomainsAssociation(
     }
 
   std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
-  Manager *attManager = (*itAttDef)->manager();
+  System *attSystem = (*itAttDef)->system();
   QList<smtk::attribute::AttributePtr> allAtts;
   for (; itAttDef!=attDefs.end(); ++itAttDef)
     {
@@ -157,7 +157,7 @@ void qtAssociationWidget::showDomainsAssociation(
     if((*itAttDef)->associatesWithVolume())
       {
       std::vector<smtk::attribute::AttributePtr> result;
-      attManager->findAttributes(*itAttDef, result);
+      attSystem->findAttributes(*itAttDef, result);
       std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
       for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
         {
@@ -202,11 +202,11 @@ void qtAssociationWidget::showAttributeAssociation(
     }
 
   std::vector<smtk::attribute::DefinitionPtr>::iterator itAttDef = attDefs.begin();
-  Manager *attManager = (*itAttDef)->manager();
+  System *attSystem = (*itAttDef)->system();
 
   // figure out how many unique definitions this model item has
   QList<smtk::attribute::DefinitionPtr> uniqueDefs =  this->processDefUniqueness(theEntiy,
-                                                                                 attManager);
+                                                                                 attSystem);
 
 
   std::set<smtk::attribute::AttributePtr> doneAtts;
@@ -217,7 +217,7 @@ void qtAssociationWidget::showAttributeAssociation(
       continue;
       }
     std::vector<smtk::attribute::AttributePtr> result;
-    attManager->findAttributes(*itAttDef, result);
+    attSystem->findAttributes(*itAttDef, result);
     std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
     for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
       {
@@ -288,7 +288,7 @@ void qtAssociationWidget::showEntityAssociation(
 
 
   //add current-associated items to the current attribute
-  smtk::model::ManagerPtr modelManager = attDef->manager()->refModelManager();
+  smtk::model::ManagerPtr modelManager = attDef->system()->refModelManager();
   smtk::model::ModelEntities modelEnts;
   smtk::model::Cursor::CursorsFromUUIDs(
     modelEnts,
@@ -362,19 +362,19 @@ std::set<smtk::model::ModelEntity> qtAssociationWidget::processAttUniqueness(
     {
     // we need to exclude any entities that are already assigned another att
     // Get the most "basic" definition that is unique
-    Manager *attManager = attDef->manager();
-    smtk::model::ManagerPtr modelManager = attManager->refModelManager();
+    System *attSystem = attDef->system();
+    smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
     smtk::attribute::ConstDefinitionPtr baseDef =
-      attManager->findIsUniqueBaseClass(attDef);
+      attSystem->findIsUniqueBaseClass(attDef);
     smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
     std::vector<smtk::attribute::DefinitionPtr> newdefs;
-    attManager->findAllDerivedDefinitions(bdef, true, newdefs);
+    attSystem->findAllDerivedDefinitions(bdef, true, newdefs);
     std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
     for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
       {
       std::vector<smtk::attribute::AttributePtr> result;
-      attManager->findAttributes(*itDef, result);
+      attSystem->findAttributes(*itDef, result);
       std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
       for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
         {
@@ -398,7 +398,7 @@ std::set<smtk::model::ModelEntity> qtAssociationWidget::processAttUniqueness(
 //----------------------------------------------------------------------------
 QList<smtk::attribute::DefinitionPtr>
 qtAssociationWidget::processDefUniqueness(const smtk::model::ModelEntity& theEntity,
-                                          smtk::attribute::Manager* attManager)
+                                          smtk::attribute::System* attSystem)
 {
   QList<smtk::attribute::DefinitionPtr> uniqueDefs;
 
@@ -411,18 +411,18 @@ qtAssociationWidget::processDefUniqueness(const smtk::model::ModelEntity& theEnt
   typedef smtk::model::AttributeSet::const_iterator cit;
   for (cit i = associatedAtts.begin(); i != associatedAtts.end(); ++i)
     {
-    smtk::attribute::AttributePtr attPtr = attManager->findAttribute( (*i) );
+    smtk::attribute::AttributePtr attPtr = attSystem->findAttribute( (*i) );
     if(attPtr)
       {
       smtk::attribute::DefinitionPtr attDef = attPtr->definition();
       if(attDef->isUnique())
         {
-        Manager *attManager = attDef->manager();
+        System *attSystem = attDef->system();
         smtk::attribute::ConstDefinitionPtr baseDef =
-          attManager->findIsUniqueBaseClass(attDef);
+          attSystem->findIsUniqueBaseClass(attDef);
         smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));
         std::vector<smtk::attribute::DefinitionPtr> newdefs;
-        attManager->findAllDerivedDefinitions(bdef, true, newdefs);
+        attSystem->findAllDerivedDefinitions(bdef, true, newdefs);
         std::vector<smtk::attribute::DefinitionPtr>::iterator itDef;
         for (itDef=newdefs.begin(); itDef!=newdefs.end(); ++itDef)
           {
@@ -480,10 +480,10 @@ smtk::model::ModelEntity qtAssociationWidget::getModelItem(
     {
     QVariant var = item->data(Qt::UserRole);
     smtk::common::UUID uid( var.toString().toStdString() );
-    smtk::attribute::Manager *attManager = this->Internals->View->uiManager()->attManager();
-    if(attManager)
+    smtk::attribute::System *attSystem = this->Internals->View->uiManager()->attSystem();
+    if(attSystem)
       {
-      smtk::model::ManagerPtr modelManager = attManager->refModelManager();
+      smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
       return smtk::model::ModelEntity(modelManager,uid);
       }
     }
@@ -544,7 +544,7 @@ QListWidgetItem* qtAssociationWidget::addAttributeAssociationItem(
 void qtAssociationWidget::addDomainListItem(
   const smtk::model::GroupEntity& domainEnt, QList<smtk::attribute::AttributePtr>& allAtts)
 {
-  smtk::attribute::Manager *attManager = this->Internals->View->uiManager()->attManager();
+  smtk::attribute::System *attSystem = this->Internals->View->uiManager()->attSystem();
 
   QTableWidgetItem* domainItem = new QTableWidgetItem(  QString::fromStdString(domainEnt.name()) );
   domainItem->setFlags(Qt::ItemIsEnabled);
@@ -570,7 +570,7 @@ void qtAssociationWidget::addDomainListItem(
   smtk::model::AttributeSet associatedAtts = domainEnt.attributes();
   if(associatedAtts.size() > 0)
     {
-    smtk::attribute::AttributePtr first_att = attManager->findAttribute( (*associatedAtts.begin()) );
+    smtk::attribute::AttributePtr first_att = attSystem->findAttribute( (*associatedAtts.begin()) );
     if(first_att)
       {
       idx = attNames.indexOf(QString::fromStdString(first_att->name()));
@@ -746,8 +746,8 @@ void qtAssociationWidget::onNodalOptionChanged(int idx)
 //----------------------------------------------------------------------------
 void qtAssociationWidget::onDomainAssociationChanged()
 {
-  smtk::attribute::Manager *attManager = this->Internals->View->uiManager()->attManager();
-  smtk::model::ManagerPtr modelManager = attManager->refModelManager();
+  smtk::attribute::System *attSystem = this->Internals->View->uiManager()->attSystem();
+  smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
 
   QComboBox* const combo = qobject_cast<QComboBox*>(
     QObject::sender());
@@ -773,7 +773,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
 
 
   QString attName = combo->currentText();
-  AttributePtr attPtr = attManager->findAttribute(attName.toStdString());
+  AttributePtr attPtr = attSystem->findAttribute(attName.toStdString());
   if(attPtr)
     {
     domainItem.attachAttribute(attPtr->id());

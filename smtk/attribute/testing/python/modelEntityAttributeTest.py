@@ -23,10 +23,10 @@ if __name__ == '__main__':
 
     status = 0
 
-    attribMgr = smtk.attribute.Manager()
+    attribSys = smtk.attribute.System()
     modelMgr = smtk.model.Manager()
-    print 'Managers created'
-    def_ = attribMgr.createDefinition('testDef')
+    print 'Systems created'
+    def_ = attribSys.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'
     else:
@@ -46,9 +46,9 @@ if __name__ == '__main__':
     me_e_def.setTypeMask(smtk.model.EDGE | smtk.model.GROUP_ENTITY)
     me_f_def.setTypeMask(smtk.model.FACE | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
     me_hg_def.setTypeMask(smtk.model.EDGE | smtk.model.FACE | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENEOUS_GROUP)
-    sweepCurves = attribMgr.createAttribute('SweepCurves', 'Edges')
-    sweepSurfaces = attribMgr.createAttribute('SweepSurfaces', 'Faces')
-    funkyGroup = attribMgr.createAttribute('EdgesOrFacesNotBoth', 'EdgeOrFaceGroups')
+    sweepCurves = attribSys.createAttribute('SweepCurves', 'Edges')
+    sweepSurfaces = attribSys.createAttribute('SweepSurfaces', 'Faces')
+    funkyGroup = attribSys.createAttribute('EdgesOrFacesNotBoth', 'EdgeOrFaceGroups')
     fgroup = modelMgr.addGroup(0, 'FaceGroup')
     egroup = modelMgr.addGroup(0, 'EdgeGroup')
     mgroup = modelMgr.addGroup(0, 'MixedGroup')

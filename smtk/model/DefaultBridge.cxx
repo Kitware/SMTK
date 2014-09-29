@@ -24,7 +24,7 @@ namespace smtk {
 /// Default constructor. Initializes statically-registered operators.
 DefaultBridge::DefaultBridge()
 {
-  this->initializeOperatorManager(DefaultBridge::s_operators);
+  this->initializeOperatorSystem(DefaultBridge::s_operators);
 }
 
 /// Indicate that, since we have no "backing store" model, the entire model is already present.

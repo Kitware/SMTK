@@ -11,7 +11,7 @@
 #include <algorithm>
 
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/RefItem.h"
@@ -262,7 +262,7 @@ copyTo(ValueItemDefinitionPtr def,
     {
     // Set expression definition (if possible)
     std::string typeStr = this->expressionDefinition()->type();
-    smtk::attribute::DefinitionPtr exp = info.ToManager.findDefinition(typeStr);
+    smtk::attribute::DefinitionPtr exp = info.ToSystem.findDefinition(typeStr);
     if (exp)
       {
       def->setExpressionDefinition(exp);

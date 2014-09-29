@@ -45,13 +45,13 @@ namespace smtk
       // Temp structure used for copying definitions
       struct CopyInfo
       {
-        // Reference to manager that is getting modified ("to")
-        const smtk::attribute::Manager& ToManager;
-        // List of ValueItemDefinitions that reference expressions not currently in this manager
+        // Reference to system that is getting modified ("to")
+        const smtk::attribute::System& ToSystem;
+        // List of ValueItemDefinitions that reference expressions not currently in this system
         std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedExpItems;
-        // List of RefItemDefinitions that reference types not currently in this manager
+        // List of RefItemDefinitions that reference types not currently in this system
         std::queue<std::pair<std::string, smtk::attribute::ItemDefinitionPtr> > UnresolvedRefItems;
-        CopyInfo(const smtk::attribute::Manager *mgr) : ToManager(*mgr) {}
+        CopyInfo(const smtk::attribute::System *mgr) : ToSystem(*mgr) {}
       };
 
       virtual ~ItemDefinition();
