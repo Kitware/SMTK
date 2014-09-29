@@ -207,7 +207,7 @@ public: \
   * kernel, and (2) a pair of smtk::attribute::Definition instances that
   * define the structure of operator parameters and results.
   * The latter Definition instances are kept inside an attribute system
-  * owned by the Bridge; you can access it with smtk::Bridge::operatorManager().
+  * owned by the Bridge; you can access it with smtk::Bridge::operatorSystem().
   *
   * Register an instance of a Bridge subclass to a
   * model with Manager::bridgeModel(). Then, when an
