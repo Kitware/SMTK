@@ -43,7 +43,15 @@ smtk_install_library(SMTKCore DEPENDS cJSON)
 ################################################################################
 # setup install rules
 ################################################################################
-install(FILES PublicPointerDefs.h DESTINATION include/smtk)
+install(
+  FILES
+    AutoInit.h
+    PublicPointerDefs.h
+    SharedFromThis.h
+    SystemConfig.h
+  DESTINATION
+    include/smtk
+)
 
 #setup the exports for the library when used from an installed location
 install(EXPORT SMTK-targets DESTINATION lib)
