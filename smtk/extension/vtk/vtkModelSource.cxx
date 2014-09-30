@@ -1,9 +1,18 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/vtk/vtkModelSource.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -71,7 +80,7 @@ void vtkModelSource::Dirty()
 
 template<int Dim>
 void AddEntityTessToPolyData(
-  smtk::model::ManagerPtr model, const smtk::util::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
+  smtk::model::ManagerPtr model, const smtk::common::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
 {
   smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
   if (it == model->tessellations().end())
@@ -151,9 +160,9 @@ void vtkModelSource::GenerateRepresentationFromModel(
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
   smtk::model::UUIDWithTessellation it;
   vtkIdType npts = 0;
-  smtk::util::UUIDs modelVerts;
-  smtk::util::UUIDs modelLines;
-  smtk::util::UUIDs modelPolys;
+  smtk::common::UUIDs modelVerts;
+  smtk::common::UUIDs modelLines;
+  smtk::common::UUIDs modelPolys;
   for (it = model->tessellations().begin(); it != model->tessellations().end(); ++it)
     {
     npts += it->second.coords().size() / 3;
@@ -189,7 +198,7 @@ void vtkModelSource::GenerateRepresentationFromModel(
       }
     }
   pts->Allocate(npts);
-  smtk::util::UUIDs::iterator uit;
+  smtk::common::UUIDs::iterator uit;
   if (!modelVerts.empty())
     {
     vtkNew<vtkCellArray> verts;

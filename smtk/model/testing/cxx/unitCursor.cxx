@@ -1,8 +1,18 @@
-#include "smtk/model/Cursor.h"
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#include "smtk/io/ExportJSON.h"
+
 
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Chain.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/model/Cursor.h"
 #include "smtk/model/Edge.h"
 #include "smtk/model/EdgeUse.h"
 #include "smtk/model/Face.h"
@@ -18,15 +28,16 @@
 #include "smtk/model/VertexUse.h"
 #include "smtk/model/Volume.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include <fstream>
 #include <sstream>
 
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 using smtk::shared_ptr;
 
 static int numberOfInclusionsRemoved = 0;

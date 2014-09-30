@@ -1,13 +1,31 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_Arrangement_h
 #define __smtk_model_Arrangement_h
 
+#include "smtk/options.h" // for SMTK_HASH_STORAGE
+
+#include "smtk/common/UUID.h"
+
 #include "smtk/model/ArrangementKind.h"
 #include "smtk/model/Entity.h"
-#include "smtk/util/UUID.h"
 
-#include "smtk/options.h" // for SMTK_HASH_STORAGE
 #ifdef SMTK_HASH_STORAGE
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (push)
+#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
+#  endif
 #  include "sparsehash/sparse_hash_map"
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (pop)
+#  endif
 #endif // SMTK_HASH_STORAGE
 
 #include <map>
@@ -71,14 +89,14 @@ public:
   static Arrangement SimpleIndex(int relationIdx);
   bool IndexFromSimple(int& relationIdx) const;
 
-  bool relations(smtk::util::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const;
+  bool relations(smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const;
 
   /// A helper to extract the relationship from an arrangement that stores only an index.
   template<bool (Arrangement::*M)(int&) const>
   struct IndexHelper
   {
     bool operator () (
-      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
       {
       if (entity)
         {
@@ -96,7 +114,7 @@ public:
   struct IndexAndSenseHelper
   {
     bool operator () (
-      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
       {
       if (entity)
         {
@@ -114,7 +132,7 @@ public:
   struct IndexRangeHelper
   {
     bool operator () (
-      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
       {
       if (entity)
         {
@@ -133,7 +151,7 @@ public:
   struct IndexSenseAndOrientationHelper
   {
     bool operator () (
-      smtk::util::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
+      smtk::common::UUIDArray& rels, const Entity* entity, const Arrangement& arr) const
       {
       if (entity)
         {
@@ -177,11 +195,11 @@ class ArrangementReference
 {
 public:
   ArrangementReference(
-    const smtk::util::UUID& entId, ArrangementKind k, int idx)
+    const smtk::common::UUID& entId, ArrangementKind k, int idx)
     : entityId(entId), kind(k), index(idx)
     { }
 
-  smtk::util::UUID entityId; //!< The ID of the entity on which the arrangement is defined.
+  smtk::common::UUID entityId; //!< The ID of the entity on which the arrangement is defined.
   ArrangementKind kind;      //!< The kind of the arrangement.
   int index;                 //!< The index of the arrangement.
 };
@@ -192,14 +210,14 @@ typedef std::vector<Arrangement> Arrangements;
 typedef std::map<ArrangementKind,Arrangements> KindsToArrangements;
 #ifdef SMTK_HASH_STORAGE
 /// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
-typedef google::sparse_hash_map<smtk::util::UUID,KindsToArrangements> UUIDsToArrangements;
+typedef google::sparse_hash_map<smtk::common::UUID,KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
-typedef google::sparse_hash_map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
+typedef google::sparse_hash_map<smtk::common::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
 #else
 /// Each Manager entity's UUID is mapped to a vector of Arrangment instances.
-typedef std::map<smtk::util::UUID,KindsToArrangements> UUIDsToArrangements;
+typedef std::map<smtk::common::UUID,KindsToArrangements> UUIDsToArrangements;
 /// An iterator referencing a (UUID,KindsToArrangements)-tuple.
-typedef std::map<smtk::util::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
+typedef std::map<smtk::common::UUID,KindsToArrangements>::iterator UUIDWithArrangementDictionary;
 #endif // SMTK_HASH_STORAGE
 /// An iterator referencing an (ArrangementKind,Arrangements)-tuple.
 typedef std::map<ArrangementKind,Arrangements>::iterator ArrangementKindWithArrangements;

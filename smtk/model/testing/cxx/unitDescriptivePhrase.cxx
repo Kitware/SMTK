@@ -1,9 +1,18 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
 
-#include "smtk/model/ImportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
 
@@ -14,9 +23,10 @@
 #include <stdlib.h>
 
 using smtk::shared_ptr;
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 
 int main(int argc, char* argv[])
 {

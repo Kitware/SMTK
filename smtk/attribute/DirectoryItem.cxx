@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 
 #include "smtk/attribute/DirectoryItem.h"
@@ -28,11 +15,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include <iostream>
 #include <stdio.h>
 
-using namespace smtk::attribute; 
+using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-DirectoryItem::DirectoryItem(Attribute *owningAttribute, 
-                             int itemPosition): 
+DirectoryItem::DirectoryItem(Attribute *owningAttribute,
+                             int itemPosition):
   Item(owningAttribute, itemPosition)
 {
 }
@@ -51,9 +38,9 @@ setDefinition(smtk::attribute::ConstItemDefinitionPtr adef)
 {
   // Note that we do a dynamic cast here since we don't
   // know if the proper definition is being passed
-  const DirectoryItemDefinition *def = 
+  const DirectoryItemDefinition *def =
     dynamic_cast<const DirectoryItemDefinition *>(adef.get());
-  
+
   // Call the parent's set definition - similar to constructor calls
   // we call from base to derived
   if ((def == NULL) || (!Item::setDefinition(adef)))
@@ -84,7 +71,7 @@ Item::Type DirectoryItem::type() const
 //----------------------------------------------------------------------------
 std::size_t DirectoryItem::numberOfRequiredValues() const
 {
-  const DirectoryItemDefinition *def = 
+  const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition*>(this->m_definition.get());
   if (def == NULL)
     {
@@ -95,7 +82,7 @@ std::size_t DirectoryItem::numberOfRequiredValues() const
 //----------------------------------------------------------------------------
 bool DirectoryItem::shouldBeRelative() const
 {
-  const DirectoryItemDefinition *def = 
+  const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
   if (def != NULL)
     {
@@ -106,7 +93,7 @@ bool DirectoryItem::shouldBeRelative() const
 //----------------------------------------------------------------------------
 bool DirectoryItem::shouldExist() const
 {
-  const DirectoryItemDefinition *def = 
+  const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
   if (def != NULL)
     {
@@ -117,7 +104,7 @@ bool DirectoryItem::shouldExist() const
 //----------------------------------------------------------------------------
 bool DirectoryItem::setValue(std::size_t element, const std::string &val)
 {
-  const DirectoryItemDefinition *def = 
+  const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());
   if ((def == NULL) || (def->isValueValid(val)))
     {
@@ -155,7 +142,7 @@ DirectoryItem::appendValue(const std::string &val)
     {
     return false; // The number of values is fixed
     }
-  
+
   if (def->isValueValid(val))
     {
     this->m_values.push_back(val);
@@ -187,7 +174,7 @@ bool DirectoryItem::setNumberOfValues(std::size_t newSize)
     {
     return true;
     }
-  
+
   //Next - are we allowed to change the number of values?
   const DirectoryItemDefinition *def =
     static_cast<const DirectoryItemDefinition *>(this->definition().get());

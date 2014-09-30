@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_bridge_remote_RemusRemoteBridge_h
 #define __smtk_bridge_remote_RemusRemoteBridge_h
 
@@ -10,6 +19,8 @@
 #include "remus/worker/ServerConnection.h" // for m_remusConn
 
 namespace smtk {
+  namespace io { class ImportJSON; }
+  namespace model { class RemoteOperator; }
   namespace bridge {
     namespace remote {
 
@@ -115,8 +126,8 @@ public:
   static smtk::model::StringList availableTypeNames();
 
 protected:
-  friend class RemoteOperator;
-  friend class ImportJSON;
+  friend class model::RemoteOperator;
+  friend class io::ImportJSON;
 
   RemusRemoteBridge();
 

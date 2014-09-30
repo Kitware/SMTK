@@ -1,16 +1,26 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
 
 #include "smtk/model/testing/cxx/helpers.h"
-#include "smtk/model/ImportJSON.h"
 #include "smtk/model/IntegerData.h"
 
-#include "smtk/util/testing/cxx/helpers.h"
+#include "smtk/common/testing/cxx/helpers.h"
 
 #include <iostream>
 #include <sstream>
 
-using namespace smtk::util;
+#include <assert.h>
+
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
 

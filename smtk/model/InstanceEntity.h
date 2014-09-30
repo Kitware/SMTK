@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_InstanceEntity_h
 #define __smtk_model_InstanceEntity_h
 
@@ -16,8 +25,8 @@ public:
 
   Cursor prototype() const;
 
-  // InstanceEntity& setTransform(const smtk::util::Matrix4d&);
-  // smtk::util::Matrix4d transform() const;
+  // InstanceEntity& setTransform(const smtk::common::Matrix4d&);
+  // smtk::common::Matrix4d transform() const;
 };
 
 typedef std::vector<InstanceEntity> InstanceEntities;

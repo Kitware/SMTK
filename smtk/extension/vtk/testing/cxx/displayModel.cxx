@@ -1,8 +1,18 @@
-#include "smtk/model/ImportJSON.h"
-#include "smtk/model/Manager.h"
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#include "smtk/io/ImportJSON.h"
 #include "smtk/extension/vtk/vtkModelRepresentation.h"
 #include "smtk/extension/vtk/vtkModelSource.h"
 #include "smtk/extension/vtk/vtkModelView.h"
+
+#include "smtk/model/Manager.h"
 
 #include "vtkAnnotationLink.h"
 #include "vtkCommand.h"
@@ -26,8 +36,9 @@
 #include "vtkRegressionTestImage.h"
 
 using smtk::shared_ptr;
+using namespace smtk::common;
 using namespace smtk::model;
-using namespace smtk::util;
+using namespace smtk::io;
 
 void applyPublicationTheme(vtkModelView* view)
 {
@@ -142,7 +153,7 @@ public:
             {
             cout
               << indent << *it << "  "
-              << (this->Manager ? this->Manager->name(smtk::util::UUID(*it)) : "--")
+              << (this->Manager ? this->Manager->name(smtk::common::UUID(*it)) : "--")
               << "\n";
             }
           }

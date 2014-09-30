@@ -1,15 +1,24 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_Operator_h
 #define __smtk_model_Operator_h
 /*! \file */
 
 //#include "smtk/Function.h" // for smtk::function<>
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/AutoInit.h"
 
 #include "smtk/model/Events.h"
 
-#include "smtk/util/AutoInit.h"
-#include "smtk/util/SharedFromThis.h"
 
 #include <string>
 

@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
@@ -7,7 +16,7 @@
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 using namespace smtk::model;
 using namespace smtk::bridge::remote;
@@ -56,7 +65,7 @@ int main(int argc, char* argv[])
   for (strit = fileTypes.begin(); strit != fileTypes.end(); ++strit)
     std::cout << "  " << *strit << "\n";
 
-  smtk::util::UUID bridgeSessionId = bconn->beginBridgeSession(bridgeName);
+  smtk::common::UUID bridgeSessionId = bconn->beginBridgeSession(bridgeName);
   if (bridgeSessionId.isNull())
     {
     std::cerr << "Null bridge session ID.\n";

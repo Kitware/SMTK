@@ -1,15 +1,24 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_Bridge_h
 #define __smtk_model_Bridge_h
 /*! \file */
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/SharedFromThis.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
+#include "smtk/SharedPtr.h"
+#include "smtk/SharedFromThis.h"
+#include "smtk/PublicPointerDefs.h"
+
+#include "smtk/common/UUID.h"
 
 #include "smtk/attribute/Manager.h"
-
-#include "smtk/SharedPtr.h"
-#include "smtk/PublicPointerDefs.h"
 
 #include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Cursor.h"
@@ -21,7 +30,7 @@ namespace smtk {
 class Bridge;
 class Cursor;
 class Operator;
-typedef std::map<smtk::util::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
+typedef std::map<smtk::common::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
 typedef std::map<smtk::model::Cursor,int> DanglingEntities;
 
 /**\brief Bit flags describing types of information bridged to Manager.
@@ -221,7 +230,7 @@ public:
   smtkTypeMacro(Bridge);
   virtual std::string name() const;
   virtual std::string className() const { return "Bridge"; }
-  smtk::util::UUID sessionId() const;
+  smtk::common::UUID sessionId() const;
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
 
@@ -242,8 +251,8 @@ public:
     { return std::string(); }
 
 protected:
-  friend class ExportJSON;
-  friend class ImportJSON;
+  friend class io::ExportJSON;
+  friend class io::ImportJSON;
   friend class BRepModel;
 
   Bridge();
@@ -251,7 +260,7 @@ protected:
 
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
-  void setSessionId(const smtk::util::UUID& sessId);
+  void setSessionId(const smtk::common::UUID& sessId);
 
   void initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass = false);
   virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
@@ -260,7 +269,7 @@ protected:
   virtual BridgeIOPtr createIODelegate(const std::string& format);
 
   DanglingEntities m_dangling;
-  smtk::util::UUID m_sessionId;
+  smtk::common::UUID m_sessionId;
   smtk::attribute::Manager* m_operatorMgr;
 };
 

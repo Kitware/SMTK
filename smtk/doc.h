@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_doc_h
 #define __smtk_doc_h
 
@@ -23,6 +32,12 @@
   */
 namespace smtk {
 
+  /**\brief Classes used throughout the toolkit.
+    *
+    */
+  namespace common {
+  }
+
   /**\brief Define attributes describing simulation inputs.
     *
     */
@@ -33,7 +48,7 @@ namespace smtk {
     *
     * The Manager class holds records defining one or more geometric-
     * and/or topological-domain decompositions;
-    * it maps smtk::util::UUID values to Entity, Arrangement, and
+    * it maps smtk::common::UUID values to Entity, Arrangement, and
     * Tessellation instances.
     * However, most developers will use the Cursor classes
     * (Vertex, Edge, Face, Volume, VertexUse, EdgeUse, FaceUse, VolumeUse,
@@ -67,10 +82,32 @@ namespace smtk {
   namespace model {
   }
 
-  /**\brief Utilities for the toolkit.
+  /**\brief Tools for exporting simulation input decks from attributes.
     *
     */
-  namespace util {
+  namespace simulation {
+  }
+
+  /**\brief I/O utilities for the toolkit.
+    *
+    */
+  namespace io {
+  }
+
+  /**\brief Bridges to solid modeling kernels.
+    *
+    */
+  namespace bridge {
+    /**\brief A bridge to the Common Geometry Module (Argonne).
+      *
+      */
+    namespace cgm {
+    }
+    /**\brief A forwarding bridge that uses Remus.
+      *
+      */
+    namespace remote {
+    }
   }
 
   /**\brief Representations of SMTK components in user interfaces.

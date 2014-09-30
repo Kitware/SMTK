@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/Entity.h"
 
 #include <algorithm>
@@ -10,7 +19,7 @@
 //#include <boost/variant.hpp>
 
 using namespace std;
-using namespace smtk::util;
+using namespace smtk::common;
 
 namespace smtk {
   namespace model {
@@ -165,9 +174,9 @@ Entity& Entity::removeRelation(const UUID& b)
 
 /**\brief Find the given relation \a r and return its index, inserting it if not present.
   */
-int Entity::findOrAppendRelation(const smtk::util::UUID& r)
+int Entity::findOrAppendRelation(const UUID& r)
 {
-  for (smtk::util::UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
+  for (UUIDArray::size_type i = 0; i < this->m_relations.size(); ++i)
     {
     if (this->m_relations[i] == r)
       {

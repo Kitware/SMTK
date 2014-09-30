@@ -1,7 +1,16 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_testing_helpers_h
 #define __smtk_model_testing_helpers_h
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 #include "smtk/model/Manager.h"
 
 #include <ostream>
@@ -10,7 +19,7 @@ namespace smtk {
   namespace model {
     namespace testing {
 
-smtk::util::UUIDArray createTet(smtk::model::ManagerPtr sm);
+smtk::common::UUIDArray createTet(smtk::model::ManagerPtr sm);
 
 /// Report an integer as a hexadecimal value.
 class hexconst

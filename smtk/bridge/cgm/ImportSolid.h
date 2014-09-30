@@ -1,10 +1,19 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_bridge_cgm_ImportSolid_h
 #define __smtk_bridge_cgm_ImportSolid_h
 
 #include "smtk/bridge/cgm/cgmSMTKExports.h" // for CGMSMTK_EXPORT
 #include "smtk/PublicPointerDefs.h" // For ManagerPtr
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 namespace smtk {
   namespace model {
@@ -22,7 +31,7 @@ namespace smtk {
 class CGMSMTK_EXPORT ImportSolid
 {
 public:
-  static smtk::util::UUIDArray fromFilenameIntoManager(
+  static smtk::common::UUIDArray fromFilenameIntoManager(
     const std::string& filename,
     const std::string& filetype,
     smtk::model::ManagerPtr manager);

@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 
 #include "smtk/attribute/Attribute.h"
@@ -275,7 +262,7 @@ void Attribute::removeAllAssociations()
   unsigned long attribId = this->id();
   if (modelMgr)
     {
-    smtk::util::UUIDs::const_iterator mit;
+    smtk::common::UUIDs::const_iterator mit;
     for (
       mit = this->m_modelEntities.begin();
       mit != this->m_modelEntities.end();
@@ -290,7 +277,7 @@ void Attribute::removeAllAssociations()
 /**\brief Is the model \a entity associated with this attribute?
   *
   */
-bool Attribute::isEntityAssociated(const smtk::util::UUID& entity) const
+bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 {
   return (this->m_modelEntities.find(entity) != this->m_modelEntities.end());
 }
@@ -326,7 +313,7 @@ bool Attribute::isEntityAssociated(const smtk::model::Cursor& cursor) const
   * successful. It may return false if the association is prohibited.
   * (This is not currently implemented.)
   */
-bool Attribute::associateEntity(const smtk::util::UUID& entity)
+bool Attribute::associateEntity(const smtk::common::UUID& entity)
 {
   if (this->isEntityAssociated(entity))
     {
@@ -341,11 +328,21 @@ bool Attribute::associateEntity(const smtk::util::UUID& entity)
     modelMgr->attachAttribute(this->id(), entity);
   return true; // Entity may be and is now associated.
 }
+/**\brief Associate a new-style model ID (a Cursor) with this attribute.
+  *
+  * This function returns true when the association is valid and
+  * successful. It may return false if the association is prohibited.
+  * (This is not currently implemented.)
+  */
+bool Attribute::associateEntity(const smtk::model::Cursor& entity)
+{
+  return this->associateEntity(entity.entity());
+}
 //----------------------------------------------------------------------------
 /**\brief Disassociate a new-style model ID (a UUID) from this attribute.
   *
   */
-void Attribute::disassociateEntity(const smtk::util::UUID& entity, bool reverse)
+void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool reverse)
 {
   if (!this->isEntityAssociated(entity))
     {
@@ -362,6 +359,14 @@ void Attribute::disassociateEntity(const smtk::util::UUID& entity, bool reverse)
       modelMgr->detachAttribute(this->id(), entity, false);
       }
     }
+}
+//----------------------------------------------------------------------------
+/**\brief Disassociate a new-style model entity (a Cursor) from this attribute.
+  *
+  */
+void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool reverse)
+{
+  this->disassociateEntity(entity.entity(), reverse);
 }
 //----------------------------------------------------------------------------
 smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const

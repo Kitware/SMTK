@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 // Implement an SMTK remote model worker.
 // Steal code from CMB's vtkModelManagerWrapper.
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
@@ -9,8 +18,8 @@ using namespace smtk::model;
 using namespace remus::meshtypes;
 using namespace remus::proto;
 
+#include "smtk/AutoInit.h"
 #include "smtk/options.h"
-#include "smtk/util/AutoInit.h"
 
 #ifdef SMTK_BUILD_CGM
 smtkComponentInitMacro(smtk_cgm_bridge);

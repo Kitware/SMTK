@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 // .NAME Item.h -
 // .SECTION Description
 // .SECTION See Also
@@ -29,7 +16,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 #include <map>
 #include <queue>
 #include <string>
@@ -145,9 +132,9 @@ namespace smtk
      bool usingDefinitionAdvanceLevel(int mode=0) const
       {return (mode==1 ? this->m_usingDefAdvanceLevelInfo[1] : this->m_usingDefAdvanceLevelInfo[0]);}
 
-     void setUserData(const std::string &key, smtk::util::UserDataPtr value)
+     void setUserData(const std::string &key, smtk::simulation::UserDataPtr value)
        {this->m_userData[key] = value;}
-     smtk::util::UserDataPtr userData(const std::string &key) const;
+     smtk::simulation::UserDataPtr userData(const std::string &key) const;
      void clearUserData(const std::string &key)
      {this->m_userData.erase(key);}
      void clearAllUserData()
@@ -181,17 +168,17 @@ namespace smtk
      bool m_isEnabled;
      mutable std::string m_tempString;
      smtk::attribute::ConstItemDefinitionPtr m_definition;
-     std::map<std::string, smtk::util::UserDataPtr > m_userData;
+     std::map<std::string, smtk::simulation::UserDataPtr > m_userData;
     private:
      bool m_usingDefAdvanceLevelInfo[2];
      int m_advanceLevel[2];
     };
 //----------------------------------------------------------------------------
-    inline smtk::util::UserDataPtr Item::userData(const std::string &key) const
+    inline smtk::simulation::UserDataPtr Item::userData(const std::string &key) const
     {
-      std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
+      std::map<std::string, smtk::simulation::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? smtk::util::UserDataPtr() : it->second);
+      return ((it == this->m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
     }
   }
 }

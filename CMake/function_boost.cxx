@@ -1,4 +1,12 @@
-#include <boost/function.hpp>
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================#include <boost/function.hpp>
 #include <boost/bind.hpp>
 
 struct favorite_int {

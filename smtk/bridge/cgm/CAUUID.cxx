@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
@@ -48,7 +57,7 @@ CAUUID::CAUUID(RefEntity* ref, const CubitSimpleAttrib& sa)
 {
   if (!sa.string_data_list().empty())
     {
-    this->m_entityId = smtk::util::UUID(
+    this->m_entityId = smtk::common::UUID(
       std::string(sa.string_data_list().back().c_str()));
     }
 }
@@ -59,7 +68,7 @@ CAUUID::CAUUID(RefEntity* ref, CubitSimpleAttrib* sa)
 {
   if (sa && sa->string_data_list() && sa->string_data_list()->size() != 0)
     {
-    this->m_entityId = smtk::util::UUID(
+    this->m_entityId = smtk::common::UUID(
       std::string(sa->string_data_list()->last_item()->c_str()));
     }
 }
@@ -189,7 +198,7 @@ CubitSimpleAttrib* CAUUID::cubit_simple_attrib()
 }
 #endif
 
-smtk::util::UUID CAUUID::entityId() const
+smtk::common::UUID CAUUID::entityId() const
 {
   return this->m_entityId;
 }

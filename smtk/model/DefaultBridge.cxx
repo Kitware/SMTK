@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/DefaultBridge.h"
 
 #include "smtk/model/BridgeRegistrar.h"
@@ -7,7 +16,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
 
-#include "smtk/util/AutoInit.h"
+#include "smtk/AutoInit.h"
 
 namespace smtk {
   namespace model {
@@ -15,7 +24,6 @@ namespace smtk {
 /// Default constructor. Initializes statically-registered operators.
 DefaultBridge::DefaultBridge()
 {
-  this->m_importingOperators = false;
   this->initializeOperatorManager(DefaultBridge::s_operators);
 }
 
@@ -42,7 +50,7 @@ BridgedInfoBits DefaultBridge::transcribeInternal(const Cursor& entity, BridgedI
   */
 void DefaultBridge::backsRemoteBridge(
   const std::string& remoteBridgeName,
-  const smtk::util::UUID& bridgeSessionId)
+  const smtk::common::UUID& bridgeSessionId)
 {
   this->m_remoteBridgeName = remoteBridgeName;
   this->m_sessionId = bridgeSessionId;
@@ -69,7 +77,7 @@ std::string DefaultBridge::remoteName() const
 OperatorPtr DefaultBridge::op(const std::string& opName, ManagerPtr manager) const
 {
   OperatorPtr oper = this->Bridge::op(opName, manager);
-  if (this->m_importingOperators && !oper && !this->m_remoteBridgeName.empty())
+  if (!oper && !this->m_remoteBridgeName.empty())
     { // we are a remote bridge... create any operator our friend classes ask for.
     RemoteOperatorPtr rop = RemoteOperator::create();
     rop->setName(opName);
@@ -117,12 +125,6 @@ OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr oper)
   return oper->createResult(OPERATION_FAILED);
 }
 ///@}
-
-/// Called by friends of DefaultBridge to indicate that new RemoteOperators should be created.
-void DefaultBridge::setImportingOperators(bool isImporting)
-{
-  this->m_importingOperators = isImporting;
-}
 
   } // namespace model
 } // namespace smtk

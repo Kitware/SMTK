@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/cgm/ReadOperator.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
@@ -107,7 +116,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     {
     RefEntity* entry = imported.get_and_step();
     smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(entry, true);
-    smtk::util::UUID entId = refId->entityId();
+    smtk::common::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
       resultModels->setValue(i, smtkEntry);

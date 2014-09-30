@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_EntityPhrase_h
 #define __smtk_model_EntityPhrase_h
 
@@ -28,7 +37,7 @@ public:
 
   void setMutability(int whatsMutable);
 
-  static DescriptivePhrases PhrasesFromUUIDs(smtk::model::ManagerPtr, const smtk::util::UUIDs&);
+  static DescriptivePhrases PhrasesFromUUIDs(smtk::model::ManagerPtr, const smtk::common::UUIDs&);
 
 protected:
   EntityPhrase();

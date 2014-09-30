@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/model/Entity.h"
@@ -271,7 +280,7 @@ bool QEntityItemModel::insertRows(int position, int rows, const QModelIndex& own
   int maxPos = position + rows;
   for (int row = position; row < maxPos; ++row)
     {
-    smtk::util::UUID uid = this->m_manager->addEntityOfTypeAndDimension(smtk::model::INVALID, -1);
+    smtk::common::UUID uid = this->m_manager->addEntityOfTypeAndDimension(smtk::model::INVALID, -1);
     this->m_phrases.insert(this->m_phrases.begin() + row, uid);
     this->m_reverse[uid] = row;
     }
@@ -337,14 +346,14 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
     {
   case -1:
       { // Sort by UUID.
-      std::multiset<smtk::util::UUID> sorter;
+      std::multiset<smtk::common::UUID> sorter;
       this->sortDataWithContainer(sorter, order);
       }
     break;
   case 1:
       {
       smtk::model::SortByEntityFlags comparator(this->m_manager);
-      std::multiset<smtk::util::UUID,smtk::model::SortByEntityFlags>
+      std::multiset<smtk::common::UUID,smtk::model::SortByEntityFlags>
         sorter(comparator);
       this->sortDataWithContainer(sorter, order);
       }
@@ -359,7 +368,7 @@ void QEntityItemModel::sort(int column, Qt::SortOrder order)
         &smtk::model::BRepModel::hasStringProperty> comparator(
           this->m_manager, "name");
       std::multiset<
-        smtk::util::UUID,
+        smtk::common::UUID,
         smtk::model::SortByEntityProperty<
           smtk::model::BRepModel,
           smtk::model::StringList,
@@ -484,7 +493,7 @@ QIcon QEntityItemModel::lookupIconForEntityFlags(smtk::model::BitFlags flags)
 template<typename T>
 void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 {
-  smtk::util::UUIDArray::iterator ai;
+  smtk::common::UUIDArray::iterator ai;
   // Insertion into the set sorts the UUIDs.
   for (ai = this->m_phrases.begin(); ai != this->m_phrases.end(); ++ai)
     {
@@ -525,7 +534,7 @@ void QEntityItemModel::sortDataWithContainer(T& sorter, Qt::SortOrder order)
 }
   */
 
-/// A utility function to retrieve the DescriptivePhrasePtrassociated with a model index.
+/// A utility function to retrieve the DescriptivePhrasePtr associated with a model index.
 DescriptivePhrasePtr QEntityItemModel::getItem(const QModelIndex& idx) const
 {
   if (idx.isValid())

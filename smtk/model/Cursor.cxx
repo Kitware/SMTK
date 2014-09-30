@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/Cursor.h"
 
 #include "smtk/model/CursorArrangementOps.h"
@@ -16,7 +25,7 @@ Cursor::Cursor()
 }
 
 /// Construct a cursor referencing a given \a entity residing in the given \a inManager.
-Cursor::Cursor(ManagerPtr inManager, const smtk::util::UUID& inEntity)
+Cursor::Cursor(ManagerPtr inManager, const smtk::common::UUID& inEntity)
   : m_manager(inManager), m_entity(inEntity)
 {
 }
@@ -45,7 +54,7 @@ const ManagerPtr Cursor::manager() const
 }
 
 /// Change the UUID of the entity the cursor references.
-bool Cursor::setEntity(const smtk::util::UUID& inEntity)
+bool Cursor::setEntity(const smtk::common::UUID& inEntity)
 {
   if (inEntity == this->m_entity)
     {
@@ -56,7 +65,7 @@ bool Cursor::setEntity(const smtk::util::UUID& inEntity)
 }
 
 /// Return the UUID of the entity the cursor references.
-const smtk::util::UUID& Cursor::entity() const
+const smtk::common::UUID& Cursor::entity() const
 {
   return this->m_entity;
 }
@@ -273,7 +282,7 @@ Cursors Cursor::bordantEntities(int ofDimension) const
   Cursors result;
   if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_manager->bordantEntities(
+    smtk::common::UUIDs uids = this->m_manager->bordantEntities(
       this->m_entity, ofDimension);
     CursorsFromUUIDs(result, this->m_manager, uids);
     }
@@ -285,7 +294,7 @@ Cursors Cursor::boundaryEntities(int ofDimension) const
   Cursors result;
   if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_manager->boundaryEntities(
+    smtk::common::UUIDs uids = this->m_manager->boundaryEntities(
       this->m_entity, ofDimension);
     CursorsFromUUIDs(result, this->m_manager, uids);
     }
@@ -297,7 +306,7 @@ Cursors Cursor::lowerDimensionalBoundaries(int lowerDimension)
   Cursors result;
   if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_manager->lowerDimensionalBoundaries(
+    smtk::common::UUIDs uids = this->m_manager->lowerDimensionalBoundaries(
       this->m_entity, lowerDimension);
     CursorsFromUUIDs(result, this->m_manager, uids);
     }
@@ -309,7 +318,7 @@ Cursors Cursor::higherDimensionalBordants(int higherDimension)
   Cursors result;
   if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_manager->higherDimensionalBordants(
+    smtk::common::UUIDs uids = this->m_manager->higherDimensionalBordants(
       this->m_entity, higherDimension);
     CursorsFromUUIDs(result, this->m_manager, uids);
     }
@@ -321,7 +330,7 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   Cursors result;
   if (this->m_manager && !this->m_entity.isNull())
     {
-    smtk::util::UUIDs uids = this->m_manager->adjacentEntities(
+    smtk::common::UUIDs uids = this->m_manager->adjacentEntities(
       this->m_entity, ofDimension);
     CursorsFromUUIDs(result, this->m_manager, uids);
     }

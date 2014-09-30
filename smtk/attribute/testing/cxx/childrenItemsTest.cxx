@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
@@ -35,9 +22,11 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+
 #include "smtk/model/EntityTypeBits.h"
-#include "smtk/util/AttributeWriter.h"
-#include "smtk/util/Logger.h"
+
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
 
 #include <iostream>
 
@@ -187,7 +176,7 @@ int main(int argc, char *argv[])
   smtk::attribute::ValueItemPtr vitem =
     smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(att->find("DoubleItem2"));
 
-  smtk::util::Logger logger;
+  smtk::io::Logger logger;
   if (!vitem)
     {
     smtkErrorMacro(logger, "Error: Can't find DoubleItem2");
@@ -243,7 +232,7 @@ int main(int argc, char *argv[])
   // Find the expression enabled item
   item = att->item(2);
   vitem = smtk::dynamic_pointer_cast<smtk::attribute::ValueItem>(item);
-  smtk::util::AttributeWriter writer;
+  smtk::io::AttributeWriter writer;
   if (writer.write(manager, argv[1],logger))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";

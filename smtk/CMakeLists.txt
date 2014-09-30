@@ -1,19 +1,25 @@
 
 #Build the actual code
+add_subdirectory(common)
+smtk_source_group(common)
+
 add_subdirectory(attribute)
 smtk_source_group(attribute)
 
 add_subdirectory(model)
 smtk_source_group(model)
 
-add_subdirectory(util)
-smtk_source_group(util)
+add_subdirectory(simulation)
+smtk_source_group(simulation)
+
+add_subdirectory(io)
+smtk_source_group(io)
 
 add_subdirectory(view)
 smtk_source_group(view)
 
-set(smtk_headers ${attributeHeaders} ${modelHeaders} ${utilHeaders} ${viewHeaders})
-set(smtk_srcs ${attributeSrcs} ${modelSrcs} ${utilSrcs} ${viewSrcs})
+set(smtk_headers ${commonHeaders} ${attributeHeaders} ${modelHeaders} ${simulationHeaders} ${ioHeaders} ${viewHeaders})
+set(smtk_srcs ${commonSrcs} ${attributeSrcs} ${modelSrcs} ${simulationSrcs} ${ioSrcs} ${viewSrcs})
 
 add_library(SMTKCore ${smtk_srcs})
 target_link_libraries(SMTKCore
@@ -37,7 +43,15 @@ smtk_install_library(SMTKCore DEPENDS cJSON)
 ################################################################################
 # setup install rules
 ################################################################################
-install(FILES PublicPointerDefs.h DESTINATION include/smtk)
+install(
+  FILES
+    AutoInit.h
+    PublicPointerDefs.h
+    SharedFromThis.h
+    SystemConfig.h
+  DESTINATION
+    include/smtk
+)
 
 #setup the exports for the library when used from an installed location
 install(EXPORT SMTK-targets DESTINATION lib)
@@ -48,9 +62,11 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
     GENERATOR_ARGS --avoid-protected-hack
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     LOCAL_INCLUDE_DIRECTORIES
+      ${CMAKE_CURRENT_SOURCE_DIR}/common
       ${CMAKE_CURRENT_SOURCE_DIR}/attribute
       ${CMAKE_CURRENT_SOURCE_DIR}/model
-      ${CMAKE_CURRENT_SOURCE_DIR}/util
+      ${CMAKE_CURRENT_SOURCE_DIR}/simulation
+      ${CMAKE_CURRENT_SOURCE_DIR}/io
       ${CMAKE_CURRENT_SOURCE_DIR}/view
       ${CMAKE_CURRENT_SOURCE_DIR}
       ${CMAKE_CURRENT_BINARY_DIR}

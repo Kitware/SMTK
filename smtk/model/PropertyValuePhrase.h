@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_PropertyValuePhrase_h
 #define __smtk_model_PropertyValuePhrase_h
 
@@ -24,7 +33,7 @@ public:
   virtual std::string title();
   virtual std::string subtitle();
 
-  virtual smtk::util::UUID relatedEntityId() const;
+  virtual smtk::common::UUID relatedEntityId() const;
   virtual Cursor relatedEntity() const;
   virtual std::string relatedPropertyName() const;
   virtual PropertyType relatedPropertyType() const;

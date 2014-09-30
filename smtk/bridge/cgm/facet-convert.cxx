@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 /**
  * \file facet-convert.cxx
  *
@@ -49,8 +58,8 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/util/UUID.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/common/UUID.h"
+#include "smtk/io/ExportJSON.h"
 #include "cJSON.h"
 
 #include <map>
@@ -96,8 +105,8 @@ template<typename E>
 void AddEntitiesToBody(
   DLIList<E*>& entities,
   smtk::model::ManagerPtr manager,
-  const smtk::util::UUID& owningBodyId,
-  std::map<int,smtk::util::UUID>& translation)
+  const smtk::common::UUID& owningBodyId,
+  std::map<int,smtk::common::UUID>& translation)
 {
   int ne = entities.size();
   //cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
@@ -139,7 +148,7 @@ void AddEntitiesToBody(
     for (int j = 0; j < nc; ++j)
       {
       RefEntity* child = children.get_and_step();
-      smtk::util::UUID smtkChildId = translation[TDUniqueId::get_unique_id(child)];
+      smtk::common::UUID smtkChildId = translation[TDUniqueId::get_unique_id(child)];
       cell->second.relations().push_back(smtkChildId);
       manager->findEntity(smtkChildId)->relations().push_back(cell->first);
       }
@@ -150,7 +159,7 @@ template<typename E>
 void AddArrangementsToBody(
   DLIList<E*>& entities,
   smtk::model::ManagerPtr manager,
-  std::map<int,smtk::util::UUID>& translation)
+  std::map<int,smtk::common::UUID>& translation)
 {
   int ne = entities.size();
   std::cout << "        Body has " << ne << " " << E::get_class_name() << " entities:\n";
@@ -158,7 +167,7 @@ void AddArrangementsToBody(
     {
     E* shell = entities.get_and_step();
     // First, create a new entity representing the shell.
-    smtk::util::UUID shellSMTKId =
+    smtk::common::UUID shellSMTKId =
       manager->addEntityOfTypeAndDimension(
         smtk::model::SHELL_ENTITY |
         (1 << shell->dag_type().dimension()) |
@@ -167,7 +176,7 @@ void AddArrangementsToBody(
     // Now, find the SMTK cell bounded by the current shell:
     RefEntity* vol = shell->get_basic_topology_entity_ptr();
     int cgmId = TDUniqueId::get_unique_id(vol);
-    smtk::util::UUID smtkId = translation[cgmId];
+    smtk::common::UUID smtkId = translation[cgmId];
     smtk::model::Entity* vcell = manager->findEntity(smtkId);
     if (!vcell)
       {
@@ -177,9 +186,9 @@ void AddArrangementsToBody(
     //cout << "        " << i << "  " << shell << "  volume " << smtkId << "\n";
 
     // Now build a list of offsets of UUIDs in the cell's relations array:
-    std::map<smtk::util::UUID,int> offsets;
+    std::map<smtk::common::UUID,int> offsets;
     int offset = 0;
-    for (smtk::util::UUIDArray::iterator it = vcell->relations().begin(); it != vcell->relations().end(); ++it, ++offset)
+    for (smtk::common::UUIDArray::iterator it = vcell->relations().begin(); it != vcell->relations().end(); ++it, ++offset)
       {
       offsets[*it] = offset;
       }
@@ -200,7 +209,7 @@ void AddArrangementsToBody(
     // FIXME: The above should be shell->ordered_co_edges() when E == Loop.
     int ns = cofaces.size();
     //std::cout << "shell " << i << " (" << shell << ") " << ns << " sense-entities\n";
-    smtk::util::UUIDArray shellRelations;
+    smtk::common::UUIDArray shellRelations;
     smtk::model::Arrangement shellArrOfUses; // the face-uses that compose the shell
     shellRelations.resize(ns + 1);
     shellRelations[ns] = smtkId;
@@ -217,11 +226,11 @@ void AddArrangementsToBody(
       SenseEntity* se = cofaces.get_and_step();
       //std::cout << "   " << j << "  " << (int)se->get_sense() << "\n";
       int faceId = TDUniqueId::get_unique_id(se->get_basic_topology_entity_ptr());
-      smtk::util::UUID smtkFaceId = translation[faceId];
+      smtk::common::UUID smtkFaceId = translation[faceId];
       // Now we know a face on the shell. Back up and see if
       // one of its uses has the same sense as our SenseEntity.
       // If not, then we need to create a new SMTK use entity.
-      smtk::util::UUID smtkFaceUseId =
+      smtk::common::UUID smtkFaceUseId =
         manager->findCreateOrReplaceCellUseOfSenseAndOrientation(
           smtkFaceId, se->get_sense(),
           se->get_sense() == CUBIT_REVERSED ?
@@ -235,11 +244,11 @@ void AddArrangementsToBody(
         << " dir " << (se->get_sense() == CUBIT_FORWARD ? "+" : "-")
         << "\n";
        */
-      std::map<smtk::util::UUID,int>::iterator oit = offsets.find(smtkFaceId);
+      std::map<smtk::common::UUID,int>::iterator oit = offsets.find(smtkFaceId);
       if (oit == offsets.end())
         {
         vcell->appendRelation(smtkFaceId);
-        oit = offsets.insert(std::pair<smtk::util::UUID,int>(smtkFaceId,offset++)).first;
+        oit = offsets.insert(std::pair<smtk::common::UUID,int>(smtkFaceId,offset++)).first;
         }
       // Add [offset into relations, sense(neg/pos = 0/1)] to arrangement:
       //a.details().push_back(oit->second);
@@ -260,7 +269,7 @@ template<typename E>
 void AddTessellationsToBody(
   DLIList<E*>& entities,
   smtk::model::ManagerPtr manager,
-  std::map<int,smtk::util::UUID>& translation)
+  std::map<int,smtk::common::UUID>& translation)
 {
   int ne = entities.size();
   //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
@@ -269,13 +278,13 @@ void AddTessellationsToBody(
     // First, create a cell for the given entity:
     E* entry = entities.get_and_step();
     int cgmId = TDUniqueId::get_unique_id(entry);
-    std::map<int,smtk::util::UUID>::iterator transIter =
+    std::map<int,smtk::common::UUID>::iterator transIter =
       translation.find(cgmId);
     if (transIter == translation.end())
       {
       continue;
       }
-    smtk::util::UUID uid(transIter->second);
+    smtk::common::UUID uid(transIter->second);
     if (uid.isNull())
       {
       continue;
@@ -294,7 +303,7 @@ void AddTessellationsToBody(
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations& tess(manager->tessellations());
     smtk::model::UUIDsToTessellations::iterator it =
-      tess.insert(std::pair<smtk::util::UUID,smtk::model::Tessellation>(uid, blank)).first;
+      tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(uid, blank)).first;
     // Now add data to the Tessellation "in situ" to avoid a copy.
     // First, copy point coordinates:
     it->second.coords().reserve(3 * npts);
@@ -348,7 +357,7 @@ template<>
 void AddTessellationsToBody(
   DLIList<RefVertex*>& entities,
   smtk::model::ManagerPtr manager,
-  std::map<int,smtk::util::UUID>& translation)
+  std::map<int,smtk::common::UUID>& translation)
 {
   int ne = entities.size();
   //cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
@@ -357,13 +366,13 @@ void AddTessellationsToBody(
     // First, create a cell for the given entity:
     RefVertex* entry = entities.get_and_step();
     int cgmId = TDUniqueId::get_unique_id(entry);
-    std::map<int,smtk::util::UUID>::iterator transIter =
+    std::map<int,smtk::common::UUID>::iterator transIter =
       translation.find(cgmId);
     if (transIter == translation.end())
       {
       continue;
       }
-    smtk::util::UUID uid(transIter->second);
+    smtk::common::UUID uid(transIter->second);
     if (uid.isNull())
       {
       continue;
@@ -372,7 +381,7 @@ void AddTessellationsToBody(
     smtk::model::Tessellation blank;
     smtk::model::UUIDsToTessellations& tess(manager->tessellations());
     smtk::model::UUIDsToTessellations::iterator it =
-      tess.insert(std::pair<smtk::util::UUID,smtk::model::Tessellation>(uid, blank)).first;
+      tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(uid, blank)).first;
     // Now add data to the Tessellation "in situ" to avoid a copy.
     // First, copy point coordinates:
     it->second.coords().resize(3);
@@ -384,7 +393,7 @@ template<typename E>
 void AddUseToBody(
   DLIList<E*>& entities,
   smtk::model::ManagerPtr manager,
-  std::map<int,smtk::util::UUID>& translation)
+  std::map<int,smtk::common::UUID>& translation)
 {
   (void)entities;
   (void)manager;
@@ -394,15 +403,15 @@ void AddUseToBody(
 int ImportBody(
   Body* cgmBody,
   smtk::model::ManagerPtr manager,
-  std::map<int,smtk::util::UUID>& translation)
+  std::map<int,smtk::common::UUID>& translation)
 {
   DLIList<RefEntity*> children;
   BodySM* cgmBodySM = cgmBody->get_body_sm_ptr();
   TopologyEntity* cgmBodyTopo = cgmBodySM ? cgmBodySM->topology_entity() : NULL;
   int cgmBodyId = TDUniqueId::get_unique_id(cgmBody);
-  smtk::util::UUID smtkNullId;
-  smtk::util::UUID smtkBodyId;
-  std::map<int,smtk::util::UUID>::iterator inTable = translation.find(cgmBodyId);
+  smtk::common::UUID smtkNullId;
+  smtk::common::UUID smtkBodyId;
+  std::map<int,smtk::common::UUID>::iterator inTable = translation.find(cgmBodyId);
   if (inTable != translation.end())
     {
     smtkBodyId = inTable->second;
@@ -489,7 +498,7 @@ void ExportBodyToJSONFile(
   const std::string& filename)
 {
   cJSON* json = cJSON_CreateObject();
-  smtk::model::ExportJSON::fromModel(json, manager);
+  smtk::io::ExportJSON::fromModel(json, manager);
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   FILE* fid = fopen(filename.c_str(), "w");
@@ -501,7 +510,7 @@ void ExportBodyToJSONFile(
 CubitStatus ConvertModel(
   DLIList<Body*>& imported,
   std::vector<smtk::model::ManagerPtr>& bodies,
-  std::map<int,smtk::util::UUID>& translation,
+  std::map<int,smtk::common::UUID>& translation,
   bool singleModel)
 {
   int ni = imported.size();
@@ -613,7 +622,7 @@ int main (int argc, char **argv)
 
   // Convert to an SMTK model.
   std::vector<smtk::model::ManagerPtr> bodies;
-  std::map<int,smtk::util::UUID> translation;
+  std::map<int,smtk::common::UUID> translation;
   bool singleModel = argc > 3 ? true : false;
   stat = ConvertModel(imported, bodies, translation, singleModel);
   if (stat != CUBIT_SUCCESS)

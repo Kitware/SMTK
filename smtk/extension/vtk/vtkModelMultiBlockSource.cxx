@@ -1,10 +1,19 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include "vtkCellArray.h"
 #include "vtkCellData.h"

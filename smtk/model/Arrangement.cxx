@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/Arrangement.h"
 
 namespace smtk {
@@ -320,7 +329,7 @@ bool Arrangement::IndexFromSimple(int& relationIdx) const
   * context. (Other methods create and interpret arrangements in
   * specific circumstances where the context is known.)
   */
-bool Arrangement::relations(smtk::util::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
+bool Arrangement::relations(smtk::common::UUIDArray& relsOut, const Entity* ent, ArrangementKind k) const
 {
   if (!ent) return false;
   switch (ent->entityFlags() & ENTITY_MASK)

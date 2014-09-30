@@ -1,8 +1,17 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/options.h"
 
-#include "smtk/util/AutoInit.h"
+#include "smtk/AutoInit.h"
 
 #ifdef SMTK_USE_CGM
 // If CGM is included in the build, ensure that it is loaded

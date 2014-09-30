@@ -1,8 +1,17 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_bridge_remote_RemusRPCWorker_h
 #define __smtk_bridge_remote_RemusRPCWorker_h
 
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/SharedFromThis.h"
+#include "smtk/SharedFromThis.h"
 
 #include "remus/worker/Worker.h"
 #include "remus/worker/Job.h"

@@ -1,9 +1,18 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_Vertex_h
 #define __smtk_model_Vertex_h
 
 #include "smtk/model/CellEntity.h"
 
-//#include "smtk/util/Eigen.h" // For Vector3d
+//#include "smtk/common/Eigen.h" // For Vector3d
 
 #include <vector>
 
@@ -24,7 +33,7 @@ public:
   Edges edges() const;
 
   double* coordinates() const;
-  //smtk::util::Vector3d coordinates() const;
+  //smtk::common::Vector3d coordinates() const;
 };
 
 typedef std::vector<Vertex> Vertices;

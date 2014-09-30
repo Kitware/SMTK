@@ -1,3 +1,14 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
 """
 Manual port of SMTK/smtk/attribute/Testing/basicAttributeXMLWriterTest.cxx
 For verifying python-shiboken wrappers
@@ -65,7 +76,7 @@ if __name__ == '__main__':
     iitemdef.addCategory('Heat');
 
     def1 = manager.createDefinition('Derived1', 'BaseDef')
-    def1.setAssociationMask(smtk.model.Item.MODEL_DOMAIN) # belongs on model
+    def1.setAssociationMask(smtk.model.MODEL_DOMAIN) # belongs on model
     # Lets add some item definitions
     ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, 'DoubleItem1')
     # Allow this one to hold an expression
@@ -85,7 +96,7 @@ if __name__ == '__main__':
     vdef.setLabel('Option 1')
 
     def2 = manager.createDefinition('Derived2', 'Derived1')
-    def2.setAssociationMask(smtk.model.Item.REGION)
+    def2.setAssociationMask(smtk.model.VOLUME)
     # Lets add some item definitions
     sitemdef = def2.addItemDefinitionStr( smtk.attribute.StringItemDefinition, 'StringItem1' )
     sitemdef.setIsMultiline(True)
@@ -130,8 +141,8 @@ if __name__ == '__main__':
     #Find the expression enabled item
     item = att.item(2)
     vitem = smtk.attribute.ValueItem.CastTo(item)
-    writer = smtk.util.AttributeWriter()
-    logger = smtk.util.Logger()
+    writer = smtk.io.AttributeWriter()
+    logger = smtk.io.Logger()
     if writer.write(manager, sys.argv[1], logger):
         sys.stderr.write('Errors encountered creating Attribute File:\n')
         sys.stderr.write(logger.convertToString())

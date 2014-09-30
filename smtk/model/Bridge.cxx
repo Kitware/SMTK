@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/Bridge.h"
 
 #include "smtk/model/BridgeIO.h"
@@ -9,8 +18,8 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Manager.h"
 
-#include "smtk/util/AttributeReader.h"
-#include "smtk/util/Logger.h"
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/Logger.h"
 
 using smtk::attribute::Definition;
 using smtk::attribute::IntItemDefinition;
@@ -21,7 +30,7 @@ namespace smtk {
 
 /// Default constructor. This assigns a random session ID to each Bridge instance.
 Bridge::Bridge()
-  : m_sessionId(smtk::util::UUID::random()), m_operatorMgr(NULL)
+  : m_sessionId(smtk::common::UUID::random()), m_operatorMgr(NULL)
 {
 }
 
@@ -49,7 +58,7 @@ std::string Bridge::name() const
   * calls (RPC), the session ID specifies which Bridge on which
   * machine should actually invoke the operator.
   */
-smtk::util::UUID Bridge::sessionId() const
+smtk::common::UUID Bridge::sessionId() const
 {
   return this->m_sessionId;
 }
@@ -211,7 +220,7 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
   * to be a remote mirror of a modeling session (for, e.g.,
   * client-server operation).
   */
-void Bridge::setSessionId(const smtk::util::UUID& sessId)
+void Bridge::setSessionId(const smtk::common::UUID& sessId)
 {
   this->m_sessionId = sessId;
 }
@@ -255,8 +264,8 @@ void Bridge::initializeOperatorManager(const OperatorConstructors* opList, bool 
 
   if (!opList) return;
 
-  smtk::util::Logger log;
-  smtk::util::AttributeReader rdr;
+  smtk::io::Logger log;
+  smtk::io::AttributeReader rdr;
   OperatorConstructors::const_iterator it;
   bool ok = true;
   for (it = opList->begin(); it != opList->end(); ++it)

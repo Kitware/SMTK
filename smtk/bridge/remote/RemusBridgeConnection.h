@@ -1,11 +1,20 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_bridge_remote_RemusBridgeConnection_h
 #define __smtk_bridge_remote_RemusBridgeConnection_h
 
 #include "smtk/bridge/remote/SMTKRemoteExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/SharedFromThis.h"
 
-#include "smtk/util/SharedFromThis.h"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
@@ -43,8 +52,8 @@ public:
 
   std::vector<std::string> bridgeNames();
 
-  smtk::util::UUID beginBridgeSession(const std::string& bridgeName);
-  bool endBridgeSession(const smtk::util::UUID& bridgeSessionId);
+  smtk::common::UUID beginBridgeSession(const std::string& bridgeName);
+  bool endBridgeSession(const smtk::common::UUID& bridgeSessionId);
 
   std::vector<std::string> supportedFileTypes(
     const std::string& bridgeName = std::string());
@@ -54,14 +63,14 @@ public:
     const std::string& bridgeName = std::string());
 
   std::vector<std::string> operatorNames(const std::string& bridgeName);
-  std::vector<std::string> operatorNames(const smtk::util::UUID& bridgeSessionId);
+  std::vector<std::string> operatorNames(const smtk::common::UUID& bridgeSessionId);
 
   smtk::model::OperatorPtr createOperator(
-    const smtk::util::UUID& bridgeOrModel, const std::string& opName);
+    const smtk::common::UUID& bridgeOrModel, const std::string& opName);
   smtk::model::OperatorPtr createOperator(
     const std::string& bridgeName, const std::string& opName);
 
-  void fetchWholeModel(const smtk::util::UUID& modelId);
+  void fetchWholeModel(const smtk::common::UUID& modelId);
 
   smtk::model::ManagerPtr modelManager();
   void setModelManager(smtk::model::ManagerPtr);
@@ -81,7 +90,7 @@ protected:
   smtk::shared_ptr<remus::client::Client> m_client;
   smtk::model::ManagerPtr m_modelMgr;
   std::set<std::string> m_remoteBridgeNames;
-  std::map<smtk::util::UUID,std::string> m_remoteBridgeSessionIds;
+  std::map<smtk::common::UUID,std::string> m_remoteBridgeSessionIds;
 };
 
     } // namespace remote

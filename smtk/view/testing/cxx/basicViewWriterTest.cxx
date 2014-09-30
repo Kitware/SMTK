@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 #include "smtk/attribute/Manager.h"
 #include "smtk/attribute/Definition.h"
@@ -34,15 +21,19 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/VoidItemDefinition.h"
+
 #include "smtk/model/EntityTypeBits.h" // for BitFlags type
-#include "smtk/util/Logger.h"
-#include "smtk/util/XmlV2StringWriter.h"
-#include "smtk/util/XmlDocV2Parser.h"
+
+#include "smtk/io/Logger.h"
+#include "smtk/io/XmlV2StringWriter.h"
+#include "smtk/io/XmlDocV2Parser.h"
+
 #include "smtk/view/Attribute.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/ModelEntity.h"
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
+
 #define PUGIXML_HEADER_ONLY
 #include "pugixml/src/pugixml.hpp"
 #include "pugixml/src/pugixml.cpp"
@@ -174,8 +165,8 @@ int main()
   att = manager.createAttribute("Globals", globalsDef);
   iSec = root->addSubView<view::InstancedPtr>("Global Parameters");
   iSec->addInstance(att);
-  smtk::util::Logger logger;
-  smtk::util::XmlV2StringWriter writer(manager);
+  smtk::io::Logger logger;
+  smtk::io::XmlV2StringWriter writer(manager);
   std::string result = writer.convertToString(logger);
   std::cout << result << std::endl;
   if (logger.hasErrors())
@@ -188,7 +179,7 @@ int main()
   pugi::xml_document doc;
   doc.load(test);
   attribute::Manager manager1;
-  smtk::util::XmlDocV2Parser reader(manager1);
+  smtk::io::XmlDocV2Parser reader(manager1);
   reader.process(doc);
   if (reader.messageLog().hasErrors())
     {
@@ -197,7 +188,7 @@ int main()
     status = -1;
     }
 
-  smtk::util::XmlV2StringWriter writer1(manager1);
+  smtk::io::XmlV2StringWriter writer1(manager1);
   std::cout << "Manager 1:\n";
   result = writer1.convertToString(logger);
   std::cout << result << std::endl;

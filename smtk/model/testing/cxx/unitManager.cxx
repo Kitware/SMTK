@@ -1,18 +1,28 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/io/ExportJSON.h"
 #include "smtk/model/Volume.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
-#include <smtk/util/testing/cxx/helpers.h>
 
 #include "cJSON.h"
 
 using smtk::shared_ptr;
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 
 static int entCount = 0;
 static int subgroups = 0;

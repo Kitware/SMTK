@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/vtk/vtkModelRepresentation.h"
 
 #include "smtk/model/Manager.h"
@@ -223,7 +232,7 @@ vtkSelection* vtkModelRepresentation::ConvertSelection(vtkView* view, vtkSelecti
           vtkIdType jj = 0;
           for (vtkIdType ii = 0; ii < uuids->GetNumberOfValues(); ++ii)
             {
-            smtk::util::UUID uid(uuids->GetValue(ii));
+            smtk::common::UUID uid(uuids->GetValue(ii));
             smtk::model::Entity* entity = this->Model->findEntity(uid);
             bool keepId = true;
             if (entity && (entity->entityFlags() & this->SelectionMask) == 0)

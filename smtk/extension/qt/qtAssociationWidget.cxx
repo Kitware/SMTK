@@ -1,24 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2003 Kitware Inc. 469 Clifton Corporate Parkway,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 #include "smtk/extension/qt/qtAssociationWidget.h"
 
@@ -79,7 +67,7 @@ public:
 
   QPointer<QComboBox> NodalDropDown;
   WeakAttributePtr CurrentAtt;
-  smtk::util::UUID CurrentModelGroup;
+  smtk::common::UUID CurrentModelGroup;
   QPointer<qtBaseView> View;
 };
 
@@ -145,7 +133,7 @@ void qtAssociationWidget::showDomainsAssociation(
   this->Internals->boundaryGroup->setVisible(false);
 
   this->Internals->CurrentAtt = smtk::attribute::AttributePtr();
-  this->Internals->CurrentModelGroup = smtk::util::UUID();
+  this->Internals->CurrentModelGroup = smtk::common::UUID();
 
   this->Internals->DomainMaterialTable->blockSignals(true);
   this->Internals->DomainMaterialTable->setRowCount(0);
@@ -265,7 +253,7 @@ void qtAssociationWidget::showEntityAssociation(
   this->Internals->boundaryGroup->setVisible(true);
 
   this->Internals->CurrentAtt = theAtt;
-  this->Internals->CurrentModelGroup = smtk::util::UUID();
+  this->Internals->CurrentModelGroup = smtk::common::UUID();
 
   this->Internals->CurrentList->blockSignals(true);
   this->Internals->AvailableList->blockSignals(true);
@@ -491,7 +479,7 @@ smtk::model::ModelEntity qtAssociationWidget::getModelItem(
   if(item)
     {
     QVariant var = item->data(Qt::UserRole);
-    smtk::util::UUID uid( var.toString().toStdString() );
+    smtk::common::UUID uid( var.toString().toStdString() );
     smtk::attribute::Manager *attManager = this->Internals->View->uiManager()->attManager();
     if(attManager)
       {
@@ -768,7 +756,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
     return;
     }
   QString domainStr = combo->property("DomainEntityObj").toString();
-  smtk::util::UUID uid( domainStr.toStdString() );
+  smtk::common::UUID uid( domainStr.toStdString() );
   smtk::model::GroupEntity domainItem(modelManager,uid);
   if(!domainItem.isValid())
     {

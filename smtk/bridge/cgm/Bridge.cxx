@@ -1,8 +1,14 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/TDUUID.h"
-
-#include "smtk/util/AutoInit.h"
-#include "smtk/util/UUID.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
@@ -19,6 +25,10 @@
 #include "smtk/model/Shell.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/Loop.h"
+
+#include "smtk/common/UUID.h"
+
+#include "smtk/AutoInit.h"
 
 #include "RefEntity.hpp"
 #include "DagType.hpp"

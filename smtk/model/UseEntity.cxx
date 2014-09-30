@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/UseEntity.h"
 
 #include "smtk/model/CellEntity.h"
@@ -36,7 +45,7 @@ Orientation UseEntity::orientation() const
     {
     int idx, esense;
     arr->IndexAndSenseFromUseHasCell(idx, esense);
-    smtk::util::UUID cellId = ent->relations()[idx];
+    smtk::common::UUID cellId = ent->relations()[idx];
     // Now find the cell's HAS_USE record with the same sense as us:
     int arrIdx = this->m_manager->findCellHasUseWithSense(cellId, esense);
     if (arrIdx >= 0)

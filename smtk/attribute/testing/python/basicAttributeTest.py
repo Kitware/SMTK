@@ -1,3 +1,14 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
 """
 Manual port of SMTK/smtk/attribute/Testing/basicAttributeTest.cxx
 For verifying python-shiboken wrappers
@@ -15,10 +26,10 @@ if __name__ == '__main__':
     manager = smtk.attribute.Manager()
     print 'Manager created'
     t = manager.resourceType()
-    if t != smtk.util.Resource.ATTRIBUTE:
+    if t != smtk.common.Resource.ATTRIBUTE:
       print 'ERROR: Returned wrong resource type'
       status = -1
-    print 'Resource type:', smtk.util.Resource.type2String(t)
+    print 'Resource type:', smtk.common.Resource.type2String(t)
     def_ = manager.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'
@@ -60,10 +71,7 @@ if __name__ == '__main__':
     if att.isColorSet():
        print "Color should not be set.\n"
        status = -1
-    if att.numberOfAssociatedEntities() != 0:
-       print "Should not have associated entities.\n"
-       status = -1
-    if len(att.associatedEntitiesSet()) != 0 :
+    if len(att.associatedModelEntityIds()) != 0:
        print "Should not have associated entities.\n"
        status = -1
     if att.appliesToBoundaryNodes():

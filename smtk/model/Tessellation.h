@@ -1,10 +1,31 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_Tessellation_h
 #define __smtk_model_Tessellation_h
 
-#include "smtk/util/UUID.h"
-#include "smtk/util/SystemConfig.h"
+#include "smtk/SystemConfig.h"
+#include "smtk/common/UUID.h"
 
-#include "sparsehash/sparse_hash_map"
+#ifdef SMTK_HASH_STORAGE
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (push)
+#    pragma warning (disable : 4996)  // Overeager "unsafe" parameter check
+#  endif
+#  include "sparsehash/sparse_hash_map"
+#  if defined(_MSC_VER) // Visual studio
+#    pragma warning (pop)
+#  endif
+#else // SMTK_HASH_STORAGE
+#  include <map>
+#endif // SMTK_HASH_STORAGE
+
 
 #include <vector>
 
@@ -53,8 +74,13 @@ protected:
   std::vector<int> m_conn;
 };
 
-typedef google::sparse_hash_map<smtk::util::UUID,Tessellation> UUIDsToTessellations;
-typedef google::sparse_hash_map<smtk::util::UUID,Tessellation>::iterator UUIDWithTessellation;
+#ifdef SMTK_HASH_STORAGE
+typedef google::sparse_hash_map<smtk::common::UUID,Tessellation> UUIDsToTessellations;
+typedef google::sparse_hash_map<smtk::common::UUID,Tessellation>::iterator UUIDWithTessellation;
+#else // SMTK_HASH_STORAGE
+typedef std::map<smtk::common::UUID,Tessellation> UUIDsToTessellations;
+typedef std::map<smtk::common::UUID,Tessellation>::iterator UUIDWithTessellation;
+#endif // SMTK_HASH_STORAGE
 
   } // model namespace
 } // smtk namespace

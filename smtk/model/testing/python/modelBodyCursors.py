@@ -1,3 +1,14 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
 """
 Demonstrate model construction from within Python.
 
@@ -23,7 +34,7 @@ if __name__ == '__main__':
     model = store.addModel(3, 3, 'Test Model')
     # Create a model as if we were importing it (i.e., UUIDs already assigned).
     # This tests the methods created for use by Bridge subclasses.
-    ugen = smtk.util.UUIDGenerator()
+    ugen = smtk.common.UUIDGenerator()
     uids = [ugen.random() for x in range(50)]; # Generate 10 UUIDs
 
     # Cells
@@ -87,7 +98,7 @@ if __name__ == '__main__':
     store.findEntity(uids[6], True).pushRelation(uids[4]).pushRelation(uids[3])
 
     store.assignDefaultNames()
-    print smtk.model.ExportJSON.fromModel(store)
+    print smtk.io.ExportJSON.fromModel(store)
 
     status = \
         len(vert1.edges()) != 2 or \

@@ -1,12 +1,19 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/BridgeRegistrar.h"
 
 #include "smtk/model/Bridge.h"
 
 #include <stdlib.h> // for atexit()
 
-using smtk::util::UUID;
-using smtk::util::UUIDs;
-using smtk::util::UUIDArray;
+using namespace smtk::common;
 
 namespace smtk {
   namespace model {

@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/model/PropertyListPhrase.h"
 #include "smtk/model/PropertyValuePhrase.h"
 
@@ -55,7 +64,7 @@ std::string PropertyListPhrase::subtitle()
   return std::string();
 }
 
-smtk::util::UUID PropertyListPhrase::relatedEntityId() const
+smtk::common::UUID PropertyListPhrase::relatedEntityId() const
 {
   return this->m_entity.entity();
 }

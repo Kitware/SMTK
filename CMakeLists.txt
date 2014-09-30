@@ -52,8 +52,15 @@ find_package(Sphinx)
 
 #turn on ctest if we want testing
 if (SMTK_ENABLE_TESTING)
+  message(STATUS "SMTK_ENABLE_TESTING")
   enable_testing()
   include(CTest)
+
+  #add the first test which is for checking the copyright
+  add_test(NAME CopyrightStatement
+    COMMAND ${CMAKE_COMMAND}
+        "-DSMTK_SOURCE_DIR=${SMTK_SOURCE_DIR}"
+        -P "${SMTK_SOURCE_DIR}/CMake/CheckCopyright.cmake")
 endif()
 
 ################################################################################

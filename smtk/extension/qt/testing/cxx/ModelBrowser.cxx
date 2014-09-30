@@ -1,8 +1,18 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
+
 #include "smtk/extension/qt/qtEntityItemModel.h"
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 
-#include "smtk/extension/qt/testing/ui_ModelBrowser.h"
+#include "smtk/extension/qt/testing/cxx/ui_ModelBrowser.h"
 
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/ModelEntity.h"

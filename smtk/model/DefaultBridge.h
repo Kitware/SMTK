@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_model_DefaultBridge_h
 #define __smtk_model_DefaultBridge_h
 
@@ -5,8 +14,6 @@
 
 namespace smtk {
   namespace model {
-
-class ImportJSON;
 
 /**\brief A bridge that does no transcription.
   *
@@ -52,13 +59,13 @@ public:
 
   void backsRemoteBridge(
     const std::string& remoteBridgeName,
-    const smtk::util::UUID& bridgeSessionId);
+    const smtk::common::UUID& bridgeSessionId);
   virtual std::string remoteName() const;
   virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
 
 protected:
   friend class RemoteOperator;
-  friend class ImportJSON;
+  friend class io::ImportJSON;
 
   DefaultBridge();
 
@@ -70,7 +77,6 @@ protected:
   void setImportingOperators(bool isImporting);
 
   std::string m_remoteBridgeName;
-  bool m_importingOperators;
 };
 
   } // namespace model

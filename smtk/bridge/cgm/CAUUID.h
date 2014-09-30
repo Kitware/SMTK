@@ -1,3 +1,12 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #ifndef __smtk_bridge_cgm_CAUUID_h
 #define __smtk_bridge_cgm_CAUUID_h
 
@@ -7,7 +16,7 @@
 #  include "cgm_version.h"
 #endif
 #include "CubitAttrib.hpp"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 
 namespace smtk {
   namespace bridge {
@@ -48,7 +57,7 @@ public:
   virtual CubitSimpleAttrib* cubit_simple_attrib();
 #endif
 
-  smtk::util::UUID entityId() const;
+  smtk::common::UUID entityId() const;
 
   static CubitStatus actuate_all();
 
@@ -59,7 +68,7 @@ protected:
   static CubitAttrib* creator(RefEntity*, CubitSimpleAttrib*);
 #endif
 
-  smtk::util::UUID m_entityId;
+  smtk::common::UUID m_entityId;
 };
 
 } // namespace cgm

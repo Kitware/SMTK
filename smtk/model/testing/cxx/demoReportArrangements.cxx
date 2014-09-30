@@ -1,7 +1,16 @@
-#include "smtk/model/Cursor.h"
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+#include "smtk/io/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
 
-#include "smtk/model/ExportJSON.h"
-#include "smtk/model/ImportJSON.h"
+#include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/UseEntity.h"
@@ -13,9 +22,10 @@
 #include <string>
 #include <iostream>
 
-using namespace smtk::util;
+using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::model::testing;
+using namespace smtk::io;
 using smtk::shared_ptr;
 
 smtk::model::BitFlags maskOrder[] = {

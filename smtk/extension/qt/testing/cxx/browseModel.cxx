@@ -1,16 +1,26 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
-#include "smtk/model/ImportJSON.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
+#include "smtk/io/ExportJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
-#include "smtk/util/testing/cxx/helpers.h"
-#include "smtk/model/testing/cxx/helpers.h"
 
 #include "smtk/extension/qt/testing/cxx/ModelBrowser.h"
+
+#include "smtk/common/testing/cxx/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include <QtGui/QApplication>
 #include <QtGui/QTreeView>
@@ -52,7 +62,7 @@ int main(int argc, char* argv[])
 
 
   smtk::model::ManagerPtr model = smtk::model::Manager::create();
-  smtk::model::ImportJSON::intoModel(json.c_str(), model);
+  smtk::io::ImportJSON::intoModel(json.c_str(), model);
   model->assignDefaultNames();
 
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
@@ -96,7 +106,7 @@ int main(int argc, char* argv[])
   if (argc > 4)
     {
     std::ofstream result(argv[4]);
-    result << smtk::model::ExportJSON::fromModel(model).c_str() << "\n";
+    result << smtk::io::ExportJSON::fromModel(model).c_str() << "\n";
     result.close();
     }
 

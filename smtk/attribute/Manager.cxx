@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
 
 #include "smtk/attribute/Manager.h"
@@ -30,7 +17,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
-#include "smtk/util/UUID.h"
+#include "smtk/common/UUID.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -55,10 +42,10 @@ Manager::~Manager()
  }
 
 //----------------------------------------------------------------------------
-smtk::util::Resource::Type
+smtk::common::Resource::Type
 Manager::resourceType() const
 {
-  return smtk::util::Resource::ATTRIBUTE;
+  return smtk::common::Resource::ATTRIBUTE;
 }
 
 //----------------------------------------------------------------------------
@@ -910,8 +897,8 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
   // But only if the models are the same
   if (info.IsSameModel && ((options & COPY_ASSOCIATIONS) == COPY_ASSOCIATIONS))
     {
-    smtk::util::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
-    smtk::util::UUIDs::const_iterator it;
+    smtk::common::UUIDs uuidSet = sourceAtt->associatedModelEntityIds();
+    smtk::common::UUIDs::const_iterator it;
     for (it=uuidSet.begin(); it != uuidSet.end(); it++)
       {
       newAtt->associateEntity(*it);

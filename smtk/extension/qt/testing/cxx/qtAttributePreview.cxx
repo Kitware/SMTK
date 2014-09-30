@@ -1,41 +1,33 @@
-/*=========================================================================
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 
-Copyright (c) 1998-2013 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
 // .NAME qtAttributePreview - Standalone test program for qtRootView instances
 // .SECTION Description
 // .SECTION See Also
 
-#include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
-#include "smtk/model/Manager.h"
 #include "smtk/extension/qt/qtRootView.h"
 #include "smtk/extension/qt/qtUIManager.h"
-#include "smtk/util/AttributeReader.h"
-#include "smtk/util/AttributeWriter.h"
-#include "smtk/util/Logger.h"
+
+#include "smtk/io/AttributeReader.h"
+#include "smtk/io/AttributeWriter.h"
+#include "smtk/io/Logger.h"
+
 #include "smtk/view/Base.h"
 #include "smtk/view/Instanced.h"
 #include "smtk/view/Root.h"
+
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/attribute/Manager.h"
+
+#include "smtk/model/Manager.h"
 
 #include <QApplication>
 #include <QFrame>
@@ -69,8 +61,8 @@ int main(int argc, char *argv[])
   smtk::attribute::Manager manager;
   char *inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
-  smtk::util::AttributeReader reader;
-  smtk::util::Logger inputLogger;
+  smtk::io::AttributeReader reader;
+  smtk::io::Logger inputLogger;
   bool  err = reader.read(manager, inputPath, true, inputLogger);
   if (err)
     {
@@ -232,8 +224,8 @@ int main(int argc, char *argv[])
     {
     char *outputPath = argv[2];
     std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
-    smtk::util::AttributeWriter writer;
-    smtk::util::Logger outputLogger;
+    smtk::io::AttributeWriter writer;
+    smtk::io::Logger outputLogger;
     bool  outputErr = writer.write(manager, outputPath, outputLogger);
     if (outputErr)
       {

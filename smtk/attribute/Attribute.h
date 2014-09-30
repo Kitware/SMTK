@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 // .NAME smtkAttribute.h - Represents a standalone piece of simulation information
 // .SECTION Description
 // .SECTION See Also
@@ -29,7 +16,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
-#include "smtk/util/UUID.h" // for template associatedModelEntities()
+#include "smtk/common/UUID.h" // for template associatedModelEntities()
 
 #include <map>
 #include <set>
@@ -126,16 +113,18 @@ namespace smtk
 
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
-      bool isEntityAssociated(const smtk::util::UUID& entity) const;
+      bool isEntityAssociated(const smtk::common::UUID& entity) const;
       bool isEntityAssociated(const smtk::model::Cursor& cursor) const;
 
-      smtk::util::UUIDs associatedModelEntityIds() const
+      smtk::common::UUIDs associatedModelEntityIds() const
       {return this->m_modelEntities;}
       template<typename T> T associatedModelEntities() const;
 
-      bool associateEntity(const smtk::util::UUID& entity);
+      bool associateEntity(const smtk::common::UUID& entity);
+      bool associateEntity(const smtk::model::Cursor& entity);
 
-      void disassociateEntity(const smtk::util::UUID& entity, bool reverse = true);
+      void disassociateEntity(const smtk::common::UUID& entity, bool reverse = true);
+      void disassociateEntity(const smtk::model::Cursor& entity, bool reverse = true);
       void removeAllAssociations();
 
       // These methods only applies to Attributes whose
@@ -154,9 +143,9 @@ namespace smtk
       smtk::attribute::Manager *manager() const;
       smtk::model::ManagerPtr modelManager() const;
 
-      void setUserData(const std::string &key, smtk::util::UserDataPtr value)
+      void setUserData(const std::string &key, smtk::simulation::UserDataPtr value)
         {this->m_userData[key] = value;}
-      smtk::util::UserDataPtr userData(const std::string &key) const;
+      smtk::simulation::UserDataPtr userData(const std::string &key) const;
       void clearUserData(const std::string &key)
         {this->m_userData.erase(key);}
       void clearAllUserData()
@@ -187,12 +176,12 @@ namespace smtk
       std::vector<smtk::attribute::ItemPtr> m_items;
       smtk::attribute::AttributeId m_id;
       smtk::attribute::DefinitionPtr m_definition;
-      smtk::util::UUIDs m_modelEntities;
+      smtk::common::UUIDs m_modelEntities;
       std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
       bool m_isColorSet;
-      std::map<std::string, smtk::util::UserDataPtr > m_userData;
+      std::map<std::string, smtk::simulation::UserDataPtr > m_userData;
       // We need something to indicate that the attribute is in process of
       // being deleted - this is used skip certain clean up steps that
       // would need to be done otherwise
@@ -203,11 +192,11 @@ namespace smtk
 
     };
 //----------------------------------------------------------------------------
-    inline smtk::util::UserDataPtr Attribute::userData(const std::string &key) const
+    inline smtk::simulation::UserDataPtr Attribute::userData(const std::string &key) const
     {
-      std::map<std::string, smtk::util::UserDataPtr >::const_iterator it =
+      std::map<std::string, smtk::simulation::UserDataPtr >::const_iterator it =
         this->m_userData.find(key);
-      return ((it == this->m_userData.end()) ? smtk::util::UserDataPtr() : it->second);
+      return ((it == this->m_userData.end()) ? smtk::simulation::UserDataPtr() : it->second);
     }
 //----------------------------------------------------------------------------
     inline void Attribute::setColor(double r, double g, double b, double a)
@@ -226,7 +215,7 @@ namespace smtk
       if (!modelMgr) { // No attached manager means we cannot make cursors.
         return result;
       }
-      smtk::util::UUIDs::const_iterator it;
+      smtk::common::UUIDs::const_iterator it;
       for (it = this->m_modelEntities.begin(); it != this->m_modelEntities.end(); ++it) {
         typename T::value_type entry(modelMgr, *it);
         if (entry.isValid()) {

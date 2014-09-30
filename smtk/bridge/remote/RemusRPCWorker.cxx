@@ -1,9 +1,18 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
 #include "smtk/model/BridgeRegistrar.h"
-#include "smtk/model/ImportJSON.h"
-#include "smtk/model/ExportJSON.h"
+#include "smtk/io/ImportJSON.h"
+#include "smtk/io/ExportJSON.h"
 #include "smtk/model/Operator.h"
 
 #include "remus/proto/JobContent.h"
@@ -99,7 +108,7 @@ void RemusRPCWorker::processJob(
         {
         smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
         cJSON_AddItemToObject(result, "result",
-          smtk::model::ExportJSON::createStringArray(bridgeNames));
+          smtk::io::ExportJSON::createStringArray(bridgeNames));
         }
       else if (methStr == "bridge-filetypes")
         {
@@ -122,7 +131,7 @@ void RemusRPCWorker::processJob(
             smtk::model::StringList bridgeFileTypes =
               this->m_modelMgr->bridgeFileTypes(remusType->bridgeName());
             cJSON_AddItemToObject(result, "result",
-              smtk::model::ExportJSON::createStringArray(bridgeFileTypes));
+              smtk::io::ExportJSON::createStringArray(bridgeFileTypes));
             }
           }
         }
@@ -167,7 +176,7 @@ void RemusRPCWorker::processJob(
               {
               this->m_modelMgr->registerBridgeSession(bridge);
               cJSON* sess = cJSON_CreateObject();
-              smtk::model::ExportJSON::forManagerBridgeSession(
+              smtk::io::ExportJSON::forManagerBridgeSession(
                 bridge->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
               // Now redefine our worker to be a new one whose
@@ -198,9 +207,9 @@ void RemusRPCWorker::processJob(
         cJSON* model = cJSON_CreateObject();
         // Never include bridge session list or tessellation data
         // Until someone makes us.
-        smtk::model::ExportJSON::fromModel(model, this->m_modelMgr,
-          static_cast<smtk::model::JSONFlags>(
-            smtk::model::JSON_ENTITIES | smtk::model::JSON_PROPERTIES));
+        smtk::io::ExportJSON::fromModel(model, this->m_modelMgr,
+          static_cast<smtk::io::JSONFlags>(
+            smtk::io::JSON_ENTITIES | smtk::io::JSON_PROPERTIES));
         cJSON_AddItemToObject(result, "result", model);
         }
       else if (methStr == "operator-able")
@@ -208,7 +217,7 @@ void RemusRPCWorker::processJob(
         smtk::model::OperatorPtr localOp;
         if (
           !param ||
-          !smtk::model::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
+          !smtk::io::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
           !localOp)
           {
           this->generateError(result,
@@ -226,7 +235,7 @@ void RemusRPCWorker::processJob(
         smtk::model::OperatorPtr localOp;
         if (
           !param ||
-          !smtk::model::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
+          !smtk::io::ImportJSON::ofOperator(param, localOp, this->m_modelMgr) ||
           !localOp)
           {
           this->generateError(result,
@@ -237,7 +246,7 @@ void RemusRPCWorker::processJob(
           {
           smtk::model::OperatorResult ores = localOp->operate();
           cJSON* oresult = cJSON_CreateObject();
-          smtk::model::ExportJSON::forOperatorResult(ores, oresult);
+          smtk::io::ExportJSON::forOperatorResult(ores, oresult);
           cJSON_AddItemToObject(result, "result", oresult);
           }
         }
@@ -261,7 +270,7 @@ void RemusRPCWorker::processJob(
           {
           smtk::model::BridgePtr bridge =
             this->m_modelMgr->findBridgeSession(
-              smtk::util::UUID(bsess->valuestring));
+              smtk::common::UUID(bsess->valuestring));
           if (!bridge)
             {
             this->generateError(result, "No bridge with given session ID.", reqIdStr);

@@ -1,25 +1,12 @@
-/*=========================================================================
-
-Copyright (c) 1998-2012 Kitware Inc. 28 Corporate Drive,
-Clifton Park, NY, 12065, USA.
-
-All rights reserved. No part of this software may be reproduced, distributed,
-or modified, in any form or by any means, without permission in writing from
-Kitware Inc.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES,
-INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO
-PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-=========================================================================*/
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
 // .NAME Manager.h - the main class for storing attribute information
 // .SECTION Description
 // .SECTION See Also
@@ -27,7 +14,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtk_attribute_Manager_h
 #define __smtk_attribute_Manager_h
 
-#include "smtk/util/Resource.h"    // base class
+#include "smtk/common/Resource.h"    // base class
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -50,7 +37,7 @@ namespace smtk
   {
     class Attribute;
     class Definition;
-    class SMTKCORE_EXPORT Manager : public smtk::util::Resource
+    class SMTKCORE_EXPORT Manager : public smtk::common::Resource
     {
     public:
       enum CopyOptions
@@ -62,7 +49,7 @@ namespace smtk
       Manager();
       virtual ~Manager();
 
-      virtual smtk::util::Resource::Type resourceType() const;
+      virtual smtk::common::Resource::Type resourceType() const;
 
       smtk::attribute::DefinitionPtr createDefinition(const std::string &typeName,
                                                     const std::string &baseTypeName = "");

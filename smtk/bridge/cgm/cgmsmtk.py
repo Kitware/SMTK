@@ -1,3 +1,15 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
+
 #BEGIN REMOVE ME FROM PACKAGE
 
 def __bootstrap_cgmsmtk__():
@@ -72,25 +84,25 @@ def _Debug( self, message ):
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(smtk.util.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.io.Logger.DEBUG, str(message), cs[at][1],  cs[at][2])
 
 def _Error( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(smtk.util.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.io.Logger.ERROR, str(message), cs[at][1],  cs[at][2])
 
 def _Warn( self, message ):
   cs = inspect.stack()
   at = 1
   if len(cs) < 1:
     at = 0
-  self.addRecord(smtk.util.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
+  self.addRecord(smtk.io.Logger.WARNING, str(message), cs[at][1],  cs[at][2])
 
-smtk.util.Logger.addDebug = _Debug
-smtk.util.Logger.addWarning = _Warn
-smtk.util.Logger.addError = _Error
+smtk.io.Logger.addDebug = _Debug
+smtk.io.Logger.addWarning = _Warn
+smtk.io.Logger.addError = _Error
 
 del _Debug
 del _Warn

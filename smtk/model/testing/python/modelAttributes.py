@@ -1,3 +1,14 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
 """
 Test attribute association with smtk model
 
@@ -86,8 +97,8 @@ def generate_attributes(scope):
   logging.info('Reading %s' % att_path)
   manager = smtk.attribute.Manager()
   #manager.setRefModelManager(scope.store)
-  reader = smtk.util.AttributeReader()
-  logger = smtk.util.Logger()
+  reader = smtk.io.AttributeReader()
+  logger = smtk.io.Logger()
   err = reader.read(manager, att_path, logger)
   if err:
     logging.error("Unable to load template file")
@@ -216,7 +227,7 @@ if __name__ == '__main__':
     logging.error('Unable to load input file')
     sys.exit(2)
   scope.store = smtk.model.Manager.create()
-  ok = smtk.model.ImportJSON.intoModel(json_string, scope.store)
+  ok = smtk.io.ImportJSON.intoModel(json_string, scope.store)
 
   # Load cross-reference file
   load_xref(scope, model_folder)
@@ -225,8 +236,8 @@ if __name__ == '__main__':
   scope.att_data = list()
   manager = generate_attributes(scope)
   logging.info('Writing %s' % SBI_FILENAME)
-  writer = smtk.util.AttributeWriter()
-  logger = smtk.util.Logger()
+  writer = smtk.io.AttributeWriter()
+  logger = smtk.io.Logger()
   err = writer.write(manager, SBI_FILENAME, logger)
   if err:
     logging.error('Unable to write attribute file')
@@ -239,13 +250,13 @@ if __name__ == '__main__':
 
   # Re-import model
   test_store = smtk.model.Manager.create()
-  ok = smtk.model.ImportJSON.intoModel(json_string, test_store)
+  ok = smtk.io.ImportJSON.intoModel(json_string, test_store)
   scope.store = test_store
 
   # Re-read attribute file
   logging.info('Reading back %s' % SBI_FILENAME)
   test_manager = smtk.attribute.Manager()
-  reader = smtk.util.AttributeReader()
+  reader = smtk.io.AttributeReader()
   err = reader.read(test_manager, SBI_FILENAME, logger)
   if err:
     logging.error("Unable to read attribute file")
