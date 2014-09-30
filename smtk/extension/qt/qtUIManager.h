@@ -16,7 +16,7 @@
 #define __smtk_attribute_qtUIManager_h
 
 #include "smtk/extension/qt/qtItem.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include <QFont>
 #include <QColor>
 #include <QDoubleValidator>
@@ -49,14 +49,14 @@ namespace smtk
     friend class qtRootView;
 
     public:
-      qtUIManager(smtk::attribute::Manager &manager);
+      qtUIManager(smtk::attribute::System &system);
       virtual ~qtUIManager();
 
       void initializeUI(QWidget* pWidget, bool useInternalFileBrowser=false);
       qtBaseView* initializeView(QWidget* pWidget, smtk::view::BasePtr base,
         bool useInternalFileBrowser=true);
-      smtk::attribute::Manager* attManager() const
-        {return &this->m_AttManager;}
+      smtk::attribute::System* attSystem() const
+        {return &this->m_AttSystem;}
 
       // Description:
       // Set/Get the color used for indicating items with default values
@@ -175,7 +175,7 @@ namespace smtk
       bool AdvancedBold; // true by default
       bool AdvancedItalic; // false by default
 
-      smtk::attribute::Manager &m_AttManager;
+      smtk::attribute::System &m_AttSystem;
       bool m_useInternalFileBrowser;
 
       // current advance level to show advanced attributes/items

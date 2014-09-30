@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -46,38 +46,38 @@ int main()
 {
   int status=0;
   {
-  attribute::Manager manager;
-  std::cout << "Manager Created\n";
+  attribute::System system;
+  std::cout << "System Created\n";
   // Lets create some attribute Definitions
-  attribute::DefinitionPtr funcDef = manager.createDefinition("PolyLinearFunction");
-  attribute::DefinitionPtr materialDef = manager.createDefinition("Material");
+  attribute::DefinitionPtr funcDef = system.createDefinition("PolyLinearFunction");
+  attribute::DefinitionPtr materialDef = system.createDefinition("Material");
   materialDef->setAssociationMask(smtk::model::VOLUME); // belongs on regions for 3D problem
-  attribute::DefinitionPtr boundaryConditionsDef = manager.createDefinition("BoundaryCondition");
+  attribute::DefinitionPtr boundaryConditionsDef = system.createDefinition("BoundaryCondition");
   boundaryConditionsDef->setAssociationMask(smtk::model::FACE); // belongs on boundaries for 3D problem
-  attribute::DefinitionPtr specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition");
-  attribute::DefinitionPtr specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition");
-  attribute::DefinitionPtr injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition");
-  attribute::DefinitionPtr timeParamDef = manager.createDefinition("TimeParameters");
-  attribute::DefinitionPtr globalsDef = manager.createDefinition("GlobalParameters");
+  attribute::DefinitionPtr specifiedHeadDef = system.createDefinition("SpecifiedHead", "BoundaryCondition");
+  attribute::DefinitionPtr specifiedFluxDef = system.createDefinition("SpecifiedFlux", "BoundaryCondition");
+  attribute::DefinitionPtr injectionWellDef = system.createDefinition("InjectionWell", "BoundaryCondition");
+  attribute::DefinitionPtr timeParamDef = system.createDefinition("TimeParameters");
+  attribute::DefinitionPtr globalsDef = system.createDefinition("GlobalParameters");
   // Lets add some analyses
   std::set<std::string> analysis;
   analysis.insert("Flow");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("CFD Flow", analysis);
+  system.defineAnalysis("CFD Flow", analysis);
   analysis.clear();
 
   analysis.insert("Flow");
   analysis.insert("Heat");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("CFD Flow with Heat Transfer", analysis);
+  system.defineAnalysis("CFD Flow with Heat Transfer", analysis);
   analysis.clear();
 
   analysis.insert("Constituent");
   analysis.insert("General");
   analysis.insert("Time");
-  manager.defineAnalysis("Constituent Transport", analysis);
+  system.defineAnalysis("Constituent Transport", analysis);
   analysis.clear();
 
   // Lets complete the definition for some boundary conditions
@@ -139,7 +139,7 @@ int main()
 
   // Lets add some Views
 
-  view::RootPtr root = manager.rootView();
+  view::RootPtr root = system.rootView();
   root->setTitle("SimBuilder");
   view::SimpleExpressionPtr expSec = root->addSubView<view::SimpleExpressionPtr>("Functions");
   expSec->setDefinition(funcDef);
@@ -157,16 +157,16 @@ int main()
   modSec = root->addSubView<view::ModelEntityPtr>("Boundary View");
   modSec->setModelEntityMask(smtk::model::FACE); // Look at 3D boundary entities only
 
-  manager.updateCategories();
-  attribute::AttributePtr att = manager.createAttribute("TimeInformation", timeParamDef);
+  system.updateCategories();
+  attribute::AttributePtr att = system.createAttribute("TimeInformation", timeParamDef);
   view::InstancedPtr iSec;
   iSec = root->addSubView<view::InstancedPtr>("Time Parameters");
   iSec->addInstance(att);
-  att = manager.createAttribute("Globals", globalsDef);
+  att = system.createAttribute("Globals", globalsDef);
   iSec = root->addSubView<view::InstancedPtr>("Global Parameters");
   iSec->addInstance(att);
   smtk::io::Logger logger;
-  smtk::io::XmlV2StringWriter writer(manager);
+  smtk::io::XmlV2StringWriter writer(system);
   std::string result = writer.convertToString(logger);
   std::cout << result << std::endl;
   if (logger.hasErrors())
@@ -178,8 +178,8 @@ int main()
   std::stringstream test(result);
   pugi::xml_document doc;
   doc.load(test);
-  attribute::Manager manager1;
-  smtk::io::XmlDocV2Parser reader(manager1);
+  attribute::System system1;
+  smtk::io::XmlDocV2Parser reader(system1);
   reader.process(doc);
   if (reader.messageLog().hasErrors())
     {
@@ -188,8 +188,8 @@ int main()
     status = -1;
     }
 
-  smtk::io::XmlV2StringWriter writer1(manager1);
-  std::cout << "Manager 1:\n";
+  smtk::io::XmlV2StringWriter writer1(system1);
+  std::cout << "System 1:\n";
   result = writer1.convertToString(logger);
   std::cout << result << std::endl;
 
@@ -199,7 +199,7 @@ int main()
     std::cerr << logger.convertToString();
     }
 
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
   return status;
 }

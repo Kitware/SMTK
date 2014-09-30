@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CGM "Read" Operator -->
-<SMTK_AttributeManager Version="1">
+<SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
     <AttDef Type="read" BaseType="operator">
@@ -17,4 +17,4 @@
       </ItemDefinitions>
     </AttDef>
   </Definitions>
-</SMTK_AttributeManager>
+</SMTK_AttributeSystem>

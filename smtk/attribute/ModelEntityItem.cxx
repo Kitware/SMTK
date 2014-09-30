@@ -202,7 +202,7 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     smtk::dynamic_pointer_cast<ModelEntityItem>(sourceItem);
 
   // Update values
-  // Only set values if both att managers are using the same model
+  // Only set values if both att systems are using the same model
   this->setNumberOfValues(sourceModelEntityItem->numberOfValues());
   for (std::size_t i=0; i<sourceModelEntityItem->numberOfValues(); ++i)
     {

@@ -25,14 +25,14 @@ inlet       = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'i
 skin        = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'skin')
 outlet      = sm.addGroup(smtk.model.MODEL_BOUNDARY | smtk.model.DIMENSION_2, 'outlet')
 
-mgr = smtk.attribute.Manager()
-vdef = mgr.createDefinition('velocity')
+system = smtk.attribute.System()
+vdef = system.createDefinition('velocity')
 for coord in ['x', 'y', 'z']:
    vi = smtk.attribute.DoubleItemDefinition.New('v' + coord)
    vi.setDefaultValue(-1.2 if coord == 'x' else 0.0) # in [m/s]
    vdef.addItemDefinition(vi);
 
-velocity = mgr.createAttribute('velocity', vdef)
+velocity = system.createAttribute('velocity', vdef)
 inlet.attachAttribute(velocity.id())
 
 print sm.entitiesOfDimension(2)

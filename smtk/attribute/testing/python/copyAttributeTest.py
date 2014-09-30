@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Test smtk.attribute.Manager.copyAttribute() method
+Test smtk.attribute.System.copyAttribute() method
 
 Uses copyAttributeTest.sbi in the SMTKTestData repo.
 """
@@ -42,7 +42,7 @@ if __name__ == '__main__':
   # First (and) only argument is the path to the smtk data directory
   if len(sys.argv) < 2:
     print
-    print 'Test smtk.attribute.Manager.copyAttribute()'
+    print 'Test smtk.attribute.System.copyAttribute()'
     print 'Usage: python %s path-to-SMTKTestData'
     print
     sys.exit(-1)
@@ -71,17 +71,17 @@ if __name__ == '__main__':
       sys.exit(-4)
 
   #
-  # Load attribute file into manager
+  # Load attribute file into system
   #
   att_folder = os.path.join(smtk_test_data, 'smtk', 'attribute')
   att_path = os.path.join(att_folder, INPUT_FILENAME)
   logging.info('Reading %s' % att_path)
-  input_manager = smtk.attribute.Manager()
-  input_manager.setRefModelManager(model_manager)
+  input_system = smtk.attribute.System()
+  input_system.setRefModelManager(model_manager)
 
   reader = smtk.io.AttributeReader()
   logger = smtk.io.Logger()
-  err = reader.read(input_manager, att_path, logger)
+  err = reader.read(input_system, att_path, logger)
   if err:
     logging.error("Unable to load template file")
     logging.error(logger.convertToString())
@@ -90,7 +90,7 @@ if __name__ == '__main__':
   err_count = 0
 
   # Add model associations, using known UUID values (see test2D.xref)
-  att_list = input_manager.findAttributes('FirstConcrete')
+  att_list = input_system.findAttributes('FirstConcrete')
   if not att_list:
     logging.error("Unabled to find FirstConcrete attribute")
     sys.exit(-2)
@@ -101,7 +101,7 @@ if __name__ == '__main__':
   first_concrete.associateEntity(vertex_id)
 
 
-  att_list = input_manager.findAttributes('SecondConcrete')
+  att_list = input_system.findAttributes('SecondConcrete')
   if not att_list:
     logging.error("Unabled to find SecondConcrete attribute")
     sys.exit(-2)
@@ -126,41 +126,41 @@ if __name__ == '__main__':
 
 
   #
-  # Instantiate 2nd/test manager
+  # Instantiate 2nd/test system
   #
-  test_manager = smtk.attribute.Manager()
-  test_manager.setRefModelManager(model_manager)
+  test_system = smtk.attribute.System()
+  test_system.setRefModelManager(model_manager)
 
   # Copy SecondConcrete attribute
-  # Note: shiboken refuses to wrap smtk::attribute::Manager::CopyOptions enum, saying:
+  # Note: shiboken refuses to wrap smtk::attribute::System::CopyOptions enum, saying:
   #   enum 'smtk::model::Manager::CopyOptions' is specified in typesystem, but not declared
   # Rather than trying to reason with shiboken, the options are specified numerically
-  options = 0x00000001  # should be smtk.attribute.Manager.CopyOptions.COPY_ASSOCIATIONS
-  test_manager.copyAttribute(second_concrete, options)
+  options = 0x00000001  # should be smtk.attribute.System.CopyOptions.COPY_ASSOCIATIONS
+  test_system.copyAttribute(second_concrete, options)
   expected_deftypes = [
     'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
     'FirstConcrete', 'PolyLinearFunction'
   ]
   for def_type in expected_deftypes:
-    defn = test_manager.findDefinition(def_type)
+    defn = test_system.findDefinition(def_type)
     if defn is None:
       logging.error('Expected %s definition, found None' % def_type)
       err_count += 1
 
   expected_atttypes = ['FirstConcrete', 'SecondConcrete', 'PolyLinearFunction']
   for att_type in expected_atttypes:
-    att_list = test_manager.findAttributes(att_type)
+    att_list = test_system.findAttributes(att_type)
     if len(att_list) != 1:
       logging.error('Expected %s attribute, found %d' %
         (att_type, len(att_list)))
       err_count += 1
 
   # Note there is ALOT more that could & should be verified here
-  logging.debug('Writing manager')
+  logging.debug('Writing system')
 
   # Write data out FYI
   writer = smtk.io.AttributeWriter()
-  err = writer.write(test_manager, OUTPUT_FILENAME, logger)
+  err = writer.write(test_system, OUTPUT_FILENAME, logger)
   if err:
     logging.error("Unable to write output file")
     sys.exit(-6)

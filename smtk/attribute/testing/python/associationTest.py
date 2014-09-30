@@ -25,14 +25,14 @@ if __name__ == '__main__':
     mask = smtk.model.FACE | smtk.model.GROUP_ENTITY
     group_item = mmgr.addGroup(mask, 'TopFaceBCS')
 
-    # Create attribute manager with 1 def
-    manager = smtk.attribute.Manager()
-    manager.setRefModelManager(mmgr)
-    defn = manager.createDefinition('testdef')
+    # Create attribute system with 1 def
+    system = smtk.attribute.System()
+    system.setRefModelManager(mmgr)
+    defn = system.createDefinition('testdef')
     defn.setAssociationMask(mask)
 
     # Create attribute and associate to group item
-    att = manager.createAttribute('testatt', defn)
+    att = system.createAttribute('testatt', defn)
     att.associateEntity(group_item.entity())
 
     sys.exit(status)

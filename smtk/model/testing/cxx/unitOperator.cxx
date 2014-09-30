@@ -134,7 +134,7 @@ void testImportOperators(Manager::Ptr manager)
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (rdr.readContents(
-    *bridge->operatorManager(), unitOutcomeOperator_xml, sizeof(unitOutcomeOperator_xml), log))
+    *bridge->operatorSystem(), unitOutcomeOperator_xml, sizeof(unitOutcomeOperator_xml), log))
     {
     std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
     throw std::string("Could not parse operator XML.");
@@ -146,10 +146,10 @@ void testImportOperators(Manager::Ptr manager)
 
   // Now enumerate attribute definitions that inherit "operator".
   smtk::attribute::DefinitionPtr opBase =
-    bridge->operatorManager()->findDefinition("operator");
+    bridge->operatorSystem()->findDefinition("operator");
   typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
   OpListType opList;
-  bridge->operatorManager()->derivedDefinitions(opBase, opList);
+  bridge->operatorSystem()->derivedDefinitions(opBase, opList);
   std::cout << "Imported XML for operators:\n";
   for (OpListType::iterator it = opList.begin(); it != opList.end(); ++it)
     {

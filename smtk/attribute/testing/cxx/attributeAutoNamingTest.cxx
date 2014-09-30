@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include <iostream>
@@ -17,9 +17,9 @@ int main()
 {
   int status = 0;
     {
-    smtk::attribute::Manager manager;
-    std::cout << "Manager Created\n";
-    smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
+    smtk::attribute::System system;
+    std::cout << "System Created\n";
+    smtk::attribute::DefinitionPtr def = system.createDefinition("testDef");
     if (def)
       {
       std::cout << "Definition testDef created\n";
@@ -30,7 +30,7 @@ int main()
       status = -1;
       }
 
-    smtk::attribute::AttributePtr att = manager.createAttribute("testDef");
+    smtk::attribute::AttributePtr att = system.createAttribute("testDef");
     if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -41,7 +41,7 @@ int main()
       status = -1;
       }
 
-    att = manager.createAttribute("testDef");
+    att = system.createAttribute("testDef");
     if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -52,7 +52,7 @@ int main()
       status = -1;
       }
 
-    att = manager.createAttribute("testDef");
+    att = system.createAttribute("testDef");
     if (att)
       {
       std::cout << "Attribute " << att->name() << " created\n";
@@ -62,7 +62,7 @@ int main()
       std::cout << "ERROR: 3rd Attribute not created\n";
       status = -1;
       }
-    std::cout << "Manager destroyed\n";
+    std::cout << "System destroyed\n";
     }
     return status;
 }

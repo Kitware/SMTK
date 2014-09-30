@@ -20,7 +20,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -306,7 +306,7 @@ namespace smtk {
   namespace io {
 
 template<typename T>
-int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::Manager* mgr, const char* attName, const char* attXML)
+int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::System* sys, const char* attName, const char* attXML)
 {
   cJSON* params = cJSON_GetObjectItem(node, attXML);
   cJSON* opspec = cJSON_GetObjectItem(node, attName);
@@ -319,7 +319,7 @@ int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::Manager* mgr
     rdr.setReportDuplicateDefinitionsAsErrors(false);
     if (
       rdr.readContents(
-        *mgr,
+        *sys,
         params->valuestring, strlen(params->valuestring),
         log))
       {
@@ -335,8 +335,8 @@ int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::Manager* mgr
       }
 
     // Now link the loaded XML to the operator instance by searching
-    // the operatorManager for its name.
-    obj = mgr->findAttribute(opspec->valuestring);
+    // the operatorSystem for its name.
+    obj = sys->findAttribute(opspec->valuestring);
     return !!obj;
     }
   return 0;
@@ -650,13 +650,13 @@ int ImportJSON::ofRemoteBridgeSession(cJSON* node, DefaultBridgePtr destBridge, 
     nameObj->valuestring, smtk::common::UUID(node->string));
 
   // Import the XML definitions of the serialized bridge session
-  // into the destination bridge's operatorManager():
+  // into the destination bridge's operatorSystem():
   smtk::io::Logger log;
   smtk::io::AttributeReader rdr;
   rdr.setReportDuplicateDefinitionsAsErrors(false);
   if (
     rdr.readContents(
-      *destBridge->operatorManager(),
+      *destBridge->operatorSystem(),
       opsObj->valuestring, strlen(opsObj->valuestring),
       log))
     {
@@ -841,16 +841,16 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   OperatorSpecification spec;
   if (
     cJSON_GetObjectParameters(
-      node, spec, op->bridge()->operatorManager(), "spec", "specXML"))
+      node, spec, op->bridge()->operatorSystem(), "spec", "specXML"))
     {
     op->setSpecification(spec);
     }
   return 1;
 }
 
-int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::Manager* opMgr)
+int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::System* opSys)
 {
-  return cJSON_GetObjectParameters(node, resOut, opMgr, "result", "resultXML");
+  return cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
 }
 
 int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)

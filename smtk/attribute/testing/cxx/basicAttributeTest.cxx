@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/StringItemDefinition.h"
@@ -17,9 +17,9 @@
 int main()
 {
   int status = 0;
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
-  smtk::common::Resource::Type t = manager.resourceType();
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
+  smtk::common::Resource::Type t = system.resourceType();
   if (t != smtk::common::Resource::ATTRIBUTE)
     {
     std::cout << "ERROR: Returned wrong resource type";
@@ -27,7 +27,7 @@ int main()
     }
   std::cout << "Resource type: "
             << smtk::common::Resource::type2String(t) << "\n";
-  smtk::attribute::DefinitionPtr def = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def = system.createDefinition("testDef");
   if (def)
     {
     std::cout << "Definition testDef created\n";
@@ -37,7 +37,7 @@ int main()
     std::cout << "ERROR: Definition testDef not created\n";
     status++;
     }
-  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("testDef");
+  smtk::attribute::DefinitionPtr def1 = system.createDefinition("testDef");
   if (!def1)
     {
     std::cout << "Duplicated definition testDef not created\n";
@@ -47,7 +47,7 @@ int main()
     std::cout << "ERROR: Duplicated definition testDef created\n";
     status++;
     }
-  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "testDef");
   if (att)
     {
     std::cout << "Attribute testAtt created\n";
@@ -58,7 +58,7 @@ int main()
     status++;
     }
 
-  smtk::attribute::AttributePtr att1 = manager.createAttribute("testAtt", "testDef");
+  smtk::attribute::AttributePtr att1 = system.createAttribute("testAtt", "testDef");
   if (!att1)
     {
     std::cout << "Duplicate Attribute testAtt not created\n";
@@ -72,9 +72,9 @@ int main()
   std::vector<smtk::attribute::AttributePtr> atts;
   std::vector<smtk::attribute::DefinitionPtr> defs;
 
-  // Check to see how many atts and defs are in the manager
-  manager.definitions(defs);
-  manager.attributes(atts);
+  // Check to see how many atts and defs are in the system
+  system.definitions(defs);
+  system.attributes(atts);
 
   if (defs.size() != 1)
     {
@@ -183,13 +183,13 @@ int main()
       std::cout << "Should not applies to interior node.\n";
       status++;
       }
-    if (att->manager() != &manager)
+    if (att->system() != &system)
       {
-      std::cout << "Should be this manager.\n";
+      std::cout << "Should be this system.\n";
       status++;
       }
     }
 
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   return status;
 }

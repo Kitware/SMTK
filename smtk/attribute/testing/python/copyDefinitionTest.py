@@ -10,7 +10,7 @@
 #
 #=============================================================================
 """
-Test smtk.attribute.Manager.copyDefinition() method
+Test smtk.attribute.System.copyDefinition() method
 
 Uses copyDefinitionTest.sbt in the SMTKTestData repo.
 """
@@ -40,7 +40,7 @@ if __name__ == '__main__':
   # First (and) only argument is the path to the smtk data directory
   if len(sys.argv) < 2:
     print
-    print 'Test smtk.attribute.Manager.copyDefinition()'
+    print 'Test smtk.attribute.System.copyDefinition()'
     print 'Usage: python %s path-to-SMTKTestData'
     print
     sys.exit(-1)
@@ -48,15 +48,15 @@ if __name__ == '__main__':
   logging.debug('LD_LIBRARY_PATH = %s' % os.environ.get('LD_LIBRARY_PATH'))
   logging.debug('PYTHONPATH = %s' % os.environ.get('PYTHONPATH'))
 
-  # Load attribute file into manager
+  # Load attribute file into system
   smtk_test_data = sys.argv[1]
   att_folder = os.path.join(smtk_test_data, 'smtk', 'attribute')
   att_path = os.path.join(att_folder, SBT_FILENAME)
   logging.info('Reading %s' % att_path)
-  input_manager = smtk.attribute.Manager()
+  input_system = smtk.attribute.System()
   reader = smtk.io.AttributeReader()
   logger = smtk.io.Logger()
-  err = reader.read(input_manager, att_path, logger)
+  err = reader.read(input_system, att_path, logger)
   if err:
     logging.error("Unable to load template file")
     logging.error(logger.convertToString())
@@ -64,24 +64,24 @@ if __name__ == '__main__':
 
   err_count = 0
 
-  # Instantiate 2nd manager
-  test_manager = smtk.attribute.Manager()
+  # Instantiate 2nd system
+  test_system = smtk.attribute.System()
 
   # Copy SecondConcrete definition, which should copy alot of stuff
-  source_def = input_manager.findDefinition('SecondConcrete')
-  test_manager.copyDefinition(source_def, 0)
+  source_def = input_system.findDefinition('SecondConcrete')
+  test_system.copyDefinition(source_def, 0)
   expected_types = [
     'SecondConcrete', 'AnotherAbstractBase', 'CommonBase',
     'FirstConcrete', 'PolyLinearFunction'
   ]
   for def_type in expected_types:
-    defn = test_manager.findDefinition(def_type)
+    defn = test_system.findDefinition(def_type)
     if defn is None:
       logging.error('Expected %s definition, found None' % def_type)
       err_count += 1
 
   # Add explicit test for conditional children
-  defn = test_manager.findDefinition('SecondConcrete')
+  defn = test_system.findDefinition('SecondConcrete')
   if defn:
     i = defn.findItemPosition('ConditionalSelectionList')
     item = defn.itemDefinition(i)
@@ -107,11 +107,11 @@ if __name__ == '__main__':
 
 
   # Note there is ALOT more that could & should be verified here
-  logging.debug('Writing manager')
+  logging.debug('Writing system')
 
   # Write data out FYI
   writer = smtk.io.AttributeWriter()
-  err = writer.write(test_manager, SBI_FILENAME, logger)
+  err = writer.write(test_system, SBI_FILENAME, logger)
   if err:
     logging.error("Unable to write output file")
     sys.exit(-3)

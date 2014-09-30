@@ -19,7 +19,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/io/AttributeWriter.h"
 #include "smtk/io/Logger.h"
@@ -46,10 +46,10 @@ namespace {
     {
     if (spec)
       {
-      smtk::attribute::Manager tmpMgr;
-      tmpMgr.setRefModelManager(spec->modelManager());
-      tmpMgr.copyAttribute(
-        spec, smtk::attribute::Manager::FORCE_COPY_ASSOCIATIONS);
+      smtk::attribute::System tmpSys;
+      tmpSys.setRefModelManager(spec->modelManager());
+      tmpSys.copyAttribute(
+        spec, smtk::attribute::System::FORCE_COPY_ASSOCIATIONS);
       smtk::io::Logger log;
       smtk::io::AttributeWriter wri;
       wri.includeDefinitions(false);
@@ -57,7 +57,7 @@ namespace {
       wri.includeModelInformation(false);
       wri.includeViews(false);
       std::string xml;
-      bool err = wri.writeContents(tmpMgr, xml, log, true);
+      bool err = wri.writeContents(tmpSys, xml, log, true);
       if (!err)
         {
         cJSON_AddItemToObject(opEntry, tagName,
@@ -418,7 +418,7 @@ int ExportJSON::forManagerBridgeSession(const smtk::common::UUID& uid, cJSON* no
       bridge->createIODelegate("json"));
   if (delegate)
     status &= delegate->exportJSON(modelMgr, sess);
-  status &= ExportJSON::forOperatorDefinitions(bridge->operatorManager(), sess);
+  status &= ExportJSON::forOperatorDefinitions(bridge->operatorSystem(), sess);
   return status;
 }
 
@@ -428,12 +428,11 @@ int ExportJSON::forModelOperators(const smtk::common::UUID& uid, cJSON* entRec, 
   smtk::model::ModelEntity mod(modelMgr, uid);
   smtk::model::Operators ops(mod.operators());
   cJSON_AddItemToObject(entRec, "ops",
-    cJSON_CreateOperatorArray(ops));
+    cJSON_CreateOperatorArray(ops));`
   return 1; // ExportJSON::forOperators(ops, entRec);
-}
-*/
+} */
 
-int ExportJSON::forOperatorDefinitions(smtk::attribute::Manager* opMgr, cJSON* entRec)
+int ExportJSON::forOperatorDefinitions(smtk::attribute::System* opSys, cJSON* entRec)
 {
   smtk::io::Logger log;
   smtk::io::AttributeWriter wri;
@@ -442,7 +441,7 @@ int ExportJSON::forOperatorDefinitions(smtk::attribute::Manager* opMgr, cJSON* e
   wri.includeModelInformation(false);
   wri.includeViews(false);
   std::string xml;
-  bool err = wri.writeContents(*opMgr, xml, log, true);
+  bool err = wri.writeContents(*opSys, xml, log, true);
   if (!err)
     {
     cJSON_AddItemToObject(entRec, "ops",
@@ -450,8 +449,8 @@ int ExportJSON::forOperatorDefinitions(smtk::attribute::Manager* opMgr, cJSON* e
     }
   /*
   std::vector<smtk::attribute::DefinitionPtr> ops;
-  opMgr.derivedDefinitions(
-    opMgr.findDefinition("operator"), ops);
+  opSys.derivedDefinitions(
+    opSys.findDefinition("operator"), ops);
   if (!ops.empty())
     {
     cJSON_AddItemToObject(entRec, "ops",

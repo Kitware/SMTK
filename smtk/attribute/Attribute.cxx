@@ -21,7 +21,7 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
@@ -219,31 +219,31 @@ bool Attribute::isValid()
 }
 
 //----------------------------------------------------------------------------
-Manager *Attribute::manager() const
+System *Attribute::system() const
 {
-  return this->m_definition->manager();
+  return this->m_definition->system();
 }
 //----------------------------------------------------------------------------
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
-  * null if no manager is referenced by the attribute manager (or if the
-  * attribute definition does not reference a valid manager).
+  * null if no manager is referenced by the attribute system (or if the
+  * attribute definition does not reference a valid system).
   */
 smtk::model::ManagerPtr Attribute::modelManager() const
 {
   smtk::model::ManagerPtr result;
-  smtk::attribute::Manager* attMgr = this->manager();
-  if (attMgr)
+  smtk::attribute::System* attSys = this->system();
+  if (attSys)
     {
-    result = attMgr->refModelManager();
+    result = attSys->refModelManager();
     }
   return result;
 }
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr Attribute::pointer() const
 {
-  Manager *m = this->manager();
+  System *m = this->system();
   if (m)
     {
     return m->findAttribute(this->m_name);

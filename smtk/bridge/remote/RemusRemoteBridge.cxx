@@ -185,7 +185,7 @@ smtk::model::OperatorResult RemusRemoteBridge::operateDelegate(
     !resp ||
     (err = cJSON_GetObjectItem(resp, "error")) ||
     !(res = cJSON_GetObjectItem(resp, "result")) ||
-    !smtk::io::ImportJSON::ofOperatorResult(res, result, op->bridge()->operatorManager()))
+    !smtk::io::ImportJSON::ofOperatorResult(res, result, op->bridge()->operatorSystem()))
     {
     return op->createResult(smtk::model::OPERATION_FAILED);
     }

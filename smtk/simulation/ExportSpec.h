@@ -33,10 +33,10 @@ namespace smtk
     public:
       // ----------------------------------------
       // Data-get methods, intended to be called from python scripts
-      smtk::attribute::Manager *getSimulationAttributes() const
-      { return m_simulationManager; }
-      smtk::attribute::Manager *getExportAttributes() const
-      { return m_exportManager; }
+      smtk::attribute::System *getSimulationAttributes() const
+      { return m_simulationSystem; }
+      smtk::attribute::System *getExportAttributes() const
+      { return m_exportSystem; }
       smtk::model::GridInfoPtr getAnalysisGridInfo() const
       { return m_analysisGridInfo; }
       smtk::io::Logger getLogger() const
@@ -47,16 +47,16 @@ namespace smtk
       ExportSpec();
       void clear();
 
-      void setSimulationAttributes(smtk::attribute::Manager *manager)
-      { m_simulationManager = manager; }
-      void setExportAttributes(smtk::attribute::Manager *manager)
-      { m_exportManager = manager; }
+      void setSimulationAttributes(smtk::attribute::System *system)
+      { m_simulationSystem = system; }
+      void setExportAttributes(smtk::attribute::System *system)
+      { m_exportSystem = system; }
       void setAnalysisGridInfo(smtk::model::GridInfoPtr analysisGridInfo)
       { m_analysisGridInfo = analysisGridInfo; }
 
     private:
-      smtk::attribute::Manager *m_simulationManager;
-      smtk::attribute::Manager *m_exportManager;
+      smtk::attribute::System *m_simulationSystem;
+      smtk::attribute::System *m_exportSystem;
       smtk::model::GridInfoPtr  m_analysisGridInfo;
       smtk::io::Logger          m_logger;
     };

@@ -27,7 +27,7 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -190,7 +190,7 @@ namespace {
 //----------------------------------------------------------------------------
   template<typename ItemType, typename BasicType>
   void processDerivedValue(pugi::xml_node &node,
-                           ItemType item, attribute::Manager &manager,
+                           ItemType item, attribute::System &system,
                            std::vector<ItemExpressionInfo> &itemExpressionInfo,
                            Logger &logger)
   {
@@ -259,7 +259,7 @@ namespace {
         else if (allowsExpressions && (nodeName == "Expression"))
           {
           expName = val.text().get();
-          expAtt = manager.findAttribute(expName);
+          expAtt = system.findAttribute(expName);
           if (!expAtt)
             {
             info.item = item; info.pos = static_cast<int>(i); info.expName = expName;
@@ -288,7 +288,7 @@ namespace {
         if (allowsExpressions && xatt)
           {
           expName = node.text().get();
-          expAtt = manager.findAttribute(expName);
+          expAtt = system.findAttribute(expName);
           if (!expAtt)
             {
             info.item = item; info.pos = 0; info.expName = expName;
@@ -312,8 +312,8 @@ namespace {
   }
 };
 //----------------------------------------------------------------------------
-XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::Manager &myManager):
-  m_reportAsError(true), m_manager(myManager)
+XmlDocV2Parser::XmlDocV2Parser(smtk::attribute::System &mySystem):
+  m_reportAsError(true), m_system(mySystem)
 {
 }
 
@@ -324,8 +324,8 @@ XmlDocV2Parser::~XmlDocV2Parser()
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::process(xml_document &doc)
 {
-  // Get the attribute manager node
-  xml_node amnode = doc.child("SMTK_AttributeManager");
+  // Get the attribute system node
+  xml_node amnode = doc.child("SMTK_AttributeSystem");
   this->process(amnode);
 }
 //----------------------------------------------------------------------------
@@ -344,12 +344,12 @@ void XmlDocV2Parser::process(xml_node &amnode)
   // Check that there is content
   if (amnode.empty())
     {
-    smtkWarningMacro(m_logger, "Missing SMTK_AttributeManager element");
+    smtkWarningMacro(m_logger, "Missing SMTK_AttributeSystem element");
     return;
     }
 
   // Get the category information, starting with current set
-  std::set<std::string> secCatagories = m_manager.categories();
+  std::set<std::string> secCatagories = m_system.categories();
   std::string s;
   node = amnode.child("Categories");
   if (node)
@@ -389,7 +389,7 @@ void XmlDocV2Parser::process(xml_node &amnode)
           }
         catagories.insert(cnode.text().get());
         }
-      this->m_manager.defineAnalysis(s, catagories);
+      this->m_system.defineAnalysis(s, catagories);
       }
     }
 
@@ -408,7 +408,7 @@ void XmlDocV2Parser::process(xml_node &amnode)
         tmp << "Level " << val;
         s = tmp.str();
         }
-      this->m_manager.addAdvanceLevel(val, s);
+      this->m_system.addAdvanceLevel(val, s);
 
       xml_attribute xatt = anode.attribute("Color");
       if(xatt)
@@ -417,7 +417,7 @@ void XmlDocV2Parser::process(xml_node &amnode)
         s = xatt.value();
         if(!s.empty() && this->decodeColorInfo(s, color) == 0)
           {
-          this->m_manager.setAdvanceLevelColor(val, color);
+          this->m_system.setAdvanceLevelColor(val, color);
           }
         }
       }
@@ -427,18 +427,18 @@ void XmlDocV2Parser::process(xml_node &amnode)
   this->processViews(amnode);
   this->processModelInfo(amnode);
 
-  // Now we need to check to see if there are any catagories in the manager
+  // Now we need to check to see if there are any catagories in the system
   // that were not explicitly listed in the catagories section - first update catagories
-  this->m_manager.updateCategories();
+  this->m_system.updateCategories();
 
   std::set<std::string>::const_iterator it;
-  const std::set<std::string> &cats = this->m_manager.categories();
+  const std::set<std::string> &cats = this->m_system.categories();
   for (it = cats.begin(); it != cats.end(); it++)
     {
     if (secCatagories.find(*it) == secCatagories.end())
       {
       smtkErrorMacro(this->m_logger, "Category: " << *it
-                     << " was not listed in Manager's Category Section");
+                     << " was not listed in System's Category Section");
       }
     }
 }
@@ -460,7 +460,7 @@ void XmlDocV2Parser::processAttributeInformation(xml_node &root)
     attribute::DefinitionPtr def;
     for (i = 0; i < this->m_itemExpressionDefInfo.size(); i++)
       {
-      def = this->m_manager.findDefinition(this->m_itemExpressionDefInfo[i].second);
+      def = this->m_system.findDefinition(this->m_itemExpressionDefInfo[i].second);
       if (def)
         {
         this->m_itemExpressionDefInfo[i].first->setExpressionDefinition(def);
@@ -477,7 +477,7 @@ void XmlDocV2Parser::processAttributeInformation(xml_node &root)
 
     for (i = 0; i < this->m_attRefDefInfo.size(); i++)
       {
-      def = this->m_manager.findDefinition(this->m_attRefDefInfo[i].second);
+      def = this->m_system.findDefinition(this->m_attRefDefInfo[i].second);
       if (def)
         {
         this->m_attRefDefInfo[i].first->setAttributeDefinition(def);
@@ -503,15 +503,15 @@ void XmlDocV2Parser::processAttributeInformation(xml_node &root)
     this->processAttribute(child);
     }
 
-  // Have the manager reset its next attribute id properly
-  this->m_manager.recomputeNextAttributeID();
+  // Have the system reset its next attribute id properly
+  this->m_system.recomputeNextAttributeID();
 
   // At this point we have all the attributes read in so lets
   // fix up all of the attribute  references
   attribute::AttributePtr att;
   for (i = 0; i < this->m_itemExpressionInfo.size(); i++)
     {
-    att = this->m_manager.findAttribute(this->m_itemExpressionInfo[i].expName);
+    att = this->m_system.findAttribute(this->m_itemExpressionInfo[i].expName);
     if (att)
       {
       this->m_itemExpressionInfo[i].
@@ -529,7 +529,7 @@ void XmlDocV2Parser::processAttributeInformation(xml_node &root)
 
   for (i = 0; i < this->m_attRefInfo.size(); i++)
     {
-    att = this->m_manager.findAttribute(this->m_attRefInfo[i].attName);
+    att = this->m_system.findAttribute(this->m_attRefInfo[i].attName);
     if (att)
       {
       this->m_attRefInfo[i].item->setValue(this->m_attRefInfo[i].pos, att);
@@ -565,7 +565,7 @@ void XmlDocV2Parser::processDefinition(xml_node &defNode)
   baseType = defNode.attribute("BaseType").value();
   if (baseType != "")
     {
-    baseDef = this->m_manager.findDefinition(baseType);
+    baseDef = this->m_system.findDefinition(baseType);
     if (!baseDef)
       {
       smtkErrorMacro(this->m_logger, "Could not find Base Definition: "
@@ -573,23 +573,23 @@ void XmlDocV2Parser::processDefinition(xml_node &defNode)
                      << type);
       return;
       }
-    def = this->m_manager.createDefinition(type, baseDef);
+    def = this->m_system.createDefinition(type, baseDef);
     }
   else
     {
-    def = this->m_manager.createDefinition(type);
+    def = this->m_system.createDefinition(type);
     }
   if (!def)
     {
     if (m_reportAsError)
       {
       smtkErrorMacro(this->m_logger, "Definition: "
-                     << type << " already exists in the Manager");
+                     << type << " already exists in the System");
       }
     else
       {
       smtkWarningMacro(this->m_logger, "Definition: "
-                       << type << " already exists in the Manager");
+                       << type << " already exists in the System");
       }
     return;
     }
@@ -947,9 +947,9 @@ void XmlDocV2Parser::processValueDef(pugi::xml_node &node,
   child = node.child("ExpressionType");
   if (child)
     {
-    // Is the attribute definition already in the manager?
+    // Is the attribute definition already in the system?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_manager.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_system.findDefinition(etype);
     if (adef)
       {
       idef->setExpressionDefinition(adef);
@@ -1087,9 +1087,9 @@ void XmlDocV2Parser::processRefDef(pugi::xml_node &node,
   child = node.child("AttDef");
   if (child)
     {
-    // Is the attribute definition already in the manager?
+    // Is the attribute definition already in the system?
     std::string etype = child.text().get();
-    attribute::DefinitionPtr adef = this->m_manager.findDefinition(etype);
+    attribute::DefinitionPtr adef = this->m_system.findDefinition(etype);
     if (adef)
       {
       idef->setAttributeDefinition(adef);
@@ -1466,7 +1466,7 @@ void XmlDocV2Parser::processAttribute(xml_node &attNode)
     }
   id = xatt.as_uint();
 
-  def = this->m_manager.findDefinition(type);
+  def = this->m_system.findDefinition(type);
   if (!def)
     {
     smtkErrorMacro(this->m_logger,
@@ -1484,7 +1484,7 @@ void XmlDocV2Parser::processAttribute(xml_node &attNode)
     return;
     }
 
-  att = this->m_manager.createAttribute(name, def, id);
+  att = this->m_system.createAttribute(name, def, id);
 
   if (!att)
     {
@@ -1836,7 +1836,7 @@ void XmlDocV2Parser::processRefItem(pugi::xml_node &node,
         continue;
         }
       attName = val.text().get();
-      att = this->m_manager.findAttribute(attName);
+      att = this->m_system.findAttribute(attName);
       if (!att)
         {
         info.item = item; info.pos = static_cast<int>(i); info.attName = attName;
@@ -1854,7 +1854,7 @@ void XmlDocV2Parser::processRefItem(pugi::xml_node &node,
     if (val)
       {
       attName = val.text().get();
-      att = this->m_manager.findAttribute(attName);
+      att = this->m_system.findAttribute(attName);
       if (!att)
         {
         info.item = item; info.pos = 0; info.attName = attName;
@@ -1939,7 +1939,7 @@ void XmlDocV2Parser::processDoubleItem(pugi::xml_node &node,
   this->processValueItem(node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::DoubleItemPtr, double>
-    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+    (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processIntItem(pugi::xml_node &node,
@@ -1948,7 +1948,7 @@ void XmlDocV2Parser::processIntItem(pugi::xml_node &node,
   this->processValueItem(node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::IntItemPtr, int>
-    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+    (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processStringItem(pugi::xml_node &node,
@@ -1957,7 +1957,7 @@ void XmlDocV2Parser::processStringItem(pugi::xml_node &node,
   this->processValueItem(node,
                          dynamic_pointer_cast<smtk::attribute::ValueItem>(item));
   processDerivedValue<attribute::StringItemPtr, std::string>
-    (node, item, this->m_manager, this->m_itemExpressionInfo, this->m_logger);
+    (node, item, this->m_system, this->m_itemExpressionInfo, this->m_logger);
 }
 //----------------------------------------------------------------------------
 void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
@@ -1967,7 +1967,7 @@ void XmlDocV2Parser::processModelEntityItem(pugi::xml_node &node,
   xml_node valsNode;
   std::size_t i, n = item->numberOfValues();
   smtk::common::UUID uid;
-  smtk::model::ManagerPtr mmgr = this->m_manager.refModelManager();
+  smtk::model::ManagerPtr mmgr = this->m_system.refModelManager();
   xml_node val;
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
   std::string attName;
@@ -2211,7 +2211,7 @@ void XmlDocV2Parser::processViews(xml_node &root)
     {
     return;
     }
-  smtk::view::RootPtr rs = this->m_manager.rootView();
+  smtk::view::RootPtr rs = this->m_system.rootView();
   xml_node node;
   xml_attribute xatt;
   double c[4];
@@ -2281,7 +2281,7 @@ void XmlDocV2Parser::processAttributeView(xml_node &node,
   for (child = attTypes.child("Type"); child; child = child.next_sibling("Type"))
     {
     defType = child.text().get();
-    def = this->m_manager.findDefinition(defType);
+    def = this->m_system.findDefinition(defType);
     if (def)
       {
       v->addDefinition(def);
@@ -2315,14 +2315,14 @@ void XmlDocV2Parser::processInstancedView(xml_node &node,
     {
     attName = child.text().get();
     // See if the attribute exists and if not then create it
-    att = this->m_manager.findAttribute(attName);
+    att = this->m_system.findAttribute(attName);
     if (!att)
       {
       xatt = child.attribute("Type");
       if (xatt)
         {
         defName = xatt.value();
-        attDef = this->m_manager.findDefinition(defName);
+        attDef = this->m_system.findDefinition(defName);
         if (!attDef)
           {
           smtkErrorMacro(this->m_logger,
@@ -2333,7 +2333,7 @@ void XmlDocV2Parser::processInstancedView(xml_node &node,
           }
         else
           {
-          att = this->m_manager.createAttribute(attName, attDef);
+          att = this->m_system.createAttribute(attName, attDef);
           }
         }
       else
@@ -2365,7 +2365,7 @@ void XmlDocV2Parser::processModelEntityView(xml_node &node,
   if (child)
     {
     std::string defType = child.text().get();
-    attribute::DefinitionPtr def = this->m_manager.findDefinition(defType);
+    attribute::DefinitionPtr def = this->m_system.findDefinition(defType);
     if (!def)
       {
       smtkErrorMacro(this->m_logger,
@@ -2384,7 +2384,7 @@ void XmlDocV2Parser::processSimpleExpressionView(xml_node &node,
   if (child)
     {
     std::string defType = child.text().get();
-    attribute::DefinitionPtr def = this->m_manager.findDefinition(defType);
+    attribute::DefinitionPtr def = this->m_system.findDefinition(defType);
     if (!def)
       {
       smtkErrorMacro(this->m_logger,
@@ -2494,7 +2494,7 @@ void XmlDocV2Parser::processBasicView(xml_node &node,
 void XmlDocV2Parser::processModelInfo(xml_node &root)
 {
   xml_node modelInfo = root.child("ModelInfo");
-  smtk::model::ManagerPtr manager = this->m_manager.refModelManager();
+  smtk::model::ManagerPtr manager = this->m_system.refModelManager();
   if ( modelInfo && manager)
     {
     std::string name;
@@ -2533,7 +2533,7 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
             continue;
             }
           name = xatt.value();
-          if(smtk::attribute::AttributePtr att = this->m_manager.findAttribute(name))
+          if(smtk::attribute::AttributePtr att = this->m_system.findAttribute(name))
             {
             group.attachAttribute(att->id());
             }

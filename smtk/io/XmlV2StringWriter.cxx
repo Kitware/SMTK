@@ -29,7 +29,7 @@
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -215,8 +215,8 @@ struct XmlV2StringWriter::PugiPrivate
 };
 
 //----------------------------------------------------------------------------
-XmlV2StringWriter::XmlV2StringWriter(const attribute::Manager &myManager):
-m_manager(myManager), m_includeDefinitions(true), m_includeInstances(true),
+XmlV2StringWriter::XmlV2StringWriter(const attribute::System &mySystem):
+m_system(mySystem), m_includeDefinitions(true), m_includeInstances(true),
 m_includeModelInformation(true), m_includeViews(true), m_pugi(0)
 {
 }
@@ -233,8 +233,8 @@ std::string XmlV2StringWriter::convertToString(Logger &logger,
   // Initialize the xml document
   xml_document doc;
   doc.append_child(node_comment).set_value("Created by XmlV2StringWriter");
-  xml_node root = doc.append_child("SMTK_AttributeManager");
-  root.append_attribute("Version").set_value(1);
+  xml_node root = doc.append_child("SMTK_AttributeSystem");
+  root.append_attribute("Version").set_value(2);
 
   // Generate the element tree
   this->generateXml(root, logger, false);
@@ -261,15 +261,15 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
   xml_node root;
   if (createRoot)
     {
-    // This option is used to insert an attribute manager
+    // This option is used to insert an attribute system
     // into an existing xml document (for writing resource files).
-    root = parent_node.append_child("SMTK_AttributeManager");
+    root = parent_node.append_child("SMTK_AttributeSystem");
     root.append_attribute("Version").set_value(1);
     m_pugi = new PugiPrivate(root);
     }
   else
     {
-    // This option is used when writing a single attribute manager,
+    // This option is used when writing a single attribute system,
     // and the root node has already been created by the caller.
     m_pugi = new PugiPrivate(parent_node);
     }
@@ -278,23 +278,23 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
     .set_value("**********  Category and Analysis Information ***********");
 
   // Write out the category and analysis information
-  if (this->m_manager.numberOfCategories())
+  if (this->m_system.numberOfCategories())
     {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("Categories");
     std::set<std::string>::const_iterator it;
-    const std::set<std::string> &cats = this->m_manager.categories();
+    const std::set<std::string> &cats = this->m_system.categories();
     for (it = cats.begin(); it != cats.end(); it++)
       {
       catNodes.append_child("Cat").text().set(it->c_str());
       }
     }
 
-  if (this->m_manager.numberOfAnalyses())
+  if (this->m_system.numberOfAnalyses())
     {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("Analyses");
     std::map<std::string, std::set<std::string> >::const_iterator it;
     const std::map<std::string, std::set<std::string> > &analyses =
-      this->m_manager.analyses();
+      this->m_system.analyses();
     for (it = analyses.begin(); it != analyses.end(); it++)
       {
       xml_node anode = catNodes.append_child("Analysis");
@@ -308,19 +308,19 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
     }
 
   // Write out the advance levels information
-  if (this->m_manager.numberOfAdvanceLevels())
+  if (this->m_system.numberOfAdvanceLevels())
     {
     xml_node cnode, catNodes = this->m_pugi->root.append_child("AdvanceLevels");
     std::map<int, std::string>::const_iterator it;
-    const std::map<int, std::string> &levels = this->m_manager.advanceLevels();
+    const std::map<int, std::string> &levels = this->m_system.advanceLevels();
     for (it = levels.begin(); it != levels.end(); it++)
       {
       xml_node anode = catNodes.append_child("Level");
       anode.append_attribute("Label").set_value(it->second.c_str());
-      if(this->m_manager.advanceLevelColor(it->first))
+      if(this->m_system.advanceLevelColor(it->first))
         {
         anode.append_attribute("Color").set_value(
-          this->encodeColor(this->m_manager.advanceLevelColor(it->first)).c_str());
+          this->encodeColor(this->m_system.advanceLevelColor(it->first)).c_str());
         }
       anode.text().set(getValueForXMLElement(it->first));
       }
@@ -345,7 +345,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
 void XmlV2StringWriter::processAttributeInformation()
 {
   std::vector<smtk::attribute::DefinitionPtr> baseDefs;
-  this->m_manager.findBaseDefinitions(baseDefs);
+  this->m_system.findBaseDefinitions(baseDefs);
   std::size_t i, n = baseDefs.size();
   xml_node definitions, attributes;
 
@@ -455,7 +455,7 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
     {
     // Process all attributes based on this class
     std::vector<smtk::attribute::AttributePtr> atts;
-    this->m_manager.findDefinitionAttributes(def->type(), atts);
+    this->m_system.findDefinitionAttributes(def->type(), atts);
     n = atts.size();
     for (i = 0; i < n; i++)
       {
@@ -464,7 +464,7 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
     }
   // Now process all of its derived classes
   std::vector<smtk::attribute::DefinitionPtr> defs;
-  this->m_manager.derivedDefinitions(def, defs);
+  this->m_system.derivedDefinitions(def, defs);
   n = defs.size();
   for (i = 0; i < n; i++)
     {
@@ -1276,7 +1276,7 @@ void XmlV2StringWriter::processViews()
 {
   this->m_pugi->root.append_child(node_comment).set_value("********** Workflow Views ***********");
   xml_node views = this->m_pugi->root.append_child("RootView");
-  smtk::view::RootPtr rs = this->m_manager.rootView();
+  smtk::view::RootPtr rs = this->m_system.rootView();
   std::string s;
   s = this->encodeColor(rs->defaultColor());
   views.append_child("DefaultColor").text().set(s.c_str());
@@ -1432,7 +1432,7 @@ void XmlV2StringWriter::processBasicView(xml_node &node,
 void XmlV2StringWriter::processModelInfo()
 {
   xml_node modelInfo = this->m_pugi->root.append_child("ModelInfo");
-  smtk::model::ManagerPtr refManager = this->m_manager.refModelManager();
+  smtk::model::ManagerPtr refManager = this->m_system.refModelManager();
   if(refManager)
   {
     smtk::model::GroupEntities ge =
@@ -1462,7 +1462,7 @@ void XmlV2StringWriter::processModelInfo()
           //we need to look up the attribute as the cursor only holds a reference
           //to the attributes id
           smtk::attribute::AttributePtr att =
-                                        this->m_manager.findAttribute( (*i) );
+                                        this->m_system.findAttribute( (*i) );
           if(att)
             {
             anode.append_attribute("Name").set_value( att->name().c_str());

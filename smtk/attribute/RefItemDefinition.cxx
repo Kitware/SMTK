@@ -12,7 +12,7 @@
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 
 #include <queue>
@@ -136,7 +136,7 @@ createCopy(smtk::attribute::ItemDefinition::CopyInfo& info) const
   if (this->attributeDefinition())
     {
     std::string typeStr = this->attributeDefinition()->type();
-    smtk::attribute::DefinitionPtr def = info.ToManager.findDefinition(typeStr);
+    smtk::attribute::DefinitionPtr def = info.ToSystem.findDefinition(typeStr);
     if (def)
       {
       newRef->setAttributeDefinition(def);

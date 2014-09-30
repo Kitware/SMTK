@@ -59,7 +59,7 @@ public:
   UUIDsToAttributeAssignments& attributeAssignments();
   const UUIDsToAttributeAssignments& attributeAssignments() const;
 
-  smtk::attribute::Manager* attributeManager() const;
+  smtk::attribute::System* attributeSystem() const;
 
   CursorArray findEntitiesByProperty(const std::string& pname, Integer pval);
   CursorArray findEntitiesByProperty(const std::string& pname, Float pval);
@@ -209,8 +209,8 @@ public:
   void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
 
 protected:
-  friend class smtk::attribute::Manager;
-  bool setAttributeManager(smtk::attribute::Manager* mgr, bool reverse = true);
+  friend class smtk::attribute::System;
+  bool setAttributeSystem(smtk::attribute::System* sys, bool reverse = true);
 
   std::set<ConditionTrigger> m_conditionTriggers;
   std::set<OneToOneTrigger> m_oneToOneTriggers;
@@ -218,7 +218,7 @@ protected:
   shared_ptr<UUIDsToArrangements> m_arrangements;
   shared_ptr<UUIDsToTessellations> m_tessellations;
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
-  smtk::attribute::Manager* m_attributeManager;
+  smtk::attribute::System* m_attributeSystem;
 };
 
 template<typename Collection>

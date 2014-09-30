@@ -35,13 +35,13 @@ Operator::Operator()
   this->m_bridge = NULL;
 }
 
-/// Destructor. Removes its specification() from the bridge's operator manager.
+/// Destructor. Removes its specification() from the bridge's operator system.
 Operator::~Operator()
 {
   if (this->m_bridge)
     {
     if (this->m_specification)
-      this->bridge()->operatorManager()->removeAttribute(
+      this->bridge()->operatorSystem()->removeAttribute(
         this->m_specification);
     }
 }
@@ -197,7 +197,7 @@ OperatorDefinition Operator::definition() const
   if (!mgr || !brg)
     return attribute::DefinitionPtr();
 
-  return brg->operatorManager()->findDefinition(this->name());
+  return brg->operatorSystem()->findDefinition(this->name());
 }
 
 /**\brief Return the specification (if any exists) of this operator.
@@ -252,7 +252,7 @@ bool Operator::ensureSpecification()
     return false;
 
   smtk::attribute::AttributePtr spec =
-    this->m_bridge->operatorManager()->createAttribute(this->name());
+    this->m_bridge->operatorSystem()->createAttribute(this->name());
   if (!spec)
     return false;
   return this->setSpecification(spec);
@@ -267,7 +267,7 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
   std::ostringstream rname;
   rname << "result(" << this->name() << ")";
   OperatorResult result =
-    this->bridge()->operatorManager()->createAttribute(rname.str());
+    this->bridge()->operatorSystem()->createAttribute(rname.str());
   IntItemPtr outcomeItem =
     smtk::dynamic_pointer_cast<IntItem>(
       result->find("outcome"));
@@ -288,13 +288,13 @@ OperatorResult Operator::createResult(OperatorOutcome outcome)
 void Operator::eraseResult(OperatorResult res)
 {
   Bridge* brdg;
-  smtk::attribute::Manager* mgr;
+  smtk::attribute::System* sys;
   if (
     !res ||
     !(brdg = this->bridge()) ||
-    !(mgr = brdg->operatorManager()))
+    !(sys = brdg->operatorSystem()))
     return;
-  mgr->removeAttribute(res);
+  sys->removeAttribute(res);
 }
 
 /// A comparator so that Operators may be placed in ordered sets.

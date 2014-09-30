@@ -13,7 +13,7 @@
 #include "smtk/io/Logger.h"
 #include "smtk/io/ResourceSetWriter.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/common/ResourceSet.h"
 
@@ -49,7 +49,7 @@ int main(int argc, const char* argv[])
   smtk::common::ResourceSet resources;
 
   // Build ResourceSet from input filenames
-  // This version presumes all attribute managers
+  // This version presumes all attribute systems
   smtk::io::Logger logger;
   std::string link;
   smtk::common::ResourceSet::ResourceRole role;
@@ -58,9 +58,9 @@ int main(int argc, const char* argv[])
     {
     const char *input_path = argv[i];
 
-    smtk::attribute::Manager *manager = new smtk::attribute::Manager();
+    smtk::attribute::System *system = new smtk::attribute::System();
     smtk::io::AttributeReader reader;
-    bool err = reader.read(*manager, input_path, logger);
+    bool err = reader.read(*system, input_path, logger);
     if (err)
       {
       std::cerr << "Error loading " << input_path << ": \n"
@@ -69,7 +69,7 @@ int main(int argc, const char* argv[])
       }
 
     // Initialize ResourcePtr
-    smtk::common::ResourcePtr resource(manager);
+    smtk::common::ResourcePtr resource(system);
 
     // Generate id from index
     // Switch to std::to_string() once c++11 arrives

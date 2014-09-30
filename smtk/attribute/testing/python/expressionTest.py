@@ -23,19 +23,19 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print 'Manager created'
+    system = smtk.attribute.System()
+    print 'System created'
     # Lets create an attribute to represent an expression
-    expDef = manager.createDefinition("ExpDef")
+    expDef = system.createDefinition("ExpDef")
     eitemdef = expDef.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "Expression String")
 
-    base = manager.createDefinition("BaseDef");
+    base = system.createDefinition("BaseDef");
     # Lets add some item definitions
     iitemdef = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem1")
     iitemdef2 = base.addItemDefinitionStr(smtk.attribute.IntItemDefinition, "IntItem2")
     iitemdef2.setDefaultValue(10)
 
-    def1 = manager.createDefinition("Derived1", "BaseDef");
+    def1 = system.createDefinition("Derived1", "BaseDef");
     # Lets add some item definitions
     ditemdef = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem1");
     # Allow this one to hold an expression
@@ -47,15 +47,15 @@ if __name__ == '__main__':
     ditemdef2 = def1.addItemDefinitionStr(smtk.attribute.DoubleItemDefinition, "DoubleItem2");
     ditemdef2.setDefaultValue(-35.2);
 
-    def2 = manager.createDefinition("Derived2", "Derived1");
+    def2 = system.createDefinition("Derived2", "Derived1");
     # Lets add some item definitions
     sitemdef = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem1")
     sitemdef2 = def1.addItemDefinitionStr(smtk.attribute.StringItemDefinition, "StringItem2");
     sitemdef2.setDefaultValue("Default");
 
     #Lets test creating an attribute by passing in the expression definition explicitly
-    expAtt = manager.createAttribute("Exp1", expDef);
-    att = manager.createAttribute("testAtt", "Derived2");
+    expAtt = system.createAttribute("Exp1", expDef);
+    att = system.createAttribute("testAtt", "Derived2");
     if att is not None:
         print "Attribute testAtt created";
     else:
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 elif t == smtk.attribute.Item.STRING:
                      print " String Val = %s" % vitem.valueAsString();
 
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

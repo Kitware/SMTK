@@ -136,7 +136,7 @@ def create_item(elem, name, categories, indent=''):
     return item
 
 
-def create_definition(manager, elem, indent=''):
+def create_definition(system, elem, indent=''):
     '''
     Instantiates Definition from element
     '''
@@ -150,9 +150,9 @@ def create_definition(manager, elem, indent=''):
     if att_type is None:
         att_type = name
     print '%sCreate definition for <%s> %s' % (elem.tag, indent, tagname)
-    defn = manager.createDefinition(att_type)
+    defn = system.createDefinition(att_type)
     if defn is None:
-        print 'ERROR - manager did not create definition \"%s\"' % att_type
+        print 'ERROR - system did not create definition \"%s\"' % att_type
         return None
 
     if uiname is not None:
@@ -220,13 +220,13 @@ def process_information_elem(elem, defn, categories, indent=''):
     defn.addItemDefinition(item)
 
 
-def process_instance_elem(manager, elem, view, categories, indent=''):
+def process_instance_elem(system, elem, view, categories, indent=''):
 
     '''
     Processes <Instance> element
     '''
     child_indent = '  ' + indent
-    defn = create_definition(manager, elem, child_indent)
+    defn = create_definition(system, elem, child_indent)
     if defn is None:
         return
 
@@ -235,17 +235,17 @@ def process_instance_elem(manager, elem, view, categories, indent=''):
     view.addDefinition(defn)
 
 
-def process_templates_elem(manager, elem, view, categories, indent=''):
+def process_templates_elem(system, elem, view, categories, indent=''):
     '''
     Processes <Templates> element
     '''
     child_indent = '  ' + indent
     for child in elem.findall('Instance'):
         if child.tag == 'Instance':
-            process_instance_elem(manager, child, view, categories, child_indent)
+            process_instance_elem(system, child, view, categories, child_indent)
 
     for child in elem.findall('InformationValue'):
-        defn = create_definition(manager, child)
+        defn = create_definition(system, child)
         if defn is None:
             continue
 
@@ -253,7 +253,7 @@ def process_templates_elem(manager, elem, view, categories, indent=''):
         view.addDefinition(defn)
 
 
-def process_toplevel_elem(manager, elem, indent=''):
+def process_toplevel_elem(system, elem, indent=''):
     '''
     Process <TopLevel> elements
     '''
@@ -268,25 +268,25 @@ def process_toplevel_elem(manager, elem, indent=''):
     # Create AttributeView because we can add definitions to them
     print 'SECTION', section_type
     view = smtk.view.Attribute.New(section_type)
-    manager.rootView().addSubView(view)
+    system.rootView().addSubView(view)
 
     for child in elem.findall('Templates'):
-        process_templates_elem(manager, child, view, categories, child_indent)
+        process_templates_elem(system, child, view, categories, child_indent)
 
     for child in elem.findall('InformationValue'):
         # Create defn then create item
-        defn = create_definition(manager, child, child_indent)
+        defn = create_definition(system, child, child_indent)
         if defn is not None:
             view.addDefinition(defn)
             process_information_elem(child, defn, categories, child_indent)
 
     # Add placeholder analysis type so we can add categories
     # Otherwise smtk will refuse to read the file
-    manager.defineAnalysis('PlaceholderAnalysis', list(categories))
-    manager.updateCategories()
+    system.defineAnalysis('PlaceholderAnalysis', list(categories))
+    system.updateCategories()
 
 
-def process_toplevel_group(manager, elem, indent=''):
+def process_toplevel_group(system, elem, indent=''):
     '''
     Process <TopLevelGroup> element
     '''
@@ -294,7 +294,7 @@ def process_toplevel_group(manager, elem, indent=''):
     for child in elem:
         print indent, child.tag, child.attrib.get('Section')
         #if child.tag == 'TopLevel' and child.attrib.get('Section') == 'Materials':
-        process_toplevel_elem(manager, child, child_indent)
+        process_toplevel_elem(system, child, child_indent)
 
 
 if __name__ == '__main__':
@@ -308,15 +308,15 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output_template_file', default='output.sbt')
     args = parser.parse_args()
 
-    # Instantiate attribute manager for outpot
-    manager = smtk.attribute.Manager()
+    # Instantiate attribute system for outpot
+    system = smtk.attribute.System()
 
     # Generate default expression types
-    sim_exp = manager.createDefinition('SimExpression')
+    sim_exp = system.createDefinition('SimExpression')
     sim_exp.setIsAbstract(True)
-    interp_exp = manager.createDefinition('SimInterpolation', sim_exp)
+    interp_exp = system.createDefinition('SimInterpolation', sim_exp)
     interp_exp.setIsAbstract(True)
-    poly_exp = manager.createDefinition('PolyLinearFunction', interp_exp)
+    poly_exp = system.createDefinition('PolyLinearFunction', interp_exp)
     poly_exp.setLabel('PolyLinear Function')
 
     group_item = smtk.attribute.GroupItemDefinition.New('ValuePairs')
@@ -339,13 +339,13 @@ if __name__ == '__main__':
     for child in root:
         print 'elem', child.tag
         if child.tag == 'TopLevelGroup':
-            process_toplevel_group(manager, child)
+            process_toplevel_group(system, child)
 
-    # Write manager to template file
+    # Write system to template file
     output_path = args.output_template_file
     writer = smtk.util.AttributeWriter()
     logger = smtk.util.Logger()
-    hasErr = writer.write(manager, output_path, logger)
+    hasErr = writer.write(system, output_path, logger)
     print 'Write %s hasErr? %s' % (output_path, hasErr)
     if hasErr:
         print logger.convertToString()

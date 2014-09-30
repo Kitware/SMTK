@@ -180,7 +180,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::GroupItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
   <suppress-warning text="skipping function 'smtk::attribute::IntItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
   <suppress-warning text="skipping function 'smtk::attribute::Item::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
-  <suppress-warning text="skipping function 'smtk::attribute::Manager::copyAttributeImpl', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
+  <suppress-warning text="skipping function 'smtk::attribute::System::copyAttributeImpl', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
   <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
   <suppress-warning text="skipping function 'smtk::attribute::RefItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
   <suppress-warning text="skipping function 'smtk::attribute::StringItem::copyFrom', unmatched parameter type 'smtk::attribute::Item::CopyInfo&amp;" />
@@ -302,7 +302,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::initializeOperatorManager', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
+  <suppress-warning text="skipping function 'smtk::model::Bridge::initializeOperatorSystem', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
 
 
@@ -1426,18 +1426,18 @@
         </modify-function>
       </object-type>
 
-      <object-type name="Manager">
-        <include file-name="smtk/attribute/Manager.h" location="local" />
+      <object-type name="System">
+        <include file-name="smtk/attribute/System.h" location="local" />
         <enum-type name="CopyOptions" />
         <add-function signature="_ExporterGeneratedFunStringConverterDoNotUse_(std::string const &amp;)"
           static="yes"
-          return-type="smtk::attribute::Manager *">
+          return-type="smtk::attribute::System *">
           <inject-code>
             unsigned long tadd;
             std::stringstream ss;
             ss &lt;&lt; std::hex &lt;&lt; %1;
             ss &gt;&gt; tadd;
-            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::attribute::Manager * &gt;(tadd);
+            %RETURN_TYPE %0 = reinterpret_cast&lt; smtk::attribute::System * &gt;(tadd);
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1669,8 +1669,8 @@
       <object-type name="ExportSpec">
         <include file-name="smtk/simulation/ExportSpec.h" location="local"/>
         <modify-function signature="clear()" access="private" />
-        <modify-function signature="setSimulationAttributes(smtk::attribute::Manager*)" access="private" />
-        <modify-function signature="setExportAttributes(smtk::attribute::Manager*)" access="private" />
+        <modify-function signature="setSimulationAttributes(smtk::attribute::System*)" access="private" />
+        <modify-function signature="setExportAttributes(smtk::attribute::System*)" access="private" />
         <modify-function signature="setAnalysisGridInfo(smtk::shared_ptr&lt;smtk::model::GridInfo&gt;)" access="private" />
         <add-function signature="_InternalConverterDoNotUse_(std::string const &amp;)"
           static="yes"

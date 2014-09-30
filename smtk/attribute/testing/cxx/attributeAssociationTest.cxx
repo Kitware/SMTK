@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/model/Cursor.h"
@@ -25,14 +25,14 @@ using namespace smtk;
 int main()
 {
   // ----
-  // I. First see how things work when Manager is not yet set.
-  attribute::Manager mgr;
+  // I. First see how things work when System is not yet set.
+  attribute::System sys;
   test(
-    !mgr.refModelManager(),
-    "Manager should not have model storage by default.");
+    !sys.refModelManager(),
+    "System should not have model storage by default.");
 
-  DefinitionPtr def = mgr.createDefinition("testDef");
-  AttributePtr att = mgr.createAttribute("testAtt", "testDef");
+  DefinitionPtr def = sys.createDefinition("testDef");
+  AttributePtr att = sys.createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
   att->associateEntity(fakeEntityId);
@@ -50,13 +50,13 @@ int main()
     "Could not disassociate a \"fake\" entity from this attribute.");
 
   // ----
-  // II. Now see how things work when the attribute manager has
+  // II. Now see how things work when the attribute system has
   //     a valid model modelMgr pointer.
   model::Manager::Ptr modelMgr = model::Manager::create();
-  mgr.setRefModelManager(modelMgr);
+  sys.setRefModelManager(modelMgr);
   test(
-    mgr.refModelManager() == modelMgr,
-    "Could not set attribute manager's model-manager.");
+    sys.refModelManager() == modelMgr,
+    "Could not set attribute system's model-manager.");
 
   test(
     att->modelManager() == modelMgr,
@@ -86,18 +86,18 @@ int main()
     "Removing all attribute associations did not empty association list.");
 
   // ----
-  // III. Test corner cases when switch model managers on the attribute manager.
+  // III. Test corner cases when switch model managers on the attribute system.
   model::Manager::Ptr auxModelManager = model::Manager::create();
-  mgr.setRefModelManager(auxModelManager);
+  sys.setRefModelManager(auxModelManager);
   test(
-    mgr.refModelManager() == auxModelManager,
-    "Attribute manager's modelMgr not changed.");
+    sys.refModelManager() == auxModelManager,
+    "Attribute system's modelMgr not changed.");
   test(
-    auxModelManager->attributeManager() == &mgr,
-    "Second model manager's attribute manager not changed.");
+    auxModelManager->attributeSystem() == &sys,
+    "Second model manager's attribute system not changed.");
   test(
-    modelMgr->attributeManager() == NULL,
-    "Original model manager's attribute manager not reset.");
+    modelMgr->attributeSystem() == NULL,
+    "Original model manager's attribute system not reset.");
 
   return 0;
 }

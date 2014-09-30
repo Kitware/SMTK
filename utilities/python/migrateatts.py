@@ -286,23 +286,23 @@ def copy_attribute(src_att, defn, logger):
     return True
 
 
-def migrate(src_manager, dst_manager):
+def migrate(src_system, dst_system):
     '''
     Copies attributes from src to dst
     Returns Logger of messages
     '''
     logger = smtk.util.Logger()
 
-    # Set refModel if src_manager has one
-    if src_manager.refModel() is not None:
-        dst_manager.setRefModel(src_manager.refModel())
+    # Set refModel if src_system has one
+    if src_system.refModel() is not None:
+        dst_system.setRefModel(src_system.refModel())
 
     # Traverse all source attributes to build table sorted by type
     src_count = 0
     src_dict = dict()
-    next_id = src_manager.nextId()
+    next_id = src_system.nextId()
     for i in range(next_id):
-        att = src_manager.findAttribute(i)
+        att = src_system.findAttribute(i)
         if att is None:
             continue
 
@@ -329,8 +329,8 @@ def migrate(src_manager, dst_manager):
     for att_type in att_type_list:
         att_list = src_dict.get(att_type)
 
-        # Check for definition in dst_manager
-        defn = dst_manager.findDefinition(att_type)
+        # Check for definition in dst_system
+        defn = dst_system.findDefinition(att_type)
         if defn is None:
             message = 'Unable to migrate attributes of type %s' % att_type + \
                 ', because no definition found in destination template.' + \
@@ -351,7 +351,7 @@ def migrate(src_manager, dst_manager):
     print 'Number of attributes copied: %d' % dst_count
 
     # Break encapsulation to set manager's next id
-    dst_manager.m_nextAttributeId = src_manager.nextId()
+    dst_system.m_nextAttributeId = src_system.nextId()
 
     return logger
 
@@ -367,9 +367,9 @@ if __name__ == '__main__':
     attribute_file = sys.argv[1]
     print 'Loading attribute file %s' % attribute_file
     attribute_reader = smtk.util.AttributeReader()
-    src_manager = smtk.attribute.Manager()
+    src_system = smtk.attribute.System()
     io_logger.reset()
-    err = attribute_reader.read(src_manager, attribute_file, io_logger)
+    err = attribute_reader.read(src_system, attribute_file, io_logger)
     if err:
         print 'WARNING - CANNOT READ ATTRIBUTE FILE %s' % attribute_file
         print io_logger.convertToString()
@@ -378,9 +378,9 @@ if __name__ == '__main__':
     template_file = sys.argv[2]
     print 'Loading template file %s' % template_file
     template_reader = smtk.util.AttributeReader()
-    dst_manager = smtk.attribute.Manager()
+    dst_system = smtk.attribute.System()
     io_logger.reset()
-    err = template_reader.read(dst_manager, template_file, io_logger)
+    err = template_reader.read(dst_system, template_file, io_logger)
     if err:
         print 'ERROR - CANNOT READ TEMPLATE FILE %s' % template_file
         print io_logger.convertToString()
@@ -391,12 +391,12 @@ if __name__ == '__main__':
 
     # Traverse input and migrate attributes
     migrate_logger = smtk.util.Logger()
-    migrate_logger = migrate(src_manager, dst_manager)
+    migrate_logger = migrate(src_system, dst_system)
 
     # Write output file
     output_filename = sys.argv[3]
     writer = smtk.util.AttributeWriter()
-    err = writer.write(dst_manager, output_filename, io_logger)
+    err = writer.write(dst_system, output_filename, io_logger)
     if err:
         print 'ERROR - CANNOT WRITE OUTPUT FILE %s' % output_filename
         print io_logger.convertToString()
