@@ -109,9 +109,6 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperat
 
 add_library(smtkCMBBridge ${_module_src} ${cmbBridgeSrcs})
 
-# Install the headers.
-smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
-
 set (__private_dependencies)
 
 if (PARAVIEW_ENABLE_PYTHON)
@@ -136,11 +133,6 @@ target_link_libraries(smtkCMBBridge
    ${__private_dependencies}
   )
 
-target_include_directories(smtkCMBBridge
-  PUBLIC
-  ${vtkSMTKDiscreteModel_INCLUDE_DIRS}
-  )
-
 smtk_export_header(smtkCMBBridge SMTKCMBBridgeExports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
@@ -148,16 +140,11 @@ if (BUILD_SHARED_LIBS)
   set_target_properties(smtkCMBBridge PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
+# Install the headers.
+smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
+
 #install the library and exports the library when used from a build tree
-#smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTK)
-
-  install(TARGETS smtkCMBBridge
- #   EXPORT SMTK-targets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
-
+smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTK vtkSMTKDiscreteModel)
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)

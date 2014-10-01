@@ -229,22 +229,26 @@ set(_module_src
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
 
+target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS}
+    vtkCommonDataModel
+    vtkIOCore
+    vtkFiltersCore
+    vtkRenderingCore
+    vtkFiltersSources
+    vtkInteractionStyle
+    vtkIOXMLParser
+    vtkRenderingFreeTypeOpenGL
+    vtkRenderingOpenGL
+    vtksys
+)
+
+# On Mac OS X, set the directory included as part of the installed library's path:
+if (BUILD_SHARED_LIBS)
+  set_target_properties(vtkSMTKDiscreteModel PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+endif()
+
 # install the headers
- smtk_public_headers(${DiscreteModelHeaders})
+smtk_public_headers(${DiscreteModelHeaders})
+
 # ... and make header compilation tests link properly:
-# smtk_install_library(vtkSMTKDiscreteModel)
-  install(TARGETS vtkSMTKDiscreteModel
- #   EXPORT SMTK-targets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-  )
-
-target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
-
-target_include_directories(vtkSMTKDiscreteModel PUBLIC
-  ${PROJECT_SOURCE_DIR}
-  ${PROJECT_SOURCE_DIR}/Serialize
-  ${PROJECT_SOURCE_DIR}/Model
-  ${PROJECT_BINARY_DIR}
-  )
+smtk_install_library(vtkSMTKDiscreteModel)
