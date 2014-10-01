@@ -30,7 +30,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkCMBModelWriterV2.h"
 #include "vtkCMBModelWriterV4.h"
-//#include "vtkCMBModelWriterV5.h"
+#include "vtkCMBModelWriterV5.h"
 #include "vtkFieldData.h"
 #include "vtkIntArray.h"
 #include "vtkObjectFactory.h"
@@ -89,7 +89,7 @@ void vtkCMBModelWriterBase::Write(vtkDiscreteModel* model)
     }
    else if(this->Version == 5)
     {
-//    writer = vtkCMBModelWriterV5::New();
+    writer = vtkCMBModelWriterV5::New();
     }
   else
     {

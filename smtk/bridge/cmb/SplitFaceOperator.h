@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_cmb_SplitFaceOperator_h
 #define __smtk_bridge_cmb_SplitFaceOperator_h
 
-#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
+#include "SMTKCMBBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkSplitOperator.h"
 #include "vtkNew.h"

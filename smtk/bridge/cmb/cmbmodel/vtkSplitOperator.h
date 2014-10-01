@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkSplitOperator_h
 #define __smtkcmb_vtkSplitOperator_h
 
-#include "vtkSMTKCMBModelModule.h" // For export macro
+#include "SMTKCMBBridgeExports.h" // For export macro
 #include "vtkSplitOperatorBase.h"
 
 
@@ -37,7 +37,7 @@ class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;
 class vtkModelEntity;
 
-class VTKSMTKCMBMODEL_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
+class SMTKCMBBRIDGE_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
 {
 public:
   static vtkSplitOperator * New();

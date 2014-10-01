@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_cmb_MergeOperator_h
 #define __smtk_bridge_cmb_MergeOperator_h
 
-#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
+#include "SMTKCMBBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"

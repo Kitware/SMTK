@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_cmb_ReadOperator_h
 #define __smtk_bridge_cmb_ReadOperator_h
 
-#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
+#include "SMTKCMBBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"

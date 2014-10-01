@@ -20,7 +20,7 @@
 #include "smtk/model/Loop.h"
 
 #include "vtkCMBModelReadOperator.h"
-//#include "vtkCMBModelWriterV5.h"
+#include "vtkCMBModelWriterV5.h"
 
 #include "vtkDiscreteModel.h"
 #include "vtkDiscreteModelEdge.h"
@@ -281,7 +281,6 @@ int Bridge::ExportEntitiesToFileOfNameAndType(
   if (refsOut.size() <= 0)
     return 1;
 
-/*
   vtkNew<vtkCMBModelWriterV5> wri;
   wri->SetDataModeToAscii(); // for debugging only
   std::set<vtkDiscreteModel*>::size_type nfiles = refsOut.size();
@@ -296,7 +295,6 @@ int Bridge::ExportEntitiesToFileOfNameAndType(
     wri->Write(*mit);
     std::cout << "Wrote " << fname.str() << "\n";
     }
-    */
 
   return 0;
 }

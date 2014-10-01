@@ -1,19 +1,19 @@
 ADD_EXECUTABLE(CMBSerializationTest CMBSerializationTest.cxx)
-TARGET_LINK_LIBRARIES(CMBSerializationTest vtkSMTKCMBModel)
+TARGET_LINK_LIBRARIES(CMBSerializationTest smtkCMBBridge vtkSMTKDiscreteModel)
 add_test(ModelBuilderSerializationTest ${EXECUTABLE_OUTPUT_PATH}/CMBSerializationTest)
 
-# ADD_EXECUTABLE(CMB2DModelTopologyTest CMB2DModelTopologyTest.cxx)
-# TARGET_LINK_LIBRARIES(CMB2DModelTopologyTest vtkSMTKCMBModel)
-# add_test(ModelBuilder2DModelTopologyTest ${EXECUTABLE_OUTPUT_PATH}/CMB2DModelTopologyTest)
+ADD_EXECUTABLE(CMB2DModelTopologyTest CMB2DModelTopologyTest.cxx)
+TARGET_LINK_LIBRARIES(CMB2DModelTopologyTest smtkCMBBridge vtkSMTKDiscreteModel)
+add_test(ModelBuilder2DModelTopologyTest ${EXECUTABLE_OUTPUT_PATH}/CMB2DModelTopologyTest)
 
 # ADD_EXECUTABLE(CMBParserV4Test CMBParserV4Test.cxx)
-# TARGET_LINK_LIBRARIES(CMBParserV4Test vtkSMTKCMBModel)
+# TARGET_LINK_LIBRARIES(CMBParserV4Test smtkCMBBridge)
 # add_short_test(ModelBuilderParserV4Test
 #  ${EXECUTABLE_OUTPUT_PATH}/CMBParserV4Test
 #  ${CMB_TEST_DATA_ROOT}/CMBParserV4Test.cmb )
 
 # ADD_EXECUTABLE(CMBModelEventsTest CMBModelEventsTest.cxx)
-# TARGET_LINK_LIBRARIES(CMBModelEventsTest vtkSMTKCMBModel)
+# TARGET_LINK_LIBRARIES(CMBModelEventsTest smtkCMBBridge)
 # add_short_test(ModelBuilderModelEventsTest
 #  ${EXECUTABLE_OUTPUT_PATH}/CMBModelEventsTest
 #  ${CMB_TEST_DATA_ROOT}/test2D.cmb ${CMB_TEST_DATA_ROOT}/smooth_surface.cmb)

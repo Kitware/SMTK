@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkCMBParserV2.h"
 #include "vtkCMBParserV4.h"
-//#include "vtkCMBParserV5.h"
+#include "vtkCMBParserV5.h"
 #include "vtkFieldData.h"
 #include "vtkNew.h"
 #include "vtkObjectFactory.h"
@@ -124,7 +124,7 @@ vtkCMBParserBase* vtkCMBModelReadOperator::NewParser(vtkPolyData* MasterPoly)
     }
   else if(version->GetValue(0) == 5)
     {
-//    return vtkCMBParserV5::New();
+    return vtkCMBParserV5::New();
     }
   else
     {

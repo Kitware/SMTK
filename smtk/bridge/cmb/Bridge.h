@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_cmb_Bridge_h
 #define __smtk_bridge_cmb_Bridge_h
 
-#include "smtk/bridge/cmb/SMTKCMBBridgeExports.h"
+#include "SMTKCMBBridgeExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Bridge.h"
 
@@ -47,8 +47,7 @@ namespace smtk {
 
 namespace smtk {
   namespace bridge {
-
-  namespace cmb {
+    namespace cmb {
 
 class vtkItemWatcherCommand;
 

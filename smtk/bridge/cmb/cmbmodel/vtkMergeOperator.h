@@ -32,13 +32,13 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkMergeOperator_h
 #define __smtkcmb_vtkMergeOperator_h
 
-#include "vtkSMTKCMBModelModule.h" // For export macro
+#include "SMTKCMBBridgeExports.h" // For export macro
 #include "vtkMergeOperatorBase.h"
 
 
 class vtkDiscreteModelWrapper;
 
-class VTKSMTKCMBMODEL_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
+class SMTKCMBBRIDGE_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
 {
 public:
   static vtkMergeOperator * New();

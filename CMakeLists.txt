@@ -281,16 +281,7 @@ include_directories(
 ################################################################################
 
 if(SMTK_BUILD_CMB_BRIDGE)
-  include_directories(
-    "${CMAKE_CURRENT_BINARY_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/smtkcmb/cmbmodel"
-    "${CMAKE_CURRENT_SOURCE_DIR}/smtkcmb/discretemodel"
-    "${CMAKE_CURRENT_SOURCE_DIR}/smtkcmb/discretemodel/Model"
-    "${CMAKE_CURRENT_BINARY_DIR}/smtkcmb/cmbmodel"
-    "${CMAKE_CURRENT_BINARY_DIR}/smtkcmb/discretemodel"
-  )
-  add_subdirectory (smtkcmb)
+  find_package(ParaView REQUIRED)
 endif()
 
 ################################################################################

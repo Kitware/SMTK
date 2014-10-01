@@ -1,5 +1,89 @@
+PROJECT(smtkCMBBridge)
 
+# Only include the ParaView use-file in subdirectories
+# that require ParaView include paths. Otherwise, command
+# lines get too long on some platforms.
 include("${PARAVIEW_USE_FILE}")
+  list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+  set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
+
+include_directories(
+    "${CMAKE_CURRENT_BINARY_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmbmodel"
+    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel"
+    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel/Model"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmbmodel"
+    "${CMAKE_CURRENT_BINARY_DIR}/discretemodel"
+)
+
+# Don't add the VTK or other subdirectories as they use the
+# vtk_module_library() macro and vtk/module.cmake file.
+# The pv_process_modules() macro finds all subdirectories
+# containing a module.cmake file automatically.
+pv_setup_module_environment("SMTKCMB")
+pv_process_modules()
+
+# Handleing cmbmodel files
+project(SMTKCMBModel)
+
+SET(CmbModelFiles
+  cmbmodel/vtkCMBModelWriterV2.cxx
+  cmbmodel/vtkCMBModelWriterV4.cxx
+  cmbmodel/vtkCMBModelWriterV5.cxx
+  cmbmodel/vtkCMBModelWriterBase.cxx
+  cmbmodel/vtkCMBParserBase.cxx
+  cmbmodel/vtkCMBParserV2.cxx
+  cmbmodel/vtkCMBParserV4.cxx
+  cmbmodel/vtkCMBParserV5.cxx
+  cmbmodel/vtkCMBModelReader.cxx
+)
+
+SET(CMBOperationFiles
+  cmbmodel/vtkMergeOperator.cxx
+  cmbmodel/vtkMergeOperatorBase.cxx
+  cmbmodel/vtkCMBModelReadOperator.cxx
+  cmbmodel/vtkCreateModelEdgesOperator.cxx
+  cmbmodel/vtkCreateModelEdgesOperatorBase.cxx
+  cmbmodel/vtkSplitOperator.cxx
+  cmbmodel/vtkSplitOperatorBase.cxx
+)
+
+SET(CmbModelHeaders
+  cmbmodel/vtkCMBModelWriterV2.h
+  cmbmodel/vtkCMBModelWriterV4.h
+  cmbmodel/vtkCMBModelWriterV5.h
+  cmbmodel/vtkCMBModelWriterBase.h
+  cmbmodel/vtkCMBParserBase.h
+  cmbmodel/vtkCMBParserV2.h
+  cmbmodel/vtkCMBParserV4.h
+  cmbmodel/vtkCMBParserV5.h
+  cmbmodel/vtkCMBModelReader.h
+
+  cmbmodel/vtkMergeOperator.h
+  cmbmodel/vtkMergeOperatorBase.h
+  cmbmodel/vtkCMBModelReadOperator.h
+  cmbmodel/vtkCreateModelEdgesOperator.h
+  cmbmodel/vtkCreateModelEdgesOperatorBase.h
+  cmbmodel/vtkSplitOperator.h
+  cmbmodel/vtkSplitOperatorBase.h
+)
+
+
+SET_SOURCE_FILES_PROPERTIES(
+  cmbmodel/vtkCMBParserBase
+  ABSTRACT
+)
+
+SET_SOURCE_FILES_PROPERTIES(
+${CmbModelFiles}
+WRAP_EXCLUDE
+)
+
+set(_module_src
+  ${CmbModelFiles}
+  ${CMBOperationFiles}
+)
 
 set(cmbBridgeSrcs
   Bridge.cxx
@@ -23,24 +107,37 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXM
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
 
-add_library(smtkCMBBridge ${cmbBridgeSrcs})
+add_library(smtkCMBBridge ${_module_src} ${cmbBridgeSrcs})
 
-# Install the headers
-smtk_public_headers(${cmbBridgeHeaders})
+# Install the headers.
+smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
 
-#set smtkCMBBridge to publicly link to SMTKCore and privately to vtkSMTKCMBModel
+set (__private_dependencies)
+
+if (PARAVIEW_ENABLE_PYTHON)
+  list(APPEND __private_dependencies
+      vtkPythonInterpreter)
+endif (PARAVIEW_ENABLE_PYTHON)
+
+#set smtkCMBBridge to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkCMBBridge
   LINK_PUBLIC
     SMTKCore
     vtkSMTK
   LINK_PRIVATE
-    vtkSMTKCMBModel
-    vtkSMTKDiscreteModel
+   vtkSMTKDiscreteModel
+   vtkPVServerManagerCore
+   vtkPVClientServerCoreRendering
+   vtkPVVTKExtensionsRendering
+   vtkFiltersCore
+   vtkRenderingCore
+   vtkGeovisCore
+   vtksys
+   ${__private_dependencies}
   )
 
 target_include_directories(smtkCMBBridge
   PUBLIC
-  ${vtkSMTKCMBModel_INCLUDE_DIRS}
   ${vtkSMTKDiscreteModel_INCLUDE_DIRS}
   )
 
@@ -52,7 +149,7 @@ if (BUILD_SHARED_LIBS)
 endif()
 
 #install the library and exports the library when used from a build tree
-#smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTK vtkSMTKCMBModel)
+#smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTK)
 
   install(TARGETS smtkCMBBridge
  #   EXPORT SMTK-targets
@@ -63,5 +160,6 @@ endif()
 
 
 if (SMTK_ENABLE_TESTING)
-#  add_subdirectory(testing)
+  add_subdirectory(testing)
+  add_subdirectory(cmbmodel/testing)
 endif()

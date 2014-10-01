@@ -229,8 +229,8 @@ set(_module_src
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
 
-#install the headers
-smtk_public_headers(${DiscreteModelHeaders})
+# install the headers
+ smtk_public_headers(${DiscreteModelHeaders})
 # ... and make header compilation tests link properly:
 # smtk_install_library(vtkSMTKDiscreteModel)
   install(TARGETS vtkSMTKDiscreteModel
