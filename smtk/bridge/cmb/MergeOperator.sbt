@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "Merge" Operator -->
-<SMTK_AttributeManager Version="1">
+<SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
     <AttDef Type="merge" BaseType="operator">
@@ -13,4 +13,4 @@
     <!-- Result -->
     <AttDef Type="result(merge)" BaseType="result"/>
   </Definitions>
-</SMTK_AttributeManager>
+</SMTK_AttributeSystem>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- Description of the CMB Discrete Model "Split Face" Operator -->
-<SMTK_AttributeManager Version="1">
+<SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
     <AttDef Type="split face" BaseType="operator">
@@ -21,4 +21,4 @@
     <!-- Result -->
     <AttDef Type="result(split face)" BaseType="result"/>
   </Definitions>
-</SMTK_AttributeManager>
+</SMTK_AttributeSystem>
