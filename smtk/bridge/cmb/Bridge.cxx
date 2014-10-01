@@ -128,7 +128,7 @@ public:
   */
 Bridge::Bridge()
 {
-  this->initializeOperatorManager(Bridge::s_operators);
+  this->initializeOperatorSystem(Bridge::s_operators);
   this->m_itemWatcher = vtkItemWatcherCommand::New();
   this->m_itemWatcher->bridge = this;
 }
