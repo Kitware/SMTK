@@ -9,7 +9,7 @@
 //=========================================================================
 
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/common/ResourceSet.h"
 
 #include <iostream>
@@ -23,9 +23,9 @@ int main(int /* argc */, const char* /* argv */[])
   unsigned n;
   smtk::common::ResourceSet resourceSet;
 
-  // Create and add attribute manager
-  smtk::attribute::ManagerPtr manager1(new  smtk::attribute::Manager());
-  result = resourceSet.addResource(manager1, "manager1", "",
+  // Create and add attribute system
+  smtk::attribute::SystemPtr system1(new  smtk::attribute::System());
+  result = resourceSet.addResource(system1, "system1", "",
                                    smtk::common::ResourceSet::TEMPLATE);
   n = resourceSet.numberOfResources();
   if (!result)
@@ -40,9 +40,9 @@ int main(int /* argc */, const char* /* argv */[])
     status += 1;
     }
 
-  // Create amd add 2nd attribute manager
-  smtk::attribute::ManagerPtr manager2(new  smtk::attribute::Manager());
-  result = resourceSet.addResource(manager2, "manager2", "path2",
+  // Create amd add 2nd attribute system
+  smtk::attribute::SystemPtr system2(new  smtk::attribute::System());
+  result = resourceSet.addResource(system2, "system2", "path2",
                                    smtk::common::ResourceSet::INSTANCE);
   n = resourceSet.numberOfResources();
   if (!result)
@@ -57,8 +57,8 @@ int main(int /* argc */, const char* /* argv */[])
     status += 1;
     }
 
-  // Add 1st manager w/different id and role
-  result = resourceSet.addResource(manager1, "manager1-different-id", "",
+  // Add 1st system w/different id and role
+  result = resourceSet.addResource(system1, "system1-different-id", "",
                                    smtk::common::ResourceSet::SCENARIO);
   n = resourceSet.numberOfResources();
   if (!result)
@@ -74,7 +74,7 @@ int main(int /* argc */, const char* /* argv */[])
     }
 
   // Try using same id twice
-  result = resourceSet.addResource(manager2, "manager2");
+  result = resourceSet.addResource(system2, "system2");
   n = resourceSet.numberOfResources();
   if (result)
     {
@@ -99,7 +99,7 @@ int main(int /* argc */, const char* /* argv */[])
   else
     {
     const char * expectedNames[] =
-      { "manager1", "manager2", "manager1-different-id" };
+      { "system1", "system2", "system1-different-id" };
     for (unsigned i = 0; i<ids.size(); i++)
       {
       if (ids[i] != expectedNames[i])
@@ -117,7 +117,7 @@ int main(int /* argc */, const char* /* argv */[])
   smtk::common::ResourceSet::ResourceRole role;
   smtk::common::ResourceSet::ResourceState state;
   std::string link;
-  result = resourceSet.resourceInfo("manager2", rtype, role, state, link);
+  result = resourceSet.resourceInfo("system2", rtype, role, state, link);
   if (!result)
     {
     std::cerr << "info() call failed" << std::endl;
@@ -156,7 +156,7 @@ int main(int /* argc */, const char* /* argv */[])
 
   // Retrieve resource
   smtk::common::ResourcePtr resource;
-  result = resourceSet.get("manager2", resource);
+  result = resourceSet.get("system2", resource);
   if (!result)
     {
     std::cerr << "get() failed" << std::endl;

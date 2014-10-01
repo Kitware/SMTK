@@ -11,7 +11,7 @@
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/view/Base.h"
 #include "smtk/view/Root.h"
@@ -32,7 +32,7 @@ public:
   this->ParentWidget = p;
   this->DataObject = dataObject;
   this->UIManager = uiman;
-  smtk::view::RootPtr rs = uiman->attManager()->rootView();
+  smtk::view::RootPtr rs = uiman->attSystem()->rootView();
   this->FixedLabelWidth = rs->maxValueLabelLength();
   }
   ~qtBaseViewInternals()
@@ -85,8 +85,8 @@ void qtBaseView::getDefinitions(
   QList<smtk::attribute::DefinitionPtr>& defs)
 {
   std::vector<smtk::attribute::DefinitionPtr> newdefs;
-  Manager *attManager = attDef->manager();
-  attManager->findAllDerivedDefinitions(attDef, true, newdefs);
+  System *attSystem = attDef->system();
+  attSystem->findAllDerivedDefinitions(attDef, true, newdefs);
   if(!attDef->isAbstract() && !defs.contains(attDef))
     {
     defs.push_back(attDef);
@@ -123,7 +123,7 @@ int qtBaseView::fixedLabelWidth()
 //----------------------------------------------------------------------------
 bool qtBaseView::setFixedLabelWidth(int w)
 {
-  smtk::view::RootPtr rs = this->uiManager()->attManager()->rootView();
+  smtk::view::RootPtr rs = this->uiManager()->attSystem()->rootView();
   w = std::min(w, rs->maxValueLabelLength());
   w = std::max(w, rs->minValueLabelLength());
   this->Internals->FixedLabelWidth = w;

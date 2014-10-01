@@ -35,7 +35,6 @@ namespace smtk
   namespace attribute
   {
     class Attribute;
-    typedef unsigned long AttributeId;
     class RefItem;
     class RefItemDefinition;
     class Definition;
@@ -51,7 +50,7 @@ namespace smtk
     class IntItemDefinition;
     class Item;
     class ItemDefinition;
-    class Manager;
+    class System;
     class ModelEntityItem;
     class ModelEntityItemDefinition;
     class StringItem;
@@ -253,7 +252,7 @@ namespace smtk
     typedef smtk::shared_ptr< const smtk::attribute::RefItemDefinition >         ConstRefItemDefinitionPtr;
 
     // Note used by SMTK but added for completeness
-    typedef smtk::shared_ptr< smtk::attribute::Manager >   ManagerPtr;
+    typedef smtk::shared_ptr< smtk::attribute::System >   SystemPtr;
   };
 
   namespace simulation

@@ -52,38 +52,38 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print "Manager Created"
+    system = smtk.attribute.System()
+    print "System Created"
 
     #Lets create some attribute Definitions
-    funcDef = manager.createDefinition("PolyLinearFunction")
+    funcDef = system.createDefinition("PolyLinearFunction")
     if funcDef is None:
       print "could not create funcDef"
       sys.exit( -1 )
-    materialDef = manager.createDefinition("Material")
+    materialDef = system.createDefinition("Material")
     if materialDef is None:
       print "could not create materialDef"
       sys.exit( -1 )
     materialDef.setAssociationMask(smtk.model.VOLUME) #belongs on 3D domains
-    boundaryConditionsDef = manager.createDefinition("BoundaryCondition")
+    boundaryConditionsDef = system.createDefinition("BoundaryCondition")
     boundaryConditionsDef.setAssociationMask(smtk.model.FACE); #belongs on 3D boundaries
-    specifiedHeadDef = manager.createDefinition("SpecifiedHead", "BoundaryCondition")
+    specifiedHeadDef = system.createDefinition("SpecifiedHead", "BoundaryCondition")
     if specifiedHeadDef is None:
       print "Could not create SpecifiedHead"
       sys.exit( -1 )
-    specifiedFluxDef = manager.createDefinition("SpecifiedFlux", "BoundaryCondition")
+    specifiedFluxDef = system.createDefinition("SpecifiedFlux", "BoundaryCondition")
     if specifiedHeadDef is None:
       print "could not create specifiedHeadDef"
       sys.exit( -1 )
-    injectionWellDef = manager.createDefinition("InjectionWell", "BoundaryCondition")
+    injectionWellDef = system.createDefinition("InjectionWell", "BoundaryCondition")
     if injectionWellDef is None:
       print "could not create injectionWellDef"
       sys.exit( -1 )
-    timeParamDef = manager.createDefinition("TimeParameters")
+    timeParamDef = system.createDefinition("TimeParameters")
     if timeParamDef is None:
       print "could not create timeParamDef"
       sys.exit( -1 )
-    globalsDef = manager.createDefinition("GlobalParameters")
+    globalsDef = system.createDefinition("GlobalParameters")
     if globalsDef is None:
       print "could not create globalsDef"
       sys.exit( -1 )
@@ -93,20 +93,20 @@ if __name__ == '__main__':
     analysis.append("Flow")
     analysis.append("General")
     analysis.append("Time")
-    manager.defineAnalysis("CFD Flow", analysis)
+    system.defineAnalysis("CFD Flow", analysis)
     del analysis[:]
 
     analysis.append("Flow")
     analysis.append("Heat")
     analysis.append("General")
     analysis.append("Time")
-    manager.defineAnalysis("CFD Flow with Heat Transfer", analysis)
+    system.defineAnalysis("CFD Flow with Heat Transfer", analysis)
     del analysis[:]
 
     analysis.append("Constituent")
     analysis.append("General")
     analysis.append("Time")
-    manager.defineAnalysis("Constituent Transport", analysis)
+    system.defineAnalysis("Constituent Transport", analysis)
     del analysis[:]
 
     #Lets complete the definition for some boundary conditions
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
     #Lets add some views
 
-    root = manager.rootView()
+    root = system.rootView()
     root.setTitle("SimBuilder")
     expSec = addSubView(root, smtk.view.SimpleExpression,"Functions")
     expSec.setDefinition(funcDef)
@@ -178,32 +178,32 @@ if __name__ == '__main__':
     modSec = addSubView(root, smtk.view.ModelEntity, "Boundary View")
     modSec.setModelEntityMask(smtk.model.FACE) # Look at 3d boundary entities only
 
-    manager.updateCategories()
-    att = manager.createAttribute("TimeInformation", timeParamDef)
+    system.updateCategories()
+    att = system.createAttribute("TimeInformation", timeParamDef)
     iSec = addSubView(root, smtk.view.Instanced, "Time Parameters")
     iSec.addInstance(att)
-    att = manager.createAttribute("Globals", globalsDef)
+    att = system.createAttribute("Globals", globalsDef)
     iSec = addSubView(root, smtk.view.Instanced, "Global Parameters")
     iSec.addInstance(att)
-#    writer = smtk.attribute.XmlV2StringWriter(manager)
+#    writer = smtk.attribute.XmlV2StringWriter(system)
 #    result = writer.convertToString()
 #    print result
     #test(result)
     #doc = smtk.pugi.xml_document
     #doc.load(test)
-    #manager1 = smtk.attribute.Manager()
-    #reader = smtk.attribute.XmlDocV2Parser(manager1)
+    #system1 = smtk.attribute.System()
+    #reader = smtk.attribute.XmlDocV2Parser(system1)
     #reader.process(doc)
     #readErrors = reader.errorStatus()
     #if readErrors is not "":
       #print "READ ERRORS ENCOUNTERED!!!"
       #print readErrors
-    #writer1 = smtk.attribute.XmlV2StringWriter(manager1)
-    #print << "Manager 1:"
+    #writer1 = smtk.attribute.XmlV2StringWriter(system1)
+    #print << "System 1:"
     #result = writer1.convertToString()
     #print result
 
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

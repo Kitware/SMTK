@@ -9,7 +9,7 @@
 //=========================================================================
 #include "smtk/model/Manager.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Attribute.h"
 
 #include "smtk/model/AttributeAssignments.h"
@@ -55,7 +55,7 @@ Manager::Manager() :
   m_arrangements(new UUIDsToArrangements),
   m_tessellations(new UUIDsToTessellations),
   m_attributeAssignments(new UUIDsToAttributeAssignments),
-  m_attributeManager(NULL)
+  m_attributeSystem(NULL)
 {
 }
 
@@ -68,14 +68,14 @@ Manager::Manager(
   :
     BRepModel(inTopology), m_arrangements(inArrangements),
     m_tessellations(tess), m_attributeAssignments(attribs),
-    m_attributeManager(NULL)
+    m_attributeSystem(NULL)
 {
 }
 
 /// Destroying a model manager requires us to release the default attribute manager..
 Manager::~Manager()
 {
-  this->setAttributeManager(NULL);
+  this->setAttributeSystem(NULL);
 }
 //@}
 
@@ -156,30 +156,30 @@ bool Manager::erase(const UUID& uid)
   * This is an error if the manager already has a non-null
   * reference to a different model manager instance.
   *
-  * If this manager is associated with a different attribute manager,
-  * that attribute manager is detached (its model manager reference
+  * If this manager is associated with a different attribute system,
+  * that attribute system is detached (its model manager reference
   * set to null) and all attribute associations in the model manager
   * are erased.
   * This is not an error, but a warning message will be generated.
   *
   * On error, false is returned, an error message is generated,
-  * and no change is made to the attribute manager.
+  * and no change is made to the attribute system.
   */
-bool Manager::setAttributeManager(smtk::attribute::Manager* attMgr, bool reverse)
+bool Manager::setAttributeSystem(smtk::attribute::System* attSys, bool reverse)
 {
-  if (attMgr)
+  if (attSys)
     {
-    smtk::model::Manager* attMgrModelMgr = attMgr->refModelManager().get();
-    if (attMgrModelMgr && attMgrModelMgr != this)
+    smtk::model::Manager* attSysModelMgr = attSys->refModelManager().get();
+    if (attSysModelMgr && attSysModelMgr != this)
       {
       return false;
       }
     }
-  if (this->m_attributeManager && this->m_attributeManager != attMgr)
+  if (this->m_attributeSystem && this->m_attributeSystem != attSys)
     {
     // Only warn when (a) the new manager is non-NULL and (b) we
     // have at least 1 attribute association.
-    if (!this->m_attributeAssignments->empty() && attMgr)
+    if (!this->m_attributeAssignments->empty() && attSys)
       {
       std::cout
         << "WARNING: Changing attribute managers.\n"
@@ -187,20 +187,20 @@ bool Manager::setAttributeManager(smtk::attribute::Manager* attMgr, bool reverse
       this->m_attributeAssignments->clear();
       }
     if (reverse)
-      this->m_attributeManager->setRefModelManager(ManagerPtr());
+      this->m_attributeSystem->setRefModelManager(ManagerPtr());
     }
-  this->m_attributeManager = attMgr;
-  if (this->m_attributeManager && reverse)
-    this->m_attributeManager->setRefModelManager(shared_from_this());
+  this->m_attributeSystem = attSys;
+  if (this->m_attributeSystem && reverse)
+    this->m_attributeSystem->setRefModelManager(shared_from_this());
   return true;
 }
 
 /**\brief Return the attribute manager associated with this model manager.
   *
   */
-smtk::attribute::Manager* Manager::attributeManager() const
+smtk::attribute::System* Manager::attributeSystem() const
 {
-  return this->m_attributeManager;
+  return this->m_attributeSystem;
 }
 
 /**@name Find entities by their property values.
@@ -1143,7 +1143,7 @@ bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
-bool Manager::hasAttribute(int attribId, const UUID& toEntity)
+bool Manager::hasAttribute(const UUID&  attribId, const UUID& toEntity)
 {
   UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
   if (it == this->m_attributeAssignments->end())
@@ -1159,12 +1159,12 @@ bool Manager::hasAttribute(int attribId, const UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::attachAttribute(int attribId, const UUID& toEntity)
+bool Manager::attachAttribute(const UUID&  attribId, const UUID& toEntity)
 {
   bool allowed = true;
-  if (this->m_attributeManager)
+  if (this->m_attributeSystem)
     {
-    attribute::AttributePtr att = this->m_attributeManager->findAttribute(attribId);
+    attribute::AttributePtr att = this->m_attributeSystem->findAttribute(attribId);
     if (!att || !att->associateEntity(toEntity))
       allowed = false;
     }
@@ -1176,7 +1176,7 @@ bool Manager::attachAttribute(int attribId, const UUID& toEntity)
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::detachAttribute(int attribId, const UUID& fromEntity, bool reverse)
+bool Manager::detachAttribute(const UUID&  attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -1198,10 +1198,10 @@ bool Manager::detachAttribute(int attribId, const UUID& fromEntity, bool reverse
     // Notify the Attribute of the removal
     if (reverse)
       {
-      if (this->m_attributeManager)
+      if (this->m_attributeSystem)
         {
         smtk::attribute::AttributePtr attrib =
-          this->m_attributeManager->findAttribute(attribId);
+          this->m_attributeSystem->findAttribute(attribId);
         // FIXME: Should we check that the manager's refManager
         //        is this Manager instance?
         if (attrib)

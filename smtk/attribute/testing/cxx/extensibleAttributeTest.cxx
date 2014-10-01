@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/RefItemDefinition.h"
@@ -446,12 +446,12 @@ int checkStringItem(const char *name, smtk::attribute::AttributePtr att, bool is
 }
 
 
-int checkManager(smtk::attribute::Manager& manager)
+int checkSystem(smtk::attribute::System& system)
 {
   int status = 0;
 
   std::cout << "Checking Extensible Value Items........\n";
-  smtk::attribute::DefinitionPtr def = manager.findDefinition("Derived2");
+  smtk::attribute::DefinitionPtr def = system.findDefinition("Derived2");
   if (!def)
     {
     std::cerr << "Could not find Derived 2 Def! - ERROR\n";
@@ -506,10 +506,10 @@ int checkManager(smtk::attribute::Manager& manager)
     }
 
   // Find or Create an attribute
-  smtk::attribute::AttributePtr att = manager.findAttribute("Derived2Att");
+  smtk::attribute::AttributePtr att = system.findAttribute("Derived2Att");
   if (!att)
     {
-    att = manager.createAttribute("Derived2Att", def);
+    att = system.createAttribute("Derived2Att", def);
     if (!att)
       {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -541,7 +541,7 @@ int checkManager(smtk::attribute::Manager& manager)
     }
 
   std::cout << "Checking Extensible Group Items........\n";
-  def = manager.findDefinition("Derived3");
+  def = system.findDefinition("Derived3");
   if (!def)
     {
     std::cerr << "Could not find Derived 3 Def! - ERROR\n";
@@ -596,10 +596,10 @@ int checkManager(smtk::attribute::Manager& manager)
     }
 
   // Find or Create an attribute
-  att = manager.findAttribute("Derived3Att");
+  att = system.findAttribute("Derived3Att");
   if (!att)
     {
-    att = manager.createAttribute("Derived3Att", def);
+    att = system.createAttribute("Derived3Att", def);
     if (!att)
       {
       std::cerr << "Could not create Attribute - ERROR\n";
@@ -646,11 +646,11 @@ int main(int argc, char *argv[])
   std::string outputFilename = argv[2];
 
   {
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
   smtk::io::AttributeReader reader;
   smtk::io::Logger logger;
-  if (reader.read(manager, argv[1], true, logger))
+  if (reader.read(system, argv[1], true, logger))
     {
     std::cerr << "Errors encountered reading Attribute File: " << argv[1] << "\n";
     std::cerr << logger.convertToString();
@@ -661,10 +661,10 @@ int main(int argc, char *argv[])
     std::cout << "Read in template - PASSED\n";
     }
 
-  // Write output file *before* checking manager (checking changes manager)
+  // Write output file *before* checking system (checking changes system)
   smtk::io::AttributeWriter writer;
   smtk::io::Logger logger1;
-  if (writer.write(manager, outputFilename,logger1))
+  if (writer.write(system, outputFilename,logger1))
     {
     std::cerr << "Errors encountered creating Attribute File:\n";
     std::cerr << logger1.convertToString();
@@ -675,23 +675,23 @@ int main(int argc, char *argv[])
     std::cout << "Wrote " << outputFilename << std::endl;
     }
 
-  // Check manager
-  status = checkManager(manager);
+  // Check system
+  status = checkSystem(system);
   if (status < 0)
     {
     return status;
     }
 
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
 
-  //Use separate scope to read attribute manager back in
+  //Use separate scope to read attribute system back in
   {
-  smtk::attribute::Manager readbackManager;
-  std::cout << "Readback Manager Created\n";
+  smtk::attribute::System readbackSystem;
+  std::cout << "Readback System Created\n";
   smtk::io::AttributeReader reader2;
   smtk::io::Logger logger2;
-  if (reader2.read(readbackManager, outputFilename, true, logger2))
+  if (reader2.read(readbackSystem, outputFilename, true, logger2))
     {
     std::cerr << "Errors encountered reading Attribute File: "
               << outputFilename << "\n";
@@ -699,7 +699,7 @@ int main(int argc, char *argv[])
     return -1;
     }
 
-  status = checkManager(readbackManager);
+  status = checkSystem(readbackSystem);
   }
 
   return status;

@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/IntItem.h"
@@ -29,14 +29,14 @@ int main()
   typedef smtk::attribute::ValueItem ValueItem;
   typedef smtk::attribute::Item AttItem;
 
-  smtk::attribute::Manager manager;
-  std::cout << "Manager Created\n";
+  smtk::attribute::System system;
+  std::cout << "System Created\n";
   // Lets create an attribute to represent an expression
-  smtk::attribute::DefinitionPtr expDef = manager.createDefinition("ExpDef");
+  smtk::attribute::DefinitionPtr expDef = system.createDefinition("ExpDef");
   smtk::attribute::StringItemDefinitionPtr eitemdef = StringItemDef::New("Expression String");
   expDef->addItemDefinition(eitemdef);
 
-  smtk::attribute::DefinitionPtr base = manager.createDefinition("BaseDef");
+  smtk::attribute::DefinitionPtr base = system.createDefinition("BaseDef");
   // Lets add some item definitions
   smtk::attribute::IntItemDefinitionPtr iitemdef = IntItemDef::New("IntItem1");
   base->addItemDefinition(iitemdef);
@@ -44,7 +44,7 @@ int main()
   iitemdef2->setDefaultValue(10);
   base->addItemDefinition(iitemdef2);
 
-  smtk::attribute::DefinitionPtr def1 = manager.createDefinition("Derived1", "BaseDef");
+  smtk::attribute::DefinitionPtr def1 = system.createDefinition("Derived1", "BaseDef");
    // Lets add some item definitions
   smtk::attribute::DoubleItemDefinitionPtr ditemdef = DoubleItemDef::New("DoubleItem1");
   // Allow this one to hold an expression
@@ -60,7 +60,7 @@ int main()
   ditemdef2->setDefaultValue(-35.2);
   def1->addItemDefinition(ditemdef2);
 
-  smtk::attribute::DefinitionPtr def2 = manager.createDefinition("Derived2", "Derived1");
+  smtk::attribute::DefinitionPtr def2 = system.createDefinition("Derived2", "Derived1");
    // Lets add some item definitions
   smtk::attribute::StringItemDefinitionPtr sitemdef = StringItemDef::New("StringItem1");
   def1->addItemDefinition(sitemdef);
@@ -69,8 +69,8 @@ int main()
   def1->addItemDefinition(sitemdef2);
 
   // Lets test creating an attribute by passing in the expression definition explicitly
-  smtk::attribute::AttributePtr expAtt = manager.createAttribute("Exp1", expDef);
-  smtk::attribute::AttributePtr att = manager.createAttribute("testAtt", "Derived2");
+  smtk::attribute::AttributePtr expAtt = system.createAttribute("Exp1", expDef);
+  smtk::attribute::AttributePtr att = system.createAttribute("testAtt", "Derived2");
   if (att)
     {
     std::cout << "Attribute testAtt created\n";
@@ -152,7 +152,7 @@ int main()
         }
       }
     }
-  std::cout << "Manager destroyed\n";
+  std::cout << "System destroyed\n";
   }
   return status;
 }

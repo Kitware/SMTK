@@ -11,7 +11,7 @@
 
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/ValueItemDefinition.h"
@@ -292,8 +292,8 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
 
   this->setNumberOfValues(sourceValueItem->numberOfValues());
 
-  // Get reference to attribute manager
-  Manager *manager = this->attribute()->manager();
+  // Get reference to attribute system
+  System *system = this->attribute()->system();
 
   // Update values
   for (std::size_t i=0; i<sourceValueItem->numberOfValues(); ++i)
@@ -305,7 +305,7 @@ void ValueItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
     else if (sourceValueItem->isExpression(i))
       {
       std::string nameStr = sourceValueItem->expression(i)->name();
-      AttributePtr att = manager->findAttribute(nameStr);
+      AttributePtr att = system->findAttribute(nameStr);
       if (att)
         {
         this->setExpression(i, att);

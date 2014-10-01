@@ -16,7 +16,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/GroupItem.h"
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
@@ -397,8 +397,8 @@ void qtSimpleExpressionView::onFuncNameChanged(QListWidgetItem* item)
   smtk::attribute::AttributePtr func = this->getFunctionFromItem(item);
   if(func)
     {
-    Manager *attManager = func->definition()->manager();
-    attManager->rename(func, item->text().toAscii().constData());
+    System *attSystem = func->definition()->system();
+    attSystem->rename(func, item->text().toAscii().constData());
     }
 }
 
@@ -497,9 +497,9 @@ void qtSimpleExpressionView::createNewFunction(
     return;
     }
   this->Internals->FuncList->blockSignals(true);
-  Manager *attManager = attDef->manager();
+  System *attSystem = attDef->system();
 
-  smtk::attribute::AttributePtr newFunc = attManager->createAttribute(attDef->type());
+  smtk::attribute::AttributePtr newFunc = attSystem->createAttribute(attDef->type());
   QListWidgetItem* item = this->addFunctionListItem(newFunc);
   if(item)
     {
@@ -585,8 +585,8 @@ void qtSimpleExpressionView::onDeleteSelected()
       }
 
     attribute::DefinitionPtr attDef = sview->definition();
-    Manager *attManager = attDef->manager();
-    attManager->removeAttribute(this->getFunctionFromItem(selItem));
+    System *attSystem = attDef->system();
+    attSystem->removeAttribute(this->getFunctionFromItem(selItem));
 
     this->Internals->FuncList->takeItem(this->Internals->FuncList->row(selItem));
     }
@@ -765,8 +765,8 @@ void qtSimpleExpressionView::initFunctionList()
   attribute::DefinitionPtr attDef = sview->definition();
 
   std::vector<smtk::attribute::AttributePtr> result;
-  Manager *attManager = attDef->manager();
-  attManager->findAttributes(attDef, result);
+  System *attSystem = attDef->system();
+  attSystem->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   this->Internals->FuncList->blockSignals(true);
   this->Internals->FuncList->clear();

@@ -39,7 +39,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/GroupItem.h"
@@ -187,18 +187,18 @@ QSize qtTextEdit::sizeHint() const
 }
 
 //----------------------------------------------------------------------------
-qtUIManager::qtUIManager(smtk::attribute::Manager &manager) :
-  m_AttManager(manager), m_useInternalFileBrowser(false)
+qtUIManager::qtUIManager(smtk::attribute::System &system) :
+  m_AttSystem(system), m_useInternalFileBrowser(false)
 {
   this->RootView = NULL;
 
-  if(manager.rootView())
+  if(system.rootView())
     {
-    this->advFont.setBold(manager.rootView()->advancedBold());
-    this->advFont.setItalic(manager.rootView()->advancedItalic());
-    const double* rgba = manager.rootView()->defaultColor();
+    this->advFont.setBold(system.rootView()->advancedBold());
+    this->advFont.setItalic(system.rootView()->advancedItalic());
+    const double* rgba = system.rootView()->defaultColor();
     this->DefaultValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
-    rgba = manager.rootView()->invalidColor();
+    rgba = system.rootView()->invalidColor();
     this->InvalidValueColor.setRgbF(rgba[0], rgba[1], rgba[2]);
     }
   else
@@ -224,7 +224,7 @@ qtUIManager::~qtUIManager()
 void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  if(!this->m_AttManager.rootView())
+  if(!this->m_AttSystem.rootView())
     {
     return;
     }
@@ -235,14 +235,14 @@ void qtUIManager::initializeUI(QWidget* pWidget, bool useInternalFileBrowser)
   this->internalInitialize();
 
   this->RootView = new qtRootView(
-    this->m_AttManager.rootView(), pWidget, this);
+    this->m_AttSystem.rootView(), pWidget, this);
   this->RootView->showAdvanceLevel(this->m_currentAdvLevel);
 }
 
 //----------------------------------------------------------------------------
 void qtUIManager::internalInitialize()
 {
-  smtk::view::RootPtr rs = this->m_AttManager.rootView();
+  smtk::view::RootPtr rs = this->m_AttSystem.rootView();
   const double *dcolor = rs->defaultColor();
   this->DefaultValueColor.setRgbF(dcolor[0], dcolor[1], dcolor[2], dcolor[3]);
   dcolor = rs->invalidColor();
@@ -250,7 +250,7 @@ void qtUIManager::internalInitialize()
   this->findDefinitionsLongLabels();
 
   // initialize initial advance level
-  const std::map<int, std::string> &levels = this->m_AttManager.advanceLevels();
+  const std::map<int, std::string> &levels = this->m_AttSystem.advanceLevels();
   if(levels.size() > 0)
     {
     // use the minimum enum value as initial advance level
@@ -283,7 +283,7 @@ void qtUIManager::setAdvanceLevel(int b)
 //----------------------------------------------------------------------------
 void qtUIManager::initAdvanceLevels(QComboBox* combo)
 {
-  const std::map<int, std::string> &levels = this->m_AttManager.advanceLevels();
+  const std::map<int, std::string> &levels = this->m_AttSystem.advanceLevels();
   if(levels.size() == 0)
     {
     // for backward compatibility, we automatically add
@@ -309,7 +309,7 @@ qtBaseView* qtUIManager::initializeView(QWidget* pWidget,
                                  bool useInternalFileBrowser)
 {
   m_useInternalFileBrowser = useInternalFileBrowser;
-  if(!this->m_AttManager.rootView())
+  if(!this->m_AttSystem.rootView())
     {
     return NULL;
     }
@@ -695,8 +695,8 @@ QWidget* qtUIManager::createExpressionRefWidget(
     }
   QList<QString> attNames;
   std::vector<smtk::attribute::AttributePtr> result;
-  Manager *lAttManager = attDef->manager();
-  lAttManager->findAttributes(attDef, result);
+  System *lAttSystem = attDef->system();
+  lAttSystem->findAttributes(attDef, result);
   std::vector<smtk::attribute::AttributePtr>::iterator it;
   for (it=result.begin(); it!=result.end(); ++it)
     {
@@ -751,8 +751,8 @@ void qtUIManager::onExpressionReferenceChanged()
 
   if(curIdx>=0)
     {
-    Manager *lAttManager = item->attribute()->manager();
-    AttributePtr attPtr = lAttManager->findAttribute(comboBox->currentText().toStdString());
+    System *lAttSystem = item->attribute()->system();
+    AttributePtr attPtr = lAttSystem->findAttribute(comboBox->currentText().toStdString());
     if(elementIdx >=0 && inputitem->isSet(elementIdx) &&
       attPtr == inputitem->expression(elementIdx))
       {
@@ -1392,7 +1392,7 @@ void qtUIManager::findDefinitionsLongLabels()
   // Generate list of all concrete definitions in the manager
   std::vector<smtk::attribute::DefinitionPtr> defs;
   std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-  this->m_AttManager.findBaseDefinitions(baseDefinitions);
+  this->m_AttSystem.findBaseDefinitions(baseDefinitions);
   std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
   for (baseIter = baseDefinitions.begin();
@@ -1400,7 +1400,7 @@ void qtUIManager::findDefinitionsLongLabels()
        baseIter++)
     {
     std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-    m_AttManager.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+    m_AttSystem.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
     defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
     }
 

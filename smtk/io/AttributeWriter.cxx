@@ -24,12 +24,12 @@ AttributeWriter::AttributeWriter():
 {
 }
 //----------------------------------------------------------------------------
-bool AttributeWriter::write(const smtk::attribute::Manager &manager,
+bool AttributeWriter::write(const smtk::attribute::System &system,
                             const std::string &filename,
                             Logger &logger)
 {
   logger.reset();
-  XmlV2StringWriter theWriter(manager);
+  XmlV2StringWriter theWriter(system);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);
@@ -54,13 +54,13 @@ bool AttributeWriter::write(const smtk::attribute::Manager &manager,
 }
 
 //----------------------------------------------------------------------------
-bool AttributeWriter::writeContents(const smtk::attribute::Manager &manager,
+bool AttributeWriter::writeContents(const smtk::attribute::System &system,
                                     std::string &filecontents,
                                     Logger &logger,
                                     bool no_declaration)
 {
   logger.reset();
-  XmlV2StringWriter theWriter(manager);
+  XmlV2StringWriter theWriter(system);
   theWriter.includeDefinitions(this->m_includeDefinitions);
   theWriter.includeInstances(this->m_includeInstances);
   theWriter.includeModelInformation(this->m_includeModelInformation);

@@ -23,42 +23,39 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print 'Manager created'
-    t = manager.resourceType()
+    system = smtk.attribute.System()
+    print 'System created'
+    t = system.resourceType()
     if t != smtk.common.Resource.ATTRIBUTE:
       print 'ERROR: Returned wrong resource type'
       status = -1
     print 'Resource type:', smtk.common.Resource.type2String(t)
-    def_ = manager.createDefinition('testDef')
+    def_ = system.createDefinition('testDef')
     if def_ is not None:
         print 'Definition testDef created'
     else:
         print 'ERROR: Definition testDef not created'
         status = -1
-    def1 = manager.createDefinition("testDef")
+    def1 = system.createDefinition("testDef")
     if def1 is None:
         print 'Duplicated definition testDef not created'
     else:
         print 'ERROR: Duplicated definition testDef created'
         status = -1
-    att = manager.createAttribute('testAtt', 'testDef')
+    att = system.createAttribute('testAtt', 'testDef')
     if not att is None:
         print 'Attribute testAtt created'
     else:
         print 'ERROR: Attribute testAtt not created'
         status = -1
 
-    att1 = manager.createAttribute('testAtt', 'testDef')
+    att1 = system.createAttribute('testAtt', 'testDef')
     if att1 is None:
         print 'Duplicate Attribute testAtt not created'
     else:
         print 'ERROR: Duplicate Attribute testAtt  created'
         status = -1
 
-    if att.id() != 0:
-      print "Unexpected id should be 0"
-      status = -1
     if att.isColorSet():
       print "Color should not be set."
       status = -1
@@ -96,10 +93,10 @@ if __name__ == '__main__':
     if att.appliesToInteriorNodes():
        print "Should not applies to interior node.\n"
        status = -1
-#    if att.manager() is not None:
+#    if att.system() is not None:
 #       print "Should not be null.\n"
 #       status = -1
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

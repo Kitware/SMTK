@@ -89,7 +89,7 @@ void qtRootView::createWidget( )
     }
 
   this->Internals->clearWidgets();
-  const Manager* attMan = this->uiManager()->attManager();
+  const System* attSys = this->uiManager()->attSystem();
 
   //first setup the advanced check box layout form
   //QHBoxLayout* advancedLayout = new QHBoxLayout();
@@ -118,7 +118,7 @@ void qtRootView::createWidget( )
   this->Internals->FilterByCheck->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   this->Internals->ShowCategoryCombo = new QComboBox(this->Widget);
   std::set<std::string>::const_iterator it;
-  const std::set<std::string> &cats = attMan->categories();
+  const std::set<std::string> &cats = attSys->categories();
   for (it = cats.begin(); it != cats.end(); it++)
     {
     this->Internals->ShowCategoryCombo->addItem(it->c_str());

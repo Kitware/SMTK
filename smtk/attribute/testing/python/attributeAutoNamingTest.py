@@ -23,37 +23,37 @@ if __name__ == '__main__':
 
     status = 0
 
-    manager = smtk.attribute.Manager()
-    print "Manager Created"
-    def_ = manager.createDefinition("testDef")
+    system = smtk.attribute.System()
+    print "System Created"
+    def_ = system.createDefinition("testDef")
     if def_ is not None:
       print "Definition testDef created"
     else:
       print "ERROR: Definition testDef not created"
       status = -1
 
-    att = manager.createAttribute("testDef")
+    att = system.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()
     else:
       print "ERROR: 1st Attribute not created"
       status = -1
 
-    att = manager.createAttribute("testDef")
+    att = system.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()
     else:
       print "ERROR: 2nd Attribute not created"
       status = -1
 
-    att = manager.createAttribute("testDef")
+    att = system.createAttribute("testDef")
     if att is not None:
       print "Attribute %s created" % att.name()
     else:
       print "ERROR: 3rd Attribute not created"
       status = -1
 
-    del manager
-    print 'Manager destroyed'
+    del system
+    print 'System destroyed'
 
     sys.exit(status)

@@ -28,7 +28,7 @@ namespace smtk
 {
   namespace attribute
   {
-    class Manager;
+    class System;
   }
   namespace io
   {
@@ -39,24 +39,24 @@ namespace smtk
       AttributeReader() : m_reportAsError(true) {}
 
       // Returns true if there was a problem with reading the file
-      bool read(smtk::attribute::Manager &manager,
+      bool read(smtk::attribute::System &system,
                 const std::string &filename, bool includePath,
                 smtk::io::Logger &logger);
-      bool read(smtk::attribute::Manager &manager,
+      bool read(smtk::attribute::System &system,
                 const std::string &filename,
                 smtk::io::Logger &logger)
-      {return this->read(manager, filename, false, logger);}
+      {return this->read(system, filename, false, logger);}
 
-      bool readContents(smtk::attribute::Manager &manager,
+      bool readContents(smtk::attribute::System &system,
                         const std::string &filecontents,
                         smtk::io::Logger &logger);
 
-      bool readContents(smtk::attribute::Manager &manager,
+      bool readContents(smtk::attribute::System &system,
                         const char *contents,
                         std::size_t length,
                         smtk::io::Logger &logger);
 
-      bool readContents(smtk::attribute::Manager &manager,
+      bool readContents(smtk::attribute::System &system,
                         pugi::xml_node& rootNode,
                         smtk::io::Logger& logger);
 

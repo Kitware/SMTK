@@ -32,26 +32,31 @@ namespace smtk
   {
     class RefItem;
     class Item;
-    class Manager;
-    typedef unsigned long AttributeId;
+    class System;
 
     class SMTKCORE_EXPORT Attribute
     {
       friend class smtk::attribute::Definition;
-      friend class smtk::attribute::Manager;
+      friend class smtk::attribute::System;
       friend class smtk::attribute::RefItem;
     public:
-      static smtk::attribute::AttributePtr New(const std::string &myName,
-                                    smtk::attribute::DefinitionPtr myDefinition,
-                                    smtk::attribute::AttributeId myId)
+      static smtk::attribute::AttributePtr
+        New(const std::string &myName,
+            smtk::attribute::DefinitionPtr myDefinition)
+      { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition)); }
+
+       static smtk::attribute::AttributePtr
+        New(const std::string &myName,
+            smtk::attribute::DefinitionPtr myDefinition,
+            const smtk::common::UUID &myId)
       { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
-      // NOTE: To rename an attribute use the manager!
+      // NOTE: To rename an attribute use the system!
       const std::string &name() const
       { return this->m_name;}
 
-      smtk::attribute::AttributeId id() const
+      const smtk::common::UUID &id() const
       { return this->m_id;}
 
       const std::string &type() const;
@@ -140,7 +145,7 @@ namespace smtk
 
       bool isValid();
 
-      smtk::attribute::Manager *manager() const;
+      smtk::attribute::System *system() const;
       smtk::model::ManagerPtr modelManager() const;
 
       void setUserData(const std::string &key, smtk::simulation::UserDataPtr value)
@@ -156,7 +161,9 @@ namespace smtk
 
     protected:
       Attribute(const std::string &myName,
-                smtk::attribute::DefinitionPtr myDefinition, smtk::attribute::AttributeId myId);
+                smtk::attribute::DefinitionPtr myDefinition, const smtk::common::UUID &myId);
+      Attribute(const std::string &myName,
+                smtk::attribute::DefinitionPtr myDefinition);
 
       void removeAllItems();
       void addItem(smtk::attribute::ItemPtr iPtr)
@@ -174,7 +181,7 @@ namespace smtk
         {this->m_references.erase(attRefItem);}
       std::string m_name;
       std::vector<smtk::attribute::ItemPtr> m_items;
-      smtk::attribute::AttributeId m_id;
+      smtk::common::UUID m_id;
       smtk::attribute::DefinitionPtr m_definition;
       smtk::common::UUIDs m_modelEntities;
       std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;

@@ -175,7 +175,7 @@ void qtItem::showAdvanceLevelOverlay(bool show)
       this->Internals->AdvLevelCombo->setCurrentIndex(idx);
       }
     const double* rgba = this->baseView()->uiManager()->
-      attManager()->advanceLevelColor(mylevel);
+      attSystem()->advanceLevelColor(mylevel);
     if(rgba)
       {
       this->Internals->advOverlay->overlay()->setColor(
@@ -211,7 +211,7 @@ void qtItem::setAdvanceLevel(int l)
   if(this->Internals->advOverlay)
     {
     const double* rgba = this->baseView()->uiManager()->
-      attManager()->advanceLevelColor(l);
+      attSystem()->advanceLevelColor(l);
     if(rgba)
       {
       this->Internals->advOverlay->overlay()->setColor(

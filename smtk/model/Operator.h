@@ -127,7 +127,7 @@ enum OperatorOutcome
   * Instances of the Operator class should always have a valid
   * pointer to their owning Bridge instance.
   * Every operator's specification() Attribute is managed by the
-  * Bridge's operatorManager().
+  * Bridge's operatorSystem().
   */
 class SMTKCORE_EXPORT Operator : smtkEnableSharedPtr(Operator)
 {

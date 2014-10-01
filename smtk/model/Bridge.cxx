@@ -16,7 +16,7 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
@@ -30,14 +30,14 @@ namespace smtk {
 
 /// Default constructor. This assigns a random session ID to each Bridge instance.
 Bridge::Bridge()
-  : m_sessionId(smtk::common::UUID::random()), m_operatorMgr(NULL)
+  : m_sessionId(smtk::common::UUID::random()), m_operatorSys(NULL)
 {
 }
 
-/// Destructor. We must delete the attribute manager that tracks operator definitions.
+/// Destructor. We must delete the attribute system that tracks operator definitions.
 Bridge::~Bridge()
 {
-  delete this->m_operatorMgr;
+  delete this->m_operatorSys;
 }
 
 /**\brief Return the name of the bridge type (i.e., the name of the modeling kernel).
@@ -121,8 +121,8 @@ BridgedInfoBits Bridge::allSupportedInformation() const
 StringList Bridge::operatorNames() const
 {
   std::vector<smtk::attribute::DefinitionPtr> ops;
-  this->m_operatorMgr->derivedDefinitions(
-    this->m_operatorMgr->findDefinition("operator"), ops);
+  this->m_operatorSys->derivedDefinitions(
+    this->m_operatorSys->findDefinition("operator"), ops);
 
   StringList nameList;
   std::vector<smtk::attribute::DefinitionPtr>::iterator it;
@@ -181,19 +181,19 @@ void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
 }
 
 /** @name Operator Manager
-  *\brief Return this bridge's internal attribute manager, used to describe operators.
+  *\brief Return this bridge's internal attribute system, used to describe operators.
   *
   * Each operator should have a definition of the same name held in this manager.
   */
 ///@{
-smtk::attribute::Manager* Bridge::operatorManager()
+smtk::attribute::System* Bridge::operatorSystem()
 {
-  return this->m_operatorMgr;
+  return this->m_operatorSys;
 }
 
-const smtk::attribute::Manager* Bridge::operatorManager() const
+const smtk::attribute::System* Bridge::operatorSystem() const
 {
-  return this->m_operatorMgr;
+  return this->m_operatorSys;
 }
 ///@}
 
@@ -234,24 +234,24 @@ void Bridge::setSessionId(const smtk::common::UUID& sessId)
   * of the subclass (since the base class does not have access to the map).
   *
   * This method traverses the XML descriptions and imports each into
-  * the bridge's attribute manager.
+  * the bridge's attribute system.
   */
-void Bridge::initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass)
+void Bridge::initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass)
 {
   // Subclasses may already have initialized
-  if (this->m_operatorMgr && !inheritSubclass)
+  if (this->m_operatorSys && !inheritSubclass)
     {
-    delete this->m_operatorMgr;
-    this->m_operatorMgr = NULL;
+    delete this->m_operatorSys;
+    this->m_operatorSys = NULL;
     }
 
-  if (!this->m_operatorMgr)
+  if (!this->m_operatorSys)
     {
-    this->m_operatorMgr = new smtk::attribute::Manager;
+    this->m_operatorSys = new smtk::attribute::System;
 
     // Create the "base" definitions that all operators and results will inherit.
-    this->m_operatorMgr->createDefinition("operator");
-    Definition::Ptr defn = this->m_operatorMgr->createDefinition("result");
+    this->m_operatorSys->createDefinition("operator");
+    Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
     IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
     RefItemDefinition::Ptr paramsDefn = RefItemDefinition::New("validated parameters");
     outcomeDefn->setNumberOfRequiredValues(1);
@@ -274,7 +274,7 @@ void Bridge::initializeOperatorManager(const OperatorConstructors* opList, bool 
       continue;
 
     ok &= !rdr.readContents(
-      *this->m_operatorMgr,
+      *this->m_operatorSys,
       it->second.first.c_str(), it->second.first.size(),
       log);
     }

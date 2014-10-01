@@ -9,7 +9,7 @@
 //=========================================================================
 
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/RefItem.h"
@@ -18,6 +18,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -26,31 +27,31 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-Manager::Manager(): m_nextAttributeId(0), m_rootView(new view::Root(""))
+System::System(): m_rootView(new view::Root(""))
 {
 }
 
 //----------------------------------------------------------------------------
-Manager::~Manager()
+System::~System()
 {
   std::map<std::string,  smtk::attribute::DefinitionPtr>::const_iterator it;
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
-    // Decouple all defintions from this manager
-    (*it).second->clearManager();
+    // Decouple all defintions from this system
+    (*it).second->clearSystem();
     }
  }
 
 //----------------------------------------------------------------------------
 smtk::common::Resource::Type
-Manager::resourceType() const
+System::resourceType() const
 {
   return smtk::common::Resource::ATTRIBUTE;
 }
 
 //----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr
-Manager::createDefinition(const std::string &typeName,
+System::createDefinition(const std::string &typeName,
                           const std::string &baseTypeName)
 {
   smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
@@ -81,13 +82,13 @@ Manager::createDefinition(const std::string &typeName,
 
 //----------------------------------------------------------------------------
 smtk::attribute::DefinitionPtr
-Manager::createDefinition(const std::string &typeName,
+System::createDefinition(const std::string &typeName,
                           smtk::attribute::DefinitionPtr baseDef)
 {
   smtk::attribute::DefinitionPtr  def = this->findDefinition(typeName);
   // Does this definition already exist or if the base def is not part
   // of this manger
-  if (!(!def && (!baseDef || ((baseDef->manager() == this)))))
+  if (!(!def && (!baseDef || ((baseDef->system() == this)))))
     {
     return smtk::attribute::DefinitionPtr();
     }
@@ -103,12 +104,12 @@ Manager::createDefinition(const std::string &typeName,
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
+smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              smtk::attribute::DefinitionPtr def)
 {
-  // Make sure the definition belongs to this manager or if the definition
+  // Make sure the definition belongs to this system or if the definition
   // is abstract
-  if ((def->manager() != this) || def->isAbstract())
+  if ((def->system() != this) || def->isAbstract())
     {
     return smtk::attribute::AttributePtr();
     }
@@ -118,7 +119,7 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
     {
     return smtk::attribute::AttributePtr();
     }
-  a = Attribute::New(name, def, this->m_nextAttributeId++);
+  a = Attribute::New(name, def);
   this->m_attributeClusters[def->type()].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[a->id()] = a;
@@ -126,45 +127,24 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Manager::createAttribute(const std::string &typeName)
+smtk::attribute::AttributePtr System::createAttribute(const std::string &typeName)
 {
   smtk::attribute::AttributePtr att =
-    this->createAttribute(this->createUniqueName(typeName), typeName,
-                          this->m_nextAttributeId);
-  if (att)
-    {
-    this->m_nextAttributeId++;
-    }
+    this->createAttribute(this->createUniqueName(typeName), typeName);
   return att;
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
+smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              const std::string &typeName)
 {
-  smtk::attribute::AttributePtr att = this->createAttribute(name, typeName,
-                                                  this->m_nextAttributeId);
-  if (att)
-    {
-    this->m_nextAttributeId++;
-    }
+  smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
+  smtk::attribute::AttributePtr att = this->createAttribute(name, def);
   return att;
 }
 
 //----------------------------------------------------------------------------
-void Manager::recomputeNextAttributeID()
-{
-  std::map<std::string, AttributePtr>::const_iterator it;
-  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
-    {
-    if (it->second->id() > this->m_nextAttributeId)
-      {
-      this->m_nextAttributeId = it->second->id() + 1;
-      }
-    }
-}
-//----------------------------------------------------------------------------
-void Manager::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
+void System::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   std::map<std::string, DefinitionPtr>::const_iterator it;
   result.resize(this->m_definitions.size());
@@ -175,7 +155,7 @@ void Manager::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) c
     }
 }
 //----------------------------------------------------------------------------
-void Manager::attributes(std::vector<smtk::attribute::AttributePtr> &result) const
+void System::attributes(std::vector<smtk::attribute::AttributePtr> &result) const
 {
   std::map<std::string, AttributePtr>::const_iterator it;
   result.resize(this->m_attributes.size());
@@ -188,9 +168,10 @@ void Manager::attributes(std::vector<smtk::attribute::AttributePtr> &result) con
 //----------------------------------------------------------------------------
 // For Reader classes
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
-                                             smtk::attribute::DefinitionPtr def,
-                                             smtk::attribute::AttributeId id)
+smtk::attribute::AttributePtr
+System::createAttribute(const std::string &name,
+                        smtk::attribute::DefinitionPtr def,
+                        const smtk::common::UUID &id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
@@ -206,9 +187,10 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
   return a;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
-                                             const std::string &typeName,
-                                             smtk::attribute::AttributeId id)
+smtk::attribute::AttributePtr
+System::createAttribute(const std::string &name,
+                        const std::string &typeName,
+                        const smtk::common::UUID &id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
@@ -231,10 +213,10 @@ smtk::attribute::AttributePtr Manager::createAttribute(const std::string &name,
   return a;
 }
 //----------------------------------------------------------------------------
-bool Manager::removeAttribute(smtk::attribute::AttributePtr att)
+bool System::removeAttribute(smtk::attribute::AttributePtr att)
 {
-  // Make sure that this manager is managing this attribute
-  if (att->manager() != this)
+  // Make sure that this system is managing this attribute
+  if (att->system() != this)
     {
     return false;
     }
@@ -244,7 +226,7 @@ bool Manager::removeAttribute(smtk::attribute::AttributePtr att)
   return true;
 }
 //----------------------------------------------------------------------------
-void Manager::findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const
+void System::findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   smtk::attribute::DefinitionPtr def;
   result.clear();
@@ -262,18 +244,18 @@ void Manager::findDefinitions(unsigned long mask, std::vector<smtk::attribute::D
 }
 
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 findAttributes(smtk::attribute::DefinitionPtr def,
                std::vector<smtk::attribute::AttributePtr> &result) const
 {
   result.clear();
-  if (def && (def->manager() == this))
+  if (def && (def->system() == this))
     {
     this->internalFindAttributes(def, result);
     }
 }
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 internalFindAttributes(smtk::attribute::DefinitionPtr def,
                        std::vector<smtk::attribute::AttributePtr> &result) const
 {
@@ -301,19 +283,19 @@ internalFindAttributes(smtk::attribute::DefinitionPtr def,
 }
 
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 findAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
                           bool onlyConcrete,
                           std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   result.clear();
-  if (def && (def->manager() == this))
+  if (def && (def->system() == this))
     {
     this->internalFindAllDerivedDefinitions(def, onlyConcrete, result);
     }
 }
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
                                   bool onlyConcrete,
                                   std::vector<smtk::attribute::DefinitionPtr> &result) const
@@ -337,10 +319,10 @@ internalFindAllDerivedDefinitions(smtk::attribute::DefinitionPtr def,
 }
 
 //----------------------------------------------------------------------------
-bool Manager::rename(smtk::attribute::AttributePtr att, const std::string &newName)
+bool System::rename(smtk::attribute::AttributePtr att, const std::string &newName)
 {
-  // Make sure that this manager is managing this attribute
-  if (att->manager() != this)
+  // Make sure that this system is managing this attribute
+  if (att->system() != this)
     {
     return false;
     }
@@ -356,7 +338,7 @@ bool Manager::rename(smtk::attribute::AttributePtr att, const std::string &newNa
   return true;
 }
 //----------------------------------------------------------------------------
-std::string Manager::createUniqueName(const std::string &type) const
+std::string System::createUniqueName(const std::string &type) const
 {
   int i = 0;
   std::string base = type, newName;
@@ -376,7 +358,7 @@ std::string Manager::createUniqueName(const std::string &type) const
   return "";
 }
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   result.clear();
@@ -391,7 +373,7 @@ findBaseDefinitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
     }
 }
 //----------------------------------------------------------------------------
-void Manager::updateCategories()
+void System::updateCategories()
 {
   std::queue<attribute::DefinitionPtr> toBeProcessed;
   // Insert all top most definitions into the queue
@@ -426,7 +408,7 @@ void Manager::updateCategories()
     toBeProcessed.pop();
     }
   // Now all of the definitions have been processed we need to combine all
-  // of their categories to form the managers
+  // of their categories to form the systems
   this->m_categories.clear();
   for (it = this->m_definitions.begin(); it != this->m_definitions.end(); it++)
     {
@@ -435,7 +417,7 @@ void Manager::updateCategories()
     }
 }
 //----------------------------------------------------------------------------
-void Manager::
+void System::
 derivedDefinitions(smtk::attribute::DefinitionPtr def,
                    std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
@@ -456,7 +438,7 @@ derivedDefinitions(smtk::attribute::DefinitionPtr def,
     }
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
+smtk::attribute::ConstDefinitionPtr System::findIsUniqueBaseClass(
   smtk::attribute::DefinitionPtr attDef) const
 {
   if(!attDef.get() || !attDef->isUnique() || !attDef->baseDefinition().get())
@@ -476,22 +458,22 @@ smtk::attribute::ConstDefinitionPtr Manager::findIsUniqueBaseClass(
   return smtk::attribute::ConstDefinitionPtr();
 }
 //----------------------------------------------------------------------------
-void Manager::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
+void System::setRefModelManager(smtk::model::ManagerPtr refModelMgr)
 {
   smtk::model::ManagerPtr curManager = this->m_refModelMgr.lock();
   if (curManager && curManager != refModelMgr)
     {
-    curManager->setAttributeManager(NULL, false);
+    curManager->setAttributeSystem(NULL, false);
     }
   this->m_refModelMgr = refModelMgr;
-  if (refModelMgr && this->m_refModelMgr.lock()->attributeManager() != this)
+  if (refModelMgr && this->m_refModelMgr.lock()->attributeSystem() != this)
     {
-    refModelMgr->setAttributeManager(this, false);
+    refModelMgr->setAttributeSystem(this, false);
     }
 }
 //----------------------------------------------------------------------------
 void
-Manager::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
+System::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
 {
   WeakDefinitionPtrSet ddefs = m_derivedDefInfo[def];
   WeakDefinitionPtrSet::iterator iter;
@@ -508,14 +490,14 @@ Manager::updateDerivedDefinitionIndexOffsets(smtk::attribute::DefinitionPtr def)
     }
 }
 //----------------------------------------------------------------------------
-void Manager::addAdvanceLevel(
+void System::addAdvanceLevel(
   int level, std::string label, const double *l_color)
 {
   this->m_advLevels[level] = label;
   this->setAdvanceLevelColor(level, l_color);
 }
 //----------------------------------------------------------------------------
-const double* Manager::advanceLevelColor(int level) const
+const double* System::advanceLevelColor(int level) const
 {
   std::map<int, std::vector<double> >::const_iterator it =
     this->m_advLevelColors.find(level);
@@ -527,7 +509,7 @@ const double* Manager::advanceLevelColor(int level) const
   return NULL;
 }
 //----------------------------------------------------------------------------
-void Manager::setAdvanceLevelColor(int level, const double *l_color)
+void System::setAdvanceLevelColor(int level, const double *l_color)
 {
   if(l_color && this->m_advLevels.find(level) != this->m_advLevels.end())
     {
@@ -536,12 +518,12 @@ void Manager::setAdvanceLevelColor(int level, const double *l_color)
     }
 }
 //----------------------------------------------------------------------------
-// Copies attribute defintion into this manager
+// Copies attribute defintion into this system
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItemDefinition instances, might have to
 // copy additional definitions for their targets.
 smtk::attribute::DefinitionPtr
-Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
+System::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
                         unsigned int /*options*/)
 {
   // Returns defintion
@@ -574,11 +556,11 @@ Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
           }
         else
           {
-          // Need to copy definition, first find it in the input manager
+          // Need to copy definition, first find it in the input system
           std::cout << "Copying \"" << type << "\" definition" << std::endl;
           smtk::attribute::DefinitionPtr nextDef =
-            sourceDef->manager()->findDefinition(type);
-          // Definition missing only if source manager is invalid, but check anyway
+            sourceDef->system()->findDefinition(type);
+          // Definition missing only if source system is invalid, but check anyway
           if (!nextDef)
             {
             std::cerr << "ERROR: Unable to find source definition " << type
@@ -615,11 +597,11 @@ Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
           }
         else
           {
-          // Need to copy definition, first find it in the input manager
+          // Need to copy definition, first find it in the input system
           std::cout << "Copying \"" << type << "\" definition" << std::endl;
           smtk::attribute::DefinitionPtr nextDef =
-            sourceDef->manager()->findDefinition(type);
-          // Definition missing only if source manager is invalid, but check anyway
+            sourceDef->system()->findDefinition(type);
+          // Definition missing only if source system is invalid, but check anyway
           if (!nextDef)
             {
             std::cerr << "ERROR: Unable to find source definition " << type
@@ -644,8 +626,8 @@ Manager::copyDefinition(const smtk::attribute::DefinitionPtr sourceDef,
   return newDef;
 }
 //----------------------------------------------------------------------------
-// Copies attribute defintion into this manager, returning true if successful
-bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
+// Copies attribute defintion into this system, returning true if successful
+bool System::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
                                  smtk::attribute::ItemDefinition::CopyInfo& info)
 {
   // Check for type conflict
@@ -662,7 +644,7 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
   smtk::attribute::DefinitionPtr sourceBaseDef = sourceDef->baseDefinition();
   if (sourceBaseDef)
     {
-    // Check if base definition of this type already exists in this manager
+    // Check if base definition of this type already exists in this system
     std::string baseTypeName = sourceBaseDef->type();
     if (!this->findDefinition(baseTypeName))
       {
@@ -726,12 +708,12 @@ bool Manager::copyDefinitionImpl(smtk::attribute::DefinitionPtr sourceDef,
   return true;
 }
 //----------------------------------------------------------------------------
-// Copies attribute into this manager
+// Copies attribute into this system
 // Returns smart pointer (will be empty if operation unsuccessful)
 // If definition contains RefItem or ExpressionType instances, might also
-// copy additional attributes from the source attribute manager.
+// copy additional attributes from the source attribute system.
 smtk::attribute::AttributePtr
-Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
+System::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
                        unsigned int options)
 {
   // Returns attribute pointer
@@ -741,7 +723,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   std::string name = sourceAtt->name();
   if (this->findAttribute(name))
     {
-    std::cout << "WARNING: Manager contains attribute with name \"" << name
+    std::cout << "WARNING: System contains attribute with name \"" << name
               << "\" -- not copying." << std::endl;
     return newAtt;
     }
@@ -752,7 +734,7 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   // Call internal copy method
   smtk::attribute::Item::CopyInfo info;
   smtk::model::ManagerPtr thisModel = this->refModelManager();
-  smtk::model::ManagerPtr thatModel = sourceAtt->manager()->refModelManager();
+  smtk::model::ManagerPtr thatModel = sourceAtt->system()->refModelManager();
   info.IsSameModel =
     (thisModel && (thisModel == thatModel)) ||
     (options & FORCE_COPY_ASSOCIATIONS);
@@ -780,10 +762,10 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
           }
         else
           {
-          // Need to copy attribute, first find it in the input manager
+          // Need to copy attribute, first find it in the input system
           std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(attName);
-          // Attribute missing only if source manager is invalid, but check anyway
+          AttributePtr nextAtt = sourceAtt->system()->findAttribute(attName);
+          // Attribute missing only if source system is invalid, but check anyway
           if (!nextAtt)
             {
             std::cerr << "ERROR: Unable to find source attribute " << attName
@@ -817,10 +799,10 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
           }
         else
           {
-          // Need to copy attribute, first find it in input manager
+          // Need to copy attribute, first find it in input system
           std::cout << "Copying \"" << attName << "\" attribute" << std::endl;
-          AttributePtr nextAtt = sourceAtt->manager()->findAttribute(attName);
-          // Attribute missing only if source manager is invalid, but check anyway
+          AttributePtr nextAtt = sourceAtt->system()->findAttribute(attName);
+          // Attribute missing only if source system is invalid, but check anyway
           if (!nextAtt)
             {
             std::cerr << "ERROR: Unable to find source attribute " << attName
@@ -845,9 +827,9 @@ Manager::copyAttribute(const smtk::attribute::AttributePtr sourceAtt,
   return newAtt;
 }
 //----------------------------------------------------------------------------
-// Copies attribute defintion into this manager, returning true if successful
+// Copies attribute defintion into this system, returning true if successful
 // Note: Any model associations are *not* copied
-bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
+bool System::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
                                 smtk::attribute::Item::CopyInfo& info,
                                 unsigned options)
 {
@@ -857,7 +839,7 @@ bool Manager::copyAttributeImpl(smtk::attribute::AttributePtr sourceAtt,
   std::string name = sourceAtt->name();
   if (this->findAttribute(name))
     {
-    std::cout << "WARNING: Manager contains attribute with name \"" << name
+    std::cout << "WARNING: System contains attribute with name \"" << name
               << "\" -- not copying." << std::endl;
     return false;
     }

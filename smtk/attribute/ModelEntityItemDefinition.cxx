@@ -12,7 +12,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ModelEntityItem.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"

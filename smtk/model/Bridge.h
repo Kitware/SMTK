@@ -18,7 +18,7 @@
 
 #include "smtk/common/UUID.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Cursor.h"
@@ -206,8 +206,8 @@ public: \
   * that implements the modeling operation using the "foreign" modeling
   * kernel, and (2) a pair of smtk::attribute::Definition instances that
   * define the structure of operator parameters and results.
-  * The latter Definition instances are kept inside an attribute manager
-  * owned by the Bridge; you can access it with smtk::Bridge::operatorManager().
+  * The latter Definition instances are kept inside an attribute system
+  * owned by the Bridge; you can access it with smtk::Bridge::operatorSystem().
   *
   * Register an instance of a Bridge subclass to a
   * model with Manager::bridgeModel(). Then, when an
@@ -242,8 +242,8 @@ public:
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);
 
-  smtk::attribute::Manager* operatorManager();
-  const smtk::attribute::Manager* operatorManager() const;
+  smtk::attribute::System* operatorSystem();
+  const smtk::attribute::System* operatorSystem() const;
 
   virtual OperatorConstructor findOperatorConstructor(const std::string&) const
     { return OperatorConstructor(); }
@@ -262,7 +262,7 @@ protected:
 
   void setSessionId(const smtk::common::UUID& sessId);
 
-  void initializeOperatorManager(const OperatorConstructors* opList, bool inheritSubclass = false);
+  void initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass = false);
   virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(const std::string&, const OperatorConstructors* opList) const;
 
@@ -270,7 +270,7 @@ protected:
 
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
-  smtk::attribute::Manager* m_operatorMgr;
+  smtk::attribute::System* m_operatorSys;
 };
 
   } // namespace model

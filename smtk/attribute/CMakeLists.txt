@@ -15,7 +15,7 @@ set(attributeHeaders
   IntItemDefinition.h
   Item.h
   ItemDefinition.h
-  Manager.h
+  System.h
   ModelEntityItem.h
   ModelEntityItemDefinition.h
   RefItem.h
@@ -45,7 +45,7 @@ set(attributeSrcs
   IntItemDefinition.cxx
   Item.cxx
   ItemDefinition.cxx
-  Manager.cxx
+  System.cxx
   ModelEntityItem.cxx
   ModelEntityItemDefinition.cxx
   RefItem.cxx

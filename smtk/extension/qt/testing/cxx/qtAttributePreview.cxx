@@ -25,7 +25,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/Manager.h"
 
@@ -50,20 +50,20 @@ int main(int argc, char *argv[])
   if (argc < 2)
     {
     std::cout << "\n"
-              << "Simple program to load attribute manager and display corresponding editor panel" << "\n"
+              << "Simple program to load attribute system and display corresponding editor panel" << "\n"
               << "Usage: qtAttributePreview attribute_filename  [output_filename]"
               << "  [view_name | view_number]" << "\n"
               << std::endl;
     return -1;
     }
 
-  // Instantiate and load attribute manager
-  smtk::attribute::Manager manager;
+  // Instantiate and load attribute system
+  smtk::attribute::System system;
   char *inputPath = argv[1];
   std::cout << "Loading simulation file: " << inputPath << std::endl;
   smtk::io::AttributeReader reader;
   smtk::io::Logger inputLogger;
-  bool  err = reader.read(manager, inputPath, true, inputLogger);
+  bool  err = reader.read(system, inputPath, true, inputLogger);
   if (err)
     {
     std::cout << "Error loading simulation file -- exiting" << "\n";
@@ -71,13 +71,13 @@ int main(int argc, char *argv[])
     return -2;
     }
 
-  // If manager contains no views, create InstancedView by default
-  if (manager.rootView()->numberOfSubViews() == 0)
+  // If system contains no views, create InstancedView by default
+  if (system.rootView()->numberOfSubViews() == 0)
     {
-    // Generate list of all concrete definitions in the manager
+    // Generate list of all concrete definitions in the system
     std::vector<smtk::attribute::DefinitionPtr> defs;
     std::vector<smtk::attribute::DefinitionPtr> baseDefinitions;
-    manager.findBaseDefinitions(baseDefinitions);
+    system.findBaseDefinitions(baseDefinitions);
     std::vector<smtk::attribute::DefinitionPtr>::const_iterator baseIter;
 
     for (baseIter = baseDefinitions.begin();
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
         }
 
       std::vector<smtk::attribute::DefinitionPtr> derivedDefs;
-      manager.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
+      system.findAllDerivedDefinitions(*baseIter, true, derivedDefs);
       defs.insert(defs.end(), derivedDefs.begin(), derivedDefs.end());
       }
 
@@ -101,21 +101,21 @@ int main(int argc, char *argv[])
       {
       smtk::view::InstancedPtr view =
           smtk::view::Instanced::New((*defIter)->type());
-      manager.rootView()->addSubView(view);
+      system.rootView()->addSubView(view);
       smtk::attribute::AttributePtr instance =
-        manager.createAttribute((*defIter)->type());
+        system.createAttribute((*defIter)->type());
       view->addInstance(instance);
       }
     }
 
-  smtk::model::ManagerPtr modelManager = manager.refModelManager();
+  smtk::model::ManagerPtr modelManager = system.refModelManager();
 
   // Instantiate Qt application
   QApplication *app = new QApplication(argc, argv);
 
   // Instantiate smtk's qtUIManager
   smtk::attribute::qtUIManager *uiManager =
-    new smtk::attribute::qtUIManager(manager);
+    new smtk::attribute::qtUIManager(system);
 
   // Instantiate empty widget as containter for qtUIManager
   QWidget *widget = new QWidget();
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 
   bool useInternalFileBrowser = true;
 
-  smtk::view::RootPtr rootView = manager.rootView();
+  smtk::view::RootPtr rootView = system.rootView();
   smtk::view::BasePtr view;
 
   // Check for input "view" argument
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
       smtk::view::InstancedPtr instanced = smtk::view::Instanced::New("Default");
 
       std::vector<smtk::attribute::DefinitionPtr> defList;
-      manager.findBaseDefinitions(defList);
+      system.findBaseDefinitions(defList);
       for (size_t i=0; i<defList.size(); ++i)
         {
         smtk::attribute::DefinitionPtr defn = defList[i];
@@ -150,18 +150,18 @@ int main(int argc, char *argv[])
           {
           // For abstract definitions, retrieve all derived & concrete defs
           std::vector<smtk::attribute::DefinitionPtr> derivedList;
-          manager.findAllDerivedDefinitions(defn, true, derivedList);
+          system.findAllDerivedDefinitions(defn, true, derivedList);
           for (size_t j=0; j<derivedList.size(); ++j)
             {
             std::string attType = derivedList[j]->type();
-            smtk::attribute::AttributePtr att = manager.createAttribute(attType);
+            smtk::attribute::AttributePtr att = system.createAttribute(attType);
             instanced->addInstance(att);
             }
           }
         else
           {
           std::string attType = defn->type();
-          smtk::attribute::AttributePtr att = manager.createAttribute(attType);
+          smtk::attribute::AttributePtr att = system.createAttribute(attType);
           instanced->addInstance(att);
           }
         }
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
     std::cout << "Writing resulting simulation file: " << outputPath << std::endl;
     smtk::io::AttributeWriter writer;
     smtk::io::Logger outputLogger;
-    bool  outputErr = writer.write(manager, outputPath, outputLogger);
+    bool  outputErr = writer.write(system, outputPath, outputLogger);
     if (outputErr)
       {
       std::cout << "Error writing simulation file -- exiting" << "\n"

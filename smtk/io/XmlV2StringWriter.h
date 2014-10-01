@@ -18,7 +18,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -38,7 +38,7 @@ namespace smtk
     class SMTKCORE_EXPORT XmlV2StringWriter
     {
     public:
-      XmlV2StringWriter(const smtk::attribute::Manager &manager);
+      XmlV2StringWriter(const smtk::attribute::System &system);
       virtual ~XmlV2StringWriter();
       std::string convertToString(smtk::io::Logger &logger,
                                   bool no_declaration = false);
@@ -48,7 +48,7 @@ namespace smtk
       const smtk::io::Logger &messageLog() const
       {return this->m_logger;}
 
-      //Control which sections of the attribute manager should be writtern out
+      //Control which sections of the attribute system should be writtern out
       // By Default all sections are processed.  These are advance options!!
       // If val is false then defintions will not be saved
       void includeDefinitions(bool val)
@@ -138,7 +138,7 @@ namespace smtk
       static std::string encodeModelEntityMask(smtk::model::BitFlags m);
       static std::string encodeColor(const double *color);
 
-      const smtk::attribute::Manager &m_manager;
+      const smtk::attribute::System &m_system;
       bool m_includeDefinitions;
       bool m_includeInstances;
       bool m_includeModelInformation;

@@ -21,20 +21,34 @@
 #include "smtk/attribute/DirectoryItem.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/Definition.h"
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
+#include "smtk/common/UUIDGenerator.h"
+
 #include <iostream>
 using namespace smtk::attribute;
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition,
-                     unsigned long myId):
+                     const smtk::common::UUID &myId):
   m_name(myName), m_id(myId), m_definition(myDefinition),
   m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false),
   m_isColorSet(false), m_aboutToBeDeleted(false)
 {
+  this->m_definition->buildAttribute(this);
+}
+
+//----------------------------------------------------------------------------
+Attribute::Attribute(const std::string &myName,
+                     smtk::attribute::DefinitionPtr myDefinition):
+  m_name(myName), m_definition(myDefinition),
+  m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false),
+  m_isColorSet(false), m_aboutToBeDeleted(false)
+{
+  smtk::common::UUIDGenerator gen;
+  this->m_id = gen.random();
   this->m_definition->buildAttribute(this);
 }
 
@@ -219,31 +233,31 @@ bool Attribute::isValid()
 }
 
 //----------------------------------------------------------------------------
-Manager *Attribute::manager() const
+System *Attribute::system() const
 {
-  return this->m_definition->manager();
+  return this->m_definition->system();
 }
 //----------------------------------------------------------------------------
 /**\brief Return the model Manager instance whose entities may have attributes.
   *
   * This returns a shared pointer to smtk::model::Manager, which may be
-  * null if no manager is referenced by the attribute manager (or if the
-  * attribute definition does not reference a valid manager).
+  * null if no manager is referenced by the attribute system (or if the
+  * attribute definition does not reference a valid system).
   */
 smtk::model::ManagerPtr Attribute::modelManager() const
 {
   smtk::model::ManagerPtr result;
-  smtk::attribute::Manager* attMgr = this->manager();
-  if (attMgr)
+  smtk::attribute::System* attSys = this->system();
+  if (attSys)
     {
-    result = attMgr->refModelManager();
+    result = attSys->refModelManager();
     }
   return result;
 }
 //----------------------------------------------------------------------------
 smtk::attribute::AttributePtr Attribute::pointer() const
 {
-  Manager *m = this->manager();
+  System *m = this->system();
   if (m)
     {
     return m->findAttribute(this->m_name);
@@ -259,7 +273,6 @@ void Attribute::removeAllAssociations()
 {
   // new-style model entities
   smtk::model::ManagerPtr modelMgr;
-  unsigned long attribId = this->id();
   if (modelMgr)
     {
     smtk::common::UUIDs::const_iterator mit;
@@ -268,7 +281,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      modelMgr->detachAttribute(attribId, *mit, false);
+      modelMgr->detachAttribute(this->id(), *mit, false);
       }
     }
   this->m_modelEntities.clear();

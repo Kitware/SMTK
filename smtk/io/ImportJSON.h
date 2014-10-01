@@ -41,7 +41,7 @@ public:
   static int ofRemoteBridgeSession(cJSON*, smtk::model::DefaultBridgePtr destBridge, smtk::model::ManagerPtr context);
   static int ofLocalBridgeSession(cJSON*, smtk::model::ManagerPtr context);
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
-  static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::attribute::Manager* opMgr);
+  static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::attribute::System* opSys);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
 
   // Low-level helpers:
