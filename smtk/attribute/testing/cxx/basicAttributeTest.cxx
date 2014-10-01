@@ -103,11 +103,6 @@ int main()
 
   if (att)
     {
-    if( att->id() != 0 )
-      {
-      std::cout << "Unexpected id: " << att->id() << " should be 0\n";
-      status++;
-      }
     double color[] = {3,24,12,6};
     if (att->isColorSet())
       {

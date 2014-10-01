@@ -1143,7 +1143,7 @@ bool Manager::findOrAddEntityToGroup(const UUID& grp, const UUID& ent)
 /**\brief Report whether an entity has been assigned an attribute.
   *
   */
-bool Manager::hasAttribute(int attribId, const UUID& toEntity)
+bool Manager::hasAttribute(const UUID&  attribId, const UUID& toEntity)
 {
   UUIDWithAttributeAssignments it = this->m_attributeAssignments->find(toEntity);
   if (it == this->m_attributeAssignments->end())
@@ -1159,7 +1159,7 @@ bool Manager::hasAttribute(int attribId, const UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::attachAttribute(int attribId, const UUID& toEntity)
+bool Manager::attachAttribute(const UUID&  attribId, const UUID& toEntity)
 {
   bool allowed = true;
   if (this->m_attributeSystem)
@@ -1176,7 +1176,7 @@ bool Manager::attachAttribute(int attribId, const UUID& toEntity)
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::detachAttribute(int attribId, const UUID& fromEntity, bool reverse)
+bool Manager::detachAttribute(const UUID&  attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);

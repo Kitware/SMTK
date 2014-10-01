@@ -388,22 +388,22 @@ bool Cursor::hasAttributes() const
 }
 
 /**\brief Does the cursor have any attributes associated with it?
-  */
-bool Cursor::hasAttribute(int attribId) const
+ */
+    bool Cursor::hasAttribute(const smtk::common::UUID &attribId) const
 {
   return this->m_manager->hasAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
-bool Cursor::attachAttribute(int attribId)
+bool Cursor::attachAttribute(const smtk::common::UUID &attribId)
 {
   return this->m_manager->attachAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
-bool Cursor::detachAttribute(int attribId, bool reverse)
+bool Cursor::detachAttribute(const smtk::common::UUID &attribId, bool reverse)
 {
   return this->m_manager->detachAttribute(attribId, this->m_entity, reverse);
 }

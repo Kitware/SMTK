@@ -18,6 +18,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/model/Manager.h"
 #include "smtk/common/UUID.h"
+#include "smtk/common/UUIDGenerator.h"
 #include "smtk/view/Root.h"
 #include <iostream>
 #include <sstream>
@@ -26,7 +27,7 @@
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-System::System(): m_nextAttributeId(0), m_rootView(new view::Root(""))
+System::System(): m_rootView(new view::Root(""))
 {
 }
 
@@ -118,7 +119,7 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
     {
     return smtk::attribute::AttributePtr();
     }
-  a = Attribute::New(name, def, this->m_nextAttributeId++);
+  a = Attribute::New(name, def);
   this->m_attributeClusters[def->type()].insert(a);
   this->m_attributes[name] = a;
   this->m_attributeIdMap[a->id()] = a;
@@ -129,12 +130,7 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
 smtk::attribute::AttributePtr System::createAttribute(const std::string &typeName)
 {
   smtk::attribute::AttributePtr att =
-    this->createAttribute(this->createUniqueName(typeName), typeName,
-                          this->m_nextAttributeId);
-  if (att)
-    {
-    this->m_nextAttributeId++;
-    }
+    this->createAttribute(this->createUniqueName(typeName), typeName);
   return att;
 }
 
@@ -142,27 +138,11 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &typeNam
 smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
                                              const std::string &typeName)
 {
-  smtk::attribute::AttributePtr att = this->createAttribute(name, typeName,
-                                                  this->m_nextAttributeId);
-  if (att)
-    {
-    this->m_nextAttributeId++;
-    }
+  smtk::attribute::DefinitionPtr def = this->findDefinition(typeName);
+  smtk::attribute::AttributePtr att = this->createAttribute(name, def);
   return att;
 }
 
-//----------------------------------------------------------------------------
-void System::recomputeNextAttributeID()
-{
-  std::map<std::string, AttributePtr>::const_iterator it;
-  for (it = this->m_attributes.begin(); it != this->m_attributes.end(); it++)
-    {
-    if (it->second->id() > this->m_nextAttributeId)
-      {
-      this->m_nextAttributeId = it->second->id() + 1;
-      }
-    }
-}
 //----------------------------------------------------------------------------
 void System::definitions(std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
@@ -188,9 +168,10 @@ void System::attributes(std::vector<smtk::attribute::AttributePtr> &result) cons
 //----------------------------------------------------------------------------
 // For Reader classes
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
-                                             smtk::attribute::DefinitionPtr def,
-                                             smtk::attribute::AttributeId id)
+smtk::attribute::AttributePtr
+System::createAttribute(const std::string &name,
+                        smtk::attribute::DefinitionPtr def,
+                        const smtk::common::UUID &id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);
@@ -206,9 +187,10 @@ smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
   return a;
 }
 //----------------------------------------------------------------------------
-smtk::attribute::AttributePtr System::createAttribute(const std::string &name,
-                                             const std::string &typeName,
-                                             smtk::attribute::AttributeId id)
+smtk::attribute::AttributePtr
+System::createAttribute(const std::string &name,
+                        const std::string &typeName,
+                        const smtk::common::UUID &id)
 {
   // First we need to check to see if an attribute exists by the same name
   smtk::attribute::AttributePtr a = this->findAttribute(name);

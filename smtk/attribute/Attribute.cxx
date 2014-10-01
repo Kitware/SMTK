@@ -25,16 +25,30 @@
 
 #include "smtk/model/Manager.h"
 #include "smtk/model/Cursor.h"
+#include "smtk/common/UUIDGenerator.h"
+
 #include <iostream>
 using namespace smtk::attribute;
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition,
-                     unsigned long myId):
+                     const smtk::common::UUID &myId):
   m_name(myName), m_id(myId), m_definition(myDefinition),
   m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false),
   m_isColorSet(false), m_aboutToBeDeleted(false)
 {
+  this->m_definition->buildAttribute(this);
+}
+
+//----------------------------------------------------------------------------
+Attribute::Attribute(const std::string &myName,
+                     smtk::attribute::DefinitionPtr myDefinition):
+  m_name(myName), m_definition(myDefinition),
+  m_appliesToBoundaryNodes(false), m_appliesToInteriorNodes(false),
+  m_isColorSet(false), m_aboutToBeDeleted(false)
+{
+  smtk::common::UUIDGenerator gen;
+  this->m_id = gen.random();
   this->m_definition->buildAttribute(this);
 }
 
@@ -259,7 +273,6 @@ void Attribute::removeAllAssociations()
 {
   // new-style model entities
   smtk::model::ManagerPtr modelMgr;
-  unsigned long attribId = this->id();
   if (modelMgr)
     {
     smtk::common::UUIDs::const_iterator mit;
@@ -268,7 +281,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      modelMgr->detachAttribute(attribId, *mit, false);
+      modelMgr->detachAttribute(this->id(), *mit, false);
       }
     }
   this->m_modelEntities.clear();

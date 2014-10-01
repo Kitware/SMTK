@@ -15,6 +15,8 @@
 #define __smtk_attribute_System_h
 
 #include "smtk/common/Resource.h"    // base class
+#include "smtk/common/UUID.h"
+
 #include "smtk/attribute/ItemDefinition.h"
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
@@ -60,7 +62,7 @@ namespace smtk
       smtk::attribute::AttributePtr createAttribute(const std::string &name, attribute::DefinitionPtr def);
       bool removeAttribute(smtk::attribute::AttributePtr att);
       smtk::attribute::AttributePtr findAttribute(const std::string &name) const;
-      smtk::attribute::AttributePtr findAttribute(smtk::attribute::AttributeId id) const;
+      smtk::attribute::AttributePtr findAttribute(const smtk::common::UUID &id) const;
       void findAttributes(const std::string &type, std::vector<smtk::attribute::AttributePtr> &result) const;
       void findAttributes(smtk::attribute::DefinitionPtr def, std::vector<smtk::attribute::AttributePtr> &result) const;
       smtk::attribute::DefinitionPtr findDefinition(const std::string &type) const;
@@ -101,14 +103,9 @@ namespace smtk
 
       // For Reader classes
       smtk::attribute::AttributePtr createAttribute(const std::string &name, const std::string &type,
-                                          smtk::attribute::AttributeId id);
+                                                    const smtk::common::UUID &id);
      smtk::attribute::AttributePtr createAttribute(const std::string &name, attribute::DefinitionPtr def,
-                                          smtk::attribute::AttributeId id);
-     smtk::attribute::AttributeId nextId() const
-     {return this->m_nextAttributeId;}
-
-     // Sets the next attribute id counter to be the bigger than the largest used by its attributes
-     void recomputeNextAttributeID();
+                                                   const smtk::common::UUID &id);
      std::string createUniqueName(const std::string &type) const;
 
       void updateCategories();
@@ -161,12 +158,11 @@ namespace smtk
       std::map<std::string, smtk::attribute::DefinitionPtr> m_definitions;
       std::map<std::string, std::set<smtk::attribute::AttributePtr> > m_attributeClusters;
       std::map<std::string, smtk::attribute::AttributePtr> m_attributes;
-      std::map<smtk::attribute::AttributeId, smtk::attribute::AttributePtr> m_attributeIdMap;
+      std::map<smtk::common::UUID, smtk::attribute::AttributePtr> m_attributeIdMap;
       std::map<smtk::attribute::DefinitionPtr,
         smtk::attribute::WeakDefinitionPtrSet > m_derivedDefInfo;
       std::set<std::string> m_categories;
       std::map<std::string, std::set<std::string> > m_analyses;
-      smtk::attribute::AttributeId m_nextAttributeId;
       smtk::view::RootPtr m_rootView;
 
       smtk::model::WeakManagerPtr m_refModelMgr;
@@ -185,9 +181,9 @@ namespace smtk
       return (it == this->m_attributes.end()) ? smtk::attribute::AttributePtr() : it->second;
     }
 //----------------------------------------------------------------------------
-    inline smtk::attribute::AttributePtr System::findAttribute(smtk::attribute::AttributeId attId) const
+    inline smtk::attribute::AttributePtr System::findAttribute(const smtk::common::UUID &attId) const
     {
-      std::map<smtk::attribute::AttributeId, AttributePtr>::const_iterator it;
+      std::map<smtk::common::UUID, AttributePtr>::const_iterator it;
       it = this->m_attributeIdMap.find(attId);
       return (it == this->m_attributeIdMap.end()) ? smtk::attribute::AttributePtr() : it->second;
     }
