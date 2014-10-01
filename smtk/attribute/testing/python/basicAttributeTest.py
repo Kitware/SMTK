@@ -56,9 +56,6 @@ if __name__ == '__main__':
         print 'ERROR: Duplicate Attribute testAtt  created'
         status = -1
 
-    if att.id() != 0:
-      print "Unexpected id should be 0"
-      status = -1
     if att.isColorSet():
       print "Color should not be set."
       status = -1

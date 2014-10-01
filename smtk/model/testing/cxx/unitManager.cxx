@@ -187,11 +187,14 @@ int main(int argc, char* argv[])
   // Test attribute assignment (model-side only; no attributes are
   // created, but we can make up attribute IDs and assign them to
   // entities). See also: attributeAssociationTest.
-  test( sm->attachAttribute(/*attribId*/0, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->attachAttribute(/*attribId*/1, uids[0]), "Inserting a new attribute should succeed");
-  test( sm->attachAttribute(/*attribId*/0, uids[0]), "Inserting an attribute twice should succeed");
-  test( sm->detachAttribute(/*attribId*/0, uids[0]), "Removing a non-existent attribute should fail");
-  test(!sm->detachAttribute(/*attribId*/0, uids[1]), "Removing a non-existent attribute should fail");
+  smtk::common::UUID aid1, aid2;
+  aid1 = smtk::common::UUID::random();
+  aid2 = smtk::common::UUID::random();
+  test( sm->attachAttribute(/*attribId*/aid1, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->attachAttribute(/*attribId*/aid2, uids[0]), "Inserting a new attribute should succeed");
+  test( sm->attachAttribute(/*attribId*/aid1, uids[0]), "Inserting an attribute twice should succeed");
+  test( sm->detachAttribute(/*attribId*/aid1, uids[0]), "Removing a non-existent attribute should fail");
+  test(!sm->detachAttribute(/*attribId*/aid1, uids[1]), "Removing a non-existent attribute should fail");
 
   // Test removal of arrangement information and entities.
   // Remove a volume from its volume use and the model containing it.

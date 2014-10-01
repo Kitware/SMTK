@@ -33,7 +33,6 @@ namespace smtk
     class RefItem;
     class Item;
     class System;
-    typedef unsigned long AttributeId;
 
     class SMTKCORE_EXPORT Attribute
     {
@@ -41,9 +40,15 @@ namespace smtk
       friend class smtk::attribute::System;
       friend class smtk::attribute::RefItem;
     public:
-      static smtk::attribute::AttributePtr New(const std::string &myName,
-                                    smtk::attribute::DefinitionPtr myDefinition,
-                                    smtk::attribute::AttributeId myId)
+      static smtk::attribute::AttributePtr
+        New(const std::string &myName,
+            smtk::attribute::DefinitionPtr myDefinition)
+      { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition)); }
+
+       static smtk::attribute::AttributePtr
+        New(const std::string &myName,
+            smtk::attribute::DefinitionPtr myDefinition,
+            const smtk::common::UUID &myId)
       { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
@@ -51,7 +56,7 @@ namespace smtk
       const std::string &name() const
       { return this->m_name;}
 
-      smtk::attribute::AttributeId id() const
+      const smtk::common::UUID &id() const
       { return this->m_id;}
 
       const std::string &type() const;
@@ -156,7 +161,9 @@ namespace smtk
 
     protected:
       Attribute(const std::string &myName,
-                smtk::attribute::DefinitionPtr myDefinition, smtk::attribute::AttributeId myId);
+                smtk::attribute::DefinitionPtr myDefinition, const smtk::common::UUID &myId);
+      Attribute(const std::string &myName,
+                smtk::attribute::DefinitionPtr myDefinition);
 
       void removeAllItems();
       void addItem(smtk::attribute::ItemPtr iPtr)
@@ -174,7 +181,7 @@ namespace smtk
         {this->m_references.erase(attRefItem);}
       std::string m_name;
       std::vector<smtk::attribute::ItemPtr> m_items;
-      smtk::attribute::AttributeId m_id;
+      smtk::common::UUID m_id;
       smtk::attribute::DefinitionPtr m_definition;
       smtk::common::UUIDs m_modelEntities;
       std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;

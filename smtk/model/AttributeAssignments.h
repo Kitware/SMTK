@@ -33,7 +33,7 @@ namespace smtk {
   namespace model {
 
 /// A set of attribute identifiers.
-typedef std::set<smtk::attribute::AttributeId> AttributeSet;
+typedef std::set<smtk::common::UUID> AttributeSet;
 
 /**\brief Store a list of attributes assigned to solid model entities.
   *
@@ -41,9 +41,9 @@ typedef std::set<smtk::attribute::AttributeId> AttributeSet;
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  bool attachAttribute(smtk::attribute::AttributeId attribId);
-  bool detachAttribute(smtk::attribute::AttributeId attribId);
-  bool isAssociated(smtk::attribute::AttributeId attribId) const;
+  bool attachAttribute(const smtk::common::UUID &attribId);
+  bool detachAttribute(const smtk::common::UUID &attribId);
+  bool isAssociated(const smtk::common::UUID &attribId) const;
 
   AttributeSet& attributes() { return this->m_attributes; }
   const AttributeSet& attributes() const { return this->m_attributes; }

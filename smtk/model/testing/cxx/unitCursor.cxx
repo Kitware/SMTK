@@ -282,11 +282,14 @@ int main(int argc, char* argv[])
 
     // Verify that attribute assignment works (with some
     // made-up attribute IDs)
+    smtk::common::UUID aid1, aid2;
+    aid1 = smtk::common::UUID::random();
+    aid2 = smtk::common::UUID::random();
     test(!entity.hasAttributes(), "Detecting an un-associated attribute");
-    test( entity.attachAttribute(1), "Attaching an attribute");
-    test( entity.attachAttribute(1), "Re-attaching a repeated attribute");
-    test( entity.detachAttribute(1), "Detaching an associated attribute");
-    test(!entity.detachAttribute(2), "Detaching an un-associated attribute");
+    test( entity.attachAttribute(aid1), "Attaching an attribute");
+    test( entity.attachAttribute(aid1), "Re-attaching a repeated attribute");
+    test( entity.detachAttribute(aid1), "Detaching an associated attribute");
+    test(!entity.detachAttribute(aid2), "Detaching an un-associated attribute");
 
     // Test that face entity was created with invalid (but present) face uses.
     Face f(sm, uids[20]);

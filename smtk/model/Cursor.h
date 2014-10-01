@@ -150,9 +150,9 @@ public:
   const Tessellation* hasTessellation() const;
 
   bool hasAttributes() const;
-  bool hasAttribute(int attribId) const;
-  bool attachAttribute(int attribId);
-  bool detachAttribute(int attribId, bool reverse = true);
+  bool hasAttribute(const smtk::common::UUID &attribId) const;
+  bool attachAttribute(const smtk::common::UUID &attribId);
+  bool detachAttribute(const smtk::common::UUID &attribId, bool reverse = true);
   AttributeAssignments& attributes();
   AttributeSet attributes() const;
 

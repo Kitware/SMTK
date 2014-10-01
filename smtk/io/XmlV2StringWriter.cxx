@@ -865,7 +865,7 @@ void XmlV2StringWriter::processAttribute(xml_node &attributes,
       node.append_attribute("OnBoundaryNodes").set_value(att->appliesToBoundaryNodes());
       }
     }
-  node.append_attribute("ID").set_value(static_cast<unsigned int>(att->id()));
+  node.append_attribute("ID").set_value(att->id().toString().c_str());
   // Save Color Information
   if (att->isColorSet())
     {

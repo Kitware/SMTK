@@ -12,7 +12,6 @@
 
 #include "smtk/SharedFromThis.h"
 #include "smtk/model/Cursor.h"
-#include "smtk/attribute/Attribute.h" // for AttributeId
 
 #include <string>
 #include <vector>
@@ -98,7 +97,7 @@ public:
   virtual Cursor relatedEntity() const                         { return Cursor(); }
   virtual smtk::common::UUID relatedEntityId() const           { return this->relatedEntity().entity(); }
   virtual ArrangementKind relatedArrangementKind() const       { return KINDS_OF_ARRANGEMENTS; }
-  virtual smtk::attribute::AttributeId relatedAttributeId() const { return static_cast<smtk::attribute::AttributeId>(-1); }
+  virtual smtk::common::UUID relatedAttributeId() const        { return smtk::common::UUID::null(); }
   virtual std::string relatedPropertyName() const              { return std::string(); }
   virtual PropertyType relatedPropertyType() const             { return INVALID_PROPERTY; }
 

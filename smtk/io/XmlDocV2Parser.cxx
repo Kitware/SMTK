@@ -503,9 +503,6 @@ void XmlDocV2Parser::processAttributeInformation(xml_node &root)
     this->processAttribute(child);
     }
 
-  // Have the system reset its next attribute id properly
-  this->m_system.recomputeNextAttributeID();
-
   // At this point we have all the attributes read in so lets
   // fix up all of the attribute  references
   attribute::AttributePtr att;
@@ -1436,7 +1433,7 @@ void XmlDocV2Parser::processAttribute(xml_node &attNode)
   xml_attribute xatt;
   attribute::AttributePtr att;
   attribute::DefinitionPtr def;
-  smtk::attribute::AttributeId id;
+  smtk::common::UUID id;
   int i, n;
 
   xatt = attNode.attribute("Name");
@@ -1459,12 +1456,12 @@ void XmlDocV2Parser::processAttribute(xml_node &attNode)
   xatt = attNode.attribute("ID");
   if (!xatt)
     {
-    smtkErrorMacro(this->m_logger,
-                   "Invalid Attribute: " << name
-                   << "  - Missing XML Attribute ID");
-    return;
+    id = smtk::common::UUID::null();
     }
-  id = xatt.as_uint();
+  else
+    {
+    id = smtk::common::UUID(xatt.value());
+    }
 
   def = this->m_system.findDefinition(type);
   if (!def)
@@ -1484,7 +1481,16 @@ void XmlDocV2Parser::processAttribute(xml_node &attNode)
     return;
     }
 
-  att = this->m_system.createAttribute(name, def, id);
+  // Do we have a valid uuid?
+  if (id.isNull())
+    {
+    att = this->m_system.createAttribute(name, def);
+    }
+  else
+    {
+    att = this->m_system.createAttribute(name, def, id);
+    }
+
 
   if (!att)
     {
