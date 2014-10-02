@@ -15,7 +15,6 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkCMBModelWriterBase.h"
 #include "vtkCMBParserV4.h"
-#include "vtkEdgeSplitOperator.h"
 #include "vtkModelItemIterator.h"
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
