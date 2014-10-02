@@ -25,9 +25,6 @@ include_directories(
 pv_setup_module_environment("SMTKCMB")
 pv_process_modules()
 
-# Handleing cmbmodel files
-project(SMTKCMBModel)
-
 SET(CmbModelFiles
   cmbmodel/vtkCMBModelWriterV2.cxx
   cmbmodel/vtkCMBModelWriterV4.cxx
