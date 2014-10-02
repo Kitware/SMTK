@@ -43,7 +43,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkCMBModelWriterV5_h
 #define __smtkcmb_vtkCMBModelWriterV5_h
 
-#include "SMTKCMBBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
 #include "vtkCMBModelWriterV4.h"
 #include <vector>
 

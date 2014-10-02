@@ -229,18 +229,7 @@ set(_module_src
 set(vtkSMTKDiscreteModel_NO_HeaderTest 1)
 vtk_module_library(vtkSMTKDiscreteModel ${_module_src})
 
-target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS}
-    vtkCommonDataModel
-    vtkIOCore
-    vtkFiltersCore
-    vtkRenderingCore
-    vtkFiltersSources
-    vtkInteractionStyle
-    vtkIOXMLParser
-    vtkRenderingFreeTypeOpenGL
-    vtkRenderingOpenGL
-    vtksys
-)
+target_link_libraries(vtkSMTKDiscreteModel LINK_PRIVATE ${UUID_LIBS})
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)

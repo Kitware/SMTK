@@ -1,7 +1,7 @@
 #ifndef __smtk_bridge_cmb_Bridge_h
 #define __smtk_bridge_cmb_Bridge_h
 
-#include "SMTKCMBBridgeExports.h"
+#include "smtk/bridge/cmb/cmbBridgeExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Bridge.h"
 

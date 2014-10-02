@@ -13,6 +13,7 @@ include_directories(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmbmodel"
     "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel"
     "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel/Model"
+    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel/Serialize"
     "${CMAKE_CURRENT_BINARY_DIR}/cmbmodel"
     "${CMAKE_CURRENT_BINARY_DIR}/discretemodel"
 )
@@ -133,7 +134,7 @@ target_link_libraries(smtkCMBBridge
    ${__private_dependencies}
   )
 
-smtk_export_header(smtkCMBBridge SMTKCMBBridgeExports.h)
+smtk_export_header(smtkCMBBridge cmbBridgeExports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)

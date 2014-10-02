@@ -29,7 +29,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkCMBParserV5_h
 #define __smtkcmb_vtkCMBParserV5_h
 
-#include "SMTKCMBBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 

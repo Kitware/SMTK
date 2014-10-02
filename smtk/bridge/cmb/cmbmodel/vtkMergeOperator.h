@@ -32,7 +32,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 #ifndef __smtkcmb_vtkMergeOperator_h
 #define __smtkcmb_vtkMergeOperator_h
 
-#include "SMTKCMBBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
 #include "vtkMergeOperatorBase.h"
 
 
