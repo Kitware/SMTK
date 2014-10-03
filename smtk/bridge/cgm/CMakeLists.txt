@@ -67,8 +67,8 @@ target_link_libraries(cgm-convert SMTKCore cgmSMTK ${CGM_LIBRARIES})
 add_executable(facet-convert facet-convert.cxx)
 target_link_libraries(facet-convert SMTKCore ${CGM_LIBRARIES})
 
-if (SMTK_BUILD_ParaView)
-  include("${PARAVIEW_USE_FILE}")
+if (SMTK_BUILD_VTK)
+  include("${VTK_USE_FILE}")
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
     SMTKCore

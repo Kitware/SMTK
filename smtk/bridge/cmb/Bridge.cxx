@@ -58,7 +58,7 @@
 
 #include "vtkCommand.h"
 #include "vtkCellArray.h"
-#include "vtkCompositeDataPipeline.h" // for COMPOSITE_INDICES()
+#include "vtkCompositeDataPipeline.h" // for UPDATE_COMPOSITE_INDICES()
 #include "vtkInformation.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkNew.h"
@@ -361,7 +361,7 @@ bool Bridge::assignUUIDToEntity(
     return false;
   vtkInformation* mp = item->GetProperties();
   mp->AddObserver(vtkCommand::DeleteEvent, this->m_itemWatcher);
-  mp->Set(vtkCompositeDataPipeline::COMPOSITE_INDICES(),
+  mp->Set(vtkCompositeDataPipeline::UPDATE_COMPOSITE_INDICES(),
     const_cast<int*>(reinterpret_cast<const int*>(itemId.begin())),
     16/sizeof(unsigned int));
   this->m_itemsToRefs[itemId] = item;
@@ -377,11 +377,11 @@ smtk::common::UUID Bridge::findOrSetEntityUUID(vtkModelItem* item)
 smtk::common::UUID Bridge::findOrSetEntityUUID(vtkInformation* mp)
 {
   smtk::common::UUID mid;
-  // Use COMPOSITE_INDICES() to hold a UUID.
-  if (mp->Has(vtkCompositeDataPipeline::COMPOSITE_INDICES()))
+  // Use UPDATE_COMPOSITE_INDICES() to hold a UUID.
+  if (mp->Has(vtkCompositeDataPipeline::UPDATE_COMPOSITE_INDICES()))
     {
     int rawUUID[16/sizeof(int)];
-    mp->Get(vtkCompositeDataPipeline::COMPOSITE_INDICES(), rawUUID);
+    mp->Get(vtkCompositeDataPipeline::UPDATE_COMPOSITE_INDICES(), rawUUID);
     smtk::common::UUID::const_iterator rawAddr =
       reinterpret_cast<const smtk::common::UUID::iterator>(&rawUUID[0]);
     mid = smtk::common::UUID(rawAddr, rawAddr + smtk::common::UUID::size());
@@ -389,7 +389,7 @@ smtk::common::UUID Bridge::findOrSetEntityUUID(vtkInformation* mp)
   else
     {
     mid = this->m_idGenerator.random();
-    mp->Set(vtkCompositeDataPipeline::COMPOSITE_INDICES(),
+    mp->Set(vtkCompositeDataPipeline::UPDATE_COMPOSITE_INDICES(),
       reinterpret_cast<int*>(mid.begin()),
       16/sizeof(unsigned int));
     }

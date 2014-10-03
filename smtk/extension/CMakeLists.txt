@@ -5,11 +5,11 @@ if(SMTK_BUILD_QT)
 endif()
 
 
-if(SMTK_BUILD_ParaView)
-  # Only include the ParaView use-file in subdirectories
-  # that require ParaView include paths. Otherwise, command
+if(SMTK_BUILD_VTK)
+  # Only include the VTK use-file in subdirectories
+  # that require VTK include paths. Otherwise, command
   # lines get too long on some platforms.
-  include("${PARAVIEW_USE_FILE}")
+  include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
@@ -17,6 +17,8 @@ if(SMTK_BUILD_ParaView)
   # vtk_module_library() macro and vtk/module.cmake file.
   # The pv_process_modules() macro finds all subdirectories
   # containing a module.cmake file automatically.
-  pv_setup_module_environment("SMTK")
-  pv_process_modules()
+  include (vtkSMTKModules)
+  vtk_smtk_setup_module_environment("VTKSMTK")
+  vtk_smtk_process_modules()
+
 endif()

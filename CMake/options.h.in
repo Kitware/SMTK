@@ -15,8 +15,12 @@
 // Was SMTK built with Qt? If true, QtSMTK library will exist.
 #cmakedefine SMTK_BUILD_QT
 
-// Was SMTK built with ParaView? If true, the pvSMTK library will exist.
-#cmakedefine SMTK_BUILD_ParaView
+// Was SMTK built with VTK? If true, the vtkSMTK library will exist.
+#cmakedefine SMTK_BUILD_VTK
+
+// Was SMTK built with VTK? If true, the smtkCMBBridge library
+// and vtkSMTKDiscreteModel library will exist.
+#cmakedefine SMTK_BUILD_CMB_BRIDGE
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
 #cmakedefine SMTK_BUILD_CGM

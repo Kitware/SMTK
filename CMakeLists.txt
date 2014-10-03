@@ -30,7 +30,7 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
+option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_BUILD_CMB_BRIDGE "Build CMB discrete model bridge component" OFF)
 
@@ -113,15 +113,15 @@ if(SMTK_BUILD_QT)
 endif()
 
 ################################################################################
-# ParaView-VTK Related Settings
+# VTK Related Settings
 ################################################################################
 
-if(SMTK_BUILD_ParaView)
+if(SMTK_BUILD_VTK)
   # Find the package here so environment variables are set, but
-  # be careful not to include the PARAVIEW_USE_FILE until inside
+  # be careful not to include the VTK_USE_FILE until inside
   # a subdirectory that requires it; otherwise the list of include
   # paths can become too long for some platforms.
-  find_package(ParaView REQUIRED)
+  find_package(VTK REQUIRED)
 endif()
 
 
@@ -255,8 +255,8 @@ add_subdirectory(thirdparty)
 ################################################################################
 
 # Add the current directory so we can include files like: <smtk/internal/Test.h>
-# Save the include directories in a variable so that VTK and ParaView modules
-# (inside the paraview/{vtk,pvvtk} directories) can reuse them.
+# Save the include directories in a variable so that VTK modules
+# (inside the extension/vtk and bridge/cmb directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -267,21 +267,11 @@ include_directories(
 )
 
 ################################################################################
-# Look for VTK and ParaView modules
-################################################################################
-# Cannot prepare ParaView/VTK modules until the include directories
-# have been set or they will be unable to find SMTK, Boost, etc.
-#if(SMTK_BUILD_ParaView)
-#  pv_setup_module_environment("SMTK")
-#  pv_process_modules()
-#endif()
-
-################################################################################
 # Look for CMB bridge discrete model modules
 ################################################################################
 
 if(SMTK_BUILD_CMB_BRIDGE)
-  find_package(ParaView REQUIRED)
+  find_package(VTK REQUIRED)
 endif()
 
 ################################################################################

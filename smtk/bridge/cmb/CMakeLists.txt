@@ -1,9 +1,9 @@
 PROJECT(smtkCMBBridge)
 
-# Only include the ParaView use-file in subdirectories
-# that require ParaView include paths. Otherwise, command
+# Only include the VTK use-file in subdirectories
+# that require VTK include paths. Otherwise, command
 # lines get too long on some platforms.
-include("${PARAVIEW_USE_FILE}")
+include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
@@ -22,8 +22,9 @@ include_directories(
 # vtk_module_library() macro and vtk/module.cmake file.
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
-pv_setup_module_environment("SMTKCMB")
-pv_process_modules()
+include (vtkSMTKModules)
+vtk_smtk_setup_module_environment("SMTKCMB")
+vtk_smtk_process_modules()
 
 SET(CmbModelFiles
   cmbmodel/vtkCMBModelWriterV2.cxx
@@ -109,10 +110,10 @@ add_library(smtkCMBBridge ${_module_src} ${cmbBridgeSrcs})
 
 set (__private_dependencies)
 
-if (PARAVIEW_ENABLE_PYTHON)
+if (VTK_WRAP_PYTHON)
   list(APPEND __private_dependencies
       vtkPythonInterpreter)
-endif (PARAVIEW_ENABLE_PYTHON)
+endif (VTK_WRAP_PYTHON)
 
 #set smtkCMBBridge to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
 target_link_libraries(smtkCMBBridge
@@ -121,9 +122,6 @@ target_link_libraries(smtkCMBBridge
     vtkSMTK
   LINK_PRIVATE
    vtkSMTKDiscreteModel
-   vtkPVServerManagerCore
-   vtkPVClientServerCoreRendering
-   vtkPVVTKExtensionsRendering
    vtkFiltersCore
    vtkRenderingCore
    vtkGeovisCore

@@ -38,7 +38,7 @@ You may optionally provide
   [Cubit](http://cubit.sandia.gov/),
   for importing CAD models;
   and
-+ [ParaView](http://paraview.org) version 4.1 or newer,
++ [VTK](http://VTK.org) version 6.1 or newer,
   for graphical presentation and selection of geometric models.
 
 If you want to build the documentation you will need
