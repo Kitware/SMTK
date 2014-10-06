@@ -136,7 +136,7 @@ These packages can all be installed with pip:
   sudo pip install docutils
   sudo pip install Sphinx
   # For linking to external Doxygen docs:
-  sudo pip install sphinxcontrib-doxylinks
+  sudo pip install sphinxcontrib-doxylink
   # For creating inline class docs from Doxygen XML:
   sudo pip install breathe
   # For the default theme:
