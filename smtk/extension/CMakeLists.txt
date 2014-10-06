@@ -9,8 +9,37 @@ if(SMTK_BUILD_VTK)
   # Only include the VTK use-file in subdirectories
   # that require VTK include paths. Otherwise, command
   # lines get too long on some platforms.
+
+  # We need the COMPONENTS argument so that this will work
+  # with both standalone VTK or Paraview-VTK
+  set(__required_vtk_modules
+      vtkCommonCore
+      vtkCommonDataModel
+      vtkCommonExecutionModel
+      vtkRenderingCore
+      vtkInteractionStyle
+      vtkViewsCore
+      vtkViewsInfovis
+      vtkIOXML
+      vtkIOLegacy
+      vtkInteractionStyle
+      vtkRenderingContext2D
+      vtkRenderingContextOpenGL
+      vtkRenderingOpenGL
+      vtkRenderingMatplotlib
+      vtkRenderingVolumeOpenGL
+      vtkRenderingFreeTypeOpenGL
+  )
+
+  if (SMTK_ENABLE_TESTING)
+    list(APPEND __required_vtk_modules vtkTestingRendering)
+  endif()
+  message("__required_vtk_modules = ${__required_vtk_modules}")
+  find_package( VTK REQUIRED COMPONENTS ${__required_vtk_modules} )
+
   include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
+  # message("VTK_MODULES_DIR=${VTK_MODULES_DIR}")
   set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
   # Don't add the VTK or other subdirectories as they use the

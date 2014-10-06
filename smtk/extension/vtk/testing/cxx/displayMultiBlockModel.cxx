@@ -27,7 +27,6 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 
-#include "vtkTestUtilities.h"
 #include "vtkRegressionTestImage.h"
 
 using smtk::shared_ptr;
