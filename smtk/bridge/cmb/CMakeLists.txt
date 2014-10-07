@@ -119,7 +119,6 @@ endif (VTK_WRAP_PYTHON)
 target_link_libraries(smtkCMBBridge
   LINK_PUBLIC
     SMTKCore
-    vtkSMTK
   LINK_PRIVATE
    vtkSMTKDiscreteModel
    vtkFiltersCore
@@ -140,7 +139,7 @@ endif()
 smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTK vtkSMTKDiscreteModel)
+smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
