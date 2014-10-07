@@ -222,7 +222,7 @@ install (FILES ${PROJECT_BINARY_DIR}/smtk/HashFunctor.h
 # Save compile-time options for use by other packages
 ################################################################################
 configure_file(
-  ${PROJECT_SOURCE_DIR}/CMake/Options.h.cmake
+  ${PROJECT_SOURCE_DIR}/CMake/Options.h.in
   ${PROJECT_BINARY_DIR}/smtk/Options.h
   @ONLY)
 
