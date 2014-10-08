@@ -52,6 +52,7 @@ public:
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
   QPointer<QTableWidget> ItemsTable;
+  bool creatingWidget;
 };
 
 //----------------------------------------------------------------------------
@@ -103,6 +104,7 @@ void qtGroupItem::createWidget()
     {
     return;
     }
+  this->Internals->creatingWidget = true;
 
   QString title = item->label().empty() ? item->name().c_str() : item->label().c_str();
   QGroupBox* groupBox = new QGroupBox(title, this->parentWidget());
@@ -134,6 +136,7 @@ void qtGroupItem::createWidget()
     connect(groupBox, SIGNAL(toggled(bool)),
             this, SLOT(setEnabledState(bool)));
     }
+  this->Internals->creatingWidget = false;
 }
 
 //----------------------------------------------------------------------------
@@ -444,7 +447,7 @@ void qtGroupItem::addItemsToTable(int i)
 //----------------------------------------------------------------------------
 void qtGroupItem::onChildWidgetSizeChanged()
 {
-  if(this->Internals->ItemsTable)
+  if(this->Internals->ItemsTable && !this->Internals->creatingWidget)
     {
     this->Internals->ItemsTable->resizeColumnsToContents();
     QCoreApplication::processEvents();
