@@ -44,6 +44,10 @@ include(GenerateExportHeader)
 # export install targets
 include(SMTKMacros)
 
+# include cmake code that allows for easier testing of SMTK classes
+# and also provides helpers around create_test_sourcelist
+include(CMake/SMTKTestingMacros.cmake)
+
 # Include mechanism for determining shared and weak pointer support
 include(SharedPtr)
 
