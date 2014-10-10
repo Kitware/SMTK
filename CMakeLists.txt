@@ -256,6 +256,7 @@ install(
   FILES
     ${PROJECT_SOURCE_DIR}/CMake/EncodeCStringFunctions.cmake
     ${PROJECT_SOURCE_DIR}/CMake/SMTKOperatorXML.cmake
+    ${PROJECT_SOURCE_DIR}/CMake/SMTKBridgeJSON.cmake
   DESTINATION
     lib/cmake/SMTK
 )

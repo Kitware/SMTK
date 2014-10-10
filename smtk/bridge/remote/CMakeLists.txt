@@ -25,6 +25,7 @@ target_link_libraries(SMTKRemote
   LINK_PRIVATE
     RemusCommon
     RemusClient
+    RemusServer
   )
 
 target_include_directories(SMTKRemote

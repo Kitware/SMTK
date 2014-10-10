@@ -50,6 +50,15 @@ endif()
 #install the library and exports the library when used from a build tree
 smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 
+# Normally we would uncomment this line:
+#    smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" cgmBridgeJSON)
+# to generate a header file containing the JSON string defining
+# tags for the CGM bridge. However, because we wish to omit portions
+# of the JSON depending on configuration options, a hand-edited header
+# is included in the source tree instead. The other option would be to
+# use nodeJS or Python to conditionally create the JSON and/or header.
+# But this is simpler.
+
 # Operators which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 # We do not need the path to the generated header (appended

@@ -20,7 +20,7 @@ classes in the :cxx:`smtk::attribute` namespace are mostly found in the
 :file:`smtk/attribute` directory.
 Exceptions occur where classes that belong in a namespace depend on third-party libraries
 that should not be linked to SMTK's core library.
-For example, Qt widgets for attributes are in :file:`smtk/Qt`, not in :file:`smtk/attribute`
+For example, Qt widgets for attributes are in :file:`smtk/extensions/qt`, not in :file:`smtk/attribute`
 because they depend on Qt, which is optional when building SMTK (so that, for instance,
 solid modeling kernels like Cubit may be supported without issue).
 
@@ -104,8 +104,8 @@ The following rules apply to writing documentation:
   the Doxygen documentation *when appropriate*.
   Examples:
   ``:smtk:`UUID``` produces this link: :smtk:`UUID` while the
-  ``:smtk:`Manager <smtk::attribute::Manager>``` variant can produce
-  links (:smtk:`Manager <smtk::attribute::Manager>` in this case) whose text varies from the classname
+  ``:smtk:`System <smtk::attribute::System>``` variant can produce
+  links (:smtk:`System <smtk::attribute::System>` in this case) whose text varies from the classname
   or whose classnames are ambiguous because of namespaces.
   The leading ``:smtk:`` names the tag file holding the class and function definitions;
   other third-party-library tag files may be added in the future.

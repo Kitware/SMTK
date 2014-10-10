@@ -21,6 +21,9 @@
 
 #include "remus/client/ServerConnection.h"
 
+#include "remus/server/Server.h"
+#include "remus/server/WorkerFactory.h"
+
 #include "remus/proto/Job.h"
 #include "remus/proto/JobContent.h"
 #include "remus/proto/JobSubmission.h"
@@ -48,7 +51,20 @@ RemusBridgeConnection::~RemusBridgeConnection()
 bool RemusBridgeConnection::connectToServer(const std::string& hostname, int port)
 {
   // TODO: Drop any current connection and reset bridges? Copy-on-connect? ???
-  this->m_conn = remus::client::ServerConnection(hostname, port);
+  if (hostname.empty() || hostname == "local")
+    {
+    // Start a process-local server
+    boost::shared_ptr<remus::server::WorkerFactory> factory(new remus::server::WorkerFactory());
+    factory->setMaxWorkerCount(0);
+    this->m_localServer = smtk::shared_ptr<remus::Server>(
+      new remus::Server(remus::server::ServerPorts(),factory));
+    this->m_localServer->startBrokering();
+
+    // Connect to the process-local server
+    this->m_conn = remus::client::ServerConnection();
+    }
+  else
+    this->m_conn = remus::client::ServerConnection(hostname, port);
   this->m_client =
     smtk::shared_ptr<remus::client::Client>(
       new remus::client::Client(this->m_conn));
@@ -62,6 +78,8 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
   std::vector<std::string> resultVec;
   if (this->m_remoteBridgeNames.empty())
     {
+    if (!this->m_client)
+      this->connectToServer();
     remus::common::MeshIOTypeSet mtypes = this->m_client->supportedIOTypes();
     remus::common::MeshIOTypeSet::const_iterator mit;
     for (mit = mtypes.begin(); mit != mtypes.end(); ++mit)

@@ -19,6 +19,10 @@
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
 
+#include "remus/server/Server.h"
+
+#include "remus/common/remusGlobals.h"
+
 #include "remus/proto/JobRequirements.h"
 
 #include "cJSON.h"
@@ -48,7 +52,9 @@ public:
   smtkCreateMacro(RemusBridgeConnection);
   virtual ~RemusBridgeConnection();
 
-  bool connectToServer(const std::string& hostname, int port);
+  bool connectToServer(
+    const std::string& hostname = "local",
+    int port = remus::SERVER_CLIENT_PORT);
 
   std::vector<std::string> bridgeNames();
 
@@ -93,6 +99,7 @@ protected:
 
   remus::client::ServerConnection m_conn;
   smtk::shared_ptr<remus::client::Client> m_client;
+  smtk::shared_ptr<remus::Server> m_localServer;
   smtk::model::ManagerPtr m_modelMgr;
   std::set<std::string> m_remoteBridgeNames;
   std::map<smtk::common::UUID,std::string> m_remoteBridgeSessionIds;

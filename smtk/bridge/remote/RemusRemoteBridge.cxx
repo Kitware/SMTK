@@ -362,12 +362,15 @@ smtkImplementsModelingKernel(
   smtk::bridge::remote::RemusRemoteBridge);
 
 smtkRegisterBridgeWithRemus("native", ,"smtk::model[native]", Native);
-#if 0 // ifdef SMTK_BUILD_CGM
+#ifdef SMTK_BUILD_CGM
 // FIXME: Use conditionals to enable these only when the underlying CGM library supports them:
 //        At worst, this source could depend on list-cgm-engines, which provides a list.
 //        At best, FindCGM could provide CMake variables to be included in smtk/options.h.in.
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgmEngines::setDefault("ACIS"),  "smtk::model[cgm{ACIS}]", CGM_ACIS);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgmEngines::setDefault("cubit"), "smtk::model[cgm{Cubit}]", CGM_Cubit);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgmEngines::setDefault("OCC"),   "smtk::model[cgm{OpenCascade}]", CGM_OpenCascade);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgmEngines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("ACIS"),  "smtk::model[cgm{ACIS}]", CGM_ACIS);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("cubit"), "smtk::model[cgm{Cubit}]", CGM_Cubit);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("OCC"),   "smtk::model[cgm{OpenCascade}]", CGM_OpenCascade);
+smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
+#endif
+#ifdef SMTK_BUILD_CMB
+smtkRegisterBridgeWithRemus("cmb", ,  "smtk::model[cmb]", CMB);
 #endif
