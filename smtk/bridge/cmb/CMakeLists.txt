@@ -141,6 +141,10 @@ smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
 
+if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_CMB_BRIDGE)
+  add_subdirectory(plugin)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
   add_subdirectory(cmbmodel/testing)

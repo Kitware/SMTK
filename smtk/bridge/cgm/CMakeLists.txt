@@ -118,6 +118,10 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py ${CMAKE_INSTALL_PREFIX}/python/cgmsmtk.py )" )
 endif()
 
+if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_CGM)
+  add_subdirectory(plugin)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
   target_link_libraries(TestBuild_smtk_bridge_cgm LINK_PRIVATE ${CGM_LIBRARIES})

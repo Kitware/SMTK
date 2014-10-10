@@ -33,6 +33,7 @@ option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_BUILD_CMB_BRIDGE "Build CMB discrete model bridge component" OFF)
+option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridge" OFF)
 
 option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
@@ -113,17 +114,32 @@ if(SMTK_BUILD_QT)
 endif()
 
 ################################################################################
+# NOTE: This has be before any find_package(VTK), because currently ParaView
+# and VTK can NOT be easily switched due to modules and macros intermixed
+################################################################################
+################################################################################
+# Look for CMB bridge discrete model modules
+################################################################################
+
+if(SMTK_BUILD_BRIDGE_PLUGIN)
+  find_package(ParaView REQUIRED)
+endif()
+
+################################################################################
 # VTK Related Settings
 ################################################################################
 
 if(SMTK_BUILD_VTK)
-  # Find the package here so environment variables are set, but
-  # be careful not to include the VTK_USE_FILE until inside
-  # a subdirectory that requires it; otherwise the list of include
-  # paths can become too long for some platforms.
-  find_package(VTK REQUIRED)
+  if(SMTK_BUILD_BRIDGE_PLUGIN)
+    find_package(ParaView REQUIRED)
+  else()
+    # Find the package here so environment variables are set, but
+    # be careful not to include the VTK_USE_FILE until inside
+    # a subdirectory that requires it; otherwise the list of include
+    # paths can become too long for some platforms.
+    find_package(VTK REQUIRED)
+  endif()
 endif()
-
 
 ################################################################################
 # CGM Related Settings
@@ -271,7 +287,11 @@ include_directories(
 ################################################################################
 
 if(SMTK_BUILD_CMB_BRIDGE)
-  find_package(VTK REQUIRED)
+  if(SMTK_BUILD_BRIDGE_PLUGIN)
+    find_package(ParaView REQUIRED)
+  else()
+    find_package(VTK REQUIRED)
+  endif()
 endif()
 
 ################################################################################
