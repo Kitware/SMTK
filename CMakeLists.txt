@@ -2,6 +2,17 @@ cmake_minimum_required (VERSION 2.8.11)
 cmake_policy(SET CMP0020 NEW)
 project(SMTK)
 
+################################################################################
+# SMTK version number
+
+set(SMTK_VERSION_MAJOR 0)
+set(SMTK_VERSION_MINOR 9)
+set(SMTK_VERSION_PATCH 0)
+set(SMTK_VERSION
+  "${SMTK_VERSION_MAJOR}.${SMTK_VERSION_MINOR}.${SMTK_VERSION_PATCH}")
+#
+################################################################################
+
 #Add our Cmake directory to the module search path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${SMTK_SOURCE_DIR}/CMake)
 

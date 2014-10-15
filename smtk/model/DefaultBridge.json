@@ -1,0 +1,11 @@
+{
+  "kernel": "smtk",
+  "engines": [
+    {
+      "name": "native",
+      "filetypes": [
+        ".json (Native SMTK model)"
+      ]
+    }
+  ]
+}

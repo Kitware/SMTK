@@ -27,16 +27,18 @@ typedef smtk::function<BridgePtr()> BridgeConstructor;
 struct StaticBridgeInfo {
   std::string Name;
   BridgeConstructor Constructor;
-  StringList Tags;
-  StringList FileTypes;
+  std::string Tags;
+  bool TagsParsed;
+  std::string Site;
+  StringList Engines;
+  StringData FileTypes;
 
-  StaticBridgeInfo() { }
+  StaticBridgeInfo() : TagsParsed(false) { }
   StaticBridgeInfo(
     const std::string& bname,
-    BridgeConstructor bctor,
-    const StringList& btags = StringList(),
-    const StringList& btype = StringList())
-    : Name(bname), Constructor(bctor), Tags(btags), FileTypes(btype)
+    const std::string& btags,
+    BridgeConstructor bctor)
+    : Name(bname), Constructor(bctor), Tags(btags), TagsParsed(false)
     { }
 };
 
@@ -55,17 +57,20 @@ class SMTKCORE_EXPORT BridgeRegistrar
 public:
   static bool registerBridge(
     const std::string& bname,
-    const StringList& fileTypes,
-    const StringList& tags,
+    const std::string& tags,
     BridgeConstructor bctor);
   static StringList bridgeNames();
-  static StringList bridgeFileTypes(const std::string& bname);
-  static StringList bridgeTags(const std::string& bname);
+  static std::string bridgeTags(const std::string& bname);
+  static std::string bridgeSite(const std::string& bname);
+  static StringList bridgeEngines(const std::string& bname);
+  static StringList bridgeFileTypes(
+    const std::string& bname, const std::string& engine = std::string());
   static BridgeConstructor bridgeConstructor(const std::string& bname);
   static BridgePtr createBridge(const std::string& bname);
 
 protected:
   static void cleanupBridges();
+  static void parseTags(StaticBridgeInfo& bridge);
 
   static BridgeConstructors* s_bridges;
 };

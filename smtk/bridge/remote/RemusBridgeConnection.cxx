@@ -104,7 +104,7 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
             RemusRemoteBridge::createFunctor(
               shared_from_this(), kernelInfo, mit->inputType());
           smtk::model::BridgeRegistrar::registerBridge(
-            binfo.name(), binfo.fileTypes(), binfo.tags(), binfo);
+            binfo.name(), binfo.tags(), binfo);
           }
         }
       }

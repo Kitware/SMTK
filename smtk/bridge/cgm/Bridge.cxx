@@ -612,47 +612,9 @@ void Bridge::colorPropFromIndex(
     }
 }
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk
 
-static const char* CGMFileTypes[] = {
-#ifdef HAVE_ACIS
-  ".sat (Standard ACIS Text)",
-  ".sab (Standard ACIS Binary)",
-#endif
-#if defined(HAVE_OCC_IGES) || defined(HAVE_ACIS)
-  ".iges (Initial Graphics Exchange Specification)",
-  ".igs (Initial Graphics Exchange Specification)",
-#endif
-#ifdef HAVE_OCC_STEP
-  ".step (Standard for the Exchange of Product model data)",
-  ".stp (Standard for the Exchange of Product model data)",
-#endif
-#ifdef HAVE_OCC
-  ".brep (OpenCascade Boundary Representation)",
-  ".occ (OpenCascade Boundary Representation)",
-#endif
-#ifdef HAVE_OCC_STL
-  ".stl (STereoLithography file)",
-#endif
-  ".off (Object File Format)",
-  ".cholla (Cholla facet file)",
-  NULL
-};
-static const char* CGMTags[] = {
-  "{"
-    "\"kernel\":\"cgm\","
-    "\"engines\":["
-#ifdef HAVE_ACIS
-      "\"ACIS\","
-#endif
-#ifdef HAVE_OCC
-      "\"OpenCascade\","
-#endif
-      "\"Cholla\""
-    "]"
-  "}"
-  , NULL
-};
-smtkImplementsModelingKernel(cgm,CGMFileTypes,CGMTags,smtk::bridge::cgm::Bridge);
+#include "smtk/bridge/cgm/Bridge_json.h" // For Bridge_json
+smtkImplementsModelingKernel(cgm,Bridge_json,smtk::bridge::cgm::Bridge);

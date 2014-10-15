@@ -9,6 +9,8 @@
 //=========================================================================
 #include "smtk/io/ExportJSON.h"
 
+#include "smtk/common/Version.h"
+
 #include "smtk/model/BridgeIOJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
@@ -500,6 +502,44 @@ int ExportJSON::forDanglingEntities(const smtk::common::UUID& bridgeSessionId, c
     if (it->first.manager() == modelMgr)
       cJSON_AddItemToObject(darray, it->first.entity().toString().c_str(), cJSON_CreateNumber(it->second));
     }
+  return 1;
+}
+
+/**\brief Serialize a description of a Remus model worker.
+  *
+  * This populates an empty JSON Object (\a wdesc) with
+  * data required for a Remus server to start an smtk-model-worker
+  * process for use by a RemusRemoteBridge instance.
+  */
+int ExportJSON::forModelWorker(
+    cJSON* wdesc,
+    const std::string& meshTypeIn, const std::string& meshTypeOut,
+    const std::string& kernel, const std::string& engine,
+    const std::string& site, const std::string& root,
+    const std::string& workerPath, const std::string& requirementsFileName)
+{
+  if (!wdesc || wdesc->type != cJSON_Object)
+    return 0;
+
+  // Base worker requirements
+  cJSON_AddItemToObject(wdesc, "InputType", cJSON_CreateString(meshTypeIn.c_str()));
+  cJSON_AddItemToObject(wdesc, "OutputType", cJSON_CreateString(meshTypeOut.c_str()));
+  cJSON_AddItemToObject(wdesc, "ExecutableName", cJSON_CreateString(workerPath.c_str()));
+
+  // External requirements information
+  cJSON_AddItemToObject(wdesc, "File", cJSON_CreateString(requirementsFileName.c_str()));
+  cJSON_AddItemToObject(wdesc, "FileFormat", cJSON_CreateString("XML"));
+
+  // Additional requirements for SMTK model worker
+  cJSON_AddItemToObject(wdesc, "Root", cJSON_CreateString(root.c_str()));
+
+  cJSON* tag = cJSON_CreateObject();
+  cJSON_AddItemToObject(wdesc, "Tag", tag);
+  cJSON_AddItemToObject(tag, "kernel", cJSON_CreateString(kernel.c_str()));
+  cJSON_AddItemToObject(tag, "engine", cJSON_CreateString(engine.c_str()));
+  cJSON_AddItemToObject(tag, "site", cJSON_CreateString(site.c_str()));
+  cJSON_AddItemToObject(tag, "smtk_version",
+    cJSON_CreateString(smtk::common::Version::number().c_str()));
   return 1;
 }
 

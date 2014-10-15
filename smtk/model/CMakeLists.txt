@@ -94,6 +94,8 @@ set(modelHeaders
   VolumeUse.h
   )
 
+smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultBridge.json" defBridgeJSON)
+
 #install the headers
 smtk_public_headers(${modelHeaders})
 

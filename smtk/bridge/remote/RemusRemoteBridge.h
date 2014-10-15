@@ -19,9 +19,16 @@
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/StringData.h"
 
+#ifndef _MSC_VER
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+#endif
 #include "remus/client/Client.h" // for m_remusClient
 #include "remus/common/MeshRegistrar.h" // for RemusModelBridgeType
 #include "remus/worker/ServerConnection.h" // for m_remusConn
+#ifndef _MSC_VER
+  #pragma GCC diagnostic pop
+#endif
 
 namespace smtk {
   namespace io { class ImportJSON; }

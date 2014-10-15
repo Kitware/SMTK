@@ -66,6 +66,13 @@ public:
   static int forOperatorResult(smtk::model::OperatorResult res, cJSON*);
   static int forDanglingEntities(const smtk::common::UUID& bridgeSessionId, cJSON* node, smtk::model::ManagerPtr modelMgr);
 
+  static int forModelWorker(
+    cJSON* workerDescription,
+    const std::string& meshTypeIn, const std::string& meshTypeOut,
+    const std::string& kernel, const std::string& engine,
+    const std::string& site, const std::string& root,
+    const std::string& workerPath, const std::string& requirementsFileName);
+
   // Low-level helpers:
   static cJSON* createStringArray(std::vector<std::string>& arr);
   static cJSON* createUUIDArray(std::vector<smtk::common::UUID>& arr);

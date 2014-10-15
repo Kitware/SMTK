@@ -43,14 +43,12 @@ public:
   smtk::model::BridgePtr operator() () const;
 
   std::string name() const { return this->m_name; }
-  smtk::model::StringList fileTypes() const { return this->m_fileTypes; }
-  smtk::model::StringList tags() const { return this->m_tags; }
+  std::string tags() const { return this->m_tags; }
 
   RemusBridgeConnectionPtr m_conn;
   std::string m_meshType;
   std::string m_name;
-  smtk::model::StringList m_fileTypes;
-  smtk::model::StringList m_tags;
+  std::string m_tags;
   std::string m_operatorXML;
 };
 

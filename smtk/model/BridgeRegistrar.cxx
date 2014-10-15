@@ -11,6 +11,10 @@
 
 #include "smtk/model/Bridge.h"
 
+#include "smtk/io/ImportJSON.h"
+
+#include "cJSON.h"
+
 #include <stdlib.h> // for atexit()
 
 using namespace smtk::common;
@@ -27,22 +31,94 @@ void BridgeRegistrar::cleanupBridges()
   delete BridgeRegistrar::s_bridges;
 }
 
+/**\brief Parse the JSON tag data for the given \a bridge.
+  *
+  * Look for specific keys in bridge.Tag and use them
+  * to populate other bridge member variables.
+  */
+void BridgeRegistrar::parseTags(StaticBridgeInfo& bridge)
+{
+  bridge.TagsParsed = true;
+  if (bridge.Tags.empty())
+    return;
+
+  cJSON* json = cJSON_Parse(bridge.Tags.c_str());
+  if (!json)
+    return;
+
+  if (json->type == cJSON_Object)
+    {
+    cJSON* kernel = cJSON_GetObjectItem(json, "kernel");
+    if (
+      kernel &&
+      kernel->type == cJSON_String &&
+      kernel->valuestring &&
+      kernel->valuestring[0])
+      bridge.Name = kernel->valuestring;
+
+    cJSON* engines = cJSON_GetObjectItem(json, "engines");
+    if (
+      engines &&
+      engines->type == cJSON_Array)
+      {
+      bridge.Engines.clear();
+      bridge.FileTypes.clear();
+      for (cJSON* engine = engines->child; engine; engine = engine->next)
+        {
+        if (engine->type == cJSON_Object)
+          {
+          std::string curEngine;
+          cJSON* einfo;
+          einfo = cJSON_GetObjectItem(engine, "name");
+          if (
+            einfo &&
+            einfo->type == cJSON_String &&
+            einfo->valuestring &&
+            einfo->valuestring[0])
+            {
+            curEngine = einfo->valuestring;
+            bridge.Engines.push_back(curEngine);
+            }
+          einfo = cJSON_GetObjectItem(engine, "filetypes");
+          if (
+            einfo &&
+            einfo->type == cJSON_Array &&
+            einfo->child)
+            {
+            StringList fileTypes;
+            smtk::io::ImportJSON::getStringArrayFromJSON(einfo->child, fileTypes);
+            if (curEngine.empty())
+              curEngine = "*";
+            bridge.FileTypes[curEngine] = fileTypes;
+            }
+          }
+        }
+      }
+    }
+
+  cJSON_Delete(json);
+}
+
 /**\brief Register a bridge "type" for use by an application.
   *
   * The type (\a bname) must be unique.
-  * For most bridges, it will be the name of the modeling kernel
-  * that is bridged to SMTK (e.g., discrete).
-  * However, for
-  * + bridges that present multiple modeling kernels (e.g., "cgm"),
-  *   it should uniquely include those kernels (e.g., "cgm{Cubit,OCC}");
-  * + remote bridges, it should be unique across any connection
-  *   configuration information (i.e., the name of the server and
-  *   remote endpoint of the remote bridge, the modeling kernel used by
-  *   the remote bridge, etc.).
+  * To make bridge names unique the following naming scheme is used:
+  * "smtk::model[kernel{options},site]@server:port".
+  * The leading "smtk::model" appears so that Remus can distinguish
+  * between models and meshes. The model is then qualified by an
+  * expression in square brackets which indicates the modeling
+  * kernel at the remote end (including any configuration options
+  * for that kernel in curly brackets) and the site name.
+  * The site name may be a hostname or, where a filesystem is shared
+  * by multiple hosts, a name identifying the shared filesystem.
+  * Finally, the Remus server and port number appear at the end of
+  * the name so that multiple engines with the same configuration
+  * may be distinguished by the Remus server they registered with.
   *
-  * This allows applications to query available bridges by
+  * This class allows applications to query available bridges by
   * the types of files they can read, the name of the bridge
-  * class, or by arbitrary tags associated with them.
+  * class, or by arbitrary tags associated with them identifying
+  * configuration options.
   * Once a query identifies a suitable bridge, the application
   * can construct bridges of the the given type using the
   * constructor or by calling convenience routines such as
@@ -52,19 +128,19 @@ void BridgeRegistrar::cleanupBridges()
   * only one constructor is stored per \a bname.
   * Remus and other remote bridges should include
   * disambiguating information in both \a bname and \a tags.
-  * If a tag begins with "{" and ends with "}" then
-  * applications may assume it is a JSON dictionary and
-  * use values in the dictionary for presentation to users.
-  * The latter is much more friendly to users than the former.
-  * For example, a tag might be<pre>
+  * The tag is assumed to be a JSON string.
+  * See the SMTK User's Guide for more information
+  * on its structure.
+  * An example tag might be<pre>
   * {"class":"remus",
   *  "server":"tcp://localhost",
-  *  "worker-host":"foo.kitware.com",
+  *  "site":"foo.kitware.com",
   *  "bridge":"cgm", "engine":"OCC",
+  *  "filetypes":[".brep", ".occ", ".stl"],
   *  "filesys":"8dfcb75c-a3b5-4e10-a9dd-85623afe3372"}
   *  </pre>
   * for the \a bname
-  * "smtk::model[cgm{OCC}] foo.kitware.com@tcp://localhost".
+  * "smtk::model[cgm{OCC},foo.kitware.com]@tcp://localhost".
   *
   * The tag names in the example above should be present for
   * remus remote bridges, with "engine" being optional depending
@@ -85,8 +161,7 @@ void BridgeRegistrar::cleanupBridges()
   */
 bool BridgeRegistrar::registerBridge(
   const std::string& bname,
-  const StringList& fileTypes,
-  const StringList& tags,
+  const std::string& btags,
   BridgeConstructor bctor)
 {
   if (!BridgeRegistrar::s_bridges)
@@ -96,7 +171,7 @@ bool BridgeRegistrar::registerBridge(
     }
   if (!bname.empty() && bctor)
     {
-    StaticBridgeInfo entry(bname, bctor, tags, fileTypes);
+    StaticBridgeInfo entry(bname, btags, bctor);
     (*BridgeRegistrar::s_bridges)[bname] = entry;
     return true;
     }
@@ -120,29 +195,79 @@ StringList BridgeRegistrar::bridgeNames()
 }
 
 /// Return the list of file types this bridge can read (currently: a list of file extensions).
-StringList BridgeRegistrar::bridgeFileTypes(const std::string& bname)
+StringList BridgeRegistrar::bridgeFileTypes(
+  const std::string& bname,
+  const std::string& bengine)
 {
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
+  BridgeConstructors::iterator it = s_bridges->find(bname);
   if (it != s_bridges->end())
-    return it->second.FileTypes;
-  StringList result;
-  return result;
+    {
+    if (!it->second.TagsParsed)
+      BridgeRegistrar::parseTags(it->second);
+    StringData::const_iterator eit;
+    if (bengine.empty() && !it->second.FileTypes.empty())
+      return it->second.FileTypes.begin()->second;
+    else if (
+      !bengine.empty() &&
+      (eit = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end())
+      return eit->second;
+    }
+  StringList empty;
+  return empty;
 }
 
-/**\brief Return the list of tag strings that describe this bridge.
+/**\brief Return the tag string that describes this bridge.
   *
-  * Note that any entry beginning with "{" and ending with "}" should
-  * be assumed to be a JSON dictionary containing fields to present
+  * The tag should be a JSON dictionary containing fields to present
   * to a user when selecting bridges.
   * The JSON may also be used to group bridges by capabilities.
   */
-StringList BridgeRegistrar::bridgeTags(const std::string& bname)
+std::string BridgeRegistrar::bridgeTags(const std::string& bname)
 {
   BridgeConstructors::const_iterator it = s_bridges->find(bname);
   if (it != s_bridges->end())
     return it->second.Tags;
-  StringList result;
-  return result;
+  std::string empty;
+  return empty;
+}
+
+/**\brief Return the site that describes the filesystem for this bridge.
+  *
+  * The site should be a unique, user-presentable label identifying
+  * the filesystem available to the model worker.
+  * If empty, the site should be interpreted to be the root
+  * filesystem of the local machine.
+  */
+std::string BridgeRegistrar::bridgeSite(const std::string& bname)
+{
+  BridgeConstructors::iterator it = s_bridges->find(bname);
+  if (it != s_bridges->end())
+    {
+    if (!it->second.TagsParsed)
+      BridgeRegistrar::parseTags(it->second);
+    return it->second.Site;
+    }
+  std::string empty;
+  return empty;
+}
+
+/**\brief Return the list of engines that the bridge provides.
+  *
+  * Some bridges, such as CGM, expose multiple solid modeling kernels;
+  * in this case, we call the underlying kernels "engines" and
+  * provide a way to obtain the list of engines for a given bridge name.
+  */
+StringList BridgeRegistrar::bridgeEngines(const std::string& bname)
+{
+  BridgeConstructors::iterator it = s_bridges->find(bname);
+  if (it != s_bridges->end())
+    {
+    if (!it->second.TagsParsed)
+      BridgeRegistrar::parseTags(it->second);
+    return it->second.Engines;
+    }
+  StringList empty;
+  return empty;
 }
 
 /**\brief Return a function to construct a Bridge instance given its class-specific name. Or NULL if you pass an invalid name.
