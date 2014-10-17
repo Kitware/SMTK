@@ -62,6 +62,9 @@ public:
 
   static bool addManagerEntityToCGM(const smtk::model::Cursor& ent);
 
+  static int staticSetup(const std::string& optName, const smtk::model::StringList& optVal);
+  virtual int setup(const std::string& optName, const smtk::model::StringList& optVal);
+
 protected:
   friend class ImportSolid;
 

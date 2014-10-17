@@ -52,10 +52,13 @@ int main(int argc, char* argv[])
 
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
+  bconn->addSearchDir("/usr/local/var/smtk/workers");
 
   bool didConnect = true;
   if (hostname != "local")
     didConnect = bconn->connectToServer(hostname, port);
+  else
+    didConnect = bconn->connectToServer();
   if (!didConnect)
     {
     std::cerr << "Could not connect to tcp://" << hostname << ":" << port << "\n";

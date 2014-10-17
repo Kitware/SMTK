@@ -12,16 +12,13 @@
 
 #include "smtk/options.h"
 
-#ifdef SMTK_BUILD_CGM
-#  include "smtk/bridge/cgm/Engines.h"
-#endif
-
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/StringData.h"
@@ -353,4 +350,8 @@ void RemusRemoteBridge::cleanupOperators()
   } // namespace bridge
 } // namespace smtk
 
-smtkImplementsModelingKernel(remus_remote,"",smtk::bridge::remote::RemusRemoteBridge);
+smtkImplementsModelingKernel(
+  remus_remote,
+  "",
+  smtk::model::BridgeHasNoStaticSetup,
+  smtk::bridge::remote::RemusRemoteBridge);

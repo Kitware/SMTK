@@ -1,5 +1,6 @@
 # set up sources to build
 set(commonSrcs
+  Environment.cxx
   Resource.cxx
   ResourceSet.cxx
   UUID.cxx
@@ -7,6 +8,7 @@ set(commonSrcs
 )
 
 set(commonHeaders
+  Environment.h
   Resource.h
   ResourceSet.h
   UUID.h

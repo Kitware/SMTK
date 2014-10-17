@@ -162,6 +162,7 @@ void BridgeRegistrar::parseTags(StaticBridgeInfo& bridge)
 bool BridgeRegistrar::registerBridge(
   const std::string& bname,
   const std::string& btags,
+  BridgeStaticSetup bsetup,
   BridgeConstructor bctor)
 {
   if (!BridgeRegistrar::s_bridges)
@@ -171,7 +172,7 @@ bool BridgeRegistrar::registerBridge(
     }
   if (!bname.empty() && bctor)
     {
-    StaticBridgeInfo entry(bname, btags, bctor);
+    StaticBridgeInfo entry(bname, btags, bsetup, bctor);
     (*BridgeRegistrar::s_bridges)[bname] = entry;
     return true;
     }
@@ -268,6 +269,21 @@ StringList BridgeRegistrar::bridgeEngines(const std::string& bname)
     }
   StringList empty;
   return empty;
+}
+
+/**\brief Return a function to perform pre-construction Bridge setup for the given bridge type.
+  *
+  * A "null" method is returned if you pass an invalid bridge type name.
+  *
+  * \sa BridgeStaticSetup
+  */
+BridgeStaticSetup BridgeRegistrar::bridgeStaticSetup(const std::string& bname)
+{
+  BridgeStaticSetup result = NULL;
+  BridgeConstructors::const_iterator it = s_bridges->find(bname);
+  if (it != s_bridges->end())
+    result = it->second.Setup;
+  return result;
 }
 
 /**\brief Return a function to construct a Bridge instance given its class-specific name. Or NULL if you pass an invalid name.

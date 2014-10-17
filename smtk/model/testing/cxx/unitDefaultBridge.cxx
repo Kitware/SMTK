@@ -191,7 +191,11 @@ protected:
     return localResult;
     }
 };
-smtkImplementsModelingKernel(forwarding, "{\"kernel\":\"test-forwarding\", \"engines\":[]}", TestForwardingBridge);
+smtkImplementsModelingKernel(
+  forwarding,
+  "{\"kernel\":\"test-forwarding\", \"engines\":[]}",
+  BridgeHasNoStaticSetup,
+  TestForwardingBridge);
 
 class TestForwardingOperator : public Operator
 {

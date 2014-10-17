@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/Cursor.h"
@@ -87,6 +88,30 @@ bool Bridge::addManagerEntityToCGM(const smtk::model::Cursor& ent)
 {
   (void)ent;
   return true;
+}
+
+/**\brief Provide generic setup interface.
+  *
+  * Currently this only recognizes the "engine" keyword.
+  * When passed \a optName "engine", the first entry in \a optVal
+  * should be a valid modeling engine for CGM.
+  */
+int Bridge::staticSetup(const std::string& optName, const smtk::model::StringList& optVal)
+{
+  if (optName == "engine" && !optVal.empty())
+    {
+    return Engines::setDefault(optVal[0]) ? 1 : 0;
+    }
+  return 0;
+}
+
+/**\brief Accept post-construction configuration options.
+  *
+  * Currently CGM does not support any options.
+  */
+int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
+{
+  return 0;
 }
 
 /**\brief Populate records for \a cursor that reflect the CGM \a entity.
@@ -617,4 +642,4 @@ void Bridge::colorPropFromIndex(
 } // namespace smtk
 
 #include "smtk/bridge/cgm/Bridge_json.h" // For Bridge_json
-smtkImplementsModelingKernel(cgm,Bridge_json,smtk::bridge::cgm::Bridge);
+smtkImplementsModelingKernel(cgm,Bridge_json,smtk::bridge::cgm::Bridge::staticSetup,smtk::bridge::cgm::Bridge);

@@ -12,6 +12,8 @@
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 
+#include "smtk/common/Environment.h"
+
 #include "smtk/model/Manager.h"
 
 #include "smtk/io/ExportJSON.h"
@@ -19,6 +21,7 @@
 #include "remus/worker/Worker.h"
 
 using namespace smtk::model;
+using namespace smtk::common;
 using namespace remus::meshtypes;
 using namespace remus::proto;
 
@@ -35,6 +38,14 @@ using namespace remus::proto;
 #  include "TargetConditionals.h"
 #endif
 
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#  include <unistd.h>
+int smtkChDir(const std::string& path) { return chdir(path.c_str()); }
+#else
+#  include <direct.h>
+int smtkChDir(const std::string& path) { return _chdir(path.c_str()); }
+#endif
+
 #ifdef SMTK_BUILD_CGM
 smtkComponentInitMacro(smtk_cgm_bridge);
 smtkComponentInitMacro(smtk_cgm_read_operator);
@@ -48,6 +59,8 @@ smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("OCC")
 smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
 #endif // SMTK_BUILD_CGM
 
+std::ofstream logr("/tmp/wlog.txt", std::ios::app);
+
 int usage(
   int ecode = 0, const std::string& msg = std::string())
 {
@@ -57,15 +70,20 @@ int usage(
     << "\tsmtk-model-worker <url> [options]      to accept jobs\n"
     << "\tsmtk-model-worker -generate [options]  to generate a worker description file\n"
     << "where\n"
-    << "  -generate          creates a Remus worker description(s) and exits.\n"
-    << "  -server=<url>      specifies the remus server to user, tcp://localhost:50510 by default.\n"
-    << "                     If this is the first argument, you may specify just <url> without -server=.\n"
-    << "  -rwfile=<file>     specifies the base filename storing the generated worker description.\n"
-    << "                     With -generate, <file> also serves as the base for the requirements filename.\n"
-    << "  -kernel=<kern>     specifies the name an SMTK modeling kernel.\n"
-    << "  -engine=<engine>   specifies an engine the SMTK modeling kernel should use.\n"
-    << "  -root=<dir>        specifies the directory the worker should make available for I/O.\n"
-    << "  -site=<site>       specifies the filesystem/host site name.\n"
+    << "  -generate          Create a Remus worker description(s) and exits.\n"
+    << "  -server=<url>      Specify the remus server to user. By default,\n"
+    << "                     this is tcp://localhost:50510. If this is the\n"
+    << "                     first argument, you may specify just <url>\n"
+    << "                     without \"-server=\" in front.\n"
+    << "  -rwfile=<file>     Specify the base filename storing the generated\n"
+    << "                     worker description. With -generate, <file> also\n"
+    << "                     serves as the base for the requirements filename.\n"
+    << "  -kernel=<kern>     Specify the name an SMTK modeling kernel.\n"
+    << "  -engine=<engine>   Specify an engine the SMTK modeling kernel should use.\n"
+    << "  -root=<dir>        Specify the directory the worker should make\n"
+    << "                     available for reading and writing model files.\n"
+    << "  -site=<site>       Specify the filesystem/host site name.\n"
+    << "  -help              Print this message and exit.\n"
     << "\n"
     << "Examples:\n"
     << "  smtk-model-worker -generate \\\n"
@@ -79,7 +97,8 @@ int usage(
     << "The worker will be able to read and write files to /var/smtk/data\n"
     << "and will advertise its mesh type as \"smtk::model[cgm{OpenCascade}@foo]\"\n"
     << "\n"
-    << "  smtk-model-worker tcp://localhost:50505 -rwfile=/var/smtk/workers/foo.RW\n"
+    << "  smtk-model-worker tcp://localhost:50505 \\\n"
+    << "    -rwfile=/var/smtk/workers/foo.RW\n"
     << "will start serving model requests using the description generated above.\n"
     << "\n"
     ;
@@ -95,7 +114,10 @@ int usage(
 
   // III. Print user-specified message and return exit code.
   if (!msg.empty())
+    {
     std::cout << msg << "\n";
+    logr << "  Usage: " << msg << "\n";
+    }
 
   return ecode;
 }
@@ -104,10 +126,11 @@ int usage(
 struct WkOpts
 {
   WkOpts()
-    : m_gen(false)
+    : m_gen(false), m_printhelp(false)
     {
     }
 
+  void setPrintHelp() { this->m_printhelp = true; }
   void setServer(const std::string& url) { this->m_url = url; }
   void setKernel(const std::string& kern) { this->m_kern = kern; }
   void setEngine(const std::string& engine) { this->m_engine = engine; }
@@ -117,6 +140,7 @@ struct WkOpts
   void setGenerate() { this->m_gen = true; }
   void setWorkerPath(const std::string& wpath) { this->m_wpath = wpath; }
 
+  bool printHelp() const { return this->m_printhelp; }
   std::string serverURL() const { return this->m_url; }
   std::string root() const { return this->m_root; }
   std::string rwfile() const { return this->m_rwfile; }
@@ -154,10 +178,16 @@ struct WkOpts
   std::string m_rwfile;
   std::string m_wpath;
   bool m_gen;
+  bool m_printhelp;
 };
 
 int main(int argc, char* argv[])
 {
+  logr << "Starting model worker:";
+  for (int i = 1; i < argc; ++i)
+    logr << " " << argv[i];
+  logr << "\n";
+
   using namespace smtk::bridge;
   WkOpts wkOpts;
   wkOpts.setWorkerPath(argv[0]);
@@ -165,21 +195,40 @@ int main(int argc, char* argv[])
   try
     {
     args.add_parameter("-server",   &wkOpts, &WkOpts::setServer).default_value("tcp://localhost:50510").order(1);
-    args.add_parameter("-rwfile",   &wkOpts, &WkOpts::setRWFile).default_value("smtk-model-worker.RW");
+    args.add_parameter("-rwfile",   &wkOpts, &WkOpts::setRWFile);
     args.add_parameter("-root",     &wkOpts, &WkOpts::setRoot);
     args.add_parameter("-site",     &wkOpts, &WkOpts::setSite);
     args.add_parameter("-kernel",   &wkOpts, &WkOpts::setKernel);
     args.add_parameter("-engine",   &wkOpts, &WkOpts::setEngine);
     args.add_parameter("-generate", &wkOpts, &WkOpts::setGenerate);
+    args.add_parameter("-help",     &wkOpts, &WkOpts::setPrintHelp);
     args.parse(argc, argv);
     }
   catch (std::exception& e)
     {
+    logr << "  Exception " << e.what() << "\n";
     return usage(1, e.what());
     }
+  if (wkOpts.printHelp())
+    {
+    logr << "  Help\n";
+    return usage(0);
+    }
 
+  logr << "  Chroot\n";
+  if (!wkOpts.root().empty())
+    {
+    if (smtkChDir(wkOpts.root()))
+      {
+      return usage(1,
+        "Unable to change to directory \"" + wkOpts.root() + "\"");
+      }
+    }
+
+  logr << "  About to connect to " << wkOpts.serverURL() << "\n";
   remus::worker::ServerConnection connection =
     remus::worker::make_ServerConnection(wkOpts.serverURL());
+  logr << "  Server " << wkOpts.serverURL() << "\n";
 
   // I. Advertise a "handshake" worker for the type of kernel requested.
   //    The RemusRPCWorker instance will swap it out for one with a
@@ -204,8 +253,14 @@ int main(int argc, char* argv[])
   //       Tag should exist and be a JSON string with hostname and a host UUID
   //       (but not a session ID yet).
   JobRequirements requirements = make_JobRequirements(io_type, wkOpts.workerName(), "");
+  logr << "  Worker name: " << wkOpts.workerName() << "\n";
+  std::cout << "Worker iotype " << io_type.inputType() << "->" << io_type.outputType() << "\n";
   if (wkOpts.generate())
     {
+    if (wkOpts.rwfile().empty())
+      {
+      return usage(1, "Remus worker filename not specifed or invalid.");
+      }
     // Create bridge session and serialize operators.
     smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
     smtk::model::Bridge::Ptr bridge = mgr->createAndRegisterBridge(wkOpts.kernel());
@@ -229,53 +284,33 @@ int main(int argc, char* argv[])
     // FIXME: workerPath() should return path of worker RELATIVE TO RWFile!
     if (smtk::io::ExportJSON::forModelWorker(
         desc, io_type.inputType(), io_type.outputType(),
-        wkOpts.kernel(), wkOpts.engine(),
+        bridge, wkOpts.engine(),
         wkOpts.site(), wkOpts.root(),
         wkOpts.workerPath(), reqFileName))
       {
       // Now handle platform-specific environment settings that we may
       // need to preserve.
-      std::string libsearchpath_name;
-      std::string fallbacklibsearchpath_name;
-      std::string pythonpath_name = "PYTHONPATH";
-      std::string libsearchpath;
+      const std::string fallbacklibsearchpath_name = "DYLD_FALLBACK_LIBRARY_PATH";
+      const std::string pythonpath_name = "PYTHONPATH";
       std::string fallbacklibsearchpath;
+      std::string libsearchpath_name;
+      std::string libsearchpath;
       std::string pythonpath;
       cJSON* descEnv = cJSON_CreateObject();
-      char* buf;
 #ifndef _WIN32
 #  ifdef __APPLE__
       libsearchpath_name = "DYLD_LIBRARY_PATH";
-      fallbacklibsearchpath_name = "DYLD_FALLBACK_LIBRARY_PATH";
-      buf = getenv(fallbacklibsearchpath_name.c_str());
-      if (buf && buf[0])
-        fallbacklibsearchpath = buf;
+      fallbacklibsearchpath =
+        Environment::getVariable(
+          fallbacklibsearchpath_name);
 #  else
       libsearchpath_name = "LD_LIBRARY_PATH";
 #  endif
-      buf = getenv(libsearchpath_name.c_str());
-      if (buf && buf[0])
-        libsearchpath = buf;
-      buf = getenv(pythonpath_name.c_str());
-      if (buf && buf[0])
-        pythonpath = buf;
 #else
-#  ifdef __CYGWIN__
-#  else
-      const bool valid;
-
       libsearchpath_name = "PATH";
-      valid = (_dupenv_s(&buf, NULL, libsearchpath_name.c_str()) == 0) && (buf != NULL);
-      if (valid)
-        libsearchpath = buf;
-      free(buf); //perfectly valid to free a NULL pointer
-
-      valid = (_dupenv_s(&buf, NULL, pythonpath_name.c_str()) == 0) && (buf != NULL);
-      if (valid)
-        pythonpath = buf;
-      free(buf); //perfectly valid to free a NULL pointer
-#  endif
 #endif
+      libsearchpath = Environment::getVariable(libsearchpath_name);
+      pythonpath = Environment::getVariable(pythonpath_name);
       bool anyEnv = false;
       if (!libsearchpath.empty())
         {
@@ -314,15 +349,66 @@ int main(int argc, char* argv[])
       }
     cJSON_Delete(desc);
 
-    std::cout << "\n\nWrote " << wkOpts.rwfile() << "\n\n";
+    logr << "Wrote " << wkOpts.rwfile() << "\n      " << reqFileName << "\n";
+    std::cout << "\n\nWrote " << wkOpts.rwfile() << "\n      " << reqFileName << "\n\n";
     return 0; // Do not wait for jobs.
     }
 
-  remus::Worker* w = new remus::Worker(requirements,connection);
-
   remote::RemusRPCWorker::Ptr smtkWorker = remote::RemusRPCWorker::create();
+  if (!wkOpts.rwfile().empty())
+    { // Configure the smtkWorker
+    std::ifstream rwFile(wkOpts.rwfile());
+    std::string rwData(
+      (std::istreambuf_iterator<char>(rwFile)),
+      (std::istreambuf_iterator<char>()));
+    cJSON* config = cJSON_Parse(rwData.c_str());
+    if (!config)
+      {
+      std::cerr << "\n\nUnable to parse RemusWorker file " << wkOpts.rwfile() << "\n";
+      return 1;
+      }
+    cJSON* tag = cJSON_GetObjectItem(config, "tag");
+    if (!tag)
+      {
+      std::cerr << "\n\nUnable to find RemusWorker tag data\n";
+      return 1;
+      }
+    const char* known_tag_options[] = {
+      "default_kernel",
+      "default_engine",
+      "exclude_kernels",
+      "exclude_engines",
+      "site",
+      NULL
+    };
+    const char* known_top_options[] = {
+      "Root",
+      NULL
+    };
+    cJSON* opt;
+    const char** oname;
+    for (oname = known_top_options; *oname; ++oname)
+      {
+      opt = cJSON_GetObjectItem(config, *oname);
+      if (opt && opt->valuestring && opt->valuestring[0])
+        smtkWorker->setOption(*oname, opt->valuestring);
+      }
+    for (oname = known_tag_options; *oname; ++oname)
+      {
+      opt = cJSON_GetObjectItem(tag, *oname);
+      if (opt && opt->valuestring && opt->valuestring[0])
+        smtkWorker->setOption(*oname, opt->valuestring);
+      }
+    char* tagchar = cJSON_PrintUnformatted(tag);
+    requirements.tag(tagchar);
+    free(tagchar);
+    }
+  logr << "Requirements tag is \"" << requirements.tag() << "\"\n";
+
+  remus::Worker* w = new remus::Worker(requirements,connection);
   while (true)
     {
+    logr << "Waiting for job\n"; logr.flush();
     std::cerr << "Waiting for job\n";
     remus::worker::Job jobdesc = w->getJob();
     switch (jobdesc.validityReason())
@@ -338,10 +424,12 @@ int main(int argc, char* argv[])
     default:
       break;
       }
+    logr << "  Got job\n"; logr.flush();
     std::cout << "  Got job\n";
 
     smtkWorker->processJob(w, jobdesc, requirements);
 
+    logr << "  Job complete\n"; logr.flush();
     std::cout << "  Job complete\n";
     }
 

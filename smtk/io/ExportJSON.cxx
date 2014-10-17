@@ -11,6 +11,7 @@
 
 #include "smtk/common/Version.h"
 
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/BridgeIOJSON.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Entity.h"
@@ -514,7 +515,7 @@ int ExportJSON::forDanglingEntities(const smtk::common::UUID& bridgeSessionId, c
 int ExportJSON::forModelWorker(
     cJSON* wdesc,
     const std::string& meshTypeIn, const std::string& meshTypeOut,
-    const std::string& kernel, const std::string& engine,
+    smtk::model::BridgePtr bridge, const std::string& engine,
     const std::string& site, const std::string& root,
     const std::string& workerPath, const std::string& requirementsFileName)
 {
@@ -531,29 +532,90 @@ int ExportJSON::forModelWorker(
   cJSON_AddItemToObject(wdesc, "FileFormat", cJSON_CreateString("XML"));
 
   // Additional requirements for SMTK model worker
-  cJSON_AddItemToObject(wdesc, "Root", cJSON_CreateString(root.c_str()));
+  cJSON* argArray = cJSON_CreateArray();
+  cJSON_AddItemToArray(argArray, cJSON_CreateString("-rwfile=@SELF@"));
+  cJSON_AddItemToArray(argArray, cJSON_CreateString(("-kernel=" + bridge->name()).c_str()));
+  if (!engine.empty())
+    cJSON_AddItemToArray(argArray, cJSON_CreateString(("-engine=" + engine).c_str()));
+  if (!site.empty())
+    cJSON_AddItemToArray(argArray, cJSON_CreateString(("-site=" + site).c_str()));
+  if (!root.empty())
+    cJSON_AddItemToArray(argArray, cJSON_CreateString(("-root=" + root).c_str()));
+  cJSON_AddItemToObject(wdesc, "Arguments", argArray);
 
-  cJSON* tag = cJSON_CreateObject();
+  // TODO: Handle workers that can support multiple kernels as well as
+  //       multiple engines.
+  cJSON* tag = cJSON_Parse(BridgeRegistrar::bridgeTags(bridge->name()).c_str());
+  if (!tag)
+    return 0;
+
   cJSON_AddItemToObject(wdesc, "Tag", tag);
-  cJSON_AddItemToObject(tag, "kernel", cJSON_CreateString(kernel.c_str()));
-  cJSON_AddItemToObject(tag, "engine", cJSON_CreateString(engine.c_str()));
+  cJSON_AddItemToObject(tag, "default_kernel", cJSON_CreateString(bridge->name().c_str()));
+  cJSON_AddItemToObject(tag, "default_engine", cJSON_CreateString(engine.c_str()));
   cJSON_AddItemToObject(tag, "site", cJSON_CreateString(site.c_str()));
   cJSON_AddItemToObject(tag, "smtk_version",
     cJSON_CreateString(smtk::common::Version::number().c_str()));
   return 1;
 }
 
-cJSON* ExportJSON::createStringArray(std::vector<std::string>& arr)
+/**\brief Create a JSON-RPC request object.
+  *
+  * This variant stores a valid pointer in \a params for you to populate.
+  */
+cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId)
+{
+  cJSON* rpcReq = cJSON_CreateObject();
+  cJSON_AddItemToObject(rpcReq, "method", cJSON_CreateString(method.c_str()));
+  cJSON_AddItemToObject(rpcReq, "id", cJSON_CreateString(reqId.c_str()));
+  if (&params)
+    {
+    params = cJSON_CreateArray();
+    cJSON_AddItemToObject(rpcReq, "params", params);
+    }
+  return rpcReq;
+}
+
+/**\brief Create a JSON-RPC request object.
+  *
+  * This variant stores a single string parameter, \a params.
+  */
+cJSON* ExportJSON::createRPCRequest(const std::string& method, const std::string& params, const std::string& reqId)
+{
+  cJSON* paramObj;
+  cJSON* rpcReq = ExportJSON::createRPCRequest(method, paramObj, reqId);
+  cJSON_AddItemToArray(paramObj, cJSON_CreateString(params.c_str()));
+  return rpcReq;
+}
+
+/**\brief Copy \a arr into a JSON array of strings.
+  *
+  * You are responsible for managing the memory allocated for the returned
+  * object, either by calling cJSON_Delete on it or adding it to another
+  * cJSON node that is eventually deleted.
+  */
+cJSON* ExportJSON::createStringArray(const std::vector<std::string>& arr)
 {
   return cJSON_CreateStringArray(&arr[0], static_cast<unsigned>(arr.size()));
 }
 
-cJSON* ExportJSON::createUUIDArray(std::vector<smtk::common::UUID>& arr)
+/**\brief Copy \a arr into a JSON array of UUIDs.
+  *
+  * You are responsible for managing the memory allocated for the returned
+  * object, either by calling cJSON_Delete on it or adding it to another
+  * cJSON node that is eventually deleted.
+  */
+cJSON* ExportJSON::createUUIDArray(const std::vector<smtk::common::UUID>& arr)
 {
   return cJSON_CreateUUIDArray(&arr[0], static_cast<unsigned>(arr.size()));
 }
 
-cJSON* ExportJSON::createIntegerArray(std::vector<long>& arr)
+/**\brief Copy \a arr into a JSON array of integers.
+  *
+  * You are responsible for managing the memory allocated for the returned
+  * object, either by calling cJSON_Delete on it or adding it to another
+  * cJSON node that is eventually deleted.
+  */
+cJSON* ExportJSON::createIntegerArray(const std::vector<long>& arr)
 {
   return cJSON_CreateLongArray(&arr[0], static_cast<unsigned>(arr.size()));
 }

@@ -83,10 +83,12 @@ typedef unsigned long BridgedInfoBits;
   * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
   *                the bridge's capabilities, including file types that the bridge supports.
   *                The format of the JSON structure is documented in the SMTK User's Guide.
+  * \a Setup     - A function to provide configuration before bridge construction.
+  *                See the documentation for BridgeStaticSetup and BridgeHasNoStaticSetup.
   * \a Cls       - The name of the bridge class. The class must have a static method named
   *                "create" that constructs and instance and returns a shared pointer to it.
   */
-#define smtkImplementsModelingKernel(Comp, Tags, Cls) \
+#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::BridgePtr baseCreate() { \
     return Cls ::create(); \
@@ -96,12 +98,14 @@ typedef unsigned long BridgedInfoBits;
     smtk::model::BridgeRegistrar::registerBridge( \
       #Comp, /* Can't rely on bridgeName to be initialized yet */ \
       Tags, \
+      Setup, \
       baseCreate); \
   } \
   void smtk_##Comp##_bridge_AutoInit_Destruct() { \
     smtk::model::BridgeRegistrar::registerBridge( \
       Cls ::bridgeName, \
       std::string(), \
+      NULL, \
       NULL); \
   } \
   /**\brief Declare the component name */ \

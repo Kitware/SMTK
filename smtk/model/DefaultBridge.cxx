@@ -133,4 +133,5 @@ OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr oper)
 smtkImplementsModelingKernel(
   native,
   DefaultBridge_json,
+  smtk::model::BridgeHasNoStaticSetup,
   smtk::model::DefaultBridge);

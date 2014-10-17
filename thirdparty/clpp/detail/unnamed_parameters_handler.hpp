@@ -96,9 +96,9 @@ private:
                                                                , size_t serial_number ) const {
         o_stream what_happened;
         what_happened << lib_prefix()
-                      << "You inputed unnamed parameter '" << inputed_parameter << "' "
+                      << "You passed an unknown parameter '" << inputed_parameter << "' "
                       << "with order number " << serial_number << ", "
-                      << "but there is no parameter with such order number!";
+                      << "but there is no parameter expected at that position!";
         throw std::runtime_error( what_happened.str() );
     }
 };

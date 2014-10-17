@@ -40,7 +40,11 @@ public:
   RemusStaticBridgeInfo(
     const RemusStaticBridgeInfo&);
 
-  smtk::model::BridgePtr operator() () const;
+  int staticSetup(
+    const std::string& optName,
+    const smtk::model::StringList& optVal);
+
+  smtk::model::BridgePtr operator () () const;
 
   std::string name() const { return this->m_name; }
   std::string tags() const { return this->m_tags; }
