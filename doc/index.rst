@@ -7,6 +7,8 @@ SMTK: Simulation Modeling Tool Kit
 .. role:: cxx(code)
    :language: c++
 
+.. image:: figures/smtk-logo.*
+
 Contents:
 
 .. toctree::
