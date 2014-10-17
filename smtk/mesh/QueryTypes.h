@@ -17,4 +17,15 @@
 #include "smtk/mesh/CellTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
 
+namespace smtk {
+namespace mesh {
+
+typedef int TypeSet;
+typedef int CellSet;
+typedef int PointSet;
+typedef int MeshSet;
+
+}
+}
+
 #endif

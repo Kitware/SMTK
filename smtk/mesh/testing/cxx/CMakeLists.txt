@@ -12,6 +12,8 @@
 
 set(unit_tests
   UnitTestCellTypes.cxx
+  UnitTestManager.cxx
+  UnitTestCollection.cxx
   UnitTestQueryTypes.cxx
   )
 

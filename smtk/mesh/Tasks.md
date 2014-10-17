@@ -24,7 +24,13 @@ be able to do the following:
   cellSet.AllCellsOfType( smtk::mesh::Dims3 );
 ```
 
-3. Ability to walk the mesh in some manner. This decomposes int
+3. Ability to walk the mesh in some manner.
+
+
+4. Ability to get and set the names for meshCollections and specific meshes
+
+5. Ability to query Collection based on a UUID
+
 
 ##IO##
 
@@ -33,7 +39,7 @@ from it. The code should roughly look like:
 
 ```
   smtk::mesh::Manager manager;
-  smtk::common::uuid meshSetUUID = smtk::io::load_mesh(file_path, manager);
+  smtk::mesh::Collection collec = smtk::io::load_mesh(file_path, manager);
 
 ```
 
@@ -44,14 +50,12 @@ into moab.
   smtk::mesh::Manager manager;
   ...
   //save the last mesh in the collection
-  const std::size_t size = manager.numberOfMeshCollections();
-  smtk::mesh::MeshCollection collection = manager.meshCollection(size-1);
+  const std::size_t size = manager.numberOfCollections();
+  smtk::mesh::Manager::const_iterator collection = manager.collectionBegin();
 
   //now
-  smtk::io::save_mesh(collection);
+  smtk::io::save_mesh(*collection);
 
-  //or
-  smtk::io::save_mesh( manager, collection.entity() );
 ```
 
 
@@ -89,26 +93,27 @@ Current goals of the system are:
 
 ```
   smtk::mesh::Manager manager;
-
-  smtk::mesh::TypeSet ts = manager.findAssociatedTypes( modelCursor );
+  smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
+  smtk::mesh::TypeSet ts = collection.findAssociatedTypes( modelCursor );
 ```
 
 3. Query given a model cursor find all elements of a specific type:
 
 ```
   smtk::mesh::Manager manager;
+  smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
 
-  smtk::mesh::CellSet cs = manager.findAssociatedCells( modelCursor );
-  smtk::mesh::PointSet ps = manager.findAssociatedPoints( modelCursor );
-  smtk::mesh::MeshSet ms = manager.findAssociatedMeshes( modelCursor );
+  smtk::mesh::CellSet cs = collection.findAssociatedCells( modelCursor );
+  smtk::mesh::PointSet ps = collection.findAssociatedPoints( modelCursor );
+  smtk::mesh::MeshSet ms = collection.findAssociatedMeshes( modelCursor );
 
   //find only hexahedron cells
-  smtk::mesh::CellSet cs = manager.findAssociatedCells( modelCursor,
-                                                          smtk::mesh::Hexahedron );
+  smtk::mesh::CellSet cs = collection.findAssociatedCells( modelCursor,
+                                                           smtk::mesh::Hexahedron );
 
   //find only meshes that contain 2d cells
-  smtk::mesh::MeshSet ms = manager.findAssociatedMeshes( modelCursor,
-                                                           smtk::mesh::Dim2 );
+  smtk::mesh::MeshSet ms = collection.findAssociatedMeshes( modelCursor,
+                                                            smtk::mesh::Dim2 );
 ```
 
 ##General Manager API examples##
@@ -117,16 +122,13 @@ Current goals of the system are:
   smtk::mesh::Manager manager;
   smtk::common::uuid meshSetUUID = smtk::io::load_mesh(file_path, manager);
 
-  manager.numberOfMeshCollections();
+  manager.numberOfCollections();
   manager.numberOfMeshesInCollection(meshSetUUID);
 
-  smtk::mesh::MeshCollection collection = manager.meshCollection(meshSetUUID);
+  smtk::mesh::Collection collection = manager.collection(meshSetUUID);
 
   collection.numberOfMeshes();
-  collection.highestDimension();
 
   smtk::mesh::MeshSet = collection.allMeshes( smtk::mesh::Dims2 );
   smtk::mesh::MeshSet = collection.allMeshes( smtk::mesh::Dims3 );
-
-  smtk::mesh::CellSet cells = collection.all2DCells();
 ```

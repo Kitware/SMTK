@@ -2,7 +2,8 @@
 set(meshSrcs
   # Cells.cxx
   # CellSet.cxx
-  # Manager.cxx
+  Collection.cxx
+  Manager.cxx
   # Mesh.cxx
   # MeshSet.cxx
   # Points.cxx
@@ -15,7 +16,8 @@ set(meshHeaders
   CellTraits.h
   CellTypes.h
   DimensionTypes.h
-  # Manager.h
+  Manager.h
+  Collection.h
   # Mesh.h
   # MeshSet.h
   # Points.h
