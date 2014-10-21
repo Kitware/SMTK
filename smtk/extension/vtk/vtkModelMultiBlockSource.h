@@ -35,6 +35,11 @@ public:
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
 
+  // Description:
+  // Model entity ID that this source will be built upon.
+  vtkSetStringMacro(ModelEntityID);
+  vtkGetStringMacro(ModelEntityID);
+
   void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
   void Dirty();
 
@@ -67,6 +72,8 @@ protected:
 
   // Internal map of UUID and block index into multiblock
   std::map<std::string, unsigned int> UUID2BlockIdMap;
+  // Model Entity UUID
+  char* ModelEntityID;
 
 private:
 

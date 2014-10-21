@@ -9,8 +9,10 @@
 //=========================================================================
 #include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/common/UUID.h"
@@ -43,11 +45,13 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
     {
     this->DefaultColor[i] = 1.;
     }
+  this->ModelEntityID = NULL;
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
 {
   this->SetCachedOutput(NULL);
+  this->SetModelEntityID(NULL);
 }
 
 void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
@@ -56,6 +60,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
 
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
+  os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
 }
 
 /// Set the SMTK model to be displayed.
@@ -268,20 +273,61 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
-  vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model)
+  vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
 {
-  mbds->SetNumberOfBlocks(model->tessellations().size());
-  vtkIdType i;
-  smtk::model::UUIDWithTessellation it;
-  for (i = 0, it = model->tessellations().begin(); it != model->tessellations().end(); ++it, ++i)
+  // TODO: how do we handle submodels in a multiblock dataset
+  if(this->ModelEntityID && this->ModelEntityID[0])
     {
-    vtkNew<vtkPolyData> poly;
-    mbds->SetBlock(i, poly.GetPointer());
-    smtk::model::Cursor cursor(model, it->first);
-    // Set the block name to the entity UUID.
-    mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
-    this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
-    this->UUID2BlockIdMap[cursor.entity().toString()] = static_cast<unsigned int>(i);
+    smtk::common::UUID uid(this->ModelEntityID);
+    smtk::model::Cursor entity(manager, uid);
+    ModelEntity modelEntity = entity.isModelEntity() ?
+      entity.as<smtk::model::ModelEntity>() : entity.owningModel();
+    if (modelEntity.isValid())
+      {
+      smtk::model::Cursors cursors;
+      CellEntities cellents = modelEntity.cells();
+      for (CellEntities::iterator it = cellents.begin(); it != cellents.end(); ++it)
+        {
+        if((*it).hasTessellation())
+          {
+          cursors.insert(*it);
+          }
+        }
+      mbds->SetNumberOfBlocks(cursors.size());
+      vtkIdType i;
+      smtk::model::Cursors::iterator cit;
+      for (i = 0, cit = cursors.begin(); cit != cursors.end(); ++cit, ++i)
+        {
+        vtkNew<vtkPolyData> poly;
+        mbds->SetBlock(i, poly.GetPointer());
+        // Set the block name to the entity UUID.
+        mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
+        this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit);
+        this->UUID2BlockIdMap[(*cit).entity().toString()] = static_cast<unsigned int>(i);
+        }
+      }
+    else
+      {
+      vtkGenericWarningMacro(<< "Can not find the model entity with UUID: " << this->ModelEntityID);
+      }
+    }
+  else
+    {
+    vtkGenericWarningMacro(<< "A valid model entity id was not set, so all tessellations are used.");
+
+    mbds->SetNumberOfBlocks(manager->tessellations().size());
+    vtkIdType i;
+    smtk::model::UUIDWithTessellation it;
+    for (i = 0, it = manager->tessellations().begin(); it != manager->tessellations().end(); ++it, ++i)
+      {
+      vtkNew<vtkPolyData> poly;
+      mbds->SetBlock(i, poly.GetPointer());
+      smtk::model::Cursor cursor(manager, it->first);
+      // Set the block name to the entity UUID.
+      mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
+      this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
+      this->UUID2BlockIdMap[cursor.entity().toString()] = static_cast<unsigned int>(i);
+      }
     }
 }
 
