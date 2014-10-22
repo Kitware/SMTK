@@ -38,8 +38,9 @@ be able to do the following:
 from it. The code should roughly look like:
 
 ```
-  smtk::mesh::Manager manager;
-  smtk::mesh::Collection collec = smtk::io::load_mesh(file_path, manager);
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
+  smtk::mesh::Collection c = manager->findCollection(entity);
 
 ```
 
@@ -47,14 +48,14 @@ from it. The code should roughly look like:
 into moab.
 
 ```
-  smtk::mesh::Manager manager;
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   ...
   //save the last mesh in the collection
   const std::size_t size = manager.numberOfCollections();
   smtk::mesh::Manager::const_iterator collection = manager.collectionBegin();
 
   //now
-  smtk::io::save_mesh(*collection);
+  smtk::io::SaveMesh::intoFile(*collection, file_path);
 
 ```
 
@@ -92,7 +93,7 @@ Current goals of the system are:
 2. Query given a model cursor find what are the associated types:
 
 ```
-  smtk::mesh::Manager manager;
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
   smtk::mesh::TypeSet ts = collection.findAssociatedTypes( modelCursor );
 ```
@@ -100,7 +101,7 @@ Current goals of the system are:
 3. Query given a model cursor find all elements of a specific type:
 
 ```
-  smtk::mesh::Manager manager;
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
 
   smtk::mesh::CellSet cs = collection.findAssociatedCells( modelCursor );
@@ -119,7 +120,7 @@ Current goals of the system are:
 ##General Manager API examples##
 
 ```
-  smtk::mesh::Manager manager;
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::common::uuid meshSetUUID = smtk::io::load_mesh(file_path, manager);
 
   manager.numberOfCollections();

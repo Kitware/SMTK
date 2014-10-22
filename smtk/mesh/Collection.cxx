@@ -24,7 +24,7 @@ class Collection::InternalImpl
 public:
   InternalImpl():
     WeakManager(),
-    Interface(  )
+    Interface( smtk::mesh::moab::make_interface()  )
   {
   }
 
@@ -56,6 +56,11 @@ public:
     this->WeakManager = smtk::weak_ptr<smtk::mesh::Manager>(newMngr);
     return true;
     }
+
+  smtk::mesh::moab::Interface* mesh_iface() const
+    { return this->Interface.get(); }
+
+
 
 private:
   smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
@@ -139,13 +144,6 @@ const smtk::common::UUID Collection::entity() const
 }
 
 //----------------------------------------------------------------------------
-std::size_t Collection::numberOfMeshes() const
-{
-  // return this->m_interface->size();
-  return 0;
-}
-
-//----------------------------------------------------------------------------
 bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
 {
   //re-parent the collection onto a new manager
@@ -175,6 +173,19 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
   currentManager->addCollection( *this );
 
   return true;
+}
+
+//----------------------------------------------------------------------------
+std::size_t Collection::numberOfMeshes() const
+{
+  smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
+
+  int num_ents = 0;
+  ::moab::EntityHandle handle;
+  iface->get_number_entities_by_type( iface->get_root_set(),
+                                     ::moab::MBENTITYSET,
+                                     num_ents);
+  return static_cast<std::size_t>(num_ents);
 }
 
 //----------------------------------------------------------------------------

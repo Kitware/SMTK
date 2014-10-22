@@ -53,10 +53,10 @@ public:
   //fetch the entity id for this uuid
   const smtk::common::UUID entity() const;
 
-  std::size_t numberOfMeshes() const;
-
   //re-parent the collection onto a new manager.
   bool reparent(smtk::mesh::ManagerPtr newParent);
+
+  std::size_t numberOfMeshes() const;
 
   //General Queries on a Collection
   smtk::mesh::TypeSet   associatedTypes( );
