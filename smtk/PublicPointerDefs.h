@@ -20,6 +20,12 @@
 #include <set>
 #include <vector>
 
+//forward declare moab Interface class
+namespace moab
+{
+  class Interface;
+}
+
 namespace smtk
 {
   namespace common
@@ -67,6 +73,12 @@ namespace smtk
   namespace mesh
   {
     class Manager;
+    namespace moab
+    {
+      //make the our moab interface class be the same as the moab::interface
+      //We don't inherit from moab::interface since it is an abstract class
+      typedef ::moab::Interface Interface;
+    }
   }
 
 
@@ -173,6 +185,11 @@ namespace smtk
   namespace mesh
   {
     typedef smtk::shared_ptr< smtk::mesh::Manager >               ManagerPtr;
+    namespace moab
+    {
+      typedef smtk::shared_ptr< smtk::mesh::moab::Interface >     InterfacePtr;
+    }
+
   }
 
   //Shiboken requires that we use fully qualified namespaces for all

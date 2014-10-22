@@ -8,6 +8,7 @@ set(meshSrcs
   # MeshSet.cxx
   # Points.cxx
   # PointSet.cxx
+  moab/Interface.cxx
   )
 
 set(meshHeaders
@@ -23,7 +24,7 @@ set(meshHeaders
   # Points.h
   # PointSet.h
   QueryTypes.h
-  moab/CellTypesToTypes.h
+  moab/Interface.h
   )
 
 #install the headers

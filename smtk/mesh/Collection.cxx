@@ -10,22 +10,34 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/moab/Interface.h"
+
+#include "moab/Range.hpp"
+#include "moab/CN.hpp"
 
 namespace smtk {
 namespace mesh {
-
 
 //----------------------------------------------------------------------------
 class Collection::InternalImpl
 {
 public:
   InternalImpl():
-    WeakManager()
+    WeakManager(),
+    Interface(  )
   {
   }
 
   InternalImpl( smtk::mesh::ManagerPtr mngr ):
-    WeakManager(mngr)
+    WeakManager(mngr),
+    Interface( smtk::mesh::moab::make_interface() )
+  {
+  }
+
+  InternalImpl( smtk::mesh::ManagerPtr mngr,
+               smtk::mesh::moab::InterfacePtr interface ):
+    WeakManager(mngr),
+    Interface( interface )
   {
   }
 
@@ -45,10 +57,9 @@ public:
     return true;
     }
 
-  std::size_t size() const { return 0; }
-
 private:
   smtk::weak_ptr<smtk::mesh::Manager> WeakManager;
+  smtk::mesh::moab::InterfacePtr Interface;
 };
 
 //----------------------------------------------------------------------------
@@ -75,6 +86,30 @@ Collection::Collection( smtk::mesh::ManagerPtr mngr ):
       this->m_entity = smtk::common::UUID::null();
       }
     }
+}
+
+//----------------------------------------------------------------------------
+Collection::Collection( smtk::mesh::moab::InterfacePtr interface,
+                        smtk::mesh::ManagerPtr mngr):
+  m_entity( mngr->nextEntityId() ),
+  m_name(),
+  m_internals( new InternalImpl(mngr, interface) )
+{
+  //first we need an uuid before we can be added to the manager
+  if(mngr)
+    {
+    const bool valid = mngr->addCollection( *this );
+    if (!valid)
+      {
+      this->m_entity = smtk::common::UUID::null();
+      }
+    }
+}
+
+//----------------------------------------------------------------------------
+Collection::~Collection()
+{
+
 }
 
 //----------------------------------------------------------------------------
@@ -106,7 +141,8 @@ const smtk::common::UUID Collection::entity() const
 //----------------------------------------------------------------------------
 std::size_t Collection::numberOfMeshes() const
 {
-  return this->m_internals->size();
+  // return this->m_interface->size();
+  return 0;
 }
 
 //----------------------------------------------------------------------------

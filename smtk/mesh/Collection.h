@@ -14,8 +14,9 @@
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
-#include "smtk/mesh/QueryTypes.h"
 #include "smtk/common/UUID.h"
+#include "smtk/mesh/QueryTypes.h"
+
 #include "smtk/model/EntityRef.h"
 
 namespace smtk {
@@ -31,7 +32,16 @@ public:
   Collection();
 
   //Construct a valid collection that is associated with a manager
+  //but has an empty interface that can be populated
   Collection( smtk::mesh::ManagerPtr mngr );
+
+  //Construct a valid collection that has an associated interface
+  //in the future we need a better way to make collections refer
+  //to different mesh interfaces
+  Collection( smtk::mesh::moab::InterfacePtr interface,
+              smtk::mesh::ManagerPtr mngr);
+
+  ~Collection();
 
   //determine if the given Collection is valid and is properly associated
   //to a manager.
@@ -85,6 +95,9 @@ private:
   smtk::common::UUID m_entity;
   std::string m_name;
 
+  //holds a reference to both the manager and the moab interface
+  //in the future this should be switchable to allow different interface
+  //types
   class InternalImpl;
   smtk::shared_ptr< InternalImpl > m_internals;
 };
