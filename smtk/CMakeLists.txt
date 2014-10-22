@@ -43,7 +43,10 @@ target_include_directories(smtkCore
 )
 target_link_libraries(smtkCore
   LINK_PUBLIC cJSON
-  LINK_PRIVATE ${Boost_LIBRARIES})
+  LINK_PRIVATE ${Boost_LIBRARIES} MOAB)
+
+target_include_directories(SMTKCore
+  PRIVATE ${MOAB_INCLUDE_DIRS})
 
 smtk_export_header(smtkCore CoreExports.h)
 if (NOT BUILD_SHARED_LIBS AND SMTK_ENABLE_PYTHON_WRAPPING)
