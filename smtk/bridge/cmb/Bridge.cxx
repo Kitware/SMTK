@@ -66,6 +66,8 @@
 #include "vtkPolyData.h"
 #include "vtkUnsignedIntArray.h"
 
+using namespace smtk::model;
+
 namespace smtk {
   namespace bridge {
     namespace cmb {
@@ -1073,17 +1075,32 @@ smtk::model::Face Bridge::addFaceToManager(
       { // Add refFace relations and arrangements
       // If face uses exist, add them to the bridge.
       vtkModelFaceUse* fu;
+      bool haveFaceUse = false;
       for (int i = 0; i < 2; ++i)
         {
         fu = refFace->GetModelFaceUse(i); // 0 = negative, 1 = positive
         if (fu)
           {
+          haveFaceUse = true;
           smtk::common::UUID fuid = this->findOrSetEntityUUID(fu);
           this->addFaceUseToManager(fuid, fu, manager, relDepth - 1);
           // Now, since we are the "higher" end of the relationship,
           // arrange the use wrt ourself:
           manager->findCreateOrReplaceCellUseOfSenseAndOrientation(
             uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, fuid);
+          }
+        }
+      if (!haveFaceUse)
+        { // Add a reference to the volume(s) directly (with no relationship)
+        int nvols = refFace->GetNumberOfModelRegions();
+        for (int i = 0; i < nvols; ++i)
+          {
+          vtkModelRegion* vol = refFace->GetModelRegion(i);
+          if (vol)
+            {
+            Volume v(manager, this->findOrSetEntityUUID(vol));
+            result.addRawRelation(v);
+            }
           }
         }
       std::vector<vtkModelEdge*> edges;
