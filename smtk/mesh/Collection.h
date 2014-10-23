@@ -15,7 +15,9 @@
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/UUID.h"
+
 #include "smtk/mesh/QueryTypes.h"
+#include "smtk/mesh/TypeSet.h"
 
 #include "smtk/model/EntityRef.h"
 
@@ -59,19 +61,22 @@ public:
   std::size_t numberOfMeshes() const;
 
   //General Queries on a Collection
-  smtk::mesh::TypeSet   associatedTypes( );
+  smtk::mesh::TypeSet   associatedTypes( ) const;
   smtk::mesh::CellSet   cells( );
   smtk::mesh::PointSet  points( );
   smtk::mesh::MeshSet   meshes( );
 
   //Advanced Queries on a Collection
+  //find meshes of a given dimensions
+  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
+
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes );
 
+  //find the point set related to a given cell type or collection of types
   smtk::mesh::PointSet  pointsAssociatedTo( smtk::mesh::CellType cellType );
   smtk::mesh::PointSet  pointsAssociatedTo( smtk::mesh::CellTypes cellTypes );
-
 
   //Query a Collection given a model cursor
   smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref );

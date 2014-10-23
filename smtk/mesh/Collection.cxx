@@ -11,6 +11,7 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 #include "smtk/mesh/moab/Interface.h"
+#include "smtk/mesh/moab/CellTypeToType.h"
 
 #include "moab/Range.hpp"
 #include "moab/CN.hpp"
@@ -189,9 +190,45 @@ std::size_t Collection::numberOfMeshes() const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::TypeSet Collection::associatedTypes( )
+smtk::mesh::TypeSet Collection::associatedTypes( ) const
 {
-  return smtk::mesh::TypeSet();
+  const std::size_t numMeshes = this->numberOfMeshes();
+  if( numMeshes == 0)
+    {
+    return smtk::mesh::TypeSet();
+    }
+
+  //we have meshes
+  smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
+  ::moab::EntityHandle rootHandle = iface->get_root_set();
+
+  //iterate over all the celltypes and get the number for each
+  //construct a smtk::mesh::CellTypes at the same time
+  typedef ::smtk::mesh::CellType CellEnum;
+  smtk::mesh::CellTypes ctypes;
+  for(int i=0; i < ctypes.size(); ++i ) //need a way to iterate all the cell types
+    {
+    CellEnum ce = static_cast<CellEnum>(i);
+    //now we need to convert from CellEnum to MoabType
+    ::moab::EntityType moabEType = smtk::mesh::moab::smtkToMOABCell(ce);
+
+    //some of the cell types that smtk supports moab doesn't support
+    //so we can't query on those.
+    int num = 0;
+    if(moabEType != ::moab::MBMAXTYPE)
+      {
+      iface->get_number_entities_by_type(rootHandle,
+                                       moabEType,
+                                       num);
+      }
+    ctypes[ce] = (num > 0);
+    }
+
+  //determine the state of the typeset
+  const bool hasMeshes = numMeshes > 0;
+  const bool hasCells = ctypes.any();
+  const bool hasPoints = hasMeshes && hasCells;
+  return smtk::mesh::TypeSet(ctypes, hasMeshes, hasCells, hasPoints) ;
 }
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( )
@@ -207,6 +244,12 @@ smtk::mesh::PointSet Collection::points( )
 smtk::mesh::MeshSet Collection::meshes( )
 {
   return smtk::mesh::MeshSet();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
+{
+  return smtk::mesh::CellSet();
 }
 
 //----------------------------------------------------------------------------
