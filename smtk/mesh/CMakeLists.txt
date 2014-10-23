@@ -8,6 +8,7 @@ set(meshSrcs
   # MeshSet.cxx
   # Points.cxx
   # PointSet.cxx
+  TypeSet.cxx
   moab/Interface.cxx
   )
 
@@ -24,6 +25,7 @@ set(meshHeaders
   # Points.h
   # PointSet.h
   QueryTypes.h
+  TypeSet.h
   moab/Interface.h
   )
 

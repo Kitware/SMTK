@@ -15,6 +15,7 @@ set(unit_tests
   UnitTestManager.cxx
   UnitTestCollection.cxx
   UnitTestQueryTypes.cxx
+  UnitTestTypeSet.cxx
   )
 
 set(unit_tests_which_require_data
