@@ -10,7 +10,7 @@
 
 #include "ReadOperator.h"
 
-#include "smtk/bridge/cmb/Bridge.h"
+#include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
@@ -101,7 +101,7 @@ Bridge* ReadOperator::discreteBridge() const
 
 smtkImplementsModelOperator(
   smtk::bridge::discrete::ReadOperator,
-  cmb_read,
+  discrete_read,
   "read",
   ReadOperator_xml,
   smtk::bridge::discrete::Bridge);

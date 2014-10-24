@@ -11,7 +11,7 @@
 #ifndef __smtk_bridge_discrete_CreateEdgesOperator_h
 #define __smtk_bridge_discrete_CreateEdgesOperator_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"

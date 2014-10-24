@@ -8,7 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/bridge/cmb/Bridge.h"
+#include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/common/UUID.h"
 #include "smtk/AutoInit.h"
@@ -1193,7 +1193,7 @@ static const char* DiscreteFileTypes[] = {
 smtkImplementsModelingKernel(discrete,DiscreteFileTypes,smtk::bridge::discrete::Bridge);
 
 // Force these operators to be registered whenever the bridge is used:
-smtkComponentInitMacro(smtk_cmb_read_operator);
-smtkComponentInitMacro(smtk_cmb_merge_operator);
-smtkComponentInitMacro(smtk_cmb_split_face_operator);
-smtkComponentInitMacro(smtk_cmb_create_edges_operator);
+smtkComponentInitMacro(smtk_discrete_read_operator);
+smtkComponentInitMacro(smtk_discrete_merge_operator);
+smtkComponentInitMacro(smtk_discrete_split_face_operator);
+smtkComponentInitMacro(smtk_discrete_create_edges_operator);

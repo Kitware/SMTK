@@ -10,7 +10,7 @@
 
 #include "SplitFaceOperator.h"
 
-#include "smtk/bridge/cmb/Bridge.h"
+#include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
@@ -134,7 +134,7 @@ int SplitFaceOperator::fetchCMBFaceId() const
 
 smtkImplementsModelOperator(
   smtk::bridge::discrete::SplitFaceOperator,
-  cmb_split_face,
+  discrete_split_face,
   "split face",
   SplitFaceOperator_xml,
   smtk::bridge::discrete::Bridge);

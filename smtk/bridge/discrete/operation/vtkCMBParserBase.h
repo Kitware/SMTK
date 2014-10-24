@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserBase_h
 #define __smtkdiscrete_vtkCMBParserBase_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification

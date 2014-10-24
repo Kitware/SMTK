@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCMBParserV4_h
 #define __smtkdiscrete_vtkCMBParserV4_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 

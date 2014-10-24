@@ -11,7 +11,7 @@
 #ifndef __smtk_bridge_discrete_SplitFaceOperator_h
 #define __smtk_bridge_discrete_SplitFaceOperator_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkSplitOperator.h"
 #include "vtkNew.h"

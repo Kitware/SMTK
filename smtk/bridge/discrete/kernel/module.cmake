@@ -1,6 +1,6 @@
 vtk_module(vtkSMTKDiscreteModel
   GROUPS
-   CmbCore
+   DiscreteCore
   DEPENDS
     vtkCommonDataModel
     vtkIOCore

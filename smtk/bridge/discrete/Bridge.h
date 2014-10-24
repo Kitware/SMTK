@@ -11,7 +11,7 @@
 #ifndef __smtk_bridge_discrete_Bridge_h
 #define __smtk_bridge_discrete_Bridge_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h"
+#include "smtk/bridge/discrete/discreteBridgeExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/model/Bridge.h"
 

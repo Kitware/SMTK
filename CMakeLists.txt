@@ -118,7 +118,7 @@ endif()
 # and VTK can NOT be easily switched due to modules and macros intermixed
 ################################################################################
 ################################################################################
-# Look for CMB bridge discrete model modules
+# Look for Discrete bridge discrete model modules
 ################################################################################
 
 if(SMTK_BUILD_BRIDGE_PLUGIN)
@@ -272,7 +272,7 @@ add_subdirectory(thirdparty)
 
 # Add the current directory so we can include files like: <smtk/internal/Test.h>
 # Save the include directories in a variable so that VTK modules
-# (inside the extension/vtk and bridge/cmb directories) can reuse them.
+# (inside the extension/vtk and bridge/discrete directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -283,7 +283,7 @@ include_directories(
 )
 
 ################################################################################
-# Look for CMB bridge discrete model modules
+# Look for Discrete bridge discrete model modules
 ################################################################################
 
 if(SMTK_BUILD_DISCRETE_BRIDGE)

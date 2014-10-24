@@ -10,12 +10,12 @@ include("${VTK_USE_FILE}")
 include_directories(
     "${CMAKE_CURRENT_BINARY_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmbmodel"
-    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel"
-    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel/Model"
-    "${CMAKE_CURRENT_SOURCE_DIR}/discretemodel/Serialize"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmbmodel"
-    "${CMAKE_CURRENT_BINARY_DIR}/discretemodel"
+    "${CMAKE_CURRENT_SOURCE_DIR}/operation"
+    "${CMAKE_CURRENT_SOURCE_DIR}/kernel"
+    "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Model"
+    "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Serialize"
+    "${CMAKE_CURRENT_BINARY_DIR}/operation"
+    "${CMAKE_CURRENT_BINARY_DIR}/kernel"
 )
 
 # Don't add the VTK or other subdirectories as they use the
@@ -23,54 +23,54 @@ include_directories(
 # The pv_process_modules() macro finds all subdirectories
 # containing a module.cmake file automatically.
 include (vtkSMTKModules)
-vtk_smtk_setup_module_environment("SMTKCMB")
+vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
 SET(DiscreteModelFiles
-  cmbmodel/vtkCMBModelWriterV2.cxx
-  cmbmodel/vtkCMBModelWriterV4.cxx
-  cmbmodel/vtkCMBModelWriterV5.cxx
-  cmbmodel/vtkCMBModelWriterBase.cxx
-  cmbmodel/vtkCMBParserBase.cxx
-  cmbmodel/vtkCMBParserV2.cxx
-  cmbmodel/vtkCMBParserV4.cxx
-  cmbmodel/vtkCMBParserV5.cxx
-  cmbmodel/vtkCMBModelReader.cxx
+  operation/vtkCMBModelWriterV2.cxx
+  operation/vtkCMBModelWriterV4.cxx
+  operation/vtkCMBModelWriterV5.cxx
+  operation/vtkCMBModelWriterBase.cxx
+  operation/vtkCMBParserBase.cxx
+  operation/vtkCMBParserV2.cxx
+  operation/vtkCMBParserV4.cxx
+  operation/vtkCMBParserV5.cxx
+  operation/vtkCMBModelReader.cxx
 )
 
-SET(CMBOperationFiles
-  cmbmodel/vtkMergeOperator.cxx
-  cmbmodel/vtkMergeOperatorBase.cxx
-  cmbmodel/vtkCMBModelReadOperator.cxx
-  cmbmodel/vtkCreateModelEdgesOperator.cxx
-  cmbmodel/vtkCreateModelEdgesOperatorBase.cxx
-  cmbmodel/vtkSplitOperator.cxx
-  cmbmodel/vtkSplitOperatorBase.cxx
+SET(DiscreteOperationFiles
+  operation/vtkMergeOperator.cxx
+  operation/vtkMergeOperatorBase.cxx
+  operation/vtkCMBModelReadOperator.cxx
+  operation/vtkCreateModelEdgesOperator.cxx
+  operation/vtkCreateModelEdgesOperatorBase.cxx
+  operation/vtkSplitOperator.cxx
+  operation/vtkSplitOperatorBase.cxx
 )
 
 SET(DiscreteModelHeaders
-  cmbmodel/vtkCMBModelWriterV2.h
-  cmbmodel/vtkCMBModelWriterV4.h
-  cmbmodel/vtkCMBModelWriterV5.h
-  cmbmodel/vtkCMBModelWriterBase.h
-  cmbmodel/vtkCMBParserBase.h
-  cmbmodel/vtkCMBParserV2.h
-  cmbmodel/vtkCMBParserV4.h
-  cmbmodel/vtkCMBParserV5.h
-  cmbmodel/vtkCMBModelReader.h
+  operation/vtkCMBModelWriterV2.h
+  operation/vtkCMBModelWriterV4.h
+  operation/vtkCMBModelWriterV5.h
+  operation/vtkCMBModelWriterBase.h
+  operation/vtkCMBParserBase.h
+  operation/vtkCMBParserV2.h
+  operation/vtkCMBParserV4.h
+  operation/vtkCMBParserV5.h
+  operation/vtkCMBModelReader.h
 
-  cmbmodel/vtkMergeOperator.h
-  cmbmodel/vtkMergeOperatorBase.h
-  cmbmodel/vtkCMBModelReadOperator.h
-  cmbmodel/vtkCreateModelEdgesOperator.h
-  cmbmodel/vtkCreateModelEdgesOperatorBase.h
-  cmbmodel/vtkSplitOperator.h
-  cmbmodel/vtkSplitOperatorBase.h
+  operation/vtkMergeOperator.h
+  operation/vtkMergeOperatorBase.h
+  operation/vtkCMBModelReadOperator.h
+  operation/vtkCreateModelEdgesOperator.h
+  operation/vtkCreateModelEdgesOperatorBase.h
+  operation/vtkSplitOperator.h
+  operation/vtkSplitOperatorBase.h
 )
 
 
 SET_SOURCE_FILES_PROPERTIES(
-  cmbmodel/vtkCMBParserBase
+  operation/vtkCMBParserBase
   ABSTRACT
 )
 
@@ -81,7 +81,7 @@ WRAP_EXCLUDE
 
 set(_module_src
   ${DiscreteModelFiles}
-  ${CMBOperationFiles}
+  ${DiscreteOperationFiles}
 )
 
 set(discreteBridgeSrcs
@@ -147,5 +147,5 @@ endif()
 
 if (SMTK_ENABLE_TESTING)
   add_subdirectory(testing)
-  add_subdirectory(cmbmodel/testing)
+  add_subdirectory(operation/testing)
 endif()

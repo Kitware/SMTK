@@ -10,7 +10,7 @@
 
 #include "CreateEdgesOperator.h"
 
-#include "smtk/bridge/cmb/Bridge.h"
+#include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -83,7 +83,7 @@ Bridge* CreateEdgesOperator::discreteBridge() const
 
 smtkImplementsModelOperator(
   smtk::bridge::discrete::CreateEdgesOperator,
-  cmb_create_edges,
+  discrete_create_edges,
   "create edges",
   CreateEdgesOperator_xml,
   smtk::bridge::discrete::Bridge);

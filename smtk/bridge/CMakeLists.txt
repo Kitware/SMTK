@@ -7,11 +7,11 @@ if (SMTK_BUILD_CGM AND CGM_FOUND)
 endif()
 
 ################################################################################
-# Build CMB bridge
+# Build Discrete bridge
 ################################################################################
 
 if(SMTK_BUILD_DISCRETE_BRIDGE)
-  add_subdirectory(cmb)
+  add_subdirectory(discrete)
 endif()
 
 ################################################################################

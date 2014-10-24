@@ -15,7 +15,7 @@
 #ifndef __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
 #define __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
 
-#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 
 

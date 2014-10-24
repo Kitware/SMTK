@@ -10,7 +10,7 @@
 
 #include "MergeOperator.h"
 
-#include "smtk/bridge/cmb/Bridge.h"
+#include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -105,7 +105,7 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
 
 smtkImplementsModelOperator(
   smtk::bridge::discrete::MergeOperator,
-  cmb_merge,
+  discrete_merge,
   "merge",
   MergeOperator_xml,
   smtk::bridge::discrete::Bridge);
