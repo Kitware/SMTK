@@ -816,6 +816,7 @@ smtk::model::FaceUse Bridge::addFaceUseToManager(
         coFace->GetModelFace()->GetModelFaceUse(1) == coFace ?
         smtk::model::POSITIVE : smtk::model::NEGATIVE);
       }
+
     if (relDepth >= 0)
       {
       // Add coFace relations and arrangements.
@@ -823,6 +824,7 @@ smtk::model::FaceUse Bridge::addFaceUseToManager(
       if (shellUse)
         {
         smtk::common::UUID shellId = this->findOrSetEntityUUID(shellUse);
+
         this->addCMBEntityToManager(matchingFace.entity(), coFace->GetModelFace(), manager, relDepth - 1);
         this->addCMBEntityToManager(shellId, shellUse, manager, relDepth - 1);
         vtkModelItemIterator* loopIt = coFace->NewLoopUseIterator();
@@ -1090,7 +1092,8 @@ smtk::model::Face Bridge::addFaceToManager(
             uid, 0, i ? smtk::model::POSITIVE : smtk::model::NEGATIVE, fuid);
           }
         }
-      if (!haveFaceUse)
+
+     if (!haveFaceUse)
         { // Add a reference to the volume(s) directly (with no relationship)
         int nvols = refFace->GetNumberOfModelRegions();
         for (int i = 0; i < nvols; ++i)

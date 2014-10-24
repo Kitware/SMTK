@@ -9,7 +9,6 @@
 //=========================================================================
 #include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
-#include "smtk/model/CellEntity.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
@@ -271,6 +270,23 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
     }
 }
 
+/// Recursively find all the entities with tessellation
+void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
+  const CellEntities &cellents, smtk::model::Cursors &cursors)
+{
+  for (CellEntities::const_iterator it = cellents.begin(); it != cellents.end(); ++it)
+    {
+    if((*it).hasTessellation())
+      {
+      cursors.insert(*it);
+      }
+    else if((*it).boundingCells().size() > 0)
+      {
+      this->FindEntitiesWithTessellation((*it).boundingCells(), cursors);
+      }
+    }
+}
+
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
@@ -286,13 +302,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       {
       smtk::model::Cursors cursors;
       CellEntities cellents = modelEntity.cells();
-      for (CellEntities::iterator it = cellents.begin(); it != cellents.end(); ++it)
-        {
-        if((*it).hasTessellation())
-          {
-          cursors.insert(*it);
-          }
-        }
+      this->FindEntitiesWithTessellation(cellents, cursors);
+
       mbds->SetNumberOfBlocks(cursors.size());
       vtkIdType i;
       smtk::model::Cursors::iterator cit;
@@ -303,6 +314,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         // Set the block name to the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
         this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit);
+//        std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         this->UUID2BlockIdMap[(*cit).entity().toString()] = static_cast<unsigned int>(i);
         }
       }

@@ -24,7 +24,9 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
 #include "vtkModelEntity.h"
+#include "smtk/io/ExportJSON.h"
 
+#include "cJSON.h"
 #include "ReadOperator_xml.h"
 
 using namespace smtk::model;
@@ -71,6 +73,16 @@ OperatorResult ReadOperator::operateInternal()
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   result->findModelEntity("model")->setValue(modelEntity);
+/*
+  cJSON* json = cJSON_CreateObject();
+  smtk::io::ExportJSON::fromModel(json, this->manager());
+  std::cout << "Result " << cJSON_Print(json) << "\n";
+  cJSON_Delete(json);
+  */
+std::string json = smtk::io::ExportJSON::fromModel(this->manager());
+    std::ofstream file("/Users/yuminyuan/Desktop/smooth_surface1.json");
+    file << json;
+    file.close();
 
   return result;
 }

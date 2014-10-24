@@ -12,6 +12,7 @@
 
 #include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
+#include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 
 #include <map>
@@ -64,6 +65,9 @@ protected:
     vtkInformationVector* outInfo);
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
+
+  void FindEntitiesWithTessellation(
+    const smtk::model::CellEntities &cellents, smtk::model::Cursors &cursors);
 
   // Instance model Manager:
   smtk::model::ManagerPtr ModelMgr;
