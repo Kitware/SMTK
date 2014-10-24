@@ -14,14 +14,14 @@
 #ifndef __smtk_mesh_moab_CellTypeToType_h
 #define __smtk_mesh_moab_CellTypeToType_h
 
+#include "smtk/mesh/moab/Types.h"
 #include "smtk/mesh/CellTypes.h"
-#include "moab/EntityType.hpp"
 
 namespace smtk {
 namespace mesh {
 namespace moab {
 
-smtk::mesh::CellType moabToSMTKCell(::moab::EntityType t)
+smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t)
   {
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
   switch (t)
@@ -61,9 +61,9 @@ smtk::mesh::CellType moabToSMTKCell(::moab::EntityType t)
   }
 
 
-::moab::EntityType smtkToMOABCell(smtk::mesh::CellType t)
+smtk::mesh::moab::EntityType smtkToMOABCell(smtk::mesh::CellType t)
   {
-  ::moab::EntityType ctype = ::moab::MBMAXTYPE;
+  smtk::mesh::moab::EntityType ctype = ::moab::MBMAXTYPE;
   switch (t)
     {
     case smtk::mesh::Vertex:

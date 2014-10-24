@@ -182,7 +182,7 @@ std::size_t Collection::numberOfMeshes() const
   smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
 
   int num_ents = 0;
-  ::moab::EntityHandle handle;
+  smtk::mesh::moab::Handle handle;
   iface->get_number_entities_by_type( iface->get_root_set(),
                                      ::moab::MBENTITYSET,
                                      num_ents);
@@ -200,7 +200,7 @@ smtk::mesh::TypeSet Collection::associatedTypes( ) const
 
   //we have meshes
   smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
-  ::moab::EntityHandle rootHandle = iface->get_root_set();
+  smtk::mesh::moab::Handle rootHandle = iface->get_root_set();
 
   //iterate over all the celltypes and get the number for each
   //construct a smtk::mesh::CellTypes at the same time
@@ -210,7 +210,8 @@ smtk::mesh::TypeSet Collection::associatedTypes( ) const
     {
     CellEnum ce = static_cast<CellEnum>(i);
     //now we need to convert from CellEnum to MoabType
-    ::moab::EntityType moabEType = smtk::mesh::moab::smtkToMOABCell(ce);
+    smtk::mesh::moab::EntityType moabEType =
+                                smtk::mesh::moab::smtkToMOABCell(ce);
 
     //some of the cell types that smtk supports moab doesn't support
     //so we can't query on those.
