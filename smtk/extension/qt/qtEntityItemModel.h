@@ -43,6 +43,8 @@ public:
   QEntityItemModel(QObject* parent = 0);
   virtual ~QEntityItemModel();
 
+  void clear();
+
   /// Enumeration of model-specific data roles.
   enum DataRoles {
     TitleTextRole       = Qt::UserRole + 100, //!< Entity name (user-editable)

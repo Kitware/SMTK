@@ -1,0 +1,289 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="CMBSimBuilderMeshGroup">
+
+    <Proxy name="CMBMeshWrapper" class="vtkCMBMeshWrapper">
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper to initialize the server mesh.
+        </Documentation>
+      </ProxyProperty>
+      <DoubleVectorProperty
+         name="GlobalLength"
+         command="SetGlobalLength"
+         number_of_elements="1"
+         default_values="0">
+        <Documentation>
+          The desired global length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+         name="GlobalMinimumAngle"
+         command="SetGlobalMinimumAngle"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0" max="33."/>
+        <Documentation>
+          The desired global minimum angle of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+    </Proxy>
+
+    <SourceProxy name="MeshPolyDataProvider" class="vtkCMBMeshPolyDataProvider">
+      <ProxyProperty name="MeshWrapper" command="SetMeshWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBSimBuilderMeshGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Mesh Wrapper for the algorithm to get the polydata from.
+        </Documentation>
+      </ProxyProperty>
+      <IdTypeVectorProperty
+         name="EntityId"
+         command="SetEntityId"
+         number_of_elements="1"
+         default_values="none" >
+        <Documentation>
+          Set the Id of the model entity to be accessed.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <IntVectorProperty
+         name="ItemType"
+         command="SetItemType"
+         number_of_elements="1"
+         default_values="none">
+        <Documentation>
+          Set the type of the model entity to be accessed.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty name="CreateEdgePointVerts"
+        command="SetCreateEdgePointVerts"
+        number_of_elements="1"
+        default_values="0" >
+        <BooleanDomain name="bool"/>
+      </IntVectorProperty>
+    </SourceProxy>
+
+  <OperatorProxy name="CmbMeshGridRepresentationOperator" class="vtkCMBMeshGridRepresentationOperator">
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="AnalysisMesh"
+         command="SetMeshIsAnalysisGrid"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          If the current 2D custom mesh should be used the simulation analysis mesh
+        </Documentation>
+      </IntVectorProperty>
+      <StringVectorProperty name="GridFileName"
+        command="SetGridFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to write the analysis mesh to
+        </Documentation>
+      </StringVectorProperty>
+    <ProxyProperty name="MeshRepresentationInput"
+      command="SetMeshRepresentationInput"
+      number_of_elements="1">
+      <ProxyGroupDomain name="groups">
+        <Group name="sources"/>
+        <Group name="filters"/>
+      </ProxyGroupDomain>
+      <DataTypeDomain name="input_type">
+        <DataType value="vtkPolyData"/>
+      </DataTypeDomain>
+      <Documentation>
+        The polydata that will be used as mesh represention
+      </Documentation>
+    </ProxyProperty>
+
+    <!-- End of CmbMeshGridRepresentationOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelEdgeMeshOperator" class="vtkCMBModelEdgeMeshOperator">
+      <IdTypeVectorProperty
+         name="Id"
+         command="SetId"
+         number_of_elements="1"
+         default_values="-1">
+        <Documentation>
+          Set the unique persistent id to specify what edge to operate on.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <DoubleVectorProperty
+         name="Length"
+         command="SetLength"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty
+         name="BuildModelEntityMesh"
+         command="SetBuildModelEntityMesh"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to build the mesh.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="MeshHigherDimensionalEntities"
+         command="SetMeshHigherDimensionalEntities"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to mesh other model entities that are affected by remeshing this edge.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of ModelEdgeMeshOperator -->
+    </OperatorProxy>
+
+    <OperatorProxy name="ModelFaceMeshOperator" class="vtkCMBModelFaceMeshOperator">
+      <IdTypeVectorProperty
+         name="Id"
+         command="SetId"
+         number_of_elements="1"
+         default_values="-1">
+        <Documentation>
+          Set the unique persistent id to specify what face to operate on.
+        </Documentation>
+      </IdTypeVectorProperty>
+      <DoubleVectorProperty
+         name="Length"
+         command="SetLength"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0"/>
+        <Documentation>
+          The desired length of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <DoubleVectorProperty
+         name="MinimumAngle"
+         command="SetMinimumAngle"
+         number_of_elements="1"
+         default_values="0">
+        <DoubleRangeDomain name="range" min="0" max="33."/>
+        <Documentation>
+          The desired minimum angle of the cells.
+        </Documentation>
+      </DoubleVectorProperty>
+      <IntVectorProperty
+         name="BuildModelEntityMesh"
+         command="SetBuildModelEntityMesh"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to build the mesh.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="MeshHigherDimensionalEntities"
+         command="SetMeshHigherDimensionalEntities"
+         number_of_elements="1"
+         default_values="0">
+        <IntRangeDomain name="range" min="0" max="1"/>
+        <Documentation>
+          Specify whether or not to mesh other model entities that are affected by remeshing this face.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="OperateSucceeded"
+         command="GetOperateSucceeded"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <IntVectorProperty
+         name="FaceMesherFailed"
+         command="GetFaceMesherFailed"
+         number_of_elements="1"
+         information_only="1"
+         default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the mesher on the server was failed to run or crashed.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of ModelFaceMeshOperator -->
+    </OperatorProxy>
+
+    <SourceProxy name="MeshToModelWriter" class="vtkCMBMeshToModelWriter"
+      label="The bcs file writer">
+      <ProxyProperty name="ModelWrapper" command="SetModelWrapper">
+        <ProxyGroupDomain name="groups">
+          <Group name="CMBModelGroup"/>
+        </ProxyGroupDomain>
+        <Documentation>
+          Sets the Model Wrapper for the algorithm to get the polydata from.
+        </Documentation>
+      </ProxyProperty>
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to write to.
+        </Documentation>
+      </StringVectorProperty>
+      <!-- End of MeshToModelWriter -->
+    </SourceProxy>
+    <OperatorProxy name="MeshToModelReadOperator" class="vtkCMBMeshToModelReadOperator">
+      <StringVectorProperty name="FileName"
+        command="SetFileName"
+        number_of_elements="1">
+        <Documentation>
+          The name of the file to read from.
+        </Documentation>
+      </StringVectorProperty>
+      <IntVectorProperty
+        name="OperateSucceeded"
+        command="GetOperateSucceeded"
+        number_of_elements="1"
+        information_only="1"
+        default_values="0" >
+        <SimpleIntInformationHelper/>
+        <Documentation>
+          Return if the operation on the server was successful.
+        </Documentation>
+      </IntVectorProperty>
+      <!-- End of MeshToModelReadOperator -->
+    </OperatorProxy>
+
+  </ProxyGroup>
+
+
+</ServerManagerConfiguration>

@@ -674,6 +674,9 @@ INPUT                  = \
   "@SMTK_SOURCE_DIR@/smtk/bridge" \
   "@SMTK_SOURCE_DIR@/smtk/bridge/remote" \
   "@SMTK_SOURCE_DIR@/smtk/bridge/cgm" \
+  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete" \
+  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete/operation" \
+  "@SMTK_SOURCE_DIR@/smtk/bridge/discrete/kernel" \
   "@SMTK_SOURCE_DIR@/smtk/common" \
   "@SMTK_SOURCE_DIR@/smtk/common/testing/cxx" \
   "@SMTK_SOURCE_DIR@/smtk/model" \

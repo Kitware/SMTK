@@ -32,7 +32,6 @@
 #include "vtkTextProperty.h"
 #include "vtkViewTheme.h"
 
-#include "vtkTestUtilities.h"
 #include "vtkRegressionTestImage.h"
 
 using smtk::shared_ptr;

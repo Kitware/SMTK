@@ -1,0 +1,34 @@
+//=========================================================================
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//=========================================================================
+
+//
+//  Copyright (c) CREATIS (Centre de Recherche et d'Applications en Traitement de
+//  l'Image). All rights reserved. See Doc/License.txt or
+//  http://www.creatis.insa-lyon.fr/Public/Gdcm/License.html for details.
+//
+//     This software is distributed WITHOUT ANY WARRANTY; without even
+//     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//     PURPOSE.  See the above copyright notices for more information.
+//
+//=============================================================================
+
+/* GetMacAddress require a lot of include files to access low level API */
+#cmakedefine CMAKE_HAVE_UNISTD_H
+#cmakedefine CMAKE_HAVE_STDLIB_H
+#cmakedefine CMAKE_HAVE_SYS_IOCTL_H
+#cmakedefine CMAKE_HAVE_SYS_SOCKET_H
+#cmakedefine CMAKE_HAVE_SYS_SOCKIO_H
+#cmakedefine CMAKE_HAVE_NET_IF_H
+#cmakedefine CMAKE_HAVE_NETINET_IN_H
+#cmakedefine CMAKE_HAVE_NET_IF_DL_H
+#cmakedefine CMAKE_HAVE_NET_IF_ARP_H
+#cmakedefine HAVE_SA_LEN
+
+#cmakedefine SYSTEM_UUID_FOUND

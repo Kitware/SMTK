@@ -116,8 +116,22 @@ QEntityItemModel::~QEntityItemModel()
   delete this->P;
 }
 
+//-----------------------------------------------------------------------------
+void QEntityItemModel::clear()
+{
+  if(this->m_root && !this->m_root->subphrases().empty())
+    {
+    this->beginRemoveRows(index(0,0,QModelIndex()), 0, this->m_root->subphrases().size());
+    this->m_root = DescriptivePhrasePtr();
+    this->endRemoveRows();
+    }
+}
+
 QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owner) const
 {
+  if(!this->m_root || this->m_root->subphrases().empty())
+    return QModelIndex();
+
   if (owner.isValid() && owner.column() != 0)
     return QModelIndex();
 

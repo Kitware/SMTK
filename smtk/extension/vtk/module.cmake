@@ -2,7 +2,7 @@ set (__groupdeps)
 set (__dependencies)
 
 # We must test whether each of the targets below exist
-# because they are required when built into VTK or ParaView
+# because they are required when built into VTK
 # but may not be present, especially since the OpenGL2
 # backend became available.
 foreach(target

@@ -7,6 +7,14 @@ if (SMTK_BUILD_CGM AND CGM_FOUND)
 endif()
 
 ################################################################################
+# Build Discrete bridge
+################################################################################
+
+if(SMTK_BUILD_DISCRETE_BRIDGE)
+  add_subdirectory(discrete)
+endif()
+
+################################################################################
 # Build remus remote bridge
 ################################################################################
 # This must come *after* all targets that implement bridges.

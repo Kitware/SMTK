@@ -74,11 +74,19 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     }
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
-  if (!Engines::setDefault(engine))
+  try
     {
-    std::cerr << "Could not set default engine to \"" << engine << "\"\n";
-    return this->createResult(smtk::model::OPERATION_FAILED);
+    if (!Engines::setDefault(engine))
+      {
+      std::cerr << "Could not set default engine to \"" << engine << "\"\n";
+      return this->createResult(smtk::model::OPERATION_FAILED);
+      }
     }
+  catch (exception& e)
+    {
+    std::cout << "There is exception being throw while setting default engine: \"" << e.what() << "\"\n";
+    }
+
   std::cout << "Default modeler now \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
   CubitStatus s;
   DLIList<RefEntity*> imported;

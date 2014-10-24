@@ -30,8 +30,11 @@ option(BUILD_SHARED_LIBS "Build SMTK using shared libraries" OFF)
 option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" ON)
 # Option to build Qt ui compoments for attributes
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
-option(SMTK_BUILD_ParaView "Build ParaView component" OFF)
+option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
+option(SMTK_BUILD_DISCRETE_BRIDGE "Build discrete model bridge components" OFF)
+option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridges" OFF)
+
 option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)
@@ -111,17 +114,32 @@ if(SMTK_BUILD_QT)
 endif()
 
 ################################################################################
-# ParaView-VTK Related Settings
+# NOTE: This has be before any find_package(VTK), because currently ParaView
+# and VTK can NOT be easily switched due to modules and macros intermixed
+################################################################################
+################################################################################
+# Look for Discrete bridge discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_ParaView)
-  # Find the package here so environment variables are set, but
-  # be careful not to include the PARAVIEW_USE_FILE until inside
-  # a subdirectory that requires it; otherwise the list of include
-  # paths can become too long for some platforms.
+if(SMTK_BUILD_BRIDGE_PLUGIN)
   find_package(ParaView REQUIRED)
 endif()
 
+################################################################################
+# VTK Related Settings
+################################################################################
+
+if(SMTK_BUILD_VTK)
+  if(SMTK_BUILD_BRIDGE_PLUGIN)
+    find_package(ParaView REQUIRED)
+  else()
+    # Find the package here so environment variables are set, but
+    # be careful not to include the VTK_USE_FILE until inside
+    # a subdirectory that requires it; otherwise the list of include
+    # paths can become too long for some platforms.
+    find_package(VTK REQUIRED)
+  endif()
+endif()
 
 ################################################################################
 # CGM Related Settings
@@ -253,8 +271,8 @@ add_subdirectory(thirdparty)
 ################################################################################
 
 # Add the current directory so we can include files like: <smtk/internal/Test.h>
-# Save the include directories in a variable so that VTK and ParaView modules
-# (inside the paraview/{vtk,pvvtk} directories) can reuse them.
+# Save the include directories in a variable so that VTK modules
+# (inside the extension/vtk and bridge/discrete directories) can reuse them.
 include_directories(
   "${CMAKE_CURRENT_BINARY_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -265,14 +283,16 @@ include_directories(
 )
 
 ################################################################################
-# Look for VTK and ParaView modules
+# Look for Discrete bridge discrete model modules
 ################################################################################
-# Cannot prepare ParaView/VTK modules until the include directories
-# have been set or they will be unable to find SMTK, Boost, etc.
-#if(SMTK_BUILD_ParaView)
-#  pv_setup_module_environment("SMTK")
-#  pv_process_modules()
-#endif()
+
+if(SMTK_BUILD_DISCRETE_BRIDGE)
+  if(SMTK_BUILD_BRIDGE_PLUGIN)
+    find_package(ParaView REQUIRED)
+  else()
+    find_package(VTK REQUIRED)
+  endif()
+endif()
 
 ################################################################################
 # Finally build smtk

@@ -12,6 +12,7 @@
 
 #include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "vtkMultiBlockDataSetAlgorithm.h"
+#include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
 
 #include <map>
@@ -34,6 +35,11 @@ public:
 
   smtk::model::ManagerPtr GetModelManager();
   void SetModelManager(smtk::model::ManagerPtr);
+
+  // Description:
+  // Model entity ID that this source will be built upon.
+  vtkSetStringMacro(ModelEntityID);
+  vtkGetStringMacro(ModelEntityID);
 
   void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
   void Dirty();
@@ -60,6 +66,9 @@ protected:
 
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
+  void FindEntitiesWithTessellation(
+    const smtk::model::CellEntities &cellents, smtk::model::Cursors &cursors);
+
   // Instance model Manager:
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
@@ -67,6 +76,8 @@ protected:
 
   // Internal map of UUID and block index into multiblock
   std::map<std::string, unsigned int> UUID2BlockIdMap;
+  // Model Entity UUID
+  char* ModelEntityID;
 
 private:
 

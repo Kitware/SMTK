@@ -67,8 +67,8 @@ target_link_libraries(cgm-convert SMTKCore cgmSMTK ${CGM_LIBRARIES})
 add_executable(facet-convert facet-convert.cxx)
 target_link_libraries(facet-convert SMTKCore ${CGM_LIBRARIES})
 
-if (SMTK_BUILD_ParaView)
-  include("${PARAVIEW_USE_FILE}")
+if (SMTK_BUILD_VTK)
+  include("${VTK_USE_FILE}")
   add_executable(vtk-to-cholla vtk-to-cholla.cxx)
   target_link_libraries(vtk-to-cholla
     SMTKCore
@@ -116,6 +116,10 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
 
   install(CODE "set(LIBRARY_OUTPUT_PATH \"${CMAKE_INSTALL_PREFIX}/lib\")
                 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py ${CMAKE_INSTALL_PREFIX}/python/cgmsmtk.py )" )
+endif()
+
+if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_CGM)
+  add_subdirectory(plugin)
 endif()
 
 if (SMTK_ENABLE_TESTING)
