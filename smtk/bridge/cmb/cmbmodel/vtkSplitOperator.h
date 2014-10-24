@@ -12,10 +12,10 @@
 // .SECTION Description
 // Operator to split a model face given an angle on the server.
 
-#ifndef __smtkcmb_vtkSplitOperator_h
-#define __smtkcmb_vtkSplitOperator_h
+#ifndef __smtkdiscrete_vtkSplitOperator_h
+#define __smtkdiscrete_vtkSplitOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkSplitOperatorBase.h"
 
 
@@ -23,7 +23,7 @@ class vtkDiscreteModelWrapper;
 class vtkIdTypeArray;
 class vtkModelEntity;
 
-class SMTKCMBBRIDGE_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
+class SMTKDISCRETEBRIDGE_EXPORT vtkSplitOperator : public vtkSplitOperatorBase
 {
 public:
   static vtkSplitOperator * New();

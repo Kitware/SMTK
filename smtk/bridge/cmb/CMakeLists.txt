@@ -1,4 +1,4 @@
-PROJECT(smtkCMBBridge)
+PROJECT(smtkDiscreteBridge)
 
 # Only include the VTK use-file in subdirectories
 # that require VTK include paths. Otherwise, command
@@ -26,7 +26,7 @@ include (vtkSMTKModules)
 vtk_smtk_setup_module_environment("SMTKCMB")
 vtk_smtk_process_modules()
 
-SET(CmbModelFiles
+SET(DiscreteModelFiles
   cmbmodel/vtkCMBModelWriterV2.cxx
   cmbmodel/vtkCMBModelWriterV4.cxx
   cmbmodel/vtkCMBModelWriterV5.cxx
@@ -48,7 +48,7 @@ SET(CMBOperationFiles
   cmbmodel/vtkSplitOperatorBase.cxx
 )
 
-SET(CmbModelHeaders
+SET(DiscreteModelHeaders
   cmbmodel/vtkCMBModelWriterV2.h
   cmbmodel/vtkCMBModelWriterV4.h
   cmbmodel/vtkCMBModelWriterV5.h
@@ -75,16 +75,16 @@ SET_SOURCE_FILES_PROPERTIES(
 )
 
 SET_SOURCE_FILES_PROPERTIES(
-${CmbModelFiles}
+${DiscreteModelFiles}
 WRAP_EXCLUDE
 )
 
 set(_module_src
-  ${CmbModelFiles}
+  ${DiscreteModelFiles}
   ${CMBOperationFiles}
 )
 
-set(cmbBridgeSrcs
+set(discreteBridgeSrcs
   Bridge.cxx
   CreateEdgesOperator.cxx
   MergeOperator.cxx
@@ -92,7 +92,7 @@ set(cmbBridgeSrcs
   SplitFaceOperator.cxx
 )
 
-set(cmbBridgeHeaders
+set(discreteBridgeHeaders
   Bridge.h
   CreateEdgesOperator.h
   MergeOperator.h
@@ -106,7 +106,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXM
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
 
-add_library(smtkCMBBridge ${_module_src} ${cmbBridgeSrcs})
+add_library(smtkDiscreteBridge ${_module_src} ${discreteBridgeSrcs})
 
 set (__private_dependencies)
 
@@ -115,8 +115,8 @@ if (VTK_WRAP_PYTHON)
       vtkPythonInterpreter)
 endif (VTK_WRAP_PYTHON)
 
-#set smtkCMBBridge to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
-target_link_libraries(smtkCMBBridge
+#set smtkDiscreteBridge to publicly link to SMTKCore and privately to vtkSMTKDiscreteModel
+target_link_libraries(smtkDiscreteBridge
   LINK_PUBLIC
     SMTKCore
   LINK_PRIVATE
@@ -128,20 +128,20 @@ target_link_libraries(smtkCMBBridge
    ${__private_dependencies}
   )
 
-smtk_export_header(smtkCMBBridge cmbBridgeExports.h)
+smtk_export_header(smtkDiscreteBridge discreteBridgeExports.h)
 
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
-  set_target_properties(smtkCMBBridge PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+  set_target_properties(smtkDiscreteBridge PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 # Install the headers.
-smtk_public_headers(${cmbBridgeHeaders} ${CmbModelHeaders})
+smtk_public_headers(${discreteBridgeHeaders} ${DiscreteModelHeaders})
 
 #install the library and exports the library when used from a build tree
-smtk_install_library(smtkCMBBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
+smtk_install_library(smtkDiscreteBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
 
-if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_CMB_BRIDGE)
+if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_DISCRETE_BRIDGE)
   add_subdirectory(plugin)
 endif()
 

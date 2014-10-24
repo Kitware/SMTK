@@ -28,8 +28,8 @@
 // in a valid state.  Lower dimensional entities will have their
 // boundary modified event triggered before higher dimensional entities.
 
-#ifndef __smtkcmb_vtkModel_h
-#define __smtkcmb_vtkModel_h
+#ifndef __smtkdiscrete_vtkModel_h
+#define __smtkdiscrete_vtkModel_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"

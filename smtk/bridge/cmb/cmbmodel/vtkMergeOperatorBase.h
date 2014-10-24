@@ -15,10 +15,10 @@
 // (e.g. color, BCS/ModelEntityGroup associations) will not be changed.
 
 
-#ifndef __smtkcmb_vtkMergeOperatorBase_h
-#define __smtkcmb_vtkMergeOperatorBase_h
+#ifndef __smtkdiscrete_vtkMergeOperatorBase_h
+#define __smtkdiscrete_vtkMergeOperatorBase_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -26,7 +26,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelGeometricEntity;
 class vtkIdTypeArray;
 
-class SMTKCMBBRIDGE_EXPORT vtkMergeOperatorBase : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkMergeOperatorBase : public vtkObject
 {
 public:
   static vtkMergeOperatorBase * New();

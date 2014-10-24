@@ -13,8 +13,8 @@
 // Topologically, edge use 1 is in the same direction of the model edge
 // and edge use 0 is in the opposite direction.
 
-#ifndef __smtkcmb_vtkModelEdge_h
-#define __smtkcmb_vtkModelEdge_h
+#ifndef __smtkdiscrete_vtkModelEdge_h
+#define __smtkdiscrete_vtkModelEdge_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"

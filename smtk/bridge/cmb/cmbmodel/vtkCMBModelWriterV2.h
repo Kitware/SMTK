@@ -26,10 +26,10 @@
 // number of model entities in last model entity group
 // the Ids of the model entities in the last group
 
-#ifndef __smtkcmb_vtkCMBModelWriterV2_h
-#define __smtkcmb_vtkCMBModelWriterV2_h
+#ifndef __smtkdiscrete_vtkCMBModelWriterV2_h
+#define __smtkdiscrete_vtkCMBModelWriterV2_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 #include <vector>
 
@@ -40,7 +40,7 @@ class vtkModelEntity;
 class vtkModelItem;
 class vtkPolyData;
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBModelWriterV2 : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelWriterV2 : public vtkObject
 {
 public:
   static vtkCMBModelWriterV2 * New();

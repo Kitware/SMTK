@@ -12,10 +12,10 @@
 // .SECTION Description
 // Parse a vtkPolyData that was read in from a CMB version 1 file.
 
-#ifndef __smtkcmb_vtkCMBParserV2_h
-#define __smtkcmb_vtkCMBParserV2_h
+#ifndef __smtkdiscrete_vtkCMBParserV2_h
+#define __smtkdiscrete_vtkCMBParserV2_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 
@@ -24,7 +24,7 @@ class vtkDiscreteModel;
 class vtkModelEntity;
 class vtkPolyData;
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBParserV2 : public vtkCMBParserBase
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserV2 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV2* New();

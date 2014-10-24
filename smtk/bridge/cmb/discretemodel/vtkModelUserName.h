@@ -13,8 +13,8 @@
 // Helper class with functions for setting and getting a user name
 // for a vtkModelEntity.
 
-#ifndef __smtkcmb_vtkModelUserName_h
-#define __smtkcmb_vtkModelUserName_h
+#ifndef __smtkdiscrete_vtkModelUserName_h
+#define __smtkdiscrete_vtkModelUserName_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 

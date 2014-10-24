@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::bridge::cmb::Bridge::Ptr bridge = smtk::bridge::cmb::Bridge::create();
+  smtk::bridge::discrete::Bridge::Ptr bridge = smtk::bridge::discrete::Bridge::create();
   manager->registerBridgeSession(bridge);
 
   std::cout << "Available cmb operators\n";

@@ -11,8 +11,8 @@
 // .SECTION Description
 // This is used by vtkModelXMLParser to represent an XML document starting
 // at the root element.
-#ifndef __smtkcmb_vtkXMLElement_h
-#define __smtkcmb_vtkXMLElement_h
+#ifndef __smtkdiscrete_vtkXMLElement_h
+#define __smtkdiscrete_vtkXMLElement_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"

@@ -36,7 +36,7 @@
 #include <vtksys/SystemTools.hxx>
 
 
-using namespace CmbFaceMesherClasses;
+using namespace discreteFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCMBMeshToModelReader);
 vtkCxxSetObjectMacro(vtkCMBMeshToModelReader, ModelWrapper, vtkDiscreteModelWrapper);

@@ -70,7 +70,7 @@ using namespace smtk::model;
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
 
 /// Track which models are tracked by which bridges.
 std::map<vtkDiscreteModel*,Bridge::WeakPtr> Bridge::s_modelsToBridges;
@@ -1180,17 +1180,17 @@ smtk::model::Vertex Bridge::addVertexToManager(
   return smtk::model::Vertex();
 }
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
-static const char* CMBFileTypes[] = {
+static const char* DiscreteFileTypes[] = {
   ".cmb (Conceptual Model Builder)",
   NULL
 };
 
-smtkImplementsModelingKernel(cmb,CMBFileTypes,smtk::bridge::cmb::Bridge);
+smtkImplementsModelingKernel(discrete,DiscreteFileTypes,smtk::bridge::discrete::Bridge);
 
 // Force these operators to be registered whenever the bridge is used:
 smtkComponentInitMacro(smtk_cmb_read_operator);

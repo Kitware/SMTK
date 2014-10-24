@@ -42,8 +42,8 @@
 // </ConceptualModel>
 // \endcode
 
-#ifndef __smtkcmb_vtkXMLModelWriter_h
-#define __smtkcmb_vtkXMLModelWriter_h
+#ifndef __smtkdiscrete_vtkXMLModelWriter_h
+#define __smtkdiscrete_vtkXMLModelWriter_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"

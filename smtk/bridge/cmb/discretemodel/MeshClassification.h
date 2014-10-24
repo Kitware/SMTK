@@ -8,8 +8,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtkcmb_MESHCLASSIFICATION_H
-#define __smtkcmb_MESHCLASSIFICATION_H
+#ifndef __smtkdiscrete_MESHCLASSIFICATION_H
+#define __smtkdiscrete_MESHCLASSIFICATION_H
 
 #include "vtkType.h"
 #include <vector> //needed for vector

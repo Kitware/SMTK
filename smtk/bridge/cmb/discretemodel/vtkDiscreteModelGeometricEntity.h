@@ -18,8 +18,8 @@
 // array is used to get the corresponding cell id for the master grid.
 
 
-#ifndef __smtkcmb_vtkDiscreteModelGeometricEntity_h
-#define __smtkcmb_vtkDiscreteModelGeometricEntity_h
+#ifndef __smtkdiscrete_vtkDiscreteModelGeometricEntity_h
+#define __smtkdiscrete_vtkDiscreteModelGeometricEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkDiscreteModelEntity.h"

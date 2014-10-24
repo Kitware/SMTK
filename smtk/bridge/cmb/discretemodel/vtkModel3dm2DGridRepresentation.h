@@ -18,8 +18,8 @@
 // master polydata is the same as the 3dm grid it was created from.
 // Currently it does not handle floating edges.
 
-#ifndef __smtkcmb_vtkModel3dm2DGridRepresentation_h
-#define __smtkcmb_vtkModel3dm2DGridRepresentation_h
+#ifndef __smtkdiscrete_vtkModel3dm2DGridRepresentation_h
+#define __smtkdiscrete_vtkModel3dm2DGridRepresentation_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"

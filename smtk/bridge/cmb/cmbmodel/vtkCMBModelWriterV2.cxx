@@ -464,7 +464,7 @@ void vtkCMBModelWriterV2::SetModelItemUUIDs(
   std::vector<vtkModelItem*> & items,
   const char* arrayName)
 {
-  vtkUnsignedIntArray* arr = smtk::bridge::cmb::Bridge::retrieveUUIDs(model, items);
+  vtkUnsignedIntArray* arr = smtk::bridge::discrete::Bridge::retrieveUUIDs(model, items);
   arr->SetName(arrayName);
   poly->GetFieldData()->AddArray(arr);
   arr->Delete();

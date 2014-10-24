@@ -16,8 +16,8 @@
 // of the SourceEntity and TargetEntity and will be destroyed during
 // the merge operation.
 
-#ifndef __smtkcmb_vtkMergeEventData_h
-#define __smtkcmb_vtkMergeEventData_h
+#ifndef __smtkdiscrete_vtkMergeEventData_h
+#define __smtkdiscrete_vtkMergeEventData_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"

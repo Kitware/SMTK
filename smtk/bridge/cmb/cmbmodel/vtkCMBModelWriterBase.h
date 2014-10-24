@@ -15,10 +15,10 @@
 // information included in the field data.  It writes out the current
 // version unless specified otherwise.
 
-#ifndef __smtkcmb_vtkCMBModelWriterBase_h
-#define __smtkcmb_vtkCMBModelWriterBase_h
+#ifndef __smtkdiscrete_vtkCMBModelWriterBase_h
+#define __smtkdiscrete_vtkCMBModelWriterBase_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -26,7 +26,7 @@ class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBModelWriterBase : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelWriterBase : public vtkObject
 {
 public:
   static vtkCMBModelWriterBase * New();

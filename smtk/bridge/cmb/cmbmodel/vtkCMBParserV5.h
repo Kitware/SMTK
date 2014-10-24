@@ -12,10 +12,10 @@
 // .SECTION Description
 // Parse a vtkPolyData that was read in from a CMB version 5 file.
 
-#ifndef __smtkcmb_vtkCMBParserV5_h
-#define __smtkcmb_vtkCMBParserV5_h
+#ifndef __smtkdiscrete_vtkCMBParserV5_h
+#define __smtkdiscrete_vtkCMBParserV5_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkCMBParserBase.h"
 #include <vector>
 
@@ -27,13 +27,13 @@ class vtkPolyData;
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
       class Bridge;
     }
   }
 }
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserV5 : public vtkCMBParserBase
 {
 public:
   static vtkCMBParserV5* New();
@@ -59,7 +59,7 @@ protected:
   // is "more" complete.
   void SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteModel* model);
 
-  static smtk::shared_ptr<smtk::bridge::cmb::Bridge> s_bridge;
+  static smtk::shared_ptr<smtk::bridge::discrete::Bridge> s_bridge;
 
 private:
   vtkCMBParserV5(const vtkCMBParserV5&);  // Not implemented.

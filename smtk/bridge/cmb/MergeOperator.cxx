@@ -27,7 +27,7 @@ using namespace smtk::model;
 namespace smtk {
   namespace bridge {
 
-  namespace cmb {
+  namespace discrete {
 
 MergeOperator::MergeOperator()
 {
@@ -42,7 +42,7 @@ bool MergeOperator::ableToOperate()
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:
-    this->cmbBridge()->findModel(model.entity()) &&
+    this->discreteBridge()->findModel(model.entity()) &&
     // The source and target cells must be valid:
     this->fetchCMBCellId("source cell") >= 0 &&
     this->fetchCMBCellId("target cell") >= 0
@@ -51,7 +51,7 @@ bool MergeOperator::ableToOperate()
 
 OperatorResult MergeOperator::operateInternal()
 {
-  Bridge* bridge = this->cmbBridge();
+  Bridge* bridge = this->discreteBridge();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetSourceId(this->fetchCMBCellId("source cell"));
@@ -80,7 +80,7 @@ OperatorResult MergeOperator::operateInternal()
   return result;
 }
 
-Bridge* MergeOperator::cmbBridge() const
+Bridge* MergeOperator::discreteBridge() const
 {
   return dynamic_cast<Bridge*>(this->bridge());
 }
@@ -88,7 +88,7 @@ Bridge* MergeOperator::cmbBridge() const
 int MergeOperator::fetchCMBCellId(const std::string& pname) const
 {
   vtkModelItem* item =
-    this->cmbBridge()->entityForUUID(
+    this->discreteBridge()->entityForUUID(
       this->specification()->findModelEntity(pname)->value().entity());
 
   vtkModelEntity* cell = dynamic_cast<vtkModelEntity*>(item);
@@ -98,14 +98,14 @@ int MergeOperator::fetchCMBCellId(const std::string& pname) const
   return -1;
 }
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cmb::MergeOperator,
+  smtk::bridge::discrete::MergeOperator,
   cmb_merge,
   "merge",
   MergeOperator_xml,
-  smtk::bridge::cmb::Bridge);
+  smtk::bridge::discrete::Bridge);

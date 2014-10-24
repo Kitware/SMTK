@@ -22,8 +22,8 @@
 // that are adjacent to an internal model face (i.e. a model
 // face that is adjacent to 2 model regions).
 
-#ifndef __smtkcmb_vtkModelBCGridRepresentation_h
-#define __smtkcmb_vtkModelBCGridRepresentation_h
+#ifndef __smtkdiscrete_vtkModelBCGridRepresentation_h
+#define __smtkdiscrete_vtkModelBCGridRepresentation_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGridRepresentation.h"

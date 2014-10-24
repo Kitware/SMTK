@@ -17,8 +17,8 @@
 // the faceuse.  outerloop directions are opposite (e.g. eu1+, eu2-, eu3+
 // for faceuse1 will have eu1-, eu3-, eu2+).
 
-#ifndef __smtkcmb_vtkModelFace_h
-#define __smtkcmb_vtkModelFace_h
+#ifndef __smtkdiscrete_vtkModelFace_h
+#define __smtkdiscrete_vtkModelFace_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"

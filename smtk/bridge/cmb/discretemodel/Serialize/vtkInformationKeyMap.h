@@ -18,8 +18,8 @@
 // Make sure to call RemoveAllKeys() before exit to avoid leak warnings
 // from vtkDebugLeaks.
 
-#ifndef __smtkcmb_vtkInformationKeyMap_h
-#define __smtkcmb_vtkInformationKeyMap_h
+#ifndef __smtkdiscrete_vtkInformationKeyMap_h
+#define __smtkdiscrete_vtkInformationKeyMap_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"

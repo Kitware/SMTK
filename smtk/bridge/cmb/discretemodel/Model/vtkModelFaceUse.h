@@ -11,8 +11,8 @@
 // .NAME vtkModelFaceUse -
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkModelFaceUse_h
-#define __smtkcmb_vtkModelFaceUse_h
+#ifndef __smtkdiscrete_vtkModelFaceUse_h
+#define __smtkdiscrete_vtkModelFaceUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

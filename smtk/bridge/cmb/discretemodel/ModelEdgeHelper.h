@@ -11,8 +11,8 @@
 // .NAME MODELEDGEHELPER - Helper Classes for creating model edges
 // .SECTION Description
 // Includes NewModelEdgeInfo and LoopInfo
-#ifndef __smtkcmb_MODELEDGEHELPER_H
-#define __smtkcmb_MODELEDGEHELPER_H
+#ifndef __smtkdiscrete_MODELEDGEHELPER_H
+#define __smtkdiscrete_MODELEDGEHELPER_H
 
 #include <vtkIdList.h>
 #include <vtksys/MD5.h>

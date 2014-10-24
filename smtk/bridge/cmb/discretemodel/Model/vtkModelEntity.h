@@ -16,8 +16,8 @@
 // (e.g. UserName) but has to make sure to add the InformationKey
 // in the Serialize Reader.
 
-#ifndef __smtkcmb_vtkModelEntity_h
-#define __smtkcmb_vtkModelEntity_h
+#ifndef __smtkdiscrete_vtkModelEntity_h
+#define __smtkdiscrete_vtkModelEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelItem.h"

@@ -11,8 +11,8 @@
 // .NAME vtkDiscreteModelVertex - CMB specific model vertex class.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkDiscreteModelVertex_h
-#define __smtkcmb_vtkDiscreteModelVertex_h
+#ifndef __smtkdiscrete_vtkDiscreteModelVertex_h
+#define __smtkdiscrete_vtkDiscreteModelVertex_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelVertex.h"

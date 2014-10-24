@@ -8,21 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_cmb_CreateEdgesOperator_h
-#define __smtk_bridge_cmb_CreateEdgesOperator_h
+#ifndef __smtk_bridge_discrete_CreateEdgesOperator_h
+#define __smtk_bridge_discrete_CreateEdgesOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h"
+#include "smtk/bridge/cmb/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCreateModelEdgesOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
 
 class Bridge;
 
-class SMTKCMBBRIDGE_EXPORT CreateEdgesOperator : public smtk::model::Operator
+class SMTKDISCRETEBRIDGE_EXPORT CreateEdgesOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(CreateEdgesOperator);
@@ -35,13 +35,13 @@ public:
 protected:
   CreateEdgesOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* cmbBridge() const;
+  Bridge* discreteBridge() const;
 
   vtkNew<vtkCreateModelEdgesOperator> m_op;
 };
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cmb_CreateEdgesOperator_h
+#endif // __smtk_bridge_discrete_CreateEdgesOperator_h

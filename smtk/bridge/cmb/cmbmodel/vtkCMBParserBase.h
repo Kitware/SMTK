@@ -12,10 +12,10 @@
 // .SECTION Description
 // Abstract base class for parsing a vtkPolyData to create a vtkDiscreteModel.
 
-#ifndef __smtkcmb_vtkCMBParserBase_h
-#define __smtkcmb_vtkCMBParserBase_h
+#ifndef __smtkdiscrete_vtkCMBParserBase_h
+#define __smtkdiscrete_vtkCMBParserBase_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 #include "vtkSmartPointer.h" //needed for classification
 #include <map> //needed for classification
@@ -31,7 +31,7 @@ class vtkModel;
 class vtkModelEntity;
 class vtkPolyData;
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBParserBase : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBParserBase : public vtkObject
 {
 public:
   vtkTypeMacro(vtkCMBParserBase,vtkObject);

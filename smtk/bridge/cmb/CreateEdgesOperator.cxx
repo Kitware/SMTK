@@ -28,7 +28,7 @@ using namespace smtk::model;
 namespace smtk {
   namespace bridge {
 
-  namespace cmb {
+  namespace discrete {
 
 CreateEdgesOperator::CreateEdgesOperator()
 {
@@ -42,13 +42,13 @@ bool CreateEdgesOperator::ableToOperate()
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:
-    this->cmbBridge()->findModel(model.entity())
+    this->discreteBridge()->findModel(model.entity())
     ;
 }
 
 OperatorResult CreateEdgesOperator::operateInternal()
 {
-  Bridge* bridge = this->cmbBridge();
+  Bridge* bridge = this->discreteBridge();
 
   vtkDiscreteModelWrapper* modelWrapper =
     bridge->findModel(
@@ -71,19 +71,19 @@ OperatorResult CreateEdgesOperator::operateInternal()
   return result;
 }
 
-Bridge* CreateEdgesOperator::cmbBridge() const
+Bridge* CreateEdgesOperator::discreteBridge() const
 {
   return dynamic_cast<Bridge*>(this->bridge());
 }
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cmb::CreateEdgesOperator,
+  smtk::bridge::discrete::CreateEdgesOperator,
   cmb_create_edges,
   "create edges",
   CreateEdgesOperator_xml,
-  smtk::bridge::cmb::Bridge);
+  smtk::bridge::discrete::Bridge);

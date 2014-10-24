@@ -18,9 +18,9 @@
 // Was SMTK built with VTK? If true, the vtkSMTK library will exist.
 #cmakedefine SMTK_BUILD_VTK
 
-// Was SMTK built with VTK? If true, the smtkCMBBridge library
+// Was SMTK built with VTK? If true, the smtkDiscreteBridge library
 // and vtkSMTKDiscreteModel library will exist.
-#cmakedefine SMTK_BUILD_CMB_BRIDGE
+#cmakedefine SMTK_BUILD_DISCRETE_BRIDGE
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
 #cmakedefine SMTK_BUILD_CGM

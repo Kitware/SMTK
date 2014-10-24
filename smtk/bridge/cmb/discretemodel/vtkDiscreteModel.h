@@ -17,8 +17,8 @@
 // vtkDiscreteModelWrapper to access the model on the server from the
 // client.
 
-#ifndef __smtkcmb_vtkDiscreteModel_h
-#define __smtkcmb_vtkDiscreteModel_h
+#ifndef __smtkdiscrete_vtkDiscreteModel_h
+#define __smtkdiscrete_vtkDiscreteModel_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModel.h"

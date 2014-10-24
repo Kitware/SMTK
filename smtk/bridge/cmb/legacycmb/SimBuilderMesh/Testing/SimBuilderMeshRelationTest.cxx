@@ -29,7 +29,7 @@
 #include <vtkIdTypeArray.h>
 #include "cmbFaceMeshHelper.h"
 
-using namespace CmbFaceMesherClasses;
+using namespace discreteFaceMesherClasses;
 
 // This tests the events for the SimBuilder Mesh.
 

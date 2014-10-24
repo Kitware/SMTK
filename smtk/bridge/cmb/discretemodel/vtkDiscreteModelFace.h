@@ -11,8 +11,8 @@
 // .NAME vtkDiscreteModelFace - A model face based on a polydata representation.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkDiscreteModelFace_h
-#define __smtkcmb_vtkDiscreteModelFace_h
+#ifndef __smtkdiscrete_vtkDiscreteModelFace_h
+#define __smtkdiscrete_vtkDiscreteModelFace_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelFace.h"

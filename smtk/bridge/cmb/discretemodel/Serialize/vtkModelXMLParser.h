@@ -11,8 +11,8 @@
 // .SECTION Description
 // This is a subclass of vtkXMLParser that constructs a DOM representation
 // of parsed XML using vtkXMLElement.
-#ifndef __smtkcmb_vtkModelXMLParser_h
-#define __smtkcmb_vtkModelXMLParser_h
+#ifndef __smtkdiscrete_vtkModelXMLParser_h
+#define __smtkdiscrete_vtkModelXMLParser_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkXMLParser.h"

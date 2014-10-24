@@ -11,8 +11,8 @@
 // .NAME vtkModelMaterial -
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkModelMaterial_h
-#define __smtkcmb_vtkModelMaterial_h
+#ifndef __smtkdiscrete_vtkModelMaterial_h
+#define __smtkdiscrete_vtkModelMaterial_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 

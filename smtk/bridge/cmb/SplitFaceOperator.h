@@ -8,21 +8,21 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_cmb_SplitFaceOperator_h
-#define __smtk_bridge_cmb_SplitFaceOperator_h
+#ifndef __smtk_bridge_discrete_SplitFaceOperator_h
+#define __smtk_bridge_discrete_SplitFaceOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h"
+#include "smtk/bridge/cmb/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkSplitOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
 
 class Bridge;
 
-class SMTKCMBBRIDGE_EXPORT SplitFaceOperator : public smtk::model::Operator
+class SMTKDISCRETEBRIDGE_EXPORT SplitFaceOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(SplitFaceOperator);
@@ -35,14 +35,14 @@ public:
 protected:
   SplitFaceOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* cmbBridge() const;
+  Bridge* discreteBridge() const;
   int fetchCMBFaceId() const;
 
   vtkNew<vtkSplitOperator> m_op;
 };
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cmb_SplitFaceOperator_h
+#endif // __smtk_bridge_discrete_SplitFaceOperator_h

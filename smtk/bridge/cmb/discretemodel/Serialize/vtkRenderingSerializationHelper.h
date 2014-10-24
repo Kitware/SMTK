@@ -16,8 +16,8 @@
 // .SECTION See Also
 // vtkSerializationHelperMap vtkSerializationHelper
 
-#ifndef __smtkcmb_vtkRenderingSerializationHelper_h
-#define __smtkcmb_vtkRenderingSerializationHelper_h
+#ifndef __smtkdiscrete_vtkRenderingSerializationHelper_h
+#define __smtkdiscrete_vtkRenderingSerializationHelper_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkSerializationHelper.h"

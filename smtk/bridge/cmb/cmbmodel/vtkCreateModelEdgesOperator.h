@@ -12,10 +12,10 @@
 // .SECTION Description
 // Operator to create model edges on the server for a model that contains model regions
 
-#ifndef __smtkcmb_vtkCreateModelEdgesOperator_h
-#define __smtkcmb_vtkCreateModelEdgesOperator_h
+#ifndef __smtkdiscrete_vtkCreateModelEdgesOperator_h
+#define __smtkdiscrete_vtkCreateModelEdgesOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkCreateModelEdgesOperatorBase.h"
 #include "ModelEdgeHelper.h" // for NewModelEdgeInfo and LoopInfo
 
@@ -26,7 +26,7 @@ class vtkDiscreteModel;
 class vtkDiscreteModelEdge;
 class vtkPolyData;
 
-class SMTKCMBBRIDGE_EXPORT vtkCreateModelEdgesOperator :
+class SMTKDISCRETEBRIDGE_EXPORT vtkCreateModelEdgesOperator :
   public vtkCreateModelEdgesOperatorBase
 {
 public:

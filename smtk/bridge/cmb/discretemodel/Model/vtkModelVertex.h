@@ -11,8 +11,8 @@
 // .NAME vtkModelVertex - Abstract generic model vertex class.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkModelVertex_h
-#define __smtkcmb_vtkModelVertex_h
+#ifndef __smtkdiscrete_vtkModelVertex_h
+#define __smtkdiscrete_vtkModelVertex_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelGeometricEntity.h"

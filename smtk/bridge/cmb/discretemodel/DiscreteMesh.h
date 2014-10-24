@@ -13,8 +13,8 @@
 // The implementation of a mesh that can represent 2D/3D or mixed type
 // models.
 
-#ifndef __smtkcmb_DISCRETEMESH_H
-#define __smtkcmb_DISCRETEMESH_H
+#ifndef __smtkdiscrete_DISCRETEMESH_H
+#define __smtkdiscrete_DISCRETEMESH_H
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 

@@ -11,8 +11,8 @@
 // .NAME vtkDiscreteModelEntity -
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkDiscreteModelEntity_h
-#define __smtkcmb_vtkDiscreteModelEntity_h
+#ifndef __smtkdiscrete_vtkDiscreteModelEntity_h
+#define __smtkdiscrete_vtkDiscreteModelEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"

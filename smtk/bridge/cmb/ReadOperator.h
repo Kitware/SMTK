@@ -8,17 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_cmb_ReadOperator_h
-#define __smtk_bridge_cmb_ReadOperator_h
+#ifndef __smtk_bridge_discrete_ReadOperator_h
+#define __smtk_bridge_discrete_ReadOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h"
+#include "smtk/bridge/cmb/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkCMBModelReadOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
 
 class Bridge;
 
@@ -27,7 +27,7 @@ class Bridge;
   * This requires the file to be of type/extension "cmb" (which
   * is really just a VTK XML polydata file).
   */
-class SMTKCMBBRIDGE_EXPORT ReadOperator : public smtk::model::Operator
+class SMTKDISCRETEBRIDGE_EXPORT ReadOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(ReadOperator);
@@ -40,13 +40,13 @@ public:
 protected:
   ReadOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* cmbBridge() const;
+  Bridge* discreteBridge() const;
 
   vtkNew<vtkCMBModelReadOperator> m_op;
 };
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cmb_ReadOperator_h
+#endif // __smtk_bridge_discrete_ReadOperator_h

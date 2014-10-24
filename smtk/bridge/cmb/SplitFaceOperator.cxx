@@ -33,7 +33,7 @@ using namespace smtk::model;
 namespace smtk {
   namespace bridge {
 
-  namespace cmb {
+  namespace discrete {
 
 SplitFaceOperator::SplitFaceOperator()
 {
@@ -47,7 +47,7 @@ bool SplitFaceOperator::ableToOperate()
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:
-    this->cmbBridge()->findModel(model.entity()) &&
+    this->discreteBridge()->findModel(model.entity()) &&
     // The CMB face to split must be valid
     this->fetchCMBFaceId() >= 0
     ;
@@ -55,7 +55,7 @@ bool SplitFaceOperator::ableToOperate()
 
 OperatorResult SplitFaceOperator::operateInternal()
 {
-  Bridge* bridge = this->cmbBridge();
+  Bridge* bridge = this->discreteBridge();
 
   // Translate SMTK inputs into CMB inputs
   this->m_op->SetFeatureAngle(
@@ -109,7 +109,7 @@ OperatorResult SplitFaceOperator::operateInternal()
   return result;
 }
 
-Bridge* SplitFaceOperator::cmbBridge() const
+Bridge* SplitFaceOperator::discreteBridge() const
 {
   return dynamic_cast<Bridge*>(this->bridge());
 }
@@ -117,7 +117,7 @@ Bridge* SplitFaceOperator::cmbBridge() const
 int SplitFaceOperator::fetchCMBFaceId() const
 {
   vtkModelItem* item =
-    this->cmbBridge()->entityForUUID(
+    this->discreteBridge()->entityForUUID(
       this->specification()->findModelEntity(
         "face to split")->value().entity());
   vtkModelEntity* face = dynamic_cast<vtkModelEntity*>(item);
@@ -127,14 +127,14 @@ int SplitFaceOperator::fetchCMBFaceId() const
   return -1;
 }
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cmb::SplitFaceOperator,
+  smtk::bridge::discrete::SplitFaceOperator,
   cmb_split_face,
   "split face",
   SplitFaceOperator_xml,
-  smtk::bridge::cmb::Bridge);
+  smtk::bridge::discrete::Bridge);

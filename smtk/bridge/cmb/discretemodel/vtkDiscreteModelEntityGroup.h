@@ -15,8 +15,8 @@
 // types storing an association to this.  Note that a vtkModelEntity can
 // belong to multiple vtkDiscreteModelEntityGroups (including none at all).
 
-#ifndef __smtkcmb_vtkDiscreteModelEntityGroup_h
-#define __smtkcmb_vtkDiscreteModelEntityGroup_h
+#ifndef __smtkdiscrete_vtkDiscreteModelEntityGroup_h
+#define __smtkdiscrete_vtkDiscreteModelEntityGroup_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

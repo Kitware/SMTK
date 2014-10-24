@@ -10,7 +10,7 @@ endif()
 # Build CMB bridge
 ################################################################################
 
-if(SMTK_BUILD_CMB_BRIDGE)
+if(SMTK_BUILD_DISCRETE_BRIDGE)
   add_subdirectory(cmb)
 endif()
 

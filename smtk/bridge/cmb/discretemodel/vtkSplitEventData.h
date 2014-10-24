@@ -18,8 +18,8 @@
 // (e.g. split based on angle) then the event will be triggered
 // multiple times.
 
-#ifndef __smtkcmb_vtkSplitEventData_h
-#define __smtkcmb_vtkSplitEventData_h
+#ifndef __smtkdiscrete_vtkSplitEventData_h
+#define __smtkdiscrete_vtkSplitEventData_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 

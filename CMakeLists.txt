@@ -32,8 +32,8 @@ option(SMTK_NO_SYSTEM_BOOST "Allow boost to search for system installed boost" O
 option(SMTK_BUILD_QT "Build Qt GUI" OFF)
 option(SMTK_BUILD_VTK "Build VTK component" OFF)
 option(SMTK_BUILD_CGM "Build CGM component" OFF)
-option(SMTK_BUILD_CMB_BRIDGE "Build CMB discrete model bridge component" OFF)
-option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridge" OFF)
+option(SMTK_BUILD_DISCRETE_BRIDGE "Build discrete model bridge components" OFF)
+option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridges" OFF)
 
 option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
@@ -286,7 +286,7 @@ include_directories(
 # Look for CMB bridge discrete model modules
 ################################################################################
 
-if(SMTK_BUILD_CMB_BRIDGE)
+if(SMTK_BUILD_DISCRETE_BRIDGE)
   if(SMTK_BUILD_BRIDGE_PLUGIN)
     find_package(ParaView REQUIRED)
   else()

@@ -11,8 +11,8 @@
 // .NAME vtkDiscreteModelEdge - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkDiscreteModelEdge_h
-#define __smtkcmb_vtkDiscreteModelEdge_h
+#ifndef __smtkdiscrete_vtkDiscreteModelEdge_h
+#define __smtkdiscrete_vtkDiscreteModelEdge_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelEdge.h"

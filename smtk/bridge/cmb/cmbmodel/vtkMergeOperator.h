@@ -15,16 +15,16 @@
 // (e.g. color, BCS/ModelEntityGroup associations) will not be changed.
 // Warning: This may only currently work from model faces.
 
-#ifndef __smtkcmb_vtkMergeOperator_h
-#define __smtkcmb_vtkMergeOperator_h
+#ifndef __smtkdiscrete_vtkMergeOperator_h
+#define __smtkdiscrete_vtkMergeOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkMergeOperatorBase.h"
 
 
 class vtkDiscreteModelWrapper;
 
-class SMTKCMBBRIDGE_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
+class SMTKDISCRETEBRIDGE_EXPORT vtkMergeOperator : public vtkMergeOperatorBase
 {
 public:
   static vtkMergeOperator * New();

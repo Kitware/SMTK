@@ -11,8 +11,8 @@
 // .NAME vtkModelShellUse - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkModelShellUse_h
-#define __smtkcmb_vtkModelShellUse_h
+#ifndef __smtkdiscrete_vtkModelShellUse_h
+#define __smtkdiscrete_vtkModelShellUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

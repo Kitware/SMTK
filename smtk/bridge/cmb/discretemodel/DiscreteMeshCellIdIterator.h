@@ -9,8 +9,8 @@
 //=========================================================================
 
 
-#ifndef __smtkcmb_DiscreteMeshCellIdIterator_h
-#define __smtkcmb_DiscreteMeshCellIdIterator_h
+#ifndef __smtkdiscrete_DiscreteMeshCellIdIterator_h
+#define __smtkdiscrete_DiscreteMeshCellIdIterator_h
 
 #include <iterator> //needed for custom iterator
 #include <vtkType.h> //needed for vtkIdType

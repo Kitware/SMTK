@@ -46,7 +46,7 @@
 #include "vtkCMBMeshWriter.h"
 #include "cmbFaceMeshHelper.h"
 
-using namespace CmbFaceMesherClasses;
+using namespace discreteFaceMesherClasses;
 
 vtkStandardNewMacro(vtkCMBMeshGridRepresentationServer);
 

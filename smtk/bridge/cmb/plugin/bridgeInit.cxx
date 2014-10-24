@@ -12,8 +12,8 @@
 
 #include "smtk/AutoInit.h"
 
-#ifdef SMTK_BUILD_CMB_BRIDGE
+#ifdef SMTK_BUILD_DISCRETE_BRIDGE
 // If CMB-bridge is included in the build, ensure that it is loaded
 // (and thus registered with the model manager).
-smtkComponentInitMacro(smtk_cmb_bridge);
-#endif // SMTK_BUILD_CMB_BRIDGE
+smtkComponentInitMacro(smtk_discrete_bridge);
+#endif // SMTK_BUILD_DISCRETE_BRIDGE

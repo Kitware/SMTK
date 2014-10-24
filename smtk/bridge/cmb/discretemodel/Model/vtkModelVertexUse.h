@@ -11,8 +11,8 @@
 // .NAME vtkModelVertexUse - Abstract generic model entity class.
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkModelVertexUse_h
-#define __smtkcmb_vtkModelVertexUse_h
+#ifndef __smtkdiscrete_vtkModelVertexUse_h
+#define __smtkdiscrete_vtkModelVertexUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

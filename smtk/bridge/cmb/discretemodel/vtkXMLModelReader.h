@@ -25,8 +25,8 @@
 // .SECTION See Also
 // vtkSerializer vtkXMLArchiveWriter
 
-#ifndef __smtkcmb_vtkXMLModelReader_h
-#define __smtkcmb_vtkXMLModelReader_h
+#ifndef __smtkdiscrete_vtkXMLModelReader_h
+#define __smtkdiscrete_vtkXMLModelReader_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Serialize/vtkSerializer.h"

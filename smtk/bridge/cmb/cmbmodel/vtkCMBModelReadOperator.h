@@ -13,10 +13,10 @@
 // Front end for the readers.  Reads in a vtkPolyData and then figures
 // out how to parse that vtkPolyData.
 
-#ifndef __smtkcmb_vtkCMBModelReadOperator_h
-#define __smtkcmb_vtkCMBModelReadOperator_h
+#ifndef __smtkdiscrete_vtkCMBModelReadOperator_h
+#define __smtkdiscrete_vtkCMBModelReadOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 
 
@@ -25,7 +25,7 @@ class vtkDiscreteModelWrapper;
 class vtkPolyData;
 class vtkDiscreteModel;
 
-class SMTKCMBBRIDGE_EXPORT vtkCMBModelReadOperator : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelReadOperator : public vtkObject
 {
 public:
   static vtkCMBModelReadOperator * New();

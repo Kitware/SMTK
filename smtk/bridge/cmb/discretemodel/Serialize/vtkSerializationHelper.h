@@ -18,8 +18,8 @@
 // .SECTION See Also
 // vtkSerializationHelperMap
 
-#ifndef __smtkcmb_vtkSerializationHelper_h
-#define __smtkcmb_vtkSerializationHelper_h
+#ifndef __smtkdiscrete_vtkSerializationHelper_h
+#define __smtkdiscrete_vtkSerializationHelper_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkObject.h"

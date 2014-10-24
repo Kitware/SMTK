@@ -47,7 +47,7 @@
 #include <vtksys/SystemTools.hxx>
 
 
-using namespace CmbFaceMesherClasses;
+using namespace discreteFaceMesherClasses;
 
 namespace {
   void CreateIdMap(vtkIdList* ids, std::map<int, int>& createdMap)

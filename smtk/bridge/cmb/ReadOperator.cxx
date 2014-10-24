@@ -24,9 +24,7 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
 #include "vtkModelEntity.h"
-#include "smtk/io/ExportJSON.h"
 
-#include "cJSON.h"
 #include "ReadOperator_xml.h"
 
 using namespace smtk::model;
@@ -34,7 +32,7 @@ using namespace smtk::model;
 namespace smtk {
   namespace bridge {
 
-  namespace cmb {
+  namespace discrete {
 
 ReadOperator::ReadOperator()
 {
@@ -67,39 +65,43 @@ OperatorResult ReadOperator::operateInternal()
     return this->createResult(OPERATION_FAILED);
     }
 
-  smtk::common::UUID modelId = this->cmbBridge()->trackModel(
+  smtk::common::UUID modelId = this->discreteBridge()->trackModel(
     mod.GetPointer(), fname, this->manager());
   smtk::model::Cursor modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   result->findModelEntity("model")->setValue(modelEntity);
 /*
+//#include "smtk/io/ExportJSON.h"
+//#include "cJSON.h"
+
   cJSON* json = cJSON_CreateObject();
   smtk::io::ExportJSON::fromModel(json, this->manager());
   std::cout << "Result " << cJSON_Print(json) << "\n";
   cJSON_Delete(json);
   */
+/*
 std::string json = smtk::io::ExportJSON::fromModel(this->manager());
     std::ofstream file("/Users/yuminyuan/Desktop/smooth_surface1.json");
     file << json;
     file.close();
-
+*/
   return result;
 }
 
-Bridge* ReadOperator::cmbBridge() const
+Bridge* ReadOperator::discreteBridge() const
 {
   return dynamic_cast<Bridge*>(this->bridge());
 }
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cmb::ReadOperator,
+  smtk::bridge::discrete::ReadOperator,
   cmb_read,
   "read",
   ReadOperator_xml,
-  smtk::bridge::cmb::Bridge);
+  smtk::bridge::discrete::Bridge);

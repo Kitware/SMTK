@@ -11,8 +11,8 @@
 // .NAME vtkDiscreteModelRegion -
 // .SECTION Description
 
-#ifndef __smtkcmb_vtkDiscreteModelRegion_h
-#define __smtkcmb_vtkDiscreteModelRegion_h
+#ifndef __smtkdiscrete_vtkDiscreteModelRegion_h
+#define __smtkdiscrete_vtkDiscreteModelRegion_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "Model/vtkModelRegion.h"

@@ -14,8 +14,8 @@
 // server/client, respectively in the GEOMETRIC() vtkInformationObjectBaseKey.
 // Use a SafeDownCast() to determine which one.
 
-#ifndef __smtkcmb_vtkModelGeometricEntity_h
-#define __smtkcmb_vtkModelGeometricEntity_h
+#ifndef __smtkdiscrete_vtkModelGeometricEntity_h
+#define __smtkdiscrete_vtkModelGeometricEntity_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

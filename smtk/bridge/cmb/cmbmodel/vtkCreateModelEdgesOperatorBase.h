@@ -12,16 +12,16 @@
 // .SECTION Description
 // Operator to extract the model edges of a model that also consists of model regions
 
-#ifndef __smtkcmb_vtkCreateModelEdgesOperatorBase_h
-#define __smtkcmb_vtkCreateModelEdgesOperatorBase_h
+#ifndef __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
+#define __smtkdiscrete_vtkCreateModelEdgesOperatorBase_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h" // For export macro
+#include "smtk/bridge/cmb/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
 
 
 class vtkDiscreteModel;
 
-class SMTKCMBBRIDGE_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCreateModelEdgesOperatorBase : public vtkObject
 {
 public:
   static vtkCreateModelEdgesOperatorBase * New();

@@ -13,8 +13,8 @@
 // Query on mesh point ids to see what model vertex it represents.
 // Can also add new model vertices to the DiscerteModel
 
-#ifndef __smtkcmb_ModelVertexClassification_H
-#define __smtkcmb_ModelVertexClassification_H
+#ifndef __smtkdiscrete_ModelVertexClassification_H
+#define __smtkdiscrete_ModelVertexClassification_H
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkType.h" //needed for vtkIdType

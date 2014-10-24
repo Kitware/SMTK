@@ -15,8 +15,8 @@
 // model edge use that is in the opposite direction (i.e. they combine
 // to be a model edge use pair).
 
-#ifndef __smtkcmb_vtkModelEdgeUse_h
-#define __smtkcmb_vtkModelEdgeUse_h
+#ifndef __smtkdiscrete_vtkModelEdgeUse_h
+#define __smtkdiscrete_vtkModelEdgeUse_h
 
 #include "vtkSMTKDiscreteModelModule.h" // For export macro
 #include "vtkModelEntity.h"

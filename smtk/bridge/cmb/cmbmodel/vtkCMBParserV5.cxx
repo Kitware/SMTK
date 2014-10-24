@@ -48,7 +48,7 @@
 #include <string.h>
 
 /// The parser keeps a single bridge around to track all the models it imports.
-smtk::shared_ptr<smtk::bridge::cmb::Bridge> vtkCMBParserV5::s_bridge;
+smtk::shared_ptr<smtk::bridge::discrete::Bridge> vtkCMBParserV5::s_bridge;
 
 vtkStandardNewMacro(vtkCMBParserV5);
 
@@ -57,7 +57,7 @@ vtkStandardNewMacro(vtkCMBParserV5);
 vtkCMBParserV5::vtkCMBParserV5()
 {
   if (!vtkCMBParserV5::s_bridge)
-    vtkCMBParserV5::s_bridge = smtk::bridge::cmb::Bridge::create();
+    vtkCMBParserV5::s_bridge = smtk::bridge::discrete::Bridge::create();
 }
 
 vtkCMBParserV5:: ~vtkCMBParserV5()

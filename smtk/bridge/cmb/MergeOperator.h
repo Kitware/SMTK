@@ -8,17 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_bridge_cmb_MergeOperator_h
-#define __smtk_bridge_cmb_MergeOperator_h
+#ifndef __smtk_bridge_discrete_MergeOperator_h
+#define __smtk_bridge_discrete_MergeOperator_h
 
-#include "smtk/bridge/cmb/cmbBridgeExports.h"
+#include "smtk/bridge/cmb/discreteBridgeExports.h"
 #include "smtk/model/Operator.h"
 #include "vtkMergeOperator.h"
 #include "vtkNew.h"
 
 namespace smtk {
   namespace bridge {
-    namespace cmb {
+    namespace discrete {
 
 class Bridge;
 
@@ -31,7 +31,7 @@ class Bridge;
   *
   * The source and target must be adjacent and have the same parametric dimension.
   */
-class SMTKCMBBRIDGE_EXPORT MergeOperator : public smtk::model::Operator
+class SMTKDISCRETEBRIDGE_EXPORT MergeOperator : public smtk::model::Operator
 {
 public:
   smtkTypeMacro(MergeOperator);
@@ -44,15 +44,15 @@ public:
 protected:
   MergeOperator();
   virtual smtk::model::OperatorResult operateInternal();
-  Bridge* cmbBridge() const;
+  Bridge* discreteBridge() const;
   int fetchCMBCellId(const std::string& parameterName) const;
 
   vtkNew<vtkMergeOperator> m_op;
 };
 
-    } // namespace cmb
+    } // namespace discrete
   } // namespace bridge
 
 } // namespace smtk
 
-#endif // __smtk_bridge_cmb_MergeOperator_h
+#endif // __smtk_bridge_discrete_MergeOperator_h
