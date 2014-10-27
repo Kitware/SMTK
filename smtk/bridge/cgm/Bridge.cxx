@@ -111,6 +111,8 @@ int Bridge::staticSetup(const std::string& optName, const smtk::model::StringLis
   */
 int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
 {
+  (void)optName;
+  (void)optVal;
   return 0;
 }
 

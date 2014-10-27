@@ -1180,17 +1180,27 @@ smtk::model::Vertex Bridge::addVertexToManager(
   return smtk::model::Vertex();
 }
 
+/**\brief Set pre-construction options.
+  *
+  * Returns a non-zero value when the option is accepted
+  * and zero when \a optName is unrecognized or
+  * \a optVal is unacceptable.
+  */
+int Bridge::staticSetup(const std::string& optName, const smtk::model::StringList& optVal)
+{
+  return 0;
+}
+
     } // namespace discrete
   } // namespace bridge
-
 } // namespace smtk
 
-static const char* DiscreteFileTypes[] = {
-  ".cmb (Conceptual Model Builder)",
-  NULL
-};
-
-smtkImplementsModelingKernel(discrete,DiscreteFileTypes,smtk::bridge::discrete::Bridge);
+#include "smtk/bridge/discrete/Bridge_json.h"
+smtkImplementsModelingKernel(
+  discrete,
+  Bridge_json,
+  smtk::bridge::discrete::Bridge::staticSetup,
+  smtk::bridge::discrete::Bridge);
 
 // Force these operators to be registered whenever the bridge is used:
 smtkComponentInitMacro(smtk_discrete_read_operator);

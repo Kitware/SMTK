@@ -94,6 +94,7 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::createRPCRequest', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->

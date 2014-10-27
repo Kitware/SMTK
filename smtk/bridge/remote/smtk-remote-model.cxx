@@ -59,6 +59,10 @@ smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("OCC")
 smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
 #endif // SMTK_BUILD_CGM
 
+#ifdef SMTK_BUILD_DISCRETE_BRIDGE
+smtkComponentInitMacro(smtk_discrete_bridge);
+#endif // SMTK_BUILD_DISCRETE_BRIDGE
+
 std::ofstream logr("/tmp/wlog.txt", std::ios::app);
 
 int usage(
@@ -271,7 +275,7 @@ int main(int argc, char* argv[])
       opspec = cJSON_GetObjectItem(spec, "ops")->valuestring;
     cJSON_Delete(spec);
     requirements = make_JobRequirements(
-      io_type, wkOpts.workerName(), opspec.c_str(), remus::common::ContentFormat::JSON);
+      io_type, wkOpts.workerName(), opspec.c_str(), remus::common::ContentFormat::XML);
 
     // Write the model operator attribute system as the job requirements:
     std::string reqFileName = wkOpts.rwfile() + ".requirements";

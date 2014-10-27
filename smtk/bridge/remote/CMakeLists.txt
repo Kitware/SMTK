@@ -79,6 +79,10 @@ if (SMTK_BUILD_CGM)
   target_include_directories(smtk-remote-model PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
+if (SMTK_BUILD_DISCRETE_BRIDGE)
+  target_link_libraries(smtk-remote-model smtkDiscreteBridge)
+endif()
+
 if (SMTK_ENABLE_TESTING)
   # ... and make header compilation tests link properly:
   target_link_libraries(TestBuild_smtk_bridge_remote LINK_PRIVATE RemusCommon)
