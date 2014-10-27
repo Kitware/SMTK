@@ -268,6 +268,8 @@ int main(int argc, char* argv[])
     // Create bridge session and serialize operators.
     smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
     smtk::model::Bridge::Ptr bridge = mgr->createAndRegisterBridge(wkOpts.kernel());
+    if (!bridge)
+      return usage(1, "Could not create bridge \"" + wkOpts.kernel() + "\"");
     smtk::attribute::System* opsys = bridge->operatorSystem();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
