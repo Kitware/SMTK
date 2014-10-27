@@ -112,7 +112,7 @@ protected:
   static void cleanupBridges();
   static void parseTags(StaticBridgeInfo& bridge);
 
-  static BridgeConstructors* s_bridges;
+  static BridgeConstructors* s_bridges(bool del = false);
 };
 
   } // namespace model

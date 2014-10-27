@@ -24,7 +24,6 @@
   #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
 #include "remus/client/Client.h" // for m_remusClient
-#include "remus/common/MeshRegistrar.h" // for RemusModelBridgeType
 #include "remus/worker/ServerConnection.h" // for m_remusConn
 #ifndef _MSC_VER
   #pragma GCC diagnostic pop
@@ -37,83 +36,6 @@ namespace smtk {
     namespace remote {
 
 class RemusBridgeConnection; // A Remus client-server connection specifically for smtk::models.
-
-/**\brief A subclass of the Remus mesh type for model bridges.
-  *
-  * This subclass adds a method to obtain an SMTK bridge name
-  * which is different than its advertised input format.
-  * Input formats advertised using Remus include compile-time
-  * options specific to modeling kernels while bridges do not.
-  * For example, it is important to Remus clients to distinguish
-  * whether CGM was built with OpenCascade support or not.
-  * However, SMTK only cares that the CGM bridge is named "cgm".
-  */
-struct RemusModelTypeBase : remus::meshtypes::MeshTypeBase
-{
-  /**\brief Return the name used to register the bridge class with SMTK.
-    *
-    * This is used to obtain a constructor function from
-    * smtk::model::BRepModel::bridgeConstructor().
-    */
-  virtual std::string bridgeName() const = 0;
-
-  /**\brief Prepare for construction of a bridge of this type.
-    *
-    * This method is invoked before the bridge constructor function
-    * obtained from smtk::model::BRepModel::bridgeConstructor()
-    * is invoked. It is used to change the default modeling kernel
-    * for bridges to systems like CGM that can support different
-    * kernels.
-    */
-  virtual void bridgePrep() const
-    { /* Do nothing by default. */ }
-};
-
-/// Shorthand for the class objects used to obtain remus workers.
-typedef boost::shared_ptr<RemusModelTypeBase> RemusModelBridgeType;
-
-/**\brief Call this macro in your bridge's implementation file to register it as a remus worker.
-  *
-  * This macro declares a new struct derived from remus::meshtypes::MeshTypeBase
-  * corresponding to the specific modeling kernel. This struct must provide a
-  * unique name.
-  *
-  * The \a CompString argument specifies the Remus-unique service name
-  * (such as "smtk::model[cgm{ACIS}]@tcp://foo.com:50505").
-  * This is not used to construct a bridge but is used to disambiguate
-  * bridges of the same type running on different hosts, exposing a
-  * different modeling kernel, registered with a different Remus server,
-  * or providing access to a different filesystem.
-  *
-  * The \a BridgeName argument must be identical to what you pass to the
-  * smtkImplementsModelingKernel macro. This is not the name that Remus will
-  * use to identify the bridge; it is the name used to create the bridge that
-  * will back the RemusRemoteBridge instance.
-  *
-  * The \a BridgePrep is a function that should be invoked before the
-  * the constructor function of the given \a BridgeName is called.
-  * If you do not need a function invoked, then pass an empty value for the argument.
-  * \a BridgePrep is used to set the default modeling kernel on several backends,
-  * including CGM.
-  *
-  * The \a QualComp argument should include additional runtime requirements
-  * on the component.
-  */
-#define smtkRegisterBridgeWithRemus(BridgeName, BridgePrep, CompString, QualComp) \
-  struct smtk ##QualComp## RemusRemoteBridgeType : \
-    smtk::bridge::remote::RemusModelTypeBase \
-    { \
-    static boost::shared_ptr<remus::meshtypes::MeshTypeBase> create() \
-      { \
-      return boost::shared_ptr<remus::meshtypes::MeshTypeBase>( \
-        new smtk ##QualComp## RemusRemoteBridgeType()); \
-      } \
-    virtual std::string name() const { return CompString ; } \
-    virtual std::string bridgeName() const { return BridgeName ; } \
-    virtual void bridgePrep() const { (void)0; BridgePrep ; } \
-    }; \
-  static remus::common::MeshRegistrar smtk ##QualComp## RemusTag( \
-    (smtk ##QualComp## RemusRemoteBridgeType()) ); \
 
 /**\brief A bridge that forwards operation requests to a Remus worker.
   *
@@ -141,10 +63,6 @@ public:
 
   Ptr setup(RemusBridgeConnection* remusServerConnection, remus::proto::JobRequirements& jreq);
   remus::proto::JobRequirements remusRequirements() const;
-
-  static RemusModelBridgeType findAvailableType(
-    const std::string& bridgeType);
-  static smtk::model::StringList availableTypeNames();
 
 protected:
   friend class model::RemoteOperator;

@@ -53,10 +53,6 @@ smtkComponentInitMacro(smtk_cgm_read_operator);
 //        At worst, this source could depend on list-cgm-engines, which provides a list.
 //        At best, FindCGM could provide CMake variables to be included in smtk/options.h.in.
 #include "smtk/bridge/cgm/Engines.h"
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("ACIS"),  "smtk::model[cgm{ACIS}]", CGM_ACIS);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("cubit"), "smtk::model[cgm{Cubit}]", CGM_Cubit);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("OCC"),   "smtk::model[cgm{OpenCascade}]", CGM_OpenCascade);
-smtkRegisterBridgeWithRemus("cgm", smtk::bridge::cgm::Engines::setDefault("facet"), "smtk::model[cgm{Cholla}]", CGM_Cholla);
 #endif // SMTK_BUILD_CGM
 
 #ifdef SMTK_BUILD_DISCRETE_BRIDGE
@@ -109,10 +105,9 @@ int usage(
 
   // II. List available modeling kernels.
   std::cout << "Valid <kern> values are:\n";
-  StringList allKernels =
-    smtk::bridge::remote::RemusRemoteBridge::availableTypeNames();
+  StringList allKernels = smtk::model::BridgeRegistrar::bridgeNames();
   for (StringList::iterator kit = allKernels.begin(); kit != allKernels.end(); ++kit)
-    if (*kit != "smtk::model[native]") // Do not allow "native" unbacked models, for now.
+    if (*kit != "native") // Do not allow "native" unbacked models, for now.
       std::cout << "  " << *kit << "\n";
   std::cout << "\n";
 
@@ -238,20 +233,9 @@ int main(int argc, char* argv[])
   //    The RemusRPCWorker instance will swap it out for one with a
   //    session tag once a session is started.
 
-  remote::RemusModelBridgeType other =
-    remote::RemusRemoteBridge::findAvailableType(wkOpts.meshType());
-  if (!other)
-    {
-    return usage(1, "kernel \"" + wkOpts.meshType() + "\" was unknown.");
-    }
-
-  // Perform any prep work required so that new bridge sessions create
-  // kernel sessions of the proper type (e.g., set the default CGM engine).
-  other->bridgePrep();
-
   // Every worker shares the same output type ("smtk::model[native]")
   // since that is the wire format SMTK uses:
-  remus::common::MeshIOType io_type(other->name(), "smtk::model[native]");
+  remus::common::MeshIOType io_type(wkOpts.meshType(), "smtk::model[native]");
 
   // TODO: requirements should list available "storage" UUIDs.
   //       Tag should exist and be a JSON string with hostname and a host UUID
@@ -405,11 +389,29 @@ int main(int argc, char* argv[])
       if (opt && opt->valuestring && opt->valuestring[0])
         smtkWorker->setOption(*oname, opt->valuestring);
       }
+    // If requirements were specified in a file change our requirements to match.
+    opt = cJSON_GetObjectItem(config, "File");
+    if (opt && opt->valuestring && opt->valuestring[0])
+      requirements = make_JobRequirements(
+        io_type, wkOpts.workerName(),
+        remus::common::FileHandle(opt->valuestring),
+        remus::common::ContentFormat::XML); // FIXME: Read FileFormat from RW file and use it.
+
     char* tagchar = cJSON_PrintUnformatted(tag);
     requirements.tag(tagchar);
     free(tagchar);
     }
   logr << "Requirements tag is \"" << requirements.tag() << "\"\n";
+
+  // Register the requirements mesh type as the special bridge name advertised via Remus.
+  BridgeStaticSetup bsetup = BridgeRegistrar::bridgeStaticSetup(wkOpts.kernel());
+  BridgeConstructor bctor = BridgeRegistrar::bridgeConstructor(wkOpts.kernel());
+  if (!bctor)
+    {
+    return usage(1, "Unable to obtain constructor for kernel \"" + wkOpts.kernel() + "\"");
+    }
+  smtk::model::BridgeRegistrar::registerBridge(
+    requirements.meshTypes().inputType(), requirements.tag(), bsetup, bctor);
 
   remus::Worker* w = new remus::Worker(requirements,connection);
   while (true)

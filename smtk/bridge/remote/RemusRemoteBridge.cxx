@@ -66,40 +66,6 @@ remus::proto::JobRequirements RemusRemoteBridge::remusRequirements() const
   return this->m_remusWorkerReqs;
 }
 
-/// Obtain the type-id of a kernel that can be used as a worker.
-RemusModelBridgeType RemusRemoteBridge::findAvailableType(
-  const std::string& bridgeType)
-{
-  std::set<boost::shared_ptr<remus::meshtypes::MeshTypeBase> > allTypes
-    = remus::common::MeshRegistrar::allRegisteredTypes();
-
-  std::set<boost::shared_ptr<remus::meshtypes::MeshTypeBase> >::iterator it;
-  for (it = allTypes.begin(); it != allTypes.end(); ++it)
-    {
-    RemusModelBridgeType btype = boost::dynamic_pointer_cast<RemusModelTypeBase>(*it);
-    if (btype && (btype->name() == bridgeType || btype->bridgeName() == bridgeType))
-      return btype;
-    }
-
-  return RemusModelBridgeType();
-}
-
-/// Return a list of the registered bridge types
-smtk::model::StringList RemusRemoteBridge::availableTypeNames()
-{
-  smtk::model::StringList atypes;
-  std::set<boost::shared_ptr<remus::meshtypes::MeshTypeBase> > allTypes
-    = remus::common::MeshRegistrar::allRegisteredTypes();
-
-  RemusModelBridgeType atype;
-
-  std::set<boost::shared_ptr<remus::meshtypes::MeshTypeBase> >::iterator it;
-  for (it = allTypes.begin(); it != allTypes.end(); ++it)
-    if ((atype = boost::dynamic_pointer_cast<RemusModelTypeBase>(*it)))
-      atypes.push_back(atype->name());
-  return atypes;
-}
-
 smtk::model::BridgedInfoBits RemusRemoteBridge::transcribeInternal(
   const smtk::model::Cursor& entity, smtk::model::BridgedInfoBits flags)
 {

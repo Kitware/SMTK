@@ -23,12 +23,34 @@ namespace smtk {
   namespace model {
 
 /// A map of all the bridges which may be instantiated (indexed by name).
-BridgeConstructors* BridgeRegistrar::s_bridges = NULL;
+BridgeConstructors* BridgeRegistrar::s_bridges(bool del)
+{
+  static BridgeConstructors* bridges = NULL;
+  if (del)
+    {
+    if (bridges)
+      {
+      std::cout << "Deleting bridge list " << bridges << " (" << &bridges << ")" << "\n";
+      delete bridges;
+      bridges = NULL;
+      }
+    }
+  else
+    {
+    if (!bridges)
+      {
+      bridges = new BridgeConstructors();
+      atexit(cleanupBridges);
+      std::cout << "Allocating bridge list " << bridges << " (" << &bridges << ")" << "\n";
+      }
+    }
+  return bridges;
+}
 
 /// Called to delete allocated memory as the program exits.
 void BridgeRegistrar::cleanupBridges()
 {
-  delete BridgeRegistrar::s_bridges;
+  s_bridges(true);
 }
 
 /**\brief Parse the JSON tag data for the given \a bridge.
@@ -165,20 +187,17 @@ bool BridgeRegistrar::registerBridge(
   BridgeStaticSetup bsetup,
   BridgeConstructor bctor)
 {
-  if (!BridgeRegistrar::s_bridges)
-    {
-    BridgeRegistrar::s_bridges = new BridgeConstructors;
-    atexit(cleanupBridges);
-    }
   if (!bname.empty() && bctor)
     {
     StaticBridgeInfo entry(bname, btags, bsetup, bctor);
-    (*BridgeRegistrar::s_bridges)[bname] = entry;
+    (*s_bridges())[bname] = entry;
+    std::cout << "Adding bridge " << bname << "\n";
     return true;
     }
   else if (!bname.empty())
     { // unregister the bridge of the given name.
-    BridgeRegistrar::s_bridges->erase(bname);
+    s_bridges()->erase(bname);
+    std::cout << "Removing bridge " << bname << "\n";
     // FIXME: We should ensure that no registered Bridge sessions are of type bname.
     //        Presumably, by deleting all such sessions and removing their entities
     //        from storage.
@@ -190,7 +209,7 @@ bool BridgeRegistrar::registerBridge(
 StringList BridgeRegistrar::bridgeNames()
 {
   StringList result;
-  for (BridgeConstructors::const_iterator it = s_bridges->begin(); it != s_bridges->end(); ++it)
+  for (BridgeConstructors::const_iterator it = s_bridges()->begin(); it != s_bridges()->end(); ++it)
     result.push_back(it->first);
   return result;
 }
@@ -200,8 +219,8 @@ StringList BridgeRegistrar::bridgeFileTypes(
   const std::string& bname,
   const std::string& bengine)
 {
-  BridgeConstructors::iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     {
     if (!it->second.TagsParsed)
       BridgeRegistrar::parseTags(it->second);
@@ -225,8 +244,8 @@ StringList BridgeRegistrar::bridgeFileTypes(
   */
 std::string BridgeRegistrar::bridgeTags(const std::string& bname)
 {
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::const_iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     return it->second.Tags;
   std::string empty;
   return empty;
@@ -241,8 +260,8 @@ std::string BridgeRegistrar::bridgeTags(const std::string& bname)
   */
 std::string BridgeRegistrar::bridgeSite(const std::string& bname)
 {
-  BridgeConstructors::iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     {
     if (!it->second.TagsParsed)
       BridgeRegistrar::parseTags(it->second);
@@ -260,8 +279,8 @@ std::string BridgeRegistrar::bridgeSite(const std::string& bname)
   */
 StringList BridgeRegistrar::bridgeEngines(const std::string& bname)
 {
-  BridgeConstructors::iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     {
     if (!it->second.TagsParsed)
       BridgeRegistrar::parseTags(it->second);
@@ -280,8 +299,8 @@ StringList BridgeRegistrar::bridgeEngines(const std::string& bname)
 BridgeStaticSetup BridgeRegistrar::bridgeStaticSetup(const std::string& bname)
 {
   BridgeStaticSetup result = NULL;
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::const_iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     result = it->second.Setup;
   return result;
 }
@@ -294,8 +313,8 @@ BridgeStaticSetup BridgeRegistrar::bridgeStaticSetup(const std::string& bname)
 BridgeConstructor BridgeRegistrar::bridgeConstructor(const std::string& bname)
 {
   BridgeConstructor result = NULL;
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::const_iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     result = it->second.Constructor;
   return result;
 }
@@ -306,8 +325,8 @@ BridgeConstructor BridgeRegistrar::bridgeConstructor(const std::string& bname)
 BridgePtr BridgeRegistrar::createBridge(const std::string& bname)
 {
   BridgeConstructor ctor = NULL;
-  BridgeConstructors::const_iterator it = s_bridges->find(bname);
-  if (it != s_bridges->end())
+  BridgeConstructors::const_iterator it = s_bridges()->find(bname);
+  if (it != s_bridges()->end())
     ctor = it->second.Constructor;
   if (ctor)
     return ctor();

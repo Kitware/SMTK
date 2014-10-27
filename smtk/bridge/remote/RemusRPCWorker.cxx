@@ -212,20 +212,15 @@ void RemusRPCWorker::processJob(
           }
         else
           {
-          RemusModelBridgeType remusType =
-            RemusRemoteBridge::findAvailableType(bname->valuestring);
-          if (remusType)
-            {
-            smtk::model::StringList bridgeFileTypes =
-              this->m_modelMgr->bridgeFileTypes(remusType->bridgeName());
-            cJSON_AddItemToObject(result, "result",
-              smtk::io::ExportJSON::createStringArray(bridgeFileTypes));
-            }
+          // FIXME: Need to extract kernel, engine from bname?
+          smtk::model::StringList bridgeFileTypes =
+            BridgeRegistrar::bridgeFileTypes(bname->valuestring);
+          cJSON_AddItemToObject(result, "result",
+            smtk::io::ExportJSON::createStringArray(bridgeFileTypes));
           }
         }
       else if (methStr == "create-bridge")
         {
-        RemusModelBridgeType remusType;
         smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
         std::set<std::string> bridgeSet(bridgeNames.begin(), bridgeNames.end());
         cJSON* bname;
@@ -235,8 +230,7 @@ void RemusRPCWorker::processJob(
           bname->type != cJSON_String ||
           !bname->valuestring ||
           !bname->valuestring[0] ||
-          !(remusType = RemusRemoteBridge::findAvailableType(bname->valuestring)) ||
-          bridgeSet.find(remusType->bridgeName()) == bridgeSet.end())
+          bridgeSet.find(bname->valuestring) == bridgeSet.end())
           {
           this->generateError(result,
             "Parameters not passed or bridge-name not specified/invalid.",
@@ -244,9 +238,27 @@ void RemusRPCWorker::processJob(
           }
         else
           {
-          remusType->bridgePrep();
+          // Pass options such as engine name (if any) to static setup
+          smtk::model::BridgeStaticSetup bsetup =
+            smtk::model::BridgeRegistrar::bridgeStaticSetup(bname->valuestring);
+          cJSON* ename;
+          if (
+            bsetup &&
+            (ename = cJSON_GetObjectItem(param, "engine-name")) &&
+            ename->type == cJSON_String &&
+            !ename->valuestring && !ename->valuestring[0])
+            {
+            std::string defEngine = ename->valuestring;
+            if (!defEngine.empty())
+              {
+              StringList elist;
+              elist.push_back(ename->valuestring);
+              bsetup("engine", elist);
+              }
+            }
+
           smtk::model::BridgeConstructor bctor =
-            smtk::model::BridgeRegistrar::bridgeConstructor(remusType->bridgeName());
+            smtk::model::BridgeRegistrar::bridgeConstructor(bname->valuestring);
           if (!bctor)
             {
             this->generateError(result,
