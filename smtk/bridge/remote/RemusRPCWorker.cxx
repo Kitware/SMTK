@@ -279,6 +279,7 @@ void RemusRPCWorker::processJob(
               smtk::io::ExportJSON::forManagerBridgeSession(
                 bridge->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
+#if 0
               // Now redefine our worker to be a new one whose
               // requirements include a tag for this bridge session.
               // That way it can be singled out by the client that
@@ -298,6 +299,7 @@ void RemusRPCWorker::processJob(
                 << bridge->sessionId().toString() << ".\n";
               //cJSON_AddItemToObject(result, "result",
               //  cJSON_CreateString(bridge->sessionId().toString().c_str()));
+#endif
               }
             }
           }
@@ -378,6 +380,7 @@ void RemusRPCWorker::processJob(
           else
             {
             this->m_modelMgr->unregisterBridgeSession(bridge);
+#if 0
             // Remove tag from worker requirements.
             r = make_JobRequirements(
               r.meshTypes(), r.workerName(), r.hasRequirements() ? r.requirements() : "");
@@ -386,6 +389,7 @@ void RemusRPCWorker::processJob(
               << "Redefining worker. "
               << "Requirements now untagged, removed "
               << bridge->sessionId().toString() << ".\n";
+#endif // 0
             }
           }
         }

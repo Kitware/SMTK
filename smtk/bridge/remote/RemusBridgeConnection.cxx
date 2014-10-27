@@ -259,10 +259,12 @@ UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
 
   UUID bridgeId = bridge->sessionId();
   this->m_remoteBridgeSessionIds[bridgeId] = bridgeName;
+  /*
   std::cout
     << "Updating worker \"" << jreq.workerName() << "\""
     << " tag \"" << jreq.tag() << "\"\n";
   jreq.tag(bridgeId.toString());
+  */
   bridge->setup(this, jreq);
   return bridgeId;
 }
