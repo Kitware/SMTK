@@ -39,10 +39,10 @@ void load_valid_mesh()
   smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
   test( !entity.isNull(), "uuid shouldn't be invalid");
 
-  smtk::mesh::Collection c = manager->collection(entity);
-  test( c.isValid(), "collection should be valid");
+  smtk::mesh::CollectionPtr c = manager->collection(entity);
+  test( c->isValid(), "collection should be valid");
 
-  std::size_t numMeshes = c.numberOfMeshes();
+  std::size_t numMeshes = c->numberOfMeshes();
   std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
   test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
   test( numMeshes == 53, "dataset once loaded should have 53 meshes");

@@ -13,9 +13,6 @@
 #include "smtk/mesh/moab/Interface.h"
 #include "smtk/mesh/moab/CellTypeToType.h"
 
-#include "moab/Range.hpp"
-#include "moab/CN.hpp"
-
 namespace smtk {
 namespace mesh {
 
@@ -83,15 +80,6 @@ Collection::Collection( smtk::mesh::ManagerPtr mngr ):
   m_name(),
   m_internals( new InternalImpl(mngr) )
 {
-  //first we need an uuid before we can be added to the manager
-  if(mngr)
-    {
-    const bool valid = mngr->addCollection( *this );
-    if (!valid)
-      {
-      this->m_entity = smtk::common::UUID::null();
-      }
-    }
 }
 
 //----------------------------------------------------------------------------
@@ -101,21 +89,16 @@ Collection::Collection( smtk::mesh::moab::InterfacePtr interface,
   m_name(),
   m_internals( new InternalImpl(mngr, interface) )
 {
-  //first we need an uuid before we can be added to the manager
-  if(mngr)
-    {
-    const bool valid = mngr->addCollection( *this );
-    if (!valid)
-      {
-      this->m_entity = smtk::common::UUID::null();
-      }
-    }
+
 }
 
 //----------------------------------------------------------------------------
 Collection::~Collection()
 {
-
+  if(this->m_internals)
+    {
+    delete this->m_internals;
+    }
 }
 
 //----------------------------------------------------------------------------
@@ -152,7 +135,7 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
   if(currentManager)
     { //if we are assoicated with a valid manager remove the manager reference
       //to us before we re-parent our selves and this becomes impossible
-      currentManager->removeCollection( *this );
+      currentManager->removeCollection( this->shared_from_this() );
     }
 
   const bool reparenting = this->m_internals->reparent(newParent);
@@ -171,7 +154,7 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
     }
 
   //add us to the new manager
-  currentManager->addCollection( *this );
+  currentManager->addCollection( this->shared_from_this() );
 
   return true;
 }

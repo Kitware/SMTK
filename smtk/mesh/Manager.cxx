@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
 
 #include "smtk/common/UUID.h"
 
@@ -21,7 +22,7 @@ namespace mesh {
 class Manager::InternalStorageImpl
 {
 public:
-  typedef std::map< smtk::common::UUID, smtk::mesh::Collection > ContainerType;
+  typedef std::map< smtk::common::UUID, smtk::mesh::CollectionPtr > ContainerType;
 
   typedef ContainerType::value_type value_type;
   typedef ContainerType::mapped_type mapped_type;
@@ -38,10 +39,10 @@ public:
   //Returns true when adding a new collection or a collection that already
   //exists.
   bool add(const smtk::common::UUID& uid,
-           const smtk::mesh::Collection& collection)
+           const smtk::mesh::CollectionPtr& collection)
   {
     const bool is_valid_u = !uid.isNull();
-    const bool is_valid_c = collection.isValid();
+    const bool is_valid_c = collection->isValid();
     const bool not_already_added = this->Collections.count( uid ) == 0;
     const bool can_add = is_valid_u && is_valid_c && not_already_added;
 
@@ -61,7 +62,7 @@ public:
     iterator to_remove = this->Collections.find( uid );
     if(to_remove != this->Collections.end())
       {
-      to_remove->second.removeManagerConnection();
+      to_remove->second->removeManagerConnection();
       this->Collections.erase( to_remove );
       return true;
       }
@@ -95,7 +96,7 @@ public:
     { return this->Collections.size(); }
 
 private:
-  std::map< smtk::common::UUID, smtk::mesh::Collection > Collections;
+  ContainerType Collections;
 };
 
 
@@ -121,10 +122,32 @@ smtk::common::UUID Manager::nextEntityId()
 }
 
 //----------------------------------------------------------------------------
-bool Manager::addCollection(const smtk::mesh::Collection& collection)
+smtk::mesh::CollectionPtr Manager::makeCollection()
+{
+  smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                this->shared_from_this() ) );
+
+  this->addCollection( collection );
+  return collection;
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CollectionPtr Manager::makeCollection(smtk::mesh::moab::InterfacePtr interface)
+{
+  smtk::mesh::CollectionPtr collection( new smtk::mesh::Collection(
+                                                interface,
+                                                this->shared_from_this() ) );
+
+  this->addCollection( collection );
+  return collection;
+}
+
+
+//----------------------------------------------------------------------------
+bool Manager::addCollection(const smtk::mesh::CollectionPtr& collection)
 {
   //do we need to re-parent the collection?
-  return this->m_collector->add(collection.entity(), collection);
+  return this->m_collector->add(collection->entity(), collection);
 }
 
 //----------------------------------------------------------------------------
@@ -134,9 +157,9 @@ std::size_t Manager::numberOfCollections() const
 }
 
 //----------------------------------------------------------------------------
-bool Manager::hasCollection( const smtk::mesh::Collection& collection ) const
+bool Manager::hasCollection( const smtk::mesh::CollectionPtr& collection ) const
 {
-  return this->m_collector->has( collection.entity() );
+  return this->m_collector->has( collection->entity() );
 }
 
 //----------------------------------------------------------------------------
@@ -158,21 +181,21 @@ Manager::const_iterator Manager::findCollection( const smtk::common::UUID& colle
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Collection Manager::collection( const smtk::common::UUID& collectionID ) const
+smtk::mesh::CollectionPtr Manager::collection( const smtk::common::UUID& collectionID ) const
 {
   const_iterator result = this->m_collector->find(collectionID);
   if(result == this->m_collector->end())
     { //returning end() result causes undefined behavior and will generally
       //cause a segfault when you query the item
-    return smtk::mesh::Collection();
+    return smtk::mesh::CollectionPtr();
     }
   return result->second;
 }
 
 //----------------------------------------------------------------------------
-bool Manager::removeCollection( const smtk::mesh::Collection& collection )
+bool Manager::removeCollection( const smtk::mesh::CollectionPtr& collection )
 {
-  return this->m_collector->remove( collection.entity() );
+  return this->m_collector->remove( collection->entity() );
 }
 
 //----------------------------------------------------------------------------
@@ -182,16 +205,16 @@ std::size_t Manager::numberOfAssociations() const
 }
 
 //----------------------------------------------------------------------------
-bool Manager::isAssociatedCollection( const smtk::mesh::Collection& collection )
+bool Manager::isAssociatedCollection( const smtk::mesh::CollectionPtr& collection )
 {
   //this is complex as it is the inverse of searching by cursor
   return false;
 }
 
 //----------------------------------------------------------------------------
-bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& erf ) const
+bool Manager::isAssociatedToACollection( const smtk::model::EntityRef& eref ) const
 {
-  return this->m_associator->has( erf.entity() );
+  return this->m_associator->has( eref.entity() );
 }
 
 //----------------------------------------------------------------------------
@@ -207,25 +230,30 @@ Manager::const_iterator Manager::associatedCollectionEnd() const
 }
 
 //----------------------------------------------------------------------------
-Manager::const_iterator Manager::findAssociatedCollection( const smtk::model::EntityRef& erf ) const
+Manager::const_iterator Manager::findAssociatedCollection( const smtk::model::EntityRef& eref ) const
 {
-  return this->m_associator->find( erf.entity() );
+  return this->m_associator->find( eref.entity() );
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Collection Manager::associatedCollection( const smtk::model::EntityRef& erf ) const
+smtk::mesh::CollectionPtr Manager::associatedCollection( const smtk::model::EntityRef& eref) const
 {
-  const_iterator result = this->m_associator->find( erf.entity() );
+  const_iterator result = this->m_associator->find( eref.entity() );
+  if(result == this->m_associator->end())
+    { //returning end() result causes undefined behavior and will generally
+      //cause a segfault when you query the item
+    return smtk::mesh::CollectionPtr();
+    }
   return result->second;
 }
 
 //----------------------------------------------------------------------------
-bool Manager::addAssociation( const smtk::model::EntityRef& erf,
-                               const smtk::mesh::Collection& collection)
+bool Manager::addAssociation( const smtk::model::EntityRef& eref,
+                               const smtk::mesh::CollectionPtr& collection)
 {
   //do we need to re-parent the collection?
-  this->m_collector->add(collection.entity(), collection);
-  return this->m_associator->add( erf.entity(), collection );
+  this->m_collector->add(collection->entity(), collection);
+  return this->m_associator->add( eref.entity(), collection );
 }
 
 //----------------------------------------------------------------------------

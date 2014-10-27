@@ -22,23 +22,23 @@ std::string data_root = SMTK_DATA_DIR;
 
 
 //----------------------------------------------------------------------------
-smtk::mesh::Collection load_mesh(smtk::mesh::ManagerPtr mngr)
+smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
   smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, mngr);
   test( !entity.isNull(), "uuid shouldn't be invalid");
 
-  smtk::mesh::Collection c = mngr->collection(entity);
-  test( c.isValid(), "collection should be valid");
+  smtk::mesh::CollectionPtr c = mngr->collection(entity);
+  test( c->isValid(), "collection should be valid");
 
   return c;
 }
 
 //----------------------------------------------------------------------------
-void verify_typeset_queries(const smtk::mesh::Collection& c)
+void verify_typeset_queries(const smtk::mesh::CollectionPtr& c)
 {
-  smtk::mesh::TypeSet types = c.associatedTypes();
+  smtk::mesh::TypeSet types = c->associatedTypes();
 
   //to begin with TypeSet will only look at the fairly basic information
   test( types.hasCells(), "This collection should have cells");
@@ -75,7 +75,7 @@ void verify_typeset_queries(const smtk::mesh::Collection& c)
 int UnitTestTypeSetFromData(int argc, char** argv)
 {
   smtk::mesh::ManagerPtr mngr = smtk::mesh::Manager::create();
-  smtk::mesh::Collection c = load_mesh(mngr);
+  smtk::mesh::CollectionPtr c = load_mesh(mngr);
 
   verify_typeset_queries(c);
 

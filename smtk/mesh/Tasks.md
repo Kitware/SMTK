@@ -29,8 +29,15 @@ be able to do the following:
 
 4. Ability to get and set the names for meshCollections and specific meshes
 
+
 5. Ability to query Collection based on a UUID
 
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr manager.collection( uuid_of_collection );
+
+```
 
 ##IO##
 
@@ -40,7 +47,7 @@ from it. The code should roughly look like:
 ```
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
-  smtk::mesh::Collection c = manager->findCollection(entity);
+  smtk::mesh::CollectionPtr c = manager->collection( entity );
 
 ```
 
@@ -94,26 +101,26 @@ Current goals of the system are:
 
 ```
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
-  smtk::mesh::TypeSet ts = collection.findAssociatedTypes( modelCursor );
+  smtk::mesh::CollectionPtr collection = manager.associatedCollection(modelCursor);
+  smtk::mesh::TypeSet ts = collection->findAssociatedTypes( modelCursor );
 ```
 
 3. Query given a model cursor find all elements of a specific type:
 
 ```
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::mesh::Collection collection = manager.associatedCollection(modelCursor);
+  smtk::mesh::CollectionPtr collection = manager.associatedCollection(modelCursor);
 
-  smtk::mesh::CellSet cs = collection.findAssociatedCells( modelCursor );
-  smtk::mesh::PointSet ps = collection.findAssociatedPoints( modelCursor );
-  smtk::mesh::MeshSet ms = collection.findAssociatedMeshes( modelCursor );
+  smtk::mesh::CellSet cs = collection->findAssociatedCells( modelCursor );
+  smtk::mesh::PointSet ps = collection->findAssociatedPoints( modelCursor );
+  smtk::mesh::MeshSet ms = collection->findAssociatedMeshes( modelCursor );
 
   //find only hexahedron cells
-  smtk::mesh::CellSet cs = collection.findAssociatedCells( modelCursor,
+  smtk::mesh::CellSet cs = collection->findAssociatedCells( modelCursor,
                                                            smtk::mesh::Hexahedron );
 
   //find only meshes that contain 2d cells
-  smtk::mesh::MeshSet ms = collection.findAssociatedMeshes( modelCursor,
+  smtk::mesh::MeshSet ms = collection->findAssociatedMeshes( modelCursor,
                                                             smtk::mesh::Dim2 );
 ```
 
@@ -124,12 +131,11 @@ Current goals of the system are:
   smtk::common::uuid meshSetUUID = smtk::io::load_mesh(file_path, manager);
 
   manager.numberOfCollections();
-  manager.numberOfMeshesInCollection(meshSetUUID);
 
-  smtk::mesh::Collection collection = manager.collection(meshSetUUID);
+  smtk::mesh::CollectionPtr collection = manager.collection( meshSetUUID );
 
-  collection.numberOfMeshes();
+  collection->numberOfMeshes();
 
-  smtk::mesh::MeshSet = collection.allMeshes( smtk::mesh::Dims2 );
-  smtk::mesh::MeshSet = collection.allMeshes( smtk::mesh::Dims3 );
+  smtk::mesh::MeshSet m2 = collection->meshes( smtk::mesh::Dims2 );
+  smtk::mesh::MeshSet m3 = collection->meshes( smtk::mesh::Dims3 );
 ```

@@ -12,6 +12,7 @@
 #define __smtk_mesh_Collection_h
 
 #include "smtk/SMTKCoreExports.h"
+#include "smtk/SharedFromThis.h"
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/UUID.h"
@@ -26,10 +27,8 @@ namespace mesh {
 
 //Flyweight interface around a moab database of meshes. When constructed
 //becomes registered with a manager with a weak relationship.
-class SMTKCORE_EXPORT Collection
+class SMTKCORE_EXPORT Collection : public smtk::enable_shared_from_this<Collection>
 {
-public:
-
   //default constructor generates an invalid collection
   Collection();
 
@@ -42,6 +41,11 @@ public:
   //to different mesh interfaces
   Collection( smtk::mesh::moab::InterfacePtr interface,
               smtk::mesh::ManagerPtr mngr);
+
+public:
+  smtkTypeMacro(Collection);
+  //construct an invalid collection
+  smtkCreateMacro(Collection);
 
   ~Collection();
 
@@ -91,6 +95,9 @@ public:
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
 
 private:
+  Collection( const Collection& other ); //blank since we are used by shared_ptr
+  Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
+
   friend class smtk::mesh::Manager;
 
   //called by the manager that manages this collection, means that somebody
@@ -102,9 +109,10 @@ private:
 
   //holds a reference to both the manager and the moab interface
   //in the future this should be switchable to allow different interface
-  //types
+  //types. Using a raw pointer while we decide if we can bring in
+  //scoped_ptr / unique_ptr.
   class InternalImpl;
-  smtk::shared_ptr< InternalImpl > m_internals;
+  smtk::mesh::Collection::InternalImpl* m_internals;
 };
 
 }

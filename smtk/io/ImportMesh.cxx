@@ -29,8 +29,7 @@ smtk::common::UUID ImportMesh::intoManager(const std::string& filePath,
     return smtk::common::UUID();
     }
   //make a moab specific mesh collection
-  smtk::mesh::Collection c(moab,manager);
-  return c.entity();
+  return manager->makeCollection(moab)->entity();
 }
 
 }

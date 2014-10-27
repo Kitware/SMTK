@@ -41,7 +41,11 @@ function(smtk_unit_tests)
     add_executable(${test_prog} ${TestSources} ${SMTK_ut_EXTRA_SOURCES})
 
     target_link_libraries(${test_prog} LINK_PRIVATE ${SMTK_ut_LIBRARIES})
-    target_include_directories(${test_prog} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(${test_prog}
+        PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${MOAB_INCLUDE_DIRS}
+        )
 
     if(have_testing_data)
       target_compile_definitions(${test_prog} PRIVATE "SMTK_DATA_DIR=\"${SMTK_DATA_DIR}\"")

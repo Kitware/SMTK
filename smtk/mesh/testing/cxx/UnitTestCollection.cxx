@@ -19,10 +19,13 @@ namespace
 //----------------------------------------------------------------------------
 void verify_invlaid_constructor()
 {
-  smtk::mesh::Collection invalid_collection;
-  test( !invalid_collection.isValid() , "collection should be invalid");
+  smtk::mesh::CollectionPtr null_collec;
+  test( null_collec == false , "collection  pointer should be invalid");
 
-  smtk::common::UUID uid = invalid_collection.entity();
+  smtk::mesh::CollectionPtr invalid_collection = smtk::mesh::Collection::create();
+  test( !invalid_collection->isValid() , "collection should be invalid");
+
+  smtk::common::UUID uid = invalid_collection->entity();
   test( (uid==smtk::common::UUID::null()) , "collection uuid should be null");
 }
 
@@ -30,11 +33,11 @@ void verify_invlaid_constructor()
 void verify_valid_constructor()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
-  smtk::mesh::Collection collection(mgr);
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
-  test( collection.isValid() , "collection should be valid");
+  test( collection->isValid() , "collection should be valid");
 
-  smtk::common::UUID uid = collection.entity();
+  smtk::common::UUID uid = collection->entity();
   test( (uid!=smtk::common::UUID::null()) , "collection uuid should be valid");
 }
 
@@ -43,15 +46,15 @@ void verify_removal_from_collection()
 {
   //add a collection to manager
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
-  smtk::mesh::Collection collection(mgr);
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
 
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  test( collection->isValid() , "collection should be valid as it related to a manager");
 
   //remove the collection
   const bool result = mgr->removeCollection( collection );
 
   //verify the collection states that it is now invalid
-  test( collection.isValid() == false, "removal from a manager should cause the collection to be invalid");
+  test( collection->isValid() == false, "removal from a manager should cause the collection to be invalid");
 
 }
 
@@ -62,13 +65,13 @@ void verify_reparenting()
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
   smtk::mesh::ManagerPtr mgr2 = smtk::mesh::Manager::create();
 
-  smtk::mesh::Collection collection(mgr);
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
+  test( collection->isValid() , "collection should be valid as it related to a manager");
 
   //reparent to second manager
-  bool reparenting_good = collection.reparent(mgr2);
+  bool reparenting_good = collection->reparent(mgr2);
   test( reparenting_good, "reparenting failed");
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  test( collection->isValid() , "collection should be valid as it related to a manager");
 
   test( mgr->numberOfCollections() == 0, "Incorrect results from numberOfCollections");
   test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
@@ -77,30 +80,30 @@ void verify_reparenting()
 //----------------------------------------------------------------------------
 void verify_reparenting_invalid_collection()
 {
-  smtk::mesh::Collection invalid_collection;
+  smtk::mesh::CollectionPtr invalid_collection = smtk::mesh::Collection::create();
 
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
-  bool reparenting_good = invalid_collection.reparent(mgr);
+  bool reparenting_good = invalid_collection->reparent(mgr);
 
   test( reparenting_good, "reparenting failed");
-  test( invalid_collection.isValid() , "collection should be valid as it related to a manager");
+  test( invalid_collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 //----------------------------------------------------------------------------
 void verify_reparenting_twice()
 {
-  smtk::mesh::Collection collection;
+  smtk::mesh::CollectionPtr collection= smtk::mesh::Collection::create();
 
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
-  bool reparenting_good = collection.reparent(mgr);
+  bool reparenting_good = collection->reparent(mgr);
 
   test( reparenting_good, "reparenting failed");
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  test( collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
-  reparenting_good = collection.reparent(mgr);
+  reparenting_good = collection->reparent(mgr);
   test( reparenting_good, "reparenting failed");
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  test( collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
 }
@@ -110,19 +113,19 @@ void verify_reparenting_after_manager_deletion()
   //add a collection to manager
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
 
-  smtk::mesh::Collection collection(mgr);
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
+  test( collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
   //remove the manager
   mgr.reset();
-  test( !collection.isValid() , "collection shouldn't be valid as manager is deleted");
+  test( !collection->isValid() , "collection shouldn't be valid as manager is deleted");
 
   //reparent to second manager
   smtk::mesh::ManagerPtr mgr2 = smtk::mesh::Manager::create();
-  bool reparenting_good = collection.reparent(mgr2);
+  bool reparenting_good = collection->reparent(mgr2);
   test( reparenting_good, "reparenting failed");
-  test( collection.isValid() , "collection should be valid as it related to a manager");
+  test( collection->isValid() , "collection should be valid as it related to a manager");
   test( mgr2->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 }
 

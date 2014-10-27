@@ -9,6 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/Manager.h"
+#include "smtk/mesh/Collection.h"
 
 #include "smtk/mesh/testing/cxx/helpers.h"
 
@@ -38,26 +39,26 @@ void verify_collection_queries()
 {
   smtk::mesh::ManagerPtr mgr = smtk::mesh::Manager::create();
 
-  smtk::mesh::Collection collection(mgr);
+  smtk::mesh::CollectionPtr collection = mgr->makeCollection();
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
   const bool has = mgr->hasCollection(collection);
   test( has, "Incorrect results from hasCollection");
 
-  smtk::mesh::Collection collection_bad;
+  smtk::mesh::CollectionPtr collection_bad = smtk::mesh::Collection::create();
   bool doesnt_have = !mgr->hasCollection(collection_bad);
   test( doesnt_have, "Incorrect results from hasCollection when giving a bad collection");
 
   //test search capabilities
-  smtk::mesh::Collection findBad = mgr->collection( smtk::common::UUID() );
-  smtk::mesh::Collection findBad2 = mgr->collection( smtk::common::UUID() );
-  smtk::mesh::Collection findRes = mgr->collection( collection.entity() );
-  smtk::mesh::Collection findRes2 = mgr->findCollection( collection.entity() )->second;
+  smtk::mesh::CollectionPtr findBad = mgr->collection( smtk::common::UUID() );
+  smtk::mesh::CollectionPtr findBad2 = mgr->collection( smtk::common::UUID() );
+  smtk::mesh::CollectionPtr findRes = mgr->collection( collection->entity() );
+  smtk::mesh::CollectionPtr findRes2 = mgr->findCollection( collection->entity() )->second;
 
-  test( !findBad.isValid(), "Failed to return an invalid Collection from a bad find call");
-  test( !findBad2.isValid(), "Failed to return an invalid Collection from a bad find call");
-  test( findRes.isValid(), "Failed to return an valid Collection from a find call");
-  test( findRes2.isValid(), "Failed to return an valid Collection from a find call");
+  test( !findBad, "Failed to return an invalid Collection from a bad find call");
+  test( !findBad2, "Failed to return an invalid Collection from a bad find call");
+  test( findRes && findRes->isValid(), "Failed to return an valid Collection from a find call");
+  test( findRes2 && findRes2->isValid(), "Failed to return an valid Collection from a find call");
 }
 
 //----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ void verify_collection_iterators()
   std::size_t distance = std::distance(begin,end);
   test( distance == 0, "Incorrect iterators given from an empty manager");
 
-  smtk::mesh::Collection collection(mgr);
+  smtk::mesh::CollectionPtr collection= mgr->makeCollection();
   test( mgr->numberOfCollections() == 1, "Incorrect results from numberOfCollections");
 
   //now that we have an item verify the iterators work
@@ -91,7 +92,9 @@ void verify_add_remove_collection()
 
   const int size=1024;
   for( int i=0 ; i < size; ++i)
-    { smtk::mesh::Collection collection(mgr); }
+    {
+    mgr->makeCollection(); //make a collection and add it to manager
+    }
   test( mgr->numberOfCollections() == size, "Incorrect results from numberOfCollections");
 
 
@@ -112,9 +115,9 @@ void verify_add_remove_collection()
       i != uids_to_remove.end();
       ++i)
     {
-    smtk::mesh::Collection badCollection = mgr->collection( *i );
+    smtk::mesh::CollectionPtr badCollection = mgr->collection( *i );
     smtk::mesh::Manager::const_iterator badIterator = mgr->findCollection( *i );
-    test( badCollection.isValid() == false, "remove failed to actually remove a collection item");
+    test( badCollection == false, "remove failed to actually remove a collection item");
     test( badIterator == end, "remove failed to actually remove a collection item");
     }
 
