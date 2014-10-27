@@ -16,6 +16,6 @@ if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
     COMMAND
       unitRemusBridgeConnection
       ${SMTK_DATA_DIR}/cgm/pyramid.brep
-      cgm
+      "smtk::model[cgm{OpenCascade}]"
   )
 endif()
