@@ -21,6 +21,7 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
+inline
 smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t)
   {
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
@@ -60,7 +61,7 @@ smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t)
   return ctype;
   }
 
-
+inline
 smtk::mesh::moab::EntityType smtkToMOABCell(smtk::mesh::CellType t)
   {
   smtk::mesh::moab::EntityType ctype = ::moab::MBMAXTYPE;

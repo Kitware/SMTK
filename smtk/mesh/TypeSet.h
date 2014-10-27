@@ -29,12 +29,13 @@ public:
   //dimensions are inferred by what cell types are enabled
   TypeSet( smtk::mesh::CellTypes ctypes,
            bool hasM,
-           bool hasC,
-           bool hasP );
+           bool hasC);
+
+  bool operator==( const TypeSet& other ) const;
+  bool operator!=( const TypeSet& other ) const;
 
   bool hasMeshes() const;
   bool hasCells() const;
-  bool hasPoints() const;
 
   //Dimension is related fully to the cell types that are passed in.
   //What this means is that we don't consider having points ( coordinates )
@@ -50,8 +51,6 @@ private:
   smtk::mesh::DimensionTypes m_dimTypes;
   bool m_hasMesh;
   bool m_hasCell;
-  bool m_hasPoint;
-
 };
 
 

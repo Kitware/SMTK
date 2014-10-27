@@ -39,24 +39,38 @@ TypeSet::TypeSet():
   m_cellTypes(),
   m_dimTypes(),
   m_hasMesh( false ),
-  m_hasCell( false ),
-  m_hasPoint( false )
+  m_hasCell( false )
 {
 
 }
 
 //----------------------------------------------------------------------------
 TypeSet::TypeSet( smtk::mesh::CellTypes ctypes,
-                  bool hasM, bool hasC, bool hasP ):
+                  bool hasM, bool hasC ):
   m_cellTypes(ctypes),
   m_dimTypes( make_dim_types(ctypes) ),
   m_hasMesh( hasM ),
-  m_hasCell( hasC ),
-  m_hasPoint( hasP )
+  m_hasCell( hasC )
 {
 
 }
 
+//----------------------------------------------------------------------------
+bool TypeSet::operator==( const TypeSet& other ) const
+{
+  //m_dimTypes are derived from m_cellTypes so we only need to compare
+  //m_cellTypes and m_hasMesh, Cell, Point
+  return ( this->m_cellTypes == other.m_cellTypes &&
+           this->m_hasMesh == other.m_hasMesh &&
+           this->m_hasCell == other.m_hasCell );
+
+}
+
+//----------------------------------------------------------------------------
+bool TypeSet::operator!=( const TypeSet& other ) const
+{
+  return !(*this == other);
+}
 
 //----------------------------------------------------------------------------
 bool TypeSet::hasMeshes() const
@@ -68,12 +82,6 @@ bool TypeSet::hasMeshes() const
 bool TypeSet::hasCells() const
 {
     return this->m_hasCell;
-}
-
-//----------------------------------------------------------------------------
-bool TypeSet::hasPoints() const
-{
-  return this->m_hasPoint;
 }
 
 //----------------------------------------------------------------------------

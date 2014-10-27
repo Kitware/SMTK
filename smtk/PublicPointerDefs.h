@@ -190,6 +190,11 @@ namespace smtk
     namespace moab
     {
       typedef smtk::shared_ptr< smtk::mesh::moab::Interface >     InterfacePtr;
+
+      //required forward declare of function so that collection private
+      //interface can be extracted by other classes by using this helper
+      //function.
+      const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c);
     }
 
   }

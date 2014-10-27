@@ -33,6 +33,8 @@ smtk::mesh::moab::InterfacePtr make_interface();
 //file. If the file given fails to load we will return a invalid InterfacePtr
 smtk::mesh::moab::InterfacePtr make_interface(const std::string& path);
 
+const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c);
+
 }
 }
 }

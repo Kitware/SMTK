@@ -12,6 +12,7 @@
 
 
 #include "smtk/mesh/moab/Interface.h"
+#include "smtk/mesh/Collection.h"
 #include "moab/Core.hpp"
 
 namespace smtk {
@@ -38,6 +39,13 @@ smtk::mesh::moab::InterfacePtr make_interface(const std::string& path)
     }
   return moab;
 }
+
+//extract the interfacPtr from a collection
+const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c)
+{
+  return c->extractInterface();
+}
+
 
 }
 }

@@ -10,8 +10,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/mesh/moab/Interface.h"
-#include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/Helpers.h"
 
 namespace smtk {
 namespace mesh {
@@ -55,8 +54,11 @@ public:
     return true;
     }
 
-  smtk::mesh::moab::Interface* mesh_iface() const
-    { return this->Interface.get(); }
+  const smtk::mesh::moab::InterfacePtr& mesh_iface() const
+    { return this->Interface; }
+
+  smtk::mesh::Handle mesh_root_handle() const
+    { return this->Interface->get_root_set(); }
 
 
 
@@ -100,13 +102,17 @@ Collection::~Collection()
     delete this->m_internals;
     }
 }
+//----------------------------------------------------------------------------
+const smtk::mesh::moab::InterfacePtr& Collection::extractInterface() const
+{
+  return this->m_internals->mesh_iface();
+}
 
 //----------------------------------------------------------------------------
 void Collection::removeManagerConnection()
 {
   this->m_internals->resetManger();
 }
-
 
 //----------------------------------------------------------------------------
 bool Collection::isValid() const
@@ -162,72 +168,85 @@ bool Collection::reparent(smtk::mesh::ManagerPtr newParent)
 //----------------------------------------------------------------------------
 std::size_t Collection::numberOfMeshes() const
 {
-  smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
-
-  int num_ents = 0;
-  smtk::mesh::moab::Handle handle;
-  iface->get_number_entities_by_type( iface->get_root_set(),
-                                     ::moab::MBENTITYSET,
-                                     num_ents);
-  return static_cast<std::size_t>(num_ents);
+  return smtk::mesh::moab::numMeshes(this->m_internals->mesh_root_handle(),
+                                     this->m_internals->mesh_iface() );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::associatedTypes( ) const
 {
-  const std::size_t numMeshes = this->numberOfMeshes();
-  if( numMeshes == 0)
-    {
-    return smtk::mesh::TypeSet();
-    }
-
-  //we have meshes
-  smtk::mesh::moab::Interface* iface = this->m_internals->mesh_iface();
-  smtk::mesh::moab::Handle rootHandle = iface->get_root_set();
-
-  //iterate over all the celltypes and get the number for each
-  //construct a smtk::mesh::CellTypes at the same time
-  typedef ::smtk::mesh::CellType CellEnum;
-  smtk::mesh::CellTypes ctypes;
-  for(int i=0; i < ctypes.size(); ++i ) //need a way to iterate all the cell types
-    {
-    CellEnum ce = static_cast<CellEnum>(i);
-    //now we need to convert from CellEnum to MoabType
-    smtk::mesh::moab::EntityType moabEType =
-                                smtk::mesh::moab::smtkToMOABCell(ce);
-
-    //some of the cell types that smtk supports moab doesn't support
-    //so we can't query on those.
-    int num = 0;
-    if(moabEType != ::moab::MBMAXTYPE)
-      {
-      iface->get_number_entities_by_type(rootHandle,
-                                       moabEType,
-                                       num);
-      }
-    ctypes[ce] = (num > 0);
-    }
-
-  //determine the state of the typeset
-  const bool hasMeshes = numMeshes > 0;
-  const bool hasCells = ctypes.any();
-  const bool hasPoints = hasMeshes && hasCells;
-  return smtk::mesh::TypeSet(ctypes, hasMeshes, hasCells, hasPoints) ;
+  return smtk::mesh::moab::compute_types(this->m_internals->mesh_root_handle(),
+                                         this->m_internals->mesh_iface() );
 }
+
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( )
 {
   return smtk::mesh::CellSet();
 }
+
 //----------------------------------------------------------------------------
 smtk::mesh::PointSet Collection::points( )
 {
-  return smtk::mesh::PointSet();
+  return smtk::mesh::PointSet( );
 }
+
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::meshes( )
 {
-  return smtk::mesh::MeshSet();
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                               this->m_internals->mesh_root_handle() );
+}
+
+//----------------------------------------------------------------------------
+std::vector< std::string > Collection::meshNames( )
+{
+  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  ::moab::Range entities = smtk::mesh::moab::get_meshsets(handle, iface);
+  return smtk::mesh::moab::compute_names(entities, iface);
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes( smtk::mesh::DimensionType dim )
+{
+  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+  const int dim_value = static_cast<int>(dim);
+
+  smtk::mesh::HandleRange entities = smtk::mesh::moab::get_meshsets( handle,
+                                                                     dim_value,
+                                                                     iface );
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::meshes( const std::string& name )
+{
+  const smtk::mesh::moab::InterfacePtr& iface = this->m_internals->mesh_iface();
+  smtk::mesh::moab::Handle handle = this->m_internals->mesh_root_handle();
+
+  smtk::mesh::HandleRange entities = smtk::mesh::moab::get_meshsets( handle,
+                                                                     name,
+                                                                     iface );
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              entities );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::cells( smtk::mesh::CellType cellType )
+{
+  return smtk::mesh::CellSet();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::cells( smtk::mesh::CellTypes cellTypes )
+{
+  return smtk::mesh::CellSet();
 }
 
 //----------------------------------------------------------------------------
@@ -237,48 +256,41 @@ smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet Collection::cells( smtk::mesh::CellType cellType )
-{
-  return smtk::mesh::CellSet();
-}
-
-// //----------------------------------------------------------------------------
-smtk::mesh::CellSet Collection::cells( smtk::mesh::CellTypes cellTypes )
-{
-  return smtk::mesh::CellSet();
-}
-
-//----------------------------------------------------------------------------
-smtk::mesh::PointSet Collection::pointsAssociatedTo( smtk::mesh::CellType cellType )
-{
-  return smtk::mesh::PointSet();
-}
-//----------------------------------------------------------------------------
-smtk::mesh::PointSet Collection::pointsAssociatedTo( smtk::mesh::CellTypes cellTypes )
-{
-  return smtk::mesh::PointSet();
-}
-
-//----------------------------------------------------------------------------
 smtk::mesh::TypeSet Collection::findAssociatedTypes( const smtk::model::EntityRef& eref )
 {
   return smtk::mesh::TypeSet();
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref )
+smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref  )
+{
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              smtk::mesh::HandleRange() );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref ,
+                                                      smtk::mesh::CellType cellType )
+{
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              smtk::mesh::HandleRange() );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref ,
+                                                      smtk::mesh::DimensionType dim )
+{
+  return smtk::mesh::MeshSet( this->shared_from_this(),
+                              this->m_internals->mesh_root_handle(),
+                              smtk::mesh::HandleRange() );
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref  )
 {
   return smtk::mesh::CellSet();
-}
-//----------------------------------------------------------------------------
-smtk::mesh::PointSet Collection::findAssociatedPoints( const smtk::model::EntityRef& eref )
-{
-  return smtk::mesh::PointSet();
-}
-//----------------------------------------------------------------------------
-smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref )
-{
-  return smtk::mesh::MeshSet();
 }
 
 //----------------------------------------------------------------------------
@@ -287,10 +299,12 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
   return smtk::mesh::CellSet();
 }
 
+
 //----------------------------------------------------------------------------
-smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType )
+smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref ,
+                                                      smtk::mesh::DimensionType dim )
 {
-  return smtk::mesh::MeshSet();
+  return smtk::mesh::CellSet( );
 }
 
 

@@ -9,8 +9,8 @@
 1. Organize the concept of cell types and querying by cell types. Something
   like the following should be possible:
 ```
-  meshSet.allCellsOfType( smtk::mesh::Hexahedron );
-  cellSet.allCellsOfType( smtk::mesh::Pyramid );
+  collection.cells( smtk::mesh::Hexahedron );
+  meshset.cells( smtk::mesh::Hexahedron );
 ```
 which means that we need the ability of cell types be derived from a common
 parent so that this is possible ( or use templates? ). I think using enums /
@@ -20,8 +20,8 @@ from enum to concrete type
 2. We need to also expand the concepts to dimensionality. We should
 be able to do the following:
 ```
-  meshSet.AllCellsOfType( smtk::mesh::Dims2 );
-  cellSet.AllCellsOfType( smtk::mesh::Dims3 );
+  collection.cells( smtk::mesh::Dims2 );
+  meshset.cells( smtk::mesh::Dims3 );
 ```
 
 3. Ability to walk the mesh in some manner.
@@ -38,6 +38,24 @@ be able to do the following:
   smtk::mesh::CollectionPtr manager.collection( uuid_of_collection );
 
 ```
+
+6. Ability to extract the shells for each region.
+   Most likely done by using the code written for the moab reader as options
+   on the collection.
+
+7. Ability to do a union or intersect of meshsets, and appending of a meshset
+   to another.
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
+  smtk::mesh::MeshSet m2 = collection->meshes( smtk::mesh::Dims2 );
+  smtk::mesh::MeshSet m3 = collection->meshes( smtk::mesh::Dims3 );
+
+  smtk::mesh::MeshSet overlapping = smtk::mesh::intersect(m2,m3);
+```
+
 
 ##IO##
 

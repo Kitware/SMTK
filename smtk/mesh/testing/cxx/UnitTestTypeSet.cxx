@@ -24,7 +24,6 @@ void verify_basic_typeset()
   smtk::mesh::TypeSet t_set;
   test( t_set.hasMeshes() == false );
   test( t_set.hasCells() == false );
-  test( t_set.hasPoints() == false );
 
   //verify all cell types are zero
   for(int i=0; i < 10; ++i)
@@ -44,13 +43,12 @@ void verify_typeset_constructors()
 {
   //just verify that all the copy constructors work
   smtk::mesh::TypeSet t_set(smtk::mesh::CellTypes(),
-                           false, true, false ); //has cells only
+                           false, true ); //has cells only
   smtk::mesh::TypeSet t_set2(t_set);
   smtk::mesh::TypeSet t_set3 = t_set2;
 
   test( t_set3.hasMeshes() == false );
   test( t_set3.hasCells() == true );
-  test( t_set3.hasPoints() == false );
 
   //verify all cell types are zero
   for(int i=0; i < 10; ++i)
@@ -83,11 +81,10 @@ void verify_typeset_with_cells_and_dims()
 {
   //now verify a typeset with a couple things set
   smtk::mesh::TypeSet t_set(smtk::mesh::CellTypes( std::string("11100") ), //triangle,quad,polygon
-                            false, true, false ); //has cells only
+                            false, true ); //has cells only
 
   test( t_set.hasMeshes() == false );
   test( t_set.hasCells() == true );
-  test( t_set.hasPoints() == false );
 
   //verify all only 2d cells are valid
   for(int i=0; i < 10; ++i)

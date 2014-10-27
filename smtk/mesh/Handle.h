@@ -8,23 +8,17 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#ifndef __smtk_mesh_QueryTypes_h
-#define __smtk_mesh_QueryTypes_h
+#ifndef __smtk_mesh_Handle_h
+#define __smtk_mesh_Handle_h
 
-//Query Types is a convenience header, whose goal is to make it easier
-//for users to query a manager
-
-#include "smtk/mesh/CellTypes.h"
-#include "smtk/mesh/DimensionTypes.h"
-
+#include "smtk/mesh/moab/Types.h"
 
 namespace smtk {
 namespace mesh {
-
-typedef int CellSet;
-typedef int PointSet;
-
+  typedef smtk::mesh::moab::Handle Handle;
+  typedef smtk::mesh::moab::HandleRange HandleRange;
 }
 }
+
 
 #endif

@@ -20,6 +20,7 @@ set(unit_tests
 
 set(unit_tests_which_require_data
   UnitTestLoadMesh.cxx
+  UnitTestMeshSet.cxx
   UnitTestTypeSetFromData.cxx
   )
 

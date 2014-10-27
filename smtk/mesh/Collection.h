@@ -17,10 +17,14 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/mesh/Handle.h"
+#include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
 #include "smtk/model/EntityRef.h"
+
+#include <vector>
 
 namespace smtk {
 namespace mesh {
@@ -64,41 +68,61 @@ public:
 
   std::size_t numberOfMeshes() const;
 
-  //General Queries on a Collection
+  //----------------------------------------------------------------------------
+  //Queries on the full Collection
+  //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   associatedTypes( ) const;
-  smtk::mesh::CellSet   cells( );
-  smtk::mesh::PointSet  points( );
-  smtk::mesh::MeshSet   meshes( );
+  smtk::mesh::CellSet   cells( ); //all cells
+  smtk::mesh::PointSet  points( ); //all points
+  smtk::mesh::MeshSet   meshes( ); //all meshes
 
-  //Advanced Queries on a Collection
-  //find meshes of a given dimensions
-  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
+  //For any mesh set that has a name we return that name. It is possible
+  //that the we have un-named mesh sets.
+  std::vector< std::string > meshNames();
+
+  //all meshes of that are labeled of a given dimension, which generally
+  //is the high dimension inside that mesh
+  smtk::mesh::MeshSet   meshes( smtk::mesh::DimensionType dim );
+  smtk::mesh::MeshSet   meshes( const std::string& name );
 
   //find a cells of a given type or a collection of types
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes );
+  smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
 
-  //find the point set related to a given cell type or collection of types
-  smtk::mesh::PointSet  pointsAssociatedTo( smtk::mesh::CellType cellType );
-  smtk::mesh::PointSet  pointsAssociatedTo( smtk::mesh::CellTypes cellTypes );
-
-  //Query a Collection given a model cursor
+  //----------------------------------------------------------------------------
+  // Queries by a model Cursor
+  //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   findAssociatedTypes( const smtk::model::EntityRef& eref );
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
-  smtk::mesh::PointSet  findAssociatedPoints( const smtk::model::EntityRef& eref );
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref );
-
-  //Query a Collection given a model cursor and some QueryType interface ( cell, dim )
-  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
-  //The meshes returned can include mixed cell meshes so watch out
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::MeshSet   findAssociatedMeshes( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref );
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
+  smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
+
+  //todo: query based on materials and other attributes of the mesh db
+  //Tag("MATERIAL_SET"){};
+  //smtk::mesh:::Mesh materialMeshes();
+  //Tag("DIRICHLET_SET"){};
+  //smtk::mesh:::Mesh dirichletMeshes();
+  //Tag("NEUMANN_SET"){};
+  //smtk::mesh:::Mesh neumannMeshes();
+  //Tag("GroupTag"){};
+  //smtk::mesh:::Mesh groupMeshes();
+  //todo: need to be able to extract the entire surface of the mesh
+  //smtk::mesh::MeshSet extractSurfaceMeshes();
 
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
   Collection& operator=( const Collection& other ); //blank since we are used by shared_ptr
 
   friend class smtk::mesh::Manager;
+  friend const smtk::mesh::moab::InterfacePtr& smtk::mesh::moab::extractInterface(smtk::mesh::CollectionPtr c);
+
+  //called by friend extractInterface to get the interface shared_ptr
+  //that we hold
+  const smtk::mesh::moab::InterfacePtr& extractInterface() const;
 
   //called by the manager that manages this collection, means that somebody
   //has requested us to be removed from a collection

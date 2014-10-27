@@ -37,6 +37,8 @@ struct verify_cell_attributes
     switch(cellEnum)
       {
       smtkMeshCellEnumToTypeMacro( this->verify( CellTraits() ) );
+      case smtk::mesh::CellType_MAX:
+        break;
       }
   }
 
