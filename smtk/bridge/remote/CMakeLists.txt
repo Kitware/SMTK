@@ -56,6 +56,7 @@ target_link_libraries(smtk-model-server
   SMTKCore
   RemusCommon
   RemusServer
+  ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-model-server PRIVATE ${REMUS_INCLUDE_DIRS})
 
@@ -72,6 +73,7 @@ target_link_libraries(smtk-remote-model
   RemusProto
   RemusClient
   RemusWorker
+  ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-remote-model PRIVATE ${REMUS_INCLUDE_DIRS})
 if (SMTK_BUILD_CGM)
