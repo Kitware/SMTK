@@ -57,6 +57,10 @@ namespace smtk {
 Bridge::Bridge()
 {
   this->initializeOperatorSystem(Bridge::s_operators);
+  if (!Engines::areInitialized())
+    {
+    Engines::isInitialized("");
+    }
 }
 
 /// Virtual destructor. Here because Bridge overrides virtual methods from Bridge.

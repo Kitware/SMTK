@@ -9,6 +9,7 @@ set(cgmSrcs
   ImportSolid.cxx
   Operator.cxx
   ReadOperator.cxx
+  CreateSphereOperator.cxx
   TDUUID.cxx
 )
 
@@ -20,6 +21,7 @@ set(cgmHeaders
   ImportSolid.h
   Operator.h
   ReadOperator.h
+  CreateSphereOperator.h
   TDUUID.h
 )
 
@@ -65,6 +67,7 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
 
 # Install the headers
 smtk_public_headers(${cgmHeaders})

@@ -1,3 +1,14 @@
+//=============================================================================
+//
+//  Copyright (c) Kitware, Inc.
+//  All rights reserved.
+//  See LICENSE.txt for details.
+//
+//  This software is distributed WITHOUT ANY WARRANTY; without even
+//  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+//  PURPOSE.  See the above copyright notice for more information.
+//
+//=============================================================================
 /*
  * Normally this would be machine-generated from Bridge.json
  * using the smtk_bridge_json CMake macro, but this version
