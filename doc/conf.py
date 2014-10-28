@@ -16,6 +16,8 @@ import sys
 import os
 
 readTheDocs = os.environ.get('READTHEDOCS', None) == 'True'
+sys.path.append(os.getcwd()) # So that the findfigure package can be imported
+sourcedir = sys.argv[-2] # FIXME: Is the penultimate argument always the source dir?
 builddir = sys.argv[-1] # FIXME: Is the final argument always be the build dir?
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -39,6 +41,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinxcontrib.actdiag',
     'sphinxcontrib.doxylink',
+    'findfigure',
     'breathe'
 ]
 
@@ -109,6 +112,16 @@ pygments_style = 'sphinx'
 
 # If true, keep warnings as "system message" paragraphs in the built documents.
 #keep_warnings = False
+
+# -- Findfigure configuration ---------------------------------------------
+
+findfigure_paths = {
+  '*':[
+    sourcedir,
+    os.path.join(sourcedir, 'userguide', 'figures'),
+    builddir,
+    os.path.join(builddir,'..')]
+}
 
 # -- Action diagram configuration -----------------------------------------
 

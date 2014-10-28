@@ -85,7 +85,7 @@ However, there are cursor-like classes, all derived from :smtk:`smtk::model::Cur
 that provide easier access to model traversal.
 These classes are organized like so:
 
-.. figure:: figures/cursor-classes-with-inheritance.svg
+.. findfigure:: cursor-classes-with-inheritance.*
 
    Each of the orange, green, purple, and red words is the name of a cursor class.
    The black arrows show relationships between instances of them (for which the
@@ -153,7 +153,7 @@ By placing the :smtk:`smtkComponentInitMacro` in your application's
 main source file:
 
 .. highlight:: c++
-.. literalinclude:: ../smtk/bridge/remote/testing/cxx/generate-remus-worker-file.cxx
+.. literalinclude:: ../../smtk/bridge/remote/smtk-remote-model.cxx
   :start-after: // ++ UserGuide/Model/1 ++
   :end-before: // -- UserGuide/Model/1 --
   :linenos:
@@ -186,7 +186,7 @@ when asked for an operator by name;
 the RemoteOperator class delegates its ableToOperate and operate methods
 to the DefaultBridge instance which instantiated it.
 
-.. figure:: figures/forwarding-bridge.svg
+.. findfigure:: forwarding-bridge.*
 
    The CMB client-server model uses SMTK's RemoteOperator and DefaultBridge classes to
    forward operations from the client to the server (and results back to the client).

@@ -130,10 +130,12 @@ if (SPHINX_FOUND)
 
   set(SMTK_USERGUIDE_DOCS
     index.rst
-    userguide.rst
-    userguide-attribute.rst
-    userguide-model.rst
-    userguide-contributing.rst
+    userguide/index.rst
+    userguide/attribute/index.rst
+    userguide/attribute/concepts.rst
+    userguide/attribute/file-syntax.rst
+    userguide/model.rst
+    userguide/contributing.rst
   )
   if (DOXYGEN_FOUND)
     # Need doxygen docs built if possible
@@ -142,9 +144,9 @@ if (SPHINX_FOUND)
   endif()
 
   set(SMTK_USERGUIDE_FIGS
-    figures/forwarding-bridge.svg
-    figures/cursor-classes-with-inheritance.svg
-    figures/ExampleAttributePanel.png
+    userguide/figures/forwarding-bridge.svg
+    userguide/figures/cursor-classes-with-inheritance.svg
+    userguide/figures/ExampleAttributePanel.png
   )
 
   # Add the top-level reStructuredText file.

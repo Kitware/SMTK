@@ -31,12 +31,11 @@ solid modeling kernels for preparing discretizations of your
 simulation domain.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
-   userguide-attribute.rst
-   userguide-model.rst
-   userguide-contributing.rst
-   design.rst
+   attribute/index.rst
+   model.rst
+   contributing.rst
 
 .. role:: cxx(code)
    :language: c++
