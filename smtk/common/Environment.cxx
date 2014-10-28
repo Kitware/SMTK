@@ -24,7 +24,7 @@ bool Environment::hasVariable(const std::string& varName)
   buf = getenv(varName.c_str());
   return buf && buf[0];
 #else
-  const bool valid;
+  bool valid;
 
   valid = (_dupenv_s(&buf, NULL, varName.c_str()) == 0) && (buf != NULL);
   free(buf); //perfectly valid to free a NULL pointer
@@ -42,10 +42,10 @@ std::string Environment::getVariable(const std::string& varName)
     return buf;
   return std::string();
 #else
-  const bool valid;
+  bool valid;
   std::string result;
 
-  valid = (_dupenv_s(&buf, NULL, libsearchpath_name.c_str()) == 0) && (buf != NULL);
+  valid = (_dupenv_s(&buf, NULL, varName.c_str()) == 0) && (buf != NULL);
   if (valid)
     result = buf;
   free(buf); //perfectly valid to free a NULL pointer
