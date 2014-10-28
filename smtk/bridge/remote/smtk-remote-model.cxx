@@ -25,7 +25,6 @@ using namespace smtk::common;
 using namespace remus::meshtypes;
 using namespace remus::proto;
 
-#include "smtk/AutoInit.h"
 #include "smtk/Options.h"
 
 #include "cJSON.h"
@@ -46,18 +45,18 @@ int smtkChDir(const std::string& path) { return chdir(path.c_str()); }
 int smtkChDir(const std::string& path) { return _chdir(path.c_str()); }
 #endif
 
+// ++ UserGuide/Model/1 ++
+#include "smtk/AutoInit.h"
+
 #ifdef SMTK_BUILD_CGM
 smtkComponentInitMacro(smtk_cgm_bridge);
-smtkComponentInitMacro(smtk_cgm_read_operator);
-// FIXME: Use conditionals to enable these only when the underlying CGM library supports them:
-//        At worst, this source could depend on list-cgm-engines, which provides a list.
-//        At best, FindCGM could provide CMake variables to be included in smtk/options.h.in.
 #include "smtk/bridge/cgm/Engines.h"
 #endif // SMTK_BUILD_CGM
 
 #ifdef SMTK_BUILD_DISCRETE_BRIDGE
 smtkComponentInitMacro(smtk_discrete_bridge);
 #endif // SMTK_BUILD_DISCRETE_BRIDGE
+// -- UserGuide/Model/1 --
 
 std::ofstream logr("/tmp/wlog.txt", std::ios::app);
 

@@ -117,7 +117,7 @@ attributes based on the definitions above:
    :end-before: # -- 5 --
    :linenos:
 
-When you ask the :smtk:`Manager <smtk::attribute::Manager>` to
+When you ask the :smtk:`System <smtk::attribute::System>` to
 create an :smtk:`Attribute`, it provides an :smtk:`Item` to match
 every :smtk:`ItemDefinition` in the attribute's underlying
 :smtk:`Definition`.
