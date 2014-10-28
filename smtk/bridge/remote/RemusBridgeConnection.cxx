@@ -19,7 +19,12 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include <functional>
+
 #include "remus/client/ServerConnection.h"
+
+#include "remus/server/Server.h"
+#include "remus/server/WorkerFactory.h"
 
 #include "remus/proto/Job.h"
 #include "remus/proto/JobContent.h"
@@ -28,6 +33,9 @@
 #include "cJSON.h"
 
 using smtk::common::UUID;
+using namespace smtk::common;
+using namespace smtk::model;
+using namespace smtk::io;
 
 namespace smtk {
   namespace bridge {
@@ -42,10 +50,53 @@ RemusBridgeConnection::~RemusBridgeConnection()
 {
 }
 
+/**\brief Indicate location where Remus worker files may live.
+  *
+  * Before calling connectToServer(void), call this method
+  * for each directory you would like the process-local Remus
+  * server to search for worker files.
+  * This has no effect once connectToServer() has been invoked.
+  */
+void RemusBridgeConnection::addSearchDir(const std::string& searchDir)
+{
+  this->m_searchDirs.insert(searchDir);
+}
+
+/**\brief Reset all of the search directories added with addSearchDir().
+  */
+void RemusBridgeConnection::clearSearchDirs()
+{
+  this->m_searchDirs.clear();
+}
+
+/**\brief Initiate the connection to the Remus server.
+  *
+  * This constructs a Remus server connection; it does
+  * not necessarily verify that communication to/from
+  * the server works.
+  */
 bool RemusBridgeConnection::connectToServer(const std::string& hostname, int port)
 {
   // TODO: Drop any current connection and reset bridges? Copy-on-connect? ???
-  this->m_conn = remus::client::ServerConnection(hostname, port);
+  if (hostname.empty() || hostname == "local")
+    {
+    // Start a process-local server
+    boost::shared_ptr<remus::server::WorkerFactory> factory(new remus::server::WorkerFactory());
+    factory->setMaxWorkerCount(5);
+
+    // Add search directories, if any.
+    for (searchdir_t::const_iterator it = this->m_searchDirs.begin(); it != this->m_searchDirs.end(); ++it)
+      factory->addWorkerSearchDirectory(*it);
+
+    this->m_localServer = smtk::shared_ptr<remus::Server>(
+      new remus::Server(remus::server::ServerPorts(),factory));
+    this->m_localServer->startBrokering();
+
+    // Connect to the process-local server
+    this->m_conn = remus::client::ServerConnection();
+    }
+  else
+    this->m_conn = remus::client::ServerConnection(hostname, port);
   this->m_client =
     smtk::shared_ptr<remus::client::Client>(
       new remus::client::Client(this->m_conn));
@@ -59,16 +110,87 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
   std::vector<std::string> resultVec;
   if (this->m_remoteBridgeNames.empty())
     {
+    if (!this->m_client)
+      this->connectToServer();
     remus::common::MeshIOTypeSet mtypes = this->m_client->supportedIOTypes();
     remus::common::MeshIOTypeSet::const_iterator mit;
     for (mit = mtypes.begin(); mit != mtypes.end(); ++mit)
+      {
       if (mit->outputType() == "smtk::model[native]") // TODO: Eliminate this magic string?
-        this->m_remoteBridgeNames.insert(mit->inputType());
+        {
+        if (this->m_remoteBridgeNames.insert(mit->inputType()).second)
+          { // Obtain the solid-modeling kernel "requirements", including the file types and operators.
+          remus::proto::JobRequirementsSet kernelInfos = this->m_client->retrieveRequirements(*mit);
+          if (kernelInfos.size() <= 0)
+            {
+            continue;
+            }
+          else if (kernelInfos.size() > 1)
+            {
+            std::cerr
+              << "Error. Bridge name " << mit->inputType()
+              << " has multiple requirements. Using first.\n";
+            }
+          const remus::proto::JobRequirements& kernelInfo(*kernelInfos.begin());
+          RemusStaticBridgeInfo binfo =
+            RemusRemoteBridge::createFunctor(
+              shared_from_this(), kernelInfo, mit->inputType());
+          // FIXME: If we implemented it, we could pass a method to
+          //        accept remotely-provided pre-construction setup
+          //        options to the bridge. But that is too fancy for now.
+          using namespace std::placeholders;
+          smtk::model::BridgeRegistrar::registerBridge(
+            binfo.name(), binfo.tags(), std::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
+          }
+        }
+      }
     }
   resultVec = std::vector<std::string>(
     this->m_remoteBridgeNames.begin(), this->m_remoteBridgeNames.end());
 
   return resultVec;
+}
+
+/**\brief Start a worker of a particular type, or revive a particular session ID.
+  *
+  */
+int RemusBridgeConnection::staticSetup(
+  const std::string& bridgeName,
+  const std::string& optName,
+  const smtk::model::StringList& optVal)
+{
+  (void) this->bridgeNames(); // ensure that we've fetched the bridge names from the server.
+  if (this->m_remoteBridgeNames.find(bridgeName) == this->m_remoteBridgeNames.end())
+    return 0;
+
+  remus::proto::JobRequirements jreq;
+  if (!this->findRequirementsForRemusType(jreq, bridgeName))
+    return 0;
+
+  //FIXME: Sanitize bridgeName!
+  cJSON* params;
+  cJSON* request = ExportJSON::createRPCRequest("bridge-setup", params, /*id*/ "1");
+  cJSON_AddItemToObject(params, "bridge-name", cJSON_CreateString(bridgeName.c_str()));
+  cJSON_AddItemToObject(params, "option-name", cJSON_CreateString(optName.c_str()));
+  cJSON_AddItemToObject(params, "option-value", ExportJSON::createStringArray(optVal));
+  cJSON* result = this->jsonRPCRequest(request, jreq);
+  cJSON* rval;
+  if (
+    // Was JSON parsable?
+    !result ||
+    // Is the result an Object (as required by JSON-RPC 2.0)?
+    result->type != cJSON_Object ||
+    // Does the result Object have a field named "result" (req'd by JSON-RPC)?
+    !(rval = cJSON_GetObjectItem(result, "result")) ||
+    // Is the "result" field an Object with a child that is also an object?
+    rval->type != cJSON_Number)
+    {
+    // TODO: See if result has "error" key and report it.
+    if (result)
+      cJSON_Delete(result);
+    return 0;
+    }
+  return rval->valueint;
 }
 
 /**\brief Start a worker of a particular type, or revive a particular session ID.
@@ -137,10 +259,12 @@ UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
 
   UUID bridgeId = bridge->sessionId();
   this->m_remoteBridgeSessionIds[bridgeId] = bridgeName;
+  /*
   std::cout
     << "Updating worker \"" << jreq.workerName() << "\""
     << " tag \"" << jreq.tag() << "\"\n";
   jreq.tag(bridgeId.toString());
+  */
   bridge->setup(this, jreq);
   return bridgeId;
 }
@@ -174,6 +298,16 @@ bool RemusBridgeConnection::endBridgeSession(const UUID& bridgeSessionId)
   // Now remove the entry from the proxy's list of sessions.
   this->m_remoteBridgeSessionIds.erase(it);
   return true;
+}
+
+/**\brief Obtain a RemusRemoteBridge given its session ID.
+  *
+  */
+RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeSession(
+  const smtk::common::UUID& bridgeSessionId)
+{
+  Bridge::Ptr sess = this->m_modelMgr->findBridgeSession(bridgeSessionId);
+  return smtk::dynamic_pointer_cast<RemusRemoteBridge>(sess);
 }
 
 /**\brief Return a list of file types supported by a particular bridge.
@@ -321,6 +455,9 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
   return result;
 }
 
+/**\brief
+  *
+  */
 std::vector<std::string> RemusBridgeConnection::operatorNames(const std::string& bridgeName)
 {
   (void)bridgeName;
@@ -328,6 +465,9 @@ std::vector<std::string> RemusBridgeConnection::operatorNames(const std::string&
   return result;
 }
 
+/**\brief
+  *
+  */
 std::vector<std::string> RemusBridgeConnection::operatorNames(const UUID& bridgeSessionId)
 {
   (void)bridgeSessionId;
@@ -335,6 +475,9 @@ std::vector<std::string> RemusBridgeConnection::operatorNames(const UUID& bridge
   return result;
 }
 
+/**\brief
+  *
+  */
 smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
   const UUID& bridgeOrModel, const std::string& opName)
 {
@@ -344,6 +487,9 @@ smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
   return empty;
 }
 
+/**\brief
+  *
+  */
 smtk::model::OperatorPtr RemusBridgeConnection::createOperator(
   const std::string& bridgeName, const std::string& opName)
 {
@@ -420,7 +566,7 @@ cJSON* RemusBridgeConnection::jsonRPCRequest(const std::string& request, const r
   remus::proto::JobResult jres = this->m_client->retrieveResults(jd);
   if (!jres.valid() || jres.formatType() != remus::common::ContentFormat::JSON)
     return NULL;
-  cJSON* result = cJSON_Parse(jres.data().c_str());
+  cJSON* result = cJSON_Parse(jres.data());
   return result;
 }
 
@@ -454,6 +600,12 @@ void RemusBridgeConnection::jsonRPCNotification(const std::string& note, const r
   cJSON* result = cJSON_Parse(jres.data().c_str());
   return result;
   */
+}
+
+/// Return the Remus connection object this class owns.
+remus::client::ServerConnection RemusBridgeConnection::connection()
+{
+  return this->m_conn;
 }
 
 /**\brief Given a Remus-style worker name (e.g., "smtk[cgm{OpenCascade}]"),

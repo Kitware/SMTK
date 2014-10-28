@@ -1,0 +1,11 @@
+{
+  "kernel": "discrete",
+  "engines": [
+    {
+      "name": "native",
+      "filetypes": [
+        ".cmb (Conceptual Model Builder)"
+      ]
+    }
+  ]
+}

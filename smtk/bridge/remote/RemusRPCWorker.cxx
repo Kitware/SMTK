@@ -25,7 +25,43 @@
 
 #include "cJSON.h"
 
+#include <algorithm>
+#include <functional>
+#include <cctype>
+#include <locale>
+#include <sstream>
+
 using namespace remus::proto;
+using namespace smtk::model;
+using namespace smtk::common;
+
+// Some awesome whitespace trimmers from
+// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+
+// trim from start
+static inline std::string& ltrim(std::string& s) {
+  s.erase(
+    s.begin(),
+    std::find_if(
+      s.begin(), s.end(),
+      std::not1(std::ptr_fun<int, int>(std::isspace))));
+  return s;
+}
+
+// trim from end
+static inline std::string& rtrim(std::string& s) {
+  s.erase(
+    std::find_if(
+      s.rbegin(), s.rend(),
+      std::not1(std::ptr_fun<int, int>(std::isspace))).base(),
+    s.end());
+  return s;
+}
+
+// trim from both ends
+static inline std::string& trim(std::string& s) {
+  return ltrim(rtrim(s));
+}
 
 namespace smtk {
   namespace bridge {
@@ -38,6 +74,58 @@ RemusRPCWorker::RemusRPCWorker()
 
 RemusRPCWorker::~RemusRPCWorker()
 {
+}
+
+/**\brief Set an option to be used by the worker as it processes jobs.
+  *
+  * Options currently recognized include "default_kernel", "default_engine",
+  * "exclude_kernels", and "exclude_engines".
+  * These are used to constrain the worker to a specific modeler.
+  *
+  * The first two options are used to solve dilemmas where a file
+  * to be read or other operation to be performed might feasibly be
+  * executed using different kernels or engines.
+  * When a tie occurs, the defaults are used.
+  *
+  * The latter two options are used to prevent the application from
+  * accessing functionality built into SMTK but administratively
+  * prohibited (for example, due to stability problems or licensing
+  * issues).
+  * The exclusion rules are not applied to values in the default
+  * kernel and engine, so specifying the wildcard "*" for both
+  * the kernels and engines will prohibit any but the default
+  * from being used.
+  * Otherwise the "exclude_*" options should be comma-separated lists.
+  */
+void RemusRPCWorker::setOption(
+  const std::string& optName,
+  const std::string& optVal)
+{
+  StringList vals;
+  if (
+    optName.find("exclude_") == 0 && (
+      optName == "exclude_kernels" ||
+      optName == "exclude_engines"))
+    {
+    std::stringstream stream(optVal);
+    while (stream.good())
+      {
+      std::string token;
+      std::getline(stream, token, ',');
+      vals.push_back(trim(token));
+      }
+    }
+  else
+    {
+    vals.push_back(optVal);
+    }
+  this->m_options[optName] = vals;
+}
+
+/// Remove all options recorded by setOption.
+void RemusRPCWorker::clearOptions()
+{
+  this->m_options.clear();
 }
 
 /**\brief Evalate a JSON-RPC 2.0 request encapsulated in a Remus job.
@@ -124,20 +212,15 @@ void RemusRPCWorker::processJob(
           }
         else
           {
-          RemusModelBridgeType remusType =
-            RemusRemoteBridge::findAvailableType(bname->valuestring);
-          if (remusType)
-            {
-            smtk::model::StringList bridgeFileTypes =
-              this->m_modelMgr->bridgeFileTypes(remusType->bridgeName());
-            cJSON_AddItemToObject(result, "result",
-              smtk::io::ExportJSON::createStringArray(bridgeFileTypes));
-            }
+          // FIXME: Need to extract kernel, engine from bname?
+          smtk::model::StringList bridgeFileTypes =
+            BridgeRegistrar::bridgeFileTypes(bname->valuestring);
+          cJSON_AddItemToObject(result, "result",
+            smtk::io::ExportJSON::createStringArray(bridgeFileTypes));
           }
         }
       else if (methStr == "create-bridge")
         {
-        RemusModelBridgeType remusType;
         smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
         std::set<std::string> bridgeSet(bridgeNames.begin(), bridgeNames.end());
         cJSON* bname;
@@ -147,8 +230,7 @@ void RemusRPCWorker::processJob(
           bname->type != cJSON_String ||
           !bname->valuestring ||
           !bname->valuestring[0] ||
-          !(remusType = RemusRemoteBridge::findAvailableType(bname->valuestring)) ||
-          bridgeSet.find(remusType->bridgeName()) == bridgeSet.end())
+          bridgeSet.find(bname->valuestring) == bridgeSet.end())
           {
           this->generateError(result,
             "Parameters not passed or bridge-name not specified/invalid.",
@@ -156,9 +238,27 @@ void RemusRPCWorker::processJob(
           }
         else
           {
-          remusType->bridgePrep();
+          // Pass options such as engine name (if any) to static setup
+          smtk::model::BridgeStaticSetup bsetup =
+            smtk::model::BridgeRegistrar::bridgeStaticSetup(bname->valuestring);
+          cJSON* ename;
+          if (
+            bsetup &&
+            (ename = cJSON_GetObjectItem(param, "engine-name")) &&
+            ename->type == cJSON_String &&
+            !ename->valuestring && !ename->valuestring[0])
+            {
+            std::string defEngine = ename->valuestring;
+            if (!defEngine.empty())
+              {
+              StringList elist;
+              elist.push_back(ename->valuestring);
+              bsetup("engine", elist);
+              }
+            }
+
           smtk::model::BridgeConstructor bctor =
-            smtk::model::BridgeRegistrar::bridgeConstructor(remusType->bridgeName());
+            smtk::model::BridgeRegistrar::bridgeConstructor(bname->valuestring);
           if (!bctor)
             {
             this->generateError(result,
@@ -179,6 +279,7 @@ void RemusRPCWorker::processJob(
               smtk::io::ExportJSON::forManagerBridgeSession(
                 bridge->sessionId(), sess, this->m_modelMgr);
               cJSON_AddItemToObject(result, "result", sess);
+#if 0
               // Now redefine our worker to be a new one whose
               // requirements include a tag for this bridge session.
               // That way it can be singled out by the client that
@@ -198,6 +299,7 @@ void RemusRPCWorker::processJob(
                 << bridge->sessionId().toString() << ".\n";
               //cJSON_AddItemToObject(result, "result",
               //  cJSON_CreateString(bridge->sessionId().toString().c_str()));
+#endif
               }
             }
           }
@@ -278,6 +380,7 @@ void RemusRPCWorker::processJob(
           else
             {
             this->m_modelMgr->unregisterBridgeSession(bridge);
+#if 0
             // Remove tag from worker requirements.
             r = make_JobRequirements(
               r.meshTypes(), r.workerName(), r.hasRequirements() ? r.requirements() : "");
@@ -286,6 +389,7 @@ void RemusRPCWorker::processJob(
               << "Redefining worker. "
               << "Requirements now untagged, removed "
               << bridge->sessionId().toString() << ".\n";
+#endif // 0
             }
           }
         }
@@ -307,7 +411,7 @@ void RemusRPCWorker::processJob(
     remus::proto::make_JobResult(
       jd.id(), response, remus::common::ContentFormat::JSON);
   //std::cout << "Response is " << response << "\n";
-  w->returnMeshResults(jobResult);
+  w->returnResult(jobResult);
   free(response);
   if (swapWorker)
     {

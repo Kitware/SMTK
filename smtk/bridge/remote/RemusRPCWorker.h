@@ -16,6 +16,8 @@
 #include "remus/worker/Worker.h"
 #include "remus/worker/Job.h"
 
+#include "smtk/model/StringData.h"
+
 struct cJSON;
 
 namespace smtk {
@@ -44,6 +46,11 @@ public:
   smtkCreateMacro(RemusRPCWorker);
   virtual ~RemusRPCWorker();
 
+  virtual void setOption(
+    const std::string& optName,
+    const std::string& optVal);
+  virtual void clearOptions();
+
   void processJob(
     remus::worker::Worker*& w,
     remus::worker::Job& jd,
@@ -55,6 +62,7 @@ protected:
   void generateError(cJSON* err, const std::string& errMsg, const std::string& reqId);
 
   smtk::model::ManagerPtr m_modelMgr;
+  smtk::model::StringData m_options;
 
 private:
   RemusRPCWorker(const RemusRPCWorker&); // Not implemented.

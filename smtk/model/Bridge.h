@@ -80,32 +80,32 @@ typedef unsigned long BridgedInfoBits;
   *
   * \a Comp      - A "short" name for the bridge. This is used as part of several function
   *                names, so it must be a valid variable name and should *not* be in quotes.
-  * \a FileTypes - A pointer to a NULL-terminated array of strings containing file types
-  *                that the bridge supports. Each type may be followed by a parentetical
-  *                description of the file type, e.g., { "*.json (Native SMTK model)", NULL }.
+  * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
+  *                the bridge's capabilities, including file types that the bridge supports.
+  *                The format of the JSON structure is documented in the SMTK User's Guide.
+  * \a Setup     - A function to provide configuration before bridge construction.
+  *                See the documentation for BridgeStaticSetup and BridgeHasNoStaticSetup.
   * \a Cls       - The name of the bridge class. The class must have a static method named
   *                "create" that constructs and instance and returns a shared pointer to it.
   */
-#define smtkImplementsModelingKernel(Comp, FileTypes, Cls) \
+#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls) \
   /* Adapt create() to return a base-class pointer */ \
   static smtk::model::BridgePtr baseCreate() { \
     return Cls ::create(); \
   } \
   /* Implement autoinit methods */ \
   void smtk_##Comp##_bridge_AutoInit_Construct() { \
-    std::vector<std::string> fileTypes; \
-    for (const char** ft = FileTypes; *ft; ++ft) \
-      if (*ft[0]) \
-        fileTypes.push_back(*ft); \
     smtk::model::BridgeRegistrar::registerBridge( \
       #Comp, /* Can't rely on bridgeName to be initialized yet */ \
-      fileTypes, \
+      Tags, \
+      Setup, \
       baseCreate); \
   } \
   void smtk_##Comp##_bridge_AutoInit_Destruct() { \
     smtk::model::BridgeRegistrar::registerBridge( \
       Cls ::bridgeName, \
-      std::vector<std::string>(), \
+      std::string(), \
+      NULL, \
       NULL); \
   } \
   /**\brief Declare the component name */ \
@@ -209,8 +209,8 @@ public: \
   * The latter Definition instances are kept inside an attribute system
   * owned by the Bridge; you can access it with smtk::Bridge::operatorSystem().
   *
-  * Register an instance of a Bridge subclass to a
-  * model with Manager::bridgeModel(). Then, when an
+  * Instances of Bridge subclasses should be registered with a
+  * model using Manager::bridgeModel(). Then, when an
   * entity cannot be resolved from a UUID created by
   * the bridge, the \a transcribe method will be invoked
   * to request that the bridge add an entry.
@@ -223,6 +223,7 @@ public: \
   * is only partial information in Manager.
   *
   * \sa smtk::model::BridgedInformation smtk::model::Operator
+  * \sa smtkDeclareModelingKernel smtkImplementsModelingKernel
   */
 class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 {

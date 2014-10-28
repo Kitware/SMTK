@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/bridge/cgm/Bridge.h"
+#include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
 #include "smtk/model/Cursor.h"
@@ -56,6 +57,10 @@ namespace smtk {
 Bridge::Bridge()
 {
   this->initializeOperatorSystem(Bridge::s_operators);
+  if (!Engines::areInitialized())
+    {
+    Engines::isInitialized("");
+    }
 }
 
 /// Virtual destructor. Here because Bridge overrides virtual methods from Bridge.
@@ -87,6 +92,32 @@ bool Bridge::addManagerEntityToCGM(const smtk::model::Cursor& ent)
 {
   (void)ent;
   return true;
+}
+
+/**\brief Provide generic setup interface.
+  *
+  * Currently this only recognizes the "engine" keyword.
+  * When passed \a optName "engine", the first entry in \a optVal
+  * should be a valid modeling engine for CGM.
+  */
+int Bridge::staticSetup(const std::string& optName, const smtk::model::StringList& optVal)
+{
+  if (optName == "engine" && !optVal.empty())
+    {
+    return Engines::setDefault(optVal[0]) ? 1 : 0;
+    }
+  return 0;
+}
+
+/**\brief Accept post-construction configuration options.
+  *
+  * Currently CGM does not support any options.
+  */
+int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
+{
+  (void)optName;
+  (void)optVal;
+  return 0;
 }
 
 /**\brief Populate records for \a cursor that reflect the CGM \a entity.
@@ -612,21 +643,9 @@ void Bridge::colorPropFromIndex(
     }
 }
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk
 
-static const char* CGMFileTypes[] = {
-  ".sat (Standard ACIS Text)",
-  ".step (Standard for the Exchange of Product model data)",
-  ".stp (Standard for the Exchange of Product model data)",
-  ".iges (Initial Graphics Exchange Specification)",
-  ".igs (Initial Graphics Exchange Specification)",
-  ".brep (OpenCascade Boundary Representation)",
-  ".occ (OpenCascade Boundary Representation)",
-  ".stl (STereoLithography file)",
-  ".off (Object File Format)",
-  ".cholla (Cholla facet file)",
-  NULL
-};
-smtkImplementsModelingKernel(cgm,CGMFileTypes,smtk::bridge::cgm::Bridge);
+#include "smtk/bridge/cgm/Bridge_json.h" // For Bridge_json
+smtkImplementsModelingKernel(cgm,Bridge_json,smtk::bridge::cgm::Bridge::staticSetup,smtk::bridge::cgm::Bridge);

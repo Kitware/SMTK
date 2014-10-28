@@ -129,8 +129,9 @@ OperatorResult DefaultBridge::operateDelegate(RemoteOperatorPtr oper)
   } // namespace model
 } // namespace smtk
 
-static const char* DefaultBridgeFileTypes[] = {
-  ".json",
-  NULL
-};
-smtkImplementsModelingKernel(native,DefaultBridgeFileTypes,smtk::model::DefaultBridge);
+#include "smtk/model/DefaultBridge_json.h" // For DefaultBridge_json
+smtkImplementsModelingKernel(
+  native,
+  DefaultBridge_json,
+  smtk::model::BridgeHasNoStaticSetup,
+  smtk::model::DefaultBridge);

@@ -85,7 +85,7 @@ However, there are cursor-like classes, all derived from :smtk:`smtk::model::Cur
 that provide easier access to model traversal.
 These classes are organized like so:
 
-.. figure:: figures/cursor-classes-with-inheritance.svg
+.. findfigure:: cursor-classes-with-inheritance.*
 
    Each of the orange, green, purple, and red words is the name of a cursor class.
    The black arrows show relationships between instances of them (for which the
@@ -116,6 +116,56 @@ When a model operation is performed,
 — depending on how much information the modeling kernel provides about affected model entities —
 entities in SMTK’s storage are partially or totally marked as dirty and retranscribed on demand.
 
+
+Registration and initialization of Bridges and Operators
+--------------------------------------------------------
+
+Because bridges usually back SMTK model entities with representations in a solid
+modeling kernel, constructing a bridge (and thus initializing a modeling kernel)
+can be an expensive operation.
+This expense is even higher if the actual bridge must live in a separate process
+or even possibly on a remote machine.
+Because applications need to be able to discover what bridges are available and
+provide enough information to users to make an informed decision about which one
+to use, metadata on available bridges is stored in the model manager to avoid
+the overhead of constructing an instance of each available bridge type.
+
+There are two ways for bridge metadata to get registered with the model manager:
+
+* via static initialization at link time
+  (using the :smtk:`smtkImplementsModelingKernel` macro),
+* via dynamic registration at run time
+  (using the :smtk:`BridgeRegistrar::registerBridge` method).
+
+This is further complicated by the fact that Operator subclasses need to
+be registered with particular Bridge subclasses — and this registration may also
+occur at link time (so that developers can concisely specify the Operator-Bridge
+association as part of the Operator's implementation) or at run time (so that
+composite operators such as macros can be created on the fly; and so that
+modeling kernels that provide programmatic access to their operators can have
+their operators enumerated in SMTK at run time).
+
+Finally, because bridges and their operators are maintained in separate libraries
+and static initialization is very platform-dependent, some extra work may be
+required in order to ensure that statically-registered bridges have had a chance
+to declare themselves before applications query SMTK for a list of bridges.
+By placing the :smtk:`smtkComponentInitMacro` in your application's
+main source file:
+
+.. highlight:: c++
+.. literalinclude:: ../../smtk/bridge/remote/smtk-remote-model.cxx
+  :start-after: // ++ UserGuide/Model/1 ++
+  :end-before: // -- UserGuide/Model/1 --
+  :linenos:
+
+you can ensure that the named component (the CGM bridge in this example) has
+its initializer called at the same time that static variables for your application
+are initialized — even on platforms that perform lazy dynamic linking or provide
+SMTK as static libraries.
+Note that you do **not** need to include any header files declaring the components
+you wish initialized; the smtkComponentInitMacro declares a global C function that
+each component should provide.
+
 Remote models
 =============
 
@@ -136,7 +186,7 @@ when asked for an operator by name;
 the RemoteOperator class delegates its ableToOperate and operate methods
 to the DefaultBridge instance which instantiated it.
 
-.. figure:: figures/forwarding-bridge.svg
+.. findfigure:: forwarding-bridge.*
 
    The CMB client-server model uses SMTK's RemoteOperator and DefaultBridge classes to
    forward operations from the client to the server (and results back to the client).

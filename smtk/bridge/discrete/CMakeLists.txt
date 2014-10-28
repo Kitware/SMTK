@@ -100,6 +100,9 @@ set(discreteBridgeHeaders
   SplitFaceOperator.h
 )
 
+include(SMTKBridgeJSON)
+smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" discreteBridgeJSON)
+
 include(SMTKOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXML)

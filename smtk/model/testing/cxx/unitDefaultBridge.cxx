@@ -191,10 +191,11 @@ protected:
     return localResult;
     }
 };
-const char* noFileTypes[] = {
-  NULL
-};
-smtkImplementsModelingKernel(forwarding, noFileTypes, TestForwardingBridge);
+smtkImplementsModelingKernel(
+  forwarding,
+  "{\"kernel\":\"test-forwarding\", \"engines\":[]}",
+  BridgeHasNoStaticSetup,
+  TestForwardingBridge);
 
 class TestForwardingOperator : public Operator
 {

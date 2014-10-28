@@ -15,7 +15,7 @@
 #include "CubitDefines.h"
 #include "CubitGeomConfigure.h"
 
-#include "smtk/options.h"
+#include "smtk/Options.h"
 #include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/common/UUIDGenerator.h"
 

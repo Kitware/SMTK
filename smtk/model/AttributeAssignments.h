@@ -10,7 +10,7 @@
 #ifndef __smtk_model_AttributeAssignments_h
 #define __smtk_model_AttributeAssignments_h
 
-#include "smtk/options.h" // for SMTK_HASH_STORAGE
+#include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 
 #include "smtk/common/UUID.h"

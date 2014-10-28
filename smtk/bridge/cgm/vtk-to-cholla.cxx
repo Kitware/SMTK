@@ -15,7 +15,7 @@
 #include "vtkPointData.h"
 #include "vtkXMLPolyDataReader.h"
 
-#include "smtk/options.h" // for CGM_HAVE_VERSION_H
+#include "smtk/Options.h" // for CGM_HAVE_VERSION_H
 
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push

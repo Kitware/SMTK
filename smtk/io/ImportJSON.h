@@ -15,6 +15,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/model/StringData.h"
+
 struct cJSON;
 
 namespace smtk {
@@ -43,6 +45,10 @@ public:
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
   static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::attribute::System* opSys);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
+
+  // Mid-level helpers:
+  static std::string bridgeNameFromTagData(cJSON* tagData);
+  static smtk::model::StringList bridgeFileTypesFromTagData(cJSON* tagData);
 
   // Low-level helpers:
   static int getUUIDArrayFromJSON(cJSON* uidRec, std::vector<smtk::common::UUID>& uids);

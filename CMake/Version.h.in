@@ -1,0 +1,54 @@
+#ifndef __smtk_common_Version_h
+#define __smtk_common_Version_h
+
+#include "smtk/SMTKCoreExports.h"
+
+#include <string>
+
+/*! \file
+ * Both preprocessor macros and functions are available so
+ * that access is available at compile time and at run
+ * time, even from within wrapped languages like Python.
+ */
+
+/// Version number as a string.
+#define SMTK_VERSION "@SMTK_VERSION@"
+/// Integer-valued major version number
+#define SMTK_VERSION_MAJOR @SMTK_VERSION_MAJOR@
+/// Integer-valued minor version number
+#define SMTK_VERSION_MINOR @SMTK_VERSION_MINOR@
+/// Integer-valued patch version number
+#define SMTK_VERSION_PATCH @SMTK_VERSION_PATCH@
+
+namespace smtk {
+  namespace common {
+
+/// Run-time access to the version number in different formats
+class SMTKCORE_EXPORT Version
+{
+public:
+  /// Return the version number components as integers.
+  static int major() { return SMTK_VERSION_MAJOR; }
+
+  /// Return the version number components as integers.
+  static int minor() { return SMTK_VERSION_MINOR; }
+
+  /// Return the version number components as integers.
+  static int patch() { return SMTK_VERSION_PATCH; }
+
+  /// Return the full version number as a string.
+  static std::string number() { return SMTK_VERSION; }
+
+  /// Return the full version number encoded into a single integer.
+  static int combined()
+    { return combined(major(), minor(), patch()); }
+
+  /// Return an encoded version integer given integer components.
+  static int combined(int maj, int min, int pat)
+    { return pat + 1000 * (min + 100 * maj); }
+};
+
+  } // namespace common
+} // namespace smtk
+
+#endif // __smtk_common_Version_h

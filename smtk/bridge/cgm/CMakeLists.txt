@@ -9,6 +9,7 @@ set(cgmSrcs
   ImportSolid.cxx
   Operator.cxx
   ReadOperator.cxx
+  CreateSphereOperator.cxx
   TDUUID.cxx
 )
 
@@ -20,6 +21,7 @@ set(cgmHeaders
   ImportSolid.h
   Operator.h
   ReadOperator.h
+  CreateSphereOperator.h
   TDUUID.h
 )
 
@@ -50,12 +52,22 @@ endif()
 #install the library and exports the library when used from a build tree
 smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 
+# Normally we would uncomment this line:
+#    smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" cgmBridgeJSON)
+# to generate a header file containing the JSON string defining
+# tags for the CGM bridge. However, because we wish to omit portions
+# of the JSON depending on configuration options, a hand-edited header
+# is included in the source tree instead. The other option would be to
+# use nodeJS or Python to conditionally create the JSON and/or header.
+# But this is simpler.
+
 # Operators which have XML descriptions in separate files
 # need to have it encoded as a string in a header.
 # We do not need the path to the generated header (appended
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
 
 # Install the headers
 smtk_public_headers(${cgmHeaders})

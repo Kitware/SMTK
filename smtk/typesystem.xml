@@ -5,10 +5,13 @@
 
   <!-- Ignore some namespaces -->
   <suppress-warning text="namespace 'boost' does not have a type entry"/>
-  <suppress-warning text="namespace 'cgmsmtk' does not have a type entry"/>
+  <suppress-warning text="namespace 'cgm' does not have a type entry"/>
   <suppress-warning text="namespace 'google' does not have a type entry"/>
   <suppress-warning text="namespace 'mpl_' does not have a type entry"/>
   <suppress-warning text="namespace 'pugi' does not have a type entry"/>
+  <suppress-warning text="namespace 'remote' does not have a type entry"/>
+	<suppress-warning text="namespace 'smtk::bridge' does not have a type entry"/>
+	<suppress-warning text="namespace 'smtk::bridge::remote' does not have a type entry"/>
 	<suppress-warning text="namespace 'smtk::internal' does not have a type entry"/>
   <suppress-warning text="namespace 'std' does not have a type entry"/>
 
@@ -83,11 +86,15 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelOperators', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelWorker', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeNameFromTagData', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::createRPCRequest', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->

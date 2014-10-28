@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_options_h
-#define __smtk_options_h
+#ifndef __smtk_Options_h
+#define __smtk_Options_h
 
 // Compile-time options chosen for this build of SMTK.
 
@@ -27,7 +27,10 @@
 // Does CGM provide cgm_version.h (true for v14+, false otherwise).
 #cmakedefine CGM_HAVE_VERSION_H
 
+// Was SMTK built with Remus? If true, SMTKRemote library will exist.
+#cmakedefine SMTK_ENABLE_REMUS
+
 // Should sparse_hash_map be used (instead of std::map) for primary storage?
 #cmakedefine SMTK_HASH_STORAGE
 
-#endif // __smtk_options_h
+#endif // __smtk_Options_h

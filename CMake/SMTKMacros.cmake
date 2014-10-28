@@ -103,6 +103,7 @@ function(smtk_prepend_string prefix result)
 endfunction(smtk_prepend_string)
 
 include(SMTKOperatorXML)
+include(SMTKBridgeJSON)
 
 # Builds source groups for the smtk files so that they show up nicely in
 # Visual Studio.

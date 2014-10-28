@@ -10,6 +10,8 @@
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
+#include "smtk/AutoInit.h"
+
 #include "smtk/model/Manager.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -21,20 +23,42 @@
 using namespace smtk::model;
 using namespace smtk::bridge::remote;
 
+#ifdef SMTK_BUILD_CGM
+smtkComponentInitMacro(smtk_cgm_bridge);
+#endif
+
 int main(int argc, char* argv[])
 {
-  if (argc < 4)
+  if (argc < 3)
+    {
+    std::cout
+      << "Usage:\n"
+      << "  " << argv[0] << " filename hint [remusHost [remusPort]]\n"
+      << "where\n"
+      << "  filename     is the path to a model file to read.\n"
+      << "  hint         is the name of an SMTK bridge or worker.\n"
+      << "  remusHost    is either \"local\" or a hostname where a\n"
+      << "               remus server is running. \"local\" is default.\n"
+      << "  remusPort    is the port number of the remus server.\n"
+      << "               The default port is 50505.\n"
+      ;
     return 1;
+    }
 
   std::string fileName(argv[1]);
-  std::string bridgeName(argv[2]);
-  std::string hostname(argv[3]);
+  std::string bridgeName(argc > 2 ? argv[2] : "");
+  std::string hostname(argc > 3 ? argv[3] : "local");
   int port(argc > 4 ? atoi(argv[4]) : 50505);
 
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
+  bconn->addSearchDir("/usr/local/var/smtk/workers");
 
-  bool didConnect = bconn->connectToServer(hostname, port);
+  bool didConnect = true;
+  if (hostname != "local")
+    didConnect = bconn->connectToServer(hostname, port);
+  else
+    didConnect = bconn->connectToServer();
   if (!didConnect)
     {
     std::cerr << "Could not connect to tcp://" << hostname << ":" << port << "\n";

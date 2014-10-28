@@ -3,12 +3,14 @@ set(RemoteLibSrcs
   RemusBridgeConnection.cxx
   RemusBridgeConnections.cxx
   RemusRemoteBridge.cxx
+  RemusStaticBridgeInfo.cxx
 )
 
 set(RemoteLibHeaders
   RemusBridgeConnection.h
   RemusBridgeConnections.h
   RemusRemoteBridge.h
+  RemusStaticBridgeInfo.h
 )
 
 add_library(SMTKRemote ${RemoteLibSrcs})
@@ -23,6 +25,7 @@ target_link_libraries(SMTKRemote
   LINK_PRIVATE
     RemusCommon
     RemusClient
+    RemusServer
   )
 
 target_include_directories(SMTKRemote
@@ -53,6 +56,7 @@ target_link_libraries(smtk-model-server
   SMTKCore
   RemusCommon
   RemusServer
+  ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-model-server PRIVATE ${REMUS_INCLUDE_DIRS})
 
@@ -69,11 +73,16 @@ target_link_libraries(smtk-remote-model
   RemusProto
   RemusClient
   RemusWorker
+  ${Boost_LIBRARIES}
 )
 target_include_directories(smtk-remote-model PRIVATE ${REMUS_INCLUDE_DIRS})
 if (SMTK_BUILD_CGM)
   target_link_libraries(smtk-remote-model cgmSMTK)
   target_include_directories(smtk-remote-model PRIVATE ${CGM_INCLUDE_DIRS})
+endif()
+
+if (SMTK_BUILD_DISCRETE_BRIDGE)
+  target_link_libraries(smtk-remote-model smtkDiscreteBridge)
 endif()
 
 if (SMTK_ENABLE_TESTING)

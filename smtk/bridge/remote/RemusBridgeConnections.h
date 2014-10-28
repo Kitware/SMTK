@@ -41,7 +41,8 @@ public:
   smtkCreateMacro(RemusBridgeConnections);
   ~RemusBridgeConnections();
 
-  smtk::shared_ptr<RemusBridgeConnection> connectToServer(std::string const& host = std::string(), int port = -1);
+  smtk::shared_ptr<RemusBridgeConnection> connectToServer(
+    std::string const& host = std::string(), int port = -1);
 
 protected:
   RemusBridgeConnections();

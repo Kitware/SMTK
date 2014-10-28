@@ -127,6 +127,7 @@ public:
     vtkObject* caller, unsigned long eventId, void* callData)
     {
     (void)eventId;
+    (void)callData;
     smtk::common::UUID uid = bridge->findOrSetEntityUUID(vtkInformation::SafeDownCast(caller));
     vtkModelItem* item = bridge->entityForUUID(uid);
     std::cout << "Item " << item << " deleted. Was " << uid << "\n";
@@ -1002,7 +1003,7 @@ smtk::model::Loop Bridge::addLoopToManager(
     int faceUseOrientation = -1;
     vtkModelFaceUse* refFaceUse = locateLoopInFace(refLoop, faceUseOrientation, refLoopParent);
     if (!refFaceUse || faceUseOrientation < 0) return smtk::model::Loop();
-    smtk::common::UUID fuid = this->findOrSetEntityUUID(refFaceUse);
+    //smtk::common::UUID fuid = this->findOrSetEntityUUID(refFaceUse);
     smtk::model::FaceUse faceUse = this->addFaceUseToManager(fid, refFaceUse, manager, 0);
     smtk::model::Loop loop;
     if (refLoopParent)
@@ -1182,15 +1183,14 @@ smtk::model::Vertex Bridge::addVertexToManager(
 
     } // namespace discrete
   } // namespace bridge
-
 } // namespace smtk
 
-static const char* DiscreteFileTypes[] = {
-  ".cmb (Conceptual Model Builder)",
-  NULL
-};
-
-smtkImplementsModelingKernel(discrete,DiscreteFileTypes,smtk::bridge::discrete::Bridge);
+#include "smtk/bridge/discrete/Bridge_json.h"
+smtkImplementsModelingKernel(
+  discrete,
+  Bridge_json,
+  BridgeHasNoStaticSetup,
+  smtk::bridge::discrete::Bridge);
 
 // Force these operators to be registered whenever the bridge is used:
 smtkComponentInitMacro(smtk_discrete_read_operator);

@@ -1,0 +1,33 @@
+{
+  "kernel": "cgm",
+  "engines": [
+    {
+      "name": "ACIS",
+      "filetypes": [
+        ".iges (Initial Graphics Exchange Specification)",
+        ".igs (Initial Graphics Exchange Specification)",
+        ".sat (Standard ACIS Text)",
+        ".sab (Standard ACIS Binary)"
+      ]
+    },
+    {
+      "name": "OpenCascade",
+      "filetypes": [
+        ".brep (OpenCascade Boundary Representation)",
+        ".occ (OpenCascade Boundary Representation)",
+        ".iges (Initial Graphics Exchange Specification)",
+        ".igs (Initial Graphics Exchange Specification)",
+        ".step (Standard for the Exchange of Product model data)",
+        ".stp (Standard for the Exchange of Product model data)",
+        ".stl (STereoLithography file)"
+      ]
+    },
+    {
+      "name": "Cholla",
+      "filetypes": [
+        ".off (Object File Format)",
+        ".cholla (Cholla facet file)"
+      ]
+    }
+  ]
+}
