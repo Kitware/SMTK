@@ -10,7 +10,7 @@
 #ifndef __smtk_model_BRepModel_h
 #define __smtk_model_BRepModel_h
 
-#include "smtk/options.h" // for SMTK_HASH_STORAGE
+#include "smtk/Options.h" // for SMTK_HASH_STORAGE
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 #include "smtk/SystemConfig.h"
