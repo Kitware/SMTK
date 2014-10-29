@@ -48,6 +48,7 @@ and installed SMTK according to these instructions.
 
    attribute/index.rst
    model.rst
+   administration.rst
    contributing.rst
 
 .. role:: cxx(code)

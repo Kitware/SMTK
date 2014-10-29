@@ -30,7 +30,7 @@ BridgeConstructors* BridgeRegistrar::s_bridges(bool del)
     {
     if (bridges)
       {
-      std::cout << "Deleting bridge list " << bridges << " (" << &bridges << ")" << "\n";
+      //std::cout << "Deleting bridge list " << bridges << " (" << &bridges << ")" << "\n";
       delete bridges;
       bridges = NULL;
       }
@@ -41,7 +41,7 @@ BridgeConstructors* BridgeRegistrar::s_bridges(bool del)
       {
       bridges = new BridgeConstructors();
       atexit(cleanupBridges);
-      std::cout << "Allocating bridge list " << bridges << " (" << &bridges << ")" << "\n";
+      //std::cout << "Allocating bridge list " << bridges << " (" << &bridges << ")" << "\n";
       }
     }
   return bridges;
@@ -191,13 +191,13 @@ bool BridgeRegistrar::registerBridge(
     {
     StaticBridgeInfo entry(bname, btags, bsetup, bctor);
     (*s_bridges())[bname] = entry;
-    std::cout << "Adding bridge " << bname << "\n";
+    //std::cout << "Adding bridge " << bname << "\n";
     return true;
     }
   else if (!bname.empty())
     { // unregister the bridge of the given name.
     s_bridges()->erase(bname);
-    std::cout << "Removing bridge " << bname << "\n";
+    //std::cout << "Removing bridge " << bname << "\n";
     // FIXME: We should ensure that no registered Bridge sessions are of type bname.
     //        Presumably, by deleting all such sessions and removing their entities
     //        from storage.

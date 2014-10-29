@@ -64,7 +64,7 @@ public:
   virtual ~RemusBridgeConnection();
 
   void addSearchDir(const std::string& searchDir);
-  void clearSearchDirs();
+  void clearSearchDirs(bool clearDefaultsToo = false);
   bool connectToServer(
     const std::string& hostname = "local",
     int port = remus::SERVER_CLIENT_PORT);

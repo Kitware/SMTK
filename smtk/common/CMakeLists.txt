@@ -1,6 +1,7 @@
 # set up sources to build
 set(commonSrcs
   Environment.cxx
+  Paths.cxx
   Resource.cxx
   ResourceSet.cxx
   UUID.cxx
@@ -9,11 +10,25 @@ set(commonSrcs
 
 set(commonHeaders
   Environment.h
+  Paths.h
   Resource.h
   ResourceSet.h
   UUID.h
   UUIDGenerator.h
 )
+
+if (APPLE)
+  set(commonSrcs ${commonSrcs} PathsHelperMacOSX.mm)
+  set(commonHeaders ${commonHeaders} PathsHelperMacOSX.h)
+endif()
+if (UNIX)
+  set(commonSrcs ${commonSrcs} PathsHelperUnix.cxx)
+  set(commonHeaders ${commonHeaders} PathsHelperUnix.h)
+endif()
+#if (WINDOWS)
+#  set(commonSrcs ${commonSrcs} PathsHelperWindows.cxx)
+#  set(commonHeaders ${commonHeaders} PathsHelperWindows.h)
+#endif()
 
 # Generate the version header using CMake variables.
 configure_file(

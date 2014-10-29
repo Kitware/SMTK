@@ -52,7 +52,10 @@ int main(int argc, char* argv[])
 
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
-  bconn->addSearchDir("/usr/local/var/smtk/workers");
+  // Do not search for workers in default paths; we don't want to pick things up by accident:
+  bconn->clearSearchDirs(true);
+  if (argc > 5)
+     bconn->addSearchDir(argv[5]);
 
   bool didConnect = true;
   if (hostname != "local")
