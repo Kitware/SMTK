@@ -1,3 +1,4 @@
+add_executable(attributeReaderTest attributeReaderTest.cxx)
 add_executable(basicAttributeTest basicAttributeTest.cxx)
 add_executable(basicAttributeDefinitionTest basicAttributeDefinitionTest.cxx)
 add_executable(basicAttributeDerivationTest basicAttributeDerivationTest.cxx)
@@ -11,6 +12,7 @@ add_executable(attributeReferencingTest attributeReferencingTest.cxx)
 add_executable(categoryTest categoryTest.cxx)
 add_executable(extensibleAttributeTest extensibleAttributeTest.cxx)
 
+target_link_libraries(attributeReaderTest SMTKCore)
 target_link_libraries(basicAttributeTest SMTKCore)
 target_link_libraries(basicAttributeDefinitionTest SMTKCore)
 target_link_libraries(basicAttributeDerivationTest SMTKCore)
@@ -48,4 +50,7 @@ add_test(extensibleAttributeTest
 ${EXECUTABLE_OUTPUT_PATH}/extensibleAttributeTest
    "${SMTK_DATA_DIR}/smtk/attribute/ExtensibleTemplateTest.xml"
    "${CMAKE_BINARY_DIR}/Testing/Temporary/ExtensibleTemplateTestResult.xml")
+add_test(attributeV1ReaderTest
+${EXECUTABLE_OUTPUT_PATH}/attributeReaderTest
+   "${SMTK_DATA_DIR}/smtk/attribute/HydraTemplateV1.sbt")
 endif()

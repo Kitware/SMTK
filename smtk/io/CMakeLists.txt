@@ -7,9 +7,8 @@ set(ioSrcs
   Logger.cxx
   ResourceSetReader.cxx
   ResourceSetWriter.cxx
-  #XmlDocV1Parser.cxx
+  XmlDocV1Parser.cxx
   XmlDocV2Parser.cxx
-  #XmlV1StringWriter.cxx
   XmlV2StringWriter.cxx
 )
 
