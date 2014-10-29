@@ -19,7 +19,7 @@
 
 #include "smtk/io/Logger.h"
 
-#include "smtk/attribute/Manager.h"
+#include "smtk/attribute/System.h"
 
 #include "smtk/model/EntityTypeBits.h"
 
@@ -59,10 +59,10 @@ namespace smtk
     class SMTKCORE_EXPORT XmlDocV1Parser
     {
     public:
-      XmlDocV1Parser(smtk::attribute::Manager &manager);
+      XmlDocV1Parser(smtk::attribute::System &asys);
       virtual ~XmlDocV1Parser();
-      void process(pugi::xml_document &doc);
-      void process(pugi::xml_node &rootNode);
+      virtual void process(pugi::xml_document &doc);
+      virtual void process(pugi::xml_node &rootNode);
       static void convertStringToXML(std::string &str);
       const smtk::io::Logger &messageLog() const
       {return this->m_logger;}
@@ -70,10 +70,14 @@ namespace smtk
       void setReportDuplicateDefinitionsAsErrors(bool mode)
       {this->m_reportAsError = mode;}
 
+      static bool canParse(pugi::xml_document &doc);
+      static bool canParse(pugi::xml_node &node);
+      static pugi::xml_node getRootNode(pugi::xml_document &doc);
+
     protected:
       void processAttributeInformation(pugi::xml_node &root);
       void processViews(pugi::xml_node &root);
-      void processModelInfo(pugi::xml_node &root);
+      virtual void processModelInfo(pugi::xml_node &root);
 
       void processDefinition(pugi::xml_node &defNode);
       void processAttribute(pugi::xml_node &attNode);
@@ -109,7 +113,7 @@ namespace smtk
                              smtk::attribute::StringItemPtr item);
       void processStringDef(pugi::xml_node &node,
                             smtk::attribute::StringItemDefinitionPtr idef);
-      void processModelEntityItem(pugi::xml_node &node,
+      virtual void processModelEntityItem(pugi::xml_node &node,
                              smtk::attribute::ModelEntityItemPtr item);
       void processModelEntityDef(pugi::xml_node &node,
                             smtk::attribute::ModelEntityItemDefinitionPtr idef);
@@ -139,10 +143,12 @@ namespace smtk
       bool getColor(pugi::xml_node &node, double color[3],
                     const std::string &colorName);
 
+      virtual smtk::common::UUID getAttributeID(pugi::xml_node &attNode);
+
       smtk::model::BitFlags decodeModelEntityMask(const std::string &s);
       static int decodeColorInfo(const std::string &s, double *color);
       bool m_reportAsError;
-      smtk::attribute::Manager &m_manager;
+      smtk::attribute::System &m_system;
       std::vector<ItemExpressionDefInfo> m_itemExpressionDefInfo;
       std::vector<AttRefDefInfo> m_attRefDefInfo;
       std::vector<ItemExpressionInfo> m_itemExpressionInfo;
