@@ -1,0 +1,28 @@
+<ServerManagerConfiguration>
+  <ProxyGroup name="sources">
+    <!-- ================================================================== -->
+    <SourceProxy name="CmbMoabSolidReader" class="vtkCmbMoabReader" label="CmbMoabSolidReader">
+      <Documentation
+         long_help="Read a Moab file."
+         short_help="Read a Moab file.">
+      </Documentation>
+      <StringVectorProperty
+            name="FileName"
+            animateable="0"
+            command="SetFileName"
+            number_of_elements="1">
+        <FileListDomain name="files"/>
+        <Documentation>
+          This property specifies the file name for the Moab reader.
+        </Documentation>
+      </StringVectorProperty>
+
+      <Hints>
+        <ReaderFactory extensions="h5m sat brep stp cub exo"
+                       file_description="Moab File Formats" />
+     </Hints>
+    </SourceProxy>
+    <!-- End CmbMoabSolidReader -->
+  </ProxyGroup>
+  <!-- End Filters Group -->
+</ServerManagerConfiguration>
