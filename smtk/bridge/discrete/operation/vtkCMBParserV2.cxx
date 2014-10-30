@@ -35,10 +35,9 @@
 #include "vtkSmartPointer.h"
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
+#include "ModelParserHelper.h"
 
 #include <map>
-#
-
 
 vtkStandardNewMacro(vtkCMBParserV2);
 
@@ -84,7 +83,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
 
   // next load in the model faces and add in the model face uses
   vtkIdTypeArray* ModelFaceRegions = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceRegionsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceRegionsString()));
   ModelEntities.resize(ModelFaceRegions->GetNumberOfTuples());
   // map from region id to vector of pair of model face and side (i.e. face use)
   std::map<vtkIdType, std::vector<std::pair<vtkDiscreteModelFace*, int> > > FacesOfRegion;
@@ -121,7 +120,7 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   CellToModelType faceToIds; //classification
   vtkIdTypeArray* CellClassification = this->NewIdTypeArray(
     MasterPoly->GetCellData()->GetArray(
-    vtkCMBParserBase::GetModelFaceTagName()));
+    ModelParserHelper::GetModelFaceTagName()));
   if(!CellClassification)
     {
     vtkErrorMacro("Cannot get cell classification information.");
@@ -185,16 +184,16 @@ bool vtkCMBParserV2::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   this->SetModelEntityData(MasterPoly, ModelEntities, "ModelRegion", Model);
 
   // next load in floating edges
-  if(MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetFloatingEdgesString()))
+  if(MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetFloatingEdgesString()))
     {
     vtkIdTypeArray* EdgeRegionlId = this->NewIdTypeArray(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetFloatingEdgesString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetFloatingEdgesString()));
     if(EdgeRegionlId)
       {
       vtkDoubleArray* endPoints =  vtkDoubleArray::SafeDownCast(
-        MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeVerticesString()));
+        MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeVerticesString()));
       vtkIntArray* lineSpacing = vtkIntArray::SafeDownCast(
-        MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetEdgeLineResolutionString()));
+        MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetEdgeLineResolutionString()));
       ModelEntities.resize(EdgeRegionlId->GetNumberOfTuples());
       double point1[3], point2[3];
       for(vtkIdType i=0;i<EdgeRegionlId->GetNumberOfTuples();i++)

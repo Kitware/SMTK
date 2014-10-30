@@ -38,6 +38,7 @@
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
+#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkCMBModelWriterV4);
 
@@ -78,11 +79,11 @@ void vtkCMBModelWriterV4::SetModelVertexData(vtkDiscreteModel* Model, vtkPolyDat
     }
   Vertices->Delete();
 
-  PointIdArray->SetName(vtkCMBParserBase::GetVertexPointIdString());
+  PointIdArray->SetName(ModelParserHelper::GetVertexPointIdString());
   Poly->GetFieldData()->AddArray(PointIdArray);
   PointIdArray->Delete();
 
-  LocationArray->SetName(vtkCMBParserBase::GetVertexLocationString());
+  LocationArray->SetName(ModelParserHelper::GetVertexLocationString());
   Poly->GetFieldData()->AddArray(LocationArray);
   LocationArray->Delete();
   this->SetModelEntityData(Poly, Entities, "ModelVertex");
@@ -131,15 +132,15 @@ void vtkCMBModelWriterV4::SetModelEdgeData(vtkDiscreteModel* Model, vtkPolyData*
     }
   Edges->Delete();
 
-  PointIdArray->SetName(vtkCMBParserBase::GetModelEdgeVerticesString());
+  PointIdArray->SetName(ModelParserHelper::GetModelEdgeVerticesString());
   Poly->GetFieldData()->AddArray(PointIdArray);
   PointIdArray->Delete();
 
-  EdgeRegionId->SetName(vtkCMBParserBase::GetFloatingEdgesString());
+  EdgeRegionId->SetName(ModelParserHelper::GetFloatingEdgesString());
   Poly->GetFieldData()->AddArray(EdgeRegionId);
   EdgeRegionId->Delete();
 
-  lineSpacing->SetName(vtkCMBParserBase::GetEdgeLineResolutionString());
+  lineSpacing->SetName(ModelParserHelper::GetEdgeLineResolutionString());
   Poly->GetFieldData()->AddArray(lineSpacing);
   lineSpacing->Delete();
 
@@ -201,19 +202,19 @@ void vtkCMBModelWriterV4::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
       }
     }
   Faces->Delete();
-  ModelFaceAdjacentRegionsId->SetName(vtkCMBParserBase::GetModelFaceRegionsString());
+  ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentRegionsId);
   ModelFaceAdjacentRegionsId->Delete();
 
-  ModelFaceAdjacentEdgesId->SetName(vtkCMBParserBase::GetModelFaceEdgesString());
+  ModelFaceAdjacentEdgesId->SetName(ModelParserHelper::GetModelFaceEdgesString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentEdgesId);
   ModelFaceAdjacentEdgesId->Delete();
 
-  ModelEdgeDirections->SetName(vtkCMBParserBase::GetModelEdgeDirectionsString());
+  ModelEdgeDirections->SetName(ModelParserHelper::GetModelEdgeDirectionsString());
   Poly->GetFieldData()->AddArray(ModelEdgeDirections);
   ModelEdgeDirections->Delete();
 
-  ModelFaceMaterialIds->SetName(vtkCMBParserBase::GetFaceMaterialIdString());
+  ModelFaceMaterialIds->SetName(ModelParserHelper::GetFaceMaterialIdString());
   Poly->GetFieldData()->AddArray(ModelFaceMaterialIds);
   ModelFaceMaterialIds->Delete();
 
