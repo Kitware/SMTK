@@ -92,14 +92,16 @@ namespace smtk
       const std::map<std::string, std::set<std::string> > &analyses() const
       {return this->m_analyses;}
 
+      std::size_t numberOfAdvanceLevels() const
+      {return this->m_advLevels.size();}
+#ifndef SHIBOKEN_SKIP
       void addAdvanceLevel(int level, std::string label, const double *l_color=0);
       const std::map<int, std::string> &advanceLevels() const
       {return this->m_advLevels;}
-      std::size_t numberOfAdvanceLevels() const
-      {return this->m_advLevels.size();}
       // the color is expected in the format of double[4] - rgba
       const double* advanceLevelColor(int level) const;
       void setAdvanceLevelColor(int level, const double *l_color);
+#endif
 
       // For Reader classes
       smtk::attribute::AttributePtr createAttribute(const std::string &name, const std::string &type,
