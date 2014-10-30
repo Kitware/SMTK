@@ -17,6 +17,7 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"

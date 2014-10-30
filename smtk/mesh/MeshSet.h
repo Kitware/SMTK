@@ -14,9 +14,9 @@
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/QueryTypes.h"
-#include "smtk/mesh/DimensionTypes.h"
 #include "smtk/mesh/TypeSet.h"
 
 namespace smtk {

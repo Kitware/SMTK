@@ -21,7 +21,7 @@
 namespace smtk {
 namespace mesh {
 
-typedef int CellSet;
+typedef int Points;
 typedef int PointSet;
 
 }

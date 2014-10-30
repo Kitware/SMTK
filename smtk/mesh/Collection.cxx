@@ -182,7 +182,9 @@ smtk::mesh::TypeSet Collection::associatedTypes( ) const
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( );
 }
 
 //----------------------------------------------------------------------------
@@ -240,19 +242,25 @@ smtk::mesh::MeshSet Collection::meshes( const std::string& name )
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( smtk::mesh::CellType cellType )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( cellType );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( smtk::mesh::CellTypes cellTypes )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( cellTypes );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::cells( smtk::mesh::DimensionType dim )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( dim );
 }
 
 //----------------------------------------------------------------------------
@@ -290,13 +298,17 @@ smtk::mesh::MeshSet Collection::findAssociatedMeshes( const smtk::model::EntityR
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref  )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( );
 }
 
 //----------------------------------------------------------------------------
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType )
 {
-  return smtk::mesh::CellSet();
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( );
 }
 
 
@@ -304,7 +316,9 @@ smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRe
 smtk::mesh::CellSet Collection::findAssociatedCells( const smtk::model::EntityRef& eref ,
                                                       smtk::mesh::DimensionType dim )
 {
-  return smtk::mesh::CellSet( );
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.cells( );
 }
 
 

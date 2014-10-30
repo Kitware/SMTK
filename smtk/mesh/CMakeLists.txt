@@ -1,7 +1,7 @@
 # set up sources to build
 set(meshSrcs
   # Cells.cxx
-  # CellSet.cxx
+  CellSet.cxx
   Collection.cxx
   Manager.cxx
   # Mesh.cxx
@@ -14,7 +14,7 @@ set(meshSrcs
 
 set(meshHeaders
   # Cells.h
-  # CellSet.h
+  CellSet.h
   CellTraits.h
   CellTypes.h
   DimensionTypes.h

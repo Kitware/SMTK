@@ -123,6 +123,106 @@ smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
   return result;
 }
 
+//----------------------------------------------------------------------------
+//get all cells held by this range
+inline
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
+{
+  // get all non-meshset entities in meshset, including in contained meshsets
+  typedef ::moab::Range::const_iterator iterator;
+  ::moab::Range entitiesCells;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_handle appends to the range given
+    iface->get_entities_by_handle(*i, entitiesCells, true);
+    }
+  return entitiesCells;
+}
+
+
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given cell type
+inline
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  smtk::mesh::CellType cellType,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+{
+  smtk::mesh::moab::EntityType moabCellType =
+                                  smtk::mesh::moab::smtkToMOABCell(cellType);
+
+  ::moab::Range entitiesCells;
+
+  // get all non-meshset entities in meshset of a given cell type
+  typedef ::moab::Range::const_iterator iterator;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_type appends to the range given
+    iface->get_entities_by_type(*i, moabCellType, entitiesCells, true);
+    }
+  return entitiesCells;
+}
+
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given cell type(s)
+inline
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  const smtk::mesh::CellTypes& cellTypes,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
+{
+  const std::size_t cellTypesToFind = cellTypes.count();
+  if( cellTypesToFind == cellTypes.size())
+    { //if all the cellTypes are enabled we should just use get_cells
+      //all() method can't be used as it was added in C++11
+    return get_cells( meshsets, iface);
+    }
+  else if(cellTypesToFind == 0)
+    {
+    return smtk::mesh::HandleRange();
+    }
+
+  //we now search from highest cell type to lowest cell type adding everything
+  //to the range. The reason for this is that ranges perform best when inserting
+  //from high to low values
+  ::moab::Range entitiesCells;
+  for(int i = (cellTypes.size() -1); i >= 0; --i )
+    {
+    //skip all cell types we don't have
+    if( !cellTypes[i] )
+      { continue; }
+
+    smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
+
+    ::moab::Range cellEnts = get_cells(meshsets, currentCellType, iface);
+
+    entitiesCells.insert(cellEnts.begin(), cellEnts.end());
+    }
+
+  return entitiesCells;
+}
+
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given dimension
+inline
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  smtk::mesh::DimensionType dim,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
+{
+  const int dimension = static_cast<int>(dim);
+
+  //get all non-meshset entities of a given dimension
+  typedef ::moab::Range::const_iterator iterator;
+  ::moab::Range entitiesCells;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_dimension appends to the range given
+    iface->get_entities_by_dimension(*i, dimension, entitiesCells, true);
+    }
+  return entitiesCells;
+}
 
 
 //----------------------------------------------------------------------------
@@ -161,7 +261,7 @@ smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
   smtk::mesh::CellTypes ctypes;
   if(numMeshes > 0)
     {
-    for(int i=0; i < ctypes.size(); ++i ) //need a way to iterate all the cell types
+    for(int i=0; i < ctypes.size(); ++i )
       {
       CellEnum ce = static_cast<CellEnum>(i);
       //now we need to convert from CellEnum to MoabType
