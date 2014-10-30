@@ -41,14 +41,6 @@ namespace smtk {
     namespace cgm {
 
 // local helper
-static bool hasEnding(const std::string& fullString, const std::string& ending)
-{
-  if (fullString.length() >= ending.length())
-    return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
-  else
-    return false;
-}
-
 bool CreateSphereOperator::ableToOperate()
 {
   return
@@ -73,7 +65,7 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
 
   //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   //std::cout << "Default modeler \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
-  CubitStatus s;
+  //CubitStatus s;
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);

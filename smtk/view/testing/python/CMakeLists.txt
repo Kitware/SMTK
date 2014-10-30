@@ -13,8 +13,8 @@ if( PYTHONINTERP_FOUND )
   else() #windows
     set(SHIBOKEN_SMTK_PYTHON "${CMAKE_BINARY_DIR};${SHIBOKEN_LIBRARY_PATH}")
   endif()
-  message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
-  message("${SHIBOKEN_LIBRARY_PATH}")
+  #message("${LIB_ENV_VAR}   PYTHONPATH=${SIBOKEN_SMTK_PYTHON}")
+  #message("${SHIBOKEN_LIBRARY_PATH}")
    add_test(basicViewWriterTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/basicViewWriterTest.py)
   set_tests_properties( basicViewWriterTestPy
                         PROPERTIES ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )
