@@ -1335,6 +1335,10 @@ void qtAttributeView::getAllDefinitions()
     this->qtBaseView::getDefinitions(attDef, this->Internals->AllDefs);
     }
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wshadow"
+#endif
   foreach (smtk::attribute::DefinitionPtr adef, this->Internals->AllDefs)
     {
     foreach(QString category, this->Internals->AttDefMap.keys())
@@ -1346,6 +1350,9 @@ void qtAttributeView::getAllDefinitions()
         }
       }
     }
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 }
 
 //----------------------------------------------------------------------------
