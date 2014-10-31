@@ -1,0 +1,12 @@
+{
+  "kernel": "vtk",
+  "engines": [
+    {
+      "name": "default",
+      "filetypes": [
+        ".vtu (VTK Unstructured Grid)",
+        ".vtk (VTK Legacy)"
+      ]
+    }
+  ]
+}

@@ -11,5 +11,6 @@ requiring much theory.
 .. toctree::
    :maxdepth: 2
 
+   add_a_bridge/index.rst
    implement_an_operator/index.rst
    python_first_steps/index.rst

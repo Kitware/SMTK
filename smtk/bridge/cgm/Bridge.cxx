@@ -318,7 +318,7 @@ smtk::model::BridgedInfoBits Bridge::addBodyToManager(
         RefEntity* child = children.get_and_step();
         smtk::model::Cursor childCursor(mutableCursor.manager(), TDUUID::ofEntity(child)->entityId());
         this->declareDanglingEntity(mutableCursor,
-          this->transcribeInternal(childCursor, smtk::model::BRIDGE_ENTITY_TYPE));
+          this->transcribeInternal(childCursor, requestedInfo)); //smtk::model::BRIDGE_ENTITY_TYPE));
         //std::cout << "  " << child << "   " << childCursor.entity() << "\n";
         if (!childCursor.entity().isNull())
           {
