@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef SHIBOKEN_SKIP
 #include "smtk/Options.h"
 #include "smtk/SharedPtr.h"
 
@@ -168,3 +169,4 @@ int main (int argc, char* argv[])
   server.waitForBrokeringToFinish();
   return valid ? 0 : 1;
 }
+#endif // SHIBOKEN_SKIP

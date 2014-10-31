@@ -75,7 +75,7 @@ import smtk
 _temp = __import__('cgmSMTKPython', globals(), locals(), [], -1)
 __import_shared_ptrs__()
 
-cgm = _temp.cgmsmtk.cgm
+cgm = _temp.cgm
 
 import inspect
 

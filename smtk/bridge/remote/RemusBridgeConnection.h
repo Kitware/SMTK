@@ -18,6 +18,7 @@
 
 #include "smtk/common/UUID.h"
 
+#ifndef SHIBOKEN_SKIP
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
 
@@ -26,6 +27,7 @@
 #include "remus/common/remusGlobals.h"
 
 #include "remus/proto/JobRequirements.h"
+#endif // SHIBOKEN_SKIP
 
 #include "cJSON.h"
 
@@ -65,6 +67,7 @@ public:
 
   void addSearchDir(const std::string& searchDir);
   void clearSearchDirs(bool clearDefaultsToo = false);
+#ifndef SHIBOKEN_SKIP
   bool connectToServer(
     const std::string& hostname = "local",
     int port = remus::SERVER_CLIENT_PORT);
@@ -123,6 +126,7 @@ protected:
   smtk::model::ManagerPtr m_modelMgr;
   std::set<std::string> m_remoteBridgeNames;
   std::map<smtk::common::UUID,std::string> m_remoteBridgeSessionIds;
+#endif // SHIBOKEN_SKIP
 };
 
     } // namespace remote

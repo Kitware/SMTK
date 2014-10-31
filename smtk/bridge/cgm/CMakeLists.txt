@@ -115,18 +115,12 @@ if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
       ${SMTK_SOURCE_DIR}/smtk
       ${SMTK_BINARY_DIR}/smtk
       ${CMAKE_CURRENT_BINARY_DIR}
-    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem_cgm.xml
+    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
     HEADERS ${cgmHeaders}
     DEPENDS SMTKCore
   )
   target_include_directories(cgmSMTKPython
     PRIVATE ${CGM_INCLUDE_DIRS})
-
-    configure_file(
-      "${CMAKE_CURRENT_SOURCE_DIR}/cgmsmtk.py"
-      "${SMTK_BINARY_DIR}/cgmsmtk.py"
-      @ONLY
-    )
 
   #todo we need to install this file in such a way that it can resolve
   #the location of shiboken, which is going to mean running fixup bundle

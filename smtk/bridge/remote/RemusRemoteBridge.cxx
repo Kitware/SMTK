@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 
@@ -321,3 +322,4 @@ smtkImplementsModelingKernel(
   "",
   smtk::model::BridgeHasNoStaticSetup,
   smtk::bridge::remote::RemusRemoteBridge);
+#endif // SHIBOKEN_SKIP

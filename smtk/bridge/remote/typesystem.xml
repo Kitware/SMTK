@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore methods that refer directly to pointers -->
+
+  <!-- ignore shared_from_this base class-->
+
+  <!-- Additional objects to be wrapped when building with Remus -->
+  <namespace-type name="smtk" generate="no">
+    <namespace-type name="bridge" generate="no">
+      <namespace-type name="remote" generate="yes">
+        <object-type name="RemusBridgeConnection">
+          <include file-name="smtk/bridge/remote/RemusridgeConnection.h" location="local"/>
+        </object-type>
+        <object-type name="RemusRemoteBridge">
+          <include file-name="smtk/bridge/remote/RemusRemoteBridge.h" location="local"/>
+        </object-type>
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtkremote::remote::RemusRemoteBridge"/>
+  <value-type template="smtk::shared_ptr" args="smtkremote::remote::RemusBridgeConnection"/>
+
+  <!-- Don't wrap methods that take pointers to Remus classes.
+       Shiboken improperly scopes classnames in argument
+       lists.
+  <rejection class="smtkremote::remote::Bridge" function-name="addGroupToManager"/>
+    -->
+
+  @EXTRA_OBJECTS@
+
+</typesystem>
