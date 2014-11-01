@@ -29,23 +29,23 @@ def runDoxygen(sourcfile, doxyfileIn, doxyfileOut):
   fetches tag files, XML files, and references remotely-generated
   documentation from an actual SMTK build.
   """
-  dx = open(os.path.join(sourcedir, doxyfileIn), 'r')
-  cfg = dx.read()
   import re
+  import subprocess
+  dxi = open(os.path.join(sourcedir, doxyfileIn), 'r')
+  cfg = dxi.read()
   srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
   bindir = srcdir
   c2 = re.sub('@SMTK_SOURCE_DIR@', srcdir, \
          re.sub('@SMTK_BINARY_DIR@', bindir, cfg))
-  doxname = os.path.join(sourcedir, doxyfileOut)
-  dox = open(doxname, 'w')
-  print >>dox, c2
-  dox.close()
+  doxname = os.path.abspath(os.path.join(sourcedir, doxyfileOut))
+  dxo = open(doxname, 'w')
+  print >>dxo, c2
+  dxo.close()
   try:
     os.mkdir('reference')
   except:
     pass
   os.chdir('reference')
-  import subprocess
   print 'Running Doxygen on %s' % doxyfileOut
   rcode = subprocess.call(('doxygen', doxname))
   print '   Doxygen returned %s' % rcode
