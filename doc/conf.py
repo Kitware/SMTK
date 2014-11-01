@@ -20,6 +20,43 @@ sys.path.append(os.getcwd()) # So that the findfigure package can be imported
 sourcedir = sys.argv[-2] # FIXME: Is the penultimate argument always the source dir?
 builddir = sys.argv[-1] # FIXME: Is the final argument always be the build dir?
 
+def runDoxygen(sourcfile, doxyfileIn, doxyfileOut):
+  """Run Doxygen as part of generating user documentation.
+
+  This is only meant to be used on readthedocs.org to generate
+  reference documentation for linking into the user's guide and
+  tutorial. It should eventually be replaced by something that
+  fetches tag files, XML files, and references remotely-generated
+  documentation from an actual SMTK build.
+  """
+  dx = open(os.path.join(sourcedir, doxyfileIn), 'r')
+  cfg = dx.read()
+  import re
+  srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
+  bindir = srcdir
+  c2 = re.sub('@SMTK_SOURCE_DIR@', srcdir, \
+         re.sub('@SMTK_BINARY_DIR@', bindir, cfg))
+  doxname = os.path.join(sourcedir, doxyfileOut)
+  dox = open(doxname, 'w')
+  print >>dox, c2
+  dox.close()
+  try:
+    os.mkdir('reference')
+  except:
+    pass
+  os.chdir('reference')
+  import subprocess
+  print 'Running Doxygen on %s' % doxyfileOut
+  rcode = subprocess.call(('doxygen', doxname))
+  print '   Doxygen returned %s' % rcode
+  os.chdir('..')
+
+if not readTheDocs:
+  # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
+  runDoxygen(sourcedir, 'sparsehash.doxyfile.in', 'sparsehash.doxyfile')
+  runDoxygen(sourcedir, 'cjson.doxyfile.in', 'cjson.doxyfile')
+  runDoxygen(sourcedir, 'smtk.doxyfile.in', 'smtk.doxyfile')
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
