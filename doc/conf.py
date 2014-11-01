@@ -37,12 +37,10 @@ def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
   srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
   bindir = srcdir
   refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
-  print '***\n\nConfiguring SMTK_BINARY_DIR to "%s"\n            refdir to "%s"\n\n***' % (rtdblddir, refdir)
   cfg2 = re.sub('@SMTK_SOURCE_DIR@', srcdir, \
-         re.sub('@SMTK_BINARY_DIR@', rtdblddir, cfg))
+         re.sub('@SMTK_BINARY_DIR@', os.path.abspath(rtdblddir), cfg))
   try:
     os.makedirs(refdir)
-    print '*** Successfully created refdir ***'
   except OSError as e:
     if 'File exists' in e:
       pass
@@ -191,9 +189,8 @@ refbase = os.path.join('..', '..', 'reference')
 if readTheDocs:
   # We store the reference documentation inside the user-doc build
   # directory on readthedocs so that it will get installed properly.
-  tagbase = os.path.join(builddir, 'doc', 'reference')
+  tagbase = os.path.abspath(os.path.join(builddir, 'doc', 'reference'))
   refbase = os.path.join('doc', 'reference')
-  print '***\n\nExpecting tag files in %s\n\n***' % tagbase
 doxylink = {
   'smtk' : (
     os.path.join(tagbase, 'smtk.tags'),
