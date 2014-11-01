@@ -20,7 +20,7 @@ sys.path.append(os.getcwd()) # So that the findfigure package can be imported
 sourcedir = sys.argv[-2] # FIXME: Is the penultimate argument always the source dir?
 builddir = sys.argv[-1] # FIXME: Is the final argument always be the build dir?
 
-def runDoxygen(sourcfile, builddir, doxyfileIn, doxyfileOut):
+def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
   """Run Doxygen as part of generating user documentation.
 
   This is only meant to be used on readthedocs.org to generate
@@ -31,16 +31,18 @@ def runDoxygen(sourcfile, builddir, doxyfileIn, doxyfileOut):
   """
   import re
   import subprocess
-  dxiname = open(os.path.join(sourcedir, doxyfileIn), 'r')
+  dxiname = open(os.path.join(rtdsrcdir, doxyfileIn), 'r')
   cfg = dxiname.read()
   orgdir = os.path.abspath(os.getcwd())
   srcdir = os.path.abspath(os.path.join(os.getcwd(), '..'))
   bindir = srcdir
-  refdir = os.path.abspath(os.path.join(builddir, 'doc', 'reference'))
+  refdir = os.path.abspath(os.path.join(rtdblddir, 'doc', 'reference'))
+  print '***\n\nConfiguring SMTK_BINARY_DIR to "%s"\n            refdir to "%s"\n\n***' % (rtdblddir, refdir)
   cfg2 = re.sub('@SMTK_SOURCE_DIR@', srcdir, \
-         re.sub('@SMTK_BINARY_DIR@', builddir, cfg))
+         re.sub('@SMTK_BINARY_DIR@', rtdblddir, cfg))
   try:
     os.makedirs(refdir)
+    print '*** Successfully created refdir ***'
   except OSError as e:
     if 'File exists' in e:
       pass
@@ -191,6 +193,7 @@ if readTheDocs:
   # directory on readthedocs so that it will get installed properly.
   tagbase = os.path.join(builddir, 'doc', 'reference')
   refbase = os.path.join('doc', 'reference')
+  print '***\n\nExpecting tag files in %s\n\n***' % tagbase
 doxylink = {
   'smtk' : (
     os.path.join(tagbase, 'smtk.tags'),
