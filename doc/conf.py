@@ -51,7 +51,7 @@ def runDoxygen(sourcfile, doxyfileIn, doxyfileOut):
   print '   Doxygen returned %s' % rcode
   os.chdir('..')
 
-if not readTheDocs:
+if readTheDocs:
   # Run doxygen ourselves on ReadTheDocs.org so that doxylinks will work.
   runDoxygen(sourcedir, 'sparsehash.doxyfile.in', 'sparsehash.doxyfile')
   runDoxygen(sourcedir, 'cjson.doxyfile.in', 'cjson.doxyfile')
