@@ -114,7 +114,7 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
   int num_vert_props = this->numVertexPropsFromType(cell_type);
 
   size_type unchecked_next =
-    curOffset + num_verts * (1 + num_vert_props) + num_cell_props;
+    curOffset + (cell_type & TESS_VARYING_VERT_CELL ? 2 : 1) + num_verts * (1 + num_vert_props) + num_cell_props;
   size_type next =
     (unchecked_next < 0 || unchecked_next >= static_cast<int>(this->m_conn.size())) ?
     this->end() :
