@@ -11,9 +11,12 @@
 #define __smtk_vtk_ModelSource_h
 
 #include "smtk/extension/vtk/vtkSMTKExports.h"
-#include "vtkPolyDataAlgorithm.h"
+
+#include "smtk/model/Cursor.h"
+
 #include "smtk/PublicPointerDefs.h"
 
+#include "vtkPolyDataAlgorithm.h"
 
 /**\brief A VTK filter that provides polydata for an SMTK model manager instance.
   *
@@ -27,8 +30,8 @@ public:
 
   vtkGetObjectMacro(CachedOutput,vtkPolyData);
 
-  smtk::model::ManagerPtr GetModel();
-  void SetModel(smtk::model::ManagerPtr);
+  smtk::model::Cursors GetEntities();
+  void SetEntities(const smtk::model::Cursors&);
 
   void Dirty();
 
@@ -36,8 +39,21 @@ protected:
   vtkModelSource();
   virtual ~vtkModelSource();
 
+  struct SortByDim {
+    bool operator () (const smtk::model::Cursor& a, const smtk::model::Cursor& b)
+      {
+      return
+        (a.dimension() < b.dimension()) ||
+        (a.dimension() == b.dimension() && a < b) ?
+        true : false;
+      }
+  };
+  typedef std::set<smtk::model::Cursor,SortByDim> CursorsByDim;
+
+  void AccumulateSortedEntities(
+    CursorsByDim& accum, vtkIdType& npts, smtk::model::Cursors& toplevel);
   void GenerateRepresentationFromModel(
-    vtkPolyData* poly, smtk::model::ManagerPtr model);
+    vtkPolyData* poly, const CursorsByDim& model, vtkIdType npts);
 
   //virtual int FillInputPortInformation(int port, vtkInformation* request);
   //virtual int FillOutputPortInformation(int port, vtkInformation* request);
@@ -50,7 +66,7 @@ protected:
   void SetCachedOutput(vtkPolyData*);
 
   // Instance storage:
-  smtk::model::ManagerPtr Model;
+  smtk::model::Cursors Entities;
   vtkPolyData* CachedOutput;
 
 private:

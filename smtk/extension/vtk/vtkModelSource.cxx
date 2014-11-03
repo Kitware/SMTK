@@ -9,7 +9,11 @@
 //=========================================================================
 #include "smtk/extension/vtk/vtkModelSource.h"
 
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Cursor.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
 #include "smtk/common/UUID.h"
@@ -29,6 +33,7 @@
 #include "vtkStringArray.h"
 
 using namespace smtk::model;
+using namespace smtk::common;
 
 vtkStandardNewMacro(vtkModelSource);
 vtkCxxSetObjectMacro(vtkModelSource,CachedOutput,vtkPolyData);
@@ -48,25 +53,25 @@ void vtkModelSource::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 
-  os << indent << "Model: " << this->Model.get() << "\n";
+  os << indent << "Entities: " << this->Entities.size() << " entries\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
 }
 
 /// Set the SMTK model to be displayed.
-void vtkModelSource::SetModel(smtk::model::ManagerPtr model)
+void vtkModelSource::SetEntities(const smtk::model::Cursors& ents)
 {
-  if (this->Model == model)
+  if (this->Entities == ents)
     {
     return;
     }
-  this->Model = model;
+  this->Entities = ents;
   this->Modified();
 }
 
 /// Get the SMTK model being displayed.
-smtk::model::ManagerPtr vtkModelSource::GetModel()
+smtk::model::Cursors vtkModelSource::GetEntities()
 {
-  return this->Model;
+  return this->Entities;
 }
 
 /// Indicate that the model has changed and should have its VTK representation updated.
@@ -78,153 +83,124 @@ void vtkModelSource::Dirty()
   this->SetCachedOutput(NULL);
 }
 
-template<int Dim>
-void AddEntityTessToPolyData(
-  smtk::model::ManagerPtr model, const smtk::common::UUID& uid, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
+static void AddEntityTessToPolyData(
+  vtkPolyData* pd, vtkPoints* pts, vtkStringArray* pedigree,
+  const smtk::common::UUID& uid, const Tessellation* tess)
 {
-  smtk::model::UUIDWithTessellation it = model->tessellations().find(uid);
-  if (it == model->tessellations().end())
-    {
-    return;
-    }
   vtkIdType i;
   vtkIdType connOffset = pts->GetNumberOfPoints();
   std::vector<vtkIdType> conn;
   std::string uuidStr = uid.toString();
-  vtkIdType npts = it->second.coords().size() / 3;
+  vtkIdType npts = tess->coords().size() / 3;
+  conn.reserve(npts);
   for (i = 0; i < npts; ++i)
     {
-    pts->InsertNextPoint(&it->second.coords()[3*i]);
+    conn.push_back(pts->InsertNextPoint(&tess->coords()[3*i]));
     }
-  vtkIdType nconn = it->second.conn().size();
-  int ptsPerPrim = 0;
-  if (nconn == 0 && Dim == 0)
-    { // every point is a vertex cell.
-    for (i = 0; i < npts; ++i)
-      {
-      vtkIdType pid = i + connOffset;
-      cells->InsertNextCell(1, &pid);
-      pedigree->InsertNextValue(uuidStr);
-      }
-    }
-  else
+  Tessellation::size_type off;
+  vtkCellArray* verts = pd->GetVerts();
+  vtkCellArray* lines = pd->GetLines();
+  vtkCellArray* polys = pd->GetPolys();
+  //vtkCellArray* strip = NULL; // TODO. Handle this case one day.
+  for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
     {
-    for (i = 0; i < nconn; i += ptsPerPrim + 1)
+    Tessellation::size_type cell_type = tess->cellType(off);
+    Tessellation::size_type cell_shape = tess->cellShapeFromType(cell_type);
+    std::vector<int> cell_conn;
+    Tessellation::size_type num_verts = tess->vertexIdsOfCell(off, cell_conn);
+    std::vector<vtkIdType> vtk_conn;
+    vtk_conn.reserve(cell_conn.size());
+    for (std::vector<int>::iterator connit = cell_conn.begin(); connit != cell_conn.end(); ++connit)
+      vtk_conn.push_back(connOffset + *connit);
+    switch (cell_shape)
       {
-      if (Dim < 2)
+    case TESS_VERTEX:          verts->InsertNextCell(1, &vtk_conn[0]); break;
+    case TESS_TRIANGLE:        polys->InsertNextCell(3, &vtk_conn[0]); break;
+    case TESS_QUAD:            polys->InsertNextCell(4, &vtk_conn[0]); break;
+    case TESS_POLYVERTEX:      verts->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    case TESS_POLYLINE:        lines->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    case TESS_POLYGON:         polys->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    //case TESS_TRIANGLE_STRIP:  strip->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    default:
+      std::cerr << "Invalid cell shape " << cell_shape << " at offset " << off << ". Skipping.\n";
+      continue;
+      break;
+      }
+    // WARNING!!!
+    // Normally, it would matter what order the verts, lines, polys, and strips appear in...
+    // but since the pedigree ID is the same for all the cells (and we assume for now that
+    // there is one uuidStr per polydata), then it doesn't matter.
+    pedigree->InsertNextValue(uuidStr);
+    }
+}
+
+/// Fetch children for model and group entities.
+void vtkModelSource::AccumulateSortedEntities(
+  CursorsByDim& accum, vtkIdType& npts, Cursors& toplevel)
+{
+  for (Cursors::const_iterator it = toplevel.begin(); it != toplevel.end(); ++it)
+    {
+    if (it->isModelEntity())
+      { // Add free cells
+      CellEntities freeCells = it->as<ModelEntity>().cells();
+      // Find all boundaries of all free cells
+      CellEntities::iterator fcit;
+      for (fcit = freeCells.begin(); fcit != freeCells.end(); ++fcit)
         {
-        ptsPerPrim = it->second.conn()[i];
+        Cursors bdys = fcit->lowerDimensionalBoundaries(-1); // Get *all* boundaries.
+        bdys.insert(*fcit); // include the bounding cell
+        // Now call ourselves recursively so that we can get npts
+        this->AccumulateSortedEntities(accum, npts, bdys);
         }
-      else
+      }
+    else if (it->isGroupEntity())
+      { // Add group members, but not their boundaries
+      Cursors members = it->as<GroupEntity>().members<Cursors>();
+      // Do this recursively since a group may contain other groups
+      this->AccumulateSortedEntities(accum, npts, members);
+      }
+    else
+      {
+      const Tessellation* tess = it->hasTessellation();
+      if (tess)
         {
-        // TODO: Handle "extended" format that allows lines and verts.
-        switch (it->second.conn()[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
-          {
-        case 0:
-          ptsPerPrim = 3; //primType = VTK_TRIANGLE;
-          break;
-        case 1:
-          ptsPerPrim = 4; //primType = VTK_QUAD;
-          break;
-        default:
-            {
-            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << it->second.conn()[i]);
-            return;
-            }
-          }
+        accum.insert(*it);
+        npts += tess->coords().size() / 3; // TODO: assumes coords are 3-D.
         }
-      if (nconn < (ptsPerPrim + i + 1))
-        { // FIXME: Ignore junk at the end? Error message?
-        break;
-        }
-      conn.resize(ptsPerPrim);
-      // Rewrite connectivity for polydata:
-      for (int k = 0; k < ptsPerPrim; ++k)
-        {
-        conn[k] = it->second.conn()[i + k + 1] + connOffset;
-        }
-      cells->InsertNextCell(ptsPerPrim, &conn[0]);
-      pedigree->InsertNextValue(uuidStr);
       }
     }
 }
 
 /// Do the actual work of grabbing primitives from the model.
 void vtkModelSource::GenerateRepresentationFromModel(
-  vtkPolyData* pd, smtk::model::ManagerPtr model)
+  vtkPolyData* pd, const CursorsByDim& accum, vtkIdType npts)
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkStringArray> pedigree;
   pedigree->SetName("UUID");
+  pts->Allocate(npts);
   pd->SetPoints(pts.GetPointer());
   pd->GetCellData()->SetPedigreeIds(pedigree.GetPointer());
-  smtk::model::UUIDWithTessellation it;
-  vtkIdType npts = 0;
-  smtk::common::UUIDs modelVerts;
-  smtk::common::UUIDs modelLines;
-  smtk::common::UUIDs modelPolys;
-  for (it = model->tessellations().begin(); it != model->tessellations().end(); ++it)
+  vtkNew<vtkCellArray> verts;
+  vtkNew<vtkCellArray> lines;
+  vtkNew<vtkCellArray> polys;
+  pd->SetVerts(verts.GetPointer());
+  pd->SetLines(lines.GetPointer());
+  pd->SetPolys(polys.GetPointer());
+  // TODO: Do not handle cells with different tessellation dimension
+  //       than their cell type would otherwise indicate.
+  //       For instance, no surface cell should contain a polyline or
+  //       vertex tessellation entry. Pedigree IDs will be wrong in
+  //       this case.
+  // TODO: Do not handle strips currently since that would require
+  //       us to sort cursors by whether their tessellations had any
+  //       strips.
+  CursorsByDim::const_iterator it;
+  for (it = accum.begin(); it != accum.end(); ++it)
     {
-    npts += it->second.coords().size() / 3;
-    smtk::model::Entity* entity = model->findEntity(it->first);
-    if (entity)
-      {
-      switch(entity->dimension())
-        {
-      case 0:
-        modelVerts.insert(it->first);
-        break;
-      case 1:
-        modelLines.insert(it->first);
-        break;
-      case 2:
-        modelPolys.insert(it->first);
-        break;
-      default:
-        if (it->second.conn().empty())
-          {
-          modelVerts.insert(it->first);
-          }
-        else if (it->second.conn()[0] > 0)
-          { // assume everything that has a 0 entry is a triangle. (Three.JS format without quads or extra per-vertex stuff)
-          modelPolys.insert(it->first);
-          }
-        else
-          { // otherwise, it's a polyline
-          modelLines.insert(it->first);
-          }
-        break;
-        }
-      }
-    }
-  pts->Allocate(npts);
-  smtk::common::UUIDs::iterator uit;
-  if (!modelVerts.empty())
-    {
-    vtkNew<vtkCellArray> verts;
-    pd->SetVerts(verts.GetPointer());
-    for (uit = modelVerts.begin(); uit != modelVerts.end(); ++uit)
-      {
-      AddEntityTessToPolyData<0>(model, *uit, pts.GetPointer(), pd->GetVerts(), pedigree.GetPointer());
-      }
-    }
-  if (!modelLines.empty())
-    {
-    vtkNew<vtkCellArray> lines;
-    pd->SetLines(lines.GetPointer());
-    for (uit = modelLines.begin(); uit != modelLines.end(); ++uit)
-      {
-      AddEntityTessToPolyData<1>(model, *uit, pts.GetPointer(), pd->GetLines(), pedigree.GetPointer());
-      }
-    }
-  if (!modelPolys.empty())
-    {
-    vtkNew<vtkCellArray> polys;
-    pd->SetPolys(polys.GetPointer());
-    for (uit = modelPolys.begin(); uit != modelPolys.end(); ++uit)
-      {
-      AddEntityTessToPolyData<2>(model, *uit, pts.GetPointer(), pd->GetPolys(), pedigree.GetPointer());
-      }
+    const Tessellation* tess = it->hasTessellation();
+    if (!tess) continue;
+    AddEntityTessToPolyData(pd, pts.GetPointer(), pedigree.GetPointer(), it->entity(), tess);
     }
 }
 
@@ -260,16 +236,18 @@ int vtkModelSource::RequestData(
     return 0;
     }
 
-  if (!this->Model)
-    {
-    vtkErrorMacro("No input model");
-    return 0;
+  if (this->Entities.empty())
+    { // Fail silently when no output requested.
+    return 1;
     }
 
   if (!this->CachedOutput)
     { // Populate a polydata with tessellation information from the model.
     vtkNew<vtkPolyData> rep;
-    this->GenerateRepresentationFromModel(rep.GetPointer(), this->Model);
+    CursorsByDim sortedEnts;
+    vtkIdType npts = 0;
+    this->AccumulateSortedEntities(sortedEnts, npts, this->Entities);
+    this->GenerateRepresentationFromModel(rep.GetPointer(), sortedEnts, npts);
     this->SetCachedOutput(rep.GetPointer());
     }
   output->ShallowCopy(this->CachedOutput);
