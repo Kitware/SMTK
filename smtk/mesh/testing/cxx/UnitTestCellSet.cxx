@@ -385,6 +385,101 @@ void verify_cellset_subtract(const smtk::mesh::CollectionPtr& c)
         "subtract of two meshes produced wrong size" );
 }
 
+//----------------------------------------------------------------------------
+void verify_cellset_point_intersect(const smtk::mesh::CollectionPtr& c)
+{
+  using namespace smtk::mesh;
+
+  smtk::mesh::CellSet twoDim   =   c->cells( smtk::mesh::Dims2 );
+  smtk::mesh::CellSet threeDim =   c->cells( smtk::mesh::Dims3 );
+
+  //First test partial containment
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(threeDim, threeDim, PartiallyContained );
+    test( result == threeDim, "intersection of self should produce self " );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(threeDim, twoDim, PartiallyContained );
+    test( result.size() != 0, "we should have partial containment between 2d and 3d" );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(twoDim, threeDim, PartiallyContained );
+    test( result.size() != 0, "we should have partial containment between 3d and 2d" );
+  }
+
+  //Next test full containment
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(threeDim, threeDim, FullyContained );
+    test( result == threeDim, "intersection of self should produce self " );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(threeDim, twoDim, FullyContained );
+    test( result.size() != 0, "we should have partial containment between 2d and 3d" );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_intersect(twoDim, threeDim, FullyContained );
+    test( result.size() == 0, "we should have no threeDim elements fully covered by 2d" );
+  }
+
+}
+
+//----------------------------------------------------------------------------
+void verify_cellset_point_difference(const smtk::mesh::CollectionPtr& c)
+{
+  using namespace smtk::mesh;
+
+  smtk::mesh::CellSet twoDim   =   c->cells( smtk::mesh::Dims2 );
+  smtk::mesh::CellSet threeDim =   c->cells( smtk::mesh::Dims3 );
+
+  //First test partial containment
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(threeDim, threeDim, PartiallyContained );
+    test( result.size() == 0, "difference of self should produce nothing " );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(threeDim, twoDim, PartiallyContained );
+    test( result.size() == 0, "all points in the 2d cells should be used by a 3d cell" );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(twoDim, threeDim, PartiallyContained );
+    test( result.size() != 0, "every 3d cell has a point used by a 2d cell?" );
+  }
+
+  //Next test full containment
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(threeDim, threeDim, FullyContained );
+    test( result.size() == 0, "difference of self should produce nothing " );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(threeDim, twoDim, FullyContained );
+    test( result.size() == 0, "all points in the 2d cells should be used by a 3d cell" );
+  }
+
+  {
+    smtk::mesh::CellSet result =
+      smtk::mesh::point_difference(twoDim, threeDim, FullyContained );
+    test( result.size() != 0, "not all points in the 3d cells should be used by 2d cell's" );
+  }
+}
+
 }
 
 //----------------------------------------------------------------------------
@@ -403,6 +498,9 @@ int UnitTestCellSet(int argc, char** argv)
   verify_cellset_intersect(c);
   verify_cellset_union(c);
   verify_cellset_subtract(c);
+
+  verify_cellset_point_intersect(c);
+  verify_cellset_point_difference(c);
 
   return 0;
 }

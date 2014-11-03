@@ -156,6 +156,65 @@ CellSet set_union( const CellSet& a, const CellSet& b )
   return smtk::mesh::CellSet(a.m_parent, result);
 }
 
+//----------------------------------------------------------------------------
+//intersect two cell sets at the point id level, all cells from b which
+//share points with cells in a are placed in the resulting CellSet.
+CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
+{
+  if( a.m_parent != b.m_parent )
+    { //return an empty CellSet if the collections don't match
+    return smtk::mesh::CellSet(a.m_parent,
+                               smtk::mesh::HandleRange());
+    }
+
+  const smtk::mesh::moab::InterfacePtr& iface =
+                          smtk::mesh::moab::extractInterface(a.m_parent);
+
+  //switch the algorithm based on the containment type
+  smtk::mesh::HandleRange result;
+  if(t == smtk::mesh::PartiallyContained)
+    {
+    smtk::mesh::moab::functors::PartiallyContained f;
+    result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
+    }
+  else
+    {
+    smtk::mesh::moab::functors::FullyContained f;
+    result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
+    }
+  return smtk::mesh::CellSet(a.m_parent, result);
+}
+
+//----------------------------------------------------------------------------
+//subtract two cell sets at the point id level, all cells from b whose
+//points are not used by cells from a are placed in the resulting CellSet.
+CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
+{
+  if( a.m_parent != b.m_parent )
+    { //return an empty CellSet if the collections don't match
+    return smtk::mesh::CellSet(a.m_parent,
+                               smtk::mesh::HandleRange());
+    }
+
+  const smtk::mesh::moab::InterfacePtr& iface =
+                          smtk::mesh::moab::extractInterface(a.m_parent);
+
+  //switch the algorithm based on the containment type
+  smtk::mesh::HandleRange result;
+  if(t == smtk::mesh::PartiallyContained)
+    {
+    smtk::mesh::moab::functors::PartiallyContained f;
+    result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
+    }
+  else
+    {
+    smtk::mesh::moab::functors::FullyContained f;
+    result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
+    }
+
+  return smtk::mesh::CellSet(a.m_parent, result);
+}
+
 
 
 }

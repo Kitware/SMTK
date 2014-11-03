@@ -24,6 +24,13 @@ namespace mesh {
 typedef int Points;
 typedef int Connectivity;
 
+
+enum ContainmentType
+{
+  PartiallyContained=1,
+  FullyContained=2
+};
+
 }
 }
 

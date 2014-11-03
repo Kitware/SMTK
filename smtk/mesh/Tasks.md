@@ -43,8 +43,7 @@ be able to do the following:
    Most likely done by using the code written for the moab reader as options
    on the collection.
 
-7. Ability to do a union or intersect of meshsets, and appending of a meshset
-   to another.
+7. Ability to do a union, intersect, and difference of meshsets.
 ```
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
   ...
@@ -53,8 +52,54 @@ be able to do the following:
   smtk::mesh::MeshSet m2 = collection->meshes( smtk::mesh::Dims2 );
   smtk::mesh::MeshSet m3 = collection->meshes( smtk::mesh::Dims3 );
 
-  smtk::mesh::MeshSet overlapping = smtk::mesh::intersect(m2,m3);
+  smtk::mesh::MeshSet overlapping = smtk::mesh::set_intersect(m2,m3);
+  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(m2,m3);
 ```
+
+8. Ability to do a union, intersect, and difference of cellsets.
+```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
+  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Dims2 );
+  smtk::mesh::CellSet c3 = collection->cells( smtk::mesh::Dims3 );
+
+  smtk::mesh::CellSet overlapping = smtk::mesh::set_intersect(c2,c3);
+  smtk::mesh::MeshSet not_overlapping = smtk::mesh::set_difference(c2,c3);
+```
+
+9. Ability to do intersection and difference of two distinct mesh or cell sets
+ that share nothing in common but point coordinates ( aka topology ids ).
+
+ The query will need to take in three input parameters. 1 and 2 are the sets
+ to query against and the third is how we determine if a cell from set 2 is
+ contained in set 1. Currently the two options are Partial Contained and
+ Fully Contained, with the former meaning at least 1 point per cell needs to be
+ in set 1 to be contained in the result, while the latter requires all points
+ per cell.
+
+ The reason for this functionality is the ability to find usages between
+ two distinct sets. Say for example trying to find the lines from set b whose
+ points are used by any triangle in set a. So in code it would look like:
+
+ ```
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  ...
+  smtk::mesh::CollectionPtr collection = manager.collection( uuid_of_collection );
+  ...
+  smtk::mesh::CellSet c1 = collection->cells( smtk::mesh::Lines );
+  smtk::mesh::CellSet c2 = collection->cells( smtk::mesh::Triangles );
+
+
+  //overlapping now contains all cells from c1 that share any point with
+  //a cell from C2
+  smtk::mesh::CellSet overlapping = smtk::mesh::point_intersect(
+                            c2,c1, PartiallyContained );
+
+
+ ```
+
 
 
 ##IO##
@@ -109,10 +154,9 @@ Current goals of the system are:
 
 1. Able to associate model cursors / uuids to mesh elements, which can be:
   a. Cell
-  b. Point
-  c. Mesh
-  d. Collection
-  e. Set of Cell's, Point's, Mesh's
+  b. Mesh
+  c. Collection
+  d. Set of Cell's, Point's, Mesh's
 
 
 2. Query given a model cursor find what are the associated types:

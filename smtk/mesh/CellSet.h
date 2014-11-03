@@ -33,6 +33,8 @@ class SMTKCORE_EXPORT CellSet
   friend CellSet set_intersect( const CellSet& a, const CellSet& b);
   friend CellSet set_difference( const CellSet& a, const CellSet& b);
   friend CellSet set_union( const CellSet& a, const CellSet& b );
+  friend CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t);
+  friend CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t);
 public:
 
   //construct a CellSet that represents an arbitrary unknown subset of cells that
@@ -74,21 +76,46 @@ private:
 //Function that provide set operations on CellSets
 
 
-//intersect two mesh sets, placing the results in the return mesh set
-//Note: If the meshsets come from different collections the result will
+//intersect two cell sets, placing the results in the return cell set.
+//This does cell Id level intersection, if you want to intersect
+//based on shared points you want to use point_intersect
+//Note: If the cellsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT CellSet set_intersect( const CellSet& a, const CellSet& b);
 
-//subtract mesh b from a, placing the results in the return mesh set
-//Note: If the meshsets come from different collections the result will
+//subtract cell b from a, placing the results in the return cell set.
+//This does cell Id level difference, if you want to subtract
+//based on shared points you want to use point_difference
+//Note: If the cellsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT CellSet set_difference( const CellSet& a, const CellSet& b);
 
-//union two mesh sets, placing the results in the return mesh set
-//Note: If the meshsets come from different collections the result will
+//union two cell sets, placing the results in the return cell set
+//Note: If the cellsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT CellSet set_union( const CellSet& a, const CellSet& b );
 
+
+//intersect two cell sets at the point id level, all cells from b which
+//share points with cells in a are placed in the resulting CellSet.
+//Currently the two options are Partial Contained and Fully Contained,
+//with the former meaning at least 1 point per cell needs to be
+//in set 1 to be contained in the result, while the latter requires all points
+//per cell.
+//Note: If the cellsets come from different collections the result will
+//always be empty
+SMTKCORE_EXPORT CellSet point_intersect( const CellSet& a, const CellSet& b,
+                                         ContainmentType t);
+
+//subtract two cell sets at the point id level, all cells from b whose
+//points are not used by cells from a are placed in the resulting CellSet.
+//Currently the two options are Partial Contained and Fully Contained,
+//with the former meaning at least 1 point per cell causes it to be removed,
+//while the latter requires all points per cell.
+//Note: If the cellsets come from different collections the result will
+//always be empty
+SMTKCORE_EXPORT CellSet point_difference( const CellSet& a, const CellSet& b,
+                                          ContainmentType t);
 
 }
 }

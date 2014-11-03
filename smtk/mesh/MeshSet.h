@@ -85,12 +85,22 @@ private:
 //Function that provide set operations on MeshSets
 
 
-//intersect two mesh sets, placing the results in the return mesh set
+//intersect two mesh sets, placing the results in the return mesh set. The
+//intersection is done at the mesh id level, not at the cell id, or at
+//the point usage level. If you need to find the result of a cell id intersection
+//you should use CellSet. If you need to find the result of a intersection
+//based on the shared points you want to use CellSet and the point_intersect
+//call.
 //Note: If the meshsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_intersect( const MeshSet& a, const MeshSet& b);
 
-//subtract mesh b from a, placing the results in the return mesh set
+//subtract two mesh sets, placing the results in the return mesh set. The
+//difference is done at the mesh id level, not at the cell id, or at
+//the point usage level. If you need to find the result of a cell id subtraction
+//you should use CellSet. If you need to find the result of a difference
+//based on the shared points you want to use CellSet and the point_difference
+//call.
 //Note: If the meshsets come from different collections the result will
 //always be empty
 SMTKCORE_EXPORT MeshSet set_difference( const MeshSet& a, const MeshSet& b);
