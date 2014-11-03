@@ -188,10 +188,17 @@ smtk::mesh::CellSet Collection::cells( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::PointSet Collection::points( )
+smtk::mesh::Points Collection::points( )
 {
-  return smtk::mesh::PointSet( );
+  return smtk::mesh::Points( );
 }
+
+//----------------------------------------------------------------------------
+smtk::mesh::Connectivity Collection::connectivity( )
+{
+  return smtk::mesh::Connectivity( );
+}
+
 
 //----------------------------------------------------------------------------
 smtk::mesh::MeshSet Collection::meshes( )

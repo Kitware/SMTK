@@ -115,10 +115,15 @@ smtk::mesh::CellSet MeshSet::cells( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::PointSet MeshSet::points( )
+smtk::mesh::Points MeshSet::points( )
 {
-  //need to pass the range and parents I expect
-  return smtk::mesh::PointSet();
+  return smtk::mesh::Points();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::Connectivity MeshSet::connectivity( )
+{
+  return smtk::mesh::Connectivity();
 }
 
 //----------------------------------------------------------------------------

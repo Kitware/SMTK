@@ -87,10 +87,10 @@ std::size_t CellSet::size( ) const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::PointSet CellSet::points( )
+smtk::mesh::Points CellSet::points( )
 {
   //need to pass the range and parents I expect
-  return smtk::mesh::PointSet();
+  return smtk::mesh::Points();
 }
 
 //----------------------------------------------------------------------------
@@ -98,6 +98,20 @@ smtk::mesh::Points CellSet::points( std::size_t ) const
 {
   //need to pass the range and parents I expect
   return smtk::mesh::Points();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::Connectivity CellSet::connectivity( )
+{
+  //need to pass the range and parents I expect
+  return smtk::mesh::Connectivity();
+}
+
+//----------------------------------------------------------------------------
+smtk::mesh::Connectivity CellSet::connectivity( std::size_t ) const
+{
+  //need to pass the range and parents I expect
+  return smtk::mesh::Connectivity();
 }
 
 //----------------------------------------------------------------------------

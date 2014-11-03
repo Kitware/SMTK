@@ -22,7 +22,7 @@ namespace smtk {
 namespace mesh {
 
 typedef int Points;
-typedef int PointSet;
+typedef int Connectivity;
 
 }
 }

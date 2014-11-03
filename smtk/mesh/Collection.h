@@ -73,9 +73,10 @@ public:
   //Queries on the full Collection
   //----------------------------------------------------------------------------
   smtk::mesh::TypeSet   associatedTypes( ) const;
-  smtk::mesh::CellSet   cells( ); //all cells
-  smtk::mesh::PointSet  points( ); //all points
   smtk::mesh::MeshSet   meshes( ); //all meshes
+  smtk::mesh::CellSet   cells( ); //all cells
+  smtk::mesh::Points    points( ); //all points
+  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
 
   //For any mesh set that has a name we return that name. It is possible
   //that the we have un-named mesh sets.

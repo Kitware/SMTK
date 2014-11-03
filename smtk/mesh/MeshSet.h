@@ -58,15 +58,23 @@ public:
   bool append( const MeshSet& other);
 
   bool is_empty() const;
+
+  //number of meshes
   std::size_t size() const;
 
   smtk::mesh::CellSet cells(); //all cells of the meshset
-  smtk::mesh::PointSet points(); //all points of the meshset
+  smtk::mesh::Points points(); //all points of the meshset
+  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
 
   //we should be able to extract the points or cells of the meshes.
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   cells( smtk::mesh::CellTypes cellTypes );
   smtk::mesh::CellSet   cells( smtk::mesh::DimensionType dim );
+
+  //in the future we want to be able to iterate the given meshes in a MeshSet
+  //and generate the cells, points and connectivity for each one independently.
+  //This will also allow us to generate associations back to the model based
+  //on single meshes
 
 private:
   smtk::mesh::CollectionPtr m_parent;

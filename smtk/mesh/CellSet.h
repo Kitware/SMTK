@@ -58,10 +58,13 @@ public:
   bool is_empty() const;
   std::size_t size() const;
 
-  smtk::mesh::PointSet points(); //all points of the cellset
+  smtk::mesh::Points points(); //all points of the cellset
+  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
 
   //get the points for a single cell
   smtk::mesh::Points points( std::size_t ) const;
+  //get the connectivity for a single cell
+  smtk::mesh::Connectivity connectivity( std::size_t ) const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;
