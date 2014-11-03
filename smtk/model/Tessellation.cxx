@@ -99,7 +99,9 @@ Tessellation& Tessellation::reset()
 }
 
 Tessellation::size_type Tessellation::begin() const
-{ return 0; }
+{
+  return this->m_conn.empty() ? this->end() : 0;
+}
 
 Tessellation::size_type Tessellation::end() const
 { return -1; }

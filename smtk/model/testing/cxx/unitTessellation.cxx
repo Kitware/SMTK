@@ -27,6 +27,7 @@ int main()
   };
   std::vector<int> cell1(cellConn1, cellConn1 + sizeof(cellConn1)/sizeof(cellConn1[0]));
   test(!tess.insertCell(0, cell1), "Expected invalid vertex 1 insertion to fail.");
+  test(tess.begin() == tess.end(), "Expected begin() == end() for empty tessellation.");
 
   int cellConn2[] = { // VALID vertex with "don't care" material ID of 100 and "don't care" normal ID
     TESS_VERTEX | TESS_FACE_MATERIAL | TESS_FACE_VERTEX_NORMAL,
@@ -36,6 +37,7 @@ int main()
   test(tess.insertCell(0, cell2), "Expected valid vertex 2 insertion to succeed.");
   cellTypeCheck.insert(cellTypeCheck.begin(), cellConn2[0]);
   cellMatCheck.insert(cellMatCheck.begin(), cellConn2[2]);
+  test(tess.begin() != tess.end(), "Expected begin() != end() for non-empty tessellation.");
 
   int cellConn3[] = { // INVALID polyvertex (missing normal ID entries)
     TESS_POLYVERTEX | TESS_FACE_VERTEX_NORMAL,
