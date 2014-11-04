@@ -10,7 +10,6 @@
 #ifndef __smtk_model_Tessellation_h
 #define __smtk_model_Tessellation_h
 
-#include "smtk/SystemConfig.h"
 #include "smtk/common/UUID.h"
 
 #ifdef SMTK_HASH_STORAGE
@@ -98,12 +97,14 @@ public:
   /// Direct access to the underlying point-coordinate storage
   std::vector<double>& coords()
     { return this->m_coords; }
+  /// Direct access to the underlying point-coordinate storage
   std::vector<double> const& coords() const
     { return this->m_coords; }
 
   /// Direct access to the underlying connectivity storage
   std::vector<int>& conn()
     { return this->m_conn; }
+  /// Direct access to the underlying connectivity storage
   std::vector<int> const& conn() const
     { return this->m_conn; }
 

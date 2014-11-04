@@ -63,27 +63,27 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 /// Add three 3-D point coordinates to the tessellation plus a triangle record.
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
-  std::vector<int> conn;
-  conn.reserve(4);
-  conn.push_back(TESS_TRIANGLE);
-  conn.push_back(this->addCoords(a));
-  conn.push_back(this->addCoords(b));
-  conn.push_back(this->addCoords(c));
-  this->insertNextCell(conn);
+  std::vector<int> tconn;
+  tconn.reserve(4);
+  tconn.push_back(TESS_TRIANGLE);
+  tconn.push_back(this->addCoords(a));
+  tconn.push_back(this->addCoords(b));
+  tconn.push_back(this->addCoords(c));
+  this->insertNextCell(tconn);
   return *this;
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
 Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
 {
-  std::vector<int> conn;
-  conn.reserve(5);
-  conn.push_back(TESS_QUAD);
-  conn.push_back(this->addCoords(a));
-  conn.push_back(this->addCoords(b));
-  conn.push_back(this->addCoords(c));
-  conn.push_back(this->addCoords(d));
-  this->insertNextCell(conn);
+  std::vector<int> qconn;
+  qconn.reserve(5);
+  qconn.push_back(TESS_QUAD);
+  qconn.push_back(this->addCoords(a));
+  qconn.push_back(this->addCoords(b));
+  qconn.push_back(this->addCoords(c));
+  qconn.push_back(this->addCoords(d));
+  this->insertNextCell(qconn);
   return *this;
 }
 
@@ -318,7 +318,11 @@ bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 bool Tessellation::insertCell(size_type offset, size_type conn_length, const int* cellConn)
 {
   if (conn_length < 2) // Must have cell type plus at least one vertex ID
+    {
+    std::cerr
+      << "ERROR: conn length " << conn_length << " too short. Skipping.\n";
     return false;
+    }
 
   size_type num_verts;
   size_type cell_type = cellConn[0];
@@ -334,7 +338,8 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
   case TESS_TRIANGLE_STRIP:
                               num_verts = cellConn[1]; break;
   default:
-  case TESS_INVALID_CELL:     return false;
+  case TESS_INVALID_CELL:     std::cerr << "ERROR: Unknown cell type " << cell_type << "\n";
+                              return false;
     }
 
   // Determine whether cellConn is the proper length.
@@ -348,7 +353,12 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
     num_verts * (1 + num_vert_props); // cell connectivity + per-vertex property offsets
 
   if (conn_length != expected_length)
+    {
+    std::cerr
+      << "ERROR: Expected conn length " << expected_length
+      << " got " << conn_length << ". Skipping.\n";
     return false;
+    }
 
   std::vector<int>::iterator cur_insert = this->m_conn.begin() + offset;
   this->m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
