@@ -20,6 +20,10 @@ add_executable(unitManager unitManager.cxx)
 target_link_libraries(unitManager SMTKCore SMTKCoreModelTesting)
 add_test(unitManager ${EXECUTABLE_OUTPUT_PATH}/unitManager)
 
+add_executable(unitTessellation unitTessellation.cxx)
+target_link_libraries(unitTessellation SMTKCore SMTKCoreModelTesting)
+add_test(unitTessellation ${EXECUTABLE_OUTPUT_PATH}/unitTessellation)
+
 add_executable(unitOperator unitOperator.cxx)
 smtk_operator_xml( "${CMAKE_CURRENT_SOURCE_DIR}/unitOutcomeOperator.sbt" unitOperatorXML)
 target_link_libraries(unitOperator SMTKCore SMTKCoreModelTesting)

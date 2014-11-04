@@ -292,7 +292,10 @@ int main(int argc, char* argv[])
       {
       hlp = vtkModelSelectionHelper::New();
       }
-    src->SetModel(sm);
+    Cursors thingsToDraw =
+      sm->entitiesMatchingFlagsAs<Cursors>(
+        smtk::model::MODEL_ENTITY);
+    src->SetEntities(thingsToDraw);
     rep->SetModel(sm);
     rep->SetSelectionMask(smtk::model::DIMENSION_1);
     rep->SetInputConnection(src->GetOutputPort());

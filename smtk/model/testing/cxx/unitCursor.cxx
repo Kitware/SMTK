@@ -125,7 +125,27 @@ int main(int argc, char* argv[])
     // and that they are only reported back as free
     // cells (and not other related entities via
     // casts to invalid cursor types).
+    // Also, check lowerDimensionalBoundaries and higherDimensionalBordants.
     Volume tet = Volume(sm, uids[21]);
+    test(tet.lowerDimensionalBoundaries(2).size() == 5,
+      "The test model volume should have had 5 surface boundaries.");
+    test(tet.lowerDimensionalBoundaries(1).size() == 9,
+      "The test model volume should have had 9 surface+edge boundaries.");
+    test(tet.lowerDimensionalBoundaries(0).size() == 7,
+      "The test model volume should have had 7 surface+edge+vertex boundaries.");
+    test(tet.lowerDimensionalBoundaries(-1).size() == 21,
+      "The test model volume should have had 21 boundaries (total).");
+
+    Vertex vrt = Vertex(sm, uids[0]);
+    test(vrt.higherDimensionalBordants(1).size() == 3,
+      "The test model vert should have had 3 edge boundaries.");
+    test(vrt.higherDimensionalBordants(2).size() == 3,
+      "The test model vert should have had 3 surface+edge boundaries.");
+    test(vrt.higherDimensionalBordants(3).size() == 1,
+      "The test model vert should have had 1 edge+surface+volume boundaries.");
+    test(vrt.higherDimensionalBordants(-1).size() == 7,
+      "The test model vert should have had 7 boundaries (total).");
+
     // Test ModelEntity::addCell()
     model.addCell(tet);
     test(model.isEmbedded(tet), "Tetrahedron not embedded in model");

@@ -29,7 +29,14 @@ using namespace remus::proto;
 
 #include "cJSON.h"
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wshadow"
+#endif
 #include "clpp/parser.hpp"
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include <fstream>
 

@@ -406,7 +406,10 @@ UUIDs BRepModel::lowerDimensionalBoundaries(const UUID& ofEntity, int lowerDimen
     result = this->boundaryEntities(ofEntity, currentDim--);
     for (int i = delta; i > 0; --i, --currentDim)
       {
-      result = this->boundaryEntities(result, currentDim);
+      UUIDs tmp = this->boundaryEntities(result, currentDim);
+      if (lowerDimension >= 0)
+        result.clear();
+      result.insert(tmp.begin(), tmp.end());
       }
     }
   return result;
@@ -435,18 +438,21 @@ UUIDs BRepModel::higherDimensionalBordants(const UUID& ofEntity, int higherDimen
     {
     return result;
     }
-  if (it->second.dimension() >= higherDimension)
+  if (higherDimension >= 0 && it->second.dimension() >= higherDimension)
     {
     // do nothing
     }
   else
     {
     int currentDim = it->second.dimension() + 1;
-    int delta = higherDimension - currentDim;
+    int delta = higherDimension < 0 ? 4 : higherDimension - currentDim;
     result = this->bordantEntities(ofEntity, currentDim++);
     for (int i = delta; i > 0; --i, ++currentDim)
       {
-      result = this->bordantEntities(result, currentDim);
+      UUIDs tmp = this->bordantEntities(result, currentDim);
+      if (higherDimension >= 0)
+        result.clear();
+      result.insert(tmp.begin(), tmp.end());
       }
     }
   return result;

@@ -330,6 +330,8 @@ void AddTessellationsToBody(
         case 3:
           it->second.addTriangle(pConn[0], pConn[1], pConn[2]);
           break;
+        case 4:
+          it->second.addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
         default:
           std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
           break;
@@ -338,7 +340,8 @@ void AddTessellationsToBody(
       }
     else
       {
-      it->second.conn().reserve(npts + 1);
+      it->second.conn().reserve(npts + 2);
+      it->second.conn().push_back(smtk::model::TESS_POLYLINE);
       it->second.conn().push_back(npts);
       for (int k = 0; k < npts; ++k)
         {
@@ -357,6 +360,9 @@ void AddTessellationsToBody(
 {
   int ne = entities.size();
   //std::cout << "        Tessellation " << ne << " " << E::get_class_name() << " entities:\n";
+  std::vector<int> cellConn;
+  cellConn.push_back(smtk::model::TESS_VERTEX);
+  cellConn.push_back(0);
   for (int i = 0; i < ne; ++i)
     {
     // First, create a cell for the given entity:
@@ -382,6 +388,7 @@ void AddTessellationsToBody(
     // First, copy point coordinates:
     it->second.coords().resize(3);
     coords.get_xyz(&it->second.coords()[0]);
+    it->second.insertNextCell(cellConn);
     }
 }
 

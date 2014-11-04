@@ -31,10 +31,7 @@ if(SMTK_BUILD_VTK)
         vtkIOXML
         vtkIOLegacy
         vtkInteractionStyle
-        vtkRenderingContext2D
-        vtkRenderingContextOpenGL
         vtkRenderingOpenGL
-        vtkRenderingMatplotlib
         vtkRenderingVolumeOpenGL
         vtkRenderingFreeTypeOpenGL
     )
