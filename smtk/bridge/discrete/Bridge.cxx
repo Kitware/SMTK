@@ -572,6 +572,7 @@ static void AddCellsToTessellation(
   std::map<vtkIdType,int>::iterator pit;
   for (cells->InitTraversal(); cells->GetNextCell(npts, conn); )
     {
+    tconn.clear();
     tconn.reserve(npts + 2);
     switch (role)
       {
