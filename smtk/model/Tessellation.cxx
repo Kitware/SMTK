@@ -63,27 +63,27 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 /// Add three 3-D point coordinates to the tessellation plus a triangle record.
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
-  std::vector<int> conn;
-  conn.reserve(4);
-  conn.push_back(TESS_TRIANGLE);
-  conn.push_back(this->addCoords(a));
-  conn.push_back(this->addCoords(b));
-  conn.push_back(this->addCoords(c));
-  this->insertNextCell(conn);
+  std::vector<int> tconn;
+  tconn.reserve(4);
+  tconn.push_back(TESS_TRIANGLE);
+  tconn.push_back(this->addCoords(a));
+  tconn.push_back(this->addCoords(b));
+  tconn.push_back(this->addCoords(c));
+  this->insertNextCell(tconn);
   return *this;
 }
 
 /// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
 Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
 {
-  std::vector<int> conn;
-  conn.reserve(5);
-  conn.push_back(TESS_QUAD);
-  conn.push_back(this->addCoords(a));
-  conn.push_back(this->addCoords(b));
-  conn.push_back(this->addCoords(c));
-  conn.push_back(this->addCoords(d));
-  this->insertNextCell(conn);
+  std::vector<int> qconn;
+  qconn.reserve(5);
+  qconn.push_back(TESS_QUAD);
+  qconn.push_back(this->addCoords(a));
+  qconn.push_back(this->addCoords(b));
+  qconn.push_back(this->addCoords(c));
+  qconn.push_back(this->addCoords(d));
+  this->insertNextCell(qconn);
   return *this;
 }
 
