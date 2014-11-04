@@ -120,6 +120,7 @@ protected:
   friend class MergeOperator;
   friend class ReadOperator;
   friend class SplitFaceOperator;
+  friend class ImportOperator;
 
   Bridge();
 

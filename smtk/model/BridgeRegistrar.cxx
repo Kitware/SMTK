@@ -108,7 +108,7 @@ void BridgeRegistrar::parseTags(StaticBridgeInfo& bridge)
             einfo->child)
             {
             StringList fileTypes;
-            smtk::io::ImportJSON::getStringArrayFromJSON(einfo->child, fileTypes);
+            smtk::io::ImportJSON::getStringArrayFromJSON(einfo, fileTypes);
             if (curEngine.empty())
               curEngine = "*";
             bridge.FileTypes[curEngine] = fileTypes;
@@ -225,8 +225,20 @@ StringList BridgeRegistrar::bridgeFileTypes(
     if (!it->second.TagsParsed)
       BridgeRegistrar::parseTags(it->second);
     StringData::const_iterator eit;
+    // when there is no engine passed in, we will return all
+    // extensions fr
     if (bengine.empty() && !it->second.FileTypes.empty())
-      return it->second.FileTypes.begin()->second;
+      {
+      StringList retFileTypes;
+      PropertyNameWithStrings entry;
+      for (entry = it->second.FileTypes.begin();
+        entry != it->second.FileTypes.end(); ++entry)
+        {
+        retFileTypes.insert(retFileTypes.end(),
+          entry->second.begin(), entry->second.end());
+        }
+      return retFileTypes;
+      }
     else if (
       !bengine.empty() &&
       (eit = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end())

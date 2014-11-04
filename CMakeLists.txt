@@ -304,6 +304,9 @@ if(SMTK_BUILD_DISCRETE_BRIDGE)
   else()
     find_package(VTK REQUIRED)
   endif()
+
+  # This option is only available when SMTK_BUILD_DISCRETE_BRIDGE is ON
+  option(SMTK_BUILD_MOAB_READER "Build moab reader for discrete model" OFF)
 endif()
 
 ################################################################################

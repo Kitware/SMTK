@@ -18,9 +18,13 @@
 // Was SMTK built with VTK? If true, the vtkSMTK library will exist.
 #cmakedefine SMTK_BUILD_VTK
 
-// Was SMTK built with VTK? If true, the smtkDiscreteBridge library
+// Was SMTK built with discrete model? If true, the smtkDiscreteBridge library
 // and vtkSMTKDiscreteModel library will exist.
 #cmakedefine SMTK_BUILD_DISCRETE_BRIDGE
+
+// Was SMTK built with moab reader? If true, the vtkDiscreteMoabReader
+// library will exist and smtkDiscreteBridge library will link against it.
+#cmakedefine SMTK_BUILD_MOAB_READER
 
 // Was SMTK built with CGM? If true, cgm-convert will exist.
 #cmakedefine SMTK_BUILD_CGM
