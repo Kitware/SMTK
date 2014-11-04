@@ -318,7 +318,11 @@ bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 bool Tessellation::insertCell(size_type offset, size_type conn_length, const int* cellConn)
 {
   if (conn_length < 2) // Must have cell type plus at least one vertex ID
+    {
+    std::cerr
+      << "ERROR: conn length " << conn_length << " too short. Skipping.\n";
     return false;
+    }
 
   size_type num_verts;
   size_type cell_type = cellConn[0];
@@ -334,7 +338,8 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
   case TESS_TRIANGLE_STRIP:
                               num_verts = cellConn[1]; break;
   default:
-  case TESS_INVALID_CELL:     return false;
+  case TESS_INVALID_CELL:     std::cerr << "ERROR: Unknown cell type " << cell_type << "\n";
+                              return false;
     }
 
   // Determine whether cellConn is the proper length.
@@ -348,7 +353,12 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
     num_verts * (1 + num_vert_props); // cell connectivity + per-vertex property offsets
 
   if (conn_length != expected_length)
+    {
+    std::cerr
+      << "ERROR: Expected conn length " << expected_length
+      << " got " << conn_length << ". Skipping.\n";
     return false;
+    }
 
   std::vector<int>::iterator cur_insert = this->m_conn.begin() + offset;
   this->m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
