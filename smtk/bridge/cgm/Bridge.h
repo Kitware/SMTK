@@ -91,6 +91,10 @@ protected:
   BridgedInfoBits addVertexToManager(const smtk::model::Vertex&, RefVertex*, BridgedInfoBits requestedInfo);
   BridgedInfoBits addGroupToManager(const smtk::model::GroupEntity&, RefGroup*, BridgedInfoBits requestedInfo);
 
+  bool addTessellation(const smtk::model::Cursor&, RefFace*);
+  bool addTessellation(const smtk::model::Cursor&, RefEdge*);
+  bool addTessellation(const smtk::model::Cursor&, RefVertex*);
+
   static void colorPropFromIndex(smtk::model::Cursor&, int);
 
 private:
@@ -98,7 +102,7 @@ private:
   void operator = (const Bridge&); // Not implemented.
 };
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk
 

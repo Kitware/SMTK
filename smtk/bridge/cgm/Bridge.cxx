@@ -47,7 +47,10 @@
 #include "RefVertex.hpp"
 #include "RefGroup.hpp"
 
+#include "GMem.hpp"
+
 using smtk::model::Cursor;
+using namespace smtk::common;
 
 namespace smtk {
   namespace bridge {
@@ -112,6 +115,9 @@ int Bridge::staticSetup(const std::string& optName, const smtk::model::StringLis
 /**\brief Accept post-construction configuration options.
   *
   * Currently CGM does not support any options.
+  *
+  * TODO: Accept options for allowable tessellation error.
+  *       (See addTessellation method.)
   */
 int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
 {
@@ -515,6 +521,19 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
       }
     if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
       {
+      DLIList<RefEntity*> children;
+      refVolume->get_child_ref_entities(children);
+      int nc = children.size();
+      for (int j = 0; j < nc; ++j)
+        {
+        RefEntity* child = children.get_and_step();
+        TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(child, true);
+        smtk::common::UUID smtkChildId = refId->entityId();
+        Cursor smtkChild(cursor.manager(), smtkChildId);
+        mutableCursor.addRawRelation(smtkChild); // FIXME: Should test for preexisting relationship.
+        if (true) // FIXME: should test "depth"
+          this->addCGMEntityToManager(smtkChild, child, requestedInfo);
+        }
       // FIXME: Todo.
       actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
       }
@@ -540,13 +559,48 @@ smtk::model::BridgedInfoBits Bridge::addFaceToManager(
   RefFace* refFace,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refFace)
     {
-    if (requestedInfo)
+    smtk::model::Face mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertFace(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // Add refFace relations and arrangements
+      DLIList<RefEntity*> children;
+      refFace->get_child_ref_entities(children);
+      int nc = children.size();
+      for (int j = 0; j < nc; ++j)
+        {
+        RefEntity* child = children.get_and_step();
+        TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(child, true);
+        smtk::common::UUID smtkChildId = refId->entityId();
+        Cursor smtkChild(cursor.manager(), smtkChildId);
+        mutableCursor.addRawRelation(smtkChild); // FIXME: Should test for preexisting relationship.
+        if (true) // FIXME: should test "depth"
+          this->addCGMEntityToManager(smtkChild, child, requestedInfo);
+        }
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refFace))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refFace->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -605,6 +659,125 @@ smtk::model::BridgedInfoBits Bridge::addGroupToManager(
     }
   return actual;
 }
+
+template<typename E>
+bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt)
+{
+  if (!cgmEnt || !cursor.manager() || !cursor.entity())
+    return false;
+
+  GMem primitives;
+  double measure = cgmEnt->measure();
+  double maxErr = pow(measure, 1./cgmEnt->dimension()) / 10.;
+  double longestEdge = measure;
+  cgmEnt->get_graphics(primitives, 15, maxErr, longestEdge);
+  int connCount = primitives.fListCount;
+  int npts = primitives.pointListCount;
+  if (npts <= 0 || (connCount <= 0 && cgmEnt->dimension() > 1))
+    {
+    return false;
+    }
+  smtk::model::Tessellation blank;
+  smtk::model::UUIDsToTessellations& tess(cursor.manager()->tessellations());
+  smtk::model::UUIDsToTessellations::iterator it =
+    tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(cursor.entity(), blank)).first;
+  // Now add data to the Tessellation "in situ" to avoid a copy.
+  // First, copy point coordinates:
+  it->second.coords().reserve(3 * npts);
+  GPoint* inPts = primitives.point_list();
+  for (int j = 0; j < npts; ++j, ++inPts)
+    {
+    it->second.addCoords(inPts->x, inPts->y, inPts->z);
+    }
+  // Now translate the connectivity:
+  if (cgmEnt->dimension() > 1)
+    {
+    it->second.conn().reserve(connCount);
+    int* inConn = primitives.facet_list();
+    int ptsPerPrim = 0;
+    for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
+      {
+      ptsPerPrim = *inConn;
+      int* pConn = inConn + 1;
+      switch (ptsPerPrim)
+        {
+      case 1:
+        // This is a vertex
+        it->second.addPoint(pConn[0]);
+        break;
+      case 2:
+        it->second.addLine(pConn[0], pConn[1]);
+        break;
+      case 3:
+        it->second.addTriangle(pConn[0], pConn[1], pConn[2]);
+        break;
+      case 4:
+        it->second.addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
+      default:
+        std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
+        break;
+        }
+      }
+    }
+  else
+    {
+    it->second.conn().reserve(npts + 2);
+    it->second.conn().push_back(smtk::model::TESS_POLYLINE);
+    it->second.conn().push_back(npts);
+    for (int k = 0; k < npts; ++k)
+      {
+      it->second.conn().push_back(k);
+      }
+    }
+  return true;
+}
+
+template<>
+bool BridgeAddTessellation(const Cursor& cursor, RefVertex* cgmEnt)
+{
+  if (!cgmEnt || !cursor.manager() || !cursor.entity())
+    return false;
+
+  std::vector<int> cellConn;
+  cellConn.push_back(smtk::model::TESS_VERTEX);
+  cellConn.push_back(0);
+
+  CubitVector coords = cgmEnt->coordinates();
+  smtk::model::Tessellation blank;
+  smtk::model::UUIDsToTessellations& tess(cursor.manager()->tessellations());
+  smtk::model::UUIDsToTessellations::iterator it =
+    tess.insert(
+      std::pair<smtk::common::UUID,smtk::model::Tessellation>(
+        cursor.entity(), blank)).first;
+  // Now add data to the Tessellation "in situ" to avoid a copy.
+  // First, copy point coordinates:
+  it->second.coords().resize(3);
+  coords.get_xyz(&it->second.coords()[0]);
+  it->second.insertNextCell(cellConn);
+  return true;
+}
+
+/**\brief Ask CGM to hand us a tessellation of the \a cgmEnt for rendering.
+  *
+  * The resulting tessellation is stored in the \a cursor's model manager
+  * and accessible from the cursor.
+  */
+///@{
+bool Bridge::addTessellation(const Cursor& cursor, RefFace* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt);
+}
+
+bool Bridge::addTessellation(const Cursor& cursor, RefEdge* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt);
+}
+
+bool Bridge::addTessellation(const Cursor& cursor, RefVertex* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt);
+}
+///@}
 
 /**\brief Assign an RGBA color to \a uid base on \a colorIndex.
   *
