@@ -49,6 +49,7 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 {
   int ai = this->addCoords(a);
   int bi = this->addCoords(b);
+  this->m_conn.push_back(TESS_POLYLINE);
   this->m_conn.push_back(2);
   this->m_conn.push_back(ai);
   this->m_conn.push_back(bi);
@@ -57,25 +58,39 @@ Tessellation& Tessellation::addLine(double* a, double* b)
 
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
-  int ai = this->addCoords(a);
-  int bi = this->addCoords(b);
-  int ci = this->addCoords(c);
-  this->m_conn.push_back(0); // A triangle in three.js format.
-  this->m_conn.push_back(ai);
-  this->m_conn.push_back(bi);
-  this->m_conn.push_back(ci);
+  std::vector<int> conn;
+  conn.reserve(4);
+  conn.push_back(TESS_TRIANGLE);
+  conn.push_back(this->addCoords(a));
+  conn.push_back(this->addCoords(b));
+  conn.push_back(this->addCoords(c));
+  this->insertNextCell(conn);
+  return *this;
+}
+
+Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
+{
+  std::vector<int> conn;
+  conn.reserve(5);
+  conn.push_back(TESS_QUAD);
+  conn.push_back(this->addCoords(a));
+  conn.push_back(this->addCoords(b));
+  conn.push_back(this->addCoords(c));
+  conn.push_back(this->addCoords(d));
+  this->insertNextCell(conn);
   return *this;
 }
 
 Tessellation& Tessellation::addPoint(int ai)
 {
-  this->m_conn.push_back(512);
+  this->m_conn.push_back(TESS_VERTEX);
   this->m_conn.push_back(ai);
   return *this;
 }
 
 Tessellation& Tessellation::addLine(int ai, int bi)
 {
+  this->m_conn.push_back(TESS_POLYLINE);
   this->m_conn.push_back(2);
   this->m_conn.push_back(ai);
   this->m_conn.push_back(bi);
@@ -84,10 +99,20 @@ Tessellation& Tessellation::addLine(int ai, int bi)
 
 Tessellation& Tessellation::addTriangle(int ai, int bi, int ci)
 {
-  this->m_conn.push_back(0);
+  this->m_conn.push_back(TESS_TRIANGLE);
   this->m_conn.push_back(ai);
   this->m_conn.push_back(bi);
   this->m_conn.push_back(ci);
+  return *this;
+}
+
+Tessellation& Tessellation::addQuad(int ai, int bi, int ci, int di)
+{
+  this->m_conn.push_back(TESS_QUAD);
+  this->m_conn.push_back(ai);
+  this->m_conn.push_back(bi);
+  this->m_conn.push_back(ci);
+  this->m_conn.push_back(di);
   return *this;
 }
 
@@ -188,9 +213,26 @@ Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
     this->end();
 }
 
+Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const int* cellConn)
+{
+  size_type insert_pos = static_cast<size_type>(this->m_conn.size());
+  return
+    this->insertCell(insert_pos, connLen, cellConn) ?
+    insert_pos :
+    this->end();
+}
+
 bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 {
   size_type conn_length = cellConn.size();
+  return
+    conn_length > 0 ?
+      this->insertCell(offset, conn_length, &cellConn[0]) :
+      false;
+}
+
+bool Tessellation::insertCell(size_type offset, size_type conn_length, const int* cellConn)
+{
   if (conn_length < 2) // Must have cell type plus at least one vertex ID
     return false;
 
@@ -225,7 +267,7 @@ bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
     return false;
 
   std::vector<int>::iterator cur_insert = this->m_conn.begin() + offset;
-  this->m_conn.insert(cur_insert, cellConn.begin(), cellConn.end());
+  this->m_conn.insert(cur_insert, cellConn, cellConn + conn_length);
   return true;
 }
 

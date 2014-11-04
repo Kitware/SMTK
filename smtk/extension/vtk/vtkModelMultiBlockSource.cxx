@@ -136,8 +136,7 @@ void vtkModelMultiBlockSource::Dirty()
  * \sa vtkModelMultiBlockSource::GetDefaultColor
  */
 
-template<int Dim>
-void AddEntityTessToPolyData(
+static void AddEntityTessToPolyData(
   const smtk::model::Cursor& cursor, vtkPoints* pts, vtkPolyData* pd, vtkStringArray* pedigree)
 {
   const smtk::model::Tessellation* tess = cursor.hasTessellation();
@@ -214,20 +213,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
   smtk::model::Entity* entity;
   if (cursor.isValid(&entity))
     {
-    switch(entity->dimension())
-      {
-    case 0:
-      AddEntityTessToPolyData<0>(cursor, pts.GetPointer(), pd, pedigree.GetPointer());
-      break;
-    case 1:
-      AddEntityTessToPolyData<1>(cursor, pts.GetPointer(), pd, pedigree.GetPointer());
-      break;
-    case 2:
-      AddEntityTessToPolyData<2>(cursor, pts.GetPointer(), pd, pedigree.GetPointer());
-      break;
-    default:
-      break;
-      }
+    AddEntityTessToPolyData(cursor, pts.GetPointer(), pd, pedigree.GetPointer());
     // Only create the color array if there is a valid default:
     if (this->DefaultColor[3] >= 0.)
       {

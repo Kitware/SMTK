@@ -101,10 +101,12 @@ public:
   Tessellation& addPoint(double* a);
   Tessellation& addLine(double* a, double* b);
   Tessellation& addTriangle(double* a, double* b, double* c);
+  Tessellation& addQuad(double* a, double* b, double* c, double* d);
 
   Tessellation& addPoint(int ai);
   Tessellation& addLine(int ai, int bi);
   Tessellation& addTriangle(int ai, int bi, int ci);
+  Tessellation& addQuad(int ai, int bi, int ci, int di);
 
   Tessellation& reset();
 
@@ -126,7 +128,10 @@ public:
   //       cellProperty(TESS_FACE_COLOR,         offset, vertNormalIds);
 
   size_type insertNextCell(std::vector<int>& cellConn);
+  size_type insertNextCell(size_type connLen, const int* cellConn);
+
   bool insertCell(size_type offset, std::vector<int>& cellConn);
+  bool insertCell(size_type offset, size_type connLen, const int* cellConn);
 
   static size_type cellShapeFromType(size_type);
   static int numCellPropsFromType(size_type cellType);

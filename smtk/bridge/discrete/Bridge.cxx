@@ -572,31 +572,54 @@ static void AddCellsToTessellation(
   std::map<vtkIdType,int>::iterator pit;
   for (cells->InitTraversal(); cells->GetNextCell(npts, conn); )
     {
-    tconn.resize(npts);
+    tconn.reserve(npts + 2);
+    switch (role)
+      {
+    case SMTK_ROLE_VERTS:
+      if (npts > 1)
+        {
+        tconn.push_back(TESS_POLYVERTEX);
+        tconn.push_back(npts);
+        }
+      else
+        {
+        tconn.push_back(TESS_VERTEX);
+        }
+      break;
+    case SMTK_ROLE_LINES:
+      tconn.push_back(TESS_POLYLINE);
+      tconn.push_back(npts);
+      break;
+    case SMTK_ROLE_POLYS:
+      switch (npts)
+        {
+      case 0:
+      case 1:
+      case 2:
+        std::cerr
+          << "Too few points (" << npts
+          << ") for a surface primitive. Skipping.\n";
+        continue;
+        break;
+      case 3: tconn.push_back(TESS_TRIANGLE); break;
+      case 4: tconn.push_back(TESS_QUAD); break;
+      default: tconn.push_back(TESS_POLYGON); tconn.push_back(npts); break;
+        }
+      break;
+    default:
+      std::cerr << "Unknown tessellation role " << role << ". Skipping.\n";
+      continue;
+      break;
+      }
     for (vtkIdType i = 0; i < npts; ++i)
       {
       if ((pit = vertMap.find(conn[i])) == vertMap.end())
         pit = vertMap.insert(
           std::pair<vtkIdType,int>(
             conn[i], tess.addCoords(pts->GetPoint(conn[i])))).first;
-      tconn[i] = pit->second;
+      tconn.push_back(pit->second );
       }
-    switch (role)
-      {
-    case SMTK_ROLE_VERTS:
-      break;
-    case SMTK_ROLE_LINES:
-      break;
-    case SMTK_ROLE_POLYS:
-      switch (npts)
-        {
-      case 1: tess.addPoint(tconn[0]); break;
-      case 2: tess.addLine(tconn[0], tconn[1]); break;
-      case 3: tess.addTriangle(tconn[0], tconn[1], tconn[2]); break;
-      default: std::cerr << "Unhandled polydata primitive " << npts << " pts\n"; break;
-        }
-      break;
-      }
+    tess.insertNextCell(tconn);
     }
 }
 
