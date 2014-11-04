@@ -145,7 +145,10 @@ public:
   Cursors higherDimensionalBordants(int higherDimension);
   Cursors adjacentEntities(int ofDimension);
 
+  template<typename T> T relationsAs() const;
+  Cursors relations() const;
   Cursor& addRawRelation(const Cursor& ent);
+  Cursor& findOrAddRawRelation(const Cursor& ent);
 
   const Tessellation* hasTessellation() const;
 
@@ -220,6 +223,26 @@ protected:
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
+
+template<typename T>
+T Cursor::relationsAs() const
+{
+  T result;
+  smtk::model::Entity* entRec;
+  if (!this->isValid(&entRec))
+    return result;
+
+  smtk::common::UUIDArray::const_iterator it;
+  for (it = entRec->relations().begin(); it != entRec->relations().end(); ++it)
+    {
+    typename T::value_type entry(this->m_manager, *it);
+    if (entry.isValid())
+      {
+      result.insert(result.end(), entry);
+      }
+    }
+  return result;
+}
 
 template<typename S, typename T>
 void Cursor::CursorsFromUUIDs(

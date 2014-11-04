@@ -103,6 +103,44 @@ void testComplexVertexChain()
   test(eun.vertexUses() == rvu, "Complex chain traversal failed (reversed).");
 }
 
+void testMiscConstructionMethods()
+{
+  ManagerPtr sm = Manager::create();
+  Vertices verts;
+  Edges edges;
+  for (int i = 0; i < 6; ++i)
+    {
+    verts.push_back(sm->addVertex());
+    if (i > 0)
+      {
+      edges.push_back(sm->addEdge());
+      edges[i-1].addRawRelation(verts[i-1]);
+      edges[i-1].addRawRelation(verts[i]);
+      test(edges[i-1].relationsAs<CursorArray>().size() == 2,
+        "Expected addRawRelation() to add a relation.");
+      }
+    }
+  edges.push_back(sm->addEdge());
+  edges[5].addRawRelation(verts[5]);
+  edges[5].addRawRelation(verts[0]);
+  test(edges[5].relationsAs<CursorArray>().size() == 2,
+    "Expected addRawRelation() to add a relation.");
+
+  // Should have no effect:
+  edges[0].findOrAddRawRelation(verts[0]);
+  test(edges[0].relationsAs<CursorArray>().size() == 2,
+    "Expected findOrAddRawRelation() to skip adding a duplicate relation.");
+
+  // Should have an effect:
+  edges[0].addRawRelation(verts[0]);
+  test(edges[0].relationsAs<CursorArray>().size() == 3,
+    "Expected addRawRelation() to add a duplicate relation.");
+
+  // Should not include duplicates:
+  test(edges[0].relationsAs<Cursors>().size() == 2,
+    "Expected relationsAs<Cursors> (a set) to remove duplicates.");
+}
+
 int main(int argc, char* argv[])
 {
   (void) argc;
@@ -466,6 +504,7 @@ int main(int argc, char* argv[])
     test(n4 == 3, "3 inner-face vertex-uses should have 4 chains each.");
 
     testComplexVertexChain();
+    testMiscConstructionMethods();
     }
   catch (const std::string& msg)
     {

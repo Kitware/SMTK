@@ -530,7 +530,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
         TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(child, true);
         smtk::common::UUID smtkChildId = refId->entityId();
         Cursor smtkChild(cursor.manager(), smtkChildId);
-        mutableCursor.addRawRelation(smtkChild); // FIXME: Should test for preexisting relationship.
+        mutableCursor.findOrAddRawRelation(smtkChild);
         if (true) // FIXME: should test "depth"
           this->addCGMEntityToManager(smtkChild, child, requestedInfo);
         }
