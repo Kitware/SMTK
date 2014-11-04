@@ -16,6 +16,7 @@ Tessellation::Tessellation()
 {
 }
 
+/// Add a 3-D point coordinate to the tessellation, but not a vertex record.
 int Tessellation::addCoords(double* a)
 {
   std::vector<double>::size_type ipt = this->m_coords.size();
@@ -26,6 +27,7 @@ int Tessellation::addCoords(double* a)
   return static_cast<int>(ipt / 3);
 }
 
+/// Add a 3-D point coordinate to the tessellation, but not a vertex record.
 Tessellation& Tessellation::addCoords(double x, double y, double z)
 {
   this->m_coords.push_back(x);
@@ -34,6 +36,7 @@ Tessellation& Tessellation::addCoords(double x, double y, double z)
   return *this;
 }
 
+/// Add a 3-D point coordinate to the tessellation plus a vertex record.
 Tessellation& Tessellation::addPoint(double* a)
 {
   int ai = this->addCoords(a);
@@ -45,6 +48,7 @@ Tessellation& Tessellation::addPoint(double* a)
   return *this;
 }
 
+/// Add two 3-D point coordinates to the tessellation plus a line-segment record.
 Tessellation& Tessellation::addLine(double* a, double* b)
 {
   int ai = this->addCoords(a);
@@ -56,6 +60,7 @@ Tessellation& Tessellation::addLine(double* a, double* b)
   return *this;
 }
 
+/// Add three 3-D point coordinates to the tessellation plus a triangle record.
 Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
 {
   std::vector<int> conn;
@@ -68,6 +73,7 @@ Tessellation& Tessellation::addTriangle(double* a, double* b, double* c)
   return *this;
 }
 
+/// Add four 3-D point coordinates to the tessellation plus a quadrilateral record.
 Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
 {
   std::vector<int> conn;
@@ -81,6 +87,7 @@ Tessellation& Tessellation::addQuad(double* a, double* b, double* c, double* d)
   return *this;
 }
 
+/// Add a vertex record using a pre-existing point coordinate (referenced by ID).
 Tessellation& Tessellation::addPoint(int ai)
 {
   this->m_conn.push_back(TESS_VERTEX);
@@ -88,6 +95,7 @@ Tessellation& Tessellation::addPoint(int ai)
   return *this;
 }
 
+/// Add a line-segment record using 2 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addLine(int ai, int bi)
 {
   this->m_conn.push_back(TESS_POLYLINE);
@@ -97,6 +105,7 @@ Tessellation& Tessellation::addLine(int ai, int bi)
   return *this;
 }
 
+/// Add a triangle record using 3 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addTriangle(int ai, int bi, int ci)
 {
   this->m_conn.push_back(TESS_TRIANGLE);
@@ -106,6 +115,7 @@ Tessellation& Tessellation::addTriangle(int ai, int bi, int ci)
   return *this;
 }
 
+/// Add a quadrilateral record using 4 pre-existing point coordinates (referenced by ID).
 Tessellation& Tessellation::addQuad(int ai, int bi, int ci, int di)
 {
   this->m_conn.push_back(TESS_QUAD);
@@ -116,6 +126,7 @@ Tessellation& Tessellation::addQuad(int ai, int bi, int ci, int di)
   return *this;
 }
 
+/// Erase all point coordinates and tessellation primitive records.
 Tessellation& Tessellation::reset()
 {
   this->m_conn.clear();
@@ -123,14 +134,29 @@ Tessellation& Tessellation::reset()
   return *this;
 }
 
+/**\brief Return an offset-style iterator for traversing the
+  *       tessellation-primitive-record connectivity array.
+  *
+  * The integer that is returned can be used as an offset into the
+  * connectivity array that marks the beginning of a tessellation
+  * primitive (vertex, line segment, triangle, quad, etc.).
+  */
 Tessellation::size_type Tessellation::begin() const
 {
   return this->m_conn.empty() ? this->end() : 0;
 }
 
+/**\brief Return an offset-style end iterator for traversing the
+  *       tessellation-primitive-record connectivity array.
+  *
+  * This is just a special invalid value that makes offsets into
+  * the connectivity array appear to be usable as iterators.
+  */
 Tessellation::size_type Tessellation::end() const
 { return -1; }
 
+/**\brief Advance an offset into the connectivity record to the next cell.
+  */
 Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
 {
   size_type cell_type;
@@ -149,6 +175,13 @@ Tessellation::size_type Tessellation::nextCellOffset(size_type curOffset) const
   return next;
 }
 
+/**\brief Return the type of tessellation primitive stored at the given \a offset.
+  *
+  * Note that the cell type includes both its shape plus flags
+  * used by Three.js to indicate what per-cell and/or per-vertex
+  * properties are stored in addition to coordinates (e.g.,
+  * normals, color, material).
+  */
 Tessellation::size_type Tessellation::cellType(size_type offset) const
 {
   return
@@ -157,6 +190,13 @@ Tessellation::size_type Tessellation::cellType(size_type offset) const
     this->m_conn[offset];
 }
 
+/**\brief Return the number of vertices in the tessellation primitive
+  *       stored at the given \a offset.
+  *
+  * You may optionally pass the address of \a cellTypeOut to obtain
+  * the cell's type at the same time (since it must be fetched in
+  * order to determine the number of vertices.
+  */
 Tessellation::size_type Tessellation::numberOfCellVertices(
   size_type offset, size_type* cellTypeOut) const
 {
@@ -180,6 +220,16 @@ Tessellation::size_type Tessellation::numberOfCellVertices(
   return 0;
 }
 
+/**\brief Return the vertex IDs of the points defining the tessellation
+  *       primitive at the given \a offset in \a cellConn.
+  *
+  * Note that this is **not** the same as the vector of integers you
+  * must pass the insertCell or insertNextCell methods!
+  * This call populates \a cellConn with *just* the vertex IDs, not
+  * the cell type, the number of vertices, or any non-vertex IDs stored
+  * in the connectivity (such as normal-vector IDs, color IDs, material
+  * IDs, etc.).
+  */
 Tessellation::size_type Tessellation::vertexIdsOfCell(size_type offset, std::vector<int>& cellConn) const
 {
   size_type cell_type;
@@ -187,10 +237,11 @@ Tessellation::size_type Tessellation::vertexIdsOfCell(size_type offset, std::vec
   ++ offset;
   if (cell_type & TESS_VARYING_VERT_CELL)
     ++ offset; // advance to first vertex.
-  cellConn.insert(cellConn.end(), &this->m_conn[offset], &this->m_conn[offset + num_verts]);
+  cellConn.insert(cellConn.end(), &this->m_conn[offset], &this->m_conn[offset] + num_verts);
   return num_verts;
 }
 
+/// Return the material ID of the primitive at the given \a offset.
 Tessellation::size_type Tessellation::materialIdOfCell(size_type offset) const
 {
   size_type cell_type;
@@ -204,6 +255,11 @@ Tessellation::size_type Tessellation::materialIdOfCell(size_type offset) const
   return this->m_conn[offset];
 }
 
+/**\brief Insert by specifying exactly the values
+  *       to be appended to the end of the connectivity array.
+  *
+  * This simply calls insertCell with the proper offset.
+  */
 Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
 {
   size_type insert_pos = static_cast<size_type>(this->m_conn.size());
@@ -213,6 +269,11 @@ Tessellation::size_type Tessellation::insertNextCell(std::vector<int>& cellConn)
     this->end();
 }
 
+/**\brief Insert by specifying exactly the values
+  *       to be appended to the end of the connectivity array.
+  *
+  * This simply calls insertCell with the proper offset.
+  */
 Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const int* cellConn)
 {
   size_type insert_pos = static_cast<size_type>(this->m_conn.size());
@@ -222,6 +283,11 @@ Tessellation::size_type Tessellation::insertNextCell(size_type connLen, const in
     this->end();
 }
 
+/**\brief Insert a cell by specifying exactly the values
+  *       to be inserted into the connectivity array.
+  *
+  * This variant accepts vectors of integers rather than a pointer.
+  */
 bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
 {
   size_type conn_length = cellConn.size();
@@ -231,6 +297,24 @@ bool Tessellation::insertCell(size_type offset, std::vector<int>& cellConn)
       false;
 }
 
+/**\brief Insert a cell by specifying exactly the values
+  *       to be inserted into the connectivity array.
+  *
+  * Note that this is not simply a list of point coordinate IDs to serve
+  * as corner vertices for the primitive;
+  * rather, it starts with the cell type,
+  * then includes the number of vertices in the cell (but only when
+  * the cell type requires it -- see TESS_VARYING_VERT_CELL),
+  * followed by
+  * the vertex IDs,
+  * the material ID (if the TESS_FACE_MATERIAL bit is set in the cell type),
+  * the per-cell UV coordinate ID (if the TESS_FACE_UV bit is set),
+  * the per-vertex UV coordinate IDs (if the TESS_FACE_VERTEX_UV bit is set),
+  * the per-cell normal vector ID (if the TESS_FACE_NORMAL bit is set),
+  * the per-vertex normal vector IDs (if the TESS_FACE_VERTEX_NORMAL bit is set),
+  * the per-cell color ID (if the TESS_FACE_COLOR bit is set), and
+  * the per-vertex color IDs (if the TESS_FACE_VERTEX_COLOR bit is set).
+  */
 bool Tessellation::insertCell(size_type offset, size_type conn_length, const int* cellConn)
 {
   if (conn_length < 2) // Must have cell type plus at least one vertex ID
@@ -271,11 +355,13 @@ bool Tessellation::insertCell(size_type offset, size_type conn_length, const int
   return true;
 }
 
+/// Given a cell type, return just the bits that represent its shape.
 Tessellation::size_type Tessellation::cellShapeFromType(size_type ctype)
 {
   return ctype & TESS_CELLTYPE_MASK;
 }
 
+/// Given a cell type, return the number of per-cell IDs stored in the connectivity array.
 int Tessellation::numCellPropsFromType(size_type ctype)
 {
   int num_cell_props = 0;
@@ -286,6 +372,9 @@ int Tessellation::numCellPropsFromType(size_type ctype)
   return num_cell_props;
 }
 
+/**\brief Given a cell type, return the number of per-vertex property IDs
+  *       (not including vertex IDs) stored in the connectivity array.
+  */
 int Tessellation::numVertexPropsFromType(size_type ctype)
 {
   int num_vert_props = 0;

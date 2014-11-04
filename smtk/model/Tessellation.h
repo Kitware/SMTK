@@ -75,6 +75,18 @@ enum TessellationCellType
   * a triangulation of the model entity for rendering.
   * However, it may also evolve to store information about the
   * underlying geometric construct being approximated.
+  *
+  * Each instance stores point coordinates and connectivity
+  * in two different arrays.
+  * These arrays are organized for maximum compatibility with
+  * [ThreeJS](http://threejs.org/) but extended to allow additional
+  * primitive types (mainly vertices and polylines, but also others).
+  *
+  * Although ThreeJS bit values are used to indicate additional
+  * values stored in the connectivity (such as normal vector, color,
+  * and uv-coordinate IDs), there is no storage for additional
+  * properties (i.e., no normals, colors, or uv-coordinates).
+  * That may change in the future.
   */
 class SMTKCORE_EXPORT Tessellation
 {
