@@ -10,10 +10,8 @@ simulation domain.
 
 ## Documentation
 
-To read more about how to use SMTK see the
-
-+ [user's guide (**FIXME**)](http://smtk.org/doc/user/index.html) and
-+ [reference documentation (**FIXME**)](http://smtk.org/doc/reference/smtk/index.xhtml)
+The SMTK documentation is at [Read The Docs](http://smtk.readthedocs.org/en/latest/index.html).
+What's below is a quick guide to building SMTK.
 
 ## Building SMTK
 

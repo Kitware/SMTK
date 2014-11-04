@@ -20,12 +20,13 @@
 #include "vtkNew.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper.h"
-#include "vtkXMLMultiBlockDataWriter.h"
+#include "vtkProperty.h"
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
+#include "vtkXMLMultiBlockDataWriter.h"
 
 #include "vtkRegressionTestImage.h"
 
@@ -78,6 +79,8 @@ int main(int argc, char* argv[])
     src->SetModelManager(sm);
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
+    act->GetProperty()->SetPointSize(5);
+    act->GetProperty()->SetLineWidth(2);
 
     win->AddRenderer(ren.GetPointer());
     ren->AddActor(act.GetPointer());

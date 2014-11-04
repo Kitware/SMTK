@@ -417,7 +417,6 @@ qtAssociationWidget::processDefUniqueness(const smtk::model::ModelEntity& theEnt
       smtk::attribute::DefinitionPtr attDef = attPtr->definition();
       if(attDef->isUnique())
         {
-        System *attSystem = attDef->system();
         smtk::attribute::ConstDefinitionPtr baseDef =
           attSystem->findIsUniqueBaseClass(attDef);
         smtk::attribute::DefinitionPtr bdef(smtk::const_pointer_cast<Definition>(baseDef));

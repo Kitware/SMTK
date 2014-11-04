@@ -82,7 +82,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     }
-  catch (exception& e)
+  catch (std::exception& e)
     {
     std::cout << "There is exception being throw while setting default engine: \"" << e.what() << "\"\n";
     }

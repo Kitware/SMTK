@@ -136,16 +136,15 @@ void vtkModelMultiBlockSource::Dirty()
  * \sa vtkModelMultiBlockSource::GetDefaultColor
  */
 
-template<int Dim>
-void AddEntityTessToPolyData(
-  const smtk::model::Cursor& cursor, vtkPoints* pts, vtkCellArray* cells, vtkStringArray* pedigree)
+static void AddEntityTessToPolyData(
+  const smtk::model::Cursor& cursor, vtkPoints* pts, vtkPolyData* pd, vtkStringArray* pedigree)
 {
   const smtk::model::Tessellation* tess = cursor.hasTessellation();
   if (!tess)
     return;
 
   vtkIdType i;
-  vtkIdType connOffset = pts->GetNumberOfPoints();
+  //vtkIdType connOffset = pts->GetNumberOfPoints();
   std::vector<vtkIdType> conn;
   std::string uuidStr = cursor.entity().toString();
   vtkIdType npts = tess->coords().size() / 3;
@@ -153,57 +152,46 @@ void AddEntityTessToPolyData(
     {
     pts->InsertNextPoint(&tess->coords()[3*i]);
     }
-  vtkIdType nconn = tess->conn().size();
-  int ptsPerPrim = 0;
-  if (nconn == 0 && Dim == 0)
-    { // every point is a vertex cell.
-    for (i = 0; i < npts; ++i)
-      {
-      vtkIdType pid = i + connOffset;
-      cells->InsertNextCell(1, &pid);
-      pedigree->InsertNextValue(uuidStr);
-      }
-    }
-  else
+  Tessellation::size_type off;
+  vtkNew<vtkCellArray> verts;
+  vtkNew<vtkCellArray> lines;
+  vtkNew<vtkCellArray> polys;
+  vtkNew<vtkCellArray> strip;
+  bool have_verts = false;
+  bool have_lines = false;
+  bool have_polys = false;
+  bool have_strip = false;
+  for (off = tess->begin(); off != tess->end(); off = tess->nextCellOffset(off))
     {
-    for (i = 0; i < nconn; i += ptsPerPrim + 1)
+    Tessellation::size_type cell_type = tess->cellType(off);
+    Tessellation::size_type cell_shape = tess->cellShapeFromType(cell_type);
+    std::vector<int> cell_conn;
+    Tessellation::size_type num_verts = tess->vertexIdsOfCell(off, cell_conn);
+    std::vector<vtkIdType> vtk_conn(cell_conn.begin(), cell_conn.end());
+    switch (cell_shape)
       {
-      if (Dim < 2)
-        {
-        ptsPerPrim = tess->conn()[i];
-        }
-      else
-        {
-        // TODO: Handle "extended" format that allows lines and verts.
-        switch (tess->conn()[i] & 0x01) // bit 0 indicates quad, otherwise triangle.
-          {
-        case 0:
-          ptsPerPrim = 3; //primType = VTK_TRIANGLE;
-          break;
-        case 1:
-          ptsPerPrim = 4; //primType = VTK_QUAD;
-          break;
-        default:
-            {
-            vtkGenericWarningMacro(<< "Unknown tessellation primitive type: " << tess->conn()[i]);
-            return;
-            }
-          }
-        }
-      if (nconn < (ptsPerPrim + i + 1))
-        { // FIXME: Ignore junk at the end? Error message?
-        break;
-        }
-      conn.resize(ptsPerPrim);
-      // Rewrite connectivity for polydata:
-      for (int k = 0; k < ptsPerPrim; ++k)
-        {
-        conn[k] = tess->conn()[i + k + 1] + connOffset;
-        }
-      cells->InsertNextCell(ptsPerPrim, &conn[0]);
-      pedigree->InsertNextValue(uuidStr);
+    case TESS_VERTEX:          have_verts = true; verts->InsertNextCell(1, &vtk_conn[0]); break;
+    case TESS_TRIANGLE:        have_polys = true; polys->InsertNextCell(3, &vtk_conn[0]); break;
+    case TESS_QUAD:            have_polys = true; polys->InsertNextCell(4, &vtk_conn[0]); break;
+    case TESS_POLYVERTEX:      have_verts = true; verts->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    case TESS_POLYLINE:        have_lines = true; lines->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    case TESS_POLYGON:         have_polys = true; polys->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    case TESS_TRIANGLE_STRIP:  have_strip = true; strip->InsertNextCell(num_verts, &vtk_conn[0]); break;
+    default:
+      std::cerr << "Invalid cell shape " << cell_shape << " at offset " << off << ". Skipping.\n";
+      continue;
+      break;
       }
+    // WARNING!!!
+    // Normally, it would matter what order the verts, lines, polys, and strips appear in...
+    // but since the pedigree ID is the same for all the cells (and we assume for now that
+    // there is one uuidStr per polydata), then it doesn't matter.
+    pedigree->InsertNextValue(uuidStr);
     }
+  if (have_verts) pd->SetVerts(verts.GetPointer());
+  if (have_lines) pd->SetLines(lines.GetPointer());
+  if (have_polys) pd->SetPolys(polys.GetPointer());
+  if (have_strip) pd->SetStrips(strip.GetPointer());
 }
 
 /// Loop over the model generating blocks of polydata.
@@ -225,32 +213,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
   smtk::model::Entity* entity;
   if (cursor.isValid(&entity))
     {
-    switch(entity->dimension())
-      {
-    case 0:
-        {
-        vtkNew<vtkCellArray> verts;
-        pd->SetVerts(verts.GetPointer());
-        AddEntityTessToPolyData<0>(cursor, pts.GetPointer(), pd->GetVerts(), pedigree.GetPointer());
-        }
-      break;
-    case 1:
-        {
-        vtkNew<vtkCellArray> lines;
-        pd->SetLines(lines.GetPointer());
-        AddEntityTessToPolyData<1>(cursor, pts.GetPointer(), pd->GetLines(), pedigree.GetPointer());
-        }
-      break;
-    case 2:
-        {
-        vtkNew<vtkCellArray> polys;
-        pd->SetPolys(polys.GetPointer());
-        AddEntityTessToPolyData<2>(cursor, pts.GetPointer(), pd->GetPolys(), pedigree.GetPointer());
-        }
-      break;
-    default:
-      break;
-      }
+    AddEntityTessToPolyData(cursor, pts.GetPointer(), pd, pedigree.GetPointer());
     // Only create the color array if there is a valid default:
     if (this->DefaultColor[3] >= 0.)
       {

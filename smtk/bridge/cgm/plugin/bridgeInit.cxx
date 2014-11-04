@@ -8,8 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/options.h"
-
+#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
 #ifdef SMTK_BUILD_CGM

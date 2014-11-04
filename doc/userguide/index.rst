@@ -30,6 +30,19 @@ SMTK also provides a uniform interface to several different
 solid modeling kernels for preparing discretizations of your
 simulation domain.
 
+For instructions on obtaining, building, and installing
+SMTK, clone the repository:
+
+.. code:: sh
+
+   git clone git://public.kitware.com/SMTK.git
+
+and follow the instructions in the :file:`ReadMe.mkd` file
+in the top-level source directory.
+The rest of this user's guide assumes you have built
+and installed SMTK according to these instructions.
+
+
 .. toctree::
    :maxdepth: 4
 

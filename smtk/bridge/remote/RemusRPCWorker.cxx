@@ -135,6 +135,7 @@ void RemusRPCWorker::processJob(
   remus::worker::Job& jd,
   remus::proto::JobRequirements& r)
 {
+  (void)r;
   JobProgress progress;
   JobStatus status(jd.id(),remus::IN_PROGRESS);
 

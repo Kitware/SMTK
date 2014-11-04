@@ -10,8 +10,6 @@
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 
-#include "smtk/options.h"
-
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
 
@@ -22,6 +20,8 @@
 #include "smtk/model/Cursor.h"
 #include "smtk/model/RemoteOperator.h"
 #include "smtk/model/StringData.h"
+
+#include "smtk/Options.h"
 
 #include "remus/common/MeshIOType.h"
 #include "remus/proto/JobSubmission.h"

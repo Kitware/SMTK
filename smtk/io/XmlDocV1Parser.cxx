@@ -2046,6 +2046,7 @@ void XmlDocV1Parser::processStringItem(pugi::xml_node &node,
 void XmlDocV1Parser::processModelEntityItem(pugi::xml_node &node,
                                           attribute::ModelEntityItemPtr item)
 {
+  (void)node;
   smtkWarningMacro(this->m_logger,
                  "All Model Entity Items will be ignored for Attribute Version 1 Format"
                  << item->name());
