@@ -30,6 +30,7 @@ class RefGroup;
 class RefEntity;
 class SenseEntity;
 class GroupingEntity;
+template<class X> class DLIList;
 
 namespace smtk {
   namespace bridge {
@@ -91,9 +92,15 @@ protected:
   BridgedInfoBits addVertexToManager(const smtk::model::Vertex&, RefVertex*, BridgedInfoBits requestedInfo);
   BridgedInfoBits addGroupToManager(const smtk::model::GroupEntity&, RefGroup*, BridgedInfoBits requestedInfo);
 
+  void addRelations(
+    smtk::model::Cursor& cursor,
+    DLIList<RefEntity*>& rels,
+    BridgedInfoBits requestedInfo,
+    int depth);
   bool addTessellation(const smtk::model::Cursor&, RefFace*);
   bool addTessellation(const smtk::model::Cursor&, RefEdge*);
   bool addTessellation(const smtk::model::Cursor&, RefVertex*);
+  bool addNamesIfAny(smtk::model::Cursor&, RefEntity*);
 
   static void colorPropFromIndex(smtk::model::Cursor&, int);
 

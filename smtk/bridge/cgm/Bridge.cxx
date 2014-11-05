@@ -29,8 +29,12 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "RefEntity.hpp"
 #include "DagType.hpp"
 #include "Body.hpp"
@@ -48,6 +52,8 @@
 #include "RefGroup.hpp"
 
 #include "GMem.hpp"
+
+typedef DLIList<RefEntity*> DLIRefList;
 
 using smtk::model::Cursor;
 using namespace smtk::common;
@@ -347,6 +353,7 @@ smtk::model::BridgedInfoBits Bridge::addBodyToManager(
     if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
       {
       // Set properties.
+      this->addNamesIfAny(mutableCursor, body);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableCursor, body->color());
       actual |= smtk::model::BRIDGE_PROPERTIES;
@@ -521,19 +528,14 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
       }
     if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
       {
-      DLIList<RefEntity*> children;
-      refVolume->get_child_ref_entities(children);
-      int nc = children.size();
-      for (int j = 0; j < nc; ++j)
-        {
-        RefEntity* child = children.get_and_step();
-        TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(child, true);
-        smtk::common::UUID smtkChildId = refId->entityId();
-        Cursor smtkChild(cursor.manager(), smtkChildId);
-        mutableCursor.findOrAddRawRelation(smtkChild);
-        if (true) // FIXME: should test "depth"
-          this->addCGMEntityToManager(smtkChild, child, requestedInfo);
-        }
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refVolume->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 3);
+      // Add parent relationships
+      refVolume->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
       // FIXME: Todo.
       actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
       }
@@ -545,6 +547,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
     if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
       {
       // Set properties.
+      this->addNamesIfAny(mutableCursor, refVolume);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableCursor, refVolume->color());
       actual |= smtk::model::BRIDGE_PROPERTIES;
@@ -569,20 +572,14 @@ smtk::model::BridgedInfoBits Bridge::addFaceToManager(
 
     if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      DLIList<RefEntity*> children;
-      refFace->get_child_ref_entities(children);
-      int nc = children.size();
-      for (int j = 0; j < nc; ++j)
-        {
-        RefEntity* child = children.get_and_step();
-        TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(child, true);
-        smtk::common::UUID smtkChildId = refId->entityId();
-        Cursor smtkChild(cursor.manager(), smtkChildId);
-        mutableCursor.addRawRelation(smtkChild); // FIXME: Should test for preexisting relationship.
-        if (true) // FIXME: should test "depth"
-          this->addCGMEntityToManager(smtkChild, child, requestedInfo);
-        }
-      // FIXME: Todo.
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refFace->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 2);
+      // Add parent relationships
+      refFace->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
       actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
       }
     if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
@@ -598,6 +595,7 @@ smtk::model::BridgedInfoBits Bridge::addFaceToManager(
     if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
       {
       // Set properties.
+      this->addNamesIfAny(mutableCursor, refFace);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableCursor, refFace->color());
       actual |= smtk::model::BRIDGE_PROPERTIES;
@@ -612,13 +610,44 @@ smtk::model::BridgedInfoBits Bridge::addEdgeToManager(
   RefEdge* refEdge,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refEdge)
     {
-    if (requestedInfo)
+    smtk::model::Edge mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertEdge(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
       // Add refEdge relations and arrangements
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refEdge->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+      // Add parent relationships
+      refEdge->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refEdge))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refEdge);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refEdge->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -630,13 +659,41 @@ smtk::model::BridgedInfoBits Bridge::addVertexToManager(
   RefVertex* refVertex,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refVertex)
     {
-    if (requestedInfo)
+    smtk::model::Vertex mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertVertex(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
       // Add refVertex relations and arrangements
+      DLIList<RefEntity*> rels;
+      // Add parent relationships
+      refVertex->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 0);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refVertex))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refVertex);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refVertex->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -652,12 +709,61 @@ smtk::model::BridgedInfoBits Bridge::addGroupToManager(
   BridgedInfoBits actual = 0;
   if (refGroup)
     {
-    if (requestedInfo)
+    smtk::model::GroupEntity mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertGroup(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // Add refGroup relations and arrangements
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refGroup->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+      // Add parent relationships
+      refGroup->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      // FIXME: Will we ever do this?
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refGroup);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refGroup->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
+}
+
+void Bridge::addRelations(
+  smtk::model::Cursor& cursor,
+  DLIList<RefEntity*>& rels,
+  BridgedInfoBits requestedInfo,
+  int depth)
+{
+  int nc = rels.size();
+  for (int j = 0; j < nc; ++j)
+    {
+    RefEntity* rel = rels.get_and_step();
+    TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(rel, true);
+    smtk::common::UUID smtkChildId = refId->entityId();
+    Cursor smtkChild(cursor.manager(), smtkChildId);
+    cursor.findOrAddRawRelation(smtkChild);
+    if (depth > 0)
+      this->addCGMEntityToManager(smtkChild, rel, requestedInfo);
+    }
 }
 
 template<typename E>
@@ -778,6 +884,41 @@ bool Bridge::addTessellation(const Cursor& cursor, RefVertex* cgmEnt)
   return BridgeAddTessellation(cursor, cgmEnt);
 }
 ///@}
+
+/**\brief Add names attached to \a cgmEnt to the SMTK entity \a cursor.
+  *
+  * Returns true if any names were attached to \a cgmEnt and
+  * false otherwise.
+  */
+bool Bridge::addNamesIfAny(smtk::model::Cursor& cursor, RefEntity* cgmEnt)
+{
+  int numNames = cgmEnt->num_names();
+  if (numNames > 0)
+    {
+#if !defined(CGM_MAJOR_VERSION) || CGM_MAJOR_VERSION <= 13
+    DLIList<CubitString*> cgmNames;
+    cgmEnt->entity_names(cgmNames);
+    smtk::model::StringList smtkNames;
+    for (int nn = 0; nn < numNames; ++nn)
+      {
+      CubitString* name = cgmNames.get_and_step();
+      smtkNames.push_back(name->c_str());
+      }
+#else // CGM_MAJOR_VERSION >= 14
+    DLIList<CubitString> cgmNames;
+    cgmEnt->entity_names(cgmNames);
+    smtk::model::StringList smtkNames;
+    for (int nn = 0; nn < numNames; ++nn)
+      {
+      CubitString name = cgmNames.get_and_step();
+      smtkNames.push_back(name.c_str());
+      }
+#endif // CGM_MAJOR_VERSION
+    cursor.setStringProperty("name", smtkNames);
+    return true;
+    }
+  return false;
+}
 
 /**\brief Assign an RGBA color to \a uid base on \a colorIndex.
   *
