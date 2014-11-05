@@ -61,6 +61,7 @@ public:
 
   virtual ~RemusRemoteBridge();
 
+  using smtk::model::Bridge::setup;
   Ptr setup(RemusBridgeConnection* remusServerConnection, remus::proto::JobRequirements& jreq);
   remus::proto::JobRequirements remusRequirements() const;
 

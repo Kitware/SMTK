@@ -229,6 +229,7 @@ namespace smtk
           result.insert(result.end(), entry);
         }
       }
+      return result;
     }
   } // attribute namespace
 } // smtk namespace

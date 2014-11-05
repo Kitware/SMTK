@@ -19,6 +19,8 @@
 
 #include "smtk/model/Events.h"
 
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/System.h"
 
 #include <string>
 
@@ -158,7 +160,20 @@ public:
 
   smtk::attribute::AttributePtr specification() const;
   bool setSpecification(smtk::attribute::AttributePtr spec);
-  bool ensureSpecification();
+  bool ensureSpecification() const;
+
+  smtk::attribute::IntItemPtr findInt(const std::string &name);
+  smtk::attribute::DoubleItemPtr findDouble(const std::string &name);
+  smtk::attribute::StringItemPtr findString(const std::string &name);
+  smtk::attribute::FileItemPtr findFile(const std::string &name);
+  smtk::attribute::DirectoryItemPtr findDirectory(const std::string &name);
+  smtk::attribute::GroupItemPtr findGroup(const std::string &name);
+  smtk::attribute::RefItemPtr findRef(const std::string &name);
+  smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string &name);
+  bool associateEntity(const smtk::model::Cursor& entity);
+  void disassociateEntity(const smtk::model::Cursor& entity);
+  void removeAllAssociations();
+  template<typename T> T associatedEntitiesAs() const;
 
   OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
   void eraseResult(OperatorResult res);
@@ -182,6 +197,24 @@ protected:
 
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);
 SMTKCORE_EXPORT OperatorOutcome stringToOutcome(const std::string& oc);
+
+
+template<typename T>
+T Operator::associatedEntitiesAs() const
+{
+  bool resetMgr = false;
+  this->ensureSpecification();
+  if (this->m_specification->system())
+    if (!this->m_specification->modelManager())
+      {
+      resetMgr = true;
+      this->m_specification->system()->setRefModelManager(this->m_manager);
+      }
+  T result = this->m_specification->associatedModelEntities<T>();
+  if (resetMgr)
+    this->m_specification->system()->setRefModelManager(smtk::model::ManagerPtr());
+  return result;
+}
 
   } // model namespace
 } // smtk namespace
