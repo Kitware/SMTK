@@ -197,6 +197,20 @@ const smtk::attribute::System* Bridge::operatorSystem() const
 }
 ///@}
 
+/**\brief Set configuration options on the bridge.
+  *
+  * Subclasses may override this method to accept configuration
+  * options specific to their backends.
+  * When \a optName and \a optVal are acceptable, the
+  * method returns 1; otherwise a zero or negative value is returned.
+  */
+int Bridge::setup(const std::string& optName, const StringList& optVal)
+{
+  (void)optName;
+  (void)optVal;
+  return 0;
+}
+
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
   *
   * Subclasses must override this method.

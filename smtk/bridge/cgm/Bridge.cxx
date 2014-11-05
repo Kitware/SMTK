@@ -65,6 +65,8 @@ namespace smtk {
 /// Default constructor.
 Bridge::Bridge()
 {
+  this->m_maxRelChordErr = 0.1; // fraction of longest edge.
+  this->m_maxAngleErr = 2.0; // maximum angle in degrees.
   this->initializeOperatorSystem(Bridge::s_operators);
   if (!Engines::areInitialized())
     {
@@ -120,15 +122,41 @@ int Bridge::staticSetup(const std::string& optName, const smtk::model::StringLis
 
 /**\brief Accept post-construction configuration options.
   *
-  * Currently CGM does not support any options.
-  *
-  * TODO: Accept options for allowable tessellation error.
-  *       (See addTessellation method.)
+  * Currently CGM supports two options:
+  * "tessellation maximum relative chord error" and
+  * "tessellation maximum angle error".
+  * Each accepts a single string that can be converted to
+  * a floating point number.
+  * If the value differs from the default (0.1 for the
+  * chord error and 2 for the angle error), then a new
+  * value is set and setup() returns 1. Otherwise 0 is
+  * returned.
   */
 int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
 {
-  (void)optName;
-  (void)optVal;
+  char* valid;
+  double value;
+  if (!optVal.empty() && !optVal[0].empty())
+    {
+    if (optName == "tessellation maximum relative chord error")
+      {
+      value = strtod(optVal[0].c_str(), &valid);
+      if (valid && value != this->m_maxRelChordErr)
+        {
+        this->m_maxRelChordErr = value;
+        return 1;
+        }
+      }
+    else if (optName == "tessellation maximum angle error")
+      {
+      value = strtod(optVal[0].c_str(), &valid);
+      if (valid && value != this->m_maxAngleErr)
+        {
+        this->m_maxAngleErr = 2.0; // maximum angle in degrees.
+        return 1;
+        }
+      }
+    }
   return 0;
 }
 
@@ -767,16 +795,16 @@ void Bridge::addRelations(
 }
 
 template<typename E>
-bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt)
+bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt, double chordErr, double angleErr)
 {
   if (!cgmEnt || !cursor.manager() || !cursor.entity())
     return false;
 
   GMem primitives;
   double measure = cgmEnt->measure();
-  double maxErr = pow(measure, 1./cgmEnt->dimension()) / 10.;
+  double maxErr = pow(measure, 1./cgmEnt->dimension()) * chordErr;
   double longestEdge = measure;
-  cgmEnt->get_graphics(primitives, 15, maxErr, longestEdge);
+  cgmEnt->get_graphics(primitives, angleErr, maxErr, longestEdge);
   int connCount = primitives.fListCount;
   int npts = primitives.pointListCount;
   if (npts <= 0 || (connCount <= 0 && cgmEnt->dimension() > 1))
@@ -839,7 +867,7 @@ bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt)
 }
 
 template<>
-bool BridgeAddTessellation(const Cursor& cursor, RefVertex* cgmEnt)
+bool BridgeAddTessellation(const Cursor& cursor, RefVertex* cgmEnt, double, double)
 {
   if (!cgmEnt || !cursor.manager() || !cursor.entity())
     return false;
@@ -871,17 +899,17 @@ bool BridgeAddTessellation(const Cursor& cursor, RefVertex* cgmEnt)
 ///@{
 bool Bridge::addTessellation(const Cursor& cursor, RefFace* cgmEnt)
 {
-  return BridgeAddTessellation(cursor, cgmEnt);
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Bridge::addTessellation(const Cursor& cursor, RefEdge* cgmEnt)
 {
-  return BridgeAddTessellation(cursor, cgmEnt);
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 
 bool Bridge::addTessellation(const Cursor& cursor, RefVertex* cgmEnt)
 {
-  return BridgeAddTessellation(cursor, cgmEnt);
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
 }
 ///@}
 

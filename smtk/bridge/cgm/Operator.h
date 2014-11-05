@@ -13,6 +13,9 @@
 #include "smtk/bridge/cgm/cgmSMTKExports.h"
 #include "smtk/model/Operator.h"
 
+class RefEntity;
+class ToolDataUser;
+
 namespace smtk {
   namespace bridge {
     namespace cgm {
@@ -29,6 +32,8 @@ class CGMSMTK_EXPORT Operator : public smtk::model::Operator
 {
 protected:
   Bridge* cgmBridge();
+  ToolDataUser* cgmData(const smtk::model::Cursor& smtkEntity);
+  RefEntity* cgmEntity(const smtk::model::Cursor& smtkEntity);
 };
 
 } // namespace cgm

@@ -104,6 +104,9 @@ protected:
 
   static void colorPropFromIndex(smtk::model::Cursor&, int);
 
+  double m_maxRelChordErr;
+  double m_maxAngleErr;
+
 private:
   Bridge(const Bridge&); // Not implemented.
   void operator = (const Bridge&); // Not implemented.
