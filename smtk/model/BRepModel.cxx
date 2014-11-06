@@ -18,6 +18,9 @@
 
 #include "smtk/AutoInit.h"
 
+//required for insert_iterator on VS2010+
+#include <iterator>
+
 // Force the native (default) bridge to be registered
 smtkComponentInitMacro(smtk_native_bridge);
 

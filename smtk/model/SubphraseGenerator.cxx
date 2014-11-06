@@ -27,6 +27,8 @@
 #include "smtk/model/PropertyValuePhrase.h"
 
 #include <algorithm>
+//required for insert_iterator on VS2010+
+#include <iterator>
 
 namespace smtk {
   namespace model {
