@@ -3,5 +3,5 @@ target_link_libraries(list-cgm-engines cgmSMTK SMTKCore)
 add_test(list-cgm-engines ${EXECUTABLE_OUTPUT_PATH}/list-cgm-engines -test-set-default)
 
 add_executable(test-operators test-operators.cxx)
-target_link_libraries(test-operators cgmSMTK SMTKCore)
+target_link_libraries(test-operators cgmSMTK SMTKCore ${Boost_LIBRARIES})
 add_test(test-operators ${EXECUTABLE_OUTPUT_PATH}/test-operators)

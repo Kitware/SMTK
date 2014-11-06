@@ -624,6 +624,7 @@
   #pragma GCC diagnostic ignored "-Wunused-parameter"
   #pragma GCC diagnostic ignored "-Wunused-variable"
   #pragma GCC diagnostic ignored "-Wunused-private-field"
+  #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
 #endif
 #include "detail/checkers/all.hpp"
 #include "detail/user_functions_caller.hpp"
