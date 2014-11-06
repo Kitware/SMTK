@@ -1,10 +1,10 @@
 project(tut_python_first_steps)
 cmake_minimum_required(VERSION 2.8.11)
 
-find_package(PythonInterp 2.7 REQUIRED)
-
-
 if (SMTK_ENABLE_TESTING AND SMTK_BUILD_PYTHON_WRAPPINGS AND SMTK_DATA_DIR)
+
+  find_package(PythonInterp 2.7 REQUIRED)
+
   add_test(
     NAME tut-python_first_steps
     COMMAND ${PYTHON_EXECUTABLE}

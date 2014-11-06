@@ -64,12 +64,6 @@ endif(DOXYGEN_FOUND)
 # If we have rst2html, create the user's guide for SMTK
 # as an HTML document.
 
-if (WIN32)
-  find_package(PythonInterp 2.7 REQUIRED)
-  message("PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}")
-  set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
-endif()
-
 # Define a macro for processing reStructuredText files
 # if docutils were found.
 if (SPHINX_FOUND)
