@@ -29,8 +29,12 @@
 
 #include "smtk/common/UUID.h"
 
+#include "smtk/Options.h"
 #include "smtk/AutoInit.h"
 
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
+#endif
 #include "RefEntity.hpp"
 #include "DagType.hpp"
 #include "Body.hpp"
@@ -47,7 +51,12 @@
 #include "RefVertex.hpp"
 #include "RefGroup.hpp"
 
+#include "GMem.hpp"
+
+typedef DLIList<RefEntity*> DLIRefList;
+
 using smtk::model::Cursor;
+using namespace smtk::common;
 
 namespace smtk {
   namespace bridge {
@@ -56,6 +65,8 @@ namespace smtk {
 /// Default constructor.
 Bridge::Bridge()
 {
+  this->m_maxRelChordErr = 0.1; // fraction of longest edge.
+  this->m_maxAngleErr = 2.0; // maximum angle in degrees.
   this->initializeOperatorSystem(Bridge::s_operators);
   if (!Engines::areInitialized())
     {
@@ -111,12 +122,41 @@ int Bridge::staticSetup(const std::string& optName, const smtk::model::StringLis
 
 /**\brief Accept post-construction configuration options.
   *
-  * Currently CGM does not support any options.
+  * Currently CGM supports two options:
+  * "tessellation maximum relative chord error" and
+  * "tessellation maximum angle error".
+  * Each accepts a single string that can be converted to
+  * a floating point number.
+  * If the value differs from the default (0.1 for the
+  * chord error and 2 for the angle error), then a new
+  * value is set and setup() returns 1. Otherwise 0 is
+  * returned.
   */
 int Bridge::setup(const std::string& optName, const smtk::model::StringList& optVal)
 {
-  (void)optName;
-  (void)optVal;
+  char* valid;
+  double value;
+  if (!optVal.empty() && !optVal[0].empty())
+    {
+    if (optName == "tessellation maximum relative chord error")
+      {
+      value = strtod(optVal[0].c_str(), &valid);
+      if (valid && value != this->m_maxRelChordErr)
+        {
+        this->m_maxRelChordErr = value;
+        return 1;
+        }
+      }
+    else if (optName == "tessellation maximum angle error")
+      {
+      value = strtod(optVal[0].c_str(), &valid);
+      if (valid && value != this->m_maxAngleErr)
+        {
+        this->m_maxAngleErr = 2.0; // maximum angle in degrees.
+        return 1;
+        }
+      }
+    }
   return 0;
 }
 
@@ -318,7 +358,7 @@ smtk::model::BridgedInfoBits Bridge::addBodyToManager(
         RefEntity* child = children.get_and_step();
         smtk::model::Cursor childCursor(mutableCursor.manager(), TDUUID::ofEntity(child)->entityId());
         this->declareDanglingEntity(mutableCursor,
-          this->transcribeInternal(childCursor, smtk::model::BRIDGE_ENTITY_TYPE));
+          this->transcribeInternal(childCursor, requestedInfo)); //smtk::model::BRIDGE_ENTITY_TYPE));
         //std::cout << "  " << child << "   " << childCursor.entity() << "\n";
         if (!childCursor.entity().isNull())
           {
@@ -341,6 +381,7 @@ smtk::model::BridgedInfoBits Bridge::addBodyToManager(
     if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
       {
       // Set properties.
+      this->addNamesIfAny(mutableCursor, body);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableCursor, body->color());
       actual |= smtk::model::BRIDGE_PROPERTIES;
@@ -515,6 +556,14 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
       }
     if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
       {
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refVolume->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 3);
+      // Add parent relationships
+      refVolume->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
       // FIXME: Todo.
       actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
       }
@@ -526,6 +575,7 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
     if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
       {
       // Set properties.
+      this->addNamesIfAny(mutableCursor, refVolume);
       // If the color is not the default color, add it as a property.
       this->colorPropFromIndex(mutableCursor, refVolume->color());
       actual |= smtk::model::BRIDGE_PROPERTIES;
@@ -540,13 +590,43 @@ smtk::model::BridgedInfoBits Bridge::addFaceToManager(
   RefFace* refFace,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refFace)
     {
-    if (requestedInfo)
+    smtk::model::Face mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertFace(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // Add refFace relations and arrangements
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refFace->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 2);
+      // Add parent relationships
+      refFace->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refFace))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refFace);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refFace->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -558,13 +638,44 @@ smtk::model::BridgedInfoBits Bridge::addEdgeToManager(
   RefEdge* refEdge,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refEdge)
     {
-    if (requestedInfo)
+    smtk::model::Edge mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertEdge(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
       // Add refEdge relations and arrangements
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refEdge->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+      // Add parent relationships
+      refEdge->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, -1);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refEdge))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refEdge);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refEdge->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -576,13 +687,41 @@ smtk::model::BridgedInfoBits Bridge::addVertexToManager(
   RefVertex* refVertex,
   BridgedInfoBits requestedInfo)
 {
-  (void)cursor;
   BridgedInfoBits actual = 0;
   if (refVertex)
     {
-    if (requestedInfo)
+    smtk::model::Vertex mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertVertex(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
       // Add refVertex relations and arrangements
+      DLIList<RefEntity*> rels;
+      // Add parent relationships
+      refVertex->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 0);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      if (this->addTessellation(cursor, refVertex))
+        actual |= smtk::model::BRIDGE_TESSELLATION;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refVertex);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refVertex->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
@@ -598,12 +737,215 @@ smtk::model::BridgedInfoBits Bridge::addGroupToManager(
   BridgedInfoBits actual = 0;
   if (refGroup)
     {
-    if (requestedInfo)
+    smtk::model::GroupEntity mutableCursor(cursor);
+    if (!mutableCursor.isValid())
+      mutableCursor.manager()->insertGroup(cursor.entity());
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+
+    if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // Add refGroup relations and arrangements
+      // Add child relationships
+      DLIList<RefEntity*> rels;
+      refGroup->get_child_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+      // Add parent relationships
+      refGroup->get_parent_ref_entities(rels);
+      this->addRelations(mutableCursor, rels, requestedInfo, 1);
+
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
+      // FIXME: Todo.
+      actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+      {
+      // FIXME: Will we ever do this?
+      }
+    if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+      {
+      // Set properties.
+      this->addNamesIfAny(mutableCursor, refGroup);
+      // If the color is not the default color, add it as a property.
+      this->colorPropFromIndex(mutableCursor, refGroup->color());
+      actual |= smtk::model::BRIDGE_PROPERTIES;
       }
     }
   return actual;
+}
+
+void Bridge::addRelations(
+  smtk::model::Cursor& cursor,
+  DLIList<RefEntity*>& rels,
+  BridgedInfoBits requestedInfo,
+  int depth)
+{
+  int nc = rels.size();
+  for (int j = 0; j < nc; ++j)
+    {
+    RefEntity* rel = rels.get_and_step();
+    TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(rel, true);
+    smtk::common::UUID smtkChildId = refId->entityId();
+    Cursor smtkChild(cursor.manager(), smtkChildId);
+    cursor.findOrAddRawRelation(smtkChild);
+    if (depth > 0)
+      this->addCGMEntityToManager(smtkChild, rel, requestedInfo);
+    }
+}
+
+template<typename E>
+bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt, double chordErr, double angleErr)
+{
+  if (!cgmEnt || !cursor.manager() || !cursor.entity())
+    return false;
+
+  GMem primitives;
+  double measure = cgmEnt->measure();
+  double maxErr = pow(measure, 1./cgmEnt->dimension()) * chordErr;
+  double longestEdge = measure;
+  cgmEnt->get_graphics(primitives, angleErr, maxErr, longestEdge);
+  int connCount = primitives.fListCount;
+  int npts = primitives.pointListCount;
+  if (npts <= 0 || (connCount <= 0 && cgmEnt->dimension() > 1))
+    {
+    return false;
+    }
+  smtk::model::Tessellation blank;
+  smtk::model::UUIDsToTessellations& tess(cursor.manager()->tessellations());
+  smtk::model::UUIDsToTessellations::iterator it =
+    tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(cursor.entity(), blank)).first;
+  // Now add data to the Tessellation "in situ" to avoid a copy.
+  // First, copy point coordinates:
+  it->second.coords().reserve(3 * npts);
+  GPoint* inPts = primitives.point_list();
+  for (int j = 0; j < npts; ++j, ++inPts)
+    {
+    it->second.addCoords(inPts->x, inPts->y, inPts->z);
+    }
+  // Now translate the connectivity:
+  if (cgmEnt->dimension() > 1)
+    {
+    it->second.conn().reserve(connCount);
+    int* inConn = primitives.facet_list();
+    int ptsPerPrim = 0;
+    for (int k = 0; k < connCount; k += (ptsPerPrim + 1), inConn += (ptsPerPrim + 1))
+      {
+      ptsPerPrim = *inConn;
+      int* pConn = inConn + 1;
+      switch (ptsPerPrim)
+        {
+      case 1:
+        // This is a vertex
+        it->second.addPoint(pConn[0]);
+        break;
+      case 2:
+        it->second.addLine(pConn[0], pConn[1]);
+        break;
+      case 3:
+        it->second.addTriangle(pConn[0], pConn[1], pConn[2]);
+        break;
+      case 4:
+        it->second.addQuad(pConn[0], pConn[1], pConn[2], pConn[3]);
+      default:
+        std::cerr << "Unknown primitive has " << ptsPerPrim << " conn entries\n";
+        break;
+        }
+      }
+    }
+  else
+    {
+    it->second.conn().reserve(npts + 2);
+    it->second.conn().push_back(smtk::model::TESS_POLYLINE);
+    it->second.conn().push_back(npts);
+    for (int k = 0; k < npts; ++k)
+      {
+      it->second.conn().push_back(k);
+      }
+    }
+  return true;
+}
+
+template<>
+bool BridgeAddTessellation(const Cursor& cursor, RefVertex* cgmEnt, double, double)
+{
+  if (!cgmEnt || !cursor.manager() || !cursor.entity())
+    return false;
+
+  std::vector<int> cellConn;
+  cellConn.push_back(smtk::model::TESS_VERTEX);
+  cellConn.push_back(0);
+
+  CubitVector coords = cgmEnt->coordinates();
+  smtk::model::Tessellation blank;
+  smtk::model::UUIDsToTessellations& tess(cursor.manager()->tessellations());
+  smtk::model::UUIDsToTessellations::iterator it =
+    tess.insert(
+      std::pair<smtk::common::UUID,smtk::model::Tessellation>(
+        cursor.entity(), blank)).first;
+  // Now add data to the Tessellation "in situ" to avoid a copy.
+  // First, copy point coordinates:
+  it->second.coords().resize(3);
+  coords.get_xyz(&it->second.coords()[0]);
+  it->second.insertNextCell(cellConn);
+  return true;
+}
+
+/**\brief Ask CGM to hand us a tessellation of the \a cgmEnt for rendering.
+  *
+  * The resulting tessellation is stored in the \a cursor's model manager
+  * and accessible from the cursor.
+  */
+///@{
+bool Bridge::addTessellation(const Cursor& cursor, RefFace* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+}
+
+bool Bridge::addTessellation(const Cursor& cursor, RefEdge* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+}
+
+bool Bridge::addTessellation(const Cursor& cursor, RefVertex* cgmEnt)
+{
+  return BridgeAddTessellation(cursor, cgmEnt, this->m_maxRelChordErr, this->m_maxAngleErr);
+}
+///@}
+
+/**\brief Add names attached to \a cgmEnt to the SMTK entity \a cursor.
+  *
+  * Returns true if any names were attached to \a cgmEnt and
+  * false otherwise.
+  */
+bool Bridge::addNamesIfAny(smtk::model::Cursor& cursor, RefEntity* cgmEnt)
+{
+  int numNames = cgmEnt->num_names();
+  if (numNames > 0)
+    {
+#if !defined(CGM_MAJOR_VERSION) || CGM_MAJOR_VERSION <= 13
+    DLIList<CubitString*> cgmNames;
+    cgmEnt->entity_names(cgmNames);
+    smtk::model::StringList smtkNames;
+    for (int nn = 0; nn < numNames; ++nn)
+      {
+      CubitString* name = cgmNames.get_and_step();
+      smtkNames.push_back(name->c_str());
+      }
+#else // CGM_MAJOR_VERSION >= 14
+    DLIList<CubitString> cgmNames;
+    cgmEnt->entity_names(cgmNames);
+    smtk::model::StringList smtkNames;
+    for (int nn = 0; nn < numNames; ++nn)
+      {
+      CubitString name = cgmNames.get_and_step();
+      smtkNames.push_back(name.c_str());
+      }
+#endif // CGM_MAJOR_VERSION
+    cursor.setStringProperty("name", smtkNames);
+    return true;
+    }
+  return false;
 }
 
 /**\brief Assign an RGBA color to \a uid base on \a colorIndex.

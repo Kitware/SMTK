@@ -251,6 +251,8 @@ public:
   virtual std::string findOperatorXML(const std::string&) const
     { return std::string(); }
 
+  virtual int setup(const std::string& optName, const StringList& optVal);
+
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;

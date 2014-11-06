@@ -35,6 +35,7 @@
   <suppress-warning text="skipping function 'smtk::model::Cursor::instances', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::GroupEntity::addEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addSubmodels', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::model::Cursor::relationsAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeSubmodels', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeGroups', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeCells', unmatched parameter type 'T const&amp;'"/>

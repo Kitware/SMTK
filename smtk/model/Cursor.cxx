@@ -16,6 +16,8 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
+#include <algorithm>
+
 namespace smtk {
   namespace model {
 
@@ -337,7 +339,20 @@ Cursors Cursor::adjacentEntities(int ofDimension)
   return result;
 }
 
-/// Add a relation to an entity, \a ent, with no arrangement information.
+/// Return a set of entities related to this entity. This method is provided for Python wrapping.
+Cursors Cursor::relations() const
+{
+  return this->relationsAs<Cursors>();
+}
+
+/**\brief Add a relation to an entity, \a ent, without specifying the relationship's nature.
+  *
+  * The relation is considered "raw" because no arrangement information is added
+  * describing the nature of the arrangement.
+  *
+  * This method adds a relation regardless of whether \a ent is already a relation;
+  * \a ent may appear in the entity's list of relations multiple times after this call.
+  */
 Cursor& Cursor::addRawRelation(const Cursor& ent)
 {
   if (
@@ -349,9 +364,36 @@ Cursor& Cursor::addRawRelation(const Cursor& ent)
     {
     Entity* entRec = this->m_manager->findEntity(this->m_entity);
     if (entRec)
-      {
       entRec->appendRelation(ent.entity());
-      }
+    }
+  return *this;
+}
+
+/**\brief Find or add a relation to an entity, \a ent, without specifying the relationship's nature.
+  *
+  * The relation is considered "raw" because no arrangement information is added
+  * describing the nature of the arrangement.
+  *
+  * This method has no effect if \a ent is already a relation.
+  */
+Cursor& Cursor::findOrAddRawRelation(const Cursor& ent)
+{
+  if (
+    this->m_manager &&
+    !this->m_entity.isNull() &&
+    this->m_manager == ent.manager() &&
+    !ent.entity().isNull() &&
+    ent.entity() != this->m_entity)
+    {
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    if (
+      entRec &&
+      std::find(
+        entRec->relations().begin(),
+        entRec->relations().end(),
+        ent.entity())
+      == entRec->relations().end())
+      entRec->appendRelation(ent.entity());
     }
   return *this;
 }
@@ -846,6 +888,16 @@ std::ostream& operator << (std::ostream& os, const Cursor& c)
   os << c.name();
   return os;
 }
+
+/*! \fn template<typename T> T Cursor::relationsAs() const
+ *\brief Return all of the entities related to this cursor.
+ *
+ * The return value is a template parameter naming container type.
+ * Each member is cast from a Cursor to T::value_type and added
+ * to the container only if valid. This makes it possible to
+ * subset the relations by forcing them into a container of the
+ * desired type.
+ */
 
 /*! \fn template<typename S, typename T> void Cursor::CursorsFromUUIDs(S& result, ManagerPtr mgr, const T& uids)
  *\brief Convert a set of UUIDs into a set of cursors referencing the same \a mgr.
