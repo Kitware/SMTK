@@ -33,9 +33,10 @@
 find_package(PackageHandleStandardArgs)
 
 if (WIN32)
-  find_package(PythonInterp 2.7 REQUIRED)
-  #message("PYTHON_EXECUTABLE ${PYTHON_EXECUTABLE}")
-  set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
+  find_package(PythonInterp 2.7)
+  if(PYTHONINTERP_FOUND)
+    set(PYTHON_WINDOWS_ONLY ${PYTHON_EXECUTABLE})
+  endif()
 endif()
 
 find_program( RST2HTML_EXECUTABLE
@@ -46,7 +47,7 @@ find_program( RST2HTML_EXECUTABLE
         "The Python Docutils reStructuredText HTML converter"
 )
 
-if (RST2HTML_EXECUTABLE)
+if (RST2HTML_EXECUTABLE AND PYTHONINTERP_FOUND)
 
     set(DOCUTILS_FOUND "YES")
 
