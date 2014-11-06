@@ -264,59 +264,59 @@ bool Operator::ensureSpecification() const
 ///@{
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::IntItemPtr Operator::findInt(const std::string &name)
+smtk::attribute::IntItemPtr Operator::findInt(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findInt(name);
+  return this->specification()->findInt(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::DoubleItemPtr Operator::findDouble(const std::string &name)
+smtk::attribute::DoubleItemPtr Operator::findDouble(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findDouble(name);
+  return this->specification()->findDouble(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::StringItemPtr Operator::findString(const std::string &name)
+smtk::attribute::StringItemPtr Operator::findString(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findString(name);
+  return this->specification()->findString(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::FileItemPtr Operator::findFile(const std::string &name)
+smtk::attribute::FileItemPtr Operator::findFile(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findFile(name);
+  return this->specification()->findFile(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::DirectoryItemPtr Operator::findDirectory(const std::string &name)
+smtk::attribute::DirectoryItemPtr Operator::findDirectory(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findDirectory(name);
+  return this->specification()->findDirectory(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::GroupItemPtr Operator::findGroup(const std::string &name)
+smtk::attribute::GroupItemPtr Operator::findGroup(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findGroup(name);
+  return this->specification()->findGroup(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::RefItemPtr Operator::findRef(const std::string &name)
+smtk::attribute::RefItemPtr Operator::findRef(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findRef(name);
+  return this->specification()->findRef(pname);
 }
 
 /// Return the integer-valued parameter named \a name or NULL if it does not exist.
-smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string &name)
+smtk::attribute::ModelEntityItemPtr Operator::findModelEntity(const std::string& pname)
 {
   this->ensureSpecification();
-  return this->specification()->findModelEntity(name);
+  return this->specification()->findModelEntity(pname);
 }
 
 /// Associate a model entity with the operator.

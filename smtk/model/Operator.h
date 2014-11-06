@@ -162,14 +162,14 @@ public:
   bool setSpecification(smtk::attribute::AttributePtr spec);
   bool ensureSpecification() const;
 
-  smtk::attribute::IntItemPtr findInt(const std::string &name);
-  smtk::attribute::DoubleItemPtr findDouble(const std::string &name);
-  smtk::attribute::StringItemPtr findString(const std::string &name);
-  smtk::attribute::FileItemPtr findFile(const std::string &name);
-  smtk::attribute::DirectoryItemPtr findDirectory(const std::string &name);
-  smtk::attribute::GroupItemPtr findGroup(const std::string &name);
-  smtk::attribute::RefItemPtr findRef(const std::string &name);
-  smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string &name);
+  smtk::attribute::IntItemPtr findInt(const std::string& name);
+  smtk::attribute::DoubleItemPtr findDouble(const std::string& name);
+  smtk::attribute::StringItemPtr findString(const std::string& name);
+  smtk::attribute::FileItemPtr findFile(const std::string& name);
+  smtk::attribute::DirectoryItemPtr findDirectory(const std::string& name);
+  smtk::attribute::GroupItemPtr findGroup(const std::string& name);
+  smtk::attribute::RefItemPtr findRef(const std::string& name);
+  smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string& name);
   bool associateEntity(const smtk::model::Cursor& entity);
   void disassociateEntity(const smtk::model::Cursor& entity);
   void removeAllAssociations();
