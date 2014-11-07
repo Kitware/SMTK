@@ -26,7 +26,13 @@ include (vtkSMTKModules)
 vtk_smtk_setup_module_environment("SMTKDiscrete")
 vtk_smtk_process_modules()
 
+# Build vtk moab reader before bridge
+if(SMTK_BUILD_MOAB_READER)
+  add_subdirectory(moabreader)
+endif()
+
 SET(DiscreteModelFiles
+  operation/vtkCMBModelBuilder.cxx
   operation/vtkCMBModelWriterV2.cxx
   operation/vtkCMBModelWriterV4.cxx
   operation/vtkCMBModelWriterV5.cxx
@@ -46,9 +52,14 @@ SET(DiscreteOperationFiles
   operation/vtkCreateModelEdgesOperatorBase.cxx
   operation/vtkSplitOperator.cxx
   operation/vtkSplitOperatorBase.cxx
+  operation/vtkModelEntityOperatorBase.cxx
+  operation/vtkDataSetRegionSurfaceFilter.cxx
+  operation/vtkMasterPolyDataNormals.cxx
+  operation/vtkMergeDuplicateCells.cxx
 )
 
 SET(DiscreteModelHeaders
+  operation/vtkCMBModelBuilder.h
   operation/vtkCMBModelWriterV2.h
   operation/vtkCMBModelWriterV4.h
   operation/vtkCMBModelWriterV5.h
@@ -66,6 +77,10 @@ SET(DiscreteModelHeaders
   operation/vtkCreateModelEdgesOperatorBase.h
   operation/vtkSplitOperator.h
   operation/vtkSplitOperatorBase.h
+  operation/vtkModelEntityOperatorBase.h
+  operation/vtkDataSetRegionSurfaceFilter.h
+  operation/vtkMasterPolyDataNormals.h
+  operation/vtkMergeDuplicateCells.h
 )
 
 
@@ -90,6 +105,7 @@ set(discreteBridgeSrcs
   MergeOperator.cxx
   ReadOperator.cxx
   SplitFaceOperator.cxx
+  ImportOperator.cxx
 )
 
 set(discreteBridgeHeaders
@@ -98,16 +114,23 @@ set(discreteBridgeHeaders
   MergeOperator.h
   ReadOperator.h
   SplitFaceOperator.h
+  ImportOperator.h
 )
 
-include(SMTKBridgeJSON)
-smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" discreteBridgeJSON)
+# Normally this would be machine-generated from Bridge.json
+# using the smtk_bridge_json CMake macro, but this version
+# has been hand-edited to include preprocessor macros that
+# add and remove engines and filetypes as support for them
+# is known at compile time.
+# include(SMTKBridgeJSON)
+# smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/Bridge.json" discreteBridgeJSON)
 
 include(SMTKOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgesOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ImportOperator.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteBridge ${_module_src} ${discreteBridgeSrcs})
 
@@ -123,13 +146,26 @@ target_link_libraries(smtkDiscreteBridge
   LINK_PUBLIC
     SMTKCore
   LINK_PRIVATE
+    vtkRenderingCore
+    vtkRenderingFreeTypeOpenGL
+    vtkRenderingOpenGL
    vtkSMTKDiscreteModel
    vtkFiltersCore
+   vtkFiltersGeometry
+   vtkIOParallel
    vtkRenderingCore
    vtkGeovisCore
    vtksys
    ${__private_dependencies}
   )
+
+if(SMTK_BUILD_MOAB_READER)
+  target_link_libraries(smtkDiscreteBridge
+    LINK_PRIVATE
+      vtkDiscreteMoabReader
+  )
+endif()
+
 
 smtk_export_header(smtkDiscreteBridge discreteBridgeExports.h)
 

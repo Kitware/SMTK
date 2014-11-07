@@ -38,6 +38,7 @@
 #include "vtkPolyData.h"
 #include "vtkSmartPointer.h"
 #include <vtkStringArray.h>
+#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkCMBModelWriterV5);
 
@@ -97,15 +98,15 @@ void vtkCMBModelWriterV5::SetModelEdgeData(vtkDiscreteModel* model, vtkPolyData*
     lineSpacing->SetValue(counter, edge->GetLineResolution());
     }
 
-  pointIdArray->SetName(vtkCMBParserBase::GetModelEdgeVerticesString());
+  pointIdArray->SetName(ModelParserHelper::GetModelEdgeVerticesString());
   poly->GetFieldData()->AddArray(pointIdArray);
   pointIdArray->Delete();
 
-  edgeRegionId->SetName(vtkCMBParserBase::GetFloatingEdgesString());
+  edgeRegionId->SetName(ModelParserHelper::GetFloatingEdgesString());
   poly->GetFieldData()->AddArray(edgeRegionId);
   edgeRegionId->Delete();
 
-  lineSpacing->SetName(vtkCMBParserBase::GetEdgeLineResolutionString());
+  lineSpacing->SetName(ModelParserHelper::GetEdgeLineResolutionString());
   poly->GetFieldData()->AddArray(lineSpacing);
   lineSpacing->Delete();
 
@@ -165,15 +166,15 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
       }
     Faces->Delete();
 
-    ModelFaceAdjacentEdgesId->SetName(vtkCMBParserBase::GetModelFaceEdgesString());
+    ModelFaceAdjacentEdgesId->SetName(ModelParserHelper::GetModelFaceEdgesString());
     Poly->GetFieldData()->AddArray(ModelFaceAdjacentEdgesId);
     ModelFaceAdjacentEdgesId->Delete();
 
-    ModelEdgeDirections->SetName(vtkCMBParserBase::GetModelEdgeDirectionsString());
+    ModelEdgeDirections->SetName(ModelParserHelper::GetModelEdgeDirectionsString());
     Poly->GetFieldData()->AddArray(ModelEdgeDirections);
     ModelEdgeDirections->Delete();
 
-    ModelFaceMaterialIds->SetName(vtkCMBParserBase::GetFaceMaterialIdString());
+    ModelFaceMaterialIds->SetName(ModelParserHelper::GetFaceMaterialIdString());
     Poly->GetFieldData()->AddArray(ModelFaceMaterialIds);
     ModelFaceMaterialIds->Delete();
     }
@@ -199,7 +200,7 @@ void vtkCMBModelWriterV5::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
       ModelFaceAdjacentRegionsId->InsertNextTupleValue(ids);
       }
     Faces->Delete();
-    ModelFaceAdjacentRegionsId->SetName(vtkCMBParserBase::GetModelFaceRegionsString());
+    ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());
     Poly->GetFieldData()->AddArray(ModelFaceAdjacentRegionsId);
     ModelFaceAdjacentRegionsId->Delete();
     }
@@ -221,7 +222,7 @@ void vtkCMBModelWriterV5::SetAnalysisGridData(
      gridRepresentation->GetGridFileName())
     {
     vtkStringArray* gridName = vtkStringArray::New();
-    gridName->SetName(vtkCMBParserBase::GetAnalysisGridFileName());
+    gridName->SetName(ModelParserHelper::GetAnalysisGridFileName());
     gridName->InsertNextValue(analysisGridName);
     poly->GetFieldData()->AddArray(gridName);
     gridName->Delete();
@@ -235,7 +236,7 @@ void vtkCMBModelWriterV5::SetAnalysisGridData(
   else if(vtkModel3dm2DGridRepresentation::SafeDownCast(gridRepresentation))
     {
     vtkStringArray* gridType = vtkStringArray::New();
-    gridType->SetName(vtkCMBParserBase::GetAnalysisGridFileType());
+    gridType->SetName(ModelParserHelper::GetAnalysisGridFileType());
     gridType->InsertNextValue("2D ADH");
     poly->GetFieldData()->AddArray(gridType);
     gridType->Delete();

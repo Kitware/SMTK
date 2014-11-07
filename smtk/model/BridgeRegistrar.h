@@ -102,11 +102,13 @@ public:
   static std::string bridgeTags(const std::string& bname);
   static std::string bridgeSite(const std::string& bname);
   static StringList bridgeEngines(const std::string& bname);
-  static StringList bridgeFileTypes(
+  static StringData bridgeFileTypes(
     const std::string& bname, const std::string& engine = std::string());
   static BridgeStaticSetup bridgeStaticSetup(const std::string& bname);
   static BridgeConstructor bridgeConstructor(const std::string& bname);
   static BridgePtr createBridge(const std::string& bname);
+
+  static std::string fileTypesTag() { return "filetypes"; }
 
 protected:
   static void cleanupBridges();

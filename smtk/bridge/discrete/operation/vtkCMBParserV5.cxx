@@ -41,6 +41,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkStdString.h"
 #include "vtkStringArray.h"
+#include "ModelParserHelper.h"
 
 #include <map>
 #include <vector>
@@ -72,15 +73,15 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
 
   // find out what the largest Unique ID is...
   vtkIdTypeArray* MaterialIdsArray = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetMaterialUniquePersistentIdsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetMaterialUniquePersistentIdsString()));
   vtkIdTypeArray* RegionIdsArray = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelRegionUniquePersistentIdsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionUniquePersistentIdsString()));
   vtkIdTypeArray* FaceIdsArray = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceUniquePersistentIdsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceUniquePersistentIdsString()));
   vtkIdTypeArray* EdgeIdsArray = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeUniquePersistentIdsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeUniquePersistentIdsString()));
   vtkIdTypeArray* VertexIdsArray = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelVertexUniquePersistentIdsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelVertexUniquePersistentIdsString()));
 
   vtkIdType maxUniqueId = MaterialIdsArray->GetRange()[1];
   if(RegionIdsArray)
@@ -109,7 +110,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   std::vector<vtkModelItem*> modelRecords;
   modelRecords.push_back(Model);
   vtkCMBParserV5::s_bridge->assignUUIDs(modelRecords,
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelUUIDsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelUUIDsString()));
   // TODO: Handle submodels whose UUIDs are also in the field-data array.
   //       Need to know how the order in the file may be obtained.
 
@@ -123,7 +124,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   MaterialIdsArray->Delete();
   vtkCMBParserV5::s_bridge->assignUUIDs(
     std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetMaterialUUIDsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetMaterialUUIDsString()));
   this->SetModelEntityData(MasterPoly, ModelEntities, "Material", Model);
 
   // next load in the model vertices
@@ -135,7 +136,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
       vtkFieldData* masterFieldData = MasterPoly->GetFieldData();
 
       vtkIdTypeArray* vertexPointIds = this->NewIdTypeArray(
-        masterFieldData->GetArray(vtkCMBParserBase::GetVertexPointIdString()));
+        masterFieldData->GetArray(ModelParserHelper::GetVertexPointIdString()));
 
       if(!vertexPointIds)
         {
@@ -153,7 +154,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
       this->SetModelEntityData(MasterPoly, ModelEntities, "ModelVertex", Model);
       vtkCMBParserV5::s_bridge->assignUUIDs(
         std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-        MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelVertexUUIDsString()));
+        MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelVertexUUIDsString()));
       }
     VertexIdsArray->Delete();
     VertexIdsArray = 0;
@@ -162,7 +163,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   if(EdgeIdsArray)
     {
     vtkIdTypeArray* EdgeVertices = this->NewIdTypeArray(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeVerticesString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeVerticesString()));
     ModelEntities.resize(EdgeIdsArray->GetNumberOfTuples());
     for(vtkIdType i=0;i<EdgeIdsArray->GetNumberOfTuples();i++)
       {
@@ -187,17 +188,17 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEdge", Model);
     vtkCMBParserV5::s_bridge->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeUUIDsString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeUUIDsString()));
     EdgeVertices->Delete();
     }
 
   // next load in the model faces and add in the model face uses
   vtkIdTypeArray* ModelFaceRegions = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceRegionsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceRegionsString()));
   vtkIdTypeArray* EdgesOfModelFace = this->NewIdTypeArray(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceEdgesString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceEdgesString()));
   vtkIntArray* EdgeDirections = vtkIntArray::SafeDownCast(
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeDirectionsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeDirectionsString()));
   std::vector<vtkModelEdge*> Edges;
   std::vector<int> EdgeDirs;
   if(EdgesOfModelFace)
@@ -207,7 +208,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     }
   ModelEntities.resize(FaceIdsArray->GetNumberOfTuples());
   vtkIdTypeArray* FaceMaterials =
-    this->NewIdTypeArray(MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetFaceMaterialIdString()));
+    this->NewIdTypeArray(MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetFaceMaterialIdString()));
 
   // map from region id to vector of pair of model face and side (i.e. face use)
   std::map<vtkIdType, std::vector<std::pair<vtkDiscreteModelFace*, int> > > FacesOfRegion;
@@ -292,13 +293,13 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   this->SetModelEntityData(MasterPoly, ModelEntities, "ModelFace", Model);
   vtkCMBParserV5::s_bridge->assignUUIDs(
     std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-    MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceUUIDsString()));
+    MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceUUIDsString()));
   // now that the ids are properly set we can add the cells to the model faces and/or edges
 
   CellToModelType CellToModelEntityIds; //classification
   vtkIdTypeArray* CellClassification = this->NewIdTypeArray(
     MasterPoly->GetCellData()->GetArray(
-    vtkCMBParserBase::GetModelFaceTagName()));
+    ModelParserHelper::GetModelFaceTagName()));
   if(!CellClassification)
     {
     vtkErrorMacro("Cannot get cell classification information.");
@@ -334,11 +335,11 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   if(RegionIdsArray)
     {
     vtkIdTypeArray* RegionMaterials = this->NewIdTypeArray(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelRegionsMaterialsString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionsMaterialsString()));
     vtkDoubleArray* PointInside =  vtkDoubleArray::SafeDownCast(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelRegionPointInsideString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionPointInsideString()));
     vtkIntArray* pointInsideValidity = vtkIntArray::SafeDownCast(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelRegionPointInsideValidity()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionPointInsideValidity()));
     ModelEntities.resize(RegionIdsArray->GetNumberOfTuples());
     for(vtkIdType i=0;i<RegionIdsArray->GetNumberOfTuples();i++)
       {
@@ -375,16 +376,16 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelRegion", Model);
     vtkCMBParserV5::s_bridge->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelRegionUUIDsString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelRegionUUIDsString()));
     }
 
   // next associate any floating edges with their region
-  if(MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetFloatingEdgesString()))
+  if(MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetFloatingEdgesString()))
     {
     vtkIdTypeArray* EdgeRegionId = this->NewIdTypeArray(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetFloatingEdgesString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetFloatingEdgesString()));
     vtkIdTypeArray* EdgeId = this->NewIdTypeArray(
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelEdgeUniquePersistentIdsString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelEdgeUniquePersistentIdsString()));
     if(EdgeRegionId)
       {
       for(vtkIdType i=0;i<EdgeRegionId->GetNumberOfTuples();i++)
@@ -458,7 +459,7 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
     this->SetModelEntityData(MasterPoly, ModelEntities, "ModelEntityGroup", Model);
     vtkCMBParserV5::s_bridge->assignUUIDs(
       std::vector<vtkModelItem*>(ModelEntities.begin(), ModelEntities.end()),
-      MasterPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelGroupUUIDsString()));
+      MasterPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelGroupUUIDsString()));
     }
 
   // TODO: Handle uses and shells whose UUIDs are also in field-data arrays.
@@ -467,8 +468,8 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   // deal with the mapping from model grid to analysis grid
   this->SetAnalysisGridData(MasterPoly, Model);
 
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetFileVersionString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelFaceRegionsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetFileVersionString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelFaceRegionsString());
   MasterPoly->GetFieldData()->RemoveArray("ModelFaceMaterials");
   MasterPoly->GetFieldData()->RemoveArray("ModelRegionMaterials");
   MasterPoly->GetFieldData()->RemoveArray("ModelRegionPointInside");
@@ -477,18 +478,18 @@ bool vtkCMBParserV5::Parse(vtkPolyData* MasterPoly, vtkDiscreteModel* Model)
   MasterPoly->GetFieldData()->RemoveArray("EdgeVertices");
   MasterPoly->GetFieldData()->RemoveArray("edgedirections");
   MasterPoly->GetFieldData()->RemoveArray("ModelFaceEdges");
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetMaterialUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelGroupUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelVertexUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelRegionUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelEdgeUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelFaceUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelVertexUseUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelEdgeUseUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelFaceUseUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelShellUUIDsString());
-  MasterPoly->GetFieldData()->RemoveArray(vtkCMBParserBase::GetModelLoopUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetMaterialUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelGroupUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelVertexUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelRegionUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelEdgeUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelFaceUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelVertexUseUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelEdgeUseUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelFaceUseUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelShellUUIDsString());
+  MasterPoly->GetFieldData()->RemoveArray(ModelParserHelper::GetModelLoopUUIDsString());
 
   // put warning if people try to store other arrays in the master polydata
   if(MasterPoly->GetPointData()->GetNumberOfArrays() != 0)
@@ -603,7 +604,7 @@ void vtkCMBParserV5::SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteMod
   vtkCharArray* canonicalSideArray = vtkCharArray::SafeDownCast(
     masterCells->GetArray(cellCSName));
   vtkStringArray* analysisGridType = vtkStringArray::SafeDownCast(
-    masterPoly->GetFieldData()->GetAbstractArray(vtkCMBParserBase::GetAnalysisGridFileType()));
+    masterPoly->GetFieldData()->GetAbstractArray(ModelParserHelper::GetAnalysisGridFileType()));
   if(pointMapArray || cellMapArray || canonicalSideArray)
     {
     if(pointMapArray && cellMapArray && canonicalSideArray)
@@ -631,7 +632,7 @@ void vtkCMBParserV5::SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteMod
     vtkDebugMacro("Currently the vtkModelBCGridRepresentation is saved out separately in a m2m file");
     }
   if(vtkStringArray* gridName = vtkStringArray::SafeDownCast(
-       masterPoly->GetFieldData()->GetAbstractArray(vtkCMBParserBase::GetAnalysisGridFileName())))
+       masterPoly->GetFieldData()->GetAbstractArray(ModelParserHelper::GetAnalysisGridFileName())))
     {
     vtkVariant name = gridName->GetVariantValue(0);
     model->GetAnalysisGridInfo()->SetGridFileName(name.ToString().c_str());
@@ -640,7 +641,7 @@ void vtkCMBParserV5::SetAnalysisGridData(vtkPolyData* masterPoly, vtkDiscreteMod
   // delete out some unneeded arrays
   masterPoints->RemoveArray(pointMapName);
 
-  masterCells->RemoveArray(vtkCMBParserBase::GetCellClassificationName());
+  masterCells->RemoveArray(ModelParserHelper::GetCellClassificationName());
   masterCells->RemoveArray(cellMapName);
   masterCells->RemoveArray(cellCSName);
 }

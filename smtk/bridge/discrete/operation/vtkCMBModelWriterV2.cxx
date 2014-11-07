@@ -38,6 +38,7 @@
 #include "vtkStringArray.h"
 #include "vtkUnsignedIntArray.h"
 #include "vtkXMLPolyDataWriter.h"
+#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkCMBModelWriterV2);
 
@@ -67,7 +68,7 @@ bool vtkCMBModelWriterV2::Write(vtkDiscreteModel* Model)
   vtkNew<vtkIdTypeArray> Classification;
   Classification->SetNumberOfComponents(1);
   Classification->SetNumberOfTuples(mesh.GetNumberOfCells());
-  Classification->SetName(vtkCMBParserBase::GetModelFaceTagName());
+  Classification->SetName(ModelParserHelper::GetModelFaceTagName());
 
   //iterate all edges than all faces, which is how the polydata is composed
   //this
@@ -156,7 +157,7 @@ void vtkCMBModelWriterV2::SetModelFaceData(vtkDiscreteModel* Model, vtkPolyData*
     ModelFaceAdjacentRegionsId->InsertNextTupleValue(ids);
     }
   Faces->Delete();
-  ModelFaceAdjacentRegionsId->SetName(vtkCMBParserBase::GetModelFaceRegionsString());
+  ModelFaceAdjacentRegionsId->SetName(ModelParserHelper::GetModelFaceRegionsString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentRegionsId.GetPointer());
   this->SetModelEntityData(Poly, Entities, "ModelFace");
 }
@@ -304,11 +305,11 @@ void vtkCMBModelWriterV2::SetFloatingEdgeData(vtkDiscreteModel* Model, vtkPolyDa
       }
     }
   Edges->Delete();
-  EdgeRegionlId->SetName(vtkCMBParserBase::GetFloatingEdgesString());
+  EdgeRegionlId->SetName(ModelParserHelper::GetFloatingEdgesString());
   Poly->GetFieldData()->AddArray(EdgeRegionlId.GetPointer());
-  endPoints->SetName(vtkCMBParserBase::GetModelEdgeVerticesString());
+  endPoints->SetName(ModelParserHelper::GetModelEdgeVerticesString());
   Poly->GetFieldData()->AddArray(endPoints.GetPointer());
-  lineSpacing->SetName(vtkCMBParserBase::GetEdgeLineResolutionString());
+  lineSpacing->SetName(ModelParserHelper::GetEdgeLineResolutionString());
   Poly->GetFieldData()->AddArray(lineSpacing.GetPointer());
   this->SetModelEntityData(Poly, Entities, "ModelEdge");
 }
@@ -324,49 +325,49 @@ void vtkCMBModelWriterV2::SetUUIDData(vtkDiscreteModel* model, vtkPolyData* poly
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
 
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelUUIDsString());
   // Material
   entities.clear();
   itit = model->NewIterator(vtkModelMaterialType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetMaterialUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetMaterialUUIDsString());
   // Groups
   entities.clear();
   itit = model->NewIterator(vtkDiscreteModelEntityGroupType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelGroupUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelGroupUUIDsString());
   // Regions
   entities.clear();
   itit = model->NewIterator(vtkModelRegionType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelRegionUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelRegionUUIDsString());
   // Faces
   entities.clear();
   itit = model->NewIterator(vtkModelFaceType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelFaceUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelFaceUUIDsString());
   // Edges
   entities.clear();
   itit = model->NewIterator(vtkModelEdgeType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelEdgeUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelEdgeUUIDsString());
   // Vertices
   entities.clear();
   itit = model->NewIterator(vtkModelVertexType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelVertexUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelVertexUUIDsString());
 
   // Shell
   entities.clear();
@@ -374,14 +375,14 @@ void vtkCMBModelWriterV2::SetUUIDData(vtkDiscreteModel* model, vtkPolyData* poly
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelShellUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelShellUUIDsString());
   // Loop
   entities.clear();
   itit = model->NewIterator(vtkModelLoopUseType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelLoopUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelLoopUUIDsString());
 
   // Face uses
   entities.clear();
@@ -389,21 +390,21 @@ void vtkCMBModelWriterV2::SetUUIDData(vtkDiscreteModel* model, vtkPolyData* poly
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelFaceUseUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelFaceUseUUIDsString());
   // Edge uses
   entities.clear();
   itit = model->NewIterator(vtkModelEdgeUseType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelEdgeUseUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelEdgeUseUUIDsString());
   // Vertex uses
   entities.clear();
   itit = model->NewIterator(vtkModelVertexUseType);
   for (itit->Begin(); !itit->IsAtEnd(); itit->Next())
     entities.push_back(itit->GetCurrentItem());
   itit->Delete();
-  this->SetModelItemUUIDs(model, poly, entities, vtkCMBParserBase::GetModelVertexUseUUIDsString());
+  this->SetModelItemUUIDs(model, poly, entities, ModelParserHelper::GetModelVertexUseUUIDsString());
 }
 
 void vtkCMBModelWriterV2::SetModelEntityData(
@@ -476,7 +477,7 @@ void vtkCMBModelWriterV2::AddFileVersion(vtkPolyData* Poly)
   Version->SetNumberOfComponents(1);
   Version->SetNumberOfTuples(1);
   Version->SetValue(0, this->GetVersion());
-  Version->SetName(vtkCMBParserBase::GetFileVersionString());
+  Version->SetName(ModelParserHelper::GetFileVersionString());
   Poly->GetFieldData()->AddArray(Version.GetPointer());
 }
 

@@ -14,17 +14,16 @@
 // vtkModelEntity.  Also can be used to build or destroy a
 // vtkDiscreteModelEntityGroup.
 
-#ifndef __vtkModelEntityOperatorBase_h
-#define __vtkModelEntityOperatorBase_h
+#ifndef __smtkdiscrete_vtkModelEntityOperatorBase_h
+#define __smtkdiscrete_vtkModelEntityOperatorBase_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkDiscreteModel;
 class vtkModelEntity;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkModelEntityOperatorBase : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkModelEntityOperatorBase : public vtkObject
 {
 public:
   static vtkModelEntityOperatorBase * New();

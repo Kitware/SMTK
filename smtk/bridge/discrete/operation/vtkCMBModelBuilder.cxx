@@ -44,7 +44,8 @@
 #include "vtkStringArray.h"
 #include "vtkIdTypeArray.h"
 #include "vtkPointData.h"
-#include "vtkTriangulateConcavePolysFilter.h"
+#include "vtkMath.h"
+#include "ModelParserHelper.h"
 
 #include <set>
 #include <sstream>
@@ -199,7 +200,7 @@ void vtkCMBModelBuilder::Operate(
 
   //if this optional array exists use it to populate the domain/region mapping
   vtkIdTypeArray* modelRegionDomainMap = vtkIdTypeArray::SafeDownCast(
-    modelPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelPredefinedDomainSets()));
+    modelPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelPredefinedDomainSets()));
   if(modelRegionDomainMap)
     {
     //for each region we are given the domain it part of
@@ -212,11 +213,11 @@ void vtkCMBModelBuilder::Operate(
       }
 
     modelPoly->GetFieldData()->RemoveArray(
-          vtkCMBParserBase::GetModelPredefinedDomainSets());
+          ModelParserHelper::GetModelPredefinedDomainSets());
     }
 
   vtkIdTypeArray* modelFaceRegionsMap = vtkIdTypeArray::SafeDownCast(
-    modelPoly->GetFieldData()->GetArray(vtkCMBParserBase::GetModelFaceRegionsMapString()));
+    modelPoly->GetFieldData()->GetArray(ModelParserHelper::GetModelFaceRegionsMapString()));
   if(!modelFaceRegionsMap)//!this->ProcessForParsing(MasterPoly))
     {
     vtkErrorMacro("Output from the input poly algorithm does not have modelFaceRegionsMap field data.");
@@ -248,7 +249,7 @@ void vtkCMBModelBuilder::Operate(
 
  // vtkPolyData* modelPoly =vtkPolyData::SafeDownCast(MergeFilter->GetOutput(0));
   vtkIdTypeArray* modelFaceIds = vtkIdTypeArray::SafeDownCast(
-    modelPoly->GetCellData()->GetArray(vtkCMBParserBase::GetModelFaceTagName()));
+    modelPoly->GetCellData()->GetArray(ModelParserHelper::GetModelFaceTagName()));
 
   std::map<vtkIdType, vtkSmartPointer<vtkIdList> > modelFaceCells;
   vtkIdType faceId;
@@ -444,7 +445,7 @@ void vtkCMBModelBuilder::Operate(
 
   vtkIdTypeArray* predefinedBoundarySet = vtkIdTypeArray::SafeDownCast(
     modelPoly->GetFieldData()->GetArray(
-    vtkCMBParserBase::GetModelPredefinedBoundarySets()));
+    ModelParserHelper::GetModelPredefinedBoundarySets()));
   if(predefinedBoundarySet)
     {
     typedef std::vector<vtkDiscreteModelEntity*> idVec;
@@ -488,7 +489,7 @@ void vtkCMBModelBuilder::Operate(
       op->Operate(model);
       }
     modelPoly->GetFieldData()->RemoveArray(
-          vtkCMBParserBase::GetModelPredefinedBoundarySets());
+          ModelParserHelper::GetModelPredefinedBoundarySets());
     }
 
   this->OperateSucceeded = 1;
@@ -724,7 +725,7 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(vtkDiscreteModelRegion *reg
       {
       // Hmmm... shouldn't have concave polys at this point, since won't be displayed
       // correctly... just warn and skip
-      if (vtkTriangulateConcavePolysFilter::IsPolygonConcave(
+      if (vtkCMBModelBuilder::IsPolygonConcave(
         faceGeometry->GetPoints(), numPts, pts))
         {
         vtkWarningMacro("Concave polygon encountered (shouldn't happen)");
@@ -788,6 +789,44 @@ void vtkCMBModelBuilder::ComputePointInsideForRegion(vtkDiscreteModelRegion *reg
   vtkErrorMacro("Failed to set point inside for region " <<
     region->GetUniquePersistentId());
   faces->Delete();
+}
+
+//-----------------------------------------------------------------------------
+bool vtkCMBModelBuilder::IsPolygonConcave(vtkPoints *points,
+                                                        vtkIdType npts,
+                                                        vtkIdType *pts)
+{
+  // look for flip of cross product (direction) between adjacent sets of three points
+  double v1[3], v2[3], pt[3][3], cross[2][3];
+
+  int basePt = 1, previousPt, nextPt;
+  points->GetPoint(pts[npts - 1], pt[0]);
+  points->GetPoint(pts[0], pt[1]);
+
+  for (vtkIdType i = 0; i < npts; i++, basePt++)
+    {
+    basePt %= 3;
+    nextPt = (basePt + 1) % 3;
+    previousPt = (basePt + 2) % 3;
+
+    points->GetPoint(pts[(i+1) % npts], pt[nextPt]);
+
+    for (int j = 0; j < 3; j++)
+      {
+      v1[j] = pt[previousPt][j] - pt[basePt][j];
+      v2[j] = pt[nextPt][j] - pt[basePt][j];
+      }
+
+    vtkMath::Cross(v1, v2, cross[i%2]);
+    if (i > 0)
+      {
+      if (vtkMath::Dot(cross[0], cross[1]) < 0)
+        {
+        return true;
+        }
+      }
+    }
+  return false;
 }
 
 //-----------------------------------------------------------------------------

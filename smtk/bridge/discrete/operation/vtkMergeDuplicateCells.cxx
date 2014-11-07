@@ -22,7 +22,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
-#include "vtkCMBParserBase.h"
+#include "ModelParserHelper.h"
 
 #include <map>
 #include <vector>
@@ -319,7 +319,7 @@ void vtkMergeDuplicateCells::SetModelFaceRegionInfo(vtkPolyData* Poly)
     }
 
   ModelFaceAdjacentRegionsId->SetName(
-    vtkCMBParserBase::GetModelFaceRegionsMapString());
+    ModelParserHelper::GetModelFaceRegionsMapString());
   Poly->GetFieldData()->AddArray(ModelFaceAdjacentRegionsId);
   ModelFaceAdjacentRegionsId->Delete();
 }

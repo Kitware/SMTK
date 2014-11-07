@@ -17,7 +17,7 @@ if (SMTK_BUILD_CGM)
 
   target_link_libraries(smtkCGMBridge_Plugin
     LINK_PUBLIC
-      smtkCore
+      SMTKCore
       cgmSMTK
       vtkPVServerManagerApplication
     LINK_PRIVATE

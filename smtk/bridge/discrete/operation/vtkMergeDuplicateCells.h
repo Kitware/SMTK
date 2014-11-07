@@ -17,18 +17,17 @@
 // vtkPolyData has vtkCellData that associates each mesh facet
 // with a model face based on model topology.
 
-#ifndef __vtkMergeDuplicateCells_h
-#define __vtkMergeDuplicateCells_h
+#ifndef __smtkdiscrete_vtkMergeDuplicateCells_h
+#define __smtkdiscrete_vtkMergeDuplicateCells_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkCell;
 class vtkIdTypeArray;
 class vtkPolyData;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMergeDuplicateCells : public vtkPolyDataAlgorithm
+class SMTKDISCRETEBRIDGE_EXPORT vtkMergeDuplicateCells : public vtkPolyDataAlgorithm
 {
 public:
   static vtkMergeDuplicateCells* New();

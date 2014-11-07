@@ -18,16 +18,15 @@
 // Note: Only Polys are passed through this filter.  Any Verts or Lines on the
 // input are removed, and we don't handle Strips.
 
-#ifndef __vtkMasterPolyDataNormals_h
-#define __vtkMasterPolyDataNormals_h
+#ifndef __smtkdiscrete_vtkMasterPolyDataNormals_h
+#define __smtkdiscrete_vtkMasterPolyDataNormals_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkPolyDataAlgorithm.h"
-#include "cmbSystemConfig.h"
 
 class vtkIdList;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkMasterPolyDataNormals : public vtkPolyDataAlgorithm
+class SMTKDISCRETEBRIDGE_EXPORT vtkMasterPolyDataNormals : public vtkPolyDataAlgorithm
 {
 public:
   static vtkMasterPolyDataNormals* New();

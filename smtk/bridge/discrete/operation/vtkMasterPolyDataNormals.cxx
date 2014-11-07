@@ -11,11 +11,9 @@
 
 #include "vtkMasterPolyDataNormals.h"
 
-#include "vtkCMBParserBase.h"
 #include "vtkObjectFactory.h"
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
-#include "vtkMultiBlockWrapper.h"
 #include "vtkNew.h"
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
@@ -23,6 +21,7 @@
 #include "vtkIntArray.h"
 #include "vtkPointData.h"
 #include "vtkPolyDataNormals.h"
+#include "ModelParserHelper.h"
 
 vtkStandardNewMacro(vtkMasterPolyDataNormals);
 
@@ -148,7 +147,7 @@ int vtkMasterPolyDataNormals::RequestData(
     }
 
   vtkDataArray *baseRegionIds = input->GetCellData()->GetArray(
-                                 vtkCMBParserBase::GetShellTagName());
+                                 ModelParserHelper::GetShellTagName());
   if(!baseRegionIds)
     {
     vtkErrorMacro("Region CellData required!");

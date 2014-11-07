@@ -160,7 +160,7 @@ public:
   static std::string shortUUIDName(const smtk::common::UUID& uid, BitFlags entityFlags);
 
   static StringList bridgeNames();
-  static StringList bridgeFileTypes(const std::string& bname);
+  static StringData bridgeFileTypes(const std::string& bname, const std::string& engine = std::string());
   static BridgePtr createBridge(const std::string& bname);
   BridgePtr createAndRegisterBridge(
     const std::string& bname,

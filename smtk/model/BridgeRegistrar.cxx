@@ -101,14 +101,14 @@ void BridgeRegistrar::parseTags(StaticBridgeInfo& bridge)
             curEngine = einfo->valuestring;
             bridge.Engines.push_back(curEngine);
             }
-          einfo = cJSON_GetObjectItem(engine, "filetypes");
+          einfo = cJSON_GetObjectItem(engine, BridgeRegistrar::fileTypesTag().c_str());
           if (
             einfo &&
             einfo->type == cJSON_Array &&
             einfo->child)
             {
             StringList fileTypes;
-            smtk::io::ImportJSON::getStringArrayFromJSON(einfo->child, fileTypes);
+            smtk::io::ImportJSON::getStringArrayFromJSON(einfo, fileTypes);
             if (curEngine.empty())
               curEngine = "*";
             bridge.FileTypes[curEngine] = fileTypes;
@@ -215,7 +215,7 @@ StringList BridgeRegistrar::bridgeNames()
 }
 
 /// Return the list of file types this bridge can read (currently: a list of file extensions).
-StringList BridgeRegistrar::bridgeFileTypes(
+StringData BridgeRegistrar::bridgeFileTypes(
   const std::string& bname,
   const std::string& bengine)
 {
@@ -224,15 +224,30 @@ StringList BridgeRegistrar::bridgeFileTypes(
     {
     if (!it->second.TagsParsed)
       BridgeRegistrar::parseTags(it->second);
-    StringData::const_iterator eit;
+    // when there is no engine passed in, we will return all
+    // extensions from all engines
+    PropertyNameWithStrings entry;
+    StringData retFileTypes;
     if (bengine.empty() && !it->second.FileTypes.empty())
-      return it->second.FileTypes.begin()->second;
-    else if (
-      !bengine.empty() &&
-      (eit = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end())
-      return eit->second;
+      {
+      for (entry = it->second.FileTypes.begin();
+        entry != it->second.FileTypes.end(); ++entry)
+        {
+        retFileTypes[entry->first].insert(
+          retFileTypes[entry->first].end(),
+          entry->second.begin(), entry->second.end());
+        }
+      }
+    else if (!bengine.empty())
+      {
+      if ( (entry = it->second.FileTypes.find(bengine)) != it->second.FileTypes.end() )
+        retFileTypes[bengine].insert(
+          retFileTypes[bengine].end(),
+          entry->second.begin(), entry->second.end());
+      }
+    return retFileTypes;
     }
-  StringList empty;
+  StringData empty;
   return empty;
 }
 

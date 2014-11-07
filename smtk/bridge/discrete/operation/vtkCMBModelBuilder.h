@@ -13,12 +13,11 @@
 // This CMB Model builder takes a vtkPolyData as input, then parse and convert
 // all the topology and geometry info from the input to fill in a CMB model.
 
-#ifndef __vtkCMBModelBuilder_h
-#define __vtkCMBModelBuilder_h
+#ifndef __smtkdiscrete_vtkCMBModelBuilder_h
+#define __smtkdiscrete_vtkCMBModelBuilder_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkObject.h"
-#include "cmbSystemConfig.h"
 
 class vtkCellLocator;
 class vtkDiscreteModelRegion;
@@ -27,8 +26,9 @@ class vtkPolyData;
 class vtkAlgorithm;
 class vtkIdList;
 class vtkIntArray;
+class vtkPoints;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkCMBModelBuilder : public vtkObject
+class SMTKDISCRETEBRIDGE_EXPORT vtkCMBModelBuilder : public vtkObject
 {
 public:
   static vtkCMBModelBuilder * New();
@@ -47,6 +47,10 @@ public:
 protected:
   vtkCMBModelBuilder();
   virtual ~vtkCMBModelBuilder();
+
+/// copied from vtkTriangulateConcavePolysFilter in CMB/VTKExtension.
+  // Tests whether the cell is concave
+  static bool IsPolygonConcave(vtkPoints *points, vtkIdType npts, vtkIdType *pts);
 
 private:
 

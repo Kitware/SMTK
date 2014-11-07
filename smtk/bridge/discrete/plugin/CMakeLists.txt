@@ -17,7 +17,7 @@ if (SMTK_BUILD_DISCRETE_BRIDGE)
 
   target_link_libraries(smtkDiscreteBridge_Plugin
     LINK_PUBLIC
-      smtkCore
+      SMTKCore
       smtkDiscreteBridge
       vtkPVServerManagerApplication
     LINK_PRIVATE
