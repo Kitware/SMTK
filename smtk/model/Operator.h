@@ -27,10 +27,12 @@
 namespace smtk {
   namespace model {
 
+#ifndef SHIBOKEN_SKIP
 //typedef smtk::function<smtk::model::OperatorPtr()> OperatorConstructor;
 typedef smtk::model::OperatorPtr (*OperatorConstructor)();
 typedef std::pair<std::string,OperatorConstructor> StaticOperatorInfo;
 typedef std::map<std::string,StaticOperatorInfo> OperatorConstructors;
+#endif
 
 /**\brief An enumeration of operation outcomes (or lacks thereof).
   *
@@ -141,6 +143,7 @@ public:
   virtual bool ableToOperate() { return false; }
   virtual OperatorResult operate();
 
+#ifndef SHIBOKEN_SKIP
   void observe(OperatorEventType event, WillOperateCallback functionHandle, void* callData);
   void observe(OperatorEventType event, DidOperateCallback functionHandle, void* callData);
 
@@ -149,6 +152,7 @@ public:
 
   int trigger(OperatorEventType event);
   int trigger(OperatorEventType event, const OperatorResult& result);
+#endif // SHIBOKEN_SKIP
 
   ManagerPtr manager() const;
   Ptr setManager(ManagerPtr s);
@@ -178,7 +182,9 @@ public:
   OperatorResult createResult(OperatorOutcome outcome = UNABLE_TO_OPERATE);
   void eraseResult(OperatorResult res);
 
+#ifndef SHIBOKEN_SKIP
   bool operator < (const Operator& other) const;
+#endif // SHIBOKEN_SKIP
 
 protected:
   friend class DefaultBridge;
@@ -188,11 +194,13 @@ protected:
 
   virtual OperatorResult operateInternal() = 0;
 
+#ifndef SHIBOKEN_SKIP
   ManagerPtr m_manager; // Model manager, not the attribute manager for the operator.
   Bridge* m_bridge;
   OperatorSpecification m_specification;
   std::set<WillOperateObserver> m_willOperateTriggers;
   std::set<DidOperateObserver> m_didOperateTriggers;
+#endif // SHIBOKEN_SKIP
 };
 
 SMTKCORE_EXPORT std::string outcomeAsString(int oc);

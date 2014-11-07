@@ -321,6 +321,7 @@ std::string Bridge::findOperatorXMLInternal(
   return it->second.first;
 }
 
+#ifndef SHIBOKEN_SKIP
 /**\brief A convenience method used by subclass findOperatorConstructor methods.
   */
 OperatorConstructor Bridge::findOperatorConstructorInternal(
@@ -339,6 +340,7 @@ OperatorConstructor Bridge::findOperatorConstructorInternal(
     }
   return it->second.second;
 }
+#endif // SHIBOKEN_SKIP
 
 /**\brief Subclasses may override this method to export additional state.
   *

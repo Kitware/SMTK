@@ -23,9 +23,12 @@
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addFaceUseToManager', unmatched parameter type 'CoFace*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addVolumeUseToManager', unmatched parameter type 'CoVolume*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addShellToManager', unmatched parameter type 'Shell*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addNamesIfAny', unmatched parameter type 'RefEntity*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addRelations', unmatched parameter type 'DLIList&lt;RefEntity*&gt;&amp;'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefEdge*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefVertex*'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::addTessellation', unmatched parameter type 'RefFace*'"/>
+
 
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::registerOperator', unmatched parameter type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>

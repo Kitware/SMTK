@@ -14,6 +14,7 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
 
@@ -68,7 +69,7 @@ smtk::model::OperatorResult BooleanUnionOperator::operateInternal()
     if (cgmBody)
       cgmBodiesIn.append(cgmBody);
     if (!keepInputs)
-      this->manager()->erase(it->entity());
+      this->manager()->eraseModel(*it);
     }
 
   if (cgmBodiesIn.size() < 2)
