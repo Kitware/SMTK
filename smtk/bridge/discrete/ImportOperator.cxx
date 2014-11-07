@@ -54,26 +54,20 @@ ImportOperator::ImportOperator()
 
 bool ImportOperator::ableToOperate()
 {
-  return this->ensureSpecification();
-  /*
-  if(!this->ensureSpecification())
+  if(!this->ensureSpecification() ||
+    !this->specification()->isValid())
     return false;
+
   std::string filename = this->specification()->findFile("filename")->value();
   if (filename.empty())
     return false;
   std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
-  StringList importtypes = this->manager()->bridgeFileTypes(
-    this->bridge()->name(), "import");
-  for(std::vector<String>::iterator it = importtypes.begin();
-      it != importtypes.end(); ++it)
-    {
-    if((*it).find(ext) != std::string::npos)
-      {
-      return true;
-      }
-    }
-  return false;
-  */
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  bool able = (ext == ".vtk");
+#ifdef SMTK_BUILD_MOAB_READER
+    able = able || ext == ".exo";
+#endif
+  return able;
 }
 
 OperatorResult ImportOperator::operateInternal()

@@ -24,8 +24,16 @@
 #include "vtkDiscreteModelWrapper.h"
 #include "vtkModelItem.h"
 #include "vtkModelEntity.h"
+#include <vtksys/SystemTools.hxx>
 
 #include "ReadOperator_xml.h"
+
+// #define SMTK_DISCRETE_BRIDGE_DEBUG
+
+#if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
+#include "smtk/io/ExportJSON.h"
+#include "cJSON.h"
+#endif
 
 using namespace smtk::model;
 
@@ -40,9 +48,16 @@ ReadOperator::ReadOperator()
 
 bool ReadOperator::ableToOperate()
 {
-  return
-    this->ensureSpecification()
-    ;
+  if(!this->ensureSpecification() ||
+    !this->specification()->isValid())
+    return false;
+
+  std::string filename = this->specification()->findFile("filename")->value();
+  if (filename.empty())
+    return false;
+  std::string ext = vtksys::SystemTools::GetFilenameLastExtension(filename);
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+  return ext == ".cmb";
 }
 
 OperatorResult ReadOperator::operateInternal()
@@ -71,21 +86,14 @@ OperatorResult ReadOperator::operateInternal()
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
   result->findModelEntity("model")->setValue(modelEntity);
-/*
-//#include "smtk/io/ExportJSON.h"
-//#include "cJSON.h"
 
-  cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModel(json, this->manager());
-  std::cout << "Result " << cJSON_Print(json) << "\n";
-  cJSON_Delete(json);
-  */
-/*
+#if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
 std::string json = smtk::io::ExportJSON::fromModel(this->manager());
-    std::ofstream file("/Users/yuminyuan/Desktop/smooth_surface1.json");
+    std::ofstream file("/Users/yuminyuan/Desktop/read_op_out.json");
     file << json;
     file.close();
-*/
+#endif
+
   return result;
 }
 

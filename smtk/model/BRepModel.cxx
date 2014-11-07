@@ -1244,7 +1244,7 @@ StringList BRepModel::bridgeNames()
 }
 
 /// Return the list of file types this bridge can read (currently: a list of file extensions).
-StringList BRepModel::bridgeFileTypes(const std::string& bname, const std::string& engine)
+StringData BRepModel::bridgeFileTypes(const std::string& bname, const std::string& engine)
 {
   return BridgeRegistrar::bridgeFileTypes(bname, engine);
 }
