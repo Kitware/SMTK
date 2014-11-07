@@ -212,6 +212,7 @@
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Bridge' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'DescriptivePhrase' is not known"/>
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Operator' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::BRepModel::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::create', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::Manager::SelfType&gt;'"/>
@@ -275,21 +276,20 @@
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
   <suppress-warning text="skipping field 'BRepModel::m_defaultBridge' with unmatched type 'smtk::shared_ptr&lt;Bridge&gt;'"/>
-  <suppress-warning text="skipping field 'Bridge::m_operators' with unmatched type 'std::set&lt;smtk::model::OperatorPtr&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::Manager::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::addOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::op', unmatched return type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorXMLInternal', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::operators', unmatched return type 'smtk::model::Operators'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::EntityPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
-  <suppress-warning text="skipping function 'smtk::model::ModelEntity::op', unmatched return type 'smtk::model::OperatorPtr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::setManager', unmatched return type 'smtk::model::Operator::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::setBridge', unmatched return type 'smtk::model::Operator::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::associatedEntitiesAs', unmatched return type 'T'"/>
+
 
   <suppress-warning text="skipping field 'BRepModel::s_bridges' with unmatched type 'std::map&lt;std::string,smtk::model::StaticBridgeInfo&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::registerBridge', unmatched parameter type 'smtk::model::BridgeConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::BRepModel::bridgeConstructor', unmatched return type 'smtk::model::BridgeConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'smtk::model::OperatorPtr'"/>
   <suppress-warning text="skipping field 'BRepModel::m_sessions' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
 
 
@@ -634,6 +634,7 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::Operator"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::Manager">
     <modify-function signature="arrangeEntity(smtk::common::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
@@ -861,6 +862,10 @@
       <enum-type name="OperatorOutcome">
         <include file-name="smtk/model/Operator.h" location="local"/>
       </enum-type>
+
+      <object-type name="Operator">
+        <include file-name="smtk/model/Operator.h" location="local"/>
+      </object-type>
 
       <object-type name="AttributeAssignments">
         <include file-name="smtk/model/AttributeAssignments.h" location="local"/>

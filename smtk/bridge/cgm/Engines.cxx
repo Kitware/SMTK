@@ -11,9 +11,14 @@
 
 #include "smtk/bridge/cgm/CAUUID.h"
 
+#include "smtk/Options.h"
+
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push
 #  pragma GCC diagnostic ignored"-Wunused-parameter"
+#endif
+#ifdef CGM_HAVE_VERSION_H
+#  include "cgm_version.h"
 #endif
 #include "DLIList.hpp"
 #include "FacetModifyEngine.hpp"
@@ -103,10 +108,12 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
 bool Engines::setDefault(const std::string& engine)
 {
   // If we've never called init, do some extra stuff:
+#if defined(CGM_VERSION_MAJOR) && CGM_VERSION_MAJOR >= 14
   if (!Engines::areInitialized())
     {
     return Engines::isInitialized(engine);
     }
+#endif
   // Otherwise, see if we can create the appropriate engines
   // and set them in the default query/modify tool.
 

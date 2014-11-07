@@ -115,40 +115,55 @@ const UUIDsToAttributeAssignments& Manager::attributeAssignments() const
 }
 //@}
 
-/**\brief Remove an entity from the manager.
+/**\brief A convenience method for erasing an entity from storage.
   *
-  * This overrides BRepModel::erase() in order to ensure that all
-  * Arrangements referencing \a uid are also removed. (BRepModel
-  * does not store arrangement information.)
-  *
-  * **Warning**: Invoking this method naively will likely result
-  * in an inconsistent solid model. This does not cascade
-  * any changes required to remove dependent entities (i.e.,
-  * removing a face does not remove any face-uses or shells that
-  * the face participated in, potentially leaving an improper volume
-  * boundary). The application is expected to perform further
-  * operations to keep the model valid.
   */
-bool Manager::erase(const UUID& uid)
+bool Manager::erase(const Cursor& cursor)
 {
-  Entity* ent = this->findEntity(uid);
-  UUIDWithArrangementDictionary ad = this->m_arrangements->find(uid);
-  if (!ent || ad == this->m_arrangements->end())
-    return false; // Can't erase what we don't have.
+  return this->BRepModel::erase(cursor.entity());
+}
 
-  ArrangementKindWithArrangements ak;
-  do
+/**\brief A convenience method for erasing a model and its children.
+  *
+  * This removes the model plus all of its free cells, groups, and
+  * submodels from storage.
+  * This method will have no effect given an invalid model entity.
+  */
+bool Manager::eraseModel(const ModelEntity& model)
+{
+  if (!model.isValid())
+    return false;
+
+  CellEntities free = model.cells();
+  for (CellEntities::iterator fit = free.begin(); fit != free.end(); ++fit)
     {
-    ak = ad->second.begin();
-    if (ak == ad->second.end())
-      break;
-    Arrangements::size_type aidx = ak->second.size();
-    for (; aidx > 0; --aidx)
-      this->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
-    ad = this->m_arrangements->find(uid); // iterator may be invalidated by unarrangeEntity.
+    Cursors bdys = fit->lowerDimensionalBoundaries(-1);
+    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+      {
+      std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+      this->erase(bit->entity());
+      }
+    std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
+    this->erase(fit->entity());
     }
-  while (ad != this->m_arrangements->end());
-  return this->BRepModel::erase(uid);
+
+  GroupEntities grps = model.groups();
+  for (GroupEntities::iterator git = grps.begin(); git != grps.end(); ++git)
+    {
+    Cursors members = git->members<Cursors>();
+    for (Cursors::iterator mit = members.begin(); mit != members.end(); ++mit)
+      {
+      std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
+      this->erase(mit->entity());
+      }
+    std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
+    this->erase(git->entity());
+    }
+
+  std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
+  this->erase(model.entity());
+
+  return true;
 }
 
 /**\brief Set the attribute manager.

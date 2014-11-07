@@ -570,6 +570,18 @@ Entity* BRepModel::findEntity(const UUID& uid, bool tryBridges)
 /**\brief Remove the entity with the given \a uid.
   *
   * Returns true upon success, false when the entity did not exist.
+  *
+  * Note that the implementation is aware of when the BRepModel
+  * is actually a Manager and removes storage from the Manager as
+  * well (including tessellation data).
+  *
+  * **Warning**: Invoking this method naively will likely result
+  * in an inconsistent solid model. This does not cascade
+  * any changes required to remove dependent entities (i.e.,
+  * removing a face does not remove any face-uses or shells that
+  * the face participated in, potentially leaving an improper volume
+  * boundary). The application is expected to perform further
+  * operations to keep the model valid.
   */
 bool BRepModel::erase(const UUID& uid)
 {
@@ -581,8 +593,31 @@ bool BRepModel::erase(const UUID& uid)
 
   Manager* store = dynamic_cast<Manager*>(this);
   if (store)
+    {
+    // Trigger an event before the erasure so the observers
+    // have a chance to see what's about to disappear.
     store->trigger(std::make_pair(DEL_EVENT, ENTITY_ENTRY),
       Cursor(store->shared_from_this(), uid));
+
+    UUIDWithArrangementDictionary ad = store->arrangements().find(uid);
+    if (ad != store->arrangements().end())
+      {
+      ArrangementKindWithArrangements ak;
+      do
+        {
+        ak = ad->second.begin();
+        if (ak == ad->second.end())
+          break;
+        Arrangements::size_type aidx = ak->second.size();
+        for (; aidx > 0; --aidx)
+          store->unarrangeEntity(uid, ak->first, static_cast<int>(aidx - 1), false);
+        ad = store->arrangements().find(uid); // iterator may be invalidated by unarrangeEntity.
+        }
+      while (ad != store->arrangements().end());
+      }
+    store->tessellations().erase(uid);
+    store->attributeAssignments().erase(uid);
+    }
 
   // TODO: If this entity is a model and has an entry in m_modelBridges,
   //       we should verify that any submodels retain a reference to the

@@ -84,7 +84,9 @@ public:
   template<typename Collection>
   Collection entitiesMatchingFlagsAs(BitFlags flags, bool exactMatch = true);
 
-  virtual bool erase(const smtk::common::UUID& uid);
+  using BRepModel::erase;
+  virtual bool erase(const Cursor& cursor);
+  virtual bool eraseModel(const ModelEntity& cursor);
 
   tess_iter_type setTessellation(const smtk::common::UUID& cellId, const Tessellation& geom);
 

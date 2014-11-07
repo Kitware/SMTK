@@ -67,6 +67,7 @@ enum BridgedInformation
 /// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
 typedef unsigned long BridgedInfoBits;
 
+#ifndef SHIBOKEN_SKIP
 /**\brief Declare that a class implements a bridge to a solid modeling kernel.
   *
   * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
@@ -190,6 +191,20 @@ public: \
   virtual smtk::model::OperatorConstructor findOperatorConstructor( \
     const std::string& opName) const;
 
+#else // SHIBOKEN_SKIP
+
+#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls) \
+  std::string Cls ::bridgeName(#Comp); \
+  std::string Cls ::className() const; \
+  std::string Cls ::findOperatorXML(const std::string& opName) const;
+
+#define smtkDeclareModelingKernel() \
+  static std::string bridgeName; \
+  virtual std::string name(); \
+  virtual std::string className() const;
+
+#endif // SHIBOKEN_SKIP
+
 /**\brief A base class for bridging modelers into SMTK.
   *
   * SMTK can act as a bridge between other (foreign) solid modelers
@@ -246,8 +261,10 @@ public:
   smtk::attribute::System* operatorSystem();
   const smtk::attribute::System* operatorSystem() const;
 
+#ifndef SHIBOKEN_SKIP
   virtual OperatorConstructor findOperatorConstructor(const std::string&) const
     { return OperatorConstructor(); }
+#endif // SHIBOKEN_SKIP
   virtual std::string findOperatorXML(const std::string&) const
     { return std::string(); }
 
@@ -265,9 +282,11 @@ protected:
 
   void setSessionId(const smtk::common::UUID& sessId);
 
+#ifndef SHIBOKEN_SKIP
   void initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass = false);
   virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(const std::string&, const OperatorConstructors* opList) const;
+#endif // SHIBOKEN_SKIP
 
   virtual BridgeIOPtr createIODelegate(const std::string& format);
 
