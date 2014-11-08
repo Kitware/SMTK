@@ -225,7 +225,11 @@ bool System::removeAttribute(smtk::attribute::AttributePtr att)
   this->m_attributeClusters[att->type()].erase(att);
   return true;
 }
+
 //----------------------------------------------------------------------------
+/**\brief Find the attribute definitions that can be associated with \a mask.
+  *
+  */
 void System::findDefinitions(unsigned long mask, std::vector<smtk::attribute::DefinitionPtr> &result) const
 {
   smtk::attribute::DefinitionPtr def;

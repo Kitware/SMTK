@@ -213,6 +213,9 @@ int ExportJSON::forManager(
 
   for (it = modelMgr->topology().begin(); it != modelMgr->topology().end(); ++it)
     {
+    if ((it->second.entityFlags() & BRIDGE_SESSION) && !(sections & JSON_BRIDGES))
+      continue;
+
     cJSON* curChild = cJSON_CreateObject();
       {
       std::string suid = it->first.toString();

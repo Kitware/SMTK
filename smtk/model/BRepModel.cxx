@@ -39,7 +39,7 @@ BRepModel::BRepModel() :
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
   m_defaultBridge(DefaultBridge::create()),
-  m_modelCount(1)
+  m_globalCounters(2,1) // first entry is bridge counter, second is model counter
 {
   this->registerBridgeSession(this->m_defaultBridge);
   // TODO: throw() when topology == NULL?
@@ -55,7 +55,7 @@ BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
   m_defaultBridge(DefaultBridge::create()),
-  m_modelCount(1)
+  m_globalCounters(2,1) // first entry is bridge counter, second is model counter
 {
   this->registerBridgeSession(this->m_defaultBridge);
   // TODO: throw() when topology == NULL?
@@ -630,8 +630,13 @@ bool BRepModel::erase(const UUID& uid)
   // index. Thus, we call elideEntityReferences rather than removeEntityReferences.
   this->elideEntityReferences(ent);
 
+  // TODO: Notify observers of property removal?
+  this->m_floatData->erase(uid);
+  this->m_stringData->erase(uid);
+  this->m_integerData->erase(uid);
+
   // TODO: Notify model of entity removal?
-  this->m_topology->erase(ent);
+  this->m_topology->erase(uid);
 
   // If the entity was a model, remove any bridge entry for it.
   if (isModel)
@@ -1213,7 +1218,7 @@ std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       {
       std::ostringstream defaultName;
       defaultName << "Model ";
-      int count = this->m_modelCount++;
+      int count = this->m_globalCounters[1]++;
       char hexavigesimal[8]; // 7 hexavigesimal digits will cover us up to 2**31.
       int i;
       for (i = 0; count > 0 && i < 7; ++i)
@@ -1233,6 +1238,20 @@ std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
       {
       tmpName = this->stringProperty(uid, "name")[0];
       }
+    return tmpName;
+    }
+  else if (entityFlags & BRIDGE_SESSION)
+    {
+    std::string tmpName;
+    if (!this->hasStringProperty(uid,"name"))
+      {
+      tmpName =
+        Entity::defaultNameFromCounters(
+          entityFlags, this->m_globalCounters);
+      this->setStringProperty(uid, "name", tmpName);
+      }
+    else
+      tmpName = this->stringProperty(uid, "name")[0];
     return tmpName;
     }
   // Otherwise, use the "owning" model as part of the default name
@@ -1324,6 +1343,8 @@ bool BRepModel::registerBridgeSession(BridgePtr bridge)
     return false;
 
   this->m_sessions[sessId] = bridge;
+  BRepModel::iter_type brec =
+    this->setEntityOfTypeAndDimension(sessId, BRIDGE_SESSION, -1);
   return true;
 }
 
@@ -1337,13 +1358,16 @@ bool BRepModel::unregisterBridgeSession(BridgePtr bridge)
   if (sessId.isNull())
     return false;
 
+  // TODO: Erase all models related to the bridge??? (m_modelBridges)
+  //       Or do we want to allow markup to continue past the life of a session?
+  this->erase(sessId);
   return this->m_sessions.erase(sessId) ? true : false;
 }
 
 /// Find a bridge given its session UUID (or NULL).
-BridgePtr BRepModel::findBridgeSession(const UUID& sessId)
+BridgePtr BRepModel::findBridgeSession(const UUID& sessId) const
 {
-  UUIDsToBridges::iterator it = this->m_sessions.find(sessId);
+  UUIDsToBridges::const_iterator it = this->m_sessions.find(sessId);
   if (it == this->m_sessions.end())
     return BridgePtr();
   return it->second;
@@ -1365,6 +1389,26 @@ UUIDs BRepModel::bridgeSessions() const
     result.insert(it->first);
     }
   return result;
+}
+
+/**\brief Return the set of models attached to the given bridge \a sessionId.
+  *
+  * Currently this is not an efficient query when the number of models is large.
+  * It could be accelerated by storing the inverse map of m_modelBridges.
+  */
+smtk::common::UUIDs BRepModel::modelsOfBridgeSession(const smtk::common::UUID& sessionId) const
+{
+  smtk::common::UUIDs modelSet;
+  BridgePtr bridge = this->findBridgeSession(sessionId);
+  if (!bridge)
+    return modelSet;
+  UUIDsToBridges::const_iterator it;
+  for (it = this->m_modelBridges.begin(); it != this->m_modelBridges.end(); ++it)
+    {
+    if (it->second == bridge)
+      modelSet.insert(it->first);
+    }
+  return modelSet;
 }
 
 /// Return a reference to the \a modelId's counter array associated with the given \a entityFlags.

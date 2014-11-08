@@ -1,3 +1,5 @@
+#!/usr/bin/python
+import sys
 #=============================================================================
 #
 #  Copyright (c) Kitware, Inc.
@@ -13,16 +15,27 @@ import smtk
 try:
   import cgmsmtk
 except:
-  print "Expected"
+  print 'Expecting ERROR:'
 
 mgr = smtk.model.Manager.create()
-brg = smtk.model.Manager.createBridge('cgm')
-brg.name()
-brg.sessionId()
-mgr.registerBridgeSession(brg)
+sess = mgr.createSession('cgm')
+brg = sess.bridge() # smtk.model.Manager.createBridge('cgm')
+#sess = smtk.model.BridgeSession(mgr, brg)
+sess.assignDefaultName()
+print '\n\n%s: type "%s" %s %s' % \
+  (sess.name(), brg.name(), sess.flagSummary(0), brg.sessionId())
+print '  Site: %s' % (sess.site() or 'local')
+for eng in sess.engines():
+  print '  Engine %s filetypes:\n    %s' % \
+    (eng, '\n    '.join(sess.fileTypes(eng, 'read')))
+# We could evaluate the session tag as JSON, but most of
+# the information is available through methods above that
+# we needed to test:
+bridgetag = sess.tag()
+print '\n'
 
-opnames = brg.operatorNames()
-cs1 = brg.op('create sphere', mgr)
+opnames = sess.operatorNames()
+cs1 = sess.op('create sphere')
 cs1.findDouble('radius').setValue(1.)
 #cs1.findDouble('inner radius').setValue(0.1) # Crashes
 #cs1.findDouble('inner radius').setValue(-0.1) # Complains bitterly
@@ -37,12 +50,15 @@ cs1.findDouble('center').setValue(2, 0.2)
 res = cs1.operate()
 sph = res.findModelEntity('bodies').value(0)
 
-cs2 = brg.op('create sphere', mgr)
+cs2 = sess.op('create sphere')
 cs2.findDouble('radius').setValue(0.5)
 res2 = cs2.operate()
 sph2 = res2.findModelEntity('bodies').value(0)
 
-u1 = brg.op('union', mgr)
+print 'Operators that can associate with ' + sph2.flagSummary(1) + ' include\n  %s' % \
+  '\n  '.join(sess.operatorsForAssociation(sph2.entityFlags()))
+
+u1 = sess.op('union')
 u1.associateEntity(sph)
 u1.associateEntity(sph2)
 res = u1.operate()
@@ -56,3 +72,8 @@ su = res.findModelEntity('bodies').value(0)
 #sphFile = open('/tmp/s3.json', 'w')
 #print >> sphFile, json
 #sphFile.close()
+
+#
+# Now verify that mgr.closeSession removes the entity record for the session.
+mgr.closeSession(sess)
+sys.exit(0 if sess.name() == ('invalid id ' + str(sess.entity())) else 1)

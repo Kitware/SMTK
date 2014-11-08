@@ -135,7 +135,17 @@ std::string Cursor::flagSummary(int form) const
     Entity* ent = this->m_manager->findEntity(this->m_entity);
     if (ent)
       {
-      return ent->flagSummary(form);
+      std::ostringstream summary;
+      // We can embellish the entity BitFlag summary with
+      // additional information for some objects.
+      if (ent->entityFlags() & BRIDGE_SESSION)
+        {
+        Bridge::Ptr brdg = this->m_manager->findBridgeSession(this->m_entity);
+        if (brdg)
+          summary << brdg->name() << " ";
+        }
+      summary << ent->flagSummary(form);
+      return summary.str();
       }
     }
   return Entity::flagSummary(INVALID, form);
@@ -160,6 +170,19 @@ std::string Cursor::name() const
 void Cursor::setName(const std::string& n)
 {
   this->setStringProperty("name", n);
+}
+
+/**\brief Assign a default name to the entity.
+  *
+  * This uses counters associated with the owning
+  * model or model manager to name the entity.
+  */
+std::string Cursor::assignDefaultName()
+{
+  if (!this->m_manager || !this->m_entity)
+    return std::string();
+
+  return this->m_manager->assignDefaultName(this->m_entity);
 }
 
 /** Return a user-assigned color for the entity.

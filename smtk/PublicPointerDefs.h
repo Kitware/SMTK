@@ -70,6 +70,8 @@ namespace smtk
     typedef std::vector<smtk::model::Arrangement> Arrangements;
     class BRepModel;
     class Bridge;
+    class BridgeSession;
+    typedef std::vector<smtk::model::BridgeSession> BridgeSessions;
     class BridgeIO;
     class BridgeIOJSON;
     class CellEntity;

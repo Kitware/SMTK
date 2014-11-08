@@ -106,6 +106,7 @@ enum EntityTypeBits
   GROUP_ENTITY         = 0x00000800, //!< A bit indicating a group; UUIDs may only occur 0 or 1 times. A separate flag describes constraints on group members.
   MODEL_ENTITY         = 0x00001000, //!< A bit indicating a (sub)model.
   INSTANCE_ENTITY      = 0x00002000, //!< A bit indicating an instance of model.
+  BRIDGE_SESSION       = 0x00004000, //!< A bit indicating a bridge session.
   // Inherent property bits (arguably inappropriate as they could be hard to maintain):
   COVER                = 0x00100000, //!< The entity must have a relation indicating which cover(s) it participates in
   PARTITION            = 0x00200000, //!< The entity must have a relation indicating which partition(s) it participates in
@@ -117,8 +118,8 @@ enum EntityTypeBits
   NO_SUBGROUPS         = 0x08000000, //!< The group is not allowed to contain other groups if this flag is set.
   // Specific bit-combinations of interest (just combinations of the above):
   ANY_DIMENSION        = 0x000000ff, //!< Mask to extract the dimensionality of an entity.
-  ENTITY_MASK          = 0x00003f00, //!< Mask to extract the type of an entity. Exactly one bit should be set for any valid entity.
-  ANY_ENTITY           = 0x00003fff, //!< Mask to extract the type and dimension of an entity.
+  ENTITY_MASK          = 0x00007f00, //!< Mask to extract the type of an entity. Exactly one bit should be set for any valid entity.
+  ANY_ENTITY           = 0x00007fff, //!< Mask to extract the type and dimension of an entity.
   VERTEX               = 0x00000101, //!< A cell of dimension 0 (i.e., a vertex)
   EDGE                 = 0x00000102, //!< A cell of dimension 1 (i.e., an edge)
   FACE                 = 0x00000104, //!< A cell of dimension 2 (i.e., a face)
@@ -176,6 +177,8 @@ inline bool isShell(BitFlags entityFlags) { return (entityFlags & ANY_ENTITY) ==
 inline bool isGroupEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == GROUP_ENTITY; }
 inline bool isModelEntity(BitFlags entityFlags)    { return (entityFlags & ENTITY_MASK) == MODEL_ENTITY; }
 inline bool isInstanceEntity(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == INSTANCE_ENTITY; }
+
+inline bool isBridgeSession(BitFlags entityFlags) { return (entityFlags & ENTITY_MASK) == BRIDGE_SESSION; }
 
   } // namespace model
 } // namespace smtk

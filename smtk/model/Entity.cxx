@@ -330,6 +330,13 @@ std::string Entity::flagSummaryHelper(BitFlags flags, int form)
       result += "s"; // plural is easy in this case.
       }
     break;
+  case BRIDGE_SESSION:
+    result = "session";
+    if (form)
+      {
+      result += "s"; // plural is easy in this case.
+      }
+    break;
   default:
     result = "invalid";
     break;
@@ -472,6 +479,7 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     name << counters[0]++;
     break;
   case INSTANCE_ENTITY:
+  case BRIDGE_SESSION:
   default:
     name << counters[0]++;
     break;

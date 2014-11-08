@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/model/SubphraseGenerator.h"
 
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/ShellEntity.h"
@@ -230,6 +231,14 @@ void SubphraseGenerator::prototypeOfInstance(
       EntityPhrase::create()->setup(
         instanceOf, src));
     }
+}
+
+
+void SubphraseGenerator::modelsOfBridgeSession(
+  DescriptivePhrase::Ptr src, const BridgeSession& sess, DescriptivePhrases& result)
+{
+  ModelEntities modelsOf = sess.models<ModelEntities>();
+  addEntityPhrases(modelsOf, src, this->directLimit(), result);
 }
 
 

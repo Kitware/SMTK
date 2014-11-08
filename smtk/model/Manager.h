@@ -200,6 +200,10 @@ public:
   InstanceEntity addInstance();
   InstanceEntity addInstance(const Cursor& instanceOf);
 
+  BridgeSession createSession(const std::string& bridgeName);
+  void closeSession(const BridgeSession& sess);
+  BridgeSessions allSessions() const;
+
   void observe(ManagerEventType event, ConditionCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToOneCallback functionHandle, void* callData);
   void observe(ManagerEventType event, OneToManyCallback functionHandle, void* callData);

@@ -9,7 +9,7 @@
 #  PURPOSE.  See the above copyright notice for more information.
 #
 #=============================================================================
-import os
+import os, sys
 import smtk
 try:
   import cgmsmtk

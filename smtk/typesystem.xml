@@ -27,6 +27,8 @@
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::model::BridgeSession::models', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::model::BridgeSession::operatorsForAssociation', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Cursor::CursorsFromUUIDs', unmatched parameter type 'S&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addCells', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::addGroups', unmatched parameter type 'T const&amp;'"/>
@@ -128,6 +130,7 @@
   <suppress-warning text="skipping field 'Manager::m_attributeAssignments' with unmatched type 'shared_ptr&lt;UUIDsToAttributeAssignments&gt;'"/>
 
   <!-- ignore shadowing/hiding of Cursor::isValid() as it is intentional -->
+  <suppress-warning text="hiding of function 'isValid' in class 'BridgeSession'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'CellEntity'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Chain'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Cursor'"/>
@@ -146,6 +149,7 @@
   <suppress-warning text="hiding of function 'isValid' in class 'VertexUse'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'Volume'"/>
   <suppress-warning text="hiding of function 'isValid' in class 'VolumeUse'"/>
+  <suppress-warning text="Shadowing: Cursor::isValid() const and BridgeSession::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and CellEntity::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Chain::isValid() const"/>
   <suppress-warning text="Shadowing: Cursor::isValid() const and Edge::isValid() const"/>
@@ -241,6 +245,7 @@
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'SubphraseGenerator' is not known"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::freeGroupsInModel', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
+  <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::modelsOfBridgeSession', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::membersOfGroup', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::EntityPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping function 'smtk::model::DescriptivePhrase::setDelegate', unmatched return type 'smtk::model::DescriptivePhrase::Ptr'"/>
@@ -878,6 +883,26 @@
       <enum-type name="BridgedInformation">
         <include file-name="smtk/model/Bridge.h" location="local"/>
       </enum-type>
+
+      <value-type name="BridgeSession">
+        <include file-name="smtk/model/BridgeSession.h" location="local"/>
+        <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
+        <!-- We can add, rather than modify, signatures by not making the methods const.
+             This allows us to change the return type to an array of pointers-to-cursors,
+             which shiboken properly converts. -->
+        <add-function signature="models()" static="no"
+          return-type="std::vector&lt;smtk::model::BridgeSession*&gt;">
+          <inject-code>
+            smtk::model::ModelEntities tmp =
+              %CPPSELF-&gt;models&lt;smtk::model::ModelEntities&gt;();
+            %RETURN_TYPE %0;
+            for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::BridgeSession(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
+      </value-type>
+
 
       <enum-type name="Orientation">
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>

@@ -168,8 +168,9 @@ public:
 
   bool registerBridgeSession(BridgePtr session);
   bool unregisterBridgeSession(BridgePtr session);
-  BridgePtr findBridgeSession(const smtk::common::UUID& sessionId);
+  BridgePtr findBridgeSession(const smtk::common::UUID& sessionId) const;
   smtk::common::UUIDs bridgeSessions() const;
+  smtk::common::UUIDs modelsOfBridgeSession(const smtk::common::UUID& sessionId) const;
 
 protected:
   shared_ptr<UUIDsToEntities> m_topology;
@@ -180,7 +181,7 @@ protected:
   smtk::shared_ptr<Bridge> m_defaultBridge;
   UUIDsToBridges m_sessions;
   smtk::common::UUIDGenerator m_uuidGenerator;
-  int m_modelCount;
+  IntegerList m_globalCounters; // first entry is bridge counter, second is model counter
 
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);

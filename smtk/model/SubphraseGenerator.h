@@ -74,6 +74,8 @@ protected:
 
   void prototypeOfInstance(DescriptivePhrase::Ptr src, const InstanceEntity& ent, DescriptivePhrases& result);
 
+  void modelsOfBridgeSession(DescriptivePhrase::Ptr src, const BridgeSession& sess, DescriptivePhrases& result);
+
   void entitiesOfEntityList(EntityListPhrase::Ptr src, const CursorArray& ents, DescriptivePhrases& result);
   void propertiesOfPropertyList(PropertyListPhrase::Ptr src, PropertyType p, DescriptivePhrases& result);
 
