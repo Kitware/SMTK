@@ -25,6 +25,7 @@
 #include "smtk/attribute/VoidItem.h"
 
 #include "smtk/model/Bridge.h"
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Operator.h"
@@ -251,14 +252,14 @@ smtkImplementsModelOperator(
 
 Integer TestForwardingOperator::s_state = 1;
 
-void printBridgeOperatorNames(BridgePtr br, const std::string& msg)
+void printBridgeOperatorNames(const BridgeSession& br, const std::string& msg)
 {
-  StringList opNames = br->operatorNames();
+  StringList opNames = br.operatorNames();
   StringList::const_iterator it;
-  std::cout << "Bridge \"" << br->name() << "\" [" << br->className() << ", " << msg << "] operators:\n";
+  std::cout << "Bridge \"" << br.name() << "\" [" << br.bridge()->className() << ", " << msg << "] operators:\n";
   for (it = opNames.begin(); it != opNames.end(); ++it)
     {
-    smtk::model::OperatorPtr op = br->op(*it, smtk::model::ManagerPtr());
+    smtk::model::OperatorPtr op = br.op(*it);
     std::cout
       << "  " << *it
       << " [" << op->className() << "]"
@@ -287,7 +288,9 @@ int main()
 
     // The default bridge of the "remote" manager:
     Bridge::Ptr remoteBridge = remoteMgr->bridgeForModel(UUID::null());
-    printBridgeOperatorNames(remoteBridge, "remote");
+    BridgeSession remoteSess(remoteMgr, remoteBridge->sessionId());
+    remoteMgr->registerBridgeSession(remoteBridge);
+    printBridgeOperatorNames(remoteSess, "remote");
 
     // Now we want to mirror the remote manager locally.
     // Serialize the "remote" bridge session:
@@ -297,10 +300,12 @@ int main()
     TestForwardingBridge::Ptr localBridge = TestForwardingBridge::create();
     localBridge->remoteBridge = remoteBridge;
     localBridge->remoteModel = remoteMgr;
+    localMgr->registerBridgeSession(localBridge);
+    BridgeSession localSess(localMgr, localBridge->sessionId());
     test(localBridge->operatorNames().size() == 0, "Forwarding bridge should have no operators by default.");
-    printBridgeOperatorNames(localBridge, "local, pre-import");
+    printBridgeOperatorNames(localSess, "local, pre-import");
     ImportJSON::ofRemoteBridgeSession(sessJSON->child, localBridge, localMgr);
-    printBridgeOperatorNames(localBridge, "local, post-import");
+    printBridgeOperatorNames(localSess, "local, post-import");
     test(localBridge->operatorNames().size() == remoteBridge->operatorNames().size(),
       "Forwarding bridge operator count should match remote bridge after import.");
 

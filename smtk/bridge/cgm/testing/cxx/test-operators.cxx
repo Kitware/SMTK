@@ -12,6 +12,7 @@
 #include "smtk/io/ExportJSON.h"
 
 #include "smtk/model/Bridge.h"
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Cursor.h"
 #include "smtk/model/Manager.h"
@@ -30,6 +31,7 @@
 
 #include "clpp/parser.hpp"
 
+#include <algorithm>
 #include <fstream>
 
 using namespace smtk::io;
@@ -145,6 +147,7 @@ int main (int argc, char* argv[])
 
   Manager::Ptr mgr = Manager::create();
   Bridge::Ptr brg = mgr->createBridge("cgm");
+  mgr->registerBridgeSession(brg);
   StringList err(1);
   err[0] = opts.relativeChordError(); brg->setup("tessellation maximum relative chord error", err);
   err[0] = opts.angleError(); brg->setup("tessellation maximum angle error", err);
@@ -178,6 +181,16 @@ int main (int argc, char* argv[])
     }
   ModelEntity prism = result->findModelEntity("bodies")->value();
 
+  ModelEntities operands;
+  operands.push_back(sphere);
+  operands.push_back(prism);
+  BridgeSession bs(mgr, brg->sessionId());
+  StringList validOps = bs.operatorsForAssociation(operands);
+  test(!validOps.empty(),
+    "Expected at least 1 operator (union) that can act on model entities.");
+  test(std::find(validOps.begin(), validOps.end(), "union") != validOps.end(),
+    "Expected the union operator to be valid.");
+
   op = brg->op("union", mgr);
   op->ensureSpecification();
   test(op->associateEntity(sphere), "Could not associate sphere to union operator");
@@ -192,9 +205,9 @@ int main (int argc, char* argv[])
   smtk::attribute::ModelEntityItem::Ptr bodies = result->findModelEntity("bodies");
   std::cout << "Created " << bodies->value().flagSummary() << "\n";
   std::cout << "   with " << bodies->value().as<ModelEntity>().cells().size() << " cells\n";
-  std::ofstream json("/tmp/sphere.json");
-  json << ExportJSON::fromModel(mgr);
-  json.close();
+  //std::ofstream json("/tmp/sphere.json");
+  //json << ExportJSON::fromModel(mgr);
+  //json.close();
 
   return 0;
 }

@@ -6,6 +6,7 @@ set(modelSrcs
   AttributeListPhrase.cxx
   BRepModel.cxx
   Bridge.cxx
+  BridgeSession.cxx
   BridgeIOJSON.cxx
   BridgeRegistrar.cxx
   CellEntity.cxx
@@ -50,6 +51,7 @@ set(modelHeaders
   AttributeListPhrase.h
   BRepModel.h
   Bridge.h
+  BridgeSession.h
   BridgeIO.h
   BridgeIOJSON.h
   BridgeRegistrar.h

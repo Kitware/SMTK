@@ -94,6 +94,7 @@ public:
 
   std::string name() const;
   void setName(const std::string& n);
+  std::string assignDefaultName();
 
   FloatList color() const;
   bool hasColor() const;

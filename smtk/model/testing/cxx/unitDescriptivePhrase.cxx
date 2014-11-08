@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/DescriptivePhrase.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/PropertyListPhrase.h"
@@ -14,6 +15,7 @@
 
 #include "smtk/io/ImportJSON.h"
 
+#include "smtk/common/testing/cxx/helpers.h"
 #include "smtk/model/testing/cxx/helpers.h"
 
 #include <fstream>
@@ -48,9 +50,15 @@ int main(int argc, char* argv[])
     }
   sm->assignDefaultNames();
 
-  Cursors ents;
-  Cursor::CursorsFromUUIDs(
-    ents, sm, sm->entitiesMatchingFlags(MODEL_ENTITY, false));
+  BridgeSessions ents = sm->allSessions();
+  test(ents.size() == 1, "Expected a single bridge session.");
+
+  // Assign all the models to the lone (default, native) session.
+  ModelEntities models =
+    sm->entitiesMatchingFlagsAs<ModelEntities>(
+      MODEL_ENTITY, false);
+  for (ModelEntities::iterator mit = models.begin(); mit != models.end(); ++mit)
+    sm->setBridgeForModel(ents[0].bridge(), mit->entity());
 
   CursorArray faces;
   Cursor::CursorsFromUUIDs(

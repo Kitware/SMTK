@@ -13,6 +13,7 @@
 #include "smtk/attribute/Attribute.h"
 
 #include "smtk/model/AttributeAssignments.h"
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/Chain.h"
 #include "smtk/model/CursorArrangementOps.h"
 #include "smtk/model/Edge.h"
@@ -1749,6 +1750,44 @@ InstanceEntity Manager::addInstance(const Cursor& object)
   return InstanceEntity();
 }
 //@}
+
+/**\brief Create a bridge session given a "type" name.
+  *
+  */
+BridgeSession Manager::createSession(const std::string& bridgeName)
+{
+  // NB: The BridgeSession constructor calls registerBridgeSession for us:
+  return BridgeSession(
+    shared_from_this(),
+    BRepModel::createBridge(bridgeName));
+}
+
+/**\brief Unregister a bridge session from the model manager.
+  *
+  */
+void Manager::closeSession(const BridgeSession& sess)
+{
+  if (sess.manager().get() == this)
+    {
+    this->erase(sess);
+    this->unregisterBridgeSession(sess.bridge());
+    }
+}
+
+/**\brief Return an array of all the bridge sessions this manager owns.
+  *
+  */
+BridgeSessions Manager::allSessions() const
+{
+  BridgeSessions result;
+  UUIDsToBridges::const_iterator it;
+  for (it = this->m_sessions.begin(); it != this->m_sessions.end(); ++it)
+    result.push_back(
+      BridgeSession(
+        smtk::const_pointer_cast<Manager>(shared_from_this()),
+        it->first));
+  return result;
+}
 
 /**@name Callback methods
   *\brief These methods provide observers with a way to register

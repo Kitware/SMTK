@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/model/SimpleModelSubphrases.h"
 
+#include "smtk/model/BridgeSession.h"
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/EntityPhrase.h"
@@ -226,6 +227,7 @@ void SimpleModelSubphrases::childrenOfEntity(
     GroupEntity gent = ent.as<GroupEntity>();
     ModelEntity ment = ent.as<ModelEntity>();
     InstanceEntity ient = ent.as<InstanceEntity>();
+    BridgeSession sess = ent.as<BridgeSession>();
     if (uent.isValid())
       {
       this->cellOfUse(phr, uent, result);
@@ -257,6 +259,10 @@ void SimpleModelSubphrases::childrenOfEntity(
     else if (ient.isValid())
       {
       this->prototypeOfInstance(phr, ient, result);
+      }
+    else if (sess.isValid())
+      {
+      this->modelsOfBridgeSession(phr, sess, result);
       }
     }
   // Things common to all entities
