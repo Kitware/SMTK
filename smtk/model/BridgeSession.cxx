@@ -145,12 +145,9 @@ StringList BridgeSession::engines() const
   * Valid context strings are "read", "import", "write", and "export".
   * The default is "read".
   */
-StringList BridgeSession::fileTypes(
-  const std::string& engine,
-  const std::string& context
-) const
+StringData BridgeSession::fileTypes(
+  const std::string& engine) const
 {
-  (void)context;
   return BridgeRegistrar::bridgeFileTypes(this->bridge()->name(), engine);
 }
 

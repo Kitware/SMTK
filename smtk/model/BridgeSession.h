@@ -45,9 +45,8 @@ public:
   std::string tag() const;
   std::string site() const;
   StringList engines() const;
-  StringList fileTypes(
-    const std::string& engine = std::string(),
-    const std::string& context = std::string("read")) const;
+  StringData fileTypes(
+    const std::string& engine = std::string()) const;
 };
 
 template<typename T>
