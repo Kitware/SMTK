@@ -27,7 +27,7 @@ print '\n\n%s: type "%s" %s %s' % \
 print '  Site: %s' % (sess.site() or 'local')
 for eng in sess.engines():
   print '  Engine %s filetypes:\n    %s' % \
-    (eng, '\n    '.join(sess.fileTypes(eng, 'read')))
+    (eng, '\n    '.join(sess.fileTypes(eng)))
 # We could evaluate the session tag as JSON, but most of
 # the information is available through methods above that
 # we needed to test:
