@@ -29,8 +29,8 @@ namespace smtk {
   * This variant also ensures that the bridge is registered
   * with the \a manager.
   */
-BridgeSession::BridgeSession(ManagerPtr manager, BridgePtr brdg)
-  : Cursor(manager, brdg->sessionId())
+BridgeSession::BridgeSession(ManagerPtr mgr, BridgePtr brdg)
+  : Cursor(mgr, brdg->sessionId())
 {
   if (!this->m_manager->findBridgeSession(brdg->sessionId()))
     this->m_manager->registerBridgeSession(brdg);

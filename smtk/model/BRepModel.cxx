@@ -1345,6 +1345,7 @@ bool BRepModel::registerBridgeSession(BridgePtr bridge)
   this->m_sessions[sessId] = bridge;
   BRepModel::iter_type brec =
     this->setEntityOfTypeAndDimension(sessId, BRIDGE_SESSION, -1);
+  (void)brec;
   return true;
 }
 
