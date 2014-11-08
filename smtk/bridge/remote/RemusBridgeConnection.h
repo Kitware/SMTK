@@ -27,9 +27,9 @@
 #include "remus/common/remusGlobals.h"
 
 #include "remus/proto/JobRequirements.h"
-#endif // SHIBOKEN_SKIP
 
 #include "cJSON.h"
+#endif // SHIBOKEN_SKIP
 
 #include <map>
 #include <set>
