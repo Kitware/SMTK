@@ -71,6 +71,12 @@ public:
   bool connectToServer(
     const std::string& hostname = "local",
     int port = remus::SERVER_CLIENT_PORT);
+#else
+  // Shiboken cannot parse the default port and does not
+  // properly handle default arguments anyway, so provide
+  // something for it to wrap:
+  bool connectToServer(const std::string& hostname, int port);
+#endif
 
   std::vector<std::string> bridgeNames();
 
@@ -79,6 +85,7 @@ public:
     const std::string& optName,
     const smtk::model::StringList& optVal);
 
+#ifndef SHIBOKEN_SKIP
   smtk::common::UUID beginBridgeSession(const std::string& bridgeName);
   bool endBridgeSession(const smtk::common::UUID& bridgeSessionId);
   RemusRemoteBridgePtr findBridgeSession(

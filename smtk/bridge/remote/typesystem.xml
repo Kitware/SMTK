@@ -3,9 +3,19 @@
 
   @EXTRA_TYPESYSTEMS@
 
+  <!-- Ignore shiboken's inability to grok C++ -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::remote::RemusBridgeConnection::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::remote::RemusBridgeConnection::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::remote::RemusRemoteBridge::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::remote::RemusRemoteBridge::SelfType&gt;'"/>
+
   <!-- Ignore methods that refer directly to pointers -->
 
   <!-- ignore shared_from_this base class-->
+  <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'RemusBridgeConnection' is not known"/>
+  <suppress-warning text="class 'RemusRemoteBridge' inherits from unknown base class 'smtk::model::DefaultBridge'"/>
+  <suppress-warning text="class not found for setup inheritance 'smtk::model::DefaultBridge'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::remote::RemusRemoteBridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::remote::RemusRemoteBridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::remote::RemusRemoteBridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::remote::RemusRemoteBridge::SelfType&gt;'"/>
 
   <!-- Additional objects to be wrapped when building with Remus -->
   <namespace-type name="smtk" generate="no">
@@ -13,6 +23,14 @@
       <namespace-type name="remote" generate="yes">
         <object-type name="RemusBridgeConnection">
           <include file-name="smtk/bridge/remote/RemusBridgeConnection.h" location="local"/>
+          <add-function signature="create()"
+            static="yes"
+            return-type="smtk::shared_ptr&lt;smtk::bridge::remote::RemusBridgeConnection&gt;">
+            <inject-code>
+              %RETURN_TYPE %0 = smtk::bridge::remote::RemusBridgeConnection::create();
+              %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+            </inject-code>
+          </add-function>
         </object-type>
         <object-type name="RemusRemoteBridge">
           <include file-name="smtk/bridge/remote/RemusRemoteBridge.h" location="local"/>

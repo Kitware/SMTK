@@ -92,6 +92,14 @@ try:
     btuple.append(('cgm', _tempcgm.cgm))
   finally:
     _temp = _tempmain
+
+  try:
+    _tempremote = __import__('SMTKRemotePython', globals(), locals(), [], -1)
+    _temp = _tempremote
+    __import_shared_ptrs__()
+    btuple.append(('remote', _tempremote.remote))
+  finally:
+    _temp = _tempmain
   if len(btuple) > 0:
     bridgeModule = namedtuple('bridgeModule', ' '.join([x for x,y in btuple]))
     bridge = bridgeModule(*[y for x,y in btuple])
