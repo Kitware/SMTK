@@ -35,9 +35,7 @@ public:
   smtk::model::qtModelView* getModelView();
 
 public slots:
-  void onAddDomainset();
-  void onAddBC();
-  void onRemove();
+  void onClearSelection();
 
 signals:
 
