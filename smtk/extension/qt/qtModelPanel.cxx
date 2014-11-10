@@ -52,12 +52,8 @@ qtModelPanel::qtModelPanel(QWidget* p)
   this->Internal->treeviewLayout->addWidget(this->Internal->ModelView);
   // signals/slots
 
-  QObject::connect(this->Internal->AddDomainset,
-    SIGNAL(clicked()), this, SLOT(onAddDomainset()));
-  QObject::connect(this->Internal->AddBC,
-    SIGNAL(clicked()), this, SLOT(onAddBC()));
-  QObject::connect(this->Internal->RemoveButton,
-    SIGNAL(clicked()), this, SLOT(onRemove()));
+  QObject::connect(this->Internal->ClearSelection,
+    SIGNAL(clicked()), this, SLOT(onClearSelection()));
 }
 
 //-----------------------------------------------------------------------------
@@ -72,21 +68,9 @@ smtk::model::qtModelView* qtModelPanel::getModelView()
 }
 
 //-----------------------------------------------------------------------------
-void qtModelPanel::onAddDomainset()
+void qtModelPanel::onClearSelection()
 {
-  this->getModelView()->addGroup(DIMENSION_3, "Domain Set");
-}
-
-//-----------------------------------------------------------------------------
-void qtModelPanel::onAddBC()
-{
-  this->getModelView()->addGroup(DIMENSION_2, "BC Group");
-}
-
-//-----------------------------------------------------------------------------
-void qtModelPanel::onRemove()
-{
-  this->getModelView()->removeSelected();
+  this->getModelView()->clearSelection();
 }
 
   } // namespace model
