@@ -123,7 +123,7 @@ bool Engines::setDefault(const std::string& engine)
   // Grrr....
   std::string engineLower = engine;
   std::transform(engineLower.begin(), engineLower.end(), engineLower.begin(),
-    smtk::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
+    std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
 
   bool defaultChanged = false;
   DLIList<GeometryModifyEngine*> gmes;
@@ -144,7 +144,7 @@ bool Engines::setDefault(const std::string& engine)
     const char* mtxt = gqe->modeler_type();
     std::string modeler = (mtxt && mtxt[0] ? mtxt : "(null)");
     std::transform(modeler.begin(), modeler.end(), modeler.begin(),
-      smtk::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
+      std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
     if (modeler == engineLower)
       {
       GeometryQueryTool::instance()->set_default_gqe(gqe);

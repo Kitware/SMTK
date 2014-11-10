@@ -34,9 +34,6 @@ namespace smtk
   /// Bring the platform's std::bind equivalent into the smtk namespace.
   using @FUNCTION_NAMESPACE@::bind;
 
-  /// Bring the platform's std::bind2nd equivalent into the smtk namespace.
-  using @FUNCTION_NAMESPACE@::bind2nd;
-
   /// Alias for std::placeholders or boost::placeholders, depending on platform.
   namespace placeholders
     {
