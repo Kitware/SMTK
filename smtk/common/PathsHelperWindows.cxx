@@ -9,7 +9,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#include "smtk/common/PathsHelperUnix.h"
+#include "smtk/common/PathsHelperWindows.h"
 #include "smtk/common/Paths.h"
 #include "smtk/common/Environment.h"
 #include "smtk/common/Version.h"
@@ -19,7 +19,7 @@
 namespace smtk {
   namespace common {
 
-PathsHelperUnix::PathsHelperUnix()
+PathsHelperWindows::PathsHelperWindows()
 {
   Paths::s_bundleDir.clear();
   Paths::s_toplevelDir.clear();
@@ -28,20 +28,46 @@ PathsHelperUnix::PathsHelperUnix()
 
   std::set<std::string> workerSearch;
   workerSearch.insert(Paths::currentDirectory());
-  workerSearch.insert(Paths::s_toplevelDirCfg + "/var/smtk/workers");
-  workerSearch.insert(Paths::s_toplevelDirCfg + "/var/smtk/" + smtk::common::Version::number() + "/workers");
+  workerSearch.insert(Paths::s_toplevelDirCfg + "/workers");
+  workerSearch.insert(Paths::s_toplevelDirCfg + "/var/workers");
 
   Paths::s_executableDir = Paths::s_executable;
   std::string::size_type pos = Paths::s_executableDir.rfind('/');
   if (pos != std::string::npos)
+    {
     Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
+    }
+  else
+    {
+    pos = Paths::s_executableDir.rfind('\\');
+    if (pos != std::string::npos)
+      Paths::s_executableDir = Paths::s_executableDir.substr(0, pos);
+    }
 
   if (Paths::s_toplevelDir.empty())
     Paths::s_toplevelDir = Paths::s_toplevelDirCfg;
   if (Paths::s_executableDir.empty())
     Paths::s_executableDir = Paths::s_toplevelDir + "/bin";
 
-  PathsHelperUnix::AddSplitPaths(
+  // Search for workers in the binary directory
+  if (
+    Paths::s_executableDir != Paths::s_toplevelDirCfg &&
+    Paths::s_executableDir != Paths::currentDirectory())
+    workerSearch.insert(Paths::s_executableDir);
+
+  char bundlepath[_MAX_PATH];
+  GetModuleFileName(NULL, bundlepath, _MAX_PATH);
+  if (bundlepath[0])
+    Paths::s_bundleDir = bundlepath;
+  if (!Paths::s_bundleDir.empty())
+    {
+    std::string::size_type pos = string(bundlepath).find_last_of( "\\");
+    if (pos != std::string::npos)
+      Paths::s_bundleDir = Paths::s_bundleDir.substr(0, pos);
+    workerSearch.insert(Paths::s_bundleDir);
+    }
+
+  PathsHelperWindows::AddSplitPaths(
     workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
 
   Paths::s_workerSearchPaths =
@@ -49,13 +75,13 @@ PathsHelperUnix::PathsHelperUnix()
       workerSearch.begin(), workerSearch.end());
 }
 
-void PathsHelperUnix::AddSplitPaths(
+void PathsHelperWindows::AddSplitPaths(
   std::set<std::string>& split,
   const std::string& src)
 {
   std::stringstream envSearch(src);
   std::string spath;
-  while (std::getline(envSearch, spath, ':'))
+  while (std::getline(envSearch, spath, ';'))
     if (!spath.empty())
       split.insert(spath);
 }

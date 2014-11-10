@@ -9,8 +9,8 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-#ifndef __smtk_common_PathsHelperUnix_h
-#define __smtk_common_PathsHelperUnix_h
+#ifndef __smtk_common_PathsHelperWindows_h
+#define __smtk_common_PathsHelperWindows_h
 
 #include "smtk/SMTKCoreExports.h"
 
@@ -20,10 +20,10 @@
 namespace smtk {
   namespace common {
 
-class SMTKCORE_EXPORT PathsHelperUnix
+class SMTKCORE_EXPORT PathsHelperWindows
 {
 public:
-  PathsHelperUnix();
+  PathsHelperWindows();
 
   static void AddSplitPaths(
     std::set<std::string>& splitPaths,
@@ -33,4 +33,4 @@ public:
   } // namespace common
 } // namespace smtk
 
-#endif // __smtk_common_PathsHelperUnix_h
+#endif // __smtk_common_PathsHelperWindows_h

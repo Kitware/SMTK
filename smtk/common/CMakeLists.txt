@@ -25,10 +25,10 @@ if (UNIX)
   set(commonSrcs ${commonSrcs} PathsHelperUnix.cxx)
   set(commonHeaders ${commonHeaders} PathsHelperUnix.h)
 endif()
-#if (WINDOWS)
-#  set(commonSrcs ${commonSrcs} PathsHelperWindows.cxx)
-#  set(commonHeaders ${commonHeaders} PathsHelperWindows.h)
-#endif()
+if (WINDOWS)
+  set(commonSrcs ${commonSrcs} PathsHelperWindows.cxx)
+  set(commonHeaders ${commonHeaders} PathsHelperWindows.h)
+endif()
 
 # Generate the version header using CMake variables.
 configure_file(

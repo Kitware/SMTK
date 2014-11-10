@@ -212,6 +212,13 @@
   <!-- we are not going to wrap std::[io]stream, so ignore -->
   <suppress-warning text="skipping function 'smtk::model::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
 
+  <!-- ignore some methods that pass arrays by pointer -->
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const int *' in function 'smtk::model::Tessellation::insertCell(int offset, int connLen, const int * cellConn)'."/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const int *' in function 'smtk::model::Tessellation::insertNextCell(int connLen, const int * cellConn)'."/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'smtk::model::Tessellation::numberOfCellVertices(int offset, int * cellTypeOut) const'."/>
+  <suppress-warning text="There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'double *' in function 'smtk::model::Tessellation::addQuad(double * a, double * b, double * c, double * d)'."/>
+
+
   <!-- ignore shared_from_this base class-->
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'BRepModel' is not known"/>
   <suppress-warning text="template baseclass 'smtk::enable_shared_from_this&lt;__VA_ARGS__&gt;' of 'Bridge' is not known"/>
@@ -1084,6 +1091,10 @@
         <modify-function signature="addLine(double *, double *)" remove="all"/>
         <modify-function signature="addTriangle(double*, double*, double*)" remove="all"/>
       </object-type>
+
+      <enum-type name="TessellationCellType">
+        <include file-name="smtk/model/Tessellation.h" location="local"/>
+      </enum-type>
 
       <object-type name="Manager">
         <include file-name="smtk/model/Manager.h" location="local"/>
