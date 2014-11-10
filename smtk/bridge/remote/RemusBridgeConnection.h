@@ -18,6 +18,7 @@
 
 #include "smtk/common/UUID.h"
 
+#ifndef SHIBOKEN_SKIP
 #include "remus/client/Client.h"
 #include "remus/client/ServerConnection.h"
 
@@ -28,6 +29,7 @@
 #include "remus/proto/JobRequirements.h"
 
 #include "cJSON.h"
+#endif // SHIBOKEN_SKIP
 
 #include <map>
 #include <set>
@@ -64,10 +66,17 @@ public:
   virtual ~RemusBridgeConnection();
 
   void addSearchDir(const std::string& searchDir);
-  void clearSearchDirs();
+  void clearSearchDirs(bool clearDefaultsToo = false);
+#ifndef SHIBOKEN_SKIP
   bool connectToServer(
     const std::string& hostname = "local",
     int port = remus::SERVER_CLIENT_PORT);
+#else
+  // Shiboken cannot parse the default port and does not
+  // properly handle default arguments anyway, so provide
+  // something for it to wrap:
+  bool connectToServer(const std::string& hostname, int port);
+#endif
 
   std::vector<std::string> bridgeNames();
 
@@ -76,6 +85,7 @@ public:
     const std::string& optName,
     const smtk::model::StringList& optVal);
 
+#ifndef SHIBOKEN_SKIP
   smtk::common::UUID beginBridgeSession(const std::string& bridgeName);
   bool endBridgeSession(const smtk::common::UUID& bridgeSessionId);
   RemusRemoteBridgePtr findBridgeSession(
@@ -123,6 +133,7 @@ protected:
   smtk::model::ManagerPtr m_modelMgr;
   std::set<std::string> m_remoteBridgeNames;
   std::map<smtk::common::UUID,std::string> m_remoteBridgeSessionIds;
+#endif // SHIBOKEN_SKIP
 };
 
     } // namespace remote

@@ -80,6 +80,35 @@ simulation = _temp.smtk.simulation
 io = _temp.smtk.io
 view = _temp.smtk.view
 
+# Try importing bridge modules. They may not be built, so don't complain on failure.
+try:
+  from collections import namedtuple
+  btuple = []
+  _tempmain = _temp
+  try:
+    _tempcgm = __import__('cgmSMTKPython', globals(), locals(), [], -1)
+    _temp = _tempcgm
+    __import_shared_ptrs__()
+    btuple.append(('cgm', _tempcgm.cgm))
+  finally:
+    _temp = _tempmain
+
+  try:
+    _tempremote = __import__('SMTKRemotePython', globals(), locals(), [], -1)
+    _temp = _tempremote
+    __import_shared_ptrs__()
+    btuple.append(('remote', _tempremote.remote))
+  finally:
+    _temp = _tempmain
+  if len(btuple) > 0:
+    bridgeModule = namedtuple('bridgeModule', ' '.join([x for x,y in btuple]))
+    bridge = bridgeModule(*[y for x,y in btuple])
+  else:
+    bridge = None
+except:
+  bridge = None
+
+
 attribute.type_dict = { attribute.Item.ATTRIBUTE_REF: (attribute.RefItem, attribute.RefItemDefinition),
                         attribute.Item.DOUBLE: (attribute.DoubleItem, attribute.DoubleItemDefinition),
                         attribute.Item.GROUP: (attribute.GroupItem, attribute.GroupItemDefinition),

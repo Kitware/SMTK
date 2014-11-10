@@ -37,4 +37,6 @@
 // Should sparse_hash_map be used (instead of std::map) for primary storage?
 #cmakedefine SMTK_HASH_STORAGE
 
+#define SMTK_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+
 #endif // __smtk_Options_h

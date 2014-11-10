@@ -7,10 +7,13 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef SHIBOKEN_SKIP
 #include "smtk/Options.h"
 #include "smtk/SharedPtr.h"
 
 #include "smtk/model/StringData.h"
+
+#include "smtk/common/Paths.h"
 
 #ifndef _MSC_VER
 #  pragma GCC diagnostic push
@@ -36,7 +39,8 @@ int usage(
     << "Usage:\n"
     << "  smtk-model-server [options]\n"
     << "where options may include\n"
-    << "  -search=<dir>       Specifies a path to search for RemusWorker (.RW) files\n"
+    << "  -no-default-search  Excludes default RemusWorker (.rw) search directories.\n"
+    << "  -search=<dir>       Specifies a path to search for RemusWorker (.rw) files\n"
     << "  -client=<host:port> Specifies the host and port to listen for client connections\n"
     << "  -worker=<host:port> Specifies the host and port to listen for worker connections\n"
     << "\n"
@@ -58,6 +62,8 @@ struct ProgOpts
       m_clientHost("127.0.0.1"), m_clientPort(remus::SERVER_CLIENT_PORT),
       m_workerHost("127.0.0.1"), m_workerPort(remus::SERVER_WORKER_PORT)
     {
+    smtk::common::Paths paths;
+    this->m_search = paths.workerSearchPaths();
     }
 
   void setProgPath(const std::string& selfPath) { this->m_progPath = selfPath; }
@@ -72,6 +78,7 @@ struct ProgOpts
     this->convertHostPort(hostport, this->m_workerHost, this->m_workerPort);
     this->m_workerSet = true;
     }
+  void clearSearch() { this->m_search.clear(); }
   void addSearch(const std::string& path) { this->m_search.push_back(path); }
 
   std::string progPath() const { return this->m_progPath; }
@@ -114,6 +121,7 @@ int main (int argc, char* argv[])
   clpp::command_line_parameters_parser args;
   try
     {
+    args.add_parameter("-no-default-search", &opts, &ProgOpts::clearSearch);
     args.add_parameter("-search", &opts, &ProgOpts::addSearch);
     args.add_parameter("-client", &opts, &ProgOpts::setClient);
     args.add_parameter("-worker", &opts, &ProgOpts::setWorker);
@@ -161,3 +169,4 @@ int main (int argc, char* argv[])
   server.waitForBrokeringToFinish();
   return valid ? 0 : 1;
 }
+#endif // SHIBOKEN_SKIP

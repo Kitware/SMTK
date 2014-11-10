@@ -9,6 +9,7 @@
 //=========================================================================
 // Implement an SMTK remote model worker.
 // Steal code from CMB's vtkModelManagerWrapper.
+#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 
@@ -450,3 +451,4 @@ int main(int argc, char* argv[])
   delete w;
   return 0;
 }
+#endif // SHIBOKEN_SKIP

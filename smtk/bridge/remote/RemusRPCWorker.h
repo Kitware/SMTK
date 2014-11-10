@@ -13,8 +13,10 @@
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SharedFromThis.h"
 
+#ifndef SHIBOKEN_SKIP
 #include "remus/worker/Worker.h"
 #include "remus/worker/Job.h"
+#endif // SHIBOKEN_SKIP
 
 #include "smtk/model/StringData.h"
 
@@ -51,18 +53,22 @@ public:
     const std::string& optVal);
   virtual void clearOptions();
 
+#ifndef SHIBOKEN_SKIP
   void processJob(
     remus::worker::Worker*& w,
     remus::worker::Job& jd,
     remus::proto::JobRequirements& r);
+#endif // SHIBOKEN_SKIP
 
 protected:
   RemusRPCWorker();
 
+#ifndef SHIBOKEN_SKIP
   void generateError(cJSON* err, const std::string& errMsg, const std::string& reqId);
 
   smtk::model::ManagerPtr m_modelMgr;
   smtk::model::StringData m_options;
+#endif // SHIBOKEN_SKIP
 
 private:
   RemusRPCWorker(const RemusRPCWorker&); // Not implemented.

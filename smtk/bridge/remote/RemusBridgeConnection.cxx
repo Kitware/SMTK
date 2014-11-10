@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
@@ -18,6 +19,10 @@
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
+
+#include "smtk/common/Paths.h"
+
+#include "smtk/Function.h"
 
 #include <functional>
 
@@ -43,6 +48,9 @@ namespace smtk {
 
 RemusBridgeConnection::RemusBridgeConnection()
 {
+  Paths paths;
+  StringList spaths = paths.workerSearchPaths();
+  this->m_searchDirs = searchdir_t(spaths.begin(), spaths.end());
   this->m_modelMgr = smtk::model::Manager::create();
 }
 
@@ -63,10 +71,20 @@ void RemusBridgeConnection::addSearchDir(const std::string& searchDir)
 }
 
 /**\brief Reset all of the search directories added with addSearchDir().
+  *
+  * If \a clearDefaultsToo is true, then the pre-existing search
+  * paths provided by smtk::common::Paths::workerSearchPaths()
+  * are eliminated as well.
   */
-void RemusBridgeConnection::clearSearchDirs()
+void RemusBridgeConnection::clearSearchDirs(bool clearDefaultsToo)
 {
   this->m_searchDirs.clear();
+  if (!clearDefaultsToo)
+    {
+    Paths paths;
+    StringList spaths = paths.workerSearchPaths();
+    this->m_searchDirs = searchdir_t(spaths.begin(), spaths.end());
+    }
 }
 
 /**\brief Initiate the connection to the Remus server.
@@ -138,9 +156,9 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
           // FIXME: If we implemented it, we could pass a method to
           //        accept remotely-provided pre-construction setup
           //        options to the bridge. But that is too fancy for now.
-          using namespace std::placeholders;
+          using namespace smtk::placeholders;
           smtk::model::BridgeRegistrar::registerBridge(
-            binfo.name(), binfo.tags(), std::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
+            binfo.name(), binfo.tags(), smtk::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
           }
         }
       }
@@ -657,3 +675,4 @@ bool RemusBridgeConnection::findRequirementsForRemusType(remus::proto::JobRequir
     } // namespace remote
   } // namespace bridge
 } // namespace smtk
+#endif // SHIBOKEN_SKIP

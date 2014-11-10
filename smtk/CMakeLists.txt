@@ -32,6 +32,19 @@ if (NOT BUILD_SHARED_LIBS AND SMTK_BUILD_PYTHON_WRAPPINGS)
   set_target_properties(SMTKCore PROPERTIES POSITION_INDEPENDENT_CODE True)
 endif()
 
+# On Mac OS X, link to the Foundation framework
+if (APPLE)
+  find_library(SMTK_MACOS_FOUNDATION_FMWK
+    NAMES Foundation
+    PATHS ${CMAKE_OSX_SYSROOT}/System/Library
+    PATH_SUFFIXES Frameworks
+    NO_DEFAULT_PATH)
+  if (SMTK_MACOS_FOUNDATION_FMWK)
+    target_link_libraries(SMTKCore
+      LINK_PRIVATE ${SMTK_MACOS_FOUNDATION_FMWK})
+  endif()
+endif()
+
 # On Mac OS X, set the directory included as part of the installed library's path:
 if (BUILD_SHARED_LIBS)
   set_target_properties(SMTKCore PROPERTIES INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")

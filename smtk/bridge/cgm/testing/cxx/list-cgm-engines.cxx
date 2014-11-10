@@ -7,6 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#include "smtk/Function.h"
+
 #include "smtk/bridge/cgm/Engines.h"
 
 #include <algorithm>
@@ -38,7 +40,7 @@ int main(int argc, char* argv[])
       {
       std::string engine(*it);
       std::transform(engine.begin(), engine.end(), engine.begin(),
-        std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
+        smtk::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
 
       // The FACET engine cannot be the default. (It is unclear why this is so.)
       if (engine == "facet" || engine == "(null)")

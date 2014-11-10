@@ -61,12 +61,12 @@ target_link_libraries(smtk-model-server
 target_include_directories(smtk-model-server PRIVATE ${REMUS_INCLUDE_DIRS})
 
 # Add a worker that links to each modeling kernel we bridge
-add_executable(smtk-remote-model
-  smtk-remote-model.cxx
+add_executable(smtk-model-worker
+  smtk-model-worker.cxx
   RemusRPCWorker.cxx
 )
 
-target_link_libraries(smtk-remote-model
+target_link_libraries(smtk-model-worker
   SMTKCore
   SMTKRemote
   RemusCommon
@@ -75,14 +75,14 @@ target_link_libraries(smtk-remote-model
   RemusWorker
   ${Boost_LIBRARIES}
 )
-target_include_directories(smtk-remote-model PRIVATE ${REMUS_INCLUDE_DIRS})
+target_include_directories(smtk-model-worker PRIVATE ${REMUS_INCLUDE_DIRS})
 if (SMTK_BUILD_CGM)
-  target_link_libraries(smtk-remote-model cgmSMTK)
-  target_include_directories(smtk-remote-model PRIVATE ${CGM_INCLUDE_DIRS})
+  target_link_libraries(smtk-model-worker cgmSMTK)
+  target_include_directories(smtk-model-worker PRIVATE ${CGM_INCLUDE_DIRS})
 endif()
 
 if (SMTK_BUILD_DISCRETE_BRIDGE)
-  target_link_libraries(smtk-remote-model smtkDiscreteBridge)
+  target_link_libraries(smtk-model-worker smtkDiscreteBridge)
 endif()
 
 if (SMTK_ENABLE_TESTING)
@@ -91,4 +91,29 @@ if (SMTK_ENABLE_TESTING)
   target_include_directories(TestBuild_smtk_bridge_remote PRIVATE ${REMUS_INCLUDE_DIRS})
 
   add_subdirectory(testing)
+endif()
+
+if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+  #extract the headers from the library we built to give them to shiboken
+
+  sbk_wrap_library(SMTKRemote
+    GENERATOR_ARGS --avoid-protected-hack
+    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
+    LOCAL_INCLUDE_DIRECTORIES
+      ${SMTK_SOURCE_DIR}/smtk/common
+      ${SMTK_SOURCE_DIR}/smtk/attribute
+      ${SMTK_SOURCE_DIR}/smtk/model
+      ${SMTK_SOURCE_DIR}/smtk/bridge
+      ${SMTK_SOURCE_DIR}/smtk/bridge/remote
+      ${SMTK_SOURCE_DIR}/smtk/simulation
+      ${SMTK_SOURCE_DIR}/smtk/io
+      ${SMTK_SOURCE_DIR}/smtk/view
+      ${SMTK_SOURCE_DIR}/smtk
+      ${SMTK_BINARY_DIR}/smtk
+      ${CMAKE_CURRENT_BINARY_DIR}
+    TYPESYSTEM ${SMTK_SOURCE_DIR}/smtk/bridge/remote/typesystem.xml
+    HEADERS ${RemoteLibHeaders}
+    DEPENDS SMTKCore
+  )
+  #target_include_directories(SMTKRemotePython PRIVATE ${CGM_INCLUDE_DIRS})
 endif()

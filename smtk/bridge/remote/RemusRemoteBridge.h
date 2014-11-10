@@ -19,6 +19,7 @@
 #include "smtk/model/DefaultBridge.h"
 #include "smtk/model/StringData.h"
 
+#ifndef SHIBOKEN_SKIP
 #ifndef _MSC_VER
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
@@ -28,6 +29,7 @@
 #ifndef _MSC_VER
   #pragma GCC diagnostic pop
 #endif
+#endif // SHIBOKEN_SKIP
 
 namespace smtk {
   namespace io { class ImportJSON; }
@@ -62,6 +64,7 @@ public:
   virtual ~RemusRemoteBridge();
 
   using smtk::model::Bridge::setup;
+#ifndef SHIBOKEN_SKIP
   Ptr setup(RemusBridgeConnection* remusServerConnection, remus::proto::JobRequirements& jreq);
   remus::proto::JobRequirements remusRequirements() const;
 
@@ -79,12 +82,10 @@ protected:
   virtual smtk::model::OperatorResult operateDelegate(
     smtk::model::RemoteOperatorPtr op);
 
-#ifndef SHIBOKEN_SKIP
   static RemusStaticBridgeInfo createFunctor(
     RemusBridgeConnectionPtr remusConn,
     const remus::proto::JobRequirements& jobReq,
     const std::string& meshType);
-#endif // SHIBOKEN_SKIP
   static bool registerBridgedOperator(
     const std::string& bridgeName, const std::string& opName,
     const char* opDescrXML, smtk::model::OperatorConstructor opCtor);
@@ -97,6 +98,7 @@ protected:
   static std::map<std::string,RemusStaticBridgeInfo>* s_remotes;
 
   static void cleanupBridgeTypes();
+#endif // SHIBOKEN_SKIP
 };
 
     } // namespace remote

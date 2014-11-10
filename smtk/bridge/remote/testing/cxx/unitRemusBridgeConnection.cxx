@@ -7,6 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
+#ifndef SHIBOKEN_SKIP
 #include "smtk/bridge/remote/RemusBridgeConnection.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
@@ -52,7 +53,10 @@ int main(int argc, char* argv[])
 
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
-  bconn->addSearchDir("/usr/local/var/smtk/workers");
+  // Do not search for workers in default paths; we don't want to pick things up by accident:
+  bconn->clearSearchDirs(true);
+  if (argc > 5)
+     bconn->addSearchDir(argv[5]);
 
   bool didConnect = true;
   if (hostname != "local")
@@ -122,3 +126,4 @@ int main(int argc, char* argv[])
 
   return 0;
 }
+#endif // SHIBOKEN_SKIP
