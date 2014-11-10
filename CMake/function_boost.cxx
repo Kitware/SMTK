@@ -8,6 +8,9 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================#include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/function.hpp>
+#include <boost/functional.hpp>
+#include <boost/mpl/placeholders.hpp>
 
 struct favorite_int {
   int operator() () { return 42; }

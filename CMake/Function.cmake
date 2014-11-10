@@ -32,6 +32,8 @@ function(determineFunctionType type incType)
     set(RESULT "boost")
     set(INCLUDE_RESULT "#include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/functional.hpp> // for bind2nd
+#include <boost/mpl/placeholders.hpp> // for _1, _2, ..., _N
 ")
     set(${type}_BOOST_TRUE TRUE PARENT_SCOPE)
   endif()

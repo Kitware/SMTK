@@ -7,15 +7,25 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-// .NAME Function.h - Present a consistent interface to platform's std::function equivalent
-// .SECTION Description
-// .SECTION See Also
 
 #ifndef __smtk_Function_h
 #define __smtk_Function_h
 
 @FUNCTION_TYPE_HEADERS@
 
+/**! \file Function.h
+  * \brief Aliases to make function, bind, bind2nd, and placeholders platform-independent.
+  *
+  * Note that including this header generally precludes you from wrapping
+  * methods which use it using shiboken. Be aware that you will probably
+  * need to exclude portions of your API that use these methods from processing
+  * by shiboken using the SHIBOKEN_SKIP preprocessor macro:<pre>
+  *
+  *   #ifndef SHIBOKEN_SKIP
+  *     void registerCallback(smtk::function cbfunc);
+  *   #endif
+  * </pre>
+  */
 namespace smtk
 {
   /// Bring the platform's std::function equivalent into the smtk namespace.
@@ -23,6 +33,24 @@ namespace smtk
 
   /// Bring the platform's std::bind equivalent into the smtk namespace.
   using @FUNCTION_NAMESPACE@::bind;
+
+  /// Bring the platform's std::bind2nd equivalent into the smtk namespace.
+  using @FUNCTION_NAMESPACE@::bind2nd;
+
+  /// Alias for std::placeholders or boost::placeholders, depending on platform.
+  namespace placeholders
+    {
+    /// Bring the platform's std::placeholders equivalent into the smtk namespace.
+    ///@{
+    using @FUNCTION_NAMESPACE@::placeholders::_1;
+    using @FUNCTION_NAMESPACE@::placeholders::_2;
+    // TODO: We cannot rely on _N being more than _2 but currently
+    // SMTK itself only uses 2 bound arguments. If more are
+    // needed, we'll have to figure out a way to detect _N at
+    // cmake configuration time (when this file is generated)
+    // and insert them.
+    ///@}
+    }
 };
 
 #endif /* __smtk_Function_h */

@@ -22,6 +22,8 @@
 
 #include "smtk/common/Paths.h"
 
+#include "smtk/Function.h"
+
 #include <functional>
 
 #include "remus/client/ServerConnection.h"
@@ -154,9 +156,9 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
           // FIXME: If we implemented it, we could pass a method to
           //        accept remotely-provided pre-construction setup
           //        options to the bridge. But that is too fancy for now.
-          using namespace std::placeholders;
+          using namespace smtk::placeholders;
           smtk::model::BridgeRegistrar::registerBridge(
-            binfo.name(), binfo.tags(), std::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
+            binfo.name(), binfo.tags(), smtk::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
           }
         }
       }
