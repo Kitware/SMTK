@@ -79,7 +79,13 @@ int main(int argc, char* argv[])
   test(instcfgp3 == instcfgp1, "Stage 1 and stage 3 config-time toplevel dirs should match.");
   test(instp3 == instp1, "Stage 1 and stage 3 toplevel dirs should match.");
 
-  Environment::setVariable("SMTK_WORKER_SEARCH_PATH", "EnvTestA:EnvTestB");
+  Environment::setVariable("SMTK_WORKER_SEARCH_PATH",
+#if !defined(_WIN32) || defined(__CYGWIN__)
+    "EnvTestA:EnvTestB"
+#else
+    "EnvTestA;EnvTestB" // Note semicolon separator
+#endif
+  );
   p3.forceUpdate();
   int testCount = 0;
   typedef std::vector<std::string> StringList;
