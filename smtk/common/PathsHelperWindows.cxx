@@ -64,7 +64,8 @@ PathsHelperWindows::PathsHelperWindows()
     Paths::s_bundleDir = bundlepath;
   if (!Paths::s_bundleDir.empty())
     {
-    std::string::size_type pos = string(bundlepath).find_last_of( "\\");
+    Paths::s_bundleDir = std::string(bundlepath);
+    std::string::size_type pos = Paths::s_bundleDir.find_last_of( "\\");
     if (pos != std::string::npos)
       Paths::s_bundleDir = Paths::s_bundleDir.substr(0, pos);
     workerSearch.insert(Paths::s_bundleDir);
