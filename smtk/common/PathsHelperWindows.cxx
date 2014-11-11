@@ -49,7 +49,7 @@ PathsHelperWindows::PathsHelperWindows()
   if (Paths::s_toplevelDir.empty())
     Paths::s_toplevelDir = Paths::s_toplevelDirCfg;
   if (Paths::s_executableDir.empty())
-    Paths::s_executableDir = Paths::s_toplevelDir + "/bin";
+    Paths::s_executableDir = Paths::s_toplevelDir;
 
   // Search for workers in the binary directory
   if (
