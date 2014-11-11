@@ -41,7 +41,7 @@ created and introspected by SMTK.
 
 * The :cxx:`static BridgePtr create()` method is required in order
   for instances of the object to be created; its address is passed
-  to the :smtk:`BridgeRegistar` class by another macro discussed later
+  to the :smtk:`BridgeRegistrar` class by another macro discussed later
   so that instances of the bridge can be created given just a string
   describing the bridge.
   This is necessary so that bridges can be created and managed
