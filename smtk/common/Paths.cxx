@@ -80,8 +80,8 @@ std::string Paths::currentDirectory()
   std::string result;
   if (smtkGetCurrentDir(path, sizeof(path)))
     {
+    path[FILENAME_MAX-1] = '\0';
     result = path;
-    result[FILENAME_MAX-1] = '\0';
     }
   return result;
 }
