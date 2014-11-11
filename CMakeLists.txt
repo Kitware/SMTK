@@ -193,7 +193,19 @@ endif()
 ################################################################################
 # Determine function
 ################################################################################
-determineFunctionType(FUNCTION_NAMESPACE FUNCTION_TYPE_HEADERS)
+determineFunctionType(
+  FUNCTION_FOUND
+  FUNCTION_NAMESPACE
+  USING_PLACEHOLDERS
+  FUNCTION_TYPE_HEADERS)
+
+if (NOT FUNCTION_FOUND)
+  message(FATAL_ERROR
+    "
+    SMTK requires std::function, std::tr1::function, or boost::function.
+    Please examine CMake's logs to see why CMake/function*.cxx won't compile.
+    ")
+endif()
 
 configure_file(
   ${PROJECT_SOURCE_DIR}/CMake/Function.h.in
