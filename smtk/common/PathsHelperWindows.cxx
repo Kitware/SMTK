@@ -16,6 +16,8 @@
 
 #include <sstream>
 
+#include <windows.h>
+
 namespace smtk {
   namespace common {
 
@@ -55,6 +57,7 @@ PathsHelperWindows::PathsHelperWindows()
     Paths::s_executableDir != Paths::currentDirectory())
     workerSearch.insert(Paths::s_executableDir);
 
+#if defined(_WIN32_WINNT_WINXP) && (_WIN32_WINNT_WINXP >= 0x0501)
   char bundlepath[_MAX_PATH];
   GetModuleFileName(NULL, bundlepath, _MAX_PATH);
   if (bundlepath[0])
@@ -66,6 +69,7 @@ PathsHelperWindows::PathsHelperWindows()
       Paths::s_bundleDir = Paths::s_bundleDir.substr(0, pos);
     workerSearch.insert(Paths::s_bundleDir);
     }
+#endif
 
   PathsHelperWindows::AddSplitPaths(
     workerSearch, Environment::getVariable("SMTK_WORKER_SEARCH_PATH"));
