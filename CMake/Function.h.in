@@ -39,13 +39,9 @@ namespace smtk
     {
     /// Bring the platform's std::placeholders equivalent into the smtk namespace.
     ///@{
-    using @FUNCTION_NAMESPACE@::placeholders::_1;
-    using @FUNCTION_NAMESPACE@::placeholders::_2;
-    // TODO: We cannot rely on _N being more than _2 but currently
-    // SMTK itself only uses 2 bound arguments. If more are
-    // needed, we'll have to figure out a way to detect _N at
-    // cmake configuration time (when this file is generated)
-    // and insert them.
+    @USING_PLACEHOLDERS@
+    // TODO: We should detect _N and use it rather than a
+    // fixed number. SMTK itself only uses 2 bound arguments.
     ///@}
     }
 };

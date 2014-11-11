@@ -272,7 +272,7 @@ int main(int argc, char* argv[])
 
     // Write the model operator attribute system as the job requirements:
     std::string reqFileName = wkOpts.rwfile() + ".requirements";
-    std::ofstream reqFile(reqFileName);
+    std::ofstream reqFile(reqFileName.c_str());
     reqFile << opspec;
     reqFile.close();
 
@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
       else
         cJSON_Delete(descEnv);
 
-      std::ofstream workerFile(wkOpts.rwfile());
+      std::ofstream workerFile(wkOpts.rwfile().c_str());
       char* descStr = cJSON_Print(desc);
       workerFile << descStr << "\n";
       workerFile.close();
@@ -354,7 +354,7 @@ int main(int argc, char* argv[])
   remote::RemusRPCWorker::Ptr smtkWorker = remote::RemusRPCWorker::create();
   if (!wkOpts.rwfile().empty())
     { // Configure the smtkWorker
-    std::ifstream rwFile(wkOpts.rwfile());
+    std::ifstream rwFile(wkOpts.rwfile().c_str());
     std::string rwData(
       (std::istreambuf_iterator<char>(rwFile)),
       (std::istreambuf_iterator<char>()));

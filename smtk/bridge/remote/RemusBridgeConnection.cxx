@@ -41,6 +41,7 @@ using smtk::common::UUID;
 using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::io;
+using namespace smtk::placeholders;
 
 namespace smtk {
   namespace bridge {
@@ -156,7 +157,6 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
           // FIXME: If we implemented it, we could pass a method to
           //        accept remotely-provided pre-construction setup
           //        options to the bridge. But that is too fancy for now.
-          using namespace smtk::placeholders;
           smtk::model::BridgeRegistrar::registerBridge(
             binfo.name(), binfo.tags(), smtk::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
           }
