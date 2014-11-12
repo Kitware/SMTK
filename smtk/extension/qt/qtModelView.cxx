@@ -466,7 +466,7 @@ bool qtModelView::initOperator(smtk::model::OperatorPtr op)
   QDialog attDialog;
   attDialog.setWindowTitle(attDef->label().empty() ?
                             attDef->type().c_str() : attDef->label().c_str());
-  QVBoxLayout* layout = new QVBoxLayout(&attDialog);
+  QVBoxLayout* alayout = new QVBoxLayout(&attDialog);
 
   smtk::attribute::qtUIManager uiManager(*(att->system()));
   smtk::view::RootPtr rootView = uiManager.attSystem()->rootView();
@@ -476,13 +476,11 @@ bool qtModelView::initOperator(smtk::model::OperatorPtr op)
   QObject::connect(&uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
 
-  attribute::qtBaseView* view = uiManager.initializeView(&attDialog, instanced, false);
+  uiManager.initializeView(&attDialog, instanced, false);
 
-//  attribute::qtAttribute attWidget(att, &attDialog, NULL);
-  //layout->addWidget(attView.widget())
   QDialogButtonBox* buttonBox=new QDialogButtonBox( &attDialog );
   buttonBox->setStandardButtons(QDialogButtonBox::Ok);
-  layout->addWidget(buttonBox);
+  alayout->addWidget(buttonBox);
   attDialog.setModal(true);
   QObject::connect(buttonBox, SIGNAL(accepted()), &attDialog, SLOT(accept()));
   return attDialog.exec() == QDialog::Accepted;
