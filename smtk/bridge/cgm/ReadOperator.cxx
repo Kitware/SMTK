@@ -52,9 +52,7 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
 
 bool ReadOperator::ableToOperate()
 {
-  return
-    this->ensureSpecification() &&
-    this->specification()->isValid();
+  return this->specification()->isValid();
 }
 
 smtk::model::OperatorResult ReadOperator::operateInternal()

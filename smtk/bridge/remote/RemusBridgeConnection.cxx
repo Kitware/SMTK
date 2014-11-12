@@ -439,7 +439,6 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
     return smtk::model::OperatorResult();
     }
 
-  readOp->ensureSpecification();
   readOp->specification()->findFile("filename")->setValue(fileName);
   smtk::attribute::StringItem::Ptr fileTypeItem =
     readOp->specification()->findString("filetype");

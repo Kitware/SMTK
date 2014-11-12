@@ -44,9 +44,7 @@ namespace smtk {
 // local helper
 bool CreatePrismOperator::ableToOperate()
 {
-  return
-    this->ensureSpecification() &&
-    this->specification()->isValid();
+  return this->specification()->isValid();
 }
 
 smtk::model::OperatorResult CreatePrismOperator::operateInternal()

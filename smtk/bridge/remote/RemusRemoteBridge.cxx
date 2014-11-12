@@ -104,7 +104,6 @@ bool RemusRemoteBridge::ableToOperateDelegate(
   cJSON_AddItemToObject(req, "method", cJSON_CreateString("operator-able"));
   cJSON_AddItemToObject(req, "id", cJSON_CreateString("1")); // TODO
   cJSON_AddItemToObject(req, "params", par);
-  op->ensureSpecification();
   smtk::io::ExportJSON::forOperator(op->specification(), par);
   // Add the bridge's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));
@@ -142,7 +141,6 @@ smtk::model::OperatorResult RemusRemoteBridge::operateDelegate(
   cJSON_AddItemToObject(req, "method", cJSON_CreateString("operator-apply"));
   cJSON_AddItemToObject(req, "id", cJSON_CreateString("1")); // TODO
   cJSON_AddItemToObject(req, "params", par);
-  op->ensureSpecification();
   smtk::io::ExportJSON::forOperator(op->specification(), par);
   // Add the bridge's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));

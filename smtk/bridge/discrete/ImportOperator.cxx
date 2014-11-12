@@ -54,8 +54,7 @@ ImportOperator::ImportOperator()
 
 bool ImportOperator::ableToOperate()
 {
-  if(!this->ensureSpecification() ||
-    !this->specification()->isValid())
+  if(!this->specification()->isValid())
     return false;
 
   std::string filename = this->specification()->findFile("filename")->value();

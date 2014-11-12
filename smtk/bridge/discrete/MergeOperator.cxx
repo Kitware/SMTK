@@ -38,7 +38,6 @@ bool MergeOperator::ableToOperate()
   smtk::model::ModelEntity model;
 
   return
-    this->ensureSpecification() &&
     // The SMTK model must be valid
     (model = this->specification()->findModelEntity("model")->value().as<smtk::model::ModelEntity>()).isValid() &&
     // The CMB model must exist:

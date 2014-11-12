@@ -82,7 +82,6 @@ int main(int argc, char* argv[])
     return 1;
     }
 
-  readOp->ensureSpecification();
   readOp->specification()->findFile("filename")->setValue(std::string(argv[1]));
   std::cout << "Importing " << argv[1] << "\n";
   smtk::model::OperatorResult result = readOp->operate();
@@ -134,7 +133,6 @@ int main(int argc, char* argv[])
       {
       std::cout << "Attempting face split\n";
       smtk::model::OperatorPtr splitFace = model.op("split face");
-      splitFace->ensureSpecification();
       splitFace->specification()->findModelEntity("face to split")->setValue(f);
       splitFace->specification()->findModelEntity("model")->setValue(
           *manager->entitiesMatchingFlagsAs<ModelEntities>(smtk::model::MODEL_ENTITY).begin());
@@ -151,14 +149,14 @@ int main(int argc, char* argv[])
     smtk::model::CursorArray exports;
     exports.push_back(model);
     bridge->ExportEntitiesToFileOfNameAndType(
-      exports, "/tmp/foo.cmb", "cmb");
+      exports, "bridgeTest.cmb", "cmb");
     std::cout << "  done\n";
     }
 
   std::string json = smtk::io::ExportJSON::fromModel(manager);
   if (!json.empty())
     {
-    std::ofstream jsonFile("/tmp/foo.json");
+    std::ofstream jsonFile("bridgeTest.json");
     jsonFile << json;
     jsonFile.close();
     }

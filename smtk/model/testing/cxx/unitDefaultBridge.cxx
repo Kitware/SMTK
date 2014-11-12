@@ -211,9 +211,6 @@ public:
 
   virtual bool ableToOperate()
     {
-    if (!this->ensureSpecification())
-      return false;
-
     if (!this->specification()->isValid())
       return false;
 
