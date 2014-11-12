@@ -18,7 +18,7 @@ namespace smtk {
 /**\brief How should searches for items be conducted?
   *
   */
-enum SMTKCORE_EXPORT SearchStyle
+enum SearchStyle
 {
   NO_CHILDREN,     //!< Search only the attribute, not its children
   ACTIVE_CHILDREN, //!< Search the attribute, descending active children

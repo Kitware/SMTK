@@ -744,12 +744,20 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
-    <modify-function signature="find(const std::string &amp;)">
+    <add-function
+      signature="find(const std::string &amp;)" static="no"
+      return_type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1, smtk::attribute::ALL_CHILDREN);
+        %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
+      </inject-code>
+    </add-function>
+    <modify-function signature="find(const std::string &amp;, smtk::attribute::SearchStyle)">
       <modify-argument index="return">
         <replace-type modified-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;" />
       </modify-argument>
       <inject-code class="target" position="beginning">
-        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1);
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1, %2);
         %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
       </inject-code>
     </modify-function>
@@ -1237,6 +1245,11 @@
     </namespace-type>
 
     <namespace-type name="attribute">
+
+      <enum-type name="SearchStyle">
+        <include file-name="smtk/attribute/SearchStyle.h" location="local"/>
+      </enum-type>
+
       <!-- setup the attribute classes -->
       <object-type name="Attribute">
         <include file-name="smtk/attribute/Attribute.h" location="local"/>
@@ -1547,10 +1560,6 @@
         </modify-function>
 
      </object-type>
-
-     <enum-type name="SearchStyle">
-       <include file-name="smtk/attribute/SearchStyle.h" location="local"/>
-     </enum-type>
 
       <object-type name="StringItem">
         <include file-name="smtk/attribute/StringItem.h" location="local" />

@@ -20,6 +20,7 @@ set(attributeHeaders
   ModelEntityItemDefinition.h
   RefItem.h
   RefItemDefinition.h
+  SearchStyle.h
   StringItem.h
   StringItemDefinition.h
   ValueItem.h
