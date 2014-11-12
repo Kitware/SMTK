@@ -5,7 +5,7 @@
     <!-- Operator -->
     <AttDef Type="create brick" BaseType="operator">
       <ItemDefinitions>
-        <Int Name="operand variants">
+        <Int Name="construction method">
           <ChildrenDefinitions>
             <!-- Option 1: width, depth, height -->
             <Double Name="width" NumberOfRequiredValues="1">
@@ -24,37 +24,32 @@
             <Double Name="center" NumberOfRequiredValues="3">
               <DefaultValue>0.0</DefaultValue>
             </Double>
-            <Double Name="axis 0" NumberOfRequiredValues="3">
-              <DefaultValue>1.0,0.0,0.0</DefaultValue>
-            </Double>
-            <Double Name="axis 1" NumberOfRequiredValues="3">
-              <DefaultValue>0.0,1.0,0.0</DefaultValue>
-            </Double>
-            <Double Name="axis 2" NumberOfRequiredValues="3">
-              <DefaultValue>0.0,0.0,1.0</DefaultValue>
-            </Double>
+            <Double Name="axis 0" NumberOfRequiredValues="3"/>
+            <Double Name="axis 1" NumberOfRequiredValues="3"/>
+            <Double Name="axis 2" NumberOfRequiredValues="3"/>
             <Double Name="extension" NumberOfRequiredValues="3">
               <Min Inclusive="true">0</Min>
-              <DefaultValue>0.5,0.5,0.5</DefaultValue>
+              <DefaultValue>0.5</DefaultValue>
             </Double>
           </ChildrenDefinitions>
           <DiscreteInfo DefaultIndex="1">
             <Structure>
-              <Value Enum="Axis-aligned">0</Value>
+              <Value Enum="axis-aligned">0</Value>
               <Items>
-                <Item>Width</Item>
-                <Item>Depth</Item>
-                <Item>Height</Item>
+                <Item>width</Item>
+                <Item>depth</Item>
+                <Item>height</Item>
+                <Item>center</Item>
               </Items>
             </Structure>
             <Structure>
-              <Value Enum="Parallepiped">0</Value>
+              <Value Enum="parallepiped">0</Value>
               <Items>
-                <Item>Center</Item>
-                <Item>Axis 0</Item>
-                <Item>Axis 1</Item>
-                <Item>Axis 2</Item>
-                <Item>Extension</Item>
+                <Item>center</Item>
+                <Item>axis 0</Item>
+                <Item>axis 1</Item>
+                <Item>axis 2</Item>
+                <Item>extension</Item>
               </Items>
             </Structure>
           </DiscreteInfo>
