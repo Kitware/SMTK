@@ -231,6 +231,7 @@ namespace smtk
     typedef smtk::weak_ptr< smtk::attribute::ItemDefinition >         WeakItemDefinitionPtr;
 
     typedef smtk::shared_ptr< smtk::attribute::ValueItem >            ValueItemPtr;
+    typedef smtk::shared_ptr< const smtk::attribute::ValueItem >      ConstValueItemPtr;
     typedef smtk::shared_ptr< smtk::attribute::ValueItemDefinition >  ValueItemDefinitionPtr;
 
     typedef smtk::shared_ptr< smtk::attribute::DirectoryItem >            DirectoryItemPtr;

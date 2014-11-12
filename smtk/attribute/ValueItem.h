@@ -15,6 +15,7 @@
 #define __smtk_attribute_ValueItem_h
 
 #include "smtk/attribute/Item.h"
+#include "smtk/attribute/SearchStyle.h"
 #include "smtk/PublicPointerDefs.h"
 #include "smtk/SMTKCoreExports.h"
 
@@ -85,7 +86,7 @@ namespace smtk
       std::size_t numberOfChildrenItems() const
       { return this->m_childrenItems.size();}
 
-      const std::map<std::string, smtk::attribute::ItemPtr> childrenItems() const
+      const std::map<std::string, smtk::attribute::ItemPtr>& childrenItems() const
       { return this->m_childrenItems; }
 
       std::size_t numberOfActiveChildrenItems() const
@@ -104,6 +105,9 @@ namespace smtk
      // Used by System::copyAttribute()
      virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                            smtk::attribute::Item::CopyInfo& info);
+
+      ItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle);
+      ConstItemPtr findChild(const std::string& name, smtk::attribute::SearchStyle) const;
     protected:
       ValueItem(Attribute *owningAttribute, int itemPosition);
       ValueItem(Item *owningItem, int myPosition, int mySubGroupPosition);

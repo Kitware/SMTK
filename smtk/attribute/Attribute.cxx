@@ -384,17 +384,31 @@ void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool rever
 //----------------------------------------------------------------------------
 smtk::attribute::ItemPtr Attribute::find(
   const std::string& inName,
-  DescentStyle style
+  SearchStyle style
   )
 {
   int i = this->m_definition->findItemPosition(inName);
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
+  if (i < 0 && style != NO_CHILDREN)
+    { // try to find child items that match the name and type.
+    int numItems = this->numberOfItems();
+    for (i = 0; i < numItems; ++i)
+      {
+      ValueItem::Ptr vitem = dynamic_pointer_cast<ValueItem>(this->item(i));
+      Item::Ptr match;
+      if (vitem && (match = vitem->findChild(inName, style)))
+        return match;
+      }
+    i = -1; // Nothing found.
+    }
+  return (i < 0) ?
+    smtk::attribute::ItemPtr() :
+    this->m_items[static_cast<std::size_t>(i)];
 }
 
 //----------------------------------------------------------------------------
 smtk::attribute::ConstItemPtr Attribute::find(
   const std::string& inName,
-  DescentStyle style
+  SearchStyle style
   ) const
 {
   int i = this->m_definition->findItemPosition(inName);

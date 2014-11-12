@@ -16,6 +16,7 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/SearchStyle.h"
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
 #include <map>
@@ -33,16 +34,6 @@ namespace smtk
     class RefItem;
     class Item;
     class System;
-
-    /**\brief How should searches for items be conducted?
-      *
-      */
-    enum DescentStyle
-      {
-      NO_CHILDREN,     //!< Search only the attribute, not its children
-      ACTIVE_CHILDREN, //!< Search the attribute, descending active children
-      ALL_CHILDREN     //!< Search the attribute, descending all children
-      };
 
     /**\brief Represent a (possibly composite) value according to a definition.
       *
@@ -102,17 +93,17 @@ namespace smtk
 
       smtk::attribute::ItemPtr find(
         const std::string& name,
-        DescentStyle style = ACTIVE_CHILDREN);
+        SearchStyle style = ACTIVE_CHILDREN);
       smtk::attribute::ConstItemPtr find(
-        const std::string &name
-        DescentStyle style = ACTIVE_CHILDREN) const;
+        const std::string &name,
+        SearchStyle style = ACTIVE_CHILDREN) const;
       std::size_t numberOfItems() const
       {return this->m_items.size();}
 
       template<typename T>
-      T::Ptr findAs(
+      typename T::Ptr findAs(
         const std::string& name,
-        DescentStyle style = ACTIVE_CHILDREN);
+        SearchStyle style = ACTIVE_CHILDREN);
 
       smtk::attribute::IntItemPtr findInt(const std::string &name);
       smtk::attribute::ConstIntItemPtr findInt(const std::string &name) const;
@@ -255,7 +246,7 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename T>
-    T::Ptr Attribute::findAs(const std::string& name, DescentStyle style)
+    typename T::Ptr Attribute::findAs(const std::string& name, SearchStyle style)
     {
     return smtk::dynamic_pointer_cast<T>(this->find(name, style));
     }

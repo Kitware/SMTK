@@ -1548,6 +1548,10 @@
 
      </object-type>
 
+     <enum-type name="SearchStyle">
+       <include file-name="smtk/attribute/SearchStyle.h" location="local"/>
+     </enum-type>
+
       <object-type name="StringItem">
         <include file-name="smtk/attribute/StringItem.h" location="local" />
         <add-function signature="CastTo(smtk::shared_ptr&lt;smtk::attribute::Item &gt; &amp;)"

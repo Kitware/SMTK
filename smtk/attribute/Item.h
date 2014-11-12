@@ -35,11 +35,11 @@ namespace smtk
 
     class SMTKCORE_EXPORT Item
     {
-      smtkTypeMacro(Item);
       friend class Definition;
       friend class GroupItemDefinition;
       friend class ValueItemDefinition;
     public:
+      smtkTypeMacro(Item);
       enum Type
       {
         ATTRIBUTE_REF,
