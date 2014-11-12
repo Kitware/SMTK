@@ -382,7 +382,20 @@ void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool rever
   this->disassociateEntity(entity.entity(), reverse);
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const
+smtk::attribute::ItemPtr Attribute::find(
+  const std::string& inName,
+  DescentStyle style
+  )
+{
+  int i = this->m_definition->findItemPosition(inName);
+  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
+}
+
+//----------------------------------------------------------------------------
+smtk::attribute::ConstItemPtr Attribute::find(
+  const std::string& inName,
+  DescentStyle style
+  ) const
 {
   int i = this->m_definition->findItemPosition(inName);
   if (i < 0)
@@ -392,12 +405,6 @@ smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const
   return this->m_items[static_cast<std::size_t>(i)];
 }
 
-//----------------------------------------------------------------------------
-smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
-{
-  int i = this->m_definition->findItemPosition(inName);
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
-}
 //-----------------------------------------------------------------------------
 smtk::attribute::IntItemPtr Attribute::findInt(const std::string &nameStr)
 { return smtk::dynamic_pointer_cast<IntItem>(this->find(nameStr)); }
