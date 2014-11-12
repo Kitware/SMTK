@@ -43,6 +43,8 @@ using namespace smtk::common;
 using namespace smtk::model;
 using namespace smtk::io;
 
+using smtk::attribute::IntItem;
+
 namespace {
 
 template<class T>
@@ -318,14 +320,12 @@ int main()
     test(
       localOp->className() == "smtk::model::RemoteOperator",
       "Local operator did not return expected className() \"smtk::model::RemoteOperator\"");
-    test(
-      !localOp->specification(),
-      "Local operator had a default specification. Expected a null shared pointer.");
     localOp->ensureSpecification();
     test(
       !!localOp->specification(),
-      "Local operator's ensureSpecification did not work.");
-    localOp->specification()->findInt("addToCount")->setValue(2);
+      "Local operator should have a default specification, not a null pointer.");
+    localOp->findInt("addToCount")->setValue(1);
+    localOp->findAs<IntItem>("addToCount")->setValue(2);
     test(
       localOp->specification()->findInt("addToCount")->value() == 2,
       "Setting a valid parameter had no effect.");
