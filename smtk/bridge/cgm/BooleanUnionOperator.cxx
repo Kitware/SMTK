@@ -49,9 +49,7 @@ namespace smtk {
 // local helper
 bool BooleanUnionOperator::ableToOperate()
 {
-  return
-    this->ensureSpecification() &&
-    this->specification()->isValid();
+  return this->specification()->isValid();
 }
 
 smtk::model::OperatorResult BooleanUnionOperator::operateInternal()

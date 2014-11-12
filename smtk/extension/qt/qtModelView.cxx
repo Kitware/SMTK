@@ -456,7 +456,7 @@ void qtModelView::operatorInvoked()
 //----------------------------------------------------------------------------
 bool qtModelView::initOperator(smtk::model::OperatorPtr op)
 {
-  if(!op ||!op->ensureSpecification() || !op->specification()->isValid())
+  if(!op || !op->specification()->isValid())
     {
     return false;
     }
