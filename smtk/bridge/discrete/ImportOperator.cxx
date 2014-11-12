@@ -169,6 +169,11 @@ std::string json = smtk::io::ExportJSON::fromModel(this->manager());
     file << json;
     file.close();
 */
+
+  this->manager()->setBridgeForModel(
+    this->bridge()->shared_from_this(),
+    modelId);
+
   return result;
 }
 

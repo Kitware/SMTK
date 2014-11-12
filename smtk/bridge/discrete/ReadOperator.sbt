@@ -5,7 +5,9 @@
     <!-- Operator -->
     <AttDef Type="read" BaseType="operator">
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1">
+        <File Name="filename" NumberOfRequiredValues="1"
+          ShouldExist="true"
+          FileFilters="Conceptual Model Builder (*.cmb);;All files (*.*)">
         </File>
       </ItemDefinitions>
     </AttDef>

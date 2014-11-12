@@ -97,15 +97,22 @@ void qtAttribute::createWidget()
   int numShowItems = 0;
   smtk::attribute::AttributePtr att = this->getObject();
   std::size_t i, n = att->numberOfItems();
-  for (i = 0; i < n; i++)
+  if(this->Internals->View)
     {
-    if(this->Internals->View->uiManager()->passAdvancedCheck(
-        att->item(static_cast<int>(i))->advanceLevel()) &&
-      this->Internals->View->uiManager()->passItemCategoryCheck(
-        att->item(static_cast<int>(i))->definition()))
+    for (i = 0; i < n; i++)
       {
-      numShowItems++;
+      if(this->Internals->View->uiManager()->passAdvancedCheck(
+          att->item(static_cast<int>(i))->advanceLevel()) &&
+        this->Internals->View->uiManager()->passItemCategoryCheck(
+          att->item(static_cast<int>(i))->definition()))
+        {
+        numShowItems++;
+        }
       }
+    }
+  else // show everything
+    {
+    numShowItems = n;
     }
   if(numShowItems == 0)
     {
@@ -195,10 +202,10 @@ QWidget* qtAttribute::parentWidget()
 qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
   qtBaseView* bview, Qt::Orientation enVectorItemOrient)
 {
-  if(!bview->uiManager()->passAdvancedCheck(
+  if(bview && (!bview->uiManager()->passAdvancedCheck(
       item->advanceLevel()) ||
     !bview->uiManager()->passItemCategoryCheck(
-      item->definition()))
+      item->definition())))
     {
     return NULL;
     }

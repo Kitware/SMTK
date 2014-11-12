@@ -63,9 +63,9 @@ void qtVoidItem::setLabelVisible(bool visible)
 void qtVoidItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck() ||
+  if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
-      dataObj->definition()))
+      dataObj->definition())))
     {
     return;
     }

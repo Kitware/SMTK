@@ -21,11 +21,25 @@
 #include "smtk/extension/qt/qtEntityItemDelegate.h"
 #include "smtk/model/EntityPhrase.h"
 #include "smtk/model/EntityListPhrase.h"
+#include "smtk/model/BridgeSession.h"
+#include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/Definition.h"
+#include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtUIManager.h"
+
+#include "smtk/view/Root.h"
+#include "smtk/view/Instanced.h"
 
 #include <QPointer>
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QMenu>
+#include <QAction>
+#include <QVariant>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 #include <iomanip>
 // -----------------------------------------------------------------------------
@@ -54,6 +68,11 @@ qtModelView::qtModelView(QWidget* p)
   this->setDropIndicatorShown(true);
   this->setDragEnabled(true);
   this->setAcceptDrops(true);
+  this->setContextMenuPolicy(Qt::CustomContextMenu);
+  QObject::connect(this,
+                   SIGNAL(customContextMenuRequested(const QPoint &)),
+                   this, SLOT(showContextMenu(const QPoint &)));
+  this->m_ContextMenu = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -353,5 +372,121 @@ smtk::model::GroupEntity qtModelView::groupParentOfIndex(const QModelIndex& qidx
     }
   return group;
 }
+
+//-----------------------------------------------------------------------------
+void qtModelView::showContextMenu(const QPoint &p)
+{
+  // Set up Context Menu Structure
+  if(this->m_ContextMenu)
+    {
+    this->m_ContextMenu->clear();
+    }
+  else
+    {
+    this->m_ContextMenu = new QMenu(this);
+    this->m_ContextMenu->setTitle("Operators Menu");
+    }
+
+  QModelIndex dropIdx = this->indexAt(p);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(dropIdx);
+  smtk::model::BridgeSession brSession;
+
+  if (dp && (brSession = dp->relatedEntity().as<smtk::model::BridgeSession>()).isValid())
+    {
+    StringList opNames = brSession.operatorNames();
+    for(StringList::const_iterator it = opNames.begin();
+        it != opNames.end(); ++it)
+      {
+      QAction* act = this->m_ContextMenu->addAction((*it).c_str());
+      QVariant vdata( QString::fromStdString(brSession.entity().toString()) );
+      act->setData(vdata);
+      QObject::connect(act, SIGNAL(triggered()), this, SLOT(operatorInvoked()));
+      }
+    this->m_ContextMenu->popup(this->mapToGlobal(p));
+    }
+}
+
+//-----------------------------------------------------------------------------
+void qtModelView::operatorInvoked()
+{
+  QAction* const action = qobject_cast<QAction*>(
+    QObject::sender());
+  if(!action)
+    {
+    return;
+    }
+  QVariant var = action->data();
+  smtk::common::UUID sessId( var.toString().toStdString() );
+
+  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  smtk::model::BridgePtr bridge =
+    qmodel->manager()->findBridgeSession(sessId);
+  if (!bridge)
+    {
+    std::cout << "No bridge available from bridgeSession: \"" << sessId.toString() << "\"\n";
+    return;
+    }
+  std::string opName = action->text().toStdString();
+  OperatorPtr brOp = bridge->op(opName, qmodel->manager());
+  if (!brOp)
+    {
+    std::cerr
+      << "Could not create operator: \"" << opName << "\" for bridge"
+      << " \"" << bridge->name() << "\""
+      << " (" << bridge->sessionId() << ")\n";
+    return;
+    }
+
+  if(!this->initOperator(brOp))
+    return;
+  emit this->operationRequested(brOp);
+
+//  cJSON* json = cJSON_CreateObject();
+//  ExportJSON::forOperator(brOp, json);
+//  std::cout << "Found operator " << cJSON_Print(json) << ")\n";
+//  OperatorResult result = brOp->operate();
+//  json = cJSON_CreateObject();
+//  ExportJSON::forOperatorResult(result, json);
+//  std::cout << "Result " << cJSON_Print(json) << "\n";
+
+//  emit this->operationRequested(uid, action->text());
+//  emit this->operationFinished(result);
+}
+
+//----------------------------------------------------------------------------
+bool qtModelView::initOperator(smtk::model::OperatorPtr op)
+{
+  if(!op ||!op->ensureSpecification() || !op->specification()->isValid())
+    {
+    return false;
+    }
+  smtk::attribute::AttributePtr att = op->specification();
+  attribute::DefinitionPtr attDef = att->definition();
+
+  QDialog attDialog;
+  attDialog.setWindowTitle(attDef->label().empty() ?
+                            attDef->type().c_str() : attDef->label().c_str());
+  QVBoxLayout* layout = new QVBoxLayout(&attDialog);
+
+  smtk::attribute::qtUIManager uiManager(*(att->system()));
+  smtk::view::RootPtr rootView = uiManager.attSystem()->rootView();
+  smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(op->name());
+  instanced->addInstance(att);
+  rootView->addSubView(instanced);
+  QObject::connect(&uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+    this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
+
+  attribute::qtBaseView* view = uiManager.initializeView(&attDialog, instanced, false);
+
+//  attribute::qtAttribute attWidget(att, &attDialog, NULL);
+  //layout->addWidget(attView.widget())
+  QDialogButtonBox* buttonBox=new QDialogButtonBox( &attDialog );
+  buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+  layout->addWidget(buttonBox);
+  attDialog.setModal(true);
+  QObject::connect(buttonBox, SIGNAL(accepted()), &attDialog, SLOT(accept()));
+  return attDialog.exec() == QDialog::Accepted;
+}
+
   } // namespace model
 } // namespace smtk
