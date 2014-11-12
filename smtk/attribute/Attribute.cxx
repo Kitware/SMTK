@@ -426,7 +426,7 @@ smtk::attribute::ConstItemPtr Attribute::find(
     }
   return (i < 0) ?
     smtk::attribute::ConstItemPtr() :
-    this->m_items[static_cast<std::size_t>(i)];
+    smtk::const_pointer_cast<const Item>(this->m_items[static_cast<std::size_t>(i)]);
 }
 
 //-----------------------------------------------------------------------------
