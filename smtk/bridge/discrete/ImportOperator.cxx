@@ -165,10 +165,15 @@ OperatorResult ImportOperator::operateInternal()
   */
 /*
 std::string json = smtk::io::ExportJSON::fromModel(this->manager());
-    std::ofstream file("/Users/yuminyuan/Desktop/smooth_surface1.json");
+    std::ofstream file("/tmp/import_op_out.json");
     file << json;
     file.close();
 */
+
+  this->manager()->setBridgeForModel(
+    this->bridge()->shared_from_this(),
+    modelId);
+
   return result;
 }
 

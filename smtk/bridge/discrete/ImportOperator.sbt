@@ -5,7 +5,9 @@
     <!-- Operator -->
     <AttDef Type="import" BaseType="operator">
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1">
+        <File Name="filename" NumberOfRequiredValues="1"
+          ShouldExist="true"
+          FileFilters="Legacy VTK files (*.vtk);;All files (*.*)">
         </File>
       </ItemDefinitions>
     </AttDef>

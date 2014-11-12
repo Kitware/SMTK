@@ -20,8 +20,16 @@
 #include "smtk/common/UUID.h"
 
 #include <QTreeView>
+#include <QPoint>
 
 class QDropEvent;
+class QMenu;
+
+namespace smtk {
+ namespace attribute {
+  class qtFileItem;
+ }
+}
 
 namespace smtk {
   namespace model {
@@ -44,9 +52,14 @@ public slots:
   void selectEntities(const QList<std::string>& selIds);
   virtual void removeFromGroup(const QModelIndex& qidx);
   virtual void removeSelected();
+  void showContextMenu(const QPoint &p);
+  void operatorInvoked();
 
 signals:
   void entitiesSelected(const smtk::common::UUIDs& ids);
+  void operationRequested(const smtk::model::OperatorPtr& brOp);
+  void operationFinished(const smtk::model::OperatorResult&);
+  void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
 
 protected:
 
@@ -73,6 +86,9 @@ protected:
     smtk::common::UUIDs& ids, BitFlags entityFlags);
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
+  bool initOperator(smtk::model::OperatorPtr op);
+
+  QMenu* m_ContextMenu;
 };
 
   } // namespace model

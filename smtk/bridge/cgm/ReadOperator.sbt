@@ -5,7 +5,10 @@
     <!-- Operator -->
     <AttDef Type="read" BaseType="operator">
       <ItemDefinitions>
-        <File Name="filename" NumberOfRequiredValues="1"/>
+        <File Name="filename" NumberOfRequiredValues="1"
+          ShouldExist="true"
+          FileFilters="OpenCascade Boundary Representation (*.brep *.occ);;All files (*.*)">
+        </File>
         <String Name="filetype" NumberOfRequiredValues="1"/>
       </ItemDefinitions>
     </AttDef>

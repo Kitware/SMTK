@@ -19,6 +19,8 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/model/Manager.h"
+
 #include "CGMApp.hpp"
 #include "DagType.hpp"
 #include "CubitAttribManager.hpp"
@@ -127,9 +129,13 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     smtk::common::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+      {
       resultModels->setValue(i, smtkEntry);
+      this->manager()->setBridgeForModel(bridge->shared_from_this(), entId);
+      }
     }
   imported.reset();
+
 
   return result;
 }

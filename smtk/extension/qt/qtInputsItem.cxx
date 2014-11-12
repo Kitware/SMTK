@@ -87,9 +87,9 @@ void qtInputsItem::setLabelVisible(bool visible)
 void qtInputsItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
-  if(!dataObj || !this->passAdvancedCheck() ||
+  if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
-      dataObj->definition()))
+      dataObj->definition())))
     {
     return;
     }
@@ -247,9 +247,9 @@ void qtInputsItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
   smtk::attribute::ValueItemPtr dataObj =dynamic_pointer_cast<ValueItem>(this->getObject());
-  if(!dataObj || !this->passAdvancedCheck() ||
+  if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
-      dataObj->definition()))
+      dataObj->definition())))
     {
     return;
     }
@@ -293,7 +293,10 @@ void qtInputsItem::updateUI()
     }
   QLabel* label = new QLabel(labelText, this->Widget);
   label->setSizePolicy(sizeFixedPolicy);
-  label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+  if(this->baseView())
+    {
+    label->setFixedWidth(this->baseView()->fixedLabelWidth() - padding);
+    }
   label->setWordWrap(true);
   label->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
@@ -313,7 +316,7 @@ void qtInputsItem::updateUI()
     unitText.append(" (").append(itemDef->units().c_str()).append(")");
     label->setText(unitText);
     }
-  if(itemDef->advanceLevel())
+  if(itemDef->advanceLevel() && this->baseView())
     {
     label->setFont(this->baseView()->uiManager()->advancedFont());
     }
@@ -375,7 +378,8 @@ void qtInputsItem::setOutputOptional(int state)
   if(enable != this->getObject()->isEnabled())
     {
     this->getObject()->setIsEnabled(enable);
-    this->baseView()->valueChanged(this->getObject());
+    if(this->baseView())
+      this->baseView()->valueChanged(this->getObject());
     }
 }
 
