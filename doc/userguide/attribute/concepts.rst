@@ -31,6 +31,11 @@ also accessible in Python, whose instances perform the following functions:
   Each item references an ItemDefinition that constrains the
   values that may be held in storage, in much the same way
   that an Attribute has a Definition.
+  Some items (those derived from :smtk:`ValueItem`) can
+  have other items as children;
+  this is used to implement `conditional items`_, where
+  the presence of children is predicated on the value taken on
+  by their parent item.
 
 :smtk:`ItemDefinition`
   instances constrain the number of values that an Item
@@ -129,6 +134,7 @@ the attribute data and write the simulation input files.
 .. Wish I could align code & image horizontally
 
 .. _GUIExample:
+
 .. findfigure:: ExampleAttributePanel.*
    :align: center
 
@@ -137,6 +143,7 @@ the attribute data and write the simulation input files.
    and white backgrounds indicate modified values.
 
 .. _XMLExample:
+
 .. code-block:: xml
 
   <Definitions>
@@ -177,3 +184,50 @@ the attribute data and write the simulation input files.
     </AttDef>
 
     <!-- Remaining content not shown -->
+
+.. _conditional items:
+
+-----------------
+Conditional items
+-----------------
+
+One particular workflow SMTK supports is attributes that
+can be defined by multiple, distinct sets of values.
+For example, there are many ways to define a circle, four of which are:
+using 3 points on the circle,
+using a center and radius,
+using 2 points (a center plus a point on the circle), and
+by inscribing a circle inside a triangle.
+There are times when you will want to represent an attribute
+that can accept any of these definitions instead of constraining
+the user to work with a single construction technique.
+
+SMTK accommodates this by having you create an auxiliary
+item whose value enumerates the different possible definitions.
+This auxiliary item owns all of the items that are active
+depending on the auxiliary item's value.
+For our example of a circle, the attribute definition would be
+
+.. _ConditionalXML:
+
+.. literalinclude:: circle.xml
+   :language: xml
+   :start-after: <!-- + 1 + -->
+   :end-before: <!-- - 1 - -->
+
+You can see that each "Structure" section describes a particular
+way to define the circle.
+Different subsets of the items are active depending on whether
+the auxiliary "construction method" value is 0, 1, 2, or 3.
+
+.. _ConditionalGUI:
+
+.. findfigure:: circle-ui.*
+   :align: center
+
+   The user interface generated for a conditional item definition.
+
+When SMTK generates a user interface for the attribute above,
+the "construction method" value is represented as a tabbed
+widget with 1 tab for each of the "Structure" sections above.
+The default tab will be "2 points".

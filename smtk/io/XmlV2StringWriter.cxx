@@ -1519,6 +1519,10 @@ std::string XmlV2StringWriter::encodeColor(const double *c)
 std::string XmlV2StringWriter::encodeModelEntityMask(smtk::model::BitFlags f)
 {
   std::string s;
+  if ( smtk::model::isBridgeSession(f) )
+    {
+    s.append("b");
+    }
   if ( smtk::model::isGroupEntity(f) )
     {
     s.append("g");

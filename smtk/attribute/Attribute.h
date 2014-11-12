@@ -16,6 +16,7 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/attribute/SearchStyle.h"
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
 #include <map>
@@ -34,6 +35,9 @@ namespace smtk
     class Item;
     class System;
 
+    /**\brief Represent a (possibly composite) value according to a definition.
+      *
+      */
     class SMTKCORE_EXPORT Attribute
     {
       friend class smtk::attribute::Definition;
@@ -87,10 +91,19 @@ namespace smtk
            smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(ith)]);
       }
 
-      smtk::attribute::ItemPtr find(const std::string &name) ;
-      smtk::attribute::ConstItemPtr find(const std::string &name) const;
+      smtk::attribute::ItemPtr find(
+        const std::string& name,
+        SearchStyle style = ACTIVE_CHILDREN);
+      smtk::attribute::ConstItemPtr find(
+        const std::string &name,
+        SearchStyle style = ACTIVE_CHILDREN) const;
       std::size_t numberOfItems() const
       {return this->m_items.size();}
+
+      template<typename T>
+      typename T::Ptr findAs(
+        const std::string& name,
+        SearchStyle style = ACTIVE_CHILDREN);
 
       smtk::attribute::IntItemPtr findInt(const std::string &name);
       smtk::attribute::ConstIntItemPtr findInt(const std::string &name) const;
@@ -231,6 +244,13 @@ namespace smtk
       }
       return result;
     }
+//----------------------------------------------------------------------------
+    template<typename T>
+    typename T::Ptr Attribute::findAs(const std::string& name, SearchStyle style)
+    {
+    return smtk::dynamic_pointer_cast<T>(this->find(name, style));
+    }
+//----------------------------------------------------------------------------
   } // attribute namespace
 } // smtk namespace
 

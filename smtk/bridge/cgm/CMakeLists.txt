@@ -9,6 +9,7 @@ set(cgmSrcs
   ImportSolid.cxx
   Operator.cxx
   ReadOperator.cxx
+  CreateBrickOperator.cxx
   CreatePrismOperator.cxx
   CreateSphereOperator.cxx
   BooleanUnionOperator.cxx
@@ -23,6 +24,7 @@ set(cgmHeaders
   ImportSolid.h
   Operator.h
   ReadOperator.h
+  CreateBrickOperator.h
   CreatePrismOperator.h
   CreateSphereOperator.h
   BooleanUnionOperator.h
@@ -71,6 +73,7 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateBrickOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreatePrismOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/BooleanUnionOperator.sbt" cgmOperatorXML)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<SMTK_AttributeSystem Version="2">
+ <!-- + 1 + -->
+ <Definitions>
+    <AttDef Type="circle" Label="Circle" BaseType="" Version="0">
+      <ItemDefinitions>
+        <!-- Here is our auxiliary item -->
+        <Int Name="construction method">
+          <!-- First we list *all* of the child items -->
+          <ChildrenDefinitions>
+            <Double Name="radius" NumberOfRequiredValues="1">
+              <Min Inclusive="false">0</Min>
+              <DefaultValue>0.5</DefaultValue>
+            </Double>
+            <Double Name="center" NumberOfRequiredValues="3">
+              <DefaultValue>0.0</DefaultValue>
+            </Double>
+            <Double Name="point 1" NumberOfRequiredValues="3"/>
+            <Double Name="point 2" NumberOfRequiredValues="3"/>
+            <Double Name="point 3" NumberOfRequiredValues="3"/>
+          </ChildrenDefinitions>
+          <!-- Now we enumerate the acceptable auxiliary values
+               along with the children used in each case.
+            -->
+          <DiscreteInfo DefaultIndex="1">
+            <Structure>
+              <Value Enum="3 points">0</Value>
+              <Items>
+                <Item>point 1</Item>
+                <Item>point 2</Item>
+                <Item>point 3</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="2 points">1</Value>
+              <Items>
+                <Item>center</Item>
+                <Item>point 1</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="center and radius">2</Value>
+              <Items>
+                <Item>center</Item>
+                <Item>radius</Item>
+              </Items>
+            </Structure>
+            <Structure>
+              <Value Enum="inscribe in triangle">3</Value>
+              <Items>
+                <Item>point 1</Item>
+                <Item>point 2</Item>
+                <Item>point 3</Item>
+              </Items>
+            </Structure>
+          </DiscreteInfo>
+        </Int>
+      </ItemDefinitions>
+    </AttDef>
+  </Definitions>
+ <!-- - 1 - -->
+</SMTK_AttributeSystem>

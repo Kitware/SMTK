@@ -166,14 +166,37 @@ public:
   bool setSpecification(smtk::attribute::AttributePtr spec);
   bool ensureSpecification() const;
 
-  smtk::attribute::IntItemPtr findInt(const std::string& name);
-  smtk::attribute::DoubleItemPtr findDouble(const std::string& name);
-  smtk::attribute::StringItemPtr findString(const std::string& name);
-  smtk::attribute::FileItemPtr findFile(const std::string& name);
-  smtk::attribute::DirectoryItemPtr findDirectory(const std::string& name);
-  smtk::attribute::GroupItemPtr findGroup(const std::string& name);
-  smtk::attribute::RefItemPtr findRef(const std::string& name);
-  smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string& name);
+  /// Convenience method for finding a operator parameter of a known type.
+  template<typename T> typename T::Ptr findAs(
+    const std::string& pname,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN)
+    { return this->specification()->findAs<T>(pname, style); }
+
+  smtk::attribute::IntItemPtr findInt(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::DoubleItemPtr findDouble(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::StringItemPtr findString(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::FileItemPtr findFile(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::DirectoryItemPtr findDirectory(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::GroupItemPtr findGroup(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::RefItemPtr findRef(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+  smtk::attribute::ModelEntityItemPtr findModelEntity(
+    const std::string& name,
+    smtk::attribute::SearchStyle style = smtk::attribute::ALL_CHILDREN);
+
   bool associateEntity(const smtk::model::Cursor& entity);
   void disassociateEntity(const smtk::model::Cursor& entity);
   void removeAllAssociations();

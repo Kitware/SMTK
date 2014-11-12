@@ -2553,6 +2553,9 @@ XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
     {
     switch (s[i])
       {
+      case 'b':
+        flags |= smtk::model::BRIDGE_SESSION;
+        break;
       case 'g':
         flags |= smtk::model::GROUP_ENTITY;
         break;

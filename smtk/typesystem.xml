@@ -24,6 +24,8 @@
 
   <!-- Suppressed because they are templated methods -->
   <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::findAs', unmatched return type 'T::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
   <suppress-warning text="skipping function 'smtk::dynamicCastPointer', unmatched return type 'smtk::shared_ptr&lt;T&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Definition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
@@ -43,8 +45,8 @@
   <suppress-warning text="skipping function 'smtk::model::ModelEntity::removeCells', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::Cursor::unembedEntities', unmatched parameter type 'T const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::model::ShellEntity::addUses', unmatched parameter type 'T const&amp;'"/>
-  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::entitiesMatchingFlagsAs', unmatched return type 'Collection'"/>
+  <suppress-warning text="skipping function 'smtk::model::Operator::findAs', unmatched return type 'T::Ptr'"/>
 
   <!-- Return a list.  For now we will ignore the iterators-->
   <suppress-warning text="skipping function 'smtk::model::Item::beginAssociatedAttributes', unmatched return type 'smtk::model::Item::const_iterator'"/>
@@ -646,7 +648,80 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::EntityListPhrase"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::BRepModel"/>
   <value-type template="smtk::shared_ptr" args="smtk::model::SimpleModelSubphrases"/>
-  <value-type template="smtk::shared_ptr" args="smtk::model::Operator"/>
+  <value-type template="smtk::shared_ptr" args="smtk::model::Operator">
+    <add-function
+      signature="findAsInt(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::IntItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::IntItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::IntItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::IntItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsDouble(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::DoubleItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::DoubleItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::DoubleItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::DoubleItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsString(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::StringItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::StringItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::StringItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::StringItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsFile(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::FileItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::FileItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::FileItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::FileItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsDirectory(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::DirectoryItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::DirectoryItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::DirectoryItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::DirectoryItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsGroup(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::GroupItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::GroupItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::GroupItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::GroupItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsRef(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::RefItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::RefItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::RefItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::RefItem &gt; ](result);
+      </inject-code>
+    </add-function>
+    <add-function
+      signature="findAsModelEntity(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt; result =
+          %CPPSELF->get()->specification()->findAs&lt;smtk::attribute::ModelEntityItem&gt;(%1, smtk::attribute::ALL_CHILDREN);
+        return %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::ModelEntityItem &gt; ](result);
+      </inject-code>
+    </add-function>
+  </value-type>
   <value-type template="smtk::shared_ptr" args="smtk::model::Manager">
     <modify-function signature="arrangeEntity(smtk::common::UUID,smtk::model::ArrangementKind,smtk::model::Arrangement,int)">
       <inject-code class="target" position="beginning">
@@ -744,12 +819,20 @@
   <value-type template="smtk::shared_ptr" args="smtk::model::GridInfo"/>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Attribute">
-    <modify-function signature="find(const std::string &amp;)">
+    <add-function
+      signature="find(const std::string &amp;)" static="no"
+      return-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;">
+      <inject-code>
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1, smtk::attribute::ALL_CHILDREN);
+        %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
+      </inject-code>
+    </add-function>
+    <modify-function signature="find(const std::string &amp;, smtk::attribute::SearchStyle)">
       <modify-argument index="return">
         <replace-type modified-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;" />
       </modify-argument>
       <inject-code class="target" position="beginning">
-        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1);
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1, %2);
         %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
       </inject-code>
     </modify-function>
@@ -1237,6 +1320,11 @@
     </namespace-type>
 
     <namespace-type name="attribute">
+
+      <enum-type name="SearchStyle">
+        <include file-name="smtk/attribute/SearchStyle.h" location="local"/>
+      </enum-type>
+
       <!-- setup the attribute classes -->
       <object-type name="Attribute">
         <include file-name="smtk/attribute/Attribute.h" location="local"/>

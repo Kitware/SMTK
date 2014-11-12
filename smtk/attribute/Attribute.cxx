@@ -382,22 +382,53 @@ void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool rever
   this->disassociateEntity(entity.entity(), reverse);
 }
 //----------------------------------------------------------------------------
-smtk::attribute::ConstItemPtr Attribute::find(const std::string &inName) const
+smtk::attribute::ItemPtr Attribute::find(
+  const std::string& inName,
+  SearchStyle style
+  )
 {
   int i = this->m_definition->findItemPosition(inName);
-  if (i < 0)
-    {
-    return smtk::attribute::ConstItemPtr();
+  if (i < 0 && style != NO_CHILDREN)
+    { // try to find child items that match the name and type.
+    int numItems = this->numberOfItems();
+    for (i = 0; i < numItems; ++i)
+      {
+      ValueItem::Ptr vitem = dynamic_pointer_cast<ValueItem>(this->item(i));
+      Item::Ptr match;
+      if (vitem && (match = vitem->findChild(inName, style)))
+        return match;
+      }
+    i = -1; // Nothing found.
     }
-  return this->m_items[static_cast<std::size_t>(i)];
+  return (i < 0) ?
+    smtk::attribute::ItemPtr() :
+    this->m_items[static_cast<std::size_t>(i)];
 }
 
 //----------------------------------------------------------------------------
-smtk::attribute::ItemPtr Attribute::find(const std::string &inName)
+smtk::attribute::ConstItemPtr Attribute::find(
+  const std::string& inName,
+  SearchStyle style
+  ) const
 {
   int i = this->m_definition->findItemPosition(inName);
-  return (i < 0) ? smtk::attribute::ItemPtr() : this->m_items[static_cast<std::size_t>(i)];
+  if (i < 0 && style != NO_CHILDREN)
+    { // try to find child items that match the name and type.
+    int numItems = this->numberOfItems();
+    for (i = 0; i < numItems; ++i)
+      {
+      ConstValueItemPtr vitem = dynamic_pointer_cast<const ValueItem>(this->item(i));
+      ConstItemPtr match;
+      if (vitem && (match = vitem->findChild(inName, style)))
+        return match;
+      }
+    i = -1; // Nothing found.
+    }
+  return (i < 0) ?
+    smtk::attribute::ConstItemPtr() :
+    this->m_items[static_cast<std::size_t>(i)];
 }
+
 //-----------------------------------------------------------------------------
 smtk::attribute::IntItemPtr Attribute::findInt(const std::string &nameStr)
 { return smtk::dynamic_pointer_cast<IntItem>(this->find(nameStr)); }
