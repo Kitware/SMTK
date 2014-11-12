@@ -89,7 +89,7 @@ OperatorResult ReadOperator::operateInternal()
 
 #if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
 std::string json = smtk::io::ExportJSON::fromModel(this->manager());
-    std::ofstream file("/Users/yuminyuan/Desktop/read_op_out.json");
+    std::ofstream file("/tmp/read_op_out.json");
     file << json;
     file.close();
 #endif
