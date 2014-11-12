@@ -51,7 +51,10 @@ bool CreateBrickOperator::ableToOperate()
 
 smtk::model::OperatorResult CreateBrickOperator::operateInternal()
 {
+  using smtk::attribute::SearchStyle;
+
   // Figure out which variant of the method to use.
+  smtk::attribute::IntItem::Ptr methodItem = this->findInt("construction method");
   smtk::attribute::DoubleItem::Ptr widthItem = this->findDouble("width");
   smtk::attribute::DoubleItem::Ptr depthItem = this->findDouble("depth");
   smtk::attribute::DoubleItem::Ptr heightItem = this->findDouble("height");
@@ -63,46 +66,48 @@ smtk::model::OperatorResult CreateBrickOperator::operateInternal()
   smtk::attribute::DoubleItem::Ptr extensionItem = this->findDouble("extension");
 
   Body* cgmBody;
-  if (widthItem && depthItem && heightItem)
+  int method = methodItem->discreteIndex(0);
+  switch (method)
     {
-    double width = widthItem->value();
-    double depth = depthItem->value();
-    double height = heightItem->value();
+  case 0: // axis-aligned cuboid
+      {
+      double width = widthItem->value();
+      double depth = depthItem->value();
+      double height = heightItem->value();
 
-    cgmBody = GeometryModifyTool::instance()->brick(width, depth, height);
-    }
-  else if (
-    centerItem && extensionItem &&
-    axis0Item && axis1Item && axis2Item)
-    {
-    CubitVector center;
-    CubitVector axes[3];
-    CubitVector extension;
+      cgmBody = GeometryModifyTool::instance()->brick(width, depth, height);
+      }
+    break;
+  case 1: // parallelepiped
+      {
+      CubitVector center;
+      CubitVector axes[3];
+      CubitVector extension;
 
-    center.x(centerItem->value(0));
-    center.y(centerItem->value(1));
-    center.z(centerItem->value(2));
+      center.x(centerItem->value(0));
+      center.y(centerItem->value(1));
+      center.z(centerItem->value(2));
 
-    axes[0].x(axis0Item->value(0));
-    axes[0].y(axis0Item->value(1));
-    axes[0].z(axis0Item->value(2));
+      axes[0].x(axis0Item->value(0));
+      axes[0].y(axis0Item->value(1));
+      axes[0].z(axis0Item->value(2));
 
-    axes[1].x(axis1Item->value(0));
-    axes[1].y(axis1Item->value(1));
-    axes[1].z(axis1Item->value(2));
+      axes[1].x(axis1Item->value(0));
+      axes[1].y(axis1Item->value(1));
+      axes[1].z(axis1Item->value(2));
 
-    axes[2].x(axis2Item->value(0));
-    axes[2].y(axis2Item->value(1));
-    axes[2].z(axis2Item->value(2));
+      axes[2].x(axis2Item->value(0));
+      axes[2].y(axis2Item->value(1));
+      axes[2].z(axis2Item->value(2));
 
-    extension.x(extensionItem->value(0));
-    extension.y(extensionItem->value(1));
-    extension.z(extensionItem->value(2));
+      extension.x(extensionItem->value(0));
+      extension.y(extensionItem->value(1));
+      extension.z(extensionItem->value(2));
 
-    cgmBody = GeometryModifyTool::instance()->brick(center, axes, extension);
-    }
-  else
-    {
+      cgmBody = GeometryModifyTool::instance()->brick(center, axes, extension);
+      }
+    break;
+  default:
     cgmBody = NULL;
     }
   if (!cgmBody)
