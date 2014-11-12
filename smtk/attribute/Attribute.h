@@ -246,9 +246,9 @@ namespace smtk
     }
 //----------------------------------------------------------------------------
     template<typename T>
-    typename T::Ptr Attribute::findAs(const std::string& name, SearchStyle style)
+    typename T::Ptr Attribute::findAs(const std::string& iname, SearchStyle style)
     {
-    return smtk::dynamic_pointer_cast<T>(this->find(name, style));
+    return smtk::dynamic_pointer_cast<T>(this->find(iname, style));
     }
 //----------------------------------------------------------------------------
   } // attribute namespace
