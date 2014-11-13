@@ -81,7 +81,7 @@
     <AttDef Type="result(create brick)" BaseType="result">
       <ItemDefinitions>
         <!-- The brick created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1"/>
+        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

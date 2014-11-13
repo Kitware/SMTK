@@ -16,7 +16,7 @@
     <AttDef Type="result(read)" BaseType="result">
       <ItemDefinitions>
         <!-- The model read from the file. -->
-        <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1"/>
+        <ModelEntity Name="model" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

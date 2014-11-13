@@ -24,7 +24,7 @@
     <AttDef Type="result(create prism)" BaseType="result">
       <ItemDefinitions>
         <!-- The prism created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1"/>
+        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

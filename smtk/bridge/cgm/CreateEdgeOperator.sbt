@@ -60,7 +60,7 @@
     <AttDef Type="result(create edge)" BaseType="result">
       <ItemDefinitions>
         <!-- The edge created. -->
-        <ModelEntity Name="edge" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="edge" NumberOfRequiredValues="1" MembershipMask="258"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

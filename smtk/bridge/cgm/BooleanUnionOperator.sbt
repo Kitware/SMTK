@@ -14,7 +14,7 @@
     <AttDef Type="result(union)" BaseType="result">
       <ItemDefinitions>
         <!-- The united body (or bodies). -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1"/>
+        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

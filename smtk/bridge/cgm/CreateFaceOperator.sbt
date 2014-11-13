@@ -33,7 +33,7 @@
     <AttDef Type="result(create face)" BaseType="result">
       <ItemDefinitions>
         <!-- The face created. -->
-        <ModelEntity Name="face" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="face" NumberOfRequiredValues="1" MembershipMask="260"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

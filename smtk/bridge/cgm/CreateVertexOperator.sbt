@@ -20,7 +20,7 @@
     <AttDef Type="result(create vertex)" BaseType="result">
       <ItemDefinitions>
         <!-- The vertex created. -->
-        <ModelEntity Name="vertex" NumberOfRequiredValues="1"/>
+        <ModelEntity Name="vertex" NumberOfRequiredValues="1" MembershipMask="257"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>
