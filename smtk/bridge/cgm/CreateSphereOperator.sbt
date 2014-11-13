@@ -20,7 +20,7 @@
     <AttDef Type="result(create sphere)" BaseType="result">
       <ItemDefinitions>
         <!-- The sphere created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1"/>
+        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
       </ItemDefinitions>
     </AttDef>
   </Definitions>

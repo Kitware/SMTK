@@ -37,8 +37,8 @@ public:
     const std::string& filetype);
 };
 
-} // namespace cgm
-  } //namespace bridge
+    } // namespace cgm
+  } // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_cgm_ExportSolid_h

@@ -27,6 +27,8 @@ ModelEntityItemDefinition::ModelEntityItemDefinition(const std::string& sname):
   this->m_membershipMask = smtk::model::ANY_ENTITY;
   this->m_numberOfRequiredValues = 0;
   this->m_useCommonLabel = false;
+  this->m_isExtensible = false;
+  this->m_maxNumberOfValues = 0;
 }
 
 /// Destructor.
@@ -139,6 +141,12 @@ void ModelEntityItemDefinition::setNumberOfRequiredValues(std::size_t esize)
     {
     this->m_valueLabels.resize(esize);
     }
+}
+
+/// Set the maximum number of values accepted (or 0 for no limit).
+void ModelEntityItemDefinition::setMaxNumberOfValues(std::size_t maxNum)
+{
+  this->m_maxNumberOfValues = maxNum;
 }
 
 /// Return whether the definition provides labels for each value.

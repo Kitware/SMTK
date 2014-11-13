@@ -53,6 +53,8 @@ namespace smtk
       DataT defaultValue() const;
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
+      shared_ptr<const DefType> concreteDefinition() const
+        { return dynamic_pointer_cast<const DefType>(this->definition()); }
     protected:
       ValueItemTemplate(Attribute *owningAttribute, int itemPosition);
       ValueItemTemplate(Item *owningItem, int myPosition, int mySubGroupPosition);

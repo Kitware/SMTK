@@ -904,6 +904,17 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
                    << idef->name());
     }
 
+  xatt = node.attribute("Extensible");
+  if (xatt)
+    {
+    idef->setIsExtensible(xatt.as_bool());
+    xatt = node.attribute("MaxNumberOfValues");
+    if (xatt)
+      {
+      idef->setMaxNumberOfValues(xatt.as_uint());
+      }
+    }
+
   // Lets see if there are labels
   if(node.child("Labels"))
     {

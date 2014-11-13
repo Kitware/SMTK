@@ -34,10 +34,14 @@ protected:
   Bridge* cgmBridge();
   ToolDataUser* cgmData(const smtk::model::Cursor& smtkEntity);
   RefEntity* cgmEntity(const smtk::model::Cursor& smtkEntity);
+
+  template<typename T>
+  T cgmEntityAs(const smtk::model::Cursor& smtkEntity)
+    { return dynamic_cast<T>(this->cgmEntity(smtkEntity)); }
 };
 
-} // namespace cgm
-  } //namespace bridge
+    } // namespace cgm
+  } // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_cgm_Operator_h

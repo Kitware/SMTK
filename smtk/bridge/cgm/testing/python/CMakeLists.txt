@@ -1,5 +1,6 @@
 set(smtkCGMBridgePythonTests
   cgmSolidModeling
+  cgmBuildUp
 )
 
 # Additional tests that require SMTK_DATA_DIR

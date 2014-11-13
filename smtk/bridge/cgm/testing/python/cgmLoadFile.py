@@ -23,9 +23,9 @@ brg = smtk.model.Manager.createBridge('cgm')
 mgr.registerBridgeSession(brg)
 
 readop = brg.op('read', mgr)
-readop.findFile('filename').setValue(os.path.join(ddir,'cgm','62_shaver1.brep'))
+readop.findAsFile('filename').setValue(os.path.join(ddir,'cgm','62_shaver1.brep'))
 # Note that we could set the file type here:
-#    readop.findString('filetype').setValue('OCC')
+#    readop.findAsString('filetype').setValue('OCC')
 # but there is no need to in this case as it will be
 # correctly inferred from the filename.
 res = readop.operate()

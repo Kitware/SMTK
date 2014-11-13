@@ -36,22 +36,22 @@ print '\n'
 
 opnames = sess.operatorNames()
 cs1 = sess.op('create sphere')
-cs1.findDouble('radius').setValue(1.)
-#cs1.findDouble('inner radius').setValue(0.1) # Crashes
-#cs1.findDouble('inner radius').setValue(-0.1) # Complains bitterly
-cs1.findDouble('inner radius').setValue(0.2) # Actually works
+cs1.findAsDouble('radius').setValue(1.)
+#cs1.findAsDouble('inner radius').setValue(0.1) # Crashes
+#cs1.findAsDouble('inner radius').setValue(-0.1) # Complains bitterly
+cs1.findAsDouble('inner radius').setValue(0.2) # Actually works
 
 # CGM's OCC backend apparently does not pay attention to
 # the sphere center parameters:
-cs1.findDouble('center').setValue(0, 0.2)
-cs1.findDouble('center').setValue(1, 0.2)
-cs1.findDouble('center').setValue(2, 0.2)
+cs1.findAsDouble('center').setValue(0, 0.2)
+cs1.findAsDouble('center').setValue(1, 0.2)
+cs1.findAsDouble('center').setValue(2, 0.2)
 
 res = cs1.operate()
 sph = res.findModelEntity('bodies').value(0)
 
 cs2 = sess.op('create sphere')
-cs2.findDouble('radius').setValue(0.5)
+cs2.findAsDouble('radius').setValue(0.5)
 res2 = cs2.operate()
 sph2 = res2.findModelEntity('bodies').value(0)
 
