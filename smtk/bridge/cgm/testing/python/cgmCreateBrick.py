@@ -1,8 +1,4 @@
 #!/usr/bin/python
-import sys
-sys.path.append('/Users/dcthomp/Build/SMTK/public')
-sys.path.append('/Users/dcthomp/Build/SMTK/public/lib')
-print "Appended"
 #=============================================================================
 #
 #  Copyright (c) Kitware, Inc.
