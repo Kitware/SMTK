@@ -30,8 +30,8 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-} // namespace cgm
-  } //namespace bridge
+    } // namespace cgm
+  } // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_cgm_CreateSphereOperator_h

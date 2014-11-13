@@ -34,7 +34,7 @@ protected:
   virtual smtk::model::OperatorResult operateInternal();
 };
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk
 

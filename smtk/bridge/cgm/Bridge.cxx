@@ -950,7 +950,7 @@ bool Bridge::addNamesIfAny(smtk::model::Cursor& cursor, RefEntity* cgmEnt)
 
 /**\brief Assign an RGBA color to \a uid base on \a colorIndex.
   *
-  * Cubit only provides 16 colors. Wah.
+  * Cubit only provides 17 colors. Wah.
   */
 void Bridge::colorPropFromIndex(
   smtk::model::Cursor& cursor, int colorIndex)

@@ -44,8 +44,8 @@ public:
   static bool shutdown();
 };
 
-} // namespace cgm
-  } //namespace bridge
+    } // namespace cgm
+  } // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_cgm_Engines_h

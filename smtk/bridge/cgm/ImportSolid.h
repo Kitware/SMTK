@@ -37,8 +37,8 @@ public:
     smtk::model::ManagerPtr manager);
 };
 
-} // namespace cgm
-  } //namespace bridge
+    } // namespace cgm
+  } // namespace bridge
 } // namespace smtk
 
 #endif // __smtk_bridge_cgm_ImportSolid_h
