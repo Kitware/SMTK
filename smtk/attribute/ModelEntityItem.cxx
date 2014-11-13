@@ -89,14 +89,21 @@ bool ModelEntityItem::setNumberOfValues(std::size_t newSize)
     return true;
     }
 
-  //Next - are we allowed to change the number of values?
+  // Next - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
+  if (!def->isExtensible())
+    return false; // You may not resize.
+
+  // Next - are we within the prescribed limits?
   std::size_t n = def->numberOfRequiredValues();
-  if (n)
-    {
-    return false; // The number of values is fixed
-    }
+  if (newSize < n)
+    return false; // The number of values requested is too small.
+
+  n = def->maxNumberOfValues();
+  if (n > 0 && newSize > n)
+    return false; // The number of values requested is too large.
+
   this->m_values.resize(newSize);
   return true;
 }

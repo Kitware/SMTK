@@ -12,6 +12,7 @@ set(cgmSrcs
   CreateBrickOperator.cxx
   CreateCylinderOperator.cxx
   CreateEdgeOperator.cxx
+  CreateFaceOperator.cxx
   CreatePrismOperator.cxx
   CreateSphereOperator.cxx
   CreateVertexOperator.cxx
@@ -30,6 +31,7 @@ set(cgmHeaders
   CreateBrickOperator.h
   CreateCylinderOperator.h
   CreateEdgeOperator.h
+  CreateFaceOperator.h
   CreatePrismOperator.h
   CreateSphereOperator.h
   CreateVertexOperator.h
@@ -82,6 +84,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateBrickOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateCylinderOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgeOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateFaceOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreatePrismOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateVertexOperator.sbt" cgmOperatorXML)

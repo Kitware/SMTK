@@ -33,7 +33,7 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
-#include "RefVertex.hpp"
+#include "RefEdge.hpp"
 #include "RefFace.hpp"
 
 #include "smtk/bridge/cgm/CreateFaceOperator_xml.h"
@@ -50,47 +50,46 @@ bool CreateFaceOperator::ableToOperate()
 
 smtk::model::OperatorResult CreateFaceOperator::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr verticesItem =
-    this->findModelEntity("vertices");
-  smtk::attribute::DoubleItem::Ptr pointItem =
-    this->findDouble("point");
-  smtk::attribute::IntItem::Ptr curveTypeItem =
-    this->findInt("curve type");
+  smtk::attribute::ModelEntityItem::Ptr edgesItem =
+    this->findModelEntity("edges");
+  smtk::attribute::IntItem::Ptr surfTypeItem =
+    this->findInt("surface type");
   smtk::attribute::IntItem::Ptr colorItem =
     this->findInt("color");
 
   int color = colorItem->value();
-  CubitVector point(
-    pointItem->value(0),
-    pointItem->value(1),
-    pointItem->value(2));
-  GeometryType curveType = static_cast<GeometryType>(
-    curveTypeItem->concreteDefinition()->discreteValue(
-      curveTypeItem->discreteIndex()));
-  switch (curveType)
+  GeometryType surfType = static_cast<GeometryType>(
+    surfTypeItem->concreteDefinition()->discreteValue(
+      surfTypeItem->discreteIndex()));
+  switch (surfType)
     {
-  case STRAIGHT_CURVE_TYPE: //    intermediate_point_ptr  is not used
-  case PARABOLA_CURVE_TYPE: //    intermediate_point_ptr is the tip of the parabola
-  case HYPERBOLA_CURVE_TYPE: //    intermediate_point_ptr is the center of its two foci
-  case ELLIPSE_CURVE_TYPE:
-    //    intermediate_point_ptr is the center of the ellipse
-    //    the two points are vertices, one gives the major radius,
-    //    the other point gives the minor radius.
-  case ARC_CURVE_TYPE: //    arc passes three points
+  case PLANE_SURFACE_TYPE:
+  case BEST_FIT_SURFACE_TYPE:
     break;
   default:
-    std::cerr << "Bad curve type " << curveType << "\n";
+    std::cerr << "Bad surf type " << surfType << "\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  RefVertex* v0 = this->cgmEntityAs<RefVertex*>(verticesItem->value(0));
-  RefVertex* v1 = this->cgmEntityAs<RefVertex*>(verticesItem->value(1));
-  if (!v0 || !v1)
+  DLIList<RefEdge*> edgeList;
+  for (std::size_t i = 0; i < edgesItem->numberOfValues(); ++i)
     {
-    std::cerr << "One or more vertices were invalid " << v0 << ", " << v1 << "\n";
+    RefEdge* edg = this->cgmEntityAs<RefEdge*>(edgesItem->value(i));
+    if (!edg)
+      {
+      std::cerr << "One or more edges were invalid " << edgesItem->value(i).name() << "\n";
+      return this->createResult(smtk::model::OPERATION_FAILED);
+      }
+    edgeList.push(edg);
+    }
+  if (edgeList.size() <= 0)
+    {
+    std::cerr << "No edges provided.\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  RefFace* cgmFace = GeometryModifyTool::instance()->make_RefFace(curveType, v0, v1, &point);
+  bool isFree = true;
+  bool checkEdges = true;
+  RefFace* cgmFace = GeometryModifyTool::instance()->make_RefFace(surfType, edgeList, isFree, NULL, checkEdges);
   if (!cgmFace)
     {
     std::cerr << "Failed to create face\n";

@@ -600,6 +600,16 @@ void XmlV1StringWriter::processModelEntityDef(pugi::xml_node& node,
 
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
+
+  bool ext = idef->isExtensible();
+  if (ext)
+    {
+    node.append_attribute("Extensible") = true;
+    unsigned int mx = static_cast<unsigned int>(idef->maxNumberOfValues());
+    if (mx > 0)
+      node.append_attribute("MaxNumberOfValues") = mx;
+    }
+
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();

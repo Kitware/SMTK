@@ -47,6 +47,12 @@ public:
   std::size_t numberOfRequiredValues() const;
   void setNumberOfRequiredValues(std::size_t esize);
 
+  bool isExtensible() const { return this->m_isExtensible; }
+  void setIsExtensible(bool extensible) { this->m_isExtensible = extensible; }
+
+  std::size_t maxNumberOfValues() const { return this->m_maxNumberOfValues; }
+  void setMaxNumberOfValues(std::size_t maxNum);
+
   bool hasValueLabels() const;
   std::string valueLabel(std::size_t element) const;
   void setValueLabel(std::size_t element, const std::string &elabel);
@@ -61,7 +67,9 @@ protected:
   smtk::model::BitFlags m_membershipMask;
   bool m_useCommonLabel;
   std::vector<std::string> m_valueLabels;
+  bool m_isExtensible;
   std::size_t m_numberOfRequiredValues;
+  std::size_t m_maxNumberOfValues;
 };
 
   } // namespace attribute
