@@ -249,6 +249,7 @@
   <suppress-warning text="skipping function 'smtk::model::EntityListPhrase::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::EntityListPhrase::SelfType&gt;'"/>
   <suppress-warning text="skipping field 'DescriptivePhrase::m_delegate' with unmatched type 'smtk::shared_ptr&lt;SubphraseGenerator&gt;'"/>
   <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::setValue', unmatched parameter type 'size_t'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ValueItemTemplate::concreteDefinition', unmatched return type 'shared_ptr&lt;const smtk::attribute::ValueItemTemplate&lt;DataT&gt;::DefType&gt;"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::propertiesOfPropertyList', unmatched parameter type 'smtk::model::PropertyListPhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SubphraseGenerator::cellOfUse', unmatched parameter type 'smtk::model::DescriptivePhrase::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::model::SimpleModelSubphrases::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::model::SimpleModelSubphrases::SelfType&gt;'"/>

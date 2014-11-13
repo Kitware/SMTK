@@ -45,7 +45,7 @@
             </Structure>
           </DiscreteInfo>
         </Int>
-        <ModelEntity Name="vertices" NumberOfRequireValues="2">
+        <ModelEntity Name="vertices" NumberOfRequiredValues="2">
           <BriefDescription>Two pre-existing model vertices.</BriefDescription>
         </ModelEntity>
         <Int Name="color" NumberOfRequiredValues="1">

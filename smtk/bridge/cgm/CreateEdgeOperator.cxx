@@ -33,6 +33,7 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
+#include "RefVertex.hpp"
 #include "RefEdge.hpp"
 
 #include "smtk/bridge/cgm/CreateEdgeOperator_xml.h"
@@ -50,20 +51,22 @@ bool CreateEdgeOperator::ableToOperate()
 smtk::model::OperatorResult CreateEdgeOperator::operateInternal()
 {
   smtk::attribute::ModelEntityItem::Ptr verticesItem =
-    this->specification()->findModelEntity("vertices");
+    this->findModelEntity("vertices");
   smtk::attribute::DoubleItem::Ptr pointItem =
-    this->specification()->findDouble("point");
+    this->findDouble("point");
   smtk::attribute::IntItem::Ptr curveTypeItem =
-    this->specification()->findInt("curve type");
+    this->findInt("curve type");
   smtk::attribute::IntItem::Ptr colorItem =
-    this->specification()->findInt("color");
+    this->findInt("color");
 
   int color = colorItem->value();
   CubitVector point(
     pointItem->value(0),
     pointItem->value(1),
     pointItem->value(2));
-  GeometryType curveType = static_cast<GeometryType>(curveTypeItem->value());
+  GeometryType curveType = static_cast<GeometryType>(
+    curveTypeItem->concreteDefinition()->discreteValue(
+      curveTypeItem->discreteIndex()));
   switch (curveType)
     {
   case STRAIGHT_CURVE_TYPE: //    intermediate_point_ptr  is not used
@@ -87,7 +90,7 @@ smtk::model::OperatorResult CreateEdgeOperator::operateInternal()
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  RefEdge* cgmEdge = GeometryModifyTool::instance()->make_RefEdge(curveType, v0, v1, point);
+  RefEdge* cgmEdge = GeometryModifyTool::instance()->make_RefEdge(curveType, v0, v1, &point);
   if (!cgmEdge)
     {
     std::cerr << "Failed to create edge\n";
