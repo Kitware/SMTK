@@ -10,6 +10,7 @@
 #include "smtk/model/Cursor.h"
 
 #include "smtk/model/CursorArrangementOps.h"
+#include "smtk/model/DefaultBridge.h"
 #include "smtk/model/Entity.h"
 #include "smtk/model/Events.h"
 #include "smtk/model/Manager.h"
@@ -142,7 +143,15 @@ std::string Cursor::flagSummary(int form) const
         {
         Bridge::Ptr brdg = this->m_manager->findBridgeSession(this->m_entity);
         if (brdg)
-          summary << brdg->name() << " ";
+          {
+          // if this is a DefaultBridge and there is a remote bridge name, display that;
+          // otherwise, show the local bridge name.
+          DefaultBridgePtr defaultBr = smtk::dynamic_pointer_cast<DefaultBridge>(brdg);
+          if(defaultBr && !defaultBr->remoteName().empty())
+            summary << defaultBr->remoteName() << " ";
+          else
+            summary << brdg->name() << " ";
+          }
         }
       summary << ent->flagSummary(form);
       return summary.str();
