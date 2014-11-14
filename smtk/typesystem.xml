@@ -824,7 +824,8 @@
       signature="find(const std::string &amp;)" static="no"
       return-type="smtk::shared_ptr&lt; smtk::attribute::Item &gt;">
       <inject-code>
-        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result = %CPPSELF->get()->find(%1, smtk::attribute::ALL_CHILDREN);
+        smtk::shared_ptr&lt; smtk::attribute::Item &gt; result =
+          %CPPSELF->get()->find(%1, smtk::attribute::ACTIVE_CHILDREN);
         %PYARG_0 = %CONVERTTOPYTHON[ smtk::shared_ptr&lt; smtk::attribute::Item &gt; ](result);
       </inject-code>
     </add-function>
