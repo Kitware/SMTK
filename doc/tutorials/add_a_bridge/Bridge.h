@@ -48,6 +48,7 @@ struct EntityHandle {
 class Bridge : public smtk::model::Bridge
 {
 public:
+  // This is required of every bridge:
   smtkDeclareModelingKernel();
   typedef smtk::shared_ptr<Bridge> Ptr;
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
@@ -55,9 +56,11 @@ public:
   virtual ~Bridge();
   virtual BridgedInfoBits allSupportedInformation() const;
 
+  // These are specific to each bridge but required in some form:
   EntityHandle toEntity(const smtk::model::Cursor& eid);
   smtk::model::Cursor toCursor(const EntityHandle& ent);
 
+  // These methods may be provided as needed.
   static int staticSetup(
     const std::string& optName,
     const smtk::model::StringList& optVal);
@@ -68,6 +71,7 @@ public:
 protected:
   Bridge();
 
+  // This is required of every bridge:
   virtual BridgedInfoBits transcribeInternal(
     const smtk::model::Cursor& entity,
     BridgedInfoBits requestedInfo);
