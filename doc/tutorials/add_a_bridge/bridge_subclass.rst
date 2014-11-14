@@ -8,8 +8,19 @@
 Creating a bridge subclass
 **************************
 
+Bridges exist to link foreign modeling entities to SMTK
+modeling entities, in a bidirectional way:
+
+* we *transcribe* foreign modeling entities into an SMTK model manager, and
+* we perform *operations* in SMTK that make changes in the foreign modeling
+  kernel (and then result in more transcriptions to update SMTK's model manager).
+
+Only the first of these is needed for read-only access so we will cover it
+first and then describe the interactions between bridges and operators.
+Implementing operators is the topic of another tutorial.
+
 The first thing you must do when creating your own bridge is
-implement a subclass of :smtk:`smtk::model::Bridge`:
+to implement a subclass of :smtk:`smtk::model::Bridge`:
 
 .. literalinclude:: Bridge.h
    :start-after: // ++ 1 ++
