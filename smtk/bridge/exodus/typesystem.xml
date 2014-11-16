@@ -5,10 +5,23 @@
 
   <!-- Ignore Shiboken notice that Exodus lives inside SMTK namespace -->
   <suppress-warning text="Duplicate type entry: 'smtk'"/>
+  <suppress-warning text="namespace 'detail' does not have a type entry"/>
 
   <!-- Ignore methods that refer directly to Exodus pointers -->
 
   <!-- Ignore Exodus-specific enums -->
+
+  <!-- Ignore Exodus-specific enums -->
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::EntityHandle::EntityHandle', unmatched parameter type 'vtkIdType'"/>
+  <suppress-warning text="skipping field 'EntityHandle::entityId' with unmatched type 'vtkIdType'"/>
+  <suppress-warning text="skipping field 'Bridge::m_models' with unmatched type 'std::vector&lt;vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::toBlock', unmatched return type 'T*'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::exodus::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::addModel', unmatched parameter type 'vtkSmartPointer&lt;vtkMultiBlockDataSet&gt;&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::exodus::Bridge::SMTK_UUID_KEY', unmatched return type 'vtkInformationStringKey*'"/>
+
 
   <!-- Additional objects to be wrapped when building with Exodus -->
   <namespace-type name="smtk" generate = "no">

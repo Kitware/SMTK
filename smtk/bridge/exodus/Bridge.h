@@ -18,10 +18,10 @@
 
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
+#include "vtkSmartPointer.h"
 
 #include <map>
-
-class vtkUnstructuredGrid;
+#include <vector>
 
 namespace smtk {
   namespace bridge {
@@ -31,16 +31,39 @@ namespace smtk {
 /// The types of entities in an Exodus "model"
 enum EntityType
 {
-  EXO_BLOCK,        // Exodus blocks are groups of cells
-  EXO_SIDE_SET,     // Exodus side sets are groups of cell boundaries
-  EXO_NODE_SET      // Exodus node sets are groups of points
+  EXO_MODEL,        //!< An entire Exodus dataset (file)
+  EXO_BLOCK,        //!< Exodus blocks are groups of cells inside a dataset.
+  EXO_SIDE_SET,     //!< Exodus side sets are groups of cell boundaries.
+  EXO_NODE_SET,     //!< Exodus node sets are groups of points.
+
+  EXO_INVALID       //!< The handle is invalid
 };
 
 /// A "handle" for a VTK entity (point, cell, property, etc.)
-struct EntityHandle {
-  EntityType entityType;   //!< Describes the type of entity
-  int entityRelation;      //!< A modifier for the entity type (to select an array or boundary)
-  vtkIdType entityId;      //!< The offset in the array of entities describing this entity.
+struct EntityHandle
+{
+  int modelNumber;         //!< An offset in the vector of models (m_models).
+  EntityType entityType;   //!< Describes the type of entity.
+  vtkIdType entityId;      //!< The offset in the array of a model's blocks describing this entity.
+
+  EntityHandle()
+    : modelNumber(-1), entityType(EXO_INVALID), entityId(-1)
+    { }
+
+  EntityHandle(EntityType etyp, int emod, vtkIdType eid)
+    : modelNumber(emod), entityType(etyp), entityId(eid)
+    { }
+
+  bool isValid() const
+    { return this->entityType != EXO_INVALID && this->modelNumber >= 0; }
+
+  EntityHandle parent() const
+    {
+    return
+      (this->entityType == EXO_MODEL || this->entityType == EXO_INVALID) ?
+      EntityHandle() :
+      EntityHandle(EXO_MODEL, this->modelNumber, -1);
+    }
 };
 // -- 2 --
 
@@ -50,20 +73,31 @@ struct EntityHandle {
 class Bridge : public smtk::model::Bridge
 {
 public:
+  typedef std::vector<vtkSmartPointer<vtkMultiBlockDataSet> > ModelVector_t;
+  typedef std::map<smtk::model::Cursor,EntityHandle> ReverseIdMap_t;
+
+  smtkTypeMacro(Bridge);
+  smtkCreateMacro(smtk::model::Bridge);
+  smtkSharedFromThisMacro(smtk::model::Bridge);
   smtkDeclareModelingKernel();
-  typedef smtk::shared_ptr<Bridge> Ptr;
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
-  static BridgePtr create();
   virtual ~Bridge();
   virtual BridgedInfoBits allSupportedInformation() const
-    { return BRIDGE_EVERYTHING; }
+    { return smtk::model::BRIDGE_EVERYTHING; }
 
   EntityHandle toEntity(const smtk::model::Cursor& eid);
   smtk::model::Cursor toCursor(const EntityHandle& ent);
 
+  smtk::model::ManagerPtr manager() { return this->m_manager; }
+  void setManager(smtk::model::ManagerPtr mgr) { this->m_manager = mgr; }
+
   static vtkInformationStringKey* SMTK_UUID_KEY();
 
+  smtk::model::ModelEntity addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
+
 protected:
+  friend class Operator;
+
   Bridge();
 
   virtual BridgedInfoBits transcribeInternal(
@@ -73,12 +107,13 @@ protected:
   template<typename T>
   T* toBlock(const EntityHandle& handle);
 
+  std::string toBlockName(const EntityHandle& handle) const;
+
   smtk::model::ManagerPtr m_manager;
   smtk::common::UUIDGenerator m_uuidGen;
-  vtkNew<vtkMultiBlockDataSet> m_model;
-  // std::map<EntityHandle,smtk::model::Cursor> m_fwdIdMap; // not needed; store UUID in field data.
-  typedef std::map<smtk::model::Cursor,EntityHandle> ReverseIdMap_t;
+  ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
+  // std::map<EntityHandle,smtk::model::Cursor> m_fwdIdMap; // not needed; store UUID in vtkInformation.
   // -- 1 --
 
   bool addTessellation(
@@ -93,12 +128,20 @@ private:
 template<typename T>
 T* Bridge::toBlock(const EntityHandle& handle)
 {
-  if (ent.entityId < 0)
+  if (
+    handle.entityType == EXO_INVALID ||
+    handle.entityId < 0 ||
+    handle.modelNumber < 0 ||
+    handle.modelNumber > static_cast<int>(this->m_models.size()))
     return NULL;
 
   int blockId = -1; // Where in the VTK dataset is the entity type data?
-  switch (ent.entityType)
+  switch (handle.entityType)
     {
+  case EXO_MODEL:
+    return dynamic_cast<T*>(
+      this->m_models[handle.modelNumber].GetPointer());
+    break;
   case EXO_BLOCK:    blockId = 0; break;
   case EXO_SIDE_SET: blockId = 4; break;
   case EXO_NODE_SET: blockId = 7; break;
@@ -107,10 +150,10 @@ T* Bridge::toBlock(const EntityHandle& handle)
     }
   vtkMultiBlockDataSet* typeSet =
     vtkMultiBlockDataSet::SafeDownCast(
-      this->m_model->GetBlock(blockId));
-  if (!typeSet || typeSet->GetNumberOfBlocks() >= ent.entityId)
+      this->m_models[handle.modelNumber]->GetBlock(blockId));
+  if (!typeSet || typeSet->GetNumberOfBlocks() >= handle.entityId)
     return NULL;
-  return dynamic_cast<T*>(typeSet->GetBlock(ent.entityId));
+  return dynamic_cast<T*>(typeSet->GetBlock(handle.entityId));
 }
 
 

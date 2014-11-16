@@ -27,6 +27,8 @@ target_link_libraries(SMTKBridgeExodus
     SMTKCore
   LINK_PRIVATE
     vtkIOExodus
+    vtkIOParallelExodus
+    vtkFiltersGeometry
     vtkCommonDataModel
     vtksys
 )
@@ -90,6 +92,8 @@ if (SMTK_ENABLE_TESTING)
   target_link_libraries(TestBuild_smtk_bridge_exodus
     LINK_PRIVATE
       vtkIOExodus
+      vtkIOParallelExodus
+      vtkFiltersGeometry
       vtkCommonDataModel
       vtksys
   )

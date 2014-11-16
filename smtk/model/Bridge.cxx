@@ -178,6 +178,8 @@ void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
 {
   if ((present & this->allSupportedInformation()) < this->allSupportedInformation())
     this->m_dangling[ent] = present;
+  else
+    this->m_dangling.erase(ent);
 }
 
 /** @name Operator Manager

@@ -27,11 +27,14 @@
 namespace smtk {
   namespace model {
 
+/// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
+typedef unsigned long BridgedInfoBits;
+
 class Bridge;
 class Cursor;
 class Operator;
 typedef std::map<smtk::common::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
-typedef std::map<smtk::model::Cursor,int> DanglingEntities;
+typedef std::map<smtk::model::Cursor,BridgedInfoBits> DanglingEntities;
 
 /**\brief Bit flags describing types of information bridged to Manager.
   *
@@ -63,9 +66,6 @@ enum BridgedInformation
   BRIDGE_PROPERTIES             = 0x00000070, //!< Transcribe all properties.
   BRIDGE_EVERYTHING             = 0x000000ff  //!< Transcribe all information about the entity.
 };
-
-/// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
-typedef unsigned long BridgedInfoBits;
 
 #ifndef SHIBOKEN_SKIP
 /**\brief Declare that a class implements a bridge to a solid modeling kernel.

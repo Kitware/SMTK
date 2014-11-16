@@ -1,13 +1,23 @@
 #include "Bridge.h"
 #include "Bridge_json.h"
 
+#include "smtk/model/Cursor.h"
+#include "smtk/model/GroupEntity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Tessellation.h"
+
 #include "vtkCellArray.h"
+#include "vtkGeometryFilter.h"
 #include "vtkInformation.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkInformationStringKey.h"
 #include "vtkPoints.h"
 #include "vtkPolyData.h"
 #include "vtkUnsignedIntArray.h"
+
+using namespace smtk::model;
+using namespace smtk::common;
 
 namespace smtk {
   namespace bridge {
@@ -23,6 +33,7 @@ enum smtkCellTessRole {
 
 Bridge::Bridge()
 {
+  this->initializeOperatorSystem(Bridge::s_operators);
 }
 
 Bridge::~Bridge()
@@ -30,7 +41,7 @@ Bridge::~Bridge()
 }
 
 /// Turn any valid cursor into an entity handle.
-EntityHandle toEntity(const smtk::model::Cursor& eid)
+EntityHandle Bridge::toEntity(const smtk::model::Cursor& eid)
 {
   ReverseIdMap_t::const_iterator it = this->m_revIdMap.find(eid);
   if (it == this->m_revIdMap.end())
@@ -38,7 +49,7 @@ EntityHandle toEntity(const smtk::model::Cursor& eid)
   return it->second;
 }
 
-smtk::model::Cursor toCursor(const EntityHandle& ent)
+smtk::model::Cursor Bridge::toCursor(const EntityHandle& ent)
 {
   vtkDataObject* entData = this->toBlock<vtkDataObject>(ent);
   if (!entData)
@@ -58,18 +69,139 @@ smtk::model::Cursor toCursor(const EntityHandle& ent)
   return Cursor(this->m_manager, uid);
 }
 
+/// Add the dataset and its blocks to the bridge.
+smtk::model::ModelEntity Bridge::addModel(
+  vtkSmartPointer<vtkMultiBlockDataSet>& model)
+{
+  EntityHandle handle;
+  handle.modelNumber = static_cast<int>(this->m_models.size());
+  handle.entityType = EXO_MODEL;
+  handle.entityId = -1; // unused for EXO_MODEL.
+  this->m_models.push_back(model);
+  smtk::model::ModelEntity result = this->toCursor(handle);
+  this->transcribe(result, smtk::model::BRIDGE_EVERYTHING);
+  this->manager()->setBridgeForModel(shared_from_this(), result.entity());
+  return result;
+}
+
 BridgedInfoBits Bridge::transcribeInternal(
   const smtk::model::Cursor& entity,
   BridgedInfoBits requestedInfo)
 {
-  EntityHandle handle = this->toHandle(entity);
+  BridgedInfoBits actual = BRIDGE_NOTHING;
+  EntityHandle handle = this->toEntity(entity);
   if (!handle.isValid())
-    return BRIDGE_NOTHING;
+    return actual;
 
   vtkDataSet* obj = this->toBlock<vtkDataSet>(handle);
   if (!obj)
-    return BRIDGE_NOTHING;
+    return actual;
 
+  smtk::model::Cursor mutableCursor(entity);
+  if (!mutableCursor.isValid())
+    {
+    switch (handle.entityType)
+      {
+    case EXO_MODEL:
+      mutableCursor.manager()->insertModel(
+        mutableCursor.entity(), 3, 3);
+      break;
+    case EXO_BLOCK:
+      mutableCursor.manager()->insertGroup(
+        mutableCursor.entity(), MODEL_DOMAIN,
+        this->toBlockName(handle));
+      break;
+    case EXO_SIDE_SET:
+      mutableCursor.manager()->insertGroup(
+        mutableCursor.entity(), MODEL_BOUNDARY,
+        this->toBlockName(handle));
+      break;
+    case EXO_NODE_SET:
+      mutableCursor.manager()->insertGroup(
+        mutableCursor.entity(), MODEL_BOUNDARY,
+        this->toBlockName(handle));
+      break;
+    default:
+      return actual;
+      break;
+      }
+    actual |= smtk::model::BRIDGE_ENTITY_TYPE;
+    }
+  else
+    {
+    // If the entity is valid, is there any reason to refresh it?
+    // Perhaps we want additional information transcribed?
+    if (this->danglingEntities().find(mutableCursor) ==
+      this->danglingEntities().end())
+      return smtk::model::BRIDGE_EVERYTHING; // Not listed as dangling => everything transcribed already.
+    }
+
+  if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
+    {
+    //this->addRelations(mutableCursor, rels, requestedInfo, -1);
+    EntityHandle parentHandle = handle.parent();
+    if (parentHandle.isValid())
+      {
+      Cursor parentCursor = this->toCursor(parentHandle);
+      mutableCursor.findOrAddRawRelation(parentCursor);
+      if (!parentCursor.isValid())
+        {
+        this->declareDanglingEntity(parentCursor, 0);
+        this->transcribe(parentCursor, requestedInfo, true);
+        }
+      }
+    // Now add children.
+
+    actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+    }
+  if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+    {
+    // FIXME: Todo.
+    actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
+    }
+  if (requestedInfo & smtk::model::BRIDGE_TESSELLATION)
+    {
+    if (this->addTessellation(entity, handle))
+      actual |= smtk::model::BRIDGE_TESSELLATION;
+    }
+  if (requestedInfo & smtk::model::BRIDGE_PROPERTIES)
+    {
+    // Set properties.
+    actual |= smtk::model::BRIDGE_PROPERTIES;
+    }
+
+  this->declareDanglingEntity(mutableCursor, actual);
+  return actual;
+}
+
+/// Return the block name for the given handle.
+std::string Bridge::toBlockName(const EntityHandle& handle) const
+{
+  if (
+    handle.entityType == EXO_INVALID ||
+    handle.entityId < 0 ||
+    handle.modelNumber < 0 ||
+    handle.modelNumber > static_cast<int>(this->m_models.size()))
+    return NULL;
+
+  int blockId = -1; // Where in the VTK dataset is the entity type data?
+  switch (handle.entityType)
+    {
+  case EXO_MODEL:    return std::string(); break;
+  case EXO_BLOCK:    blockId = 0; break;
+  case EXO_SIDE_SET: blockId = 4; break;
+  case EXO_NODE_SET: blockId = 7; break;
+  default:
+    return std::string();
+    }
+  vtkMultiBlockDataSet* typeSet =
+    vtkMultiBlockDataSet::SafeDownCast(
+      this->m_models[handle.modelNumber]->GetBlock(blockId));
+  if (!typeSet || typeSet->GetNumberOfBlocks() >= handle.entityId)
+    return std::string();
+  return std::string(
+    typeSet->GetMetaData(handle.entityId)->Get(
+      vtkCompositeDataSet::NAME()));
 }
 
 // A method that helps convert vtkPolyData into an SMTK Tessellation.
@@ -141,11 +273,12 @@ static void AddCellsToTessellation(
 
 bool Bridge::addTessellation(
   const smtk::model::Cursor& cursor,
-  vtkDataObject* data)
+  const EntityHandle& handle)
 {
   if (cursor.hasTessellation())
     return true; // no need to recompute.
 
+  vtkDataObject* data = this->toBlock<vtkDataObject>(handle);
   if (!data)
     return false; // can't squeeze triangles from a NULL
 

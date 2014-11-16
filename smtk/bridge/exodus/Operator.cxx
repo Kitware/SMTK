@@ -10,6 +10,8 @@
 #include "smtk/bridge/exodus/Operator.h"
 #include "smtk/bridge/exodus/Bridge.h"
 
+#include "vtkDataObject.h"
+
 namespace smtk {
   namespace bridge {
     namespace exodus {
@@ -29,7 +31,7 @@ vtkDataObject* Operator::exodusData(const smtk::model::Cursor& smtkEntity)
   if (!brdg)
     return NULL;
 
-  return brdg->toObject<vtkDataObject>(brdg->toHandle(smtkEntity));
+  return brdg->toBlock<vtkDataObject>(brdg->toEntity(smtkEntity));
 }
 
     } // namespace exodus

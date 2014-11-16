@@ -17,6 +17,7 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
 
 #include "vtkExodusIIReader.h"
 
@@ -40,7 +41,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   std::string filetype = filetypeItem->value();
 
   vtkNew<vtkExodusIIReader> rdr;
-  rdr->SetFileName(filenameItem->value(0));
+  rdr->SetFileName(filenameItem->value(0).c_str());
   rdr->UpdateInformation();
   // Turn on all side and node sets.
   // Turn off all element blocks?
@@ -49,7 +50,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     vtkSmartPointer<vtkMultiBlockDataSet>::New();
   modelOut->ShallowCopy(
     vtkMultiBlockDataSet::SafeDownCast(
-      rdr->GetOutputDataObject()));
+      rdr->GetOutputDataObject(0)));
   Bridge* brdg = this->exodusBridge();
   smtk::model::ModelEntity smtkModelOut =
     brdg->addModel(modelOut);
