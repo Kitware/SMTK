@@ -90,7 +90,7 @@ int Bridge::transcribe(
     DanglingEntities::iterator it = this->m_dangling.find(entity);
     if (onlyDangling && it == this->m_dangling.end())
       { // The bridge has not been told that this UUID exists.
-      return retval;;
+      return retval;
       }
     // Ask the subclass to transcribe information.
     BridgedInfoBits actual = this->transcribeInternal(entity, requested);
@@ -99,10 +99,11 @@ int Bridge::transcribe(
     // ... and verify that all of those have been satisfied.
     retval = (honorable & actual) == honorable;
     // If transcription is complete, then remove the UUID from the dangling
-    // entity set:
+    // entity set. Note that we must refresh the iterator since transcribeInternal
+    // may have modified m_dangling.
     if (
       ((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
-      (it != this->m_dangling.end()))
+      ((it = this->m_dangling.find(entity)) != this->m_dangling.end()))
         this->m_dangling.erase(it);
     }
   return retval;
