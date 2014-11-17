@@ -321,9 +321,9 @@ void qtAssociationWidget::showEntityAssociation(
   smtk::model::Cursors allEntities;
   while(subs.size() > 0)
     {
+    allEntities.insert(subs[subs.size()-1]->relatedEntity());
     smtk::model::DescriptivePhrases nested_subs = subs[subs.size()-1]->subphrases();
     subs.insert(subs.begin(),nested_subs.begin(),nested_subs.end());
-    allEntities.insert(subs[0]->relatedEntity());
     subs.pop_back();
     }
 
@@ -339,6 +339,11 @@ void qtAssociationWidget::showEntityAssociation(
         { match = true; }
       if(attDef->associatesWithVolume() && i->isVolume())
         { match = true; }
+      if(attDef->associatesWithGroup() && i->isGroupEntity())
+        { match = true; }
+      if(attDef->associatesWithModel() && i->isModelEntity())
+        { match = true; }
+
 
       //only add this item if we haven't seen it already
       if(match && usedModelEnts.count(*i) == 0)
