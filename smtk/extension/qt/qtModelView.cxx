@@ -168,7 +168,8 @@ void qtModelView::selectionChanged (
   smtk::common::UUIDs ids;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    this->recursiveSelect(qmodel, sel, ids, CELL_ENTITY);
+    this->recursiveSelect(qmodel, sel, ids,
+      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
     }
 
   emit this->entitiesSelected(ids);
@@ -180,9 +181,10 @@ void qtModelView::recursiveSelect (
     smtk::common::UUIDs& ids, BitFlags entityFlags)
 {
   DescriptivePhrasePtr dPhrase = qmodel->getItem(sel);
-  if(dPhrase && (dPhrase->relatedEntity().entityFlags() & entityFlags) == entityFlags &&
-  ids.find(dPhrase->relatedEntityId()) == ids.end())
-    ids.insert(dPhrase->relatedEntityId());
+  if(dPhrase &&
+    (dPhrase->relatedEntity().entityFlags() & entityFlags) &&
+    ids.find(dPhrase->relatedEntityId()) == ids.end())
+      ids.insert(dPhrase->relatedEntityId());
 
   for (int row=0; row < qmodel->rowCount(sel); ++row)
     {
