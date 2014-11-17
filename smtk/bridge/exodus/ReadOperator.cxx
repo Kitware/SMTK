@@ -16,10 +16,14 @@
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
 
 #include "vtkExodusIIReader.h"
+
+using namespace smtk::model;
+using namespace smtk::common;
 
 namespace smtk {
   namespace bridge {
@@ -66,12 +70,40 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     brdg->addModel(modelOut);
 
   // Now set model for bridge and transcribe everything.
-
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels =
     result->findModelEntity("model");
   resultModels->setValue(smtkModelOut);
+
+  // The side and node sets now exist; go through
+  // and use the Exodus reader's private information
+  // to add property information.
+  GroupEntities groups = smtkModelOut.groups();
+  for (GroupEntities::iterator git = groups.begin(); git != groups.end(); ++git)
+    {
+    int oid;
+    EntityHandle handle = this->exodusHandle(*git);
+    switch (handle.entityType)
+      {
+    case EXO_BLOCK:
+      oid = rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, handle.entityId);
+      git->setStringProperty("exodus type", "element block");
+      break;
+    case EXO_NODE_SET:
+      oid = rdr->GetObjectId(vtkExodusIIReader::NODE_SET, handle.entityId);
+      git->setStringProperty("exodus type", "node set");
+      break;
+    case EXO_SIDE_SET:
+      oid = rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, handle.entityId);
+      git->setStringProperty("exodus type", "side set");
+      break;
+    case EXO_MODEL:
+    default:
+      continue; // skip
+      }
+    git->setIntegerProperty("exodus id", oid);
+    }
 
   return result;
 }

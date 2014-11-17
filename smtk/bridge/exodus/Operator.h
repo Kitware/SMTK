@@ -20,6 +20,7 @@ namespace smtk {
     namespace exodus {
 
 class Bridge;
+struct EntityHandle;
 
 /**\brief An operator using the Exodus "kernel."
   *
@@ -32,6 +33,7 @@ class SMTKBRIDGEEXODUS_EXPORT Operator : public smtk::model::Operator
 protected:
   Bridge* exodusBridge();
   vtkDataObject* exodusData(const smtk::model::Cursor& smtkEntity);
+  EntityHandle exodusHandle(const smtk::model::Cursor& smtkEntity);
 };
 
     } // namespace exodus
