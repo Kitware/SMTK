@@ -46,6 +46,10 @@ option(SMTK_BUILD_CGM "Build CGM component" OFF)
 option(SMTK_BUILD_DISCRETE_BRIDGE "Build discrete model bridge components" OFF)
 option(SMTK_BUILD_BRIDGE_PLUGIN "Build paraview plugin for model bridges" OFF)
 
+if (SMTK_BUILD_VTK)
+  option(SMTK_ENABLE_EXODUS_BRIDGE "Build a bridge to Exodus-II side sets" ON)
+endif()
+
 option(SMTK_ENABLE_REMUS "Build Remus component" OFF)
 option(SMTK_ENABLE_TESTING "Enable Testing" ON)
 option(SMTK_BUILD_PYTHON_WRAPPINGS "Build Python Wrappings using Shiboken" OFF)

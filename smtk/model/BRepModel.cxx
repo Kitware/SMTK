@@ -1325,6 +1325,9 @@ BridgePtr BRepModel::createAndRegisterBridge(
   BridgePtr result = BRepModel::createBridge(bname);
   if (result)
     {
+    Manager* mgr = dynamic_cast<Manager*>(this);
+    if (mgr)
+      result->setManager(mgr);
     if (bridgeSessionId)
       result->setSessionId(bridgeSessionId);
     this->registerBridgeSession(result);
@@ -1346,6 +1349,10 @@ bool BRepModel::registerBridgeSession(BridgePtr bridge)
   BRepModel::iter_type brec =
     this->setEntityOfTypeAndDimension(sessId, BRIDGE_SESSION, -1);
   (void)brec;
+
+  Manager* mgr = dynamic_cast<Manager*>(this);
+  if (mgr)
+    bridge->setManager(mgr);
   return true;
 }
 

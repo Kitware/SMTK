@@ -94,6 +94,14 @@ try:
     _temp = _tempmain
 
   try:
+    _tempexo = __import__('SMTKBridgeExodusPython', globals(), locals(), [], -1)
+    _temp = _tempexo
+    __import_shared_ptrs__()
+    btuple.append(('exodus', _tempexo.exodus))
+  finally:
+    _temp = _tempmain
+
+  try:
     _tempremote = __import__('SMTKRemotePython', globals(), locals(), [], -1)
     _temp = _tempremote
     __import_shared_ptrs__()

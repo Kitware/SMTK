@@ -10,6 +10,7 @@
 #include "smtk/model/Bridge.h"
 
 #include "smtk/model/BridgeIO.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -89,7 +90,7 @@ int Bridge::transcribe(
     DanglingEntities::iterator it = this->m_dangling.find(entity);
     if (onlyDangling && it == this->m_dangling.end())
       { // The bridge has not been told that this UUID exists.
-      return retval;;
+      return retval;
       }
     // Ask the subclass to transcribe information.
     BridgedInfoBits actual = this->transcribeInternal(entity, requested);
@@ -98,10 +99,11 @@ int Bridge::transcribe(
     // ... and verify that all of those have been satisfied.
     retval = (honorable & actual) == honorable;
     // If transcription is complete, then remove the UUID from the dangling
-    // entity set:
+    // entity set. Note that we must refresh the iterator since transcribeInternal
+    // may have modified m_dangling.
     if (
       ((actual & this->allSupportedInformation()) == this->allSupportedInformation()) &&
-      (it != this->m_dangling.end()))
+      ((it = this->m_dangling.find(entity)) != this->m_dangling.end()))
         this->m_dangling.erase(it);
     }
   return retval;
@@ -178,6 +180,8 @@ void Bridge::declareDanglingEntity(const Cursor& ent, BridgedInfoBits present)
 {
   if ((present & this->allSupportedInformation()) < this->allSupportedInformation())
     this->m_dangling[ent] = present;
+  else
+    this->m_dangling.erase(ent);
 }
 
 /** @name Operator Manager
@@ -211,6 +215,14 @@ int Bridge::setup(const std::string& optName, const StringList& optVal)
   return 0;
 }
 
+/// Return a reference to the manager that owns this Bridge.
+Manager::Ptr Bridge::manager() const
+{
+  return this->m_manager ?
+    this->m_manager->shared_from_this() :
+    Manager::Ptr();
+}
+
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
   *
   * Subclasses must override this method.
@@ -237,6 +249,12 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
 void Bridge::setSessionId(const smtk::common::UUID& sessId)
 {
   this->m_sessionId = sessId;
+}
+
+/// Inform this instance of the bridge that it is owned by \a mgr.
+void Bridge::setManager(Manager* mgr)
+{
+  this->m_manager = mgr;
 }
 
 /**\brief Subclasses must call this method from within their constructors.

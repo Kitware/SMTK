@@ -27,11 +27,14 @@
 namespace smtk {
   namespace model {
 
+/// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
+typedef unsigned long BridgedInfoBits;
+
 class Bridge;
 class Cursor;
 class Operator;
 typedef std::map<smtk::common::UUID,smtk::shared_ptr<Bridge> > UUIDsToBridges;
-typedef std::map<smtk::model::Cursor,int> DanglingEntities;
+typedef std::map<smtk::model::Cursor,BridgedInfoBits> DanglingEntities;
 
 /**\brief Bit flags describing types of information bridged to Manager.
   *
@@ -63,9 +66,6 @@ enum BridgedInformation
   BRIDGE_PROPERTIES             = 0x00000070, //!< Transcribe all properties.
   BRIDGE_EVERYTHING             = 0x000000ff  //!< Transcribe all information about the entity.
 };
-
-/// Bit-vector combinations of BridgedInformation values for requesting information to transcribe.
-typedef unsigned long BridgedInfoBits;
 
 #ifndef SHIBOKEN_SKIP
 /**\brief Declare that a class implements a bridge to a solid modeling kernel.
@@ -270,6 +270,8 @@ public:
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
+  ManagerPtr manager() const;
+
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;
@@ -281,6 +283,7 @@ protected:
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   void setSessionId(const smtk::common::UUID& sessId);
+  void setManager(Manager* mgr);
 
 #ifndef SHIBOKEN_SKIP
   void initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass = false);
@@ -293,6 +296,7 @@ protected:
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
   smtk::attribute::System* m_operatorSys;
+  Manager* m_manager;
 };
 
   } // namespace model

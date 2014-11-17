@@ -1,0 +1,12 @@
+{
+  "kernel": "exodus",
+  "engines": [
+    {
+      "name": "default",
+      "filetypes": [
+        ".exo (Exodus files)",
+        ".ex2 (Exodus-II files)"
+      ]
+    }
+  ]
+}
