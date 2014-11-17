@@ -44,7 +44,17 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   rdr->SetFileName(filenameItem->value(0).c_str());
   rdr->UpdateInformation();
   // Turn on all side and node sets.
-  // Turn off all element blocks?
+  vtkExodusIIReader::ObjectType set_types[] = {
+    vtkExodusIIReader::SIDE_SET,
+    vtkExodusIIReader::NODE_SET,
+    vtkExodusIIReader::ELEM_BLOCK
+  };
+  const int num_set_types = sizeof(set_types) / sizeof(set_types[0]);
+  for (int j = 0; j < num_set_types; ++j)
+    for (int i = 0; i < rdr->GetNumberOfObjects(set_types[j]); ++i)
+      rdr->SetObjectStatus(set_types[j], i, 1);
+
+  // Read in the data (so we can obtain tessellation info)
   rdr->Update();
   vtkSmartPointer<vtkMultiBlockDataSet> modelOut =
     vtkSmartPointer<vtkMultiBlockDataSet>::New();

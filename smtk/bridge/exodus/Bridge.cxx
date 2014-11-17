@@ -112,6 +112,7 @@ smtk::model::ModelEntity Bridge::addModel(
   handle.entityId = -1; // unused for EXO_MODEL.
   this->m_models.push_back(model);
   smtk::model::ModelEntity result = this->toCursor(handle);
+  this->m_revIdMap[result] = handle;
   this->transcribe(result, smtk::model::BRIDGE_EVERYTHING, false);
   this->manager()->setBridgeForModel(shared_from_this(), result.entity());
   return result;
@@ -126,7 +127,7 @@ BridgedInfoBits Bridge::transcribeInternal(
   if (!handle.isValid())
     return actual;
 
-  vtkDataSet* obj = this->toBlock<vtkDataSet>(handle);
+  vtkDataObject* obj = this->toBlock<vtkDataObject>(handle);
   if (!obj)
     return actual;
 
@@ -189,12 +190,13 @@ BridgedInfoBits Bridge::transcribeInternal(
     for (cit = children.begin(); cit != children.end(); ++cit)
       {
       Cursor childCursor = this->toCursor(*cit);
-      mutableCursor.findOrAddRawRelation(childCursor);
       if (!childCursor.isValid())
         {
+        this->m_revIdMap[childCursor] = *cit;
         this->declareDanglingEntity(childCursor, 0);
         this->transcribe(childCursor, requestedInfo, true);
         }
+      mutableCursor.as<smtk::model::ModelEntity>().addGroup(childCursor);
       }
 
     actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
@@ -242,7 +244,7 @@ std::string Bridge::toBlockName(const EntityHandle& handle) const
   vtkMultiBlockDataSet* typeSet =
     vtkMultiBlockDataSet::SafeDownCast(
       this->m_models[handle.modelNumber]->GetBlock(blockId));
-  if (!typeSet || typeSet->GetNumberOfBlocks() >= handle.entityId)
+  if (!typeSet || handle.entityId >= typeSet->GetNumberOfBlocks())
     return std::string();
   return std::string(
     typeSet->GetMetaData(handle.entityId)->Get(

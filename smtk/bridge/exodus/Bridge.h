@@ -42,16 +42,16 @@ enum EntityType
 /// A "handle" for a VTK entity (point, cell, property, etc.)
 struct EntityHandle
 {
-  int modelNumber;         //!< An offset in the vector of models (m_models).
   EntityType entityType;   //!< Describes the type of entity.
+  int modelNumber;         //!< An offset in the vector of models (m_models).
   vtkIdType entityId;      //!< The offset in the array of a model's blocks describing this entity.
 
   EntityHandle()
-    : modelNumber(-1), entityType(EXO_INVALID), entityId(-1)
+    : entityType(EXO_INVALID), modelNumber(-1), entityId(-1)
     { }
 
   EntityHandle(EntityType etyp, int emod, vtkIdType eid)
-    : modelNumber(emod), entityType(etyp), entityId(eid)
+    : entityType(etyp), modelNumber(emod), entityId(eid)
     { }
 
   bool isValid() const
@@ -149,7 +149,7 @@ T* Bridge::toBlock(const EntityHandle& handle)
   vtkMultiBlockDataSet* typeSet =
     vtkMultiBlockDataSet::SafeDownCast(
       this->m_models[handle.modelNumber]->GetBlock(blockId));
-  if (!typeSet || typeSet->GetNumberOfBlocks() >= handle.entityId)
+  if (!typeSet || handle.entityId >= typeSet->GetNumberOfBlocks())
     return NULL;
   return dynamic_cast<T*>(typeSet->GetBlock(handle.entityId));
 }
