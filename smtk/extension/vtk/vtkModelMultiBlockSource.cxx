@@ -10,6 +10,7 @@
 #include "smtk/extension/vtk/vtkModelMultiBlockSource.h"
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
@@ -254,7 +255,6 @@ void vtkModelMultiBlockSource::FindEntitiesWithTessellation(
 void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
   vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr manager)
 {
-  // TODO: how do we handle submodels in a multiblock dataset
   if(this->ModelEntityID && this->ModelEntityID[0])
     {
     smtk::common::UUID uid(this->ModelEntityID);
@@ -263,11 +263,14 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       entity.as<smtk::model::ModelEntity>() : entity.owningModel();
     if (modelEntity.isValid())
       {
+      // First, enumerate all free cells and their boundaries to
+      // find those which provide tessellations.
       smtk::model::Cursors cursors;
       CellEntities cellents = modelEntity.cells();
       this->FindEntitiesWithTessellation(cellents, cursors);
 
-      mbds->SetNumberOfBlocks(cursors.size());
+      GroupEntities groups = modelEntity.groups();
+      mbds->SetNumberOfBlocks(cursors.size() + groups.size());
       vtkIdType i;
       smtk::model::Cursors::iterator cit;
       for (i = 0, cit = cursors.begin(); cit != cursors.end(); ++cit, ++i)
@@ -277,9 +280,27 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         // Set the block name to the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
         this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit);
-//        std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
+        // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         this->UUID2BlockIdMap[(*cit).entity().toString()] = static_cast<unsigned int>(i);
         }
+
+      // Now look at groups of the model to see if those have any tessellation data
+      i = 0;
+      for (GroupEntities::iterator git = groups.begin(); git != groups.end(); ++git, ++i)
+        {
+        if (git->hasTessellation())
+          {
+          vtkNew<vtkPolyData> poly;
+          mbds->SetBlock(cursors.size() + i, poly.GetPointer());
+          mbds->GetMetaData(cursors.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
+          this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git);
+          this->UUID2BlockIdMap[git->entity().toString()] = static_cast<unsigned int>(cursors.size() + i);
+          }
+        }
+      // TODO: how do we handle submodels in a multiblock dataset? We could have
+      //       a cycle in the submodels, so treating them as trees would not work.
+      // Finally, if nothing has any tessellation information, see if any is associated
+      // with the model itself.
       }
     else
       {
