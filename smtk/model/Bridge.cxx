@@ -10,6 +10,7 @@
 #include "smtk/model/Bridge.h"
 
 #include "smtk/model/BridgeIO.h"
+#include "smtk/model/Manager.h"
 #include "smtk/model/RemoteOperator.h"
 
 #include "smtk/attribute/Attribute.h"
@@ -213,6 +214,14 @@ int Bridge::setup(const std::string& optName, const StringList& optVal)
   return 0;
 }
 
+/// Return a reference to the manager that owns this Bridge.
+Manager::Ptr Bridge::manager() const
+{
+  return this->m_manager ?
+    this->m_manager->shared_from_this() :
+    Manager::Ptr();
+}
+
 /**\brief Transcribe information requested by \a flags into \a entity from foreign modeler.
   *
   * Subclasses must override this method.
@@ -239,6 +248,12 @@ BridgedInfoBits Bridge::transcribeInternal(const Cursor& entity, BridgedInfoBits
 void Bridge::setSessionId(const smtk::common::UUID& sessId)
 {
   this->m_sessionId = sessId;
+}
+
+/// Inform this instance of the bridge that it is owned by \a mgr.
+void Bridge::setManager(Manager* mgr)
+{
+  this->m_manager = mgr;
 }
 
 /**\brief Subclasses must call this method from within their constructors.

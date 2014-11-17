@@ -270,6 +270,8 @@ public:
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
+  ManagerPtr manager() const;
+
 protected:
   friend class io::ExportJSON;
   friend class io::ImportJSON;
@@ -281,6 +283,7 @@ protected:
   virtual BridgedInfoBits transcribeInternal(const Cursor& entity, BridgedInfoBits flags);
 
   void setSessionId(const smtk::common::UUID& sessId);
+  void setManager(Manager* mgr);
 
 #ifndef SHIBOKEN_SKIP
   void initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass = false);
@@ -293,6 +296,7 @@ protected:
   DanglingEntities m_dangling;
   smtk::common::UUID m_sessionId;
   smtk::attribute::System* m_operatorSys;
+  Manager* m_manager;
 };
 
   } // namespace model

@@ -66,7 +66,7 @@ smtk::model::Cursor Bridge::toCursor(const EntityHandle& ent)
     {
     uid = smtk::common::UUID(uuidChar);
     }
-  return Cursor(this->m_manager, uid);
+  return Cursor(this->manager(), uid);
 }
 
 /// Add the dataset and its blocks to the bridge.
@@ -79,7 +79,7 @@ smtk::model::ModelEntity Bridge::addModel(
   handle.entityId = -1; // unused for EXO_MODEL.
   this->m_models.push_back(model);
   smtk::model::ModelEntity result = this->toCursor(handle);
-  this->transcribe(result, smtk::model::BRIDGE_EVERYTHING);
+  this->transcribe(result, smtk::model::BRIDGE_EVERYTHING, false);
   this->manager()->setBridgeForModel(shared_from_this(), result.entity());
   return result;
 }
@@ -179,7 +179,7 @@ std::string Bridge::toBlockName(const EntityHandle& handle) const
 {
   if (
     handle.entityType == EXO_INVALID ||
-    handle.entityId < 0 ||
+    (handle.entityType != EXO_MODEL && handle.entityId < 0) ||
     handle.modelNumber < 0 ||
     handle.modelNumber > static_cast<int>(this->m_models.size()))
     return NULL;

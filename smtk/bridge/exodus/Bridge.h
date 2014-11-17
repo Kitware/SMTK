@@ -88,9 +88,6 @@ public:
   EntityHandle toEntity(const smtk::model::Cursor& eid);
   smtk::model::Cursor toCursor(const EntityHandle& ent);
 
-  smtk::model::ManagerPtr manager() { return this->m_manager; }
-  void setManager(smtk::model::ManagerPtr mgr) { this->m_manager = mgr; }
-
   static vtkInformationStringKey* SMTK_UUID_KEY();
 
   smtk::model::ModelEntity addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
@@ -109,7 +106,6 @@ protected:
 
   std::string toBlockName(const EntityHandle& handle) const;
 
-  smtk::model::ManagerPtr m_manager;
   smtk::common::UUIDGenerator m_uuidGen;
   ModelVector_t m_models;
   ReverseIdMap_t m_revIdMap;
@@ -130,7 +126,7 @@ T* Bridge::toBlock(const EntityHandle& handle)
 {
   if (
     handle.entityType == EXO_INVALID ||
-    handle.entityId < 0 ||
+    (handle.entityType != EXO_MODEL && handle.entityId < 0) ||
     handle.modelNumber < 0 ||
     handle.modelNumber > static_cast<int>(this->m_models.size()))
     return NULL;
