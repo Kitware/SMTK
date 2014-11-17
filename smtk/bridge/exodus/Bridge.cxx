@@ -69,6 +69,39 @@ smtk::model::Cursor Bridge::toCursor(const EntityHandle& ent)
   return Cursor(this->manager(), uid);
 }
 
+std::vector<EntityHandle> Bridge::childrenOf(const EntityHandle& ent)
+{
+  std::vector<EntityHandle> children;
+  if (ent.entityType != EXO_MODEL)
+    return children; // element blocks, side sets, and node sets have no children (yet).
+
+  vtkMultiBlockDataSet* model = this->toBlock<vtkMultiBlockDataSet>(ent);
+  if (!model)
+    return children;
+
+  struct {
+    EntityType entityType;
+    int blockId;
+  } blocksByType[] = {
+    {EXO_BLOCK,    0},
+    {EXO_SIDE_SET, 4},
+    {EXO_NODE_SET, 7}
+  };
+  const int numBlocksByType =
+    sizeof(blocksByType) / sizeof(blocksByType[0]);
+  for (int i = 0; i < numBlocksByType; ++i)
+    {
+    vtkMultiBlockDataSet* typeSet =
+      dynamic_cast<vtkMultiBlockDataSet*>(
+        model->GetBlock(blocksByType[i].blockId));
+    if (!typeSet) continue;
+    for (unsigned j = 0; j < typeSet->GetNumberOfBlocks(); ++j)
+      children.push_back(
+        EntityHandle(blocksByType[i].entityType, ent.modelNumber, j));
+    }
+  return children;
+}
+
 /// Add the dataset and its blocks to the bridge.
 smtk::model::ModelEntity Bridge::addModel(
   vtkSmartPointer<vtkMultiBlockDataSet>& model)
@@ -151,6 +184,18 @@ BridgedInfoBits Bridge::transcribeInternal(
         }
       }
     // Now add children.
+    std::vector<EntityHandle> children = this->childrenOf(handle);
+    std::vector<EntityHandle>::iterator cit;
+    for (cit = children.begin(); cit != children.end(); ++cit)
+      {
+      Cursor childCursor = this->toCursor(*cit);
+      mutableCursor.findOrAddRawRelation(childCursor);
+      if (!childCursor.isValid())
+        {
+        this->declareDanglingEntity(childCursor, 0);
+        this->transcribe(childCursor, requestedInfo, true);
+        }
+      }
 
     actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
     }

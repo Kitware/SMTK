@@ -88,6 +88,8 @@ public:
   EntityHandle toEntity(const smtk::model::Cursor& eid);
   smtk::model::Cursor toCursor(const EntityHandle& ent);
 
+  std::vector<EntityHandle> childrenOf(const EntityHandle& ent);
+
   static vtkInformationStringKey* SMTK_UUID_KEY();
 
   smtk::model::ModelEntity addModel(vtkSmartPointer<vtkMultiBlockDataSet>& model);
