@@ -34,6 +34,18 @@ vtkDataObject* Operator::exodusData(const smtk::model::Cursor& smtkEntity)
   return brdg->toBlock<vtkDataObject>(brdg->toEntity(smtkEntity));
 }
 
+/**\brief A helper to return the Exodus handle associated with an \a smtkEntity.
+  *
+  */
+EntityHandle Operator::exodusHandle(const smtk::model::Cursor& smtkEntity)
+{
+  Bridge* brdg = this->exodusBridge();
+  if (!brdg)
+    return EntityHandle();
+
+  return brdg->toEntity(smtkEntity);
+}
+
     } // namespace exodus
   } //namespace bridge
 } // namespace smtk
