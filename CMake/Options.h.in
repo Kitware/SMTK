@@ -22,6 +22,10 @@
 // and vtkSMTKDiscreteModel library will exist.
 #cmakedefine SMTK_BUILD_DISCRETE_BRIDGE
 
+// Was SMTK built with exodus-II reader? If true,
+// the SMTKBridgeExodus library will exist.
+#cmakedefine SMTK_ENABLE_EXODUS_BRIDGE
+
 // Was SMTK built with moab reader? If true, the vtkDiscreteMoabReader
 // library will exist and smtkDiscreteBridge library will link against it.
 #cmakedefine SMTK_BUILD_MOAB_READER
