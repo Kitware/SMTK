@@ -983,13 +983,13 @@
              This allows us to change the return type to an array of pointers-to-cursors,
              which shiboken properly converts. -->
         <add-function signature="models()" static="no"
-          return-type="std::vector&lt;smtk::model::BridgeSession*&gt;">
+          return-type="std::vector&lt;smtk::model::ModelEntity*&gt;">
           <inject-code>
             smtk::model::ModelEntities tmp =
               %CPPSELF-&gt;models&lt;smtk::model::ModelEntities&gt;();
             %RETURN_TYPE %0;
             for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::BridgeSession(*it));
+              %0.push_back(new smtk::model::ModelEntity(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
