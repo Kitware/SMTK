@@ -65,7 +65,7 @@ namespace smtk {
 /// Default constructor.
 Bridge::Bridge()
 {
-  this->m_maxRelChordErr = 0.1; // fraction of longest edge.
+  this->m_maxRelChordErr = 0.01; // fraction of longest edge.
   this->m_maxAngleErr = 2.0; // maximum angle in degrees.
   this->initializeOperatorSystem(Bridge::s_operators);
   if (!Engines::areInitialized())
