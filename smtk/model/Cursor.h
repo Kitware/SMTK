@@ -51,7 +51,10 @@
         return true; \
         } \
       return false; \
-    }
+    } \
+  /* Required for shiboken: */ \
+  bool operator == (const Cursor& other) const \
+    { return this->superclass::operator == (other); }
 
 namespace smtk {
   namespace model {

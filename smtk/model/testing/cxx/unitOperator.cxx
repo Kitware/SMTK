@@ -169,7 +169,7 @@ void testImportOperators(Manager::Ptr manager)
 void testOperatorOutcomes(Manager::Ptr manager)
 {
   TestOutcomeOperator::Ptr op = smtk::dynamic_pointer_cast<TestOutcomeOperator>(
-    manager->bridgeForModel(smtk::common::UUID::null())->op("outcome test", manager));
+    manager->bridgeForModel(smtk::common::UUID::null())->op("outcome test"));
 
   int shouldCancel = 1;
   int numberOfFailedOperations = 0;

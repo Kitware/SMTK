@@ -90,7 +90,7 @@ void testOperator(ModelEntity model)
   // Ask the bridge to create an operator:
   ex::CounterOperator::Ptr op =
     smtk::dynamic_pointer_cast<ex::CounterOperator>(
-      bridge->op("counter", model.manager()));
+      bridge->op("counter"));
 
   op->ensureSpecification();
   smtk::attribute::ModelEntityItemPtr input =

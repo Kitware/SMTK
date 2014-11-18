@@ -833,7 +833,7 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   if (!pnode || cJSON_GetStringValue(pnode, oname))
     return 0;
 
-  op = bridge->op(oname, context);
+  op = bridge->op(oname);
   if (!op)
     return 0;
 

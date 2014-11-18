@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     std::cout << "  " << *it << "\n";
   std::cout << "\n";
 
-  smtk::model::OperatorPtr readOp = bridge->op("read", manager);
+  smtk::model::OperatorPtr readOp = bridge->op("read");
   if (!readOp)
     {
     std::cerr << "No read operator\n";

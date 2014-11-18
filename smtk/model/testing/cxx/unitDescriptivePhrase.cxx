@@ -50,7 +50,9 @@ int main(int argc, char* argv[])
     }
   sm->assignDefaultNames();
 
+  sm->bridgeForModel(UUID::null());
   BridgeSessions ents = sm->allSessions();
+  std::cout << ents.size() << " bridge sessions.\n";
   test(ents.size() == 1, "Expected a single bridge session.");
 
   // Assign all the models to the lone (default, native) session.

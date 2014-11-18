@@ -180,6 +180,35 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and FaceUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and InstanceEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ShellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and UseEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and CellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and GroupEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ModelEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and BridgeSession::operator==(const smtk::model::Cursor &amp; other) const"/>
 
   <!-- ignore sundry warnings associated with attribute/definition copy methods -->
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
