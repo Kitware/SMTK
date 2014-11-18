@@ -987,7 +987,7 @@
         <include file-name="smtk/model/Bridge.h" location="local"/>
       </enum-type>
 
-      <value-type name="BridgeSession">
+      <value-type name="BridgeSession" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/BridgeSession.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
@@ -1011,17 +1011,17 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
-      <value-type name="CellEntity">
+      <value-type name="CellEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Chain">
+      <value-type name="Chain" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Chain.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Cursor">
+      <value-type name="Cursor" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Cursor.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
@@ -1035,12 +1035,12 @@
         <modify-function signature="subphrases()" remove="all"/>
       </object-type>
 
-      <value-type name="Edge">
+      <value-type name="Edge" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Edge.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="EdgeUse">
+      <value-type name="EdgeUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
@@ -1069,17 +1069,17 @@
         </add-function>
       </object-type>
 
-      <value-type name="Face">
+      <value-type name="Face" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Face.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="FaceUse">
+      <value-type name="FaceUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/FaceUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="GroupEntity">
+      <value-type name="GroupEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/GroupEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <add-function signature="members()" static="no"
@@ -1094,17 +1094,17 @@
         </add-function>
       </value-type>
 
-      <value-type name="InstanceEntity">
+      <value-type name="InstanceEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/InstanceEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Loop">
+      <value-type name="Loop" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Loop.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ModelEntity">
+      <value-type name="ModelEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/ModelEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
@@ -1270,37 +1270,37 @@
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
-      <value-type name="Shell">
+      <value-type name="Shell" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Shell.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ShellEntity">
+      <value-type name="ShellEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/ShellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="UseEntity">
+      <value-type name="UseEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Vertex">
+      <value-type name="Vertex" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VertexUse">
+      <value-type name="VertexUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/VertexUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Volume">
+      <value-type name="Volume" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Volume.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VolumeUse">
+      <value-type name="VolumeUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/VolumeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>

@@ -17,6 +17,8 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
+#include <boost/functional/hash.hpp>
+
 #include <algorithm>
 
 namespace smtk {
@@ -883,6 +885,17 @@ bool Cursor::operator < (const Cursor& other) const
   return this->m_entity < other.m_entity;
 }
 
+/**\brief A hash function for cursors.
+  *
+  * This allows cursors to be put into sets in Python.
+  */
+std::size_t Cursor::hash() const
+{
+  std::size_t result = this->m_entity.hash();
+  boost::hash_combine(result, reinterpret_cast<std::size_t>(this->m_manager.get()));
+  return result;
+}
+
 ManagerEventRelationType Cursor::embeddingRelationType(const Cursor& embedded) const
 {
   ManagerEventRelationType reln = INVALID_RELATIONSHIP;
@@ -919,6 +932,11 @@ std::ostream& operator << (std::ostream& os, const Cursor& c)
 {
   os << c.name();
   return os;
+}
+
+std::size_t cursorHash(const Cursor& c)
+{
+  return c.hash();
 }
 
 /*! \fn template<typename T> T Cursor::relationsAs() const

@@ -9,6 +9,7 @@
 //=========================================================================
 #include "smtk/common/UUID.h"
 
+#include <boost/functional/hash.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
@@ -132,6 +133,13 @@ UUID& UUID::operator = (const UUID& other)
 UUID::operator bool () const
 {
   return this->isNull() ? false : true;
+}
+
+/// Return a hash of a UUID.
+std::size_t UUID::hash() const
+{
+  boost::hash<boost::uuids::uuid> uuid_hasher;
+  return uuid_hasher(this->m_data);
 }
 
 /// Write a UUID to a stream (as a string).

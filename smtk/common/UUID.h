@@ -75,6 +75,8 @@ public:
 
   operator bool() const;
 
+  std::size_t hash() const;
+
 protected:
   // Implemented using Boost's UUID library.
   boost::uuids::uuid m_data;
