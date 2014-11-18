@@ -851,6 +851,17 @@
         %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
       </inject-code>
     </modify-function>
+        <add-function signature="associatedEntities()"
+                      return-type="std::vector&lt;smtk::model::Cursor*&gt;" static="no">
+          <inject-code>
+            smtk::model::CursorArray tmp =
+              (*%CPPSELF)-&gt;associatedModelEntities&lt;smtk::model::CursorArray&gt;();
+            %RETURN_TYPE %0;
+            for (smtk::model::CursorArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::Cursor(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
