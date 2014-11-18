@@ -253,7 +253,7 @@ public:
   virtual BridgedInfoBits allSupportedInformation() const;
 
   StringList operatorNames() const;
-  virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
+  virtual OperatorPtr op(const std::string& opName) const;
 
   const DanglingEntities& danglingEntities() const;
   void declareDanglingEntity(const Cursor& ent, BridgedInfoBits present = 0);

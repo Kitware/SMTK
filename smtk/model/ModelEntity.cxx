@@ -119,7 +119,7 @@ ModelEntity& ModelEntity::removeSubmodel(const ModelEntity& m)
 /// Return an operator of the given \a opname with its Manager set to this model's.
 OperatorPtr ModelEntity::op(const std::string& opname) const
 {
-  return this->bridge()->op(opname, this->m_manager);
+  return this->bridge()->op(opname);
 }
 
 /*

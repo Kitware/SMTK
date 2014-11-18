@@ -74,14 +74,14 @@ std::string DefaultBridge::remoteName() const
   * 3. A friend class (such as ImportJSON) has called setImportingOperators(true)
   *    and not subsequently called setImportingOperators(false).
   */
-OperatorPtr DefaultBridge::op(const std::string& opName, ManagerPtr manager) const
+OperatorPtr DefaultBridge::op(const std::string& opName) const
 {
-  OperatorPtr oper = this->Bridge::op(opName, manager);
+  OperatorPtr oper = this->Bridge::op(opName);
   if (!oper && !this->m_remoteBridgeName.empty())
     { // we are a remote bridge... create any operator our friend classes ask for.
     RemoteOperatorPtr rop = RemoteOperator::create();
     rop->setName(opName);
-    rop->setManager(manager);
+    rop->setManager(this->manager());
     // Naughty, but necessary so we can pretend that the
     // operator existed all along.
     DefaultBridge* self = const_cast<DefaultBridge*>(this);

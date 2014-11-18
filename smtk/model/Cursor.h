@@ -51,7 +51,10 @@
         return true; \
         } \
       return false; \
-    }
+    } \
+  /* Required for shiboken: */ \
+  bool operator == (const Cursor& other) const \
+    { return this->superclass::operator == (other); }
 
 namespace smtk {
   namespace model {
@@ -214,6 +217,8 @@ public:
   bool operator == (const Cursor& other) const;
   bool operator < (const Cursor& other) const;
 
+  std::size_t hash() const;
+
 protected:
   ManagerPtr m_manager;
   smtk::common::UUID m_entity;
@@ -224,6 +229,8 @@ protected:
 };
 
 SMTKCORE_EXPORT std::ostream& operator << (std::ostream& os, const Cursor& c);
+
+SMTKCORE_EXPORT std::size_t cursorHash(const Cursor& c);
 
 template<typename T>
 T Cursor::relationsAs() const

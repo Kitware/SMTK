@@ -429,7 +429,7 @@ void qtModelView::operatorInvoked()
     return;
     }
   std::string opName = action->text().toStdString();
-  OperatorPtr brOp = bridge->op(opName, qmodel->manager());
+  OperatorPtr brOp = bridge->op(opName);
   if (!brOp)
     {
     std::cerr

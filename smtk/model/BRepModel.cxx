@@ -38,10 +38,8 @@ BRepModel::BRepModel() :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_defaultBridge(DefaultBridge::create()),
   m_globalCounters(2,1) // first entry is bridge counter, second is model counter
 {
-  this->registerBridgeSession(this->m_defaultBridge);
   // TODO: throw() when topology == NULL?
 }
 
@@ -54,16 +52,15 @@ BRepModel::BRepModel(shared_ptr<UUIDsToEntities> topo) :
   m_floatData(new UUIDsToFloatData),
   m_stringData(new UUIDsToStringData),
   m_integerData(new UUIDsToIntegerData),
-  m_defaultBridge(DefaultBridge::create()),
   m_globalCounters(2,1) // first entry is bridge counter, second is model counter
 {
-  this->registerBridgeSession(this->m_defaultBridge);
   // TODO: throw() when topology == NULL?
 }
 
 BRepModel::~BRepModel()
 {
-  this->unregisterBridgeSession(this->m_defaultBridge);
+  if (this->m_defaultBridge)
+    this->unregisterBridgeSession(this->m_defaultBridge);
 }
 
 UUIDsToEntities& BRepModel::topology()
@@ -1158,6 +1155,12 @@ BridgePtr BRepModel::bridgeForModel(const UUID& uid) const
     return it->second;
 
   // Nope? Return the default bridge.
+  if (!this->m_defaultBridge)
+    {
+    BRepModel* self = const_cast<BRepModel*>(this);
+    self->m_defaultBridge = smtk::model::DefaultBridge::create();
+    self->registerBridgeSession(self->m_defaultBridge);
+    }
   return this->m_defaultBridge;
 }
 

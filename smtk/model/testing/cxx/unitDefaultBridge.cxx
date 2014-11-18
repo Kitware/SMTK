@@ -173,7 +173,7 @@ protected:
 
   virtual bool ableToOperateDelegate(RemoteOperatorPtr oper)
     {
-    OperatorPtr remOp = remoteBridge->op(oper->name(), remoteModel);
+    OperatorPtr remOp = remoteBridge->op(oper->name());
     remOp->setSpecification(remoteBridge->operatorSystem()->copyAttribute(oper->specification()));
     return remOp->ableToOperate();
     }
@@ -181,7 +181,7 @@ protected:
   virtual OperatorResult operateDelegate(RemoteOperatorPtr localOp)
     {
     printParams(localOp->specification(), "local input");
-    OperatorPtr remOp = remoteBridge->op(localOp->name(), remoteModel);
+    OperatorPtr remOp = remoteBridge->op(localOp->name());
     remOp->setSpecification(remoteBridge->operatorSystem()->copyAttribute(localOp->specification()));
     OperatorResult remResult = remOp->operate();
     OperatorResult localResult = this->operatorSystem()->copyAttribute(remResult);
@@ -310,7 +310,7 @@ int main()
 
     // Run the local operator.
     // Examine the remote version to verify the operation was forwarded.
-    OperatorPtr localOp = localBridge->op("forwarding operator", localMgr);
+    OperatorPtr localOp = localBridge->op("forwarding operator");
     test(
       smtk::dynamic_pointer_cast<smtk::model::RemoteOperator>(localOp) ?
       true : false, "Local forwarding operator was not an instance of RemoteOperator.");

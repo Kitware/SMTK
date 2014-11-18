@@ -61,7 +61,7 @@ public:
     const std::string& remoteBridgeName,
     const smtk::common::UUID& bridgeSessionId);
   virtual std::string remoteName() const;
-  virtual OperatorPtr op(const std::string& opName, ManagerPtr manager) const;
+  virtual OperatorPtr op(const std::string& opName) const;
 
 protected:
   friend class RemoteOperator;

@@ -87,7 +87,7 @@ Operator::Ptr BridgeSession::op(const std::string& opName) const
   Bridge::Ptr brdg = this->bridge();
   if (!brdg)
     return Operator::Ptr();
-  return brdg->op(opName, this->m_manager);
+  return brdg->op(opName);
 }
 
 /**\brief Return operators that can be associated with the given entity flags.

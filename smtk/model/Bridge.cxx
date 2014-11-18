@@ -133,7 +133,7 @@ StringList Bridge::operatorNames() const
   return nameList;
 }
 
-OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
+OperatorPtr Bridge::op(const std::string& opName) const
 {
   OperatorPtr oper;
   if (opName.empty())
@@ -148,7 +148,7 @@ OperatorPtr Bridge::op(const std::string& opName, ManagerPtr manager) const
     return oper;
 
   oper->setBridge(const_cast<Bridge*>(this));
-  oper->setManager(manager);
+  oper->setManager(this->manager());
 
   RemoteOperator::Ptr remoteOp = smtk::dynamic_pointer_cast<RemoteOperator>(oper);
   if (remoteOp)

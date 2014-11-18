@@ -154,7 +154,7 @@ int main (int argc, char* argv[])
   Operator::Ptr op;
   OperatorResult result;
 
-  op = brg->op("create sphere", mgr);
+  op = brg->op("create sphere");
   op->findDouble("radius")->setValue(opts.sphereRadius());
   op->findDouble("center")->setValue(0,opts.sphereCenter()[0]);
   op->findDouble("center")->setValue(1,opts.sphereCenter()[1]);
@@ -168,7 +168,7 @@ int main (int argc, char* argv[])
     }
   ModelEntity sphere = result->findModelEntity("bodies")->value();
 
-  op = brg->op("create prism", mgr);
+  op = brg->op("create prism");
   op->findDouble("height")->setValue(opts.prismHeight());
   op->findInt("number of sides")->setValue(opts.prismNumber());
   op->findDouble("major radius")->setValue(opts.prismMajor());
@@ -191,7 +191,7 @@ int main (int argc, char* argv[])
   test(std::find(validOps.begin(), validOps.end(), "union") != validOps.end(),
     "Expected the union operator to be valid.");
 
-  op = brg->op("union", mgr);
+  op = brg->op("union");
   op->ensureSpecification();
   test(op->associateEntity(sphere), "Could not associate sphere to union operator");
   test(op->associateEntity(prism), "Could not associate prism to union operator");

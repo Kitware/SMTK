@@ -180,6 +180,35 @@
   <suppress-warning text="Shadowing: UseEntity::isValid() const and FaceUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VertexUse::isValid() const"/>
   <suppress-warning text="Shadowing: UseEntity::isValid() const and VolumeUse::isValid() const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and InstanceEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ShellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and EdgeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Vertex::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Edge::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and UseEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Face::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and Shell::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and CellEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Loop::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and GroupEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and FaceUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: UseEntity::operator==(const smtk::model::Cursor &amp; other) const and VolumeUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and ModelEntity::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: CellEntity::operator==(const smtk::model::Cursor &amp; other) const and Volume::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and VertexUse::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: ShellEntity::operator==(const smtk::model::Cursor &amp; other) const and Chain::operator==(const smtk::model::Cursor &amp; other) const"/>
+  <suppress-warning text="Shadowing: Cursor::operator==(const smtk::model::Cursor &amp; other) const and BridgeSession::operator==(const smtk::model::Cursor &amp; other) const"/>
 
   <!-- ignore sundry warnings associated with attribute/definition copy methods -->
   <suppress-warning text="skipping field 'CopyInfo::UnresolvedRefItems' with unmatched type 'std::queue&lt;std::pair&lt;std::string,smtk::attribute::ItemDefinitionPtr&gt;&gt;'" />
@@ -851,6 +880,17 @@
         %PYARG_0 = %CONVERTTOPYTHON[std::vector&lt;smtk::shared_ptr&lt;smtk::attribute::Item &gt; &gt;](_out);
       </inject-code>
     </modify-function>
+        <add-function signature="associatedEntities()"
+                      return-type="std::vector&lt;smtk::model::Cursor*&gt;" static="no">
+          <inject-code>
+            smtk::model::CursorArray tmp =
+              (*%CPPSELF)-&gt;associatedModelEntities&lt;smtk::model::CursorArray&gt;();
+            %RETURN_TYPE %0;
+            for (smtk::model::CursorArray::iterator it = tmp.begin(); it != tmp.end(); ++it)
+              %0.push_back(new smtk::model::Cursor(*it));
+            %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
+          </inject-code>
+        </add-function>
   </value-type>
 
   <value-type template="smtk::shared_ptr" args="smtk::attribute::Definition" />
@@ -976,20 +1016,20 @@
         <include file-name="smtk/model/Bridge.h" location="local"/>
       </enum-type>
 
-      <value-type name="BridgeSession">
+      <value-type name="BridgeSession" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/BridgeSession.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
              This allows us to change the return type to an array of pointers-to-cursors,
              which shiboken properly converts. -->
         <add-function signature="models()" static="no"
-          return-type="std::vector&lt;smtk::model::BridgeSession*&gt;">
+          return-type="std::vector&lt;smtk::model::ModelEntity*&gt;">
           <inject-code>
             smtk::model::ModelEntities tmp =
               %CPPSELF-&gt;models&lt;smtk::model::ModelEntities&gt;();
             %RETURN_TYPE %0;
             for (smtk::model::ModelEntities::iterator it = tmp.begin(); it != tmp.end(); ++it)
-              %0.push_back(new smtk::model::BridgeSession(*it));
+              %0.push_back(new smtk::model::ModelEntity(*it));
             %PYARG_0 = %CONVERTTOPYTHON[%RETURN_TYPE](%0);
           </inject-code>
         </add-function>
@@ -1000,17 +1040,17 @@
         <include file-name="smtk/model/ArrangementKind.h" location="local"/>
       </enum-type>
 
-      <value-type name="CellEntity">
+      <value-type name="CellEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/CellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Chain">
+      <value-type name="Chain" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Chain.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Cursor">
+      <value-type name="Cursor" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Cursor.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
@@ -1024,12 +1064,12 @@
         <modify-function signature="subphrases()" remove="all"/>
       </object-type>
 
-      <value-type name="Edge">
+      <value-type name="Edge" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Edge.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="EdgeUse">
+      <value-type name="EdgeUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/EdgeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
@@ -1058,17 +1098,17 @@
         </add-function>
       </object-type>
 
-      <value-type name="Face">
+      <value-type name="Face" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Face.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="FaceUse">
+      <value-type name="FaceUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/FaceUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="GroupEntity">
+      <value-type name="GroupEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/GroupEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <add-function signature="members()" static="no"
@@ -1083,17 +1123,17 @@
         </add-function>
       </value-type>
 
-      <value-type name="InstanceEntity">
+      <value-type name="InstanceEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/InstanceEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Loop">
+      <value-type name="Loop" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Loop.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ModelEntity">
+      <value-type name="ModelEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/ModelEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
         <!-- We can add, rather than modify, signatures by not making the methods const.
@@ -1259,37 +1299,37 @@
         <include file-name="smtk/model/Events.h" location="local"/>
       </enum-type>
 
-      <value-type name="Shell">
+      <value-type name="Shell" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Shell.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="ShellEntity">
+      <value-type name="ShellEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/ShellEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="UseEntity">
+      <value-type name="UseEntity" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/UseEntity.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Vertex">
+      <value-type name="Vertex" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Vertex.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VertexUse">
+      <value-type name="VertexUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/VertexUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="Volume">
+      <value-type name="Volume" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/Volume.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>
 
-      <value-type name="VolumeUse">
+      <value-type name="VolumeUse" hash-function="smtk::model::cursorHash">
         <include file-name="smtk/model/VolumeUse.h" location="local"/>
         <modify-function signature="isValid(smtk::model::Entity**) const" remove="all"/>
       </value-type>

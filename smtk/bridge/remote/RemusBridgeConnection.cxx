@@ -429,7 +429,7 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
     }
   std::cout << "Found bridge " << bridge->sessionId() << " (" << actualBridgeName << ")\n";
 
-  smtk::model::OperatorPtr readOp = bridge->op("read", this->m_modelMgr);
+  smtk::model::OperatorPtr readOp = bridge->op("read");
   if (!readOp)
     {
     std::cerr
