@@ -14,7 +14,14 @@
 #include "smtk/SystemConfig.h"
 #include "smtk/HashFunctor.h"
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wshadow"
+#endif
 #include <boost/uuid/uuid.hpp>
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include <iostream>
 #include <set>

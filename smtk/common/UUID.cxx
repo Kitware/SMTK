@@ -9,9 +9,16 @@
 //=========================================================================
 #include "smtk/common/UUID.h"
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wshadow"
+#endif
 #include <boost/functional/hash.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 namespace smtk {
   namespace common {

@@ -9,7 +9,14 @@
 //=========================================================================
 #include "smtk/common/UUIDGenerator.h"
 
+#ifndef _MSC_VER
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored"-Wshadow"
+#endif
 #include <boost/uuid/uuid_generators.hpp>
+#ifndef _MSC_VER
+#  pragma GCC diagnostic pop
+#endif
 
 #include <ctime> // for time()
 #include <stdlib.h> // for getenv()/_dupenv_s()
