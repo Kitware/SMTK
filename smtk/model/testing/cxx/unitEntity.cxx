@@ -128,7 +128,7 @@ void EntityNamesForForm(std::ostringstream& summaries, int form)
     ;
 }
 
-int main()
+int TestEntitySummary()
 {
   smtk::model::Integer cdata[] = {0, 0, 0, 0, 0, 0};
   smtk::model::IntegerList counters(cdata, cdata + sizeof(cdata)/sizeof(cdata[0]));
@@ -206,4 +206,141 @@ int main()
       << correct << "\n";
     }
   return ok ? 0 : 1;
+}
+
+int TestEntityIOSpecs()
+{
+  static struct {
+    std::string name;
+    BitFlags value;
+  } testToValValues[] = {
+    { "anydim",     smtk::model::ANY_DIMENSION },
+    { "bdy",        smtk::model::MODEL_BOUNDARY },
+    { "bridge",     smtk::model::BRIDGE_SESSION },
+    { "cell",       smtk::model::CELL_ENTITY },
+    { "chain",      smtk::model::CHAIN },
+    { "closed",     smtk::model::CLOSED },
+    { "cover",      smtk::model::COVER },
+    { "domain",     smtk::model::MODEL_DOMAIN },
+    { "edge",       smtk::model::EDGE },
+    { "edge_use",   smtk::model::EDGE_USE },
+    { "face",       smtk::model::FACE },
+    { "face_use",   smtk::model::FACE_USE },
+    { "flat",       smtk::model::NO_SUBGROUPS },
+    { "group",      smtk::model::GROUP_ENTITY },
+    { "homg",       smtk::model::HOMOGENOUS_GROUP },
+    { "instance",   smtk::model::INSTANCE_ENTITY },
+    { "invalid",    smtk::model::INVALID },
+    { "loop",       smtk::model::LOOP },
+    { "model",      smtk::model::MODEL_ENTITY },
+    { "nodim",      0 },
+    { "none",       0 },
+    { "open",       smtk::model::OPEN },
+    { "partition",  smtk::model::PARTITION },
+    { "shell",      smtk::model::SHELL_ENTITY },
+    { "shell2",     smtk::model::SHELL },
+    { "use",        smtk::model::USE_ENTITY },
+    { "vertex",     smtk::model::VERTEX },
+    { "vertex_use", smtk::model::VERTEX_USE },
+    { "volume",     smtk::model::VOLUME },
+    { "volume_use", smtk::model::VOLUME_USE },
+    { "none|0",     smtk::model::DIMENSION_0 },
+    { "none|1",     smtk::model::DIMENSION_1 },
+    { "none|2",     smtk::model::DIMENSION_2 },
+    { "none|3",     smtk::model::DIMENSION_3 },
+    { "none|4",     smtk::model::DIMENSION_4 },
+    { "none|410",   smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
+    { "none|104",   smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
+    { "none|12",    smtk::model::DIMENSION_1 | smtk::model::DIMENSION_2 },
+    { "cell|0",     smtk::model::VERTEX },
+    { "cell|1",     smtk::model::EDGE },
+    { "cell|2",     smtk::model::FACE },
+    { "cell|3",     smtk::model::VOLUME },
+    { "||3",        smtk::model::DIMENSION_3 },
+    { "|3|",        smtk::model::DIMENSION_3 },
+    { "none||",     0 },
+  };
+  static int numTestToValValues = sizeof(testToValValues) / sizeof(testToValValues[0]);
+  std::cout << "\nTesting Entity::specifierStringToFlag()\n\n";
+  for (int i = 0; i < numTestToValValues; ++i)
+    {
+    std::ostringstream msg;
+    BitFlags expected = testToValValues[i].value;
+    std::string testValue = testToValValues[i].name;
+    BitFlags result = Entity::specifierStringToFlag(testValue);
+    msg << "(" << testValue << ") -> \"" << std::ios_base::hex << result << " expected " << std::ios_base::hex << expected;
+    test(result == expected, msg.str());
+    }
+
+  static struct {
+    std::string name;
+    BitFlags value;
+  } testToSpecValues[] = {
+    { "none|anydim",           smtk::model::ANY_DIMENSION },
+    { "none|bdy|nodim",        smtk::model::MODEL_BOUNDARY },
+    { "bridge|nodim",          smtk::model::BRIDGE_SESSION },
+    { "cell|nodim",            smtk::model::CELL_ENTITY },
+    { "cell|anydim",           smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION },
+    { "chain",                 smtk::model::CHAIN },
+    { "none|closed|nodim",     smtk::model::CLOSED },
+    { "none|cover|nodim",      smtk::model::COVER },
+    { "none|domain|nodim",     smtk::model::MODEL_DOMAIN },
+    { "edge",                  smtk::model::EDGE },
+    { "edge_use",              smtk::model::EDGE_USE },
+    { "face",                  smtk::model::FACE },
+    { "face_use",              smtk::model::FACE_USE },
+    { "none|flat|nodim",       smtk::model::NO_SUBGROUPS },
+    { "group|nodim",           smtk::model::GROUP_ENTITY },
+    { "none|homg|nodim",       smtk::model::HOMOGENOUS_GROUP },
+    { "instance|nodim",        smtk::model::INSTANCE_ENTITY },
+    { "invalid",               smtk::model::INVALID },
+    { "loop",                  smtk::model::LOOP },
+    { "model|nodim",           smtk::model::MODEL_ENTITY },
+    { "none|nodim",            0 },
+    { "none|open|nodim",       smtk::model::OPEN },
+    { "none|partition|nodim",  smtk::model::PARTITION },
+    { "shell|nodim",           smtk::model::SHELL_ENTITY },
+    { "shell2",                smtk::model::SHELL },
+    { "use|nodim",             smtk::model::USE_ENTITY },
+    { "vertex",                smtk::model::VERTEX },
+    { "vertex_use",            smtk::model::VERTEX_USE },
+    { "volume",                smtk::model::VOLUME },
+    { "volume_use",            smtk::model::VOLUME_USE },
+    { "none|0",                smtk::model::DIMENSION_0 },
+    { "none|1",                smtk::model::DIMENSION_1 },
+    { "none|2",                smtk::model::DIMENSION_2 },
+    { "none|3",                smtk::model::DIMENSION_3 },
+    { "none|4",                smtk::model::DIMENSION_4 },
+    { "none|014",              smtk::model::DIMENSION_0 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_4 },
+    { "cell|open|0",           smtk::model::VERTEX | smtk::model::OPEN },
+  };
+  static int numTestToSpecValues = sizeof(testToSpecValues) / sizeof(testToSpecValues[0]);
+  std::cout << "\nTesting Entity::flagToSpecifierString()\n\n";
+  for (int i = 0; i < numTestToSpecValues; ++i)
+    {
+    std::ostringstream msg;
+    std::string expected = testToSpecValues[i].name;
+    BitFlags testValue = testToSpecValues[i].value;
+    std::string result = Entity::flagToSpecifierString(testValue);
+    msg << "(" << std::ios_base::hex << testValue << ") -> \"" << result << "\" expected \"" << expected << "\"";
+    test(result == expected, msg.str());
+    }
+  return 0;
+}
+
+int main()
+{
+  int status = 0;
+  try
+    {
+    status |= TestEntityIOSpecs();
+    }
+  catch (const std::string& msg)
+    {
+    status = 1;
+    }
+
+  status |= TestEntitySummary();
+
+  return status ? 1 : 0;
 }
