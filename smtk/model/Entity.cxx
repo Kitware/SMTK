@@ -592,6 +592,7 @@ static struct {
   { "3",          smtk::model::DIMENSION_3 },
   { "4",          smtk::model::DIMENSION_4 },
   { "anydim",     smtk::model::ANY_DIMENSION },
+  { "b",          smtk::model::BRIDGE_SESSION },
   { "bdy",        smtk::model::MODEL_BOUNDARY },
   { "bridge",     smtk::model::BRIDGE_SESSION },
   { "cell",       smtk::model::CELL_ENTITY },
@@ -599,29 +600,56 @@ static struct {
   { "closed",     smtk::model::CLOSED },
   { "cover",      smtk::model::COVER },
   { "domain",     smtk::model::MODEL_DOMAIN },
+  { "e",          smtk::model::EDGE }, // Backwards-compatibility
   { "edge",       smtk::model::EDGE },
   { "edge_use",   smtk::model::EDGE_USE },
+  { "ef",         smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
+  { "efr",        smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
+  { "ev",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "f",          smtk::model::FACE }, // Backwards-compatibility
   { "face",       smtk::model::FACE },
   { "face_use",   smtk::model::FACE_USE },
+  { "fe",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "fev",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "flat",       smtk::model::NO_SUBGROUPS },
+  { "fr",         smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
+  { "fv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "g",          smtk::model::GROUP_ENTITY }, // Backwards compatibility
+  { "gmrfev",     smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION }, // Backwards compatibility
   { "group",      smtk::model::GROUP_ENTITY },
   { "homg",       smtk::model::HOMOGENOUS_GROUP },
   { "instance",   smtk::model::INSTANCE_ENTITY },
   { "invalid",    smtk::model::INVALID },
   { "loop",       smtk::model::LOOP },
+  { "m",          smtk::model::MODEL_ENTITY }, // Backwards compatibility
   { "model",      smtk::model::MODEL_ENTITY },
+  { "mrfev",      smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION }, // Backwards compatibility
   { "nodim",      0 },
   { "none",       0 },
   { "open",       smtk::model::OPEN },
   { "partition",  smtk::model::PARTITION },
+  { "r",          smtk::model::VOLUME }, // Backwards compatibility
+  { "re",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "region",     smtk::model::VOLUME },
+  { "rev",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rf",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 }, // Backwards compatibility
+  { "rfe",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "rfev",       smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rfv",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_0 }, // Backwards compatibility
   { "shell",      smtk::model::SHELL_ENTITY },
   { "shell2",     smtk::model::SHELL },
   { "use",        smtk::model::USE_ENTITY },
+  { "v",          smtk::model::VERTEX }, // Backwards-compatibility
+  { "ve",         smtk::model::VERTEX | smtk::model::EDGE }, // Backwards-compatibility
+  { "vef",        smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
+  { "vefr",       smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
   { "vertex",     smtk::model::VERTEX },
   { "vertex_use", smtk::model::VERTEX_USE },
   { "volume",     smtk::model::VOLUME },
   { "volume_use", smtk::model::VOLUME_USE },
 };
+
 
 static int numOrderedValues = sizeof(orderedValues) / sizeof(orderedValues[0]);
 

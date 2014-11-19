@@ -38,6 +38,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/StringData.h"
@@ -1518,36 +1519,7 @@ std::string XmlV2StringWriter::encodeColor(const double *c)
 //----------------------------------------------------------------------------
 std::string XmlV2StringWriter::encodeModelEntityMask(smtk::model::BitFlags f)
 {
-  std::string s;
-  if ( smtk::model::isBridgeSession(f) )
-    {
-    s.append("b");
-    }
-  if ( smtk::model::isGroupEntity(f) )
-    {
-    s.append("g");
-    }
-  if ( smtk::model::isModelEntity(f) )
-    {
-    s.append("m");
-    }
-  if ( smtk::model::isVolume(f) )
-    {
-    s.append("r"); //v is used by vertex so use r aka region
-    }
-  if ( smtk::model::isFace(f) )
-    {
-    s.append("f");
-    }
-  if ( smtk::model::isEdge(f) )
-    {
-    s.append("e");
-    }
-  if ( smtk::model::isVertex(f) )
-    {
-    s.append("v");
-    }
-  return s;
+  return smtk::model::Entity::flagToSpecifierString(f);
 }
 //----------------------------------------------------------------------------
 
