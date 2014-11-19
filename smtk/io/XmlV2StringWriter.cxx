@@ -264,7 +264,7 @@ void XmlV2StringWriter::generateXml(pugi::xml_node& parent_node,
     // This option is used to insert an attribute system
     // into an existing xml document (for writing resource files).
     root = parent_node.append_child("SMTK_AttributeSystem");
-    root.append_attribute("Version").set_value(1);
+    root.append_attribute("Version").set_value(2);
     m_pugi = new PugiPrivate(root);
     }
   else
