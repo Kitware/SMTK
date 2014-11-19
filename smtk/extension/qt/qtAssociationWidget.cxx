@@ -24,7 +24,7 @@
 #include "smtk/attribute/ValueItemDefinition.h"
 
 #include "smtk/model/Manager.h"
-#include "smtk/model/ModelEntity.h"
+#include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/SimpleModelSubphrases.h"
@@ -180,7 +180,7 @@ void qtAssociationWidget::showDomainsAssociation(
 
 //----------------------------------------------------------------------------
 void qtAssociationWidget::showAttributeAssociation(
-  smtk::model::ModelEntity theEntiy,
+  smtk::model::Cursor theEntiy,
   std::vector<smtk::attribute::DefinitionPtr>& attDefs)
 {
   this->Internals->domainGroup->setVisible(false);
@@ -289,18 +289,18 @@ void qtAssociationWidget::showEntityAssociation(
 
   //add current-associated items to the current attribute
   smtk::model::ManagerPtr modelManager = attDef->system()->refModelManager();
-  smtk::model::ModelEntities modelEnts;
+  smtk::model::Cursors modelEnts;
   smtk::model::Cursor::CursorsFromUUIDs(
     modelEnts,
     modelManager,
     theAtt->associatedModelEntityIds());
 
-  typedef smtk::model::ModelEntities::const_iterator cit;
+  typedef smtk::model::Cursors::const_iterator cit;
   for (cit i =modelEnts.begin(); i != modelEnts.end(); ++i)
     {
     this->addModelAssociationListItem(this->Internals->CurrentList, *i);
     }
-  std::set<smtk::model::ModelEntity> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
+  std::set<smtk::model::Cursor> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
 
   //now that we have add all the used model entities, we need to move onto
   //all model entities that havent been matched
@@ -357,11 +357,11 @@ void qtAssociationWidget::showEntityAssociation(
 }
 
 //----------------------------------------------------------------------------
-std::set<smtk::model::ModelEntity> qtAssociationWidget::processAttUniqueness(
+std::set<smtk::model::Cursor> qtAssociationWidget::processAttUniqueness(
                                             smtk::attribute::DefinitionPtr attDef,
-                                            const smtk::model::ModelEntities &assignedIds)
+                                            const smtk::model::Cursors &assignedIds)
 {
-  std::set<smtk::model::ModelEntity> allUsedModelIds(assignedIds.begin(),
+  std::set<smtk::model::Cursor> allUsedModelIds(assignedIds.begin(),
                                                      assignedIds.end());
   if(attDef->isUnique())
     {
@@ -383,13 +383,13 @@ std::set<smtk::model::ModelEntity> qtAssociationWidget::processAttUniqueness(
       std::vector<smtk::attribute::AttributePtr>::iterator itAtt;
       for (itAtt=result.begin(); itAtt!=result.end(); ++itAtt)
         {
-        smtk::model::ModelEntities modelEnts;
+        smtk::model::Cursors modelEnts;
         smtk::model::Cursor::CursorsFromUUIDs(
           modelEnts,
           modelManager,
           (*itAtt)->associatedModelEntityIds());
 
-        typedef smtk::model::ModelEntities::const_iterator cit;
+        typedef smtk::model::Cursors::const_iterator cit;
         for (cit i = modelEnts.begin(); i != modelEnts.end(); ++i)
           { //add them all, and let the set sort it out
           allUsedModelIds.insert(*i);
@@ -402,7 +402,7 @@ std::set<smtk::model::ModelEntity> qtAssociationWidget::processAttUniqueness(
 
 //----------------------------------------------------------------------------
 QList<smtk::attribute::DefinitionPtr>
-qtAssociationWidget::processDefUniqueness(const smtk::model::ModelEntity& theEntity,
+qtAssociationWidget::processDefUniqueness(const smtk::model::Cursor& theEntity,
                                           smtk::attribute::System* attSystem)
 {
   QList<smtk::attribute::DefinitionPtr> uniqueDefs;
@@ -470,14 +470,14 @@ smtk::attribute::AttributePtr qtAssociationWidget::getAttribute(
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::ModelEntity qtAssociationWidget::getSelectedModelItem(
+smtk::model::Cursor qtAssociationWidget::getSelectedModelItem(
   QListWidget* theList)
 {
   return this->getModelItem(this->getSelectedItem(theList));
 }
 
 //-----------------------------------------------------------------------------
-smtk::model::ModelEntity qtAssociationWidget::getModelItem(
+smtk::model::Cursor qtAssociationWidget::getModelItem(
   QListWidgetItem * item)
 {
   if(item)
@@ -488,10 +488,10 @@ smtk::model::ModelEntity qtAssociationWidget::getModelItem(
     if(attSystem)
       {
       smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
-      return smtk::model::ModelEntity(modelManager,uid);
+      return smtk::model::Cursor(modelManager,uid);
       }
     }
-  return smtk::model::ModelEntity();
+  return smtk::model::Cursor();
 }
 
 //-----------------------------------------------------------------------------
@@ -516,7 +516,7 @@ void qtAssociationWidget::removeSelectedItem(QListWidget* theList)
 
 //----------------------------------------------------------------------------
 QListWidgetItem* qtAssociationWidget::addModelAssociationListItem(
-  QListWidget* theList, smtk::model::ModelEntity modelItem)
+  QListWidget* theList, smtk::model::Cursor modelItem)
 {
   QListWidgetItem* item = new QListWidgetItem(
                             QString::fromStdString(modelItem.name()),
@@ -598,7 +598,7 @@ void qtAssociationWidget::onRemoveAssigned()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::model::ModelEntity currentItem = this->getSelectedModelItem(
+    smtk::model::Cursor currentItem = this->getSelectedModelItem(
       this->Internals->CurrentList);
     if(!currentItem.entity().isNull())
       {
@@ -634,7 +634,7 @@ void qtAssociationWidget::onAddAvailable()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::model::ModelEntity currentItem = this->getSelectedModelItem(
+    smtk::model::Cursor currentItem = this->getSelectedModelItem(
       this->Internals->AvailableList);
     if(!currentItem.entity().isNull())
       {
@@ -676,9 +676,9 @@ void qtAssociationWidget::onExchange()
   this->Internals->AvailableList->blockSignals(true);
   if(this->Internals->CurrentAtt.lock())
     {
-    smtk::model::ModelEntity currentItem = this->getSelectedModelItem(
+    smtk::model::Cursor currentItem = this->getSelectedModelItem(
       this->Internals->CurrentList);
-    smtk::model::ModelEntity availableItem = this->getSelectedModelItem(
+    smtk::model::Cursor availableItem = this->getSelectedModelItem(
       this->Internals->AvailableList);
     if(!currentItem.entity().isNull() && availableItem.isValid())
       {
