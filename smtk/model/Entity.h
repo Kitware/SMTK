@@ -17,6 +17,7 @@
 
 #include "smtk/model/EntityTypeBits.h" // for entityFlags values
 #include "smtk/model/IntegerData.h" // for IntegerList
+#include "smtk/model/StringData.h" // for StringList
 
 #include <map>
 #include <set>
@@ -69,6 +70,9 @@ public:
   static std::string flagSummary(BitFlags entityFlags, int form = 0);
   static std::string flagDescription(BitFlags entityFlags, int form = 0);
   static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters);
+  static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
+  static BitFlags specifierStringToFlag(const std::string& spec);
+  static BitFlags dimensionToDimensionBits(int dim);
 
 protected:
   BitFlags m_entityFlags;

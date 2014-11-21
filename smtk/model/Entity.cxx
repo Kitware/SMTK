@@ -9,10 +9,13 @@
 //=========================================================================
 #include "smtk/model/Entity.h"
 
+#include "smtk/common/StringUtil.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
 #include <vector>
+#include <cctype>
 
 #include <sstream>
 
@@ -221,6 +224,9 @@ std::string Entity::flagDimensionList(BitFlags flags, bool& plural)
 std::string Entity::flagSummaryHelper(BitFlags flags, int form)
 {
   std::string result;
+  if (flags & GROUP_ENTITY)
+    flags &= (~ENTITY_MASK) | GROUP_ENTITY; // omit all other entity types for switch statement;
+
   switch (flags & ENTITY_MASK)
     {
   case CELL_ENTITY:
@@ -351,41 +357,57 @@ std::string Entity::flagSummary(BitFlags flags, int form)
 {
   std::string result = flagSummaryHelper(flags, form);
   // Add some extra information about groups.
-  if ((flags & ENTITY_MASK) == GROUP_ENTITY)
+  if ((flags & GROUP_ENTITY) == GROUP_ENTITY)
     {
+    bool dimSep = false;
+    if (flags & (ANY_ENTITY & ~GROUP_ENTITY))
+      result += " (";
     if (flags & ANY_DIMENSION)
       {
-      result += " (";
-      bool comma = false;
       for (int i = 0; i <= 4; ++i)
         {
         int dim = 1 << i;
         if (flags & dim)
           {
-          if (comma)
-            {
+          if (dimSep)
             result += ",";
-            }
-          result += cellNamesByDimensionSingular[i];
-          comma = true;
+          result += ('0' + i);
+          dimSep = true;
           }
         }
-      switch (flags & ENTITY_MASK)
+      if (dimSep) result += "-d";
+      }
+
+    bool entSep = false;
+    for (BitFlags entType = CELL_ENTITY; entType < ENTITY_MASK; entType <<= 1)
+      {
+      if ((entType & GROUP_ENTITY) && NO_SUBGROUPS)
+        continue;
+      if (entType & flags)
         {
-      case CELL_ENTITY:
-        result += " cells)";
-        break;
-      case USE_ENTITY:
-        result += " uses)";
-        break;
-      case SHELL_ENTITY:
-        result += " shells)";
-        break;
-      default:
-        result += " entities)";
-        break;
+        if (entSep)
+          result += ", ";
+        else if (dimSep)
+          result += " ";
+        entSep = true;
+        switch (entType)
+          {
+        case CELL_ENTITY: result += "cells"; break;
+        case USE_ENTITY: result += "uses"; break;
+        case SHELL_ENTITY: result += "shells"; break;
+        case GROUP_ENTITY: result += "groups"; break;
+        case MODEL_ENTITY: result += "models"; break;
+        case INSTANCE_ENTITY: result += "instances"; break;
+        case BRIDGE_SESSION: result += "bridge sessions"; break;
+        default: break;
+          }
         }
       }
+    if (dimSep && !entSep)
+      result += " entities";
+    if (dimSep || entSep)
+      result += ")";
+
     if (flags & COVER) result += " cover";
     if (flags & PARTITION) result += " partition";
     }
@@ -406,7 +428,10 @@ std::string Entity::flagDescription(BitFlags flags, int form)
   return Entity::flagSummary(flags, form);
 }
 
-// If you change this, you may need to change flagSummmary/flagDescription above
+/**\brief Given a vector of counters, return a numbered name string and advance counters as required.
+  *
+  * If you change this method, you may also need to change flagSummmary/flagDescription.
+  */
 std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counters)
 {
   std::ostringstream name;
@@ -485,6 +510,243 @@ std::string Entity::defaultNameFromCounters(BitFlags flags, IntegerList& counter
     break;
     }
   return name.str();
+}
+
+template<EntityTypeBits B>
+bool hasBit(BitFlags val)
+{
+  return ((val & B) == B);
+}
+
+/**\brief Given a bitmask or entity flag, return a string specifier.
+  *
+  * The second argument, \a textual, indicates whether or not the value
+  * will be converted to a human-oriented textual description of the bits
+  * set or simply a string containing the decimal value of the bit vector.
+  * The default is to generate human-oriented text since it is also
+  * robust to version changes.
+  *
+  * The textual version should never begin with a number so that the
+  * inverse of this method (specifierStringToFlag) need not expend effort
+  * inferring the format.
+  */
+std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
+{
+  std::ostringstream spec;
+  if (textual)
+    {
+    // Check for specially-named bit values (convenience names)
+    if (val == smtk::model::INVALID)     spec << "invalid";
+
+    else if (val == smtk::model::VERTEX) spec << "vertex";
+    else if (val == smtk::model::EDGE)   spec << "edge";
+    else if (val == smtk::model::FACE)   spec << "face";
+    else if (val == smtk::model::VOLUME) spec << "volume";
+
+    else if (val == smtk::model::VERTEX_USE) spec << "vertex_use";
+    else if (val == smtk::model::EDGE_USE)   spec << "edge_use";
+    else if (val == smtk::model::FACE_USE)   spec << "face_use";
+    else if (val == smtk::model::VOLUME_USE) spec << "volume_use";
+
+    else if (val == smtk::model::CHAIN) spec << "chain";
+    else if (val == smtk::model::LOOP)  spec << "loop";
+    else if (val == smtk::model::SHELL) spec << "shell2";
+
+    // Not a specially-named bit value; generate a name:
+    else
+      {
+      // Put entity type bits first and ensure they are all non-numeric.
+      bool haveType = false;
+      if (isCellEntity(val))     {                                 haveType = true; spec << "cell"; }
+      if (isUseEntity(val))      { if (haveType) spec << "|"; else haveType = true; spec << "use"; }
+      if (isShellEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "shell"; }
+      if (isGroupEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "group"; }
+      if (isModelEntity(val))    { if (haveType) spec << "|"; else haveType = true; spec << "model"; }
+      if (isInstanceEntity(val)) { if (haveType) spec << "|"; else haveType = true; spec << "instance"; }
+      if (isBridgeSession(val))  { if (haveType) spec << "|"; else haveType = true; spec << "bridge"; }
+
+      if (!haveType)             { spec << "none"; }
+
+      if (hasBit<smtk::model::MODEL_DOMAIN>(val))     spec << "|domain";
+      if (hasBit<smtk::model::MODEL_BOUNDARY>(val))   spec << "|bdy";
+
+      if (hasBit<smtk::model::COVER>(val))            spec << "|cover";
+      if (hasBit<smtk::model::PARTITION>(val))        spec << "|partition";
+
+      if (hasBit<smtk::model::OPEN>(val))             spec << "|open";
+      if (hasBit<smtk::model::CLOSED>(val))           spec << "|closed";
+
+      if (hasBit<smtk::model::HOMOGENOUS_GROUP>(val)) spec << "|homg";
+
+      if (hasBit<smtk::model::NO_SUBGROUPS>(val))     spec << "|flat";
+
+      if (hasBit<smtk::model::ANY_DIMENSION>(val))    spec << "|anydim";
+      else if (!(val & smtk::model::ANY_DIMENSION))   spec << "|nodim";
+      else
+        {
+        spec << "|";
+        // Note that explicit dimension bits are not separated; they are only 1 character.
+        if (hasBit<smtk::model::DIMENSION_0>(val))    spec << "0";
+        if (hasBit<smtk::model::DIMENSION_1>(val))    spec << "1";
+        if (hasBit<smtk::model::DIMENSION_2>(val))    spec << "2";
+        if (hasBit<smtk::model::DIMENSION_3>(val))    spec << "3";
+        if (hasBit<smtk::model::DIMENSION_4>(val))    spec << "4";
+        }
+      }
+    }
+  else
+    {
+    spec << val;
+    }
+  return spec.str();
+}
+
+static struct {
+  std::string name;
+  BitFlags value;
+} orderedValues[] = {
+  { "0",          smtk::model::DIMENSION_0 },
+  { "1",          smtk::model::DIMENSION_1 },
+  { "2",          smtk::model::DIMENSION_2 },
+  { "3",          smtk::model::DIMENSION_3 },
+  { "4",          smtk::model::DIMENSION_4 },
+  { "anydim",     smtk::model::ANY_DIMENSION },
+  { "b",          smtk::model::BRIDGE_SESSION },
+  { "bdy",        smtk::model::MODEL_BOUNDARY },
+  { "bridge",     smtk::model::BRIDGE_SESSION },
+  { "cell",       smtk::model::CELL_ENTITY },
+  { "chain",      smtk::model::CHAIN },
+  { "closed",     smtk::model::CLOSED },
+  { "cover",      smtk::model::COVER },
+  { "domain",     smtk::model::MODEL_DOMAIN },
+  { "e",          smtk::model::EDGE }, // Backwards-compatibility
+  { "edge",       smtk::model::EDGE },
+  { "edge_use",   smtk::model::EDGE_USE },
+  { "ef",         smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
+  { "efr",        smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
+  { "ev",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "f",          smtk::model::FACE }, // Backwards-compatibility
+  { "face",       smtk::model::FACE },
+  { "face_use",   smtk::model::FACE_USE },
+  { "fe",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "fev",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "flat",       smtk::model::NO_SUBGROUPS },
+  { "fr",         smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
+  { "fv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "g",          smtk::model::GROUP_ENTITY }, // Backwards compatibility
+  { "gmrfev",     smtk::model::GROUP_ENTITY | smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION }, // Backwards compatibility
+  { "group",      smtk::model::GROUP_ENTITY },
+  { "homg",       smtk::model::HOMOGENOUS_GROUP },
+  { "instance",   smtk::model::INSTANCE_ENTITY },
+  { "invalid",    smtk::model::INVALID },
+  { "loop",       smtk::model::LOOP },
+  { "m",          smtk::model::MODEL_ENTITY }, // Backwards compatibility
+  { "model",      smtk::model::MODEL_ENTITY },
+  { "mrfev",      smtk::model::MODEL_ENTITY | smtk::model::CELL_ENTITY | smtk::model::ANY_DIMENSION }, // Backwards compatibility
+  { "nodim",      0 },
+  { "none",       0 },
+  { "open",       smtk::model::OPEN },
+  { "partition",  smtk::model::PARTITION },
+  { "r",          smtk::model::VOLUME }, // Backwards compatibility
+  { "re",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "region",     smtk::model::VOLUME },
+  { "rev",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rf",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 }, // Backwards compatibility
+  { "rfe",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 }, // Backwards compatibility
+  { "rfev",       smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_1 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rfv",        smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_2 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "rv",         smtk::model::CELL_ENTITY | smtk::model::DIMENSION_3 | smtk::model::DIMENSION_0 }, // Backwards compatibility
+  { "shell",      smtk::model::SHELL_ENTITY },
+  { "shell2",     smtk::model::SHELL },
+  { "use",        smtk::model::USE_ENTITY },
+  { "v",          smtk::model::VERTEX }, // Backwards-compatibility
+  { "ve",         smtk::model::VERTEX | smtk::model::EDGE }, // Backwards-compatibility
+  { "vef",        smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE }, // Backwards-compatibility
+  { "vefr",       smtk::model::VERTEX | smtk::model::EDGE | smtk::model::FACE | smtk::model::VOLUME }, // Backwards-compatibility
+  { "vertex",     smtk::model::VERTEX },
+  { "vertex_use", smtk::model::VERTEX_USE },
+  { "volume",     smtk::model::VOLUME },
+  { "volume_use", smtk::model::VOLUME_USE },
+};
+
+
+static int numOrderedValues = sizeof(orderedValues) / sizeof(orderedValues[0]);
+
+BitFlags keywordToBitFlags(const std::string& keyword)
+{
+  if (keyword.empty())
+    return 0;
+
+  // If a keyword starts with a number, it is a sequence of dimension bits:
+  if (keyword.size() > 1 && (keyword[0] >= '0' && keyword[0] <= '4'))
+    {
+    BitFlags dims = 0;
+    for (std::size_t i = 0; i < keyword.size(); ++i)
+      dims |= keywordToBitFlags(keyword.substr(i, 1));
+    return dims;
+    }
+
+  std::string proper = keyword; // make a mutable copy.
+  smtk::common::StringUtil::lower(proper); // downcase it.
+  // Must be an actual keyword. Try looking it up.
+  int lo = 0;
+  int hi = numOrderedValues;
+  while (lo < hi)
+    {
+    int mid = (lo & hi) + ((lo ^ hi) >> 1);
+    if (orderedValues[mid].name < proper)
+      lo = mid + 1;
+    else
+      hi = mid;
+    }
+  if (orderedValues[hi].name == proper)
+    return orderedValues[hi].value;
+
+  return 0;
+}
+
+BitFlags Entity::specifierStringToFlag(const std::string& spec)
+{
+  std::string val(spec);
+  StringUtil::trim(val);
+  BitFlags result = 0;
+  if (val.empty())
+    return result;
+
+  // If the string starts with a digit, it must be a direct numeric value.
+  if (isdigit(val[0]))
+    {
+    std::istringstream strval(val);
+    strval >> result;
+    return result;
+    }
+  // OK, we have textual values which we will bitwise-OR together.
+  // First, split the values at "|"
+  StringList vals = smtk::common::StringUtil::split(val, "|", /*omit:*/ true, /*trim:*/ true);
+  for (StringList::iterator it = vals.begin(); it != vals.end(); ++it)
+    {
+    // Now find keywords in our carefully-arranged lookup table
+    result |= keywordToBitFlags(smtk::common::StringUtil::lower(*it));
+    }
+  return result;
+}
+
+/**\brief Given a dimension number (0, 1, 2, 3, 4), return the proper bitcode.
+  *
+  * This does bounds checking and will return 0 for out-of-bound dimensions.
+  */
+BitFlags Entity::dimensionToDimensionBits(int dim)
+{
+  switch (dim)
+    {
+  case 0: return DIMENSION_0;
+  case 1: return DIMENSION_1;
+  case 2: return DIMENSION_2;
+  case 3: return DIMENSION_3;
+  case 4: return DIMENSION_4;
+  default: break;
+    }
+  return 0;
 }
 
   } // namespace model

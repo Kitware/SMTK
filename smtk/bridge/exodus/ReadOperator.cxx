@@ -21,6 +21,8 @@
 #include "smtk/model/ModelEntity.h"
 
 #include "vtkExodusIIReader.h"
+#include "vtkHyperTreeGrid.h"
+#include "vtkInformation.h"
 
 using namespace smtk::model;
 using namespace smtk::common;
@@ -65,6 +67,12 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   modelOut->ShallowCopy(
     vtkMultiBlockDataSet::SafeDownCast(
       rdr->GetOutputDataObject(0)));
+  // Set the DIMENSION information key so that transcription
+  // can properly set dimension bits on the model and groups
+  // without access to the reader:
+  modelOut->GetInformation()->Set(
+    vtkHyperTreeGrid::DIMENSION(),
+    rdr->GetDimensionality());
   Bridge* brdg = this->exodusBridge();
   smtk::model::ModelEntity smtkModelOut =
     brdg->addModel(modelOut);
@@ -78,7 +86,7 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 
   // The side and node sets now exist; go through
   // and use the Exodus reader's private information
-  // to add property information.
+  // to correct the property information.
   GroupEntities groups = smtkModelOut.groups();
   for (GroupEntities::iterator git = groups.begin(); git != groups.end(); ++git)
     {
@@ -89,14 +97,17 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
     case EXO_BLOCK:
       oid = rdr->GetObjectId(vtkExodusIIReader::ELEM_BLOCK, handle.entityId);
       git->setStringProperty("exodus type", "element block");
+      git->setMembershipMask(DIMENSION_3 | MODEL_DOMAIN);
       break;
     case EXO_NODE_SET:
       oid = rdr->GetObjectId(vtkExodusIIReader::NODE_SET, handle.entityId);
       git->setStringProperty("exodus type", "node set");
+      git->setMembershipMask(DIMENSION_0 | MODEL_BOUNDARY);
       break;
     case EXO_SIDE_SET:
       oid = rdr->GetObjectId(vtkExodusIIReader::SIDE_SET, handle.entityId);
       git->setStringProperty("exodus type", "side set");
+      git->setMembershipMask(ANY_DIMENSION | MODEL_BOUNDARY);
       break;
     case EXO_MODEL:
     default:

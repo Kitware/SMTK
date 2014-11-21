@@ -40,6 +40,7 @@
 #include "smtk/attribute/VoidItemDefinition.h"
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/Entity.h"
 #include "smtk/model/EntityTypeBits.h"
 #include "smtk/model/Manager.h"
 
@@ -889,7 +890,9 @@ void XmlDocV1Parser::processModelEntityDef(pugi::xml_node &node,
   mmask = node.child("MembershipMask");
   if (mmask)
     {
-    idef->setMembershipMask(mmask.text().as_uint());
+    idef->setMembershipMask(
+      this->decodeModelEntityMask(
+        mmask.text().as_string()));
     }
 
   xatt = node.attribute("NumberOfRequiredValues");
@@ -2558,38 +2561,12 @@ int XmlDocV1Parser::decodeColorInfo(const std::string &s, double *color)
 smtk::model::BitFlags
 XmlDocV1Parser::decodeModelEntityMask(const std::string &s)
 {
-  smtk::model::BitFlags flags = 0;
-  std::size_t i, n = s.length();
-  for (i = 0; i < n; i++)
+  smtk::model::BitFlags flags = smtk::model::Entity::specifierStringToFlag(s);
+  if (!s.empty() && flags == 0 && s != "none" && s != "none|nodim")
     {
-    switch (s[i])
-      {
-      case 'b':
-        flags |= smtk::model::BRIDGE_SESSION;
-        break;
-      case 'g':
-        flags |= smtk::model::GROUP_ENTITY;
-        break;
-      case 'm':
-        flags |= smtk::model::MODEL_ENTITY;
-        break;
-      case 'r': //use r for volume aka region
-        flags |= smtk::model::VOLUME;
-        break;
-      case 'f':
-        flags |= smtk::model::FACE;
-        break;
-      case 'e':
-        flags |= smtk::model::EDGE;
-        break;
-      case 'v':
-        flags |= smtk::model::VERTEX;
-        break;
-      default:
-        smtkErrorMacro(this->m_logger,
-                       "Decoding Model Entity Mask - Option "
-                       << s[i] << " is not supported");
-      }
+    smtkErrorMacro(this->m_logger,
+      "Decoding Model Entity Mask - Option \""
+      << s << "\" is not supported");
     }
   return flags;
 }

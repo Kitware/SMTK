@@ -49,6 +49,9 @@
 namespace Ui { class qtAttributeAssociation; }
 
 using namespace smtk::attribute;
+using smtk::model::Cursor;
+using smtk::model::Cursors;
+using smtk::model::GroupEntity;
 
 namespace detail
 {
@@ -289,11 +292,8 @@ void qtAssociationWidget::showEntityAssociation(
 
   //add current-associated items to the current attribute
   smtk::model::ManagerPtr modelManager = attDef->system()->refModelManager();
-  smtk::model::Cursors modelEnts;
-  smtk::model::Cursor::CursorsFromUUIDs(
-    modelEnts,
-    modelManager,
-    theAtt->associatedModelEntityIds());
+  smtk::model::Cursors modelEnts =
+    theAtt->associatedModelEntities<smtk::model::Cursors>();
 
   typedef smtk::model::Cursors::const_iterator cit;
   for (cit i =modelEnts.begin(); i != modelEnts.end(); ++i)
@@ -304,52 +304,23 @@ void qtAssociationWidget::showEntityAssociation(
 
   //now that we have add all the used model entities, we need to move onto
   //all model entities that havent been matched
-  const smtk::model::BitFlags emask = smtk::model::MODEL_ENTITY;
-  smtk::model::Cursors cursors;
-  smtk::model::Cursor::CursorsFromUUIDs(
-    cursors,
-    modelManager,
-    modelManager->entitiesMatchingFlags(emask));
+  smtk::model::Cursors cursors = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
+    attDef->associationMask(), false);
 
-  smtk::model::EntityListPhrasePtr entityList = smtk::model::EntityListPhrase::create();
-  entityList->setup(cursors);
-  //set the subphrase generator:
-  entityList->setDelegate(smtk::model::SimpleModelSubphrases::create());
+  Cursors avail;
+  // subtract the set of already-associated entities.
+  std::set_difference(cursors.begin(), cursors.end(),
+    modelEnts.begin(), modelEnts.end(),
+    std::inserter(avail, avail.end()));
 
-  //walk the tree getting all entities in the tree in a brute force manner
-  smtk::model::DescriptivePhrases subs = entityList->subphrases();
-  smtk::model::Cursors allEntities;
-  while(subs.size() > 0)
+  smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
+  GroupEntity tmpGrp = tmpMgr->addGroup();
+  tmpGrp.setMembershipMask(attDef->associationMask());
+
+  for(Cursors::iterator i = avail.begin(); i != avail.end(); ++i)
     {
-    allEntities.insert(subs[subs.size()-1]->relatedEntity());
-    smtk::model::DescriptivePhrases nested_subs = subs[subs.size()-1]->subphrases();
-    subs.insert(subs.begin(),nested_subs.begin(),nested_subs.end());
-    subs.pop_back();
-    }
-
-  typedef smtk::model::Cursors::const_iterator me_it;
-  for(me_it i = allEntities.begin(); i != allEntities.end(); ++i)
-    {
-      bool match = false;
-      if(attDef->associatesWithVertex() && i->isVertex())
-        { match = true; }
-      if(attDef->associatesWithEdge() && i->isEdge())
-        { match = true; }
-      if(attDef->associatesWithFace() && i->isFace())
-        { match = true; }
-      if(attDef->associatesWithVolume() && i->isVolume())
-        { match = true; }
-      if(attDef->associatesWithGroup() && i->isGroupEntity())
-        { match = true; }
-      if(attDef->associatesWithModel() && i->isModelEntity())
-        { match = true; }
-
-
-      //only add this item if we haven't seen it already
-      if(match && usedModelEnts.count(*i) == 0)
-        {
-        this->addModelAssociationListItem(this->Internals->AvailableList, *i);
-        }
+    if (tmpGrp.meetsMembershipConstraints(*i))
+      this->addModelAssociationListItem(this->Internals->AvailableList, *i);
     }
 
   this->Internals->CurrentList->blockSignals(false);

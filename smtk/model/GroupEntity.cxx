@@ -17,6 +17,8 @@
 namespace smtk {
   namespace model {
 
+static const std::string memberMaskName("membership mask");
+
 /**\brief Return the parent of this group.
   *
   * The group may be embedded in multiple containers but its first
@@ -127,6 +129,43 @@ bool GroupEntity::meetsMembershipConstraints(
     prospectiveMember, typeMask, mustBeHomogenous);
 }
 
+/**\brief Set constraints on what may be added as a member of the group.
+  *
+  * This is stored separately from the Entity record as an
+  * integer property named "membership mask".
+  *
+  * Note that the \a mask is not used directly; bits from
+  * the GroupEntity::entityFlags() related to membership constraints
+  * and dimensionality are bitwise-ORed with the mask.
+  */
+void GroupEntity::setMembershipMask(BitFlags mask)
+{
+  this->setIntegerProperty(memberMaskName,
+    (this->entityFlags() & (ANY_DIMENSION | GROUP_CONSTRAINT_MASK)) |
+    mask);
+}
+
+/**\brief Return the mask constraining the types of entities that may be members.
+  *
+  * Note that because the group's entityFlags() also constrain members,
+  * this may not return the exact mask value passed to setMembershipMask();
+  * in particular, the group's dimension bits and group constraint bits
+  * are bitwise-ORed with the mask.
+  */
+BitFlags GroupEntity::membershipMask() const
+{
+  BitFlags result =
+    (this->entityFlags() & (ANY_DIMENSION | GROUP_CONSTRAINT_MASK)) |
+    ENTITY_MASK;
+  if (this->hasIntegerProperty(memberMaskName))
+    {
+    const IntegerList& prop(this->integerProperty(memberMaskName));
+    if (!prop.empty())
+      result = static_cast<BitFlags>(prop[0]);
+    }
+  return result;
+}
+
 /**\brief A protected method used by the public version to handle recursive group tests.
   *
   * The \a typeMask flag is used to pass information about entities contained
@@ -148,11 +187,11 @@ bool GroupEntity::meetsMembershipConstraintsInternal(
     }
   else
     {
-    memberMask = groupFlags;
+    memberMask = this->membershipMask();
     // First, if no entity types other than groups are specified, we assume that all
     // entity types are allowed. We do not currently handle the case where you wish
     // to have a group composed of only a hierarchy of groups with no other entities.
-    if ((groupFlags & GROUP_ENTITY) == GROUP_ENTITY) memberMask |= ENTITY_MASK;
+    if ((memberMask & ENTITY_MASK) == GROUP_ENTITY) memberMask |= ENTITY_MASK;
     // By default, a group can contain other groups as long as their members meet the
     // membership test.
     if (groupFlags & NO_SUBGROUPS) memberMask &= ~GROUP_ENTITY;
@@ -215,7 +254,7 @@ bool GroupEntity::meetsMembershipConstraintsInternal(
   BitFlags memberFlags = prospectiveMember.entityFlags();
   BitFlags memberTest = (memberFlags & memberMask);
   if (!(memberTest & ANY_DIMENSION) && (memberMask & ANY_DIMENSION)) return false;
-  if (!(memberTest & ANY_ENTITY) && (memberMask & ANY_ENTITY)) return false;
+  if (!(memberTest & ENTITY_MASK) && (memberMask & ENTITY_MASK)) return false;
 
   // If the prospectiveMember is a group, we must now also test its members.
   // If it is not a group, maybe we should update the typemask.

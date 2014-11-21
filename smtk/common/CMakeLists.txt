@@ -4,6 +4,7 @@ set(commonSrcs
   Paths.cxx
   Resource.cxx
   ResourceSet.cxx
+  StringUtil.cxx
   UUID.cxx
   UUIDGenerator.cxx
 )
@@ -13,6 +14,7 @@ set(commonHeaders
   Paths.h
   Resource.h
   ResourceSet.h
+  StringUtil.h
   UUID.h
   UUIDGenerator.h
 )

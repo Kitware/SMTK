@@ -132,6 +132,7 @@ enum EntityTypeBits
   VERTEX_USE           = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   EDGE_USE             = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
   FACE_USE             = 0x00000204, //!< A cell-use of dimension 2 (i.e., a face use)
+  VOLUME_USE           = 0x00000208, //!< A cell-use of dimension 3 (i.e., a volume use)
   USE_0D               = 0x00000201, //!< A cell-use of dimension 0 (i.e., a vertex use)
   USE_1D               = 0x00000202, //!< A cell-use of dimension 1 (i.e., an edge use)
   USE_2D               = 0x00000204, //!< A cell-use of dimension 2 (i.e., a face use)

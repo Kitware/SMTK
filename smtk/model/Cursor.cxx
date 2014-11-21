@@ -113,6 +113,70 @@ int Cursor::dimensionBits() const
   return 0;
 }
 
+/**\brief Set the dimensionality of this entity. WARNING: Intended for internal use only.
+  *
+  * This method is used by some bridges to change the dimensionality of a model
+  * after it has been transcribed. Do not call it.
+  */
+void Cursor::setDimensionBits(BitFlags dimBits)
+{
+  if (this->m_manager && !this->m_entity.isNull())
+    {
+    Entity* entRec = this->m_manager->findEntity(this->m_entity);
+    if (entRec)
+      {
+      BitFlags old = entRec->entityFlags() & ~ANY_DIMENSION;
+      entRec->setEntityFlags(old | dimBits);
+      }
+    }
+}
+
+/**\brief Return the maximum number of coordinates required to parameterize this model's point locus.
+  *
+  * Unlike Cursor::dimension(), this will always return a non-negative number
+  * for valid cell, use, shell and model entities.
+  * It returns -1 for unpopulated groups with no members, instance entities, bridge sessions,
+  * and other entities with no dimension bits set.
+  */
+int Cursor::maxParametricDimension() const
+{
+  int result = -1;
+  BitFlags dimbits = this->dimensionBits();
+  if (dimbits == 0) return result;
+  BitFlags onedim = DIMENSION_0;
+  while (1)
+    {
+    ++result;
+    if (2 * onedim > dimbits)
+      return result;
+    onedim <<= 1;
+    }
+  return -1;
+}
+
+/**\brief Return the dimension of the space into which this entity is embedded.
+  *
+  * This is the number of actual coordinate values associated with points in
+  * the underlying space of the entity (i.e., the point locus that make it up).
+  * It should be equal to or greater than the maximum parametric dimension.
+  *
+  * All the entities in a model must have the same embedding dimension; it
+  * is a property stored with the model.
+  *
+  * By default, the embedding dimension is 3.
+  */
+int Cursor::embeddingDimension() const
+{
+  ModelEntity owner = this->owningModel();
+  if (owner.isValid() && owner.hasIntegerProperty("embedding dimension"))
+    {
+    const IntegerList& prop(owner.integerProperty("embedding dimension"));
+    if (!prop.empty())
+      return prop[0];
+    }
+  return this->maxParametricDimension();
+}
+
 /// Return the bit vector describing the entity's type. \sa isVector, isEdge, ...
 BitFlags Cursor::entityFlags() const
 {
