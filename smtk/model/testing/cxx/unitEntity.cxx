@@ -382,7 +382,7 @@ int main()
     {
     status |= TestEntityIOSpecs();
     }
-  catch (const std::string& msg)
+  catch (const std::string&)
     {
     status = 1;
     }
