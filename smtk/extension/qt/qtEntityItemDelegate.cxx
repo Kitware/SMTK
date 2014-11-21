@@ -117,6 +117,7 @@ void QEntityItemDelegate::paint(
   titleFont.setBold(this->titleFontWeight() > 1 ? true : false);
   subtitleFont.setPixelSize(this->m_subtitleFontSize);
   subtitleFont.setBold(this->subtitleFontWeight() > 1 ? true : false);
+
   //subtitleFont.setWeight(subtitleFont.weight() - 2);
   QFontMetrics titleFM(titleFont);
   QFontMetrics subtitleFM(subtitleFont);
@@ -155,9 +156,10 @@ void QEntityItemDelegate::paint(
       iconRect.top() + iconsize.height() / 2 + 3),
     icon.pixmap(iconsize.width(), iconsize.height()));
 
+  if (option.state.testFlag(QStyle::State_Selected))
+    painter->setPen(Qt::white);
   painter->setFont(titleFont);
   painter->drawText(titleRect, titleText);
-
 
   painter->setFont(subtitleFont);
   painter->drawText(subtitleRect, subtitleText);
