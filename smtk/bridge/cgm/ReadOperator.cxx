@@ -69,9 +69,29 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
   std::string engine = "OCC";
   if (filetype.empty())
     { // Try to infer file type
-    if (hasEnding(filename,".sat")) filetype = "ACIS_SAT";
+    if (hasEnding(filename, "facet")) filetype = "FACET"; // We just want something not in an #if-clause
+    // Be sure these match Bridge_json.h:
+#if defined(HAVE_ACIS)
+    else if (hasEnding(filename,".sat")) filetype = "ACIS_SAT";
+    else if (hasEnding(filename,".sab")) filetype = "ACIS_SAB";
+#endif
+#if defined(HAVE_OCC)
     else if (hasEnding(filename,".brep")) filetype = "OCC";
+#endif
+#if defined(HAVE_ACIS) || (defined(HAVE_OCC) && defined(HAVE_OCC_IGES))
+    else if (hasEnding(filename,".iges")) filetype = "IGES";
+    else if (hasEnding(filename,".igs")) filetype = "IGES";
+#endif
+#if defined(HAVE_OCC) && defined(HAVE_OCC_STEP)
+    else if (hasEnding(filename,".step")) filetype = "STEP";
+    else if (hasEnding(filename,".stp")) filetype = "STEP";
+#endif
+#if defined(HAVE_OCC) && defined(HAVE_OCC_STL)
+    else if (hasEnding(filename,".stl")) filetype = "STL";
+#endif
     }
+  // TODO: Both ACIS and OCC can provide IGES and STEP support (but do not always).
+  //       Figure out how to choose the correct engine (or at least not an improper one).
   if (filetype == "FACET_TYPE") engine = "FACET";
   else if (filetype == "ACIS_SAT") engine = "ACIS";
   try

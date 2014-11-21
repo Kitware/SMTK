@@ -72,7 +72,7 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # tags for the CGM bridge. However, because we wish to omit portions
 # of the JSON depending on configuration options, a hand-edited header
 # is included in the source tree instead. The other option would be to
-# use nodeJS or Python to conditionally create the JSON and/or header.
+# build a program at configure-time to conditionally create the JSON and/or header.
 # But this is simpler.
 
 # Operators which have XML descriptions in separate files
