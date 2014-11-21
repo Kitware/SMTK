@@ -31,6 +31,7 @@
 #include "vtkRenderer.h"
 #include "vtkRenderView.h"
 #include "vtkStringArray.h"
+#include "vtkPolyDataNormals.h"
 
 using namespace smtk::model;
 
@@ -230,6 +231,13 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
         }
       pd->GetCellData()->AddArray(cellColor.GetPointer());
       pd->GetCellData()->SetScalars(cellColor.GetPointer());
+      }
+    if (pd->GetPolys()->GetSize() > 0)
+      {
+      vtkNew<vtkPolyDataNormals> nrm;
+      nrm->SetInputDataObject(pd);
+      nrm->Update();
+      pd->ShallowCopy(nrm->GetOutput());
       }
     }
 }
