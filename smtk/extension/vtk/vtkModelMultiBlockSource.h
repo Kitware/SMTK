@@ -11,13 +11,17 @@
 #define __smtk_vtk_ModelMultiBlockSource_h
 
 #include "smtk/extension/vtk/vtkSMTKExports.h"
-#include "vtkMultiBlockDataSetAlgorithm.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
+
+#include "vtkMultiBlockDataSetAlgorithm.h"
+
+#include "vtkNew.h"
 
 #include <map>
 
 class vtkPolyData;
+class vtkPolyDataNormals;
 
 /**\brief A VTK source for exposing model geometry in SMTK Manager as multiblock data.
   *
@@ -69,18 +73,16 @@ protected:
   void FindEntitiesWithTessellation(
     const smtk::model::CellEntities &cellents, smtk::model::Cursors &cursors);
 
-  // Instance model Manager:
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 
-  // Internal map of UUID and block index into multiblock
-  std::map<std::string, unsigned int> UUID2BlockIdMap;
-  // Model Entity UUID
-  char* ModelEntityID;
+  std::map<std::string, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
+  char* ModelEntityID; // Model Entity UUID
+
+  vtkNew<vtkPolyDataNormals> NormalGenerator;
 
 private:
-
   vtkModelMultiBlockSource(const vtkModelMultiBlockSource&); // Not implemented.
   void operator = (const vtkModelMultiBlockSource&); // Not implemented.
 };

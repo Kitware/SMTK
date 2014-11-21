@@ -234,10 +234,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
       }
     if (pd->GetPolys()->GetSize() > 0)
       {
-      vtkNew<vtkPolyDataNormals> nrm;
-      nrm->SetInputDataObject(pd);
-      nrm->Update();
-      pd->ShallowCopy(nrm->GetOutput());
+      this->NormalGenerator->SetInputDataObject(pd);
+      this->NormalGenerator->Update();
+      pd->ShallowCopy(this->NormalGenerator->GetOutput());
       }
     }
 }
