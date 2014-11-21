@@ -30,6 +30,8 @@ class SMTKCORE_EXPORT ModelEntity : public Cursor
 public:
   SMTK_CURSOR_CLASS(ModelEntity,Cursor,isModelEntity);
 
+  void setEmbeddingDimension(int dim);
+
   Cursor parent() const;
 
   CellEntities cells() const;

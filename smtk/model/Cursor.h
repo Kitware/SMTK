@@ -92,8 +92,13 @@ public:
 
   int dimension() const;
   int dimensionBits() const;
+  void setDimensionBits(BitFlags dim);
   BitFlags entityFlags() const;
   std::string flagSummary(int form = 0) const;
+
+  int maxParametricDimension() const;
+
+  int embeddingDimension() const;
 
   std::string name() const;
   void setName(const std::string& n);

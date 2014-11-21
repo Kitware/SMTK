@@ -37,17 +37,20 @@ static const char* correct =
 "0x00000403  chain\n"
 "0x00000406  loop\n"
 "0x0000040c  shell\n"
-"0x00000801  group (vertex entities)\n"
-"0x00000802  group (edge entities)\n"
-"0x00000804  group (face entities)\n"
-"0x00000808  group (volume entities)\n"
-"0x00000809  group (vertex,volume entities)\n"
-"0x02000804  domain group (face entities)\n"
-"0x02000808  domain group (volume entities)\n"
-"0x01000804  boundary group (face entities)\n"
-"0x01000808  boundary group (volume entities)\n"
+"0x00000801  group (0-d entities)\n"
+"0x00000802  group (1-d entities)\n"
+"0x00000804  group (2-d entities)\n"
+"0x00000808  group (3-d entities)\n"
+"0x00000809  group (0,3-d entities)\n"
+"0x02000804  domain group (2-d entities)\n"
+"0x02000808  domain group (3-d entities)\n"
+"0x01000804  boundary group (2-d entities)\n"
+"0x01000808  boundary group (3-d entities)\n"
 "0x02000800  domain group\n"
 "0x01000800  boundary group\n"
+"0x02000900  domain group (cells)\n"
+"0x01000902  boundary group (1-d cells)\n"
+"0x00002e04  group (2-d uses, shells, instances)\n"
 "0x00000101  vertices\n"
 "0x00000102  edges\n"
 "0x00000104  faces\n"
@@ -60,17 +63,20 @@ static const char* correct =
 "0x00000403  chains\n"
 "0x00000406  loops\n"
 "0x0000040c  shells\n"
-"0x00000801  groups (vertex entities)\n"
-"0x00000802  groups (edge entities)\n"
-"0x00000804  groups (face entities)\n"
-"0x00000808  groups (volume entities)\n"
-"0x00000809  groups (vertex,volume entities)\n"
-"0x02000804  domain groups (face entities)\n"
-"0x02000808  domain groups (volume entities)\n"
-"0x01000804  boundary groups (face entities)\n"
-"0x01000808  boundary groups (volume entities)\n"
+"0x00000801  groups (0-d entities)\n"
+"0x00000802  groups (1-d entities)\n"
+"0x00000804  groups (2-d entities)\n"
+"0x00000808  groups (3-d entities)\n"
+"0x00000809  groups (0,3-d entities)\n"
+"0x02000804  domain groups (2-d entities)\n"
+"0x02000808  domain groups (3-d entities)\n"
+"0x01000804  boundary groups (2-d entities)\n"
+"0x01000808  boundary groups (3-d entities)\n"
 "0x02000800  domain groups\n"
 "0x01000800  boundary groups\n"
+"0x02000900  domain groups (cells)\n"
+"0x01000902  boundary groups (1-d cells)\n"
+"0x00002e04  groups (2-d uses, shells, instances)\n"
 "0x00000101  vertex 0\n"
 "0x00000102  edge 0\n"
 "0x00000104  face 0\n"
@@ -125,6 +131,13 @@ void EntityNamesForForm(std::ostringstream& summaries, int form)
     << "0x" << hexconst(GROUP_3D | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_3D | MODEL_BOUNDARY, form) << "\n"
     << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN  ) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_DOMAIN, form) << "\n"
     << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY) << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY, form) << "\n"
+
+    << "0x" << hexconst(GROUP_ENTITY | MODEL_DOMAIN | CELL_ENTITY)
+    << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_DOMAIN | CELL_ENTITY, form) << "\n"
+    << "0x" << hexconst(GROUP_ENTITY | MODEL_BOUNDARY | CELL_ENTITY | DIMENSION_1)
+    << "  " << Entity::flagSummary(GROUP_ENTITY | MODEL_BOUNDARY | CELL_ENTITY | DIMENSION_1, form) << "\n"
+    << "0x" << hexconst(GROUP_ENTITY | USE_ENTITY | SHELL_ENTITY | INSTANCE_ENTITY | DIMENSION_2)
+    << "  " << Entity::flagSummary(GROUP_ENTITY | USE_ENTITY | SHELL_ENTITY | INSTANCE_ENTITY | DIMENSION_2, form) << "\n"
     ;
 }
 
@@ -233,7 +246,9 @@ int TestEntityIOSpecs()
     { "||3",        smtk::model::DIMENSION_3 },
     { "|3|",        smtk::model::DIMENSION_3 },
     { "none||",     0 },
+    { "none|domain|nodim", smtk::model::MODEL_DOMAIN }, // ensure string split works.
     { "!",          0 },
+    // Test all of the keywords to ensure ordering is proper.
     { "anydim",     smtk::model::ANY_DIMENSION },
     { "b",          smtk::model::BRIDGE_SESSION },
     { "bdy",        smtk::model::MODEL_BOUNDARY },

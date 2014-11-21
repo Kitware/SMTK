@@ -20,7 +20,9 @@
 
 #include "vtkCellArray.h"
 #include "vtkGeometryFilter.h"
+#include "vtkHyperTreeGrid.h"
 #include "vtkInformation.h"
+#include "vtkInformationIntegerKey.h"
 #include "vtkInformationIntegerVectorKey.h"
 #include "vtkInformationStringKey.h"
 #include "vtkPoints.h"
@@ -142,29 +144,55 @@ BridgedInfoBits Bridge::transcribeInternal(
   if (!obj)
     return actual;
 
+  int dim = obj->GetInformation()->Get(vtkHyperTreeGrid::DIMENSION());
+
+  // Grab the parent entity early if possible... we need its dimension().
+  Cursor parentCursor;
+  EntityHandle parentHandle = handle.parent();
+  if (parentHandle.isValid())
+    {
+    parentCursor = this->toCursor(parentHandle);
+    if (!parentCursor.isValid())
+      {
+      // The handle is valid, so perhaps we were asked to
+      // transcribe a group before its parent model?
+      this->declareDanglingEntity(parentCursor, 0);
+      this->transcribe(parentCursor, requestedInfo, true);
+      }
+    dim = parentCursor.embeddingDimension();
+    }
+
   smtk::model::Cursor mutableCursor(entity);
+  BitFlags entityDimBits;
   if (!mutableCursor.isValid())
     {
     switch (handle.entityType)
       {
     case EXO_MODEL:
       mutableCursor.manager()->insertModel(
-        mutableCursor.entity(), 3, 3);
+        mutableCursor.entity(), dim, dim);
       break;
     case EXO_BLOCK:
+      entityDimBits = Entity::dimensionToDimensionBits(dim);
       mutableCursor.manager()->insertGroup(
-        mutableCursor.entity(), MODEL_DOMAIN,
+        mutableCursor.entity(), MODEL_DOMAIN | entityDimBits,
         this->toBlockName(handle));
+      mutableCursor.as<GroupEntity>().setMembershipMask(VOLUME);
       break;
     case EXO_SIDE_SET:
+      entityDimBits = 0;
+      for (int i = 0; i < dim; ++i)
+        entityDimBits |= Entity::dimensionToDimensionBits(i);
       mutableCursor.manager()->insertGroup(
-        mutableCursor.entity(), MODEL_BOUNDARY,
+        mutableCursor.entity(), MODEL_BOUNDARY | entityDimBits,
         this->toBlockName(handle));
+      mutableCursor.as<GroupEntity>().setMembershipMask(CELL_ENTITY | entityDimBits);
       break;
     case EXO_NODE_SET:
       mutableCursor.manager()->insertGroup(
-        mutableCursor.entity(), MODEL_BOUNDARY,
+        mutableCursor.entity(), MODEL_BOUNDARY | DIMENSION_0,
         this->toBlockName(handle));
+      mutableCursor.as<GroupEntity>().setMembershipMask(VERTEX);
       break;
     default:
       return actual;
@@ -184,16 +212,9 @@ BridgedInfoBits Bridge::transcribeInternal(
   if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
     {
     //this->addRelations(mutableCursor, rels, requestedInfo, -1);
-    EntityHandle parentHandle = handle.parent();
-    if (parentHandle.isValid())
+    if (parentCursor.isValid())
       {
-      Cursor parentCursor = this->toCursor(parentHandle);
       mutableCursor.findOrAddRawRelation(parentCursor);
-      if (!parentCursor.isValid())
-        {
-        this->declareDanglingEntity(parentCursor, 0);
-        this->transcribe(parentCursor, requestedInfo, true);
-        }
       }
     // Now add children.
     std::vector<EntityHandle> children = this->childrenOf(handle);

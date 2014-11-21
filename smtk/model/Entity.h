@@ -72,6 +72,7 @@ public:
   static std::string defaultNameFromCounters(BitFlags entityFlags, IntegerList& counters);
   static std::string flagToSpecifierString(BitFlags flagsOrMask, bool textual = true);
   static BitFlags specifierStringToFlag(const std::string& spec);
+  static BitFlags dimensionToDimensionBits(int dim);
 
 protected:
   BitFlags m_entityFlags;

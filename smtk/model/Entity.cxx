@@ -224,6 +224,9 @@ std::string Entity::flagDimensionList(BitFlags flags, bool& plural)
 std::string Entity::flagSummaryHelper(BitFlags flags, int form)
 {
   std::string result;
+  if (flags & GROUP_ENTITY)
+    flags &= (~ENTITY_MASK) | GROUP_ENTITY; // omit all other entity types for switch statement;
+
   switch (flags & ENTITY_MASK)
     {
   case CELL_ENTITY:
@@ -354,41 +357,57 @@ std::string Entity::flagSummary(BitFlags flags, int form)
 {
   std::string result = flagSummaryHelper(flags, form);
   // Add some extra information about groups.
-  if ((flags & ENTITY_MASK) == GROUP_ENTITY)
+  if ((flags & GROUP_ENTITY) == GROUP_ENTITY)
     {
+    bool dimSep = false;
+    if (flags & (ANY_ENTITY & ~GROUP_ENTITY))
+      result += " (";
     if (flags & ANY_DIMENSION)
       {
-      result += " (";
-      bool comma = false;
       for (int i = 0; i <= 4; ++i)
         {
         int dim = 1 << i;
         if (flags & dim)
           {
-          if (comma)
-            {
+          if (dimSep)
             result += ",";
-            }
-          result += cellNamesByDimensionSingular[i];
-          comma = true;
+          result += ('0' + i);
+          dimSep = true;
           }
         }
-      switch (flags & ENTITY_MASK)
+      if (dimSep) result += "-d";
+      }
+
+    bool entSep = false;
+    for (BitFlags entType = CELL_ENTITY; entType < ENTITY_MASK; entType <<= 1)
+      {
+      if ((entType & GROUP_ENTITY) && NO_SUBGROUPS)
+        continue;
+      if (entType & flags)
         {
-      case CELL_ENTITY:
-        result += " cells)";
-        break;
-      case USE_ENTITY:
-        result += " uses)";
-        break;
-      case SHELL_ENTITY:
-        result += " shells)";
-        break;
-      default:
-        result += " entities)";
-        break;
+        if (entSep)
+          result += ", ";
+        else if (dimSep)
+          result += " ";
+        entSep = true;
+        switch (entType)
+          {
+        case CELL_ENTITY: result += "cells"; break;
+        case USE_ENTITY: result += "uses"; break;
+        case SHELL_ENTITY: result += "shells"; break;
+        case GROUP_ENTITY: result += "groups"; break;
+        case MODEL_ENTITY: result += "models"; break;
+        case INSTANCE_ENTITY: result += "instances"; break;
+        case BRIDGE_SESSION: result += "bridge sessions"; break;
+        default: break;
+          }
         }
       }
+    if (dimSep && !entSep)
+      result += " entities";
+    if (dimSep || entSep)
+      result += ")";
+
     if (flags & COVER) result += " cover";
     if (flags & PARTITION) result += " partition";
     }
@@ -710,6 +729,24 @@ BitFlags Entity::specifierStringToFlag(const std::string& spec)
     result |= keywordToBitFlags(smtk::common::StringUtil::lower(*it));
     }
   return result;
+}
+
+/**\brief Given a dimension number (0, 1, 2, 3, 4), return the proper bitcode.
+  *
+  * This does bounds checking and will return 0 for out-of-bound dimensions.
+  */
+BitFlags Entity::dimensionToDimensionBits(int dim)
+{
+  switch (dim)
+    {
+  case 0: return DIMENSION_0;
+  case 1: return DIMENSION_1;
+  case 2: return DIMENSION_2;
+  case 3: return DIMENSION_3;
+  case 4: return DIMENSION_4;
+  default: break;
+    }
+  return 0;
 }
 
   } // namespace model

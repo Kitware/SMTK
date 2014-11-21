@@ -18,6 +18,19 @@
 namespace smtk {
   namespace model {
 
+/**\brief Set the number coordinate values used to specify each point in the locus of this model.
+  *
+  * This should meet or exceed the maxParametricDimension() of every entity in the model.
+  *
+  * WARNING: This is not intended to be changed during the lifetime of a model;
+  *          this method exists for the convenience of bridge classes.
+  */
+void ModelEntity::setEmbeddingDimension(int dim)
+{
+  this->setIntegerProperty("embedding dimension", dim);
+}
+
+/// Return the parent of this entity, which should be invalid or another ModelEntity.
 Cursor ModelEntity::parent() const
 {
   return CursorArrangementOps::firstRelation<Cursor>(*this, EMBEDDED_IN);

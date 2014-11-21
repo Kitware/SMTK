@@ -40,6 +40,9 @@ public:
   virtual bool meetsMembershipConstraints(
     const Cursor& prospectiveMember);
 
+  virtual void setMembershipMask(BitFlags mask);
+  BitFlags membershipMask() const;
+
 protected:
   friend class smtk::attribute::ModelEntityItemDefinition;
 

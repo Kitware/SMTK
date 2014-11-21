@@ -88,7 +88,7 @@ std::vector<std::string> StringUtil::split(
   for (start = 0; start != std::string::npos; )
     {
     match = s.find_first_of(sep, start);
-    std::string token = s.substr(start, match);
+    std::string token = s.substr(start, match - start);
     if (trim)
       StringUtil::trim(token);
     if (!omitEmpty || !token.empty())
