@@ -17,18 +17,18 @@
 #include "smtk/SharedPtr.h"
 #include "smtk/SystemConfig.h"
 
-namespace smtk
-{  //bridge relates pointer classes
-  namespace bridge
-  {
-    namespace cgm
-      {
-      class Bridge;
-      typedef smtk::shared_ptr< smtk::bridge::cgm::Bridge > BridgePtr;
-      class ImportSolid;
-      class Engines;
-      class ExportSolid;
-      }
-  }
-}
-#endif
+namespace smtk {
+  namespace bridge {
+    namespace cgm {
+
+class Bridge;
+typedef smtk::shared_ptr< smtk::bridge::cgm::Bridge > BridgePtr;
+class ImportSolid;
+class Engines;
+class ExportSolid;
+
+    } // namespace cgm
+  } // namespace bridge
+} // namespace smtk
+
+#endif // __smtk_bridge_cgm_PointerDefs_h

@@ -17,6 +17,7 @@ set(cgmSrcs
   CreateSphereOperator.cxx
   CreateVertexOperator.cxx
   BooleanUnionOperator.cxx
+  TranslateOperator.cxx
   TDUUID.cxx
 )
 
@@ -36,6 +37,7 @@ set(cgmHeaders
   CreateSphereOperator.h
   CreateVertexOperator.h
   BooleanUnionOperator.h
+  TranslateOperator.h
   TDUUID.h
 )
 
@@ -89,6 +91,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreatePrismOperator.sbt" cgmOpera
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateVertexOperator.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/BooleanUnionOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/TranslateOperator.sbt" cgmOperatorXML)
 
 # Install the headers
 smtk_public_headers(${cgmHeaders})
