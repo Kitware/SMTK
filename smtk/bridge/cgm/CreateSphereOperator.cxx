@@ -74,6 +74,18 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
     std::cerr << "Failed to create body\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
+  DLIList<RefFace*> cgmFaces;
+  cgmBody->ref_faces(cgmFaces);
+  CubitVector translate(center[0],center[1],center[2]);
+  DLIList<Body*> all_bodies;
+  CubitStatus status = GeometryModifyTool::instance()->tweak_move(
+    cgmFaces, translate, all_bodies);
+  if (status != CUBIT_SUCCESS || all_bodies.size() != 1)
+    {
+    std::cerr << "Failed to translate body\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+  cgmBody = all_bodies.pop();
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
