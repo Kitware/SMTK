@@ -551,11 +551,6 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
 
     if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
       {
-      // FIXME: Todo.
-      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
-      }
-    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
-      {
       // Add child relationships
       DLIList<RefEntity*> rels;
       refVolume->get_child_ref_entities(rels);
@@ -564,6 +559,10 @@ smtk::model::BridgedInfoBits Bridge::addVolumeToManager(
       refVolume->get_parent_ref_entities(rels);
       this->addRelations(mutableCursor, rels, requestedInfo, -1);
 
+      actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
+      }
+    if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
+      {
       // FIXME: Todo.
       actual |= smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS;
       }
@@ -815,6 +814,7 @@ bool BridgeAddTessellation(const Cursor& cursor, E* cgmEnt, double chordErr, dou
   smtk::model::UUIDsToTessellations& tess(cursor.manager()->tessellations());
   smtk::model::UUIDsToTessellations::iterator it =
     tess.insert(std::pair<smtk::common::UUID,smtk::model::Tessellation>(cursor.entity(), blank)).first;
+  it->second.reset();
   // Now add data to the Tessellation "in situ" to avoid a copy.
   // First, copy point coordinates:
   it->second.coords().reserve(3 * npts);
