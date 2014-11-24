@@ -425,9 +425,13 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
       node.append_child("DefaultColor").text().set(s.c_str());
       }
 
-    // Create association string
-    s = this->encodeModelEntityMask(def->associationMask());
-    node.append_attribute("Associations").set_value(s.c_str());
+    if (def->associationMask())
+      {
+      // Create association element if we need to.
+      xml_node assocDefNode = node.append_child("AssociationsDef");
+      ModelEntityItemDefinitionPtr assocRule = def->associationRule();
+      this->processModelEntityDef(assocDefNode, assocRule);
+      }
 
     if (def->briefDescription() != "")
       {
@@ -599,12 +603,22 @@ void XmlV2StringWriter::processModelEntityDef(pugi::xml_node& node,
                                          attribute::ModelEntityItemDefinitionPtr idef)
 {
   smtk::model::BitFlags membershipMask = idef->membershipMask();
+  std::string membershipMaskStr = this->encodeModelEntityMask(membershipMask);
   xml_node menode;
   menode = node.append_child("MembershipMask");
-  menode.text().set(membershipMask);
+  menode.text().set(membershipMaskStr.c_str());
 
   node.append_attribute("NumberOfRequiredValues") =
     static_cast<unsigned int>(idef->numberOfRequiredValues());
+  if (idef->isExtensible())
+    {
+    node.append_attribute("Extensible") = true;
+
+    if (idef->maxNumberOfValues())
+      node.append_attribute("MaxNumberOfValues") =
+        static_cast<unsigned int>(idef->maxNumberOfValues());
+    }
+
   if (idef->hasValueLabels())
     {
     xml_node lnode = node.append_child();
