@@ -8,9 +8,6 @@
         <Double Name="offset" NumberOfRequiredValues="3">
           <DefaultValue>0</DefaultValue>
         </Double>
-        <Int Name="keep inputs" NumberOfRequiredValues="1">
-          <DefaultValue>0</DefaultValue>
-        </Int>
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->

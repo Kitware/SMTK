@@ -36,8 +36,6 @@
 #include "GeometryQueryTool.hpp"
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
-#include "RefGroup.hpp"
-#include "Body.hpp"
 
 #include "smtk/bridge/cgm/TranslateOperator_xml.h"
 
@@ -56,64 +54,59 @@ bool TranslateOperator::ableToOperate()
 smtk::model::OperatorResult TranslateOperator::operateInternal()
 {
   smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");
-  int keepInputs = this->findInt("keep inputs")->value();
+
   ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
 
   ModelEntities::iterator it;
-  DLIList<Body*> cgmBodiesIn;
-  DLIList<Body*> cgmBodiesOut;
-  Body* cgmBody;
-  DLIList<RefFace*> allCGMFaces;
-  DLIList<RefFace*> cgmFaces;
+  DLIList<RefEntity*> cgmEntitiesIn;
+  DLIList<RefEntity*> cgmEntitiesOut;
+  RefEntity* cgmEntity;
   for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
     {
-    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
-    if (cgmBody)
+    cgmEntity = this->cgmEntity(*it);
+    if (cgmEntity)
       {
-      cgmBodiesIn.append(cgmBody);
-      cgmBody->ref_faces(cgmFaces);
-      allCGMFaces += cgmFaces;
-      cgmFaces.clean_out(); // just in case... but it appears that ref_faces() copies over cgmFaces each time.
+      cgmEntitiesIn.append(cgmEntity);
+      this->manager()->erase(*it); // We will re-transcribe momentarily. TODO: This could be more efficient.
       }
-    if (!keepInputs)
-      this->manager()->eraseModel(*it);
     }
 
-  int nb = cgmBodiesIn.size();
-  CubitVector delta(offset->value(0),offset->value(1),offset->value(2));
+  int nb = cgmEntitiesIn.size();
 
-  DLIList<Body*> all_bodies;
-  CubitStatus status = GeometryModifyTool::instance()->tweak_move(
-    allCGMFaces, delta, all_bodies);
-  if (status != CUBIT_SUCCESS || all_bodies.size() != nb)
+  GeometryQueryTool::instance()->translate(
+    cgmEntitiesIn,
+    offset->value(0), offset->value(1), offset->value(2),
+    true, // (check before transforming)
+    cgmEntitiesOut);
+  if (cgmEntitiesOut.size() != nb)
     {
     std::cerr
       << "Failed to translate bodies or wrong number"
-      << " (" << all_bodies.size() << " != " << nb << ")"
+      << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
       << " of resulting bodies.\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
-  smtk::attribute::ModelEntityItem::Ptr resultBodies =
-    result->findModelEntity("bodies");
+  smtk::attribute::ModelEntityItem::Ptr resultEntities =
+    result->findModelEntity("entities");
 
   Bridge* bridge = this->cgmBridge();
-  int numBodiesOut = cgmBodiesOut.size();
-  resultBodies->setNumberOfValues(numBodiesOut);
+  int numEntitiesOut = cgmEntitiesOut.size();
+  resultEntities->setNumberOfValues(numEntitiesOut);
 
-  for (int i = 0; i < numBodiesOut; ++i)
+  for (int i = 0; i < numEntitiesOut; ++i)
     {
-    cgmBody = cgmBodiesOut.get_and_step();
-    if (!cgmBody)
+    cgmEntity = cgmEntitiesOut.get_and_step();
+    if (!cgmEntity)
       continue;
 
-    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
+    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEntity, true);
     smtk::common::UUID entId = refId->entityId();
     smtk::model::Cursor smtkEntry(this->manager(), entId);
     if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
-      resultBodies->setValue(i, smtkEntry);
+      resultEntities->setValue(i, smtkEntry);
     }
 
   return result;
