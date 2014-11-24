@@ -290,7 +290,7 @@ void qtAssociationWidget::showEntityAssociation(
     }
 
 
-  //add current-associated items to the current attribute
+  // Add currently-associated items to the list displaying associations.
   smtk::model::ManagerPtr modelManager = attDef->system()->refModelManager();
   smtk::model::Cursors modelEnts =
     theAtt->associatedModelEntities<smtk::model::Cursors>();
@@ -302,17 +302,22 @@ void qtAssociationWidget::showEntityAssociation(
     }
   std::set<smtk::model::Cursor> usedModelEnts = this->processAttUniqueness(attDef, modelEnts);
 
-  //now that we have add all the used model entities, we need to move onto
-  //all model entities that havent been matched
+  // Now that we have add all the used model entities, we need to move on to all model
+  // entities that are not associated with the attribute, but which could be associated.
+  // We use the "no-exact match required" flag to catch any entity that could possibly match
+  // the association mask. This gets pruned below.
   smtk::model::Cursors cursors = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
     attDef->associationMask(), false);
 
   Cursors avail;
-  // subtract the set of already-associated entities.
+  // Subtract the set of already-associated entities.
   std::set_difference(cursors.begin(), cursors.end(),
     modelEnts.begin(), modelEnts.end(),
     std::inserter(avail, avail.end()));
 
+  // Add a subset of the remainder to the list of available entities.
+  // We create a temporary group and use GroupEntity::meetsMembershipConstraints()
+  // to test whether the mask allows association.
   smtk::model::Manager::Ptr tmpMgr = smtk::model::Manager::create();
   GroupEntity tmpGrp = tmpMgr->addGroup();
   tmpGrp.setMembershipMask(attDef->associationMask());

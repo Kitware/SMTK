@@ -52,6 +52,7 @@ sph = res.findModelEntity('bodies').value(0)
 
 cs2 = sess.op('create sphere')
 cs2.findAsDouble('radius').setValue(0.5)
+cs2.findAsDouble('center').setValue(0, 0.9)
 res2 = cs2.operate()
 sph2 = res2.findModelEntity('bodies').value(0)
 

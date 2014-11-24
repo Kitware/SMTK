@@ -16,6 +16,7 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItemDefinition.h"
 #include "smtk/attribute/System.h"
 
@@ -24,6 +25,7 @@
 
 using smtk::attribute::Definition;
 using smtk::attribute::IntItemDefinition;
+using smtk::attribute::ModelEntityItemDefinition;
 using smtk::attribute::RefItemDefinition;
 
 namespace smtk {
@@ -286,12 +288,16 @@ void Bridge::initializeOperatorSystem(const OperatorConstructors* opList, bool i
     Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
     IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
     RefItemDefinition::Ptr paramsDefn = RefItemDefinition::New("validated parameters");
+    ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
     outcomeDefn->setNumberOfRequiredValues(1);
     outcomeDefn->setIsOptional(false);
     paramsDefn->setNumberOfRequiredValues(1);
     paramsDefn->setIsOptional(true);
+    entoutDefn->setNumberOfRequiredValues(1);
+    entoutDefn->setIsOptional(true);
     defn->addItemDefinition(outcomeDefn);
     defn->addItemDefinition(paramsDefn);
+    defn->addItemDefinition(entoutDefn);
     }
 
   if (!opList) return;

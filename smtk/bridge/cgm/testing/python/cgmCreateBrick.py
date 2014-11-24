@@ -52,8 +52,16 @@ uop = sess.op('union')
 uop.associateEntity(brick)
 uop.associateEntity(b2)
 r3 = uop.operate()
+ubod = r3.findModelEntity('bodies').value(0)
+
+top = sess.op('translate')
+top.associateEntity(ubod)
+off = top.findAsDouble('offset')
+setAxis(off, [8., 3., 7.])
+r4 = top.operate()
+b4 = r4.findModelEntity('bodies').value(0)
 
 json = smtk.io.ExportJSON.fromModel(mgr)
-sphFile = open('/tmp/brickly.json', 'w')
+sphFile = open('/tmp/brickly2.json', 'w')
 print >> sphFile, json
 sphFile.close()
