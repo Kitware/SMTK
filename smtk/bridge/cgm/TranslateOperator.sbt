@@ -12,10 +12,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(translate)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The united body (or bodies). -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="model"/>
-      </ItemDefinitions>
+      <!-- The translated body (or bodies) are stored in the base result's "entities" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

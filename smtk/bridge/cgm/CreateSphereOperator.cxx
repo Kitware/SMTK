@@ -67,25 +67,22 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->sphere(radius, center[0], center[1], center[2], innerRadius);
+  Body* cgmBody = GeometryModifyTool::instance()->sphere(radius, 0., 0., 0., innerRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
     {
     std::cerr << "Failed to create body\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  DLIList<RefFace*> cgmFaces;
-  cgmBody->ref_faces(cgmFaces);
-  CubitVector translate(center[0],center[1],center[2]);
-  DLIList<Body*> all_bodies;
-  CubitStatus status = GeometryModifyTool::instance()->tweak_move(
-    cgmFaces, translate, all_bodies);
-  if (status != CUBIT_SUCCESS || all_bodies.size() != 1)
+
+  // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
+  CubitVector delta(center[0],center[1],center[2]);
+  CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
+  if (status != CUBIT_SUCCESS)
     {
     std::cerr << "Failed to translate body\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  cgmBody = all_bodies.pop();
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
