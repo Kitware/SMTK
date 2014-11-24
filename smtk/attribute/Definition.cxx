@@ -14,8 +14,11 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Item.h"
 #include "smtk/attribute/ItemDefinition.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
+
 #include <iostream>
+#include <sstream>
 
 using namespace smtk::attribute;
 double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
@@ -35,7 +38,6 @@ Definition::Definition(const std::string &myType,
   this->m_advanceLevel = 0;
   this->m_isUnique = true;
   this->m_isRequired = false;
-  this->m_associationMask = 0;
   this->m_isNotApplicableColorSet = false;
   this->m_isDefaultColorSet = false;
   if (myBaseDef)
@@ -91,38 +93,114 @@ bool Definition::conflicts(smtk::attribute::DefinitionPtr def) const
   return def->isA(baseDef);
 }
 
-//----------------------------------------------------------------------------
-bool Definition::associatesWithVertex() const
+/**\brief Return the definition that governs attribute associations.
+  *
+  * A ModelEntityItemDefinition is used to store information about
+  * the allowable associations that may be made between attributes
+  * specified by this definition and model entities.
+  *
+  * The definition's membershipMask() serves as a mask for
+  * allowable associations while the definition's minimum and
+  * maximum number of associations can be used to indicate whether
+  * an association is required, optional, and/or extensible.
+  *
+  * This method should never return a null shared-pointer;
+  * if the rule does not exist, one will be created.
+  */
+ModelEntityItemDefinitionPtr Definition::associationRule() const
 {
-  return smtk::model::isVertex(this->m_associationMask);
-}
-//----------------------------------------------------------------------------
-bool Definition::associatesWithEdge() const
-{
-  return smtk::model::isEdge(this->m_associationMask);
-}
-//----------------------------------------------------------------------------
-bool Definition::associatesWithFace() const
-{
-  return smtk::model::isFace(this->m_associationMask);
-}
-//----------------------------------------------------------------------------
-bool Definition::associatesWithVolume() const
-{
-  return smtk::model::isVolume(this->m_associationMask);
-}
-//----------------------------------------------------------------------------
-bool Definition::associatesWithModel() const
-{
-  return smtk::model::isModelEntity(this->m_associationMask);
-}
-//----------------------------------------------------------------------------
-bool Definition::associatesWithGroup() const
-{
-  return smtk::model::isGroupEntity(this->m_associationMask);
+  if (!this->m_associationRule)
+    {
+    std::ostringstream assocName;
+    assocName << this->type() << "_association";
+    // We pretend to be const because allocating this object should have
+    // no side effect (the newly-allocated definition's defaults should
+    // match values returned in its absence).
+    Definition* self = const_cast<Definition*>(this);
+    self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
+    self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
+    }
+  return this->m_associationRule;
 }
 
-//----------------------------------------------------------------------------
+/**\brief Set the rule that decides which model entities may be associated with instances of this definition.
+  *
+  */
+void Definition::setAssociationRule(ModelEntityItemDefinitionPtr rule)
+{
+  this->m_associationRule = rule;
+}
+
+/**\brief Return the mask specifying which types of model entities this attribute can be associated with.
+  *
+  */
+smtk::model::BitFlags Definition::associationMask() const
+{
+  return !! this->m_associationRule ? this->m_associationRule->membershipMask() : 0;
+}
+
+/**\brief Set the mask specifying which types of model entities this attribute can be associated with.
+  *
+  */
+void Definition::setAssociationMask(smtk::model::BitFlags mask)
+{
+  if (mask)
+    this->associationRule()->setMembershipMask(mask);
+  else
+    this->m_associationRule = ModelEntityItemDefinitionPtr();
+}
+
+/// Returns whether this attribute can be associated with vertices.
+bool Definition::associatesWithVertex() const
+{
+  return smtk::model::isVertex(this->associationMask());
+}
+
+/// Returns whether this attribute can be associated with edges.
+bool Definition::associatesWithEdge() const
+{
+  return smtk::model::isEdge(this->associationMask());
+}
+
+/// Returns whether this attribute can be associated with faces.
+bool Definition::associatesWithFace() const
+{
+  return smtk::model::isFace(this->associationMask());
+}
+
+/// Returns whether this attribute can be associated with volumes.
+bool Definition::associatesWithVolume() const
+{
+  return smtk::model::isVolume(this->associationMask());
+}
+
+/// Returns whether this attribute can be associated with models.
+bool Definition::associatesWithModel() const
+{
+  return smtk::model::isModelEntity(this->associationMask());
+}
+
+/// Returns whether this attribute can be associated with groups.
+bool Definition::associatesWithGroup() const
+{
+  return smtk::model::isGroupEntity(this->associationMask());
+}
+
+/// Return whether this attribute can be associated with entities that have the given \a maskType.
+bool Definition::canBeAssociated(smtk::model::BitFlags maskType) const
+{
+  return (maskType == (maskType & this->associationMask()));
+}
+
+/**\brief Return whether this attribute can be associated with the given \a entity.
+  *
+  * TODO:
+  *   In this case we need to process BCS and DS specially
+  *   We look at the model's dimension and based on that return
+  *   the appropriate associatesWith method
+  *   Conflicts will contain a list of attributes that prevent an attribute
+  *   of this type from being associated
+  */
 bool
 Definition::canBeAssociated(smtk::model::Cursor /*entity*/,
                             std::vector<Attribute *>* /*inConflicts*/) const
