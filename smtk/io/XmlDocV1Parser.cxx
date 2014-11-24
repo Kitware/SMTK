@@ -688,6 +688,9 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     def->setIsNodal(xatt.as_bool());
     }
 
+  // Read old-style association mask first.
+  // It will be overwritten if a new-style AssociationsDef
+  // is also provided.
   xatt = defNode.attribute("Associations");
   if (xatt)
     {
@@ -723,10 +726,10 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     }
 
   // See if we allow any associations
-  node = defNode.chidl("AssociationsDef");
+  node = defNode.child("AssociationsDef");
   if (node)
     {
-    this->processModelEntityDef(node, def->associationsRule());
+    this->processModelEntityDef(node, def->associationRule());
     }
 
   // Now lets process its items
