@@ -347,8 +347,10 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
     }
   ModelEntityItemDefinitionPtr rule = def->associationRule();
   if (
+    // Is the association not-extensible and full?
     (!rule->isExtensible() && rule->numberOfRequiredValues() >= this->m_modelEntities.size()) ||
-    (rule->isExtensible() && this->m_modelEntities.size() >= rule->maxNumberOfValues()))
+    // Is the association extensible, bounded, and full?
+    (rule->isExtensible() && rule->maxNumberOfValues() && this->m_modelEntities.size() >= rule->maxNumberOfValues()))
     { // Too many entities already associated
     return false;
     }

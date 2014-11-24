@@ -119,6 +119,10 @@ ModelEntityItemDefinitionPtr Definition::associationRule() const
     Definition* self = const_cast<Definition*>(this);
     self->m_associationRule = ModelEntityItemDefinition::New(assocName.str());
     self->m_associationRule->setMembershipMask(0); // nothing allowed by default.
+    // By default, create associations so that once the mask is set
+    // there is no limit on the number of entities that may be associated:
+    self->m_associationRule->setIsExtensible(true);
+    self->m_associationRule->setMaxNumberOfValues(0);
     }
   return this->m_associationRule;
 }
@@ -186,10 +190,15 @@ bool Definition::associatesWithGroup() const
   return smtk::model::isGroupEntity(this->associationMask());
 }
 
-/// Return whether this attribute can be associated with entities that have the given \a maskType.
-bool Definition::canBeAssociated(smtk::model::BitFlags maskType) const
+/// Return whether this attribute can be associated with entities that have the given \a flag value.
+bool Definition::canBeAssociated(smtk::model::BitFlags flag) const
 {
-  return (maskType == (maskType & this->associationMask()));
+  // This is a simpler version of GroupEntity::meetsMembershipConstraintsInternal().
+  smtk::model::BitFlags mask = this->associationMask();
+  smtk::model::BitFlags memberTest = flag & mask;
+  if (!(memberTest & smtk::model::ANY_DIMENSION) && (mask & smtk::model::ANY_DIMENSION)) return false;
+  if (!(memberTest & smtk::model::ENTITY_MASK) && (mask & smtk::model::ENTITY_MASK)) return false;
+  return true;
 }
 
 /**\brief Return whether this attribute can be associated with the given \a entity.
