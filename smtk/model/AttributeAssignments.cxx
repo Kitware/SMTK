@@ -12,12 +12,12 @@
 namespace smtk {
  namespace model {
 
-   bool AttributeAssignments::attachAttribute(const smtk::common::UUID &attribId)
+   bool AttributeAssignments::associateAttribute(const smtk::common::UUID &attribId)
 {
   return this->m_attributes.insert(attribId).second;
 }
 
-bool AttributeAssignments::detachAttribute(const smtk::common::UUID &attribId)
+bool AttributeAssignments::disassociateAttribute(const smtk::common::UUID &attribId)
 {
   return this->m_attributes.erase(attribId) > 0;
 }

@@ -1175,7 +1175,7 @@ bool Manager::hasAttribute(const UUID&  attribId, const UUID& toEntity)
   * valid (whether it was previously associated or not)
   * and false otherwise.
   */
-bool Manager::attachAttribute(const UUID&  attribId, const UUID& toEntity)
+bool Manager::associateAttribute(const UUID&  attribId, const UUID& toEntity)
 {
   bool allowed = true;
   if (this->m_attributeSystem)
@@ -1185,14 +1185,14 @@ bool Manager::attachAttribute(const UUID&  attribId, const UUID& toEntity)
       allowed = false;
     }
   if (allowed)
-    this->attributeAssignments()[toEntity].attachAttribute(attribId);
+    this->attributeAssignments()[toEntity].associateAttribute(attribId);
   return allowed;
 }
 
 /**\brief Unassign an attribute from an entity.
   *
   */
-bool Manager::detachAttribute(const UUID&  attribId, const UUID& fromEntity, bool reverse)
+bool Manager::disassociateAttribute(const UUID&  attribId, const UUID& fromEntity, bool reverse)
 {
   bool didRemove = false;
   UUIDWithAttributeAssignments ref = this->m_attributeAssignments->find(fromEntity);
@@ -1200,7 +1200,7 @@ bool Manager::detachAttribute(const UUID&  attribId, const UUID& fromEntity, boo
     {
     return didRemove;
     }
-  if ((didRemove = ref->second.detachAttribute(attribId)))
+  if ((didRemove = ref->second.disassociateAttribute(attribId)))
     {
     // If the AttributeAssignments instance is now empty, remove it.
     // (Only do this for std::map storage, as it triggers assertion

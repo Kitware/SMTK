@@ -756,7 +756,7 @@ void qtAssociationWidget::onDomainAssociationChanged()
   AttributePtr attPtr = attSystem->findAttribute(attName.toStdString());
   if(attPtr)
     {
-    domainItem.attachAttribute(attPtr->id());
+    domainItem.associateAttribute(attPtr->id());
     emit this->attAssociationChanged();
     }
   else

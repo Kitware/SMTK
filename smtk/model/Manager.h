@@ -132,8 +132,8 @@ public:
   bool findOrAddEntityToGroup(const smtk::common::UUID& grp, const smtk::common::UUID& ent);
 
   bool hasAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
-  bool attachAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
-  bool detachAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
+  bool associateAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& toEntity);
+  bool disassociateAttribute(const smtk::common::UUID&  attribId, const smtk::common::UUID& fromEntity, bool reverse = true);
 
   Vertex insertVertex(const smtk::common::UUID& uid);
   Edge insertEdge(const smtk::common::UUID& uid);

@@ -281,7 +281,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      modelMgr->detachAttribute(this->id(), *mit, false);
+      modelMgr->disassociateAttribute(this->id(), *mit, false);
       }
     }
   this->m_modelEntities.clear();
@@ -338,7 +338,7 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
   this->m_modelEntities.insert(entity);
   smtk::model::ManagerPtr modelMgr = this->modelManager();
   if (modelMgr)
-    modelMgr->attachAttribute(this->id(), entity);
+    modelMgr->associateAttribute(this->id(), entity);
   return true; // Entity may be and is now associated.
 }
 /**\brief Associate a new-style model ID (a Cursor) with this attribute.
@@ -369,7 +369,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
     smtk::model::ManagerPtr modelMgr = this->modelManager();
     if (modelMgr)
       {
-      modelMgr->detachAttribute(this->id(), entity, false);
+      modelMgr->disassociateAttribute(this->id(), entity, false);
       }
     }
 }

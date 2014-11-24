@@ -41,8 +41,8 @@ typedef std::set<smtk::common::UUID> AttributeSet;
 class SMTKCORE_EXPORT AttributeAssignments
 {
 public:
-  bool attachAttribute(const smtk::common::UUID &attribId);
-  bool detachAttribute(const smtk::common::UUID &attribId);
+  bool associateAttribute(const smtk::common::UUID &attribId);
+  bool disassociateAttribute(const smtk::common::UUID &attribId);
   bool isAssociated(const smtk::common::UUID &attribId) const;
 
   AttributeSet& attributes() { return this->m_attributes; }

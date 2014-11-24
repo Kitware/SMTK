@@ -64,7 +64,7 @@ int main()
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
-  v0.attachAttribute(att->id());
+  v0.associateAttribute(att->id());
   test(
     att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
@@ -79,7 +79,7 @@ int main()
     !v1.hasAttributes(),
     "Disassociating a non-existent attribute appears to associate it.");
 
-  v1.attachAttribute(att->id());
+  v1.associateAttribute(att->id());
   att->removeAllAssociations();
   test(
     att->associatedModelEntityIds().empty(),

@@ -245,7 +245,7 @@ void XmlDocV2Parser::processModelInfo(xml_node &root)
           name = xatt.value();
           if(smtk::attribute::AttributePtr att = this->m_system.findAttribute(name))
             {
-            group.attachAttribute(att->id());
+            group.associateAttribute(att->id());
             }
           else
             {

@@ -163,8 +163,8 @@ public:
 
   bool hasAttributes() const;
   bool hasAttribute(const smtk::common::UUID &attribId) const;
-  bool attachAttribute(const smtk::common::UUID &attribId);
-  bool detachAttribute(const smtk::common::UUID &attribId, bool reverse = true);
+  bool associateAttribute(const smtk::common::UUID &attribId);
+  bool disassociateAttribute(const smtk::common::UUID &attribId, bool reverse = true);
   AttributeAssignments& attributes();
   AttributeSet attributes() const;
 
