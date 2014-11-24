@@ -33,7 +33,7 @@ for coord in ['x', 'y', 'z']:
    vdef.addItemDefinition(vi);
 
 velocity = system.createAttribute('velocity', vdef)
-inlet.attachAttribute(velocity.id())
+inlet.associateAttribute(velocity.id())
 
 print sm.entitiesOfDimension(2)
 print sm.entitiesOfDimension(3)

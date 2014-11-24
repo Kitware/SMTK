@@ -9,10 +9,12 @@
 //=========================================================================
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/System.h"
 #include "smtk/attribute/StringItemDefinition.h"
 
 #include "smtk/model/Cursor.h"
+#include "smtk/model/Edge.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/Vertex.h"
 
@@ -32,13 +34,16 @@ int main()
     "System should not have model storage by default.");
 
   DefinitionPtr def = sys.createDefinition("testDef");
+  def->associationRule()->setMembershipMask(smtk::model::VERTEX);
+  def->associationRule()->setIsExtensible(true);
+  def->associationRule()->setMaxNumberOfValues(2);
   AttributePtr att = sys.createAttribute("testAtt", "testDef");
 
   UUID fakeEntityId = UUID::random();
   att->associateEntity(fakeEntityId);
   test(
     att->associatedModelEntityIds().count(fakeEntityId) == 1,
-    "Could not associated a \"fake\" entity with this attribute.");
+    "Could not associate a \"fake\" entity with this attribute.");
 
   // Attempt to disassociate an entity that was never associated.
   UUID anotherFakeId = UUID::random();
@@ -64,7 +69,7 @@ int main()
 
   smtk::model::Vertex v0 = modelMgr->addVertex();
   smtk::model::Vertex v1 = modelMgr->addVertex();
-  v0.attachAttribute(att->id());
+  v0.associateAttribute(att->id());
   test(
     att->associatedModelEntityIds().count(v0.entity()) == 1,
     "Could not associate a vertex to an attribute.");
@@ -79,11 +84,24 @@ int main()
     !v1.hasAttributes(),
     "Disassociating a non-existent attribute appears to associate it.");
 
-  v1.attachAttribute(att->id());
+  v1.associateAttribute(att->id());
   att->removeAllAssociations();
   test(
     att->associatedModelEntityIds().empty(),
     "Removing all attribute associations did not empty association list.");
+
+  smtk::model::Vertex v2 = modelMgr->addVertex();
+  v0.associateAttribute(att->id());
+  v1.associateAttribute(att->id());
+  test(
+    v2.associateAttribute(att->id()) == false,
+    "Should not have been able to associate more than 2 entities.");
+
+  att->removeAllAssociations();
+  smtk::model::Edge e0 = modelMgr->addEdge();
+  test(
+    e0.associateAttribute(att->id()) == false,
+    "Should not have been able to associate entity of wrong type.");
 
   // ----
   // III. Test corner cases when switch model managers on the attribute system.

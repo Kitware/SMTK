@@ -536,16 +536,16 @@ bool Cursor::hasAttributes() const
 
 /**\brief Does the cursor have any attributes associated with it?
   */
-bool Cursor::attachAttribute(const smtk::common::UUID &attribId)
+bool Cursor::associateAttribute(const smtk::common::UUID &attribId)
 {
-  return this->m_manager->attachAttribute(attribId, this->m_entity);
+  return this->m_manager->associateAttribute(attribId, this->m_entity);
 }
 
 /**\brief Does the cursor have any attributes associated with it?
   */
-bool Cursor::detachAttribute(const smtk::common::UUID &attribId, bool reverse)
+bool Cursor::disassociateAttribute(const smtk::common::UUID &attribId, bool reverse)
 {
-  return this->m_manager->detachAttribute(attribId, this->m_entity, reverse);
+  return this->m_manager->disassociateAttribute(attribId, this->m_entity, reverse);
 }
 
 /**\brief Does the cursor have any attributes associated with it?

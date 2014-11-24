@@ -722,6 +722,13 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
     def->setDetailedDescription(node.text().get());
     }
 
+  // See if we allow any associations
+  node = defNode.chidl("AssociationsDef");
+  if (node)
+    {
+    this->processModelEntityDef(node, def->associationsRule());
+    }
+
   // Now lets process its items
   xml_node itemsNode = defNode.child("ItemDefinitions");
   std::string itemName;

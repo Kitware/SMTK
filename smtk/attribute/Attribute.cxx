@@ -11,6 +11,7 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/RefItem.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/GroupItem.h"
@@ -281,7 +282,7 @@ void Attribute::removeAllAssociations()
       mit != this->m_modelEntities.end();
       ++mit)
       {
-      modelMgr->detachAttribute(this->id(), *mit, false);
+      modelMgr->disassociateAttribute(this->id(), *mit, false);
       }
     }
   this->m_modelEntities.clear();
@@ -333,12 +334,29 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
     // Nothing to be done
     return true; // Entity may be and is now associated
     }
-  // TODO: Verify that entity may be associated with this attribute.
-  //       If it may not, then we should return false.
-  this->m_modelEntities.insert(entity);
   smtk::model::ManagerPtr modelMgr = this->modelManager();
+  DefinitionPtr def = this->definition();
+  smtk::model::BitFlags etyp;
+  if (modelMgr && (etyp = modelMgr->type(entity)) && !def->canBeAssociated(etyp))
+    {
+    // Entity is well-defined, but is wrong type
+    // NB: This allows poorly-defined entities to be associated,
+    //     which is desirable to avoid overly-rigid ordering of
+    //     operations.
+    return false;
+    }
+  ModelEntityItemDefinitionPtr rule = def->associationRule();
+  if (
+    // Is the association not-extensible and full?
+    (!rule->isExtensible() && rule->numberOfRequiredValues() >= this->m_modelEntities.size()) ||
+    // Is the association extensible, bounded, and full?
+    (rule->isExtensible() && rule->maxNumberOfValues() && this->m_modelEntities.size() >= rule->maxNumberOfValues()))
+    { // Too many entities already associated
+    return false;
+    }
+  this->m_modelEntities.insert(entity);
   if (modelMgr)
-    modelMgr->attachAttribute(this->id(), entity);
+    modelMgr->associateAttribute(this->id(), entity);
   return true; // Entity may be and is now associated.
 }
 /**\brief Associate a new-style model ID (a Cursor) with this attribute.
@@ -369,7 +387,7 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
     smtk::model::ManagerPtr modelMgr = this->modelManager();
     if (modelMgr)
       {
-      modelMgr->detachAttribute(this->id(), entity, false);
+      modelMgr->disassociateAttribute(this->id(), entity, false);
       }
     }
 }

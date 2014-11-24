@@ -629,6 +629,7 @@
   <value-type template="smtk::shared_ptr" args="const smtk::attribute::Definition">
     <modify-function signature="addItemDefinition(smtk::shared_ptr&lt; smtk::attribute::ItemDefinition &gt; )" remove="all"/>
     <modify-function signature="setAdvanceLevel(int)" remove="all"/>
+    <modify-function signature="setAssociationRule(smtk::shared_ptr&lt;smtk::attribute::ModelEntityItemDefinition&gt;)" remove="all"/>
     <modify-function signature="setAssociationMask(unsigned int)" remove="all"/>
     <modify-function signature="setDefaultColor(const double *)" remove="all"/>
     <modify-function signature="setDefaultColor(double, double, double, double)" remove="all"/>

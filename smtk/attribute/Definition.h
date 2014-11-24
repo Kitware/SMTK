@@ -80,7 +80,7 @@ namespace smtk
       void setIsAbstract(bool isAbstractValue)
       { this->m_isAbstract = isAbstractValue;}
 
-      // The categories that the attribute is associated with. Typically
+      // The categories that the attribute applies to. Typically
       // a category will be a simulation type like heat transfer, fluid flow, etc.
       std::size_t numberOfCategories() const
       {return this->m_categories.size();}
@@ -144,28 +144,22 @@ namespace smtk
       bool isDefaultColorSet() const
       {return this->m_isDefaultColorSet;}
 
-      // Description:
-      // Mask is the ability to specify what type of model entities
-      // that the attribute can be associated with.
-      smtk::model::BitFlags associationMask() const
-      {return this->m_associationMask;}
-      void setAssociationMask(smtk::model::BitFlags mask)
-      {this->m_associationMask = mask;}
+      ModelEntityItemDefinitionPtr associationRule() const;
+      virtual void setAssociationRule(ModelEntityItemDefinitionPtr);
+
+      smtk::model::BitFlags associationMask() const;
+      void setAssociationMask(smtk::model::BitFlags mask);
+
       bool associatesWithVertex() const;
       bool associatesWithEdge() const;
       bool associatesWithFace() const;
       bool associatesWithVolume() const;
       bool associatesWithModel() const;
       bool associatesWithGroup() const;
-      bool canBeAssociated(smtk::model::BitFlags maskType) const
-      { return (maskType == (maskType & this->m_associationMask));}
-      // In this case we need to process BCS and DS specially
-      // We look at the model's dimension and based on that return
-      // the appropriate associatesWith method
-      // Conflicts will contain a list of attributes that prevent an attribute
-      // of this type from being associated
+
+      bool canBeAssociated(smtk::model::BitFlags maskType) const;
       bool canBeAssociated(smtk::model::Cursor entity,
-                           std::vector<smtk::attribute::Attribute *>*conflicts) const;
+        std::vector<smtk::attribute::Attribute *>*conflicts) const;
 
       bool conflicts(smtk::attribute::DefinitionPtr definition) const;
 
@@ -257,7 +251,7 @@ namespace smtk
       bool m_isRequired;
       bool m_isNotApplicableColorSet;
       bool m_isDefaultColorSet;
-      smtk::model::BitFlags m_associationMask;
+      smtk::attribute::ModelEntityItemDefinitionPtr m_associationRule;
 
       std::string m_detailedDescription;
       std::string m_briefDescription;
