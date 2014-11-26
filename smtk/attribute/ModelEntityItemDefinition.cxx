@@ -84,7 +84,8 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::Cursor& c) const
   // group constraints to be acceptable independently.
   if (
     ((this->m_membershipMask & smtk::model::ENTITY_MASK)               &&
-     !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK))     ||
+     !(itemType & this->m_membershipMask & smtk::model::ENTITY_MASK)   &&
+     (itemType & smtk::model::ENTITY_MASK) != smtk::model::GROUP_ENTITY)  ||
     ((this->m_membershipMask & smtk::model::ANY_DIMENSION)             &&
      !(itemType & this->m_membershipMask & smtk::model::ANY_DIMENSION))   ||
     ((itemType & smtk::model::GROUP_ENTITY) &&
@@ -99,6 +100,8 @@ bool ModelEntityItemDefinition::isValueValid(const smtk::model::Cursor& c) const
     // require all entries to have the same entity type flag as the first.
     smtk::model::BitFlags typeMask = this->m_membershipMask;
     bool mustBeHomogenous = (typeMask & smtk::model::HOMOGENOUS_GROUP) ? true : false;
+    if (!(typeMask & smtk::model::NO_SUBGROUPS) && !(typeMask & smtk::model::GROUP_ENTITY))
+      typeMask |= smtk::model::GROUP_ENTITY; // if groups aren't banned, allow them.
     if (
       !c.as<model::GroupEntity>().meetsMembershipConstraintsInternal(
         c, typeMask, mustBeHomogenous))

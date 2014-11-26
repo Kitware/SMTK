@@ -430,7 +430,7 @@ void XmlV2StringWriter::processDefinition(xml_node &definitions,
       // Create association element if we need to.
       xml_node assocDefNode = node.append_child("AssociationsDef");
       ModelEntityItemDefinitionPtr assocRule = def->associationRule();
-      this->processModelEntityDef(assocDefNode, assocRule);
+      this->processItemDefinition(assocDefNode, assocRule);
       }
 
     if (def->briefDescription() != "")
@@ -881,6 +881,13 @@ void XmlV2StringWriter::processAttribute(xml_node &attributes,
       }
     }
   node.append_attribute("ID").set_value(att->id().toString().c_str());
+  // Save associated entities
+  ModelEntityItemPtr assoc = att->associations();
+  if (assoc && assoc->numberOfValues() > 0)
+    {
+    xml_node assocNode = node.append_child("Associations");
+    this->processItem(assocNode, assoc);
+    }
   // Save Color Information
   if (att->isColorSet())
     {
@@ -897,31 +904,6 @@ void XmlV2StringWriter::processAttribute(xml_node &attributes,
       itemNode = items.append_child();
       itemNode.set_name(Item::type2String(att->item(i)->type()).c_str());
       this->processItem(itemNode, att->item(i));
-      }
-    }
-  // Save associated model entities (if any)
-  smtk::common::UUIDs associatedEntities = att->associatedModelEntityIds();
-  if (!associatedEntities.empty())
-    {
-    xml_node assocsNode = node.append_child("ModelEntities");
-    smtk::common::UUIDs::const_iterator it;
-    smtk::model::ManagerPtr storage = att->modelManager();
-    for (it = associatedEntities.begin(); it != associatedEntities.end(); ++it)
-      {
-      xml_node assocNode = assocsNode.append_child("ModelEntity");
-      // Save the entity name, but only if one exists.
-      // NB: Do not replace with a call to storage->name(*it),
-      //     even though it is much simpler, as that method
-      //     will generate a descriptive name if none exists.
-      smtk::model::UUIDWithStringProperties sprops = storage->stringPropertiesForEntity(*it);
-      smtk::model::PropertyNameWithStrings sprop;
-      if (
-        sprops != storage->stringProperties().end() &&
-        ((sprop = sprops->second.find("name")) != sprops->second.end()) &&
-        !sprop->second.empty())
-        assocNode.append_attribute("Name").set_value(sprop->second[0].c_str());
-      // Save the UUID as the text value of the UUID node:
-      assocNode.text().set(it->toString().c_str());
       }
     }
 }

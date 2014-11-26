@@ -29,7 +29,10 @@
 #include "smtk/common/UUIDGenerator.h"
 
 #include <iostream>
+
 using namespace smtk::attribute;
+using namespace smtk::common;
+
 //----------------------------------------------------------------------------
 Attribute::Attribute(const std::string &myName,
                      smtk::attribute::DefinitionPtr myDefinition,
@@ -268,42 +271,49 @@ smtk::attribute::AttributePtr Attribute::pointer() const
 //----------------------------------------------------------------------------
 /**\brief Remove all associations of this attribute with model entities.
   *
-  * Note that this removes both new- and old-style associations.
+  * Note that this actually resets the associations.
+  * If there are any default associations, they will be present
+  * but typically there are none.
   */
 void Attribute::removeAllAssociations()
 {
-  // new-style model entities
-  smtk::model::ManagerPtr modelMgr;
-  if (modelMgr)
-    {
-    smtk::common::UUIDs::const_iterator mit;
-    for (
-      mit = this->m_modelEntities.begin();
-      mit != this->m_modelEntities.end();
-      ++mit)
-      {
-      modelMgr->disassociateAttribute(this->id(), *mit, false);
-      }
-    }
-  this->m_modelEntities.clear();
+  if (this->m_associations)
+    this->m_associations->reset();
 }
-//----------------------------------------------------------------------------
+
 /**\brief Is the model \a entity associated with this attribute?
   *
   */
 bool Attribute::isEntityAssociated(const smtk::common::UUID& entity) const
 {
-  return (this->m_modelEntities.find(entity) != this->m_modelEntities.end());
+  return this->m_associations ? this->m_associations->has(entity) : false;
 }
-//----------------------------------------------------------------------------
+
 /**\brief Is the model entity of the \a cursor associated with this attribute?
   *
   */
 bool Attribute::isEntityAssociated(const smtk::model::Cursor& cursor) const
 {
-  return this->isEntityAssociated(cursor.entity());
+  return this->m_associations ? this->m_associations->has(cursor) : false;
 }
-//----------------------------------------------------------------------------
+
+/**\brief Return the associated model entities as a set of UUIDs.
+  *
+  */
+smtk::common::UUIDs Attribute::associatedModelEntityIds() const
+{
+  smtk::common::UUIDs result;
+  if (!this->m_associations)
+    return result;
+
+  smtk::model::CursorArray::const_iterator it;
+  for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it)
+    {
+    result.insert(it->entity());
+    }
+  return result;
+}
+
 /*! \fn template<typename T> T Attribute::associatedModelEntities() const
  *\brief Return a container of associated cursor-subclass instances.
  *
@@ -320,7 +330,7 @@ bool Attribute::isEntityAssociated(const smtk::model::Cursor& cursor) const
  * will return 3 entries (2 faces and 1 edge) since the other entities
  * do not construct valid CellEntity instances.
  */
-//----------------------------------------------------------------------------
+
 /**\brief Associate a new-style model ID (a UUID) with this attribute.
   *
   * This function returns true when the association is valid and
@@ -329,36 +339,13 @@ bool Attribute::isEntityAssociated(const smtk::model::Cursor& cursor) const
   */
 bool Attribute::associateEntity(const smtk::common::UUID& entity)
 {
-  if (this->isEntityAssociated(entity))
-    {
-    // Nothing to be done
-    return true; // Entity may be and is now associated
-    }
-  smtk::model::ManagerPtr modelMgr = this->modelManager();
-  DefinitionPtr def = this->definition();
-  smtk::model::BitFlags etyp;
-  if (modelMgr && (etyp = modelMgr->type(entity)) && !def->canBeAssociated(etyp))
-    {
-    // Entity is well-defined, but is wrong type
-    // NB: This allows poorly-defined entities to be associated,
-    //     which is desirable to avoid overly-rigid ordering of
-    //     operations.
-    return false;
-    }
-  ModelEntityItemDefinitionPtr rule = def->associationRule();
-  if (
-    // Is the association not-extensible and full?
-    (!rule->isExtensible() && rule->numberOfRequiredValues() >= this->m_modelEntities.size()) ||
-    // Is the association extensible, bounded, and full?
-    (rule->isExtensible() && rule->maxNumberOfValues() && this->m_modelEntities.size() >= rule->maxNumberOfValues()))
-    { // Too many entities already associated
-    return false;
-    }
-  this->m_modelEntities.insert(entity);
-  if (modelMgr)
-    modelMgr->associateAttribute(this->id(), entity);
-  return true; // Entity may be and is now associated.
+  return this->m_associations ?
+    this->m_associations->appendValue(
+      smtk::model::Cursor(
+        this->modelManager(), entity)) :
+    false;
 }
+
 /**\brief Associate a new-style model ID (a Cursor) with this attribute.
   *
   * This function returns true when the association is valid and
@@ -367,27 +354,31 @@ bool Attribute::associateEntity(const smtk::common::UUID& entity)
   */
 bool Attribute::associateEntity(const smtk::model::Cursor& entity)
 {
-  return this->associateEntity(entity.entity());
+  return this->m_associations ? this->m_associations->appendValue(entity) : false;
 }
-//----------------------------------------------------------------------------
+
 /**\brief Disassociate a new-style model ID (a UUID) from this attribute.
   *
+  * If \a reverse is true (the default), then the model manager is notified
+  * of the item's disassociation immediately after its removal from this
+  * attribute, allowing the model and attribute to stay in sync.
   */
 void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool reverse)
 {
-  if (!this->isEntityAssociated(entity))
-    {
-    // Nothing to be done
+  if (!this->m_associations)
     return;
-    }
 
-  this->m_modelEntities.erase(entity);
-  if(reverse)
+  std::ptrdiff_t idx = this->m_associations->find(entity);
+  if (idx >= 0)
     {
-    smtk::model::ManagerPtr modelMgr = this->modelManager();
-    if (modelMgr)
+    this->m_associations->removeValue(idx);
+    if(reverse)
       {
-      modelMgr->disassociateAttribute(this->id(), entity, false);
+      smtk::model::ManagerPtr modelMgr = this->modelManager();
+      if (modelMgr)
+        {
+        modelMgr->disassociateAttribute(this->id(), entity, false);
+        }
       }
     }
 }
@@ -397,9 +388,27 @@ void Attribute::disassociateEntity(const smtk::common::UUID& entity, bool revers
   */
 void Attribute::disassociateEntity(const smtk::model::Cursor& entity, bool reverse)
 {
-  this->disassociateEntity(entity.entity(), reverse);
+  if (!this->m_associations)
+    return;
+
+  std::ptrdiff_t idx = this->m_associations->find(entity);
+  if (idx >= 0)
+    {
+    this->m_associations->removeValue(idx);
+    if (reverse)
+      {
+      smtk::model::Cursor mutableEntity(entity);
+      mutableEntity.disassociateAttribute(this->id(), false);
+      }
+    }
 }
-//----------------------------------------------------------------------------
+
+/**\brief Return the item with the given \a inName, searching in the given \a style.
+  *
+  * The search style dictates whether children of conditional items are included
+  * and, if so, whether all of their children are searched or just the active children.
+  * The default is to search active children.
+  */
 smtk::attribute::ItemPtr Attribute::find(
   const std::string& inName,
   SearchStyle style

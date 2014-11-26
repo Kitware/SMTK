@@ -25,9 +25,10 @@ double Definition::s_notApplicableBaseColor[4] = {0.0, 0.0, 0.0, 0.0};
 double Definition::s_defaultBaseColor[4] = {1.0, 1.0, 1.0, 1.0};
 
 //----------------------------------------------------------------------------
-Definition::Definition(const std::string &myType,
-                                         smtk::attribute::DefinitionPtr myBaseDef,
-                                         System *mySystem)
+Definition::Definition(
+  const std::string &myType,
+  smtk::attribute::DefinitionPtr myBaseDef,
+  System* mySystem)
 {
   this->m_system = mySystem;
   this->m_baseDefinition = myBaseDef;
@@ -112,7 +113,7 @@ ModelEntityItemDefinitionPtr Definition::associationRule() const
   if (!this->m_associationRule)
     {
     std::ostringstream assocName;
-    assocName << this->type() << "_association";
+    assocName << this->type() << "Associations";
     // We pretend to be const because allocating this object should have
     // no side effect (the newly-allocated definition's defaults should
     // match values returned in its absence).
@@ -236,8 +237,18 @@ void Definition::buildAttribute(Attribute *att) const
   else
     {
     // This is the "base definition" so first we should make sure the attribute
-    // is "empty" of items
+    // is "empty" of items and associations
     att->removeAllItems();
+    att->m_associations = ModelEntityItemPtr();
+    }
+
+  // If the definition allows associations, create an item to hold them:
+  if (this->associationMask())
+    {
+    att->m_associations =
+      smtk::dynamic_pointer_cast<ModelEntityItem>(
+        this->associationRule()->buildItem(att, -2));
+    att->m_associations->setDefinition(this->associationRule());
     }
 
   // Next - for each item definition we have build and add the appropriate

@@ -16,7 +16,10 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
+
+#include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/SearchStyle.h"
+
 #include "smtk/common/UUID.h" // for template associatedModelEntities()
 
 #include <map>
@@ -56,12 +59,10 @@ namespace smtk
       { return smtk::attribute::AttributePtr(new Attribute(myName, myDefinition, myId)); }
 
       virtual ~Attribute();
-      // NOTE: To rename an attribute use the system!
-      const std::string &name() const
-      { return this->m_name;}
 
-      const smtk::common::UUID &id() const
-      { return this->m_id;}
+      // NOTE: To rename an attribute use the System!
+      const std::string& name() const { return this->m_name;}
+      const smtk::common::UUID& id() const { return this->m_id;}
 
       const std::string &type() const;
       std::vector<std::string> types() const;
@@ -105,37 +106,39 @@ namespace smtk
         const std::string& name,
         SearchStyle style = ACTIVE_CHILDREN);
 
-      smtk::attribute::IntItemPtr findInt(const std::string &name);
-      smtk::attribute::ConstIntItemPtr findInt(const std::string &name) const;
+      IntItemPtr findInt(const std::string &name);
+      ConstIntItemPtr findInt(const std::string &name) const;
 
-      smtk::attribute::DoubleItemPtr findDouble(const std::string &name);
-      smtk::attribute::ConstDoubleItemPtr findDouble(const std::string &name) const;
+      DoubleItemPtr findDouble(const std::string &name);
+      ConstDoubleItemPtr findDouble(const std::string &name) const;
 
-      smtk::attribute::StringItemPtr findString(const std::string &name);
-      smtk::attribute::ConstStringItemPtr findString(const std::string &name) const;
+      StringItemPtr findString(const std::string &name);
+      ConstStringItemPtr findString(const std::string &name) const;
 
-      smtk::attribute::FileItemPtr findFile(const std::string &name);
-      smtk::attribute::ConstFileItemPtr findFile(const std::string &name) const;
+      FileItemPtr findFile(const std::string &name);
+      ConstFileItemPtr findFile(const std::string &name) const;
 
-      smtk::attribute::DirectoryItemPtr findDirectory(const std::string &name);
-      smtk::attribute::ConstDirectoryItemPtr findDirectory(const std::string &name) const;
+      DirectoryItemPtr findDirectory(const std::string &name);
+      ConstDirectoryItemPtr findDirectory(const std::string &name) const;
 
-      smtk::attribute::GroupItemPtr findGroup(const std::string &name);
-      smtk::attribute::ConstGroupItemPtr findGroup(const std::string &name) const;
+      GroupItemPtr findGroup(const std::string &name);
+      ConstGroupItemPtr findGroup(const std::string &name) const;
 
-      smtk::attribute::RefItemPtr findRef(const std::string &name);
-      smtk::attribute::ConstRefItemPtr findRef(const std::string &name) const;
+      RefItemPtr findRef(const std::string &name);
+      ConstRefItemPtr findRef(const std::string &name) const;
 
-      smtk::attribute::ModelEntityItemPtr findModelEntity(const std::string &name);
-      smtk::attribute::ConstModelEntityItemPtr findModelEntity(const std::string &name) const;
+      ModelEntityItemPtr findModelEntity(const std::string &name);
+      ConstModelEntityItemPtr findModelEntity(const std::string &name) const;
 
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
+
+      ConstModelEntityItemPtr associations() const { return this->m_associations; }
+      ModelEntityItemPtr associations() { return this->m_associations; }
 
       bool isEntityAssociated(const smtk::common::UUID& entity) const;
       bool isEntityAssociated(const smtk::model::Cursor& cursor) const;
 
-      smtk::common::UUIDs associatedModelEntityIds() const
-      {return this->m_modelEntities;}
+      smtk::common::UUIDs associatedModelEntityIds() const;
       template<typename T> T associatedModelEntities() const;
 
       bool associateEntity(const smtk::common::UUID& entity);
@@ -158,7 +161,7 @@ namespace smtk
 
       bool isValid();
 
-      smtk::attribute::System *system() const;
+      smtk::attribute::System* system() const;
       smtk::model::ManagerPtr modelManager() const;
 
       void setUserData(const std::string &key, smtk::simulation::UserDataPtr value)
@@ -192,11 +195,13 @@ namespace smtk
       // This removes all references to a specific Ref Item
       void removeReference(smtk::attribute::RefItem *attRefItem)
         {this->m_references.erase(attRefItem);}
+
+#ifndef SHIBOKEN_SKIP
       std::string m_name;
       std::vector<smtk::attribute::ItemPtr> m_items;
+      ModelEntityItemPtr m_associations;
       smtk::common::UUID m_id;
       smtk::attribute::DefinitionPtr m_definition;
-      smtk::common::UUIDs m_modelEntities;
       std::map<smtk::attribute::RefItem *, std::set<std::size_t> > m_references;
       bool m_appliesToBoundaryNodes;
       bool m_appliesToInteriorNodes;
@@ -206,10 +211,8 @@ namespace smtk
       // being deleted - this is used skip certain clean up steps that
       // would need to be done otherwise
       bool m_aboutToBeDeleted;
-    private:
-      //needs to be private for shiboken wrapping to work properly
       double m_color[4];
-
+#endif // SHIBOKEN_SKIP
     };
 //----------------------------------------------------------------------------
     inline smtk::simulation::UserDataPtr Attribute::userData(const std::string &key) const
@@ -231,13 +234,12 @@ namespace smtk
     template<typename T> T Attribute::associatedModelEntities() const
     {
       T result;
-      smtk::model::ManagerPtr modelMgr = this->modelManager();
-      if (!modelMgr) { // No attached manager means we cannot make cursors.
+      if (!this->m_associations)
         return result;
-      }
-      smtk::common::UUIDs::const_iterator it;
-      for (it = this->m_modelEntities.begin(); it != this->m_modelEntities.end(); ++it) {
-        typename T::value_type entry(modelMgr, *it);
+
+      smtk::model::CursorArray::const_iterator it;
+      for (it = this->m_associations->begin(); it != this->m_associations->end(); ++it) {
+        typename T::value_type entry(*it);
         if (entry.isValid()) {
           result.insert(result.end(), entry);
         }

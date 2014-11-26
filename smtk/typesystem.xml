@@ -63,6 +63,8 @@
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntity', unmatched return type 'BRepModel::iter_type'"/>
 	<suppress-warning text="skipping function 'smtk::model::BRepModel::setEntityOfTypeAndDimension', unmatched return type 'BRepModel::iter_type'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::begin', unmatched return type 'smtk::model::CursorArray::const_iterator'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::ModelEntityItem::end', unmatched return type 'smtk::model::CursorArray::const_iterator'"/>
 
   <!-- Use cJSON objects. For now we will ignore these-->
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofDanglingEntities', unmatched parameter type 'cJSON*'"/>
@@ -316,6 +318,7 @@
   <suppress-warning text="skipping function 'smtk::model::Bridge::createIODelegate', unmatched return type 'smtk::model::BridgeIOPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Manager::findEntitiesByPropertyAs', unmatched return type 'Collection'"/>
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::common::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::associations', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
 
   <!-- Ignore until we have time to support Operators -->
   <suppress-warning text="skipping field 'BRepModel::m_modelBridges' with unmatched type 'std::map&lt;smtk::io::UUID,smtk::shared_ptr&lt;Bridge&gt;&gt;'"/>
@@ -377,6 +380,7 @@
   <primitive-type name="unsigned long long"/>
 
   <primitive-type name="std::size_t"/>
+  <primitive-type name="std::ptrdiff_t"/>
   <primitive-type name="std::string"/>
   <primitive-type name="smtk::common::UUID" target-lang-api-name="PyObject">
     <include file-name="smtk/common/UUID.h" location="global"/>

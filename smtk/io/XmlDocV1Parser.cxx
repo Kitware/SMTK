@@ -729,7 +729,14 @@ void XmlDocV1Parser::processDefinition(xml_node &defNode)
   node = defNode.child("AssociationsDef");
   if (node)
     {
-    this->processModelEntityDef(node, def->associationRule());
+    std::string assocName = node.attribute("Name").value();
+    if (assocName.empty())
+      assocName = def->type() + "Associations";
+    smtk::attribute::ModelEntityItemDefinitionPtr assocDef =
+      smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItemDefinition>(
+        smtk::attribute::ModelEntityItemDefinition::New(assocName));
+    this->processModelEntityDef(node, assocDef);
+    def->setAssociationRule(assocDef);
     }
 
   // Now lets process its items
@@ -1668,24 +1675,10 @@ void XmlDocV1Parser::processAttribute(xml_node &attNode)
       }
     }
 
-  assocsNode = attNode.child("ModelEntities");
+  assocsNode = attNode.child("Associations");
   if (assocsNode)
     {
-    n = static_cast<int>(att->numberOfItems());
-    for (i = 0, iNode = assocsNode.first_child(); (i < n) && iNode;
-      i++, iNode = iNode.next_sibling())
-      {
-      smtk::common::UUID uid(iNode.text().get());
-      if (uid.isNull())
-        {
-        smtkErrorMacro(this->m_logger,
-          "Could not convert UUID text \""
-          << iNode.text().get()
-          << "\" to a UUID. Skipping.");
-        continue;
-        }
-      att->associateEntity(uid);
-      }
+    this->processItem(assocsNode, att->associations());
     }
 }
 
