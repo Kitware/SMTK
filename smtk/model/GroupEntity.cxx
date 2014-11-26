@@ -194,6 +194,11 @@ bool GroupEntity::meetsMembershipConstraintsInternal(
     if ((memberMask & ENTITY_MASK) == GROUP_ENTITY) memberMask |= ENTITY_MASK;
     // By default, a group can contain other groups as long as their members meet the
     // membership test.
+    // We accept shorthand where the mask does not explicitly mention groups being
+    // allowed as intending for groups to be allowed as long as they have members
+    // that are allowed. TODO: need to watch changes to group membership.
+    if (!(memberMask & GROUP_ENTITY)) memberMask |= GROUP_ENTITY;
+    // OK, there are cases when groups really should be omitted.
     if (groupFlags & NO_SUBGROUPS) memberMask &= ~GROUP_ENTITY;
     // Must the group be homogenous? If so, our mask may be constrained by
     // existing members. If there are no pre-existing members, then the

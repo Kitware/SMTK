@@ -54,22 +54,24 @@ if __name__ == '__main__':
     # Lets add some item definitions
     scompdef = smtk.attribute.StringItemDefinition.New(itemNames[4])
     itemdef = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef)
-    def1.addItemDefinition(itemdef)
+    def2.addItemDefinition(itemdef)
     scompdef2 = smtk.attribute.StringItemDefinition.New(itemNames[5])
     scompdef2.setDefaultValue('Default')
     itemdef2 = smtk.attribute.StringItemDefinition.ToItemDefinition(scompdef2)
-    def1.addItemDefinition(itemdef2)
+    def2.addItemDefinition(itemdef2)
 
     def3 = system.createDefinition('Derived3', 'Derived1')
     # Lets add some item definitions
     scompdef = smtk.attribute.ModelEntityItemDefinition.New(itemNames[6])
     scompdef.setMembershipMask(smtk.model.FACE)
+    scompdef.setIsExtensible(True) # Need to set this or numberOfRequiredValues
     itemdef = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef)
-    def1.addItemDefinition(itemdef)
+    def3.addItemDefinition(itemdef)
     scompdef3 = smtk.attribute.ModelEntityItemDefinition.New(itemNames[7])
     scompdef3.setMembershipMask(smtk.model.CELL_ENTITY | smtk.model.GROUP_ENTITY | smtk.model.HOMOGENOUS_GROUP)
+    scompdef3.setIsExtensible(True) # Need to set this or numberOfRequiredValues
     itemdef3 = smtk.attribute.ModelEntityItemDefinition.ToItemDefinition(scompdef3)
-    def1.addItemDefinition(itemdef3)
+    def3.addItemDefinition(itemdef3)
 
     # Lets test out the find item position method
     pstatus = 0;

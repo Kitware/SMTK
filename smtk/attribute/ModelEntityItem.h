@@ -62,7 +62,18 @@ public:
   virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                         smtk::attribute::Item::CopyInfo& info);
 
+  bool has(const smtk::common::UUID& entity) const;
+  bool has(const smtk::model::Cursor& entity) const;
+
+  smtk::model::CursorArray::const_iterator begin() const;
+  smtk::model::CursorArray::const_iterator end() const;
+
+  std::ptrdiff_t find(const smtk::common::UUID& entity) const;
+  std::ptrdiff_t find(const smtk::model::Cursor& entity) const;
+
 protected:
+  friend class Definition;
+
   ModelEntityItem(Attribute *owningAttribute, int itemPosition);
   ModelEntityItem(Item *owningItem, int myPosition, int mySubGroupPosition);
 

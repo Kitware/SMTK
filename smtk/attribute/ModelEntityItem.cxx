@@ -144,9 +144,12 @@ bool ModelEntityItem::appendValue(const smtk::model::Cursor& val)
   // First - are we allowed to change the number of values?
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+  if (
+    (def->isExtensible() && def->maxNumberOfValues() && this->m_values.size() >= def->maxNumberOfValues()) ||
+    (!def->isExtensible() && this->m_values.size() >= def->numberOfRequiredValues()))
     {
-    return false; // The number of values is fixed
+    // The maximum number of values is fixed
+    return false;
     }
 
   if (def->isValueValid(val))
@@ -170,8 +173,12 @@ bool ModelEntityItem::removeValue(std::size_t i)
   return true;
 }
 
+/// This clears the list of values and then fills it with null entities up to the number of required values.
 void ModelEntityItem::reset()
 {
+  this->m_values.clear();
+  if (this->numberOfRequiredValues() > 0)
+    this->m_values.resize(this->numberOfRequiredValues());
 }
 
 /// A convenience method to obtain the first value in the item as a string.
@@ -190,7 +197,9 @@ std::string ModelEntityItem::valueAsString(std::size_t i) const
 /// Return whether the \a i-th value is set (i.e., a valid model entity).
 bool ModelEntityItem::isSet(std::size_t i) const
 {
-  return this->m_values[i].isValid();
+  return i < this->m_values.size() ?
+    this->m_values[i].isValid() :
+    false;
 }
 
 /// Force the \a i-th value of the item to be invalid.
@@ -223,4 +232,62 @@ void ModelEntityItem::copyFrom(ItemPtr sourceItem, CopyInfo& info)
       this->unset(i);
       }
     }
+}
+
+/**\brief Return true if the entity is associated with this item; false otherwise.
+  *
+  */
+bool ModelEntityItem::has(const smtk::common::UUID& entity) const
+{
+  return this->find(entity) >= 0;
+}
+
+/**\brief
+  *
+  */
+bool ModelEntityItem::has(const smtk::model::Cursor& entity) const
+{
+  return this->find(entity) >= 0;
+}
+
+/**\brief
+  *
+  */
+smtk::model::CursorArray::const_iterator ModelEntityItem::begin() const
+{
+  return this->m_values.begin();
+}
+
+/**\brief
+  *
+  */
+smtk::model::CursorArray::const_iterator ModelEntityItem::end() const
+{
+  return this->m_values.end();
+}
+
+/**\brief
+  *
+  */
+std::ptrdiff_t ModelEntityItem::find(const smtk::common::UUID& entity) const
+{
+  std::ptrdiff_t idx = 0;
+  smtk::model::CursorArray::const_iterator it;
+  for (it = this->begin(); it != this->end(); ++it, ++idx)
+    if (it->entity() == entity)
+      return idx;
+  return -1;
+}
+
+/**\brief
+  *
+  */
+std::ptrdiff_t ModelEntityItem::find(const smtk::model::Cursor& entity) const
+{
+  std::ptrdiff_t idx = 0;
+  smtk::model::CursorArray::const_iterator it;
+  for (it = this->begin(); it != this->end(); ++it, ++idx)
+    if (*it == entity)
+      return idx;
+  return -1;
 }
