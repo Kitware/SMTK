@@ -38,6 +38,7 @@ public:
     const std::string& engine,
     const std::vector<std::string>& args = std::vector<std::string>());
   static bool setDefault(const std::string& engine);
+  static std::string currentEngine();
 
   static std::vector<std::string> listEngines();
 

@@ -59,6 +59,8 @@ static GeometryQueryEngine* originalQueryEngine = NULL;
 static GeometryModifyEngine* originalModifyEngine = NULL;
 static GeometryHealerEngine* originalHealerEngine = NULL;
 
+static std::string s_currentEngine;
+
 bool Engines::areInitialized()
 {
   return cgmaInitialized;
@@ -75,8 +77,7 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
       }
     cgmaInitialized = originalQueryEngine ? true : false;
     // OK, we got ACIS defaults, now make the user-requested engine default
-    cgmaInitialized = Engines::setDefault(engine);
-    return cgmaInitialized;
+    return Engines::setDefault(engine);
     }
 
   // OK, either the user is asking for ACIS or we don't have it anyway...
@@ -97,24 +98,27 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
   smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   CubitStatus s = InitCGMA::initialize_cgma(
     engine.empty() ? "OCC" : engine.c_str());
-  cgmaInitialized = (s == CUBIT_SUCCESS ? true : false);
   if (!originalQueryEngine)
     {
     originalQueryEngine = GeometryQueryTool::instance()->get_gqe();
     originalModifyEngine = GeometryModifyTool::instance()->get_gme();
     }
-  return cgmaInitialized;
+  if (GeometryQueryTool::instance())
+    s_currentEngine = GeometryQueryTool::instance()->get_gqe()->modeler_type();
+  if (originalQueryEngine)
+    {
+    cgmaInitialized = true;
+    }
+  return (s == CUBIT_SUCCESS) ? true : false;
 }
 
 bool Engines::setDefault(const std::string& engine)
 {
   // If we've never called init, do some extra stuff:
-#if defined(CGM_VERSION_MAJOR) && CGM_VERSION_MAJOR >= 14
   if (!Engines::areInitialized())
     {
     return Engines::isInitialized(engine);
     }
-#endif
   // Otherwise, see if we can create the appropriate engines
   // and set them in the default query/modify tool.
 
@@ -200,7 +204,13 @@ bool Engines::setDefault(const std::string& engine)
 
   // For now, we cannot rely on anyone providing a healer.
   defaultChanged = (gmt && gqt ? true : false);
+  s_currentEngine = engine;
   return defaultChanged;
+}
+
+std::string Engines::currentEngine()
+{
+  return s_currentEngine;
 }
 
 std::vector<std::string> Engines::listEngines()

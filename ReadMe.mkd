@@ -18,25 +18,28 @@ What's below is a quick guide to building SMTK.
 In order to build SMTK you must have
 
 + A modern C++ compiler (gcc, clang, or VS),
-+ [CMake](http://cmake.org) 2.8.11 or newer, and
++ [CMake](http://cmake.org) 2.8.12 or newer, and
 + [Boost](http://boost.org) 1.50.0 or newer.
 
 We recommend using [Ninja](http://martine.github.io/ninja/) for fast builds.
 
 You may optionally provide
 
-+ [Python](http://python.org) version 2.7.3 or newer and
-  [Shiboken](http://github.com/OpenGeoscience/shiboken) from the smtk-head branch,
-  for Python wrappings of SMTK's C++ classes;
-+ [Qt](http://qt-project.org) version 4.8 or newer,
-  for widgets to interact with attributes and models;
 + [CGMA](http://trac.mcs.anl.gov/projects/ITAPS/wiki/CGM) v13 or newer,
   built with
   [OpenCascade](http://opencascade.org/) or
   [Cubit](http://cubit.sandia.gov/),
   for importing CAD models;
++ [Python](http://python.org) version 2.7.3 or newer and
+  [Shiboken](http://github.com/OpenGeoscience/shiboken) from the smtk-head branch,
+  for Python wrappings of SMTK's C++ classes;
++ [Qt](http://qt-project.org) version 4.8 or newer,
+  for widgets to interact with attributes and models;
++ [Remus](https://github.com/robertmaynard/Remus) from the master branch,
+  for running SMTK modelers in remote processes;
   and
-+ [VTK](http://VTK.org) version 6.1 or newer,
++ [ParaView](http://paraview.org) version 4.2 or newer,
+  or [VTK](http://VTK.org) version 6.1 or newer,
   for graphical presentation and selection of geometric models.
 
 If you want to build the documentation you will need
