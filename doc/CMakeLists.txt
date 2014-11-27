@@ -128,7 +128,10 @@ if (SPHINX_FOUND)
     userguide/attribute/index.rst
     userguide/attribute/concepts.rst
     userguide/attribute/file-syntax.rst
-    userguide/model.rst
+    userguide/model/index.rst
+    userguide/model/concepts.rst
+    userguide/model/bridges.rst
+    userguide/model/property-names.rst
     userguide/contributing.rst
   )
   if (DOXYGEN_FOUND)

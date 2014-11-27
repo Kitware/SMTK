@@ -47,7 +47,7 @@ and installed SMTK according to these instructions.
    :maxdepth: 4
 
    attribute/index.rst
-   model.rst
+   model/index.rst
    administration.rst
    contributing.rst
 
