@@ -51,12 +51,18 @@ public:
   vtkGetVector4Macro(DefaultColor,double);
   vtkSetVector4Macro(DefaultColor,double);
 
+  vtkGetMacro(AllowNormalGeneration,int);
+  vtkSetMacro(AllowNormalGeneration,int);
+  vtkBooleanMacro(AllowNormalGeneration,int);
+
 protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
 
   void GenerateRepresentationFromModelEntity(
-    vtkPolyData* poly, const smtk::model::Cursor& entity);
+    vtkPolyData* poly,
+    const smtk::model::Cursor& entity,
+    bool genNormals);
   void GenerateRepresentationFromModel(
     vtkMultiBlockDataSet* mbds, smtk::model::ManagerPtr model);
 
@@ -80,6 +86,7 @@ protected:
   std::map<std::string, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
   char* ModelEntityID; // Model Entity UUID
 
+  int AllowNormalGeneration;
   vtkNew<vtkPolyDataNormals> NormalGenerator;
 
 private:

@@ -47,6 +47,7 @@ vtkModelMultiBlockSource::vtkModelMultiBlockSource()
     this->DefaultColor[i] = 1.;
     }
   this->ModelEntityID = NULL;
+  this->AllowNormalGeneration = 0;
 }
 
 vtkModelMultiBlockSource::~vtkModelMultiBlockSource()
@@ -62,6 +63,7 @@ void vtkModelMultiBlockSource::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Model: " << this->ModelMgr.get() << "\n";
   os << indent << "CachedOutput: " << this->CachedOutput << "\n";
   os << indent << "ModelEntityID: " << this->ModelEntityID << "\n";
+  os << indent << "AllowNormalGeneration: " << this->AllowNormalGeneration << "\n";
 }
 
 /// Set the SMTK model to be displayed.
@@ -198,7 +200,7 @@ static void AddEntityTessToPolyData(
 
 /// Loop over the model generating blocks of polydata.
 void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
-  vtkPolyData* pd, const smtk::model::Cursor& cursor)
+  vtkPolyData* pd, const smtk::model::Cursor& cursor, bool genNormals)
 {
   vtkNew<vtkPoints> pts;
   vtkNew<vtkStringArray> pedigree;
@@ -232,11 +234,22 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModelEntity(
       pd->GetCellData()->AddArray(cellColor.GetPointer());
       pd->GetCellData()->SetScalars(cellColor.GetPointer());
       }
-    if (pd->GetPolys()->GetSize() > 0)
+    if (this->AllowNormalGeneration && pd->GetPolys()->GetSize() > 0)
       {
-      this->NormalGenerator->SetInputDataObject(pd);
-      this->NormalGenerator->Update();
-      pd->ShallowCopy(this->NormalGenerator->GetOutput());
+      bool reallyNeedNormals = genNormals;
+      if ( cursor.hasIntegerProperty("generate normals"))
+        { // Allow per-entity setting to override per-model setting
+        const IntegerList& prop(
+          cursor.integerProperty(
+            "generate normals"));
+        reallyNeedNormals = (!prop.empty() && prop[0]);
+        }
+      if (reallyNeedNormals)
+        {
+        this->NormalGenerator->SetInputDataObject(pd);
+        this->NormalGenerator->Update();
+        pd->ShallowCopy(this->NormalGenerator->GetOutput());
+        }
       }
     }
 }
@@ -270,6 +283,15 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       entity.as<smtk::model::ModelEntity>() : entity.owningModel();
     if (modelEntity.isValid())
       {
+      // See if the model has any instructions about
+      // whether to generate surface normals.
+      bool modelRequiresNormals = false;
+      if ( modelEntity.hasIntegerProperty("generate normals"))
+        {
+        const IntegerList& prop(modelEntity.integerProperty("generate normals"));
+        if (!prop.empty() && prop[0])
+          modelRequiresNormals = true;
+        }
       // First, enumerate all free cells and their boundaries to
       // find those which provide tessellations.
       smtk::model::Cursors cursors;
@@ -286,7 +308,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         mbds->SetBlock(i, poly.GetPointer());
         // Set the block name to the entity UUID.
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
-        this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit);
+        this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
         this->UUID2BlockIdMap[(*cit).entity().toString()] = static_cast<unsigned int>(i);
         }
@@ -300,7 +322,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           vtkNew<vtkPolyData> poly;
           mbds->SetBlock(cursors.size() + i, poly.GetPointer());
           mbds->GetMetaData(cursors.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
-          this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git);
+          this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git, modelRequiresNormals);
           this->UUID2BlockIdMap[git->entity().toString()] = static_cast<unsigned int>(cursors.size() + i);
           }
         }
@@ -328,7 +350,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       smtk::model::Cursor cursor(manager, it->first);
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
-      this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor);
+      this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor, this->AllowNormalGeneration);
       this->UUID2BlockIdMap[cursor.entity().toString()] = static_cast<unsigned int>(i);
       }
     }
