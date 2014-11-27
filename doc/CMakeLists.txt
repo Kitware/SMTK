@@ -78,21 +78,6 @@ if (SPHINX_FOUND)
     if (NOT sphinx_BUILD_DIR)
       set(sphinx_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}") # Reasonable default
     endif()
-    set(figureList)
-    foreach(FIG ${sphinx_FIGURES})
-      add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIG}"
-        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/${FIG}"
-        COMMAND ${CMAKE_COMMAND}
-        ARGS
-          -E copy_if_different
-          "${CMAKE_CURRENT_SOURCE_DIR}/${FIG}"
-          "${CMAKE_CURRENT_BINARY_DIR}/${FIG}"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        COMMENT "Copying figure ${FIG}"
-      )
-      list(APPEND figureList "${CMAKE_CURRENT_BINARY_DIR}/${FIG}")
-    endforeach()
     # Generate HTML version of docs
     set(sphinx_HTML_TOP "${CMAKE_CURRENT_BINARY_DIR}/${sphinx_BUILD_DIR}/html/index.html")
     add_custom_command(
@@ -109,7 +94,7 @@ if (SPHINX_FOUND)
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating HTML for ${sphinxTargetName}"
     )
-    add_custom_target(doc-${sphinxTargetName} ALL DEPENDS "${sphinx_HTML_TOP}")
+    add_custom_target(doc-${sphinxTargetName} DEPENDS "${sphinx_HTML_TOP}")
     if (sphinx_DESTINATION)
       install(
         DIRECTORY "${sphinx_BUILD_DIR}/html/"
@@ -128,7 +113,10 @@ if (SPHINX_FOUND)
     userguide/attribute/index.rst
     userguide/attribute/concepts.rst
     userguide/attribute/file-syntax.rst
-    userguide/model.rst
+    userguide/model/index.rst
+    userguide/model/concepts.rst
+    userguide/model/bridges.rst
+    userguide/model/property-names.rst
     userguide/contributing.rst
   )
   if (DOXYGEN_FOUND)

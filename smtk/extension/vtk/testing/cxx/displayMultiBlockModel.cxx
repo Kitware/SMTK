@@ -77,6 +77,8 @@ int main(int argc, char* argv[])
     vtkNew<vtkRenderer> ren;
     vtkNew<vtkRenderWindow> win;
     src->SetModelManager(sm);
+    if (debug && argv[2][0] != '0')
+    src->AllowNormalGenerationOn();
     map->SetInputConnection(src->GetOutputPort());
     act->SetMapper(map.GetPointer());
     act->GetProperty()->SetPointSize(5);
@@ -89,12 +91,13 @@ int main(int argc, char* argv[])
     vtkInteractorStyleSwitch::SafeDownCast(iac->GetInteractorStyle())->SetCurrentStyleToTrackballCamera();
     win->SetInteractor(iac);
 
-#if 0
-    vtkNew<vtkXMLMultiBlockDataWriter> wri;
-    wri->SetInputConnection(src->GetOutputPort());
-    wri->SetFileName("/tmp/foo.vtm");
-    wri->Write();
-#endif // 0
+    if (debug && argc > 3)
+      {
+      vtkNew<vtkXMLMultiBlockDataWriter> wri;
+      wri->SetInputConnection(src->GetOutputPort());
+      wri->SetFileName(argv[3]);
+      wri->Write();
+      }
 
     win->Render();
     ren->ResetCamera();
