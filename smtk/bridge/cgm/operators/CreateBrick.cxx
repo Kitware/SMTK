@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/operators/CreateBrickOperator.h"
+#include "smtk/bridge/cgm/operators/CreateBrick.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -35,19 +35,19 @@
 #include "RefGroup.hpp"
 #include "Body.hpp"
 
-#include "smtk/bridge/cgm/CreateBrickOperator_xml.h"
+#include "smtk/bridge/cgm/CreateBrick_xml.h"
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreateBrickOperator::ableToOperate()
+bool CreateBrick::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreateBrickOperator::operateInternal()
+smtk::model::OperatorResult CreateBrick::operateInternal()
 {
   using smtk::attribute::SearchStyle;
 
@@ -136,8 +136,8 @@ smtk::model::OperatorResult CreateBrickOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreateBrickOperator,
+  smtk::bridge::cgm::CreateBrick,
   cgm_create_brick,
   "create brick",
-  CreateBrickOperator_xml,
+  CreateBrick_xml,
   smtk::bridge::cgm::Bridge);

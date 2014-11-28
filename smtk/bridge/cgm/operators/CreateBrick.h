@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateBrickOperator_h
-#define __smtk_bridge_cgm_CreateBrickOperator_h
+#ifndef __smtk_bridge_cgm_CreateBrick_h
+#define __smtk_bridge_cgm_CreateBrick_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -35,11 +35,11 @@ namespace smtk {
   * their corresponding axis (i.e., how far the cuboid
   * extends along the axis from the center point).
   */
-class CGMSMTK_EXPORT CreateBrickOperator : public Operator
+class CGMSMTK_EXPORT CreateBrick : public Operator
 {
 public:
-  smtkTypeMacro(CreateBrickOperator);
-  smtkCreateMacro(CreateBrickOperator);
+  smtkTypeMacro(CreateBrick);
+  smtkCreateMacro(CreateBrick);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -53,4 +53,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateBrickOperator_h
+#endif // __smtk_bridge_cgm_CreateBrick_h

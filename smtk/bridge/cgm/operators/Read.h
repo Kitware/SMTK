@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateSphereOperator_h
-#define __smtk_bridge_cgm_CreateSphereOperator_h
+#ifndef __smtk_bridge_cgm_Read_h
+#define __smtk_bridge_cgm_Read_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,11 +16,11 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT CreateSphereOperator : public Operator
+class CGMSMTK_EXPORT Read : public Operator
 {
 public:
-  smtkTypeMacro(CreateSphereOperator);
-  smtkCreateMacro(CreateSphereOperator);
+  smtkTypeMacro(Read);
+  smtkCreateMacro(Read);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -34,4 +34,4 @@ protected:
   } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateSphereOperator_h
+#endif // __smtk_bridge_cgm_Read_h

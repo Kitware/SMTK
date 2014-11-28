@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateEdgeOperator_h
-#define __smtk_bridge_cgm_CreateEdgeOperator_h
+#ifndef __smtk_bridge_cgm_CreateSphere_h
+#define __smtk_bridge_cgm_CreateSphere_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,15 +16,11 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-/**\brief Create a edge given height, major and minor radii, and a number of sides.
-  *
-  * The number of sides must be 3 or greater.
-  */
-class CGMSMTK_EXPORT CreateEdgeOperator : public Operator
+class CGMSMTK_EXPORT CreateSphere : public Operator
 {
 public:
-  smtkTypeMacro(CreateEdgeOperator);
-  smtkCreateMacro(CreateEdgeOperator);
+  smtkTypeMacro(CreateSphere);
+  smtkCreateMacro(CreateSphere);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -35,7 +31,7 @@ protected:
 };
 
     } // namespace cgm
-  } //namespace bridge
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateEdgeOperator_h
+#endif // __smtk_bridge_cgm_CreateSphere_h

@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/operators/CreateFaceOperator.h"
+#include "smtk/bridge/cgm/operators/CreateEdge.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -33,79 +33,80 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
+#include "RefVertex.hpp"
 #include "RefEdge.hpp"
-#include "RefFace.hpp"
 
-#include "smtk/bridge/cgm/CreateFaceOperator_xml.h"
+#include "smtk/bridge/cgm/CreateEdge_xml.h"
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreateFaceOperator::ableToOperate()
+bool CreateEdge::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreateFaceOperator::operateInternal()
+smtk::model::OperatorResult CreateEdge::operateInternal()
 {
-  smtk::attribute::ModelEntityItem::Ptr edgesItem =
-    this->findModelEntity("edges");
-  smtk::attribute::IntItem::Ptr surfTypeItem =
-    this->findInt("surface type");
+  smtk::attribute::ModelEntityItem::Ptr verticesItem =
+    this->findModelEntity("vertices");
+  smtk::attribute::DoubleItem::Ptr pointItem =
+    this->findDouble("point");
+  smtk::attribute::IntItem::Ptr curveTypeItem =
+    this->findInt("curve type");
   smtk::attribute::IntItem::Ptr colorItem =
     this->findInt("color");
 
   int color = colorItem->value();
-  GeometryType surfType = static_cast<GeometryType>(
-    surfTypeItem->concreteDefinition()->discreteValue(
-      surfTypeItem->discreteIndex()));
-  switch (surfType)
+  CubitVector point(
+    pointItem->value(0),
+    pointItem->value(1),
+    pointItem->value(2));
+  GeometryType curveType = static_cast<GeometryType>(
+    curveTypeItem->concreteDefinition()->discreteValue(
+      curveTypeItem->discreteIndex()));
+  switch (curveType)
     {
-  case PLANE_SURFACE_TYPE:
-  case BEST_FIT_SURFACE_TYPE:
+  case STRAIGHT_CURVE_TYPE: //    intermediate_point_ptr  is not used
+  case PARABOLA_CURVE_TYPE: //    intermediate_point_ptr is the tip of the parabola
+  case HYPERBOLA_CURVE_TYPE: //    intermediate_point_ptr is the center of its two foci
+  case ELLIPSE_CURVE_TYPE:
+    //    intermediate_point_ptr is the center of the ellipse
+    //    the two points are vertices, one gives the major radius,
+    //    the other point gives the minor radius.
+  case ARC_CURVE_TYPE: //    arc passes three points
     break;
   default:
-    std::cerr << "Bad surf type " << surfType << "\n";
+    std::cerr << "Bad curve type " << curveType << "\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
-  DLIList<RefEdge*> edgeList;
-  for (std::size_t i = 0; i < edgesItem->numberOfValues(); ++i)
+  RefVertex* v0 = this->cgmEntityAs<RefVertex*>(verticesItem->value(0));
+  RefVertex* v1 = this->cgmEntityAs<RefVertex*>(verticesItem->value(1));
+  if (!v0 || !v1)
     {
-    RefEdge* edg = this->cgmEntityAs<RefEdge*>(edgesItem->value(i));
-    if (!edg)
-      {
-      std::cerr << "One or more edges were invalid " << edgesItem->value(i).name() << "\n";
-      return this->createResult(smtk::model::OPERATION_FAILED);
-      }
-    edgeList.push(edg);
-    }
-  if (edgeList.size() <= 0)
-    {
-    std::cerr << "No edges provided.\n";
+    std::cerr << "One or more vertices were invalid " << v0 << ", " << v1 << "\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
-  bool isFree = true;
-  bool checkEdges = true;
-  RefFace* cgmFace = GeometryModifyTool::instance()->make_RefFace(surfType, edgeList, isFree, NULL, checkEdges);
-  if (!cgmFace)
+  RefEdge* cgmEdge = GeometryModifyTool::instance()->make_RefEdge(curveType, v0, v1, &point);
+  if (!cgmEdge)
     {
-    std::cerr << "Failed to create face\n";
+    std::cerr << "Failed to create edge\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
   // Assign color to match vertex API that requires a color.
-  cgmFace->color(color);
+  cgmEdge->color(color);
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultVert =
-    result->findModelEntity("face");
+    result->findModelEntity("edge");
 
   Bridge* bridge = this->cgmBridge();
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmFace, true);
+  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmEdge, true);
   smtk::common::UUID entId = refId->entityId();
   smtk::model::Cursor smtkEntry(this->manager(), entId);
   if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
@@ -119,8 +120,8 @@ smtk::model::OperatorResult CreateFaceOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreateFaceOperator,
-  cgm_create_face,
-  "create face",
-  CreateFaceOperator_xml,
+  smtk::bridge::cgm::CreateEdge,
+  cgm_create_edge,
+  "create edge",
+  CreateEdge_xml,
   smtk::bridge::cgm::Bridge);

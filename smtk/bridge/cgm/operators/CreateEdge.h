@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_BooleanUnionOperator_h
-#define __smtk_bridge_cgm_BooleanUnionOperator_h
+#ifndef __smtk_bridge_cgm_CreateEdge_h
+#define __smtk_bridge_cgm_CreateEdge_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,11 +16,15 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT BooleanUnionOperator : public Operator
+/**\brief Create a edge given height, major and minor radii, and a number of sides.
+  *
+  * The number of sides must be 3 or greater.
+  */
+class CGMSMTK_EXPORT CreateEdge : public Operator
 {
 public:
-  smtkTypeMacro(BooleanUnionOperator);
-  smtkCreateMacro(BooleanUnionOperator);
+  smtkTypeMacro(CreateEdge);
+  smtkCreateMacro(CreateEdge);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -34,4 +38,4 @@ protected:
   } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_BooleanUnionOperator_h
+#endif // __smtk_bridge_cgm_CreateEdge_h

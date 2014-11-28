@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/operators/TranslateOperator.h"
+#include "smtk/bridge/cgm/operators/Rotate.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -37,7 +37,7 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 
-#include "smtk/bridge/cgm/TranslateOperator_xml.h"
+#include "smtk/bridge/cgm/Rotate_xml.h"
 
 using namespace smtk::model;
 
@@ -46,14 +46,16 @@ namespace smtk {
     namespace cgm {
 
 // local helper
-bool TranslateOperator::ableToOperate()
+bool Rotate::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult TranslateOperator::operateInternal()
+smtk::model::OperatorResult Rotate::operateInternal()
 {
-  smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");
+  smtk::attribute::DoubleItemPtr centerItem = this->findDouble("center");
+  smtk::attribute::DoubleItemPtr axisItem = this->findDouble("axis");
+  smtk::attribute::DoubleItemPtr angleItem = this->findDouble("angle");
 
   ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
 
@@ -73,15 +75,24 @@ smtk::model::OperatorResult TranslateOperator::operateInternal()
 
   int nb = cgmEntitiesIn.size();
 
-  GeometryQueryTool::instance()->translate(
+  CubitVector center(centerItem->value(0), centerItem->value(1), centerItem->value(2));
+  CubitVector axis(axisItem->value(0), axisItem->value(1), axisItem->value(2));
+  if (axis.normalize() == 0)
+    {
+    std::cerr
+      << "Ill-defined rotation: given axis of rotation is a zero-length vector.\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+  double angle = angleItem->value(0);
+  GeometryQueryTool::instance()->rotate(
     cgmEntitiesIn,
-    offset->value(0), offset->value(1), offset->value(2),
+    center, axis, angle,
     true, // (check before transforming)
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
     {
     std::cerr
-      << "Failed to translate bodies or wrong number"
+      << "Failed to rotate bodies or wrong number"
       << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
       << " of resulting bodies.\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
@@ -117,8 +128,8 @@ smtk::model::OperatorResult TranslateOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::TranslateOperator,
-  cgm_translate,
-  "translate",
-  TranslateOperator_xml,
+  smtk::bridge::cgm::Rotate,
+  cgm_rotate,
+  "rotate",
+  Rotate_xml,
   smtk::bridge::cgm::Bridge);

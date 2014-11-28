@@ -7,15 +7,19 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/operators/CreateSphereOperator.h"
+#include "smtk/bridge/cgm/operators/BooleanUnion.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/model/CellEntity.h"
+#include "smtk/model/Manager.h"
+#include "smtk/model/ModelEntity.h"
+
 #include "smtk/attribute/Attribute.h"
-#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -34,32 +38,43 @@
 #include "RefGroup.hpp"
 #include "Body.hpp"
 
-#include "smtk/bridge/cgm/CreateSphereOperator_xml.h"
+#include "smtk/bridge/cgm/BooleanUnion_xml.h"
+
+using namespace smtk::model;
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreateSphereOperator::ableToOperate()
+bool BooleanUnion::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreateSphereOperator::operateInternal()
+smtk::model::OperatorResult BooleanUnion::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr centerItem =
-    this->specification()->findDouble("center");
-  smtk::attribute::DoubleItem::Ptr radiusItem =
-    this->specification()->findDouble("radius");
-  smtk::attribute::DoubleItem::Ptr innerRadiusItem =
-    this->specification()->findDouble("inner radius");
+  int keepInputs = this->findInt("keep inputs")->value();
+  ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
 
-  double center[3];
-  double radius = radiusItem->value();
-  double innerRadius = innerRadiusItem->value();
-  for (int i = 0; i < 3; ++i )
-    center[i] = centerItem->value(i);
+  ModelEntities::iterator it;
+  DLIList<Body*> cgmBodiesIn;
+  DLIList<Body*> cgmBodiesOut;
+  Body* cgmBody;
+  for (it = bodiesIn.begin(); it != bodiesIn.end(); ++it)
+    {
+    cgmBody = dynamic_cast<Body*>(this->cgmEntity(*it));
+    if (cgmBody)
+      cgmBodiesIn.append(cgmBody);
+    if (!keepInputs)
+      this->manager()->eraseModel(*it);
+    }
+
+  if (cgmBodiesIn.size() < 2)
+    {
+    std::cerr << "Need multiple bodies to union, given " << cgmBodiesIn.size() << "\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
 
   //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   //std::cout << "Default modeler \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
@@ -67,20 +82,11 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->sphere(radius, 0., 0., 0., innerRadius);
+  CubitStatus s = GeometryModifyTool::instance()->unite(cgmBodiesIn, cgmBodiesOut, keepInputs);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
-  if (!cgmBody)
+  if (s != CUBIT_SUCCESS)
     {
-    std::cerr << "Failed to create body\n";
-    return this->createResult(smtk::model::OPERATION_FAILED);
-    }
-
-  // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
-  CubitVector delta(center[0],center[1],center[2]);
-  CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
-  if (status != CUBIT_SUCCESS)
-    {
-    std::cerr << "Failed to translate body\n";
+    std::cerr << "Failed to perform union.\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -90,13 +96,21 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
     result->findModelEntity("bodies");
 
   Bridge* bridge = this->cgmBridge();
-  resultBodies->setNumberOfValues(1);
+  int numBodiesOut = cgmBodiesOut.size();
+  resultBodies->setNumberOfValues(numBodiesOut);
 
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
-  smtk::common::UUID entId = refId->entityId();
-  smtk::model::Cursor smtkEntry(this->manager(), entId);
-  if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
-    resultBodies->setValue(0, smtkEntry);
+  for (int i = 0; i < numBodiesOut; ++i)
+    {
+    cgmBody = cgmBodiesOut.get_and_step();
+    if (!cgmBody)
+      continue;
+
+    smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmBody, true);
+    smtk::common::UUID entId = refId->entityId();
+    smtk::model::Cursor smtkEntry(this->manager(), entId);
+    if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
+      resultBodies->setValue(i, smtkEntry);
+    }
 
   return result;
 }
@@ -106,8 +120,8 @@ smtk::model::OperatorResult CreateSphereOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreateSphereOperator,
-  cgm_create_sphere,
-  "create sphere",
-  CreateSphereOperator_xml,
+  smtk::bridge::cgm::BooleanUnion,
+  cgm_boolean_union,
+  "union",
+  BooleanUnion_xml,
   smtk::bridge::cgm::Bridge);

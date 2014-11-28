@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/operators/CreateCylinderOperator.h"
+#include "smtk/bridge/cgm/operators/CreateSphere.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -16,7 +16,6 @@
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/StringItem.h"
 
@@ -35,35 +34,32 @@
 #include "RefGroup.hpp"
 #include "Body.hpp"
 
-#include "smtk/bridge/cgm/CreateCylinderOperator_xml.h"
+#include "smtk/bridge/cgm/CreateSphere_xml.h"
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreateCylinderOperator::ableToOperate()
+bool CreateSphere::ableToOperate()
 {
-  return
-    this->ensureSpecification() &&
-    this->specification()->isValid();
+  return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreateCylinderOperator::operateInternal()
+smtk::model::OperatorResult CreateSphere::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr heightItem =
-    this->specification()->findDouble("height");
-  smtk::attribute::DoubleItem::Ptr majorBaseRadiusItem =
-    this->specification()->findDouble("major base radius");
-  smtk::attribute::DoubleItem::Ptr minorBaseRadiusItem =
-    this->specification()->findDouble("minor base radius");
-  smtk::attribute::DoubleItem::Ptr majorTopRadiusItem =
-    this->specification()->findDouble("major top radius");
+  smtk::attribute::DoubleItem::Ptr centerItem =
+    this->specification()->findDouble("center");
+  smtk::attribute::DoubleItem::Ptr radiusItem =
+    this->specification()->findDouble("radius");
+  smtk::attribute::DoubleItem::Ptr innerRadiusItem =
+    this->specification()->findDouble("inner radius");
 
-  double height = heightItem->value();
-  double majorTopRadius = majorTopRadiusItem->value();
-  double majorBaseRadius = majorBaseRadiusItem->value();
-  double minorBaseRadius = minorBaseRadiusItem->value();
+  double center[3];
+  double radius = radiusItem->value();
+  double innerRadius = innerRadiusItem->value();
+  for (int i = 0; i < 3; ++i )
+    center[i] = centerItem->value(i);
 
   //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   //std::cout << "Default modeler \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
@@ -71,11 +67,20 @@ smtk::model::OperatorResult CreateCylinderOperator::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->cylinder(height, majorBaseRadius, minorBaseRadius, majorTopRadius);
+  Body* cgmBody = GeometryModifyTool::instance()->sphere(radius, 0., 0., 0., innerRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
     {
     std::cerr << "Failed to create body\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
+  // Do this separately because CGM's sphere() method is broken (for OCC at a minimum).
+  CubitVector delta(center[0],center[1],center[2]);
+  CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
+  if (status != CUBIT_SUCCESS)
+    {
+    std::cerr << "Failed to translate body\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -101,8 +106,8 @@ smtk::model::OperatorResult CreateCylinderOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreateCylinderOperator,
-  cgm_create_cylinder,
-  "create cylinder",
-  CreateCylinderOperator_xml,
+  smtk::bridge::cgm::CreateSphere,
+  cgm_create_sphere,
+  "create sphere",
+  CreateSphere_xml,
   smtk::bridge::cgm::Bridge);

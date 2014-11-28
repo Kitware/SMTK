@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_ReadOperator_h
-#define __smtk_bridge_cgm_ReadOperator_h
+#ifndef __smtk_bridge_cgm_BooleanUnion_h
+#define __smtk_bridge_cgm_BooleanUnion_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,11 +16,11 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-class CGMSMTK_EXPORT ReadOperator : public Operator
+class CGMSMTK_EXPORT BooleanUnion : public Operator
 {
 public:
-  smtkTypeMacro(ReadOperator);
-  smtkCreateMacro(ReadOperator);
+  smtkTypeMacro(BooleanUnion);
+  smtkCreateMacro(BooleanUnion);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -31,7 +31,7 @@ protected:
 };
 
     } // namespace cgm
-  } // namespace bridge
+  } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_ReadOperator_h
+#endif // __smtk_bridge_cgm_BooleanUnion_h
