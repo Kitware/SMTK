@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/ReadOperator.h"
+#include "smtk/bridge/cgm/operators/ReadOperator.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"

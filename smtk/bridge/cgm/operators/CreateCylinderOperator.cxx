@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/CreatePrismOperator.h"
+#include "smtk/bridge/cgm/operators/CreateCylinderOperator.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -35,33 +35,35 @@
 #include "RefGroup.hpp"
 #include "Body.hpp"
 
-#include "smtk/bridge/cgm/CreatePrismOperator_xml.h"
+#include "smtk/bridge/cgm/CreateCylinderOperator_xml.h"
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreatePrismOperator::ableToOperate()
+bool CreateCylinderOperator::ableToOperate()
 {
-  return this->specification()->isValid();
+  return
+    this->ensureSpecification() &&
+    this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreatePrismOperator::operateInternal()
+smtk::model::OperatorResult CreateCylinderOperator::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem =
     this->specification()->findDouble("height");
-  smtk::attribute::DoubleItem::Ptr majorRadiusItem =
-    this->specification()->findDouble("major radius");
-  smtk::attribute::DoubleItem::Ptr minorRadiusItem =
-    this->specification()->findDouble("minor radius");
-  smtk::attribute::IntItem::Ptr numberOfSidesItem =
-    this->specification()->findInt("number of sides");
+  smtk::attribute::DoubleItem::Ptr majorBaseRadiusItem =
+    this->specification()->findDouble("major base radius");
+  smtk::attribute::DoubleItem::Ptr minorBaseRadiusItem =
+    this->specification()->findDouble("minor base radius");
+  smtk::attribute::DoubleItem::Ptr majorTopRadiusItem =
+    this->specification()->findDouble("major top radius");
 
-  int numberOfSides = numberOfSidesItem->value();
-  double majorRadius = majorRadiusItem->value();
-  double minorRadius = minorRadiusItem->value();
   double height = heightItem->value();
+  double majorTopRadius = majorTopRadiusItem->value();
+  double majorBaseRadius = majorBaseRadiusItem->value();
+  double minorBaseRadius = minorBaseRadiusItem->value();
 
   //smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
   //std::cout << "Default modeler \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
@@ -69,7 +71,7 @@ smtk::model::OperatorResult CreatePrismOperator::operateInternal()
   DLIList<RefEntity*> imported;
   //int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
   //CGMApp::instance()->attrib_manager()->auto_flag(CUBIT_TRUE);
-  Body* cgmBody = GeometryModifyTool::instance()->prism(height, numberOfSides, majorRadius, minorRadius);
+  Body* cgmBody = GeometryModifyTool::instance()->cylinder(height, majorBaseRadius, minorBaseRadius, majorTopRadius);
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
     {
@@ -99,8 +101,8 @@ smtk::model::OperatorResult CreatePrismOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreatePrismOperator,
-  cgm_create_prism,
-  "create prism",
-  CreatePrismOperator_xml,
+  smtk::bridge::cgm::CreateCylinderOperator,
+  cgm_create_cylinder,
+  "create cylinder",
+  CreateCylinderOperator_xml,
   smtk::bridge::cgm::Bridge);

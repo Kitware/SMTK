@@ -8,17 +8,17 @@ set(cgmSrcs
   ExportSolid.cxx
   ImportSolid.cxx
   Operator.cxx
-  ReadOperator.cxx
-  CreateBrickOperator.cxx
-  CreateCylinderOperator.cxx
-  CreateEdgeOperator.cxx
-  CreateFaceOperator.cxx
-  CreatePrismOperator.cxx
-  CreateSphereOperator.cxx
-  CreateVertexOperator.cxx
-  BooleanUnionOperator.cxx
-  RotateOperator.cxx
-  TranslateOperator.cxx
+  operators/ReadOperator.cxx
+  operators/CreateBrickOperator.cxx
+  operators/CreateCylinderOperator.cxx
+  operators/CreateEdgeOperator.cxx
+  operators/CreateFaceOperator.cxx
+  operators/CreatePrismOperator.cxx
+  operators/CreateSphereOperator.cxx
+  operators/CreateVertexOperator.cxx
+  operators/BooleanUnionOperator.cxx
+  operators/RotateOperator.cxx
+  operators/TranslateOperator.cxx
   TDUUID.cxx
 )
 
@@ -29,17 +29,17 @@ set(cgmHeaders
   ExportSolid.h
   ImportSolid.h
   Operator.h
-  ReadOperator.h
-  CreateBrickOperator.h
-  CreateCylinderOperator.h
-  CreateEdgeOperator.h
-  CreateFaceOperator.h
-  CreatePrismOperator.h
-  CreateSphereOperator.h
-  CreateVertexOperator.h
-  BooleanUnionOperator.h
-  RotateOperator.h
-  TranslateOperator.h
+  operators/ReadOperator.h
+  operators/CreateBrickOperator.h
+  operators/CreateCylinderOperator.h
+  operators/CreateEdgeOperator.h
+  operators/CreateFaceOperator.h
+  operators/CreatePrismOperator.h
+  operators/CreateSphereOperator.h
+  operators/CreateVertexOperator.h
+  operators/BooleanUnionOperator.h
+  operators/RotateOperator.h
+  operators/TranslateOperator.h
   TDUUID.h
 )
 
@@ -84,17 +84,17 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # We do not need the path to the generated header (appended
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateBrickOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateCylinderOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateEdgeOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateFaceOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreatePrismOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateSphereOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/CreateVertexOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/BooleanUnionOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/RotateOperator.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/TranslateOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/ReadOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrickOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateCylinderOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdgeOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFaceOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreatePrismOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphereOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertexOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnionOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/RotateOperator.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/TranslateOperator.sbt" cgmOperatorXML)
 
 # Install the headers
 smtk_public_headers(${cgmHeaders})
