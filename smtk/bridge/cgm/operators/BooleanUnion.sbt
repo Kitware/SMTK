@@ -3,7 +3,10 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="union" BaseType="operator" Associations="m">
+    <AttDef Type="union" BaseType="operator">
+      <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="2" Extensible="true">
+        <MembershipMask>model</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
         <Int Name="keep inputs" NumberOfRequiredValues="1">
           <DefaultValue>0</DefaultValue>

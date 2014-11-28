@@ -3,7 +3,10 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="translate" BaseType="operator" Associations="model">
+    <AttDef Type="translate" BaseType="operator">
+      <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
+        <MembershipMask>model</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
         <Double Name="offset" NumberOfRequiredValues="3">
           <DefaultValue>0</DefaultValue>
