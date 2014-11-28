@@ -86,10 +86,17 @@ un.associateEntity(brick4)
 r5 = un.operate()
 brick5 = r5.findModelEntity('entities').value(0)
 
-json = smtk.io.ExportJSON.fromModel(mgr)
-jsonFile = open('/tmp/skirb4.json', 'w')
-print >> jsonFile, json
-jsonFile.close()
+sc = sess.op('scale')
+sc.associateEntity(brick5)
+sc.findAsInt('scale factor type').setDiscreteIndex(0)
+sc.findAsDouble('scale factor').setValue(3.0)
+r6 = sc.operate()
+brick6 = r6.findModelEntity('entities').value(0)
+
+#json = smtk.io.ExportJSON.fromModel(mgr)
+#jsonFile = open('/tmp/skirb4.json', 'w')
+#print >> jsonFile, json
+#jsonFile.close()
 
 #
 # Now verify that mgr.closeSession removes the entity record for the session.

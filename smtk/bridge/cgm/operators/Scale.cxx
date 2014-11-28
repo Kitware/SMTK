@@ -55,8 +55,8 @@ smtk::model::OperatorResult Scale::operateInternal()
 {
   smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");
   smtk::attribute::IntItemPtr typeItem = this->findInt("scale factor type");
-  smtk::attribute::DoubleItemPtr factorItem = this->findDouble("factor");
-  smtk::attribute::DoubleItemPtr factorsItem = this->findDouble("factors");
+  smtk::attribute::DoubleItemPtr factorItem = this->findDouble("scale factor");
+  smtk::attribute::DoubleItemPtr factorsItem = this->findDouble("scale factors");
 
   ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
 
