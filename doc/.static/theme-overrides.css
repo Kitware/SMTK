@@ -1,0 +1,22 @@
+/* override table width restrictions */
+.wy-table-responsive table td, .wy-table-responsive table th {
+    /* !important prevents the common CSS stylesheets from
+       overriding this as on RTD they are loaded after this stylesheet */
+    white-space: normal !important;
+    vertical-align: top !important;
+}
+
+.wy-table-responsive {
+    overflow: visible !important;
+}
+
+/* override inter-paragraph spacing in tables, since we want
+ * space to mark paragraphs.
+ */
+.wy-table-responsive table td p, .wy-table-responsive table th p {
+  padding-bottom: 0.2em !important;
+}
+
+.wy-table td p, .wy-table th p {
+  padding-bottom: 0.2em !important;
+}

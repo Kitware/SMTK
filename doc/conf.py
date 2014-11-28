@@ -20,6 +20,9 @@ sys.path.append(os.getcwd()) # So that the findfigure package can be imported
 sourcedir = sys.argv[-2] # FIXME: Is the penultimate argument always the source dir?
 builddir = sys.argv[-1] # FIXME: Is the final argument always be the build dir?
 
+def setup(app):
+  app.add_stylesheet("theme-overrides.css") # prevent stupid-wide table columns.
+
 def runDoxygen(rtdsrcdir, rtdblddir, doxyfileIn, doxyfileOut):
   """Run Doxygen as part of generating user documentation.
 

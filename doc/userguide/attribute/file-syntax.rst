@@ -13,9 +13,9 @@ Attributes that can be included in this XML Element.
 
    * - XML Attribute
      - Description
+
    * - Version
-     - Integer value that indicates the SMTK attribute format
-       (Required)
+     - Integer value that indicates the SMTK attribute format (Required)
 
        Valid Values are 1 or 2
 
@@ -92,14 +92,14 @@ Attributes that can be included in this XML Element.
 
    * - XML Attribute
      - Description
+
    * - Label
      - String value representing the access level name to be displayed
        in the GUI (Required)
+
    * - Color
      - String value representing the color to be used when displaying
-
        items that are associated with this access level.  The format
-
        is "r, g, b" where r, g, and b are a value between 0 and 1
        inclusive (Optional)
 
@@ -139,11 +139,10 @@ Attributes that can be included in <Categories> Element.
 
    * - XML Attribute
      - Description
+
    * - Default
      - String value representing the default categories a Definition's
-       Item belongs to
-
-       when no category is specified.
+       Item belongs to when no category is specified.
 
 Analysis Section
 ---------------------------
@@ -182,11 +181,12 @@ Attributes that can be included in this XML Element.
 
    * - XML Attribute
      - Description
+
    * - Type
      - String value representing the type analysis being
-       defined. Note that the type should be
-
-       unique with respects to all other analyses being defined. (Required)
+       defined. Note that the type should be unique with
+       respects to all other analyses being defined.
+       (Required)
 
 
 Each element contains a set of Cat XML Elements.
@@ -213,14 +213,16 @@ This element can contain the following children XML Elements:
 
    * - XML Child Element
      - Description
+
    * - <ItemDefinitions>
      - Defines the items contained within the attributes generated
-
        by this definition (Optional).
 
        See `Item Definitions Format`_.
+
    * - <BriefDescription>
      - Provides a brief description of the definition (Optional).
+
    * - <DetailedDescription>
      - Provides a detailed description of the definition (Optional).
 
@@ -231,126 +233,119 @@ Attributes that can be included in this XML Element.
 .. list-table:: XML Attributes for <AttDef> Element
    :widths: 10 40
    :header-rows: 1
+   :class: smtk-xml-att-table
 
    * - XML Attribute
      - Description
+
    * - Type
      - String value representing the attribute definition type
-
        being defined. (Required).
 
        Note that this value should be unique with respects to all
-       other definitions
-
-       being defined with this section as well as all definitions
-       being included
-
-       via the Includes XML Element (See `Includes Section`_)
+       other definitions being defined with this section as well
+       as all definitions being included via the Includes XML
+       Element (See `Includes Section`_)
 
    * - BaseType
      - String value representing the attribute defintion that this
-       defintion
-
-       is derived from (Optional).
+       definition is derived from.
+       (Optional)
 
        Note that the base definition must be defined prior to this
-       definition
+       definition either in section or in the Includes Section.
 
-       either in section or in the Includes Section.
    * - Label
-     - String value representing the name display in a GUI (Optional)
+     - String value representing the name display in a GUI
+       (Optional)
 
-       Note that is not specified, the Type value is displayed
+       Note that if not specified, the Type value is displayed.
+
    * - Version
-     - Integer value representing the "version" of the definition (Optional)
+     - Integer value representing the "version" of the definition.
+       (Optional)
 
-       This is used for versioning the definition.  If not specified
-
-       0 is assumed.
+       This is used for versioning the definition.
+       If not specified then 0 is assumed.
 
    * - Abstract
-     - Boolean value used to indicate if the definition is abstract
+     - Boolean value used to indicate if the definition is abstract or not.
+       (Optional)
 
-       or not (Optional).
-
-       If not specified, the definition is not abstract
-
+       If not specified, the definition is not abstract.
        Note that abstract definitions can not generate attributes.
 
    * - AdvanceLevel
      - Integer value used to indicate the advance level associated
-
-       with the definition and the attrubutes it
-       generates. (Optional).
+       with the definition and the attributes it generates.
+       (Optional)
 
        This value should match one of the advance values
+       defined in the `Advance Level Section`_.
+       If not specified, 0 is assumed.
 
-       defined in the `Advance Level Section`_. If not
-
-       specified, 0 is assumed.
    * - Unique
-     - Boolean value used to indicate if the attributes this
-       definition
-
+     - Boolean value used to indicate if the attributes this definition
        generates are unique with respects to the model entities it
+       associated with.
+       A model entity can only have one unique attribute of a given
+       type associated with it.
+       (Optional)
 
-       associated with.  A model entity can only have one unique
+       If not specified, the definition is assumed to be non-unique.
 
-       attribute of a given type associated with it (Optional).
-
-       If not specified, the definition is assumed to
-       be not unique.
    * - Nodal
      - Boolean value used to indicate if the attribute effects the
-       nodes of
-
-       the analysis mesh or the elements (Optional).
+       nodes of the analysis mesh or the elements.
+       (Optional)
 
        If not specified the definition's attributes are not nodal.
+
    * - Associations
      - String value indicating what type of model entities this
-       definition's
-
-       attributes can be associated on (Optional).
+       definition's attributes can be associated on.
+       (Optional)
 
        The information is represented as a string consisting of
+       a set of the following characters separated by vertical
+       bars (|):
 
-       a set of the following characters:
+       v (vertices)
 
+       e (edges)
 
-       v (vertices), e (edges), f (faces), r (volumetric regions),
-       m(model), g(groups).
+       f (faces)
 
-       If not specified the definition's attributes can not be
-       associated
+       r (volumetric regions)
 
-       with any model entities.
+       m (model)
+
+       g (groups)
+
+       An example would be "e|f" for an attribute which may
+       be associated with both edges and faces.
+       If not specified, the definition's attributes can not be
+       associated with any model entities.
+
    * - NotApplicationColor
      - String value representing the color to be used when coloring
-
        model entities  that are not associated with this
        definition's attribute.
+       (Optional)
 
        The format is "r, g, b" where r, g, and b are a value between 0
-       and 1
+       and 1 inclusive.
+       If not specified its value is 0, 0, 0.
 
-       inclusive (Optional)
-
-       If not specified its value is 0, 0, 0, 0
    * - Default Color
      - String value representing the color to be used when coloring
-
-       model entities  that are associated with this
-       definition's
-
+       model entities  that are associated with this definition's
        attribute by default.
+       (Optional)
 
        The format is "r, g, b" where r, g, and b are a value between 0
-       and 1
-
-       inclusive (Optional)
-
-       If not specified its value is 0, 0, 0, 0
+       and 1 inclusive.
+       If not specified its value is 0, 0, 0.
 
 Item Definitions Format
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -383,16 +378,19 @@ specific to it.
 
    * - XML Child Element
      - Description
+
    * - <Categories>
-     - Defines the categories that the item belongs to  (Optional).
+     - Defines the categories that the item belongs to.
+       (Optional)
 
        This element contains at set of <Cat> elements with each
-
        containing a category defined is the Category Section.
 
        See `Category Section`_.
+
    * - <BriefDescription>
      - Provides a brief description of the item (Optional).
+
    * - <DetailedDescription>
      - Provides a detailed description of the item (Optional).
 
@@ -406,75 +404,65 @@ it.
 
    * - XML Attribute
      - Description
-   * - Label
-     - String value representing the name of the item
 
-       being defined. (Required).
+   * - Label
+     - String value representing the name of the item being defined.
+       (Required)
 
        Note that this value should be unique with respects to all
-       other items
+       other items contained within this attribute definition
+       (including its Base Type).
 
-       contained within this attribute definition (including its Base Type)
    * - Version
-     - Integer value representing the "version" of the item (Optional)
+     - Integer value representing the "version" of the item.
+       (Optional)
 
        This is used for versioning the item.  If not specified
-
-       0 is assumed.
+       then 0 is assumed.
 
    * - Optional
      - Boolean value indicating if the item is considered optional
-
-       or required (Optional).
+       or required.
+       (Optional)
 
        If not specified the item is considered to be required.
 
    * - IsEnabledByDefault
      - Boolean value indicating if the item is considered to be
-       enabled
-
-       by default (Optional).
+       enabled by default.
+       (Optional)
 
        Note this is only used when Optional="true".
-
-       If not specified the item is considered to be not enabled.
+       If not specified, the item is considered to be disabled.
 
    * - AdvanceLevel
      - Integer value used to indicate the advance level associated
-
-       with the item. (Optional).
+       with the item.
+       (Optional)
 
        This value should match one of the advance values
-
-       defined in the `Advance Level Section`_. If not
-
-       specified, 0 is assumed.
-
+       defined in the `Advance Level Section`_.
+       If not specified, 0 is assumed.
 
    * - AdvanceReadLevel
      - Integer value used to indicate the advance read level associated
-
-       with the item. (Optional).
+       with the item.
+       (Optional)
 
        This value should match one of the advance values
-
-       defined in the `Advance Level Section`_.  Note that this is
-
-       ignored if the AdvanceLevel XML Attribute is used.
+       defined in the `Advance Level Section`_.
+       Note that this is ignored if the AdvanceLevel XML Attribute is used.
 
        If not specified, 0 is assumed.
 
-
    * - AdvanceWriteLevel
      - Integer value used to indicate the advance write level associated
-
-       with the item. (Optional).
+       with the item.
+       (Optional)
 
        This value should match one of the advance values
-
-       defined in the `Advance Level Section`_. Note that this is
-
-       ignored if the AdvanceLevel XML Attribute is used.
+       defined in the `Advance Level Section`_.
+       Note that this is ignored if the AdvanceLevel XML Attribute is used.
 
        If not specified, 0 is assumed.
 
@@ -541,8 +529,6 @@ Void Item Definition <Void>
 .. todo::
 
    Describe "void" items and how they are serialized
-
-
 
 RootView Section <RootView>
 ---------------------------
