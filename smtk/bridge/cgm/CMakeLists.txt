@@ -18,6 +18,7 @@ set(cgmSrcs
   operators/CreateVertex.cxx
   operators/BooleanUnion.cxx
   operators/Rotate.cxx
+  operators/Scale.cxx
   operators/Translate.cxx
   TDUUID.cxx
 )
@@ -39,6 +40,7 @@ set(cgmHeaders
   operators/CreateVertex.h
   operators/BooleanUnion.h
   operators/Rotate.h
+  operators/Scale.h
   operators/Translate.h
   TDUUID.h
 )
@@ -94,6 +96,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphere.sbt" cgmOp
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertex.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOperatorXML)
 
 # Install the headers
