@@ -80,7 +80,7 @@ smtk::model::OperatorResult CreatePrism::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultBodies =
-    result->findModelEntity("bodies");
+    result->findModelEntity("entities");
 
   Bridge* bridge = this->cgmBridge();
   resultBodies->setNumberOfValues(1);

@@ -18,10 +18,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create sphere)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The sphere created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-      </ItemDefinitions>
+      <!-- The sphere created is stored in the base result's "entities" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

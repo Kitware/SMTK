@@ -22,10 +22,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create prism)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The prism created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-      </ItemDefinitions>
+      <!-- The prism created is stored in the base result's "entities" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
