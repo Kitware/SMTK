@@ -3,7 +3,10 @@
 <SMTK_AttributeSystem Version="2">
   <Definitions>
     <!-- Operator -->
-    <AttDef Type="rotate" BaseType="operator" Associations="model">
+    <AttDef Type="rotate" BaseType="operator">
+      <AssociationsDef Name="Workpiece(s)" NumberOfRequiredValues="1" Extensible="true">
+        <MembershipMask>model</MembershipMask>
+      </AssociationsDef>
       <ItemDefinitions>
         <Double Name="axis" NumberOfRequiredValues="3">
         </Double>

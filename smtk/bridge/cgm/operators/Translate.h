@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateVertexOperator_h
-#define __smtk_bridge_cgm_CreateVertexOperator_h
+#ifndef __smtk_bridge_cgm_Translate_h
+#define __smtk_bridge_cgm_Translate_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,15 +16,11 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-/**\brief Create a vertex given height, major and minor radii, and a number of sides.
-  *
-  * The number of sides must be 3 or greater.
-  */
-class CGMSMTK_EXPORT CreateVertexOperator : public Operator
+class CGMSMTK_EXPORT Translate : public Operator
 {
 public:
-  smtkTypeMacro(CreateVertexOperator);
-  smtkCreateMacro(CreateVertexOperator);
+  smtkTypeMacro(Translate);
+  smtkCreateMacro(Translate);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -38,4 +34,4 @@ protected:
   } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateVertexOperator_h
+#endif // __smtk_bridge_cgm_Translate_h

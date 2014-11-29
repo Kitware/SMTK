@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/RotateOperator.h"
+#include "smtk/bridge/cgm/operators/Rotate.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -37,7 +37,7 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 
-#include "smtk/bridge/cgm/RotateOperator_xml.h"
+#include "smtk/bridge/cgm/Rotate_xml.h"
 
 using namespace smtk::model;
 
@@ -46,12 +46,12 @@ namespace smtk {
     namespace cgm {
 
 // local helper
-bool RotateOperator::ableToOperate()
+bool Rotate::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult RotateOperator::operateInternal()
+smtk::model::OperatorResult Rotate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem = this->findDouble("center");
   smtk::attribute::DoubleItemPtr axisItem = this->findDouble("axis");
@@ -128,8 +128,8 @@ smtk::model::OperatorResult RotateOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::RotateOperator,
+  smtk::bridge::cgm::Rotate,
   cgm_rotate,
   "rotate",
-  RotateOperator_xml,
+  Rotate_xml,
   smtk::bridge::cgm::Bridge);

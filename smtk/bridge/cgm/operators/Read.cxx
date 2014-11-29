@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/ReadOperator.h"
+#include "smtk/bridge/cgm/operators/Read.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -35,7 +35,7 @@
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
 
-#include "smtk/bridge/cgm/ReadOperator_xml.h"
+#include "smtk/bridge/cgm/Read_xml.h"
 
 namespace smtk {
   namespace bridge {
@@ -50,12 +50,12 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
     return false;
 }
 
-bool ReadOperator::ableToOperate()
+bool Read::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult ReadOperator::operateInternal()
+smtk::model::OperatorResult Read::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem =
     this->specification()->findFile("filename");
@@ -163,8 +163,8 @@ smtk::model::OperatorResult ReadOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::ReadOperator,
+  smtk::bridge::cgm::Read,
   cgm_read,
   "read",
-  ReadOperator_xml,
+  Read_xml,
   smtk::bridge::cgm::Bridge);

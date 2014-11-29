@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateFaceOperator_h
-#define __smtk_bridge_cgm_CreateFaceOperator_h
+#ifndef __smtk_bridge_cgm_Read_h
+#define __smtk_bridge_cgm_Read_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,15 +16,11 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-/**\brief Create a face given height, major and minor radii, and a number of sides.
-  *
-  * The number of sides must be 3 or greater.
-  */
-class CGMSMTK_EXPORT CreateFaceOperator : public Operator
+class CGMSMTK_EXPORT Read : public Operator
 {
 public:
-  smtkTypeMacro(CreateFaceOperator);
-  smtkCreateMacro(CreateFaceOperator);
+  smtkTypeMacro(Read);
+  smtkCreateMacro(Read);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -35,7 +31,7 @@ protected:
 };
 
     } // namespace cgm
-  } //namespace bridge
+  } // namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateFaceOperator_h
+#endif // __smtk_bridge_cgm_Read_h

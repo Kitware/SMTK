@@ -7,8 +7,8 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#ifndef __smtk_bridge_cgm_CreateCylinderOperator_h
-#define __smtk_bridge_cgm_CreateCylinderOperator_h
+#ifndef __smtk_bridge_cgm_Copy_h
+#define __smtk_bridge_cgm_Copy_h
 
 #include "smtk/bridge/cgm/Operator.h"
 
@@ -16,15 +16,12 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-/**\brief Create a cylinder given height, major and minor radii, and a number of sides.
-  *
-  * The number of sides must be 3 or greater.
-  */
-class CGMSMTK_EXPORT CreateCylinderOperator : public Operator
+/// Make a copy of a CGM entity.
+class CGMSMTK_EXPORT Copy : public Operator
 {
 public:
-  smtkTypeMacro(CreateCylinderOperator);
-  smtkCreateMacro(CreateCylinderOperator);
+  smtkTypeMacro(Copy);
+  smtkCreateMacro(Copy);
   smtkSharedFromThisMacro(Operator);
   smtkDeclareModelOperator();
 
@@ -38,4 +35,4 @@ protected:
   } //namespace bridge
 } // namespace smtk
 
-#endif // __smtk_bridge_cgm_CreateCylinderOperator_h
+#endif // __smtk_bridge_cgm_Copy_h

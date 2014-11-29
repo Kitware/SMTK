@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/TranslateOperator.h"
+#include "smtk/bridge/cgm/operators/Scale.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -37,7 +37,7 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 
-#include "smtk/bridge/cgm/TranslateOperator_xml.h"
+#include "smtk/bridge/cgm/Scale_xml.h"
 
 using namespace smtk::model;
 
@@ -46,14 +46,17 @@ namespace smtk {
     namespace cgm {
 
 // local helper
-bool TranslateOperator::ableToOperate()
+bool Scale::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult TranslateOperator::operateInternal()
+smtk::model::OperatorResult Scale::operateInternal()
 {
-  smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");
+  smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");
+  smtk::attribute::IntItemPtr typeItem = this->findInt("scale factor type");
+  smtk::attribute::DoubleItemPtr factorItem = this->findDouble("scale factor");
+  smtk::attribute::DoubleItemPtr factorsItem = this->findDouble("scale factors");
 
   ModelEntities bodiesIn = this->associatedEntitiesAs<ModelEntities>();
 
@@ -72,16 +75,26 @@ smtk::model::OperatorResult TranslateOperator::operateInternal()
     }
 
   int nb = cgmEntitiesIn.size();
-
-  GeometryQueryTool::instance()->translate(
-    cgmEntitiesIn,
-    offset->value(0), offset->value(1), offset->value(2),
-    true, // (check before transforming)
+  CubitVector origin(originItem->value(0), originItem->value(1), originItem->value(2));
+  double sx, sy, sz;
+  if (typeItem->value(0) == 0)
+    {
+    sx = sy = sz = factorItem->value(0);
+    }
+  else
+    {
+    sx = factorsItem->value(0);
+    sy = factorsItem->value(1);
+    sz = factorsItem->value(2);
+    }
+  GeometryQueryTool::instance()->scale(
+    cgmEntitiesIn, origin, sx, sy, sz,
+    true, // (check to transform)
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
     {
     std::cerr
-      << "Failed to translate bodies or wrong number"
+      << "Failed to scale bodies or wrong number"
       << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
       << " of resulting bodies.\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
@@ -117,8 +130,8 @@ smtk::model::OperatorResult TranslateOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::TranslateOperator,
-  cgm_translate,
-  "translate",
-  TranslateOperator_xml,
+  smtk::bridge::cgm::Scale,
+  cgm_scale,
+  "scale",
+  Scale_xml,
   smtk::bridge::cgm::Bridge);

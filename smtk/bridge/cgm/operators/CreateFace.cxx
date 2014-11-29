@@ -7,7 +7,7 @@
 //  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
-#include "smtk/bridge/cgm/CreateVertexOperator.h"
+#include "smtk/bridge/cgm/operators/CreateFace.h"
 
 #include "smtk/bridge/cgm/Bridge.h"
 #include "smtk/bridge/cgm/CAUUID.h"
@@ -33,47 +33,79 @@
 #include "RefEntity.hpp"
 #include "RefEntityFactory.hpp"
 #include "RefGroup.hpp"
-#include "RefVertex.hpp"
+#include "RefEdge.hpp"
+#include "RefFace.hpp"
 
-#include "smtk/bridge/cgm/CreateVertexOperator_xml.h"
+#include "smtk/bridge/cgm/CreateFace_xml.h"
 
 namespace smtk {
   namespace bridge {
     namespace cgm {
 
 // local helper
-bool CreateVertexOperator::ableToOperate()
+bool CreateFace::ableToOperate()
 {
   return this->specification()->isValid();
 }
 
-smtk::model::OperatorResult CreateVertexOperator::operateInternal()
+smtk::model::OperatorResult CreateFace::operateInternal()
 {
-  smtk::attribute::DoubleItem::Ptr pointItem =
-    this->specification()->findDouble("point");
+  smtk::attribute::ModelEntityItem::Ptr edgesItem =
+    this->findModelEntity("edges");
+  smtk::attribute::IntItem::Ptr surfTypeItem =
+    this->findInt("surface type");
   smtk::attribute::IntItem::Ptr colorItem =
-    this->specification()->findInt("color");
+    this->findInt("color");
 
   int color = colorItem->value();
-  CubitVector point(
-    pointItem->value(0),
-    pointItem->value(1),
-    pointItem->value(2));
-
-  RefVertex* cgmVert = GeometryModifyTool::instance()->make_RefVertex(point, color);
-  if (!cgmVert)
+  GeometryType surfType = static_cast<GeometryType>(
+    surfTypeItem->concreteDefinition()->discreteValue(
+      surfTypeItem->discreteIndex()));
+  switch (surfType)
     {
-    std::cerr << "Failed to create vertex\n";
+  case PLANE_SURFACE_TYPE:
+  case BEST_FIT_SURFACE_TYPE:
+    break;
+  default:
+    std::cerr << "Bad surf type " << surfType << "\n";
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
+  DLIList<RefEdge*> edgeList;
+  for (std::size_t i = 0; i < edgesItem->numberOfValues(); ++i)
+    {
+    RefEdge* edg = this->cgmEntityAs<RefEdge*>(edgesItem->value(i));
+    if (!edg)
+      {
+      std::cerr << "One or more edges were invalid " << edgesItem->value(i).name() << "\n";
+      return this->createResult(smtk::model::OPERATION_FAILED);
+      }
+    edgeList.push(edg);
+    }
+  if (edgeList.size() <= 0)
+    {
+    std::cerr << "No edges provided.\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
+  bool isFree = true;
+  bool checkEdges = true;
+  RefFace* cgmFace = GeometryModifyTool::instance()->make_RefFace(surfType, edgeList, isFree, NULL, checkEdges);
+  if (!cgmFace)
+    {
+    std::cerr << "Failed to create face\n";
+    return this->createResult(smtk::model::OPERATION_FAILED);
+    }
+
+  // Assign color to match vertex API that requires a color.
+  cgmFace->color(color);
 
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultVert =
-    result->findModelEntity("vertex");
+    result->findModelEntity("face");
 
   Bridge* bridge = this->cgmBridge();
-  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmVert, true);
+  smtk::bridge::cgm::TDUUID* refId = smtk::bridge::cgm::TDUUID::ofEntity(cgmFace, true);
   smtk::common::UUID entId = refId->entityId();
   smtk::model::Cursor smtkEntry(this->manager(), entId);
   if (bridge->transcribe(smtkEntry, smtk::model::BRIDGE_EVERYTHING, false))
@@ -87,8 +119,8 @@ smtk::model::OperatorResult CreateVertexOperator::operateInternal()
 } // namespace smtk
 
 smtkImplementsModelOperator(
-  smtk::bridge::cgm::CreateVertexOperator,
-  cgm_create_vertex,
-  "create vertex",
-  CreateVertexOperator_xml,
+  smtk::bridge::cgm::CreateFace,
+  cgm_create_face,
+  "create face",
+  CreateFace_xml,
   smtk::bridge::cgm::Bridge);
