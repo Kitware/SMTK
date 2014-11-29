@@ -8,7 +8,8 @@ set(cgmSrcs
   ExportSolid.cxx
   ImportSolid.cxx
   Operator.cxx
-  operators/Read.cxx
+  operators/BooleanUnion.cxx
+  operators/Copy.cxx
   operators/CreateBrick.cxx
   operators/CreateCylinder.cxx
   operators/CreateEdge.cxx
@@ -16,7 +17,8 @@ set(cgmSrcs
   operators/CreatePrism.cxx
   operators/CreateSphere.cxx
   operators/CreateVertex.cxx
-  operators/BooleanUnion.cxx
+  operators/Read.cxx
+  operators/Reflect.cxx
   operators/Rotate.cxx
   operators/Scale.cxx
   operators/Translate.cxx
@@ -30,7 +32,8 @@ set(cgmHeaders
   ExportSolid.h
   ImportSolid.h
   Operator.h
-  operators/Read.h
+  operators/BooleanUnion.h
+  operators/Copy.h
   operators/CreateBrick.h
   operators/CreateCylinder.h
   operators/CreateEdge.h
@@ -38,7 +41,8 @@ set(cgmHeaders
   operators/CreatePrism.h
   operators/CreateSphere.h
   operators/CreateVertex.h
-  operators/BooleanUnion.h
+  operators/Read.h
+  operators/Reflect.h
   operators/Rotate.h
   operators/Scale.h
   operators/Translate.h
@@ -86,7 +90,8 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # We do not need the path to the generated header (appended
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Copy.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrick.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateCylinder.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateEdge.sbt" cgmOperatorXML)
@@ -94,7 +99,8 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateFace.sbt" cgmOper
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreatePrism.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateSphere.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateVertex.sbt" cgmOperatorXML)
-smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Read.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Reflect.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Rotate.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Scale.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Translate.sbt" cgmOperatorXML)
