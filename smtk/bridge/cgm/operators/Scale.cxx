@@ -83,9 +83,9 @@ smtk::model::OperatorResult Scale::operateInternal()
     }
   else
     {
-    sx = factorItem->value(0);
-    sy = factorItem->value(1);
-    sz = factorItem->value(2);
+    sx = factorsItem->value(0);
+    sy = factorsItem->value(1);
+    sz = factorsItem->value(2);
     }
   GeometryQueryTool::instance()->scale(
     cgmEntitiesIn, origin, sx, sy, sz,

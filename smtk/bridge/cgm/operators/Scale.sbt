@@ -62,10 +62,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(scale)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The scaled model. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-      </ItemDefinitions>
+      <!-- The translated body (or bodies) are stored in the base result's "entities" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>
