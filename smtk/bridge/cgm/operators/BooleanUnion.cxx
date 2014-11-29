@@ -93,7 +93,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultBodies =
-    result->findModelEntity("bodies");
+    result->findModelEntity("entities");
 
   Bridge* bridge = this->cgmBridge();
   int numBodiesOut = cgmBodiesOut.size();
