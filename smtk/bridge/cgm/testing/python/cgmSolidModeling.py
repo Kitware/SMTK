@@ -12,10 +12,6 @@ import sys
 #
 #=============================================================================
 import smtk
-try:
-  import cgmsmtk
-except:
-  print 'Expecting ERROR:'
 
 mgr = smtk.model.Manager.create()
 sess = mgr.createSession('cgm')

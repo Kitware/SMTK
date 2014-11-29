@@ -79,10 +79,7 @@
     </AttDef>
     <!-- Result -->
     <AttDef Type="result(create brick)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The brick created. -->
-        <ModelEntity Name="bodies" NumberOfRequiredValues="1" Extensible="1" MembershipMask="4096"/>
-      </ItemDefinitions>
+      <!-- The brick created is stored in the base result's "entities" item. -->
     </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

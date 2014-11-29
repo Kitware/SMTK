@@ -12,10 +12,6 @@ import sys
 #
 #=============================================================================
 import smtk
-try:
-  import cgmsmtk
-except:
-  print 'Expecting ERROR:'
 
 def sumCond(itm, idx):
   """Set a conditional item."""
