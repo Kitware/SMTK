@@ -194,7 +194,7 @@ bool BridgeRegistrar::registerBridge(
     //std::cout << "Adding bridge " << bname << "\n";
     return true;
     }
-  else if (!bname.empty())
+  else if (!bname.empty() && s_bridges()->count(bname) > 0)
     { // unregister the bridge of the given name.
     s_bridges()->erase(bname);
     //std::cout << "Removing bridge " << bname << "\n";
