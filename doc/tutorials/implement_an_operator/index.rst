@@ -1,3 +1,5 @@
+.. _tut - implement an operator:
+
 =============================
 Implementing an STMK operator
 =============================

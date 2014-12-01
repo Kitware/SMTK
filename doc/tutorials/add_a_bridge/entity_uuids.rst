@@ -16,7 +16,7 @@ is assigning UUIDs to entities in the modeling kernel so that
   only a UUID (for instance, to specify inputs to a modeling
   kernel operation).
 
-There are two way to about storing and maintaining this
+There are two ways to go about storing and maintaining this
 bidirectional map between modeling kernel entities and SMTK
 UUIDs:
 
@@ -37,6 +37,7 @@ UUIDs:
    it also saves session information, it can be used to
    "restore" a modeling session so that the same files
    are loaded on the server and the UUIDs preserved.
+   *This is the approach our Exodus bridge example takes.*
 
 The advantage to the first approach is that modeling
 kernels with attribute systems generally provide a way
@@ -56,19 +57,33 @@ as will the input parameter of the inverse method that
 returns a UUID given a foreign entity;
 for our example, we've created a new type named :cxx:`EntityHandle`.
 
-.. literalinclude:: Bridge.h
-   :start-after: // ++ 1 ++
-   :end-before: // -- 1 --
+.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.h
+   :start-after: // ++ 2 ++
+   :end-before: // -- 2 --
 
-The :cxx:`EntityHandle` type stores a vtkIdType plus the "namespace"
-that the ID refers to (which could be points, cells, or other field
-data types that VTK supports).
+The :cxx:`EntityHandle` type stores 3 integer values for each model
+or group it exposes to SMTK:
+(1) the type of object being exposed (an Exodus model, an element
+block, a side set, or a node set),
+(2) the offset of the model in a vector of vtkMultiBlockDataSet
+instances held by the bridge (one per Exodus file)
+(3) the ID of the block holding the vtkUnstructuredGrid that contains
+the tessellation information for the object (or -1 when the object
+is an Exodus MODEL since it has no tessellation, only groups).
+Given an :cxx:`EntityHandle` we can easily look up the vtkUnstructuredGrid
+in the Bridge's :cxx:`m_models` member.
 
 Adding UUIDs as attributes
 --------------------------
 
-We can store UUIDs on VTK grids as point and cell data arrays.
-It is more space-efficient to store these in a 2-component
+Although we do not provide example code in this tutorial,
+it should be straightforward to add UUIDs to a modeling kernel's
+attribute system either as a 16-byte binary blob or an ASCII string
+per entity.
+
+For example, if we wished to make VTK points and cells available
+via a bridge, we could store UUIDs on VTK grids as point and cell data arrays.
+It would be more space-efficient to store these in a 2-component
 :cxx:`vtkTypeUInt64Array` (2 components for a total of 128 bits per UUID),
 but much easier to debug if we store UUIDs in :cxx:`vtkStringArray`
 instances (one for points, one for cells).
@@ -78,7 +93,7 @@ from inputs to corresponding outputs, so (for filters that support
 pedigree IDs) VTK behaves much like an attribute system in a geometric
 modeling kernel.
 
-Thus, when given any VTK dataset, we must first search for point and cell
+Thus, when given any VTK dataset, we would first search for point and cell
 arrays that define UUIDs and create them if they are not present.
 
 Although not required by this technique, you should be aware that you
@@ -96,15 +111,15 @@ traversal order, then you should
 1. store the arrays in your bridge class in the proper order and use
    them to perform the lookups.
 
-   .. literalinclude:: Bridge.cxx
+   .. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
       :start-after: // ++ 2 ++
       :end-before: // -- 2 --
 
 2. subclass :smtk:`BridgeIOJSON` in order to preserve the UUID arrays:
 
-   .. literalinclude:: BridgeVTKIOJSON.cxx
-      :start-after: // ++ 3 ++
-      :end-before: // -- 3 --
+   .. literalinclude:: ../../../smtk/bridge/exodus/BridgeExodusIOJSON.h
+      :start-after: // ++ 1 ++
+      :end-before: // -- 1 --
 
 Summary
 -------

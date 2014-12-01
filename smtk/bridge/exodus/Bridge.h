@@ -31,25 +31,27 @@ namespace smtk {
 /// The types of entities in an Exodus "model"
 enum EntityType
 {
-  EXO_MODEL,        //!< An entire Exodus dataset (file)
-  EXO_BLOCK,        //!< Exodus blocks are groups of cells inside a dataset.
-  EXO_SIDE_SET,     //!< Exodus side sets are groups of cell boundaries.
-  EXO_NODE_SET,     //!< Exodus node sets are groups of points.
+  EXO_MODEL,        //!< An entire Exodus dataset (a file).
+  EXO_BLOCK,        //!< Exodus BLOCKs are groups of cells inside a MODEL.
+  EXO_SIDE_SET,     //!< Exodus SIDE_SETs are groups of cell boundaries in a MODEL.
+  EXO_NODE_SET,     //!< Exodus NODE_SETs are groups of points in a MODEL.
 
   EXO_INVALID       //!< The handle is invalid
 };
 
-/// A "handle" for a VTK entity (point, cell, property, etc.)
+/// A "handle" for an Exodus entity (file, block, side set, or node set)
 struct EntityHandle
 {
   EntityType entityType;   //!< Describes the type of entity.
   int modelNumber;         //!< An offset in the vector of models (m_models).
   vtkIdType entityId;      //!< The offset in the array of a model's blocks describing this entity.
 
+  /// Construct an invalid handle.
   EntityHandle()
     : entityType(EXO_INVALID), modelNumber(-1), entityId(-1)
     { }
 
+  /// Construct a possibly-valid handle.
   EntityHandle(EntityType etyp, int emod, vtkIdType eid)
     : entityType(etyp), modelNumber(emod), entityId(eid)
     { }
@@ -57,6 +59,7 @@ struct EntityHandle
   bool isValid() const
     { return this->entityType != EXO_INVALID && this->modelNumber >= 0; }
 
+  /// Given a handle, return its parent if it has one.
   EntityHandle parent() const
     {
     return
@@ -68,7 +71,11 @@ struct EntityHandle
 // -- 2 --
 
 // ++ 1 ++
-/**\brief Implement a bridge from VTK unstructured grids to SMTK.
+/**\brief Implement a bridge from Exodus mesh files to SMTK.
+  *
+  * This bridge uses the VTK Exodus reader to obtain
+  * information from Exodus files, with each element block,
+  * side set, and node set represented as a vtkUnstructuredGrid.
   */
 class Bridge : public smtk::model::Bridge
 {
@@ -123,6 +130,7 @@ private:
   void operator = (const Bridge&); // Not implemented.
 };
 
+// ++ 3 ++
 template<typename T>
 T* Bridge::toBlock(const EntityHandle& handle)
 {
@@ -153,6 +161,7 @@ T* Bridge::toBlock(const EntityHandle& handle)
     return NULL;
   return dynamic_cast<T*>(typeSet->GetBlock(handle.entityId));
 }
+// -- 3 --
 
 
     } // namespace exodus

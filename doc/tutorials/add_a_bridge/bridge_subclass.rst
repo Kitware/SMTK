@@ -17,12 +17,13 @@ modeling entities, in a bidirectional way:
 
 Only the first of these is needed for read-only access so we will cover it
 first and then describe the interactions between bridges and operators.
-Implementing operators is the topic of another tutorial.
+:ref:`Implementing operators <tut - implement an operator>` is the topic
+of a separate tutorial.
 
 The first thing you must do when creating your own bridge is
 to implement a subclass of :smtk:`smtk::model::Bridge`:
 
-.. literalinclude:: Bridge.h
+.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.h
    :start-after: // ++ 1 ++
    :end-before: // -- 1 --
 
@@ -68,19 +69,13 @@ created and introspected by SMTK.
   For now, it is fine to return :smtk:`BRIDGE_EVERYTHING`.
 
 The next step is to provide methods to access the maps between SMTK
-and foreign entities.
+and foreign entities (in this case, Exodus element blocks, side sets,
+and node sets).
 The :cxx:`toEntity` and :cxx:`toCursor` methods do this and will
 be discussed in more detail in the next section.
-For our example, the :cxx:`EntityHandle` is defined like so:
-
-.. literalinclude:: Bridge.h
-   :start-after: // ++ 2 ++
-   :end-before: // -- 2 --
-
 Depending on your modeling kernel, you may use an existing type
 from the foreign modeler (like the CGM bridge does) or a new class
-like the one above (most useful for bridges discussed in
-:ref:`bridge-by-sequence`).
+like the :cxx:`EntityHandle` class in our example.
 
 The final public methods, :cxx:`staticSetup` and :cxx:`setup`, exist
 so that applications can set global configuration parameters on modeling

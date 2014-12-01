@@ -19,6 +19,17 @@ the kernel involves
   mandatory operator is a "read" operator used to load a file native
   to your modeling kernel into your native kernel's modeling session.
 
+This tutorial will use a simplistic bridge that presents an Exodus
+mesh as a model composed only of groups (element blocks, side sets,
+and node sets).
+A bridge like this is useful for cases where the geometry for a
+simulation has been completely prepared and SMTK is only being
+used to attach attributes to pre-existing subsets of the geometric
+model.
+The groups themselves have a tessellation (i.e., a graphical representation)
+based on the cells they contain but the groups do not expose any of
+these cells to SMTK.
+
 .. toctree::
 
    bridge_subclass.rst
