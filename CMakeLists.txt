@@ -58,9 +58,12 @@ option(SMTK_HASH_STORAGE "Use sparsehash library for primary storage?" OFF)
 set(SMTK_DATA_DIR "" CACHE PATH "Path to a directory of SMTK test data.")
 mark_as_advanced(SMTK_USE_SYSTEM_SPARSEHASH SMTK_HASH_STORAGE)
 
-# Find Doxygen and Sphinx (optional, for building documentation)
-find_package(Doxygen)
-find_package(Sphinx)
+option(SMTK_ENABLE_DOCUMENTATION
+  "Include targets for Doxygen- and Sphinx-generated documentation" OFF)
+if (SMTK_ENABLE_DOCUMENTATION)
+  find_package(Doxygen)
+  find_package(Sphinx)
+endif()
 
 ################################################################################
 # Testing Related Settings
@@ -338,4 +341,6 @@ add_subdirectory(smtk)
 # targets have been declared.
 ################################################################################
 
-add_subdirectory(doc)
+if (SMTK_ENABLE_DOCUMENTATION)
+  add_subdirectory(doc)
+endif()
