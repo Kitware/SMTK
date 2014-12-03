@@ -3,6 +3,7 @@ set(QAttrLibSrcs
     qtUIManager.cxx
     qtAttribute.cxx
     qtBaseView.cxx
+    qtCheckItemComboBox.cxx
     qtEntityItemDelegate.cxx
     qtEntityItemEditor.cxx
     qtEntityItemModel.cxx
@@ -41,6 +42,7 @@ set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
     qtBaseView.h
+    qtCheckItemComboBox.h
     qtEntityItemDelegate.h
     qtEntityItemEditor.h
     qtEntityItemModel.h

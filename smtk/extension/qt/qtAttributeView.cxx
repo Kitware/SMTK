@@ -15,6 +15,7 @@
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
 #include "smtk/extension/qt/qtAssociationWidget.h"
+#include "smtk/extension/qt/qtCheckItemComboBox.h"
 #include "smtk/extension/qt/qtReferencesWidget.h"
 #include "smtk/extension/qt/qtItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
@@ -49,69 +50,13 @@
 #include <QBrush>
 #include <QColorDialog>
 #include <QHeaderView>
+#include <QStandardItem>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
 
 #include <iostream>
 #include <set>
 using namespace smtk::attribute;
-
-qtCheckableComboItemDelegate::qtCheckableComboItemDelegate(QWidget* owner) :
-  QStyledItemDelegate(owner)
-{
-}
-
-void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOptionViewItem & option_, const QModelIndex & index_) const
-{
-    QStyleOptionViewItem & refToNonConstOption = const_cast<QStyleOptionViewItem &>(option_);
-    refToNonConstOption.showDecorationSelected = false;
-    //refToNonConstOption.state &= ~QStyle::State_HasFocus & ~QStyle::State_MouseOver;
-
-    QStyledItemDelegate::paint(painter_, refToNonConstOption, index_);
-}
-
-qtAttSelectCombo::qtAttSelectCombo(QWidget* pw, const QString& displayExt) :
-  QComboBox(pw), m_displayItem(NULL), m_displayTextExt(displayExt)
-{
-}
-void qtAttSelectCombo::init()
-{
-  this->m_displayItem = new QStandardItem;
-  this->m_displayItem->setFlags(Qt::ItemIsEnabled);
-  this->m_displayItem->setText("0 " + m_displayTextExt);
-  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
-  if(itemModel)
-    {
-    itemModel->insertRow(0, this->m_displayItem);
-    }
-}
-
-void qtAttSelectCombo::updateText()
-{
-  int numSel = 0;
-  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
-  if(itemModel)
-    {
-    for(int row=1; row<this->count(); row++)
-      {
-      if(itemModel->item(row)->checkState() == Qt::Checked)
-        {
-        numSel++;
-        }
-      }
-    }
-  QString displayText = QString::number(numSel) + " " + m_displayTextExt;
-  this->m_displayItem->setText(displayText);
-  this->view()->model()->setData(this->view()->model()->index(0,0),
-    displayText, Qt::DisplayRole);
-  this->view()->update();
-}
-
-void qtAttSelectCombo::hidePopup()
-{
-  this->QComboBox::hidePopup();
-  this->setCurrentIndex(0);
-}
 
 //----------------------------------------------------------------------------
 class qtAttributeViewInternals
@@ -160,11 +105,11 @@ public:
   // Model for filtering the attribute by combobox.
   QPointer<QStandardItemModel> checkableAttComboModel;
   QMap<std::string, Qt::CheckState> AttSelections;
-  qtAttSelectCombo* SelectAttCombo;
+  qtCheckItemComboBox* SelectAttCombo;
 
   // Model for filtering the attribute properties by combobox.
   QPointer<QStandardItemModel> checkablePropComboModel;
-  qtAttSelectCombo* SelectPropCombo;
+  qtCheckItemComboBox* SelectPropCombo;
   QMap<std::string, Qt::CheckState> AttProperties;
 
 };
@@ -242,7 +187,7 @@ void qtAttributeView::createWidget( )
   QObject::connect(this->Internals->PropDefsCombo,  SIGNAL(currentIndexChanged(int)),
     this, SLOT(onPropertyDefSelected()), Qt::QueuedConnection);
 
-  this->Internals->SelectPropCombo = new qtAttSelectCombo(TopFrame, "Properties");
+  this->Internals->SelectPropCombo = new qtCheckItemComboBox(TopFrame, "Properties");
   this->Internals->SelectPropCombo->setVisible(false);
   this->Internals->SelectPropCombo->setToolTip("Select properties to compare");
   this->Internals->checkablePropComboModel = new QStandardItemModel();
@@ -252,7 +197,7 @@ void qtAttributeView::createWidget( )
     new qtCheckableComboItemDelegate(this->Internals->SelectPropCombo));
   filterLayout->addWidget(this->Internals->SelectPropCombo, 0, 3);
 
-  this->Internals->SelectAttCombo = new qtAttSelectCombo(TopFrame, "Attributes");
+  this->Internals->SelectAttCombo = new qtCheckItemComboBox(TopFrame, "Attributes");
   this->Internals->SelectAttCombo->setVisible(false);
   this->Internals->SelectPropCombo->setToolTip("Select attributes to compare");
   this->Internals->checkableAttComboModel = new QStandardItemModel();
