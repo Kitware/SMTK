@@ -84,8 +84,9 @@ public:
   typedef std::map<smtk::model::Cursor,EntityHandle> ReverseIdMap_t;
 
   smtkTypeMacro(Bridge);
-  smtkCreateMacro(smtk::model::Bridge);
+  smtkSuperclassMacro(smtk::model::Bridge);
   smtkSharedFromThisMacro(smtk::model::Bridge);
+  smtkCreateMacro(smtk::model::Bridge);
   smtkDeclareModelingKernel();
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
   virtual ~Bridge();
