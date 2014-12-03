@@ -21,7 +21,7 @@ ov.setDiscreteIndex(0)
 ctr = cb.findAsDouble('center')
 cb.findAsDouble('width').setValue(0.5)
 res = cb.operate()
-brick = res.findModelEntity('bodies').value(0)
+brick = res.findModelEntity('entities').value(0)
 
 def sumCond(itm, idx):
   print itm.name(), '=', idx
@@ -46,20 +46,20 @@ ext = cb.findAsDouble('extension')
 setAxis(ext,[2, 3, .2])
 sumCond(ov,1)
 r2 = cb.operate()
-b2 = r2.findModelEntity('bodies').value(0)
+b2 = r2.findModelEntity('entities').value(0)
 
 uop = sess.op('union')
 uop.associateEntity(brick)
 uop.associateEntity(b2)
 r3 = uop.operate()
-ubod = r3.findModelEntity('bodies').value(0)
+ubod = r3.findModelEntity('entities').value(0)
 
 top = sess.op('translate')
 top.associateEntity(ubod)
 off = top.findAsDouble('offset')
 setAxis(off, [8., 3., 7.])
 r4 = top.operate()
-b4 = r4.findModelEntity('bodies').value(0)
+b4 = r4.findModelEntity('entities').value(0)
 
 json = smtk.io.ExportJSON.fromModel(mgr)
 sphFile = open('/tmp/brickly2.json', 'w')
