@@ -249,6 +249,7 @@ int TestEntityIOSpecs()
     { "none|domain|nodim", smtk::model::MODEL_DOMAIN }, // ensure string split works.
     { "!",          0 },
     // Test all of the keywords to ensure ordering is proper.
+    { "any",        smtk::model::ANY_ENTITY },
     { "anydim",     smtk::model::ANY_DIMENSION },
     { "b",          smtk::model::BRIDGE_SESSION },
     { "bdy",        smtk::model::MODEL_BOUNDARY },
@@ -323,6 +324,7 @@ int TestEntityIOSpecs()
     std::string name;
     BitFlags value;
   } testToSpecValues[] = {
+    { "any",                   smtk::model::ANY_ENTITY },
     { "none|anydim",           smtk::model::ANY_DIMENSION },
     { "none|bdy|nodim",        smtk::model::MODEL_BOUNDARY },
     { "bridge|nodim",          smtk::model::BRIDGE_SESSION },
