@@ -21,8 +21,10 @@
   * class in which the macro is placed. It defines
   * the following types inside the class scope:
   * + `SelfType` (the type of the class itself),
-  * + `Ptr` (a shared pointer to the class), and
-  * + `ConstPtr` (a constant shared pointer to the class).
+  * + `Ptr` (a shared pointer to an instance of the class), and
+  * + `ConstPtr` (a shared pointer to a constant instance of the class).
+  * + `WeakPtr` (a weak pointer to an instance of the class), and
+  * + `WeakConstPtr` (a weak pointer to a constant instance of the class).
   *
   * Use it like so:<pre>
   * class X
@@ -39,7 +41,24 @@
 #define smtkTypeMacro(...) \
   typedef __VA_ARGS__ SelfType; \
   typedef smtk::shared_ptr< __VA_ARGS__ > Ptr; \
-  typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr;
+  typedef smtk::shared_ptr< const __VA_ARGS__ > ConstPtr; \
+  typedef smtk::weak_ptr< __VA_ARGS__ > WeakPtr; \
+  typedef smtk::weak_ptr< const __VA_ARGS__ > WeakConstPtr;
+
+/**\brief Add a typedef to the superclass of this class.
+  *
+  * This adds typedefs named Superclass and SuperclassPtr
+  * (i.e., a shared pointer to the superclass) to the
+  * class.
+  *
+  * Unlike VTK's type macro, it is separate from smtkTypeMacro
+  * in order to support classes with multiple template
+  * parameters, since preprocessor macros do not properly
+  * handle commas inside template parameter lists.
+  */
+#define smtkSuperclassMacro(...) \
+  typedef __VA_ARGS__ Superclass; \
+  typedef smtk::shared_ptr< __VA_ARGS__ > SuperclassPtr;
 
 /**\brief Add static create() methods to a class.
   *
@@ -156,27 +175,32 @@
   *
   * This macro acts like a function that takes a pointer
   * to an instance of your class and returns a shared pointer
-  * to the instance. For example: <pre>
-  * class X : smtkEnabledSharedPtr(X)
+  * to the instance, even when shared_from_this is inherited
+  * from a base class. For example: <pre>
+  * class Y : smtkEnabledSharedPtr(X)
   * {
   * public:
-  *   smtkTypeMacro(X);
+  *   smtkTypeMacro(Y);
   *   static Ptr create(int a, double b);
   * protected:
-  *   X(int a, double b);
+  *   Y(int a, double b);
   * };
   *
-  * X::Ptr create(int a, double b)
+  * Y::Ptr create(int a, double b)
   * {
   *   return smtkSharedPtrHelper(
-  *     new X(a, b));
+  *     new Y(a, b));
   * }
   * </pre>
   *
   * It is important to use this method in classes derived
   * from those that use smtkEnabledSharedPtr rather than
   * naively constructing a shared pointer of the proper type,
-  * since that will likely result in an exception being thrown.
+  * since that will likely result in an exception being thrown;
+  * the path must be from Y* to shared_ptr<X> to shared_ptr<Y>,
+  * not straight from Y* to shared_ptr<Y>, or the pointer will
+  * be inserted into the wrong pool of shared pointers leading
+  * to premature deletion or multiple-deletion.
   */
 #define smtkSharedPtrHelper(...) \
   smtk::static_pointer_cast<SelfType>( \

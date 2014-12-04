@@ -53,8 +53,9 @@ class SMTKCORE_EXPORT DefaultBridge : public Bridge
 {
 public:
   smtkTypeMacro(DefaultBridge);
-  smtkCreateMacro(DefaultBridge);
+  smtkSuperclassMacro(Bridge);
   smtkSharedFromThisMacro(Bridge);
+  smtkCreateMacro(DefaultBridge);
   smtkDeclareModelingKernel();
 
   void backsRemoteBridge(

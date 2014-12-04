@@ -53,10 +53,12 @@ namespace smtk {
 class CGMSMTK_EXPORT Bridge : public smtk::model::Bridge
 {
 public:
+  smtkTypeMacro(Bridge);
+  smtkSuperclassMacro(smtk::model::Bridge);
+  smtkSharedFromThisMacro(smtk::model::Bridge);
+  smtkCreateMacro(smtk::model::Bridge);
   smtkDeclareModelingKernel();
-  typedef smtk::shared_ptr<Bridge> Ptr;
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
-  static BridgePtr create();
   virtual ~Bridge();
 
   virtual BridgedInfoBits allSupportedInformation() const;

@@ -134,4 +134,6 @@ smtkImplementsModelingKernel(
   native,
   DefaultBridge_json,
   smtk::model::BridgeHasNoStaticSetup,
-  smtk::model::DefaultBridge);
+  smtk::model::DefaultBridge,
+  true /* inherit "universal" operators */
+);

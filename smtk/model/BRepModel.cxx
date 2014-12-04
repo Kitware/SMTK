@@ -801,6 +801,8 @@ bool BRepModel::removeFloatProperty(
     return false;
     }
   uit->second.erase(sit);
+  if (uit->second.empty())
+    this->m_floatData->erase(uit);
   return true;
 }
 
@@ -887,6 +889,8 @@ bool BRepModel::removeStringProperty(
     return false;
     }
   uit->second.erase(sit);
+  if (uit->second.empty())
+    this->m_stringData->erase(uit);
   return true;
 }
 
@@ -973,6 +977,8 @@ bool BRepModel::removeIntegerProperty(
     return false;
     }
   uit->second.erase(sit);
+  if (uit->second.empty())
+    this->m_integerData->erase(uit);
   return true;
 }
 

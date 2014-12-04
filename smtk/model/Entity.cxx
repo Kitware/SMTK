@@ -552,6 +552,8 @@ std::string Entity::flagToSpecifierString(BitFlags val, bool textual)
     else if (val == smtk::model::LOOP)  spec << "loop";
     else if (val == smtk::model::SHELL) spec << "shell2";
 
+    else if (val == smtk::model::ANY_ENTITY) spec << "any";
+
     // Not a specially-named bit value; generate a name:
     else
       {
@@ -610,6 +612,7 @@ static struct {
   { "2",          smtk::model::DIMENSION_2 },
   { "3",          smtk::model::DIMENSION_3 },
   { "4",          smtk::model::DIMENSION_4 },
+  { "any",        smtk::model::ANY_ENTITY },
   { "anydim",     smtk::model::ANY_DIMENSION },
   { "b",          smtk::model::BRIDGE_SESSION },
   { "bdy",        smtk::model::MODEL_BOUNDARY },
