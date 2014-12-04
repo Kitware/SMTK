@@ -42,6 +42,7 @@ set(modelSrcs
   VertexUse.cxx
   Volume.cxx
   VolumeUse.cxx
+  operators/SetProperty.cxx
   )
 
 set(modelHeaders
@@ -94,9 +95,11 @@ set(modelHeaders
   VertexUse.h
   Volume.h
   VolumeUse.h
+  operators/SetProperty.h
   )
 
 smtk_bridge_json("${CMAKE_CURRENT_SOURCE_DIR}/DefaultBridge.json" defBridgeJSON)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/SetProperty.sbt" defOpXML)
 
 #install the headers
 smtk_public_headers(${modelHeaders})

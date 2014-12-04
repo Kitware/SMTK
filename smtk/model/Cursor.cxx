@@ -21,6 +21,8 @@
 
 #include <algorithm>
 
+using namespace smtk::common;
+
 namespace smtk {
   namespace model {
 
@@ -1024,6 +1026,138 @@ std::size_t cursorHash(const Cursor& c)
 /*! \fn Cursor::instances() const
  * \brief Return all the instances this object serves as a prototype for.
  */
+
+/*! \fn Cursor::properties<T>()
+ *  \brief Return a pointer to the properties of the entity, creating an entry as required.
+ *
+ * Unlike the hasProperties() method, this will return a valid pointer as long as the
+ * manager and entity of the cursor are valid.
+ * If the entity does not already have any properties of the given type, a new
+ * StringData, FloatData, or IntegerData instance is created and added to the
+ * appropriate map.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+StringData* Cursor::properties<StringData>()
+{
+  if (!this->hasStringProperties())
+    {
+    if (!this->manager() || !this->entity())
+      return NULL;
+    StringData blank;
+    this->manager()->stringProperties().insert(
+      std::pair<UUID,StringData>(this->entity(), blank));
+    }
+  return &(this->stringProperties());
+}
+
+template<>
+FloatData* Cursor::properties<FloatData>()
+{
+  if (!this->hasFloatProperties())
+    {
+    if (!this->manager() || !this->entity())
+      return NULL;
+    FloatData blank;
+    this->manager()->floatProperties().insert(
+      std::pair<UUID,FloatData>(this->entity(), blank));
+    }
+  return &(this->floatProperties());
+}
+
+template<>
+IntegerData* Cursor::properties<IntegerData>()
+{
+  if (!this->hasIntegerProperties())
+    {
+    if (!this->manager() || !this->entity())
+      return NULL;
+    IntegerData blank;
+    this->manager()->integerProperties().insert(
+      std::pair<UUID,IntegerData>(this->entity(), blank));
+    }
+  return &(this->integerProperties());
+}
+
+/*! \fn Cursor::hasProperties<T>() const
+ *! \fn Cursor::hasProperties<T>()
+ *  \brief Return a pointer to the properties of the entity or null if none exist.
+ *
+ * Unlike the properties() method, this will return a NULL pointer
+ * if the entity does not already have any properties of the given type.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+StringData* Cursor::hasProperties<StringData>()
+{
+  if (this->hasStringProperties())
+    return &(this->stringProperties());
+  return NULL;
+}
+
+template<>
+const StringData* Cursor::hasProperties<StringData>() const
+{
+  if (this->hasStringProperties())
+    return &(this->stringProperties());
+  return NULL;
+}
+
+template<>
+FloatData* Cursor::hasProperties<FloatData>()
+{
+  if (this->hasFloatProperties())
+    return &(this->floatProperties());
+  return NULL;
+}
+
+template<>
+const FloatData* Cursor::hasProperties<FloatData>() const
+{
+  if (this->hasFloatProperties())
+    return &(this->floatProperties());
+  return NULL;
+}
+
+template<>
+IntegerData* Cursor::hasProperties<IntegerData>()
+{
+  if (this->hasIntegerProperties())
+    return &(this->integerProperties());
+  return NULL;
+}
+
+template<>
+const IntegerData* Cursor::hasProperties<IntegerData>() const
+{
+  if (this->hasIntegerProperties())
+    return &(this->integerProperties());
+  return NULL;
+}
+
+/*! \fn Cursor::removeProperty<T>(const std::string& name)
+ *  \brief Remove the property of type \a T with the given \a name, returning true on success.
+ *
+ * False is returned if the property did not exist for the given entity.
+ *
+ * This templated version exists for use in functions where the
+ * property type is a template parameter.
+ */
+template<>
+bool Cursor::removeProperty<StringData>(const std::string& pname)
+{ return this->removeStringProperty(pname); }
+
+template<>
+bool Cursor::removeProperty<FloatData>(const std::string& pname)
+{ return this->removeFloatProperty(pname); }
+
+template<>
+bool Cursor::removeProperty<IntegerData>(const std::string& pname)
+{ return this->removeIntegerProperty(pname); }
 
   } // namespace model
 } // namespace smtk

@@ -168,6 +168,14 @@ public:
   AttributeAssignments& attributes();
   AttributeSet attributes() const;
 
+#ifndef SHIBOKEN_SKIP
+  // For T = {IntegerData, FloatData, StringData}:
+  template<typename T> T* properties();
+  template<typename T> T* hasProperties();
+  template<typename T> const T* hasProperties() const;
+  template<typename T> bool removeProperty(const std::string& name);
+#endif // SHIBOKEN_SKIP
+
   void setFloatProperty(const std::string& propName, smtk::model::Float propValue);
   void setFloatProperty(const std::string& propName, const smtk::model::FloatList& propValue);
   smtk::model::FloatList const& floatProperty(const std::string& propName) const;
