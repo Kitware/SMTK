@@ -121,11 +121,14 @@ This macro takes 5 parameters:
 
    At a minimum, the JSON dictionary must include
 
-   + The name of the bridge. This should match the "short" name passed to :smtk:`smtkImplementsModelingKernel`.
+   + The "kernel" entry set to the name of the bridge.
+     The kernel name should match the "short" name passed to :smtk:`smtkImplementsModelingKernel`.
    + A list of modeling engines that the kernel supports and the capabilities of each.
      If your bridge only supports a single modeling engine, use the name "default" as the Exodus bridge does.
      At a minimum, the capabilities for each engine should include a list of
      file extensions that the bridge can read.
+     The list of standard capabilities will be expanded in in the future,
+     but even now can be used by bridges in an ad-hoc manner.
 
 3. An :cxx:`smtk::function` to be invoked with any configuration parameters
    before an instance of the bridge is created.
@@ -171,68 +174,8 @@ The :cxx:`Bridge::s_operators` member is populated with operators by calls to
 the :smtk:`smtkImplementsModelOperator` macro inside each operator's
 implementation.
 
-Transcribing entities
----------------------
-
-The main purpose of the bridge is to provide the SMTK model Manager
-which owns it with information about the entities in some foreign modeler
-and the :smtk:`Bridge::transcribeInternal` method is where your bridge
-must do this.
-
-The first thing you should do is verify that the entity being requested
-actually exists:
-
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
-   :start-after: // ++ 7 ++
-   :end-before: // -- 7 --
-
-One trick you'll see in most bridges is the construction of a "mutable" cursor
-from the const version that passed to :cxx:`transcribeInternal`:
-
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
-   :start-after: // ++ 8 ++
-   :end-before: // -- 8 --
-
-The const version does not provide access to methods that alter the model manager's storage.
-Constructing a mutable version of the cursor is legitimate inside the bridge —
-we are pretending that the entity to be transcribed has existed in the manager
-ever since it existed in the foreign modeler.
-Since transcription should not change the entity in the foreign modeler,
-creating a mutable cursor is acceptable.
-
-Once you know that the UUID has a matching entity in the foreign modeler,
-you should create an :smtk:`Entity` instance in the model manager's map
-from UUIDs to entities.
-Make sure that the entity's flags properly define the type of the entity
-at this point but don't worry about filling in the list of relations to
-other entities unless the :smtk:`BRIDGE_ENTITY_RELATIONS` bit is set
-in the request for transcription.
-
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
-   :start-after: // ++ 9 ++
-   :end-before: // -- 9 --
-
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
-   :start-after: // ++ 10 ++
-   :end-before: // -- 10 --
-
-If :smtk:`BRIDGE_ENTITY_RELATIONS` is set, then you not only need to
-ensure that the relations are listed but that they are also *at least*
-partially transcribed.
-You are always welcome to transcribe more than is requested,
-but be aware that this can slow things down for large models.
-Because this is an example and because the Exodus bridge does not
-expose individual cells as first-class entities,
-we transcribe the entire model recursively.
-
-.. literalinclude:: ../../../smtk/bridge/exodus/Bridge.cxx
-   :start-after: // ++ 11 ++
-   :end-before: // -- 11 --
-
-Now you should check other bits in :smtk:`BridgedInformation` that
-are present in your :smtk:`Bridge::allSupportedInformation` method
-and ensure that information is transcribed properly before returning
-the bits which were actually transcribed for the given entity.
-
-The :smtk:`Bridge::transcribe` method uses the return value to
-update its list of dangling (partially transcribed) entities.
+Now that we have defined a mapping between UUIDs
+and model entities, the next step is to have the
+bridge transcribe information about foreign model
+entities into a :smtk:`model manager <smtk::model::Manager>`
+instance.
