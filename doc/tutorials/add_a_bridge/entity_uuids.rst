@@ -8,8 +8,10 @@
 Adding Entity UUIDs
 *******************
 
-The first step in adapting foreign modeling kernels to SMTK
-is assigning UUIDs to entities in the modeling kernel so that
+The first step in adapting foreign modeling kernels to SMTK,
+which you should do before you start subclassing Bridge,
+is deciding how to assign UUIDs to entities in the foreign
+modeling kernel so that
 
 * entities can persist across SMTK modeling sessions and
 * SMTK can identify entities to the modeling kernel given
@@ -96,6 +98,12 @@ modeling kernel.
 Thus, when given any VTK dataset, we would first search for point and cell
 arrays that define UUIDs and create them if they are not present.
 
+Besides points and cells, we might wish to assign UUIDs to datasets
+themselves and even filter objects.
+This might be achieved by creating a new vtkInformationKey to hold
+UUIDs and assigning it to the vtkInformation object on the dataset
+or filter.
+
 Although not required by this technique, you should be aware that you
 may store information about a particular bridge session instance in
 an SMTK JSON file by subclassing the :smtk:`BridgeIOJSON` class.
@@ -123,7 +131,7 @@ traversal order, then you should
 
 Summary
 -------
-You now have a way to map a foreign entity to its SMTK UUID and vice-versa.
+You should now have a way to map a foreign entity to its SMTK UUID and vice-versa.
 If there is any possibility that the model could change, then you are responsible
 for maintaining this mapping (or at least marking it dirty and rebuilding as
 required).
@@ -134,5 +142,5 @@ by traversal order).
 Future versions of SMTK will focus on incremental transcription of
 model entities to avoid significant waits the first time a model is read.
 
-Now it is time to use the UUID maps to *transcribe* information
-from the foreign modeling kernel into SMTK for presentation to users.
+Now that you understand how UUIDs will be stored and related to foreign
+modeling kernel entities, it is possible to subclass the SMTK model bridge class.

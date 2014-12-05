@@ -221,10 +221,10 @@ void testBridgeAssociation(Manager::Ptr manager)
 {
   // Test that operators added by previous tests still exist
   ModelEntity model = manager->addModel(3, 3, "Model Airplane");
-  StringList opNames = model.operatorNames();
+  StringList modelOpNames = model.operatorNames();
   test(
-    std::find(opNames.begin(), opNames.end(), "outcome test") !=
-    opNames.end(),
+    std::find(modelOpNames.begin(), modelOpNames.end(), "outcome test") !=
+    modelOpNames.end(),
     "Expected \"outcome test\" operator defined for the test model.");
 
   // Test op(name) method
