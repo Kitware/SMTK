@@ -176,6 +176,19 @@ void qtAttribute::updateItemsData()
   QLayout* layout = this->Widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->getObject();
+  // If there are model assocication for the attribute, create UI for it.
+  // This will be the same widget used for ModelEntityItem.
+  if(att->associations())
+    {
+    qItem = this->createItem(att->associations(), this->Widget,
+      this->Internals->View);
+    if(qItem && qItem->widget())
+      {
+      layout->addWidget(qItem->widget());
+      this->addItem(qItem);
+      }
+    }
+  // Now go through all child items and create ui components.
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
