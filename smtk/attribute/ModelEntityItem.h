@@ -27,6 +27,7 @@
 #define __smtk_attribute_ModelEntityItem_h
 
 #include "smtk/attribute/Item.h"
+#include "smtk/model/Cursor.h"
 #include "smtk/SMTKCoreExports.h"
 
 namespace smtk
