@@ -11,7 +11,6 @@
 
 #include "smtk/attribute/ModelEntityItem.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/model/Cursor.h"
 
 using namespace smtk::attribute;
 
