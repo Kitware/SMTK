@@ -51,6 +51,7 @@ namespace smtk
       virtual bool isUsingDefault(std::size_t element) const;
       virtual bool isUsingDefault() const;
       DataT defaultValue() const;
+      const std::vector<DataT>& defaultValues() const;
       virtual void copyFrom(const smtk::attribute::ItemPtr sourceItem,
                             smtk::attribute::Item::CopyInfo& info);
       shared_ptr<const DefType> concreteDefinition() const
@@ -102,7 +103,10 @@ namespace smtk
           {
           // Assumes that if the definition is discrete then default value
           // will be based on the default discrete index
-          this->m_values.resize(n, def->defaultValue());
+          if (def->defaultValues().size() > 1)
+            this->m_values = def->defaultValues();
+          else
+            this->m_values.resize(n, def->defaultValue());
           }
         else
           {
@@ -284,7 +288,10 @@ namespace smtk
         }
       if (def->hasDefault())
         {
-        this->m_values.resize(newSize, def->defaultValue());
+        if (def->defaultValues().size() == newSize)
+          this->m_values = def->defaultValues();
+        else
+          this->m_values.resize(newSize, def->defaultValue());
         this->m_isSet.resize(newSize, true);
         }
       else
@@ -352,7 +359,10 @@ namespace smtk
         }
       else
         {
-        this->setValue(element, def->defaultValue());
+        this->setValue(element,
+          def->defaultValues().size() > 1 ?
+          def->defaultValues()[element] :
+          def->defaultValue());
         }
       return true;
     }
@@ -369,9 +379,11 @@ namespace smtk
 
       std::size_t i, n = this->numberOfValues();
       DataT dval = def->defaultValue();
+      const std::vector<DataT>& dvals = def->defaultValues();
+      bool vectorDefault = (dvals.size() == n);
       for (i = 0; i < n; i++)
         {
-        if (!(this->m_isSet[i] && (this->m_values[i] == dval)))
+        if (!(this->m_isSet[i] && (vectorDefault ? this->m_values[i] == dvals[i] : this->m_values[i] == dval)))
           {
           return false;
           }
@@ -389,7 +401,12 @@ namespace smtk
         return false; // Doesn't have a default value
         }
 
-      return (this->m_values[element] == def->defaultValue());
+      DataT dval = def->defaultValue();
+      const std::vector<DataT>& dvals = def->defaultValues();
+      bool vectorDefault = (dvals.size() == def->numberOfRequiredValues());
+      return (vectorDefault ?
+        this->m_values[element] == dvals[element] :
+        this->m_values[element] == dval);
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
@@ -399,11 +416,25 @@ namespace smtk
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
         {
-        DataT dummy = DataT();
+        static DataT dummy = DataT();
         return dummy;
         }
 
       return def->defaultValue();
+    }
+//----------------------------------------------------------------------------
+    template<typename DataT>
+    const std::vector<DataT>&
+    ValueItemTemplate<DataT>::defaultValues() const
+    {
+      const DefType *def = static_cast<const DefType *>(this->definition().get());
+      if (!def)
+        {
+        static std::vector<DataT> dummy(1, DataT());
+        return dummy;
+        }
+
+      return def->defaultValues();
     }
 //----------------------------------------------------------------------------
     template<typename DataT>
@@ -463,10 +494,12 @@ namespace smtk
         }
       else
         {
-        DataT val = def->defaultValue();
+        DataT dval = def->defaultValue();
+        const std::vector<DataT>& dvals = def->defaultValues();
+        bool vectorDefault = (dvals.size() == n);
         for(i = 0; i < n; i++)
           {
-          this->setValue(i, val);
+          this->setValue(i, vectorDefault ? dvals[i] : dval);
           }
         }
       ValueItem::reset();

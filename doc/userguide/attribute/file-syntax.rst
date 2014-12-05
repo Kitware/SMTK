@@ -394,6 +394,35 @@ specific to it.
    * - <DetailedDescription>
      - Provides a detailed description of the item (Optional).
 
+   * - <DefaultValue>
+     - For Integer, String, and Double items, this element's text
+       contains the default value for the item. This element is
+       not allowed for other ItemDefinition types. (Optional)
+
+       For items that are not discrete and not extensible but do have
+       NumberOfRequiredValues greater than 1, it is possible to
+       provide a different default value for each component.
+       In this case, commas are assumed to separate the values.
+       If you wish to use a different separator, specify the "Sep"
+       attribute on the DefaultValue tag.
+
+       For example, a String item with 3 components might use
+
+       .. code:: xml
+
+          <DefaultValue Sep=":">Oh, my!:Oh no!:Yes, please.</DefaultValue>
+       to specify different defaults for each component.
+       You can also use the separator to prevent a default value
+       from having per-component values. For instance, the same
+       String item might use
+
+       .. code:: xml
+
+          <DefaultValue Sep=":">Commas, they are my style.</DefaultValue>
+       to force the default value to have a single entry used to
+       initialize all components.
+
+
 All of the elements support the following common XML Attributes.  Note
 that each element may have additional XML Attributes that are specific to
 it.

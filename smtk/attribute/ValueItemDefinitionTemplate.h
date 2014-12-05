@@ -31,9 +31,18 @@ namespace smtk
 
       virtual ~ValueItemDefinitionTemplate() {}
 
-      const DataT &defaultValue() const
+      const DataT& defaultValue() const
+      {static DataT dummy; return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[0];}
+      const DataT& defaultValue(std::size_t element) const
+      {
+        static DataT dummy;
+        bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
+        return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[vectorDefault ? element : 0];
+      }
+      const std::vector<DataT>& defaultValues() const
       {return this->m_defaultValue;}
-      bool setDefaultValue(const DataT &val);
+      bool setDefaultValue(const DataT& val);
+      bool setDefaultValue(const std::vector<DataT>& val);
       const DataT &discreteValue(std::size_t element) const
       {return this->m_discreteValues[element];}
       void addDiscreteValue(const DataT &val);
@@ -61,7 +70,7 @@ namespace smtk
       ValueItemDefinitionTemplate(const std::string &myname);
       void copyTo(ValueItemDefinitionPtr def,
         smtk::attribute::ItemDefinition::CopyInfo& info) const;
-      DataT m_defaultValue;
+      std::vector<DataT> m_defaultValue;
       DataT m_minRange;
       bool m_minRangeSet;
       bool m_minRangeInclusive;
@@ -85,15 +94,46 @@ namespace smtk
       this->m_maxRangeInclusive = false;
     }
 //----------------------------------------------------------------------------
+    /**\brief Set the default value for an attribute.
+      *
+      */
     template<typename DataT>
     bool ValueItemDefinitionTemplate<DataT>::
-    setDefaultValue(const DataT &dvalue)
+    setDefaultValue(const DataT& dvalue)
     {
-      // Is this a vaild value?
-      if (!this->isValueValid(dvalue))
-        {
-        return false;
-        }
+      std::vector<DataT> defaultTuple(1, dvalue);
+      return this->setDefaultValue(defaultTuple);
+    }
+//----------------------------------------------------------------------------
+    /**\brief Set the default value for an attribute.
+      *
+      * This variant takes an array of values so that
+      * vector quantities can have a different default
+      * for each component.
+      *
+      * However, a single default can always be specified
+      * (even for vector-valued attributes), and **must**
+      * be specified for discrete and extensible attributes.
+      *
+      * When a single default is provided but the attribute
+      * is vector-valued, then the default is used for each
+      * component.
+      */
+    template<typename DataT>
+    bool ValueItemDefinitionTemplate<DataT>::
+    setDefaultValue(const std::vector<DataT>& dvalue)
+    {
+      if (dvalue.empty())
+        return false; // *some* value must be provided.
+      if (
+        dvalue.size() > 1 &&
+        (this->isDiscrete() ||
+         this->isExtensible()))
+        return false; // only fixed-size attributes can have vector defaults.
+      typename std::vector<DataT>::const_iterator it;
+      for (it = dvalue.begin(); it != dvalue.end(); ++it)
+        if (!this->isValueValid(*it))
+          return false; // Is each value valid?
       this->m_defaultValue = dvalue;
       this->m_hasDefault = true;
       return true;
@@ -124,13 +164,13 @@ namespace smtk
       // If there is a default value is it within the new range?
       if (this->m_hasDefault)
         {
-        if (this->m_defaultValue < minVal)
+        typename std::vector<DataT>::const_iterator it;
+        for (it = this->m_defaultValue.begin(); it != this->m_defaultValue.end(); ++it)
           {
-          return false;
-          }
-        if ((!isInclusive) && (this->m_defaultValue == minVal))
-          {
-          return false;
+          if (*it < minVal)
+            return false;
+          if ((!isInclusive) && (*it == minVal))
+            return false;
           }
         }
       if ((!this->m_maxRangeSet) || (minVal < this->m_maxRange))
@@ -150,13 +190,13 @@ namespace smtk
       // If there is a default value is it within the new range?
       if (this->m_hasDefault)
         {
-        if (this->m_defaultValue > maxVal)
+        typename std::vector<DataT>::const_iterator it;
+        for (it = this->m_defaultValue.begin(); it != this->m_defaultValue.end(); ++it)
           {
-          return false;
-          }
-        if ((!isInclusive) && (this->m_defaultValue == maxVal))
-          {
-          return false;
+          if (*it > maxVal)
+            return false;
+          if ((!isInclusive) && (*it == maxVal))
+            return false;
           }
         }
       if ((!this->m_minRangeSet) || (maxVal > this->m_minRange))

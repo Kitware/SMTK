@@ -113,7 +113,7 @@ void qtDoubleValidator::fixup(QString &input) const
     }
   else if(dDef->hasDefault())
     {
-    input = QString::number(dDef->defaultValue());
+    input = QString::number(dDef->defaultValue(elementIdx));
     }
   else
     {
@@ -166,7 +166,7 @@ void qtIntValidator::fixup(QString &input) const
     }
   else if(iDef->hasDefault())
     {
-    input = QString::number(iDef->defaultValue());
+    input = QString::number(iDef->defaultValue(elementIdx));
     }
   else
     {
@@ -944,7 +944,7 @@ QWidget* qtUIManager::createEditBox(
         }
       if(dDef->hasDefault())
         {
-        value = dDef->defaultValue();
+        value = dDef->defaultValue(elementIdx);
         if(!tooltip.isEmpty())
           {
           tooltip.append("; ");
@@ -960,7 +960,7 @@ QWidget* qtUIManager::createEditBox(
         }
       else if(dDef->hasDefault())
         {
-        editBox->setText(QString::number(dDef->defaultValue()));
+        editBox->setText(QString::number(dDef->defaultValue(elementIdx)));
         isDefault = true;
         }
       if(!tooltip.isEmpty())
@@ -1008,7 +1008,7 @@ QWidget* qtUIManager::createEditBox(
         }
       if(iDef->hasDefault())
         {
-        value = iDef->defaultValue();
+        value = iDef->defaultValue(elementIdx);
         if(!tooltip.isEmpty())
           {
           tooltip.append("; ");
@@ -1022,11 +1022,11 @@ QWidget* qtUIManager::createEditBox(
         editBox->setText(item->valueAsString(elementIdx).c_str());
 
         isDefault = iDef->hasDefault() &&
-          iDef->defaultValue()==iItem->value(elementIdx);
+          iDef->defaultValue(elementIdx)==iItem->value(elementIdx);
         }
       else if(iDef->hasDefault())
         {
-        editBox->setText(QString::number(iDef->defaultValue()));
+        editBox->setText(QString::number(iDef->defaultValue(elementIdx)));
         isDefault = true;
         }
       if(!tooltip.isEmpty())
@@ -1049,11 +1049,11 @@ QWidget* qtUIManager::createEditBox(
         {
         valText = item->valueAsString(elementIdx).c_str();
         isDefault = sDef->hasDefault() &&
-          sDef->defaultValue()==sitem->value(elementIdx);
+          sDef->defaultValue(elementIdx)==sitem->value(elementIdx);
         }
       else if(sDef->hasDefault())
         {
-        valText = sDef->defaultValue().c_str();
+        valText = sDef->defaultValue(elementIdx).c_str();
         isDefault = true;
         }
 
@@ -1076,7 +1076,7 @@ QWidget* qtUIManager::createEditBox(
       if(sDef->hasDefault())
         {
         QString tooltip;
-        tooltip.append("Default: ").append(sDef->defaultValue().c_str());
+        tooltip.append("Default: ").append(sDef->defaultValue(elementIdx).c_str());
         inputWidget->setToolTip(tooltip);
        }
      break;
@@ -1187,7 +1187,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
         }
       const DoubleItemDefinition* def =
         dynamic_cast<const DoubleItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toDouble() == def->defaultValue();
+      isDefault = def->hasDefault() && editBox->text().toDouble() == def->defaultValue(elementIdx);
       }
     else if(rawitem->type()==smtk::attribute::Item::INT)
       {
@@ -1200,7 +1200,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
         }
       const IntItemDefinition* def =
         dynamic_cast<const IntItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toInt() == def->defaultValue();
+      isDefault = def->hasDefault() && editBox->text().toInt() == def->defaultValue(elementIdx);
       }
     else if(rawitem->type()==smtk::attribute::Item::STRING)
       {
@@ -1213,7 +1213,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
         }
       const StringItemDefinition* def =
         dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
-      isDefault = def->hasDefault() && editBox->text().toStdString() == def->defaultValue();
+      isDefault = def->hasDefault() && editBox->text().toStdString() == def->defaultValue(elementIdx);
       }
     else
       {
@@ -1233,7 +1233,7 @@ void qtUIManager::onInputValueChanged(QObject* obj)
       }
     const StringItemDefinition* def =
       dynamic_cast<const StringItemDefinition*>(rawitem->definition().get());
-    isDefault = def->hasDefault() && textBox->toPlainText().toStdString() == def->defaultValue();
+    isDefault = def->hasDefault() && textBox->toPlainText().toStdString() == def->defaultValue(elementIdx);
     }
   else
     {
