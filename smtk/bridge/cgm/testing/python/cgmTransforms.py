@@ -38,10 +38,10 @@ ov = cb.findAsInt('construction method')
 ov.setDiscreteIndex(0)
 cb.findAsDouble('width').setValue(0.5)
 r1 = cb.operate()
-brick1 = r1.findModelEntity('bodies').value(0)
+brick1 = r1.findModelEntity('entities').value(0)
 
 r2 = cb.operate()
-brick2 = r2.findModelEntity('bodies').value(0)
+brick2 = r2.findModelEntity('entities').value(0)
 
 #json = smtk.io.ExportJSON.fromModel(mgr)
 #jsonFile = open('/tmp/skirb1.json', 'w')

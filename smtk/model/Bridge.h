@@ -68,51 +68,38 @@ enum BridgedInformation
 };
 
 #ifndef SHIBOKEN_SKIP
-/**\brief Declare that a class implements a bridge to a solid modeling kernel.
+
+/**\brief Boilerplate for classes that accept operator registration.
+ *
+ * This is invoked by smtkDeclareModelingKernel(), so you should not
+ * normally need to use it directly.
+ *
+ * Note that you must invoke this macro in a public section of your class declaration!
+ *
+ * If you invoke this macro, you must also use the
+ * smtkImplementsOperatorRegistration macro in your bridge's implementation.
+ */
+#define smtkDeclareOperatorRegistration() \
+protected: \
+  static void cleanupOperators(); \
+  static smtk::model::OperatorConstructors* s_operators; \
+public: \
+  virtual bool registerOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor); \
+  static bool registerStaticOperator( \
+    const std::string& opName, const char* opDescrXML, \
+    smtk::model::OperatorConstructor opCtor); \
+  virtual std::string findOperatorXML(const std::string& opName) const; \
+  virtual smtk::model::OperatorConstructor findOperatorConstructor( \
+    const std::string& opName) const; \
+  virtual bool inheritsOperators() const;
+
+/**\brief Implement methods declared by smtkDeclareOperatorRegistration().
   *
-  * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
-  * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
-  *
-  * Note that you must invoke this macro in the global namespace!
-  *
-  * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
-  *
-  * This macro takes 3 arguments:
-  *
-  * \a Comp      - A "short" name for the bridge. This is used as part of several function
-  *                names, so it must be a valid variable name and should *not* be in quotes.
-  * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
-  *                the bridge's capabilities, including file types that the bridge supports.
-  *                The format of the JSON structure is documented in the SMTK User's Guide.
-  * \a Setup     - A function to provide configuration before bridge construction.
-  *                See the documentation for BridgeStaticSetup and BridgeHasNoStaticSetup.
-  * \a Cls       - The name of the bridge class. The class must have a static method named
-  *                "create" that constructs and instance and returns a shared pointer to it.
+  * Usually this macro is invoked by smtkImplementsModelingKernel().
   */
-#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls) \
-  /* Adapt create() to return a base-class pointer */ \
-  static smtk::model::BridgePtr baseCreate() { \
-    return Cls ::create(); \
-  } \
-  /* Implement autoinit methods */ \
-  void smtk_##Comp##_bridge_AutoInit_Construct() { \
-    smtk::model::BridgeRegistrar::registerBridge( \
-      #Comp, /* Can't rely on bridgeName to be initialized yet */ \
-      Tags, \
-      Setup, \
-      baseCreate); \
-  } \
-  void smtk_##Comp##_bridge_AutoInit_Destruct() { \
-    smtk::model::BridgeRegistrar::registerBridge( \
-      Cls ::bridgeName, \
-      std::string(), \
-      NULL, \
-      NULL); \
-  } \
-  /**\brief Declare the component name */ \
-  std::string Cls ::bridgeName(#Comp); \
-  /**\brief Declare the class name */ \
-  std::string Cls ::className() const { return #Cls ; }; \
+#define smtkImplementsOperatorRegistration(Cls, Inherits) \
   /**\brief Declare the map of operator constructors */ \
   smtk::model::OperatorConstructors* Cls ::s_operators = NULL; \
   /**\brief Virtual method to allow operators to register themselves with us */ \
@@ -120,7 +107,10 @@ enum BridgedInformation
     const std::string& opName, const char* opDescrXML, \
     smtk::model::OperatorConstructor opCtor) \
   { \
-    return Cls ::registerStaticOperator(opName, opDescrXML, opCtor); \
+    bool result = Cls ::registerStaticOperator(opName, opDescrXML, opCtor); \
+    if (opDescrXML) \
+      this->importOperatorXML(opDescrXML); \
+    return result; \
   } \
   /**\brief Allow operators to register themselves with us */ \
   bool Cls ::registerStaticOperator( \
@@ -150,12 +140,22 @@ enum BridgedInformation
   smtk::model::OperatorConstructor Cls ::findOperatorConstructor( \
     const std::string& opName) const \
   { \
-    return this->findOperatorConstructorInternal(opName, Cls ::s_operators); \
+    smtk::model::OperatorConstructor result; \
+    result = this->findOperatorConstructorInternal(opName, Cls ::s_operators); \
+    if (!result && this->inheritsOperators() && \
+      Cls::Superclass::staticClassName() != Cls::staticClassName()) \
+      result = this->Superclass::findOperatorConstructor(opName); \
+    return result; \
   } \
   /**\brief Find an XML description of an operator in this subclass' static list. */ \
   std::string Cls ::findOperatorXML(const std::string& opName) const \
   { \
-    return this->findOperatorXMLInternal(opName, Cls ::s_operators); \
+    std::string result; \
+    result = this->findOperatorXMLInternal(opName, Cls ::s_operators); \
+    if (result.empty() && this->inheritsOperators() && \
+      Cls::Superclass::staticClassName() != Cls::staticClassName()) \
+      result = this->Superclass::findOperatorXML(opName); \
+    return result; \
   } \
   /**\brief Called to delete registered operator map at exit. */ \
   void Cls ::cleanupOperators() \
@@ -163,7 +163,8 @@ enum BridgedInformation
     delete Cls ::s_operators; \
     Cls ::s_operators = NULL; \
   } \
-  smtkComponentInitMacro(smtk_ ##Comp## _bridge);
+  /**\brief Return whether the class inherits operators. */ \
+  bool Cls ::inheritsOperators() const { return Inherits; }
 
 /**\brief Boilerplate for classes that bridge to a solid modeling kernel.
  *
@@ -175,31 +176,79 @@ enum BridgedInformation
  */
 #define smtkDeclareModelingKernel() \
   static std::string bridgeName; \
+  static std::string staticClassName(); \
   virtual std::string name() const { return bridgeName; } \
   virtual std::string className() const; \
-protected: \
-  static void cleanupOperators(); \
-  static smtk::model::OperatorConstructors* s_operators; \
-public: \
-  virtual bool registerOperator( \
-    const std::string& opName, const char* opDescrXML, \
-    smtk::model::OperatorConstructor opCtor); \
-  static bool registerStaticOperator( \
-    const std::string& opName, const char* opDescrXML, \
-    smtk::model::OperatorConstructor opCtor); \
-  virtual std::string findOperatorXML(const std::string& opName) const; \
-  virtual smtk::model::OperatorConstructor findOperatorConstructor( \
-    const std::string& opName) const;
+  smtkDeclareOperatorRegistration();
+
+/**\brief Declare that a class implements a bridge to a solid modeling kernel.
+  *
+  * Invoke this macro inside every class definition inheriting smtk::model::Bridge.
+  * Both smtk/model/DefaultBridge.{h,cxx} and smtk/cgm/Bridge.{h,cxx} are examples.
+  *
+  * Note that you must invoke this macro in the global namespace!
+  *
+  * You must also use the smtkDeclareModelingKernel macro in your bridge's header.
+  *
+  * This macro takes 3 arguments:
+  *
+  * \a Comp      - A "short" name for the bridge. This is used as part of several function
+  *                names, so it must be a valid variable name and should *not* be in quotes.
+  * \a Tags      - A pointer to a NULL-terminated string containing a JSON description of
+  *                the bridge's capabilities, including file types that the bridge supports.
+  *                The format of the JSON structure is documented in the SMTK User's Guide.
+  * \a Setup     - A function to provide configuration before bridge construction.
+  *                See the documentation for BridgeStaticSetup and BridgeHasNoStaticSetup.
+  * \a Cls       - The name of the bridge class. The class must have a static method named
+  *                "create" that constructs and instance and returns a shared pointer to it.
+  * \a Inherits  - Either "true" or "false", depending on whether the bridge should inherit
+  *                operators from its superclass. This is used to keep forwarding bridges
+  *                like the Remus remote bridge from inheriting local operators.
+  */
+#define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls, Inherits) \
+  /* Adapt create() to return a base-class pointer */ \
+  static smtk::model::BridgePtr baseCreate() { \
+    return Cls ::create(); \
+  } \
+  /* Implement autoinit methods */ \
+  void smtk_##Comp##_bridge_AutoInit_Construct() { \
+    smtk::model::BridgeRegistrar::registerBridge( \
+      #Comp, /* Can't rely on bridgeName to be initialized yet */ \
+      Tags, \
+      Setup, \
+      baseCreate); \
+  } \
+  void smtk_##Comp##_bridge_AutoInit_Destruct() { \
+    smtk::model::BridgeRegistrar::registerBridge( \
+      Cls ::bridgeName, \
+      std::string(), \
+      NULL, \
+      NULL); \
+  } \
+  /**\brief Declare the component name */ \
+  std::string Cls ::bridgeName(#Comp); \
+  /**\brief Return the name of this class. */\
+  std::string Cls ::staticClassName() { return #Cls ; } \
+  /**\brief Declare the class name */ \
+  std::string Cls ::className() const { return Cls ::staticClassName(); } \
+  smtkImplementsOperatorRegistration(Cls, Inherits); \
+  smtkComponentInitMacro(smtk_ ##Comp## _bridge);
 
 #else // SHIBOKEN_SKIP
 
+#define smtkDeclareOperatorRegistration()
+
+#define smtkImplementsOperatorRegistration()
+
 #define smtkImplementsModelingKernel(Comp, Tags, Setup, Cls) \
   std::string Cls ::bridgeName(#Comp); \
+  std::string Cls ::staticClassName() { return #Cls ; } \
   std::string Cls ::className() const; \
   std::string Cls ::findOperatorXML(const std::string& opName) const;
 
 #define smtkDeclareModelingKernel() \
   static std::string bridgeName; \
+  static std::string staticClassName(); \
   virtual std::string name(); \
   virtual std::string className() const;
 
@@ -244,8 +293,14 @@ class SMTKCORE_EXPORT Bridge : smtkEnableSharedPtr(Bridge)
 {
 public:
   smtkTypeMacro(Bridge);
+  smtkDeclareOperatorRegistration();
+
+  // Required to be circular for Superclass::findOperator{Constructor,XML}:
+  smtkSuperclassMacro(smtk::model::Bridge);
+
+  static std::string staticClassName() { return "smtk::model::Bridge"; }
   virtual std::string name() const;
-  virtual std::string className() const { return "Bridge"; }
+  virtual std::string className() const { return Bridge::staticClassName(); }
   smtk::common::UUID sessionId() const;
 
   int transcribe(const Cursor& entity, BridgedInfoBits flags, bool onlyDangling = true);
@@ -260,13 +315,6 @@ public:
 
   smtk::attribute::System* operatorSystem();
   const smtk::attribute::System* operatorSystem() const;
-
-#ifndef SHIBOKEN_SKIP
-  virtual OperatorConstructor findOperatorConstructor(const std::string&) const
-    { return OperatorConstructor(); }
-#endif // SHIBOKEN_SKIP
-  virtual std::string findOperatorXML(const std::string&) const
-    { return std::string(); }
 
   virtual int setup(const std::string& optName, const StringList& optVal);
 
@@ -286,7 +334,8 @@ protected:
   void setManager(Manager* mgr);
 
 #ifndef SHIBOKEN_SKIP
-  void initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass = false);
+  void initializeOperatorSystem(const OperatorConstructors* opList);
+  void importOperatorXML(const std::string& opXML);
   virtual OperatorConstructor findOperatorConstructorInternal(const std::string&, const OperatorConstructors* opList) const;
   virtual std::string findOperatorXMLInternal(const std::string&, const OperatorConstructors* opList) const;
 #endif // SHIBOKEN_SKIP

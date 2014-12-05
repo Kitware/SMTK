@@ -396,5 +396,6 @@ smtkImplementsModelingKernel(
   exodus,
   Bridge_json,
   BridgeHasNoStaticSetup,
-  smtk::bridge::exodus::Bridge
+  smtk::bridge::exodus::Bridge,
+  true /* inherit "universal" operators */
 );

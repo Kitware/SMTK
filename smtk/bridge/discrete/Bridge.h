@@ -85,11 +85,11 @@ class SMTKDISCRETEBRIDGE_EXPORT Bridge : public smtk::model::Bridge
 {
 public:
   smtkTypeMacro(Bridge);
+  smtkSuperclassMacro(smtk::model::Bridge);
   smtkCreateMacro(smtk::model::Bridge);
   smtkSharedFromThisMacro(smtk::model::Bridge);
   smtkDeclareModelingKernel();
 
-  typedef smtk::weak_ptr<Bridge> WeakPtr;
   typedef smtk::model::BridgedInfoBits BridgedInfoBits;
   virtual ~Bridge();
 

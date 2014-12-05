@@ -41,6 +41,12 @@ std::map<std::string,RemusStaticBridgeInfo>*
 
 RemusRemoteBridge::RemusRemoteBridge()
 {
+  // Not calling initializeOperatorSys() on purpose;
+  // our superclass (DefaultBridge) does the job of initializing
+  // the operator system and we "inherit" operator definitions from
+  // the Remus model worker at the other end of our connection,
+  // so there are no statically-initialized operator definitions to
+  // prepare.
 }
 
 RemusRemoteBridge::~RemusRemoteBridge()
@@ -201,116 +207,6 @@ RemusStaticBridgeInfo RemusRemoteBridge::createFunctor(
   return binfo;
 }
 
-// NB: We do not invoke
-// smtkImplementsModelingKernel(remus_remote,remusRemoteNoFileTypes,smtk::bridge::remote::RemusRemoteBridge);
-// because each instance of the bridge may advertise different capabilities.
-// Instead, when setup() is called with a pointer to a remus server, we query it to discover
-// different bridges we can back and register each of them with a combined bridge name.
-// #define smtkImplementsModelingKernel(Comp, FileTypes, Cls)
-
-#if 0
-/* Adapt create() to return a base-class pointer */
-static smtk::model::BridgePtr baseCreate() {
-  return RemusRemoteBridge::create();
-}
-
-/* Implement autoinit methods */
-void smtk_remus_remote_bridge_AutoInit_Construct()
-{
-  StringList tags; // empty
-  StringList fileTypes; // empty
-  smtk::model::BridgeRegistrar::registerBridge(
-    "remus_remote", /* Can't rely on bridgeName to be initialized yet */
-    tags,
-    fileTypes,
-    baseCreate);
-}
-
-void smtk_remus_remote_bridge_AutoInit_Destruct()
-{
-  smtk::model::BridgeRegistrar::registerBridge(
-    RemusRemoteBridge::bridgeName,
-    std::vector<std::string>(),
-    std::vector<std::string>(),
-    NULL);
-}
-
-/**\brief Declare the component name */
-std::string RemusRemoteBridge::bridgeName("remus_remote");
-
-/**\brief Declare the class name */
-std::string RemusRemoteBridge::className() const { return "smtk::bridge::remote::RemusRemoteBridge"; };
-
-/**\brief Declare the map of operator constructors */
-smtk::model::OperatorConstructors* RemusRemoteBridge::s_operators = NULL;
-
-/**\brief Virtual method to allow operators to register themselves with us */
-bool RemusRemoteBridge::registerOperator(
-  const std::string& opName, const char* opDescrXML,
-  smtk::model::OperatorConstructor opCtor)
-{
-  return RemusRemoteBridge::registerStaticOperator(opName, opDescrXML, opCtor);
-}
-
-/**\brief Allow operators to register themselves with us
-  *
-  * Normally this method is implemented by smtkImplementsModelingKernel()
-  * but the RemusRemoteBridge class provides a different implementation
-  * so that operators from different bridges are kept separate.
-  */
-bool RemusRemoteBridge::registerStaticOperator(
-  const std::string& opName, const char* opDescrXML,
-  smtk::model::OperatorConstructor opCtor)
-{
-  return RemusRemoteBridge::registerBridgedOperator(
-    "remus_remote", opName, opDescrXML, opCtor);
-}
-
-bool RemusRemoteBridge::registerBridgedOperator(
-  const std::string& bridgeName, const std::string& opName,
-  const char* opDescrXML, smtk::model::OperatorConstructor opCtor)
-{
-  if (!RemusRemoteBridge::s_operators)
-    {
-    RemusRemoteBridge::s_operators = new smtk::model::OperatorConstructors;
-    atexit(RemusRemoteBridge::cleanupOperators);
-    }
-  if (!opName.empty() && opCtor)
-    {
-    smtk::model::StaticOperatorInfo entry(opDescrXML ? opDescrXML : "",opCtor);
-    (* RemusRemoteBridge::s_operators)[opName] = entry;
-    return true;
-    }
-  else if (!opName.empty())
-    { /* unregister the operator of the given name. */
-    RemusRemoteBridge::s_operators->erase(opName);
-    /* FIXME: We should ensure that no operator instances of this type are in */
-    /*        existence before allowing "unregistration" to proceed. */
-    }
-  return false;
-}
-
-/**\brief Find an operator constructor in this subclass' static list. */
-smtk::model::OperatorConstructor RemusRemoteBridge::findOperatorConstructor(
-  const std::string& opName) const
-{
-  return this->findOperatorConstructorInternal(opName, RemusRemoteBridge::s_operators);
-}
-
-/**\brief Find an XML description of an operator in this subclass' static list. */
-std::string RemusRemoteBridge::findOperatorXML(const std::string& opName) const
-{
-  return this->findOperatorXMLInternal(opName, RemusRemoteBridge::s_operators);
-}
-
-/**\brief Called to delete registered operator map at exit. */
-void RemusRemoteBridge::cleanupOperators()
-{
-  delete RemusRemoteBridge::s_operators;
-  RemusRemoteBridge::s_operators = NULL;
-}
-#endif // 0
-
     } // namespace remote
   } // namespace bridge
 } // namespace smtk
@@ -319,5 +215,7 @@ smtkImplementsModelingKernel(
   remus_remote,
   "",
   smtk::model::BridgeHasNoStaticSetup,
-  smtk::bridge::remote::RemusRemoteBridge);
+  smtk::bridge::remote::RemusRemoteBridge,
+  false /* do not inherit local operators */
+);
 #endif // SHIBOKEN_SKIP

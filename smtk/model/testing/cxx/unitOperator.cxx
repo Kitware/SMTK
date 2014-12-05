@@ -118,36 +118,43 @@ protected:
 };
 
 // Implementation corresponding to smtkDeclareModelOperator() above.
+
+/* Do not invoke smtkImplementsModelOperator so that we can test
+ * post-bridge-construction registration of operators.
+ */
+/*
 smtkImplementsModelOperator(
   TestOutcomeOperator,
   OutcomeOp,
   "outcome test",
   unitOutcomeOperator_xml,
   smtk::model::DefaultBridge);
+ */
 
-void testImportOperators(Manager::Ptr manager)
+smtk::model::OperatorPtr TestOutcomeOperator::baseCreate()
+{ return TestOutcomeOperator::create(); }
+
+std::string TestOutcomeOperator::operatorName("outcome test");
+std::string TestOutcomeOperator::className() const { return "TestOutcomeOperator"; }
+
+void testExPostFactoOperatorRegistration(Manager::Ptr manager)
 {
+  typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
   // Add operator descriptions to the default bridge of our manager.
   smtk::model::BridgePtr bridge =
     manager->bridgeForModel(smtk::common::UUID::null());
-  smtk::io::Logger log;
-  smtk::io::AttributeReader rdr;
-  rdr.setReportDuplicateDefinitionsAsErrors(false);
-  if (rdr.readContents(
-    *bridge->operatorSystem(), unitOutcomeOperator_xml, sizeof(unitOutcomeOperator_xml), log))
-    {
-    std::cerr << "Error. Log follows:\n---\n" << log.convertToString() << "\n---\n";
-    throw std::string("Could not parse operator XML.");
-    }
-  if (log.numberOfRecords())
-    {
-    std::cout << "  " << log.convertToString() << "\n";
-    }
-
-  // Now enumerate attribute definitions that inherit "operator".
   smtk::attribute::DefinitionPtr opBase =
     bridge->operatorSystem()->findDefinition("operator");
-  typedef std::vector<smtk::attribute::DefinitionPtr> OpListType;
+  OpListType origOpList;
+  bridge->operatorSystem()->derivedDefinitions(opBase, origOpList);
+
+  // Register the operator
+  bridge->registerOperator(
+    TestOutcomeOperator::operatorName,
+    unitOutcomeOperator_xml,
+    &TestOutcomeOperator::baseCreate);
+
+  // Now enumerate attribute definitions that inherit "operator".
   OpListType opList;
   bridge->operatorSystem()->derivedDefinitions(opBase, opList);
   std::cout << "Imported XML for operators:\n";
@@ -157,10 +164,10 @@ void testImportOperators(Manager::Ptr manager)
     }
   std::cout << "\n";
 
-  if (opList.size() != 1)
+  if (opList.size() != origOpList.size() + 1)
     {
     std::ostringstream err;
-    err << "Error: Expected 1 operator, found " << opList.size() << "\n";
+    err << "Error: Expected " << (origOpList.size() + 1) << " operator(s), found " << opList.size() << "\n";
     std::cerr << err.str();
     throw err.str();
     }
@@ -214,7 +221,11 @@ void testBridgeAssociation(Manager::Ptr manager)
 {
   // Test that operators added by previous tests still exist
   ModelEntity model = manager->addModel(3, 3, "Model Airplane");
-  test(model.operatorNames().size() == 1, "Expected 1 operators defined for the test model.");
+  StringList opNames = model.operatorNames();
+  test(
+    std::find(opNames.begin(), opNames.end(), "outcome test") !=
+    opNames.end(),
+    "Expected \"outcome test\" operator defined for the test model.");
 
   // Test op(name) method
   Operator::Ptr op = model.op("outcome test");
@@ -243,7 +254,7 @@ int main()
   try {
 
     testBridgeList(manager);
-    testImportOperators(manager);
+    testExPostFactoOperatorRegistration(manager);
     testOperatorOutcomes(manager);
     testBridgeAssociation(manager);
 

@@ -1234,7 +1234,9 @@ smtkImplementsModelingKernel(
   discrete,
   Bridge_json,
   BridgeHasNoStaticSetup,
-  smtk::bridge::discrete::Bridge);
+  smtk::bridge::discrete::Bridge,
+  true /* inherit "universal" operators */
+);
 
 // Force these operators to be registered whenever the bridge is used:
 smtkComponentInitMacro(smtk_discrete_read_operator);

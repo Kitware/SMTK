@@ -128,6 +128,7 @@ class TestForwardingBridge : public smtk::model::DefaultBridge
 {
 public:
   smtkTypeMacro(TestForwardingBridge); // Provides typedefs for Ptr, SelfType, ...
+  smtkSuperclassMacro(smtk::model::DefaultBridge); // Provides typedefs for Superclass, ...
   smtkCreateMacro(TestForwardingBridge); // Provides static create() method
   smtkSharedFromThisMacro(Bridge); // Provides shared_from_this() method
   smtkDeclareModelingKernel(); // Declares name() and utility methods/members.
@@ -198,7 +199,9 @@ smtkImplementsModelingKernel(
   forwarding,
   "{\"kernel\":\"test-forwarding\", \"engines\":[]}",
   BridgeHasNoStaticSetup,
-  TestForwardingBridge);
+  TestForwardingBridge,
+  false /* forwarding bridge should not inherit local operators */
+);
 
 class TestForwardingOperator : public Operator
 {
@@ -286,9 +289,9 @@ int main()
     smtk::model::Manager::Ptr localMgr = smtk::model::Manager::create();
 
     // The default bridge of the "remote" manager:
-    Bridge::Ptr remoteBridge = remoteMgr->bridgeForModel(UUID::null());
+    Bridge::Ptr remoteBridge = remoteMgr->createAndRegisterBridge("native");
     BridgeSession remoteSess(remoteMgr, remoteBridge->sessionId());
-    remoteMgr->registerBridgeSession(remoteBridge);
+    remoteSess.setName("remote session");
     printBridgeOperatorNames(remoteSess, "remote");
 
     // Now we want to mirror the remote manager locally.

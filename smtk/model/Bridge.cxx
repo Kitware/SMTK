@@ -17,16 +17,17 @@
 #include "smtk/attribute/Definition.h"
 #include "smtk/attribute/IntItemDefinition.h"
 #include "smtk/attribute/ModelEntityItemDefinition.h"
-#include "smtk/attribute/RefItemDefinition.h"
+#include "smtk/attribute/StringItemDefinition.h"
 #include "smtk/attribute/System.h"
 
 #include "smtk/io/AttributeReader.h"
 #include "smtk/io/Logger.h"
 
 using smtk::attribute::Definition;
+using smtk::attribute::DefinitionPtr;
 using smtk::attribute::IntItemDefinition;
 using smtk::attribute::ModelEntityItemDefinition;
-using smtk::attribute::RefItemDefinition;
+using smtk::attribute::StringItemDefinition;
 
 namespace smtk {
   namespace model {
@@ -35,6 +36,7 @@ namespace smtk {
 Bridge::Bridge()
   : m_sessionId(smtk::common::UUID::random()), m_operatorSys(NULL)
 {
+  this->initializeOperatorSystem(Bridge::s_operators);
 }
 
 /// Destructor. We must delete the attribute system that tracks operator definitions.
@@ -270,58 +272,116 @@ void Bridge::setManager(Manager* mgr)
   * This method traverses the XML descriptions and imports each into
   * the bridge's attribute system.
   */
-void Bridge::initializeOperatorSystem(const OperatorConstructors* opList, bool inheritSubclass)
+void Bridge::initializeOperatorSystem(const OperatorConstructors* opList)
 {
-  // Subclasses may already have initialized
-  if (this->m_operatorSys && !inheritSubclass)
+  // Superclasses may already have initialized, but since
+  // we cannot remove Definitions from an attribute System
+  // and may want to override an operator with a bridge-specific
+  // version, we must wipe away whatever already exists.
+  smtk::attribute::System* other = this->m_operatorSys;
+
+  this->m_operatorSys = new smtk::attribute::System;
+  // Create the "base" definitions that all operators and results will inherit.
+  this->m_operatorSys->createDefinition("operator");
+
+  Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
+  IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
+  ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
+  StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
+  outcomeDefn->setNumberOfRequiredValues(1);
+  outcomeDefn->setIsOptional(false);
+  entoutDefn->setNumberOfRequiredValues(1);
+  entoutDefn->setIsOptional(true);
+  logDefn->setNumberOfRequiredValues(1);
+  logDefn->setIsOptional(true);
+  defn->addItemDefinition(outcomeDefn);
+  defn->addItemDefinition(entoutDefn);
+  defn->addItemDefinition(logDefn);
+
+  if (!opList && this->inheritsOperators())
     {
     delete this->m_operatorSys;
-    this->m_operatorSys = NULL;
+    this->m_operatorSys = other;
+    return;
     }
 
-  if (!this->m_operatorSys)
+  if (opList)
     {
-    this->m_operatorSys = new smtk::attribute::System;
+    smtk::io::Logger log;
+    smtk::io::AttributeReader rdr;
+    OperatorConstructors::const_iterator it;
+    bool ok = true;
+    for (it = opList->begin(); it != opList->end(); ++it)
+      {
+      if (it->second.first.empty())
+        continue;
 
-    // Create the "base" definitions that all operators and results will inherit.
-    this->m_operatorSys->createDefinition("operator");
-    Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
-    IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
-    RefItemDefinition::Ptr paramsDefn = RefItemDefinition::New("validated parameters");
-    ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
-    outcomeDefn->setNumberOfRequiredValues(1);
-    outcomeDefn->setIsOptional(false);
-    paramsDefn->setNumberOfRequiredValues(1);
-    paramsDefn->setIsOptional(true);
-    entoutDefn->setNumberOfRequiredValues(1);
-    entoutDefn->setIsOptional(true);
-    defn->addItemDefinition(outcomeDefn);
-    defn->addItemDefinition(paramsDefn);
-    defn->addItemDefinition(entoutDefn);
+      ok &= !rdr.readContents(
+        *this->m_operatorSys,
+        it->second.first.c_str(), it->second.first.size(),
+        log);
+      }
+    if (!ok)
+      {
+      std::cerr
+        << "Error. Log follows:\n---\n"
+        << log.convertToString()
+        << "\n---\n";
+      }
     }
 
-  if (!opList) return;
-
-  smtk::io::Logger log;
-  smtk::io::AttributeReader rdr;
-  OperatorConstructors::const_iterator it;
-  bool ok = true;
-  for (it = opList->begin(); it != opList->end(); ++it)
+  if (other)
     {
-    if (it->second.first.empty())
-      continue;
+    if (this->inheritsOperators())
+      {
+      // Copy definitions that do not already exist.
+      std::vector<smtk::attribute::DefinitionPtr> tmp;
+      std::vector<smtk::attribute::DefinitionPtr>::iterator it;
+
+      DefinitionPtr otherOperator = other->findDefinition("operator");
+      other->derivedDefinitions(otherOperator, tmp);
+      for (it = tmp.begin(); it != tmp.end(); ++it)
+        if (!this->m_operatorSys->findDefinition((*it)->type()))
+          this->m_operatorSys->copyDefinition(*it);
+
+      DefinitionPtr otherResult = other->findDefinition("result");
+      other->derivedDefinitions(otherResult, tmp);
+      for (it = tmp.begin(); it != tmp.end(); ++it)
+        if (!this->m_operatorSys->findDefinition((*it)->type()))
+          this->m_operatorSys->copyDefinition(*it);
+      }
+
+    delete other;
+    }
+}
+
+/**\brief Import XML describing an operator into this bridge's operator system.
+  *
+  * This does not register a constructor for the operator;
+  * it is meant for exposing operators registered after this bridge instance
+  * has been constructed (and thus not defined by initializeOperatorSystem()),
+  * so it should only be called from within registerOperator().
+  */
+void Bridge::importOperatorXML(const std::string& opXML)
+{
+  if (this->m_operatorSys && !opXML.empty())
+    {
+    smtk::io::Logger log;
+    smtk::io::AttributeReader rdr;
+    bool ok = true;
 
     ok &= !rdr.readContents(
       *this->m_operatorSys,
-      it->second.first.c_str(), it->second.first.size(),
+      opXML.c_str(), opXML.size(),
       log);
-    }
-  if (!ok)
-    {
-    std::cerr
-      << "Error. Log follows:\n---\n"
-      << log.convertToString()
-      << "\n---\n";
+
+    if (!ok)
+      {
+      std::cerr
+        << "Error. Log follows:\n---\n"
+        << log.convertToString()
+        << "\n---\n";
+      }
     }
 }
 
@@ -386,3 +446,8 @@ BridgeIOPtr Bridge::createIODelegate(const std::string& format)
 
   } // namespace model
 } // namespace smtk
+
+smtkImplementsOperatorRegistration(
+  smtk::model::Bridge,
+  /* Do not inherit operators. */ false
+);

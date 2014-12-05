@@ -79,16 +79,6 @@ Bridge::~Bridge()
 {
 }
 
-/**\brief Create a new Bridge instance and return a shared pointer to it.
-  *
-  * The Bridge constructors and copy operators are all protected or private,
-  * so you must use create() to construct an instance.
-  */
-Bridge::Ptr Bridge::create()
-{
-  return smtk::shared_ptr<Bridge>(new Bridge);
-}
-
 /// The CGM bridge supports smtk::model::BRIDGE_EVERYTHING.
 smtk::model::BridgedInfoBits Bridge::allSupportedInformation() const
 {
@@ -990,4 +980,10 @@ void Bridge::colorPropFromIndex(
 } // namespace smtk
 
 #include "smtk/bridge/cgm/Bridge_json.h" // For Bridge_json
-smtkImplementsModelingKernel(cgm,Bridge_json,smtk::bridge::cgm::Bridge::staticSetup,smtk::bridge::cgm::Bridge);
+smtkImplementsModelingKernel(
+  cgm,
+  Bridge_json,
+  smtk::bridge::cgm::Bridge::staticSetup,
+  smtk::bridge::cgm::Bridge,
+  true /* inherit "universal" operators */
+);

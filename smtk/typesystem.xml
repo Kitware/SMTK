@@ -357,7 +357,6 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
-  <suppress-warning text="skipping function 'smtk::model::Bridge::initializeOperatorSystem', unmatched parameter type 'smtk::model::OperatorConstructors const*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
 
 
