@@ -8,11 +8,11 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 
-#include "smtk/extension/qt/qtInputsItem.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 
 #include "smtk/extension/qt/qtUIManager.h"
 #include "smtk/extension/qt/qtBaseView.h"
-#include "smtk/extension/qt/qtOverlay.h"
+#include "smtk/extension/qt/qtCheckItemComboBox.h"
 
 #include <QCheckBox>
 #include <QFrame>
@@ -27,23 +27,17 @@
 #include <QTextEdit>
 #include <QComboBox>
 #include <QToolButton>
+#include <QStandardItemModel>
 
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/System.h"
-#include "smtk/attribute/DoubleItem.h"
-#include "smtk/attribute/DoubleItemDefinition.h"
-#include "smtk/attribute/IntItem.h"
-#include "smtk/attribute/IntItemDefinition.h"
-#include "smtk/attribute/StringItem.h"
-#include "smtk/attribute/StringItemDefinition.h"
-#include "smtk/attribute/ValueItem.h"
-#include "smtk/attribute/ValueItemDefinition.h"
-#include "smtk/attribute/ValueItemTemplate.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 
 using namespace smtk::attribute;
 
 //----------------------------------------------------------------------------
-class qtInputsItemInternals
+class qtModelEntityItemInternals
 {
 public:
 
@@ -51,40 +45,37 @@ public:
   QPointer<QLabel> theLabel;
   Qt::Orientation VectorItemOrient;
 
-  // for discrete items that with potential child widget
-  // <Enum-Combo, QPair<child-layout, child-Widget> >
-  QMap<QWidget*, QPair<QLayout*, QWidget*> >ChildrenMap;
-
   // for extensible items
   QMap<QToolButton*, QPair<QLayout*, QWidget*> > ExtensibleMap;
   QList<QToolButton*> MinusButtonIndices;
   QPointer<QToolButton> AddItemButton;
+
 };
 
 //----------------------------------------------------------------------------
-qtInputsItem::qtInputsItem(
+qtModelEntityItem::qtModelEntityItem(
   smtk::attribute::ItemPtr dataObj, QWidget* p, qtBaseView* bview,
    Qt::Orientation enVectorItemOrient) : qtItem(dataObj, p, bview)
 {
-  this->Internals = new qtInputsItemInternals;
+  this->Internals = new qtModelEntityItemInternals;
   this->IsLeafItem = true;
   this->Internals->VectorItemOrient = enVectorItemOrient;
   this->createWidget();
 }
 
 //----------------------------------------------------------------------------
-qtInputsItem::~qtInputsItem()
+qtModelEntityItem::~qtModelEntityItem()
 {
   delete this->Internals;
 }
 //----------------------------------------------------------------------------
-void qtInputsItem::setLabelVisible(bool visible)
+void qtModelEntityItem::setLabelVisible(bool visible)
 {
   this->Internals->theLabel->setVisible(visible);
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::createWidget()
+void qtModelEntityItem::createWidget()
 {
   smtk::attribute::ItemPtr dataObj = this->getObject();
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
@@ -99,47 +90,53 @@ void qtInputsItem::createWidget()
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::updateItemData()
+void qtModelEntityItem::updateItemData()
 {
   this->updateUI();
   this->qtItem::updateItemData();
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::addInputEditor(int i)
+void qtModelEntityItem::addEntityAssociationWidget()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item)
     {
     return;
     }
+  // First - are we allowed to change the number of values?
+  const ModelEntityItemDefinition* def =
+    static_cast<const ModelEntityItemDefinition *>(item->definition().get());
 
   int n = static_cast<int>(item->numberOfValues());
-  if (!n)
-    {
-    return;
-    }
-  QBoxLayout* childLayout = NULL;
-  if(item->isDiscrete())
-    {
-    childLayout = new QVBoxLayout;
-    childLayout->setContentsMargins(12, 3, 3, 0);
-    childLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-    }
-
-  QWidget* editBox = this->baseView()->uiManager()->createInputWidget(
-    item, i, this->Widget, this->baseView(), childLayout);
-  if(!editBox)
+  if (!n && !def->isExtensible())
     {
     return;
     }
 
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(item->definition().get());
+  QString strExt = "Entities";
+  if (def->isExtensible() && def->maxNumberOfValues())
+    strExt.append( " (Max ").append(
+      QString::number(def->maxNumberOfValues())).append(")");
+  else if(!def->isExtensible() && def->numberOfRequiredValues())
+    strExt.append( " (Required ").append(
+      QString::number(def->numberOfRequiredValues())).append(")");
+
+  qtModelEntityItemCombo* editBox = new qtModelEntityItemCombo(
+    this->getObject(), this->Widget, strExt);
+  editBox->setToolTip("Associate model entities");
+  editBox->setModel(new QStandardItemModel());
+  editBox->setItemDelegate(
+    new qtCheckableComboItemDelegate(editBox));
+
   QSizePolicy sizeFixedPolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QBoxLayout* editorLayout = new QHBoxLayout;
   editorLayout->setMargin(0);
   editorLayout->setSpacing(3);
+/*
+  const ModelEntityItemDefinition *itemDef =
+    dynamic_cast<const ModelEntityItemDefinition*>(item->definition().get());
   if(item->isExtensible())
     {
     QToolButton* minusButton = new QToolButton(this->Widget);
@@ -170,53 +167,49 @@ void qtInputsItem::addInputEditor(int i)
       editorLayout->addWidget(label);
       }
     }
-  editorLayout->addWidget(editBox);
+*/
 
-  // always going vertical for discrete and extensible items
+  editorLayout->addWidget(editBox);
+  this->Internals->EntryLayout->addLayout(editorLayout, 0, 1);
+  editBox->init();
+
+/*
+  // always going vertical for extensible items
   if(this->Internals->VectorItemOrient == Qt::Vertical ||
-     item->isDiscrete() || item->isExtensible())
+     item->isExtensible())
     {
-    int row = item->isDiscrete() ? 2*i : i;
+    int row = i;
     // The "Add New Value" button is in first row, so take that into account
     row = item->isExtensible() ? row+1 : row;
     this->Internals->EntryLayout->addLayout(editorLayout, row, 1);
-
-    // there could be conditional children, so we need another layout
-    // so that the combobox will stay TOP-left when there are multiple
-    // combo boxes.
-    if(item->isDiscrete() && childLayout)
-      {
-      this->Internals->EntryLayout->addLayout(childLayout, row+1, 0, 1, 2);
-      }
     }
   else // going horizontal
     {
     this->Internals->EntryLayout->addLayout(editorLayout, 0, i+1);
     }
 
-  QPair<QLayout*, QWidget*> pair;
-  pair.first = childLayout;
-  pair.second = (childLayout && childLayout->count()>0) ?
-    childLayout->itemAt(0)->widget() : NULL;
-  this->Internals->ChildrenMap[editBox] = pair;
-  this->updateExtensibleState();
+  //this->updateExtensibleState();
+*/
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::loadInputValues()
+void qtModelEntityItem::loadAssociatedEntities()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item)
     {
     return;
     }
-
+/*
   int n = static_cast<int>(item->numberOfValues());
   if (!n && !item->isExtensible())
     {
     return;
     }
-
+*/
+  this->addEntityAssociationWidget();
+/*
   if(item->isExtensible())
     {
     if(!this->Internals->AddItemButton)
@@ -238,15 +231,17 @@ void qtInputsItem::loadInputValues()
 
   for(int i = 0; i < n; i++)
     {
-    this->addInputEditor(i);
+    this->addEntityAssociationWidget(i);
     }
+*/
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::updateUI()
+void qtModelEntityItem::updateUI()
 {
   //smtk::attribute::ItemPtr dataObj = this->getObject();
-  smtk::attribute::ValueItemPtr dataObj =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr dataObj =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!dataObj || !this->passAdvancedCheck() || (this->baseView() &&
     !this->baseView()->uiManager()->passItemCategoryCheck(
       dataObj->definition())))
@@ -278,9 +273,10 @@ void qtInputsItem::updateUI()
       this, SLOT(setOutputOptional(int)));
     labelLayout->addWidget(optionalCheck);
     }
-  smtk::attribute::ValueItemPtr item = dynamic_pointer_cast<ValueItem>(dataObj);
-  const ValueItemDefinition *itemDef =
-    dynamic_cast<const ValueItemDefinition*>(dataObj->definition().get());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(dataObj);
+  const ModelEntityItemDefinition *itemDef =
+    dynamic_cast<const ModelEntityItemDefinition*>(dataObj->definition().get());
 
   QString labelText;
   if(!item->label().empty())
@@ -310,12 +306,6 @@ void qtInputsItem::updateUI()
     label->setToolTip(strBriefDescription.c_str());
     }
 
-  if(!itemDef->units().empty())
-    {
-    QString unitText=label->text();
-    unitText.append(" (").append(itemDef->units().c_str()).append(")");
-    label->setText(unitText);
-    }
   if(itemDef->advanceLevel() && this->baseView())
     {
     label->setFont(this->baseView()->uiManager()->advancedFont());
@@ -323,7 +313,7 @@ void qtInputsItem::updateUI()
   labelLayout->addWidget(label);
   this->Internals->theLabel = label;
 
-  this->loadInputValues();
+  this->loadAssociatedEntities();
 
   // we need this layout so that for items with conditionan children,
   // the label will line up at Top-left against the chilren's widgets.
@@ -345,14 +335,16 @@ void qtInputsItem::updateUI()
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::setOutputOptional(int state)
+void qtModelEntityItem::setOutputOptional(int state)
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item)
     {
     return;
     }
   bool enable = state ? true : false;
+/*
   if(item->isExtensible())
     {
     if(this->Internals->AddItemButton)
@@ -364,16 +356,7 @@ void qtInputsItem::setOutputOptional(int state)
       tButton->setEnabled(enable);
       }
    }
-
-  foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
-    {
-    if(this->Internals->ChildrenMap.value(cwidget).second)
-      {
-      this->Internals->ChildrenMap.value(cwidget).second->setEnabled(enable);
-      }
-    cwidget->setEnabled(enable);
-    }
-
+*/
 //  this->Internals->EntryFrame->setEnabled(enable);
   if(enable != this->getObject()->isEnabled())
     {
@@ -384,9 +367,10 @@ void qtInputsItem::setOutputOptional(int state)
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::onAddNewValue()
+void qtModelEntityItem::onAddNewValue()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item)
     {
     return;
@@ -395,12 +379,12 @@ void qtInputsItem::onAddNewValue()
     {
 //    QBoxLayout* entryLayout = qobject_cast<QBoxLayout*>(
 //      this->Internals->EntryFrame->layout());
-    this->addInputEditor(static_cast<int>(item->numberOfValues()) - 1);
+//    this->addEntityAssociationWidget(static_cast<int>(item->numberOfValues()) - 1);
     }
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::onRemoveValue()
+void qtModelEntityItem::onRemoveValue()
 {
   QToolButton* const minusButton = qobject_cast<QToolButton*>(
     QObject::sender());
@@ -409,28 +393,21 @@ void qtInputsItem::onRemoveValue()
     return;
     }
 
-  int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);//minusButton->property("SubgroupIndex").toInt();
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  int gIdx = this->Internals->MinusButtonIndices.indexOf(minusButton);
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item || gIdx < 0 || gIdx >= static_cast<int>(item->numberOfValues()))
     {
     return;
     }
 
   QWidget* childwidget = this->Internals->ExtensibleMap.value(minusButton).second;
-  if(this->Internals->ChildrenMap.value(childwidget).second)
-    {
-    delete this->Internals->ChildrenMap.value(childwidget).second;
-    }
-  if(this->Internals->ChildrenMap.value(childwidget).first)
-    {
-    delete this->Internals->ChildrenMap.value(childwidget).first;
-    }
   delete childwidget;
   delete this->Internals->ExtensibleMap.value(minusButton).first;
   this->Internals->ExtensibleMap.remove(minusButton);
   this->Internals->MinusButtonIndices.removeOne(minusButton);
   delete minusButton;
-
+/*
   switch (item->type())
     {
     case smtk::attribute::Item::DOUBLE:
@@ -454,12 +431,15 @@ void qtInputsItem::onRemoveValue()
       break;
     }
   this->updateExtensibleState();
+*/
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::updateExtensibleState()
+void qtModelEntityItem::updateExtensibleState()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+/*
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item || !item->isExtensible())
     {
     return;
@@ -474,42 +454,29 @@ void qtInputsItem::updateExtensibleState()
     {
     tButton->setEnabled(!minReached);
     }
+*/
 }
 
 //----------------------------------------------------------------------------
-void qtInputsItem::clearChildWidgets()
+void qtModelEntityItem::clearChildWidgets()
 {
-  smtk::attribute::ValueItemPtr item =dynamic_pointer_cast<ValueItem>(this->getObject());
+  smtk::attribute::ModelEntityItemPtr item =
+    dynamic_pointer_cast<ModelEntityItem>(this->getObject());
   if(!item)
     {
     return;
     }
-
+/*
   if(item->isExtensible())
     {
     //clear mapping
     foreach(QToolButton* tButton, this->Internals->ExtensibleMap.keys())
       {
-// will delete later from this->Internals->ChildrenMap
-//      delete this->Internals->ExtensibleMap.value(tButton).second;
       delete this->Internals->ExtensibleMap.value(tButton).first;
       delete tButton;
       }
     this->Internals->ExtensibleMap.clear();
     this->Internals->MinusButtonIndices.clear();
     }
-
-  foreach(QWidget* cwidget, this->Internals->ChildrenMap.keys())
-    {
-    if(this->Internals->ChildrenMap.value(cwidget).second)
-      {
-      delete this->Internals->ChildrenMap.value(cwidget).second;
-      }
-    if(this->Internals->ChildrenMap.value(cwidget).first)
-      {
-      delete this->Internals->ChildrenMap.value(cwidget).first;
-      }
-    delete cwidget;
-    }
-  this->Internals->ChildrenMap.clear();
+*/
 }

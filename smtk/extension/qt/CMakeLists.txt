@@ -3,6 +3,7 @@ set(QAttrLibSrcs
     qtUIManager.cxx
     qtAttribute.cxx
     qtBaseView.cxx
+    qtCheckItemComboBox.cxx
     qtEntityItemDelegate.cxx
     qtEntityItemEditor.cxx
     qtEntityItemModel.cxx
@@ -28,6 +29,7 @@ set(QAttrLibSrcs
     qtModelPanel.cxx
     qtNewAttributeWidget.cxx
     qtOverlay.cxx
+    qtModelEntityItem.cxx
   )
 
   set(QAttrLibUIs
@@ -41,6 +43,7 @@ set(QAttrLibHeaders
     qtUIManager.h
     qtAttribute.h
     qtBaseView.h
+    qtCheckItemComboBox.h
     qtEntityItemDelegate.h
     qtEntityItemEditor.h
     qtEntityItemModel.h
@@ -66,6 +69,7 @@ set(QAttrLibHeaders
     qtModelPanel.h
     qtNewAttributeWidget.h
     qtOverlay.h
+    qtModelEntityItem.h
   )
 
 #install the headers

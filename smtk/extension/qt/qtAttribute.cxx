@@ -14,6 +14,7 @@
 #include "smtk/extension/qt/qtInputsItem.h"
 #include "smtk/extension/qt/qtFileItem.h"
 #include "smtk/extension/qt/qtAttributeRefItem.h"
+#include "smtk/extension/qt/qtModelEntityItem.h"
 #include "smtk/extension/qt/qtVoidItem.h"
 #include "smtk/extension/qt/qtBaseView.h"
 
@@ -28,6 +29,8 @@
 #include "smtk/attribute/GroupItemDefinition.h"
 #include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/IntItemDefinition.h"
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
 #include "smtk/attribute/ValueItem.h"
 #include "smtk/attribute/ValueItemDefinition.h"
 #include "smtk/attribute/VoidItem.h"
@@ -173,6 +176,19 @@ void qtAttribute::updateItemsData()
   QLayout* layout = this->Widget->layout();
   qtItem* qItem = NULL;
   smtk::attribute::AttributePtr att = this->getObject();
+  // If there are model assocication for the attribute, create UI for it.
+  // This will be the same widget used for ModelEntityItem.
+  if(att->associations())
+    {
+    qItem = this->createItem(att->associations(), this->Widget,
+      this->Internals->View);
+    if(qItem && qItem->widget())
+      {
+      layout->addWidget(qItem->widget());
+      this->addItem(qItem);
+      }
+    }
+  // Now go through all child items and create ui components.
   std::size_t i, n = att->numberOfItems();
   for (i = 0; i < n; i++)
     {
@@ -232,6 +248,9 @@ qtItem* qtAttribute::createItem(smtk::attribute::ItemPtr item, QWidget* pW,
       break;
     case smtk::attribute::Item::VOID:
       aItem = new qtVoidItem(smtk::dynamic_pointer_cast<VoidItem>(item), pW, bview);
+      break;
+    case smtk::attribute::Item::MODEL_ENTITY:
+      aItem = new qtModelEntityItem(smtk::dynamic_pointer_cast<ModelEntityItem>(item), pW, bview);
       break;
     default:
       //this->m_errorStatus << "Error: Unsupported Item Type: " <<

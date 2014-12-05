@@ -18,8 +18,7 @@
 #include "smtk/extension/qt/qtBaseView.h"
 
 #include <QMap>
-#include <QStyledItemDelegate>
-#include <QComboBox>
+#include <QModelIndex>
 
 class qtAttributeViewInternals;
 class QTableWidgetItem;
@@ -109,34 +108,6 @@ namespace smtk
       qtAttributeViewInternals *Internals;
 
     }; // class
-
-    //A sublcass of QTextEdit to give initial sizehint
-    class QTSMTK_EXPORT qtCheckableComboItemDelegate : public QStyledItemDelegate
-      {
-      Q_OBJECT
-      public:
-        qtCheckableComboItemDelegate(QWidget * owner);
-        virtual void paint(
-          QPainter* painter,
-          const QStyleOptionViewItem& option,
-          const QModelIndex& index) const;
-      };
-
-    //A sublcass of QComboBox to set text when hidePopup
-    class QTSMTK_EXPORT qtAttSelectCombo : public QComboBox
-      {
-      Q_OBJECT
-      public:
-        qtAttSelectCombo(QWidget * parentW, const QString& displayExt);
-        virtual void hidePopup();
-        virtual void init();
-        virtual void updateText();
-
-      private:
-        QStandardItem* m_displayItem;
-        QString m_displayTextExt;
-      };
-
   }; // namespace attribute
 }; // namespace smtk
 
