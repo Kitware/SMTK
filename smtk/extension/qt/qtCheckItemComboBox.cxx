@@ -39,6 +39,8 @@ void qtCheckableComboItemDelegate::paint(QPainter * painter_, const QStyleOption
 qtCheckItemComboBox::qtCheckItemComboBox(QWidget* pw, const QString& displayExt) :
   QComboBox(pw), m_displayItem(NULL), m_displayTextExt(displayExt)
 {
+  this->setStyleSheet("combobox-popup: 0;");
+  this->setMaxVisibleItems(10);
 }
 
 void qtCheckItemComboBox::init()
@@ -86,7 +88,6 @@ qtModelEntityItemCombo::qtModelEntityItemCombo(
 : qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
 {
   this->setMinimumWidth(80);
-  this->setMaxVisibleItems(10);
 }
 
 //----------------------------------------------------------------------------
@@ -197,9 +198,14 @@ void qtModelEntityItemCombo::itemCheckChanged(
       }
     else
       {
-      std::size_t idx = ModelEntityItem->find(cursor);
+      std::ptrdiff_t idx = ModelEntityItem->find(cursor);
       if(idx >=0)
-        ModelEntityItem->unset(idx);
+        {
+        if(itemDef->isExtensible())
+          ModelEntityItem->removeValue(idx);
+        else
+          ModelEntityItem->unset(idx);
+        }
       }
     this->updateText();
     }
