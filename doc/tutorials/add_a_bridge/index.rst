@@ -32,7 +32,7 @@ these cells to SMTK.
 
 .. toctree::
 
-   bridge_subclass.rst
    entity_uuids.rst
+   bridge_subclass.rst
    transcribing.rst
    operators.rst

@@ -10,7 +10,6 @@
 //
 //=============================================================================
 #include "Bridge.h"
-#include "Bridge_json.h"
 
 #include "smtk/model/Cursor.h"
 #include "smtk/model/GroupEntity.h"
@@ -44,15 +43,18 @@ enum smtkCellTessRole {
   SMTK_ROLE_POLYS
 };
 
+// ++ 2 ++
 Bridge::Bridge()
 {
   this->initializeOperatorSystem(Bridge::s_operators);
 }
+// -- 2 --
 
 Bridge::~Bridge()
 {
 }
 
+// ++ 3 ++
 /// Turn any valid cursor into an entity handle.
 EntityHandle Bridge::toEntity(const smtk::model::Cursor& eid)
 {
@@ -61,12 +63,14 @@ EntityHandle Bridge::toEntity(const smtk::model::Cursor& eid)
     return EntityHandle();
   return it->second;
 }
+// -- 3 --
 
+// ++ 4 ++
 smtk::model::Cursor Bridge::toCursor(const EntityHandle& ent)
 {
   vtkDataObject* entData = this->toBlock<vtkDataObject>(ent);
   if (!entData)
-    return Cursor();
+    return Cursor(); // an invalid cursor
 
   const char* uuidChar = entData->GetInformation()->Get(SMTK_UUID_KEY());
   smtk::common::UUID uid;
@@ -81,7 +85,9 @@ smtk::model::Cursor Bridge::toCursor(const EntityHandle& ent)
     }
   return Cursor(this->manager(), uid);
 }
+// -- 4 --
 
+// ++ 5 ++
 std::vector<EntityHandle> Bridge::childrenOf(const EntityHandle& ent)
 {
   std::vector<EntityHandle> children;
@@ -114,7 +120,9 @@ std::vector<EntityHandle> Bridge::childrenOf(const EntityHandle& ent)
     }
   return children;
 }
+// -- 5 --
 
+// ++ 6 ++
 /// Add the dataset and its blocks to the bridge.
 smtk::model::ModelEntity Bridge::addModel(
   vtkSmartPointer<vtkMultiBlockDataSet>& model)
@@ -130,7 +138,9 @@ smtk::model::ModelEntity Bridge::addModel(
   this->manager()->setBridgeForModel(shared_from_this(), result.entity());
   return result;
 }
+// -- 6 --
 
+// ++ 7 ++
 BridgedInfoBits Bridge::transcribeInternal(
   const smtk::model::Cursor& entity,
   BridgedInfoBits requestedInfo)
@@ -141,6 +151,8 @@ BridgedInfoBits Bridge::transcribeInternal(
     return actual;
 
   vtkDataObject* obj = this->toBlock<vtkDataObject>(handle);
+  // ...
+// -- 7 --
   if (!obj)
     return actual;
 
@@ -162,10 +174,13 @@ BridgedInfoBits Bridge::transcribeInternal(
     dim = parentCursor.embeddingDimension();
     }
 
+// ++ 8 ++
   smtk::model::Cursor mutableCursor(entity);
   BitFlags entityDimBits;
   if (!mutableCursor.isValid())
     {
+// -- 8 --
+// ++ 9 ++
     switch (handle.entityType)
       {
     case EXO_MODEL:
@@ -179,6 +194,8 @@ BridgedInfoBits Bridge::transcribeInternal(
         this->toBlockName(handle));
       mutableCursor.as<GroupEntity>().setMembershipMask(VOLUME);
       break;
+    // .. and other cases.
+// -- 9 --
     case EXO_SIDE_SET:
       entityDimBits = 0;
       for (int i = 0; i < dim; ++i)
@@ -194,6 +211,7 @@ BridgedInfoBits Bridge::transcribeInternal(
         this->toBlockName(handle));
       mutableCursor.as<GroupEntity>().setMembershipMask(VERTEX);
       break;
+// ++ 10 ++
     default:
       return actual;
       break;
@@ -208,12 +226,13 @@ BridgedInfoBits Bridge::transcribeInternal(
       this->danglingEntities().end())
       return smtk::model::BRIDGE_EVERYTHING; // Not listed as dangling => everything transcribed already.
     }
+// -- 10 --
 
+// ++ 11 ++
   if (requestedInfo & (smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS))
     {
-    //this->addRelations(mutableCursor, rels, requestedInfo, -1);
     if (parentCursor.isValid())
-      {
+      { // Connect this entity to its parent.
       mutableCursor.findOrAddRawRelation(parentCursor);
       }
     // Now add children.
@@ -231,8 +250,10 @@ BridgedInfoBits Bridge::transcribeInternal(
       mutableCursor.as<smtk::model::ModelEntity>().addGroup(childCursor);
       }
 
+    // Mark that we added this information to the manager:
     actual |= smtk::model::BRIDGE_ENTITY_RELATIONS | smtk::model::BRIDGE_ARRANGEMENTS;
     }
+// -- 11 --
   if (requestedInfo & smtk::model::BRIDGE_ATTRIBUTE_ASSOCIATIONS)
     {
     // FIXME: Todo.
@@ -392,6 +413,9 @@ bool Bridge::addTessellation(
   } // namespace bridge
 } // namespace smtk
 
+// ++ 1 ++
+#include "Bridge_json.h"
+
 smtkImplementsModelingKernel(
   exodus,
   Bridge_json,
@@ -399,3 +423,4 @@ smtkImplementsModelingKernel(
   smtk::bridge::exodus::Bridge,
   true /* inherit "universal" operators */
 );
+// -- 1 --
