@@ -11,8 +11,11 @@
 #define __smtk_qt_qtCheckItemComboBox_h
 
 #include "smtk/extension/qt/QtSMTKExports.h"
+#include "smtk/PublicPointerDefs.h"
+
 #include <QStyledItemDelegate>
 #include <QComboBox>
+#include <QModelIndex>
 
 class QStandardItem;
 
@@ -45,6 +48,24 @@ class QTSMTK_EXPORT qtCheckItemComboBox : public QComboBox
     QStandardItem* m_displayItem;
     QString m_displayTextExt;
   };
+
+  //A sublcass of qtCheckItemComboBox to refresh the list on popup
+  class QTSMTK_EXPORT qtModelEntityItemCombo : public qtCheckItemComboBox
+    {
+    Q_OBJECT
+    public:
+      qtModelEntityItemCombo(smtk::attribute::ItemPtr,
+        QWidget * parent, const QString& displayExt);
+      virtual void showPopup();
+      virtual void init();
+
+    protected slots:
+      void itemCheckChanged(
+        const QModelIndex& topLeft, const QModelIndex& bottomRight);
+
+    private:
+      smtk::attribute::WeakItemPtr m_ModelEntityItem;
+    };
 
   } // namespace attribute
 } // namespace smtk

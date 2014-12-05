@@ -9,6 +9,12 @@
 //=========================================================================
 #include "smtk/extension/qt/qtCheckItemComboBox.h"
 
+#include "smtk/attribute/ModelEntityItem.h"
+#include "smtk/attribute/ModelEntityItemDefinition.h"
+#include "smtk/attribute/System.h"
+#include "smtk/model/Cursor.h"
+#include "smtk/model/Manager.h"
+
 #include <QAbstractItemView>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
@@ -34,6 +40,7 @@ qtCheckItemComboBox::qtCheckItemComboBox(QWidget* pw, const QString& displayExt)
   QComboBox(pw), m_displayItem(NULL), m_displayTextExt(displayExt)
 {
 }
+
 void qtCheckItemComboBox::init()
 {
   this->m_displayItem = new QStandardItem;
@@ -71,4 +78,106 @@ void qtCheckItemComboBox::hidePopup()
 {
   this->QComboBox::hidePopup();
   this->setCurrentIndex(0);
+}
+
+//-----------------------------------------------------------------------------
+qtModelEntityItemCombo::qtModelEntityItemCombo(
+  smtk::attribute::ItemPtr entitem, QWidget * inParent, const QString& displayExt)
+: qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
+{
+  this->setMinimumWidth(80);
+}
+
+//----------------------------------------------------------------------------
+void qtModelEntityItemCombo::init()
+{
+  this->blockSignals(true);
+  this->clear();
+  this->qtCheckItemComboBox::init();
+  this->model()->disconnect();
+
+  if(!this->m_ModelEntityItem.lock())
+    {
+    this->blockSignals(false);
+    return;
+    }
+
+  ModelEntityItemPtr ModelEntityItem =
+    smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(
+    this->m_ModelEntityItem.lock());
+  const ModelEntityItemDefinition *itemDef =
+    static_cast<const ModelEntityItemDefinition *>(ModelEntityItem->definition().get());
+  System *attSystem = ModelEntityItem->attribute()->system();
+  smtk::model::ManagerPtr modelManager = attSystem->refModelManager();
+
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  // need to update the list, since it may be changed
+  int row=1;
+  smtk::model::Cursors modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
+    itemDef->membershipMask(), false);
+  for(smtk::model::Cursors::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)
+    {
+    QStandardItem* item = new QStandardItem;
+    std::string entName = (*it).name();
+    item->setText(entName.c_str());
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    //item->setData(this->Internals->AttSelections[keyName], Qt::CheckStateRole);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+    item->setCheckable(true);
+    item->setCheckState(ModelEntityItem->has(*it) ? Qt::Checked : Qt::Unchecked);
+
+    item->setData((*it).entity().toString().c_str(), Qt::UserRole);
+    itemModel->insertRow(row, item);
+    }
+  connect(this->model(),
+    SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),
+    this, SLOT(itemCheckChanged(const QModelIndex&, const QModelIndex&)));
+
+  //connect(this->Internals->checkableAttComboModel, SIGNAL(itemChanged ( QStandardItem*)),
+  //  this, SLOT(attributeFilterChanged(QStandardItem*)));
+  this->blockSignals(false);
+  this->updateText();
+  this->hidePopup();
+}
+
+//-----------------------------------------------------------------------------
+void qtModelEntityItemCombo::showPopup()
+{
+  this->init();
+  this->qtCheckItemComboBox::showPopup();
+}
+
+//----------------------------------------------------------------------------
+void qtModelEntityItemCombo::itemCheckChanged(
+  const QModelIndex& topLeft, const QModelIndex& )
+{
+  QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
+  QStandardItem* item = itemModel->item(topLeft.row());
+  if(!item)
+    {
+    return;
+    }
+  ModelEntityItemPtr ModelEntityItem =
+    smtk::dynamic_pointer_cast<smtk::attribute::ModelEntityItem>(
+    this->m_ModelEntityItem.lock());
+  const ModelEntityItemDefinition *itemDef =
+    static_cast<const ModelEntityItemDefinition *>(ModelEntityItem->definition().get());
+  QString entid = item->data(Qt::UserRole).toString();
+  if(!entid.isEmpty())
+    {
+    smtk::model::Cursor cursor(
+      ModelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
+    if(item->checkState() == Qt::Checked)
+      {
+      if(!ModelEntityItem->appendValue(cursor))
+        {
+        item->setCheckState(Qt::Unchecked);
+        }
+      }
+    else
+      {
+      ModelEntityItem->unset(ModelEntityItem->find(cursor));
+      }
+    this->updateText();
+    }
 }
