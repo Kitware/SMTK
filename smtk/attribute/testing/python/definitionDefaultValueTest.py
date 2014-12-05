@@ -1,3 +1,18 @@
+#=============================================================================
+#
+#  Copyright (c) Kitware, Inc.
+#  All rights reserved.
+#  See LICENSE.txt for details.
+#
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.  See the above copyright notice for more information.
+#
+#=============================================================================
+"""
+Verify that vector-valued defaults for value items are written and read
+properly to and from XML files.
+"""
 import smtk
 import sys
 err = 0
