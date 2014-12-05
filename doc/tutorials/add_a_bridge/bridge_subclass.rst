@@ -102,7 +102,7 @@ of the file **outside of any namespaces**:
    :start-after: // ++ 1 ++
    :end-before: // -- 1 --
 
-This macro takes 4 parameters:
+This macro takes 5 parameters:
 
 1. A "short" name for the bridge. This is used as part of some variable names inside the macro,
    so you should not use punctuation other than underscores.
@@ -142,6 +142,12 @@ This macro takes 4 parameters:
    being used.
 
 4. The fully-qualified name of the bridge class, including namespaces.
+
+5. Either :cxx:`true` or :cxx:`false`, used to indicate whether the
+   bridge should inherit operators from its subclass.
+   You should pass true unless your bridge is a "forwarding" bridge
+   (i.e., one that forwards operations to a remote process rather than
+   performing them locally).
 
 Bridge constructor
 ------------------
