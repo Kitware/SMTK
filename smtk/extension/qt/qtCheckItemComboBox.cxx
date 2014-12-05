@@ -167,14 +167,14 @@ void qtModelEntityItemCombo::itemCheckChanged(
   QString entid = item->data(Qt::UserRole).toString();
   if(!entid.isEmpty())
     {
-    smtk::model::Cursor cursor(
+    smtk::model::Cursor selcursor(
       ModelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
     if(item->checkState() == Qt::Checked)
       {
       bool success = false;
       if(itemDef->isExtensible())
         {
-        success = ModelEntityItem->appendValue(cursor);
+        success = ModelEntityItem->appendValue(selcursor);
         }
       else
         {
@@ -184,7 +184,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
           {
           if(!ModelEntityItem->isSet(idx))
             {
-            success = ModelEntityItem->setValue(idx, cursor);
+            success = ModelEntityItem->setValue(idx, selcursor);
             break;
             }
           }
@@ -198,7 +198,7 @@ void qtModelEntityItemCombo::itemCheckChanged(
       }
     else
       {
-      std::ptrdiff_t idx = ModelEntityItem->find(cursor);
+      std::ptrdiff_t idx = ModelEntityItem->find(selcursor);
       if(idx >=0)
         {
         if(itemDef->isExtensible())
