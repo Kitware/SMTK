@@ -105,15 +105,26 @@ void qtModelEntityItem::addEntityAssociationWidget()
     {
     return;
     }
+  // First - are we allowed to change the number of values?
+  const ModelEntityItemDefinition* def =
+    static_cast<const ModelEntityItemDefinition *>(item->definition().get());
 
   int n = static_cast<int>(item->numberOfValues());
-  if (!n)
+  if (!n && !def->isExtensible())
     {
     return;
     }
 
+  QString strExt = "Entities";
+  if (def->isExtensible() && def->maxNumberOfValues())
+    strExt.append( " (Max ").append(
+      QString::number(def->maxNumberOfValues())).append(")");
+  else if(!def->isExtensible() && def->numberOfRequiredValues())
+    strExt.append( " (Required ").append(
+      QString::number(def->numberOfRequiredValues())).append(")");
+
   qtModelEntityItemCombo* editBox = new qtModelEntityItemCombo(
-    this->getObject(), this->Widget, "Entities");
+    this->getObject(), this->Widget, strExt);
   editBox->setToolTip("Associate model entities");
   editBox->setModel(new QStandardItemModel());
   editBox->setItemDelegate(

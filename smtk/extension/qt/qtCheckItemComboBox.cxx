@@ -86,6 +86,7 @@ qtModelEntityItemCombo::qtModelEntityItemCombo(
 : qtCheckItemComboBox(inParent, displayExt), m_ModelEntityItem(entitem)
 {
   this->setMinimumWidth(80);
+  this->setMaxVisibleItems(10);
 }
 
 //----------------------------------------------------------------------------
@@ -169,14 +170,36 @@ void qtModelEntityItemCombo::itemCheckChanged(
       ModelEntityItem->attribute()->system()->refModelManager(), entid.toStdString());
     if(item->checkState() == Qt::Checked)
       {
-      if(!ModelEntityItem->appendValue(cursor))
+      bool success = false;
+      if(itemDef->isExtensible())
         {
+        success = ModelEntityItem->appendValue(cursor);
+        }
+      else
+        {
+        // find an un-set index, and set the value
+        for(std::size_t idx=0;
+          idx < ModelEntityItem->numberOfRequiredValues(); ++idx)
+          {
+          if(!ModelEntityItem->isSet(idx))
+            {
+            success = ModelEntityItem->setValue(idx, cursor);
+            break;
+            }
+          }
+        }
+      if(!success)
+        {
+        this->blockSignals(true);
         item->setCheckState(Qt::Unchecked);
+        this->blockSignals(false);
         }
       }
     else
       {
-      ModelEntityItem->unset(ModelEntityItem->find(cursor));
+      std::size_t idx = ModelEntityItem->find(cursor);
+      if(idx >=0)
+        ModelEntityItem->unset(idx);
       }
     this->updateText();
     }

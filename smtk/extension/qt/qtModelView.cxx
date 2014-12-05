@@ -470,6 +470,8 @@ bool qtModelView::initOperator(smtk::model::OperatorPtr op)
                             attDef->type().c_str() : attDef->label().c_str());
   QVBoxLayout* alayout = new QVBoxLayout(&attDialog);
 
+  smtk::model::QEntityItemModel* qmodel = this->getModel();
+  att->system()->setRefModelManager(qmodel->manager());
   smtk::attribute::qtUIManager uiManager(*(att->system()));
   smtk::view::RootPtr rootView = uiManager.attSystem()->rootView();
   smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(op->name());
