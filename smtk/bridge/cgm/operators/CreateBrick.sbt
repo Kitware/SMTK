@@ -40,6 +40,7 @@
             </Double>
             <Double Name="axis 0" NumberOfRequiredValues="3">
               <BriefDescription>Direction of a principal brick axis.</BriefDescription>
+              <DefaultValue Sep=":">1:2:3</DefaultValue>
             </Double>
             <Double Name="axis 1" NumberOfRequiredValues="3">
               <BriefDescription>Direction of a principal brick axis.</BriefDescription>

@@ -50,6 +50,9 @@
 #include "smtk/view/ModelEntity.h"
 #include "smtk/view/Root.h"
 #include "smtk/view/SimpleExpression.h"
+
+#include "smtk/common/StringUtil.h"
+
 #include <iostream>
 #include <algorithm>
 
@@ -76,6 +79,52 @@ namespace {
   const char *getValueFromXMLElement(xml_node &node, std::string)
   {
     return node.text().get();
+  }
+
+//----------------------------------------------------------------------------
+  std::vector<int> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<int>)
+  {
+    std::vector<int> result;
+    std::vector<std::string> vals;
+    std::stringstream convert;
+    int val;
+    vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
+    std::vector<std::string>::iterator it;
+    for (it = vals.begin(); it != vals.end(); ++it)
+      {
+      convert.str(*it);
+      convert >> val;
+      result.push_back(val);
+      convert.clear();
+      }
+    return result;
+  }
+
+//----------------------------------------------------------------------------
+  std::vector<double> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<double>)
+  {
+    std::vector<double> result;
+    std::vector<std::string> vals;
+    std::stringstream convert;
+    double val;
+    vals = smtk::common::StringUtil::split(node.text().get(), sep, false, true);
+    std::vector<std::string>::iterator it;
+    for (it = vals.begin(); it != vals.end(); ++it)
+      {
+      convert.str(*it);
+      convert >> val;
+      result.push_back(val);
+      convert.clear();
+      }
+    return result;
+  }
+
+//----------------------------------------------------------------------------
+  std::vector<std::string> getValueFromXMLElement(xml_node &node, const std::string& sep, std::vector<std::string>)
+  {
+    std::vector<std::string> vals;
+    vals = smtk::common::StringUtil::split(node.text().get(), sep, false, false);
+    return vals;
   }
 
 //----------------------------------------------------------------------------
@@ -155,7 +204,19 @@ namespace {
     dnode = node.child("DefaultValue");
     if (dnode)
       {
-      idef->setDefaultValue(getValueFromXMLElement(dnode, BasicType()));
+      xatt = dnode.attribute("Sep");
+      std::string sep = xatt ? xatt.value() : ",";
+      std::vector<BasicType> defs = getValueFromXMLElement(dnode, sep, std::vector<BasicType>());
+      if (defs.size() == 1 || defs.size() == idef->numberOfRequiredValues())
+        {
+        idef->setDefaultValue(defs);
+        }
+      else
+        {
+        smtkErrorMacro(logger,
+          "XML DefaultValue has incorrect size: " << defs.size()
+          << " for item " << idef->type());
+        }
       }
     // Does this node have a range?
     rnode = node.child("RangeInfo");

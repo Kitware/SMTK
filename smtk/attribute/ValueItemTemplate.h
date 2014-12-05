@@ -103,7 +103,10 @@ namespace smtk
           {
           // Assumes that if the definition is discrete then default value
           // will be based on the default discrete index
-          this->m_values.resize(n, def->defaultValue());
+          if (def->defaultValues().size() > 1)
+            this->m_values = def->defaultValues();
+          else
+            this->m_values.resize(n, def->defaultValue());
           }
         else
           {
@@ -285,7 +288,10 @@ namespace smtk
         }
       if (def->hasDefault())
         {
-        this->m_values.resize(newSize, def->defaultValue());
+        if (def->defaultValues().size() == newSize)
+          this->m_values = def->defaultValues();
+        else
+          this->m_values.resize(newSize, def->defaultValue());
         this->m_isSet.resize(newSize, true);
         }
       else

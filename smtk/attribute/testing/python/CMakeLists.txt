@@ -33,9 +33,10 @@ if( PYTHONINTERP_FOUND )
    add_test(attributeReferencingTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeReferencingTest.py)
    add_test(categoryTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/categoryTest.py)
    add_test(attributeFindItemTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/attributeFindItemTest.py)
+   add_test(definitionDefaultValueTestPy ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/definitionDefaultValueTest.py dummy.sbt)
   set_tests_properties( associationTestPy basicAttributeTestPy basicAttributeDefinitionTestPy
                         basicAttributeDerivationTestPy basicAttributeXMLWriterTestPy
-                        expressintTestPy expressionTest2Py
+                        expressintTestPy expressionTest2Py definitionDefaultValueTestPy
                         attributeAutoNamingTestPy attributeAutoNamingTestPy
                         attributeReferencingTestPy categoryTestPy attributeFindItemTestPy
                         PROPERTIES ENVIRONMENT "PYTHONPATH=${SHIBOKEN_SMTK_PYTHON};${LIB_ENV_VAR}" )

@@ -77,6 +77,76 @@ namespace {
   }
 
 //----------------------------------------------------------------------------
+  template<typename T>
+  std::string getValueForXMLElement(const T& v, std::string& sep)
+  {
+    std::ostringstream token;
+    if (v.empty())
+      return token.str();
+
+    typename T::const_iterator it;
+    std::set<char> notSep;
+    if (sep.empty())
+      {
+      // Find all the characters that cannot serve as a separator
+      // Note that we need to do this even when v.size() == 1
+      // because some locales might use our preferred separator
+      // in a non-separator-role (e.g., "3.14" is written "3,14"
+      // in some locales), so we must ensure that the single value
+      // in v does not contain the default separator.
+      for (it = v.begin(); it != v.end(); ++it)
+        {
+        token.precision(17);
+        token << *it;
+        std::string::const_iterator sit;
+        std::string entry = token.str();
+        for (sit = entry.begin(); sit != entry.end(); ++sit)
+          notSep.insert(*sit);
+        token.str(std::string());
+        token.clear();
+        }
+      // Try some preferred separators in order of preference.
+      static const char preferredSeps[] = ",;|:#@!.-=_`?+/\\";
+      int preferredSepsLen = sizeof(preferredSeps) / sizeof(preferredSeps[0]);
+      char finalSep = '\0';
+      for (int i = 0; i < preferredSepsLen; ++i)
+        if (notSep.find(preferredSeps[i]) == notSep.end())
+          {
+          finalSep = preferredSeps[i];
+          break;
+          }
+      // OK, desperately try any character at all.
+      if (!finalSep)
+        for (int i = 1; i < 255; ++i)
+          if (notSep.find(preferredSeps[i]) == notSep.end())
+            {
+            finalSep = preferredSeps[i];
+            break;
+            }
+      if (!finalSep)
+        {
+        std::cerr << "Tokens use every single possible character; no separator found. Using comma.\n";
+        finalSep = ',';
+        }
+      // Return whatever separator we came up with to the caller:
+      sep = finalSep;
+      }
+    // Now accumulate values into an output string.
+    token.clear();
+    token.precision(17);
+    it = v.begin();
+    token << *it;
+    ++it;
+    for (; it != v.end(); ++it)
+      {
+      token.precision(17);
+      token << sep << *it;
+      }
+
+    return token.str();
+  }
+
+//----------------------------------------------------------------------------
   template<typename ItemDefType>
   void processDerivedValueDef(pugi::xml_node &node,  ItemDefType idef)
   {
@@ -122,7 +192,10 @@ namespace {
     if (idef->hasDefault())
       {
       xml_node defnode = node.append_child("DefaultValue");
-      defnode.text().set(getValueForXMLElement(idef->defaultValue()));
+      std::string sep; // TODO: The writer could accept a user-provided separator.
+      defnode.text().set(getValueForXMLElement(idef->defaultValues(), sep).c_str());
+      if (!sep.empty() && sep != ",")
+        defnode.append_attribute("Sep").set_value(sep.c_str());
       }
     // Does this node have a range?
     if (idef->hasRange())

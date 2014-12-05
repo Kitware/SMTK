@@ -33,6 +33,12 @@ namespace smtk
 
       const DataT& defaultValue() const
       {static DataT dummy; return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[0];}
+      const DataT& defaultValue(std::size_t element) const
+      {
+        static DataT dummy;
+        bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
+        return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[vectorDefault ? element : 0];
+      }
       const std::vector<DataT>& defaultValues() const
       {return this->m_defaultValue;}
       bool setDefaultValue(const DataT& val);
