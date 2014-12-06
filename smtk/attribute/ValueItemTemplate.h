@@ -62,6 +62,7 @@ namespace smtk
       virtual bool setDefinition(smtk::attribute::ConstItemDefinitionPtr vdef);
       virtual void updateDiscreteValue(std::size_t element);
       std::vector<DataT> m_values;
+      const std::vector<DataT> m_dummy; //(1, DataT());
     private:
     };
 
@@ -69,7 +70,7 @@ namespace smtk
     template<typename DataT>
     ValueItemTemplate<DataT>::ValueItemTemplate(Attribute *owningAttribute,
                                                 int itemPosition):
-      ValueItem(owningAttribute, itemPosition)
+      ValueItem(owningAttribute, itemPosition), m_dummy(1, DataT())
     {
     }
 
@@ -78,7 +79,8 @@ namespace smtk
     ValueItemTemplate<DataT>::ValueItemTemplate(Item *inOwningItem,
                                                 int itemPosition,
                                                 int mySubGroupPosition):
-      ValueItem(inOwningItem, itemPosition, mySubGroupPosition)
+      ValueItem(inOwningItem, itemPosition, mySubGroupPosition),
+      m_dummy(1, DataT())
     {
     }
 //----------------------------------------------------------------------------
@@ -415,10 +417,7 @@ namespace smtk
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
-        {
-        static const DataT dummy = DataT();
-        return dummy;
-        }
+        return this->m_dummy[0];
 
       return def->defaultValue();
     }
@@ -429,10 +428,7 @@ namespace smtk
     {
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
-        {
-        static const std::vector<DataT> dummy(1, DataT());
-        return dummy;
-        }
+        return this->m_dummy;
 
       return def->defaultValues();
     }

@@ -71,6 +71,7 @@ namespace smtk
       bool m_maxRangeSet;
       bool m_maxRangeInclusive;
       std::vector<DataT> m_discreteValues;
+      DataT m_dummy;
     private:
 
     };
@@ -85,6 +86,7 @@ namespace smtk
       this->m_minRangeInclusive = false;
       this->m_maxRangeSet = false;
       this->m_maxRangeInclusive = false;
+      this->m_dummy = DataT();
     }
 //----------------------------------------------------------------------------
     /**\brief Set the default value for an attribute.
@@ -261,16 +263,14 @@ namespace smtk
     template<typename DataT>
     const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue() const
     {
-      static const DataT dummy = DataT();
-      return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[0];
+      return this->m_defaultValue.empty() ? this->m_dummy : this->m_defaultValue[0];
     }
 
     template<typename DataT>
     const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t element) const
     {
-      static const DataT dummy = DataT();
       bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
-      return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[vectorDefault ? element : 0];
+      return this->m_defaultValue.empty() ? this->m_dummy : this->m_defaultValue[vectorDefault ? element : 0];
     }
 
     template<typename DataT>
