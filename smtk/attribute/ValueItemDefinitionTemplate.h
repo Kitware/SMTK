@@ -31,16 +31,9 @@ namespace smtk
 
       virtual ~ValueItemDefinitionTemplate() {}
 
-      const DataT& defaultValue() const
-      {static DataT dummy; return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[0];}
-      const DataT& defaultValue(std::size_t element) const
-      {
-        static DataT dummy;
-        bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
-        return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[vectorDefault ? element : 0];
-      }
-      const std::vector<DataT>& defaultValues() const
-      {return this->m_defaultValue;}
+      const DataT& defaultValue() const;
+      const DataT& defaultValue(std::size_t element) const;
+      const std::vector<DataT>& defaultValues() const;
       bool setDefaultValue(const DataT& val);
       bool setDefaultValue(const std::vector<DataT>& val);
       const DataT &discreteValue(std::size_t element) const
@@ -263,6 +256,27 @@ namespace smtk
         return false;
         }
       return true;
+    }
+
+    template<typename DataT>
+    const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue() const
+    {
+      static const DataT dummy = DataT();
+      return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[0];
+    }
+
+    template<typename DataT>
+    const DataT& ValueItemDefinitionTemplate<DataT>::defaultValue(std::size_t element) const
+    {
+      static const DataT dummy = DataT();
+      bool vectorDefault = this->m_defaultValue.size() == this->numberOfRequiredValues();
+      return this->m_defaultValue.empty() ? dummy : this->m_defaultValue[vectorDefault ? element : 0];
+    }
+
+    template<typename DataT>
+    const std::vector<DataT>& ValueItemDefinitionTemplate<DataT>::defaultValues() const
+    {
+      return this->m_defaultValue;
     }
 
 //----------------------------------------------------------------------------

@@ -416,7 +416,7 @@ namespace smtk
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
         {
-        static DataT dummy = DataT();
+        static const DataT dummy = DataT();
         return dummy;
         }
 
@@ -430,7 +430,7 @@ namespace smtk
       const DefType *def = static_cast<const DefType *>(this->definition().get());
       if (!def)
         {
-        static std::vector<DataT> dummy(1, DataT());
+        static const std::vector<DataT> dummy(1, DataT());
         return dummy;
         }
 
