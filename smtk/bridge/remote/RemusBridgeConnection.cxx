@@ -21,6 +21,7 @@
 #include "smtk/attribute/StringItem.h"
 
 #include "smtk/common/Paths.h"
+#include "smtk/common/Environment.h"
 
 #include "smtk/Function.h"
 
@@ -101,7 +102,14 @@ bool RemusBridgeConnection::connectToServer(const std::string& hostname, int por
     {
     // Start a process-local server
     boost::shared_ptr<remus::server::WorkerFactory> factory(new remus::server::WorkerFactory());
-    factory->setMaxWorkerCount(5);
+    int maxWorkers = 5;
+    std::string env = smtk::common::Environment::getVariable("SMTK_REMUS_MAX_WORKERS");
+    if (!env.empty())
+      {
+      std::stringstream envVal(env);
+      envVal >> maxWorkers;
+      }
+    factory->setMaxWorkerCount(maxWorkers);
 
     // Add search directories, if any.
     for (searchdir_t::const_iterator it = this->m_searchDirs.begin(); it != this->m_searchDirs.end(); ++it)
