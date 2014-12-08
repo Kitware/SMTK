@@ -11,10 +11,13 @@
 #include "smtk/bridge/remote/RemusRPCWorker.h"
 #include "smtk/bridge/remote/RemusRemoteBridge.h"
 
-#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/ExportJSON.h"
+
+#include "smtk/model/BridgeRegistrar.h"
 #include "smtk/model/Operator.h"
+
+#include "smtk/common/StringUtil.h"
 
 #include "remus/proto/JobContent.h"
 #include "remus/proto/JobProgress.h"
@@ -35,34 +38,6 @@
 using namespace remus::proto;
 using namespace smtk::model;
 using namespace smtk::common;
-
-// Some awesome whitespace trimmers from
-// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
-
-// trim from start
-static inline std::string& ltrim(std::string& s) {
-  s.erase(
-    s.begin(),
-    std::find_if(
-      s.begin(), s.end(),
-      std::not1(std::ptr_fun<int, int>(std::isspace))));
-  return s;
-}
-
-// trim from end
-static inline std::string& rtrim(std::string& s) {
-  s.erase(
-    std::find_if(
-      s.rbegin(), s.rend(),
-      std::not1(std::ptr_fun<int, int>(std::isspace))).base(),
-    s.end());
-  return s;
-}
-
-// trim from both ends
-static inline std::string& trim(std::string& s) {
-  return ltrim(rtrim(s));
-}
 
 namespace smtk {
   namespace bridge {
@@ -113,7 +88,7 @@ void RemusRPCWorker::setOption(
       {
       std::string token;
       std::getline(stream, token, ',');
-      vals.push_back(trim(token));
+      vals.push_back(StringUtil::trim(token));
       }
     }
   else

@@ -36,3 +36,4 @@ these cells to SMTK.
    bridge_subclass.rst
    transcribing.rst
    operators.rst
+   troubleshooting.rst

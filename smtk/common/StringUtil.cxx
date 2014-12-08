@@ -24,6 +24,9 @@ namespace smtk {
 
 static std::locale safeLocale = std::locale::classic();
 
+// Some awesome whitespace trimmers based on
+// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+//
 /// Trim whitespace from both ends of a string (in place).
 std::string& StringUtil::trim(std::string& s)
 {

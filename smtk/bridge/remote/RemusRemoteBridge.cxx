@@ -119,18 +119,12 @@ bool RemusRemoteBridge::ableToOperateDelegate(
   cJSON* resp = this->m_remusConn->jsonRPCRequest(req, this->m_remusWorkerReqs);
   cJSON* err = NULL;
   cJSON* res;
-  cJSON* data;
-  cJSON* flagsOut;
 
   if (
     !resp ||
     (err = cJSON_GetObjectItem(resp, "error")) ||
     !(res = cJSON_GetObjectItem(resp, "result")) ||
-    res->type != cJSON_Object ||
-    !(data = cJSON_GetObjectItem(res, "data")) ||
-    data->type != cJSON_Object ||
-    !(flagsOut = cJSON_GetObjectItem(res, "flags")) ||
-    flagsOut->type != cJSON_Number)
+    res->type != cJSON_True)
     {
     return false;
     }
