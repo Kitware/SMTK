@@ -18,7 +18,7 @@ if (SMTK_ENABLE_TESTING AND SMTK_DATA_DIR AND SMTK_BUILD_CGM)
       -kernel=cgm -engine=OpenCascade
       -rwfile=${SMTK_BINARY_DIR}/Testing/cgm-occ.rw
       -root=${SMTK_BINARY_DIR}/Testing
-      -site=foo
+      -site=ctest
   )
   add_test(
     NAME unitRemusBridgeConnection

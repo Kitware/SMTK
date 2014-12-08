@@ -285,6 +285,10 @@ int main(int argc, char* argv[])
         wkOpts.site(), wkOpts.root(),
         wkOpts.workerPath(), reqFileName))
       {
+      // Set the worker name to match the one we'll compute when given
+      // the site specified on the command line. This may change in the future.
+      cJSON_AddItemToObject(desc,
+        "WorkerName", cJSON_CreateString(wkOpts.workerName().c_str()));
       // Now handle platform-specific environment settings that we may
       // need to preserve.
       const std::string fallbacklibsearchpath_name = "DYLD_FALLBACK_LIBRARY_PATH";
