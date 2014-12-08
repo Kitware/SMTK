@@ -25,21 +25,23 @@
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/extension/qt/qtAttribute.h"
+#include "smtk/extension/qt/qtModelOperationWidget.h"
 #include "smtk/extension/qt/qtUIManager.h"
 
 #include "smtk/view/Root.h"
 #include "smtk/view/Instanced.h"
 
 #include <QPointer>
+#include <QDockWidget>
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QMenu>
 #include <QAction>
 #include <QVariant>
-#include <QDialog>
-#include <QDialogButtonBox>
+#include <QScrollArea>
 #include <QVBoxLayout>
+#include <QApplication>
 
 #include <iomanip>
 // -----------------------------------------------------------------------------
@@ -73,11 +75,17 @@ qtModelView::qtModelView(QWidget* p)
                    SIGNAL(customContextMenuRequested(const QPoint &)),
                    this, SLOT(showContextMenu(const QPoint &)));
   this->m_ContextMenu = NULL;
+  this->m_OperatorsDock = NULL;
 }
 
 //-----------------------------------------------------------------------------
 qtModelView::~qtModelView()
 {
+  if(this->m_ContextMenu)
+    delete this->m_ContextMenu;
+
+  if(this->m_OperatorsDock)
+    delete this->m_OperatorsDock;
 }
 
 //-----------------------------------------------------------------------------
@@ -429,19 +437,17 @@ void qtModelView::operatorInvoked()
     return;
     }
   std::string opName = action->text().toStdString();
-  OperatorPtr brOp = bridge->op(opName);
-  if (!brOp)
+  QDockWidget* opDock = this->operatorsDock(opName, bridge);
+  if (!opDock)
     {
     std::cerr
-      << "Could not create operator: \"" << opName << "\" for bridge"
+      << "Could not create UI for operator: \"" << opName << "\" for bridge"
       << " \"" << bridge->name() << "\""
       << " (" << bridge->sessionId() << ")\n";
     return;
     }
 
-  if(!this->initOperator(brOp))
-    return;
-  emit this->operationRequested(brOp);
+  opDock->show();
 
 //  cJSON* json = cJSON_CreateObject();
 //  ExportJSON::forOperator(brOp, json);
@@ -456,38 +462,57 @@ void qtModelView::operatorInvoked()
 }
 
 //----------------------------------------------------------------------------
-bool qtModelView::initOperator(smtk::model::OperatorPtr op)
+QDockWidget* qtModelView::operatorsDock(
+  const std::string& opName, smtk::model::BridgePtr bridge)
 {
-  if(!op || !op->specification()->isValid())
+  if(this->m_OperatorsDock)
+    return this->m_OperatorsDock;
+
+  qtModelOperationWidget* opWidget = new qtModelOperationWidget(this);
+  if(!opWidget->setCurrentOperation(opName, bridge))
     {
-    return false;
+    delete opWidget;
+    return NULL;
     }
-  smtk::attribute::AttributePtr att = op->specification();
-  attribute::DefinitionPtr attDef = att->definition();
-
-  QDialog attDialog;
-  attDialog.setWindowTitle(attDef->label().empty() ?
-                            attDef->type().c_str() : attDef->label().c_str());
-  QVBoxLayout* alayout = new QVBoxLayout(&attDialog);
-
-  smtk::model::QEntityItemModel* qmodel = this->getModel();
-  att->system()->setRefModelManager(qmodel->manager());
-  smtk::attribute::qtUIManager uiManager(*(att->system()));
-  smtk::view::RootPtr rootView = uiManager.attSystem()->rootView();
-  smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(op->name());
-  instanced->addInstance(att);
-  rootView->addSubView(instanced);
-  QObject::connect(&uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+  QObject::connect(opWidget, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)),
+    this, SIGNAL(operationRequested(const smtk::model::OperatorPtr&)));
+  QObject::connect(opWidget, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
 
-  uiManager.initializeView(&attDialog, instanced, false);
+  QWidget* dockP = NULL;
+  foreach(QWidget *widget, QApplication::topLevelWidgets())
+    {
+    if(widget->inherits("QMainWindow"))
+      {
+      dockP = widget;
+      break;
+      }
+    }
 
-  QDialogButtonBox* buttonBox=new QDialogButtonBox( &attDialog );
-  buttonBox->setStandardButtons(QDialogButtonBox::Ok);
-  alayout->addWidget(buttonBox);
-  attDialog.setModal(true);
-  QObject::connect(buttonBox, SIGNAL(accepted()), &attDialog, SLOT(accept()));
-  return attDialog.exec() == QDialog::Accepted;
+  QDockWidget* dw = new QDockWidget(dockP);
+  QWidget* container = new QWidget();
+  container->setObjectName("operatorDockWidget");
+  container->setSizePolicy(QSizePolicy::Preferred,
+    QSizePolicy::Expanding);
+
+  QScrollArea* s = new QScrollArea(dw);
+  s->setWidgetResizable(true);
+  s->setFrameShape(QFrame::NoFrame);
+  s->setObjectName("scrollArea");
+  s->setWidget(container);
+
+  QVBoxLayout* vboxlayout = new QVBoxLayout(container);
+  vboxlayout->setMargin(0);
+  vboxlayout->addWidget(opWidget);
+
+  QString dockTitle(opName.c_str());
+  dw->setWindowTitle(dockTitle);
+  dw->setObjectName(dockTitle.append("dockWidget"));
+  dw->setWidget(s);
+  dw->setFloating(true);
+
+  this->m_OperatorsDock = dw;
+  return dw;
 }
 
   } // namespace model
