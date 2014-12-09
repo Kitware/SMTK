@@ -24,6 +24,7 @@
 
 class QDropEvent;
 class QMenu;
+class QDockWidget;
 
 namespace smtk {
  namespace attribute {
@@ -35,6 +36,7 @@ namespace smtk {
   namespace model {
 
 class DescriptivePhrase;
+class qtModelOperationWidget;
 
 class QTSMTK_EXPORT qtModelView : public QTreeView
 {
@@ -87,8 +89,12 @@ protected:
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
   bool initOperator(smtk::model::OperatorPtr op);
+  QDockWidget* operatorsDock(
+    const std::string& opName, smtk::model::BridgePtr bridge);
 
   QMenu* m_ContextMenu;
+  QDockWidget* m_OperatorsDock;
+  qtModelOperationWidget* m_OperatorsWidget;
 };
 
   } // namespace model

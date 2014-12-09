@@ -30,6 +30,7 @@ set(QAttrLibSrcs
     qtNewAttributeWidget.cxx
     qtOverlay.cxx
     qtModelEntityItem.cxx
+    qtModelOperationWidget.cxx
   )
 
   set(QAttrLibUIs
@@ -70,6 +71,7 @@ set(QAttrLibHeaders
     qtNewAttributeWidget.h
     qtOverlay.h
     qtModelEntityItem.h
+    qtModelOperationWidget.h
   )
 
 #install the headers

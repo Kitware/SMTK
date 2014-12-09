@@ -232,10 +232,13 @@ QWidget* qtFileItem::createFileBrowseWidget(int elementIdx)
   frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   lineEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
   QPushButton* fileBrowserButton = new QPushButton("Browse", frame);
+  fileBrowserButton->setMinimumHeight(lineEdit->height());
+  fileBrowserButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   QHBoxLayout* layout = new QHBoxLayout(frame);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(lineEdit);
   layout->addWidget(fileBrowserButton);
+  layout->setAlignment(Qt::AlignCenter);
 
   QString defaultText;
   if (fItem)
