@@ -1,2 +1,5 @@
 add_subdirectory(cxx)
-add_subdirectory(python)
+
+if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+  add_subdirectory(python)
+endif()
