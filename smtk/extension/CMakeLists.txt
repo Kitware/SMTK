@@ -1,4 +1,3 @@
-
 #add the Qt GUI code if enabled
 if(SMTK_BUILD_QT)
   add_subdirectory(qt)
@@ -45,7 +44,6 @@ if(SMTK_BUILD_VTK)
     include("${VTK_USE_FILE}")
     list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
     # message("VTK_MODULES_DIR=${VTK_MODULES_DIR}")
-    set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
     # Don't add the VTK or other subdirectories as they use the
     # vtk_module_library() macro and vtk/module.cmake file.
