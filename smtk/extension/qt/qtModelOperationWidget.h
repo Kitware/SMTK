@@ -37,7 +37,7 @@ namespace smtk
       Q_OBJECT
 
     public:
-      qtModelOperationWidget(QWidget* p);
+      qtModelOperationWidget(QWidget* p = NULL);
       virtual ~qtModelOperationWidget();
       virtual void setBridge(smtk::model::BridgePtr bridge);
 

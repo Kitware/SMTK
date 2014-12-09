@@ -33,6 +33,7 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QComboBox>
+#include <QLabel>
 #include <QPointer>
 #include <QSpacerItem>
 
@@ -45,6 +46,12 @@ using namespace smtk::model;
 class qtModelOperationWidgetInternals
 {
 public:
+  struct OperatorInfo
+  {
+  smtk::model::OperatorPtr opPtr;
+  QPointer<qtUIManager> opUiManager;
+  QPointer<QFrame> opUiParent;
+  };
 
   smtk::model::WeakOperatorPtr CurrentOp;
   smtk::model::Bridge::WeakPtr CurrentBridge;
@@ -52,8 +59,8 @@ public:
   QPointer<QComboBox> OperationCombo;
   QStackedLayout* OperationsLayout;
   QPointer<QPushButton> OperateButton;
-  // <operator-name, <opPtr, opUI-parent
-  QMap<std::string, QPair<smtk::model::OperatorPtr, QFrame*> > OperatorMap;
+  // <operator-name, <opPtr, opUI-parent> >
+  QMap<std::string, OperatorInfo > OperatorMap;
 };
 
 //----------------------------------------------------------------------------
@@ -73,17 +80,28 @@ qtModelOperationWidget::~qtModelOperationWidget()
 //----------------------------------------------------------------------------
 void qtModelOperationWidget::initWidget( )
 {
+  this->setObjectName("modelOperationWidget");
   this->Internals->WidgetLayout = new QVBoxLayout(this);
   this->Internals->OperationCombo = new QComboBox(this);
+  this->Internals->OperationCombo->setToolTip("Select an operator");
   this->Internals->OperationsLayout = new QStackedLayout();
   this->Internals->OperateButton = new QPushButton(this);
-  this->Internals->OperateButton->setText("Operate");
+  this->Internals->OperateButton->setText("Apply");
+  QPalette applyPalette = this->Internals->OperateButton->palette();
+  applyPalette.setColor(QPalette::Active, QPalette::Button, QColor(161, 213, 135));
+  applyPalette.setColor(QPalette::Inactive, QPalette::Button, QColor(161, 213, 135));
+  this->Internals->OperateButton->setPalette(applyPalette);
+  this->Internals->OperateButton->setDefault(true);
 
-  this->Internals->WidgetLayout->addWidget(this->Internals->OperationCombo);
+  QHBoxLayout* operatorLayout = new QHBoxLayout();
+//  QLabel* opLabel = new QLabel("Operator:");
+//  opLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+  this->Internals->OperateButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//  operatorLayout->addWidget(opLabel);
+  operatorLayout->addWidget(this->Internals->OperateButton);
+  operatorLayout->addWidget(this->Internals->OperationCombo);
+  this->Internals->WidgetLayout->addLayout(operatorLayout);
   this->Internals->WidgetLayout->addLayout(this->Internals->OperationsLayout);
-  this->Internals->WidgetLayout->addWidget(this->Internals->OperateButton);
-  this->Internals->WidgetLayout->addItem(
-    new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Maximum));
 
   // signals/slots
   QObject::connect(this->Internals->OperationCombo,
@@ -142,7 +160,7 @@ bool qtModelOperationWidget::setCurrentOperation(
   if(this->Internals->OperatorMap.contains(opName))
     {
     this->Internals->OperationsLayout->setCurrentWidget(
-      this->Internals->OperatorMap[opName].second);
+      this->Internals->OperatorMap[opName].opUiParent);
     return true;
     }
 
@@ -166,21 +184,23 @@ bool qtModelOperationWidget::setCurrentOperation(
   opLayout->setMargin(0);
 
   smtk::attribute::AttributePtr att = brOp->specification();
-  attribute::DefinitionPtr attDef = att->definition();
   att->system()->setRefModelManager(bridge->manager());
-  smtk::attribute::qtUIManager uiManager(*(att->system()));
-  smtk::view::RootPtr rootView = uiManager.attSystem()->rootView();
+  smtk::attribute::qtUIManager* uiManager = new smtk::attribute::qtUIManager(
+    *(att->system()));
+  smtk::view::RootPtr rootView = uiManager->attSystem()->rootView();
   smtk::view::InstancedPtr instanced = smtk::view::Instanced::New(brOp->name());
   instanced->addInstance(att);
   rootView->addSubView(instanced);
-  QObject::connect(&uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
+  QObject::connect(uiManager, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)),
     this, SIGNAL(fileItemCreated(smtk::attribute::qtFileItem*)));
 
-  uiManager.initializeView(opParent, instanced, false);
-  QPair<smtk::model::OperatorPtr, QFrame*> opPair;
-  opPair.first = brOp;
-  opPair.second = opParent;
-  this->Internals->OperatorMap[opName] = opPair;
+  uiManager->initializeView(opParent, instanced, false);
+  qtModelOperationWidgetInternals::OperatorInfo opInfo;
+  opInfo.opPtr = brOp;
+  opInfo.opUiParent = opParent;
+  opInfo.opUiManager = uiManager;
+
+  this->Internals->OperatorMap[opName] = opInfo;
   this->Internals->OperationsLayout->addWidget(opParent);
   this->Internals->OperationsLayout->setCurrentWidget(opParent);
 
@@ -200,7 +220,7 @@ void qtModelOperationWidget::onOperate()
   std::string opName = this->Internals->OperationCombo->currentText().toStdString();
   if(this->Internals->OperatorMap.contains(opName))
     {
-    OperatorPtr brOp = this->Internals->OperatorMap[opName].first;
+    OperatorPtr brOp = this->Internals->OperatorMap[opName].opPtr;
     emit this->operationRequested(brOp);
     }
 }

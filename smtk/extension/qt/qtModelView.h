@@ -36,6 +36,7 @@ namespace smtk {
   namespace model {
 
 class DescriptivePhrase;
+class qtModelOperationWidget;
 
 class QTSMTK_EXPORT qtModelView : public QTreeView
 {
@@ -93,7 +94,7 @@ protected:
 
   QMenu* m_ContextMenu;
   QDockWidget* m_OperatorsDock;
-
+  qtModelOperationWidget* m_OperatorsWidget;
 };
 
   } // namespace model

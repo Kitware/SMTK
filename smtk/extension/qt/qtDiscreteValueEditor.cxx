@@ -173,6 +173,8 @@ void qtDiscreteValueEditor::updateItemData()
 //----------------------------------------------------------------------------
 void qtDiscreteValueEditor::onInputValueChanged()
 {
+  if(!this->Internals->BaseView->uiManager())
+    return;
   QComboBox* const comboBox = this->Internals->Combo;
   if(!comboBox)
     {
@@ -248,10 +250,13 @@ void qtDiscreteValueEditor::onInputValueChanged()
         }
       }
 
-    int tmpLen = this->Internals->BaseView->uiManager()->getWidthOfItemsMaxLabel(
-      activeChildDefs, this->Internals->BaseView->uiManager()->advancedFont());
     int currentLen = this->Internals->BaseView->fixedLabelWidth();
-    this->Internals->BaseView->setFixedLabelWidth(tmpLen);
+    if(this->Internals->BaseView->uiManager())
+      {
+      int tmpLen = this->Internals->BaseView->uiManager()->getWidthOfItemsMaxLabel(
+        activeChildDefs, this->Internals->BaseView->uiManager()->advancedFont());
+      this->Internals->BaseView->setFixedLabelWidth(tmpLen);
+      }
 
     for(i = 0; i < m; i++)
       {

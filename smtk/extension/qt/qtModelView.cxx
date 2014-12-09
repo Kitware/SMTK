@@ -76,6 +76,7 @@ qtModelView::qtModelView(QWidget* p)
                    this, SLOT(showContextMenu(const QPoint &)));
   this->m_ContextMenu = NULL;
   this->m_OperatorsDock = NULL;
+  this->m_OperatorsWidget = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -83,6 +84,9 @@ qtModelView::~qtModelView()
 {
   if(this->m_ContextMenu)
     delete this->m_ContextMenu;
+
+  if(this->m_OperatorsWidget)
+    delete this->m_OperatorsWidget;
 
   if(this->m_OperatorsDock)
     delete this->m_OperatorsDock;
@@ -446,7 +450,6 @@ void qtModelView::operatorInvoked()
       << " (" << bridge->sessionId() << ")\n";
     return;
     }
-
   opDock->show();
 
 //  cJSON* json = cJSON_CreateObject();
@@ -465,10 +468,19 @@ void qtModelView::operatorInvoked()
 QDockWidget* qtModelView::operatorsDock(
   const std::string& opName, smtk::model::BridgePtr bridge)
 {
-  if(this->m_OperatorsDock)
-    return this->m_OperatorsDock;
+  QEntityItemModel* qmodel = this->getModel();
+  smtk::model::ManagerPtr pstore = qmodel->manager();
 
-  qtModelOperationWidget* opWidget = new qtModelOperationWidget(this);
+  BridgeSession bs(pstore, bridge->sessionId());
+
+  if(this->m_OperatorsDock && this->m_OperatorsWidget)
+    {
+    this->m_OperatorsWidget->setCurrentOperation(opName, bridge);
+    this->m_OperatorsDock->setWindowTitle(bs.flagSummary().c_str());
+    return this->m_OperatorsDock;
+    }
+
+  qtModelOperationWidget* opWidget = new qtModelOperationWidget();
   if(!opWidget->setCurrentOperation(opName, bridge))
     {
     delete opWidget;
@@ -490,27 +502,20 @@ QDockWidget* qtModelView::operatorsDock(
     }
 
   QDockWidget* dw = new QDockWidget(dockP);
-  QWidget* container = new QWidget();
-  container->setObjectName("operatorDockWidget");
-  container->setSizePolicy(QSizePolicy::Preferred,
-    QSizePolicy::Expanding);
-
   QScrollArea* s = new QScrollArea(dw);
   s->setWidgetResizable(true);
   s->setFrameShape(QFrame::NoFrame);
   s->setObjectName("scrollArea");
-  s->setWidget(container);
 
-  QVBoxLayout* vboxlayout = new QVBoxLayout(container);
-  vboxlayout->setMargin(0);
-  vboxlayout->addWidget(opWidget);
-
-  QString dockTitle(opName.c_str());
-  dw->setWindowTitle(dockTitle);
-  dw->setObjectName(dockTitle.append("dockWidget"));
+  opWidget->setSizePolicy(QSizePolicy::Preferred,
+    QSizePolicy::Expanding);
+  s->setWidget(opWidget);
+  dw->setWindowTitle(bs.flagSummary().c_str());
+  dw->setObjectName("operatorsDockWidget");
   dw->setWidget(s);
   dw->setFloating(true);
 
+  this->m_OperatorsWidget = opWidget;
   this->m_OperatorsDock = dw;
   return dw;
 }
