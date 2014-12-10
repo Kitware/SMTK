@@ -22,6 +22,8 @@ struct cJSON;
 namespace smtk {
   namespace io {
 
+class Logger;
+
 /**\brief Indicate what data should be exported to JSON.
   *
   */
@@ -72,6 +74,12 @@ public:
     smtk::model::BridgePtr bridge, const std::string& engine,
     const std::string& site, const std::string& root,
     const std::string& workerPath, const std::string& requirementsFileName);
+
+  static int forLog(
+    cJSON* logrecordarray,
+    const smtk::io::Logger& log,
+    std::size_t start = 0,
+    std::size_t end = static_cast<std::size_t>(-1));
 
   // JSON-RPC helpers:
   static cJSON* createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId);

@@ -561,6 +561,76 @@ int ExportJSON::forModelWorker(
   return 1;
 }
 
+/**\brief Export log records into a cJSON array.
+  *
+  * You must pass in a valid cJSON array (\a logrecordarray).
+  * Log entries will be appended to the end of it (and will
+  * not overwrite any pre-existing array entries).
+  *
+  * If you specify \a start and \a end, then only the specified
+  * subset of records from \a log will be added to
+  * \a logrecordarray.
+  * As with C++ iterators, \a start and \a end describe a
+  * half-open interval.
+  */
+int ExportJSON::forLog(
+  cJSON* logrecordarray,
+  const smtk::io::Logger& log,
+  std::size_t start,
+  std::size_t end)
+{
+  if (
+    !logrecordarray ||
+    logrecordarray->type != cJSON_Array)
+    return -1;
+
+  // Figure out where to stop writing entries:
+  int numberOfRecords = 0;
+  std::size_t finish = log.numberOfRecords();
+  if (end < finish)
+    finish = end;
+  // Advance to the end of the array.
+  cJSON* lastEntry = logrecordarray->child;
+  while (lastEntry && lastEntry->next)
+    lastEntry = lastEntry->next;
+  cJSON* first = NULL;
+  for (; start < finish; ++start)
+    {
+    const smtk::io::Logger::Record& rec(log.record(start));
+    if (rec.message.empty())
+      continue;
+
+    cJSON* entry = cJSON_CreateArray();
+    ++numberOfRecords;
+
+    cJSON_AddItemToArray(entry,
+      cJSON_CreateNumber(
+        static_cast<int>(rec.severity)));
+    cJSON_AddItemToArray(entry,
+      cJSON_CreateString(
+        rec.message.c_str()));
+    if (!rec.fileName.empty())
+      cJSON_AddItemToArray(entry,
+        cJSON_CreateString(
+          rec.fileName.c_str()));
+    if (rec.lineNumber)
+      cJSON_AddItemToArray(entry,
+        cJSON_CreateNumber(
+          rec.lineNumber));
+
+    // Append cJSON entry to lastEntry:
+    if (lastEntry)
+      lastEntry->next = entry;
+    else
+      first = entry;
+    entry->prev = lastEntry;
+    lastEntry = entry;
+    }
+  if (!logrecordarray->child && first)
+    logrecordarray->child = first;
+  return numberOfRecords;
+}
+
 /**\brief Create a JSON-RPC request object.
   *
   * This variant stores a valid pointer in \a params for you to populate.

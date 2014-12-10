@@ -17,7 +17,10 @@
 #include <sstream>
 #include <vector>
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as an error message.
+/**\brief Write the expression \a x to \a logger as an error message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkErrorMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -25,7 +28,10 @@
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as a warning message.
+/**\brief Write the expression \a x to \a logger as a warning message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkWarningMacro(logger, x) do {                \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -33,14 +39,29 @@
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as a debug message.
+/**\brief Write the expression \a x to \a logger as a debug message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkDebugMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
   logger.addRecord(smtk::io::Logger::DEBUG,             \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
-///@}
+
+/**\brief Write the expression \a x to \a logger as an informational message.
+  *
+  * Note that \a x may use the "<<" operator.
+  *
+  * Unlike other logging macros, this does not include  a
+  * filename and line number in the record.
+  */
+#define smtkInfoMacro(logger, x) do {                   \
+  std::stringstream s1;                                 \
+  s1 << x;                                              \
+  logger.addRecord(smtk::io::Logger::DEBUG, s1.str());  \
+  } while (0)
 
 namespace smtk
 {
@@ -80,7 +101,7 @@ namespace smtk
                      const std::string &fname="",
                      unsigned int line=0);
 
-      const Record &record(int i) const
+      const Record &record(std::size_t i) const
       {return this->m_records[i];}
 
       // Convert all the messages into a single string
@@ -97,7 +118,7 @@ namespace smtk
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_io_Logger_h */
