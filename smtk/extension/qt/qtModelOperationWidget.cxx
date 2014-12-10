@@ -150,10 +150,10 @@ bool qtModelOperationWidget::setCurrentOperation(
     return false;
 
   StringList opNames = bridge->operatorNames();
-  int pos = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
-  if(this->Internals->OperationCombo->currentIndex() != pos)
+  int idx = std::find(opNames.begin(), opNames.end(), opName) - opNames.begin();
+  if(this->Internals->OperationCombo->currentIndex() != idx)
     {
-    this->Internals->OperationCombo->setCurrentIndex(pos);
+    this->Internals->OperationCombo->setCurrentIndex(idx);
     return true;
     }
 
