@@ -15,6 +15,12 @@ namespace smtk {
   namespace io {
 
 //----------------------------------------------------------------------------
+Logger::~Logger()
+{
+  this->setFlushToStream(NULL, false);
+}
+
+//----------------------------------------------------------------------------
 void Logger::addRecord(Severity s, const std::string &m,
                        const std::string &fname,
                        unsigned int line)
@@ -24,6 +30,11 @@ void Logger::addRecord(Severity s, const std::string &m,
     this->m_hasErrors = true;
     }
   this->m_records.push_back(Record(s, m, fname, line));
+  if (this->m_file)
+    {
+    (*this->m_file) << this->toString(this->numberOfRecords() - 1);
+    this->m_file->flush();
+    }
 }
 //----------------------------------------------------------------------------
 void Logger::append(const Logger &l)
@@ -33,6 +44,13 @@ void Logger::append(const Logger &l)
   if (l.m_hasErrors)
     {
     this->m_hasErrors = true;
+    }
+  if (this->m_file)
+    {
+    (*this->m_file) << this->toString(
+      this->numberOfRecords() - l.numberOfRecords(),
+      this->numberOfRecords());
+    this->m_file->flush();
     }
 }
 //----------------------------------------------------------------------------
@@ -61,12 +79,30 @@ std::string Logger::severityAsString(Severity s)
     }
   return "UNKNOWN";
 }
-//----------------------------------------------------------------------------
-std::string Logger::convertToString() const
+
+/**\brief Convert the given log entry to a string.
+  *
+  */
+std::string Logger::toString(std::size_t i) const
 {
-  std::size_t i, n = this->m_records.size();
   std::stringstream ss;
-  for (i = 0; i < n; i++)
+  ss << severityAsString(this->m_records[i].severity) << ": ";
+  if (this->m_records[i].fileName != "")
+    {
+    ss << "In " << this->m_records[i].fileName << ", line "
+      << this->m_records[i].lineNumber << ": ";
+    }
+  ss << this->m_records[i].message << std::endl;
+  return ss.str();
+}
+
+/**\brief Convert the given log entry range to a string.
+  *
+  */
+std::string Logger::toString(std::size_t i, std::size_t j) const
+{
+  std::stringstream ss;
+  for (; i < j; i++)
     {
     ss << severityAsString(this->m_records[i].severity) << ": ";
     if (this->m_records[i].fileName != "")
@@ -77,6 +113,27 @@ std::string Logger::convertToString() const
     ss << this->m_records[i].message << std::endl;
     }
   return ss.str();
+}
+
+//----------------------------------------------------------------------------
+std::string Logger::convertToString() const
+{
+  return this->toString(0, this->m_records.size());
+}
+
+/**\brief Request all future records be flushed to \a output as they are logged.
+  *
+  * If \a ownFile is true, then the Logger takes ownership of \a output
+  * and will delete it when the Logger is destructed.
+  * If \a output is NULL, then this stops future log records from
+  * being appended to any file.
+  */
+void Logger::setFlushToStream(std::ostream* output, bool ownFile)
+{
+  if (this->m_ownFile)
+    delete this->m_file;
+  this->m_file = output;
+  this->m_ownFile = output ? ownFile : false;
 }
 
   } // namespace io

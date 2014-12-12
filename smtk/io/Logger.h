@@ -13,8 +13,9 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/SystemConfig.h"
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
 #include <vector>
 
 /**\brief Write the expression \a x to \a logger as an error message.
@@ -60,7 +61,7 @@
 #define smtkInfoMacro(logger, x) do {                   \
   std::stringstream s1;                                 \
   s1 << x;                                              \
-  logger.addRecord(smtk::io::Logger::DEBUG, s1.str());  \
+  logger.addRecord(smtk::io::Logger::INFO, s1.str());  \
   } while (0)
 
 namespace smtk
@@ -90,7 +91,8 @@ namespace smtk
           severity(INFO), lineNumber(0) {}
       };
 
-      Logger(): m_hasErrors(false) {}
+      Logger(): m_hasErrors(false), m_file(NULL), m_ownFile(false) {}
+      ~Logger();
       std::size_t numberOfRecords() const
       {return this->m_records.size();}
 
@@ -104,6 +106,9 @@ namespace smtk
       const Record &record(std::size_t i) const
       {return this->m_records[i];}
 
+      std::string toString(std::size_t i) const;
+      std::string toString(std::size_t i, std::size_t j) const;
+
       // Convert all the messages into a single string
       std::string convertToString() const;
       void reset();
@@ -112,9 +117,12 @@ namespace smtk
 
       static std::string severityAsString(Severity s);
 
+      void setFlushToStream(std::ostream* output, bool ownFile);
     protected:
       std::vector<Record> m_records;
       bool m_hasErrors;
+      std::ostream* m_file;
+      bool m_ownFile;
     private:
 
     };
