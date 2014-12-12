@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -110,7 +112,7 @@ smtk::model::OperatorResult CreateBrick::operateInternal()
     }
   if (!cgmBody)
     {
-    std::cerr << "Failed to create body\n";
+    smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

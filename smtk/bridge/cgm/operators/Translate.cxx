@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
@@ -80,10 +82,9 @@ smtk::model::OperatorResult Translate::operateInternal()
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
     {
-    std::cerr
-      << "Failed to translate bodies or wrong number"
+    smtkInfoMacro(log(), "Failed to translate bodies or wrong number"
       << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
-      << " of resulting bodies.\n";
+      << " of resulting bodies.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

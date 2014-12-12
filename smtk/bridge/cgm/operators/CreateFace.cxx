@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -67,7 +69,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   case BEST_FIT_SURFACE_TYPE:
     break;
   default:
-    std::cerr << "Bad surf type " << surfType << "\n";
+    smtkInfoMacro(log(), "Bad surf type " << surfType << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
   DLIList<RefEdge*> edgeList;
@@ -76,14 +78,14 @@ smtk::model::OperatorResult CreateFace::operateInternal()
     RefEdge* edg = this->cgmEntityAs<RefEdge*>(edgesItem->value(i));
     if (!edg)
       {
-      std::cerr << "One or more edges were invalid " << edgesItem->value(i).name() << "\n";
+      smtkInfoMacro(log(), "One or more edges were invalid " << edgesItem->value(i).name() << ".");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     edgeList.push(edg);
     }
   if (edgeList.size() <= 0)
     {
-    std::cerr << "No edges provided.\n";
+    smtkInfoMacro(log(), "No edges provided.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -92,7 +94,7 @@ smtk::model::OperatorResult CreateFace::operateInternal()
   RefFace* cgmFace = GeometryModifyTool::instance()->make_RefFace(surfType, edgeList, isFree, NULL, checkEdges);
   if (!cgmFace)
     {
-    std::cerr << "Failed to create face\n";
+    smtkInfoMacro(log(), "Failed to create face.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

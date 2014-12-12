@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/FileItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -98,16 +100,20 @@ smtk::model::OperatorResult Read::operateInternal()
     {
     if (!Engines::setDefault(engine))
       {
-      std::cerr << "Could not set default engine to \"" << engine << "\"\n";
+      smtkInfoMacro(this->manager()->log(),
+        "Could not set default engine to \"" << engine << "\"");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     }
   catch (std::exception& e)
     {
-    std::cout << "There is exception being throw while setting default engine: \"" << e.what() << "\"\n";
+    smtkInfoMacro(this->manager()->log(),
+      "Exception thrown while setting default engine: \"" << e.what() << "\"");
     }
 
-  std::cout << "Default modeler now \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"\n";
+  smtkInfoMacro(this->manager()->log(),
+    "Default modeler now"
+    " \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"");
   CubitStatus s;
   DLIList<RefEntity*> imported;
   int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
@@ -127,7 +133,8 @@ smtk::model::OperatorResult Read::operateInternal()
   CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (s != CUBIT_SUCCESS)
     {
-    std::cerr << "Failed to import CGM model, status " << s << "\n";
+    smtkInfoMacro(this->manager()->log(),
+      "Failed to import CGM model, status " << s);
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -158,7 +165,7 @@ smtk::model::OperatorResult Read::operateInternal()
   return result;
 }
 
-} // namespace cgm
+    } // namespace cgm
   } //namespace bridge
 } // namespace smtk
 

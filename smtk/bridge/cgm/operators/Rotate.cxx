@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
@@ -79,8 +81,8 @@ smtk::model::OperatorResult Rotate::operateInternal()
   CubitVector axis(axisItem->value(0), axisItem->value(1), axisItem->value(2));
   if (axis.normalize() == 0)
     {
-    std::cerr
-      << "Ill-defined rotation: given axis of rotation is a zero-length vector.\n";
+    smtkInfoMacro(log(),
+      "Ill-defined rotation: given axis of rotation is a zero-length vector.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
   double angle = angleItem->value(0);
@@ -91,10 +93,9 @@ smtk::model::OperatorResult Rotate::operateInternal()
     cgmEntitiesOut);
   if (cgmEntitiesOut.size() != nb)
     {
-    std::cerr
-      << "Failed to rotate bodies or wrong number"
+    smtkInfoMacro(log(), "Failed to rotate bodies or wrong number"
       << " (" << cgmEntitiesOut.size() << " != " << nb << ")"
-      << " of resulting bodies.\n";
+      << " of resulting bodies.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

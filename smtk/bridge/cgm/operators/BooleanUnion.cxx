@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
@@ -72,7 +74,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
 
   if (cgmBodiesIn.size() < 2)
     {
-    std::cerr << "Need multiple bodies to union, given " << cgmBodiesIn.size() << "\n";
+    smtkInfoMacro(log(), "Need multiple bodies to union, given " << cgmBodiesIn.size() << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -86,7 +88,7 @@ smtk::model::OperatorResult BooleanUnion::operateInternal()
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (s != CUBIT_SUCCESS)
     {
-    std::cerr << "Failed to perform union.\n";
+    smtkInfoMacro(log(), "Failed to perform union (status " << s << ").");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
 #include "smtk/model/ModelEntity.h"
@@ -57,7 +59,7 @@ smtk::model::OperatorResult Copy::operateInternal()
   CursorArray entitiesIn = this->associatedEntitiesAs<CursorArray>();
   if (entitiesIn.size() != 1)
     {
-    std::cerr << "Expected a single entity to copy but was given " << entitiesIn.size() << "\n";
+    smtkInfoMacro(log(), "Expected a single entity to copy but was given " << entitiesIn.size() << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -68,13 +70,13 @@ smtk::model::OperatorResult Copy::operateInternal()
     Body* refBody = this->cgmEntityAs<Body*>(entity);
     if (!refBody)
       {
-      std::cerr << "Unable obtain CGM body from " << entity.name() << "\n";
+      smtkInfoMacro(log(), "Unable obtain CGM body from " << entity.name() << ".");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     Body* newBody = GeometryModifyTool::instance()->copy_body(refBody);
     if (!newBody)
       {
-      std::cerr << "Unable to copy body " << refBody << " (" << entity.name() << ")\n";
+      smtkInfoMacro(log(), "Unable to copy body " << refBody << " (" << entity.name() << ").");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     cgmOut = newBody;
@@ -84,22 +86,22 @@ smtk::model::OperatorResult Copy::operateInternal()
     RefEntity* refEntity = this->cgmEntity(entity);
     if (!refEntity)
       {
-      std::cerr << "Unable obtain CGM entity from " << entity.name() << "\n";
+      smtkInfoMacro(log(), "Unable obtain CGM entity from " << entity.name() << ".");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     RefEntity* newEntity = GeometryModifyTool::instance()->copy_refentity(refEntity);
     if (!newEntity)
       {
-      std::cerr << "Unable to copy entity " << refEntity << " (" << entity.name() << ")\n";
+      smtkInfoMacro(log(), "Unable to copy entity " << refEntity << " (" << entity.name() << ").");
       return this->createResult(smtk::model::OPERATION_FAILED);
       }
     cgmOut = newEntity;
     }
   else
     {
-    std::cerr
-      << "Expected a cell (vertex, edge, face, volume) or model but was given "
-      << entity.flagSummary(0) << " (named " << entity.name() << ").\n";
+    smtkInfoMacro(log(),
+      "Expected a cell (vertex, edge, face, volume) or model but was given "
+      << entity.flagSummary(0) << " (named " << entity.name() << ").");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
