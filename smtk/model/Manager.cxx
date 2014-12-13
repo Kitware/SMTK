@@ -141,10 +141,10 @@ bool Manager::eraseModel(const ModelEntity& model)
     Cursors bdys = fit->lowerDimensionalBoundaries(-1);
     for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
       {
-      std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+      //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
       this->erase(bit->entity());
       }
-    std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
+    //std::cout << "Erasing " << fit->flagSummary(0) << " " << fit->entity() << "\n";
     this->erase(fit->entity());
     }
 
@@ -154,14 +154,14 @@ bool Manager::eraseModel(const ModelEntity& model)
     Cursors members = git->members<Cursors>();
     for (Cursors::iterator mit = members.begin(); mit != members.end(); ++mit)
       {
-      std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
+      //std::cout << "Erasing " << mit->flagSummary(0) << " " << mit->entity() << "\n";
       this->erase(mit->entity());
       }
-    std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
+    //std::cout << "Erasing " << git->flagSummary(0) << " " << git->entity() << "\n";
     this->erase(git->entity());
     }
 
-  std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
+  //std::cout << "Erasing " << model.flagSummary(0) << " " << model.entity() << "\n";
   this->erase(model.entity());
 
   return true;
@@ -197,9 +197,9 @@ bool Manager::setAttributeSystem(smtk::attribute::System* attSys, bool reverse)
     // have at least 1 attribute association.
     if (!this->m_attributeAssignments->empty() && attSys)
       {
-      std::cout
-        << "WARNING: Changing attribute managers.\n"
-        << "         Current attribute associations cleared.\n";
+      smtkInfoMacro(this->m_log,
+        "WARNING: Changing attribute managers.\n"
+        "         Current attribute associations cleared.\n");
       this->m_attributeAssignments->clear();
       }
     if (reverse)
