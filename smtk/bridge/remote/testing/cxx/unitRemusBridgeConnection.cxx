@@ -21,6 +21,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include <fstream>
+
 using namespace smtk::model;
 using namespace smtk::bridge::remote;
 
@@ -51,8 +53,12 @@ int main(int argc, char* argv[])
   std::string hostname(argc > 3 ? argv[3] : "local");
   int port(argc > 4 ? atoi(argv[4]) : 50505);
 
+  smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
+  mgr->log().setFlushToStream(
+    new std::ofstream("/tmp/unitRemusBridge.log"), true);
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
+  bconn->setModelManager(mgr);
   // Do not search for workers in default paths; we don't want to pick things up by accident:
   bconn->clearSearchDirs(true);
   if (argc > 5)
