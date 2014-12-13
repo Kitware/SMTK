@@ -25,6 +25,9 @@
 #include <string>
 
 namespace smtk {
+  namespace io {
+    class Logger;
+  }
   namespace model {
 
 #ifndef SHIBOKEN_SKIP
@@ -128,6 +131,15 @@ enum OperatorOutcome
   * Non-default parameter values are kept in an Attribute
   * instance that specifies the state of the Operator.
   *
+  * Before and after operateInternal() is executed, the base class
+  * inspects the model manager's Logger instance.
+  * If any new records were created, they are serialized and
+  * set as the result attribute's "log" item.
+  * You may use ImportJSON to deserialize the log and present
+  * it to users in your application.
+  * This serialization is performed since SMTK operations are
+  * often run in a remote process from the end-user application.
+  *
   * Instances of the Operator class should always have a valid
   * pointer to their owning Bridge instance.
   * Every operator's specification() Attribute is managed by the
@@ -159,6 +171,8 @@ public:
 
   Bridge* bridge() const;
   Ptr setBridge(Bridge* b);
+
+  smtk::io::Logger& log();
 
   OperatorDefinition definition() const;
 
