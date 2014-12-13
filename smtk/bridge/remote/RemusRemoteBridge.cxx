@@ -31,6 +31,7 @@
 
 using namespace smtk::common;
 using namespace smtk::model;
+using namespace smtk::io;
 
 namespace smtk {
   namespace bridge {
@@ -41,12 +42,7 @@ std::map<std::string,RemusStaticBridgeInfo>*
 
 RemusRemoteBridge::RemusRemoteBridge()
 {
-  // Not calling initializeOperatorSys() on purpose;
-  // our superclass (DefaultBridge) does the job of initializing
-  // the operator system and we "inherit" operator definitions from
-  // the Remus model worker at the other end of our connection,
-  // so there are no statically-initialized operator definitions to
-  // prepare.
+  this->initializeOperatorSystem(RemusRemoteBridge::s_operators);
 }
 
 RemusRemoteBridge::~RemusRemoteBridge()
@@ -76,12 +72,8 @@ remus::proto::JobRequirements RemusRemoteBridge::remusRequirements() const
 smtk::model::BridgedInfoBits RemusRemoteBridge::transcribeInternal(
   const smtk::model::Cursor& entity, smtk::model::BridgedInfoBits flags)
 {
-  cJSON* req = cJSON_CreateObject();
-  cJSON* par = cJSON_CreateObject();
-  cJSON_AddItemToObject(req, "jsonrpc", cJSON_CreateString("2.0"));
-  cJSON_AddItemToObject(req, "method", cJSON_CreateString("fetch-entity"));
-  cJSON_AddItemToObject(req, "id", cJSON_CreateString("1")); // TODO
-  cJSON_AddItemToObject(req, "params", par);
+  cJSON* par;
+  cJSON* req = ExportJSON::createRPCRequest("fetch-entity", par, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(par, "entity", cJSON_CreateString(entity.entity().toString().c_str()));
   cJSON_AddItemToObject(par, "flags", cJSON_CreateNumber(flags));
 
@@ -104,12 +96,8 @@ smtk::model::BridgedInfoBits RemusRemoteBridge::transcribeInternal(
 bool RemusRemoteBridge::ableToOperateDelegate(
   smtk::model::RemoteOperatorPtr op)
 {
-  cJSON* req = cJSON_CreateObject();
-  cJSON* par = cJSON_CreateObject();
-  cJSON_AddItemToObject(req, "jsonrpc", cJSON_CreateString("2.0"));
-  cJSON_AddItemToObject(req, "method", cJSON_CreateString("operator-able"));
-  cJSON_AddItemToObject(req, "id", cJSON_CreateString("1")); // TODO
-  cJSON_AddItemToObject(req, "params", par);
+  cJSON* par;
+  cJSON* req = ExportJSON::createRPCRequest("operator-able", par, /*id*/ "1", cJSON_Object);
   smtk::io::ExportJSON::forOperator(op->specification(), par);
   // Add the bridge's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));
@@ -135,12 +123,8 @@ bool RemusRemoteBridge::ableToOperateDelegate(
 smtk::model::OperatorResult RemusRemoteBridge::operateDelegate(
   smtk::model::RemoteOperatorPtr op)
 {
-  cJSON* req = cJSON_CreateObject();
-  cJSON* par = cJSON_CreateObject();
-  cJSON_AddItemToObject(req, "jsonrpc", cJSON_CreateString("2.0"));
-  cJSON_AddItemToObject(req, "method", cJSON_CreateString("operator-apply"));
-  cJSON_AddItemToObject(req, "id", cJSON_CreateString("1")); // TODO
-  cJSON_AddItemToObject(req, "params", par);
+  cJSON* par;
+  cJSON* req = ExportJSON::createRPCRequest("operator-apply", par, /*id*/ "1", cJSON_Object);
   smtk::io::ExportJSON::forOperator(op->specification(), par);
   // Add the bridge's session ID so it can be properly instantiated on the server.
   cJSON_AddItemToObject(par, "sessionId", cJSON_CreateString(this->sessionId().toString().c_str()));
