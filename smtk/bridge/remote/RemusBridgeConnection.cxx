@@ -339,10 +339,10 @@ RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeSession(
 
 /**\brief Return a list of file types supported by a particular bridge.
   */
-std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
+StringData RemusBridgeConnection::supportedFileTypes(
   const std::string& bridgeName)
 {
-  std::vector<std::string> resultVec;
+  StringData resultMap;
   cJSON* params;
   cJSON* request = ExportJSON::createRPCRequest("bridge-filetypes", params, /*id*/ "1", cJSON_Object);
   cJSON_AddItemToObject(params, "bridge-name", cJSON_CreateString(bridgeName.c_str()));
@@ -359,15 +359,15 @@ std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
     }
   else if (!this->findRequirementsForRemusType(jreq, bridgeName))
     {
-    return resultVec;
+    return resultMap;
     }
   cJSON* result = this->jsonRPCRequest(request, jreq);
-  cJSON* sarr;
+  cJSON* engines;
   if (
     !result ||
     result->type != cJSON_Object ||
-    !(sarr = cJSON_GetObjectItem(result, "result")) ||
-    sarr->type != cJSON_Array)
+    !(engines = cJSON_GetObjectItem(result, "result")) ||
+    engines->type != cJSON_Object)
     {
     smtkErrorMacro(this->log(),
       "Invalid filetype response \""
@@ -375,12 +375,25 @@ std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
     // TODO: See if result has "error" key and report it.
     if (result)
       cJSON_Delete(result);
-    return std::vector<std::string>();
+    return StringData();
     }
 
-  smtk::io::ImportJSON::getStringArrayFromJSON(sarr, resultVec);
+  smtkDebugMacro(this->log(),
+    "Filetype response: " << cJSON_Print(engines));
+  for (cJSON* engine = engines->child; (engine = engine->next); )
+    {
+    smtkDebugMacro(this->log(),
+      "  engine: " << engine->string << " types: " << cJSON_Print(engine->child));
+    if (engine->string && engine->string[0])
+      {
+      std::pair<std::string,StringList> keyval;
+      keyval.first = engine->string;
+      StringData::iterator it = resultMap.insert(keyval).first;
+      smtk::io::ImportJSON::getStringArrayFromJSON(engine, it->second);
+      }
+    }
   cJSON_Delete(result);
-  return resultVec;
+  return resultMap;
 }
 
 /**\brief Read a file without requiring a pre-existing bridge session.
@@ -404,19 +417,27 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
       bnit != this->m_remoteBridgeNameToType.end() && actualBridgeName.empty();
       ++bnit)
       {
-      std::vector<std::string> fileTypesForBridge = this->supportedFileTypes(bnit->first);
-      std::vector<std::string>::const_iterator fit;
-      for (fit = fileTypesForBridge.begin(); fit != fileTypesForBridge.end(); ++fit)
+      StringData fileTypesForBridge = this->supportedFileTypes(bnit->first);
+      StringData::const_iterator dit;
+      for (dit = fileTypesForBridge.begin(); dit != fileTypesForBridge.end(); ++dit)
         {
-        std::string::size_type fEnd;
-        std::string::size_type eEnd = fit->find(' ');
-        std::string ext(*fit, 0, eEnd);
-        smtkInfoMacro(log(), "Looking for \"" << ext << "\".");
-        if ((fEnd = fileName.rfind(ext)) && (fileName.size() - fEnd == eEnd))
-          { // matching substring is indeed at end of fileName
-          actualBridgeName = bnit->first;
-          smtkInfoMacro(log(), "Found bridge type " << actualBridgeName << " for " << fileName << ".");
-          break;
+        StringList::const_iterator fit;
+        if (dit->first != "default" && bnit->second.find(dit->first) == std::string::npos)
+          continue; // skip file types for non-default engines
+        // OK, either the bridge has only the default engine or this record matches
+        // the worker's default engine:
+        for (fit = dit->second.begin(); fit != dit->second.end(); ++fit)
+          {
+          std::string::size_type fEnd;
+          std::string::size_type eEnd = fit->find(' ');
+          std::string ext(*fit, 0, eEnd);
+          smtkInfoMacro(log(), "Looking for \"" << ext << "\".");
+          if ((fEnd = fileName.rfind(ext)) && (fileName.size() - fEnd == eEnd))
+            { // matching substring is indeed at end of fileName
+            actualBridgeName = bnit->first;
+            smtkInfoMacro(log(), "Found bridge type " << actualBridgeName << " for " << fileName << ".");
+            break;
+            }
           }
         }
       }

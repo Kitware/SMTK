@@ -89,15 +89,15 @@ int main(int argc, char* argv[])
     return 4;
     }
 
-  opnames = bconn->operatorNames(bridgeName);
-  std::cout << "Operators for bridge \"" << bridgeName << "\":\n";
-  for (strit = opnames.begin(); strit != opnames.end(); ++strit)
-    std::cout << "  " << *strit << "\n";
-
-  std::vector<std::string> fileTypes = bconn->supportedFileTypes(bridgeName);
+  StringData fileTypes = bconn->supportedFileTypes(bridgeName);
   std::cout << "File types available for \"" << bridgeName << "\":\n";
-  for (strit = fileTypes.begin(); strit != fileTypes.end(); ++strit)
-    std::cout << "  " << *strit << "\n";
+  StringData::const_iterator mapit;
+  for (mapit = fileTypes.begin(); mapit != fileTypes.end(); ++mapit)
+    {
+    std::cout << "  " << mapit->first << "\n";
+    for (strit = mapit->second.begin(); strit != mapit->second.end(); ++strit)
+      std::cout << "    " << *strit << "\n";
+    }
 
   smtk::common::UUID bridgeSessionId = bconn->beginBridgeSession(bridgeName);
   if (bridgeSessionId.isNull())

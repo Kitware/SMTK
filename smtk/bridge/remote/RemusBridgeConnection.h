@@ -96,7 +96,7 @@ public:
   RemusRemoteBridgePtr findBridgeSession(
     const smtk::common::UUID& bridgeSessionId);
 
-  std::vector<std::string> supportedFileTypes(
+  smtk::model::StringData supportedFileTypes(
     const std::string& bridgeName = std::string());
   smtk::model::OperatorResult readFile(
     const std::string& fileName,
