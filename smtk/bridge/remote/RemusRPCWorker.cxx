@@ -77,6 +77,9 @@ void RemusRPCWorker::setOption(
   const std::string& optName,
   const std::string& optVal)
 {
+  smtkDebugMacro(this->manager()->log(),
+    "set option \"" << optName << "\" to \"" << optVal << "\"");
+
   StringList vals;
   if (
     optName.find("exclude_") == 0 && (
@@ -130,6 +133,8 @@ void RemusRPCWorker::processJob(
   else
     {
     cJSON* req = cJSON_Parse(content.c_str());
+    smtkDebugMacro(this->manager()->log(),
+      "job \"" << content << "\"");
     cJSON* spec;
     cJSON* meth;
     if (
@@ -152,7 +157,8 @@ void RemusRPCWorker::processJob(
       std::string reqIdStr;
       cJSON* reqId = cJSON_GetObjectItem(req, "id");
       cJSON* param = cJSON_GetObjectItem(req, "params");
-      std::cout << "  method \"" << methStr << "\"\n";
+      smtkDebugMacro(this->manager()->log(),
+        "method \"" << methStr << "\"");
       bool missingIdFatal = true;
       if (reqId && reqId->type == cJSON_String)
         {
@@ -168,7 +174,7 @@ void RemusRPCWorker::processJob(
       //   operator-able
       //   operator-apply
 
-      //std::cout << "  " << methStr << "\n";
+      //smtkDebugMacro(this->manager()->log(), "  " << methStr);
       if (methStr == "search-bridges")
         {
         smtk::model::StringList bridgeNames = this->m_modelMgr->bridgeNames();
@@ -276,10 +282,9 @@ void RemusRPCWorker::processJob(
                   w->connection().endpoint());
               conn2.context(w->connection().context());
               swapWorker = new remus::worker::Worker(r, conn2);
-              std::cerr
-                << "Redefining worker. "
+              smtkDebugMacro(this->manager()->log(), "Redefining worker. "
                 <<"Requirements now tagged with "
-                << bridge->sessionId().toString() << ".\n";
+                << bridge->sessionId().toString() << ".");
               //cJSON_AddItemToObject(result, "result",
               //  cJSON_CreateString(bridge->sessionId().toString().c_str()));
 #endif
@@ -368,10 +373,9 @@ void RemusRPCWorker::processJob(
             r = make_JobRequirements(
               r.meshTypes(), r.workerName(), r.hasRequirements() ? r.requirements() : "");
             swapWorker = new remus::worker::Worker(r, w->connection());
-            std::cerr
-              << "Redefining worker. "
+            smtkDebugMacro(this->manager()->log(), "Redefining worker. "
               << "Requirements now untagged, removed "
-              << bridge->sessionId().toString() << ".\n";
+              << bridge->sessionId().toString() << ".");
 #endif // 0
             }
           }
@@ -393,7 +397,7 @@ void RemusRPCWorker::processJob(
   remus::proto::JobResult jobResult =
     remus::proto::make_JobResult(
       jd.id(), response, remus::common::ContentFormat::JSON);
-  //std::cout << "Response is " << response << "\n";
+  smtkDebugMacro(this->manager()->log(), "Response is \"" << response << "\"");
   w->returnResult(jobResult);
   free(response);
   if (swapWorker)
@@ -401,6 +405,24 @@ void RemusRPCWorker::processJob(
     //delete w;
     w = swapWorker;
     }
+}
+
+/// Return the model manager used by the worker. This should never be NULL.
+smtk::model::ManagerPtr RemusRPCWorker::manager()
+{
+  return this->m_modelMgr;
+}
+
+/**\brief Set the model manager used by the worker. This is ignored if NULL.
+  *
+  * \warning
+  * This should only be called immediately after creating the worker,
+  * before any operations have been run.
+  */
+void RemusRPCWorker::setManager(smtk::model::ManagerPtr mgr)
+{
+  if (mgr)
+    this->m_modelMgr = mgr;
 }
 
 void RemusRPCWorker::generateError(cJSON* err, const std::string& errMsg, const std::string& reqId)
