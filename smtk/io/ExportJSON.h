@@ -17,7 +17,9 @@
 
 #include "smtk/model/Manager.h" // For UUIDWithEntity
 
-struct cJSON;
+#ifndef SHIBOKEN_SKIP
+#  include "cJSON.h"
+#endif // SHIBOKEN_SKIP
 
 namespace smtk {
   namespace io {
@@ -82,8 +84,14 @@ public:
     std::size_t end = static_cast<std::size_t>(-1));
 
   // JSON-RPC helpers:
-  static cJSON* createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId);
   static cJSON* createRPCRequest(const std::string& method, const std::string& params, const std::string& reqId);
+#ifndef SHIBOKEN_SKIP
+  static cJSON* createRPCRequest(
+    const std::string& method, cJSON*& params, const std::string& reqId, int paramsType = cJSON_Array);
+#else
+  static cJSON* createRPCRequest(
+    const std::string& method, cJSON*& params, const std::string& reqId, int paramsType);
+#endif
 
   // Low-level helpers:
   static cJSON* createStringArray(const std::vector<std::string>& arr);
