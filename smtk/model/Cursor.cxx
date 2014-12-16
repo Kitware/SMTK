@@ -262,6 +262,36 @@ std::string Cursor::assignDefaultName()
   return this->m_manager->assignDefaultName(this->m_entity);
 }
 
+/// Returns true if the "visible" integer-property exists.
+bool Cursor::hasVisibility() const
+{
+  return this->hasIntegerProperty("visible");
+}
+
+/** Report the visibility associated with this entity.
+  *
+  * If there is no "visible" property set, return false
+  */
+bool Cursor::visible() const
+{
+  if ( this->hasIntegerProperty("visible") )
+    {
+    const IntegerList& prop(this->integerProperty("visible"));
+    return (!prop.empty() && prop[0]);
+    }
+
+  return false;
+}
+
+/** Assign the visible property to an entity.
+  *
+  * This will override any existing visibility.
+  */
+void Cursor::setVisible(bool vis)
+{
+  this->setIntegerProperty("visible", vis ? 1 : 0);
+}
+
 /** Return a user-assigned color for the entity.
   *
   * If no color was assigned, (0,0,0,0) will be returned.
