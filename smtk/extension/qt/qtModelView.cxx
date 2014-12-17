@@ -23,6 +23,9 @@
 #include "smtk/model/EntityListPhrase.h"
 #include "smtk/model/BridgeSession.h"
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/DoubleItem.h"
+#include "smtk/attribute/IntItem.h"
+#include "smtk/attribute/StringItem.h"
 #include "smtk/attribute/Definition.h"
 #include "smtk/extension/qt/qtAttribute.h"
 #include "smtk/extension/qt/qtModelOperationWidget.h"
@@ -42,6 +45,8 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QApplication>
+#include <QHeaderView>
+#include <QColorDialog>
 
 #include <iomanip>
 // -----------------------------------------------------------------------------
@@ -77,6 +82,14 @@ qtModelView::qtModelView(QWidget* p)
   this->m_ContextMenu = NULL;
   this->m_OperatorsDock = NULL;
   this->m_OperatorsWidget = NULL;
+
+  this->header()->setResizeMode(QHeaderView::ResizeToContents);
+  QObject::connect(qdelegate,
+                   SIGNAL(requestVisibilityChange(const QModelIndex&)),
+                   this, SLOT(changeVisibility(const QModelIndex&)), Qt::QueuedConnection);
+  QObject::connect(qdelegate,
+                   SIGNAL(requestColorChange(const QModelIndex&)),
+                   this, SLOT(changeColor(const QModelIndex&)), Qt::QueuedConnection);
 }
 
 //-----------------------------------------------------------------------------
@@ -421,6 +434,22 @@ void qtModelView::showContextMenu(const QPoint &p)
 }
 
 //-----------------------------------------------------------------------------
+smtk::model::BridgeSession qtModelView::getBridgeSession(
+  const QModelIndex &idx) const
+{
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::BridgeSession brSession;
+  while (dp)
+    {
+    brSession = dp->relatedEntity().as<smtk::model::BridgeSession>();
+    if(brSession.isValid())
+      break;
+    dp = dp->parent();
+    }
+  return brSession;
+}
+
+//-----------------------------------------------------------------------------
 void qtModelView::operatorInvoked()
 {
   QAction* const action = qobject_cast<QAction*>(
@@ -518,6 +547,125 @@ QDockWidget* qtModelView::operatorsDock(
   this->m_OperatorsWidget = opWidget;
   this->m_OperatorsDock = dw;
   return dw;
+}
+
+//----------------------------------------------------------------------------
+OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
+{
+  smtk::model::BridgeSession brsession = this->getBridgeSession(idx);
+  if(!brsession.isValid())
+    {
+    std::cerr
+      << "Could not find bridge session!\n";
+    return OperatorPtr();
+    }
+  // create SetProperty op
+  smtk::model::BridgePtr bridge = brsession.bridge();
+  OperatorPtr brOp = bridge->op("set property");
+  if (!brOp)
+    {
+    std::cerr
+      << "Could not create operator: \"" << "set property" << "\" for bridge"
+      << " \"" << bridge->name() << "\""
+      << " (" << bridge->sessionId() << ")\n";
+    return OperatorPtr();
+    }
+
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  if(!attrib->isValid())
+    {
+    std::cerr
+      << "Invalid spec for the op: " << brOp->name() << "\n";
+    return OperatorPtr();
+    }
+
+  attrib->system()->setRefModelManager(bridge->manager());
+
+  return brOp;
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::changeVisibility( const QModelIndex& idx)
+{
+  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  if(!brOp || !brOp->specification()->isValid())
+    return;
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  smtk::attribute::StringItemPtr nameItem =
+    attrib->findString("name");
+  smtk::attribute::IntItemPtr visItem =
+    attrib->findInt("integer value");
+  if(!nameItem || !visItem)
+    {
+    std::cerr
+      << "The set-property op is missing item(s): name or integer value\n";
+    return;
+    }
+  nameItem->setNumberOfValues(1);
+  nameItem->setValue("visible");
+  visItem->setNumberOfValues(1);
+  visItem->setValue(
+    (visItem->numberOfValues() == 0 ||
+    (visItem->numberOfValues() && visItem->value())) ? 0 : 1);
+
+  smtk::common::UUIDs ids;
+  this->recursiveSelect(this->getModel(), idx, ids,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+  Cursors entities;
+  Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
+  std::cout << "set visibility to " << entities.size() << " entities\n";
+
+  Cursors::const_iterator it;
+  for (it=entities.begin(); it != entities.end(); it++)
+    {
+    attrib->associateEntity(*it);
+    }
+
+  emit this->operationRequested(brOp);
+}
+
+//----------------------------------------------------------------------------
+void qtModelView::changeColor( const QModelIndex& idx)
+{
+  OperatorPtr brOp = this->getSetPropertyOp(idx);
+  if(!brOp || !brOp->specification()->isValid())
+    return;
+  smtk::attribute::AttributePtr attrib = brOp->specification();
+  smtk::attribute::StringItemPtr nameItem =
+    attrib->findString("name");
+  smtk::attribute::DoubleItemPtr colorItem =
+    attrib->findDouble("float value");
+  if(!nameItem || !colorItem)
+    {
+    std::cerr
+      << "The set-property op is missing item(s): name or integer value\n";
+    return;
+    }
+  nameItem->setNumberOfValues(1);
+  nameItem->setValue("color");
+  colorItem->setNumberOfValues(4);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::FloatList rgba(4);
+  rgba = dp->relatedColor();
+  QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+  QColor newColor = QColorDialog::getColor(currentColor, this);
+  if(newColor.isValid() && newColor != currentColor)
+    {
+    colorItem->setValue(0, newColor.redF());
+    colorItem->setValue(1, newColor.greenF());
+    colorItem->setValue(2, newColor.blueF());
+
+    smtk::common::UUIDs ids;
+    this->recursiveSelect(this->getModel(), idx, ids,
+      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+    smtk::common::UUIDs::const_iterator it;
+    for (it=ids.begin(); it != ids.end(); it++)
+      {
+      attrib->associateEntity(*it);
+      }
+
+    emit this->operationRequested(brOp);
+    }
 }
 
   } // namespace model

@@ -3,4 +3,10 @@
     <file>cell_08.svg</file>
     <file>cell_04.svg</file>
   </qresource>
+
+  <qresource prefix="/icons/display">
+    <file>eyeball_16.png</file>
+    <file>eyeballx_16.png</file>
+  </qresource>
+
 </RCC>

@@ -18,6 +18,7 @@
 #include "smtk/extension/qt/qtEntityItemModel.h"
 
 #include "smtk/common/UUID.h"
+#include "smtk/model/BridgeSession.h"
 
 #include <QTreeView>
 #include <QPoint>
@@ -56,15 +57,22 @@ public slots:
   virtual void removeSelected();
   void showContextMenu(const QPoint &p);
   void operatorInvoked();
+  void changeVisibility( const QModelIndex& );
+  void changeColor( const QModelIndex& );
 
 signals:
   void entitiesSelected(const smtk::common::UUIDs& ids);
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
+  void visibilityChangeRequested(const QModelIndex&);
+  void colorChangeRequested(const QModelIndex&);
 
 protected:
 
+  BridgeSession getBridgeSession(
+    const QModelIndex &idx) const;
+  OperatorPtr getSetPropertyOp(const QModelIndex& idx);
   // Description:
   // Support for customized drag-n-drop events
   virtual Qt::DropActions supportedDropActions() const;

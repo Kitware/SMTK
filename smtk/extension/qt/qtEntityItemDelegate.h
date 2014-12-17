@@ -44,6 +44,10 @@ public slots:
   void setSubtitleFontWeight(int sfs);
   void setSwatchSize(int sws);
 
+signals:
+  void requestVisibilityChange(const QModelIndex&);
+  void requestColorChange(const QModelIndex&);
+
 public:
 
   virtual QSize sizeHint(
@@ -70,6 +74,11 @@ protected slots:
   virtual void commitAndCloseEditor();
 
 protected:
+
+  virtual bool eventFilter(QObject* editor, QEvent* event);
+  virtual bool editorEvent ( QEvent * event, QAbstractItemModel * model,
+    const QStyleOptionViewItem & option, const QModelIndex & index );
+
   int m_swatchSize;
   int m_titleFontSize;
   int m_subtitleFontSize;

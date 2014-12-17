@@ -47,10 +47,11 @@ public:
 
   /// Enumeration of model-specific data roles.
   enum DataRoles {
-    TitleTextRole       = Qt::UserRole + 100, //!< Entity name (user-editable)
-    SubtitleTextRole    = Qt::UserRole + 101, //!< Entity type description
-    EntityIconRole      = Qt::UserRole + 102, //!< Entity type icon
-    EntityColorRole     = Qt::UserRole + 103  //!< Per-entity color
+    TitleTextRole             = Qt::UserRole + 100, //!< Entity name (user-editable)
+    SubtitleTextRole          = Qt::UserRole + 101, //!< Entity type description
+    EntityIconRole            = Qt::UserRole + 102, //!< Entity type icon
+    EntityColorRole           = Qt::UserRole + 103, //!< Per-entity color
+    EntityVisibilityRole      = Qt::UserRole + 104  //!< Entity visibility
   };
 
   virtual QModelIndex index(int row, int column, const QModelIndex& parent) const;

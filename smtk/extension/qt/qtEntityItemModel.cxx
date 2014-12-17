@@ -135,6 +135,13 @@ QModelIndex QEntityItemModel::index(int row, int column, const QModelIndex& owne
   if (owner.isValid() && owner.column() != 0)
     return QModelIndex();
 
+  int rows = this->rowCount(owner);
+  int columns = this->columnCount(owner);
+  if(row < 0 || row >= rows || column < 0 || column >= columns)
+    {
+    return QModelIndex();
+    }
+
   DescriptivePhrasePtr ownerPhrase = this->getItem(owner);
   DescriptivePhrases& subphrases(ownerPhrase->subphrases());
   if (row >= 0 && row < static_cast<int>(subphrases.size()))
@@ -249,6 +256,13 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           this->lookupIconForEntityFlags(
             item->phraseType()));
         }
+      else if (role == EntityVisibilityRole)
+        {
+        if(item->relatedEntity().visible())
+          return QVariant(QIcon(":/icons/display/eyeball_16.png"));
+        else
+          return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
+        }
       else if (role == EntityColorRole)
         {
         QColor color;
@@ -348,6 +362,12 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       rgba[2] = color.blueF();
       rgba[3] = color.alphaF();
       didChange = phrase->setRelatedColor(rgba);
+      }
+    else if (role == EntityVisibilityRole)
+      {
+      int vis = value.toInt();
+      phrase->relatedEntity().setVisible(vis > 0 ? true : false);
+      didChange = true;
       }
     }
   return didChange;

@@ -14,6 +14,7 @@
 
 #include <QApplication>
 #include <QPainter>
+#include <QMouseEvent>
 
 namespace smtk {
   namespace model {
@@ -130,13 +131,18 @@ void QEntityItemDelegate::paint(
   QRect subtitleRect = option.rect;
   QRect iconRect = option.rect;
   QRect colorRect = option.rect;
+  // visible icon
+  QIcon visicon = qvariant_cast<QIcon>(
+    idx.data(QEntityItemModel::EntityVisibilityRole));
+  QSize visiconsize = visicon.actualSize(option.decorationSize);
 
+  colorRect.setLeft(colorRect.left() + visiconsize.width() + 2);
   colorRect.setRight(colorRect.left() + this->m_swatchSize);
   int swdelta = (colorRect.height() - this->m_swatchSize) / 2;
   swdelta = (swdelta < 0 ? 0 : swdelta);
   colorRect.adjust(0, swdelta, 0, -swdelta);
-  iconRect.setLeft(colorRect.right());
-  iconRect.setRight(iconRect.left() + iconsize.width() + 30);
+  iconRect.setLeft(colorRect.left());
+  iconRect.setRight(iconRect.left() + iconsize.width() + 15);
   iconRect.setTop(iconRect.top() + 1);
   titleRect.setLeft(iconRect.right());
   subtitleRect.setLeft(iconRect.right());
@@ -152,9 +158,15 @@ void QEntityItemDelegate::paint(
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   painter->drawPixmap(
     QPoint(
-      iconRect.left() + iconsize.width() / 2 + 2,
-      iconRect.top() + iconsize.height() / 2 + 3),
+      iconRect.left(),
+      iconRect.top() + 7),
     icon.pixmap(iconsize.width(), iconsize.height()));
+
+  painter->drawPixmap(
+    QPoint(
+      option.rect.left(),
+      colorRect.top()),
+    visicon.pixmap(visiconsize.width(), visiconsize.height()));
 
   if (option.state.testFlag(QStyle::State_Selected))
     painter->setPen(Qt::white);
@@ -215,6 +227,54 @@ void QEntityItemDelegate::commitAndCloseEditor()
     qobject_cast<smtk::model::QEntityItemEditor*>(sender());
   emit commitData(entityEditor);
   emit closeEditor(entityEditor);
+}
+
+bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* event)
+{
+  if(event->type()==QEvent::MouseButtonPress)
+    return false;
+  return QStyledItemDelegate::eventFilter(editor, event);
+}
+
+bool QEntityItemDelegate::editorEvent (
+  QEvent * eve, QAbstractItemModel * mod,
+  const QStyleOptionViewItem & option, const QModelIndex & idx)
+{
+  bool res = this->QStyledItemDelegate::editorEvent(
+      eve, mod, option, idx);
+  if(eve->type() != QEvent::MouseButtonPress)
+    return res;
+  QMouseEvent* e = dynamic_cast<QMouseEvent*>(eve);
+  if(!e)
+    return res;
+
+  if(e->button() != Qt::LeftButton)
+    return res;
+
+  // visible icon
+  QIcon visicon = qvariant_cast<QIcon>(
+    idx.data(QEntityItemModel::EntityVisibilityRole));
+  QSize visiconsize = visicon.actualSize(option.decorationSize);
+
+  int px = e->pos().x();
+  int py = e->pos().y();
+  bool bvis = false, bcolor = false;
+  bvis = px > option.rect.left()
+    && px < (option.rect.left() + visiconsize.width())
+    && py > option.rect.top()
+    && py < (option.rect.top() + option.rect.height());
+  if(!bvis)
+    bcolor = px > (option.rect.left() + visiconsize.width() + 2)
+      && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
+      && py > option.rect.top()
+      && py < (option.rect.top() + option.rect.height());
+
+  if(bvis)
+    emit this->requestVisibilityChange(idx);
+  else if(bcolor)
+    emit this->requestColorChange(idx);
+
+  return res;
 }
 
   } // namespace model

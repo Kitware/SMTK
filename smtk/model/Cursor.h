@@ -104,6 +104,10 @@ public:
   void setName(const std::string& n);
   std::string assignDefaultName();
 
+  bool hasVisibility() const;
+  bool visible() const;
+  void setVisible(bool vis);
+
   FloatList color() const;
   bool hasColor() const;
   void setColor(const FloatList& rgba);
