@@ -892,12 +892,66 @@ int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)
   return 1;
 }
 
+/**\brief Append all of the entries in \a logrecordarray (an array of arrays) to the \a log.
+  *
+  * This returns the number of records (whether or not they were actually
+  * converted to log entries) or -1 if \a logrecordarray is invalid.
+  * When the logrecordarray is valid but some individual entries were
+  * not formatted as expected, then the return value will be higher than
+  * the number of records actually appended to the \a log.
+  */
+int ImportJSON::ofLog(cJSON* logrecordarray, smtk::io::Logger& log)
+{
+  if (!logrecordarray || logrecordarray->type != cJSON_Array)
+    return -1;
+
+  int numberOfRecords = 0;
+  cJSON* entry;
+  for (entry = logrecordarray->child; entry; entry = entry->next)
+    {
+    cJSON* severity;
+    cJSON* msg;
+    cJSON* file;
+    cJSON* line;
+    ++numberOfRecords;
+    // Every entry must be an array with at least 2 entries:
+    // an integer (severity) and a non-empty string (log message).
+    // Entries may optionally contain a filename and line number.
+    if (
+      entry && entry->type == cJSON_Array &&
+      (severity = entry->child) && (severity->type == cJSON_Number) &&
+      (msg = severity->next) && (msg->type == cJSON_String) &&
+      msg->valuestring && msg->valuestring[0])
+      {
+      file = msg->next;
+      line = file ? file->next : NULL;
+      if (file && file->type == cJSON_String && file->valuestring && file->valuestring[0])
+        if (line && line->type == cJSON_Number)
+          log.addRecord(
+            static_cast<smtk::io::Logger::Severity>(severity->valueint),
+            msg->valuestring,
+            file->valuestring,
+            static_cast<unsigned int>(line->valueint));
+        else
+          log.addRecord(
+            static_cast<smtk::io::Logger::Severity>(severity->valueint),
+            msg->valuestring,
+            file->valuestring);
+      else
+        log.addRecord(
+          static_cast<smtk::io::Logger::Severity>(severity->valueint),
+          msg->valuestring);
+      }
+    }
+  return numberOfRecords;
+}
+
 std::string ImportJSON::bridgeNameFromTagData(cJSON* tagData)
 {
   std::ostringstream bname;
   bname << "smtk::model[";
   std::string kernel;
-  cJSON* kernelJSON = cJSON_GetObjectItem(tagData, "modelingKernel");
+  cJSON* kernelJSON = cJSON_GetObjectItem(tagData, "kernel");
   if (kernelJSON)
     cJSON_GetStringValue(kernelJSON, kernel);
   bname << (kernel.empty() ? "native" : kernel);

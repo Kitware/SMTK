@@ -43,19 +43,21 @@ RemusStaticBridgeInfo::RemusStaticBridgeInfo(
   : m_conn(conn), m_meshType(meshType), m_tags(jobReq.tag())
 {
   std::string btag = jobReq.tag();
-  cJSON* info;
-  if (!btag.empty() && *btag.begin() == '{' && *btag.end() == '}')
+  cJSON* info = NULL;
+  if (!btag.empty())
     {
     info = cJSON_Parse(btag.c_str());
     // Add the server information to the tag
     }
-  else
+  if (!info)
     {
     info = cJSON_CreateObject();
     }
   cJSON_AddItemToObject(
     info, "server", cJSON_CreateString(this->m_conn->connection().endpoint().c_str()));
-  this->m_name = ImportJSON::bridgeNameFromTagData(info);
+  this->m_name = !jobReq.workerName().empty() ?
+    jobReq.workerName() :
+    ImportJSON::bridgeNameFromTagData(info);
   //StringList fileTypes = ImportJSON::bridgeFileTypesFromTagData(info);
   cJSON_Delete(info);
   if (jobReq.hasRequirements())

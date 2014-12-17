@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
@@ -71,7 +73,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   //CGMApp::instance()->attrib_manager()->auto_flag(prevAutoFlag);
   if (!cgmBody)
     {
-    std::cerr << "Failed to create body\n";
+    smtkInfoMacro(log(), "Failed to create body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
@@ -80,7 +82,7 @@ smtk::model::OperatorResult CreateSphere::operateInternal()
   CubitStatus status = GeometryQueryTool::instance()->translate(cgmBody, delta, center[2]);
   if (status != CUBIT_SUCCESS)
     {
-    std::cerr << "Failed to translate body\n";
+    smtkInfoMacro(log(), "Failed to translate body.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

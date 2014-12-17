@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -63,7 +65,7 @@ smtk::model::OperatorResult CreateVertex::operateInternal()
   RefVertex* cgmVert = GeometryModifyTool::instance()->make_RefVertex(point, color);
   if (!cgmVert)
     {
-    std::cerr << "Failed to create vertex\n";
+    smtkInfoMacro(log(), "Failed to create vertex.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

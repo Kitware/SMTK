@@ -36,18 +36,23 @@
 #include <string>
 
 namespace smtk {
+  namespace io {
+    class Logger;
+  }
   namespace bridge {
     namespace remote {
 
 class RemusRemoteBridge;
 
-/**\brief Provide JSON-RPC over a Remus connection.
+/**\brief Manage a connection to a Remus server used for modeling operations.
   *
-  * Set this object up to talk to a specific remus server
-  * and worker (registered with the server).
+  * Set this object up to talk to a specific Remus server
+  * and the workers registered with the server.
   * As long as the worker is an smtk-remote-model
-  * process, it will respond to the JSON-RPC requests
-  * instances of this class issue.
+  * process (those should be the only ones that advertise
+  * a service output type of "smtk[native]"), it will
+  * respond to the JSON-RPC requests that instances of
+  * this class issue.
   *
   * This class can manage multiple RemusRemoteBridge
   * objects that share a Remus server.
@@ -91,7 +96,7 @@ public:
   RemusRemoteBridgePtr findBridgeSession(
     const smtk::common::UUID& bridgeSessionId);
 
-  std::vector<std::string> supportedFileTypes(
+  smtk::model::StringData supportedFileTypes(
     const std::string& bridgeName = std::string());
   smtk::model::OperatorResult readFile(
     const std::string& fileName,
@@ -118,6 +123,8 @@ public:
 
   remus::client::ServerConnection connection();
 
+  smtk::io::Logger& log();
+
 protected:
   RemusBridgeConnection();
 
@@ -131,7 +138,7 @@ protected:
   smtk::shared_ptr<remus::client::Client> m_client;
   smtk::shared_ptr<remus::Server> m_localServer;
   smtk::model::ManagerPtr m_modelMgr;
-  std::set<std::string> m_remoteBridgeNames;
+  std::map<std::string,std::string> m_remoteBridgeNameToType;
   std::map<smtk::common::UUID,std::string> m_remoteBridgeSessionIds;
 #endif // SHIBOKEN_SKIP
 };

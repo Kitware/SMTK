@@ -14,6 +14,8 @@
 #include "smtk/bridge/cgm/Engines.h"
 #include "smtk/bridge/cgm/TDUUID.h"
 
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/IntItem.h"
@@ -79,21 +81,21 @@ smtk::model::OperatorResult CreateEdge::operateInternal()
   case ARC_CURVE_TYPE: //    arc passes three points
     break;
   default:
-    std::cerr << "Bad curve type " << curveType << "\n";
+    smtkInfoMacro(log(), "Bad curve type " << curveType << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
   RefVertex* v0 = this->cgmEntityAs<RefVertex*>(verticesItem->value(0));
   RefVertex* v1 = this->cgmEntityAs<RefVertex*>(verticesItem->value(1));
   if (!v0 || !v1)
     {
-    std::cerr << "One or more vertices were invalid " << v0 << ", " << v1 << "\n";
+    smtkInfoMacro(log(), "One or more vertices were invalid " << v0 << ", " << v1 << ".");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 
   RefEdge* cgmEdge = GeometryModifyTool::instance()->make_RefEdge(curveType, v0, v1, &point);
   if (!cgmEdge)
     {
-    std::cerr << "Failed to create edge\n";
+    smtkInfoMacro(log(), "Failed to create edge.");
     return this->createResult(smtk::model::OPERATION_FAILED);
     }
 

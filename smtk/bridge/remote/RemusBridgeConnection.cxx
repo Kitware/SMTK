@@ -127,7 +127,7 @@ bool RemusBridgeConnection::connectToServer(const std::string& hostname, int por
   this->m_client =
     smtk::shared_ptr<remus::client::Client>(
       new remus::client::Client(this->m_conn));
-  this->m_remoteBridgeNames.clear();
+  this->m_remoteBridgeNameToType.clear();
   return true;
 }
 
@@ -135,7 +135,7 @@ bool RemusBridgeConnection::connectToServer(const std::string& hostname, int por
 std::vector<std::string> RemusBridgeConnection::bridgeNames()
 {
   std::vector<std::string> resultVec;
-  if (this->m_remoteBridgeNames.empty())
+  if (this->m_remoteBridgeNameToType.empty())
     {
     if (!this->m_client)
       this->connectToServer();
@@ -145,20 +145,12 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
       {
       if (mit->outputType() == "smtk::model[native]") // TODO: Eliminate this magic string?
         {
-        if (this->m_remoteBridgeNames.insert(mit->inputType()).second)
-          { // Obtain the solid-modeling kernel "requirements", including the file types and operators.
-          remus::proto::JobRequirementsSet kernelInfos = this->m_client->retrieveRequirements(*mit);
-          if (kernelInfos.size() <= 0)
-            {
-            continue;
-            }
-          else if (kernelInfos.size() > 1)
-            {
-            std::cerr
-              << "Error. Bridge name " << mit->inputType()
-              << " has multiple requirements. Using first.\n";
-            }
-          const remus::proto::JobRequirements& kernelInfo(*kernelInfos.begin());
+        // Obtain the solid-modeling kernel "requirements", including the file types and operators.
+        remus::proto::JobRequirementsSet kernelInfos = this->m_client->retrieveRequirements(*mit);
+        remus::proto::JobRequirementsSet::const_iterator kit;
+        for (kit = kernelInfos.begin(); kit != kernelInfos.end(); ++kit)
+          {
+          const remus::proto::JobRequirements& kernelInfo(*kit);
           RemusStaticBridgeInfo binfo =
             RemusRemoteBridge::createFunctor(
               shared_from_this(), kernelInfo, mit->inputType());
@@ -166,13 +158,19 @@ std::vector<std::string> RemusBridgeConnection::bridgeNames()
           //        accept remotely-provided pre-construction setup
           //        options to the bridge. But that is too fancy for now.
           smtk::model::BridgeRegistrar::registerBridge(
-            binfo.name(), binfo.tags(), smtk::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2), binfo);
+            binfo.name(), binfo.tags(),
+            smtk::bind(&RemusStaticBridgeInfo::staticSetup, binfo, _1, _2),
+            binfo);
+          this->m_remoteBridgeNameToType[binfo.name()] = mit->inputType();
+          smtkInfoMacro(log(), "Added model worker named \""
+            << binfo.name() << "\", type \"" << mit->inputType() << "\".");
           }
         }
       }
     }
-  resultVec = std::vector<std::string>(
-    this->m_remoteBridgeNames.begin(), this->m_remoteBridgeNames.end());
+  std::map<std::string,std::string>::const_iterator bit;
+  for (bit = this->m_remoteBridgeNameToType.begin(); bit != this->m_remoteBridgeNameToType.end(); ++bit)
+    resultVec.push_back(bit->first);
 
   return resultVec;
 }
@@ -186,7 +184,7 @@ int RemusBridgeConnection::staticSetup(
   const smtk::model::StringList& optVal)
 {
   (void) this->bridgeNames(); // ensure that we've fetched the bridge names from the server.
-  if (this->m_remoteBridgeNames.find(bridgeName) == this->m_remoteBridgeNames.end())
+  if (this->m_remoteBridgeNameToType.find(bridgeName) == this->m_remoteBridgeNameToType.end())
     return 0;
 
   remus::proto::JobRequirements jreq;
@@ -225,18 +223,21 @@ int RemusBridgeConnection::staticSetup(
 UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
 {
   (void) this->bridgeNames(); // ensure that we've fetched the bridge names from the server.
-  if (this->m_remoteBridgeNames.find(bridgeName) == this->m_remoteBridgeNames.end())
+  if (this->m_remoteBridgeNameToType.find(bridgeName) == this->m_remoteBridgeNameToType.end())
     return UUID::null();
 
   remus::proto::JobRequirements jreq;
   if (!this->findRequirementsForRemusType(jreq, bridgeName))
     return UUID::null();
 
-  //FIXME: Sanitize bridgeName!
-  std::string reqStr =
-    "{\"jsonrpc\":\"2.0\", \"method\":\"create-bridge\", \"params\":{\"bridge-name\":\"" +
-    bridgeName + "\"}, \"id\":\"1\"}";
-  cJSON* result = this->jsonRPCRequest(reqStr, jreq);
+  cJSON* params;
+  cJSON* req = ExportJSON::createRPCRequest("create-bridge", params, /*id*/ "1", cJSON_Object);
+  cJSON_AddItemToObject(
+    params, "bridge-name",
+    cJSON_CreateString(bridgeName.c_str())); //jreq.meshTypes().inputType().c_str()));
+
+  cJSON* result = this->jsonRPCRequest(req, jreq);
+
   cJSON* bridgeObj;
   cJSON* bridgeIdObj;
   cJSON* opsObj;
@@ -286,9 +287,9 @@ UUID RemusBridgeConnection::beginBridgeSession(const std::string& bridgeName)
   UUID bridgeId = bridge->sessionId();
   this->m_remoteBridgeSessionIds[bridgeId] = bridgeName;
   /*
-  std::cout
+  smtkInfoMacro(log(),
     << "Updating worker \"" << jreq.workerName() << "\""
-    << " tag \"" << jreq.tag() << "\"\n";
+    << " tag \"" << jreq.tag() << "\".");
   jreq.tag(bridgeId.toString());
   */
   bridge->setup(this, jreq);
@@ -338,14 +339,13 @@ RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeSession(
 
 /**\brief Return a list of file types supported by a particular bridge.
   */
-std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
+StringData RemusBridgeConnection::supportedFileTypes(
   const std::string& bridgeName)
 {
-  std::vector<std::string> resultVec;
-  std::string reqStr =
-    "{\"jsonrpc\":\"2.0\", \"method\":\"bridge-filetypes\", "
-    "\"params\":{ \"bridge-name\":\"" + bridgeName + "\"}, "
-    "\"id\":\"1\"}";
+  StringData resultMap;
+  cJSON* params;
+  cJSON* request = ExportJSON::createRPCRequest("bridge-filetypes", params, /*id*/ "1", cJSON_Object);
+  cJSON_AddItemToObject(params, "bridge-name", cJSON_CreateString(bridgeName.c_str()));
 
   // Now we need a worker to contact. If one already exists of the
   // given type, ask it. Otherwise, find a "blank" session that the
@@ -359,25 +359,41 @@ std::vector<std::string> RemusBridgeConnection::supportedFileTypes(
     }
   else if (!this->findRequirementsForRemusType(jreq, bridgeName))
     {
-    return resultVec;
+    return resultMap;
     }
-  cJSON* result = this->jsonRPCRequest(reqStr, jreq);
-  cJSON* sarr;
+  cJSON* result = this->jsonRPCRequest(request, jreq);
+  cJSON* engines;
   if (
     !result ||
     result->type != cJSON_Object ||
-    !(sarr = cJSON_GetObjectItem(result, "result")) ||
-    sarr->type != cJSON_Array)
+    !(engines = cJSON_GetObjectItem(result, "result")) ||
+    engines->type != cJSON_Object)
     {
+    smtkErrorMacro(this->log(),
+      "Invalid filetype response \""
+      << (result ? cJSON_Print(result) : "null") << "\"");
     // TODO: See if result has "error" key and report it.
     if (result)
       cJSON_Delete(result);
-    return std::vector<std::string>();
+    return StringData();
     }
 
-  smtk::io::ImportJSON::getStringArrayFromJSON(sarr, resultVec);
+  smtkDebugMacro(this->log(),
+    "Filetype response: " << cJSON_Print(engines));
+  for (cJSON* engine = engines->child; (engine = engine->next); )
+    {
+    smtkDebugMacro(this->log(),
+      "  engine: " << engine->string << " types: " << cJSON_Print(engine->child));
+    if (engine->string && engine->string[0])
+      {
+      std::pair<std::string,StringList> keyval;
+      keyval.first = engine->string;
+      StringData::iterator it = resultMap.insert(keyval).first;
+      smtk::io::ImportJSON::getStringArrayFromJSON(engine, it->second);
+      }
+    }
   cJSON_Delete(result);
-  return resultVec;
+  return resultMap;
 }
 
 /**\brief Read a file without requiring a pre-existing bridge session.
@@ -395,25 +411,33 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
   if (bridgeName.empty())
     {
     (void) this->bridgeNames(); // ensure that we've fetched the bridge names from the server.
-    std::set<std::string>::const_iterator bnit;
+    std::map<std::string,std::string>::const_iterator bnit;
     for (
-      bnit = this->m_remoteBridgeNames.begin();
-      bnit != this->m_remoteBridgeNames.end() && actualBridgeName.empty();
+      bnit = this->m_remoteBridgeNameToType.begin();
+      bnit != this->m_remoteBridgeNameToType.end() && actualBridgeName.empty();
       ++bnit)
       {
-      std::vector<std::string> fileTypesForBridge = this->supportedFileTypes(*bnit);
-      std::vector<std::string>::const_iterator fit;
-      for (fit = fileTypesForBridge.begin(); fit != fileTypesForBridge.end(); ++fit)
+      StringData fileTypesForBridge = this->supportedFileTypes(bnit->first);
+      StringData::const_iterator dit;
+      for (dit = fileTypesForBridge.begin(); dit != fileTypesForBridge.end(); ++dit)
         {
-        std::string::size_type fEnd;
-        std::string::size_type eEnd = fit->find(' ');
-        std::string ext(*fit, 0, eEnd);
-        std::cout << "Looking for \"" << ext << "\"\n";
-        if ((fEnd = fileName.rfind(ext)) && (fileName.size() - fEnd == eEnd))
-          { // matching substring is indeed at end of fileName
-          actualBridgeName = *bnit;
-          std::cout << "Found bridge type " << actualBridgeName << " for " << fileName << "\n";
-          break;
+        StringList::const_iterator fit;
+        if (dit->first != "default" && bnit->second.find(dit->first) == std::string::npos)
+          continue; // skip file types for non-default engines
+        // OK, either the bridge has only the default engine or this record matches
+        // the worker's default engine:
+        for (fit = dit->second.begin(); fit != dit->second.end(); ++fit)
+          {
+          std::string::size_type fEnd;
+          std::string::size_type eEnd = fit->find(' ');
+          std::string ext(*fit, 0, eEnd);
+          smtkInfoMacro(log(), "Looking for \"" << ext << "\".");
+          if ((fEnd = fileName.rfind(ext)) && (fileName.size() - fEnd == eEnd))
+            { // matching substring is indeed at end of fileName
+            actualBridgeName = bnit->first;
+            smtkInfoMacro(log(), "Found bridge type " << actualBridgeName << " for " << fileName << ".");
+            break;
+            }
           }
         }
       }
@@ -432,18 +456,17 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
     }
   if (!bridge)
     {
-    std::cerr << "Could not find or create bridge of type \"" << actualBridgeName << "\"\n";
+    smtkInfoMacro(log(), "Could not find or create bridge of type \"" << actualBridgeName << "\".");
     return smtk::model::OperatorResult();
     }
-  std::cout << "Found bridge " << bridge->sessionId() << " (" << actualBridgeName << ")\n";
+  smtkInfoMacro(log(), "Found bridge " << bridge->sessionId() << " (" << actualBridgeName << ").");
 
   smtk::model::OperatorPtr readOp = bridge->op("read");
   if (!readOp)
     {
-    std::cerr
-      << "Could not create read operator for bridge"
+    smtkInfoMacro(log(), "Could not create read operator for bridge"
       << " \"" << actualBridgeName << "\""
-      << " (" << bridge->sessionId() << ")\n";
+      << " (" << bridge->sessionId() << ").");
     return smtk::model::OperatorResult();
     }
 
@@ -455,17 +478,7 @@ smtk::model::OperatorResult RemusBridgeConnection::readFile(
     fileTypeItem->setValue(fileType);
     }
 
-  // NB: leaky; for debug only.
-  cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::forOperator(readOp, json);
-  std::cout << "Found operator " << readOp->className() << " -- " << (readOp->specification()->isValid() ? "V" : "I") << " -- " << cJSON_Print(json) << ")\n";
-
   smtk::model::OperatorResult result = readOp->operate();
-
-  // NB: leaky; for debug only.
-  json = cJSON_CreateObject();
-  smtk::io::ExportJSON::forOperatorResult(result, json);
-  std::cout << "Result " << cJSON_Print(json) << "\n";
 
   // Fetch affected models
   smtk::attribute::ModelEntityItem::Ptr models =
@@ -536,11 +549,12 @@ void RemusBridgeConnection::fetchWholeModel(const UUID& modelId)
   if (!bridge)
     return;
 
-  cJSON* response = this->jsonRPCRequest(
-    "{\"jsonrpc\":\"2.0\", \"id\":\"1\", \"method\":\"fetch-model\"}", bridge->remusRequirements());
+  cJSON* params;
+  cJSON* request = ExportJSON::createRPCRequest("fetch-model", params, /*id*/ "1", cJSON_Array);
+  cJSON* response = this->jsonRPCRequest(request, bridge->remusRequirements());
   cJSON* model;
   cJSON* topo;
-  //std::cout << " ----- \n\n\n" << cJSON_Print(response) << "\n ----- \n\n\n";
+  //smtkInfoMacro(log(), " ----- \n\n\n" << cJSON_Print(response) << "\n ----- \n\n.");
   if (
     response &&
     (model = cJSON_GetObjectItem(response, "result")) &&
@@ -563,6 +577,7 @@ void RemusBridgeConnection::setModelManager(smtk::model::ManagerPtr mgr)
 cJSON* RemusBridgeConnection::jsonRPCRequest(cJSON* req, const remus::proto::JobRequirements& jreq)
 {
   char* reqStr = cJSON_Print(req);
+  cJSON_Delete(req);
   cJSON* response = this->jsonRPCRequest(reqStr, jreq);
   free(reqStr);
   return response;
@@ -633,6 +648,13 @@ remus::client::ServerConnection RemusBridgeConnection::connection()
   return this->m_conn;
 }
 
+/// Return the associated model manager's log (or a dummy log if we have no manager).
+smtk::io::Logger& RemusBridgeConnection::log()
+{
+  static smtk::io::Logger dummy;
+  return this->modelManager() ? this->modelManager()->log() : dummy;
+}
+
 /**\brief Given a Remus-style worker name (e.g., "smtk[cgm{OpenCascade}]"),
   *       find a bridge of that type.
   *
@@ -658,25 +680,35 @@ RemusRemoteBridge::Ptr RemusBridgeConnection::findBridgeForRemusType(
   return bridge;
 }
 
-/**\brief Find the first worker listed with the server that
-  *       has the specified remus bridge type (e.g., "smtk[cgm{OpenCascade}]").
+/**\brief Obtain the job requirements for the named worker.
   *
   * If none exists, the method returns false and \a jreq is not set;
   * otherwise it returns true.
   */
-bool RemusBridgeConnection::findRequirementsForRemusType(remus::proto::JobRequirements& jreq, const std::string& rtype)
+bool RemusBridgeConnection::findRequirementsForRemusType(remus::proto::JobRequirements& jreq, const std::string& worker)
 {
+  std::map<std::string,std::string>::const_iterator wit =
+    this->m_remoteBridgeNameToType.find(worker);
+  if (wit == this->m_remoteBridgeNameToType.end())
+    return false;
+
   remus::proto::JobRequirementsSet reqSet =
     this->m_client->retrieveRequirements(
-      remus::common::MeshIOType(rtype, "smtk::model[native]"));
+      remus::common::MeshIOType(wit->second, "smtk::model[native]"));
   if (!reqSet.size())
     return false;
-  std::cout
-    << "Choosing worker \"" << reqSet.begin()->workerName() << "\""
-    << " tag \"" << reqSet.begin()->tag() << "\""
-    << " from set of " << reqSet.size() << "\n";
-  jreq = *reqSet.begin();
-  return true;
+  remus::proto::JobRequirementsSet::const_iterator kit;
+  for (kit = reqSet.begin(); kit != reqSet.end(); ++kit)
+    {
+    const remus::proto::JobRequirements& kernelInfo(*kit);
+    if (kernelInfo.workerName() != worker)
+      continue;
+
+    jreq = *kit;
+    return true;
+    }
+
+  return false;
 }
 
     } // namespace remote

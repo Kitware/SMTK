@@ -46,6 +46,12 @@
   <suppress-warning text="enum 'CubitAssocDataType' does not have a type entry or is not an enum"/>
   <suppress-warning text="enum 'CubitFacetboolOp' does not have a type entry or is not an enum"/>
 
+  <!-- Ignore miscellaneous crufty warnings -->
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;const smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::shared_from_this', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
+  <suppress-warning text="skipping function 'smtk::bridge::cgm::Bridge::create', unmatched return type 'smtk::shared_ptr&lt;smtk::bridge::cgm::Bridge::SelfType&gt;'"/>
+
+
   <!-- Additional objects to be wrapped when building with CGM -->
   <namespace-type name="smtk" generate = "no">
     <namespace-type name="bridge" generate = "no">

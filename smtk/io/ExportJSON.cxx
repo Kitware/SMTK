@@ -561,18 +561,118 @@ int ExportJSON::forModelWorker(
   return 1;
 }
 
+/**\brief Export log records into a cJSON array.
+  *
+  * You must pass in a valid cJSON array (\a logrecordarray).
+  * Log entries will be appended to the end of it (and will
+  * not overwrite any pre-existing array entries).
+  *
+  * If you specify \a start and \a end, then only the specified
+  * subset of records from \a log will be added to
+  * \a logrecordarray.
+  * As with C++ iterators, \a start and \a end describe a
+  * half-open interval.
+  */
+int ExportJSON::forLog(
+  cJSON* logrecordarray,
+  const smtk::io::Logger& log,
+  std::size_t start,
+  std::size_t end)
+{
+  if (
+    !logrecordarray ||
+    logrecordarray->type != cJSON_Array)
+    return -1;
+
+  // Figure out where to stop writing entries:
+  int numberOfRecords = 0;
+  std::size_t finish = log.numberOfRecords();
+  if (end < finish)
+    finish = end;
+  // Advance to the end of the array.
+  cJSON* lastEntry = logrecordarray->child;
+  while (lastEntry && lastEntry->next)
+    lastEntry = lastEntry->next;
+  cJSON* first = NULL;
+  for (; start < finish; ++start)
+    {
+    const smtk::io::Logger::Record& rec(log.record(start));
+    if (rec.message.empty())
+      continue;
+
+    cJSON* entry = cJSON_CreateArray();
+    ++numberOfRecords;
+
+    cJSON_AddItemToArray(entry,
+      cJSON_CreateNumber(
+        static_cast<int>(rec.severity)));
+    cJSON_AddItemToArray(entry,
+      cJSON_CreateString(
+        rec.message.c_str()));
+    if (!rec.fileName.empty())
+      cJSON_AddItemToArray(entry,
+        cJSON_CreateString(
+          rec.fileName.c_str()));
+    if (rec.lineNumber)
+      cJSON_AddItemToArray(entry,
+        cJSON_CreateNumber(
+          rec.lineNumber));
+
+    // Append cJSON entry to lastEntry:
+    if (lastEntry)
+      lastEntry->next = entry;
+    else
+      first = entry;
+    entry->prev = lastEntry;
+    lastEntry = entry;
+    }
+  if (!logrecordarray->child && first)
+    logrecordarray->child = first;
+  return numberOfRecords;
+}
+
 /**\brief Create a JSON-RPC request object.
   *
   * This variant stores a valid pointer in \a params for you to populate.
+  *
+  * Note that \a paramsType can be used to control the type of structure
+  * created to hold parameters. JSON-RPC v2.0 allows for either an Array
+  * or an Object structure (while v1 required an Array).
+  * The value should be either cJSON_Object or cJSON_Array.
+  * If unspecified, cJSON_Array is used.
+  * Although not part of the JSON-RPC spec, True, False, and NULL parameters
+  * are also accepted by this call.
   */
-cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId)
+cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, const std::string& reqId, int paramsType)
 {
   cJSON* rpcReq = cJSON_CreateObject();
+  cJSON_AddItemToObject(rpcReq, "jsonrpc", cJSON_CreateString("2.0"));
   cJSON_AddItemToObject(rpcReq, "method", cJSON_CreateString(method.c_str()));
   cJSON_AddItemToObject(rpcReq, "id", cJSON_CreateString(reqId.c_str()));
   if (&params)
     {
-    params = cJSON_CreateArray();
+    switch (paramsType)
+      {
+    case cJSON_Array:
+      params = cJSON_CreateArray();
+      break;
+    case cJSON_Object:
+      params = cJSON_CreateObject();
+      break;
+    case cJSON_True:
+      params = cJSON_CreateTrue();
+      break;
+    case cJSON_False:
+      params = cJSON_CreateFalse();
+      break;
+    case cJSON_NULL:
+      params = cJSON_CreateNull();
+      break;
+    default:
+      // TODO: Should we emit an error here?
+      return rpcReq;
+      break;
+      }
     cJSON_AddItemToObject(rpcReq, "params", params);
     }
   return rpcReq;
@@ -582,10 +682,13 @@ cJSON* ExportJSON::createRPCRequest(const std::string& method, cJSON*& params, c
   *
   * This variant stores a single string parameter, \a params.
   */
-cJSON* ExportJSON::createRPCRequest(const std::string& method, const std::string& params, const std::string& reqId)
+cJSON* ExportJSON::createRPCRequest(
+  const std::string& method,
+  const std::string& params,
+  const std::string& reqId)
 {
   cJSON* paramObj;
-  cJSON* rpcReq = ExportJSON::createRPCRequest(method, paramObj, reqId);
+  cJSON* rpcReq = ExportJSON::createRPCRequest(method, paramObj, reqId, cJSON_Array);
   cJSON_AddItemToArray(paramObj, cJSON_CreateString(params.c_str()));
   return rpcReq;
 }

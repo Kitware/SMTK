@@ -10,6 +10,9 @@
 #include "smtk/model/Operator.h"
 #include "smtk/model/Manager.h"
 
+#include "smtk/io/ExportJSON.h"
+#include "smtk/io/Logger.h"
+
 #include "smtk/attribute/Attribute.h"
 #include "smtk/attribute/DoubleItem.h"
 #include "smtk/attribute/DirectoryItem.h"
@@ -21,6 +24,8 @@
 #include "smtk/attribute/GroupItem.h"
 
 #include "smtk/common/UUID.h"
+
+#include "cJSON.h"
 
 #include <sstream>
 
@@ -78,10 +83,21 @@ OperatorResult Operator::operate()
   OperatorResult result;
   if (this->ableToOperate())
     {
+    std::size_t logStart = this->log().numberOfRecords();
     if (!this->trigger(WILL_OPERATE))
       result = this->operateInternal();
     else
       result = this->createResult(OPERATION_CANCELED);
+    std::size_t logEnd = this->log().numberOfRecords();
+    if (logEnd > logStart)
+      { // Serialize relevant log records to JSON.
+      cJSON* array = cJSON_CreateArray();
+      smtk::io::ExportJSON::forLog(array, this->log(), logStart, logEnd);
+      char* logstr = cJSON_Print(array);
+      cJSON_Delete(array);
+      result->findString("log")->appendValue(logstr);
+      free(logstr);
+      }
     this->trigger(DID_OPERATE, result);
     }
   else
@@ -175,7 +191,7 @@ Bridge* Operator::bridge() const
   return this->m_bridge;
 }
 
-/** Set the bridge that owns this operation.
+/**\brief Set the bridge that owns this operation.
   *
   * The return value is a shared pointer to this operator.
   */
@@ -183,6 +199,17 @@ Operator::Ptr Operator::setBridge(Bridge* b)
 {
   this->m_bridge = b;
   return shared_from_this();
+}
+
+/**\brief A convenience method to return the manager's log.
+  *
+  * Always use the log for errors and informational messages
+  * so that there is a chance that users will see them.
+  */
+smtk::io::Logger& Operator::log()
+{
+  static smtk::io::Logger dummy;
+  return this->manager() ? this->manager()->log() : dummy;
 }
 
 /**\brief Return the definition of this operation and its parameters.

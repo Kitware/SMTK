@@ -60,6 +60,8 @@ public:
     remus::proto::JobRequirements& r);
 #endif // SHIBOKEN_SKIP
 
+  smtk::model::ManagerPtr manager();
+  void setManager(smtk::model::ManagerPtr);
 protected:
   RemusRPCWorker();
 

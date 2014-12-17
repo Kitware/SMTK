@@ -13,11 +13,15 @@
 
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/SystemConfig.h"
-#include <string>
+#include <iostream>
 #include <sstream>
+#include <string>
 #include <vector>
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as an error message.
+/**\brief Write the expression \a x to \a logger as an error message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkErrorMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -25,7 +29,10 @@
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as a warning message.
+/**\brief Write the expression \a x to \a logger as a warning message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkWarningMacro(logger, x) do {                \
   std::stringstream s1;                                 \
   s1 << x;                                              \
@@ -33,14 +40,29 @@
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
 
-/// Write the expression \a x (which may use the "<<" operator) to \a logger as a debug message.
+/**\brief Write the expression \a x to \a logger as a debug message.
+  *
+  * Note that \a x may use the "<<" operator.
+  */
 #define smtkDebugMacro(logger, x) do {                  \
   std::stringstream s1;                                 \
   s1 << x;                                              \
   logger.addRecord(smtk::io::Logger::DEBUG,             \
                    s1.str(),  __FILE__,  __LINE__);     \
   } while (0)
-///@}
+
+/**\brief Write the expression \a x to \a logger as an informational message.
+  *
+  * Note that \a x may use the "<<" operator.
+  *
+  * Unlike other logging macros, this does not include  a
+  * filename and line number in the record.
+  */
+#define smtkInfoMacro(logger, x) do {                   \
+  std::stringstream s1;                                 \
+  s1 << x;                                              \
+  logger.addRecord(smtk::io::Logger::INFO, s1.str());  \
+  } while (0)
 
 namespace smtk
 {
@@ -69,7 +91,8 @@ namespace smtk
           severity(INFO), lineNumber(0) {}
       };
 
-      Logger(): m_hasErrors(false) {}
+      Logger(): m_hasErrors(false), m_stream(NULL), m_ownStream(false) {}
+      ~Logger();
       std::size_t numberOfRecords() const
       {return this->m_records.size();}
 
@@ -80,8 +103,11 @@ namespace smtk
                      const std::string &fname="",
                      unsigned int line=0);
 
-      const Record &record(int i) const
+      const Record &record(std::size_t i) const
       {return this->m_records[i];}
+
+      std::string toString(std::size_t i) const;
+      std::string toString(std::size_t i, std::size_t j) const;
 
       // Convert all the messages into a single string
       std::string convertToString() const;
@@ -91,13 +117,23 @@ namespace smtk
 
       static std::string severityAsString(Severity s);
 
+      void setFlushToStream(
+        std::ostream* output, bool ownFile, bool includePast);
+      bool setFlushToFile( std::string filename, bool includePast);
+      void setFlushToStdout(bool includePast);
+      void setFlushToStderr(bool includePast);
+
     protected:
+      void flushRecordsToStream(std::size_t beginRec, std::size_t endRec);
+
       std::vector<Record> m_records;
       bool m_hasErrors;
+      std::ostream* m_stream;
+      bool m_ownStream;
     private:
 
     };
-  };
-};
+  }
+}
 
 #endif /* __smtk_io_Logger_h */

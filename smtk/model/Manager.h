@@ -19,6 +19,8 @@
 #include "smtk/model/Events.h"
 #include "smtk/model/Tessellation.h"
 
+#include "smtk/io/Logger.h"
+
 #include <algorithm>
 #include <set>
 #include <map>
@@ -214,6 +216,7 @@ public:
   void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::Cursor& related);
   void trigger(ManagerEventType event, const smtk::model::Cursor& src, const smtk::model::CursorArray& related);
 
+  smtk::io::Logger& log() { return this->m_log; }
 protected:
   friend class smtk::attribute::System;
   bool setAttributeSystem(smtk::attribute::System* sys, bool reverse = true);
@@ -225,6 +228,7 @@ protected:
   shared_ptr<UUIDsToTessellations> m_tessellations;
   shared_ptr<UUIDsToAttributeAssignments> m_attributeAssignments;
   smtk::attribute::System* m_attributeSystem;
+  smtk::io::Logger m_log;
 };
 
 template<typename Collection>

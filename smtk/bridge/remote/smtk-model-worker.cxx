@@ -18,6 +18,7 @@
 #include "smtk/model/Manager.h"
 
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/Logger.h"
 
 #include "remus/worker/Worker.h"
 
@@ -66,10 +67,10 @@ smtkComponentInitMacro(smtk_discrete_bridge);
 #endif // SMTK_BUILD_DISCRETE_BRIDGE
 // -- UserGuide/Model/1 --
 
-std::ofstream logr("/tmp/wlog.txt", std::ios::app);
-
 int usage(
-  int ecode = 0, const std::string& msg = std::string())
+  smtk::io::Logger& logr,
+  int ecode = 0,
+  const std::string& msg = std::string())
 {
   // I. Basic usage info.
   std::cout
@@ -122,7 +123,7 @@ int usage(
   if (!msg.empty())
     {
     std::cout << msg << "\n";
-    logr << "  Usage: " << msg << "\n";
+    smtkInfoMacro(logr, "Usage: " << msg);
     }
 
   return ecode;
@@ -189,10 +190,13 @@ struct WkOpts
 
 int main(int argc, char* argv[])
 {
-  logr << "Starting model worker:";
+  smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
+  smtk::io::Logger& logr(mgr->log());
+
+  logr.setFlushToFile("wlog.txt", true);
+  smtkInfoMacro(logr, "Starting model worker with args:");
   for (int i = 1; i < argc; ++i)
-    logr << " " << argv[i];
-  logr << "\n";
+    smtkInfoMacro(logr, "   " << i << ": " << argv[i]);
 
   using namespace smtk::bridge;
   WkOpts wkOpts;
@@ -212,29 +216,29 @@ int main(int argc, char* argv[])
     }
   catch (std::exception& e)
     {
-    logr << "  Exception " << e.what() << "\n";
-    return usage(1, e.what());
+    smtkInfoMacro(logr, "  Exception " << e.what());
+    return usage(logr, 1, e.what());
     }
   if (wkOpts.printHelp())
     {
-    logr << "  Help\n";
-    return usage(0);
+    smtkInfoMacro(logr, "  Help");
+    return usage(logr, 0);
     }
 
-  logr << "  Chroot\n";
+  smtkInfoMacro(logr, "  Chdir");
   if (!wkOpts.root().empty())
     {
     if (smtkChDir(wkOpts.root()))
       {
-      return usage(1,
+      return usage(logr, 1,
         "Unable to change to directory \"" + wkOpts.root() + "\"");
       }
     }
 
-  logr << "  About to connect to " << wkOpts.serverURL() << "\n";
+  smtkInfoMacro(logr, "  About to connect to " << wkOpts.serverURL());
   remus::worker::ServerConnection connection =
     remus::worker::make_ServerConnection(wkOpts.serverURL());
-  logr << "  Server " << wkOpts.serverURL() << "\n";
+  smtkInfoMacro(logr, "  Server " << wkOpts.serverURL());
 
   // I. Advertise a "handshake" worker for the type of kernel requested.
   //    The RemusRPCWorker instance will swap it out for one with a
@@ -248,19 +252,18 @@ int main(int argc, char* argv[])
   //       Tag should exist and be a JSON string with hostname and a host UUID
   //       (but not a session ID yet).
   JobRequirements requirements = make_JobRequirements(io_type, wkOpts.workerName(), "");
-  logr << "  Worker name: " << wkOpts.workerName() << "\n";
+  smtkInfoMacro(logr, "  Worker name: " << wkOpts.workerName());
   std::cout << "Worker iotype " << io_type.inputType() << "->" << io_type.outputType() << "\n";
   if (wkOpts.generate())
     {
     if (wkOpts.rwfile().empty())
       {
-      return usage(1, "Remus worker filename not specifed or invalid.");
+      return usage(logr, 1, "Remus worker filename not specifed or invalid.");
       }
     // Create bridge session and serialize operators.
-    smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
     smtk::model::Bridge::Ptr bridge = mgr->createAndRegisterBridge(wkOpts.kernel());
     if (!bridge)
-      return usage(1, "Could not create bridge \"" + wkOpts.kernel() + "\"");
+      return usage(logr, 1, "Could not create bridge \"" + wkOpts.kernel() + "\"");
     smtk::attribute::System* opsys = bridge->operatorSystem();
     cJSON* spec = cJSON_CreateObject();
     std::string opspec;
@@ -350,12 +353,13 @@ int main(int argc, char* argv[])
       }
     cJSON_Delete(desc);
 
-    logr << "Wrote " << wkOpts.rwfile() << "\n      " << reqFileName << "\n";
+    smtkInfoMacro(logr, "Wrote " << wkOpts.rwfile() << "\n      " << reqFileName);
     std::cout << "\n\nWrote " << wkOpts.rwfile() << "\n      " << reqFileName << "\n\n";
     return 0; // Do not wait for jobs.
     }
 
   remote::RemusRPCWorker::Ptr smtkWorker = remote::RemusRPCWorker::create();
+  smtkWorker->setManager(mgr);
   if (!wkOpts.rwfile().empty())
     { // Configure the smtkWorker
     std::ifstream rwFile(wkOpts.rwfile().c_str());
@@ -412,22 +416,22 @@ int main(int argc, char* argv[])
     requirements.tag(tagchar);
     free(tagchar);
     }
-  logr << "Requirements tag is \"" << requirements.tag() << "\"\n";
+  smtkInfoMacro(logr, "Requirements tag is \"" << requirements.tag() << "\"");
 
   // Register the requirements mesh type as the special bridge name advertised via Remus.
   BridgeStaticSetup bsetup = BridgeRegistrar::bridgeStaticSetup(wkOpts.kernel());
   BridgeConstructor bctor = BridgeRegistrar::bridgeConstructor(wkOpts.kernel());
   if (!bctor)
     {
-    return usage(1, "Unable to obtain constructor for kernel \"" + wkOpts.kernel() + "\"");
+    return usage(logr, 1, "Unable to obtain constructor for kernel \"" + wkOpts.kernel() + "\"");
     }
   smtk::model::BridgeRegistrar::registerBridge(
-    requirements.meshTypes().inputType(), requirements.tag(), bsetup, bctor);
+    wkOpts.workerName(), requirements.tag(), bsetup, bctor);
 
   remus::Worker* w = new remus::Worker(requirements,connection);
   while (true)
     {
-    logr << "Waiting for job\n"; logr.flush();
+    smtkInfoMacro(logr, "Waiting for job");
     std::cerr << "Waiting for job\n";
     remus::worker::Job jobdesc = w->getJob();
     switch (jobdesc.validityReason())
@@ -443,12 +447,12 @@ int main(int argc, char* argv[])
     default:
       break;
       }
-    logr << "  Got job\n"; logr.flush();
+    smtkInfoMacro(logr, "Got job");
     std::cout << "  Got job\n";
 
     smtkWorker->processJob(w, jobdesc, requirements);
 
-    logr << "  Job complete\n"; logr.flush();
+    smtkInfoMacro(logr, "Job complete");
     std::cout << "  Job complete\n";
     }
 

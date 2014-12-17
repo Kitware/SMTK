@@ -76,6 +76,7 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerStringProperties', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofManagerTessellation', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLocalBridgeSession', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofLog', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofRemoteBridgeSession', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::ofOperatorResult', unmatched parameter type 'cJSON*'"/>
@@ -84,6 +85,7 @@
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getRealArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::getIntegerArrayFromJSON', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forDanglingEntities', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forLog', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerArrangement', unmatched parameter type 'smtk::model::UUIDWithArrangementDictionary const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forManagerBridgeSession', unmatched parameter type 'cJSON*'"/>
@@ -119,6 +121,8 @@
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
   <suppress-warning text="skipping function 'smtk::common::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::Logger::setFlushToStream', unmatched parameter type 'std::ostream*'"/>
+  <suppress-warning text="skipping field 'Logger::m_stream' with unmatched type 'std::ostream'"/>
 
   <!-- do not support model property data (yet)-->
   <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>

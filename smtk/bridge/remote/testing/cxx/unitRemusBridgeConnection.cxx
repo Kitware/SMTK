@@ -21,6 +21,8 @@
 
 #include "smtk/common/UUID.h"
 
+#include <fstream>
+
 using namespace smtk::model;
 using namespace smtk::bridge::remote;
 
@@ -51,8 +53,12 @@ int main(int argc, char* argv[])
   std::string hostname(argc > 3 ? argv[3] : "local");
   int port(argc > 4 ? atoi(argv[4]) : 50505);
 
+  smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
+  mgr->log().setFlushToStream(
+    new std::ofstream("/tmp/unitRemusBridge.log"), true, true);
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
+  bconn->setModelManager(mgr);
   // Do not search for workers in default paths; we don't want to pick things up by accident:
   bconn->clearSearchDirs(true);
   if (argc > 5)
@@ -83,15 +89,15 @@ int main(int argc, char* argv[])
     return 4;
     }
 
-  opnames = bconn->operatorNames(bridgeName);
-  std::cout << "Operators for bridge \"" << bridgeName << "\":\n";
-  for (strit = opnames.begin(); strit != opnames.end(); ++strit)
-    std::cout << "  " << *strit << "\n";
-
-  std::vector<std::string> fileTypes = bconn->supportedFileTypes(bridgeName);
+  StringData fileTypes = bconn->supportedFileTypes(bridgeName);
   std::cout << "File types available for \"" << bridgeName << "\":\n";
-  for (strit = fileTypes.begin(); strit != fileTypes.end(); ++strit)
-    std::cout << "  " << *strit << "\n";
+  StringData::const_iterator mapit;
+  for (mapit = fileTypes.begin(); mapit != fileTypes.end(); ++mapit)
+    {
+    std::cout << "  " << mapit->first << "\n";
+    for (strit = mapit->second.begin(); strit != mapit->second.end(); ++strit)
+      std::cout << "    " << *strit << "\n";
+    }
 
   smtk::common::UUID bridgeSessionId = bconn->beginBridgeSession(bridgeName);
   if (bridgeSessionId.isNull())

@@ -22,6 +22,8 @@ struct cJSON;
 namespace smtk {
   namespace io {
 
+class Logger;
+
 /**\brief Import an SMTK model from JSON data.
   *
   * Methods are also provided for importing individual records
@@ -45,6 +47,8 @@ public:
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
   static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::attribute::System* opSys);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
+
+  static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);
 
   // Mid-level helpers:
   static std::string bridgeNameFromTagData(cJSON* tagData);
