@@ -270,17 +270,15 @@ bool Cursor::hasVisibility() const
 
 /** Report the visibility associated with this entity.
   *
-  * If there is no "visible" property set, return false
+  * If there is no "visible" property set,return false
   */
 bool Cursor::visible() const
 {
-  if ( this->hasIntegerProperty("visible") )
-    {
-    const IntegerList& prop(this->integerProperty("visible"));
-    return (!prop.empty() && prop[0]);
-    }
+  if ( !this->hasVisibility() )
+    return false;
 
-  return false;
+  const IntegerList& prop(this->integerProperty("visible"));
+  return (!prop.empty() && prop[0]);
 }
 
 /** Assign the visible property to an entity.

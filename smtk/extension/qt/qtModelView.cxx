@@ -578,6 +578,9 @@ OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
       << "Invalid spec for the op: " << brOp->name() << "\n";
     return OperatorPtr();
     }
+
+  attrib->system()->setRefModelManager(bridge->manager());
+
   return brOp;
 }
 
@@ -608,8 +611,12 @@ void qtModelView::changeVisibility( const QModelIndex& idx)
   smtk::common::UUIDs ids;
   this->recursiveSelect(this->getModel(), idx, ids,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
-  smtk::common::UUIDs::const_iterator it;
-  for (it=ids.begin(); it != ids.end(); it++)
+  Cursors entities;
+  Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
+  std::cout << "set visibility to " << entities.size() << " entities\n";
+
+  Cursors::const_iterator it;
+  for (it=entities.begin(); it != entities.end(); it++)
     {
     attrib->associateEntity(*it);
     }
