@@ -54,6 +54,12 @@ void SetPropertyValue(const std::string& name, typename VI::Ptr item, CursorArra
     }
 }
 
+// local helper
+bool SetProperty::ableToOperate()
+{
+  return this->specification()->isValid();
+}
+
 smtk::model::OperatorResult SetProperty::operateInternal()
 {
   smtk::attribute::StringItemPtr nameItem = this->findString("name");
