@@ -259,6 +259,8 @@ void Bridge::setSessionId(const smtk::common::UUID& sessId)
 void Bridge::setManager(Manager* mgr)
 {
   this->m_manager = mgr;
+  this->m_operatorSys->setRefModelManager(
+    mgr->shared_from_this());
 }
 
 /**\brief Subclasses must call this method from within their constructors.
