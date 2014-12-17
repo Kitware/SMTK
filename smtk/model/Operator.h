@@ -152,7 +152,7 @@ public:
 
   virtual std::string name() const = 0;
   virtual std::string className() const = 0;
-  virtual bool ableToOperate() { return false; }
+  virtual bool ableToOperate();
   virtual OperatorResult operate();
 
 #ifndef SHIBOKEN_SKIP

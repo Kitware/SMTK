@@ -59,13 +59,19 @@ Operator::~Operator()
     }
 }
 
-/*! \fn Operator::ableToOperate()
- * \brief Return whether the operator's inputs are well-defined.
- *
- * This returns true when the Operator considers its inputs to
- * be valid and false otherwise.
- * Subclasses must implement this method.
- */
+/**\brief Return whether the operator's inputs are well-defined.
+  *
+  * This returns true when the Operator considers its inputs to
+  * be valid and false otherwise.
+  *
+  * Subclasses may override this method.
+  * By default, it returns true when this->specification()->isValid()
+  * returns true.
+  */
+bool Operator::ableToOperate()
+{
+  return this->specification()->isValid();
+}
 
 /**\brief Perform the solid modeling operation the subclass implements.
   *
