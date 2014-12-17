@@ -153,7 +153,7 @@ void Logger::setFlushToStream(
   */
 bool Logger::setFlushToFile( std::string filename, bool includePast)
 {
-  std::ofstream* file = new std::ofstream(filename, std::ios::app);
+  std::ofstream* file = new std::ofstream(filename.c_str(), std::ios::app);
   if (file->good())
     {
     this->setFlushToStream(file, true, includePast);
