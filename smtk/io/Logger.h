@@ -91,7 +91,7 @@ namespace smtk
           severity(INFO), lineNumber(0) {}
       };
 
-      Logger(): m_hasErrors(false), m_file(NULL), m_ownFile(false) {}
+      Logger(): m_hasErrors(false), m_stream(NULL), m_ownStream(false) {}
       ~Logger();
       std::size_t numberOfRecords() const
       {return this->m_records.size();}
@@ -117,12 +117,19 @@ namespace smtk
 
       static std::string severityAsString(Severity s);
 
-      void setFlushToStream(std::ostream* output, bool ownFile);
+      void setFlushToStream(
+        std::ostream* output, bool ownFile, bool includePast);
+      bool setFlushToFile( std::string filename, bool includePast);
+      void setFlushToStdout(bool includePast);
+      void setFlushToStderr(bool includePast);
+
     protected:
+      void flushRecordsToStream(std::size_t beginRec, std::size_t endRec);
+
       std::vector<Record> m_records;
       bool m_hasErrors;
-      std::ostream* m_file;
-      bool m_ownFile;
+      std::ostream* m_stream;
+      bool m_ownStream;
     private:
 
     };

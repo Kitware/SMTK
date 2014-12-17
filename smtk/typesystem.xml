@@ -121,6 +121,8 @@
   <!-- do not support input or output streams-->
   <suppress-warning text="skipping function 'smtk::common::operator&lt;&lt;', unmatched return type 'std::ostream&amp;'"/>
   <suppress-warning text="skipping function 'smtk::common::operator&gt;&gt;', unmatched return type 'std::istream&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::Logger::setFlushToStream', unmatched parameter type 'std::ostream*'"/>
+  <suppress-warning text="skipping field 'Logger::m_stream' with unmatched type 'std::ostream'"/>
 
   <!-- do not support model property data (yet)-->
   <suppress-warning text="skipping field 'BRepModel::m_stringData' with unmatched type 'smtk::shared_ptr&lt;UUIDsToStringData&gt;'"/>

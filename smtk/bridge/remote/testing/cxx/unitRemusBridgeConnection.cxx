@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
 
   smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
   mgr->log().setFlushToStream(
-    new std::ofstream("/tmp/unitRemusBridge.log"), true);
+    new std::ofstream("/tmp/unitRemusBridge.log"), true, true);
   RemusBridgeConnection::Ptr bconn =
     RemusBridgeConnection::create();
   bconn->setModelManager(mgr);

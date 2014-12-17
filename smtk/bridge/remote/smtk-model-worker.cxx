@@ -193,9 +193,7 @@ int main(int argc, char* argv[])
   smtk::model::Manager::Ptr mgr = smtk::model::Manager::create();
   smtk::io::Logger& logr(mgr->log());
 
-  logr.setFlushToStream(
-    new std::ofstream("/tmp/wlog.txt", std::ios::app),
-    true);
+  logr.setFlushToFile("wlog.txt", true);
   smtkInfoMacro(logr, "Starting model worker with args:");
   for (int i = 1; i < argc; ++i)
     smtkInfoMacro(logr, "   " << i << ": " << argv[i]);
