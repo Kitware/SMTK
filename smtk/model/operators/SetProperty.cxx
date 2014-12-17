@@ -50,8 +50,7 @@ void SetPropertyValue(const std::string& name, typename VI::Ptr item, CursorArra
 
     // Add or overwrite the property with the values.
     for (it = entities.begin(); it != entities.end(); ++it)
-      for (it = entities.begin(); it != entities.end(); ++it)
-        (*it->properties<VD>())[name] = values;
+      (*it->properties<VD>())[name] = values;
     }
 }
 
