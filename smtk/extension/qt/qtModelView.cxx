@@ -658,8 +658,12 @@ void qtModelView::changeColor( const QModelIndex& idx)
     smtk::common::UUIDs ids;
     this->recursiveSelect(this->getModel(), idx, ids,
       CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
-    smtk::common::UUIDs::const_iterator it;
-    for (it=ids.begin(); it != ids.end(); it++)
+    Cursors entities;
+    Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
+    std::cout << "set color to " << entities.size() << " entities\n";
+
+    Cursors::const_iterator it;
+    for (it=entities.begin(); it != entities.end(); it++)
       {
       attrib->associateEntity(*it);
       }

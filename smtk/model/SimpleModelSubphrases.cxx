@@ -169,6 +169,9 @@ bool SimpleModelSubphrases::shouldOmitProperty(
   if (ptype == FLOAT_PROPERTY && pname == "color")
     return true;
 
+  if (ptype == INTEGER_PROPERTY && pname == "visible")
+    return true;
+
   if (
     ptype == INTEGER_PROPERTY &&
     parent && parent->relatedEntity().isModelEntity())

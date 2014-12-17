@@ -227,5 +227,9 @@ createCopy(ItemDefinition::CopyInfo& info) const
       }
     }
 
+  newDef->setIsOptional(m_isOptional);
+  newDef->setIsExtensible(m_isExtensible);
+  newDef->setIsEnabledByDefault(m_isEnabledByDefault);
+
   return newDef;
 }

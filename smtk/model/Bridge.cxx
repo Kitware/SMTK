@@ -294,6 +294,7 @@ void Bridge::initializeOperatorSystem(const OperatorConstructors* opList)
   outcomeDefn->setIsOptional(false);
   entoutDefn->setNumberOfRequiredValues(1);
   entoutDefn->setIsOptional(true);
+  entoutDefn->setIsExtensible(true);
   logDefn->setNumberOfRequiredValues(0);
   logDefn->setIsExtensible(1);
   logDefn->setIsOptional(true);
