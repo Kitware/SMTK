@@ -27,8 +27,10 @@ install:
  - mkdir -p ~/smtk-deps/cgm/build && cd ~/smtk-deps/cgm
  - git clone https://bitbucket.org/fathomteam/cgm.git src
  - cd ~/smtk-deps/cgm/build
- - cmake -G Ninja "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src && ninja
+ - cmake --version
+ - cmake --help
+ - cmake "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src && make -j2
 
 script:
  - mkdir ~/smtk-build && cd ~/smtk-build
- - cmake -G Ninja ${TRAVIS_BUILD_DIR} && ninja Continuous
+ - cmake ${TRAVIS_BUILD_DIR} && make -j2 Continuous
