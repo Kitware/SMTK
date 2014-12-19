@@ -4,6 +4,8 @@ compiler:
   - clang
 
 before_install:
+   # Add PPA for recent boost libraries
+ - sudo add-apt-repository --yes ppa:boost-latest/ppa
  #- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  #- sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
    # Make sure package index is up to date:
@@ -12,7 +14,7 @@ before_install:
 install:
    # Install build tools:
  - sudo apt-get install -yqq git ninja-build ccache python-dev texlive-extra-utils
- - sudo apt-get install -yqq libboost-dev doxygen
+ - sudo apt-get install -yqq libboost1.54-dev doxygen
    # Install Qt devel stuff:
  - sudo apt-get install -yqq libqt4-dev libqt4-opengl-dev libqtwebkit-dev qt4-dev-tools
    # Install opencascade
