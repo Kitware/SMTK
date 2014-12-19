@@ -215,6 +215,8 @@ createCopy(ItemDefinition::CopyInfo& info) const
 
   newDef->setMembershipMask(m_membershipMask);
   newDef->setNumberOfRequiredValues(m_numberOfRequiredValues);
+  newDef->setMaxNumberOfValues(m_maxNumberOfValues);
+  newDef->setIsExtensible(m_isExtensible);
   if (m_useCommonLabel)
     {
     newDef->setCommonValueLabel(m_valueLabels[0]);
@@ -226,10 +228,6 @@ createCopy(ItemDefinition::CopyInfo& info) const
       newDef->setValueLabel(i, m_valueLabels[i]);
       }
     }
-
-  newDef->setIsOptional(m_isOptional);
-  newDef->setIsExtensible(m_isExtensible);
-  newDef->setIsEnabledByDefault(m_isEnabledByDefault);
 
   return newDef;
 }

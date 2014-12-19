@@ -604,9 +604,8 @@ void qtModelView::changeVisibility( const QModelIndex& idx)
   nameItem->setNumberOfValues(1);
   nameItem->setValue("visible");
   visItem->setNumberOfValues(1);
-  visItem->setValue(
-    (visItem->numberOfValues() == 0 ||
-    (visItem->numberOfValues() && visItem->value())) ? 0 : 1);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  visItem->setValue(dp->relatedEntity().visible() ? 0 : 1);
 
   smtk::common::UUIDs ids;
   this->recursiveSelect(this->getModel(), idx, ids,
@@ -654,6 +653,7 @@ void qtModelView::changeColor( const QModelIndex& idx)
     colorItem->setValue(0, newColor.redF());
     colorItem->setValue(1, newColor.greenF());
     colorItem->setValue(2, newColor.blueF());
+    colorItem->setValue(3, newColor.alphaF());
 
     smtk::common::UUIDs ids;
     this->recursiveSelect(this->getModel(), idx, ids,
