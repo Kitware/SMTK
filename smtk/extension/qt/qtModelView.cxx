@@ -621,6 +621,7 @@ void qtModelView::changeVisibility( const QModelIndex& idx)
     }
 
   emit this->operationRequested(brOp);
+  this->dataChanged(idx, idx);
 }
 
 //----------------------------------------------------------------------------
@@ -669,6 +670,7 @@ void qtModelView::changeColor( const QModelIndex& idx)
       }
 
     emit this->operationRequested(brOp);
+    this->dataChanged(idx, idx);
     }
 }
 
