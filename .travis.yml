@@ -1,7 +1,7 @@
 language: cpp
 compiler:
-  #- gcc
-  - clang
+  - gcc
+  #- clang
 
 before_install:
    # Add PPA for recent boost libraries
@@ -38,7 +38,7 @@ install:
  #- ~/smtk-deps/cmake/install/bin/cmake --help
  #- ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" -DCGM_OCC:BOOL=ON "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src
  - ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src
- - ninja install
+ - ninja -j2 install
 
 script:
  - mkdir ~/smtk-build && cd ~/smtk-build
