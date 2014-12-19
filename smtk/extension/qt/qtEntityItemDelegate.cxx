@@ -229,22 +229,22 @@ void QEntityItemDelegate::commitAndCloseEditor()
   emit closeEditor(entityEditor);
 }
 
-bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* event)
+bool QEntityItemDelegate::eventFilter(QObject* editor, QEvent* evt)
 {
-  if(event->type()==QEvent::MouseButtonPress)
+  if(evt->type()==QEvent::MouseButtonPress)
     return false;
-  return QStyledItemDelegate::eventFilter(editor, event);
+  return QStyledItemDelegate::eventFilter(editor, evt);
 }
 
 bool QEntityItemDelegate::editorEvent (
-  QEvent * eve, QAbstractItemModel * mod,
+  QEvent * evt, QAbstractItemModel * mod,
   const QStyleOptionViewItem & option, const QModelIndex & idx)
 {
   bool res = this->QStyledItemDelegate::editorEvent(
-      eve, mod, option, idx);
-  if(eve->type() != QEvent::MouseButtonPress)
+      evt, mod, option, idx);
+  if(evt->type() != QEvent::MouseButtonPress)
     return res;
-  QMouseEvent* e = dynamic_cast<QMouseEvent*>(eve);
+  QMouseEvent* e = dynamic_cast<QMouseEvent*>(evt);
   if(!e)
     return res;
 

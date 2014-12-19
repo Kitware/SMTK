@@ -278,7 +278,7 @@ bool Cursor::visible() const
     return false;
 
   const IntegerList& prop(this->integerProperty("visible"));
-  return (!prop.empty() && prop[0]);
+  return (!prop.empty() && (prop[0] != 0));
 }
 
 /** Assign the visible property to an entity.

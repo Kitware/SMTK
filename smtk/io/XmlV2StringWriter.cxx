@@ -1131,16 +1131,13 @@ void XmlV2StringWriter::processModelEntityItem(pugi::xml_node &node,
 {
   size_t i=0, n = item->numberOfValues();
   std::size_t  numRequiredVals = item->numberOfRequiredValues();
+  // we should always have "NumberOfValues" set
+  node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
 
   xml_node val;
   if (!n)
     {
     return;
-    }
-
-  if (!numRequiredVals)
-    {
-    node.append_attribute("NumberOfValues").set_value(static_cast<unsigned int>(n));
     }
 
   if (numRequiredVals == 1)

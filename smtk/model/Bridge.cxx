@@ -292,7 +292,7 @@ void Bridge::initializeOperatorSystem(const OperatorConstructors* opList)
   StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
   outcomeDefn->setNumberOfRequiredValues(1);
   outcomeDefn->setIsOptional(false);
-  entoutDefn->setNumberOfRequiredValues(1);
+  entoutDefn->setNumberOfRequiredValues(0);
   entoutDefn->setIsOptional(true);
   entoutDefn->setIsExtensible(true);
   logDefn->setNumberOfRequiredValues(0);
