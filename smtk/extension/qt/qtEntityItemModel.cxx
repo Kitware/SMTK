@@ -258,7 +258,8 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         }
       else if (role == EntityVisibilityRole)
         {
-        if(item->relatedEntity().visible())
+        // by default, everything should be visible
+        if(!item->relatedEntity().hasVisibility() || item->relatedEntity().visible())
           return QVariant(QIcon(":/icons/display/eyeball_16.png"));
         else
           return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
