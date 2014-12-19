@@ -1,7 +1,7 @@
 language: cpp
 compiler:
   - gcc
-  - clang
+  #- clang
 
 before_install:
  #- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
@@ -26,15 +26,16 @@ install:
  - mkdir -p ~/smtk-deps/{cgm,cmake}
    # Download a new cmake since Ubuntu's is horribly old.
  - cd ~/smtk-deps/cmake
- - wget "http://www.cmake.org/files/v3.1/cmake-3.1.0-Linux-x86_64.tar.gz"
+ - wget -q "http://www.cmake.org/files/v3.1/cmake-3.1.0-Linux-x86_64.tar.gz"
  - tar xzf "cmake-3.1.0-Linux-x86_64.tar.gz"
  - mv cmake-3.1.0-Linux-x86_64 install
  - mkdir ~/smtk-deps/cgm/build && cd ~/smtk-deps/cgm
  - git clone https://bitbucket.org/fathomteam/cgm.git src
  - cd ~/smtk-deps/cgm/build
- - ~/smtk-deps/cmake/install/bin/cmake --version
- - ~/smtk-deps/cmake/install/bin/cmake --help
- - ~/smtk-deps/cmake/install/bin/cmake -G Ninja "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src && ninja
+ #- ~/smtk-deps/cmake/install/bin/cmake --version
+ #- ~/smtk-deps/cmake/install/bin/cmake --help
+ - ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src
+ - ninja install
 
 script:
  - mkdir ~/smtk-build && cd ~/smtk-build
