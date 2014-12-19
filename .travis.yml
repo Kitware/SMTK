@@ -1,7 +1,7 @@
 language: cpp
 compiler:
   - gcc
-  #- clang
+  - clang
 
 before_install:
    # Add PPA for recent boost libraries
@@ -42,8 +42,11 @@ install:
 
 script:
  - mkdir ~/smtk-build && cd ~/smtk-build
- - ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DBUILD_SHARED_LIBS:BOOL=ON -DSMTK_BUILD_QT:BOOL=ON -DSMTK_ENABLE_DOCUMENTATION:BOOL=ON -DSMTK_ENABLE_TESTING:BOOL=ON -DSMTK_BUILD_CGMA:BOOL=ON -DCGM_CFG:FILEPATH=${HOME}/smtk-deps/cgm/install/include/cgm.make -DSMTK_NO_SYSTEM_BOOST:BOOL=OFF "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-install" ${TRAVIS_BUILD_DIR}
- - ninja
+ - ~/smtk-deps/cmake/install/bin/cmake -G Ninja "-DSITE:STRING=travis-ci.org" "-DBUILDNAME:STRING=${TRAVIS_OS_NAME}-${CC}-Job.${TRAVIS_JOB_NUMBER}" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DBUILD_SHARED_LIBS:BOOL=ON -DSMTK_BUILD_QT:BOOL=ON -DSMTK_ENABLE_DOCUMENTATION:BOOL=ON -DSMTK_ENABLE_TESTING:BOOL=ON -DSMTK_BUILD_CGMA:BOOL=ON -DCGM_CFG:FILEPATH=${HOME}/smtk-deps/cgm/install/include/cgm.make -DSMTK_NO_SYSTEM_BOOST:BOOL=OFF "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-install" ${TRAVIS_BUILD_DIR}
+ - ninja ExperimentalStart
+ - ninja ExperimentalConfigure
+ - ninja ExperimentalBuild
  - ninja doc-userguide
  - ninja install
- - ctest
+ - ninja ExperimentalTest
+ - ninja ExperimentalSubmit
