@@ -1,0 +1,34 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+
+before_install:
+ #- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+ #- sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
+   # Make sure package index is up to date:
+ - sudo apt-get -qq update
+
+install:
+   # Install build tools:
+ - sudo apt-get install -yqq git cmake ninja-build ccache python-dev texlive-extra-utils
+ - sudo apt-get install -yqq libboost-dev doxygen
+   # Install Qt devel stuff:
+ - sudo apt-get install -yqq libqt4-dev libqt4-opengl-dev libqtwebkit-dev qt4-dev-tools
+   # Install opencascade
+ - sudo apt-get install -yqq libopencascade-dev
+   # Install python packages via pip
+ - sudo pip install -r ${TRAVIS_BUILD_DIR}/doc/requirements/dev.txt
+   # Set user/email so any tests we might have for developers pass
+ - git config --global user.email "travis@travis-ci.org"
+ - git config --global user.name "Travis CI"
+   # Now build deps for which there is no package
+ - mkdir ~/smtk-deps && cd ~/smtk-deps
+ - mkdir -p ~/smtk-deps/cgm/build && cd ~/smtk-deps/cgm
+ - git clone https://bitbucket.org/fathomteam/cgm.git src
+ - cd ~/smtk-deps/cgm/build
+ - cmake -G Ninja "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src && ninja
+
+script:
+ - mkdir ~/smtk-build && cd ~/smtk-build
+ - cmake -G Ninja ${TRAVIS_BUILD_DIR} && ninja Continuous
