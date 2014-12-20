@@ -13,7 +13,7 @@ before_install:
 
 install:
    # Install build tools:
- - sudo apt-get install -yqq git ninja-build ccache python-dev texlive-extra-utils doxygen
+ - sudo apt-get install -yqq git ninja-build ccache python-dev texlive-extra-utils doxygen graphviz
  - sudo apt-get install -yqq libboost1.54-dev libboost-filesystem1.54-dev libboost-system1.54-dev
    # Install Qt devel stuff:
  - sudo apt-get install -yqq libqt4-dev libqt4-opengl-dev libqtwebkit-dev qt4-dev-tools
@@ -46,7 +46,7 @@ script:
  - ninja ExperimentalStart
  - ninja ExperimentalConfigure
  - ninja ExperimentalBuild
- - ninja doc-userguide
+ - ninja doc-userguide &>/dev/nulll
  - ninja install
  - ninja ExperimentalTest
  - ninja ExperimentalSubmit
