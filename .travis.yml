@@ -46,7 +46,7 @@ script:
  - ninja ExperimentalStart
  - ninja ExperimentalConfigure
  - ninja ExperimentalBuild
- - ninja doc-userguide &>/dev/nulll
+ - ninja doc-userguide &>/dev/null
  - ninja install
  - ninja ExperimentalTest
  - ninja ExperimentalSubmit
