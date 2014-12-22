@@ -43,12 +43,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreatePrism::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreatePrism::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem =

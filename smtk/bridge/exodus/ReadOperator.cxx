@@ -31,11 +31,6 @@ namespace smtk {
   namespace bridge {
     namespace exodus {
 
-bool ReadOperator::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult ReadOperator::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem =

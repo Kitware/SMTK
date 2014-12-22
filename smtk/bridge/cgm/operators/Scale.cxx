@@ -47,12 +47,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool Scale::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult Scale::operateInternal()
 {
   smtk::attribute::DoubleItemPtr originItem = this->findDouble("origin");

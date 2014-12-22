@@ -42,12 +42,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateSphere::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateSphere::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr centerItem =

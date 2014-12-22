@@ -44,12 +44,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateEdge::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateEdge::operateInternal()
 {
   smtk::attribute::ModelEntityItem::Ptr verticesItem =

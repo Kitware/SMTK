@@ -48,12 +48,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool Copy::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult Copy::operateInternal()
 {
   CursorArray entitiesIn = this->associatedEntitiesAs<CursorArray>();

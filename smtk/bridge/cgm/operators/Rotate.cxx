@@ -47,12 +47,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool Rotate::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult Rotate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr centerItem = this->findDouble("center");
