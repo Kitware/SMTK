@@ -3,7 +3,6 @@
 # lines get too long on some platforms.
 include("${VTK_USE_FILE}")
   list(APPEND CMAKE_MODULE_PATH "${VTK_MODULES_DIR}")
-  set(VTK_MAKE_INSTANTIATORS TRUE CACHE INTERNAL "" FORCE)
 
 set(exodusSrcs
   Bridge.cxx
