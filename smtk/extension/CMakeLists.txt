@@ -30,9 +30,9 @@ if(SMTK_BUILD_VTK)
         vtkIOXML
         vtkIOLegacy
         vtkInteractionStyle
-        vtkRenderingOpenGL
-        vtkRenderingVolumeOpenGL
-        vtkRenderingFreeTypeOpenGL
+        vtkRendering${VTK_RENDERING_BACKEND}
+        vtkRenderingVolume${VTK_RENDERING_BACKEND}
+        vtkRenderingFreeType${VTK_RENDERING_BACKEND}
     )
 
     if (SMTK_ENABLE_TESTING)

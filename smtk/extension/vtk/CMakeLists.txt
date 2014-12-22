@@ -49,11 +49,11 @@ set(SMTK_VTK_TARGET_LIST)
 foreach(target
         vtkInteractionStyle
         vtkRenderingContext2D
-        vtkRenderingContextOpenGL
-        vtkRenderingOpenGL
+        vtkRenderingContext${VTK_RENDERING_BACKEND}
+        vtkRendering${VTK_RENDERING_BACKEND}
         vtkRenderingMatplotlib
-        vtkRenderingVolumeOpenGL
-        vtkRenderingFreeTypeOpenGL
+        vtkRenderingVolume${VTK_RENDERING_BACKEND}
+        vtkRenderingFreeType${VTK_RENDERING_BACKEND}
         )
   if (TARGET ${target})
     list(APPEND SMTK_VTK_TARGET_LIST ${target})
