@@ -41,6 +41,9 @@ install:
  - ninja -j2 install
  - cd ~/smtk-deps/shiboken
  - git clone https://github.com/OpenGeoscience/shiboken.git src
+ - cd src
+ - git checkout smtk-head
+ - cd ..
  - mkdir build
  - cd build
  - ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/shiboken/install" ../src
