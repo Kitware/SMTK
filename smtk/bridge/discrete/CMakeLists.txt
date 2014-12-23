@@ -147,7 +147,7 @@ target_link_libraries(smtkDiscreteBridge
   LINK_PRIVATE
     vtkRenderingCore
     vtkRenderingFreeType${VTK_RENDERING_BACKEND}
-    vtkRendering${VTK_RENDERIND_BACKEND}
+    vtkRendering${VTK_RENDERING_BACKEND}
    vtkSMTKDiscreteModel
    vtkFiltersCore
    vtkFiltersGeometry
