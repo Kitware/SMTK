@@ -394,8 +394,6 @@ bool Bridge::addTessellation(
   smtk::model::Tessellation tess;
   std::map<vtkIdType,int> vertMap;
   vtkPoints* pts = bdy->GetPoints();
-  vtkCellArray* cells;
-  cells = bdy->GetVerts();
   AddCellsToTessellation(pts, bdy->GetVerts(), SMTK_ROLE_VERTS, vertMap, tess);
   AddCellsToTessellation(pts, bdy->GetLines(), SMTK_ROLE_LINES, vertMap, tess);
   AddCellsToTessellation(pts, bdy->GetPolys(), SMTK_ROLE_POLYS, vertMap, tess);
