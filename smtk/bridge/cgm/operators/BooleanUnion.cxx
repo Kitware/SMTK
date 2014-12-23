@@ -48,12 +48,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool BooleanUnion::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult BooleanUnion::operateInternal()
 {
   int keepInputs = this->findInt("keep inputs")->value();

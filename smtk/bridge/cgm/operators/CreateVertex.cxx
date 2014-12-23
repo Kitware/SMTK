@@ -43,12 +43,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateVertex::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateVertex::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr pointItem =
