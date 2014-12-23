@@ -13,6 +13,7 @@
 #include "smtk/extension/vtk/vtkSMTKExports.h"
 #include "smtk/model/CellEntity.h" // for CellEntities
 #include "smtk/PublicPointerDefs.h"
+#include "smtk/common/UUID.h"
 
 #include "vtkMultiBlockDataSetAlgorithm.h"
 
@@ -45,7 +46,7 @@ public:
   vtkSetStringMacro(ModelEntityID);
   vtkGetStringMacro(ModelEntityID);
 
-  void GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid);
+  void GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid);
   void Dirty();
 
   vtkGetVector4Macro(DefaultColor,double);
@@ -83,7 +84,7 @@ protected:
   vtkMultiBlockDataSet* CachedOutput;
   double DefaultColor[4];
 
-  std::map<std::string, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
+  std::map<smtk::common::UUID, unsigned int> UUID2BlockIdMap; // UUIDs to block index map
   char* ModelEntityID; // Model Entity UUID
 
   int AllowNormalGeneration;
