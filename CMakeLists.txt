@@ -159,6 +159,12 @@ if(SMTK_BUILD_VTK)
   endif()
 endif()
 
+# Maintain compatibility with older VTK/ParaView, check for the definition
+# of, and define if not, VTK_RENDERING_BACKEND.
+if(NOT DEFINED VTK_RENDERING_BACKEND)
+  set(VTK_RENDERING_BACKEND "OpenGL")
+endif()
+
 ################################################################################
 # CGM Related Settings
 ################################################################################
