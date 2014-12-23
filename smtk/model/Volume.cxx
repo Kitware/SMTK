@@ -42,7 +42,7 @@ Shells Volume::shells() const
 smtk::model::Faces Volume::faces() const
 {
   Faces result;
-  Cursors all = this->bordantEntities(/*dim = */ 2);
+  Cursors all = this->boundaryEntities(/*dim = */ 2);
   for (Cursors::iterator it = all.begin(); it != all.end(); ++it)
     {
     if (it->isFace())

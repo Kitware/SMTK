@@ -168,6 +168,20 @@ void testMiscConstructionMethods()
     "Expected relationsAs<Cursors> (a set) to remove duplicates.");
 }
 
+void testVolumeCursor()
+{
+  ManagerPtr sm = Manager::create();
+  createTet(sm);
+  Volumes vols = sm->entitiesMatchingFlagsAs<Volumes>(VOLUME, true);
+  test(vols.size() == 1, "Expected a single volume in the test model.");
+  Volume vol = vols[0];
+  Faces faces = vol.faces();
+  test(faces.size() == 5, "Expected 5 faces in the test model.");
+  test(vol.use().isValid(), "Expected a valid volume use.");
+  Shells shells = vol.shells();
+  test(shells.size() == 1, "Expected a single shell (use) in the test model.");
+}
+
 int main(int argc, char* argv[])
 {
   (void) argc;
@@ -533,6 +547,7 @@ int main(int argc, char* argv[])
     testComplexVertexChain();
     testMiscConstructionMethods();
     testTemplatedPropertyMethods();
+    testVolumeCursor();
     }
   catch (const std::string& msg)
     {
