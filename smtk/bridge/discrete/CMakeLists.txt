@@ -148,14 +148,14 @@ target_link_libraries(smtkDiscreteBridge
     vtkRenderingCore
     vtkRenderingFreeType${VTK_RENDERING_BACKEND}
     vtkRendering${VTK_RENDERING_BACKEND}
-   vtkSMTKDiscreteModel
-   vtkFiltersCore
-   vtkFiltersGeometry
-   vtkIOParallel
-   vtkRenderingCore
-   vtkGeovisCore
-   vtksys
-   ${__private_dependencies}
+    vtkSMTKDiscreteModel
+    vtkFiltersCore
+    vtkFiltersGeometry
+    vtkIOParallel
+    vtkRenderingCore
+    vtkGeovisCore
+    vtksys
+    ${__private_dependencies}
   )
 
 if(SMTK_BUILD_MOAB_READER)
