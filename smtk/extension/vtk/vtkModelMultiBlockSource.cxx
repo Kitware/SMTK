@@ -15,8 +15,6 @@
 #include "smtk/model/ModelEntity.h"
 #include "smtk/model/Tessellation.h"
 
-#include "smtk/common/UUID.h"
-
 #include "vtkCellArray.h"
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
@@ -84,7 +82,7 @@ smtk::model::ManagerPtr vtkModelMultiBlockSource::GetModelManager()
 }
 
 /// Get the map from model entity UUID to the block index in multiblock output
-void vtkModelMultiBlockSource::GetUUID2BlockIdMap(std::map<std::string, unsigned int>& uuid2mid)
+void vtkModelMultiBlockSource::GetUUID2BlockIdMap(std::map<smtk::common::UUID, unsigned int>& uuid2mid)
 {
   uuid2mid.clear();
   uuid2mid.insert(this->UUID2BlockIdMap.begin(), this->UUID2BlockIdMap.end());
@@ -310,7 +308,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
         this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
-        this->UUID2BlockIdMap[(*cit).entity().toString()] = static_cast<unsigned int>(i);
+        this->UUID2BlockIdMap[(*cit).entity()] = static_cast<unsigned int>(i);
         }
 
       // Now look at groups of the model to see if those have any tessellation data
@@ -323,7 +321,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           mbds->SetBlock(cursors.size() + i, poly.GetPointer());
           mbds->GetMetaData(cursors.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
           this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git, modelRequiresNormals);
-          this->UUID2BlockIdMap[git->entity().toString()] = static_cast<unsigned int>(cursors.size() + i);
+          this->UUID2BlockIdMap[git->entity()] = static_cast<unsigned int>(cursors.size() + i);
           }
         }
       // TODO: how do we handle submodels in a multiblock dataset? We could have
@@ -351,7 +349,7 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
       this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor, this->AllowNormalGeneration);
-      this->UUID2BlockIdMap[cursor.entity().toString()] = static_cast<unsigned int>(i);
+      this->UUID2BlockIdMap[cursor.entity()] = static_cast<unsigned int>(i);
       }
     }
 }
