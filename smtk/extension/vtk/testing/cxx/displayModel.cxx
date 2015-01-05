@@ -319,6 +319,8 @@ int main(int argc, char* argv[])
       }
 
     view->Render();
+    if (!debug)
+      view->GetRenderWindow()->SetMultiSamples(0);
     view->ResetCamera();
     view->ResetCameraClippingRange();
 

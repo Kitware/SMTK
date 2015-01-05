@@ -44,12 +44,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateFace::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateFace::operateInternal()
 {
   smtk::attribute::ModelEntityItem::Ptr edgesItem =

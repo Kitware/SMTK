@@ -43,14 +43,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateCylinder::ableToOperate()
-{
-  return
-    this->ensureSpecification() &&
-    this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateCylinder::operateInternal()
 {
   smtk::attribute::DoubleItem::Ptr heightItem =

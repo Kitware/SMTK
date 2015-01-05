@@ -52,11 +52,6 @@ static bool hasEnding(const std::string& fullString, const std::string& ending)
     return false;
 }
 
-bool Read::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult Read::operateInternal()
 {
   smtk::attribute::FileItem::Ptr filenameItem =

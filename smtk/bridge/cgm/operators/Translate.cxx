@@ -47,12 +47,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool Translate::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult Translate::operateInternal()
 {
   smtk::attribute::DoubleItemPtr offset = this->findDouble("offset");

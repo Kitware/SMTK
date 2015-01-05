@@ -43,12 +43,6 @@ namespace smtk {
   namespace bridge {
     namespace cgm {
 
-// local helper
-bool CreateBrick::ableToOperate()
-{
-  return this->specification()->isValid();
-}
-
 smtk::model::OperatorResult CreateBrick::operateInternal()
 {
   using smtk::attribute::SearchStyle;
