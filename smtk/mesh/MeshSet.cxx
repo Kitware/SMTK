@@ -121,9 +121,13 @@ smtk::mesh::Points MeshSet::points( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Connectivity MeshSet::connectivity( )
+smtk::mesh::PointConnectivity MeshSet::pointConnectivity( )
 {
-  return smtk::mesh::Connectivity();
+  const smtk::mesh::moab::InterfacePtr& iface =
+                          smtk::mesh::moab::extractInterface(this->m_parent);
+  smtk::mesh::HandleRange range =
+                          smtk::mesh::moab::get_cells( this->m_range, iface );
+  return smtk::mesh::PointConnectivity(this->m_parent, range);
 }
 
 //----------------------------------------------------------------------------

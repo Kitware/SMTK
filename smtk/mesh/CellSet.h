@@ -14,6 +14,7 @@
 #include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 
+#include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/QueryTypes.h"
 #include "smtk/mesh/DimensionTypes.h"
@@ -61,12 +62,12 @@ public:
   std::size_t size() const;
 
   smtk::mesh::Points points(); //all points of the cellset
-  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
+  smtk::mesh::PointConnectivity pointConnectivity( ); //all connectivity info for all cells
 
   //get the points for a single cell
   smtk::mesh::Points points( std::size_t ) const;
   //get the connectivity for a single cell
-  smtk::mesh::Connectivity connectivity( std::size_t ) const;
+  smtk::mesh::PointConnectivity pointConnectivity( std::size_t ) const;
 
 private:
   smtk::mesh::CollectionPtr m_parent;

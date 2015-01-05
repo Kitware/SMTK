@@ -22,8 +22,6 @@ namespace smtk {
 namespace mesh {
 
 typedef int Points;
-typedef int Connectivity;
-
 
 enum ContainmentType
 {

@@ -194,9 +194,11 @@ smtk::mesh::Points Collection::points( )
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Connectivity Collection::connectivity( )
+smtk::mesh::PointConnectivity Collection::pointConnectivity( )
 {
-  return smtk::mesh::Connectivity( );
+  smtk::mesh::MeshSet ms(this->shared_from_this(),
+                         this->m_internals->mesh_root_handle());
+  return ms.pointConnectivity();
 }
 
 

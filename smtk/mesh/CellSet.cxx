@@ -101,17 +101,15 @@ smtk::mesh::Points CellSet::points( std::size_t ) const
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Connectivity CellSet::connectivity( )
+smtk::mesh::PointConnectivity CellSet::pointConnectivity( )
 {
-  //need to pass the range and parents I expect
-  return smtk::mesh::Connectivity();
+  return smtk::mesh::PointConnectivity(this->m_parent, this->m_range);
 }
 
 //----------------------------------------------------------------------------
-smtk::mesh::Connectivity CellSet::connectivity( std::size_t ) const
+smtk::mesh::PointConnectivity CellSet::pointConnectivity( std::size_t position ) const
 {
-  //need to pass the range and parents I expect
-  return smtk::mesh::Connectivity();
+  return smtk::mesh::PointConnectivity(this->m_parent, this->m_range[position]);
 }
 
 //----------------------------------------------------------------------------

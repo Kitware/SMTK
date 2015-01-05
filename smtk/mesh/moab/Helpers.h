@@ -14,6 +14,10 @@
 #ifndef __smtk_mesh_moab_Helpers_h
 #define __smtk_mesh_moab_Helpers_h
 
+#include <smtk/mesh/Handle.h>
+#include <smtk/mesh/TypeSet.h>
+#include <smtk/mesh/QueryTypes.h>
+
 #include "Interface.h"
 #include "CellTypeToType.h"
 #include "Tags.h"

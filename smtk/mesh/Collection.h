@@ -18,6 +18,7 @@
 #include "smtk/common/UUID.h"
 
 #include "smtk/mesh/CellSet.h"
+#include "smtk/mesh/PointConnectivity.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/MeshSet.h"
 #include "smtk/mesh/QueryTypes.h"
@@ -76,7 +77,7 @@ public:
   smtk::mesh::MeshSet   meshes( ); //all meshes
   smtk::mesh::CellSet   cells( ); //all cells
   smtk::mesh::Points    points( ); //all points
-  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
+  smtk::mesh::PointConnectivity pointConnectivity( ); //all point connectivity info for all cells
 
   //For any mesh set that has a name we return that name. It is possible
   //that the we have un-named mesh sets.

@@ -6,6 +6,7 @@ set(meshSrcs
   Manager.cxx
   # Mesh.cxx
   MeshSet.cxx
+  PointConnectivity.cxx
   # Points.cxx
   # PointSet.cxx
   TypeSet.cxx
@@ -17,12 +18,13 @@ set(meshHeaders
   CellSet.h
   CellTraits.h
   CellTypes.h
+  Collection.h
   DimensionTypes.h
   Handle.h
   Manager.h
-  Collection.h
   # Mesh.h
   MeshSet.h
+  PointConnectivity.h
   # Points.h
   # PointSet.h
   QueryTypes.h

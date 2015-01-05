@@ -64,7 +64,7 @@ public:
 
   smtk::mesh::CellSet cells(); //all cells of the meshset
   smtk::mesh::Points points(); //all points of the meshset
-  smtk::mesh::Connectivity connectivity( ); //all connectivity info for all cells
+  smtk::mesh::PointConnectivity pointConnectivity( ); //all point connectivity info for all cells
 
   //we should be able to extract the points or cells of the meshes.
   smtk::mesh::CellSet   cells( smtk::mesh::CellType cellType );
