@@ -624,11 +624,8 @@ bool qtModelView::setEntityVisibility(
   int numChangingEnts = 0;
   for (it=selcursors.begin(); it != selcursors.end(); it++)
     {
-    if( (*it).visible() ^ (vis > 0) )
-      {
-      numChangingEnts++;
-      attrib->associateEntity(*it);
-      }
+    numChangingEnts++;
+    attrib->associateEntity(*it);
     }
   if(numChangingEnts)
     {
