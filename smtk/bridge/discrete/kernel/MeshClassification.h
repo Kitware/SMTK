@@ -102,8 +102,9 @@ vtkIdType MeshClassification<EntityType>::size(DataType type) const
 template<class EntityType>
 bool MeshClassification<EntityType>::IsValidMeshId(vtkIdType meshId) const
 {
+  const vtkIdType index = this->ToIndex(meshId);
   return (index < this->GetVectorFromId(meshId).size()) &&
-         (this->GetElement(meshId).second!=NULL);
+         (this->GetElement(meshId).second!=0);
 }
 
 #endif // DISCRETEMESHCLASSIFICATION_H
