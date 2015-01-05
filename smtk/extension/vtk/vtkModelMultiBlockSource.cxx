@@ -19,6 +19,7 @@
 #include "vtkCellData.h"
 #include "vtkIdTypeArray.h"
 #include "vtkInformation.h"
+#include "vtkInformationStringKey.h"
 #include "vtkInformationVector.h"
 #include "vtkMultiBlockDataSet.h"
 #include "vtkNew.h"
@@ -30,6 +31,7 @@
 #include "vtkRenderView.h"
 #include "vtkStringArray.h"
 #include "vtkPolyDataNormals.h"
+
 
 using namespace smtk::model;
 
@@ -308,7 +310,13 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
         mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), (*cit).name().c_str());
         this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *cit, modelRequiresNormals);
         // std::cout << "UUID: " << (*cit).entity().toString().c_str() << " Block: " << i << std::endl;
-        this->UUID2BlockIdMap[(*cit).entity()] = static_cast<unsigned int>(i);
+        // as a convenient method to get the flat block index in multiblock
+        if(!(*cit).entity().isNull())
+          {
+          manager->setIntegerProperty((*cit).entity(), "block_index", i);
+          // (*cit).setIntegerProperty("block_index", i);
+          this->UUID2BlockIdMap[(*cit).entity()] = static_cast<unsigned int>(i);
+          }
         }
 
       // Now look at groups of the model to see if those have any tessellation data
@@ -321,6 +329,8 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
           mbds->SetBlock(cursors.size() + i, poly.GetPointer());
           mbds->GetMetaData(cursors.size() + i)->Set(vtkCompositeDataSet::NAME(), git->name().c_str());
           this->GenerateRepresentationFromModelEntity(poly.GetPointer(), *git, modelRequiresNormals);
+          // as a convenient method to get the flat block_index in multiblock
+          (*git).setIntegerProperty("block_index", cursors.size() + i);
           this->UUID2BlockIdMap[git->entity()] = static_cast<unsigned int>(cursors.size() + i);
           }
         }
@@ -349,6 +359,9 @@ void vtkModelMultiBlockSource::GenerateRepresentationFromModel(
       // Set the block name to the entity UUID.
       mbds->GetMetaData(i)->Set(vtkCompositeDataSet::NAME(), cursor.name().c_str());
       this->GenerateRepresentationFromModelEntity(poly.GetPointer(), cursor, this->AllowNormalGeneration);
+
+        // as a convenient method to get the flat block_index in multiblock
+      cursor.setIntegerProperty("block_index", i);
       this->UUID2BlockIdMap[cursor.entity()] = static_cast<unsigned int>(i);
       }
     }

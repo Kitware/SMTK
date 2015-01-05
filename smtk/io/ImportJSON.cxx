@@ -406,6 +406,11 @@ int ImportJSON::ofManager(
     {
     return 0;
     }
+  // clear previous maps
+  manager->integerProperties().clear();
+  manager->stringProperties().clear();
+  manager->floatProperties().clear();
+
   int status = 1;
   for (cJSON* curChild = dict->child; curChild && status; curChild = curChild->next)
     {
@@ -547,6 +552,7 @@ int ImportJSON::ofManagerFloatProperties(const smtk::common::UUID& uid, cJSON* d
     { // Missing floating-point property map is not an error.
     return 1;
     }
+
   for (cJSON* floatProp = floatNode->child; floatProp; floatProp = floatProp->next)
     {
     if (!floatProp->string || !floatProp->string[0])

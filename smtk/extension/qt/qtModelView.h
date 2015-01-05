@@ -22,6 +22,7 @@
 
 #include <QTreeView>
 #include <QPoint>
+#include <QMap>
 
 class QDropEvent;
 class QMenu;
@@ -50,18 +51,24 @@ public:
   smtk::model::QEntityItemModel* getModel() const;
   DescriptivePhrasePtr currentItem() const;
   void addGroup(BitFlags flag, const std::string& name);
+  void syncEntityVisibility(
+    const QMap<smtk::model::BridgePtr, smtk::common::UUIDs>& brEntities,
+    int vis);
+  void syncEntityColor(
+    const QMap<smtk::model::BridgePtr, smtk::common::UUIDs>& brEntities,
+    const QColor& clr);
 
 public slots:
-  void selectEntities(const QList<std::string>& selIds);
+  void selectEntities(const smtk::common::UUIDs& selCursors);
   virtual void removeFromGroup(const QModelIndex& qidx);
   virtual void removeSelected();
   void showContextMenu(const QPoint &p);
   void operatorInvoked();
-  void changeVisibility( const QModelIndex& );
-  void changeColor( const QModelIndex& );
+  void toggleEntityVisibility( const QModelIndex& );
+  void changeEntityColor( const QModelIndex&);
 
 signals:
-  void entitiesSelected(const smtk::common::UUIDs& ids);
+  void entitiesSelected(const smtk::model::Cursors& selCursors);
   void operationRequested(const smtk::model::OperatorPtr& brOp);
   void operationFinished(const smtk::model::OperatorResult&);
   void fileItemCreated(smtk::attribute::qtFileItem* fileItem);
@@ -73,6 +80,7 @@ protected:
   BridgeSession getBridgeSession(
     const QModelIndex &idx) const;
   OperatorPtr getSetPropertyOp(const QModelIndex& idx);
+  OperatorPtr getSetPropertyOp(smtk::model::BridgePtr bridge);
   // Description:
   // Support for customized drag-n-drop events
   virtual Qt::DropActions supportedDropActions() const;
@@ -93,12 +101,25 @@ protected:
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
   void recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::common::UUIDs& ids, BitFlags entityFlags);
+    smtk::model::Cursors& selcursors, BitFlags entityFlags);
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
   bool initOperator(smtk::model::OperatorPtr op);
   QDockWidget* operatorsDock(
     const std::string& opName, smtk::model::BridgePtr bridge);
+/*
+  void findIndexes(
+    QEntityItemModel* qmodel,
+    const QModelIndex& parentIdx,
+    const smtk::common::UUIDs& selEntities,
+    QModelIndexList& foundIndexes);
+*/
+  bool setEntityVisibility(
+    const smtk::model::Cursors& selcursors,
+    int vis, OperatorPtr op);
+  bool setEntityColor(
+  const smtk::model::Cursors& selcursors,
+  const QColor& newcolor, OperatorPtr brOp);
 
   QMenu* m_ContextMenu;
   QDockWidget* m_OperatorsDock;

@@ -86,10 +86,10 @@ qtModelView::qtModelView(QWidget* p)
   this->header()->setResizeMode(QHeaderView::ResizeToContents);
   QObject::connect(qdelegate,
                    SIGNAL(requestVisibilityChange(const QModelIndex&)),
-                   this, SLOT(changeVisibility(const QModelIndex&)), Qt::QueuedConnection);
+                   this, SLOT(toggleEntityVisibility(const QModelIndex&)), Qt::QueuedConnection);
   QObject::connect(qdelegate,
                    SIGNAL(requestColorChange(const QModelIndex&)),
-                   this, SLOT(changeColor(const QModelIndex&)), Qt::QueuedConnection);
+                   this, SLOT(changeEntityColor(const QModelIndex&)), Qt::QueuedConnection);
 }
 
 //-----------------------------------------------------------------------------
@@ -115,7 +115,7 @@ smtk::model::QEntityItemModel* qtModelView::getModel() const
 void qtModelView::dropEvent(QDropEvent* dEvent)
 {
   smtk::model::QEntityItemModel* qmodel = this->getModel();
-  smtk::common::UUIDs ids;
+  smtk::model::Cursors selcursors;
 
   // depends on the QModelIndex we dropped on, the selected
   // entities will be filtered accordingly based on what type of entities
@@ -133,13 +133,13 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       {
   //    DescriptivePhrasePtr childp = this->getModel()->getItem(sel);
   //    group.addEntity(childp->relatedEntity());
-      this->recursiveSelect(qmodel, sel, ids, ef);
+      this->recursiveSelect(qmodel, sel, selcursors, ef);
       }
-    Cursors entities;
-    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), ids);
-    std::cout << ids.size() << " ids, " << entities.size() << " entities\n";
+//    Cursors entities;
+//    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), ids);
+    std::cout << selcursors.size() << " selcursors, " << selcursors.size() << " entities\n";
 
-    group.addEntities(entities);
+    group.addEntities(selcursors);
     this->getModel()->subphrasesUpdated(dropIdx);
     this->setExpanded(dropIdx, true);
     if ( dEvent->proposedAction() == Qt::MoveAction )
@@ -190,46 +190,39 @@ void qtModelView::selectionChanged (
     return;
     }
   QTreeView::selectionChanged(selected, deselected);
-  smtk::common::UUIDs ids;
+  smtk::model::Cursors selcursors;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    this->recursiveSelect(qmodel, sel, ids,
+    this->recursiveSelect(qmodel, sel, selcursors,
       CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
     }
 
-  emit this->entitiesSelected(ids);
+  emit this->entitiesSelected(selcursors);
 }
 
 //----------------------------------------------------------------------------
 void qtModelView::recursiveSelect (
    smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
-    smtk::common::UUIDs& ids, BitFlags entityFlags)
+    smtk::model::Cursors& selcursors, BitFlags entityFlags)
 {
   DescriptivePhrasePtr dPhrase = qmodel->getItem(sel);
   if(dPhrase &&
     (dPhrase->relatedEntity().entityFlags() & entityFlags) &&
-    ids.find(dPhrase->relatedEntityId()) == ids.end())
-      ids.insert(dPhrase->relatedEntityId());
+    selcursors.find(dPhrase->relatedEntity()) == selcursors.end())
+      selcursors.insert(dPhrase->relatedEntity());
 
   for (int row=0; row < qmodel->rowCount(sel); ++row)
     {
-    this->recursiveSelect(qmodel, qmodel->index(row, 0, sel), ids, entityFlags);
+    this->recursiveSelect(qmodel, qmodel->index(row, 0, sel), selcursors, entityFlags);
     }
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::selectEntities(const QList<std::string>& selIds)
+void qtModelView::selectEntities(const smtk::common::UUIDs& selEntities)
 {
   smtk::model::QEntityItemModel* qmodel =
     dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
-  // Convert selection to UUIDs for faster membership checks:
-  smtk::common::UUIDs selEntities;
-  foreach(std::string strId, selIds)
-    {
-    smtk::common::UUID uid = smtk::common::UUID(strId);
-    if (!uid.isNull())
-      selEntities.insert(uid);
-    }
+
   // Now recursively check which model indices should be selected:
   QItemSelection selItems;
   this->selectionHelper(qmodel, this->rootIndex(), selEntities, selItems);
@@ -561,6 +554,12 @@ OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
     }
   // create SetProperty op
   smtk::model::BridgePtr bridge = brsession.bridge();
+  return this->getSetPropertyOp(bridge);
+}
+
+//----------------------------------------------------------------------------
+OperatorPtr qtModelView::getSetPropertyOp(smtk::model::BridgePtr bridge)
+{
   OperatorPtr brOp = bridge->op("set property");
   if (!brOp)
     {
@@ -585,11 +584,24 @@ OperatorPtr qtModelView::getSetPropertyOp(const QModelIndex& idx)
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::changeVisibility( const QModelIndex& idx)
+void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getSetPropertyOp(idx);
   if(!brOp || !brOp->specification()->isValid())
     return;
+  smtk::model::Cursors selcursors;
+  this->recursiveSelect(this->getModel(), idx, selcursors,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  int vis = dp->relatedEntity().visible() ? 0 : 1;
+  if(this->setEntityVisibility(selcursors, vis, brOp))
+    this->dataChanged(idx, idx);
+}
+
+//----------------------------------------------------------------------------
+bool qtModelView::setEntityVisibility(
+  const smtk::model::Cursors& selcursors, int vis, OperatorPtr brOp)
+{
   smtk::attribute::AttributePtr attrib = brOp->specification();
   smtk::attribute::StringItemPtr nameItem =
     attrib->findString("name");
@@ -599,37 +611,57 @@ void qtModelView::changeVisibility( const QModelIndex& idx)
     {
     std::cerr
       << "The set-property op is missing item(s): name or integer value\n";
-    return;
+    return false;
     }
   nameItem->setNumberOfValues(1);
   nameItem->setValue("visible");
   visItem->setNumberOfValues(1);
-  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
-  visItem->setValue(dp->relatedEntity().visible() ? 0 : 1);
+  visItem->setValue(vis);
 
-  smtk::common::UUIDs ids;
-  this->recursiveSelect(this->getModel(), idx, ids,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
-  Cursors entities;
-  Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
-  std::cout << "set visibility to " << entities.size() << " entities\n";
+  std::cout << "set visibility to " << selcursors.size() << " entities\n";
 
   Cursors::const_iterator it;
-  for (it=entities.begin(); it != entities.end(); it++)
+  int numChangingEnts = 0;
+  for (it=selcursors.begin(); it != selcursors.end(); it++)
     {
+    numChangingEnts++;
     attrib->associateEntity(*it);
     }
-
-  emit this->operationRequested(brOp);
-  this->dataChanged(idx, idx);
+  if(numChangingEnts)
+    {
+    emit this->operationRequested(brOp);
+    return true;
+    }
+  return false;
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::changeColor( const QModelIndex& idx)
+void qtModelView::changeEntityColor( const QModelIndex& idx)
 {
   OperatorPtr brOp = this->getSetPropertyOp(idx);
   if(!brOp || !brOp->specification()->isValid())
     return;
+  smtk::model::Cursors selcursors;
+  this->recursiveSelect(this->getModel(), idx, selcursors,
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+  DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
+  smtk::model::FloatList rgba(4);
+  rgba = dp->relatedColor();
+  QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+  QColor newColor = QColorDialog::getColor(currentColor, this,
+    "Choose Entity Color", QColorDialog::DontUseNativeDialog);
+  if(newColor.isValid() && newColor != currentColor)
+    {
+    if(this->setEntityColor(selcursors, newColor, brOp))
+      this->dataChanged(idx, idx);
+    }
+}
+
+//----------------------------------------------------------------------------
+bool qtModelView::setEntityColor(
+  const smtk::model::Cursors& selcursors,
+  const QColor& newColor, OperatorPtr brOp)
+{
   smtk::attribute::AttributePtr attrib = brOp->specification();
   smtk::attribute::StringItemPtr nameItem =
     attrib->findString("name");
@@ -639,40 +671,133 @@ void qtModelView::changeColor( const QModelIndex& idx)
     {
     std::cerr
       << "The set-property op is missing item(s): name or integer value\n";
-    return;
+    return false;
     }
   nameItem->setNumberOfValues(1);
   nameItem->setValue("color");
-  colorItem->setNumberOfValues(4);
+/*
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::model::FloatList rgba(4);
   rgba = dp->relatedColor();
   QColor currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
   QColor newColor = QColorDialog::getColor(currentColor, this);
-  if(newColor.isValid() && newColor != currentColor)
+*/
+  if(newColor.isValid())
     {
+    colorItem->setNumberOfValues(4);
     colorItem->setValue(0, newColor.redF());
     colorItem->setValue(1, newColor.greenF());
     colorItem->setValue(2, newColor.blueF());
     colorItem->setValue(3, newColor.alphaF());
+    }
+  else
+    colorItem->setNumberOfValues(0);
 
-    smtk::common::UUIDs ids;
-    this->recursiveSelect(this->getModel(), idx, ids,
-      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
-    Cursors entities;
-    Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
-    std::cout << "set color to " << entities.size() << " entities\n";
+ //   Cursors entities;
+ //   Cursor::CursorsFromUUIDs(entities, brOp->manager(), ids);
+    std::cout << "set color to " << selcursors.size() << " entities\n";
 
-    Cursors::const_iterator it;
-    for (it=entities.begin(); it != entities.end(); it++)
+  int numChangingEnts = 0;
+  smtk::model::FloatList rgba(4);
+  Cursors::const_iterator it;
+  for (it=selcursors.begin(); it != selcursors.end(); it++)
+    {
+    if(newColor.isValid())
       {
+      QColor currentColor;
+      if((*it).hasColor())
+        {
+        rgba = (*it).color();
+        currentColor = QColor::fromRgbF(rgba[0], rgba[1], rgba[2]);
+        }
+      if(newColor != currentColor)
+        {
+        numChangingEnts++;
+        attrib->associateEntity(*it);
+        }
+      }
+    else if((*it).hasColor()) // remove "color" property
+      {
+      numChangingEnts++;
       attrib->associateEntity(*it);
       }
-
+    }
+  if(numChangingEnts)
+    {
     emit this->operationRequested(brOp);
+    return true;
+    }
+
+  return false;
+}
+//----------------------------------------------------------------------------
+/*
+void qtModelView::findIndexes(
+  QEntityItemModel* qmodel,
+  const QModelIndex& parentIdx,
+  const smtk::common::UUIDs& selEntities,
+  QModelIndexList& foundIndexes)
+{
+  // For all the children of this index, see if
+  // each child should be included and then queue its children.
+  for (int row=0; row < qmodel->rowCount(parentIdx); ++row)
+    {
+    QModelIndex idx(qmodel->index(row, 0, parentIdx));
+    DescriptivePhrasePtr dPhrase = qmodel->getItem(idx);
+    if (dPhrase && selEntities.find(dPhrase->relatedEntityId()) != selEntities.end())
+      {
+      foundIndexes.append(idx);
+      }
+    this->findIndexes(qmodel, idx, selEntities, foundIndexes);
+    }
+}
+*/
+//----------------------------------------------------------------------------
+void qtModelView::syncEntityVisibility(
+  const QMap<smtk::model::BridgePtr, smtk::common::UUIDs>& brEntities, int vis)
+{
+  smtk::model::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  foreach(smtk::model::BridgePtr bridge, brEntities.keys())
+    {
+    OperatorPtr brOp = this->getSetPropertyOp(bridge);
+    if(!brOp || !brOp->specification()->isValid())
+      continue;
+    Cursors entities;
+    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), brEntities[bridge]);
+    this->setEntityVisibility(entities, vis, brOp);
+    }
+  // Now recursively check which model indices should be included:
+//  QModelIndexList& foundIndexes
+  foreach(QModelIndex idx, this->selectedIndexes())
+    {
     this->dataChanged(idx, idx);
     }
 }
+
+//----------------------------------------------------------------------------
+void qtModelView::syncEntityColor(
+    const QMap<smtk::model::BridgePtr, smtk::common::UUIDs>& brEntities,
+    const QColor& clr)
+{
+  smtk::model::QEntityItemModel* qmodel =
+    dynamic_cast<smtk::model::QEntityItemModel*>(this->model());
+  foreach(smtk::model::BridgePtr bridge, brEntities.keys())
+    {
+    OperatorPtr brOp = this->getSetPropertyOp(bridge);
+    if(!brOp || !brOp->specification()->isValid())
+      continue;
+    Cursors entities;
+    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), brEntities[bridge]);
+    this->setEntityColor(entities, clr, brOp);
+    }
+  // update index to redraw
+  foreach(QModelIndex idx, this->selectedIndexes())
+    {
+    this->dataChanged(idx, idx);
+    }
+}
+
 
   } // namespace model
 } // namespace smtk
