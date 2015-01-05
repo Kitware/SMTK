@@ -171,6 +171,12 @@ bool SimpleModelSubphrases::shouldOmitProperty(
 
   if (ptype == INTEGER_PROPERTY && pname == "visible")
     return true;
+  if (ptype == INTEGER_PROPERTY && pname == "block_index")
+    return true;
+  if (ptype == INTEGER_PROPERTY && pname == "visibility")
+    return true;
+  if (ptype == INTEGER_PROPERTY && pname == "cmb id")
+    return true;
 
   if (
     ptype == INTEGER_PROPERTY &&
