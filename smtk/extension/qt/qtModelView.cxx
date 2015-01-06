@@ -133,7 +133,7 @@ void qtModelView::dropEvent(QDropEvent* dEvent)
       {
   //    DescriptivePhrasePtr childp = this->getModel()->getItem(sel);
   //    group.addEntity(childp->relatedEntity());
-      this->recursiveSelect(qmodel, sel, selcursors, ef);
+      this->recursiveSelect(qmodel->getItem(sel), selcursors, ef);
       }
 //    Cursors entities;
 //    Cursor::CursorsFromUUIDs(entities, qmodel->manager(), ids);
@@ -193,27 +193,29 @@ void qtModelView::selectionChanged (
   smtk::model::Cursors selcursors;
   foreach(QModelIndex sel, this->selectedIndexes())
     {
-    this->recursiveSelect(qmodel, sel, selcursors,
-      CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+    this->recursiveSelect(qmodel->getItem(sel), selcursors,
+      CELL_ENTITY /*| SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY */);
     }
 
   emit this->entitiesSelected(selcursors);
 }
 
 //----------------------------------------------------------------------------
-void qtModelView::recursiveSelect (
-   smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
+void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
     smtk::model::Cursors& selcursors, BitFlags entityFlags)
 {
-  DescriptivePhrasePtr dPhrase = qmodel->getItem(sel);
   if(dPhrase &&
-    (dPhrase->relatedEntity().entityFlags() & entityFlags) &&
-    selcursors.find(dPhrase->relatedEntity()) == selcursors.end())
-      selcursors.insert(dPhrase->relatedEntity());
-
-  for (int row=0; row < qmodel->rowCount(sel); ++row)
+    (dPhrase->relatedEntity().entityFlags() & entityFlags)/* &&
+    selcursors.find(dPhrase->relatedEntity()) == selcursors.end() */)
     {
-    this->recursiveSelect(qmodel, qmodel->index(row, 0, sel), selcursors, entityFlags);
+    selcursors.insert(dPhrase->relatedEntity());
+    }
+
+  smtk::model::DescriptivePhrases sub = dPhrase->subphrases();
+  for (smtk::model::DescriptivePhrases::iterator it = sub.begin();
+    it != sub.end(); ++it)
+    {
+    this->recursiveSelect(*it, selcursors, entityFlags);
     }
 }
 
@@ -590,7 +592,7 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
   if(!brOp || !brOp->specification()->isValid())
     return;
   smtk::model::Cursors selcursors;
-  this->recursiveSelect(this->getModel(), idx, selcursors,
+  this->recursiveSelect(this->getModel()->getItem(idx), selcursors,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   int vis = dp->relatedEntity().visible() ? 0 : 1;
@@ -642,7 +644,7 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
   if(!brOp || !brOp->specification()->isValid())
     return;
   smtk::model::Cursors selcursors;
-  this->recursiveSelect(this->getModel(), idx, selcursors,
+  this->recursiveSelect(this->getModel()->getItem(idx), selcursors,
     CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::model::FloatList rgba(4);
