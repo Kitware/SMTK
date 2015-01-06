@@ -99,8 +99,7 @@ protected:
     const smtk::common::UUIDs& selEntities,
     QItemSelection& selItems);
   void expandToRoot(QEntityItemModel* qmodel, const QModelIndex& idx);
-  void recursiveSelect (
-   smtk::model::QEntityItemModel* qmodel, const QModelIndex& sel,
+  void recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
     smtk::model::Cursors& selcursors, BitFlags entityFlags);
 
   smtk::model::GroupEntity groupParentOfIndex(const QModelIndex& qidx);
