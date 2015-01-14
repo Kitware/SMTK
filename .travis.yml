@@ -6,39 +6,25 @@ compiler:
 before_install:
    # Add PPA for recent boost libraries
  - sudo add-apt-repository --yes ppa:boost-latest/ppa
- #- sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
- #- sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
+ - sudo add-apt-repository --yes ppa:dcthomp/smtk
    # Make sure package index is up to date:
  - sudo apt-get -qq update
 
 install:
    # Install build tools:
- - sudo apt-get install -yqq git ninja-build ccache python-dev texlive-extra-utils doxygen graphviz
+ - sudo apt-get install -yqq git cmake ninja-build ccache python-dev texlive-extra-utils doxygen graphviz
  - sudo apt-get install -yqq libboost1.54-dev libboost-filesystem1.54-dev libboost-system1.54-dev
    # Install Qt devel stuff:
  - sudo apt-get install -yqq libqt4-dev libqt4-opengl-dev libqtwebkit-dev qt4-dev-tools
    # Install opencascade
- - sudo apt-get install -yqq libopencascade-dev
+ - sudo apt-get install -yqq oce-dev cgm-dev
    # Install python packages via pip
  - sudo pip install -r ${TRAVIS_BUILD_DIR}/doc/requirements/dev.txt
    # Set user/email so any tests we might have for developers pass
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis CI"
    # Now build and/or install deps for which there is no package
- - mkdir -p ~/smtk-deps/{cgm,cmake,shiboken}
-   # Download a new cmake since Ubuntu's is horribly old.
- - cd ~/smtk-deps/cmake
- - wget -q "http://www.cmake.org/files/v3.1/cmake-3.1.0-Linux-x86_64.tar.gz"
- - tar xzf "cmake-3.1.0-Linux-x86_64.tar.gz"
- - mv cmake-3.1.0-Linux-x86_64 install
- - mkdir ~/smtk-deps/cgm/build && cd ~/smtk-deps/cgm
- - git clone https://bitbucket.org/fathomteam/cgm.git src
- - cd ~/smtk-deps/cgm/build
- #- ~/smtk-deps/cmake/install/bin/cmake --version
- #- ~/smtk-deps/cmake/install/bin/cmake --help
- #- ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" -DCGM_OCC:BOOL=ON "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src
- - ~/smtk-deps/cmake/install/bin/cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo "-DCMAKE_CXX_FLAGS:STRING=-fPIC" "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-deps/cgm/install" ../src
- - ninja -j2 install
+ - mkdir -p ~/smtk-deps/shiboken
  - cd ~/smtk-deps/shiboken
  - git clone https://github.com/OpenGeoscience/shiboken.git src
  - cd src
@@ -51,7 +37,7 @@ install:
 
 script:
  - mkdir ~/smtk-build && cd ~/smtk-build
- - ~/smtk-deps/cmake/install/bin/cmake -G Ninja "-DSITE:STRING=travis-ci.org" "-DBUILDNAME:STRING=${TRAVIS_OS_NAME}-${CC}-Job.${TRAVIS_JOB_NUMBER}-SMTK" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DBUILD_SHARED_LIBS:BOOL=ON -DSMTK_BUILD_QT:BOOL=ON -DSMTK_ENABLE_DOCUMENTATION:BOOL=ON -DSMTK_ENABLE_TESTING:BOOL=ON -DSMTK_BUILD_CGMA:BOOL=ON -DCGM_CFG:FILEPATH=${HOME}/smtk-deps/cgm/install/include/cgm.make -DSMTK_BUILD_PYTHON_WRAPPINGS:BOOL=ON "-DShiboken_DIR:PATH=${HOME}/smtk-deps/shiboken/install/lib/cmake/Shiboken-1.2.1" -DSMTK_NO_SYSTEM_BOOST:BOOL=OFF "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-install" ${TRAVIS_BUILD_DIR}
+ - ~/smtk-deps/cmake/install/bin/cmake -G Ninja "-DSITE:STRING=travis-ci.org" "-DBUILDNAME:STRING=${TRAVIS_OS_NAME}-${CC}-Job.${TRAVIS_JOB_NUMBER}-SMTK" -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DBUILD_SHARED_LIBS:BOOL=ON -DSMTK_BUILD_QT:BOOL=ON -DSMTK_ENABLE_DOCUMENTATION:BOOL=ON -DSMTK_ENABLE_TESTING:BOOL=ON -DSMTK_BUILD_CGMA:BOOL=ON -DCGM_CFG:FILEPATH=/usr/include/cgm.make -DSMTK_BUILD_PYTHON_WRAPPINGS:BOOL=ON "-DShiboken_DIR:PATH=${HOME}/smtk-deps/shiboken/install/lib/cmake/Shiboken-1.2.1" -DSMTK_NO_SYSTEM_BOOST:BOOL=OFF "-DCMAKE_INSTALL_PREFIX=${HOME}/smtk-install" ${TRAVIS_BUILD_DIR}
  - ninja -j2 ExperimentalStart
  - ninja -j2 ExperimentalConfigure
  - ninja -j2 ExperimentalBuild
