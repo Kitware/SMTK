@@ -11,6 +11,8 @@ before_install:
  - sudo apt-get -qq update
 
 install:
+   # Remove cmake-data package as it interferes with SMTK PPA cmake package:
+ - sudo dpkg -r cmake cmake-data
    # Install build tools:
  - sudo apt-get install -yqq git cmake ninja-build ccache python-dev texlive-extra-utils doxygen graphviz
  - sudo apt-get install -yqq libboost1.54-dev libboost-filesystem1.54-dev libboost-system1.54-dev
