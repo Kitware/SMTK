@@ -104,7 +104,11 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
     originalModifyEngine = GeometryModifyTool::instance()->get_gme();
     }
   if (GeometryQueryTool::instance())
-    s_currentEngine = GeometryQueryTool::instance()->get_gqe()->modeler_type();
+    {
+    const char* modType = GeometryQueryTool::instance()->get_gqe()->modeler_type();
+    // An empty modeler type means Cubit, which means ACIS:
+    s_currentEngine = modType ? modType : "ACIS";
+    }
   if (originalQueryEngine)
     {
     cgmaInitialized = true;
