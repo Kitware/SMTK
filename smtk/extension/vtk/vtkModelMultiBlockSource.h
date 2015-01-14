@@ -56,6 +56,12 @@ public:
   vtkSetMacro(AllowNormalGeneration,int);
   vtkBooleanMacro(AllowNormalGeneration,int);
 
+  // Description:
+  // Functions get string names used to store cell/field data.
+  static const char* GetEntityTagName() { return "Entity UUID"; }
+  static const char* GetGroupTagName() { return "Group"; }
+  static const char* GetVolumeTagName() { return "Volume"; }
+
 protected:
   vtkModelMultiBlockSource();
   virtual ~vtkModelMultiBlockSource();
@@ -78,7 +84,8 @@ protected:
   void SetCachedOutput(vtkMultiBlockDataSet*);
 
   void FindEntitiesWithTessellation(
-    const smtk::model::CellEntities &cellents, smtk::model::Cursors &cursors);
+    const smtk::model::CellEntity &cellent,
+    std::map<smtk::model::Cursor, smtk::model::Cursor> &cursorMap);
 
   smtk::model::ManagerPtr ModelMgr;
   vtkMultiBlockDataSet* CachedOutput;
