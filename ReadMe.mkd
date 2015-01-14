@@ -1,5 +1,7 @@
 # Simulation Modeling Tool Kit (SMTK)
 
+[![Build Status](https://travis-ci.org/Kitware/SMTK.svg?branch=master)](https://travis-ci.org/Kitware/SMTK)
+
 SMTK is a library which provides a way to specify attributes
 (such as initial and boundary conditions, but also things
 like mesh sizing functions) that describe a physical simulation

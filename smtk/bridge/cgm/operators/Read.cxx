@@ -63,7 +63,6 @@ smtk::model::OperatorResult Read::operateInternal()
   std::string filetype = filetypeItem->value();
 
   smtk::bridge::cgm::CAUUID::registerWithAttributeManager();
-  std::string engine = "OCC";
   if (filetype.empty())
     { // Try to infer file type
     if (hasEnding(filename, "facet")) filetype = "FACET"; // We just want something not in an #if-clause
@@ -87,28 +86,7 @@ smtk::model::OperatorResult Read::operateInternal()
     else if (hasEnding(filename,".stl")) filetype = "STL";
 #endif
     }
-  // TODO: Both ACIS and OCC can provide IGES and STEP support (but do not always).
-  //       Figure out how to choose the correct engine (or at least not an improper one).
-  if (filetype == "FACET_TYPE") engine = "FACET";
-  else if (filetype == "ACIS_SAT") engine = "ACIS";
-  try
-    {
-    if (!Engines::setDefault(engine))
-      {
-      smtkInfoMacro(this->manager()->log(),
-        "Could not set default engine to \"" << engine << "\"");
-      return this->createResult(smtk::model::OPERATION_FAILED);
-      }
-    }
-  catch (std::exception& e)
-    {
-    smtkInfoMacro(this->manager()->log(),
-      "Exception thrown while setting default engine: \"" << e.what() << "\"");
-    }
 
-  smtkInfoMacro(this->manager()->log(),
-    "Default modeler now"
-    " \"" << GeometryQueryTool::instance()->get_gqe()->modeler_type() << "\"");
   CubitStatus s;
   DLIList<RefEntity*> imported;
   int prevAutoFlag = CGMApp::instance()->attrib_manager()->auto_flag();
