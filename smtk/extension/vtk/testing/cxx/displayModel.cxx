@@ -292,6 +292,10 @@ int main(int argc, char* argv[])
       {
       hlp = vtkModelSelectionHelper::New();
       }
+    else
+      {
+      view->GetRenderWindow()->SetMultiSamples(0);
+      }
     Cursors thingsToDraw =
       sm->entitiesMatchingFlagsAs<Cursors>(
         smtk::model::MODEL_ENTITY);
@@ -319,8 +323,6 @@ int main(int argc, char* argv[])
       }
 
     view->Render();
-    if (!debug)
-      view->GetRenderWindow()->SetMultiSamples(0);
     view->ResetCamera();
     view->ResetCameraClippingRange();
 
