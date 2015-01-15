@@ -104,7 +104,11 @@ bool Engines::isInitialized(const std::string& engine, const std::vector<std::st
     originalModifyEngine = GeometryModifyTool::instance()->get_gme();
     }
   if (GeometryQueryTool::instance())
-    s_currentEngine = GeometryQueryTool::instance()->get_gqe()->modeler_type();
+    {
+    const char* modType = GeometryQueryTool::instance()->get_gqe()->modeler_type();
+    // An empty modeler type means Cubit, which means ACIS:
+    s_currentEngine = modType ? modType : "ACIS";
+    }
   if (originalQueryEngine)
     {
     cgmaInitialized = true;
@@ -127,7 +131,7 @@ bool Engines::setDefault(const std::string& engine)
   // Grrr....
   std::string engineLower = engine;
   std::transform(engineLower.begin(), engineLower.end(), engineLower.begin(),
-    std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
+    std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("C")));
 
   bool defaultChanged = false;
   DLIList<GeometryModifyEngine*> gmes;
@@ -148,7 +152,7 @@ bool Engines::setDefault(const std::string& engine)
     const char* mtxt = gqe->modeler_type();
     std::string modeler = (mtxt && mtxt[0] ? mtxt : "(null)");
     std::transform(modeler.begin(), modeler.end(), modeler.begin(),
-      std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
+      std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("C")));
     if (modeler == engineLower)
       {
       GeometryQueryTool::instance()->set_default_gqe(gqe);
