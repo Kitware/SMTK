@@ -26,10 +26,8 @@ smtk::mesh::CollectionPtr load_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
-  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, mngr);
-  test( !entity.isNull(), "uuid shouldn't be invalid");
 
-  smtk::mesh::CollectionPtr c = mngr->collection(entity);
+  smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
 
   return c;
@@ -188,7 +186,7 @@ void verify_iteration(const smtk::mesh::CollectionPtr& c)
     }
 
   test( reportedNumCells == actualNumCells);
-  test( actualNumVerts == actualNumVerts);
+  test( reportedNumVerts == actualNumVerts);
 }
 
 void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
@@ -229,7 +227,7 @@ void verify_shared_iteration(const smtk::mesh::CollectionPtr& c)
 
   //this verifies that twoDim isn't using the iterator state from twoDimCopy
   test( reportedNumCells == actualNumCells);
-  test( actualNumVerts == actualNumVerts);
+  test( reportedNumVerts == actualNumVerts);
 
 
   //make sure the iterator on twoDimCopy keeps going

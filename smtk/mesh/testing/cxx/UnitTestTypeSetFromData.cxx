@@ -26,10 +26,8 @@ smtk::mesh::CollectionPtr load_hex_mesh(smtk::mesh::ManagerPtr mngr)
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
-  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, mngr);
-  test( !entity.isNull(), "uuid shouldn't be invalid");
 
-  smtk::mesh::CollectionPtr c = mngr->collection(entity);
+  smtk::mesh::CollectionPtr c  = smtk::io::ImportMesh::entireFile(file_path, mngr);
   test( c->isValid(), "collection should be valid");
 
   return c;

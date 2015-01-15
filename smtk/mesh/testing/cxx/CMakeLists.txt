@@ -20,8 +20,9 @@ set(unit_tests
   )
 
 set(unit_tests_which_require_data
-  UnitTestLoadMesh.cxx
+  UnitTestAddFileToCollection.cxx
   UnitTestCellSet.cxx
+  UnitTestLoadMesh.cxx
   UnitTestMeshSet.cxx
   UnitTestTypeSetFromData.cxx
   )

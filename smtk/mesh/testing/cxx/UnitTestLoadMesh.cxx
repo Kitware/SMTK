@@ -25,9 +25,11 @@ std::string data_root = SMTK_DATA_DIR;
 void load_bad_mesh()
 {
   std::string file_path(data_root);
+
   smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
-  test( entity.isNull(), "uuid should be invalid");
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( !c->isValid(), "collection should be invalid");
+  test( c->entity().isNull(), "uuid should be invalid");
 }
 
 //----------------------------------------------------------------------------
@@ -35,18 +37,135 @@ void load_valid_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
-  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
-  smtk::common::UUID entity = smtk::io::ImportMesh::intoManager(file_path, manager);
-  test( !entity.isNull(), "uuid shouldn't be invalid");
 
-  smtk::mesh::CollectionPtr c = manager->collection(entity);
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::entireFile(file_path, manager);
   test( c->isValid(), "collection should be valid");
 
   std::size_t numMeshes = c->numberOfMeshes();
   std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
   test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
   test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+}
 
+//----------------------------------------------------------------------------
+void load_multiple_meshes()
+{
+  std::string first_file_path(data_root), second_file_path(data_root);
+  first_file_path += "/mesh/twoassm_out.h5m";
+  second_file_path += "/mesh/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(first_file_path, manager);
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(second_file_path, manager);
+
+  test( c1->isValid(), "collection should be valid");
+  test( c2->isValid(), "collection should be valid");
+
+  //verify the size of twoassm
+  {
+  std::size_t numMeshes = c1->numberOfMeshes();
+  std::cout << "number of meshes in twoassm_out is: " << numMeshes << std::endl;
+  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 53, "dataset once loaded should have 53 meshes");
+  }
+
+
+  //verify the size of 64bricks
+  {
+  std::size_t numMeshes = c2->numberOfMeshes();
+  std::cout << "number of meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
+  test( numMeshes!=0, "dataset once loaded should have more than zero meshes");
+  test( numMeshes == 800, "dataset once loaded should have 800 meshes");
+  }
+
+  //verify the manager has two collections
+  test(manager->numberOfCollections() == 2);
+}
+
+//----------------------------------------------------------------------------
+void load_same_mesh_multiple_times()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c1 = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c1->isValid(), "collection should be valid");
+  test(manager->numberOfCollections() == 1);
+
+  //load the same mesh a second time and confirm that is valid
+  smtk::mesh::CollectionPtr c2 = smtk::io::ImportMesh::entireFile(file_path, manager);
+  test( c2->isValid(), "collection should be valid");
+  test(manager->numberOfCollections() == 2);
+}
+
+//----------------------------------------------------------------------------
+void load_onlyNeumann()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  std::cout << "number of neumann meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
+  test( numMeshes == 221, "dataset once loaded should have 221 meshes");
+
+}
+
+//----------------------------------------------------------------------------
+void load_onlyDirichlet()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
+  test( c->isValid(), "collection should be valid");
+
+  std::size_t numMeshes = c->numberOfMeshes();
+  std::cout << "number of dirichlet meshes in 64bricks_12ktet is: " << numMeshes << std::endl;
+  test( numMeshes == 221, "dataset once loaded should have 221 meshes");
+}
+
+//----------------------------------------------------------------------------
+void load_bad_onlyBoundary()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/64bricks_12ktet.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyBoundary(file_path, manager);
+  //this dataset has no boundaries
+  test( !c->isValid(), "collection should be invalid");
+}
+
+//----------------------------------------------------------------------------
+void load_bad_onlyNeumann()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyNeumann(file_path, manager);
+  //this dataset has no neumann sets
+  test( !c->isValid(), "collection should be invalid");
+
+}
+
+//----------------------------------------------------------------------------
+void load_bad_onlyDirichlet()
+{
+  std::string file_path(data_root);
+  file_path += "/mesh/twoassm_out.h5m";
+
+  smtk::mesh::ManagerPtr manager = smtk::mesh::Manager::create();
+  smtk::mesh::CollectionPtr c = smtk::io::ImportMesh::onlyDirichlet(file_path, manager);
+  //this dataset has no dirichlet sets
+  test( !c->isValid(), "collection should be invalid");
 }
 
 }
@@ -56,6 +175,17 @@ int UnitTestLoadMesh(int argc, char** argv)
 {
   load_bad_mesh();
   load_valid_mesh();
+
+  load_multiple_meshes();
+
+  load_same_mesh_multiple_times();
+
+  load_onlyNeumann();
+  load_onlyDirichlet();
+
+  load_bad_onlyBoundary();
+  load_bad_onlyNeumann();
+  load_bad_onlyDirichlet();
 
   return 0;
 }

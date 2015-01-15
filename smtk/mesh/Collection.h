@@ -104,17 +104,15 @@ public:
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::CellType cellType );
   smtk::mesh::CellSet   findAssociatedCells( const smtk::model::EntityRef& eref, smtk::mesh::DimensionType dim );
 
-  //todo: query based on materials and other attributes of the mesh db
-  //Tag("MATERIAL_SET"){};
-  //smtk::mesh:::Mesh materialMeshes();
+  //todo: query based on boundary and other attributes of the mesh db
+  //Tag("BOUNDARY_SET"){};
+  //smtk::mesh:::MeshSet bodunaryMeshes();
   //Tag("DIRICHLET_SET"){};
-  //smtk::mesh:::Mesh dirichletMeshes();
+  //smtk::mesh:::MeshSet dirichletMeshes();
   //Tag("NEUMANN_SET"){};
-  //smtk::mesh:::Mesh neumannMeshes();
-  //Tag("GroupTag"){};
-  //smtk::mesh:::Mesh groupMeshes();
+  //smtk::mesh:::MeshSet neumannMeshes();
   //todo: need to be able to extract the entire surface of the mesh
-  //smtk::mesh::MeshSet extractSurfaceMeshes();
+  //smtk::mesh::MeshSet generateBoundarMeshes();
 
 private:
   Collection( const Collection& other ); //blank since we are used by shared_ptr
