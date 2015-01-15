@@ -150,11 +150,14 @@ void QEntityItemDelegate::paint(
   titleRect.setBottom(titleRect.top() + titleFM.height());
   subtitleRect.setTop(titleRect.bottom() + 2);
 
-  painter->save();
-  painter->setBrush(swatchColor);
-  painter->setPen(Qt::NoPen);
-  painter->drawRect(colorRect);
-  painter->restore();
+  if(swatchColor.isValid())
+    {
+    painter->save();
+    painter->setBrush(swatchColor);
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(colorRect);
+    painter->restore();
+    }
   //painter->drawPixmap(QPoint(iconRect.right()/2,iconRect.top()/2),icon.pixmap(iconsize.width(),iconsize.height()));
   painter->drawPixmap(
     QPoint(
@@ -162,11 +165,12 @@ void QEntityItemDelegate::paint(
       iconRect.top() + 7),
     icon.pixmap(iconsize.width(), iconsize.height()));
 
-  painter->drawPixmap(
-    QPoint(
-      option.rect.left(),
-      colorRect.top()),
-    visicon.pixmap(visiconsize.width(), visiconsize.height()));
+  if(!visicon.isNull())
+    painter->drawPixmap(
+      QPoint(
+        option.rect.left(),
+        colorRect.top()),
+      visicon.pixmap(visiconsize.width(), visiconsize.height()));
 
   if (option.state.testFlag(QStyle::State_Selected))
     painter->setPen(Qt::white);
@@ -255,15 +259,17 @@ bool QEntityItemDelegate::editorEvent (
   QIcon visicon = qvariant_cast<QIcon>(
     idx.data(QEntityItemModel::EntityVisibilityRole));
   QSize visiconsize = visicon.actualSize(option.decorationSize);
+  QColor swatchColor = qvariant_cast<QColor>(idx.data(QEntityItemModel::EntityColorRole));
 
   int px = e->pos().x();
   int py = e->pos().y();
   bool bvis = false, bcolor = false;
-  bvis = px > option.rect.left()
-    && px < (option.rect.left() + visiconsize.width())
-    && py > option.rect.top()
-    && py < (option.rect.top() + option.rect.height());
-  if(!bvis)
+  if(!visicon.isNull())
+    bvis = px > option.rect.left()
+      && px < (option.rect.left() + visiconsize.width())
+      && py > option.rect.top()
+      && py < (option.rect.top() + option.rect.height());
+  if(!bvis && swatchColor.isValid())
     bcolor = px > (option.rect.left() + visiconsize.width() + 2)
       && px < (option.rect.left() + visiconsize.width() + 2 + this->m_swatchSize)
       && py > option.rect.top()

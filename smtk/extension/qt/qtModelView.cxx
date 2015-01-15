@@ -593,7 +593,8 @@ void qtModelView::toggleEntityVisibility( const QModelIndex& idx)
     return;
   smtk::model::Cursors selcursors;
   this->recursiveSelect(this->getModel()->getItem(idx), selcursors,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
+    MODEL_ENTITY | INSTANCE_ENTITY | BRIDGE_SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   int vis = dp->relatedEntity().visible() ? 0 : 1;
   if(this->setEntityVisibility(selcursors, vis, brOp))
@@ -645,7 +646,8 @@ void qtModelView::changeEntityColor( const QModelIndex& idx)
     return;
   smtk::model::Cursors selcursors;
   this->recursiveSelect(this->getModel()->getItem(idx), selcursors,
-    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY | MODEL_ENTITY);
+    CELL_ENTITY | SHELL_ENTITY  | GROUP_ENTITY |
+    MODEL_ENTITY | INSTANCE_ENTITY | BRIDGE_SESSION);
   DescriptivePhrasePtr dp = this->getModel()->getItem(idx);
   smtk::model::FloatList rgba(4);
   rgba = dp->relatedColor();
