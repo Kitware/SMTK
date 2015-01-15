@@ -183,6 +183,12 @@ protected:
   smtk::common::UUIDGenerator m_uuidGenerator;
   IntegerList m_globalCounters; // first entry is bridge counter, second is model counter
 
+  void assignDefaultNamesWithOwner(
+    const UUIDWithEntity& irec,
+    const smtk::common::UUID& owner,
+    const std::string& ownersName,
+    std::set<smtk::common::UUID>& remaining,
+    bool nokids);
   std::string assignDefaultName(const smtk::common::UUID& uid, BitFlags entityFlags);
   IntegerList& entityCounts(const smtk::common::UUID& modelId, BitFlags entityFlags);
   void prepareForEntity(std::pair<smtk::common::UUID,Entity>& entry);

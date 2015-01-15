@@ -1185,27 +1185,64 @@ void BRepModel::setBridgeForModel(
   this->m_modelBridges[uid] = bridge;
 }
 
-/**\brief Assign a string property named "name" to each entity without one.
+/**\brief Assign a string property named "name" to every entity without one.
   *
-  * If a model can be identified as owning the entity, the default name
-  * assigned to the entity will be the model's name followed by a command
-  * and then the name for the entity.
-  * If entities without names have an owning model, then per-model counters
-  * are used to number entities of the same type (e.g., "Face 13", "Edge 42").
-  * Otherwise, the trailing digits of entity UUIDs are used.
+  * This descends sessions and models owned by sessions rather than
+  * blindly iterating over UUIDs; it is thus much faster than calling
+  * assignDefaultName() on each entity UUID.
   */
 void BRepModel::assignDefaultNames()
 {
+  // I. Put every UUID into a bin for processing
   UUIDWithEntity it;
+  UUIDs models; // models that have not had all of their children named
+  UUIDs orphans; // entities that may or may not be parent-less
+  UUIDs named; // entities with names
   for (it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
-    if (!this->hasStringProperty(it->first, "name"))
+    BitFlags etype = it->second.entityFlags();
+    if (etype & MODEL_ENTITY)
       {
-      this->assignDefaultName(it->first, it->second.entityFlags());
+      models.insert(it->first);
       }
+    else
+      {
+      if (this->hasStringProperty(it->first, "name"))
+        named.insert(it->first);
+      else
+        orphans.insert(it->first);
+      }
+    }
+  UUIDs::iterator uit;
+  for (uit = models.begin(); uit != models.end(); ++uit)
+    {
+    // Assign the owner a name if required. This way,
+    // assignDefaultNamesWithOwner can assume the name exists.
+    std::string oname;
+    if (!this->hasStringProperty(*uit, "name"))
+      oname = this->assignDefaultName(*uit);
+    else
+      oname = this->stringProperty(*uit, "name")[0];
+
+    UUIDWithEntity iit = this->m_topology->find(*uit);
+    this->assignDefaultNamesWithOwner(iit, *uit, oname, orphans, false);
+    }
+  for (uit = orphans.begin(); uit != orphans.end(); ++uit)
+    {
+    this->assignDefaultName(*uit);
     }
 }
 
+/**\brief Assign a string property named "name" to the given entity.
+  *
+  * If a model can be identified as owning an entity, the default name
+  * assigned to the entity will be the model's name followed by a comma
+  * and then the name for the entity. The model's per-entity-type counters
+  * are used to number entities of the same type (e.g., "Face 13", "Edge 42").
+  *
+  * Orphan entities (those without owning models) are given names
+  * that end with the trailing digits of their UUIDs.
+  */
 std::string BRepModel::assignDefaultName(const UUID& uid)
 {
   UUIDWithEntity it = this->m_topology->find(uid);
@@ -1214,6 +1251,52 @@ std::string BRepModel::assignDefaultName(const UUID& uid)
     return this->assignDefaultName(it->first, it->second.entityFlags());
     }
   return std::string();
+}
+
+void BRepModel::assignDefaultNamesWithOwner(
+  const UUIDWithEntity& irec,
+  const UUID& owner,
+  const std::string& ownersName,
+  std::set<smtk::common::UUID>& remaining,
+  bool nokids)
+{
+  remaining.erase(irec->first);
+  // Assign the item a name if required:
+  if (!this->hasStringProperty(irec->first, "name"))
+    {
+    IntegerList& counts(this->entityCounts(owner, irec->second.entityFlags()));
+    std::string defaultName =
+      counts.empty() ?
+      this->shortUUIDName(irec->first, irec->second.entityFlags()) :
+      ownersName + ", " + Entity::defaultNameFromCounters(irec->second.entityFlags(), counts);
+    this->setStringProperty(irec->first, "name", defaultName);
+    }
+
+  if (nokids)
+    return;
+
+  // Now descend the owner and assign its children names.
+  // Do not ascend... check that relIt dimension decreases or
+  // that certain ownership rules are met.
+  UUIDArray::const_iterator relIt;
+  BitFlags iflg = irec->second.entityFlags();
+  BitFlags idim = iflg & ANY_DIMENSION;
+  for (relIt = irec->second.relations().begin(); relIt != irec->second.relations().end(); ++relIt)
+    {
+    UUIDWithEntity child = this->m_topology->find(*relIt);
+    if (child == this->m_topology->end())
+      continue;
+    BitFlags cflg = child->second.entityFlags();
+    bool yesButNoKids = (cflg & GROUP_ENTITY) && (iflg & MODEL_ENTITY);
+    if (
+      ((cflg & ANY_DIMENSION) < idim && !(iflg & SHELL_ENTITY)) ||
+      ((cflg & SHELL_ENTITY) && (iflg & USE_ENTITY)) ||
+      ((cflg & USE_ENTITY)   && (iflg & CELL_ENTITY)) ||
+      yesButNoKids)
+      {
+      this->assignDefaultNamesWithOwner(child, owner, ownersName, remaining, yesButNoKids);
+      }
+    }
 }
 
 std::string BRepModel::assignDefaultName(const UUID& uid, BitFlags entityFlags)
