@@ -256,7 +256,7 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
           this->lookupIconForEntityFlags(
             item->phraseType()));
         }
-      else if (role == EntityVisibilityRole)
+      else if (role == EntityVisibilityRole && item->relatedEntity().isValid())
         {
         // by default, everything should be visible
         if(!item->relatedEntity().hasVisibility() || item->relatedEntity().visible())
@@ -264,7 +264,7 @@ QVariant QEntityItemModel::data(const QModelIndex& idx, int role) const
         else
           return QVariant(QIcon(":/icons/display/eyeballx_16.png"));
         }
-      else if (role == EntityColorRole)
+      else if (role == EntityColorRole && item->relatedEntity().isValid())
         {
         QColor color;
         FloatList rgba = item->relatedColor();
@@ -354,7 +354,8 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       std::string sval = value.value<QString>().toStdString();
       didChange = phrase->setSubtitle(sval);
       }
-    else if (role == EntityColorRole && phrase->isRelatedColorMutable())
+    else if (role == EntityColorRole && phrase->isRelatedColorMutable()
+            && phrase->relatedEntity().isValid())
       {
       QColor color = value.value<QColor>();
       FloatList rgba(4);
@@ -364,7 +365,7 @@ bool QEntityItemModel::setData(const QModelIndex& idx, const QVariant& value, in
       rgba[3] = color.alphaF();
       didChange = phrase->setRelatedColor(rgba);
       }
-    else if (role == EntityVisibilityRole)
+    else if (role == EntityVisibilityRole && phrase->relatedEntity().isValid())
       {
       int vis = value.toInt();
       phrase->relatedEntity().setVisible(vis > 0 ? true : false);
