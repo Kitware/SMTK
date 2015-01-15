@@ -510,7 +510,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
 {
   vtkIdType currentEdge = startingEdge;
   vtkNew<vtkIdList>cellIds, pointIds;
-  vtkIdType currentPoint, firstPoint, nextPoint;
+  vtkIdType currentPoint, nextPoint;
   vtkIdType gedge;
   std::string currentFaceInfo;
   vtkDiscreteModel* thisModel = vtkDiscreteModel::SafeDownCast(
@@ -540,7 +540,7 @@ void vtkDiscreteModelFace::WalkLoop(vtkIdType startingEdge,
       }
     if (currentPoint == -1)
       {
-      firstPoint = currentPoint = pointIds->GetId(0);
+      currentPoint = pointIds->GetId(0);
       nextPoint = pointIds->GetId(1);
       }
     else if (currentPoint != pointIds->GetId(0))
