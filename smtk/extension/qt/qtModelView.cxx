@@ -208,8 +208,6 @@ void qtModelView::recursiveSelect (smtk::model::DescriptivePhrasePtr dPhrase,
     (dPhrase->relatedEntity().entityFlags() & entityFlags)/* &&
     selcursors.find(dPhrase->relatedEntity()) == selcursors.end() */)
     {
-    if(dPhrase->relatedEntity().entityFlags() & BRIDGE_SESSION)
-      std::cout << "A BridgeSession selected " << std::endl;
     selcursors.insert(dPhrase->relatedEntity());
     }
 
