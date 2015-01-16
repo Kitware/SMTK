@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<typesystem package="@TYPESYSTEM_NAME@">
+
+  @EXTRA_TYPESYSTEMS@
+
+  <!-- Ignore Shiboken notice that CGM lives inside SMTK namespace -->
+  <suppress-warning text="Duplicate type entry: 'smtk'"/>
+
+  <!-- Additional objects to be wrapped when building with CGM -->
+  <namespace-type name="smtk" generate = "no">
+    <namespace-type name="bridge" generate = "no">
+      <namespace-type name="discrete" generate = "yes">
+
+        <object-type name="Bridge">
+          <include file-name="smtk/bridge/discrete/Bridge.h" location="local"/>
+        </object-type>
+
+      </namespace-type>
+    </namespace-type>
+  </namespace-type>
+
+  <value-type template="smtk::shared_ptr" args="smtk::bridge::discrete::Bridge">
+  </value-type>
+
+  @EXTRA_OBJECTS@
+
+</typesystem>

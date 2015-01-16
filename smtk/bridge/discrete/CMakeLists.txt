@@ -179,6 +179,42 @@ smtk_public_headers(${discreteBridgeHeaders} ${DiscreteModelHeaders})
 #install the library and exports the library when used from a build tree
 smtk_install_library(smtkDiscreteBridge DEPENDS SMTKCore vtkSMTKDiscreteModel)
 
+if(SMTK_BUILD_PYTHON_WRAPPINGS AND Shiboken_FOUND)
+  #extract the headers from discrete library we built to give them to shiboken
+
+  sbk_wrap_library(smtkDiscreteBridge
+    GENERATOR_ARGS --avoid-protected-hack
+    WORKING_DIRECTORY ${SMTK_SOURCE_DIR}/smtk
+    LOCAL_INCLUDE_DIRECTORIES
+      ${SMTK_SOURCE_DIR}/smtk/common
+      ${SMTK_SOURCE_DIR}/smtk/attribute
+      ${SMTK_SOURCE_DIR}/smtk/model
+      ${SMTK_SOURCE_DIR}/smtk/bridge
+      ${SMTK_SOURCE_DIR}/smtk/bridge/discrete
+      ${SMTK_SOURCE_DIR}/smtk/simulation
+      ${SMTK_SOURCE_DIR}/smtk/io
+      ${SMTK_SOURCE_DIR}/smtk/view
+      ${SMTK_SOURCE_DIR}/smtk
+      ${SMTK_BINARY_DIR}/smtk
+      ${CMAKE_CURRENT_BINARY_DIR}
+    TYPESYSTEM ${CMAKE_CURRENT_SOURCE_DIR}/typesystem.xml
+    HEADERS ${discreteBridgeHeaders}
+    DEPENDS
+      SMTKCore
+  )
+  target_include_directories(smtkDiscreteBridgePython
+    PRIVATE
+      "${CMAKE_CURRENT_BINARY_DIR}"
+      "${CMAKE_CURRENT_SOURCE_DIR}"
+      "${CMAKE_CURRENT_SOURCE_DIR}/operation"
+      "${CMAKE_CURRENT_SOURCE_DIR}/kernel"
+      "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Model"
+      "${CMAKE_CURRENT_SOURCE_DIR}/kernel/Serialize"
+      "${CMAKE_CURRENT_BINARY_DIR}/operation"
+      "${CMAKE_CURRENT_BINARY_DIR}/kernel"
+  )
+endif()
+
 if(SMTK_BUILD_BRIDGE_PLUGIN AND SMTK_BUILD_DISCRETE_BRIDGE)
   add_subdirectory(plugin)
 endif()
