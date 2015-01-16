@@ -22,7 +22,7 @@ namespace
 std::string data_root = SMTK_DATA_DIR;
 
 //----------------------------------------------------------------------------
-void load_bad_mesh()
+void verify_load_bad_mesh()
 {
   std::string file_path(data_root);
 
@@ -33,7 +33,7 @@ void load_bad_mesh()
 }
 
 //----------------------------------------------------------------------------
-void load_valid_mesh()
+void verify_load_valid_mesh()
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
@@ -49,7 +49,7 @@ void load_valid_mesh()
 }
 
 //----------------------------------------------------------------------------
-void load_multiple_meshes()
+void verify_load_multiple_meshes()
 {
   std::string first_file_path(data_root), second_file_path(data_root);
   first_file_path += "/mesh/twoassm_out.h5m";
@@ -84,7 +84,7 @@ void load_multiple_meshes()
 }
 
 //----------------------------------------------------------------------------
-void load_same_mesh_multiple_times()
+void verify_load_same_mesh_multiple_times()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
@@ -101,7 +101,7 @@ void load_same_mesh_multiple_times()
 }
 
 //----------------------------------------------------------------------------
-void load_onlyNeumann()
+void verify_load_onlyNeumann()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
@@ -117,7 +117,7 @@ void load_onlyNeumann()
 }
 
 //----------------------------------------------------------------------------
-void load_onlyDirichlet()
+void verify_load_onlyDirichlet()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
@@ -132,7 +132,7 @@ void load_onlyDirichlet()
 }
 
 //----------------------------------------------------------------------------
-void load_bad_onlyBoundary()
+void verify_load_bad_onlyBoundary()
 {
   std::string file_path(data_root);
   file_path += "/mesh/64bricks_12ktet.h5m";
@@ -144,7 +144,7 @@ void load_bad_onlyBoundary()
 }
 
 //----------------------------------------------------------------------------
-void load_bad_onlyNeumann()
+void verify_load_bad_onlyNeumann()
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
@@ -157,7 +157,7 @@ void load_bad_onlyNeumann()
 }
 
 //----------------------------------------------------------------------------
-void load_bad_onlyDirichlet()
+void verify_load_bad_onlyDirichlet()
 {
   std::string file_path(data_root);
   file_path += "/mesh/twoassm_out.h5m";
@@ -173,19 +173,19 @@ void load_bad_onlyDirichlet()
 //----------------------------------------------------------------------------
 int UnitTestLoadMesh(int argc, char** argv)
 {
-  load_bad_mesh();
-  load_valid_mesh();
+  verify_load_bad_mesh();
+  verify_load_valid_mesh();
 
-  load_multiple_meshes();
+  verify_load_multiple_meshes();
 
-  load_same_mesh_multiple_times();
+  verify_load_same_mesh_multiple_times();
 
-  load_onlyNeumann();
-  load_onlyDirichlet();
+  verify_load_onlyNeumann();
+  verify_load_onlyDirichlet();
 
-  load_bad_onlyBoundary();
-  load_bad_onlyNeumann();
-  load_bad_onlyDirichlet();
+  verify_load_bad_onlyBoundary();
+  verify_load_bad_onlyNeumann();
+  verify_load_bad_onlyDirichlet();
 
   return 0;
 }

@@ -25,9 +25,10 @@ set(unit_tests_which_require_data
   UnitTestLoadMesh.cxx
   UnitTestMeshSet.cxx
   UnitTestTypeSetFromData.cxx
+  UnitTestWriteMesh.cxx
   )
 
 smtk_unit_tests(LABEL "Mesh"
                 SOURCES ${unit_tests}
                 SOURCES_REQUIRE_DATA ${unit_tests_which_require_data}
-                LIBRARIES SMTKCore)
+                LIBRARIES SMTKCore ${Boost_LIBRARIES})

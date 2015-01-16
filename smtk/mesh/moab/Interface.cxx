@@ -31,7 +31,7 @@ namespace
     return (t != NULL && t->isValid());
   }
 
-
+  //--------------------------------------------------------------------------
   bool moab_load( const smtk::mesh::moab::InterfacePtr& interface,
                   const std::string& path,
                   const char* subset_name_to_load)
@@ -91,6 +91,86 @@ namespace
   return err == ::moab::MB_SUCCESS;
   }
 
+  //--------------------------------------------------------------------------
+  bool moab_write( const smtk::mesh::moab::InterfacePtr& interface,
+                   const std::string& path,
+                   const char* subset_name_to_write)
+  {
+  ::moab::ErrorCode err = ::moab::MB_FAILURE;
+
+  if(subset_name_to_write)
+    {
+    //if we are writing out a subset we first need to find the model
+    //entities with the given tag
+    ::moab::Tag subsetTag;
+    //all our tags are a single integer value
+    interface->tag_get_handle(subset_name_to_write,
+                              1,
+                              ::moab::MB_TYPE_INTEGER,
+                              subsetTag);
+
+    ::moab::Range setsToSave;
+    interface->get_entities_by_type_and_tag( interface->get_root_set(),
+                                             ::moab::MBENTITYSET,
+                                             &subsetTag,
+                                             NULL,
+                                             1,
+                                             setsToSave,
+                                             ::moab::Interface::UNION);
+
+    if( setsToSave.empty() )
+      {
+#ifndef NDEBUG
+      std::cerr << "failed to write file: " << path <<
+                   " no entities with tag: " << subset_name_to_write << std::endl;
+#endif
+      return false;
+      }
+
+    ::moab::Range entsToSave;
+    for( ::moab::Range::const_iterator i = setsToSave.begin();
+         i != setsToSave.end();
+         ++i)
+      {
+      interface->get_entities_by_handle( *i, entsToSave);
+      }
+
+    ::moab::Range entitiesToSave = setsToSave;
+    entitiesToSave.merge( entsToSave );
+    entitiesToSave.insert( 0 );
+
+    // std::cout << "start of moab_write" << std::endl;
+    // interface->list_entities(entitiesToSave);
+    // std::cout << "end of moab_write" << std::endl;
+
+    //write out just the subset. We let the file extension the user specified
+    //determine what writer to use.
+    err = interface->write_file(path.c_str(),
+                                NULL, //explicit writer type
+                                NULL, //options
+                                entitiesToSave);
+
+    }
+  else
+    {
+    //write out everything. We let the file extension the user specified
+    //determine what writer to use.
+    err = interface->write_file(path.c_str());
+    }
+
+#ifndef NDEBUG
+  if(err != ::moab::MB_SUCCESS)
+    {
+    std::string msg; interface->get_last_error(msg);
+    std::cerr << msg << std::endl;
+    std::cerr << "failed to write file: " << path << std::endl;
+    }
+#endif
+
+  return err == ::moab::MB_SUCCESS;
+  }
+
+  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   smtk::mesh::moab::InterfacePtr load_file( smtk::mesh::moab::InterfacePtr interface,
                                             const std::string& path,
@@ -106,6 +186,7 @@ namespace
   return interface;
   }
 
+  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   bool append_file( const smtk::mesh::moab::InterfacePtr& interface,
                     const std::string& path,
@@ -114,12 +195,13 @@ namespace
   return moab_load(interface, path, tag_name);
   }
 
+  //--------------------------------------------------------------------------
   //requires that interface is not a null shared ptr
   bool write_file( const smtk::mesh::moab::InterfacePtr& interface,
                    const std::string& path,
                    const char* tag_name = NULL)
   {//tag_name which is NULL loads in all meshes
-  return false;
+  return moab_write(interface, path, tag_name);
   }
 }
 
@@ -211,14 +293,14 @@ bool write_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
 //Write all the neumann sets in a file into an existing collection
 bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
-  const std::string tag("BOUNDARY_SET");
+  const std::string tag("NEUMANN_SET");
   return is_valid(c) && write_file( extractInterface(c), path, tag.c_str() );
 }
 
 //Write all the dirichlet sets in a file into an existing collection
 bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
 {
-  const std::string tag("BOUNDARY_SET");
+  const std::string tag("DIRICHLET_SET");
   return is_valid(c) && write_file( extractInterface(c), path, tag.c_str() );
 }
 
