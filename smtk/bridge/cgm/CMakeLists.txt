@@ -8,6 +8,8 @@ set(cgmSrcs
   ExportSolid.cxx
   ImportSolid.cxx
   Operator.cxx
+  operators/BooleanIntersection.cxx
+  operators/BooleanSubtraction.cxx
   operators/BooleanUnion.cxx
   operators/Copy.cxx
   operators/CreateBrick.cxx
@@ -32,6 +34,8 @@ set(cgmHeaders
   ExportSolid.h
   ImportSolid.h
   Operator.h
+  operators/BooleanIntersection.h
+  operators/BooleanSubtraction.h
   operators/BooleanUnion.h
   operators/Copy.h
   operators/CreateBrick.h
@@ -90,6 +94,8 @@ smtk_install_library(cgmSMTK DEPENDS SMTKCore)
 # We do not need the path to the generated header (appended
 # to cgmOperatorXML) since the operators themselves include
 # the header in their implementations.
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanIntersection.sbt" cgmOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanSubtraction.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/BooleanUnion.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/Copy.sbt" cgmOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/operators/CreateBrick.sbt" cgmOperatorXML)
