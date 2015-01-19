@@ -1138,19 +1138,18 @@ smtk::model::Face Bridge::addFaceToManager(
           }
         }
 
-     if (!haveFaceUse)
-        { // Add a reference to the volume(s) directly (with no relationship)
-        int nvols = refFace->GetNumberOfModelRegions();
-        for (int i = 0; i < nvols; ++i)
+      // Add a reference to the volume(s) directly (with no relationship)
+      int nvols = refFace->GetNumberOfModelRegions();
+      for (int i = 0; i < nvols; ++i)
+        {
+        vtkModelRegion* vol = refFace->GetModelRegion(i);
+        if (vol)
           {
-          vtkModelRegion* vol = refFace->GetModelRegion(i);
-          if (vol)
-            {
-            Volume v(mgr, this->findOrSetEntityUUID(vol));
-            result.addRawRelation(v);
-            }
+          Volume v(mgr, this->findOrSetEntityUUID(vol));
+          result.addRawRelation(v);
           }
         }
+
       std::vector<vtkModelEdge*> edges;
       refFace->GetModelEdges(edges);
       this->addEntityArray(result, edges, AddRawRelationHelper(), relDepth - 1);
@@ -1187,6 +1186,17 @@ smtk::model::Edge Bridge::addEdgeToManager(
         smtk::common::UUID euid = this->findOrSetEntityUUID(eu);
         this->addEdgeUseToManager(euid, eu, mgr, relDepth - 1);
         }
+
+      // Add reference to face(s) directly (with no relationship)
+      vtkModelItemIterator* fit = refEdge->NewAdjacentModelFaceIterator();
+      for (fit->Begin(); !fit->IsAtEnd(); fit->Next())
+        {
+        vtkModelItem* ff = fit->GetCurrentItem();
+        smtk::common::UUID fid = this->findOrSetEntityUUID(ff);
+        result.addRawRelation(smtk::model::Face(mgr, fid));
+        }
+      fit->Delete();
+
       // Add geometry, if any.
       this->addTessellation(result, refEdge);
       }
@@ -1213,6 +1223,30 @@ smtk::model::Vertex Bridge::addVertexToManager(
     if (relDepth >= 0)
       {
       // Add refVertex relations and arrangements
+      vtkModelItemIterator* vuit = refVertex->NewModelVertexUseIterator();
+      for (vuit->Begin(); !vuit->IsAtEnd(); vuit->Next())
+        {
+        vtkModelVertexUse* vu =
+          vtkModelVertexUse::SafeDownCast(
+            vuit->GetCurrentItem());
+        if (!vu)
+          continue;
+
+        smtk::common::UUID vuid = this->findOrSetEntityUUID(vu);
+        this->addVertexUseToManager(vuid, vu, mgr, relDepth - 1);
+        }
+      vuit->Delete();
+
+      // Add reference to edge(s) directly (with no relationship)
+      vtkModelItemIterator* eit = refVertex->NewAdjacentModelEdgeIterator();
+      for (eit->Begin(); !eit->IsAtEnd(); eit->Next())
+        {
+        vtkModelItem* ee = eit->GetCurrentItem();
+        smtk::common::UUID eid = this->findOrSetEntityUUID(ee);
+        result.addRawRelation(smtk::model::Edge(mgr, eid));
+        }
+      eit->Delete();
+
       // Add geometry, if any.
       this->addTessellation(result, refVertex);
       }
