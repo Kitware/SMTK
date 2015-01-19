@@ -1,4 +1,5 @@
 set(smtkCGMBridgePythonTests
+  cgmBooleans
   cgmSolidModeling
   cgmBuildUp
   cgmTransforms
