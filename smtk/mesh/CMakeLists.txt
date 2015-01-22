@@ -10,7 +10,9 @@ set(meshSrcs
   # Points.cxx
   # PointSet.cxx
   TypeSet.cxx
+  moab/CellTypeToType.cxx
   moab/Interface.cxx
+  moab/Tags.cxx
   )
 
 set(meshHeaders

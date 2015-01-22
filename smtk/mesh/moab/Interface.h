@@ -14,6 +14,7 @@
 #ifndef __smtk_mesh_moab_Interface_h
 #define __smtk_mesh_moab_Interface_h
 
+#include "smtk/SMTKCoreExports.h"
 #include "smtk/PublicPointerDefs.h"
 #include "moab/Interface.hpp"
 
@@ -25,6 +26,7 @@ namespace moab
 //Interface is defined in PublicPointerDefs as a typedef to moab::interface
 //We don't inherit from moab::interface since it is an abstract class
 //Requires the CollectionPtr to not be NULL
+SMTKCORE_EXPORT
 const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c);
 
 //construct an empty interface instance, this is properly connected
