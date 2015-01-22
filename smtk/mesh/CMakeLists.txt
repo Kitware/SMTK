@@ -12,6 +12,7 @@ set(meshSrcs
   TypeSet.cxx
   moab/CellTypeToType.cxx
   moab/Interface.cxx
+  moab/PointConnectivityStorage.cxx
   moab/Tags.cxx
   )
 

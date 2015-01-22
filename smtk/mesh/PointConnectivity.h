@@ -67,13 +67,6 @@ public:
   //The pointer returned should be treated as a read only pointer
   bool fetchNextCell(int& numPts, const smtk::mesh::Handle* &points);
 
-private:
-
-  smtk::mesh::CollectionPtr m_parent;
-
-  class InternalStorageImpl;
-  smtk::shared_ptr< InternalStorageImpl > m_connectivity;
-
   //struct that holds the required information to compute what is the
   //current cell when we are iterating.
   struct IterationState
@@ -87,6 +80,14 @@ private:
     std::size_t whichConnectivityVector;
     std::size_t ptrOffsetInVector;
     };
+private:
+
+  smtk::mesh::CollectionPtr m_parent;
+
+  class InternalStorageImpl;
+  smtk::shared_ptr< InternalStorageImpl > m_connectivity;
+
+
 
   IterationState m_iteratorLocation;
 };
