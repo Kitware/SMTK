@@ -4,7 +4,7 @@ set(smtkDiscreteBridgePythonTests
 
 # Additional tests that require SMTK_DATA_DIR
 set(smtkDiscreteBridgePythonDataTests
-  discreteLoadFile
+#  discreteLoadFile
 )
 
 foreach (test ${smtkDiscreteBridgePythonTests})
