@@ -865,7 +865,7 @@ void Manager::removeEntityReferences(const UUIDWithEntity& c)
     ref = this->findEntity(*bit);
     if (ref)
       {
-      ref->removeRelation(c->first);
+      ref->invalidateRelation(c->first);
       }
     }
 }
@@ -1687,7 +1687,7 @@ void Manager::prepareForEntity(std::pair<UUID,Entity>& entry)
       {
       // Create arrangements to hold face-uses:
       this->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, NEGATIVE));
-      this->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 1, POSITIVE));
+      this->arrangeEntity(entry.first, HAS_USE, Arrangement::CellHasUseWithIndexSenseAndOrientation(-1, 0, POSITIVE));
       }
     }
   else if (entry.second.entityFlags() & USE_ENTITY)
@@ -2134,6 +2134,8 @@ bool Manager::findDualArrangements(
     case CELL_ENTITY:
       if ((*arr)[index].IndexSenseAndOrientationFromCellHasUse(relationIdx, sense, orient))
         { // OK, find use's reference to this cell.
+        if (relationIdx < 0)
+          return false;
         dualEntityId = src->relations()[relationIdx];
         dualKind = HAS_CELL;
         if ((dualIndex =
@@ -2324,6 +2326,7 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
       else
         { // We found an existing but invalid use... replace it below.
         arrIdx = relIdx;
+        std::cout << "  Found cellHasUse(" << sense << "," << (orient > 0? "+" : "-") << ") at " << arrIdx << "\n";
         break;
         }
       }
@@ -2347,16 +2350,34 @@ UUID Manager::findCreateOrReplaceCellUseOfSenseAndOrientation(
     use = this->m_topology->find(replacement);
     }
 
-  // Now add the use to the cell and the cell to the use:
-  this->arrangeEntity(
-    cell, HAS_USE,
-    Arrangement::CellHasUseWithIndexSenseAndOrientation(
-      entity->appendRelation(use->first), sense, orient),
-    arrIdx);
-  this->arrangeEntity(
-    use->first, HAS_CELL,
-    Arrangement::UseHasCellWithIndexAndSense(
-      use->second.appendRelation(cell), sense));
+  if (arrIdx >= 0)
+    { // We found an existing use and need to replace it.
+    this->arrangeEntity(
+      cell, HAS_USE,
+      Arrangement::CellHasUseWithIndexSenseAndOrientation(
+        arrIdx, sense, orient),
+      arrIdx);
+    // Does the use already have a reference back to the cell?
+    this->arrangeEntity(
+      use->first, HAS_CELL,
+      Arrangement::UseHasCellWithIndexAndSense(
+        use->second.findOrAppendRelation(cell), sense));
+    }
+  else
+    {
+    // We did not find an arrangement of the specified
+    // sense and orientation... append it, adding
+    // the use to the cell and the cell to the use:
+    this->arrangeEntity(
+      cell, HAS_USE,
+      Arrangement::CellHasUseWithIndexSenseAndOrientation(
+        entity->appendRelation(use->first), sense, orient),
+      arrIdx);
+    this->arrangeEntity(
+      use->first, HAS_CELL,
+      Arrangement::UseHasCellWithIndexAndSense(
+        use->second.appendRelation(cell), sense));
+    }
 
   return use->first;
 }
