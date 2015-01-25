@@ -475,7 +475,7 @@ UUIDs BRepModel::entitiesMatchingFlags(BitFlags mask, bool exactMatch)
   for (UUIDWithEntity it = this->m_topology->begin(); it != this->m_topology->end(); ++it)
     {
     BitFlags masked = it->second.entityFlags() & mask;
-    if (
+    if ((masked && mask == ANY_ENTITY) ||
       (!exactMatch && masked) ||
       (exactMatch && masked == mask))
       {
