@@ -98,8 +98,8 @@ qtModelView::~qtModelView()
   if(this->m_ContextMenu)
     delete this->m_ContextMenu;
 
-  if(this->m_OperatorsWidget)
-    delete this->m_OperatorsWidget;
+//  if(this->m_OperatorsWidget)
+//    delete this->m_OperatorsWidget;
 
   if(this->m_OperatorsDock)
     delete this->m_OperatorsDock;

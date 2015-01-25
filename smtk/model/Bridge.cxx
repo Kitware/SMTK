@@ -289,17 +289,34 @@ void Bridge::initializeOperatorSystem(const OperatorConstructors* opList)
   Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
   ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
+  ModelEntityItemDefinition::Ptr entnewDefn = ModelEntityItemDefinition::New("new entities");
+  ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("removed entities");
+  IntItemDefinition::Ptr eventTypeDefn = IntItemDefinition::New("eventtype");
+
   StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
   outcomeDefn->setNumberOfRequiredValues(1);
   outcomeDefn->setIsOptional(false);
   entoutDefn->setNumberOfRequiredValues(0);
   entoutDefn->setIsOptional(true);
   entoutDefn->setIsExtensible(true);
+  entnewDefn->setNumberOfRequiredValues(0);
+  entnewDefn->setIsOptional(true);
+  entnewDefn->setIsExtensible(true);
+  entremDefn->setNumberOfRequiredValues(0);
+  entremDefn->setIsOptional(true);
+  entremDefn->setIsExtensible(true);
+  eventTypeDefn->setNumberOfRequiredValues(1);
+  eventTypeDefn->setIsOptional(true);
+
   logDefn->setNumberOfRequiredValues(0);
   logDefn->setIsExtensible(1);
   logDefn->setIsOptional(true);
+
   defn->addItemDefinition(outcomeDefn);
   defn->addItemDefinition(entoutDefn);
+  defn->addItemDefinition(entnewDefn);
+  defn->addItemDefinition(entremDefn);
+  defn->addItemDefinition(eventTypeDefn);
   defn->addItemDefinition(logDefn);
 
   if (!opList && this->inheritsOperators())

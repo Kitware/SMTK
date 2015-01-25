@@ -121,6 +121,7 @@ protected:
   friend class ReadOperator;
   friend class SplitFaceOperator;
   friend class ImportOperator;
+  friend class EntityGroupOperator;
 
   Bridge();
 
