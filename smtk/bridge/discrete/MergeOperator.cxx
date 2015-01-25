@@ -13,9 +13,11 @@
 #include "smtk/bridge/discrete/Bridge.h"
 
 #include "smtk/attribute/Attribute.h"
+#include "smtk/attribute/IntItem.h"
 #include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/ModelEntity.h"
+#include "smtk/model/Manager.h"
 
 #include "vtkModelItem.h"
 #include "vtkModelEntity.h"
@@ -68,12 +70,45 @@ OperatorResult MergeOperator::operateInternal()
 
   if (ok)
     {
-  // TODO: Determine lower-dimensional boundary cells
-  //       to mark as defunct?
+    smtk::model::ManagerPtr store = this->manager();
 
-  // TODO: Read list of boundary cells modified by the merge and
-  //       use the bridge to update their translations; then store
-  //       them in the OperatorResult (well, a subclass).
+    smtk::model::Cursor srcEnt =
+      this->specification()->findModelEntity("source cell")->value();
+    smtk::model::Cursor tgtEnt =
+      this->specification()->findModelEntity("target cell")->value();
+
+    // Get rid of the old entity.
+    store->erase(srcEnt.entity());
+
+    // re-add target
+    smtk::common::UUID eid = tgtEnt.entity();
+    vtkModelItem* origItem =
+      bridge->entityForUUID(eid);
+    store->erase(eid);
+
+    // Now re-add it (it will have new edges)
+    eid = bridge->findOrSetEntityUUID(origItem);
+    smtk::model::Cursor c = bridge->addCMBEntityToManager(
+      eid, origItem, store, true);
+
+    // Return the list of entities that were created
+    // so that remote bridges can track what records
+    // need to be re-fetched.
+    smtk::attribute::ModelEntityItem::Ptr resultEntities =
+      result->findModelEntity("entities");
+    resultEntities->setNumberOfValues(1);
+    resultEntities->setValue(0, c);
+
+    smtk::attribute::ModelEntityItem::Ptr removedEntities =
+      result->findModelEntity("removed entities");
+    removedEntities->setNumberOfValues(1);
+    removedEntities->setValue(0, srcEnt);
+
+    smtk::attribute::IntItem::Ptr eventEntity =
+      result->findInt("eventtype");
+    eventEntity->setNumberOfValues(1);
+    eventEntity->setValue(0, TESSELLATION_ENTRY);
+
     }
 
   return result;
