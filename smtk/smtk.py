@@ -84,12 +84,15 @@ view = _temp.smtk.view
 try:
   from collections import namedtuple
   btuple = []
+  failed = []
   _tempmain = _temp
   try:
     _tempcgm = __import__('cgmSMTKPython', globals(), locals(), [], -1)
     _temp = _tempcgm
     __import_shared_ptrs__()
     btuple.append(('cgm', _tempcgm.cgm))
+  except:
+    failed += ['cgm']
   finally:
     _temp = _tempmain
 
@@ -98,6 +101,18 @@ try:
     _temp = _tempexo
     __import_shared_ptrs__()
     btuple.append(('exodus', _tempexo.exodus))
+  except:
+    failed += ['exodus']
+  finally:
+    _temp = _tempmain
+
+  try:
+    _tempdis = __import__('smtkDiscreteBridgePython', globals(), locals(), [], -1)
+    _temp = _tempdis
+    __import_shared_ptrs__()
+    btuple.append(('discrete', _tempdis.discrete))
+  except:
+    failed += ['discrete']
   finally:
     _temp = _tempmain
 
@@ -106,8 +121,11 @@ try:
     _temp = _tempremote
     __import_shared_ptrs__()
     btuple.append(('remote', _tempremote.remote))
+  except:
+    failed += ['remote']
   finally:
     _temp = _tempmain
+
   if len(btuple) > 0:
     bridgeModule = namedtuple('bridgeModule', ' '.join([x for x,y in btuple]))
     bridge = bridgeModule(*[y for x,y in btuple])

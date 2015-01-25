@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
     return 1;
     }
 
-  smtk::model::ModelEntity model = result->findModelEntity("model")->value();
+  smtk::model::ModelEntity model = result->findModelEntity("entities")->value();
   manager->assignDefaultNames(); // should force transcription of every entity, but doesn't yet.
 
   smtk::model::DescriptivePhrase::Ptr dit;
