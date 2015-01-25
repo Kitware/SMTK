@@ -115,10 +115,13 @@ void qtModelEntityItemCombo::init()
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   // need to update the list, since it may be changed
   int row=1;
+  int numChecked = 0;
   smtk::model::Cursors modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
     itemDef->membershipMask(), false);
   for(smtk::model::Cursors::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)
     {
+    if((*it).isUseEntity())
+      continue;
     QStandardItem* item = new QStandardItem;
     std::string entName = (*it).name();
     item->setText(entName.c_str());
@@ -127,10 +130,11 @@ void qtModelEntityItemCombo::init()
     item->setData(Qt::Unchecked, Qt::CheckStateRole);
     item->setCheckable(true);
     item->setCheckState(ModelEntityItem->has(*it) ? Qt::Checked : Qt::Unchecked);
-
+    
     item->setData((*it).entity().toString().c_str(), Qt::UserRole);
     itemModel->insertRow(row, item);
     }
+
   connect(this->model(),
     SIGNAL(dataChanged ( const QModelIndex&, const QModelIndex&)),
     this, SLOT(itemCheckChanged(const QModelIndex&, const QModelIndex&)));
@@ -172,28 +176,26 @@ void qtModelEntityItemCombo::itemCheckChanged(
     if(item->checkState() == Qt::Checked)
       {
       bool success = false;
-      if(itemDef->isExtensible())
+      // find an un-set index, and set the value
+      for(std::size_t idx=0;
+        idx < ModelEntityItem->numberOfValues(); ++idx)
         {
-        success = ModelEntityItem->appendValue(selcursor);
-        }
-      else
-        {
-        // find an un-set index, and set the value
-        for(std::size_t idx=0;
-          idx < ModelEntityItem->numberOfRequiredValues(); ++idx)
+        if(!ModelEntityItem->isSet(idx))
           {
-          if(!ModelEntityItem->isSet(idx))
-            {
-            success = ModelEntityItem->setValue(idx, selcursor);
-            break;
-            }
+          success = ModelEntityItem->setValue(idx, selcursor);
+          break;
           }
         }
+
       if(!success)
         {
-        this->blockSignals(true);
-        item->setCheckState(Qt::Unchecked);
-        this->blockSignals(false);
+        success = ModelEntityItem->appendValue(selcursor);
+        if(!success)
+          {
+          this->blockSignals(true);
+          item->setCheckState(Qt::Unchecked);
+          this->blockSignals(false);
+          }
         }
       }
     else

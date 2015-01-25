@@ -130,7 +130,7 @@ bool ModelEntityItem::setValue(std::size_t i, const smtk::model::Cursor& val)
 {
   const ModelEntityItemDefinition* def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
-  if (def->isValueValid(val))
+  if (i<this->m_values.size() && def->isValueValid(val))
     {
     this->m_values[i] = val;
     return true;
@@ -164,10 +164,11 @@ bool ModelEntityItem::removeValue(std::size_t i)
   //First - are we allowed to change the number of values?
   const ModelEntityItemDefinition *def =
     static_cast<const ModelEntityItemDefinition *>(this->definition().get());
-  if (def->numberOfRequiredValues() != 0)
+  if (!def->isExtensible())
     {
     return false; // The number of values is fixed
     }
+
   this->m_values.erase(this->m_values.begin()+i);
   return true;
 }
