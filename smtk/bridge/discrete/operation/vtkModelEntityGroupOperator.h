@@ -17,19 +17,18 @@
 // adding and/or removing model entities that are associated with
 // a model entity group.
 
-#ifndef __vtkModelEntityGroupOperator_h
-#define __vtkModelEntityGroupOperator_h
+#ifndef __smtkdiscrete_vtkModelEntityGroupOperator_h
+#define __smtkdiscrete_vtkModelEntityGroupOperator_h
 
-#include "vtkCmbDiscreteModelModule.h" // For export macro
+#include "smtk/bridge/discrete/discreteBridgeExports.h" // For export macro
 #include "vtkModelEntityGroupOperatorBase.h"
-#include "cmbSystemConfig.h"
 
 #include <iostream>
 
 class vtkDiscreteModelWrapper;
 class vtkIdList;
 
-class VTKCMBDISCRETEMODEL_EXPORT vtkModelEntityGroupOperator : public vtkModelEntityGroupOperatorBase
+class SMTKDISCRETEBRIDGE_EXPORT vtkModelEntityGroupOperator : public vtkModelEntityGroupOperatorBase
 {
 public:
   static vtkModelEntityGroupOperator * New();

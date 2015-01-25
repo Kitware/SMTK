@@ -55,6 +55,9 @@ SET(DiscreteOperationFiles
   operation/vtkDataSetRegionSurfaceFilter.cxx
   operation/vtkMasterPolyDataNormals.cxx
   operation/vtkMergeDuplicateCells.cxx
+  operation/vtkModelEntityGroupOperator.cxx
+  operation/vtkModelEntityGroupOperatorBase.cxx
+  operation/vtkModelEntityOperatorBase.cxx
 )
 
 SET(DiscreteModelHeaders
@@ -80,6 +83,9 @@ SET(DiscreteModelHeaders
   operation/vtkDataSetRegionSurfaceFilter.h
   operation/vtkMasterPolyDataNormals.h
   operation/vtkMergeDuplicateCells.h
+  operation/vtkModelEntityGroupOperator.h
+  operation/vtkModelEntityGroupOperatorBase.h
+  operation/vtkModelEntityOperatorBase.h
 )
 
 
@@ -101,19 +107,21 @@ set(_module_src
 set(discreteBridgeSrcs
   Bridge.cxx
   CreateEdgesOperator.cxx
+  EntityGroupOperator.cxx
+  ImportOperator.cxx
   MergeOperator.cxx
   ReadOperator.cxx
   SplitFaceOperator.cxx
-  ImportOperator.cxx
 )
 
 set(discreteBridgeHeaders
   Bridge.h
   CreateEdgesOperator.h
+  EntityGroupOperator.h
+  ImportOperator.h
   MergeOperator.h
   ReadOperator.h
   SplitFaceOperator.h
-  ImportOperator.h
 )
 
 # Normally this would be machine-generated from Bridge.json
@@ -130,6 +138,7 @@ smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/MergeOperator.sbt" unitOperatorXM
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ReadOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/SplitFaceOperator.sbt" unitOperatorXML)
 smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/ImportOperator.sbt" unitOperatorXML)
+smtk_operator_xml("${CMAKE_CURRENT_SOURCE_DIR}/EntityGroupOperator.sbt" unitOperatorXML)
 
 add_library(smtkDiscreteBridge ${_module_src} ${discreteBridgeSrcs})
 
