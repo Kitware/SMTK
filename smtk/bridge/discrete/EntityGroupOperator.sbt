@@ -58,6 +58,11 @@
     </AttDef>
 
     <!-- Result -->
-    <AttDef Type="result(entity group)" BaseType="result"/>
+    <AttDef Type="result(entity group)" BaseType="result">
+      <ItemDefinitions>
+        <ModelEntity Name="new entities" NumberOfRequiredValues="0" Extensible="1">
+        </ModelEntity>
+      </ItemDefinitions>
+    </AttDef>
   </Definitions>
 </SMTK_AttributeSystem>

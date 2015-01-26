@@ -152,7 +152,12 @@ OperatorResult ImportOperator::operateInternal()
   smtk::model::Cursor modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
-  result->findModelEntity("model")->setValue(modelEntity);
+
+  smtk::attribute::ModelEntityItemPtr models =
+    result->findModelEntity("entities");
+  models->setNumberOfValues(1);
+  models->setValue(0, modelEntity);
+
 /*
 //#include "smtk/io/ExportJSON.h"
 //#include "cJSON.h"
