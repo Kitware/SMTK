@@ -34,7 +34,7 @@ class Logger;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int intoModel(const char* json, smtk::model::ManagerPtr manager);
+  static int intoModelManager(const char* json, smtk::model::ManagerPtr manager);
   static int ofManager(cJSON* body, smtk::model::ManagerPtr manager);
   static int ofManagerEntity(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerArrangement(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);

@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
   // ### Benchmark JSON export ###
   t.mark();
-  std::string json = ExportJSON::fromModel(sm);
+  std::string json = ExportJSON::fromModelManager(sm);
   double jsonTime = t.elapsed();
   t.mark();
   std::ofstream jsonFile("/tmp/benchmark.json");
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
     {
     ManagerPtr sm2 = Manager::create();
     t.mark();
-    ImportJSON::intoModel(json.c_str(), sm2);
+    ImportJSON::intoModelManager(json.c_str(), sm2);
     deltaT = t.elapsed();
     }
   std::cout << deltaT << " seconds to ingest JSON\n";

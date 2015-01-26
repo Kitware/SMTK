@@ -98,7 +98,7 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forModelWorker', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'smtk::model::OperatorResult const&amp;'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromUUIDs', unmatched return type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModel', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::fromModelManager', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeNameFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ImportJSON::bridgeFileTypesFromTagData', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createIntegerArray', unmatched return type 'cJSON*'"/>

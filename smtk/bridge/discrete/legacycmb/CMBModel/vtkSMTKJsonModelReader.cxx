@@ -82,7 +82,7 @@ int vtkSMTKJsonModelReader::RequestData(
 //vtkErrorMacro( << "json model (data): " << data.c_str());
   ManagerPtr sm = Manager::create();
 
-  int status = ! ImportJSON::intoModel(data.c_str(), sm);
+  int status = ! ImportJSON::intoModelManager(data.c_str(), sm);
   if (status)
     {
     vtkErrorMacro( << "Error status from ImportJSON: " << status);

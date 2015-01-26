@@ -30,7 +30,7 @@ with open(model_path, 'r') as f:
 if json is None:
   logging.error('Unable to load input file')
   sys.exit(2)
-if not smtk.io.ImportJSON.intoModel(json, mgr):
+if not smtk.io.ImportJSON.intoModelManager(json, mgr):
   logging.error('Uname to parse json input file')
   sys.exit(4)
 mgr.assignDefaultNames()

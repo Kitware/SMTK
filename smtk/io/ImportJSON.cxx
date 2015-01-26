@@ -348,7 +348,7 @@ int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::System* sys,
   * The top level JSON object must be a dictionary with key "type" set to "Manager"
   * and key "topo" set to a dictionary of UUIDs with matching entries.
   */
-int ImportJSON::intoModel(
+int ImportJSON::intoModelManager(
   const char* json, ManagerPtr manager)
 {
   int status = 0;

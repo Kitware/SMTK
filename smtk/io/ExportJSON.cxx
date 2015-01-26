@@ -150,7 +150,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
+int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
 {
   int status = 0;
   if (!json || !modelMgr)
@@ -187,10 +187,10 @@ int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
   return status;
 }
 
-std::string ExportJSON::fromModel(ManagerPtr modelMgr, JSONFlags sections)
+std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
 {
   cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModel(top, modelMgr, sections);
+  ExportJSON::fromModelManager(top, modelMgr, sections);
   char* json = cJSON_Print(top);
   std::string result(json);
   free(json);

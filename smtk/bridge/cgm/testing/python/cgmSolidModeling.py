@@ -65,7 +65,7 @@ res = u1.operate()
 su = res.findModelEntity('entities').value(0)
 # Note that su has same UUID as sph2
 
-#json = smtk.io.ExportJSON.fromModel(mgr)
+#json = smtk.io.ExportJSON.fromModelManager(mgr)
 #sphFile = open('/tmp/s3.json', 'w')
 #print >> sphFile, json
 #sphFile.close()

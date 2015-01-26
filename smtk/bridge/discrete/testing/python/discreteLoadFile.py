@@ -37,5 +37,5 @@ mod = smtk.model.ModelEntity(res.findModelEntity('entities').value(0))
 print '\nFree cells:\n  %s' % '\n  '.join([x.name() for x in mod.cells()])
 print '\nGroups:\n  %s\n' % '\n  '.join([x.name() for x in mod.groups()])
 if len(mod.cells()) != 4:
-  print smtk.io.ExportJSON.fromModel(mgr)
+  print smtk.io.ExportJSON.fromModelManager(mgr)
   raise Exception, 'Wrong number of free cells'

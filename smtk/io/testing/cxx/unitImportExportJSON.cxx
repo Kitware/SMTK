@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
   ManagerPtr sm = Manager::create();
 
   int status = 0;
-  status |= ImportJSON::intoModel(data.c_str(), sm);
-  status |= ExportJSON::fromModel(json, sm,
+  status |= ImportJSON::intoModelManager(data.c_str(), sm);
+  status |= ExportJSON::fromModelManager(json, sm,
     // Do not export bridge sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
 
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
   json = cJSON_CreateObject();
   ManagerPtr sm2 = Manager::create();
 
-  status |= ImportJSON::intoModel(exported, sm2);
-  status |= ExportJSON::fromModel(json, sm2,
+  status |= ImportJSON::intoModelManager(exported, sm2);
+  status |= ExportJSON::fromModelManager(json, sm2,
     // Do not export bridge sessions; they will have different UUIDs
     static_cast<JSONFlags>(JSON_ENTITIES | JSON_TESSELLATIONS | JSON_PROPERTIES));
   char* exported2 = cJSON_Print(json);

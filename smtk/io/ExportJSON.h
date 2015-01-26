@@ -52,8 +52,8 @@ class SMTKCORE_EXPORT ExportJSON
 public:
   static cJSON* fromUUIDs(const smtk::common::UUIDs& uids);
 
-  static int fromModel(cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
-  static std::string fromModel(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
+  static int fromModelManager(cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
+  static std::string fromModelManager(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
 
   static int forManager(cJSON* body, cJSON* sess, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static int forManagerEntity(smtk::model::UUIDWithEntity& entry, cJSON*, smtk::model::ManagerPtr modelMgr);

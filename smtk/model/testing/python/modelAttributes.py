@@ -227,7 +227,7 @@ if __name__ == '__main__':
     logging.error('Unable to load input file')
     sys.exit(2)
   scope.store = smtk.model.Manager.create()
-  ok = smtk.io.ImportJSON.intoModel(json_string, scope.store)
+  ok = smtk.io.ImportJSON.intoModelManager(json_string, scope.store)
 
   # Load cross-reference file
   load_xref(scope, model_folder)
@@ -250,7 +250,7 @@ if __name__ == '__main__':
 
   # Re-import model
   test_store = smtk.model.Manager.create()
-  ok = smtk.io.ImportJSON.intoModel(json_string, test_store)
+  ok = smtk.io.ImportJSON.intoModelManager(json_string, test_store)
   scope.store = test_store
 
   # Re-read attribute file

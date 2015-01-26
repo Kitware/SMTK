@@ -501,7 +501,7 @@ void ExportBodyToJSONFile(
   const std::string& filename)
 {
   cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModel(json, manager);
+  smtk::io::ExportJSON::fromModelManager(json, manager);
   char* exported = cJSON_Print(json);
   cJSON_Delete(json);
   FILE* fid = fopen(filename.c_str(), "w");

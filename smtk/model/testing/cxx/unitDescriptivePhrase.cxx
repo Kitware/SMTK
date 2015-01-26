@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
       (std::istreambuf_iterator<char>(file)),
       (std::istreambuf_iterator<char>()));
 
-    if (data.empty() || !ImportJSON::intoModel(data.c_str(), sm))
+    if (data.empty() || !ImportJSON::intoModelManager(data.c_str(), sm))
       {
       std::cerr << "Error importing model from file \"" << fname << "\"\n";
       return 1;

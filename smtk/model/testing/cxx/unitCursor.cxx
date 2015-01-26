@@ -273,7 +273,7 @@ int main(int argc, char* argv[])
     InstanceEntities ies = model.instances<InstanceEntities>();
     test(ies.size() == 1 && ies[0] == ie, "Prototype should list its instances.");
 
-    std::string json = ExportJSON::fromModel(sm);
+    std::string json = ExportJSON::fromModelManager(sm);
     std::ofstream jsonFile("/tmp/cursor.json");
     jsonFile << json;
     jsonFile.close();
