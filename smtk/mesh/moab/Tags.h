@@ -13,7 +13,6 @@
 #ifndef __smtk_mesh_moab_Tags_h
 #define __smtk_mesh_moab_Tags_h
 
-#include "smtk/SMTKCoreExports.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/moab/Interface.h"
 

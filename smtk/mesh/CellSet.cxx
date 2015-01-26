@@ -12,6 +12,7 @@
 #include "smtk/mesh/Collection.h"
 
 #include "smtk/mesh/moab/Helpers.h"
+#include "smtk/mesh/moab/Functors.h"
 
 namespace smtk {
 namespace mesh {
@@ -172,12 +173,12 @@ CellSet point_intersect( const CellSet& a, const CellSet& b, ContainmentType t)
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
-    smtk::mesh::moab::functors::PartiallyContained f;
+    smtk::mesh::moab::PartiallyContained f;
     result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
     }
   else
     {
-    smtk::mesh::moab::functors::FullyContained f;
+    smtk::mesh::moab::FullyContained f;
     result = smtk::mesh::moab::point_intersect(a.m_range, b.m_range, f, iface);
     }
   return smtk::mesh::CellSet(a.m_parent, result);
@@ -201,12 +202,12 @@ CellSet point_difference( const CellSet& a, const CellSet& b, ContainmentType t)
   smtk::mesh::HandleRange result;
   if(t == smtk::mesh::PartiallyContained)
     {
-    smtk::mesh::moab::functors::PartiallyContained f;
+    smtk::mesh::moab::PartiallyContained f;
     result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
     }
   else
     {
-    smtk::mesh::moab::functors::FullyContained f;
+    smtk::mesh::moab::FullyContained f;
     result = smtk::mesh::moab::point_difference(a.m_range, b.m_range, f, iface);
     }
 

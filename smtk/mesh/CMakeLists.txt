@@ -11,6 +11,7 @@ set(meshSrcs
   # PointSet.cxx
   TypeSet.cxx
   moab/CellTypeToType.cxx
+  moab/Helpers.cxx
   moab/Interface.cxx
   moab/PointConnectivityStorage.cxx
   moab/Tags.cxx
@@ -32,7 +33,11 @@ set(meshHeaders
   # PointSet.h
   QueryTypes.h
   TypeSet.h
+
+  #only exposed moab headers are Interface, and Helpers. We need to work
+  #on a better name. How about Interface and InterfaceIO?
   moab/Interface.h
+  moab/Helpers.h
   )
 
 #install the headers

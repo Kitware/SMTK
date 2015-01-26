@@ -19,9 +19,18 @@
 namespace smtk {
 namespace mesh {
 namespace moab {
-namespace functors {
 
-struct PartiallyContained
+//these aren't exported as they are private class that only
+//smtk::mesh should call ( currently )
+
+struct ContainsFunctor
+{
+  virtual bool operator()(const smtk::mesh::HandleRange& points,
+                          const ::moab::EntityHandle* connectivity,
+                          const std::size_t num_nodes) const = 0;
+};
+
+struct PartiallyContained : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
                   const ::moab::EntityHandle* connectivity,
@@ -36,7 +45,7 @@ struct PartiallyContained
   }
 };
 
-struct FullyContained
+struct FullyContained : public ContainsFunctor
 {
   bool operator()(const smtk::mesh::HandleRange& points,
                   const ::moab::EntityHandle* connectivity,
@@ -51,7 +60,6 @@ struct FullyContained
   }
 };
 
-}
 }
 }
 }
