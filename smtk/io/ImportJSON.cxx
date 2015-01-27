@@ -406,10 +406,6 @@ int ImportJSON::ofManager(
     {
     return 0;
     }
-  // clear previous maps
-  manager->integerProperties().clear();
-  manager->stringProperties().clear();
-  manager->floatProperties().clear();
 
   int status = 1;
   for (cJSON* curChild = dict->child; curChild && status; curChild = curChild->next)
