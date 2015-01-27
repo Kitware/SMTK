@@ -106,8 +106,9 @@ OperatorResult SplitFaceOperator::operateInternal()
     //       them in the OperatorResult (well, a subclass).
     smtk::model::ManagerPtr store = this->manager();
 
-    smtk::common::UUID faceUUID =
-      this->specification()->findModelEntity("face to split")->value().entity();
+    smtk::model::Cursor inFace =
+      this->specification()->findModelEntity("face to split")->value();
+    smtk::common::UUID faceUUID =inFace.entity();
     vtkModelFace* origFace = vtkModelFace::SafeDownCast(
       bridge->entityForUUID(faceUUID));
 
@@ -117,6 +118,15 @@ OperatorResult SplitFaceOperator::operateInternal()
     Volume vol2 = v2 ? Volume(store, bridge->findOrSetEntityUUID(v2)) : Volume();
 
     // First, get rid of the old face that we split.
+    // Get rid of the old entity.
+/*
+    Cursors bdys = inFace.as<CellEntity>().lowerDimensionalBoundaries(-1);
+    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+      {
+      //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+      store->erase(bit->entity());
+      }
+*/
     store->erase(faceUUID);
 
     // Now re-add it (it will have new edges)
@@ -129,17 +139,20 @@ OperatorResult SplitFaceOperator::operateInternal()
     // Return the list of entities that were created
     // so that remote bridges can track what records
     // need to be re-fetched.
+    vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
     smtk::attribute::ModelEntityItem::Ptr resultEntities =
       result->findModelEntity("entities");
-    resultEntities->setNumberOfValues(1);
+    resultEntities->setNumberOfValues(newFaceIds->GetMaxId() + 2);
     resultEntities->setValue(0, c);
 
     smtk::attribute::IntItem::Ptr eventEntity =
-      result->findInt("eventtype");
+      result->findInt("event type");
     eventEntity->setNumberOfValues(1);
     eventEntity->setValue(0, TESSELLATION_ENTRY);
 
-    vtkIdTypeArray* newFaceIds = this->m_op->GetCreatedModelFaceIDs();
+    // Adding "new faces" to the "new entities" item, as a convenient method
+    // to get newly created faces from result. This list is also in the
+    // "entities" item.
     smtk::attribute::ModelEntityItem::Ptr newEntities =
       result->findModelEntity("new entities");
     newEntities->setNumberOfValues(newFaceIds->GetMaxId() + 1);
@@ -153,6 +166,7 @@ OperatorResult SplitFaceOperator::operateInternal()
       smtk::model::Face cFace = bridge->addFaceToManager(faceUUID, face, store, true);
       newEntities->setValue(i, cFace);
       internal_addRawRelationship(cFace, vol1, vol2);
+      resultEntities->setValue(i+1, cFace);
       /*
       this->m_op->SetCurrentNewFaceId(faceId);
       vtkIdTypeArray* spvrt = this->m_op->GetSplitEdgeVertIds();

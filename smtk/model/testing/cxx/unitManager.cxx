@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
   test(sm->hasStringProperty(uids[11], "name"));
 
   cJSON* root = cJSON_CreateObject();
-  ExportJSON::fromModel(root, sm);
+  ExportJSON::fromModelManager(root, sm);
   cJSON_AddItemToObject(root, "nodes", ExportJSON::fromUUIDs(nodes));
   cJSON_AddItemToObject(root, "edges", ExportJSON::fromUUIDs(edges));
   cJSON_AddItemToObject(root, "faces", ExportJSON::fromUUIDs(faces));

@@ -65,7 +65,7 @@ if __name__ == '__main__':
     logging.error('Unable to load input file %s' % model_path)
     sys.exit(-3)
   model_manager = smtk.model.Manager.create()
-  ok = smtk.io.ImportJSON.intoModel(json_string, model_manager)
+  ok = smtk.io.ImportJSON.intoModelManager(json_string, model_manager)
   if not ok:
       logging.error("Unable to create model from contents of %s" % model_path)
       sys.exit(-4)

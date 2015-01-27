@@ -115,7 +115,6 @@ void qtModelEntityItemCombo::init()
   QStandardItemModel* itemModel = qobject_cast<QStandardItemModel*>(this->model());
   // need to update the list, since it may be changed
   int row=1;
-  int numChecked = 0;
   smtk::model::Cursors modelEnts = modelManager->entitiesMatchingFlagsAs<smtk::model::Cursors>(
     itemDef->membershipMask(), false);
   for(smtk::model::Cursors::iterator it = modelEnts.begin(); it != modelEnts.end(); ++it)

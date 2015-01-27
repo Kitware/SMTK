@@ -43,7 +43,7 @@ brick1 = r1.findModelEntity('entities').value(0)
 r2 = cb.operate()
 brick2 = r2.findModelEntity('entities').value(0)
 
-#json = smtk.io.ExportJSON.fromModel(mgr)
+#json = smtk.io.ExportJSON.fromModelManager(mgr)
 #jsonFile = open('/tmp/skirb1.json', 'w')
 #print >> jsonFile, json
 #jsonFile.close()
@@ -89,7 +89,7 @@ sc.findAsDouble('scale factor').setValue(3.0)
 r6 = sc.operate()
 brick6 = r6.findModelEntity('entities').value(0)
 
-#json = smtk.io.ExportJSON.fromModel(mgr)
+#json = smtk.io.ExportJSON.fromModelManager(mgr)
 #jsonFile = open('/tmp/skirb4.json', 'w')
 #print >> jsonFile, json
 #jsonFile.close()

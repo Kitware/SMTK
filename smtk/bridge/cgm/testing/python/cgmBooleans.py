@@ -146,7 +146,7 @@ bssub = Subtract(workpiece=b0, tool=s0)
 
 Translate(bsint, [0.1, 0.1, 0.1])
 
-json = smtk.io.ExportJSON.fromModel(mgr)
+json = smtk.io.ExportJSON.fromModelManager(mgr)
 sphFile = open('boolean.json', 'w')
 print >> sphFile, json
 sphFile.close()

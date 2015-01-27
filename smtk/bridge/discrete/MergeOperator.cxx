@@ -17,10 +17,14 @@
 #include "smtk/attribute/ModelEntityItem.h"
 
 #include "smtk/model/ModelEntity.h"
+#include "smtk/model/CellEntity.h"
 #include "smtk/model/Manager.h"
+#include "smtk/model/Volume.h"
 
 #include "vtkModelItem.h"
 #include "vtkModelEntity.h"
+#include "vtkModelFace.h"
+#include "vtkModelRegion.h"
 
 #include "MergeOperator_xml.h"
 
@@ -78,18 +82,44 @@ OperatorResult MergeOperator::operateInternal()
       this->specification()->findModelEntity("target cell")->value();
 
     // Get rid of the old entity.
+/*
+    Cursors bdys = srcEnt.as<CellEntity>().lowerDimensionalBoundaries(-1);
+    for (Cursors::iterator bit = bdys.begin(); bit != bdys.end(); ++bit)
+      {
+      //std::cout << "Erasing " << bit->flagSummary(0) << " " << bit->entity() << "\n";
+      store->erase(bit->entity());
+      }
+ */
     store->erase(srcEnt.entity());
 
     // re-add target
     smtk::common::UUID eid = tgtEnt.entity();
     vtkModelItem* origItem =
       bridge->entityForUUID(eid);
+
     store->erase(eid);
 
     // Now re-add it (it will have new edges)
     eid = bridge->findOrSetEntityUUID(origItem);
     smtk::model::Cursor c = bridge->addCMBEntityToManager(
       eid, origItem, store, true);
+    if(vtkModelFace* origFace = vtkModelFace::SafeDownCast(origItem))
+      {
+      vtkModelRegion* v1 = origFace->GetModelRegion(0);
+      vtkModelRegion* v2 = origFace->GetModelRegion(1);
+      Volume vol1 = v1 ? Volume(store, bridge->findOrSetEntityUUID(v1)) : Volume();
+      Volume vol2 = v2 ? Volume(store, bridge->findOrSetEntityUUID(v2)) : Volume();
+      if(vol1.isValid())
+        {
+        c.addRawRelation(vol1);
+        vol1.addRawRelation(c);
+        }
+      if(vol2.isValid())
+        {
+        c.addRawRelation(vol2);
+        vol2.addRawRelation(c);
+        }
+      }
 
     // Return the list of entities that were created
     // so that remote bridges can track what records
@@ -100,12 +130,13 @@ OperatorResult MergeOperator::operateInternal()
     resultEntities->setValue(0, c);
 
     smtk::attribute::ModelEntityItem::Ptr removedEntities =
-      result->findModelEntity("removed entities");
+      result->findModelEntity("expunged");
     removedEntities->setNumberOfValues(1);
+    removedEntities->setIsEnabled(true);
     removedEntities->setValue(0, srcEnt);
 
     smtk::attribute::IntItem::Ptr eventEntity =
-      result->findInt("eventtype");
+      result->findInt("event type");
     eventEntity->setNumberOfValues(1);
     eventEntity->setValue(0, TESSELLATION_ENTRY);
 

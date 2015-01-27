@@ -90,7 +90,7 @@ matProp = asys.createAttribute('fluid', matDef)
 # TODO: Replace with resource.readModel()
 jsonFile = open(modelFileName,'r')
 json = jsonFile.read()
-smtk.io.ImportJSON.intoModel(json, mmgr)
+smtk.io.ImportJSON.intoModelManager(json, mmgr)
 
 # Now find groups corresponding to IC/BCs:
 models = mmgr.findEntitiesByProperty('name', 'Test Model')

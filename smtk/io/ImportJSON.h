@@ -34,7 +34,7 @@ class Logger;
 class SMTKCORE_EXPORT ImportJSON
 {
 public:
-  static int intoModel(const char* json, smtk::model::ManagerPtr manager);
+  static int intoModelManager(const char* json, smtk::model::ManagerPtr manager);
   static int ofManager(cJSON* body, smtk::model::ManagerPtr manager);
   static int ofManagerEntity(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
   static int ofManagerArrangement(const smtk::common::UUID& uid, cJSON*, smtk::model::ManagerPtr manager);
@@ -45,7 +45,7 @@ public:
   static int ofRemoteBridgeSession(cJSON*, smtk::model::DefaultBridgePtr destBridge, smtk::model::ManagerPtr context);
   static int ofLocalBridgeSession(cJSON*, smtk::model::ManagerPtr context);
   static int ofOperator(cJSON* node, smtk::model::OperatorPtr& op, smtk::model::ManagerPtr context);
-  static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::attribute::System* opSys);
+  static int ofOperatorResult(cJSON* node, smtk::model::OperatorResult& resOut, smtk::model::RemoteOperatorPtr op);
   static int ofDanglingEntities(cJSON* node, smtk::model::ManagerPtr context);
 
   static int ofLog(cJSON* logrecordarray, smtk::io::Logger& log);

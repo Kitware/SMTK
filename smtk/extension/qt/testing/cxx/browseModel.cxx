@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 
   smtk::model::ManagerPtr model = smtk::model::Manager::create();
-  smtk::io::ImportJSON::intoModel(json.c_str(), model);
+  smtk::io::ImportJSON::intoModelManager(json.c_str(), model);
   model->assignDefaultNames();
 
   smtk::model::QEntityItemModel* qmodel = new smtk::model::QEntityItemModel;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
   if (argc > 4)
     {
     std::ofstream result(argv[4]);
-    result << smtk::io::ExportJSON::fromModel(model).c_str() << "\n";
+    result << smtk::io::ExportJSON::fromModelManager(model).c_str() << "\n";
     result.close();
     }
 

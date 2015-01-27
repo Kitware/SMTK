@@ -206,7 +206,7 @@ int main (int argc, char* argv[])
   std::cout << "Created " << bodies->value().flagSummary() << "\n";
   std::cout << "   with " << bodies->value().as<ModelEntity>().cells().size() << " cells\n";
   //std::ofstream json("/tmp/sphere.json");
-  //json << ExportJSON::fromModel(mgr);
+  //json << ExportJSON::fromModelManager(mgr);
   //json.close();
 
   return 0;

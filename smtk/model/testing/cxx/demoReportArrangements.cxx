@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
   ManagerPtr sm = Manager::create();
 
   int status = 0;
-  status |= ImportJSON::intoModel(data.c_str(), sm);
+  status |= ImportJSON::intoModelManager(data.c_str(), sm);
   if (status)
     {
     if (argc > 3)

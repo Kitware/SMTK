@@ -152,18 +152,23 @@ OperatorResult ImportOperator::operateInternal()
   smtk::model::Cursor modelEntity(this->manager(), modelId);
 
   OperatorResult result = this->createResult(OPERATION_SUCCEEDED);
-  result->findModelEntity("model")->setValue(modelEntity);
+
+  smtk::attribute::ModelEntityItemPtr models =
+    result->findModelEntity("entities");
+  models->setNumberOfValues(1);
+  models->setValue(0, modelEntity);
+
 /*
 //#include "smtk/io/ExportJSON.h"
 //#include "cJSON.h"
 
   cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModel(json, this->manager());
+  smtk::io::ExportJSON::fromModelManager(json, this->manager());
   std::cout << "Result " << cJSON_Print(json) << "\n";
   cJSON_Delete(json);
   */
 /*
-std::string json = smtk::io::ExportJSON::fromModel(this->manager());
+std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     std::ofstream file("/tmp/import_op_out.json");
     file << json;
     file.close();

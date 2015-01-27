@@ -109,7 +109,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       bgroup.setMembershipMask(mask);
       // Add group to model's relationship
       model.addGroup(bgroup);
-      std::cout << "Added " << bgroup.name() << " to " << model.name() << "\n";
+      std::cout << "new group: " << bgroup.name() << " id: " << grpUUID.toString() << "\n";
       }
     }
   else if(optype == "Remove")
@@ -167,6 +167,14 @@ OperatorResult EntityGroupOperator::operateInternal()
     if(bgroup.isValid())
       {
       // Return the created or modified group.
+      smtk::attribute::ModelEntityItem::Ptr entities =
+        result->findModelEntity("entities");
+      entities->setNumberOfValues(1);
+      entities->setValue(0, bgroup);
+
+    // Adding the new group to the "new entities" item, as a convenient method
+    // to get newly created group from result. This group is also listed in the
+    // "entities" item.
       smtk::attribute::ModelEntityItem::Ptr newEntities =
         result->findModelEntity("new entities");
       newEntities->setNumberOfValues(1);
@@ -176,7 +184,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       {
       // Return the created or modified group.
       smtk::attribute::ModelEntityItem::Ptr remEntities =
-        result->findModelEntity("removed entities");
+        result->findModelEntity("expunged");
       remEntities->setNumberOfValues(1);
       remEntities->setValue(0, grpRem);
       }

@@ -114,7 +114,7 @@ smtk::model::OperatorResult Read::operateInternal()
   smtk::model::OperatorResult result = this->createResult(
     smtk::model::OPERATION_SUCCEEDED);
   smtk::attribute::ModelEntityItem::Ptr resultModels =
-    result->findModelEntity("model");
+    result->findModelEntity("entities");
 
   Bridge* bridge = this->cgmBridge();
   std::string modelName = filename.substr(0, filename.find_last_of("."));

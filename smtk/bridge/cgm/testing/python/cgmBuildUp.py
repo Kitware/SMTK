@@ -83,7 +83,7 @@ for face in fedg:
   t.setValue(face[0])
   faces.append(crf.operate().findModelEntity('face').value(0))
 
-json = smtk.io.ExportJSON.fromModel(mgr)
+json = smtk.io.ExportJSON.fromModelManager(mgr)
 sphFile = open('buildup.json', 'w')
 print >> sphFile, json
 sphFile.close()
