@@ -194,11 +194,22 @@ std::string ModelEntityItem::valueAsString(std::size_t i) const
   return val.entity().toString();
 }
 
-/// Return whether the \a i-th value is set (i.e., a valid model entity).
+/**\brief Return whether the \a i-th value is set.
+  *
+  * This returns true when the UUID is non-NULL and false otherwise.
+  *
+  * Note that this is <b>not always what you would expect</b>!
+  * You can set a value to be an invalid, non-NULL UUID so that
+  * entities which have been expunged can be reported (and other
+  * use cases).
+  * If you want to guarantee that particular value is valid or
+  * invalid, you should use the Cursor's isValid() method after
+  * fetching the value from the ModelEntityItem.
+  */
 bool ModelEntityItem::isSet(std::size_t i) const
 {
   return i < this->m_values.size() ?
-    this->m_values[i].isValid() :
+    !!this->m_values[i].entity() :
     false;
 }
 
