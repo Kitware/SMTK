@@ -8,10 +8,14 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ExportJSON.txx"
 #include "smtk/io/ImportJSON.h"
 #include "smtk/io/Logger.h"
+
 #include "smtk/model/Manager.h"
+
 #include "smtk/common/testing/cxx/helpers.h"
+#include "smtk/model/testing/cxx/helpers.h"
 
 #include "cJSON.h"
 
@@ -21,8 +25,9 @@
 
 #include <string.h>
 
-using namespace smtk::model;
 using namespace smtk::io;
+using namespace smtk::model;
+using namespace smtk::common;
 using smtk::shared_ptr;
 
 void testLoggerSerialization1()
@@ -70,10 +75,53 @@ void testLoggerSerialization2()
     "Log did not survive JSON round trip intact.");
 }
 
+void testExportCursor(
+  const Cursors& entities, JSONRecords relations, int correctCount)
+{
+  cJSON* json = cJSON_CreateObject();
+  ExportJSON::forEntities(json, entities, relations, JSON_ENTITIES);
+  int numRecords = 0;
+  for (cJSON* child = json->child; child; child = child->next)
+    ++numRecords;
+  if (numRecords != correctCount)
+    { // For debugging, print out (names of) what we exported:
+    if (!entities.empty())
+      entities.begin()->manager()->assignDefaultNames();
+    std::cout
+      << ExportJSON::forEntities(entities, relations, JSON_PROPERTIES)
+      << "\n\n"
+      << "Exported " << numRecords << ","
+      << " expecting " << correctCount
+      << " for related record enum " << relations
+      << "\n";
+    }
+  cJSON_Delete(json);
+  test(numRecords == correctCount, "Exported wrong number of records.");
+}
+
+void testModelExport()
+{
+  ManagerPtr sm = Manager::create();
+  UUIDArray uids = smtk::model::testing::createTet(sm);
+  UUIDArray::size_type modelStart = uids.size();
+  uids.push_back(sm->addModel().entity());
+  sm->findEntity(uids[21])->relations().push_back(uids[modelStart]);
+  Cursors entities;
+  entities.insert(Cursor(sm, uids[8])); // An edge
+
+  testExportCursor(entities, JSON_BARE, 1);
+  testExportCursor(entities, JSON_CHILDREN, 9);
+  testExportCursor(entities, JSON_MODELS, 78);
+
+  std::string json = ExportJSON::forEntities(entities, JSON_BARE, JSON_DEFAULT);
+  std::cout << "json for vertex is \n" << json << "\n";
+}
+
 int main(int argc, char* argv[])
 {
   testLoggerSerialization1();
   testLoggerSerialization2();
+  testModelExport();
 
   int debug = argc > 2 ? 1 : 0;
   std::ifstream file(argc > 1 ? argv[1] : "testOut");

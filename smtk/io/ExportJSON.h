@@ -26,7 +26,7 @@ namespace smtk {
 
 class Logger;
 
-/**\brief Indicate what data should be exported to JSON.
+/**\brief Indicate what type of data should be exported to JSON.
   *
   */
 enum JSONFlags
@@ -37,6 +37,16 @@ enum JSONFlags
   JSON_TESSELLATIONS = 0x04, //!< Export tessellations of model-entity entries in the Manager.
   JSON_PROPERTIES    = 0x08, //!< Export string/float/integer properties of model-entity entries in the Manager.
   JSON_DEFAULT       = 0xff  //!< By default, export everything.
+};
+
+/**\brief Indicate what records should be exported to JSON.
+  *
+  */
+enum JSONRecords
+{
+  JSON_BARE          = 0, //!< Export only the specified entities and no more
+  JSON_CHILDREN      = 1, //!< (Reserved but unimplemented.) Export the specified entities and their children.
+  JSON_MODELS        = 2  //!< Export all entities with an owning model that also owns any of the specified entities.
 };
 
 /**\brief Export an SMTK model into a JSON-formatted string.
@@ -54,6 +64,18 @@ public:
 
   static int fromModelManager(cJSON* json, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static std::string fromModelManager(smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
+
+  template<typename T>
+  static int forEntities(
+    cJSON* json,
+    const T& entities,
+    JSONRecords relatedEntities = JSON_MODELS,
+    JSONFlags sections = JSON_DEFAULT);
+  template<typename T>
+  static std::string forEntities(
+    const T& entities,
+    JSONRecords relatedEntities = JSON_MODELS,
+    JSONFlags sections = JSON_DEFAULT);
 
   static int forManager(cJSON* body, cJSON* sess, smtk::model::ManagerPtr modelMgr, JSONFlags sections = JSON_DEFAULT);
   static int forManagerEntity(smtk::model::UUIDWithEntity& entry, cJSON*, smtk::model::ManagerPtr modelMgr);

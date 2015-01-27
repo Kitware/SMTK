@@ -105,6 +105,11 @@
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createUUIDArray', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createRPCRequest', unmatched return type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::io::ExportJSON::createStringArray', unmatched return type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorDefinitions', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'T const&amp;'"/>
+  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forEntities', unmatched parameter type 'cJSON*'"/>
 
   <!-- Ignore warnings from protected functions and members -->
   <suppress-warning text="skipping function 'smtk::model::BRepModel::insertEntityReferences', unmatched parameter type 'smtk::model::UUIDWithEntity const&amp;'"/>
@@ -356,10 +361,7 @@
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDirectory', unmatched return type 'smtk::attribute::ConstDirectoryItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructor', unmatched return type 'smtk::model::OperatorConstructor'"/>
   <suppress-warning text="skipping function 'smtk::model::Bridge::findOperatorConstructorInternal', unmatched return type 'smtk::model::OperatorConstructor'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorResult', unmatched parameter type 'cJSON*'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperatorDefinitions', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findDouble', unmatched return type 'smtk::attribute::ConstDoubleItemPtr'"/>
-  <suppress-warning text="skipping function 'smtk::io::ExportJSON::forOperator', unmatched parameter type 'cJSON*'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findString', unmatched return type 'smtk::attribute::ConstStringItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findModelEntity', unmatched return type 'smtk::attribute::ConstModelEntityItemPtr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findGroup', unmatched return type 'smtk::attribute::ConstGroupItemPtr'"/>
@@ -1843,6 +1845,10 @@
       </object-type>
 
       <enum-type name="JSONFlags">
+        <include file-name="smtk/io/ExportJSON.h" location="local"/>
+      </enum-type>
+
+      <enum-type name="JSONRecords">
         <include file-name="smtk/io/ExportJSON.h" location="local"/>
       </enum-type>
 
