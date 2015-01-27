@@ -12,11 +12,6 @@
       </ItemDefinitions>
     </AttDef>
     <!-- Result -->
-    <AttDef Type="result(import)" BaseType="result">
-      <ItemDefinitions>
-        <!-- The model imported from the file. -->
-        <ModelEntity Name="model" NumberOfRequiredValues="1"/>
-      </ItemDefinitions>
-    </AttDef>
+    <AttDef Type="result(import)" BaseType="result"/>
   </Definitions>
 </SMTK_AttributeSystem>
