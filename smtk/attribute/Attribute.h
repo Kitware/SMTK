@@ -129,6 +129,7 @@ namespace smtk
 
       ModelEntityItemPtr findModelEntity(const std::string &name);
       ConstModelEntityItemPtr findModelEntity(const std::string &name) const;
+      template<typename T> T modelEntitiesAs(const std::string& name) const;
 
       void references(std::vector<smtk::attribute::ItemPtr> &list) const;
 
@@ -229,6 +230,24 @@ namespace smtk
       this->m_color[1]= g;
       this->m_color[2]= b;
       this->m_color[3]= a;
+    }
+
+//----------------------------------------------------------------------------
+    template<typename T> T Attribute::modelEntitiesAs(const std::string& name) const
+    {
+      T result;
+      ConstModelEntityItemPtr item = this->findModelEntity(name);
+      if (!item)
+        return result;
+
+      smtk::model::CursorArray::const_iterator it;
+      for (it = item->begin(); it != item->end(); ++it) {
+        typename T::value_type entry(*it);
+        if (entry.isValid()) {
+          result.insert(result.end(), entry);
+        }
+      }
+      return result;
     }
 //----------------------------------------------------------------------------
     template<typename T> T Attribute::associatedModelEntities() const

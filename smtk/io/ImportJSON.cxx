@@ -855,9 +855,18 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   return 1;
 }
 
-int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::System* opSys)
+int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
-  return cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
+  smtk::attribute::System* opSys = op->bridge()->operatorSystem();
+  // Deserialize the OperatorResult into \a resOut:
+  int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
+  // Deserialize the relevant transcribed entities into the
+  // remote operator's model manager:
+  smtk::model::ManagerPtr mgr = op->manager();
+  cJSON* records = cJSON_GetObjectItem(node, "records");
+  if (mgr && records)
+    ImportJSON::ofManager(records, mgr);
+  return status;
 }
 
 int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)

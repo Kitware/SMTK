@@ -24,6 +24,7 @@
 
   <!-- Suppressed because they are templated methods -->
   <suppress-warning text="skipping function 'smtk::view::Group::addSubView', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>
+  <suppress-warning text="skipping function 'smtk::attribute::Attribute::modelEntitiesAs', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::associatedModelEntities', unmatched return type 'T'"/>
   <suppress-warning text="skipping function 'smtk::attribute::Attribute::findAs', unmatched return type 'T::Ptr'"/>
   <suppress-warning text="skipping function 'smtk::attribute::GroupItemDefinition::addItemDefinition', unmatched return type 'smtk::internal::shared_ptr_type&lt;T&gt;::SharedPointerType'"/>

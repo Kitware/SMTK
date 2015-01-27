@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ExportJSON.txx"
 
 #include "smtk/common/Version.h"
 
@@ -483,6 +484,17 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
+  Cursors ents = res->modelEntitiesAs<Cursors>("entities");
+  if (!ents.empty())
+    {
+    // If the operator reports new/modified entities, transcribe the affected models.
+    // TODO: In the future, this may be more conservative (i.e., fewer records
+    //       would be included to save time and memory) than JSON_MODELS.
+    cJSON* records = cJSON_CreateObject();
+    ExportJSON::forEntities(records, ents, JSON_MODELS, JSON_DEFAULT);
+    cJSON_AddItemToObject(entRec, "records", records);
+    }
+
   return 1;
 }
 
