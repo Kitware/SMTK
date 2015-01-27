@@ -233,15 +233,15 @@ namespace smtk
     }
 
 //----------------------------------------------------------------------------
-    template<typename T> T Attribute::modelEntitiesAs(const std::string& name) const
+    template<typename T> T Attribute::modelEntitiesAs(const std::string& iname) const
     {
       T result;
-      ConstModelEntityItemPtr item = this->findModelEntity(name);
-      if (!item)
+      ConstModelEntityItemPtr itm = this->findModelEntity(iname);
+      if (!itm)
         return result;
 
       smtk::model::CursorArray::const_iterator it;
-      for (it = item->begin(); it != item->end(); ++it) {
+      for (it = itm->begin(); it != itm->end(); ++it) {
         typename T::value_type entry(*it);
         if (entry.isValid()) {
           result.insert(result.end(), entry);
