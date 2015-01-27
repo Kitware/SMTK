@@ -130,7 +130,7 @@ OperatorResult MergeOperator::operateInternal()
     resultEntities->setValue(0, c);
 
     smtk::attribute::ModelEntityItem::Ptr removedEntities =
-      result->findModelEntity("deleted entities");
+      result->findModelEntity("expunged");
     removedEntities->setNumberOfValues(1);
     removedEntities->setValue(0, srcEnt);
 

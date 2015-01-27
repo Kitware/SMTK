@@ -289,7 +289,7 @@ void Bridge::initializeOperatorSystem(const OperatorConstructors* opList)
   Definition::Ptr defn = this->m_operatorSys->createDefinition("result");
   IntItemDefinition::Ptr outcomeDefn = IntItemDefinition::New("outcome");
   ModelEntityItemDefinition::Ptr entoutDefn = ModelEntityItemDefinition::New("entities");
-  ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("deleted entities");
+  ModelEntityItemDefinition::Ptr entremDefn = ModelEntityItemDefinition::New("expunged");
 
   StringItemDefinition::Ptr logDefn = StringItemDefinition::New("log");
   outcomeDefn->setNumberOfRequiredValues(1);
