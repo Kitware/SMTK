@@ -98,7 +98,7 @@ if __name__ == '__main__':
     store.findEntity(uids[6], True).pushRelation(uids[4]).pushRelation(uids[3])
 
     store.assignDefaultNames()
-    print smtk.io.ExportJSON.fromModel(store)
+    print smtk.io.ExportJSON.fromModelManager(store)
 
     status = \
         len(vert1.edges()) != 2 or \

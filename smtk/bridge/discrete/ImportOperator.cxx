@@ -163,12 +163,12 @@ OperatorResult ImportOperator::operateInternal()
 //#include "cJSON.h"
 
   cJSON* json = cJSON_CreateObject();
-  smtk::io::ExportJSON::fromModel(json, this->manager());
+  smtk::io::ExportJSON::fromModelManager(json, this->manager());
   std::cout << "Result " << cJSON_Print(json) << "\n";
   cJSON_Delete(json);
   */
 /*
-std::string json = smtk::io::ExportJSON::fromModel(this->manager());
+std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     std::ofstream file("/tmp/import_op_out.json");
     file << json;
     file.close();

@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
 
   ManagerPtr sm = Manager::create();
 
-  int status = ! ImportJSON::intoModel(data.c_str(), sm);
+  int status = ! ImportJSON::intoModelManager(data.c_str(), sm);
   if (! status)
     {
     vtkNew<vtkActor> act;

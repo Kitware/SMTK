@@ -348,7 +348,7 @@ int cJSON_GetObjectParameters(cJSON* node, T& obj, smtk::attribute::System* sys,
   * The top level JSON object must be a dictionary with key "type" set to "Manager"
   * and key "topo" set to a dictionary of UUIDs with matching entries.
   */
-int ImportJSON::intoModel(
+int ImportJSON::intoModelManager(
   const char* json, ManagerPtr manager)
 {
   int status = 0;
@@ -855,9 +855,39 @@ int ImportJSON::ofOperator(cJSON* node, OperatorPtr& op, ManagerPtr context)
   return 1;
 }
 
-int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::attribute::System* opSys)
+int ImportJSON::ofOperatorResult(cJSON* node, OperatorResult& resOut, smtk::model::RemoteOperatorPtr op)
 {
-  return cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
+  smtk::attribute::System* opSys = op->bridge()->operatorSystem();
+  // Deserialize the OperatorResult into \a resOut:
+  int status = cJSON_GetObjectParameters(node, resOut, opSys, "result", "resultXML");
+
+  // Remove entities that the operator result reports as expunged:
+  smtk::attribute::ModelEntityItemPtr expunged = resOut->findModelEntity("expunged");
+  std::size_t num = expunged->numberOfValues();
+  //std::cout << "Should expunge " << num << " entries\n";
+  for (std::size_t i = 0; i < num; ++i)
+    {
+    //std::cout << "  " << expunged->value(i).entity() << "\n";
+    expunged->value(i).manager()->erase(expunged->value(i));
+    }
+
+  // Deserialize the relevant transcribed entities into the
+  // remote operator's model manager:
+  smtk::model::ManagerPtr mgr = op->manager();
+  cJSON* records = cJSON_GetObjectItem(node, "records");
+  if (mgr && records)
+    {
+    int num = 0;
+    for (cJSON* c = records->child; c; c = c->next)
+      {
+      //std::cout << "  x " << c->string << " " << Entity::flagSummary(cJSON_GetObjectItem(c, "e")->valueint,0) << "\n";
+      mgr->erase(smtk::common::UUID(c->string));
+      ++num;
+      }
+    //std::cout << "*** Result included " << num << " records\n";
+    ImportJSON::ofManager(records, mgr);
+    }
+  return status;
 }
 
 int ImportJSON::ofDanglingEntities(cJSON* node, ManagerPtr context)

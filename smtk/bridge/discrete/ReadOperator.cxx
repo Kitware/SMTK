@@ -90,7 +90,7 @@ OperatorResult ReadOperator::operateInternal()
   models->setValue(0, modelEntity);
 
 #if defined(SMTK_DISCRETE_BRIDGE_DEBUG)
-  std::string json = smtk::io::ExportJSON::fromModel(this->manager());
+  std::string json = smtk::io::ExportJSON::fromModelManager(this->manager());
     std::ofstream file("/tmp/read_op_out.json");
     file << json;
     file.close();

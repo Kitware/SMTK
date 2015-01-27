@@ -8,6 +8,7 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //=========================================================================
 #include "smtk/io/ExportJSON.h"
+#include "smtk/io/ExportJSON.txx"
 
 #include "smtk/common/Version.h"
 
@@ -150,7 +151,7 @@ cJSON* ExportJSON::fromUUIDs(const UUIDs& uids)
   return a;
 }
 
-int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
+int ExportJSON::fromModelManager(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
 {
   int status = 0;
   if (!json || !modelMgr)
@@ -187,10 +188,10 @@ int ExportJSON::fromModel(cJSON* json, ManagerPtr modelMgr, JSONFlags sections)
   return status;
 }
 
-std::string ExportJSON::fromModel(ManagerPtr modelMgr, JSONFlags sections)
+std::string ExportJSON::fromModelManager(ManagerPtr modelMgr, JSONFlags sections)
 {
   cJSON* top = cJSON_CreateObject();
-  ExportJSON::fromModel(top, modelMgr, sections);
+  ExportJSON::fromModelManager(top, modelMgr, sections);
   char* json = cJSON_Print(top);
   std::string result(json);
   free(json);
@@ -483,6 +484,17 @@ int ExportJSON::forOperatorResult(OperatorResult res, cJSON* entRec)
 {
   cJSON_AddItemToObject(entRec, "name", cJSON_CreateString(res->type().c_str()));
   cJSON_AddAttributeSpec(entRec, "result", "resultXML", res);
+  Cursors ents = res->modelEntitiesAs<Cursors>("entities");
+  if (!ents.empty())
+    {
+    // If the operator reports new/modified entities, transcribe the affected models.
+    // TODO: In the future, this may be more conservative (i.e., fewer records
+    //       would be included to save time and memory) than JSON_MODELS.
+    cJSON* records = cJSON_CreateObject();
+    ExportJSON::forEntities(records, ents, JSON_MODELS, JSON_DEFAULT);
+    cJSON_AddItemToObject(entRec, "records", records);
+    }
+
   return 1;
 }
 

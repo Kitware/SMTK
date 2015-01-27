@@ -184,7 +184,7 @@ OperatorResult EntityGroupOperator::operateInternal()
       {
       // Return the created or modified group.
       smtk::attribute::ModelEntityItem::Ptr remEntities =
-        result->findModelEntity("deleted entities");
+        result->findModelEntity("expunged");
       remEntities->setNumberOfValues(1);
       remEntities->setValue(0, grpRem);
       }

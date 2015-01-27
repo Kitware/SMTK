@@ -6,7 +6,7 @@ set(ioTests
 
 foreach (test ${ioTests})
   add_executable(${test}  ${test}.cxx)
-  target_link_libraries(${test} SMTKCore)
+  target_link_libraries(${test} SMTKCore SMTKCoreModelTesting)
   add_test(${test} ${EXECUTABLE_OUTPUT_PATH}/${test})
 endforeach()
 
