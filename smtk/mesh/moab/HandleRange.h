@@ -14,7 +14,7 @@
 #ifndef __smtk_mesh_moab_Types_h
 #define __smtk_mesh_moab_Types_h
 
-#include "moab/EntityType.hpp"
+//these require us to install moab headers, so lets fix that
 #include "moab/EntityHandle.hpp"
 #include "moab/Range.hpp"
 
@@ -22,7 +22,6 @@ namespace smtk {
 namespace mesh {
 namespace moab {
 
-typedef ::moab::EntityType    EntityType;
 typedef ::moab::EntityHandle  Handle;
 typedef ::moab::Range         HandleRange;
 

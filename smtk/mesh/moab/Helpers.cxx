@@ -158,8 +158,7 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
                                   smtk::mesh::CellType cellType,
                                   const smtk::mesh::moab::InterfacePtr& iface)
 {
-  smtk::mesh::moab::EntityType moabCellType =
-                                  smtk::mesh::moab::smtkToMOABCell(cellType);
+  int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
 
   ::moab::Range entitiesCells;
 
@@ -168,7 +167,10 @@ smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
   for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
     {
     //get_entities_by_type appends to the range given
-    iface->get_entities_by_type(*i, moabCellType, entitiesCells, true);
+    iface->get_entities_by_type(*i,
+                                static_cast< ::moab::EntityType >(moabCellType),
+                                entitiesCells,
+                                true);
     }
   return entitiesCells;
 }
@@ -270,13 +272,14 @@ smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
       {
       CellEnum ce = static_cast<CellEnum>(i);
       //now we need to convert from CellEnum to MoabType
-      smtk::mesh::moab::EntityType moabEType =
-                                  smtk::mesh::moab::smtkToMOABCell(ce);
+      int moabEType = smtk::mesh::moab::smtkToMOABCell(ce);
 
       //some of the cell types that smtk supports moab doesn't support
       //so we can't query on those.
       int num = 0;
-      iface->get_number_entities_by_type(handle, moabEType, num);
+      iface->get_number_entities_by_type(handle,
+                                         static_cast< ::moab::EntityType >(moabEType),
+                                         num);
       ctypes[ce] = (num > 0);
       }
     }

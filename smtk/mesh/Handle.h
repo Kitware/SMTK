@@ -11,7 +11,7 @@
 #ifndef __smtk_mesh_Handle_h
 #define __smtk_mesh_Handle_h
 
-#include "smtk/mesh/moab/Types.h"
+#include "smtk/mesh/moab/HandleRange.h"
 
 namespace smtk {
 namespace mesh {

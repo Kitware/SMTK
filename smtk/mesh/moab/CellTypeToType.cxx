@@ -10,17 +10,18 @@
 //
 //=============================================================================
 
-
+#include "moab/EntityType.hpp"
 #include "smtk/mesh/moab/CellTypeToType.h"
 
 namespace smtk {
 namespace mesh {
 namespace moab {
 
-smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t)
+smtk::mesh::CellType moabToSMTKCell(int t)
   {
+  ::moab::EntityType et = static_cast< ::moab::EntityType >(t);
   smtk::mesh::CellType ctype = smtk::mesh::CellType_MAX;
-  switch (t)
+  switch (et)
     {
     case ::moab::MBVERTEX:
       ctype = smtk::mesh::Vertex;
@@ -56,9 +57,9 @@ smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t)
   return ctype;
   }
 
-smtk::mesh::moab::EntityType smtkToMOABCell(smtk::mesh::CellType t)
+int smtkToMOABCell(smtk::mesh::CellType t)
   {
-  smtk::mesh::moab::EntityType ctype = ::moab::MBMAXTYPE;
+  ::moab::EntityType ctype = ::moab::MBMAXTYPE;
   switch (t)
     {
     case smtk::mesh::Vertex:

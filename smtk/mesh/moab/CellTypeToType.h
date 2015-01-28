@@ -14,7 +14,7 @@
 #ifndef __smtk_mesh_moab_CellTypeToType_h
 #define __smtk_mesh_moab_CellTypeToType_h
 
-#include "smtk/mesh/moab/Types.h"
+#include "smtk/mesh/moab/HandleRange.h"
 #include "smtk/mesh/CellTypes.h"
 
 namespace smtk {
@@ -24,9 +24,9 @@ namespace moab {
 //these aren't exported as they are private functions that only
 //smtk::mesh should call
 
-smtk::mesh::CellType moabToSMTKCell(smtk::mesh::moab::EntityType t);
+smtk::mesh::CellType moabToSMTKCell(int t);
 
-smtk::mesh::moab::EntityType smtkToMOABCell(smtk::mesh::CellType t);
+int smtkToMOABCell(smtk::mesh::CellType t);
 
 }
 }

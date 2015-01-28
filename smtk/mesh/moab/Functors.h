@@ -14,7 +14,7 @@
 #ifndef __smtk_mesh_moab_Functors_h
 #define __smtk_mesh_moab_Functors_h
 
-#include "Interface.h"
+#include "smtk/mesh/moab/Interface.h"
 
 namespace smtk {
 namespace mesh {
