@@ -11,9 +11,9 @@
 #ifndef __smtk_mesh_moab_PointConnectivityStorage_h
 #define __smtk_mesh_moab_PointConnectivityStorage_h
 
+#include "smtk/PublicPointerDefs.h"
 #include "smtk/mesh/Handle.h"
 #include "smtk/mesh/PointConnectivity.h"
-#include "smtk/mesh/moab/Interface.h"
 
 namespace smtk {
 namespace mesh {

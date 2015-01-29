@@ -9,59 +9,34 @@
 //=========================================================================
 
 #include "smtk/io/ImportMesh.h"
-
-#include "smtk/mesh/Collection.h"
-#include "smtk/mesh/Manager.h"
-#include "smtk/mesh/moab/Interface.h"
+#include "smtk/mesh/moab/Readers.h"
 
 namespace smtk {
 namespace io {
 
-namespace
-{
-
-smtk::mesh::CollectionPtr verifyAndMake(const smtk::mesh::moab::InterfacePtr interface,
-                                        const smtk::mesh::ManagerPtr manager)
-{
-  if(!interface)
-    {
-    //create an invalid collection which isn't part of a manager
-    return smtk::mesh::Collection::create();
-    }
-  //make a moab specific mesh collection
-  return manager->makeCollection( interface );
-}
-
-}
-
 smtk::mesh::CollectionPtr ImportMesh::entireFile(const std::string& filePath,
                                                  const smtk::mesh::ManagerPtr& manager)
 {
-  return verifyAndMake( smtk::mesh::moab::make_interface(filePath),
-                        manager);
-
+  return smtk::mesh::moab::read(filePath, manager);
 }
 
 smtk::mesh::CollectionPtr ImportMesh::onlyBoundary(const std::string& filePath,
                                                    const smtk::mesh::ManagerPtr& manager)
 {
-  return verifyAndMake( smtk::mesh::moab::make_boundary_interface(filePath),
-                        manager);
+ return smtk::mesh::moab::read_boundary(filePath, manager);
 }
 
 
 smtk::mesh::CollectionPtr ImportMesh::onlyNeumann(const std::string& filePath,
                                                   const smtk::mesh::ManagerPtr& manager)
 {
-  return verifyAndMake( smtk::mesh::moab::make_neumann_interface(filePath),
-                        manager);
+  return smtk::mesh::moab::read_neumann(filePath, manager);
 }
 
 smtk::mesh::CollectionPtr ImportMesh::onlyDirichlet(const std::string& filePath,
                                                     const smtk::mesh::ManagerPtr& manager)
 {
-  return verifyAndMake( smtk::mesh::moab::make_dirichlet_interface(filePath),
-                        manager);
+  return smtk::mesh::moab::read_dirichlet(filePath, manager);
 }
 
 

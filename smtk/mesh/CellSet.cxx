@@ -11,7 +11,7 @@
 #include "smtk/mesh/CellSet.h"
 #include "smtk/mesh/Collection.h"
 
-#include "smtk/mesh/moab/Helpers.h"
+#include "smtk/mesh/moab/Interface.h"
 #include "smtk/mesh/moab/Functors.h"
 
 namespace smtk {

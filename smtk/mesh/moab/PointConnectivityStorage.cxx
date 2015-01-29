@@ -9,7 +9,7 @@
 //=========================================================================
 
 #include "smtk/mesh/moab/PointConnectivityStorage.h"
-#include "smtk/mesh/moab/Helpers.h"
+#include "smtk/mesh/moab/Interface.h"
 
 #ifndef NDEBUG
 # include <iostream>

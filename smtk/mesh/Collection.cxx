@@ -11,7 +11,6 @@
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
 
-#include "smtk/mesh/moab/Helpers.h"
 #include "smtk/mesh/moab/Interface.h"
 
 namespace smtk {

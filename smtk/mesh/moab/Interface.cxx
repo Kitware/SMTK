@@ -9,201 +9,27 @@
 //  PURPOSE.  See the above copyright notice for more information.
 //
 //=============================================================================
-
-
 #include "smtk/mesh/moab/Interface.h"
-#include "smtk/mesh/Collection.h"
 
+#include "smtk/mesh/Collection.h"
+#include "smtk/mesh/MeshSet.h"
+#include "smtk/mesh/QueryTypes.h"
+
+#include "smtk/mesh/moab/CellTypeToType.h"
+#include "smtk/mesh/moab/Tags.h"
+#include "smtk/mesh/moab/Functors.h"
 
 #include "moab/Core.hpp"
 #include "moab/FileOptions.hpp"
 #include "moab/ReaderIface.hpp"
 
+#include <algorithm>
+#include <cstring>
+#include <set>
+
 namespace smtk {
 namespace mesh {
 namespace moab {
-
-namespace
-{
-  template< typename T>
-  bool is_valid( const T& t)
-  {
-    return (t != NULL && t->isValid());
-  }
-
-  //--------------------------------------------------------------------------
-  bool moab_load( const smtk::mesh::moab::InterfacePtr& interface,
-                  const std::string& path,
-                  const char* subset_name_to_load)
-  {
-  //currently the moab::interface doesn't allow loading a subset of a file
-  //if you don't know any tag values. Our current workaround is to cast
-  //to a Core and query for all the tag values, and pass those as the
-  //ones we want to load. If we get back no tag values and we wanted
-  //to load a subset we fail.
-  ::moab::Core* core = dynamic_cast< ::moab::Core* >(interface.get());
-  if(!core)
-    {
-    return false;
-    }
-
-  //when we have no subset to load tag_values is empty and
-  //dereferencing an empty std::vector is undefined behavior
-  std::vector<int> tag_values;
-  int* tag_values_ptr = NULL;
-  int num_tag_values = 0;
-
-  //if we have a have subset to load, we need to consider have zero values
-  //for that tag to be a failure to load, and not to load in the entire file
-  if(subset_name_to_load)
-    {
-    ::moab::ErrorCode tag_err = core->serial_read_tag(path.c_str(),
-                                                      subset_name_to_load,
-                                                      NULL, //options
-                                                      tag_values);
-
-    //this file has no mesh sets that match the given tag so we should
-    //fail as trying to load now will bring in the entire mesh, which is wrong
-    if(tag_err != ::moab::MB_SUCCESS || tag_values.size() == 0)
-      {
-      return false;
-      }
-
-    tag_values_ptr = &tag_values[0];
-    num_tag_values = tag_values.size();
-    }
-
-  ::moab::ErrorCode err = interface->load_file( path.c_str(),
-                                                NULL, //file set to append to
-                                                NULL, //options
-                                                subset_name_to_load,
-                                                tag_values_ptr,
-                                                num_tag_values);
-#ifndef NDEBUG
-  if(err != ::moab::MB_SUCCESS)
-    {
-    std::string msg; interface->get_last_error(msg);
-    std::cerr << msg << std::endl;
-    std::cerr << "failed to load file: " << path << std::endl;
-    }
-#endif
-
-  return err == ::moab::MB_SUCCESS;
-  }
-
-  //--------------------------------------------------------------------------
-  bool moab_write( const smtk::mesh::moab::InterfacePtr& interface,
-                   const std::string& path,
-                   const char* subset_name_to_write)
-  {
-  ::moab::ErrorCode err = ::moab::MB_FAILURE;
-
-  if(subset_name_to_write)
-    {
-    //if we are writing out a subset we first need to find the model
-    //entities with the given tag
-    ::moab::Tag subsetTag;
-    //all our tags are a single integer value
-    interface->tag_get_handle(subset_name_to_write,
-                              1,
-                              ::moab::MB_TYPE_INTEGER,
-                              subsetTag);
-
-    ::moab::Range setsToSave;
-    interface->get_entities_by_type_and_tag( interface->get_root_set(),
-                                             ::moab::MBENTITYSET,
-                                             &subsetTag,
-                                             NULL,
-                                             1,
-                                             setsToSave,
-                                             ::moab::Interface::UNION);
-
-    if( setsToSave.empty() )
-      {
-#ifndef NDEBUG
-      std::cerr << "failed to write file: " << path <<
-                   " no entities with tag: " << subset_name_to_write << std::endl;
-#endif
-      return false;
-      }
-
-    ::moab::Range entsToSave;
-    for( ::moab::Range::const_iterator i = setsToSave.begin();
-         i != setsToSave.end();
-         ++i)
-      {
-      interface->get_entities_by_handle( *i, entsToSave);
-      }
-
-    ::moab::Range entitiesToSave = setsToSave;
-    entitiesToSave.merge( entsToSave );
-    entitiesToSave.insert( 0 );
-
-    // std::cout << "start of moab_write" << std::endl;
-    // interface->list_entities(entitiesToSave);
-    // std::cout << "end of moab_write" << std::endl;
-
-    //write out just the subset. We let the file extension the user specified
-    //determine what writer to use.
-    err = interface->write_file(path.c_str(),
-                                NULL, //explicit writer type
-                                NULL, //options
-                                entitiesToSave);
-
-    }
-  else
-    {
-    //write out everything. We let the file extension the user specified
-    //determine what writer to use.
-    err = interface->write_file(path.c_str());
-    }
-
-#ifndef NDEBUG
-  if(err != ::moab::MB_SUCCESS)
-    {
-    std::string msg; interface->get_last_error(msg);
-    std::cerr << msg << std::endl;
-    std::cerr << "failed to write file: " << path << std::endl;
-    }
-#endif
-
-  return err == ::moab::MB_SUCCESS;
-  }
-
-  //--------------------------------------------------------------------------
-  //requires that interface is not a null shared ptr
-  smtk::mesh::moab::InterfacePtr load_file( smtk::mesh::moab::InterfacePtr interface,
-                                            const std::string& path,
-                                            const char* tag_name = NULL)
-  {
-  const bool loaded = moab_load(interface, path, tag_name);
-  if(!loaded)
-    {
-    //if we have gotten to here we failed to load so we need to return a
-    //null shared_ptr to mark this as failed
-    interface.reset();
-    }
-  return interface;
-  }
-
-  //--------------------------------------------------------------------------
-  //requires that interface is not a null shared ptr
-  bool append_file( const smtk::mesh::moab::InterfacePtr& interface,
-                    const std::string& path,
-                    const char* tag_name = NULL)
-  {
-  return moab_load(interface, path, tag_name);
-  }
-
-  //--------------------------------------------------------------------------
-  //requires that interface is not a null shared ptr
-  bool write_file( const smtk::mesh::moab::InterfacePtr& interface,
-                   const std::string& path,
-                   const char* tag_name = NULL)
-  {//tag_name which is NULL loads in all meshes
-  return moab_write(interface, path, tag_name);
-  }
-}
 
 //extract the interfacPtr from a collection
 const smtk::mesh::moab::InterfacePtr& extractInterface(smtk::mesh::CollectionPtr c)
@@ -218,92 +44,391 @@ smtk::mesh::moab::InterfacePtr make_interface()
   return smtk::mesh::moab::InterfacePtr( new ::moab::Core() );
 }
 
-//construct an interface to a given file. will load all meshes inside the
-//file
-smtk::mesh::moab::InterfacePtr make_interface(const std::string& path)
+
+//----------------------------------------------------------------------------
+std::size_t numMeshes(smtk::mesh::Handle handle,
+                      const smtk::mesh::moab::InterfacePtr& iface)
 {
-  return load_file( make_interface(), path );
+  int num_ents = 0;
+  iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, num_ents);
+  return static_cast<std::size_t>(num_ents);
 }
 
-//construct an interface to a given file. will load all meshes inside the
-//file
-smtk::mesh::moab::InterfacePtr make_boundary_interface(const std::string& path)
+//----------------------------------------------------------------------------
+bool create_meshset(smtk::mesh::HandleRange cells,
+                    smtk::mesh::Handle& meshHandle,
+                    const smtk::mesh::moab::InterfacePtr& iface)
 {
-  const std::string tag("BOUNDARY_SET");
-  return load_file( make_interface(), path, tag.c_str() );
+  const unsigned int options = 0;
+  ::moab::ErrorCode rval = iface->create_meshset( options , meshHandle );
+  if(rval == ::moab::MB_SUCCESS)
+    {
+    iface->add_entities( meshHandle, cells );
+    }
+   return (rval == ::moab::MB_SUCCESS);
 }
 
-//construct an interface to a given file. will load all meshes inside the
-//file
-smtk::mesh::moab::InterfacePtr make_neumann_interface(const std::string& path)
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
+                                     const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  //Core is a fully implemented moab::Interface
-  const std::string tag("NEUMANN_SET");
-  return load_file( make_interface(), path, tag.c_str() );
+  ::moab::Range range;
+  iface->get_entities_by_type(handle, ::moab::MBENTITYSET, range);
+  return range;
 }
 
-//construct an interface to a given file. will load all meshes inside the
-//file
-smtk::mesh::moab::InterfacePtr make_dirichlet_interface(const std::string& path)
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
+                                     int dimension,
+                                     const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  const std::string tag("DIRICHLET_SET");
-  return load_file( make_interface(), path, tag.c_str() );
+  ::moab::Range all_meshes_with_dim_tag;
+  ::moab::Range meshes_of_proper_dim;
+
+  //construct a dim tag that matches the dimension coming in
+  tag::QueryDimTag dimTag(dimension, iface);
+
+  // get all the entities of that type in the mesh
+  iface->get_entities_by_type_and_tag(handle,
+                                      ::moab::MBENTITYSET,
+                                      dimTag.moabTag(),
+                                      NULL,
+                                      1,
+                                      all_meshes_with_dim_tag);
+
+  typedef ::moab::Range::const_iterator iterator;
+  for(iterator i=all_meshes_with_dim_tag.begin();
+      i != all_meshes_with_dim_tag.end(); ++i)
+    {
+    int value = 0;
+    iface->tag_get_data(dimTag.moabTagAsRef(), &(*i), 1, &value);
+    if(value == dimTag.value())
+      {
+      meshes_of_proper_dim.insert(*i);
+      }
+    }
+  return meshes_of_proper_dim;
 }
 
-//Import everything in a file into an existing collection
-bool import(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+//find all entity sets that have this exact name tag
+smtk::mesh::HandleRange get_meshsets(smtk::mesh::Handle handle,
+                                     const std::string& name,
+                                     const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  return is_valid(c) && append_file( extractInterface(c), path );
+  typedef std::vector< ::moab::EntityHandle >::const_iterator it;
+
+  //I can't get get_entities_by_type_and_tag to work properly for this
+  //query so I am going to do it the slow way by doing the checking manually
+
+  //use a vector since we are going to do single element iteration, and
+  //removal.
+  std::vector< ::moab::EntityHandle > all_ents;
+  std::vector< ::moab::EntityHandle > matching_ents;
+  //get all ents
+  iface->get_entities_by_type(handle, ::moab::MBENTITYSET, all_ents);
+
+  //see which ones have a a matching name, and if so add it
+  tag::QueryNameTag query_name(iface);
+  for( it i = all_ents.begin(); i != all_ents.end(); ++i )
+    {
+    const bool has_name = query_name.fetch_name(*i);
+    if(has_name &&
+       ( std::strcmp(name.c_str(), query_name.current_name()) == 0 ) )
+      { //has a matching name
+      matching_ents.push_back(*i);
+      }
+    }
+
+  all_ents.clear();
+
+  smtk::mesh::HandleRange result;
+  std::copy( matching_ents.rbegin(), matching_ents.rend(),
+             ::moab::range_inserter(result) );
+  return result;
 }
 
-//Import all the boundary sets in a file into an existing collection
-bool import_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+//get all cells held by this range
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  const std::string tag("BOUNDARY_SET");
-  return is_valid(c) && append_file( extractInterface(c), path, tag.c_str() );
+  // get all non-meshset entities in meshset, including in contained meshsets
+  typedef ::moab::Range::const_iterator iterator;
+  ::moab::Range entitiesCells;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_handle appends to the range given
+    iface->get_entities_by_handle(*i, entitiesCells, true);
+    }
+  return entitiesCells;
 }
 
-//Import all the neumann sets in a file into an existing collection
-bool import_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
+
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given cell type
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  smtk::mesh::CellType cellType,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
 {
-  const std::string tag("NEUMANN_SET");
-  return is_valid(c) && append_file( extractInterface(c), path, tag.c_str() );
+  int moabCellType = smtk::mesh::moab::smtkToMOABCell(cellType);
+
+  ::moab::Range entitiesCells;
+
+  // get all non-meshset entities in meshset of a given cell type
+  typedef ::moab::Range::const_iterator iterator;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_type appends to the range given
+    iface->get_entities_by_type(*i,
+                                static_cast< ::moab::EntityType >(moabCellType),
+                                entitiesCells,
+                                true);
+    }
+  return entitiesCells;
 }
 
-//Import all the dirichlet sets in a file into an existing collection
-bool import_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given cell type(s)
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  const smtk::mesh::CellTypes& cellTypes,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  const std::string tag("DIRICHLET_SET");
-  return is_valid(c) && append_file( extractInterface(c), path, tag.c_str() );
+  const std::size_t cellTypesToFind = cellTypes.count();
+  if( cellTypesToFind == cellTypes.size())
+    { //if all the cellTypes are enabled we should just use get_cells
+      //all() method can't be used as it was added in C++11
+    return get_cells( meshsets, iface);
+    }
+  else if(cellTypesToFind == 0)
+    {
+    return smtk::mesh::HandleRange();
+    }
+
+  //we now search from highest cell type to lowest cell type adding everything
+  //to the range. The reason for this is that ranges perform best when inserting
+  //from high to low values
+  ::moab::Range entitiesCells;
+  for(int i = (cellTypes.size() -1); i >= 0; --i )
+    {
+    //skip all cell types we don't have
+    if( !cellTypes[i] )
+      { continue; }
+
+    smtk::mesh::CellType currentCellType = static_cast<smtk::mesh::CellType>(i);
+
+    ::moab::Range cellEnts = get_cells(meshsets, currentCellType, iface);
+
+    entitiesCells.insert(cellEnts.begin(), cellEnts.end());
+    }
+
+  return entitiesCells;
 }
 
-//Write everything in a file into an existing collection.
-bool write(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+//get all cells held by this range handle of a given dimension
+smtk::mesh::HandleRange get_cells(smtk::mesh::HandleRange meshsets,
+                                  smtk::mesh::DimensionType dim,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
+
 {
-  return is_valid(c) && write_file( extractInterface(c), path );
+  const int dimension = static_cast<int>(dim);
+
+  //get all non-meshset entities of a given dimension
+  typedef ::moab::Range::const_iterator iterator;
+  ::moab::Range entitiesCells;
+  for(iterator i = meshsets.begin(); i != meshsets.end(); ++i)
+    {
+    //get_entities_by_dimension appends to the range given
+    iface->get_entities_by_dimension(*i, dimension, entitiesCells, true);
+    }
+  return entitiesCells;
 }
 
-//Write all the boundary sets in a file into an existing collection
-bool write_boundary(const std::string& path, const smtk::mesh::CollectionPtr& c)
+
+//----------------------------------------------------------------------------
+std::vector< std::string > compute_names(const smtk::mesh::HandleRange& r,
+                                         const smtk::mesh::moab::InterfacePtr& iface)
 {
-  const std::string tag("BOUNDARY_SET");
-  return is_valid(c) &&  write_file( extractInterface(c), path, tag.c_str() );
+  //construct a name tag query helper class
+  tag::QueryNameTag query_name(iface);
+
+  typedef ::moab::Range::const_iterator it;
+  std::set< std::string > unique_names;
+  for(it i = r.begin(); i != r.end(); ++i)
+    {
+    const bool has_name = query_name.fetch_name(*i);
+    if(has_name)
+      {
+      unique_names.insert( std::string(query_name.current_name()) );
+      }
+    }
+  //return a vector of the unique names
+  return std::vector< std::string >(unique_names.begin(), unique_names.end());
 }
 
-//Write all the neumann sets in a file into an existing collection
-bool write_neumann(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+smtk::mesh::TypeSet compute_types(smtk::mesh::Handle handle,
+                                  const smtk::mesh::moab::InterfacePtr& iface)
 {
-  const std::string tag("NEUMANN_SET");
-  return is_valid(c) && write_file( extractInterface(c), path, tag.c_str() );
+  int numMeshes = 0;
+  iface->get_number_entities_by_type( handle, ::moab::MBENTITYSET, numMeshes);
+
+  //iterate over all the celltypes and get the number for each
+  //construct a smtk::mesh::CellTypes at the same time
+  typedef ::smtk::mesh::CellType CellEnum;
+  smtk::mesh::CellTypes ctypes;
+  if(numMeshes > 0)
+    {
+    for(int i=0; i < ctypes.size(); ++i )
+      {
+      CellEnum ce = static_cast<CellEnum>(i);
+      //now we need to convert from CellEnum to MoabType
+      int moabEType = smtk::mesh::moab::smtkToMOABCell(ce);
+
+      //some of the cell types that smtk supports moab doesn't support
+      //so we can't query on those.
+      int num = 0;
+      iface->get_number_entities_by_type(handle,
+                                         static_cast< ::moab::EntityType >(moabEType),
+                                         num);
+      ctypes[ce] = (num > 0);
+      }
+    }
+
+  //determine the state of the typeset
+  const bool hasMeshes = numMeshes > 0;
+  const bool hasCells = ctypes.any();
+  return smtk::mesh::TypeSet(ctypes, hasMeshes, hasCells) ;
 }
 
-//Write all the dirichlet sets in a file into an existing collection
-bool write_dirichlet(const std::string& path, const smtk::mesh::CollectionPtr& c)
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange point_intersect(const smtk::mesh::HandleRange& a,
+                                        const smtk::mesh::HandleRange& b,
+                                        const smtk::mesh::moab::ContainsFunctor& containsFunctor,
+                                        const smtk::mesh::moab::InterfacePtr& iface)
 {
-  const std::string tag("DIRICHLET_SET");
-  return is_valid(c) && write_file( extractInterface(c), path, tag.c_str() );
+  if(a.empty() || b.empty())
+    { //the intersection with nothing is nothing
+    return smtk::mesh::HandleRange();
+    }
+
+  //first get all the points of a
+  ::moab::Range a_points; iface->get_connectivity(a, a_points);
+
+  //result storage for creating the range. This is used since inserting
+  //into a range is horribly slow
+  std::vector< ::moab::EntityHandle > vresult;
+  vresult.reserve( b.size() );
+
+  //Some elements (e.g. structured mesh) may not have an explicit connectivity list.
+  //we pass storage to the interface so that it can use that memory to construct
+  //an explicit connectivity list for us.
+  std::vector< ::moab::EntityHandle > storage;
+
+  typedef ::moab::Range::const_iterator c_it;
+  for(c_it i = b.begin(); i != b.end(); ++i)
+    {
+    const ::moab::EntityHandle* connectivity; //handle back to node list
+    int num_nodes; //tells us the number of nodes
+    const bool corners_only = false; //explicitly state we want all nodes of the cell
+
+    //grab the raw connectivity array so we don't waste any memory
+    iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+
+    //call the contains functor to determine if this cell is considered
+    //to be contained by a_points.
+    bool contains = containsFunctor(a_points, connectivity, num_nodes);
+    if(contains)
+      { vresult.push_back( *i ); }
+    }
+
+  //now that we have all the cells that are the partial intersection
+  ::moab::Range resulting_range;
+  ::moab::Range::iterator hint = resulting_range.begin();
+
+  const std::size_t size = vresult.size();
+  for(std::size_t i = 0; i < size;)
+    {
+    std::size_t j;
+    for(j = i + 1; j < size && vresult[j] == 1 + vresult[j-1]; j++);
+      //empty for loop
+    hint = resulting_range.insert( hint, vresult[i], vresult[i] + (j-i-1) );
+    i = j;
+    }
+
+  return resulting_range;
+
 }
 
+//----------------------------------------------------------------------------
+smtk::mesh::HandleRange point_difference(const smtk::mesh::HandleRange& a,
+                                         const smtk::mesh::HandleRange& b,
+                                         const smtk::mesh::moab::ContainsFunctor& containsFunctor,
+                                         const smtk::mesh::moab::InterfacePtr& iface)
+{
+  if(b.empty())
+    { //taking the difference from nothing results in nothing
+    return smtk::mesh::HandleRange();
+    }
+  else if(a.empty())
+    { //if a is empty that means all b of is the difference
+    return b;
+    }
+
+  //first get all the points of a
+  ::moab::Range a_points; iface->get_connectivity(a, a_points);
+
+  //result storage for creating the range. This is used since inserting
+  //into a range is horribly slow
+  std::vector< ::moab::EntityHandle > vresult;
+  vresult.reserve( b.size() );
+
+  //Some elements (e.g. structured mesh) may not have an explicit connectivity list.
+  //we pass storage to the interface so that it can use that memory to construct
+  //an explicit connectivity list for us.
+  std::vector< ::moab::EntityHandle > storage;
+
+  typedef ::moab::Range::const_iterator c_it;
+  for(c_it i = b.begin(); i != b.end(); ++i)
+    {
+    const ::moab::EntityHandle* connectivity; //handle back to node list
+    int num_nodes; //tells us the number of nodes
+    const bool corners_only = false; //explicitly state we want all nodes of the cell
+
+    //grab the raw connectivity array so we don't waste any memory
+    iface->get_connectivity(*i, connectivity, num_nodes, corners_only, &storage);
+
+    //call the contains functor to determine if this cell is considered
+    //to be contained by a_points. If we aren't contained than we go into
+    //the difference result
+    bool contains = containsFunctor(a_points, connectivity, num_nodes);
+    if(!contains)
+      { vresult.push_back( *i ); }
+    }
+
+  //now that we have all the cells that are the partial intersection
+  ::moab::Range resulting_range;
+  ::moab::Range::iterator hint = resulting_range.begin();
+
+  const std::size_t size = vresult.size();
+  for(std::size_t i = 0; i < size;)
+    {
+    std::size_t j;
+    for(j = i + 1; j < size && vresult[j] == 1 + vresult[j-1]; j++);
+      //empty for loop
+    hint = resulting_range.insert( hint, vresult[i], vresult[i] + (j-i-1) );
+    i = j;
+    }
+
+  return resulting_range;
+
+}
 
 }
 }

@@ -12,7 +12,7 @@
 
 #include "smtk/mesh/Collection.h"
 #include "smtk/mesh/Manager.h"
-#include "smtk/mesh/moab/Interface.h"
+#include "smtk/mesh/moab/Writers.h"
 
 namespace smtk {
   namespace io {

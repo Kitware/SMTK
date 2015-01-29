@@ -11,10 +11,11 @@ set(meshSrcs
   # PointSet.cxx
   TypeSet.cxx
   moab/CellTypeToType.cxx
-  moab/Helpers.cxx
   moab/Interface.cxx
   moab/PointConnectivityStorage.cxx
+  moab/Readers.cxx
   moab/Tags.cxx
+  moab/Writers.cxx
   )
 
 set(meshHeaders
@@ -34,10 +35,8 @@ set(meshHeaders
   QueryTypes.h
   TypeSet.h
 
-  #only exposed moab headers are Interface, and Helpers. We need to work
-  #on a better name. How about Interface and InterfaceIO?
+  #The only exposed backend headers are Interface currently
   moab/Interface.h
-  moab/Helpers.h
   )
 
 #install the headers
